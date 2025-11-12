@@ -1,0 +1,110 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
+import { ensureDatabaseExists } from './database/ensure-database';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      useFactory: async (): Promise<TypeOrmModuleOptions> => {
+        const sslEnabled =
+          process.env.DB_SSL === 'true' || process.env.DATABASE_SSL === 'true';
+        const sslOption = sslEnabled
+          ? { rejectUnauthorized: false }
+          : undefined;
+
+        const databaseFromEnv =
+          process.env.DB_NAME ??
+          process.env.DATABASE_NAME ??
+          process.env.PGDATABASE ??
+          (process.env.DATABASE_URL
+            ? new URL(process.env.DATABASE_URL).pathname.replace(/^\//, '')
+            : undefined);
+
+        const synchronize =
+          process.env.TYPEORM_SYNCHRONIZE === 'true' ||
+          process.env.DB_SYNCHRONIZE === 'true';
+
+        const baseOptions: TypeOrmModuleOptions = {
+          type: 'postgres',
+          autoLoadEntities: true,
+          synchronize,
+          ...(sslOption ? { ssl: sslOption } : {}),
+        };
+
+        const host =
+          process.env.DB_HOST ??
+          process.env.DATABASE_HOST ??
+          process.env.PGHOST ??
+          undefined;
+        const port =
+          process.env.DB_PORT ??
+          process.env.DATABASE_PORT ??
+          process.env.PGPORT ??
+          undefined;
+        const username =
+          process.env.DB_USERNAME ??
+          process.env.DB_USER ??
+          process.env.DATABASE_USER ??
+          process.env.PGUSER ??
+          undefined;
+        const password =
+          process.env.DB_PASSWORD ??
+          process.env.DB_PASS ??
+          process.env.DATABASE_PASSWORD ??
+          process.env.PGPASSWORD ??
+          undefined;
+
+        const connectionOptions: TypeOrmModuleOptions = process.env.DATABASE_URL
+          ? {
+              ...baseOptions,
+              url: process.env.DATABASE_URL,
+              ...(databaseFromEnv ? { database: databaseFromEnv } : {}),
+            }
+          : {
+              ...baseOptions,
+              ...(host ? { host } : {}),
+              ...(port ? { port: Number(port) } : {}),
+              ...(username ? { username } : {}),
+              ...(password ? { password } : {}),
+              ...(databaseFromEnv ? { database: databaseFromEnv } : {}),
+            };
+
+        if (databaseFromEnv) {
+          if (process.env.DATABASE_URL) {
+            const adminUrl = new URL(process.env.DATABASE_URL);
+            const adminDatabase =
+              process.env.DB_ADMIN_DATABASE ??
+              process.env.DATABASE_ADMIN_NAME ??
+              'postgres';
+            adminUrl.pathname = `/${adminDatabase}`;
+
+            await ensureDatabaseExists({
+              connectionString: adminUrl.toString(),
+              database: databaseFromEnv,
+              ssl: sslOption,
+            });
+          } else if (host && username) {
+            await ensureDatabaseExists({
+              host,
+              port: port ? Number(port) : undefined,
+              username,
+              password,
+              database: databaseFromEnv,
+              ssl: sslOption,
+            });
+          }
+        }
+
+        return connectionOptions;
+      },
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}

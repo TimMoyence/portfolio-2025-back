@@ -1,0 +1,1 @@
+export const CONTACTS_REPOSITORY = Symbol('CONTACTS_REPOSITORY');
