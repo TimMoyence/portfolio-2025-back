@@ -28,9 +28,6 @@ export class UsersEntity {
   @Column({ default: true })
   isActive!: boolean;
 
-  @Column({ type: 'varchar', length: 20 })
-  role: string;
-
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -41,6 +38,11 @@ export class UsersEntity {
   })
   updatedAt: Date;
 
-  @Column({ name: 'updated_or_created_by', type: 'int', nullable: true })
-  updatedOrCreatedBy: number | null;
+  @Column({
+    name: 'updated_or_created_by',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
+  updatedOrCreatedBy: string | null;
 }

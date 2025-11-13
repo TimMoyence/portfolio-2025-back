@@ -42,6 +42,11 @@ export class CoursesEntity {
   })
   updatedAt: Date;
 
-  @Column({ name: 'updated_or_created_by', type: 'int', nullable: true })
-  updatedOrCreatedBy: number | null;
+  @Column({
+    name: 'updated_or_created_by',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
+  updatedOrCreatedBy: string | null;
 }

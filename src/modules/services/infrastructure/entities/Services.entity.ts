@@ -7,8 +7,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ServicesTranslationEntity } from './ServicesTranslation.entity';
 import { ServicesFaqEntity } from './ServicesFaq.entity';
+import { ServicesTranslationEntity } from './ServicesTranslation.entity';
 
 @Entity({ name: 'services' })
 export class ServicesEntity {
@@ -54,6 +54,11 @@ export class ServicesEntity {
   })
   updatedAt: Date;
 
-  @Column({ name: 'updated_or_created_by', type: 'int', nullable: true })
-  updatedOrCreatedBy: number | null;
+  @Column({
+    name: 'updated_or_created_by',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
+  updatedOrCreatedBy: string | null;
 }

@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateUsersUseCase } from './application/CreateUsers.useCase';
 import { DeleteUsersUseCase } from './application/DeleteUsers.useCase';
 import { ListUsersUseCase } from './application/ListUsers.useCase';
+import { ListOneUserUseCase } from './application/ListOneUser.useCase';
 import { UpdateUsersUseCase } from './application/UpdateUsers.useCase';
 import { USERS_REPOSITORY } from './domain/token';
 import { UsersEntity } from './infrastructure/entities/Users.entity';
@@ -11,6 +12,7 @@ import { UsersController } from './interfaces/Users.controller';
 
 const USERS_USE_CASES = [
   ListUsersUseCase,
+  ListOneUserUseCase,
   CreateUsersUseCase,
   UpdateUsersUseCase,
   DeleteUsersUseCase,
