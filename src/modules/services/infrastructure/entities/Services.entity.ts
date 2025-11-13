@@ -4,12 +4,15 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ServicesTranslationEntity } from './ServicesTranslation.entity';
+import { ServicesFaqEntity } from './ServicesFaq.entity';
 
 @Entity({ name: 'services' })
 export class ServicesEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Index({ unique: true })
@@ -18,12 +21,6 @@ export class ServicesEntity {
 
   @Column('text')
   name: string;
-
-  @Column('text')
-  excerpt: string;
-
-  @Column('text')
-  content: string;
 
   @Column({ type: 'text', nullable: true })
   icon?: string;
@@ -36,6 +33,16 @@ export class ServicesEntity {
   status: PublishStatus;
 
   @Column({ type: 'int', default: 0 }) order: number;
+
+  @OneToMany(() => ServicesFaqEntity, (faq) => faq.service, { cascade: true })
+  faqs: ServicesFaqEntity[];
+
+  @OneToMany(
+    () => ServicesTranslationEntity,
+    (translation) => translation.service,
+    { cascade: true },
+  )
+  translations: ServicesTranslationEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

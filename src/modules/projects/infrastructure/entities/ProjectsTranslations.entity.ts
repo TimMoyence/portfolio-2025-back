@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -8,9 +9,9 @@ import {
 } from 'typeorm';
 import { ProjectsEntity } from './Projects.entity';
 
-@Entity('project_translation')
-@Unique('uq_project_locale', ['projectId', 'locale'])
-@Unique('uq_locale_slug', ['locale', 'slug'])
+@Entity({ name: 'project_translation' })
+@Unique('uq_project_translation_locale', ['projectId', 'locale'])
+@Unique('uq_project_translation_locale_slug', ['locale', 'slug'])
 export class ProjectsTranslationsEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -27,6 +28,7 @@ export class ProjectsTranslationsEntity {
   @Column({ type: 'text' })
   locale: string; // 'fr' | 'en'
 
+  @Index()
   @Column({ type: 'text' })
   slug: string;
 

@@ -2,40 +2,42 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
-import { ServicesFaqEntity } from './SercicesFaq.entity';
+import { CoursesEntity } from './Courses.entity';
 
-@Entity('service_faq')
-export class ServicesFaqTranslationEntity {
+@Entity({ name: 'courses_translation' })
+@Unique('uq_courses_translation_locale', ['courseId', 'locale'])
+@Unique('uq_courses_translation_locale_slug', ['locale', 'slug'])
+export class CoursesTranslationEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => ServicesFaqEntity, (s) => s.translations, {
+  @Column('uuid')
+  courseId: string;
+
+  @ManyToOne(() => CoursesEntity, (course) => course.translations, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'serviceFaqId' })
-  service: ServicesFaqEntity;
+  @JoinColumn({ name: 'courseId' })
+  course: CoursesEntity;
 
-  @Column('uuid')
-  serviceFaqId: string;
+  @Column('text')
+  locale: string;
 
-  @Column({ type: 'text' })
-  locale: string; // 'fr' | 'en'
-
-  @Column({ type: 'text' })
+  @Index()
+  @Column('text')
   slug: string;
 
   @Column('text')
-  question: string;
+  title: string;
 
   @Column('text')
-  answer: string;
-
-  @Column({ type: 'int', default: 0 })
-  order: number;
+  summary: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

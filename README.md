@@ -1,7 +1,7 @@
 commande to add new migration :
 
 ```bash
-pnpm run migration:new --name=TheNameInCamelCase
+npm run migration:new --name=TheNameInCamelCase
 ```
 
 ## Project setup

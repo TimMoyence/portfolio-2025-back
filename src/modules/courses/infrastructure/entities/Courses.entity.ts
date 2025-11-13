@@ -3,8 +3,10 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CoursesTranslationEntity } from './CoursesTranslation.entity';
 
 @Entity({ name: 'courses' })
 export class CoursesEntity {
@@ -23,6 +25,12 @@ export class CoursesEntity {
 
   @Column({ type: 'text', nullable: true })
   coverImage?: string;
+
+  @OneToMany(
+    () => CoursesTranslationEntity,
+    (translation) => translation.course,
+  )
+  translations: CoursesTranslationEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

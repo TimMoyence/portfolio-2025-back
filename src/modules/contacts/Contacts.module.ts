@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CreateContactsUseCase } from './application/CreateContactsUseCase';
+import { CreateContactsUseCase } from './application/CreateContacts.useCase';
 import { CONTACTS_REPOSITORY } from './domain/token';
-import { ContactsRepositoryTypeORM } from './infrastructure/ContactsRepositoryTypeORM';
-import { ContactsEntity } from './infrastructure/entities/ContactMessage.entity';
-import { ContactsController } from './interfaces/ContactsController';
+import { ContactsRepositoryTypeORM } from './infrastructure/Contacts.repository.typeORM';
+import { ContactMessagesEntity } from './infrastructure/entities/ContactMessage.entity';
+import { ContactsController } from './interfaces/Contacts.controller';
 
 const CONTACTS_USE_CASES = [CreateContactsUseCase];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ContactsEntity])],
+  imports: [TypeOrmModule.forFeature([ContactMessagesEntity])],
   controllers: [ContactsController],
   providers: [
     ...CONTACTS_USE_CASES,

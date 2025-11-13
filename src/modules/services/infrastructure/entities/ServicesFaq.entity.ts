@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServicesEntity } from './Services.entity';
-import { ServicesFaqTranslationEntity } from './SercicesFaqTranslation.entity';
+import { ServicesFaqTranslationEntity } from './ServicesFaqTranslation.entity';
 
 @Entity('service_faq')
 export class ServicesFaqEntity {
@@ -22,7 +22,7 @@ export class ServicesFaqEntity {
   @Column('uuid')
   serviceId: string;
 
-  @OneToMany(() => ServicesFaqTranslationEntity, (t) => t.service, {
+  @OneToMany(() => ServicesFaqTranslationEntity, (t) => t.serviceFaq, {
     cascade: true,
   })
   translations: ServicesFaqTranslationEntity[];

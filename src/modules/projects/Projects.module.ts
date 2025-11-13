@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProjectsEntity } from './infrastructure/entities/Projects.entity';
-import { ProjectsRepositoryTypeORM } from './infrastructure/ProjectsRepositoryTypeORM';
-import { ProjectsController } from './interfaces/ProjectsController';
+import { CreateProjectsUseCase } from './application/CreateProjects.useCase';
 import { PROJECTS_REPOSITORY } from './domain/Token';
-import { CreateProjectsUseCase } from './application/CreateProjectsUseCase';
+import { ProjectsEntity } from './infrastructure/entities/Projects.entity';
+import { ProjectsTranslationsEntity } from './infrastructure/entities/ProjectsTranslations.entity';
+import { ProjectsRepositoryTypeORM } from './infrastructure/Projects.repository.typeORM';
+import { ProjectsController } from './interfaces/Projects.controller';
 
 const PROJECTS_USE_CASES = [CreateProjectsUseCase];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProjectsEntity])],
+  imports: [
+    TypeOrmModule.forFeature([ProjectsEntity, ProjectsTranslationsEntity]),
+  ],
   controllers: [ProjectsController],
   providers: [
     ...PROJECTS_USE_CASES,
