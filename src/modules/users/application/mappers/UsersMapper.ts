@@ -1,12 +1,12 @@
 import { Users } from '../../domain/Users';
-import { CreateUserDto } from '../dto/CreateUserDto';
-import { UpdateUserDto } from '../dto/UpdateUserDto';
+import { CreateUserDto } from '../dto/CreateUser.dto';
+import { UpdateUserDto } from '../dto/UpdateUser.dto';
 
 export class UsersMapper {
-  static fromCreateDto(dto: CreateUserDto): Users {
+  static fromCreateDto(dto: CreateUserDto, passwordHash: string): Users {
     return {
       email: dto.email,
-      passwordHash: dto.passwordHash,
+      passwordHash,
       firstName: dto.firstName,
       lastName: dto.lastName,
       phone: dto.phone ?? null,
@@ -17,11 +17,14 @@ export class UsersMapper {
     };
   }
 
-  static fromUpdateDto(dto: UpdateUserDto): Partial<Users> {
+  static fromUpdateDto(
+    dto: UpdateUserDto,
+    passwordHash?: string,
+  ): Partial<Users> {
     const partial: Partial<Users> = {};
 
     if (dto.email !== undefined) partial.email = dto.email;
-    if (dto.passwordHash !== undefined) partial.passwordHash = dto.passwordHash;
+    if (passwordHash !== undefined) partial.passwordHash = passwordHash;
     if (dto.firstName !== undefined) partial.firstName = dto.firstName;
     if (dto.lastName !== undefined) partial.lastName = dto.lastName;
     if (dto.phone !== undefined) partial.phone = dto.phone;

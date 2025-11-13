@@ -7,14 +7,23 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
 import { DeleteUsersUseCase } from '../application/DeleteUsers.useCase';
 import { ListOneUserUseCase } from '../application/ListOneUser.useCase';
 import { ListUsersUseCase } from '../application/ListUsers.useCase';
 import { UpdateUsersUseCase } from '../application/UpdateUsers.useCase';
-import { CreateUserDto } from '../application/dto/CreateUserDto';
-import { UpdateUserDto } from '../application/dto/UpdateUserDto';
+import { CreateUserDto } from '../application/dto/CreateUser.dto';
+import { UpdateUserDto } from '../application/dto/UpdateUser.dto';
+import { UserResponseDto } from './dto.response/User.response.dto';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(
@@ -26,27 +35,44 @@ export class UsersController {
   ) {}
 
   @Get()
-  findAll() {
-    return this.listUsersUseCase.execute();
+  @ApiOkResponse({ type: UserResponseDto, isArray: true })
+  async findAll(): Promise<UserResponseDto[]> {
+    const users = await this.listUsersUseCase.execute();
+    return users.map(UserResponseDto.fromDomain);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listOneUserUseCase.execute(id);
+  @ApiOkResponse({ type: UserResponseDto })
+  async findOne(@Param('id') id: string): Promise<UserResponseDto | null> {
+    const user = await this.listOneUserUseCase.execute(id);
+    return user ? UserResponseDto.fromDomain(user) : null;
   }
 
   @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.createUseCase.execute(dto);
+  @ApiCreatedResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+    const user = await this.createUseCase.execute(dto);
+    return UserResponseDto.fromDomain(user);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.updateUseCase.execute(id, dto);
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
+    const user = await this.updateUseCase.execute(id, dto);
+    return UserResponseDto.fromDomain(user);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.deleteUseCase.execute(id);
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  async delete(@Param('id') id: string): Promise<UserResponseDto> {
+    const user = await this.deleteUseCase.execute(id);
+    return UserResponseDto.fromDomain(user);
   }
 }

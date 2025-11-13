@@ -23,6 +23,21 @@ $ pnpm run start:dev
 $ pnpm run start:prod
 ```
 
+## API documentation
+
+Swagger UI is available once the server is running:
+
+1. Start the API (for example `pnpm run start:dev`).
+2. Open `http://localhost:3000/docs` (or `/${SWAGGER_PATH}` if you override the path) to explore the automatically generated OpenAPI specification.
+
+The documentation is backed by DTO metadata, so request/response shapes always stay in sync with the codebase.
+
+### Auth & Users
+
+- `POST /auth/login` — authenticate with email/password and receive a JWT plus the sanitized user payload.
+- `PATCH /auth/change-password` — change a user's password by providing the current and new password (hashed transparently before persisting).
+- `GET /users` & CRUD routes — manage users; all responses omit sensitive hashes.
+
 ## Run tests
 
 ```bash

@@ -9,6 +9,11 @@ import { USERS_REPOSITORY } from './domain/token';
 import { UsersEntity } from './infrastructure/entities/Users.entity';
 import { UsersRepositoryTypeORM } from './infrastructure/Users.repository.typeORM';
 import { UsersController } from './interfaces/Users.controller';
+import { PasswordService } from './application/services/PasswordService';
+import { JwtTokenService } from './application/services/JwtTokenService';
+import { AuthenticateUserUseCase } from './application/AuthenticateUser.useCase';
+import { ChangePasswordUseCase } from './application/ChangePassword.useCase';
+import { AuthController } from './interfaces/Auth.controller';
 
 const USERS_USE_CASES = [
   ListUsersUseCase,
@@ -16,13 +21,17 @@ const USERS_USE_CASES = [
   CreateUsersUseCase,
   UpdateUsersUseCase,
   DeleteUsersUseCase,
+  AuthenticateUserUseCase,
+  ChangePasswordUseCase,
 ];
 
 @Module({
   imports: [TypeOrmModule.forFeature([UsersEntity])],
-  controllers: [UsersController],
+  controllers: [UsersController, AuthController],
   providers: [
     ...USERS_USE_CASES,
+    PasswordService,
+    JwtTokenService,
     {
       provide: USERS_REPOSITORY,
       useClass: UsersRepositoryTypeORM,

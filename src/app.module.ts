@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UsersModule } from './modules/users/Users.module';
 
 import { ensureDatabaseExists } from './database/ensure-database';
 
@@ -103,6 +104,7 @@ import { ensureDatabaseExists } from './database/ensure-database';
         return connectionOptions;
       },
     }),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
