@@ -14,6 +14,7 @@ export class CreateUsersUseCase {
   ) {}
   async execute(dto: CreateUserDto): Promise<Users> {
     const passwordHash = this.passwordService.hash(dto.password);
+    dto.updatedOrCreatedBy = dto.updatedOrCreatedBy ?? 'self-registration';
     const user = UsersMapper.fromCreateDto(dto, passwordHash);
     return this.repo.create(user);
   }

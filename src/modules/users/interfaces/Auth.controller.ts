@@ -7,7 +7,9 @@ import {
 } from '@nestjs/swagger';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
+import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
 import { ChangePasswordDto } from '../application/dto/ChangePassword.dto';
+import { CreateUserDto } from '../application/dto/CreateUser.dto';
 import { LoginDto } from '../application/dto/Login.dto';
 import { AuthResponseDto } from './dto.response/Auth.response.dto';
 import { UserResponseDto } from './dto.response/User.response.dto';
@@ -17,6 +19,7 @@ import { UserResponseDto } from './dto.response/User.response.dto';
 export class AuthController {
   constructor(
     private readonly authenticateUserUseCase: AuthenticateUserUseCase,
+    private readonly createUsersUseCase: CreateUsersUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
   ) {}
 
@@ -44,5 +47,14 @@ export class AuthController {
   ): Promise<UserResponseDto> {
     const updatedUser = await this.changePasswordUseCase.execute(dto);
     return UserResponseDto.fromDomain(updatedUser);
+  }
+
+  @Post('register')
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ description: 'Registration failed' })
+  @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
+  async register(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+    const result = await this.createUsersUseCase.execute(dto);
+    return UserResponseDto.fromDomain(result);
   }
 }

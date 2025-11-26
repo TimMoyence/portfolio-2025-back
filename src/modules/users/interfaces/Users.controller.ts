@@ -38,7 +38,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserResponseDto, isArray: true })
   async findAll(): Promise<UserResponseDto[]> {
     const users = await this.listUsersUseCase.execute();
-    return users.map(UserResponseDto.fromDomain);
+    return users.map((user) => UserResponseDto.fromDomain(user));
   }
 
   @Get(':id')
