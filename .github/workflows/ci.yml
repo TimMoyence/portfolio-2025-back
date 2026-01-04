@@ -74,16 +74,30 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/master' &&
-      secrets.DEPLOY_HOST != '' &&
-      secrets.DEPLOY_USER != '' &&
-      secrets.SSH_PRIVATE_KEY != '' &&
-      secrets.DEPLOY_REGISTRY_USER != '' &&
-      secrets.DEPLOY_REGISTRY_TOKEN != ''
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: docker
     steps:
+      - name: Check required secrets
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          DEPLOY_REGISTRY_USER: ${{ secrets.DEPLOY_REGISTRY_USER }}
+          DEPLOY_REGISTRY_TOKEN: ${{ secrets.DEPLOY_REGISTRY_TOKEN }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for v in DEPLOY_HOST DEPLOY_USER SSH_PRIVATE_KEY DEPLOY_REGISTRY_USER DEPLOY_REGISTRY_TOKEN; do
+            if [ -z "${!v:-}" ]; then
+              echo "Missing secret: $v"
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "Required secrets missing. Skipping deploy."
+            exit 1
+          fi
       - name: Deploy API container
         uses: appleboy/ssh-action@v1.2.0
         env:
