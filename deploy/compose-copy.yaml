@@ -1,0 +1,84 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - ./backend.env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - private
+
+  api:
+    image: ${BACK_IMAGE:?BACK_IMAGE is required}
+    restart: unless-stopped
+    env_file:
+      - ./backend.env
+    environment:
+      NODE_ENV: production
+      # IMPORTANT: le container écoute en interne sur 3000 (ton Dockerfile back)
+      PORT: "3000"
+      API_PREFIX: ${API_PREFIX}
+    depends_on:
+      db:
+        condition: service_healthy
+
+    # Optionnel: expose en localhost pour debug (pas requis pour Option B)
+    # ports:
+    #   - "127.0.0.1:${API_PORT}:3000"
+
+    # Healthcheck interne (ne dépend pas de Nginx/HTTPS)
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- https://asilidesign.fr/api/v1/portfolio25 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      private: {}
+      web:
+        aliases:
+          - portfolio-api
+
+  web:
+    image: ${FRONT_IMAGE:?FRONT_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      # IMPORTANT: le container écoute en interne sur 4000 (ton Dockerfile front)
+      PORT: "4000"
+    depends_on:
+      api:
+        condition: service_healthy
+
+    # Optionnel: expose en localhost pour debug
+    # ports:
+    #   - "127.0.0.1:${WEB_PORT}:4000"
+
+    networks:
+      private: {}
+      web:
+        aliases:
+          - portfolio-web
+
+networks:
+  # Réseau privé interne au projet (db non accessible depuis l’extérieur)
+  private:
+    driver: bridge
+    internal: true
+
+  # Réseau partagé déjà existant (reverse-proxy + apps)
+  web:
+    external: true
+
+volumes:
+  db_data:

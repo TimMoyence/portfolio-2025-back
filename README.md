@@ -1,3 +1,13 @@
+## Docker & Compose
+- Build image: `docker build -t ghcr.io/<owner>/portfolio-2025-back:dev .`
+- Run locally: `docker run --rm -p 3000:3000 --env-file deploy/backend.env.example ghcr.io/<owner>/portfolio-2025-back:dev`.
+- Production stack: copy `deploy/.env.example` to `deploy/.env` and `deploy/backend.env.example` to `deploy/backend.env`, then `docker compose -f deploy/compose.yaml up -d`. Postgres data is persisted in the `db_data` volume.
+
+## CI/CD (GitHub Actions)
+- Workflow `.github/workflows/ci.yml` builds with pnpm and pushes images to GHCR on `main` using tags `latest` and the commit SHA.
+- Deploy step (optional) pulls the freshly built image over SSH and restarts only the `api` service via `docker compose`, ensuring only the build output is promoted.
+- Required secrets for deploy: `DEPLOY_HOST`, `DEPLOY_USER`, `SSH_PRIVATE_KEY`, `DEPLOY_REGISTRY_USER`, `DEPLOY_REGISTRY_TOKEN`. Optional: `DEPLOY_PATH` (default `/opt/portfolio-2025`), `DEPLOY_COMPOSE_FILE` (default `/opt/portfolio-2025/compose.yaml`).
+
 commande to add new migration :
 
 ```bash
