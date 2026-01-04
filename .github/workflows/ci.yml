@@ -62,8 +62,8 @@ jobs:
           file: ./Dockerfile
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           tags: |
-            ghcr.io/${{ toLower(github.repository_owner) }}/portfolio-2025-back:${{ github.sha }}
-            ghcr.io/${{ toLower(github.repository_owner) }}/portfolio-2025-back:latest
+            ghcr.io/timmoyence/portfolio-2025-back:${{ github.sha }}
+            ghcr.io/timmoyence/portfolio-2025-back:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -109,7 +109,7 @@ jobs:
             set -euo pipefail
             WORKDIR="${DEPLOY_PATH}"
             COMPOSE_FILE="${DEPLOY_COMPOSE_FILE}"
-            BACK_IMAGE="ghcr.io/${{ toLower(github.repository_owner) }}/portfolio-2025-back:${{ github.sha }}"
+            BACK_IMAGE="ghcr.io/timmoyence/portfolio-2025-back:${{ github.sha }}"
             PROJECT="portfolio25"
 
             cd "$WORKDIR"
