@@ -108,8 +108,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -euo pipefail
-            WORKDIR="${DEPLOY_PATH}"
-            COMPOSE_FILE="${DEPLOY_COMPOSE_FILE}"
+            WORKDIR="${DEPLOY_PATH:-/opt/portfolio-2025}"
+            COMPOSE_FILE="${DEPLOY_COMPOSE_FILE:-$WORKDIR/compose.yaml}"
             BACK_IMAGE="ghcr.io/timmoyence/portfolio-2025-back:${{ github.sha }}"
             PROJECT="portfolio25"
 
