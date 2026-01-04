@@ -7,10 +7,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner && toLower(github.repository_owner) }}/portfolio-2025-back
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -56,7 +52,6 @@ jobs:
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -67,8 +62,8 @@ jobs:
           file: ./Dockerfile
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ toLower(github.repository_owner) }}/portfolio-2025-back:${{ github.sha }}
+            ghcr.io/${{ toLower(github.repository_owner) }}/portfolio-2025-back:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -114,8 +109,7 @@ jobs:
             set -euo pipefail
             WORKDIR="${DEPLOY_PATH}"
             COMPOSE_FILE="${DEPLOY_COMPOSE_FILE}"
-            IMAGE_TAG="${{ github.sha }}"
-            BACK_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}"
+            BACK_IMAGE="ghcr.io/${{ toLower(github.repository_owner) }}/portfolio-2025-back:${{ github.sha }}"
             PROJECT="portfolio25"
 
             cd "$WORKDIR"
