@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ secrets.DEPLOY_REGISTRY_USER }}/portfolio-2025-back
+  IMAGE_NAME: ${{ github.repository_owner && toLower(github.repository_owner) }}/portfolio-2025-back
 
 jobs:
   build:
