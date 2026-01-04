@@ -21,13 +21,16 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
-COPY --from=production-deps /app/node_modules ./node_modules
-COPY package.json pnpm-lock.yaml ./
-COPY --from=build /app/dist ./dist
 
-# Sécurité : user non-root
-RUN adduser --system --uid 1001 nodeuser
-RUN chown -R nodeuser:nodeuser /app
+# 1) Créer user + group explicitement (évite le souci "group missing")
+RUN groupadd --gid 1001 nodeuser \
+ && useradd  --uid 1001 --gid 1001 --system --create-home nodeuser
+
+# 2) Copier en assignant le owner directement (pas de chown récursif)
+COPY --from=production-deps --chown=nodeuser:nodeuser /app/node_modules ./node_modules
+COPY --chown=nodeuser:nodeuser package.json pnpm-lock.yaml ./
+COPY --from=build --chown=nodeuser:nodeuser /app/dist ./dist
+
 USER nodeuser
 
 EXPOSE 3000
