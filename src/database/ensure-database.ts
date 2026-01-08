@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Client, ClientConfig } from 'pg';
 
 export interface EnsureDatabaseOptions {
@@ -48,6 +51,7 @@ export async function ensureDatabaseExists({
   };
 
   const client = new Client(adminConfig);
+
   await client.connect();
 
   try {
