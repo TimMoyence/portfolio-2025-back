@@ -108,10 +108,15 @@ jobs:
             set -euo pipefail
             WORKDIR="${DEPLOY_PATH:-/opt/portfolio-2025}"
             COMPOSE_FILE="${DEPLOY_COMPOSE_FILE:-$WORKDIR/compose.yaml}"
-            BACK_IMAGE="ghcr.io/${{ secrets.DEPLOY_REGISTRY_USER }}/portfolio-2025-back:${{ github.sha }}"
+            BACK_IMAGE_VALUE="ghcr.io/${{ secrets.DEPLOY_REGISTRY_USER }}/portfolio-2025-back:${{ github.sha }}"
+            FRONT_IMAGE_VALUE="ghcr.io/${{ secrets.DEPLOY_REGISTRY_USER }}/portfolio-2025-front:latest"
+
             PROJECT="portfolio25"
 
             cd "$WORKDIR"
             echo "${{ secrets.DEPLOY_REGISTRY_TOKEN }}" | docker login ghcr.io -u "${{ secrets.DEPLOY_REGISTRY_USER }}" --password-stdin || true
-            BACK_IMAGE="$BACK_IMAGE" docker compose -p "$PROJECT" -f "$COMPOSE_FILE" pull api
-            BACK_IMAGE="$BACK_IMAGE" docker compose -p "$PROJECT" -f "$COMPOSE_FILE" up -d --no-deps api
+            BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
+            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" pull api
+
+            BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
+            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" up -d --no-deps api
