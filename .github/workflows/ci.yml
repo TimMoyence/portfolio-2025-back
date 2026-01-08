@@ -114,4 +114,4 @@ jobs:
             cd "$WORKDIR"
             echo "${{ secrets.DEPLOY_REGISTRY_TOKEN }}" | docker login ghcr.io -u "${{ secrets.DEPLOY_REGISTRY_USER }}" --password-stdin || true
             BACK_IMAGE="$BACK_IMAGE" docker compose -p "$PROJECT" -f "$COMPOSE_FILE" pull api
-            BACK_IMAGE="$BACK_IMAGE" docker compose -p "$PROJECT" -f "$COMPOSE_FILE" up -d api
+            BACK_IMAGE="$BACK_IMAGE" docker compose -p "$PROJECT" -f "$COMPOSE_FILE" up -d --no-deps api
