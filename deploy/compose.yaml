@@ -33,15 +33,16 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      # A adapter selon ton endpoint existant
       test:
-        [
-          'CMD-SHELL',
-          'node -e "http=require(''http'');req=http.get(''http://127.0.0.1:3000/api/v1/portfolio25'',r=>process.exit(r.statusCode===200?0:1));req.on(''error'',()=>process.exit(1));"',
-        ]
+        - CMD-SHELL
+        - >
+          node -e "const http=require('http');
+          const req=http.get('http://127.0.0.1:3000/api/v1/portfolio25',res=>process.exit(res.statusCode===200?0:1));
+          req.on('error',()=>process.exit(1));"
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 20s
     networks:
       private: {}
       web:
