@@ -61,7 +61,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: true
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           tags: |
             ghcr.io/timmoyence/portfolio-2025-back:${{ github.sha }}
             ghcr.io/timmoyence/portfolio-2025-back:latest
