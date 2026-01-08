@@ -21,7 +21,7 @@ import { ensureDatabaseExists } from './database/ensure-database';
         const databaseFromEnv =
           process.env.DB_NAME ??
           process.env.DATABASE_NAME ??
-          process.env.PGDATABASE ??
+          process.env.POSTGRES_DB ??
           (process.env.DATABASE_URL
             ? new URL(process.env.DATABASE_URL).pathname.replace(/^\//, '')
             : undefined);
@@ -51,13 +51,13 @@ import { ensureDatabaseExists } from './database/ensure-database';
           process.env.DB_USERNAME ??
           process.env.DB_USER ??
           process.env.DATABASE_USER ??
-          process.env.PGUSER ??
+          process.env.POSTGRES_USER ??
           undefined;
         const password =
           process.env.DB_PASSWORD ??
           process.env.DB_PASS ??
           process.env.DATABASE_PASSWORD ??
-          process.env.PGPASSWORD ??
+          process.env.POSTGRES_PASSWORD ??
           undefined;
 
         const connectionOptions: TypeOrmModuleOptions = process.env.DATABASE_URL

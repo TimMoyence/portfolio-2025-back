@@ -7,4 +7,5 @@ pnpm-debug.log*
 coverage
 *.local
 .env
+.env.*
 Dockerfile
