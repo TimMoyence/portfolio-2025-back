@@ -8,7 +8,11 @@ services:
       - db_data:/var/lib/postgresql/data
     healthcheck:
       # On évite l'interpolation de variables dans compose
-      test: ['CMD-SHELL', 'pg_isready || exit 1']
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,7 +28,7 @@ services:
       NODE_ENV: production
       PORT: '3000'
       # Optionnel: tu peux le laisser uniquement dans backend.env
-      API_PREFIX: '/api/v1/portfolio25/'
+      API_PREFIX: '/api/v1/portfolio25'
     depends_on:
       db:
         condition: service_healthy
@@ -33,7 +37,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'wget -qO- http://localhost:3000/api/v1/portfolio25/ >/dev/null || exit 1',
+          'node -e "http=require(''http'');req=http.get(''http://127.0.0.1:3000/api/v1/portfolio25'',r=>process.exit(r.statusCode===200?0:1));req.on(''error'',()=>process.exit(1));"',
         ]
       interval: 10s
       timeout: 5s

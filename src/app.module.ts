@@ -18,12 +18,17 @@ import { ensureDatabaseExists } from './database/ensure-database';
           ? { rejectUnauthorized: false }
           : undefined;
 
+        const databaseUrl =
+          process.env.DATABASE_URL && process.env.DATABASE_URL.trim().length > 0
+            ? process.env.DATABASE_URL.trim()
+            : undefined;
+
         const databaseFromEnv =
           process.env.DB_NAME ??
           process.env.DATABASE_NAME ??
           process.env.POSTGRES_DB ??
-          (process.env.DATABASE_URL
-            ? new URL(process.env.DATABASE_URL).pathname.replace(/^\//, '')
+          (databaseUrl
+            ? new URL(databaseUrl).pathname.replace(/^\//, '')
             : undefined);
 
         const synchronize =
@@ -60,10 +65,10 @@ import { ensureDatabaseExists } from './database/ensure-database';
           process.env.POSTGRES_PASSWORD ??
           undefined;
 
-        const connectionOptions: TypeOrmModuleOptions = process.env.DATABASE_URL
+        const connectionOptions: TypeOrmModuleOptions = databaseUrl
           ? {
               ...baseOptions,
-              url: process.env.DATABASE_URL,
+              url: databaseUrl,
               ...(databaseFromEnv ? { database: databaseFromEnv } : {}),
             }
           : {
@@ -76,8 +81,8 @@ import { ensureDatabaseExists } from './database/ensure-database';
             };
 
         if (databaseFromEnv) {
-          if (process.env.DATABASE_URL) {
-            const adminUrl = new URL(process.env.DATABASE_URL);
+          if (databaseUrl) {
+            const adminUrl = new URL(databaseUrl);
             const adminDatabase =
               process.env.DB_ADMIN_DATABASE ??
               process.env.DATABASE_ADMIN_NAME ??
