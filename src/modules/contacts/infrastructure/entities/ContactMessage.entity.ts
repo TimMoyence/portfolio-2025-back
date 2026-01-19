@@ -23,7 +23,25 @@ export class ContactMessagesEntity {
   email: string; // store lowercase in service
 
   @Column('text')
+  firstName: string;
+
+  @Column('text')
+  lastName: string;
+
+  @Column('text', { nullable: true })
+  phone: string | null;
+
+  @Column('text')
+  subject: string;
+
+  @Column('text')
   message: string;
+
+  @Column('text')
+  role: string;
+
+  @Column('boolean')
+  terms: boolean;
 
   @Column({
     type: 'enum',

@@ -10,7 +10,8 @@ export class PasswordService {
   private readonly digest = 'sha512';
 
   constructor(private readonly configService: ConfigService) {
-    this.secret = this.configService.get<string>('SECURE_KEY_FOR_PASSWORD_HASHING') ?? '';
+    this.secret =
+      this.configService.get<string>('SECURE_KEY_FOR_PASSWORD_HASHING') ?? '';
 
     if (!this.secret) {
       throw new Error('SECURE_KEY_FOR_PASSWORD_HASHING is not defined');
@@ -18,7 +19,13 @@ export class PasswordService {
   }
 
   hash(password: string): string {
-    return pbkdf2Sync(password, this.secret, this.iterations, this.keyLength, this.digest).toString('hex');
+    return pbkdf2Sync(
+      password,
+      this.secret,
+      this.iterations,
+      this.keyLength,
+      this.digest,
+    ).toString('hex');
   }
 
   verify(password: string, hash: string): boolean {

@@ -49,12 +49,13 @@ services:
         aliases:
           - portfolio-api
 
-  web:
+  web-fr:
     image: ${FRONT_IMAGE:?FRONT_IMAGE is required}
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: '4000'
+      SSR_LOCALE: 'fr'
     depends_on:
       api:
         condition: service_healthy
@@ -62,7 +63,23 @@ services:
       private: {}
       web:
         aliases:
-          - portfolio-web
+          - portfolio-web-fr
+
+  web-en:
+    image: ${FRONT_IMAGE:?FRONT_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: '4000'
+      SSR_LOCALE: 'en-US'
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      private: {}
+      web:
+        aliases:
+          - portfolio-web-en
 
 networks:
   private:
