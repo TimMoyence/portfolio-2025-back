@@ -9,7 +9,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 FROM deps AS build
-RUN pnpm build
+RUN rm -rf dist && pnpm build
 
 FROM base AS production-deps
 ENV NODE_ENV=production
