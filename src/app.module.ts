@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './modules/users/Users.module';
 
 import { ensureDatabaseExists } from './database/ensure-database';
+import { ContactsModule } from './modules/contacts/Contacts.module';
 
 @Module({
   imports: [
@@ -110,6 +111,7 @@ import { ensureDatabaseExists } from './database/ensure-database';
       },
     }),
     UsersModule,
+    ContactsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
