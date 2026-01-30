@@ -19,5 +19,5 @@ export default new DataSource({
     process.env.DB_DATABASE ??
     process.env.DATABASE_NAME,
   entities: ['dist/**/*.entity.js'],
-  migrations: ['dist/migrations/*.js'],
+  migrations: [__dirname + '/../migrations/*{.js,.ts}'],
 });

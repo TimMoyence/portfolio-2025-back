@@ -49,6 +49,28 @@ services:
         aliases:
           - portfolio-api
 
+  migrate:
+    image: ${BACK_IMAGE:?BACK_IMAGE is required}
+    restart: 'no'
+    env_file:
+      - ./backend.env
+    environment:
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    # Important: pas de build ici, on exécute le JS compilé
+    command:
+      [
+        'node',
+        'node_modules/typeorm/cli.js',
+        'migration:run',
+        '-d',
+        'dist/database/data-source.js',
+      ]
+    networks:
+      - private
+
   web-fr:
     image: ${FRONT_IMAGE:?FRONT_IMAGE is required}
     restart: unless-stopped
