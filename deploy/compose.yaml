@@ -93,7 +93,7 @@ services:
     environment:
       NODE_ENV: 'production'
       PORT: '4000'
-      SSR_LOCALE: 'en-US'
+      SSR_LOCALE: 'en'
     depends_on:
       api:
         condition: service_healthy
