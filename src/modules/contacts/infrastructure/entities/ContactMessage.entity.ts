@@ -43,6 +43,18 @@ export class ContactMessagesEntity {
   @Column('boolean')
   terms: boolean;
 
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  termsVersion?: string;
+
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  termsLocale?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  termsAcceptedAt?: Date;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  termsMethod?: string;
+
   @Column({
     type: 'enum',
     enum: ['NEW', 'READ', 'REPLIED', 'SPAM'],

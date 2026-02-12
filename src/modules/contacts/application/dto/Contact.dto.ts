@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsDate,
   IsEmail,
   IsOptional,
   IsString,
@@ -51,4 +52,27 @@ export class ContactDto {
   @ApiProperty({ example: true, default: false })
   @IsBoolean()
   terms: boolean;
+
+  @ApiProperty({ example: '2026-02-11', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  termsVersion?: string;
+
+  @ApiProperty({ example: 'fr', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  termsLocale?: string;
+
+  @ApiProperty({ example: 'contact_form_checkbox', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  termsMethod?: string;
+
+  @ApiProperty({ example: '2026-02-11T10:45:00.000Z', required: false })
+  @IsOptional()
+  @IsDate()
+  termsAcceptedAt?: Date;
 }

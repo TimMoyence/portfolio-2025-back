@@ -26,6 +26,10 @@ export class ContactsRepositoryTypeORM implements IContactsRepository {
         message,
         role,
         terms,
+        termsVersion,
+        termsLocale,
+        termsAcceptedAt,
+        termsMethod,
       }) => ({
         id,
         email,
@@ -36,6 +40,10 @@ export class ContactsRepositoryTypeORM implements IContactsRepository {
         message,
         role,
         terms,
+        termsVersion,
+        termsLocale,
+        termsAcceptedAt,
+        termsMethod,
       }),
     );
   }
@@ -45,6 +53,8 @@ export class ContactsRepositoryTypeORM implements IContactsRepository {
       ...data,
       requestId: randomUUID(),
       name: `${data.firstName} ${data.lastName}`.trim(),
+      termsAcceptedAt:
+        data.termsAcceptedAt ?? (data.terms ? new Date() : undefined),
     });
 
     await this.repo.save(entity);

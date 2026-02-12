@@ -8,4 +8,8 @@ export class Contacts {
   message: string;
   role: string;
   terms: boolean;
+  termsVersion?: string;
+  termsLocale?: string;
+  termsAcceptedAt?: Date;
+  termsMethod?: string;
 }

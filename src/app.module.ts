@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/Users.module';
 
 import { ensureDatabaseExists } from './database/ensure-database';
 import { ContactsModule } from './modules/contacts/Contacts.module';
+import { CookieConsentsModule } from './modules/cookie-consents/CookieConsents.module';
 
 @Module({
   imports: [
@@ -112,6 +113,7 @@ import { ContactsModule } from './modules/contacts/Contacts.module';
     }),
     UsersModule,
     ContactsModule,
+    CookieConsentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

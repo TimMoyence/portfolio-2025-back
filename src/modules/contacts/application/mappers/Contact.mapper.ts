@@ -12,6 +12,12 @@ export class ContactMapper {
       message: dto.message,
       role: dto.role,
       terms: dto.terms,
+      termsVersion: dto.termsVersion ?? undefined,
+      termsLocale: dto.termsLocale ?? undefined,
+      termsMethod: dto.termsMethod ?? undefined,
+      termsAcceptedAt: dto.termsAcceptedAt
+        ? new Date(dto.termsAcceptedAt)
+        : undefined,
     };
   }
 }
