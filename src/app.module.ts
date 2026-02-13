@@ -8,6 +8,7 @@ import { UsersModule } from './modules/users/Users.module';
 import { ensureDatabaseExists } from './database/ensure-database';
 import { ContactsModule } from './modules/contacts/Contacts.module';
 import { CookieConsentsModule } from './modules/cookie-consents/CookieConsents.module';
+import { AuditRequestsModule } from './modules/audit-requests/AuditRequests.module';
 
 @Module({
   imports: [
@@ -114,6 +115,7 @@ import { CookieConsentsModule } from './modules/cookie-consents/CookieConsents.m
     UsersModule,
     ContactsModule,
     CookieConsentsModule,
+    AuditRequestsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
