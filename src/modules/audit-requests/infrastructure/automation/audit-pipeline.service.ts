@@ -111,6 +111,12 @@ export class AuditPipelineService {
           statusCode: entry.statusCode,
           indexable: entry.indexable,
           canonical: entry.canonical,
+          title: entry.title,
+          metaDescription: entry.metaDescription,
+          h1Count: entry.h1Count,
+          htmlLang: entry.htmlLang,
+          canonicalCount: entry.canonicalCount,
+          responseTimeMs: entry.responseTimeMs,
           error: entry.error,
         })),
       });

@@ -91,6 +91,102 @@ Contact        : ${contactMethod} — ${contactValue}
     const { auditId, websiteName, contactMethod, contactValue, summaryText } =
       payload;
     const serializedReport = JSON.stringify(payload.fullReport, null, 2);
+    const llm = this.extractObject(payload.fullReport['llm']);
+    const explanation = this.extractString(
+      llm?.reportExplanation,
+      "Ce rapport présente les priorités SEO et techniques, un plan d'action et une todo d'implémentation.",
+    );
+    const executiveSummary = this.extractString(
+      llm?.executiveSummary,
+      'Résumé exécutif non disponible.',
+    );
+
+    const priorities = this.extractArray(llm?.priorities);
+    const implementationTodo = this.extractArray(llm?.implementationTodo);
+    const invoiceScope = this.extractArray(llm?.invoiceScope);
+    const estimatedHours = invoiceScope.reduce<number>((total, item) => {
+      const hours = Number(this.extractObject(item)?.estimatedHours ?? 0);
+      return Number.isFinite(hours) ? total + hours : total;
+    }, 0);
+
+    const prioritiesText = priorities
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        return `${index + 1}. ${this.extractString(object?.title, 'Action prioritaire')}
+   - Severite: ${this.extractString(object?.severity, 'medium')}
+   - Pourquoi: ${this.extractString(object?.whyItMatters, 'N/A')}
+   - Recommandation: ${this.extractString(object?.recommendedFix, 'N/A')}
+   - Charge estimee: ${this.extractNumber(object?.estimatedHours)}h`;
+      })
+      .join('\n');
+
+    const todoText = implementationTodo
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        const dependencies = this.extractArray(object?.dependencies)
+          .map((dep) => this.extractString(dep, ''))
+          .filter(Boolean)
+          .join(', ');
+        return `${index + 1}. ${this.extractString(object?.phase, `Phase ${index + 1}`)} - ${this.extractString(object?.objective, 'N/A')}
+   - Deliverable: ${this.extractString(object?.deliverable, 'N/A')}
+   - Charge estimee: ${this.extractNumber(object?.estimatedHours)}h
+   - Dependances: ${dependencies || 'Aucune'}`;
+      })
+      .join('\n');
+
+    const invoiceText = invoiceScope
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        return `${index + 1}. ${this.extractString(object?.item, `Lot ${index + 1}`)} — ${this.extractString(object?.description, 'N/A')} (${this.extractNumber(object?.estimatedHours)}h)`;
+      })
+      .join('\n');
+
+    const prioritiesHtml = priorities
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        return `
+          <li style="margin-bottom:10px;">
+            <strong>${index + 1}. ${this.escapeHtml(this.extractString(object?.title, 'Action prioritaire'))}</strong><br/>
+            <span><strong>Sévérité:</strong> ${this.escapeHtml(this.extractString(object?.severity, 'medium'))}</span><br/>
+            <span><strong>Pourquoi:</strong> ${this.escapeHtml(this.extractString(object?.whyItMatters, 'N/A'))}</span><br/>
+            <span><strong>Recommandation:</strong> ${this.escapeHtml(this.extractString(object?.recommendedFix, 'N/A'))}</span><br/>
+            <span><strong>Charge estimée:</strong> ${this.extractNumber(object?.estimatedHours)}h</span>
+          </li>
+        `;
+      })
+      .join('');
+
+    const todoHtml = implementationTodo
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        const dependencies = this.extractArray(object?.dependencies)
+          .map((dep) => this.escapeHtml(this.extractString(dep, '')))
+          .filter(Boolean)
+          .join(', ');
+        return `
+          <li style="margin-bottom:10px;">
+            <strong>${this.escapeHtml(this.extractString(object?.phase, `Phase ${index + 1}`))}</strong> — ${this.escapeHtml(this.extractString(object?.objective, 'N/A'))}<br/>
+            <span><strong>Livrable:</strong> ${this.escapeHtml(this.extractString(object?.deliverable, 'N/A'))}</span><br/>
+            <span><strong>Charge:</strong> ${this.extractNumber(object?.estimatedHours)}h</span><br/>
+            <span><strong>Dépendances:</strong> ${dependencies || 'Aucune'}</span>
+          </li>
+        `;
+      })
+      .join('');
+
+    const invoiceHtml = invoiceScope
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        return `
+          <tr>
+            <td style="padding:8px; border:1px solid #e5e7eb;">${index + 1}</td>
+            <td style="padding:8px; border:1px solid #e5e7eb;">${this.escapeHtml(this.extractString(object?.item, `Lot ${index + 1}`))}</td>
+            <td style="padding:8px; border:1px solid #e5e7eb;">${this.escapeHtml(this.extractString(object?.description, 'N/A'))}</td>
+            <td style="padding:8px; border:1px solid #e5e7eb; text-align:right;">${this.extractNumber(object?.estimatedHours)}h</td>
+          </tr>
+        `;
+      })
+      .join('');
 
     await this.transporter.sendMail({
       from: this.from,
@@ -104,8 +200,25 @@ Audit ID      : ${auditId}
 Site          : ${websiteName}
 Contact       : ${contactMethod} — ${contactValue}
 
-Resume:
+Resume utilisateur:
 ${summaryText}
+
+Explication du rapport:
+${explanation}
+
+Synthese executive:
+${executiveSummary}
+
+Actions prioritaires:
+${prioritiesText || 'Aucune action prioritaire detaillee'}
+
+Todo implementation (mode PM):
+${todoText || 'Aucune todo detaillee'}
+
+Scope de facturation recommande:
+${invoiceText || 'Aucun lot detaille'}
+
+Charge totale estimee: ${estimatedHours}h
 
 Rapport complet (JSON):
 ${serializedReport}
@@ -119,13 +232,77 @@ ${serializedReport}
             <p style="margin-bottom:16px;"><strong>Contact:</strong> ${contactMethod} — ${contactValue}</p>
 
             <h3 style="margin-bottom:8px;">Résumé utilisateur</h3>
-            <p style="white-space:pre-line; color:#333;">${summaryText}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(summaryText)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Explication du rapport</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(explanation)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Synthèse exécutive</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(executiveSummary)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Liste des actions prioritaires</h3>
+            <ol style="padding-left:20px; color:#333;">
+              ${prioritiesHtml || '<li>Aucune action détaillée.</li>'}
+            </ol>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Todo d’implémentation (pilotage PM)</h3>
+            <ol style="padding-left:20px; color:#333;">
+              ${todoHtml || '<li>Aucune todo détaillée.</li>'}
+            </ol>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Préformat devis/facture</h3>
+            <table style="width:100%; border-collapse:collapse; font-size:13px; color:#333;">
+              <thead>
+                <tr>
+                  <th style="padding:8px; border:1px solid #e5e7eb; text-align:left;">#</th>
+                  <th style="padding:8px; border:1px solid #e5e7eb; text-align:left;">Lot</th>
+                  <th style="padding:8px; border:1px solid #e5e7eb; text-align:left;">Description</th>
+                  <th style="padding:8px; border:1px solid #e5e7eb; text-align:right;">Heures</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${invoiceHtml || '<tr><td colspan="4" style="padding:8px; border:1px solid #e5e7eb;">Aucun lot détaillé.</td></tr>'}
+              </tbody>
+            </table>
+            <p style="margin-top:8px; font-size:13px; color:#333;"><strong>Charge totale estimée:</strong> ${estimatedHours}h</p>
 
             <h3 style="margin:16px 0 8px;">Rapport complet (JSON)</h3>
-            <pre style="max-height:360px; overflow:auto; background:#111; color:#eee; padding:12px; border-radius:6px;">${serializedReport}</pre>
+            <pre style="max-height:360px; overflow:auto; background:#111; color:#eee; padding:12px; border-radius:6px;">${this.escapeHtml(serializedReport)}</pre>
           </div>
         </div>
       `,
     });
+  }
+
+  private extractObject(value: unknown): Record<string, unknown> | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return null;
+    }
+    return value as Record<string, unknown>;
+  }
+
+  private extractArray(value: unknown): unknown[] {
+    return Array.isArray(value) ? value : [];
+  }
+
+  private extractString(value: unknown, fallback: string): string {
+    return typeof value === 'string' && value.trim().length > 0
+      ? value
+      : fallback;
+  }
+
+  private extractNumber(value: unknown): number {
+    return typeof value === 'number' && Number.isFinite(value)
+      ? Math.max(0, Math.round(value * 10) / 10)
+      : 0;
+  }
+
+  private escapeHtml(input: string): string {
+    return input
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
   }
 }
