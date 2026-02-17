@@ -50,6 +50,20 @@ The documentation is backed by DTO metadata, so request/response shapes always s
 - `PATCH /auth/change-password` — change a user's password by providing the current and new password (hashed transparently before persisting).
 - `GET /users` & CRUD routes — manage users; all responses omit sensitive hashes.
 
+### Audit SSE flow
+
+- `POST /audits` (and legacy `POST /audit-requests`) — create an audit request and enqueue async processing.
+- `GET /audits/:id/stream` — Server-Sent Events stream (`progress`, `completed`, `failed`, `heartbeat`).
+- `GET /audits/:id/summary` — recovery endpoint for the persisted user summary.
+
+Main env keys for this flow:
+
+- `AUDIT_QUEUE_ENABLED`, `AUDIT_QUEUE_NAME`, `REDIS_URL` (or `REDIS_HOST` + `REDIS_PORT`).
+- `AUDIT_FETCH_TIMEOUT_MS`, `AUDIT_MAX_REDIRECTS`, `AUDIT_HTML_MAX_BYTES`, `AUDIT_TEXT_MAX_BYTES`.
+- `AUDIT_SITEMAP_SAMPLE_SIZE`, `AUDIT_SITEMAP_MAX_URLS`, `AUDIT_SITEMAP_ANALYZE_LIMIT`.
+- `OPENAI_API_KEY`, `AUDIT_LLM_MODEL`, `AUDIT_LLM_TIMEOUT_MS`, `AUDIT_LLM_RETRIES`, `AUDIT_LLM_LANGUAGE`.
+- `AUDIT_REPORT_TO` (fallbacks to `CONTACT_NOTIFICATION_TO`).
+
 ## Run tests
 
 ```bash
