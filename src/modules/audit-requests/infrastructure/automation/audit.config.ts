@@ -1,0 +1,79 @@
+export interface AuditAutomationConfig {
+  queueEnabled: boolean;
+  queueName: string;
+  queueConcurrency: number;
+  queueAttempts: number;
+  queueBackoffMs: number;
+  jobTimeoutMs: number;
+  redisUrl?: string;
+  redisHost?: string;
+  redisPort?: number;
+  redisUsername?: string;
+  redisPassword?: string;
+  fetchTimeoutMs: number;
+  maxRedirects: number;
+  htmlMaxBytes: number;
+  textMaxBytes: number;
+  sitemapSampleSize: number;
+  sitemapMaxUrls: number;
+  sitemapAnalyzeLimit: number;
+  llmModel: string;
+  llmTimeoutMs: number;
+  llmRetries: number;
+  llmLanguage: string;
+  reportTo?: string;
+  openAiApiKey?: string;
+}
+
+function envInt(name: string, fallback: number): number {
+  const raw = process.env[name];
+  const parsed = Number.parseInt(raw ?? '', 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function envBool(name: string, fallback: boolean): boolean {
+  const raw = (process.env[name] ?? '').toLowerCase();
+  if (raw === 'true') return true;
+  if (raw === 'false') return false;
+  return fallback;
+}
+
+function envString(name: string): string | undefined {
+  const value = process.env[name]?.trim();
+  return value && value.length > 0 ? value : undefined;
+}
+
+export function loadAuditAutomationConfig(): AuditAutomationConfig {
+  return {
+    queueEnabled: envBool('AUDIT_QUEUE_ENABLED', true),
+    queueName: envString('AUDIT_QUEUE_NAME') ?? 'audit_requests',
+    queueConcurrency: Math.max(1, envInt('AUDIT_QUEUE_CONCURRENCY', 2)),
+    queueAttempts: Math.max(1, envInt('AUDIT_QUEUE_ATTEMPTS', 3)),
+    queueBackoffMs: Math.max(0, envInt('AUDIT_QUEUE_BACKOFF_MS', 2000)),
+    jobTimeoutMs: Math.max(1000, envInt('AUDIT_JOB_TIMEOUT_MS', 180000)),
+    redisUrl: envString('REDIS_URL'),
+    redisHost: envString('REDIS_HOST'),
+    redisPort: envString('REDIS_PORT')
+      ? Math.max(1, envInt('REDIS_PORT', 6379))
+      : undefined,
+    redisUsername: envString('REDIS_USERNAME'),
+    redisPassword: envString('REDIS_PASSWORD'),
+    fetchTimeoutMs: Math.max(1000, envInt('AUDIT_FETCH_TIMEOUT_MS', 8000)),
+    maxRedirects: Math.max(0, envInt('AUDIT_MAX_REDIRECTS', 5)),
+    htmlMaxBytes: Math.max(1024, envInt('AUDIT_HTML_MAX_BYTES', 1_000_000)),
+    textMaxBytes: Math.max(1024, envInt('AUDIT_TEXT_MAX_BYTES', 1_000_000)),
+    sitemapSampleSize: Math.max(1, envInt('AUDIT_SITEMAP_SAMPLE_SIZE', 10)),
+    sitemapMaxUrls: Math.max(10, envInt('AUDIT_SITEMAP_MAX_URLS', 50_000)),
+    sitemapAnalyzeLimit: Math.max(
+      1,
+      envInt('AUDIT_SITEMAP_ANALYZE_LIMIT', 150),
+    ),
+    llmModel: envString('AUDIT_LLM_MODEL') ?? 'gpt-4o-mini',
+    llmTimeoutMs: Math.max(1000, envInt('AUDIT_LLM_TIMEOUT_MS', 25_000)),
+    llmRetries: Math.max(0, envInt('AUDIT_LLM_RETRIES', 2)),
+    llmLanguage: envString('AUDIT_LLM_LANGUAGE') ?? 'fr',
+    reportTo:
+      envString('AUDIT_REPORT_TO') ?? envString('CONTACT_NOTIFICATION_TO'),
+    openAiApiKey: envString('OPENAI_API_KEY'),
+  };
+}

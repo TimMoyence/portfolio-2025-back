@@ -31,6 +31,8 @@ export class AuditRequestsController {
     const responseDto = new AuditRequestResponseDto();
     responseDto.message = response.message;
     responseDto.httpCode = response.httpCode;
+    responseDto.auditId = response.auditId;
+    responseDto.status = response.status;
     return responseDto;
   }
 }
