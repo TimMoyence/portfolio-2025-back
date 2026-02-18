@@ -15,6 +15,11 @@ import {
 } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
+import {
+  AuditLocale,
+  localeFromUrlPath,
+  resolveAuditLocale,
+} from '../domain/audit-locale.util';
 import { CreateAuditRequestsUseCase } from '../application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from '../application/StreamAuditEvents.useCase';
@@ -44,6 +49,7 @@ export class AuditsController {
 
     const response = await this.createUseCase.execute({
       ...dto,
+      locale: this.resolveLocale(dto.locale, req),
       ip: ip ?? req.ip ?? null,
       userAgent: req.headers['user-agent'] ?? null,
       referer: req.headers['referer'] ?? null,
@@ -78,5 +84,28 @@ export class AuditsController {
   @Sse(':id/stream')
   stream(@Param('id') auditId: string): Observable<MessageEvent> {
     return this.streamUseCase.execute(auditId);
+  }
+
+  private resolveLocale(requestedLocale: unknown, req: Request): AuditLocale {
+    const explicit = resolveAuditLocale(requestedLocale, 'fr');
+    if (requestedLocale) {
+      return explicit;
+    }
+
+    const referer = req.get('referer');
+
+    if (referer) {
+      try {
+        const fromPath = localeFromUrlPath(new URL(referer).pathname);
+        if (fromPath) return fromPath;
+      } catch {
+        const fromPath = localeFromUrlPath(referer);
+        if (fromPath) return fromPath;
+      }
+    }
+
+    const acceptLanguage = req.get('accept-language');
+
+    return resolveAuditLocale(acceptLanguage, 'fr');
   }
 }

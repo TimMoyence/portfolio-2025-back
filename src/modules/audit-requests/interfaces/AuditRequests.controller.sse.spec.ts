@@ -15,21 +15,8 @@ describe('AuditsController SSE', () => {
               status: 'RUNNING',
               progress: 30,
               step: 'Analyse homepage',
+              details: { phase: 'technical_pages', done: 2, total: 10 },
               done: false,
-              updatedAt: new Date().toISOString(),
-            },
-          },
-          {
-            type: 'instant_summary',
-            data: {
-              auditId: 'audit-1',
-              ready: false,
-              status: 'RUNNING',
-              progress: 30,
-              summaryText: 'Diagnostic initial',
-              keyChecks: {},
-              quickWins: [],
-              pillarScores: {},
               updatedAt: new Date().toISOString(),
             },
           },
@@ -61,11 +48,7 @@ describe('AuditsController SSE', () => {
     controller.stream('audit-1').subscribe({
       next: (event) => events.push({ type: event.type ?? 'unknown' }),
       complete: () => {
-        expect(events).toEqual([
-          { type: 'progress' },
-          { type: 'instant_summary' },
-          { type: 'completed' },
-        ]);
+        expect(events).toEqual([{ type: 'progress' }, { type: 'completed' }]);
         done();
       },
     });

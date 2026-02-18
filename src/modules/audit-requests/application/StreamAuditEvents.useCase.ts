@@ -15,7 +15,6 @@ export class StreamAuditEventsUseCase {
       let disposed = false;
       let busy = false;
       let lastFingerprint = '';
-      let instantSummarySent = false;
 
       const emitSnapshot = async (): Promise<void> => {
         if (disposed || busy) return;
@@ -40,7 +39,8 @@ export class StreamAuditEventsUseCase {
           }
 
           const updatedAt = audit.updatedAt.toISOString();
-          const fingerprint = `${audit.processingStatus}:${audit.progress}:${audit.step}:${audit.error}:${updatedAt}`;
+          const progressDetails = this.extractProgressDetails(audit.keyChecks);
+          const fingerprint = `${audit.processingStatus}:${audit.progress}:${audit.step}:${audit.error}:${updatedAt}:${JSON.stringify(progressDetails)}`;
           if (fingerprint === lastFingerprint) {
             return;
           }
@@ -81,29 +81,6 @@ export class StreamAuditEventsUseCase {
             return;
           }
 
-          if (
-            !instantSummarySent &&
-            audit.processingStatus === 'RUNNING' &&
-            audit.summaryText &&
-            audit.summaryText.trim().length > 0
-          ) {
-            instantSummarySent = true;
-            subscriber.next({
-              type: 'instant_summary',
-              data: {
-                auditId: audit.id,
-                ready: false,
-                status: audit.processingStatus,
-                progress: audit.progress,
-                summaryText: audit.summaryText,
-                keyChecks: audit.keyChecks,
-                quickWins: audit.quickWins,
-                pillarScores: audit.pillarScores,
-                updatedAt,
-              },
-            });
-          }
-
           subscriber.next({
             type: 'progress',
             data: {
@@ -111,6 +88,7 @@ export class StreamAuditEventsUseCase {
               status: audit.processingStatus,
               progress: audit.progress,
               step: audit.step,
+              details: progressDetails,
               done: audit.done,
               updatedAt,
             },
@@ -162,5 +140,15 @@ export class StreamAuditEventsUseCase {
         }
       };
     });
+  }
+
+  private extractProgressDetails(
+    keyChecks: Record<string, unknown>,
+  ): Record<string, unknown> | undefined {
+    const value = keyChecks['progressDetails'];
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return undefined;
+    }
+    return value as Record<string, unknown>;
   }
 }

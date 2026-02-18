@@ -18,10 +18,18 @@ export interface AuditAutomationConfig {
   sitemapMaxUrls: number;
   sitemapAnalyzeLimit: number;
   urlAnalyzeConcurrency: number;
+  pageAnalyzeLimit: number;
+  pageAiConcurrency: number;
+  pageAiTimeoutMs: number;
   llmModel: string;
   llmTimeoutMs: number;
+  llmSummaryTimeoutMs: number;
+  llmExpertTimeoutMs: number;
   llmRetries: number;
   llmLanguage: string;
+  rateHourlyMin: number;
+  rateHourlyMax: number;
+  rateCurrency: string;
   reportTo?: string;
   openAiApiKey?: string;
 }
@@ -29,6 +37,12 @@ export interface AuditAutomationConfig {
 function envInt(name: string, fallback: number): number {
   const raw = process.env[name];
   const parsed = Number.parseInt(raw ?? '', 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function envFloat(name: string, fallback: number): number {
+  const raw = process.env[name];
+  const parsed = Number.parseFloat(raw ?? '');
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
@@ -45,6 +59,21 @@ function envString(name: string): string | undefined {
 }
 
 export function loadAuditAutomationConfig(): AuditAutomationConfig {
+  const rateHourlyMin = Math.max(0, envFloat('AUDIT_RATE_HOURLY_MIN', 80));
+  const rateHourlyMax = Math.max(
+    rateHourlyMin,
+    envFloat('AUDIT_RATE_HOURLY_MAX', 120),
+  );
+  const llmTimeoutMs = Math.max(1000, envInt('AUDIT_LLM_TIMEOUT_MS', 60_000));
+  const llmSummaryTimeoutMs = Math.max(
+    1000,
+    envInt('AUDIT_LLM_SUMMARY_TIMEOUT_MS', 20_000),
+  );
+  const llmExpertTimeoutMs = Math.max(
+    1000,
+    envInt('AUDIT_LLM_EXPERT_TIMEOUT_MS', llmTimeoutMs),
+  );
+
   return {
     queueEnabled: envBool('AUDIT_QUEUE_ENABLED', true),
     queueName: envString('AUDIT_QUEUE_NAME') ?? 'audit_requests',
@@ -73,10 +102,18 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
       1,
       envInt('AUDIT_URL_ANALYZE_CONCURRENCY', 6),
     ),
+    pageAnalyzeLimit: Math.max(1, envInt('AUDIT_PAGE_ANALYZE_LIMIT', 30)),
+    pageAiConcurrency: Math.max(1, envInt('AUDIT_PAGE_AI_CONCURRENCY', 3)),
+    pageAiTimeoutMs: Math.max(1000, envInt('AUDIT_PAGE_AI_TIMEOUT_MS', 8000)),
     llmModel: envString('AUDIT_LLM_MODEL') ?? 'gpt-4o-mini',
-    llmTimeoutMs: Math.max(1000, envInt('AUDIT_LLM_TIMEOUT_MS', 25_000)),
+    llmTimeoutMs,
+    llmSummaryTimeoutMs,
+    llmExpertTimeoutMs,
     llmRetries: Math.max(0, envInt('AUDIT_LLM_RETRIES', 2)),
     llmLanguage: envString('AUDIT_LLM_LANGUAGE') ?? 'fr',
+    rateHourlyMin,
+    rateHourlyMax,
+    rateCurrency: envString('AUDIT_RATE_CURRENCY') ?? 'EUR',
     reportTo:
       envString('AUDIT_REPORT_TO') ?? envString('CONTACT_NOTIFICATION_TO'),
     openAiApiKey: envString('OPENAI_API_KEY'),

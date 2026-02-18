@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsString, MaxLength, MinLength } from 'class-validator';
+import type { AuditLocale } from '../../domain/audit-locale.util';
+import {
+  IsIn,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class AuditRequestDto {
   @ApiProperty({ example: 'Example Studio' })
@@ -17,4 +24,9 @@ export class AuditRequestDto {
   @MinLength(6)
   @MaxLength(200)
   contactValue: string;
+
+  @ApiProperty({ example: 'fr', required: false })
+  @IsOptional()
+  @IsIn(['fr', 'en'])
+  locale?: AuditLocale;
 }

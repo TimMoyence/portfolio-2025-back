@@ -10,6 +10,7 @@ import {
 import { AuditRequest } from '../domain/AuditRequest';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
+import { resolveAuditLocale } from '../domain/audit-locale.util';
 import { AuditRequestEntity } from './entities/AuditRequest.entity';
 
 @Injectable()
@@ -30,6 +31,7 @@ export class AuditRequestsRepositoryTypeORM
       processingStatus: 'PENDING',
       progress: 0,
       step: 'Queued',
+      locale: resolveAuditLocale(data.locale),
       ip: data.ip ?? undefined,
       userAgent: data.userAgent ?? undefined,
       referer: data.referer ?? undefined,
@@ -126,6 +128,7 @@ export class AuditRequestsRepositoryTypeORM
       websiteName: entity.websiteName,
       contactMethod: entity.contactMethod as 'EMAIL' | 'PHONE',
       contactValue: entity.contactValue,
+      locale: resolveAuditLocale(entity.locale),
       done: entity.done,
       processingStatus: entity.processingStatus ?? 'PENDING',
       progress: entity.progress ?? 0,

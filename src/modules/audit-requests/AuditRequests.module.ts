@@ -7,22 +7,23 @@ import {
   AUDIT_AUTOMATION_CONFIG,
   AUDIT_REQUESTS_REPOSITORY,
 } from './domain/token';
-import { AuditRequestsRepositoryTypeORM } from './infrastructure/AuditRequests.repository.typeORM';
 import { AuditRequestMailerService } from './infrastructure/AuditRequestMailer.service';
-import { loadAuditAutomationConfig } from './infrastructure/automation/audit.config';
+import { AuditRequestsRepositoryTypeORM } from './infrastructure/AuditRequests.repository.typeORM';
 import { AuditPipelineService } from './infrastructure/automation/audit-pipeline.service';
 import { AuditQueueService } from './infrastructure/automation/audit-queue.service';
 import { AuditWorkerService } from './infrastructure/automation/audit-worker.service';
+import { loadAuditAutomationConfig } from './infrastructure/automation/audit.config';
+import { DeepUrlAnalysisService } from './infrastructure/automation/deep-url-analysis.service';
 import { HomepageAnalyzerService } from './infrastructure/automation/homepage-analyzer.service';
 import { LangchainAuditReportService } from './infrastructure/automation/langchain-audit-report.service';
-import { DeepUrlAnalysisService } from './infrastructure/automation/deep-url-analysis.service';
+import { PageAiRecapService } from './infrastructure/automation/page-ai-recap.service';
 import { SafeFetchService } from './infrastructure/automation/safe-fetch.service';
 import { ScoringService } from './infrastructure/automation/scoring.service';
 import { SitemapDiscoveryService } from './infrastructure/automation/sitemap-discovery.service';
 import { UrlIndexabilityService } from './infrastructure/automation/url-indexability.service';
+import { ReportQualityGateService } from './infrastructure/automation/report-quality-gate.service';
 import { AuditRequestEntity } from './infrastructure/entities/AuditRequest.entity';
 import { AuditsController } from './interfaces/Audits.controller';
-import { AuditRequestsController } from './interfaces/AuditRequests.controller';
 
 const AUDIT_REQUESTS_USE_CASES = [
   CreateAuditRequestsUseCase,
@@ -37,6 +38,8 @@ const AUDIT_AUTOMATION_SERVICES = [
   SitemapDiscoveryService,
   UrlIndexabilityService,
   ScoringService,
+  ReportQualityGateService,
+  PageAiRecapService,
   LangchainAuditReportService,
   AuditPipelineService,
   AuditQueueService,
@@ -45,7 +48,7 @@ const AUDIT_AUTOMATION_SERVICES = [
 
 @Module({
   imports: [TypeOrmModule.forFeature([AuditRequestEntity])],
-  controllers: [AuditRequestsController, AuditsController],
+  controllers: [AuditsController],
   providers: [
     ...AUDIT_REQUESTS_USE_CASES,
     ...AUDIT_AUTOMATION_SERVICES,

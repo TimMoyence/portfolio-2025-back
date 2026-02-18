@@ -32,6 +32,7 @@ describe('ScoringService', () => {
       hasPixel: false,
       hasCookieBanner: true,
       hasForms: true,
+      internalLinks: [],
     };
 
     const result = service.compute(
@@ -67,6 +68,7 @@ describe('ScoringService', () => {
       hasPixel: false,
       hasCookieBanner: false,
       hasForms: false,
+      internalLinks: [],
     };
 
     const result = service.compute(

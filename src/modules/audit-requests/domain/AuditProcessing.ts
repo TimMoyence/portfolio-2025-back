@@ -1,3 +1,5 @@
+import { AuditLocale } from './audit-locale.util';
+
 export type AuditProcessingStatus =
   | 'PENDING'
   | 'RUNNING'
@@ -10,6 +12,7 @@ export interface AuditSnapshot {
   websiteName: string;
   contactMethod: 'EMAIL' | 'PHONE';
   contactValue: string;
+  locale: AuditLocale;
   done: boolean;
   processingStatus: AuditProcessingStatus;
   progress: number;

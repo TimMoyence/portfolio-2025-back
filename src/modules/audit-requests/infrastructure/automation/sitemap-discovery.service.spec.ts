@@ -18,10 +18,18 @@ describe('SitemapDiscoveryService', () => {
     sitemapMaxUrls: 50_000,
     sitemapAnalyzeLimit: 150,
     urlAnalyzeConcurrency: 4,
+    pageAnalyzeLimit: 30,
+    pageAiConcurrency: 3,
+    pageAiTimeoutMs: 8000,
     llmModel: 'gpt-4o-mini',
     llmTimeoutMs: 25000,
+    llmSummaryTimeoutMs: 20000,
+    llmExpertTimeoutMs: 60000,
     llmRetries: 0,
     llmLanguage: 'fr',
+    rateHourlyMin: 80,
+    rateHourlyMax: 120,
+    rateCurrency: 'EUR',
   };
 
   function createSafeFetchMock(
