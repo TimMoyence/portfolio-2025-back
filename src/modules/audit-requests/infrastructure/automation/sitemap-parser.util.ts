@@ -72,7 +72,32 @@ export function pickUrlSample(
     return { sample: [], deepAnalysis: [] };
   }
 
-  const sample = uniqueUrls.slice(0, sampleSize);
-  const deepAnalysis = uniqueUrls.slice(0, analyzeLimit);
+  const sample = pickWithHeadAndRandom(uniqueUrls, sampleSize);
+  const deepAnalysis = pickWithHeadAndRandom(uniqueUrls, analyzeLimit);
   return { sample, deepAnalysis };
+}
+
+function pickWithHeadAndRandom(urls: string[], limit: number): string[] {
+  if (limit <= 0) return [];
+  if (urls.length <= limit) return [...urls];
+
+  const safeLimit = Math.min(limit, urls.length);
+  const headCount = Math.max(1, Math.ceil(safeLimit * 0.5));
+  const head = urls.slice(0, headCount);
+  const tail = urls.slice(headCount);
+  const randomTail = sampleRandom(tail, safeLimit - headCount);
+
+  return [...head, ...randomTail];
+}
+
+function sampleRandom(values: string[], count: number): string[] {
+  if (count <= 0 || values.length === 0) return [];
+  if (values.length <= count) return [...values];
+
+  const list = [...values];
+  for (let i = list.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  return list.slice(0, count);
 }

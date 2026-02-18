@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { NotFoundException } from '@nestjs/common';
 import { DeleteUsersUseCase } from './DeleteUsers.useCase';
 import { IUsersRepository } from '../domain/IUsers.repository';
@@ -35,7 +36,9 @@ describe('DeleteUsersUseCase', () => {
   it('throws when the user does not exist', async () => {
     repo.findById.mockResolvedValue(null);
 
-    await expect(useCase.execute('missing')).rejects.toBeInstanceOf(NotFoundException);
+    await expect(useCase.execute('missing')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
     expect(repo.deactivate).not.toHaveBeenCalled();
   });
 });

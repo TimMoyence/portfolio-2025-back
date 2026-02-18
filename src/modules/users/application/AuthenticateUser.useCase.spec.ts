@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { UnauthorizedException } from '@nestjs/common';
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { Users } from '../domain/Users';

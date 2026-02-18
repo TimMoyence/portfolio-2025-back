@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/unbound-method */
 import { IUsersRepository } from '../domain/IUsers.repository';
+import { Users } from '../domain/Users';
 import { CreateUsersUseCase } from './CreateUsers.useCase';
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { PasswordService } from './services/PasswordService';
@@ -32,7 +34,18 @@ describe('CreateUsersUseCase', () => {
       lastName: 'Doe',
     };
 
-    const savedUser: any = { id: 'uuid', ...dto, phone: null, isActive: true };
+    const savedUser: Users = {
+      id: 'uuid',
+      email: dto.email,
+      passwordHash: 'hashed-password',
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      phone: null,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      updatedOrCreatedBy: 'self-registration',
+    };
     repo.create.mockResolvedValue(savedUser);
 
     const result = await useCase.execute(dto);
@@ -45,7 +58,7 @@ describe('CreateUsersUseCase', () => {
         lastName: dto.lastName,
         phone: null,
         isActive: true,
-        updatedOrCreatedBy: null,
+        updatedOrCreatedBy: 'self-registration',
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       }),

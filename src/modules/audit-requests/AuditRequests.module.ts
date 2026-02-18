@@ -15,6 +15,7 @@ import { AuditQueueService } from './infrastructure/automation/audit-queue.servi
 import { AuditWorkerService } from './infrastructure/automation/audit-worker.service';
 import { HomepageAnalyzerService } from './infrastructure/automation/homepage-analyzer.service';
 import { LangchainAuditReportService } from './infrastructure/automation/langchain-audit-report.service';
+import { DeepUrlAnalysisService } from './infrastructure/automation/deep-url-analysis.service';
 import { SafeFetchService } from './infrastructure/automation/safe-fetch.service';
 import { ScoringService } from './infrastructure/automation/scoring.service';
 import { SitemapDiscoveryService } from './infrastructure/automation/sitemap-discovery.service';
@@ -32,6 +33,7 @@ const AUDIT_REQUESTS_USE_CASES = [
 const AUDIT_AUTOMATION_SERVICES = [
   SafeFetchService,
   HomepageAnalyzerService,
+  DeepUrlAnalysisService,
   SitemapDiscoveryService,
   UrlIndexabilityService,
   ScoringService,

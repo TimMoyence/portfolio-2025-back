@@ -15,6 +15,7 @@ export class StreamAuditEventsUseCase {
       let disposed = false;
       let busy = false;
       let lastFingerprint = '';
+      let instantSummarySent = false;
 
       const emitSnapshot = async (): Promise<void> => {
         if (disposed || busy) return;
@@ -78,6 +79,29 @@ export class StreamAuditEventsUseCase {
             });
             finish();
             return;
+          }
+
+          if (
+            !instantSummarySent &&
+            audit.processingStatus === 'RUNNING' &&
+            audit.summaryText &&
+            audit.summaryText.trim().length > 0
+          ) {
+            instantSummarySent = true;
+            subscriber.next({
+              type: 'instant_summary',
+              data: {
+                auditId: audit.id,
+                ready: false,
+                status: audit.processingStatus,
+                progress: audit.progress,
+                summaryText: audit.summaryText,
+                keyChecks: audit.keyChecks,
+                quickWins: audit.quickWins,
+                pillarScores: audit.pillarScores,
+                updatedAt,
+              },
+            });
           }
 
           subscriber.next({

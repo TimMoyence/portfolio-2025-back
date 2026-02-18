@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CreateServicesUseCase } from '../application/CreateServices.useCase';
+import { Services } from '../domain/Services';
 
 @Controller('services')
 export class ServicesController {
@@ -11,7 +12,7 @@ export class ServicesController {
   }
 
   @Post()
-  create(@Body() dto: any) {
+  create(@Body() dto: Services) {
     return this.createUseCase.execute(dto);
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/unbound-method */
 import { NotFoundException } from '@nestjs/common';
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { Users } from '../domain/Users';

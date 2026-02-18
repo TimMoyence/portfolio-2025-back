@@ -10,6 +10,14 @@ export interface SitemapDiscoveryResult {
   urls: string[];
 }
 
+const COMMON_SITEMAP_PATHS = [
+  '/sitemap.xml',
+  '/sitemap_index.xml',
+  '/sitemap-index.xml',
+  '/sitemaps.xml',
+  '/sitemap/sitemap.xml',
+];
+
 @Injectable()
 export class SitemapDiscoveryService {
   private readonly logger = new Logger(SitemapDiscoveryService.name);
@@ -45,7 +53,9 @@ export class SitemapDiscoveryService {
       );
     }
 
-    candidates.add(`${origin}/sitemap.xml`);
+    for (const path of COMMON_SITEMAP_PATHS) {
+      candidates.add(`${origin}${path}`);
+    }
 
     const queue = Array.from(candidates);
     const visited = new Set<string>();

@@ -31,7 +31,7 @@ export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
     this.worker = new Worker<AuditQueueJob>(
       this.queueService.queueName,
       async (job) => {
-        await this.pipeline.run(job.data.auditId);
+        await this.runWithTimeout(job.data.auditId);
       },
       {
         connection: this.queueService.connection,
@@ -53,6 +53,26 @@ export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
   async onModuleDestroy(): Promise<void> {
     if (this.worker) {
       await this.worker.close();
+    }
+  }
+
+  private async runWithTimeout(auditId: string): Promise<void> {
+    const timeout = this.config.jobTimeoutMs;
+    let timeoutId: NodeJS.Timeout | undefined;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(
+          new Error(
+            `Audit pipeline timeout after ${timeout}ms (auditId=${auditId})`,
+          ),
+        );
+      }, timeout);
+    });
+
+    try {
+      await Promise.race([this.pipeline.run(auditId), timeoutPromise]);
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
   }
 }

@@ -36,6 +36,25 @@ const reportSchema = z.object({
         dependencies: z.array(z.string()),
       }),
     ),
+    whatToFixThisWeek: z.array(
+      z.object({
+        task: z.string(),
+        goal: z.string(),
+        estimatedHours: z.number().min(0).max(200),
+        risk: z.string(),
+        dependencies: z.array(z.string()),
+      }),
+    ),
+    whatToFixThisMonth: z.array(
+      z.object({
+        task: z.string(),
+        goal: z.string(),
+        estimatedHours: z.number().min(0).max(400),
+        risk: z.string(),
+        dependencies: z.array(z.string()),
+      }),
+    ),
+    clientMessageTemplate: z.string(),
     invoiceScope: z.array(
       z.object({
         item: z.string(),
@@ -52,6 +71,16 @@ export interface LangchainAuditInput {
   keyChecks: Record<string, unknown>;
   quickWins: string[];
   pillarScores: Record<string, number>;
+  deepFindings: Array<{
+    code: string;
+    title: string;
+    description: string;
+    severity: 'high' | 'medium' | 'low';
+    confidence: number;
+    impact: 'traffic' | 'indexation' | 'conversion';
+    affectedUrls: string[];
+    recommendation: string;
+  }>;
   sampledUrls: Array<{
     url: string;
     statusCode: number | null;
@@ -102,6 +131,7 @@ export class LangchainAuditReportService {
         keyChecks: input.keyChecks,
         quickWins: input.quickWins,
         pillarScores: input.pillarScores,
+        deepFindings: input.deepFindings,
         sampledUrls: input.sampledUrls,
       };
 
@@ -110,7 +140,7 @@ export class LangchainAuditReportService {
           role: 'system',
           content:
             this.config.llmLanguage === 'fr'
-              ? "Tu es un expert SEO technique et PM delivery. Réponds en français. summaryText doit être un texte utilisateur de 2 à 3 paragraphes (environ 180-260 mots), pédagogique, concret et rassurant, avec explications des impacts business. adminReport doit fournir un plan d'action opérationnel, une todo list d'implémentation phasée, et un cadrage devis/facturation."
+              ? "Tu es un expert SEO technique et PM delivery. Réponds en français. summaryText doit être un texte utilisateur, pédagogique, concret et rassurant, avec explications des impacts business. Le texte doit être court et direct, sans répétition ecris dans un language naturel et professionnel. Le rapport doit fournir un plan d'action opérationnel, une todo list d'implémentation phasée, un plan d'exécution hebdo/mensuel."
               : 'You are a technical SEO expert. Return concise actionable content.',
         },
         {
@@ -141,6 +171,29 @@ export class LangchainAuditReportService {
       estimatedHours: 2 + index,
       dependencies: index === 0 ? [] : [`Phase ${index}`],
     }));
+
+    const whatToFixThisWeek = topQuickWins
+      .slice(0, 3)
+      .map((quickWin, index) => ({
+        task: quickWin,
+        goal: 'Corriger les blocages à fort impact SEO et conversion',
+        estimatedHours: 2 + index,
+        risk: 'Dépendance technique faible',
+        dependencies: index === 0 ? [] : [topQuickWins[0]],
+      }));
+
+    const whatToFixThisMonth = input.deepFindings
+      .slice(0, 5)
+      .map((finding, index) => ({
+        task: finding.title,
+        goal: finding.recommendation,
+        estimatedHours: 3 + index,
+        risk:
+          finding.severity === 'high'
+            ? 'Risque business élevé si reporté'
+            : 'Risque modéré',
+        dependencies: [],
+      }));
 
     const invoiceScope = implementationTodo.map((todo) => ({
       item: todo.phase,
@@ -182,6 +235,10 @@ export class LangchainAuditReportService {
             impact: 'high' as const,
           })),
         implementationTodo,
+        whatToFixThisWeek,
+        whatToFixThisMonth,
+        clientMessageTemplate:
+          "Bonjour, suite à l'audit, nous proposons une première phase de corrections prioritaires cette semaine, suivie d'une phase d'optimisation complète sur le mois. Je peux vous transmettre le planning détaillé et le devis associé.",
         invoiceScope,
         keyChecks: input.keyChecks,
         quickWins: input.quickWins,

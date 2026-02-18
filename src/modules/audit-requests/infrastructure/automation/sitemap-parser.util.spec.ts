@@ -56,22 +56,34 @@ describe('parseSitemapXml', () => {
 });
 
 describe('pickUrlSample', () => {
-  it('returns sample and deep analysis slices', () => {
+  it('returns unique samples preserving a deterministic head', () => {
     const urls = [
       'https://example.com/1',
       'https://example.com/2',
       'https://example.com/3',
       'https://example.com/4',
     ];
+
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0);
     const picked = pickUrlSample(urls, 2, 3);
-    expect(picked.sample).toEqual([
-      'https://example.com/1',
-      'https://example.com/2',
-    ]);
-    expect(picked.deepAnalysis).toEqual([
+    randomSpy.mockRestore();
+
+    expect(picked.sample.length).toBe(2);
+    expect(new Set(picked.sample).size).toBe(2);
+    expect(picked.sample[0]).toBe('https://example.com/1');
+    expect(picked.deepAnalysis.length).toBe(3);
+    expect(new Set(picked.deepAnalysis).size).toBe(3);
+    expect(picked.deepAnalysis[0]).toBe('https://example.com/1');
+  });
+
+  it('returns all URLs when limits exceed the sitemap size', () => {
+    const urls = [
       'https://example.com/1',
       'https://example.com/2',
       'https://example.com/3',
-    ]);
+    ];
+    const picked = pickUrlSample(urls, 10, 20);
+    expect(picked.sample).toEqual(urls);
+    expect(picked.deepAnalysis).toEqual(urls);
   });
 });

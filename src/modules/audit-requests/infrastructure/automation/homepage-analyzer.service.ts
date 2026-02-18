@@ -25,6 +25,7 @@ export interface HomepageAuditSnapshot {
   hasPixel: boolean;
   hasCookieBanner: boolean;
   hasForms: boolean;
+  internalLinks: string[];
 }
 
 @Injectable()
@@ -56,6 +57,7 @@ export class HomepageAnalyzerService {
 
     const lowerHtml = html.toLowerCase();
     const detectedCmsHints = this.detectCmsHints(lowerHtml);
+    const internalLinks = this.extractInternalLinks($, fetchResult.finalUrl);
 
     return {
       finalUrl: fetchResult.finalUrl,
@@ -86,6 +88,7 @@ export class HomepageAnalyzerService {
         lowerHtml,
       ),
       hasForms: $('form').length > 0,
+      internalLinks,
     };
   }
 
@@ -113,5 +116,31 @@ export class HomepageAnalyzerService {
       hints.add('Joomla');
     }
     return Array.from(hints);
+  }
+
+  private extractInternalLinks(
+    $: ReturnType<typeof load>,
+    finalUrl: string,
+  ): string[] {
+    const origin = new URL(finalUrl).origin;
+    const links = new Set<string>();
+
+    for (const node of $('a[href]').toArray()) {
+      const href = $(node).attr('href')?.trim();
+      if (!href || href.startsWith('#')) continue;
+      if (href.startsWith('mailto:') || href.startsWith('tel:')) continue;
+
+      try {
+        const absolute = new URL(href, finalUrl);
+        if (!['http:', 'https:'].includes(absolute.protocol)) continue;
+        if (absolute.origin !== origin) continue;
+        absolute.hash = '';
+        links.add(absolute.toString());
+      } catch {
+        continue;
+      }
+    }
+
+    return Array.from(links).slice(0, 30);
   }
 }

@@ -103,6 +103,12 @@ Contact        : ${contactMethod} — ${contactValue}
 
     const priorities = this.extractArray(llm?.priorities);
     const implementationTodo = this.extractArray(llm?.implementationTodo);
+    const weekPlan = this.extractArray(llm?.whatToFixThisWeek);
+    const monthPlan = this.extractArray(llm?.whatToFixThisMonth);
+    const clientMessageTemplate = this.extractString(
+      llm?.clientMessageTemplate,
+      'Bonjour, voici les priorités identifiées avec un plan de mise en oeuvre.',
+    );
     const invoiceScope = this.extractArray(llm?.invoiceScope);
     const estimatedHours = invoiceScope.reduce<number>((total, item) => {
       const hours = Number(this.extractObject(item)?.estimatedHours ?? 0);
@@ -138,6 +144,36 @@ Contact        : ${contactMethod} — ${contactValue}
       .map((item, index) => {
         const object = this.extractObject(item);
         return `${index + 1}. ${this.extractString(object?.item, `Lot ${index + 1}`)} — ${this.extractString(object?.description, 'N/A')} (${this.extractNumber(object?.estimatedHours)}h)`;
+      })
+      .join('\n');
+
+    const weekPlanText = weekPlan
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        const deps = this.extractArray(object?.dependencies)
+          .map((dep) => this.extractString(dep, ''))
+          .filter(Boolean)
+          .join(', ');
+        return `${index + 1}. ${this.extractString(object?.task, 'Tâche')}
+   - Objectif: ${this.extractString(object?.goal, 'N/A')}
+   - Charge: ${this.extractNumber(object?.estimatedHours)}h
+   - Risque: ${this.extractString(object?.risk, 'N/A')}
+   - Dépendances: ${deps || 'Aucune'}`;
+      })
+      .join('\n');
+
+    const monthPlanText = monthPlan
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        const deps = this.extractArray(object?.dependencies)
+          .map((dep) => this.extractString(dep, ''))
+          .filter(Boolean)
+          .join(', ');
+        return `${index + 1}. ${this.extractString(object?.task, 'Tâche')}
+   - Objectif: ${this.extractString(object?.goal, 'N/A')}
+   - Charge: ${this.extractNumber(object?.estimatedHours)}h
+   - Risque: ${this.extractString(object?.risk, 'N/A')}
+   - Dépendances: ${deps || 'Aucune'}`;
       })
       .join('\n');
 
@@ -188,6 +224,44 @@ Contact        : ${contactMethod} — ${contactValue}
       })
       .join('');
 
+    const weekPlanHtml = weekPlan
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        const deps = this.extractArray(object?.dependencies)
+          .map((dep) => this.escapeHtml(this.extractString(dep, '')))
+          .filter(Boolean)
+          .join(', ');
+        return `
+          <li style="margin-bottom:10px;">
+            <strong>${index + 1}. ${this.escapeHtml(this.extractString(object?.task, 'Tâche'))}</strong><br/>
+            <span><strong>Objectif:</strong> ${this.escapeHtml(this.extractString(object?.goal, 'N/A'))}</span><br/>
+            <span><strong>Charge:</strong> ${this.extractNumber(object?.estimatedHours)}h</span><br/>
+            <span><strong>Risque:</strong> ${this.escapeHtml(this.extractString(object?.risk, 'N/A'))}</span><br/>
+            <span><strong>Dépendances:</strong> ${deps || 'Aucune'}</span>
+          </li>
+        `;
+      })
+      .join('');
+
+    const monthPlanHtml = monthPlan
+      .map((item, index) => {
+        const object = this.extractObject(item);
+        const deps = this.extractArray(object?.dependencies)
+          .map((dep) => this.escapeHtml(this.extractString(dep, '')))
+          .filter(Boolean)
+          .join(', ');
+        return `
+          <li style="margin-bottom:10px;">
+            <strong>${index + 1}. ${this.escapeHtml(this.extractString(object?.task, 'Tâche'))}</strong><br/>
+            <span><strong>Objectif:</strong> ${this.escapeHtml(this.extractString(object?.goal, 'N/A'))}</span><br/>
+            <span><strong>Charge:</strong> ${this.extractNumber(object?.estimatedHours)}h</span><br/>
+            <span><strong>Risque:</strong> ${this.escapeHtml(this.extractString(object?.risk, 'N/A'))}</span><br/>
+            <span><strong>Dépendances:</strong> ${deps || 'Aucune'}</span>
+          </li>
+        `;
+      })
+      .join('');
+
     await this.transporter.sendMail({
       from: this.from,
       to: this.reportTo,
@@ -219,6 +293,15 @@ Scope de facturation recommande:
 ${invoiceText || 'Aucun lot detaille'}
 
 Charge totale estimee: ${estimatedHours}h
+
+Plan de mise en oeuvre - cette semaine:
+${weekPlanText || 'Aucun plan semaine detaille'}
+
+Plan de mise en oeuvre - ce mois:
+${monthPlanText || 'Aucun plan mois detaille'}
+
+Template message client (copier/coller):
+${clientMessageTemplate}
 
 Rapport complet (JSON):
 ${serializedReport}
@@ -265,6 +348,19 @@ ${serializedReport}
               </tbody>
             </table>
             <p style="margin-top:8px; font-size:13px; color:#333;"><strong>Charge totale estimée:</strong> ${estimatedHours}h</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Plan d’exécution - cette semaine</h3>
+            <ol style="padding-left:20px; color:#333;">
+              ${weekPlanHtml || '<li>Aucun plan hebdo détaillé.</li>'}
+            </ol>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Plan d’exécution - ce mois</h3>
+            <ol style="padding-left:20px; color:#333;">
+              ${monthPlanHtml || '<li>Aucun plan mensuel détaillé.</li>'}
+            </ol>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Template prêt à envoyer au client</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(clientMessageTemplate)}</p>
 
             <h3 style="margin:16px 0 8px;">Rapport complet (JSON)</h3>
             <pre style="max-height:360px; overflow:auto; background:#111; color:#eee; padding:12px; border-radius:6px;">${this.escapeHtml(serializedReport)}</pre>

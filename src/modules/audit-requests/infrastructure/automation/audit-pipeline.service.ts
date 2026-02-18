@@ -6,6 +6,10 @@ import {
 } from '../../domain/token';
 import { AuditRequestMailerService } from '../AuditRequestMailer.service';
 import type { AuditAutomationConfig } from './audit.config';
+import {
+  DeepUrlAnalysisResult,
+  DeepUrlAnalysisService,
+} from './deep-url-analysis.service';
 import { HomepageAnalyzerService } from './homepage-analyzer.service';
 import {
   LangchainAuditReportService,
@@ -32,6 +36,7 @@ export class AuditPipelineService {
     private readonly config: AuditAutomationConfig,
     private readonly safeFetch: SafeFetchService,
     private readonly homepageAnalyzer: HomepageAnalyzerService,
+    private readonly deepUrlAnalysis: DeepUrlAnalysisService,
     private readonly sitemapDiscovery: SitemapDiscoveryService,
     private readonly urlIndexability: UrlIndexabilityService,
     private readonly scoring: ScoringService,
@@ -66,46 +71,95 @@ export class AuditPipelineService {
         this.config.htmlMaxBytes,
       );
       const homepage = this.homepageAnalyzer.analyze(homepageResponse);
+      const fastScoring = this.scoring.compute(homepage, [], []);
+      const instantQuickWins = fastScoring.quickWins.slice(0, 3);
+      const instantSummaryText = this.buildInstantSummary(
+        homepage,
+        fastScoring.pillarScores,
+        instantQuickWins,
+      );
 
       await this.repo.updateState(auditId, {
         progress: 30,
-        step: 'Analyse sitemap',
+        step: 'Diagnostic initial disponible',
         finalUrl: homepage.finalUrl,
         redirectChain: homepage.redirectChain,
+        summaryText: instantSummaryText,
+        quickWins: instantQuickWins,
+        pillarScores: fastScoring.pillarScores,
+        keyChecks: {
+          ...fastScoring.keyChecks,
+          firstRender: {
+            ready: true,
+            generatedAt: new Date().toISOString(),
+          },
+        },
+      });
+
+      await this.repo.updateState(auditId, {
+        step: 'Analyse sitemap',
       });
 
       const sitemapResult = await this.sitemapDiscovery.discover(
         homepage.finalUrl,
       );
+      const candidateUrls = Array.from(
+        new Set([
+          ...sitemapResult.urls,
+          ...homepage.internalLinks,
+          homepage.finalUrl,
+        ]),
+      );
       const { sample, deepAnalysis } = pickUrlSample(
-        sitemapResult.urls,
+        candidateUrls,
         this.config.sitemapSampleSize,
         this.config.sitemapAnalyzeLimit,
       );
 
       const sampledUrls = await this.urlIndexability.analyzeUrls(sample);
       const deepUrls = await this.analyzeDeepUrls(sampledUrls, deepAnalysis);
+      const deepUrlAnalysis = this.deepUrlAnalysis.analyze(deepUrls);
 
       const scoring = this.scoring.compute(
         homepage,
         sitemapResult.sitemapUrls,
         sampledUrls,
       );
+      const fullQuickWins = Array.from(
+        new Set([
+          ...scoring.quickWins,
+          ...deepUrlAnalysis.findings.map((finding) => finding.recommendation),
+        ]),
+      ).slice(0, 12);
 
       await this.repo.updateState(auditId, {
         progress: 60,
         step: 'Génération du résumé',
-        keyChecks: scoring.keyChecks,
-        quickWins: scoring.quickWins,
+        keyChecks: {
+          ...scoring.keyChecks,
+          deepUrlAnalysis: deepUrlAnalysis.metrics,
+          crawlCoverage: {
+            sitemapUrls: sitemapResult.urls.length,
+            internalLinks: homepage.internalLinks.length,
+            candidateUrls: candidateUrls.length,
+            sampledUrls: sample.length,
+            analyzedUrls: deepUrls.length,
+          },
+        },
+        quickWins: fullQuickWins,
         pillarScores: scoring.pillarScores,
       });
 
       const llmOutput = await this.llmReport.generate({
         websiteName: audit.websiteName,
         normalizedUrl: normalized.normalizedUrl,
-        keyChecks: scoring.keyChecks,
-        quickWins: scoring.quickWins,
+        keyChecks: {
+          ...scoring.keyChecks,
+          deepUrlAnalysis: deepUrlAnalysis.metrics,
+        },
+        quickWins: fullQuickWins,
         pillarScores: scoring.pillarScores,
+        deepFindings: deepUrlAnalysis.findings,
         sampledUrls: deepUrls.map((entry) => ({
           url: entry.url,
           statusCode: entry.statusCode,
@@ -128,10 +182,13 @@ export class AuditPipelineService {
 
       const fullReport = this.buildFullReport({
         llmOutput,
+        instantSummaryText,
         homepage,
         sitemapResult,
+        candidateUrls,
         sampledUrls,
         deepUrls,
+        deepUrlAnalysis,
         scoring,
       });
 
@@ -183,21 +240,28 @@ export class AuditPipelineService {
 
   private buildFullReport(input: {
     llmOutput: LangchainAuditOutput;
+    instantSummaryText: string;
     homepage: ReturnType<HomepageAnalyzerService['analyze']>;
     sitemapResult: { sitemapUrls: string[]; urls: string[] };
+    candidateUrls: string[];
     sampledUrls: UrlIndexabilityResult[];
     deepUrls: UrlIndexabilityResult[];
+    deepUrlAnalysis: DeepUrlAnalysisResult;
     scoring: ReturnType<ScoringService['compute']>;
   }): Record<string, unknown> {
     return {
       generatedAt: new Date().toISOString(),
+      instantSummary: input.instantSummaryText,
       homepage: input.homepage,
       sitemap: {
         sitemapUrls: input.sitemapResult.sitemapUrls,
         totalUrlsDiscovered: input.sitemapResult.urls.length,
+        candidateUrls: input.candidateUrls.length,
         sampledUrls: input.sampledUrls,
         deepUrlAnalysis: input.deepUrls,
       },
+      findings: input.deepUrlAnalysis.findings,
+      deepMetrics: input.deepUrlAnalysis.metrics,
       scoring: {
         pillarScores: input.scoring.pillarScores,
         quickWins: input.scoring.quickWins,
@@ -205,6 +269,24 @@ export class AuditPipelineService {
       },
       llm: input.llmOutput.adminReport,
     };
+  }
+
+  private buildInstantSummary(
+    homepage: ReturnType<HomepageAnalyzerService['analyze']>,
+    pillarScores: Record<string, number>,
+    quickWins: string[],
+  ): string {
+    const topScores = Object.entries(pillarScores)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([pillar, score]) => `${pillar}: ${score}/100`)
+      .join(', ');
+    const immediateActions =
+      quickWins.length > 0
+        ? quickWins.join(' ')
+        : 'Aucune action critique immédiate.';
+
+    return `Premier diagnostic disponible. Votre page d’accueil répond en ${homepage.totalResponseMs}ms avec un statut HTTP ${homepage.statusCode}. Les premiers scores montrent: ${topScores}. Actions prioritaires immédiates: ${immediateActions}`;
   }
 
   private toSafeError(error: unknown): string {

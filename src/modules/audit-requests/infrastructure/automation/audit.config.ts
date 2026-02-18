@@ -17,6 +17,7 @@ export interface AuditAutomationConfig {
   sitemapSampleSize: number;
   sitemapMaxUrls: number;
   sitemapAnalyzeLimit: number;
+  urlAnalyzeConcurrency: number;
   llmModel: string;
   llmTimeoutMs: number;
   llmRetries: number;
@@ -67,6 +68,10 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     sitemapAnalyzeLimit: Math.max(
       1,
       envInt('AUDIT_SITEMAP_ANALYZE_LIMIT', 150),
+    ),
+    urlAnalyzeConcurrency: Math.max(
+      1,
+      envInt('AUDIT_URL_ANALYZE_CONCURRENCY', 6),
     ),
     llmModel: envString('AUDIT_LLM_MODEL') ?? 'gpt-4o-mini',
     llmTimeoutMs: Math.max(1000, envInt('AUDIT_LLM_TIMEOUT_MS', 25_000)),

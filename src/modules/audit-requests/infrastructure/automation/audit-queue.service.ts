@@ -80,8 +80,32 @@ export class AuditQueueService implements OnModuleDestroy {
 
   private runInline(auditId: string): void {
     setImmediate(() => {
-      void this.pipeline.run(auditId);
+      void this.runWithTimeout(auditId).catch((error) => {
+        this.logger.warn(
+          `Inline audit execution failed for ${auditId}: ${String(error)}`,
+        );
+      });
     });
+  }
+
+  private async runWithTimeout(auditId: string): Promise<void> {
+    const timeout = this.config.jobTimeoutMs;
+    let timeoutId: NodeJS.Timeout | undefined;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(
+          new Error(
+            `Audit pipeline timeout after ${timeout}ms (auditId=${auditId})`,
+          ),
+        );
+      }, timeout);
+    });
+
+    try {
+      await Promise.race([this.pipeline.run(auditId), timeoutPromise]);
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
   }
 
   private buildConnection():

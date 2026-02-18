@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { ListOneUserUseCase } from './ListOneUser.useCase';
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { Users } from '../domain/Users';
