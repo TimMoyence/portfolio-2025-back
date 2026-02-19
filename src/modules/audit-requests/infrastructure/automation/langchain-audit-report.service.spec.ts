@@ -4,6 +4,7 @@ import {
   LangchainAuditInput,
   LangchainAuditReportService,
 } from './langchain-audit-report.service';
+import { DeadlineBudget } from './llm-execution.guardrails';
 import { ReportQualityGateService } from './report-quality-gate.service';
 
 describe('LangchainAuditReportService', () => {
@@ -46,8 +47,17 @@ describe('LangchainAuditReportService', () => {
     llmTimeoutMs: 25_000,
     llmSummaryTimeoutMs: 20_000,
     llmExpertTimeoutMs: 60_000,
+    llmProfile: 'stability_first_sequential',
+    llmProfileCanaryPercent: 100,
+    llmGlobalTimeoutMs: 45_000,
+    llmSectionTimeoutMs: 18_000,
+    llmSectionRetryMax: 1,
+    llmSectionRetryMinRemainingMs: 8_000,
+    llmInflightMax: 8,
     llmRetries: 0,
     llmLanguage: 'fr',
+    pageAiCircuitBreakerMinSamples: 6,
+    pageAiCircuitBreakerFailureRatio: 0.5,
     rateHourlyMin: 90,
     rateHourlyMax: 130,
     rateCurrency: 'EUR',
@@ -118,6 +128,13 @@ describe('LangchainAuditReportService', () => {
       priorityCounts: { high: 1, medium: 0, low: 0 },
       averageScores: { wording: 60, trust: 55, cta: 50, seoCopy: 58 },
       topRecurringIssues: ['missing cta'],
+    },
+    techFingerprint: {
+      primaryStack: 'WordPress',
+      confidence: 0.76,
+      evidence: ['WordPress hint detected on https://example.com/a'],
+      alternatives: ['PHP runtime'],
+      unknowns: [],
     },
   };
 
@@ -248,5 +265,106 @@ describe('LangchainAuditReportService', () => {
     expect(qualityGateResult['retried']).toBe(true);
     expect(qualityGateResult['fallback']).toBe(false);
     expect(qualityGateResult['valid']).toBe(true);
+  });
+
+  it('retries one failed fan-out section once when budget allows', async () => {
+    const service = new LangchainAuditReportService(
+      {
+        ...config,
+        openAiApiKey: 'test-key',
+        llmProfile: 'parallel_sections_v1',
+        llmSectionRetryMax: 1,
+        llmSectionRetryMinRemainingMs: 1000,
+      },
+      new ReportQualityGateService(),
+    );
+    const payloads = (
+      service as unknown as {
+        buildSectionPayloads: (
+          inputValue: LangchainAuditInput,
+        ) => Record<string, unknown>;
+      }
+    ).buildSectionPayloads(input) as {
+      executiveSection: Record<string, unknown>;
+      prioritySection: Record<string, unknown>;
+      executionSection: Record<string, unknown>;
+      clientCommsSection: Record<string, unknown>;
+    };
+    const fallbackReport = (
+      service as unknown as {
+        buildFallbackExpertReport: (
+          inputValue: LangchainAuditInput,
+          reason: string,
+        ) => Record<string, unknown>;
+      }
+    ).buildFallbackExpertReport(input, 'seed');
+    const calls: Record<string, number> = {};
+
+    jest
+      .spyOn(
+        service as unknown as { generateSectionOnce: () => Promise<unknown> },
+        'generateSectionOnce',
+      )
+      .mockImplementation((_llm, section: string) => {
+        calls[section] = (calls[section] ?? 0) + 1;
+        if (section === 'prioritySection' && calls[section] === 1) {
+          return Promise.reject(new Error('TimeoutError: Request timed out.'));
+        }
+        if (section === 'executiveSection') {
+          return Promise.resolve({
+            executiveSummary: 'Summary',
+            reportExplanation: 'Explanation',
+            strengths: [],
+          });
+        }
+        if (section === 'prioritySection') {
+          return Promise.resolve({
+            priorities: fallbackReport['priorities'],
+            urlLevelImprovements: fallbackReport['urlLevelImprovements'],
+          });
+        }
+        if (section === 'executionSection') {
+          return Promise.resolve({
+            implementationTodo: fallbackReport['implementationTodo'],
+            whatToFixThisWeek: fallbackReport['whatToFixThisWeek'],
+            whatToFixThisMonth: fallbackReport['whatToFixThisMonth'],
+            fastImplementationPlan: fallbackReport['fastImplementationPlan'],
+            implementationBacklog: fallbackReport['implementationBacklog'],
+            invoiceScope: fallbackReport['invoiceScope'],
+          });
+        }
+        return Promise.resolve({
+          clientMessageTemplate: fallbackReport['clientMessageTemplate'],
+          clientLongEmail: fallbackReport['clientLongEmail'],
+        });
+      });
+
+    const sectionResult = await (
+      service as unknown as {
+        generateFanoutSectionsWithDeadline: (
+          llm: unknown,
+          payloadValue: {
+            executiveSection: Record<string, unknown>;
+            prioritySection: Record<string, unknown>;
+            executionSection: Record<string, unknown>;
+            clientCommsSection: Record<string, unknown>;
+          },
+          locale: 'fr' | 'en',
+          inputValue: LangchainAuditInput,
+          budget: DeadlineBudget,
+        ) => Promise<Record<string, unknown>>;
+      }
+    ).generateFanoutSectionsWithDeadline(
+      {},
+      payloads,
+      'fr',
+      input,
+      DeadlineBudget.fromNow(45_000),
+    );
+
+    expect(calls['prioritySection']).toBe(2);
+    expect(sectionResult['retryCount']).toBe(1);
+    expect(sectionResult['usedFallback']).toBe(false);
+    expect(sectionResult['failedSections']).toEqual([]);
   });
 });

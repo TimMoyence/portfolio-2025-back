@@ -1,6 +1,7 @@
 import { AuditSnapshot } from '../../domain/AuditProcessing';
 import { AuditPipelineService } from './audit-pipeline.service';
 import type { AuditAutomationConfig } from './audit.config';
+import type { LlmSynthesisProgressEvent } from './langchain-audit-report.service';
 import { normalizeAuditUrl } from './url-normalizer.util';
 
 jest.mock('./url-normalizer.util', () => ({
@@ -30,8 +31,17 @@ describe('AuditPipelineService', () => {
     llmTimeoutMs: 25000,
     llmSummaryTimeoutMs: 20000,
     llmExpertTimeoutMs: 60000,
+    llmProfile: 'parallel_sections_v1',
+    llmProfileCanaryPercent: 100,
+    llmGlobalTimeoutMs: 45000,
+    llmSectionTimeoutMs: 18000,
+    llmSectionRetryMax: 1,
+    llmSectionRetryMinRemainingMs: 8000,
+    llmInflightMax: 8,
     llmRetries: 0,
     llmLanguage: 'fr',
+    pageAiCircuitBreakerMinSamples: 6,
+    pageAiCircuitBreakerFailureRatio: 0.5,
     rateHourlyMin: 80,
     rateHourlyMax: 120,
     rateCurrency: 'EUR',
@@ -231,7 +241,26 @@ describe('AuditPipelineService', () => {
       }),
     };
     const urlIndexability = {
-      analyzeUrls: jest.fn().mockResolvedValue(indexabilityResults),
+      analyzeUrls: jest.fn().mockImplementation(
+        async (
+          _urls,
+          options?: {
+            onUrlAnalyzed?: (
+              result: { url: string },
+              done: number,
+              total: number,
+            ) => void | Promise<void>;
+          },
+        ) => {
+          const total = indexabilityResults.length;
+          for (let i = 0; i < indexabilityResults.length; i += 1) {
+            if (options?.onUrlAnalyzed) {
+              await options.onUrlAnalyzed(indexabilityResults[i], i + 1, total);
+            }
+          }
+          return indexabilityResults;
+        },
+      ),
     };
     const scoring = {
       compute: jest
@@ -275,46 +304,111 @@ describe('AuditPipelineService', () => {
         ],
         metrics: { analyzedUrls: 3, missingMetaDescription: 0 },
       }),
+      inferTechFingerprint: jest.fn().mockReturnValue({
+        primaryStack: 'WordPress',
+        confidence: 0.74,
+        evidence: ['WordPress hint detected'],
+        alternatives: ['PHP runtime'],
+        unknowns: [],
+      }),
     };
     const llmReport = {
-      generate: jest.fn().mockResolvedValue({
-        summaryText: 'Résumé complet prêt pour le client.',
-        adminReport: {
-          executiveSummary: 'Synthèse',
-          qualityGate: {
-            fallback: true,
+      generate: jest.fn().mockImplementation(
+        async (
+          _input,
+          options?: {
+            onProgress?: (
+              event: LlmSynthesisProgressEvent,
+            ) => void | Promise<void>;
           },
+        ) => {
+          if (options?.onProgress) {
+            await options.onProgress({
+              section: 'summary',
+              sectionStatus: 'completed',
+              iaSubTask: 'summary_generation',
+            });
+            await options.onProgress({
+              section: 'prioritySection',
+              sectionStatus: 'started',
+              iaSubTask: 'prioritySection',
+            });
+            await options.onProgress({
+              section: 'prioritySection',
+              sectionStatus: 'completed',
+              iaSubTask: 'prioritySection',
+            });
+          }
+          return {
+            summaryText: 'Résumé complet prêt pour le client.',
+            adminReport: {
+              executiveSummary: 'Synthèse',
+              qualityGate: {
+                fallback: true,
+              },
+            },
+          };
         },
-      }),
+      ),
     };
     const pageAiRecap = {
-      analyzePages: jest.fn().mockResolvedValue({
-        recaps: [
-          {
-            url: 'https://example.com/',
-            finalUrl: 'https://example.com/',
-            priority: 'medium',
-            language: 'fr',
-            wordingScore: 70,
-            trustScore: 68,
-            ctaScore: 72,
-            seoCopyScore: 74,
-            summary: 'Recap',
-            topIssues: ['Meta'],
-            recommendations: ['Improve meta'],
-            source: 'fallback',
+      analyzePages: jest.fn().mockImplementation(
+        async (
+          _input,
+          options?: {
+            onRecapReady?: (
+              recap: {
+                url: string;
+                finalUrl: string;
+                priority: 'high' | 'medium' | 'low';
+                language: 'fr' | 'en' | 'mixed' | 'unknown';
+                wordingScore: number;
+                trustScore: number;
+                ctaScore: number;
+                seoCopyScore: number;
+                summary: string;
+                topIssues: string[];
+                recommendations: string[];
+                source: 'llm' | 'fallback';
+              },
+              done: number,
+              total: number,
+            ) => void | Promise<void>;
           },
-        ],
-        summary: {
-          totalPages: 1,
-          llmRecaps: 0,
-          fallbackRecaps: 1,
-          priorityCounts: { high: 0, medium: 1, low: 0 },
-          averageScores: { wording: 70, trust: 68, cta: 72, seoCopy: 74 },
-          topRecurringIssues: ['meta'],
+        ) => {
+          const recaps = [
+            {
+              url: 'https://example.com/',
+              finalUrl: 'https://example.com/',
+              priority: 'medium',
+              language: 'fr',
+              wordingScore: 70,
+              trustScore: 68,
+              ctaScore: 72,
+              seoCopyScore: 74,
+              summary: 'Recap',
+              topIssues: ['Meta'],
+              recommendations: ['Improve meta'],
+              source: 'fallback',
+            },
+          ];
+          if (options?.onRecapReady) {
+            await options.onRecapReady(recaps[0], 1, 1);
+          }
+          return {
+            recaps,
+            summary: {
+              totalPages: 1,
+              llmRecaps: 0,
+              fallbackRecaps: 1,
+              priorityCounts: { high: 0, medium: 1, low: 0 },
+              averageScores: { wording: 70, trust: 68, cta: 72, seoCopy: 74 },
+              topRecurringIssues: ['meta'],
+            },
+            warnings: [],
+          };
         },
-        warnings: [],
-      }),
+      ),
     };
     const mailer = {
       sendAuditReportNotification: jest.fn().mockResolvedValue(undefined),
@@ -356,19 +450,20 @@ describe('AuditPipelineService', () => {
       ),
     ).toBe(true);
     expect(
-      updates.some(
-        (state) =>
-          state.progress === 85 && state.step === 'Generation de la synthese',
-      ),
+      updates.some((state) => {
+        const keyChecks = state.keyChecks as
+          | Record<string, unknown>
+          | undefined;
+        const details = keyChecks?.progressDetails as
+          | Record<string, unknown>
+          | undefined;
+        return (
+          details?.phase === 'technical_pages' &&
+          details?.iaTask === 'technical_scan' &&
+          typeof details?.currentUrl === 'string'
+        );
+      }),
     ).toBe(true);
-    expect(
-      updates.some(
-        (state) =>
-          state.progress === 95 &&
-          state.step === 'Preparation du rapport final',
-      ),
-    ).toBe(true);
-
     const completedState = updates.find(
       (state) => state.processingStatus === 'COMPLETED',
     );

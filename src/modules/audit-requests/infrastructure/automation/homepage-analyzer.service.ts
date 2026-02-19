@@ -10,6 +10,11 @@ export interface HomepageAuditSnapshot {
   ttfbMs: number;
   totalResponseMs: number;
   contentLength: number | null;
+  server: string | null;
+  xPoweredBy: string | null;
+  setCookiePatterns: string[];
+  cacheHeaders: Record<string, string>;
+  securityHeaders: Record<string, string>;
   title: string | null;
   metaDescription: string | null;
   robotsMeta: string | null;
@@ -67,6 +72,32 @@ export class HomepageAnalyzerService {
       ttfbMs: Math.round(fetchResult.ttfbMs),
       totalResponseMs: Math.round(fetchResult.totalMs),
       contentLength: fetchResult.contentLength,
+      server: fetchResult.headers['server'] ?? null,
+      xPoweredBy: fetchResult.headers['x-powered-by'] ?? null,
+      setCookiePatterns: this.extractSetCookiePatterns(
+        fetchResult.headers['set-cookie'],
+      ),
+      cacheHeaders: this.pickHeaders(fetchResult.headers, [
+        'cache-control',
+        'cf-cache-status',
+        'x-cache',
+        'x-cache-hits',
+        'age',
+        'etag',
+        'expires',
+        'vary',
+      ]),
+      securityHeaders: this.pickHeaders(fetchResult.headers, [
+        'strict-transport-security',
+        'content-security-policy',
+        'x-frame-options',
+        'x-content-type-options',
+        'referrer-policy',
+        'permissions-policy',
+        'cross-origin-opener-policy',
+        'cross-origin-resource-policy',
+        'cross-origin-embedder-policy',
+      ]),
       title,
       metaDescription,
       robotsMeta,
@@ -142,5 +173,34 @@ export class HomepageAnalyzerService {
     }
 
     return Array.from(links).slice(0, 30);
+  }
+
+  private pickHeaders(
+    headers: Record<string, string>,
+    keys: string[],
+  ): Record<string, string> {
+    const picked: Record<string, string> = {};
+    for (const key of keys) {
+      const value = headers[key];
+      if (!value) continue;
+      picked[key] = value;
+    }
+    return picked;
+  }
+
+  private extractSetCookiePatterns(raw: string | undefined): string[] {
+    if (!raw) return [];
+    const matches: string[] = raw.match(/(?:^|,)\s*([^=;,\s]+)=/g) ?? [];
+    const names: string[] = [];
+    for (const chunk of matches) {
+      const normalized = chunk
+        .replace(/(?:^|,)\s*/, '')
+        .replace(/=$/, '')
+        .trim()
+        .toLowerCase();
+      if (!normalized) continue;
+      names.push(normalized);
+    }
+    return Array.from(new Set(names)).slice(0, 12);
   }
 }

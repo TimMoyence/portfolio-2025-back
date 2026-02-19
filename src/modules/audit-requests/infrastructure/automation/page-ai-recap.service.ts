@@ -4,6 +4,12 @@ import { z } from 'zod';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
+import {
+  DeadlineExceededError,
+  LlmInFlightLimiter,
+  getSharedLlmInFlightLimiter,
+  withHardTimeout,
+} from './llm-execution.guardrails';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 const pageRecapSchema = z.object({
@@ -69,11 +75,14 @@ export interface AnalyzePageRecapsOptions {
 @Injectable()
 export class PageAiRecapService {
   private readonly logger = new Logger(PageAiRecapService.name);
+  private readonly llmLimiter: LlmInFlightLimiter;
 
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
     private readonly config: AuditAutomationConfig,
-  ) {}
+  ) {
+    this.llmLimiter = getSharedLlmInFlightLimiter(this.config.llmInflightMax);
+  }
 
   async analyzePages(
     input: AnalyzePageRecapsInput,
@@ -112,16 +121,30 @@ export class PageAiRecapService {
     );
     let cursor = 0;
     let done = 0;
+    let llmAttempts = 0;
+    let llmFailures = 0;
+    let breakerOpen = false;
 
     const llm = this.config.openAiApiKey
       ? new ChatOpenAI({
           apiKey: this.config.openAiApiKey,
           model: this.config.llmModel,
           timeout: this.config.pageAiTimeoutMs,
-          maxRetries: Math.min(1, this.config.llmRetries),
+          maxRetries: 0,
           temperature: 0.2,
         })
       : null;
+
+    const maybeOpenBreaker = (): void => {
+      if (breakerOpen) return;
+      if (llmAttempts < this.config.pageAiCircuitBreakerMinSamples) return;
+      const failureRatio = llmFailures / Math.max(1, llmAttempts);
+      if (failureRatio < this.config.pageAiCircuitBreakerFailureRatio) return;
+      breakerOpen = true;
+      const warning = `Page AI circuit breaker opened (failures=${llmFailures}/${llmAttempts}, threshold=${this.config.pageAiCircuitBreakerFailureRatio}).`;
+      warnings.push(warning);
+      this.logger.warn(warning);
+    };
 
     const worker = async (): Promise<void> => {
       while (true) {
@@ -130,7 +153,26 @@ export class PageAiRecapService {
         if (index >= total) return;
 
         const page = input.pages[index];
-        const recap = await this.analyzeSinglePage(input.locale, page, llm);
+        let recap: PageAiRecap;
+        if (breakerOpen) {
+          recap = this.buildFallbackRecap(input.locale, page);
+        } else {
+          const analyzed = await this.analyzeSinglePage(
+            input.locale,
+            page,
+            llm,
+          );
+          recap = analyzed.recap;
+          if (analyzed.llmAttempted) {
+            llmAttempts += 1;
+            if (analyzed.llmFailed) llmFailures += 1;
+            maybeOpenBreaker();
+          }
+          if (analyzed.warning) {
+            warnings.push(analyzed.warning);
+          }
+        }
+
         recaps[index] = recap;
         done += 1;
 
@@ -155,61 +197,91 @@ export class PageAiRecapService {
     locale: AuditLocale,
     page: UrlIndexabilityResult,
     llm: ChatOpenAI | null,
-  ): Promise<PageAiRecap> {
+  ): Promise<{
+    recap: PageAiRecap;
+    llmAttempted: boolean;
+    llmFailed: boolean;
+    warning?: string;
+  }> {
     if (!llm || page.error || (page.statusCode ?? 500) >= 400) {
-      return this.buildFallbackRecap(locale, page);
+      return {
+        recap: this.buildFallbackRecap(locale, page),
+        llmAttempted: false,
+        llmFailed: false,
+      };
     }
 
     const payload = this.buildPayload(page);
     const chain = llm.withStructuredOutput(pageRecapSchema);
 
     try {
-      const result = await chain.invoke([
-        {
-          role: 'system',
-          content:
-            locale === 'fr'
-              ? 'Tu es un expert en conversion, UX copywriting et SEO on-page. Reponds uniquement en francais. Evalue la clarte du wording, la credibilite, les CTA et la qualite SEO editoriale. Fournis uniquement des recommandations concretes et prioritisees.'
-              : 'You are a senior conversion, UX copywriting, and on-page SEO expert. Respond only in English. Evaluate wording clarity, trust signals, CTA quality, and SEO copy hygiene. Provide only concrete prioritized recommendations.',
-        },
-        {
-          role: 'system',
-          content:
-            locale === 'fr'
-              ? 'Contrainte stricte: aucune langue melangee, aucune speculation, sortie concise et actionnable.'
-              : 'Strict rule: no mixed language, no speculation, concise actionable output only.',
-        },
-        {
-          role: 'user',
-          content: JSON.stringify(payload),
-        },
-      ]);
+      const result = await this.llmLimiter.run(() =>
+        withHardTimeout(
+          `page_ai_recap:${page.url}`,
+          this.config.pageAiTimeoutMs,
+          (signal) =>
+            chain.invoke(
+              [
+                {
+                  role: 'system',
+                  content:
+                    locale === 'fr'
+                      ? 'Tu realises un micro-audit de page complet (SEO + conversion + confiance + performance + hygiene technique). Reponds uniquement en francais. Tu dois evaluer: proposition de valeur, CTA et friction contact/mobile, fondations SEO (title/H1/meta/indexabilite/canonical), signaux de credibilite, hypotheses performance, et indices techniques (CMS/runtime visibles). Chaque topIssue et recommendation doit etre specifique et actionnable.'
+                      : 'You perform a full page micro-audit (SEO + conversion + trust + performance + technical hygiene). Respond only in English. Evaluate value proposition, CTA/contact/mobile friction, SEO foundations (title/H1/meta/indexability/canonical), trust signals, performance hypotheses, and visible CMS/runtime clues. Each topIssue and recommendation must be specific and actionable.',
+                },
+                {
+                  role: 'system',
+                  content:
+                    locale === 'fr'
+                      ? "Contrainte stricte: aucune langue melangee, aucune speculation sans preuve. Si une donnee manque, ecris 'Non verifiable'."
+                      : "Strict rule: no mixed language and no unsupported speculation. If data is missing, write 'Not verifiable'.",
+                },
+                {
+                  role: 'user',
+                  content: JSON.stringify(payload),
+                },
+              ],
+              { signal },
+            ),
+        ),
+      );
 
       return {
-        url: page.url,
-        finalUrl: page.finalUrl,
-        priority: result.priority,
-        language: result.language,
-        wordingScore: this.clampScore(result.wordingScore),
-        trustScore: this.clampScore(result.trustScore),
-        ctaScore: this.clampScore(result.ctaScore),
-        seoCopyScore: this.clampScore(result.seoCopyScore),
-        summary: result.summary.trim(),
-        topIssues: result.topIssues
-          .map((entry) => entry.trim())
-          .filter(Boolean)
-          .slice(0, 6),
-        recommendations: result.recommendations
-          .map((entry) => entry.trim())
-          .filter(Boolean)
-          .slice(0, 6),
-        source: 'llm',
+        recap: {
+          url: page.url,
+          finalUrl: page.finalUrl,
+          priority: result.priority,
+          language: result.language,
+          wordingScore: this.clampScore(result.wordingScore),
+          trustScore: this.clampScore(result.trustScore),
+          ctaScore: this.clampScore(result.ctaScore),
+          seoCopyScore: this.clampScore(result.seoCopyScore),
+          summary: result.summary.trim(),
+          topIssues: result.topIssues
+            .map((entry) => entry.trim())
+            .filter(Boolean)
+            .slice(0, 6),
+          recommendations: result.recommendations
+            .map((entry) => entry.trim())
+            .filter(Boolean)
+            .slice(0, 6),
+          source: 'llm',
+        },
+        llmAttempted: true,
+        llmFailed: false,
       };
     } catch (error) {
-      this.logger.warn(
-        `Per-page recap failed for ${page.url}: ${String(error)}`,
-      );
-      return this.buildFallbackRecap(locale, page);
+      const reason = String(error);
+      this.logger.warn(`Per-page recap failed for ${page.url}: ${reason}`);
+      return {
+        recap: this.buildFallbackRecap(locale, page),
+        llmAttempted: true,
+        llmFailed: true,
+        warning:
+          error instanceof DeadlineExceededError || this.isTimeoutError(error)
+            ? `Page AI timeout fallback for ${page.url}`
+            : `Page AI failure fallback for ${page.url}: ${reason}`,
+      };
     }
   }
 
@@ -231,10 +303,18 @@ export class PageAiRecapService {
       openGraphTagCount: page.openGraphTagCount ?? 0,
       hasForms: page.hasForms ?? false,
       hasCookieBanner: page.hasCookieBanner,
-      hasAnalytics: page.hasAnalytics,
       canonical: page.canonical,
       canonicalCount: page.canonicalCount ?? 0,
       responseTimeMs: page.responseTimeMs ?? null,
+      server: page.server ?? null,
+      xPoweredBy: page.xPoweredBy ?? null,
+      setCookiePatterns: page.setCookiePatterns ?? [],
+      cacheHeaders: page.cacheHeaders ?? {},
+      securityHeaders: page.securityHeaders ?? {},
+      detectedCmsHints: page.detectedCmsHints ?? [],
+      hasAnalytics: page.hasAnalytics ?? false,
+      hasTagManager: page.hasTagManager ?? false,
+      hasPixel: page.hasPixel ?? false,
     };
   }
 
@@ -463,6 +543,11 @@ export class PageAiRecapService {
 
   private clampScore(value: number): number {
     return Math.max(0, Math.min(100, Math.round(value)));
+  }
+
+  private isTimeoutError(reason: unknown): boolean {
+    const message = String(reason).toLowerCase();
+    return message.includes('timeout') || message.includes('timed out');
   }
 
   private text(locale: AuditLocale, fr: string, en: string): string {

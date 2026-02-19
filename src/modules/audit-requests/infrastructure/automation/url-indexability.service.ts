@@ -13,6 +13,11 @@ export interface UrlIndexabilityResult {
   ttfbMs?: number | null;
   totalResponseMs?: number | null;
   contentLength?: number | null;
+  server?: string | null;
+  xPoweredBy?: string | null;
+  setCookiePatterns?: string[];
+  cacheHeaders?: Record<string, string>;
+  securityHeaders?: Record<string, string>;
   indexable: boolean;
   title?: string | null;
   metaDescription?: string | null;
@@ -128,6 +133,32 @@ export class UrlIndexabilityService {
       const internalLinks = this.extractInternalLinks($, response.finalUrl);
       const internalLinkCount = internalLinks.length;
       const xRobotsTag = response.headers['x-robots-tag'] ?? null;
+      const server = response.headers['server'] ?? null;
+      const xPoweredBy = response.headers['x-powered-by'] ?? null;
+      const cacheHeaders = this.pickHeaders(response.headers, [
+        'cache-control',
+        'cf-cache-status',
+        'x-cache',
+        'x-cache-hits',
+        'age',
+        'etag',
+        'expires',
+        'vary',
+      ]);
+      const securityHeaders = this.pickHeaders(response.headers, [
+        'strict-transport-security',
+        'content-security-policy',
+        'x-frame-options',
+        'x-content-type-options',
+        'referrer-policy',
+        'permissions-policy',
+        'cross-origin-opener-policy',
+        'cross-origin-resource-policy',
+        'cross-origin-embedder-policy',
+      ]);
+      const setCookiePatterns = this.extractSetCookiePatterns(
+        response.headers['set-cookie'],
+      );
       const loweredMeta = robotsMeta?.toLowerCase() ?? '';
       const loweredHeader = xRobotsTag?.toLowerCase() ?? '';
       const indexable =
@@ -145,6 +176,11 @@ export class UrlIndexabilityService {
         ttfbMs: Math.round(response.ttfbMs),
         totalResponseMs: Math.round(response.totalMs),
         contentLength: response.contentLength,
+        server,
+        xPoweredBy,
+        setCookiePatterns,
+        cacheHeaders,
+        securityHeaders,
         indexable,
         title,
         metaDescription,
@@ -189,6 +225,11 @@ export class UrlIndexabilityService {
         ttfbMs: null,
         totalResponseMs: null,
         contentLength: null,
+        server: null,
+        xPoweredBy: null,
+        setCookiePatterns: [],
+        cacheHeaders: {},
+        securityHeaders: {},
         indexable: false,
         title: null,
         metaDescription: null,
@@ -308,5 +349,34 @@ export class UrlIndexabilityService {
       hints.add('Joomla');
     }
     return Array.from(hints);
+  }
+
+  private pickHeaders(
+    headers: Record<string, string>,
+    keys: string[],
+  ): Record<string, string> {
+    const picked: Record<string, string> = {};
+    for (const key of keys) {
+      const value = headers[key];
+      if (!value) continue;
+      picked[key] = value;
+    }
+    return picked;
+  }
+
+  private extractSetCookiePatterns(raw: string | undefined): string[] {
+    if (!raw) return [];
+    const matches: string[] = raw.match(/(?:^|,)\s*([^=;,\s]+)=/g) ?? [];
+    const names: string[] = [];
+    for (const chunk of matches) {
+      const normalized = chunk
+        .replace(/(?:^|,)\s*/, '')
+        .replace(/=$/, '')
+        .trim()
+        .toLowerCase();
+      if (!normalized) continue;
+      names.push(normalized);
+    }
+    return Array.from(new Set(names)).slice(0, 12);
   }
 }

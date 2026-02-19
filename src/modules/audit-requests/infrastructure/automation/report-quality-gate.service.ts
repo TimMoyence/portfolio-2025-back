@@ -11,10 +11,29 @@ export interface ExpertPriority {
   estimatedHours: number;
 }
 
+export interface DiagnosticChaptersShape {
+  conversionAndClarity: string;
+  speedAndPerformance: string;
+  seoFoundations: string;
+  credibilityAndTrust: string;
+  techAndScalability: string;
+  scorecardAndBusinessOpportunities: string;
+}
+
+export interface TechFingerprintShape {
+  primaryStack: string;
+  confidence: number;
+  evidence: string[];
+  alternatives: string[];
+  unknowns: string[];
+}
+
 export interface ExpertReportShape {
   executiveSummary: string;
   reportExplanation: string;
   strengths: string[];
+  diagnosticChapters: DiagnosticChaptersShape;
+  techFingerprint: TechFingerprintShape;
   priorities: ExpertPriority[];
   urlLevelImprovements: Array<{
     url: string;
@@ -155,6 +174,14 @@ export class ReportQualityGateService {
         'missing_client_long_email',
       ),
       strengths: this.normalizeStringArray(report.strengths),
+      diagnosticChapters: this.normalizeDiagnosticChapters(
+        report.diagnosticChapters,
+        locale,
+      ),
+      techFingerprint: this.normalizeTechFingerprint(
+        report.techFingerprint,
+        locale,
+      ),
       urlLevelImprovements: this.normalizeUrlLevelImprovements(
         report.urlLevelImprovements,
       ),
@@ -190,6 +217,15 @@ export class ReportQualityGateService {
       normalizedReport.reportExplanation,
       normalizedReport.clientMessageTemplate,
       normalizedReport.clientLongEmail,
+      normalizedReport.diagnosticChapters.conversionAndClarity,
+      normalizedReport.diagnosticChapters.speedAndPerformance,
+      normalizedReport.diagnosticChapters.seoFoundations,
+      normalizedReport.diagnosticChapters.credibilityAndTrust,
+      normalizedReport.diagnosticChapters.techAndScalability,
+      normalizedReport.diagnosticChapters.scorecardAndBusinessOpportunities,
+      normalizedReport.techFingerprint.primaryStack,
+      ...normalizedReport.techFingerprint.evidence,
+      ...normalizedReport.techFingerprint.unknowns,
       ...normalizedReport.priorities.flatMap((entry) => [
         entry.title,
         entry.whyItMatters,
@@ -505,6 +541,74 @@ export class ReportQualityGateService {
       whyItMatters,
       recommendedFix,
       estimatedHours: this.normalizeHours(entry.estimatedHours, 3),
+    };
+  }
+
+  private normalizeDiagnosticChapters(
+    chapters: Partial<DiagnosticChaptersShape> | undefined,
+    locale: AuditLocale,
+  ): DiagnosticChaptersShape {
+    return {
+      conversionAndClarity:
+        this.cleanText(chapters?.conversionAndClarity) ||
+        this.text(
+          locale,
+          'Conversion et clarte: Non verifiable.',
+          'Conversion and clarity: Not verifiable.',
+        ),
+      speedAndPerformance:
+        this.cleanText(chapters?.speedAndPerformance) ||
+        this.text(
+          locale,
+          'Vitesse et performance: Non verifiable.',
+          'Speed and performance: Not verifiable.',
+        ),
+      seoFoundations:
+        this.cleanText(chapters?.seoFoundations) ||
+        this.text(
+          locale,
+          'Fondations SEO: Non verifiable.',
+          'SEO foundations: Not verifiable.',
+        ),
+      credibilityAndTrust:
+        this.cleanText(chapters?.credibilityAndTrust) ||
+        this.text(
+          locale,
+          'Credibilite et confiance: Non verifiable.',
+          'Credibility and trust: Not verifiable.',
+        ),
+      techAndScalability:
+        this.cleanText(chapters?.techAndScalability) ||
+        this.text(
+          locale,
+          'Tech et scalabilite: Non verifiable.',
+          'Tech and scalability: Not verifiable.',
+        ),
+      scorecardAndBusinessOpportunities:
+        this.cleanText(chapters?.scorecardAndBusinessOpportunities) ||
+        this.text(
+          locale,
+          'Scorecard et opportunites business: Non verifiable.',
+          'Scorecard and business opportunities: Not verifiable.',
+        ),
+    };
+  }
+
+  private normalizeTechFingerprint(
+    value: Partial<TechFingerprintShape> | undefined,
+    locale: AuditLocale,
+  ): TechFingerprintShape {
+    const confidence = Number(value?.confidence);
+    return {
+      primaryStack:
+        this.cleanText(value?.primaryStack) ||
+        this.text(locale, 'Non verifiable', 'Not verifiable'),
+      confidence: Number.isFinite(confidence)
+        ? Math.max(0, Math.min(1, Math.round(confidence * 100) / 100))
+        : 0,
+      evidence: this.normalizeStringArray(value?.evidence).slice(0, 8),
+      alternatives: this.normalizeStringArray(value?.alternatives).slice(0, 4),
+      unknowns: this.normalizeStringArray(value?.unknowns).slice(0, 5),
     };
   }
 

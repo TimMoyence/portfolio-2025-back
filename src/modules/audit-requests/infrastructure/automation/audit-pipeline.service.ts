@@ -14,11 +14,13 @@ import type { AuditAutomationConfig } from './audit.config';
 import {
   DeepUrlAnalysisResult,
   DeepUrlAnalysisService,
+  TechFingerprint,
 } from './deep-url-analysis.service';
 import { HomepageAnalyzerService } from './homepage-analyzer.service';
 import {
   LangchainAuditReportService,
   LangchainAuditOutput,
+  LlmSynthesisProgressEvent,
 } from './langchain-audit-report.service';
 import {
   PageAiRecap,
@@ -126,13 +128,16 @@ export class AuditPipelineService {
 
       let technicalWriteQueue = Promise.resolve();
       let lastTechnicalDone = 0;
+      const recentTechnicalUrls: string[] = [];
       const enqueueTechnicalUpdate = (
         done: number,
         total: number,
+        currentUrl: string,
       ): Promise<void> => {
         technicalWriteQueue = technicalWriteQueue.then(async () => {
           if (done <= lastTechnicalDone) return;
           lastTechnicalDone = done;
+          this.pushRecentUrl(recentTechnicalUrls, currentUrl, 5);
           await this.repo.updateState(auditId, {
             progress: this.interpolateProgress(done, total, 20, 60),
             step: t.steps.pagesTechnical(done, total),
@@ -144,8 +149,12 @@ export class AuditPipelineService {
               },
               progressDetails: {
                 phase: 'technical_pages',
+                iaTask: 'technical_scan',
+                iaSubTask: 'headers_indexability_signals',
                 done,
                 total,
+                currentUrl,
+                recentCompletedUrls: [...recentTechnicalUrls],
               },
             },
           });
@@ -156,13 +165,18 @@ export class AuditPipelineService {
       const pageSnapshots = await this.urlIndexability.analyzeUrls(
         selectedUrls,
         {
-          onUrlAnalyzed: async (_result, done, total) =>
-            enqueueTechnicalUpdate(done, total),
+          onUrlAnalyzed: async (result, done, total) =>
+            enqueueTechnicalUpdate(done, total, result.url),
         },
       );
       await technicalWriteQueue;
 
       const deepUrlAnalysis = this.deepUrlAnalysis.analyze(
+        pageSnapshots,
+        locale,
+      );
+      const techFingerprint = this.deepUrlAnalysis.inferTechFingerprint(
+        homepage,
         pageSnapshots,
         locale,
       );
@@ -180,20 +194,31 @@ export class AuditPipelineService {
 
       let aiWriteQueue = Promise.resolve();
       let lastAiDone = 0;
-      const enqueueAiUpdate = (done: number, total: number): Promise<void> => {
+      const recentAiCompletedUrls: string[] = [];
+      const enqueueAiUpdate = (
+        done: number,
+        total: number,
+        recap: PageAiRecap,
+      ): Promise<void> => {
         aiWriteQueue = aiWriteQueue.then(async () => {
           if (done <= lastAiDone) return;
           lastAiDone = done;
+          this.pushRecentUrl(recentAiCompletedUrls, recap.url, 5);
           await this.repo.updateState(auditId, {
             progress: this.interpolateProgress(done, total, 60, 85),
             step: t.steps.pageAiAnalysis(done, total),
             keyChecks: {
               ...scoring.keyChecks,
               deepUrlAnalysis: deepUrlAnalysis.metrics,
+              techFingerprint,
               progressDetails: {
                 phase: 'page_ai_recaps',
+                iaTask: 'page_ai_recap',
+                iaSubTask: 'conversion_seo_micro_audit',
                 done,
                 total,
+                currentUrl: recap.url,
+                recentCompletedUrls: [...recentAiCompletedUrls],
               },
             },
           });
@@ -209,8 +234,8 @@ export class AuditPipelineService {
           pages: pageSnapshots,
         },
         {
-          onRecapReady: async (_recap, done, total) =>
-            enqueueAiUpdate(done, total),
+          onRecapReady: async (recap, done, total) =>
+            enqueueAiUpdate(done, total, recap),
         },
       );
       await aiWriteQueue;
@@ -230,6 +255,7 @@ export class AuditPipelineService {
         keyChecks: {
           ...scoring.keyChecks,
           deepUrlAnalysis: deepUrlAnalysis.metrics,
+          techFingerprint,
           crawlCoverage: {
             sitemapUrls: sitemapResult.urls.length,
             internalLinks: homepage.internalLinks.length,
@@ -239,52 +265,130 @@ export class AuditPipelineService {
           },
           progressDetails: {
             phase: 'synthesis',
+            iaTask: 'synthesis',
+            iaSubTask: 'summary',
             done: 0,
-            total: 1,
+            total: 5,
           },
         },
         quickWins: fullQuickWins,
         pillarScores: scoring.pillarScores,
       });
 
-      const llmOutput = await this.llmReport.generate({
-        locale,
-        websiteName: audit.websiteName,
-        normalizedUrl: normalized.normalizedUrl,
-        keyChecks: {
-          ...scoring.keyChecks,
-          deepUrlAnalysis: deepUrlAnalysis.metrics,
-          pageAiSummary: pageAi.summary,
+      const synthesisSections = [
+        'summary',
+        'executiveSection',
+        'prioritySection',
+        'executionSection',
+        'clientCommsSection',
+      ] as const;
+      const synthesisStatus = new Map<string, string>();
+      let synthesisWriteQueue = Promise.resolve();
+      const enqueueSynthesisUpdate = (
+        progressEvent: LlmSynthesisProgressEvent,
+      ): Promise<void> => {
+        synthesisWriteQueue = synthesisWriteQueue.then(async () => {
+          if (progressEvent.section && progressEvent.sectionStatus) {
+            synthesisStatus.set(
+              progressEvent.section,
+              progressEvent.sectionStatus,
+            );
+          }
+          const done = synthesisSections.filter((section) => {
+            const status = synthesisStatus.get(section);
+            return (
+              status === 'completed' ||
+              status === 'failed' ||
+              status === 'fallback'
+            );
+          }).length;
+          await this.repo.updateState(auditId, {
+            progress: this.interpolateProgress(
+              done,
+              synthesisSections.length,
+              85,
+              95,
+            ),
+            step: t.steps.summaryGeneration,
+            keyChecks: {
+              ...scoring.keyChecks,
+              deepUrlAnalysis: deepUrlAnalysis.metrics,
+              techFingerprint,
+              crawlCoverage: {
+                sitemapUrls: sitemapResult.urls.length,
+                internalLinks: homepage.internalLinks.length,
+                candidateUrls: candidateUrls.length,
+                selectedUrls: selectedUrls.length,
+                analyzedUrls: pageSnapshots.length,
+              },
+              progressDetails: {
+                phase: 'synthesis',
+                iaTask: 'synthesis',
+                iaSubTask: progressEvent.iaSubTask,
+                done,
+                total: synthesisSections.length,
+                section: progressEvent.section,
+                sectionStatus: progressEvent.sectionStatus,
+                sectionStatuses: Object.fromEntries(synthesisStatus.entries()),
+              },
+            },
+          });
+        });
+        return synthesisWriteQueue;
+      };
+
+      const llmOutput = await this.llmReport.generate(
+        {
+          auditId,
+          locale,
+          websiteName: audit.websiteName,
+          normalizedUrl: normalized.normalizedUrl,
+          keyChecks: {
+            ...scoring.keyChecks,
+            deepUrlAnalysis: deepUrlAnalysis.metrics,
+            pageAiSummary: pageAi.summary,
+            techFingerprint,
+          },
+          quickWins: fullQuickWins,
+          pillarScores: scoring.pillarScores,
+          deepFindings: deepUrlAnalysis.findings,
+          sampledUrls: pageSnapshots.map((entry) => ({
+            url: entry.url,
+            statusCode: entry.statusCode,
+            indexable: entry.indexable,
+            canonical: entry.canonical,
+            title: entry.title,
+            metaDescription: entry.metaDescription,
+            h1Count: entry.h1Count,
+            htmlLang: entry.htmlLang,
+            canonicalCount: entry.canonicalCount,
+            responseTimeMs: entry.responseTimeMs,
+            server: entry.server,
+            xPoweredBy: entry.xPoweredBy,
+            setCookiePatterns: entry.setCookiePatterns ?? [],
+            cacheHeaders: entry.cacheHeaders ?? {},
+            securityHeaders: entry.securityHeaders ?? {},
+            error: entry.error,
+          })),
+          pageRecaps: pageAi.recaps.map((recap) => ({
+            url: recap.url,
+            priority: recap.priority,
+            wordingScore: recap.wordingScore,
+            trustScore: recap.trustScore,
+            ctaScore: recap.ctaScore,
+            seoCopyScore: recap.seoCopyScore,
+            topIssues: recap.topIssues,
+            recommendations: recap.recommendations,
+            source: recap.source,
+          })),
+          pageSummary: pageAi.summary as unknown as Record<string, unknown>,
+          techFingerprint,
         },
-        quickWins: fullQuickWins,
-        pillarScores: scoring.pillarScores,
-        deepFindings: deepUrlAnalysis.findings,
-        sampledUrls: pageSnapshots.map((entry) => ({
-          url: entry.url,
-          statusCode: entry.statusCode,
-          indexable: entry.indexable,
-          canonical: entry.canonical,
-          title: entry.title,
-          metaDescription: entry.metaDescription,
-          h1Count: entry.h1Count,
-          htmlLang: entry.htmlLang,
-          canonicalCount: entry.canonicalCount,
-          responseTimeMs: entry.responseTimeMs,
-          error: entry.error,
-        })),
-        pageRecaps: pageAi.recaps.map((recap) => ({
-          url: recap.url,
-          priority: recap.priority,
-          wordingScore: recap.wordingScore,
-          trustScore: recap.trustScore,
-          ctaScore: recap.ctaScore,
-          seoCopyScore: recap.seoCopyScore,
-          topIssues: recap.topIssues,
-          recommendations: recap.recommendations,
-          source: recap.source,
-        })),
-        pageSummary: pageAi.summary as unknown as Record<string, unknown>,
-      });
+        {
+          onProgress: (event) => enqueueSynthesisUpdate(event),
+        },
+      );
+      await synthesisWriteQueue;
 
       await this.repo.updateState(auditId, {
         progress: 95,
@@ -306,6 +410,7 @@ export class AuditPipelineService {
         pageRecapSummary: pageAi.summary,
         pageWarnings: pageAi.warnings,
         localeCoverage,
+        techFingerprint,
       });
 
       await this.repo.updateState(auditId, {
@@ -465,6 +570,7 @@ export class AuditPipelineService {
     pageRecapSummary: PageAiRecapSummary;
     pageWarnings: string[];
     localeCoverage: Record<string, unknown>;
+    techFingerprint: TechFingerprint;
   }): Record<string, unknown> {
     return {
       generatedAt: new Date().toISOString(),
@@ -491,9 +597,23 @@ export class AuditPipelineService {
         pillarScores: input.scoring.pillarScores,
         quickWins: input.scoring.quickWins,
         keyChecks: input.scoring.keyChecks,
+        techFingerprint: input.techFingerprint,
       },
+      techFingerprint: input.techFingerprint,
       llm: input.llmOutput.adminReport,
     };
+  }
+
+  private pushRecentUrl(list: string[], url: string, maxItems: number): void {
+    if (!url) return;
+    const existingIndex = list.indexOf(url);
+    if (existingIndex >= 0) {
+      list.splice(existingIndex, 1);
+    }
+    list.push(url);
+    while (list.length > maxItems) {
+      list.shift();
+    }
   }
 
   private interpolateProgress(

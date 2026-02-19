@@ -118,6 +118,63 @@ Contact        : ${contactMethod} — ${contactValue}
         ? 'Executive summary unavailable.'
         : 'Resume executif non disponible.',
     );
+    const diagnosticChapters = this.extractObject(llm?.diagnosticChapters);
+    const conversionAndClarity = this.extractString(
+      diagnosticChapters?.conversionAndClarity,
+      locale === 'en'
+        ? 'Conversion and clarity analysis not verifiable.'
+        : 'Analyse conversion et clarte non verifiable.',
+    );
+    const speedAndPerformance = this.extractString(
+      diagnosticChapters?.speedAndPerformance,
+      locale === 'en'
+        ? 'Speed and performance analysis not verifiable.'
+        : 'Analyse vitesse et performance non verifiable.',
+    );
+    const seoFoundations = this.extractString(
+      diagnosticChapters?.seoFoundations,
+      locale === 'en'
+        ? 'SEO foundations analysis not verifiable.'
+        : 'Analyse fondations SEO non verifiable.',
+    );
+    const credibilityAndTrust = this.extractString(
+      diagnosticChapters?.credibilityAndTrust,
+      locale === 'en'
+        ? 'Credibility and trust analysis not verifiable.'
+        : 'Analyse credibilite et confiance non verifiable.',
+    );
+    const techAndScalability = this.extractString(
+      diagnosticChapters?.techAndScalability,
+      locale === 'en'
+        ? 'Tech and scalability analysis not verifiable.'
+        : 'Analyse tech et scalabilite non verifiable.',
+    );
+    const scorecardAndBusinessOpportunities = this.extractString(
+      diagnosticChapters?.scorecardAndBusinessOpportunities,
+      locale === 'en'
+        ? 'Scorecard and business opportunities not verifiable.'
+        : 'Scorecard et opportunites business non verifiable.',
+    );
+    const techFingerprint = this.extractObject(
+      llm?.techFingerprint ?? payload.fullReport['techFingerprint'],
+    );
+    const stackPrimary = this.extractString(
+      techFingerprint?.primaryStack,
+      locale === 'en' ? 'Not verifiable' : 'Non verifiable',
+    );
+    const stackConfidence = this.extractNumber(techFingerprint?.confidence);
+    const stackEvidence = this.extractArray(techFingerprint?.evidence)
+      .map((entry) => this.extractString(entry, '').trim())
+      .filter(Boolean)
+      .slice(0, 8);
+    const stackUnknowns = this.extractArray(techFingerprint?.unknowns)
+      .map((entry) => this.extractString(entry, '').trim())
+      .filter(Boolean)
+      .slice(0, 5);
+    const stackAlternatives = this.extractArray(techFingerprint?.alternatives)
+      .map((entry) => this.extractString(entry, '').trim())
+      .filter(Boolean)
+      .slice(0, 4);
 
     const priorities = this.buildPriorityActions(
       this.extractArray(llm?.priorities),
@@ -143,6 +200,7 @@ Contact        : ${contactMethod} — ${contactValue}
       llm?.clientLongEmail,
       summaryText,
     );
+    const clientLongEmailSnippet = this.compactText(clientLongEmail, 900);
     const fastImplementationPlan = this.extractArray(
       llm?.fastImplementationPlan,
     );
@@ -308,6 +366,29 @@ Contact        : ${contactMethod} — ${contactValue}
    - Retried once: ${qualityGateRetried ? 'yes' : 'no'}
    - Fallback mode: ${qualityGateFallback ? 'yes' : 'no'}
    - Reasons: ${qualityGateReasonsText}`;
+    const stackFingerprintText = `Stack fingerprint:
+   - Primary stack: ${stackPrimary}
+   - Confidence: ${Math.round(stackConfidence * 100)}%
+   - Evidence: ${stackEvidence.join(' | ') || (locale === 'en' ? 'Not verifiable' : 'Non verifiable')}
+   - Alternatives: ${stackAlternatives.join(' | ') || (locale === 'en' ? 'none' : 'aucune')}
+   - Unknowns: ${stackUnknowns.join(' | ') || (locale === 'en' ? 'none' : 'aucune')}`;
+    const diagnosticChaptersText = `Conversion & clarte:
+${conversionAndClarity}
+
+Vitesse & performance:
+${speedAndPerformance}
+
+SEO fondations:
+${seoFoundations}
+
+Credibilite & confiance:
+${credibilityAndTrust}
+
+Tech & scalabilite:
+${techAndScalability}
+
+Scorecard claire + quick wins + opportunites business:
+${scorecardAndBusinessOpportunities}`;
 
     const prioritiesHtml = priorities
       .map((item, index) => {
@@ -465,6 +546,15 @@ Contact        : ${contactMethod} — ${contactValue}
           .map((reason) => `<li>${this.escapeHtml(reason)}</li>`)
           .join('')
       : `<li>${locale === 'en' ? 'none' : 'aucune'}</li>`;
+    const stackEvidenceHtml = stackEvidence.length
+      ? `<ul style="padding-left:20px; margin:4px 0;">${stackEvidence.map((entry) => `<li>${this.escapeHtml(entry)}</li>`).join('')}</ul>`
+      : `<p style="margin:4px 0;">${locale === 'en' ? 'Not verifiable' : 'Non verifiable'}</p>`;
+    const stackAlternativesHtml = stackAlternatives.length
+      ? `<p style="margin:4px 0;">${this.escapeHtml(stackAlternatives.join(' | '))}</p>`
+      : `<p style="margin:4px 0;">${locale === 'en' ? 'none' : 'aucune'}</p>`;
+    const stackUnknownsHtml = stackUnknowns.length
+      ? `<ul style="padding-left:20px; margin:4px 0;">${stackUnknowns.map((entry) => `<li>${this.escapeHtml(entry)}</li>`).join('')}</ul>`
+      : `<p style="margin:4px 0;">${locale === 'en' ? 'none' : 'aucune'}</p>`;
 
     await this.transporter.sendMail({
       from: this.from,
@@ -493,6 +583,10 @@ ${executiveSummary}
 Quality Gate:
 ${qualityGateText}
 
+${diagnosticChaptersText}
+
+${stackFingerprintText}
+
 Matrice des priorites techniques:
 ${prioritiesText || 'Aucune action prioritaire detaillee'}
 
@@ -519,8 +613,8 @@ ${monthPlanText || 'Aucun plan mois detaille'}
 Template message client (copier/coller):
 ${clientMessageTemplate}
 
-Email long client (version détaillée):
-${clientLongEmail}
+Message client long (extrait):
+${clientLongEmailSnippet}
 
 Plan d'implémentation rapide:
 ${fastPlanText || 'Aucun plan rapide détaillé'}
@@ -560,6 +654,36 @@ ${serializedReport}
             <ul style="padding-left:20px; color:#333; margin-top:4px;">
               ${qualityGateReasonsHtml}
             </ul>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Conversion & clarté</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(conversionAndClarity)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Vitesse & performance</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(speedAndPerformance)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">SEO fondations</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(seoFoundations)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Crédibilité & confiance</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(credibilityAndTrust)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Tech & scalabilité</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(techAndScalability)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Scorecard claire + quick wins + business opportunities</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(scorecardAndBusinessOpportunities)}</p>
+
+            <h3 style="margin-top:16px; margin-bottom:8px;">Stack fingerprint</h3>
+            <p style="white-space:pre-line; color:#333;">
+              <strong>Primary stack:</strong> ${this.escapeHtml(stackPrimary)}<br/>
+              <strong>Confidence:</strong> ${Math.round(stackConfidence * 100)}%
+            </p>
+            <p style="margin:6px 0 2px;"><strong>Evidence:</strong></p>
+            ${stackEvidenceHtml}
+            <p style="margin:6px 0 2px;"><strong>Alternatives:</strong></p>
+            ${stackAlternativesHtml}
+            <p style="margin:6px 0 2px;"><strong>Unknowns:</strong></p>
+            ${stackUnknownsHtml}
 
             <h3 style="margin-top:16px; margin-bottom:8px;">${locale === 'en' ? 'Technical Priority Matrix' : 'Matrice des priorites techniques'}</h3>
             <ol style="padding-left:20px; color:#333;">
@@ -610,8 +734,8 @@ ${serializedReport}
             <h3 style="margin-top:16px; margin-bottom:8px;">Template prêt à envoyer au client</h3>
             <p style="white-space:pre-line; color:#333;">${this.escapeHtml(clientMessageTemplate)}</p>
 
-            <h3 style="margin-top:16px; margin-bottom:8px;">Email long prêt à envoyer au client</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(clientLongEmail)}</p>
+            <h3 style="margin-top:16px; margin-bottom:8px;">Message client long (extrait)</h3>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(clientLongEmailSnippet)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Plan d'implémentation rapide</h3>
             <ol style="padding-left:20px; color:#333;">
@@ -859,6 +983,12 @@ ${serializedReport}
   private extractBoolean(value: unknown, fallback: boolean): boolean {
     if (typeof value === 'boolean') return value;
     return fallback;
+  }
+
+  private compactText(input: string, maxChars: number): string {
+    const clean = input.replace(/\s+/g, ' ').trim();
+    if (clean.length <= maxChars) return clean;
+    return `${clean.slice(0, Math.max(0, maxChars - 3)).trimEnd()}...`;
   }
 
   private escapeHtml(input: string): string {

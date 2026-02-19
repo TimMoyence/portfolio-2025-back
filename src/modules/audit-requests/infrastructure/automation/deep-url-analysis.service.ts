@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 export type FindingSeverity = 'high' | 'medium' | 'low';
@@ -19,6 +20,19 @@ export interface DeepUrlFinding {
 export interface DeepUrlAnalysisResult {
   findings: DeepUrlFinding[];
   metrics: Record<string, unknown>;
+}
+
+interface StackCandidate {
+  score: number;
+  evidence: string[];
+}
+
+export interface TechFingerprint {
+  primaryStack: string;
+  confidence: number;
+  evidence: string[];
+  alternatives: string[];
+  unknowns: string[];
 }
 
 @Injectable()
@@ -731,6 +745,200 @@ export class DeepUrlAnalysisService {
         missingStructuredDataPages: missingStructuredDataUrls.length,
         missingOpenGraphPages: missingOpenGraphUrls.length,
       },
+    };
+  }
+
+  inferTechFingerprint(
+    homepage: HomepageAuditSnapshot,
+    urls: UrlIndexabilityResult[],
+    locale: AuditLocale = 'fr',
+  ): TechFingerprint {
+    const snapshots: Array<{
+      url: string;
+      detectedCmsHints?: string[];
+      server?: string | null;
+      xPoweredBy?: string | null;
+      setCookiePatterns?: string[];
+    }> = [
+      {
+        url: homepage.finalUrl,
+        detectedCmsHints: homepage.detectedCmsHints,
+        server: homepage.server,
+        xPoweredBy: homepage.xPoweredBy,
+        setCookiePatterns: homepage.setCookiePatterns,
+      },
+      ...urls,
+    ];
+    const candidates = new Map<string, StackCandidate>();
+    const unknowns = new Set<string>();
+
+    const addCandidate = (
+      name: string,
+      score: number,
+      evidence: string,
+    ): void => {
+      const normalized = name.trim();
+      if (!normalized || score <= 0) return;
+      const current = candidates.get(normalized) ?? { score: 0, evidence: [] };
+      current.score += score;
+      if (evidence && !current.evidence.includes(evidence)) {
+        current.evidence.push(evidence);
+      }
+      candidates.set(normalized, current);
+    };
+
+    for (const snapshot of snapshots) {
+      const url = snapshot.url;
+      const cmsHints = snapshot.detectedCmsHints ?? [];
+      for (const hint of cmsHints) {
+        addCandidate(hint, 3, `${hint} hint detected on ${url}`);
+      }
+
+      const server = (snapshot.server ?? '').toLowerCase();
+      if (!server) {
+        unknowns.add(
+          locale === 'en'
+            ? 'Server header not disclosed on most pages'
+            : 'Header Server non expose sur la majorite des pages',
+        );
+      }
+      if (server.includes('cloudflare')) {
+        addCandidate(
+          'Cloudflare edge stack',
+          1,
+          `Server header includes ${server}`,
+        );
+      }
+      if (server.includes('nginx')) {
+        addCandidate('Nginx web stack', 1, `Server header includes ${server}`);
+      }
+      if (server.includes('apache')) {
+        addCandidate('Apache web stack', 1, `Server header includes ${server}`);
+      }
+      if (server.includes('iis')) {
+        addCandidate(
+          'Microsoft IIS / ASP.NET',
+          3,
+          `Server header includes ${server}`,
+        );
+      }
+      if (server.includes('vercel')) {
+        addCandidate(
+          'Next.js on Vercel',
+          2,
+          `Server header includes ${server}`,
+        );
+      }
+
+      const xPoweredBy = (snapshot.xPoweredBy ?? '').toLowerCase();
+      if (!xPoweredBy) {
+        unknowns.add(
+          locale === 'en'
+            ? 'x-powered-by header is hidden'
+            : 'Header x-powered-by masque',
+        );
+      }
+      if (xPoweredBy.includes('next.js')) {
+        addCandidate('Next.js', 4, `x-powered-by includes ${xPoweredBy}`);
+      }
+      if (
+        xPoweredBy.includes('node') ||
+        xPoweredBy.includes('express') ||
+        xPoweredBy.includes('nestjs')
+      ) {
+        addCandidate(
+          'Node.js runtime',
+          3,
+          `x-powered-by includes ${xPoweredBy}`,
+        );
+      }
+      if (xPoweredBy.includes('php')) {
+        addCandidate('PHP runtime', 3, `x-powered-by includes ${xPoweredBy}`);
+      }
+      if (xPoweredBy.includes('asp.net')) {
+        addCandidate(
+          'ASP.NET runtime',
+          3,
+          `x-powered-by includes ${xPoweredBy}`,
+        );
+      }
+
+      const cookies = (snapshot.setCookiePatterns ?? []).map((entry) =>
+        entry.toLowerCase(),
+      );
+      if (cookies.length === 0) {
+        unknowns.add(
+          locale === 'en'
+            ? 'No deterministic Set-Cookie framework signature'
+            : 'Aucune signature framework deterministe dans Set-Cookie',
+        );
+      }
+      if (cookies.some((cookie) => cookie.startsWith('wordpress_'))) {
+        addCandidate(
+          'WordPress',
+          5,
+          `Cookie signatures detected: ${cookies.join(', ')}`,
+        );
+      }
+      if (cookies.some((cookie) => cookie.includes('woocommerce'))) {
+        addCandidate(
+          'WordPress + WooCommerce',
+          5,
+          `Cookie signatures detected: ${cookies.join(', ')}`,
+        );
+      }
+      if (cookies.some((cookie) => cookie.includes('_shopify'))) {
+        addCandidate(
+          'Shopify',
+          5,
+          `Cookie signatures detected: ${cookies.join(', ')}`,
+        );
+      }
+      if (cookies.some((cookie) => cookie === 'phpsessid')) {
+        addCandidate(
+          'PHP runtime',
+          3,
+          `Cookie signatures detected: ${cookies.join(', ')}`,
+        );
+      }
+      if (cookies.some((cookie) => cookie.startsWith('__next'))) {
+        addCandidate(
+          'Next.js',
+          2,
+          `Cookie signatures detected: ${cookies.join(', ')}`,
+        );
+      }
+      if (cookies.some((cookie) => cookie.includes('wix'))) {
+        addCandidate(
+          'Wix',
+          4,
+          `Cookie signatures detected: ${cookies.join(', ')}`,
+        );
+      }
+    }
+
+    const ranked = [...candidates.entries()].sort(
+      (a, b) => b[1].score - a[1].score,
+    );
+    const best = ranked[0];
+
+    if (!best || best[1].score < 3) {
+      return {
+        primaryStack: locale === 'en' ? 'Not verifiable' : 'Non verifiable',
+        confidence: 0.2,
+        evidence: [],
+        alternatives: [],
+        unknowns: Array.from(unknowns).slice(0, 5),
+      };
+    }
+
+    const confidence = Math.max(0.3, Math.min(0.95, best[1].score / 10));
+    return {
+      primaryStack: best[0],
+      confidence: Math.round(confidence * 100) / 100,
+      evidence: best[1].evidence.slice(0, 8),
+      alternatives: ranked.slice(1, 4).map(([name]) => name),
+      unknowns: Array.from(unknowns).slice(0, 5),
     };
   }
 

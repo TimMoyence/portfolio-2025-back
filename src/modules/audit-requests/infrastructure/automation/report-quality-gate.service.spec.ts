@@ -15,6 +15,23 @@ describe('ReportQualityGateService', () => {
     executiveSummary: 'Executive summary.',
     reportExplanation: 'Report explanation.',
     strengths: ['Strong technical baseline'],
+    diagnosticChapters: {
+      conversionAndClarity: 'Conversion issues detected on key templates.',
+      speedAndPerformance: 'Performance bottlenecks affect mobile rendering.',
+      seoFoundations: 'Metadata and heading structure need standardization.',
+      credibilityAndTrust: 'Trust signals are inconsistent across core pages.',
+      techAndScalability:
+        'Stack hygiene requires stronger maintenance controls.',
+      scorecardAndBusinessOpportunities:
+        'Prioritized quick wins can improve leads in 30 days.',
+    },
+    techFingerprint: {
+      primaryStack: 'WordPress',
+      confidence: 0.78,
+      evidence: ['WordPress hint detected'],
+      alternatives: ['PHP runtime'],
+      unknowns: [],
+    },
     priorities: [
       {
         title: 'Fix canonical consistency',

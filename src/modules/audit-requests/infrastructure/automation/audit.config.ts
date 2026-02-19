@@ -1,3 +1,7 @@
+export type AuditLlmProfile =
+  | 'stability_first_sequential'
+  | 'parallel_sections_v1';
+
 export interface AuditAutomationConfig {
   queueEnabled: boolean;
   queueName: string;
@@ -25,8 +29,17 @@ export interface AuditAutomationConfig {
   llmTimeoutMs: number;
   llmSummaryTimeoutMs: number;
   llmExpertTimeoutMs: number;
+  llmProfile: AuditLlmProfile;
+  llmProfileCanaryPercent: number;
+  llmGlobalTimeoutMs: number;
+  llmSectionTimeoutMs: number;
+  llmSectionRetryMax: number;
+  llmSectionRetryMinRemainingMs: number;
+  llmInflightMax: number;
   llmRetries: number;
   llmLanguage: string;
+  pageAiCircuitBreakerMinSamples: number;
+  pageAiCircuitBreakerFailureRatio: number;
   rateHourlyMin: number;
   rateHourlyMax: number;
   rateCurrency: string;
@@ -73,6 +86,40 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     1000,
     envInt('AUDIT_LLM_EXPERT_TIMEOUT_MS', llmTimeoutMs),
   );
+  const llmProfileRaw = envString('AUDIT_LLM_PROFILE');
+  const llmProfile: AuditLlmProfile =
+    llmProfileRaw === 'stability_first_sequential'
+      ? 'stability_first_sequential'
+      : 'parallel_sections_v1';
+  const llmGlobalTimeoutMs = Math.max(
+    1000,
+    envInt('AUDIT_LLM_GLOBAL_TIMEOUT_MS', 45_000),
+  );
+  const llmSectionTimeoutMs = Math.max(
+    1000,
+    envInt('AUDIT_LLM_SECTION_TIMEOUT_MS', 18_000),
+  );
+  const llmSectionRetryMax = Math.max(
+    0,
+    envInt('AUDIT_LLM_SECTION_RETRY_MAX', 1),
+  );
+  const llmSectionRetryMinRemainingMs = Math.max(
+    1000,
+    envInt('AUDIT_LLM_SECTION_RETRY_MIN_REMAINING_MS', 8_000),
+  );
+  const llmInflightMax = Math.max(1, envInt('AUDIT_LLM_INFLIGHT_MAX', 8));
+  const llmProfileCanaryPercent = Math.max(
+    0,
+    Math.min(100, envInt('AUDIT_LLM_PROFILE_CANARY_PERCENT', 100)),
+  );
+  const pageAiCircuitBreakerMinSamples = Math.max(
+    1,
+    envInt('AUDIT_PAGE_AI_CIRCUIT_BREAKER_MIN_SAMPLES', 6),
+  );
+  const pageAiCircuitBreakerFailureRatio = Math.max(
+    0.1,
+    Math.min(1, envFloat('AUDIT_PAGE_AI_CIRCUIT_BREAKER_FAILURE_RATIO', 0.5)),
+  );
 
   return {
     queueEnabled: envBool('AUDIT_QUEUE_ENABLED', true),
@@ -109,8 +156,17 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     llmTimeoutMs,
     llmSummaryTimeoutMs,
     llmExpertTimeoutMs,
+    llmProfile,
+    llmProfileCanaryPercent,
+    llmGlobalTimeoutMs,
+    llmSectionTimeoutMs,
+    llmSectionRetryMax,
+    llmSectionRetryMinRemainingMs,
+    llmInflightMax,
     llmRetries: Math.max(0, envInt('AUDIT_LLM_RETRIES', 2)),
     llmLanguage: envString('AUDIT_LLM_LANGUAGE') ?? 'fr',
+    pageAiCircuitBreakerMinSamples,
+    pageAiCircuitBreakerFailureRatio,
     rateHourlyMin,
     rateHourlyMax,
     rateCurrency: envString('AUDIT_RATE_CURRENCY') ?? 'EUR',

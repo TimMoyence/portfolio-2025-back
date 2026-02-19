@@ -25,8 +25,17 @@ describe('PageAiRecapService', () => {
     llmTimeoutMs: 25_000,
     llmSummaryTimeoutMs: 20_000,
     llmExpertTimeoutMs: 60_000,
+    llmProfile: 'parallel_sections_v1',
+    llmProfileCanaryPercent: 100,
+    llmGlobalTimeoutMs: 45_000,
+    llmSectionTimeoutMs: 18_000,
+    llmSectionRetryMax: 1,
+    llmSectionRetryMinRemainingMs: 8_000,
+    llmInflightMax: 8,
     llmRetries: 0,
     llmLanguage: 'fr',
+    pageAiCircuitBreakerMinSamples: 6,
+    pageAiCircuitBreakerFailureRatio: 0.5,
     rateHourlyMin: 90,
     rateHourlyMax: 130,
     rateCurrency: 'EUR',
@@ -87,5 +96,63 @@ describe('PageAiRecapService', () => {
     expect(result.summary.totalPages).toBe(1);
     expect(result.summary.fallbackRecaps).toBe(1);
     expect(result.summary.llmRecaps).toBe(0);
+  });
+
+  it('opens circuit breaker and skips remaining llm page calls on repeated failures', async () => {
+    const service = new PageAiRecapService({
+      ...config,
+      openAiApiKey: 'test-key',
+      pageAiCircuitBreakerMinSamples: 2,
+      pageAiCircuitBreakerFailureRatio: 0.5,
+      pageAiConcurrency: 1,
+    });
+    const pages = Array.from({ length: 5 }, (_, index) => ({
+      ...page,
+      url: `https://example.com/page-${index + 1}`,
+      finalUrl: `https://example.com/page-${index + 1}`,
+    }));
+
+    const analyzeSpy = jest
+      .spyOn(
+        service as unknown as { analyzeSinglePage: () => Promise<unknown> },
+        'analyzeSinglePage',
+      )
+      .mockImplementation(
+        (_locale: unknown, currentPage: UrlIndexabilityResult) =>
+          Promise.resolve({
+            recap: {
+              url: currentPage.url,
+              finalUrl: currentPage.finalUrl,
+              priority: 'high',
+              language: 'en',
+              wordingScore: 30,
+              trustScore: 30,
+              ctaScore: 30,
+              seoCopyScore: 30,
+              summary: 'fallback',
+              topIssues: ['timeout'],
+              recommendations: ['retry later'],
+              source: 'fallback',
+            },
+            llmAttempted: true,
+            llmFailed: true,
+          }),
+      );
+
+    const result = await service.analyzePages({
+      locale: 'en',
+      websiteName: 'example.com',
+      normalizedUrl: 'https://example.com',
+      pages,
+    });
+
+    expect(analyzeSpy).toHaveBeenCalledTimes(2);
+    expect(
+      result.warnings.some((warning) =>
+        warning.toLowerCase().includes('circuit breaker opened'),
+      ),
+    ).toBe(true);
+    expect(result.recaps).toHaveLength(5);
+    expect(result.summary.fallbackRecaps).toBe(5);
   });
 });
