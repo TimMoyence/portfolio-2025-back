@@ -16,9 +16,9 @@ export class MigrationLocale1771510482091 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "audit_requests" ALTER COLUMN "pillarScores" SET DEFAULT '{}'::jsonb`,
     );
-    await queryRunner.query(
-      `ALTER TABLE "audit_requests" DROP COLUMN "locale"`,
-    );
+    // await queryRunner.query(
+    //   `ALTER TABLE "audit_requests" DROP COLUMN "locale"`,
+    // );
     await queryRunner.query(
       `ALTER TABLE "audit_requests" ADD "locale" text NOT NULL DEFAULT 'fr'`,
     );
