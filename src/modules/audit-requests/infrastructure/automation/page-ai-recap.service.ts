@@ -1,3 +1,4 @@
+// Recap service for per-page AI analysis in audit automation. Uses LLM to generate insights and falls back to heuristics on failure.
 import { ChatOpenAI } from '@langchain/openai';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
