@@ -77,7 +77,7 @@ export class AuditRequestEntity {
   @Column({ type: 'text', nullable: true })
   referer?: string;
 
-  @Column({ type: 'varchar', length: 3, default: 'fr' })
+  @Column({ type: 'text', default: 'fr' })
   locale: string;
 
   @CreateDateColumn({ name: 'created_at' })
