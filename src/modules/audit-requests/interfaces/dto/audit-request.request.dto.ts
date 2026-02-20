@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class AuditRequestDto {
+export class AuditRequestRequestDto {
   @ApiProperty({ example: 'Example Studio' })
   @IsString()
   @MinLength(2)

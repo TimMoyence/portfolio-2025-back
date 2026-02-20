@@ -10,6 +10,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: portfolio_2025_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d portfolio_2025_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +42,25 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Run unit and integration tests
+        run: pnpm exec jest --runInBand --watchman=false
+
+      - name: Run DB integration tests (legacy repositories)
+        env:
+          RUN_DB_INTEGRATION: 'true'
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: portfolio_2025_ci
+        run: pnpm run test:integration:db
+
+      - name: Run e2e transportless tests
+        run: pnpm run test:e2e
+
+      - name: Run e2e HTTP socket tests
+        run: pnpm run test:e2e:http
 
       - name: Build API
         run: pnpm run build

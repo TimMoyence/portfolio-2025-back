@@ -42,7 +42,8 @@ services:
       NODE_ENV: 'production'
       PORT: '3000'
       # Optionnel: tu peux le laisser uniquement dans backend.env
-      API_PREFIX: '/api/v1/portfolio25'
+      API_PREFIX: 'api/v1/portfolio25'
+      ENABLE_LEGACY_CMS_CONTEXTS: ${ENABLE_LEGACY_CMS_CONTEXTS:-false}
     depends_on:
       db:
         condition: service_healthy

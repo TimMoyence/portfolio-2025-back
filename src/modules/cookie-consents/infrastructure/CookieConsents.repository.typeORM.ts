@@ -34,7 +34,6 @@ export class CookieConsentsRepositoryTypeORM
 
     return {
       message: 'Cookie consent recorded successfully.',
-      httpCode: 201,
     };
   }
 }

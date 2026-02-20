@@ -46,7 +46,6 @@ export class AuditRequestsRepositoryTypeORM
 
     return {
       message: 'Audit request created successfully.',
-      httpCode: 201,
       auditId: entity.id,
       status: entity.processingStatus,
     };

@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateCoursesUseCase } from './application/CreateCourses.useCase';
+import { ListCoursesUseCase } from './application/ListCourses.useCase';
 import { COURSES_REPOSITORY } from './domain/token';
 import { CoursesRepositoryTypeORM } from './infrastructure/Courses.repository.typeORM';
 import { CoursesEntity } from './infrastructure/entities/Courses.entity';
-import { CourseResourceEntity } from './infrastructure/entities/CoursesRessources.entity';
+import { CourseResourceEntity } from './infrastructure/entities/CourseResources.entity';
 import { CoursesTranslationEntity } from './infrastructure/entities/CoursesTranslation.entity';
 import { CoursesController } from './interfaces/Courses.controller';
 
-const COURSES_USE_CASES = [CreateCoursesUseCase];
+const COURSES_USE_CASES = [ListCoursesUseCase, CreateCoursesUseCase];
 
 @Module({
   imports: [

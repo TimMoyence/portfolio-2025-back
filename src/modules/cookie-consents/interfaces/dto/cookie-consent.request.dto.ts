@@ -8,7 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class CookieConsentPreferencesDto {
+class CookieConsentPreferencesRequestDto {
   @ApiProperty({ example: true })
   @IsBoolean()
   essential: boolean;
@@ -26,7 +26,7 @@ class CookieConsentPreferencesDto {
   marketing: boolean;
 }
 
-export class CookieConsentDto {
+export class CookieConsentRequestDto {
   @ApiProperty({ example: '2026-02-11' })
   @IsString()
   @MaxLength(50)
@@ -53,8 +53,8 @@ export class CookieConsentDto {
   @IsIn(['accept_all', 'essential_only', 'save_preferences', 'withdraw'])
   action: 'accept_all' | 'essential_only' | 'save_preferences' | 'withdraw';
 
-  @ApiProperty({ type: CookieConsentPreferencesDto })
+  @ApiProperty({ type: CookieConsentPreferencesRequestDto })
   @ValidateNested()
-  @Type(() => CookieConsentPreferencesDto)
-  preferences: CookieConsentPreferencesDto;
+  @Type(() => CookieConsentPreferencesRequestDto)
+  preferences: CookieConsentPreferencesRequestDto;
 }

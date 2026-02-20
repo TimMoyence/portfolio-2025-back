@@ -1,39 +1,48 @@
+import { BadRequestException } from '@nestjs/common';
+import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import { Users } from '../../domain/Users';
 import { CreateUserDto } from '../dto/CreateUser.dto';
 import { UpdateUserDto } from '../dto/UpdateUser.dto';
 
 export class UsersMapper {
   static fromCreateDto(dto: CreateUserDto, passwordHash: string): Users {
-    return {
-      email: dto.email,
-      passwordHash,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      phone: dto.phone ?? null,
-      isActive: dto.isActive ?? true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      updatedOrCreatedBy: dto.updatedOrCreatedBy ?? null,
-    };
+    try {
+      return Users.create({
+        email: dto.email,
+        passwordHash,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        phone: dto.phone ?? null,
+        isActive: dto.isActive ?? true,
+        updatedOrCreatedBy: dto.updatedOrCreatedBy ?? null,
+      });
+    } catch (error) {
+      if (error instanceof DomainValidationError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 
   static fromUpdateDto(
     dto: UpdateUserDto,
     passwordHash?: string,
   ): Partial<Users> {
-    const partial: Partial<Users> = {};
-
-    if (dto.email !== undefined) partial.email = dto.email;
-    if (passwordHash !== undefined) partial.passwordHash = passwordHash;
-    if (dto.firstName !== undefined) partial.firstName = dto.firstName;
-    if (dto.lastName !== undefined) partial.lastName = dto.lastName;
-    if (dto.phone !== undefined) partial.phone = dto.phone;
-    if (dto.isActive !== undefined) partial.isActive = dto.isActive;
-    if (dto.updatedOrCreatedBy !== undefined)
-      partial.updatedOrCreatedBy = dto.updatedOrCreatedBy;
-
-    partial.updatedAt = new Date();
-
-    return partial;
+    try {
+      return Users.update({
+        email: dto.email,
+        passwordHash,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        phone: dto.phone,
+        isActive: dto.isActive,
+        updatedOrCreatedBy: dto.updatedOrCreatedBy,
+      });
+    } catch (error) {
+      if (error instanceof DomainValidationError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 }

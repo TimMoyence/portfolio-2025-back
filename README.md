@@ -6,7 +6,7 @@
 
 ## CI/CD (GitHub Actions)
 
-- Workflow `.github/workflows/ci.yml` builds with pnpm and pushes images to GHCR on `main` using tags `latest` and the commit SHA.
+- Workflow `.github/workflows/ci.yml` runs unit/integration tests, e2e transportless tests, e2e HTTP socket tests, then builds with pnpm and pushes images to GHCR on `main` using tags `latest` and the commit SHA.
 - Deploy step (optional) pulls the freshly built image over SSH and restarts only the `api` service via `docker compose`, ensuring only the build output is promoted.
 - Required secrets for deploy: `DEPLOY_HOST`, `DEPLOY_USER`, `SSH_PRIVATE_KEY`, `DEPLOY_REGISTRY_USER`, `DEPLOY_REGISTRY_TOKEN`. Optional: `DEPLOY_PATH` (default `/opt/portfolio-2025`), `DEPLOY_COMPOSE_FILE` (default `/opt/portfolio-2025/compose.yaml`).
 
@@ -44,6 +44,8 @@ Swagger UI is available once the server is running:
 
 The documentation is backed by DTO metadata, so request/response shapes always stay in sync with the codebase.
 
+Route prefix is controlled by `API_PREFIX` (default recommended: `api/v1/portfolio25` for compatibility with the frontend configuration).
+
 ### Auth & Users
 
 - `POST /auth/login` — authenticate with email/password and receive a JWT plus the sanitized user payload.
@@ -52,12 +54,13 @@ The documentation is backed by DTO metadata, so request/response shapes always s
 
 ### Audit SSE flow
 
-- `POST /audits` (and legacy `POST /audit-requests`) — create an audit request and enqueue async processing.
+- `POST /audits` — create an audit request and enqueue async processing.
 - `GET /audits/:id/stream` — Server-Sent Events stream (`progress`, `completed`, `failed`, `heartbeat`).
 - `GET /audits/:id/summary` — recovery endpoint for the persisted user summary.
 
 Main env keys for this flow:
 
+- `ENABLE_LEGACY_CMS_CONTEXTS` to opt-in legacy modules (`services`, `projects`, `courses`, `redirects`); default `false`.
 - `AUDIT_QUEUE_ENABLED`, `AUDIT_QUEUE_NAME`, `REDIS_URL` (or `REDIS_HOST` + `REDIS_PORT`).
 - `AUDIT_FETCH_TIMEOUT_MS`, `AUDIT_MAX_REDIRECTS`, `AUDIT_HTML_MAX_BYTES`, `AUDIT_TEXT_MAX_BYTES`.
 - `AUDIT_SITEMAP_SAMPLE_SIZE`, `AUDIT_SITEMAP_MAX_URLS`, `AUDIT_SITEMAP_ANALYZE_LIMIT`, `AUDIT_PAGE_AI_CIRCUIT_BREAKER_MIN_SAMPLES`, `AUDIT_PAGE_AI_CIRCUIT_BREAKER_FAILURE_RATIO`.
@@ -78,6 +81,9 @@ $ pnpm run test
 
 # e2e tests
 $ pnpm run test:e2e
+
+# e2e HTTP socket tests (CI profile)
+$ pnpm run test:e2e:http
 
 # test coverage
 $ pnpm run test:cov

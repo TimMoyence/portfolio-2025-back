@@ -1,23 +1,17 @@
+import { BadRequestException } from '@nestjs/common';
+import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import { Contacts } from '../../domain/Contacts';
-import { ContactDto } from '../dto/Contact.dto';
+import { CreateContactCommand } from '../dto/CreateContact.command';
 
 export class ContactMapper {
-  static fromCreateDto(dto: ContactDto): Contacts {
-    return {
-      email: dto.email,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      phone: dto.phone ?? null,
-      subject: dto.subject,
-      message: dto.message,
-      role: dto.role,
-      terms: dto.terms,
-      termsVersion: dto.termsVersion ?? undefined,
-      termsLocale: dto.termsLocale ?? undefined,
-      termsMethod: dto.termsMethod ?? undefined,
-      termsAcceptedAt: dto.termsAcceptedAt
-        ? new Date(dto.termsAcceptedAt)
-        : undefined,
-    };
+  static fromCreateCommand(command: CreateContactCommand): Contacts {
+    try {
+      return Contacts.create(command);
+    } catch (error) {
+      if (error instanceof DomainValidationError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 }

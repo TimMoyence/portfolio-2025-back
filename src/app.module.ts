@@ -3,12 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './modules/users/Users.module';
 
 import { ensureDatabaseExists } from './database/ensure-database';
-import { ContactsModule } from './modules/contacts/Contacts.module';
-import { CookieConsentsModule } from './modules/cookie-consents/CookieConsents.module';
-import { AuditRequestsModule } from './modules/audit-requests/AuditRequests.module';
+import { resolveRuntimeContexts } from './runtime/runtime-contexts';
+
+const runtimeContexts = resolveRuntimeContexts();
 
 @Module({
   imports: [
@@ -112,10 +111,7 @@ import { AuditRequestsModule } from './modules/audit-requests/AuditRequests.modu
         return connectionOptions;
       },
     }),
-    UsersModule,
-    ContactsModule,
-    CookieConsentsModule,
-    AuditRequestsModule,
+    ...runtimeContexts.runtimeModules,
   ],
   controllers: [AppController],
   providers: [AppService],

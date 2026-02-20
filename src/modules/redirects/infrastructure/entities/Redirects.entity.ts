@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+@Index('IDX_redirects_enabled_created_at', ['enabled', 'createdAt'])
 @Entity({ name: 'redirects' })
 export class RedirectsEntity {
   @PrimaryGeneratedColumn('uuid')

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateServicesUseCase } from './application/CreateServices.useCase';
+import { ListServicesUseCase } from './application/ListServices.useCase';
 import { SERVICES_REPOSITORY } from './domain/token';
 import { ServicesEntity } from './infrastructure/entities/Services.entity';
 import { ServicesFaqEntity } from './infrastructure/entities/ServicesFaq.entity';
@@ -9,7 +10,7 @@ import { ServicesTranslationEntity } from './infrastructure/entities/ServicesTra
 import { ServicesRepositoryTypeORM } from './infrastructure/Services.repository.typeORM';
 import { ServicesController } from './interfaces/Services.controller';
 
-const SERVICES_USE_CASES = [CreateServicesUseCase];
+const SERVICES_USE_CASES = [ListServicesUseCase, CreateServicesUseCase];
 
 @Module({
   imports: [

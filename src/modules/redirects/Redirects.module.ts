@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateRedirectsUseCase } from './application/CreateRedirects.useCase';
+import { ListRedirectsUseCase } from './application/ListRedirects.useCase';
 import { REDIRECTS_REPOSITORY } from './domain/token';
 import { RedirectsEntity } from './infrastructure/entities/Redirects.entity';
 import { RedirectsRepositoryTypeORM } from './infrastructure/Redirects.repository.typeORM';
 import { RedirectsController } from './interfaces/Redirects.controller';
 
-const REDIRECTS_USE_CASES = [CreateRedirectsUseCase];
+const REDIRECTS_USE_CASES = [ListRedirectsUseCase, CreateRedirectsUseCase];
 
 @Module({
   imports: [TypeOrmModule.forFeature([RedirectsEntity])],

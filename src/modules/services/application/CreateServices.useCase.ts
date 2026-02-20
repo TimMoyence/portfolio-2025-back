@@ -1,14 +1,19 @@
-import { Inject } from '@nestjs/common/decorators/core/inject.decorator';
+import { Inject, Injectable } from '@nestjs/common';
 import type { IServicesRepository } from '../domain/IServices.repository';
-import type { Services } from '../domain/Services';
+import { Services } from '../domain/Services';
 import { SERVICES_REPOSITORY } from '../domain/token';
+import { CreateServiceCommand } from './dto/CreateService.command';
+import { ServiceMapper } from './mappers/Service.mapper';
 
+@Injectable()
 export class CreateServicesUseCase {
   constructor(
     @Inject(SERVICES_REPOSITORY)
     private repo: IServicesRepository,
   ) {}
-  async execute(data: Services): Promise<Services> {
-    return this.repo.create(data);
+
+  async execute(data: CreateServiceCommand): Promise<Services> {
+    const service = ServiceMapper.fromCreateCommand(data);
+    return this.repo.create(service);
   }
 }

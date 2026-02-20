@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
 import { CreateContactsUseCase } from '../application/CreateContacts.useCase';
 import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { CreateContactCommand } from '../application/dto/CreateContact.command';
 import { ContactResponseDto } from './dto/contact.response.dto';
-import { ContactDto } from '../application/dto/Contact.dto';
+import { ContactRequestDto } from './dto/contact.request.dto';
 
 @Controller('contacts')
 export class ContactsController {
@@ -16,18 +17,26 @@ export class ContactsController {
   @Post()
   @ApiCreatedResponse({ type: ContactResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
-  async create(@Body() dto: ContactDto): Promise<ContactResponseDto> {
-    const createContacts = await this.createUseCase.execute(dto);
-    if (createContacts) {
-      const responseDto = new ContactResponseDto();
-      responseDto.message = 'Contact message created successfully.';
-      responseDto.httpCode = 201;
-      return responseDto;
-    } else {
-      const responseDto = new ContactResponseDto();
-      responseDto.message = 'Failed to create contact message.';
-      responseDto.httpCode = 500;
-      return responseDto;
-    }
+  async create(@Body() dto: ContactRequestDto): Promise<ContactResponseDto> {
+    const command: CreateContactCommand = {
+      email: dto.email,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      phone: dto.phone ?? null,
+      subject: dto.subject,
+      message: dto.message,
+      role: dto.role,
+      terms: dto.terms,
+      termsVersion: dto.termsVersion ?? undefined,
+      termsLocale: dto.termsLocale ?? undefined,
+      termsAcceptedAt: dto.termsAcceptedAt ?? undefined,
+      termsMethod: dto.termsMethod ?? undefined,
+    };
+
+    const response = await this.createUseCase.execute(command);
+    const responseDto = new ContactResponseDto();
+    responseDto.message = response.message;
+    responseDto.httpCode = HttpStatus.CREATED;
+    return responseDto;
   }
 }

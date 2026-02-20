@@ -61,7 +61,6 @@ export class ContactsRepositoryTypeORM implements IContactsRepository {
 
     return {
       message: 'Contact message created successfully.',
-      httpCode: 201,
     };
   }
 }

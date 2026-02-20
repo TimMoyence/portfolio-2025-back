@@ -10,6 +10,8 @@ import { ProjectType } from '../enums/ProjectType.enum';
 import { PublishStatus } from '../enums/PublishStatus.enum';
 import { ProjectsTranslationsEntity } from './ProjectsTranslations.entity';
 
+@Index('IDX_projects_type_order', ['type', 'order'])
+@Index('IDX_projects_status_order', ['status', 'order'])
 @Entity({ name: 'projects' })
 export class ProjectsEntity {
   @PrimaryGeneratedColumn('uuid')

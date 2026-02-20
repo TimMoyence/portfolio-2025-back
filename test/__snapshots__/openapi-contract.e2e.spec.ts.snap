@@ -1,0 +1,903 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] = `
+{
+  "CourseListResponseDto": {
+    "properties": {
+      "items": {
+        "items": {
+          "$ref": "#/components/schemas/CourseResponseDto",
+        },
+        "type": "array",
+      },
+      "meta": {
+        "$ref": "#/components/schemas/PaginationMetaResponseDto",
+      },
+    },
+    "required": [
+      "items",
+      "meta",
+    ],
+    "type": "object",
+  },
+  "CourseRequestDto": {
+    "properties": {
+      "coverImage": {
+        "example": "/images/ai-course.webp",
+        "type": "string",
+      },
+      "slug": {
+        "example": "ai-course",
+        "type": "string",
+      },
+      "summary": {
+        "example": "A premium course for practical AI delivery.",
+        "type": "string",
+      },
+      "title": {
+        "example": "AI Course",
+        "type": "string",
+      },
+    },
+    "required": [
+      "slug",
+      "title",
+      "summary",
+    ],
+    "type": "object",
+  },
+  "CourseResponseDto": {
+    "properties": {
+      "coverImage": {
+        "example": "/images/ai-course.webp",
+        "type": "string",
+      },
+      "id": {
+        "example": "f71914f4-f68d-4be9-90cb-d6ce6b5fcd89",
+        "type": "string",
+      },
+      "slug": {
+        "example": "ai-course",
+        "type": "string",
+      },
+      "summary": {
+        "example": "A premium course for practical AI delivery.",
+        "type": "string",
+      },
+      "title": {
+        "example": "AI Course",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "slug",
+      "title",
+      "summary",
+    ],
+    "type": "object",
+  },
+  "PaginationMetaResponseDto": {
+    "properties": {
+      "limit": {
+        "example": 20,
+        "type": "number",
+      },
+      "page": {
+        "example": 1,
+        "type": "number",
+      },
+      "total": {
+        "example": 124,
+        "type": "number",
+      },
+      "totalPages": {
+        "example": 7,
+        "type": "number",
+      },
+    },
+    "required": [
+      "page",
+      "limit",
+      "total",
+      "totalPages",
+    ],
+    "type": "object",
+  },
+  "ProjectListResponseDto": {
+    "properties": {
+      "items": {
+        "items": {
+          "$ref": "#/components/schemas/ProjectResponseDto",
+        },
+        "type": "array",
+      },
+      "meta": {
+        "$ref": "#/components/schemas/PaginationMetaResponseDto",
+      },
+    },
+    "required": [
+      "items",
+      "meta",
+    ],
+    "type": "object",
+  },
+  "ProjectRequestDto": {
+    "properties": {
+      "coverImage": {
+        "example": "/images/portfolio.webp",
+        "type": "string",
+      },
+      "gallery": {
+        "example": [
+          "/images/portfolio-1.webp",
+          "/images/portfolio-2.webp",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "liveUrl": {
+        "example": "https://example.com",
+        "type": "string",
+      },
+      "order": {
+        "example": 0,
+        "maximum": 10000,
+        "minimum": 0,
+        "type": "number",
+      },
+      "repoUrl": {
+        "example": "https://github.com/acme/portfolio",
+        "type": "string",
+      },
+      "slug": {
+        "example": "portfolio-site",
+        "type": "string",
+      },
+      "stack": {
+        "example": [
+          "nestjs",
+          "postgres",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "status": {
+        "enum": [
+          "DRAFT",
+          "PUBLISHED",
+          "ARCHIVED",
+        ],
+        "example": "PUBLISHED",
+        "type": "string",
+      },
+      "type": {
+        "enum": [
+          "CLIENT",
+          "SIDE",
+        ],
+        "example": "SIDE",
+        "type": "string",
+      },
+    },
+    "required": [
+      "slug",
+    ],
+    "type": "object",
+  },
+  "ProjectResponseDto": {
+    "properties": {
+      "coverImage": {
+        "example": "/images/portfolio.webp",
+        "type": "string",
+      },
+      "gallery": {
+        "example": [
+          "/images/portfolio-1.webp",
+          "/images/portfolio-2.webp",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "id": {
+        "example": "5de888ea-7f7f-4700-82a8-d5ce3fb4a4da",
+        "type": "string",
+      },
+      "liveUrl": {
+        "example": "https://example.com",
+        "type": "string",
+      },
+      "order": {
+        "example": 0,
+        "type": "number",
+      },
+      "repoUrl": {
+        "example": "https://github.com/acme/portfolio",
+        "type": "string",
+      },
+      "slug": {
+        "example": "portfolio-site",
+        "type": "string",
+      },
+      "stack": {
+        "example": [
+          "nestjs",
+          "postgres",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "status": {
+        "enum": [
+          "DRAFT",
+          "PUBLISHED",
+          "ARCHIVED",
+        ],
+        "example": "PUBLISHED",
+        "type": "string",
+      },
+      "type": {
+        "enum": [
+          "CLIENT",
+          "SIDE",
+        ],
+        "example": "SIDE",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "slug",
+      "type",
+      "gallery",
+      "stack",
+      "status",
+      "order",
+    ],
+    "type": "object",
+  },
+  "RedirectListResponseDto": {
+    "properties": {
+      "items": {
+        "items": {
+          "$ref": "#/components/schemas/RedirectResponseDto",
+        },
+        "type": "array",
+      },
+      "meta": {
+        "$ref": "#/components/schemas/PaginationMetaResponseDto",
+      },
+    },
+    "required": [
+      "items",
+      "meta",
+    ],
+    "type": "object",
+  },
+  "RedirectRequestDto": {
+    "properties": {
+      "clicks": {
+        "example": 0,
+        "maximum": 1000000000,
+        "minimum": 0,
+        "type": "number",
+      },
+      "enabled": {
+        "default": true,
+        "example": true,
+        "type": "boolean",
+      },
+      "slug": {
+        "example": "promo-offer",
+        "type": "string",
+      },
+      "targetUrl": {
+        "example": "https://example.com/promo",
+        "type": "string",
+      },
+    },
+    "required": [
+      "slug",
+      "targetUrl",
+    ],
+    "type": "object",
+  },
+  "RedirectResponseDto": {
+    "properties": {
+      "clicks": {
+        "example": 0,
+        "type": "number",
+      },
+      "enabled": {
+        "example": true,
+        "type": "boolean",
+      },
+      "id": {
+        "example": "385c6819-136b-4f66-a2d7-1fd68ff6318e",
+        "type": "string",
+      },
+      "slug": {
+        "example": "promo-offer",
+        "type": "string",
+      },
+      "targetUrl": {
+        "example": "https://example.com/promo",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "slug",
+      "targetUrl",
+      "enabled",
+      "clicks",
+    ],
+    "type": "object",
+  },
+  "ServiceListResponseDto": {
+    "properties": {
+      "items": {
+        "items": {
+          "$ref": "#/components/schemas/ServiceResponseDto",
+        },
+        "type": "array",
+      },
+      "meta": {
+        "$ref": "#/components/schemas/PaginationMetaResponseDto",
+      },
+    },
+    "required": [
+      "items",
+      "meta",
+    ],
+    "type": "object",
+  },
+  "ServiceRequestDto": {
+    "properties": {
+      "icon": {
+        "example": "/icons/seo.svg",
+        "type": "string",
+      },
+      "name": {
+        "example": "Technical SEO",
+        "type": "string",
+      },
+      "order": {
+        "example": 0,
+        "maximum": 10000,
+        "minimum": 0,
+        "type": "number",
+      },
+      "slug": {
+        "example": "technical-seo",
+        "type": "string",
+      },
+      "status": {
+        "enum": [
+          "DRAFT",
+          "PUBLISHED",
+          "ARCHIVED",
+        ],
+        "example": "PUBLISHED",
+        "type": "string",
+      },
+    },
+    "required": [
+      "slug",
+      "name",
+    ],
+    "type": "object",
+  },
+  "ServiceResponseDto": {
+    "properties": {
+      "icon": {
+        "example": "/icons/seo.svg",
+        "type": "string",
+      },
+      "id": {
+        "example": "e0c9dcbf-8de6-4e2c-a2fb-fd899f26976e",
+        "type": "string",
+      },
+      "name": {
+        "example": "Technical SEO",
+        "type": "string",
+      },
+      "order": {
+        "example": 0,
+        "type": "number",
+      },
+      "slug": {
+        "example": "technical-seo",
+        "type": "string",
+      },
+      "status": {
+        "enum": [
+          "DRAFT",
+          "PUBLISHED",
+          "ARCHIVED",
+        ],
+        "example": "PUBLISHED",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "slug",
+      "name",
+      "status",
+      "order",
+    ],
+    "type": "object",
+  },
+}
+`;
+
+exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1`] = `
+{
+  "courses": {
+    "get": {
+      "operationId": "CoursesController_findAll",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "page",
+          "required": false,
+          "schema": {
+            "default": 1,
+            "example": 1,
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "default": 20,
+            "example": 20,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "enum": [
+              "ASC",
+              "DESC",
+            ],
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "sortBy",
+          "required": false,
+          "schema": {
+            "enum": [
+              "slug",
+              "title",
+              "createdAt",
+            ],
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseListResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "tags": [
+        "Courses",
+      ],
+    },
+    "post": {
+      "operationId": "CoursesController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CourseRequestDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "tags": [
+        "Courses",
+      ],
+    },
+  },
+  "projects": {
+    "get": {
+      "operationId": "ProjectsController_findAll",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "page",
+          "required": false,
+          "schema": {
+            "default": 1,
+            "example": 1,
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "default": 20,
+            "example": 20,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "enum": [
+              "ASC",
+              "DESC",
+            ],
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "sortBy",
+          "required": false,
+          "schema": {
+            "enum": [
+              "order",
+              "slug",
+              "type",
+              "createdAt",
+            ],
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "type",
+          "required": false,
+          "schema": {
+            "enum": [
+              "CLIENT",
+              "SIDE",
+            ],
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "status",
+          "required": false,
+          "schema": {
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED",
+            ],
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectListResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "tags": [
+        "Projects",
+      ],
+    },
+    "post": {
+      "operationId": "ProjectsController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProjectRequestDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "tags": [
+        "Projects",
+      ],
+    },
+  },
+  "redirects": {
+    "get": {
+      "operationId": "RedirectsController_findAll",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "page",
+          "required": false,
+          "schema": {
+            "default": 1,
+            "example": 1,
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "default": 20,
+            "example": 20,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "enum": [
+              "ASC",
+              "DESC",
+            ],
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "sortBy",
+          "required": false,
+          "schema": {
+            "enum": [
+              "slug",
+              "clicks",
+              "createdAt",
+            ],
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "enabled",
+          "required": false,
+          "schema": {
+            "example": true,
+            "type": "boolean",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedirectListResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "tags": [
+        "Redirects",
+      ],
+    },
+    "post": {
+      "operationId": "RedirectsController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RedirectRequestDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedirectResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "tags": [
+        "Redirects",
+      ],
+    },
+  },
+  "services": {
+    "get": {
+      "operationId": "ServicesController_findAll",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "page",
+          "required": false,
+          "schema": {
+            "default": 1,
+            "example": 1,
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "default": 20,
+            "example": 20,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "enum": [
+              "ASC",
+              "DESC",
+            ],
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "sortBy",
+          "required": false,
+          "schema": {
+            "enum": [
+              "order",
+              "slug",
+              "name",
+              "createdAt",
+            ],
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "status",
+          "required": false,
+          "schema": {
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED",
+            ],
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceListResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "tags": [
+        "Services",
+      ],
+    },
+    "post": {
+      "operationId": "ServicesController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServiceRequestDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "tags": [
+        "Services",
+      ],
+    },
+  },
+}
+`;

@@ -1,4 +1,4 @@
-import { PublishStatus } from 'src/modules/projects/infrastructure/enums/PublishStatus.enum';
+import { PublishStatus } from '../../../projects/infrastructure/enums/PublishStatus.enum';
 import {
   Column,
   CreateDateColumn,
@@ -10,6 +10,7 @@ import {
 import { ServicesFaqEntity } from './ServicesFaq.entity';
 import { ServicesTranslationEntity } from './ServicesTranslation.entity';
 
+@Index('IDX_services_status_order', ['status', 'order'])
 @Entity({ name: 'services' })
 export class ServicesEntity {
   @PrimaryGeneratedColumn('uuid')
