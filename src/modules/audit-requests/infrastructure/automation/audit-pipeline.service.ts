@@ -87,6 +87,13 @@ export class AuditPipelineService {
       );
       const homepage = this.homepageAnalyzer.analyze(homepageResponse);
       const fastScoring = this.scoring.compute(homepage, [], [], locale);
+      const technicalKeyChecks = {
+        ...fastScoring.keyChecks,
+        firstRender: {
+          ready: false,
+          strategy: 'final_only',
+        },
+      };
 
       await this.repo.updateState(auditId, {
         progress: 20,
@@ -95,13 +102,7 @@ export class AuditPipelineService {
         redirectChain: homepage.redirectChain,
         quickWins: fastScoring.quickWins.slice(0, 3),
         pillarScores: fastScoring.pillarScores,
-        keyChecks: {
-          ...fastScoring.keyChecks,
-          firstRender: {
-            ready: false,
-            strategy: 'final_only',
-          },
-        },
+        keyChecks: technicalKeyChecks,
       });
 
       await this.repo.updateState(auditId, {
@@ -126,50 +127,12 @@ export class AuditPipelineService {
         this.config.pageAnalyzeLimit,
       );
 
-      let technicalWriteQueue = Promise.resolve();
-      let lastTechnicalDone = 0;
-      const recentTechnicalUrls: string[] = [];
-      const enqueueTechnicalUpdate = (
-        done: number,
-        total: number,
-        currentUrl: string,
-      ): Promise<void> => {
-        technicalWriteQueue = technicalWriteQueue.then(async () => {
-          if (done <= lastTechnicalDone) return;
-          lastTechnicalDone = done;
-          this.pushRecentUrl(recentTechnicalUrls, currentUrl, 5);
-          await this.repo.updateState(auditId, {
-            progress: this.interpolateProgress(done, total, 20, 60),
-            step: t.steps.pagesTechnical(done, total),
-            keyChecks: {
-              ...fastScoring.keyChecks,
-              firstRender: {
-                ready: false,
-                strategy: 'final_only',
-              },
-              progressDetails: {
-                phase: 'technical_pages',
-                iaTask: 'technical_scan',
-                iaSubTask: 'headers_indexability_signals',
-                done,
-                total,
-                currentUrl,
-                recentCompletedUrls: [...recentTechnicalUrls],
-              },
-            },
-          });
-        });
-        return technicalWriteQueue;
-      };
-
-      const pageSnapshots = await this.urlIndexability.analyzeUrls(
-        selectedUrls,
-        {
-          onUrlAnalyzed: async (result, done, total) =>
-            enqueueTechnicalUpdate(done, total, result.url),
-        },
-      );
-      await technicalWriteQueue;
+      const pageSnapshots = await this.analyzeTechnicalPagesPhase({
+        auditId,
+        urls: selectedUrls,
+        baseKeyChecks: technicalKeyChecks,
+        stepForProgress: t.steps.pagesTechnical,
+      });
 
       const deepUrlAnalysis = this.deepUrlAnalysis.analyze(
         pageSnapshots,
@@ -192,53 +155,20 @@ export class AuditPipelineService {
         step: t.steps.pageAiAnalysis(0, pageSnapshots.length),
       });
 
-      let aiWriteQueue = Promise.resolve();
-      let lastAiDone = 0;
-      const recentAiCompletedUrls: string[] = [];
-      const enqueueAiUpdate = (
-        done: number,
-        total: number,
-        recap: PageAiRecap,
-      ): Promise<void> => {
-        aiWriteQueue = aiWriteQueue.then(async () => {
-          if (done <= lastAiDone) return;
-          lastAiDone = done;
-          this.pushRecentUrl(recentAiCompletedUrls, recap.url, 5);
-          await this.repo.updateState(auditId, {
-            progress: this.interpolateProgress(done, total, 60, 85),
-            step: t.steps.pageAiAnalysis(done, total),
-            keyChecks: {
-              ...scoring.keyChecks,
-              deepUrlAnalysis: deepUrlAnalysis.metrics,
-              techFingerprint,
-              progressDetails: {
-                phase: 'page_ai_recaps',
-                iaTask: 'page_ai_recap',
-                iaSubTask: 'conversion_seo_micro_audit',
-                done,
-                total,
-                currentUrl: recap.url,
-                recentCompletedUrls: [...recentAiCompletedUrls],
-              },
-            },
-          });
-        });
-        return aiWriteQueue;
+      const analysisKeyChecksBase = {
+        ...scoring.keyChecks,
+        deepUrlAnalysis: deepUrlAnalysis.metrics,
+        techFingerprint,
       };
-
-      const pageAi = await this.pageAiRecap.analyzePages(
-        {
-          locale,
-          websiteName: audit.websiteName,
-          normalizedUrl: normalized.normalizedUrl,
-          pages: pageSnapshots,
-        },
-        {
-          onRecapReady: async (recap, done, total) =>
-            enqueueAiUpdate(done, total, recap),
-        },
-      );
-      await aiWriteQueue;
+      const pageAi = await this.analyzePageAiPhase({
+        auditId,
+        locale,
+        websiteName: audit.websiteName,
+        normalizedUrl: normalized.normalizedUrl,
+        pages: pageSnapshots,
+        baseKeyChecks: analysisKeyChecksBase,
+        stepForProgress: t.steps.pageAiAnalysis,
+      });
 
       const fullQuickWins = this.mergeQuickWins(
         [
@@ -248,21 +178,27 @@ export class AuditPipelineService {
         ],
         12,
       );
+      const crawlCoverage = {
+        sitemapUrls: sitemapResult.urls.length,
+        internalLinks: homepage.internalLinks.length,
+        candidateUrls: candidateUrls.length,
+        selectedUrls: selectedUrls.length,
+        analyzedUrls: pageSnapshots.length,
+      };
+      const synthesisProgressKeyChecksBase = {
+        ...analysisKeyChecksBase,
+        crawlCoverage,
+      };
+      const llmKeyChecks = {
+        ...analysisKeyChecksBase,
+        pageAiSummary: pageAi.summary,
+      };
 
       await this.repo.updateState(auditId, {
         progress: 85,
         step: t.steps.summaryGeneration,
         keyChecks: {
-          ...scoring.keyChecks,
-          deepUrlAnalysis: deepUrlAnalysis.metrics,
-          techFingerprint,
-          crawlCoverage: {
-            sitemapUrls: sitemapResult.urls.length,
-            internalLinks: homepage.internalLinks.length,
-            candidateUrls: candidateUrls.length,
-            selectedUrls: selectedUrls.length,
-            analyzedUrls: pageSnapshots.length,
-          },
+          ...synthesisProgressKeyChecksBase,
           progressDetails: {
             phase: 'synthesis',
             iaTask: 'synthesis',
@@ -275,120 +211,22 @@ export class AuditPipelineService {
         pillarScores: scoring.pillarScores,
       });
 
-      const synthesisSections = [
-        'summary',
-        'executiveSection',
-        'prioritySection',
-        'executionSection',
-        'clientCommsSection',
-      ] as const;
-      const synthesisStatus = new Map<string, string>();
-      let synthesisWriteQueue = Promise.resolve();
-      const enqueueSynthesisUpdate = (
-        progressEvent: LlmSynthesisProgressEvent,
-      ): Promise<void> => {
-        synthesisWriteQueue = synthesisWriteQueue.then(async () => {
-          if (progressEvent.section && progressEvent.sectionStatus) {
-            synthesisStatus.set(
-              progressEvent.section,
-              progressEvent.sectionStatus,
-            );
-          }
-          const done = synthesisSections.filter((section) => {
-            const status = synthesisStatus.get(section);
-            return (
-              status === 'completed' ||
-              status === 'failed' ||
-              status === 'fallback'
-            );
-          }).length;
-          await this.repo.updateState(auditId, {
-            progress: this.interpolateProgress(
-              done,
-              synthesisSections.length,
-              85,
-              95,
-            ),
-            step: t.steps.summaryGeneration,
-            keyChecks: {
-              ...scoring.keyChecks,
-              deepUrlAnalysis: deepUrlAnalysis.metrics,
-              techFingerprint,
-              crawlCoverage: {
-                sitemapUrls: sitemapResult.urls.length,
-                internalLinks: homepage.internalLinks.length,
-                candidateUrls: candidateUrls.length,
-                selectedUrls: selectedUrls.length,
-                analyzedUrls: pageSnapshots.length,
-              },
-              progressDetails: {
-                phase: 'synthesis',
-                iaTask: 'synthesis',
-                iaSubTask: progressEvent.iaSubTask,
-                done,
-                total: synthesisSections.length,
-                section: progressEvent.section,
-                sectionStatus: progressEvent.sectionStatus,
-                sectionStatuses: Object.fromEntries(synthesisStatus.entries()),
-              },
-            },
-          });
-        });
-        return synthesisWriteQueue;
-      };
-
-      const llmOutput = await this.llmReport.generate(
-        {
-          auditId,
-          locale,
-          websiteName: audit.websiteName,
-          normalizedUrl: normalized.normalizedUrl,
-          keyChecks: {
-            ...scoring.keyChecks,
-            deepUrlAnalysis: deepUrlAnalysis.metrics,
-            pageAiSummary: pageAi.summary,
-            techFingerprint,
-          },
-          quickWins: fullQuickWins,
-          pillarScores: scoring.pillarScores,
-          deepFindings: deepUrlAnalysis.findings,
-          sampledUrls: pageSnapshots.map((entry) => ({
-            url: entry.url,
-            statusCode: entry.statusCode,
-            indexable: entry.indexable,
-            canonical: entry.canonical,
-            title: entry.title,
-            metaDescription: entry.metaDescription,
-            h1Count: entry.h1Count,
-            htmlLang: entry.htmlLang,
-            canonicalCount: entry.canonicalCount,
-            responseTimeMs: entry.responseTimeMs,
-            server: entry.server,
-            xPoweredBy: entry.xPoweredBy,
-            setCookiePatterns: entry.setCookiePatterns ?? [],
-            cacheHeaders: entry.cacheHeaders ?? {},
-            securityHeaders: entry.securityHeaders ?? {},
-            error: entry.error,
-          })),
-          pageRecaps: pageAi.recaps.map((recap) => ({
-            url: recap.url,
-            priority: recap.priority,
-            wordingScore: recap.wordingScore,
-            trustScore: recap.trustScore,
-            ctaScore: recap.ctaScore,
-            seoCopyScore: recap.seoCopyScore,
-            topIssues: recap.topIssues,
-            recommendations: recap.recommendations,
-            source: recap.source,
-          })),
-          pageSummary: pageAi.summary as unknown as Record<string, unknown>,
-          techFingerprint,
-        },
-        {
-          onProgress: (event) => enqueueSynthesisUpdate(event),
-        },
-      );
-      await synthesisWriteQueue;
+      const llmOutput = await this.generateSynthesisPhase({
+        auditId,
+        locale,
+        websiteName: audit.websiteName,
+        normalizedUrl: normalized.normalizedUrl,
+        quickWins: fullQuickWins,
+        pillarScores: scoring.pillarScores,
+        deepFindings: deepUrlAnalysis.findings,
+        pageSnapshots,
+        pageRecaps: pageAi.recaps,
+        pageSummary: pageAi.summary,
+        techFingerprint,
+        llmKeyChecks,
+        progressKeyChecksBase: synthesisProgressKeyChecksBase,
+        progressStep: t.steps.summaryGeneration,
+      });
 
       await this.repo.updateState(auditId, {
         progress: 95,
@@ -451,6 +289,225 @@ export class AuditPipelineService {
         finishedAt: new Date(),
       });
     }
+  }
+
+  private async analyzeTechnicalPagesPhase(input: {
+    auditId: string;
+    urls: string[];
+    baseKeyChecks: Record<string, unknown>;
+    stepForProgress: (done: number, total: number) => string;
+  }): Promise<UrlIndexabilityResult[]> {
+    let writeQueue = Promise.resolve();
+    let lastDone = 0;
+    const recentCompletedUrls: string[] = [];
+    const enqueueUpdate = (
+      done: number,
+      total: number,
+      currentUrl: string,
+    ): Promise<void> => {
+      writeQueue = writeQueue.then(async () => {
+        if (done <= lastDone) return;
+        lastDone = done;
+        this.pushRecentUrl(recentCompletedUrls, currentUrl, 5);
+        await this.repo.updateState(input.auditId, {
+          progress: this.interpolateProgress(done, total, 20, 60),
+          step: input.stepForProgress(done, total),
+          keyChecks: {
+            ...input.baseKeyChecks,
+            progressDetails: {
+              phase: 'technical_pages',
+              iaTask: 'technical_scan',
+              iaSubTask: 'headers_indexability_signals',
+              done,
+              total,
+              currentUrl,
+              recentCompletedUrls: [...recentCompletedUrls],
+            },
+          },
+        });
+      });
+      return writeQueue;
+    };
+
+    const pageSnapshots = await this.urlIndexability.analyzeUrls(input.urls, {
+      onUrlAnalyzed: async (result, done, total) =>
+        enqueueUpdate(done, total, result.url),
+    });
+    await writeQueue;
+    return pageSnapshots;
+  }
+
+  private async analyzePageAiPhase(input: {
+    auditId: string;
+    locale: AuditLocale;
+    websiteName: string;
+    normalizedUrl: string;
+    pages: UrlIndexabilityResult[];
+    baseKeyChecks: Record<string, unknown>;
+    stepForProgress: (done: number, total: number) => string;
+  }): Promise<{
+    recaps: PageAiRecap[];
+    summary: PageAiRecapSummary;
+    warnings: string[];
+  }> {
+    let writeQueue = Promise.resolve();
+    let lastDone = 0;
+    const recentCompletedUrls: string[] = [];
+    const enqueueUpdate = (
+      done: number,
+      total: number,
+      recap: PageAiRecap,
+    ): Promise<void> => {
+      writeQueue = writeQueue.then(async () => {
+        if (done <= lastDone) return;
+        lastDone = done;
+        this.pushRecentUrl(recentCompletedUrls, recap.url, 5);
+        await this.repo.updateState(input.auditId, {
+          progress: this.interpolateProgress(done, total, 60, 85),
+          step: input.stepForProgress(done, total),
+          keyChecks: {
+            ...input.baseKeyChecks,
+            progressDetails: {
+              phase: 'page_ai_recaps',
+              iaTask: 'page_ai_recap',
+              iaSubTask: 'conversion_seo_micro_audit',
+              done,
+              total,
+              currentUrl: recap.url,
+              recentCompletedUrls: [...recentCompletedUrls],
+            },
+          },
+        });
+      });
+      return writeQueue;
+    };
+
+    const pageAi = await this.pageAiRecap.analyzePages(
+      {
+        locale: input.locale,
+        websiteName: input.websiteName,
+        normalizedUrl: input.normalizedUrl,
+        pages: input.pages,
+      },
+      {
+        onRecapReady: async (recap, done, total) =>
+          enqueueUpdate(done, total, recap),
+      },
+    );
+    await writeQueue;
+    return pageAi;
+  }
+
+  private async generateSynthesisPhase(input: {
+    auditId: string;
+    locale: AuditLocale;
+    websiteName: string;
+    normalizedUrl: string;
+    quickWins: string[];
+    pillarScores: Record<string, number>;
+    deepFindings: DeepUrlAnalysisResult['findings'];
+    pageSnapshots: UrlIndexabilityResult[];
+    pageRecaps: PageAiRecap[];
+    pageSummary: PageAiRecapSummary;
+    techFingerprint: TechFingerprint;
+    llmKeyChecks: Record<string, unknown>;
+    progressKeyChecksBase: Record<string, unknown>;
+    progressStep: string;
+  }): Promise<LangchainAuditOutput> {
+    const synthesisSections = [
+      'summary',
+      'executiveSection',
+      'prioritySection',
+      'executionSection',
+      'clientCommsSection',
+    ] as const;
+    const synthesisStatus = new Map<string, string>();
+    let writeQueue = Promise.resolve();
+    const enqueueUpdate = (
+      progressEvent: LlmSynthesisProgressEvent,
+    ): Promise<void> => {
+      writeQueue = writeQueue.then(async () => {
+        if (progressEvent.section && progressEvent.sectionStatus) {
+          synthesisStatus.set(progressEvent.section, progressEvent.sectionStatus);
+        }
+        const done = synthesisSections.filter((section) => {
+          const status = synthesisStatus.get(section);
+          return (
+            status === 'completed' ||
+            status === 'failed' ||
+            status === 'fallback'
+          );
+        }).length;
+        await this.repo.updateState(input.auditId, {
+          progress: this.interpolateProgress(done, synthesisSections.length, 85, 95),
+          step: input.progressStep,
+          keyChecks: {
+            ...input.progressKeyChecksBase,
+            progressDetails: {
+              phase: 'synthesis',
+              iaTask: 'synthesis',
+              iaSubTask: progressEvent.iaSubTask,
+              done,
+              total: synthesisSections.length,
+              section: progressEvent.section,
+              sectionStatus: progressEvent.sectionStatus,
+              sectionStatuses: Object.fromEntries(synthesisStatus.entries()),
+            },
+          },
+        });
+      });
+      return writeQueue;
+    };
+
+    const llmOutput = await this.llmReport.generate(
+      {
+        auditId: input.auditId,
+        locale: input.locale,
+        websiteName: input.websiteName,
+        normalizedUrl: input.normalizedUrl,
+        keyChecks: input.llmKeyChecks,
+        quickWins: input.quickWins,
+        pillarScores: input.pillarScores,
+        deepFindings: input.deepFindings,
+        sampledUrls: input.pageSnapshots.map((entry) => ({
+          url: entry.url,
+          statusCode: entry.statusCode,
+          indexable: entry.indexable,
+          canonical: entry.canonical,
+          title: entry.title,
+          metaDescription: entry.metaDescription,
+          h1Count: entry.h1Count,
+          htmlLang: entry.htmlLang,
+          canonicalCount: entry.canonicalCount,
+          responseTimeMs: entry.responseTimeMs,
+          server: entry.server,
+          xPoweredBy: entry.xPoweredBy,
+          setCookiePatterns: entry.setCookiePatterns ?? [],
+          cacheHeaders: entry.cacheHeaders ?? {},
+          securityHeaders: entry.securityHeaders ?? {},
+          error: entry.error,
+        })),
+        pageRecaps: input.pageRecaps.map((recap) => ({
+          url: recap.url,
+          priority: recap.priority,
+          wordingScore: recap.wordingScore,
+          trustScore: recap.trustScore,
+          ctaScore: recap.ctaScore,
+          seoCopyScore: recap.seoCopyScore,
+          topIssues: recap.topIssues,
+          recommendations: recap.recommendations,
+          source: recap.source,
+        })),
+        pageSummary: input.pageSummary as unknown as Record<string, unknown>,
+        techFingerprint: input.techFingerprint,
+      },
+      {
+        onProgress: (event) => enqueueUpdate(event),
+      },
+    );
+
+    await writeQueue;
+    return llmOutput;
   }
 
   private selectUrlsForLocale(

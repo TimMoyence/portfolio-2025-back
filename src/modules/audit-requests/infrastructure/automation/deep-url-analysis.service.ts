@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
+import { localizedText } from './shared/locale-text.util';
+import { severityRank } from './shared/severity.util';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 export type FindingSeverity = 'high' | 'medium' | 'low';
@@ -236,8 +238,8 @@ export class DeepUrlAnalysisService {
       findings,
       missingTitle > 0,
       'missing_title',
-      this.message(locale, 'Balises title manquantes', 'Missing title tags'),
-      this.message(
+      localizedText(locale, 'Balises title manquantes', 'Missing title tags'),
+      localizedText(
         locale,
         `${missingTitle} URL(s) sans balise title.`,
         `${missingTitle} URL(s) are missing a title tag.`,
@@ -246,7 +248,7 @@ export class DeepUrlAnalysisService {
       0.92,
       'traffic',
       urls.filter((entry) => !entry.title).map((entry) => entry.url),
-      this.message(
+      localizedText(
         locale,
         'Ajouter un title unique et orienté intention de recherche sur chaque page.',
         'Add a unique title aligned with search intent on every page.',
@@ -257,12 +259,12 @@ export class DeepUrlAnalysisService {
       findings,
       missingMeta > 0,
       'missing_meta_description',
-      this.message(
+      localizedText(
         locale,
         'Meta descriptions manquantes',
         'Missing meta descriptions',
       ),
-      this.message(
+      localizedText(
         locale,
         `${missingMeta} URL(s) sans meta description.`,
         `${missingMeta} URL(s) are missing a meta description.`,
@@ -273,7 +275,7 @@ export class DeepUrlAnalysisService {
       urls
         .filter((entry) => !(entry.metaDescription ?? '').trim())
         .map((entry) => entry.url),
-      this.message(
+      localizedText(
         locale,
         'Rediger une meta description unique (80-170 caracteres) pour chaque page strategique.',
         'Write a unique meta description (80-170 characters) for every strategic page.',
@@ -284,8 +286,8 @@ export class DeepUrlAnalysisService {
       findings,
       duplicateTitles.length > 0,
       'duplicate_titles',
-      this.message(locale, 'Titles dupliques', 'Duplicate titles'),
-      this.message(
+      localizedText(locale, 'Titles dupliques', 'Duplicate titles'),
+      localizedText(
         locale,
         `${duplicateTitles.length} groupe(s) de titles dupliques detectes.`,
         `${duplicateTitles.length} duplicate title group(s) detected.`,
@@ -294,7 +296,7 @@ export class DeepUrlAnalysisService {
       0.86,
       'indexation',
       duplicateTitles.flatMap((group) => group.urls),
-      this.message(
+      localizedText(
         locale,
         'Rendre chaque title unique pour eviter la cannibalisation SEO.',
         'Make each title unique to avoid SEO cannibalization.',
@@ -305,12 +307,12 @@ export class DeepUrlAnalysisService {
       findings,
       duplicateMetas.length > 0,
       'duplicate_meta_descriptions',
-      this.message(
+      localizedText(
         locale,
         'Meta descriptions dupliquees',
         'Duplicate meta descriptions',
       ),
-      this.message(
+      localizedText(
         locale,
         `${duplicateMetas.length} groupe(s) de meta descriptions dupliquees detectes.`,
         `${duplicateMetas.length} duplicate meta description group(s) detected.`,
@@ -319,7 +321,7 @@ export class DeepUrlAnalysisService {
       0.82,
       'traffic',
       duplicateMetas.flatMap((group) => group.urls),
-      this.message(
+      localizedText(
         locale,
         'Differencier les meta descriptions par page et intention utilisateur.',
         'Differentiate meta descriptions by page and user intent.',
@@ -330,12 +332,12 @@ export class DeepUrlAnalysisService {
       findings,
       badTitleLength > 0,
       'title_length_quality',
-      this.message(
+      localizedText(
         locale,
         'Qualite de longueur des titles',
         'Title length quality issues',
       ),
-      this.message(
+      localizedText(
         locale,
         `${badTitleLength} URL(s) ont un title trop court ou trop long.`,
         `${badTitleLength} URL(s) have a title that is too short or too long.`,
@@ -349,7 +351,7 @@ export class DeepUrlAnalysisService {
           return len > 0 && (len < 20 || len > 65);
         })
         .map((entry) => entry.url),
-      this.message(
+      localizedText(
         locale,
         'Ajuster les titles entre 20 et 65 caracteres avec mot-cle principal.',
         'Adjust titles to 20-65 characters with the primary keyword.',
@@ -360,12 +362,12 @@ export class DeepUrlAnalysisService {
       findings,
       badMetaLength > 0,
       'meta_length_quality',
-      this.message(
+      localizedText(
         locale,
         'Qualite de longueur des meta descriptions',
         'Meta description length quality issues',
       ),
-      this.message(
+      localizedText(
         locale,
         `${badMetaLength} URL(s) ont une meta description hors plage recommandee.`,
         `${badMetaLength} URL(s) have a meta description outside the recommended range.`,
@@ -379,7 +381,7 @@ export class DeepUrlAnalysisService {
           return len > 0 && (len < 80 || len > 170);
         })
         .map((entry) => entry.url),
-      this.message(
+      localizedText(
         locale,
         'Ajuster les metas entre 80 et 170 caracteres avec une proposition de valeur claire.',
         'Adjust meta descriptions to 80-170 characters with a clear value proposition.',
@@ -390,8 +392,8 @@ export class DeepUrlAnalysisService {
       findings,
       badH1Count > 0,
       'h1_structure',
-      this.message(locale, 'Structure H1 non conforme', 'H1 structure issues'),
-      this.message(
+      localizedText(locale, 'Structure H1 non conforme', 'H1 structure issues'),
+      localizedText(
         locale,
         `${badH1Count} URL(s) n'ont pas exactement un H1.`,
         `${badH1Count} URL(s) do not have exactly one H1.`,
@@ -402,7 +404,7 @@ export class DeepUrlAnalysisService {
       urls
         .filter((entry) => (entry.h1Count ?? 1) !== 1)
         .map((entry) => entry.url),
-      this.message(
+      localizedText(
         locale,
         'Conserver un seul H1 descriptif par page.',
         'Keep one descriptive H1 per page.',
@@ -413,8 +415,8 @@ export class DeepUrlAnalysisService {
       findings,
       missingLang > 0,
       'missing_lang',
-      this.message(locale, 'Attribut lang manquant', 'Missing lang attribute'),
-      this.message(
+      localizedText(locale, 'Attribut lang manquant', 'Missing lang attribute'),
+      localizedText(
         locale,
         `${missingLang} URL(s) sans attribut lang explicite.`,
         `${missingLang} URL(s) are missing an explicit lang attribute.`,
@@ -423,7 +425,7 @@ export class DeepUrlAnalysisService {
       0.72,
       'conversion',
       urls.filter((entry) => !entry.htmlLang).map((entry) => entry.url),
-      this.message(
+      localizedText(
         locale,
         "Definir l'attribut lang pour ameliorer accessibilite, comprehension et ciblage.",
         'Set html lang to improve accessibility, relevance, and geo/language targeting.',
@@ -434,12 +436,12 @@ export class DeepUrlAnalysisService {
       findings,
       languageMismatch > 0,
       'language_mismatch',
-      this.message(
+      localizedText(
         locale,
         'Langue de page incoherente avec la locale cible',
         'Page language mismatch against selected locale',
       ),
-      this.message(
+      localizedText(
         locale,
         `${languageMismatch} URL(s) ont un html[lang] en conflit avec la locale cible.`,
         `${languageMismatch} URL(s) have html[lang] conflicting with selected locale.`,
@@ -448,7 +450,7 @@ export class DeepUrlAnalysisService {
       0.82,
       'traffic',
       languageMismatchUrls,
-      this.message(
+      localizedText(
         locale,
         "Aligner html[lang], templates et contenu avec la locale cible de l'audit.",
         'Align html[lang], templates, and content with the selected audit locale.',
@@ -459,12 +461,12 @@ export class DeepUrlAnalysisService {
       findings,
       canonicalIssues > 0,
       'canonical_consistency',
-      this.message(
+      localizedText(
         locale,
         'Canonicals manquantes ou incoherentes',
         'Missing or inconsistent canonical tags',
       ),
-      this.message(
+      localizedText(
         locale,
         `${canonicalIssues} URL(s) avec canonical absente ou multiple.`,
         `${canonicalIssues} URL(s) with missing or multiple canonical tags.`,
@@ -473,7 +475,7 @@ export class DeepUrlAnalysisService {
       0.87,
       'indexation',
       canonicalIssueUrls,
-      this.message(
+      localizedText(
         locale,
         "Assurer une canonical unique et coherente avec l'URL preferee.",
         'Ensure one canonical tag per page and align it with the preferred URL.',
@@ -484,12 +486,12 @@ export class DeepUrlAnalysisService {
       findings,
       canonicalSelfReferenceMismatch > 0,
       'canonical_self_reference_mismatch',
-      this.message(
+      localizedText(
         locale,
         'Canonical non auto-referente',
         'Canonical not self-referencing',
       ),
-      this.message(
+      localizedText(
         locale,
         `${canonicalSelfReferenceMismatch} URL(s) ont une canonical differente de l'URL finale.`,
         `${canonicalSelfReferenceMismatch} URL(s) have canonical URLs different from final URLs.`,
@@ -498,7 +500,7 @@ export class DeepUrlAnalysisService {
       0.84,
       'indexation',
       canonicalMismatchUrls,
-      this.message(
+      localizedText(
         locale,
         "Faire pointer la canonical vers l'URL canonique finale de la page.",
         'Point canonical to the page final canonical URL.',
@@ -509,8 +511,8 @@ export class DeepUrlAnalysisService {
       findings,
       noindexConflicts > 0,
       'noindex_conflicts',
-      this.message(locale, "Conflits d'indexabilite", 'Indexability conflicts'),
-      this.message(
+      localizedText(locale, "Conflits d'indexabilite", 'Indexability conflicts'),
+      localizedText(
         locale,
         `${noindexConflicts} URL(s) repondent correctement mais ne sont pas indexables.`,
         `${noindexConflicts} URL(s) return a valid response but are not indexable.`,
@@ -519,7 +521,7 @@ export class DeepUrlAnalysisService {
       0.9,
       'indexation',
       noindexUrls,
-      this.message(
+      localizedText(
         locale,
         'Supprimer les directives noindex non intentionnelles (meta/x-robots-tag).',
         'Remove unintended noindex directives (meta/x-robots-tag).',
@@ -530,8 +532,8 @@ export class DeepUrlAnalysisService {
       findings,
       errorUrls.length > 0,
       'http_errors',
-      this.message(locale, 'Erreurs HTTP detectees', 'Detected HTTP errors'),
-      this.message(
+      localizedText(locale, 'Erreurs HTTP detectees', 'Detected HTTP errors'),
+      localizedText(
         locale,
         `${errorUrls.length} URL(s) retournent une erreur ou sont inaccessibles.`,
         `${errorUrls.length} URL(s) return an error or are inaccessible.`,
@@ -540,7 +542,7 @@ export class DeepUrlAnalysisService {
       0.95,
       'traffic',
       errorUrls,
-      this.message(
+      localizedText(
         locale,
         'Corriger les pages en 4xx/5xx pour restaurer indexation et conversion.',
         'Fix 4xx/5xx pages to recover indexation and conversion.',
@@ -551,8 +553,8 @@ export class DeepUrlAnalysisService {
       findings,
       slowUrls.length > 0,
       'slow_pages',
-      this.message(locale, 'Temps de reponse eleve', 'High response times'),
-      this.message(
+      localizedText(locale, 'Temps de reponse eleve', 'High response times'),
+      localizedText(
         locale,
         `${slowUrls.length} URL(s) depassent ~2200ms de reponse.`,
         `${slowUrls.length} URL(s) exceed ~2200ms response time.`,
@@ -561,7 +563,7 @@ export class DeepUrlAnalysisService {
       0.76,
       'conversion',
       slowUrls,
-      this.message(
+      localizedText(
         locale,
         'Optimiser backend/caching/poids des pages pour accelerer le rendu.',
         'Optimize backend, caching, and page weight to improve render speed.',
@@ -572,8 +574,8 @@ export class DeepUrlAnalysisService {
       findings,
       thinContentUrls.length > 0,
       'thin_content',
-      this.message(locale, 'Contenu insuffisant', 'Thin content pages'),
-      this.message(
+      localizedText(locale, 'Contenu insuffisant', 'Thin content pages'),
+      localizedText(
         locale,
         `${thinContentUrls.length} URL(s) semblent trop pauvres en contenu editorial.`,
         `${thinContentUrls.length} URL(s) appear to have thin editorial content.`,
@@ -582,7 +584,7 @@ export class DeepUrlAnalysisService {
       0.68,
       'traffic',
       thinContentUrls,
-      this.message(
+      localizedText(
         locale,
         'Enrichir les pages (intention, preuves, FAQ, sections utiles) pour augmenter la profondeur semantique.',
         'Expand page content (intent coverage, proof points, FAQ, useful sections) to increase semantic depth.',
@@ -593,12 +595,12 @@ export class DeepUrlAnalysisService {
       findings,
       weakInternalLinkingUrls.length > 0,
       'weak_internal_linking',
-      this.message(
+      localizedText(
         locale,
         'Maillage interne insuffisant',
         'Weak internal linking',
       ),
-      this.message(
+      localizedText(
         locale,
         `${weakInternalLinkingUrls.length} URL(s) ont un maillage interne faible.`,
         `${weakInternalLinkingUrls.length} URL(s) have weak internal linking.`,
@@ -607,7 +609,7 @@ export class DeepUrlAnalysisService {
       0.69,
       'indexation',
       weakInternalLinkingUrls,
-      this.message(
+      localizedText(
         locale,
         'Ajouter des liens internes contextuels vers les pages business prioritaires.',
         'Add contextual internal links to priority business pages.',
@@ -618,12 +620,12 @@ export class DeepUrlAnalysisService {
       findings,
       urlPatternIssues > 0,
       'url_pattern_quality',
-      this.message(
+      localizedText(
         locale,
         "Qualite de structure d'URL a corriger",
         'URL pattern quality issues',
       ),
-      this.message(
+      localizedText(
         locale,
         `${urlPatternIssues} URL(s) contiennent des patterns peu SEO-friendly (query string, uppercase, underscore, slash multiples).`,
         `${urlPatternIssues} URL(s) contain non SEO-friendly patterns (query string, uppercase, underscore, multiple slashes).`,
@@ -632,7 +634,7 @@ export class DeepUrlAnalysisService {
       0.71,
       'traffic',
       urlPatternIssueUrls,
-      this.message(
+      localizedText(
         locale,
         'Standardiser les URLs en slug lisible, lowercase, sans paramètres inutiles.',
         'Standardize URLs to readable lowercase slugs without unnecessary parameters.',
@@ -643,12 +645,12 @@ export class DeepUrlAnalysisService {
       findings,
       templateDuplicatePatterns.length > 0,
       'template_duplicate_pattern',
-      this.message(
+      localizedText(
         locale,
         'Pattern template duplique detecte',
         'Duplicated template URL pattern detected',
       ),
-      this.message(
+      localizedText(
         locale,
         `${templateDuplicatePatterns.length} pattern(s) template presentent une repetition elevee.`,
         `${templateDuplicatePatterns.length} template pattern(s) show high duplication.`,
@@ -657,7 +659,7 @@ export class DeepUrlAnalysisService {
       0.66,
       'indexation',
       templateDuplicatePatterns.flatMap((entry) => entry.urls),
-      this.message(
+      localizedText(
         locale,
         'Consolider les templates similaires et renforcer la differenciation semantique.',
         'Consolidate similar templates and strengthen semantic differentiation.',
@@ -668,12 +670,12 @@ export class DeepUrlAnalysisService {
       findings,
       missingStructuredDataUrls.length > 0,
       'missing_structured_data',
-      this.message(
+      localizedText(
         locale,
         'Donnees structurees absentes',
         'Missing structured data',
       ),
-      this.message(
+      localizedText(
         locale,
         `${missingStructuredDataUrls.length} URL(s) sans schema.org exploitable.`,
         `${missingStructuredDataUrls.length} URL(s) are missing usable schema.org structured data.`,
@@ -682,7 +684,7 @@ export class DeepUrlAnalysisService {
       0.73,
       'conversion',
       missingStructuredDataUrls,
-      this.message(
+      localizedText(
         locale,
         'Ajouter des schemas adaptes (Organization, LocalBusiness, Product, FAQ, Breadcrumb).',
         'Implement relevant schemas (Organization, LocalBusiness, Product, FAQ, Breadcrumb).',
@@ -693,12 +695,12 @@ export class DeepUrlAnalysisService {
       findings,
       missingOpenGraphUrls.length > 0,
       'missing_open_graph',
-      this.message(
+      localizedText(
         locale,
         'Balises OpenGraph manquantes',
         'Missing OpenGraph tags',
       ),
-      this.message(
+      localizedText(
         locale,
         `${missingOpenGraphUrls.length} URL(s) sans metadonnees OpenGraph.`,
         `${missingOpenGraphUrls.length} URL(s) are missing OpenGraph metadata.`,
@@ -707,7 +709,7 @@ export class DeepUrlAnalysisService {
       0.67,
       'conversion',
       missingOpenGraphUrls,
-      this.message(
+      localizedText(
         locale,
         'Definir au minimum og:title, og:description et og:image sur les pages strategiques.',
         'Define at least og:title, og:description, and og:image on strategic pages.',
@@ -715,7 +717,7 @@ export class DeepUrlAnalysisService {
     );
 
     findings.sort(
-      (a, b) => this.severityRank(b.severity) - this.severityRank(a.severity),
+      (a, b) => severityRank(b.severity) - severityRank(a.severity),
     );
 
     return {
@@ -986,17 +988,6 @@ export class DeepUrlAnalysisService {
     return 'low';
   }
 
-  private severityRank(severity: FindingSeverity): number {
-    switch (severity) {
-      case 'high':
-        return 3;
-      case 'medium':
-        return 2;
-      default:
-        return 1;
-    }
-  }
-
   private isSelfReferencingCanonical(entry: UrlIndexabilityResult): boolean {
     if (!entry.canonical || !entry.finalUrl) return false;
     try {
@@ -1061,7 +1052,4 @@ export class DeepUrlAnalysisService {
     }
   }
 
-  private message(locale: AuditLocale, fr: string, en: string): string {
-    return locale === 'en' ? en : fr;
-  }
 }

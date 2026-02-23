@@ -1,6 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { load } from 'cheerio';
 import { SafeFetchResult } from './safe-fetch.service';
+import {
+  CACHE_HEADER_KEYS,
+  SECURITY_HEADER_KEYS,
+  detectCmsHints,
+  extractInternalLinks,
+  extractSetCookiePatterns,
+  pickHeaders,
+} from './shared/html-signals.util';
 
 export interface HomepageAuditSnapshot {
   finalUrl: string;
@@ -61,8 +69,8 @@ export class HomepageAnalyzerService {
       .filter((value): value is string => Boolean(value));
 
     const lowerHtml = html.toLowerCase();
-    const detectedCmsHints = this.detectCmsHints(lowerHtml);
-    const internalLinks = this.extractInternalLinks($, fetchResult.finalUrl);
+    const detectedCmsHints = detectCmsHints(lowerHtml);
+    const internalLinks = extractInternalLinks($, fetchResult.finalUrl);
 
     return {
       finalUrl: fetchResult.finalUrl,
@@ -74,30 +82,9 @@ export class HomepageAnalyzerService {
       contentLength: fetchResult.contentLength,
       server: fetchResult.headers['server'] ?? null,
       xPoweredBy: fetchResult.headers['x-powered-by'] ?? null,
-      setCookiePatterns: this.extractSetCookiePatterns(
-        fetchResult.headers['set-cookie'],
-      ),
-      cacheHeaders: this.pickHeaders(fetchResult.headers, [
-        'cache-control',
-        'cf-cache-status',
-        'x-cache',
-        'x-cache-hits',
-        'age',
-        'etag',
-        'expires',
-        'vary',
-      ]),
-      securityHeaders: this.pickHeaders(fetchResult.headers, [
-        'strict-transport-security',
-        'content-security-policy',
-        'x-frame-options',
-        'x-content-type-options',
-        'referrer-policy',
-        'permissions-policy',
-        'cross-origin-opener-policy',
-        'cross-origin-resource-policy',
-        'cross-origin-embedder-policy',
-      ]),
+      setCookiePatterns: extractSetCookiePatterns(fetchResult.headers['set-cookie']),
+      cacheHeaders: pickHeaders(fetchResult.headers, CACHE_HEADER_KEYS),
+      securityHeaders: pickHeaders(fetchResult.headers, SECURITY_HEADER_KEYS),
       title,
       metaDescription,
       robotsMeta,
@@ -123,84 +110,4 @@ export class HomepageAnalyzerService {
     };
   }
 
-  private detectCmsHints(html: string): string[] {
-    const hints = new Set<string>();
-    if (html.includes('wp-content') || html.includes('wordpress')) {
-      hints.add('WordPress');
-    }
-    if (html.includes('/_next/') || html.includes('next.js')) {
-      hints.add('Next.js');
-    }
-    if (html.includes('shopify')) {
-      hints.add('Shopify');
-    }
-    if (html.includes('wix')) {
-      hints.add('Wix');
-    }
-    if (html.includes('webflow')) {
-      hints.add('Webflow');
-    }
-    if (html.includes('drupal')) {
-      hints.add('Drupal');
-    }
-    if (html.includes('joomla')) {
-      hints.add('Joomla');
-    }
-    return Array.from(hints);
-  }
-
-  private extractInternalLinks(
-    $: ReturnType<typeof load>,
-    finalUrl: string,
-  ): string[] {
-    const origin = new URL(finalUrl).origin;
-    const links = new Set<string>();
-
-    for (const node of $('a[href]').toArray()) {
-      const href = $(node).attr('href')?.trim();
-      if (!href || href.startsWith('#')) continue;
-      if (href.startsWith('mailto:') || href.startsWith('tel:')) continue;
-
-      try {
-        const absolute = new URL(href, finalUrl);
-        if (!['http:', 'https:'].includes(absolute.protocol)) continue;
-        if (absolute.origin !== origin) continue;
-        absolute.hash = '';
-        links.add(absolute.toString());
-      } catch {
-        continue;
-      }
-    }
-
-    return Array.from(links).slice(0, 30);
-  }
-
-  private pickHeaders(
-    headers: Record<string, string>,
-    keys: string[],
-  ): Record<string, string> {
-    const picked: Record<string, string> = {};
-    for (const key of keys) {
-      const value = headers[key];
-      if (!value) continue;
-      picked[key] = value;
-    }
-    return picked;
-  }
-
-  private extractSetCookiePatterns(raw: string | undefined): string[] {
-    if (!raw) return [];
-    const matches: string[] = raw.match(/(?:^|,)\s*([^=;,\s]+)=/g) ?? [];
-    const names: string[] = [];
-    for (const chunk of matches) {
-      const normalized = chunk
-        .replace(/(?:^|,)\s*/, '')
-        .replace(/=$/, '')
-        .trim()
-        .toLowerCase();
-      if (!normalized) continue;
-      names.push(normalized);
-    }
-    return Array.from(new Set(names)).slice(0, 12);
-  }
 }

@@ -11,6 +11,8 @@ import {
   getSharedLlmInFlightLimiter,
   withHardTimeout,
 } from './llm-execution.guardrails';
+import { isTimeoutError } from './shared/error.util';
+import { localizedText } from './shared/locale-text.util';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 const pageRecapSchema = z.object({
@@ -279,7 +281,7 @@ export class PageAiRecapService {
         llmAttempted: true,
         llmFailed: true,
         warning:
-          error instanceof DeadlineExceededError || this.isTimeoutError(error)
+          error instanceof DeadlineExceededError || isTimeoutError(error)
             ? `Page AI timeout fallback for ${page.url}`
             : `Page AI failure fallback for ${page.url}: ${reason}`,
       };
@@ -333,10 +335,10 @@ export class PageAiRecapService {
     if (!(page.title ?? '').trim()) {
       seoCopy -= 18;
       topIssues.push(
-        this.text(locale, 'Balise title manquante', 'Missing title tag'),
+        localizedText(locale, 'Balise title manquante', 'Missing title tag'),
       );
       recommendations.push(
-        this.text(
+        localizedText(
           locale,
           'Definir un title unique oriente intention.',
           'Set a unique intent-aligned title.',
@@ -347,14 +349,14 @@ export class PageAiRecapService {
       wording -= 10;
       seoCopy -= 16;
       topIssues.push(
-        this.text(
+        localizedText(
           locale,
           'Meta description absente',
           'Missing meta description',
         ),
       );
       recommendations.push(
-        this.text(
+        localizedText(
           locale,
           'Ajouter une meta persuasive avec proposition de valeur.',
           'Add a persuasive meta description with value proposition.',
@@ -365,14 +367,14 @@ export class PageAiRecapService {
       wording -= 8;
       seoCopy -= 10;
       topIssues.push(
-        this.text(
+        localizedText(
           locale,
           'Structure H1 non conforme',
           'Incorrect H1 structure',
         ),
       );
       recommendations.push(
-        this.text(
+        localizedText(
           locale,
           'Conserver un seul H1 descriptif par page.',
           'Keep one descriptive H1 per page.',
@@ -383,10 +385,10 @@ export class PageAiRecapService {
       wording -= 12;
       seoCopy -= 8;
       topIssues.push(
-        this.text(locale, 'Contenu trop faible', 'Thin page content'),
+        localizedText(locale, 'Contenu trop faible', 'Thin page content'),
       );
       recommendations.push(
-        this.text(
+        localizedText(
           locale,
           'Renforcer le contenu pour couvrir l intention utilisateur.',
           'Expand the copy to fully cover user intent.',
@@ -396,14 +398,14 @@ export class PageAiRecapService {
     if (!page.hasForms || (page.ctaHints?.length ?? 0) === 0) {
       cta -= 14;
       topIssues.push(
-        this.text(
+        localizedText(
           locale,
           'CTA peu visible ou absent',
           'CTA visibility is weak or missing',
         ),
       );
       recommendations.push(
-        this.text(
+        localizedText(
           locale,
           'Ajouter un CTA principal visible au-dessus de la ligne de flottaison.',
           'Add one visible primary CTA above the fold.',
@@ -415,7 +417,7 @@ export class PageAiRecapService {
     if (!page.hasStructuredData) {
       trust -= 10;
       recommendations.push(
-        this.text(
+        localizedText(
           locale,
           'Ajouter des schemas Organization/LocalBusiness/FAQ selon le contexte.',
           'Add relevant Organization/LocalBusiness/FAQ schema.',
@@ -431,14 +433,14 @@ export class PageAiRecapService {
       seoCopy -= 20;
       trust -= 10;
       topIssues.push(
-        this.text(
+        localizedText(
           locale,
           'Page non indexable ou en erreur',
           'Page is non-indexable or in error',
         ),
       );
       recommendations.push(
-        this.text(
+        localizedText(
           locale,
           'Corriger status HTTP, directives robots et canonical.',
           'Fix HTTP status, robots directives, and canonical setup.',
@@ -463,7 +465,7 @@ export class PageAiRecapService {
       trustScore: trust,
       ctaScore: cta,
       seoCopyScore: seoCopy,
-      summary: this.text(
+      summary: localizedText(
         locale,
         `Analyse heuristique: clarté ${wording}/100, confiance ${trust}/100, CTA ${cta}/100, SEO éditorial ${seoCopy}/100.`,
         `Heuristic recap: wording ${wording}/100, trust ${trust}/100, CTA ${cta}/100, SEO copy ${seoCopy}/100.`,
@@ -546,12 +548,4 @@ export class PageAiRecapService {
     return Math.max(0, Math.min(100, Math.round(value)));
   }
 
-  private isTimeoutError(reason: unknown): boolean {
-    const message = String(reason).toLowerCase();
-    return message.includes('timeout') || message.includes('timed out');
-  }
-
-  private text(locale: AuditLocale, fr: string, en: string): string {
-    return locale === 'en' ? en : fr;
-  }
 }

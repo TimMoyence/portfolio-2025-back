@@ -623,9 +623,14 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/services?sortBy=invalid')
       .expect(400);
 
-    expect(response.body.message).toContain(
-      'sortBy must be one of the following values',
-    );
+    const messages = Array.isArray(response.body.message)
+      ? response.body.message
+      : [String(response.body.message)];
+    expect(
+      messages.some((message) =>
+        message.includes('sortBy must be one of the following values'),
+      ),
+    ).toBe(true);
   });
 
   it('GET /api/redirects rejects invalid enabled query filter', async () => {

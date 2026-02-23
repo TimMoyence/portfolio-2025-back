@@ -85,9 +85,23 @@ $ pnpm run test:e2e
 # e2e HTTP socket tests (CI profile)
 $ pnpm run test:e2e:http
 
+# DB integration tests (repositories + list performance)
+# one-shot local run (starts a dedicated Postgres container, runs tests, tears down)
+$ pnpm run test:integration:db:local
+
+# or manually:
+$ pnpm run db:integration:up
+$ pnpm run test:integration:db:run
+$ pnpm run db:integration:down
+
 # test coverage
 $ pnpm run test:cov
 ```
+
+DB integration runs against a dedicated local Postgres on `127.0.0.1:55432` with
+`DB_USERNAME=postgres`, `DB_PASSWORD=postgres`, `DB_NAME=portfolio_2025_ci`.
+This avoids collisions with your main local database and fixes issues like
+`role "postgres" does not exist`.
 
 ## Deployment
 

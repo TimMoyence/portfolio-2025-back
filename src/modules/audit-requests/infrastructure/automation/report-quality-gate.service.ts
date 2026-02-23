@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import { localizedText } from './shared/locale-text.util';
 
 type PrioritySeverity = 'high' | 'medium' | 'low';
 
@@ -126,7 +127,7 @@ export class ReportQualityGateService {
     const summary = this.cleanText(summaryText);
     const normalizedSummary =
       summary ||
-      this.text(
+      localizedText(
         locale,
         `Resume d'audit indisponible pour ${context.normalizedUrl}.`,
         `Audit summary unavailable for ${context.normalizedUrl}.`,
@@ -139,7 +140,7 @@ export class ReportQualityGateService {
       ...report,
       executiveSummary: this.requireText(
         report.executiveSummary,
-        this.text(
+        localizedText(
           locale,
           'Resume executif indisponible.',
           'Executive summary unavailable.',
@@ -149,7 +150,7 @@ export class ReportQualityGateService {
       ),
       reportExplanation: this.requireText(
         report.reportExplanation,
-        this.text(
+        localizedText(
           locale,
           'Explication du rapport indisponible.',
           'Report explanation unavailable.',
@@ -159,7 +160,7 @@ export class ReportQualityGateService {
       ),
       clientMessageTemplate: this.requireText(
         report.clientMessageTemplate,
-        this.text(
+        localizedText(
           locale,
           'Bonjour, voici les priorites a traiter en premier.',
           'Hello, here are the top priorities to address first.',
@@ -271,7 +272,7 @@ export class ReportQualityGateService {
       const normalized = this.normalizePriority({
         title: finding.title,
         severity: finding.severity,
-        whyItMatters: this.text(
+        whyItMatters: localizedText(
           locale,
           `Impact ${finding.impact}: ${finding.description}`,
           `${finding.impact} impact: ${finding.description}`,
@@ -291,7 +292,7 @@ export class ReportQualityGateService {
       const normalized = this.normalizePriority({
         title: quickWin,
         severity: 'medium',
-        whyItMatters: this.text(
+        whyItMatters: localizedText(
           locale,
           'Action rapide pour renforcer la base SEO technique et la conversion.',
           'Fast action to strengthen technical SEO baseline and conversion.',
@@ -346,18 +347,18 @@ export class ReportQualityGateService {
       switch (pillar.toLowerCase()) {
         case 'seo':
           actions.push({
-            title: this.text(
+            title: localizedText(
               locale,
               'Corriger la qualite SEO on-page sur les templates prioritaires',
               'Fix on-page SEO quality on priority templates',
             ),
             severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: this.text(
+            whyItMatters: localizedText(
               locale,
               'Le deficit SEO degrade la visibilite organique et la couverture des intentions.',
               'SEO gaps reduce organic visibility and intent coverage.',
             ),
-            recommendedFix: this.text(
+            recommendedFix: localizedText(
               locale,
               'Standardiser title/meta/H1/canonical/lang sur les pages a fort potentiel.',
               'Standardize title/meta/H1/canonical/lang on high-potential pages.',
@@ -367,18 +368,18 @@ export class ReportQualityGateService {
           break;
         case 'performance':
           actions.push({
-            title: this.text(
+            title: localizedText(
               locale,
               'Optimiser les pages lentes et le budget de rendu',
               'Optimize slow pages and rendering budget',
             ),
             severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: this.text(
+            whyItMatters: localizedText(
               locale,
               'La lenteur penalise conversion, crawl budget et experience utilisateur.',
               'Slowness hurts conversion, crawl budget, and user experience.',
             ),
-            recommendedFix: this.text(
+            recommendedFix: localizedText(
               locale,
               'Prioriser cache, poids des assets, critical CSS et reduction JS.',
               'Prioritize caching, asset weight reduction, critical CSS, and JS reduction.',
@@ -388,18 +389,18 @@ export class ReportQualityGateService {
           break;
         case 'technical':
           actions.push({
-            title: this.text(
+            title: localizedText(
               locale,
               "Stabiliser l'indexabilite et la conformite technique",
               'Stabilize indexability and technical compliance',
             ),
             severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: this.text(
+            whyItMatters: localizedText(
               locale,
               'Les defauts techniques bloquent la decouverte et la consolidation SEO.',
               'Technical defects block discovery and SEO consolidation.',
             ),
-            recommendedFix: this.text(
+            recommendedFix: localizedText(
               locale,
               'Auditer robots, canonicals, statuts HTTP, sitemap et redirections.',
               'Audit robots, canonicals, HTTP status, sitemap, and redirects.',
@@ -409,18 +410,18 @@ export class ReportQualityGateService {
           break;
         case 'trust':
           actions.push({
-            title: this.text(
+            title: localizedText(
               locale,
               'Renforcer les signaux de confiance et le marquage schema.org',
               'Strengthen trust signals and schema.org coverage',
             ),
             severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: this.text(
+            whyItMatters: localizedText(
               locale,
               'Les signaux de confiance influencent CTR, conversion et perception de marque.',
               'Trust signals influence CTR, conversion, and brand perception.',
             ),
-            recommendedFix: this.text(
+            recommendedFix: localizedText(
               locale,
               'Ajouter schemas, preuves sociales, mentions legale et coherence marque.',
               'Add schema, social proof, legal pages, and brand consistency signals.',
@@ -430,18 +431,18 @@ export class ReportQualityGateService {
           break;
         case 'conversion':
           actions.push({
-            title: this.text(
+            title: localizedText(
               locale,
               'Ameliorer le tunnel de conversion et les points de contact',
               'Improve conversion funnel and contact touchpoints',
             ),
             severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: this.text(
+            whyItMatters: localizedText(
               locale,
               'Les frictions de conversion reduisent la valeur business des visites SEO.',
               'Conversion friction reduces business value of SEO traffic.',
             ),
-            recommendedFix: this.text(
+            recommendedFix: localizedText(
               locale,
               'Renforcer CTA, formulaires et navigation vers les pages commerciales.',
               'Strengthen CTA, forms, and paths to commercial pages.',
@@ -551,42 +552,42 @@ export class ReportQualityGateService {
     return {
       conversionAndClarity:
         this.cleanText(chapters?.conversionAndClarity) ||
-        this.text(
+        localizedText(
           locale,
           'Conversion et clarte: Non verifiable.',
           'Conversion and clarity: Not verifiable.',
         ),
       speedAndPerformance:
         this.cleanText(chapters?.speedAndPerformance) ||
-        this.text(
+        localizedText(
           locale,
           'Vitesse et performance: Non verifiable.',
           'Speed and performance: Not verifiable.',
         ),
       seoFoundations:
         this.cleanText(chapters?.seoFoundations) ||
-        this.text(
+        localizedText(
           locale,
           'Fondations SEO: Non verifiable.',
           'SEO foundations: Not verifiable.',
         ),
       credibilityAndTrust:
         this.cleanText(chapters?.credibilityAndTrust) ||
-        this.text(
+        localizedText(
           locale,
           'Credibilite et confiance: Non verifiable.',
           'Credibility and trust: Not verifiable.',
         ),
       techAndScalability:
         this.cleanText(chapters?.techAndScalability) ||
-        this.text(
+        localizedText(
           locale,
           'Tech et scalabilite: Non verifiable.',
           'Tech and scalability: Not verifiable.',
         ),
       scorecardAndBusinessOpportunities:
         this.cleanText(chapters?.scorecardAndBusinessOpportunities) ||
-        this.text(
+        localizedText(
           locale,
           'Scorecard et opportunites business: Non verifiable.',
           'Scorecard and business opportunities: Not verifiable.',
@@ -602,7 +603,7 @@ export class ReportQualityGateService {
     return {
       primaryStack:
         this.cleanText(value?.primaryStack) ||
-        this.text(locale, 'Non verifiable', 'Not verifiable'),
+        localizedText(locale, 'Non verifiable', 'Not verifiable'),
       confidence: Number.isFinite(confidence)
         ? Math.max(0, Math.min(1, Math.round(confidence * 100) / 100))
         : 0,
@@ -651,7 +652,7 @@ export class ReportQualityGateService {
         task: this.cleanText(entry?.task),
         goal:
           this.cleanText(entry?.goal) ||
-          this.text(
+          localizedText(
             locale,
             'Ameliorer les signaux SEO critiques',
             'Improve critical SEO signals',
@@ -659,7 +660,7 @@ export class ReportQualityGateService {
         estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
         risk:
           this.cleanText(entry?.risk) ||
-          this.text(locale, 'Risque modere', 'Moderate risk'),
+          localizedText(locale, 'Risque modere', 'Moderate risk'),
         dependencies: this.normalizeStringArray(entry?.dependencies),
       }))
       .filter((entry) => entry.task);
@@ -801,7 +802,4 @@ export class ReportQualityGateService {
     }, 0);
   }
 
-  private text(locale: AuditLocale, fr: string, en: string): string {
-    return locale === 'en' ? en : fr;
-  }
 }
