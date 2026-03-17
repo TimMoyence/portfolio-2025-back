@@ -8,7 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  quality-gate:
+    name: quality-gate
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -52,8 +53,8 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
-      - name: Run unit tests
-        run: pnpm test -- --runInBand --watchman=false
+      - name: Run coverage gate
+        run: pnpm run test:cov:ci
 
       - name: Run DB integration tests (legacy repositories)
         env:
@@ -74,10 +75,35 @@ jobs:
       - name: Build API
         run: pnpm run build
 
+  security:
+    name: security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dependency review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
   docker:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    needs: build
+    needs:
+      - quality-gate
+      - security
     permissions:
       contents: read
       packages: write

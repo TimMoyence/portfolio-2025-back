@@ -9,7 +9,7 @@
     "prepare": "husky",
     "build": "rm -rf dist && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"docs/**/*.md\" \"README.md\" \"CONTRIBUTING.md\" \"AGENTS.md\" \".github/**/*.md\" \"*.{json,mjs,cjs}\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"docs/**/*.md\" \"README.md\" \"CONTRIBUTING.md\" \"AGENTS.md\" \".github/**/*.{md,yml,yaml}\" \"*.{json,mjs,cjs,yml,yaml}\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -17,6 +17,8 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "lint:fix": "pnpm run lint --fix",
     "test": "jest --watchman=false",
+    "test:cov": "jest --coverage --watchman=false",
+    "test:cov:ci": "pnpm exec jest --coverage --runInBand --watchman=false",
     "typecheck": "pnpm exec tsc --noEmit -p tsconfig.json",
     "ci:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm exec jest --runInBand --watchman=false && pnpm run build",
     "migration:generate": "pnpm build && pnpm exec typeorm-ts-node-commonjs migration:generate src/migrations/$npm_config_name -d src/database/data-source.ts",
@@ -38,7 +40,7 @@
     "*.ts": [
       "eslint --fix --max-warnings=0"
     ],
-    "*.{ts,js,mjs,cjs,json,md}": [
+    "*.{ts,js,mjs,cjs,json,md,yml,yaml}": [
       "prettier --write"
     ]
   },
@@ -113,6 +115,19 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "coverageReporters": [
+      "text-summary",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 60,
+        "branches": 45,
+        "functions": 45,
+        "lines": 60
+      }
+    },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }

@@ -6,9 +6,11 @@ API NestJS 11 du projet Portfolio 2025. Le backend suit une architecture en couc
 
 - [Guide de contribution](./CONTRIBUTING.md)
 - [Standards d'ingenierie](./docs/engineering-standards.md)
+- [Gouvernance du depot](./docs/repository-governance.md)
 - [Garde-fous IA et prompt injection](./docs/ai-security-guardrails.md)
 - [Gouvernance base de donnees](./docs/database-governance.md)
 - [Matrice de coherence DDD](./docs/ddd-coherence-matrix.md)
+- [ADR](./docs/adr/README.md)
 
 ## Architecture
 
@@ -42,6 +44,7 @@ pnpm run lint
 pnpm run format:check
 pnpm run typecheck
 pnpm test -- --runInBand --watchman=false
+pnpm run test:cov
 pnpm run test:e2e
 pnpm run test:e2e:http
 pnpm run build
@@ -57,6 +60,12 @@ Apres `pnpm install`, Husky installe automatiquement trois hooks :
 - `pre-push` : lance `pnpm run ci:check`.
 
 La CI GitHub complete ces garde-fous avec lint, format, typecheck, tests unitaires, e2e, integration DB et build.
+
+## Gouvernance depot
+
+- Le proprietaire de code est defini dans [`.github/CODEOWNERS`](./.github/CODEOWNERS).
+- Les protections distantes de `master` sont documentees dans [`docs/repository-governance.md`](./docs/repository-governance.md).
+- Les decisions d'architecture sont historisees dans [`docs/adr`](./docs/adr).
 
 ## Base de donnees et migrations
 

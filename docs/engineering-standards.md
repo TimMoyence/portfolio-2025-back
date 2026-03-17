@@ -51,6 +51,7 @@ Une tache n'est pas terminee tant que :
 - lint, format, typecheck, tests et build passent ;
 - les hooks Git (`pre-commit`, `commit-msg`, `pre-push`) sont restes actifs et respectes ;
 - la documentation est a jour pour toute evolution publique, architecture, env, deploiement ou workflow ;
+- un ADR a ete cree ou mis a jour si la decision change les frontieres d'architecture ou la gouvernance ;
 - les changements base de donnees incluent migration et couverture d'integration adaptee ;
 - les flux LLM sont revus sous l'angle prompt injection et contenu non fiable ;
 - le changement est committe comme une unite coherente.

@@ -41,6 +41,7 @@ Avant d'ouvrir une PR, lancer idealement :
 pnpm run lint
 pnpm run format:check
 pnpm run typecheck
+pnpm run test:cov
 pnpm test -- --runInBand --watchman=false
 pnpm run test:e2e
 pnpm run test:e2e:http
@@ -54,3 +55,5 @@ Les hooks Git suivants tournent automatiquement apres installation des dependanc
 - `pre-push` via `pnpm run ci:check`.
 
 Si la base de donnees est impactee, ajouter le flux d'integration DB documente.
+
+Si l'architecture, la gouvernance de depot ou les conventions durables evoluent, un ADR ou la documentation de gouvernance doit etre mis a jour dans le meme commit.
