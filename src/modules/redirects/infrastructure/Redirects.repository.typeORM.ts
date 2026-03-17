@@ -5,7 +5,10 @@ import {
   PaginatedResult,
   createPaginatedResult,
 } from '../../../common/domain/pagination.types';
-import { RedirectListQuery, RedirectSortBy } from '../domain/RedirectList.query';
+import {
+  RedirectListQuery,
+  RedirectSortBy,
+} from '../domain/RedirectList.query';
 import { IRedirectsRepository } from '../domain/IRedirects.repository';
 import { Redirects } from '../domain/Redirects';
 import { RedirectsEntity } from './entities/Redirects.entity';
@@ -38,7 +41,9 @@ export class RedirectsRepositoryTypeORM implements IRedirectsRepository {
   }
 
   async create(data: Redirects): Promise<Redirects> {
-    const saved = await this.repo.save(data as unknown as Partial<RedirectsEntity>);
+    const saved = await this.repo.save(
+      data as unknown as Partial<RedirectsEntity>,
+    );
     return saved as unknown as Redirects;
   }
 

@@ -302,10 +302,20 @@ describe('LangchainAuditReportService', () => {
 
     jest
       .spyOn(
-        service as unknown as { generateSectionOnce: () => Promise<unknown> },
+        service as unknown as {
+          generateSectionOnce: (
+            llm: unknown,
+            section: string,
+            payload: Record<string, unknown>,
+            locale: string,
+            retryMode: boolean,
+            budget: unknown,
+            options: unknown,
+          ) => Promise<unknown>;
+        },
         'generateSectionOnce',
       )
-      .mockImplementation((_llm, section: string) => {
+      .mockImplementation((_llm, section) => {
         calls[section] = (calls[section] ?? 0) + 1;
         if (section === 'prioritySection' && calls[section] === 1) {
           return Promise.reject(new Error('TimeoutError: Request timed out.'));

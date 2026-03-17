@@ -40,7 +40,10 @@ export class Users {
       throw new DomainValidationError('Invalid user email');
     }
 
-    if (typeof props.passwordHash !== 'string' || props.passwordHash.length < 1) {
+    if (
+      typeof props.passwordHash !== 'string' ||
+      props.passwordHash.length < 1
+    ) {
       throw new DomainValidationError('Invalid user password hash');
     }
 
@@ -80,7 +83,10 @@ export class Users {
     }
 
     if (props.passwordHash !== undefined) {
-      if (typeof props.passwordHash !== 'string' || props.passwordHash.length < 1) {
+      if (
+        typeof props.passwordHash !== 'string' ||
+        props.passwordHash.length < 1
+      ) {
         throw new DomainValidationError('Invalid user password hash');
       }
       partial.passwordHash = props.passwordHash;

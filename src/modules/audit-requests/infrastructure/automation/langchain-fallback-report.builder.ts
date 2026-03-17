@@ -106,20 +106,22 @@ export function buildFallbackExpertReport(
     dependencies: index === 0 ? [] : [topQuickWins[0]],
   }));
 
-  const whatToFixThisMonth = input.deepFindings.slice(0, 8).map((finding, index) => ({
-    task: finding.title,
-    goal: finding.recommendation,
-    estimatedHours: 3 + Math.min(index, 6),
-    risk:
-      finding.severity === 'high'
-        ? localizedText(
-            input.locale,
-            'Risque business eleve si reporte',
-            'High business risk if delayed',
-          )
-        : localizedText(input.locale, 'Risque modere', 'Moderate risk'),
-    dependencies: [],
-  }));
+  const whatToFixThisMonth = input.deepFindings
+    .slice(0, 8)
+    .map((finding, index) => ({
+      task: finding.title,
+      goal: finding.recommendation,
+      estimatedHours: 3 + Math.min(index, 6),
+      risk:
+        finding.severity === 'high'
+          ? localizedText(
+              input.locale,
+              'Risque business eleve si reporte',
+              'High business risk if delayed',
+            )
+          : localizedText(input.locale, 'Risque modere', 'Moderate risk'),
+      dependencies: [],
+    }));
 
   const fastImplementationPlan = topQuickWins.slice(0, 5).map((quickWin) => ({
     task: quickWin,
@@ -149,23 +151,25 @@ export function buildFallbackExpertReport(
     priority: 'high' as const,
   }));
 
-  const implementationBacklog = input.deepFindings.slice(0, 10).map((finding) => ({
-    task: finding.title,
-    priority: finding.severity,
-    details: finding.recommendation,
-    estimatedHours: finding.severity === 'high' ? 6 : 4,
-    dependencies: [],
-    acceptanceCriteria:
-      input.locale === 'en'
-        ? [
-            'Fix deployed and verified',
-            'Crawl/indexability validation without regression',
-          ]
-        : [
-            'Correction deployee et verifiee',
-            'Validation crawl/indexabilite sans regression',
-          ],
-  }));
+  const implementationBacklog = input.deepFindings
+    .slice(0, 10)
+    .map((finding) => ({
+      task: finding.title,
+      priority: finding.severity,
+      details: finding.recommendation,
+      estimatedHours: finding.severity === 'high' ? 6 : 4,
+      dependencies: [],
+      acceptanceCriteria:
+        input.locale === 'en'
+          ? [
+              'Fix deployed and verified',
+              'Crawl/indexability validation without regression',
+            ]
+          : [
+              'Correction deployee et verifiee',
+              'Validation crawl/indexabilite sans regression',
+            ],
+    }));
 
   const invoiceScope = implementationTodo.map((todo) => ({
     item: todo.phase,
@@ -313,7 +317,9 @@ export function withDeterministicCost(
   locale: AuditLocale,
   config: DeterministicCostConfig,
 ): Record<string, unknown> {
-  const invoiceHours = sumHours(report.invoiceScope.map((item) => item.estimatedHours));
+  const invoiceHours = sumHours(
+    report.invoiceScope.map((item) => item.estimatedHours),
+  );
   const backlogHours = sumHours(
     report.implementationBacklog.map((item) => item.estimatedHours),
   );
@@ -323,7 +329,8 @@ export function withDeterministicCost(
   const prioritiesHours = sumHours(
     report.priorities.map((item) => item.estimatedHours),
   );
-  const totalHours = invoiceHours || backlogHours || todoHours || prioritiesHours;
+  const totalHours =
+    invoiceHours || backlogHours || todoHours || prioritiesHours;
 
   const fastTrackHours = sumHours(
     report.fastImplementationPlan.map((item) => item.estimatedHours),

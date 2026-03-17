@@ -50,6 +50,8 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   const listCoursesUseCase = { execute: jest.fn() };
   const createRedirectsUseCase = { execute: jest.fn() };
   const listRedirectsUseCase = { execute: jest.fn() };
+  const getHttpServer = (): Parameters<typeof request>[0] =>
+    app.getHttpServer() as Parameters<typeof request>[0];
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -74,7 +76,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
           useValue: createAuditRequestsUseCase,
         },
         { provide: GetAuditSummaryUseCase, useValue: getAuditSummaryUseCase },
-        { provide: StreamAuditEventsUseCase, useValue: streamAuditEventsUseCase },
+        {
+          provide: StreamAuditEventsUseCase,
+          useValue: streamAuditEventsUseCase,
+        },
         {
           provide: AuthenticateUserUseCase,
           useValue: authenticateUserUseCase,
@@ -263,7 +268,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('POST /api/contacts validates payload and returns contract response', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/contacts')
       .send({
         firstName: 'John',
@@ -283,7 +288,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('POST /api/contacts forbids non-whitelisted fields', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/contacts')
       .send({
         firstName: 'John',
@@ -297,11 +302,13 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       })
       .expect(400);
 
-    expect(response.body.message).toContain('property injected should not exist');
+    expect(response.body.message).toContain(
+      'property injected should not exist',
+    );
   });
 
   it('POST /api/audits resolves locale from referer when not provided', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/audits')
       .set('referer', 'https://example.com/en/contact')
       .send({
@@ -320,7 +327,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('GET /api/audits/:id/summary returns summary snapshot', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .get('/api/audits/audit-1/summary')
       .expect(200);
 
@@ -337,7 +344,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('GET /api/audits/:id/stream exposes SSE event stream', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .get('/api/audits/audit-1/stream')
       .expect(200)
       .expect('Content-Type', /text\/event-stream/);
@@ -351,7 +358,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       new UnauthorizedException('Invalid credentials'),
     );
 
-    await request(app.getHttpServer())
+    await request(getHttpServer())
       .post('/api/auth/login')
       .send({
         email: 'john@example.com',
@@ -361,7 +368,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('GET /api/services exposes paginated contract', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .get('/api/services?page=1&limit=20&sortBy=order&order=ASC')
       .expect(200);
 
@@ -388,7 +395,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('GET /api/projects exposes paginated contract', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .get('/api/projects?page=1&limit=20&sortBy=order&order=ASC')
       .expect(200);
 
@@ -420,7 +427,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('GET /api/courses exposes paginated contract', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .get('/api/courses?page=1&limit=20&sortBy=createdAt&order=DESC')
       .expect(200);
 
@@ -445,7 +452,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('GET /api/redirects exposes paginated contract', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .get('/api/redirects?page=1&limit=20&sortBy=createdAt&order=DESC')
       .expect(200);
 
@@ -471,8 +478,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('GET legacy endpoints forward optional list filters', async () => {
-    await request(app.getHttpServer())
-      .get('/api/services?page=2&limit=5&sortBy=createdAt&order=DESC&status=DRAFT')
+    await request(getHttpServer())
+      .get(
+        '/api/services?page=2&limit=5&sortBy=createdAt&order=DESC&status=DRAFT',
+      )
       .expect(200);
     expect(listServicesUseCase.execute).toHaveBeenCalledWith({
       page: 2,
@@ -482,8 +491,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       order: 'DESC',
     });
 
-    await request(app.getHttpServer())
-      .get('/api/projects?page=3&limit=10&sortBy=type&order=ASC&type=SIDE&status=PUBLISHED')
+    await request(getHttpServer())
+      .get(
+        '/api/projects?page=3&limit=10&sortBy=type&order=ASC&type=SIDE&status=PUBLISHED',
+      )
       .expect(200);
     expect(listProjectsUseCase.execute).toHaveBeenCalledWith({
       page: 3,
@@ -494,8 +505,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       order: 'ASC',
     });
 
-    await request(app.getHttpServer())
-      .get('/api/redirects?page=1&limit=50&sortBy=clicks&order=DESC&enabled=false')
+    await request(getHttpServer())
+      .get(
+        '/api/redirects?page=1&limit=50&sortBy=clicks&order=DESC&enabled=false',
+      )
       .expect(200);
     expect(listRedirectsUseCase.execute).toHaveBeenCalledWith({
       page: 1,
@@ -507,7 +520,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('POST /api/services forwards payload to legacy services use case', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/services')
       .send({
         slug: 'technical-seo',
@@ -536,7 +549,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('POST /api/projects forwards payload to legacy projects use case', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/projects')
       .send({
         slug: 'portfolio-site',
@@ -566,7 +579,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('POST /api/courses forwards payload to legacy courses use case', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/courses')
       .send({
         slug: 'ai-course',
@@ -586,7 +599,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('POST /api/redirects forwards payload to legacy redirects use case', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/redirects')
       .send({
         slug: 'promo-offer',
@@ -606,7 +619,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('POST /api/services rejects non-whitelisted fields', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/services')
       .send({
         slug: 'technical-seo',
@@ -615,11 +628,13 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       })
       .expect(400);
 
-    expect(response.body.message).toContain('property injected should not exist');
+    expect(response.body.message).toContain(
+      'property injected should not exist',
+    );
   });
 
   it('GET /api/services rejects invalid sort query', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .get('/api/services?sortBy=invalid')
       .expect(400);
 
@@ -634,7 +649,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   it('GET /api/redirects rejects invalid enabled query filter', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(getHttpServer())
       .get('/api/redirects?enabled=not-a-boolean')
       .expect(400);
 

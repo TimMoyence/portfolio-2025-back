@@ -38,7 +38,9 @@ export class ServicesRepositoryTypeORM implements IServicesRepository {
   }
 
   async create(data: Services): Promise<Services> {
-    const saved = await this.repo.save(data as unknown as Partial<ServicesEntity>);
+    const saved = await this.repo.save(
+      data as unknown as Partial<ServicesEntity>,
+    );
     return saved as unknown as Services;
   }
 

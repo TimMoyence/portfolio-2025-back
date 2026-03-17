@@ -33,7 +33,10 @@ export class ProjectResponseDto {
   @ApiProperty({ example: ['nestjs', 'postgres'], type: String, isArray: true })
   stack: string[];
 
-  @ApiProperty({ example: 'PUBLISHED', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] })
+  @ApiProperty({
+    example: 'PUBLISHED',
+    enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
+  })
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
   @ApiProperty({ example: 0 })

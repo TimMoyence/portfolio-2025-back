@@ -36,7 +36,9 @@ export class CoursesController {
     example: 'createdAt',
   })
   @ApiOkResponse({ type: CourseListResponseDto })
-  async findAll(@Query() query: CourseListQueryDto): Promise<CourseListResponseDto> {
+  async findAll(
+    @Query() query: CourseListQueryDto,
+  ): Promise<CourseListResponseDto> {
     const result = await this.listUseCase.execute({
       page: query.page,
       limit: query.limit,

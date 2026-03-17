@@ -21,7 +21,10 @@ const PERF_DATASET_SIZE = parsePositiveInt(
   process.env.LEGACY_LIST_PERF_DATASET_SIZE,
   250,
 );
-const PERF_SAMPLE_SIZE = parsePositiveInt(process.env.LEGACY_LIST_PERF_SAMPLES, 40);
+const PERF_SAMPLE_SIZE = parsePositiveInt(
+  process.env.LEGACY_LIST_PERF_SAMPLES,
+  40,
+);
 const PERF_P95_BUDGET_MS = parsePositiveInt(
   process.env.LEGACY_LIST_P95_BUDGET_MS,
   120,
@@ -94,7 +97,7 @@ function percentile(values: number[], p: number): number {
 
 async function measureLatencies(
   sampleSize: number,
-  execute: (iteration: number) => Promise<void>,
+  execute: (iteration: number) => Promise<unknown>,
 ): Promise<number[]> {
   const warmupIterations = Math.min(5, sampleSize);
   for (let i = 0; i < warmupIterations; i += 1) {
@@ -145,7 +148,7 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
       serviceRows.push({
         slug: `perf-service-${i}`,
         name: `Perf Service ${i}`,
-        icon: null,
+        icon: undefined,
         status: i % 3 === 0 ? PublishStatus.DRAFT : PublishStatus.PUBLISHED,
         order: i,
         updatedOrCreatedBy: null,
@@ -173,9 +176,15 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
       });
     }
 
-    await dataSource.getRepository(ServicesEntity).save(serviceRows, { chunk: 200 });
-    await dataSource.getRepository(ProjectsEntity).save(projectRows, { chunk: 200 });
-    await dataSource.getRepository(RedirectsEntity).save(redirectRows, { chunk: 200 });
+    await dataSource
+      .getRepository(ServicesEntity)
+      .save(serviceRows, { chunk: 200 });
+    await dataSource
+      .getRepository(ProjectsEntity)
+      .save(projectRows, { chunk: 200 });
+    await dataSource
+      .getRepository(RedirectsEntity)
+      .save(redirectRows, { chunk: 200 });
   });
 
   afterAll(async () => {

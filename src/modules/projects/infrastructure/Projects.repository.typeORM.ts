@@ -41,7 +41,9 @@ export class ProjectsRepositoryTypeORM implements IProjectsRepository {
   }
 
   async create(data: Projects): Promise<Projects> {
-    const saved = await this.repo.save(data as unknown as Partial<ProjectsEntity>);
+    const saved = await this.repo.save(
+      data as unknown as Partial<ProjectsEntity>,
+    );
     return saved as unknown as Projects;
   }
 

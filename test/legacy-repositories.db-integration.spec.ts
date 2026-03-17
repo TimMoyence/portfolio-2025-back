@@ -116,9 +116,9 @@ describeDb('Legacy repositories (db integration)', () => {
       sortBy: 'order',
       order: 'ASC',
     });
-    expect(result.items.some((service) => service.slug === 'technical-seo')).toBe(
-      true,
-    );
+    expect(
+      result.items.some((service) => service.slug === 'technical-seo'),
+    ).toBe(true);
     expect(result.total).toBeGreaterThanOrEqual(1);
   });
 
@@ -149,7 +149,9 @@ describeDb('Legacy repositories (db integration)', () => {
     });
 
     expect(result.items.length).toBeGreaterThanOrEqual(1);
-    expect(result.items.every((item) => item.status === 'PUBLISHED')).toBe(true);
+    expect(result.items.every((item) => item.status === 'PUBLISHED')).toBe(
+      true,
+    );
   });
 
   it('persists and reads projects entities', async () => {
@@ -175,9 +177,9 @@ describeDb('Legacy repositories (db integration)', () => {
       sortBy: 'order',
       order: 'ASC',
     });
-    expect(result.items.some((project) => project.slug === 'portfolio-site')).toBe(
-      true,
-    );
+    expect(
+      result.items.some((project) => project.slug === 'portfolio-site'),
+    ).toBe(true);
     expect(result.total).toBeGreaterThanOrEqual(1);
   });
 
@@ -236,7 +238,9 @@ describeDb('Legacy repositories (db integration)', () => {
       sortBy: 'createdAt',
       order: 'DESC',
     });
-    expect(result.items.some((course) => course.slug === 'ai-course')).toBe(true);
+    expect(result.items.some((course) => course.slug === 'ai-course')).toBe(
+      true,
+    );
     expect(result.total).toBeGreaterThanOrEqual(1);
   });
 
@@ -258,9 +262,9 @@ describeDb('Legacy repositories (db integration)', () => {
       sortBy: 'createdAt',
       order: 'DESC',
     });
-    expect(result.items.some((redirect) => redirect.slug === 'promo-offer')).toBe(
-      true,
-    );
+    expect(
+      result.items.some((redirect) => redirect.slug === 'promo-offer'),
+    ).toBe(true);
     expect(result.total).toBeGreaterThanOrEqual(1);
   });
 
@@ -295,18 +299,22 @@ describeDb('Legacy repositories (db integration)', () => {
   });
 
   it('creates expected indexes for filtered legacy list queries', async () => {
-    const servicesStatusOrderIndex = await dataSource.query(
-      `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'services' AND indexname = 'IDX_services_status_order'`,
-    );
-    const projectsTypeOrderIndex = await dataSource.query(
-      `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'projects' AND indexname = 'IDX_projects_type_order'`,
-    );
-    const projectsStatusOrderIndex = await dataSource.query(
-      `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'projects' AND indexname = 'IDX_projects_status_order'`,
-    );
-    const redirectsEnabledCreatedAtIndex = await dataSource.query(
-      `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'redirects' AND indexname = 'IDX_redirects_enabled_created_at'`,
-    );
+    const servicesStatusOrderIndex: Array<{ indexname: string }> =
+      await dataSource.query(
+        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'services' AND indexname = 'IDX_services_status_order'`,
+      );
+    const projectsTypeOrderIndex: Array<{ indexname: string }> =
+      await dataSource.query(
+        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'projects' AND indexname = 'IDX_projects_type_order'`,
+      );
+    const projectsStatusOrderIndex: Array<{ indexname: string }> =
+      await dataSource.query(
+        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'projects' AND indexname = 'IDX_projects_status_order'`,
+      );
+    const redirectsEnabledCreatedAtIndex: Array<{ indexname: string }> =
+      await dataSource.query(
+        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'redirects' AND indexname = 'IDX_redirects_enabled_created_at'`,
+      );
 
     expect(servicesStatusOrderIndex).toHaveLength(1);
     expect(projectsTypeOrderIndex).toHaveLength(1);

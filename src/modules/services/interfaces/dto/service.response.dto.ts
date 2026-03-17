@@ -14,7 +14,10 @@ export class ServiceResponseDto {
   @ApiProperty({ example: '/icons/seo.svg', required: false })
   icon?: string;
 
-  @ApiProperty({ example: 'PUBLISHED', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] })
+  @ApiProperty({
+    example: 'PUBLISHED',
+    enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
+  })
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
   @ApiProperty({ example: 0 })

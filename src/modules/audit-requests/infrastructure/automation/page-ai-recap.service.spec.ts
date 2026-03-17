@@ -114,29 +114,34 @@ describe('PageAiRecapService', () => {
 
     const analyzeSpy = jest
       .spyOn(
-        service as unknown as { analyzeSinglePage: () => Promise<unknown> },
+        service as unknown as {
+          analyzeSinglePage: (
+            locale: unknown,
+            currentPage: UrlIndexabilityResult,
+            llm: unknown,
+          ) => Promise<unknown>;
+        },
         'analyzeSinglePage',
       )
-      .mockImplementation(
-        (_locale: unknown, currentPage: UrlIndexabilityResult) =>
-          Promise.resolve({
-            recap: {
-              url: currentPage.url,
-              finalUrl: currentPage.finalUrl,
-              priority: 'high',
-              language: 'en',
-              wordingScore: 30,
-              trustScore: 30,
-              ctaScore: 30,
-              seoCopyScore: 30,
-              summary: 'fallback',
-              topIssues: ['timeout'],
-              recommendations: ['retry later'],
-              source: 'fallback',
-            },
-            llmAttempted: true,
-            llmFailed: true,
-          }),
+      .mockImplementation((_locale, currentPage) =>
+        Promise.resolve({
+          recap: {
+            url: currentPage.url,
+            finalUrl: currentPage.finalUrl,
+            priority: 'high',
+            language: 'en',
+            wordingScore: 30,
+            trustScore: 30,
+            ctaScore: 30,
+            seoCopyScore: 30,
+            summary: 'fallback',
+            topIssues: ['timeout'],
+            recommendations: ['retry later'],
+            source: 'fallback',
+          },
+          llmAttempted: true,
+          llmFailed: true,
+        }),
       );
 
     const result = await service.analyzePages({

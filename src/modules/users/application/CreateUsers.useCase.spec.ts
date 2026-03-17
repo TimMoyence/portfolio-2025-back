@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/unbound-method */
+/* eslint-disable @typescript-eslint/unbound-method */
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { Users } from '../domain/Users';
 import { CreateUsersUseCase } from './CreateUsers.useCase';

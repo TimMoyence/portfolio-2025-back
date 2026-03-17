@@ -26,14 +26,24 @@ export class AuditRequest {
   referer?: string | null;
 
   static create(props: CreateAuditRequestProps): AuditRequest {
-    const websiteName = this.requireText(props.websiteName, 'website name', 2, 200);
+    const websiteName = this.requireText(
+      props.websiteName,
+      'website name',
+      2,
+      200,
+    );
     const locale = LocaleCode.resolve(props.locale, 'fr').value;
 
     if (props.contactMethod !== 'EMAIL' && props.contactMethod !== 'PHONE') {
       throw new DomainValidationError('Invalid audit contact method');
     }
 
-    const rawContact = this.requireText(props.contactValue, 'contact value', 6, 200);
+    const rawContact = this.requireText(
+      props.contactValue,
+      'contact value',
+      6,
+      200,
+    );
     let contactValue = rawContact;
 
     if (props.contactMethod === 'EMAIL') {

@@ -801,5 +801,4 @@ export class ReportQualityGateService {
       return text.includes(marker) ? count + 1 : count;
     }, 0);
   }
-
 }

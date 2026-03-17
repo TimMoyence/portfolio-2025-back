@@ -12,7 +12,9 @@ export class CreateCookieConsentsUseCase {
     private readonly repo: ICookieConsentsRepository,
   ) {}
 
-  async execute(data: CreateCookieConsentCommand): Promise<CookieConsentResponse> {
+  async execute(
+    data: CreateCookieConsentCommand,
+  ): Promise<CookieConsentResponse> {
     const consent = CookieConsentMapper.fromCreateCommand(data);
     return this.repo.create(consent);
   }

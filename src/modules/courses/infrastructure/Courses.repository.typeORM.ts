@@ -34,7 +34,9 @@ export class CoursesRepositoryTypeORM implements ICoursesRepository {
   }
 
   async create(data: Courses): Promise<Courses> {
-    const saved = await this.repo.save(data as unknown as Partial<CoursesEntity>);
+    const saved = await this.repo.save(
+      data as unknown as Partial<CoursesEntity>,
+    );
     return saved as unknown as Courses;
   }
 

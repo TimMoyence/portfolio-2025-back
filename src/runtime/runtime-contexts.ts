@@ -41,7 +41,9 @@ export function resolveRuntimeContexts(
   return {
     coreModules,
     legacyModules,
-    runtimeModules: legacyEnabled ? [...coreModules, ...legacyModules] : coreModules,
+    runtimeModules: legacyEnabled
+      ? [...coreModules, ...legacyModules]
+      : coreModules,
     legacyEnabled,
   };
 }

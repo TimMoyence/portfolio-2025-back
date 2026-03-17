@@ -54,9 +54,12 @@ export class CookieConsent {
     }
 
     if (
-      !['accept_all', 'essential_only', 'save_preferences', 'withdraw'].includes(
-        props.action,
-      )
+      ![
+        'accept_all',
+        'essential_only',
+        'save_preferences',
+        'withdraw',
+      ].includes(props.action)
     ) {
       throw new DomainValidationError('Invalid cookie consent action');
     }

@@ -16,9 +16,7 @@ import {
 } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
-import {
-  CreateAuditRequestCommand,
-} from '../application/dto/CreateAuditRequest.command';
+import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';
 import {
   AuditLocale,
   localeFromUrlPath,

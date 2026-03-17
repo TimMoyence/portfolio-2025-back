@@ -49,7 +49,10 @@ export function detectCmsHints(html: string): string[] {
   return Array.from(hints);
 }
 
-export function extractInternalLinks($: CheerioAPI, finalUrl: string): string[] {
+export function extractInternalLinks(
+  $: CheerioAPI,
+  finalUrl: string,
+): string[] {
   let origin: string;
   try {
     origin = new URL(finalUrl).origin;

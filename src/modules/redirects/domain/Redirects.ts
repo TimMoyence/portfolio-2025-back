@@ -17,7 +17,10 @@ export class Redirects {
   static create(props: CreateRedirectProps): Redirects {
     const redirect = new Redirects();
     redirect.slug = this.requireSlug(props.slug, 'redirect slug');
-    redirect.targetUrl = this.requireUrl(props.targetUrl, 'redirect target URL');
+    redirect.targetUrl = this.requireUrl(
+      props.targetUrl,
+      'redirect target URL',
+    );
     redirect.enabled = this.resolveEnabled(props.enabled);
     redirect.clicks = this.resolveClicks(props.clicks);
     return redirect;

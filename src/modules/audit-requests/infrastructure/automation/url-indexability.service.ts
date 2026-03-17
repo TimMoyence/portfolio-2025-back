@@ -144,7 +144,10 @@ export class UrlIndexabilityService {
       const server = response.headers['server'] ?? null;
       const xPoweredBy = response.headers['x-powered-by'] ?? null;
       const cacheHeaders = pickHeaders(response.headers, CACHE_HEADER_KEYS);
-      const securityHeaders = pickHeaders(response.headers, SECURITY_HEADER_KEYS);
+      const securityHeaders = pickHeaders(
+        response.headers,
+        SECURITY_HEADER_KEYS,
+      );
       const setCookiePatterns = extractSetCookiePatterns(
         response.headers['set-cookie'],
       );
@@ -282,5 +285,4 @@ export class UrlIndexabilityService {
 
     return Array.from(values).slice(0, 8);
   }
-
 }

@@ -42,7 +42,9 @@ export class ServicesController {
     example: 'PUBLISHED',
   })
   @ApiOkResponse({ type: ServiceListResponseDto })
-  async findAll(@Query() query: ServiceListQueryDto): Promise<ServiceListResponseDto> {
+  async findAll(
+    @Query() query: ServiceListQueryDto,
+  ): Promise<ServiceListResponseDto> {
     const result = await this.listUseCase.execute({
       page: query.page,
       limit: query.limit,
@@ -52,7 +54,9 @@ export class ServicesController {
     });
 
     return {
-      items: result.items.map((service) => ServiceResponseDto.fromDomain(service)),
+      items: result.items.map((service) =>
+        ServiceResponseDto.fromDomain(service),
+      ),
       meta: {
         page: result.page,
         limit: result.limit,

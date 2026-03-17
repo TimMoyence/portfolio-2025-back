@@ -376,7 +376,20 @@ describe('AuditPipelineService', () => {
             ) => void | Promise<void>;
           },
         ) => {
-          const recaps = [
+          const recaps: Array<{
+            url: string;
+            finalUrl: string;
+            priority: 'high' | 'medium' | 'low';
+            language: 'fr' | 'en' | 'mixed' | 'unknown';
+            wordingScore: number;
+            trustScore: number;
+            ctaScore: number;
+            seoCopyScore: number;
+            summary: string;
+            topIssues: string[];
+            recommendations: string[];
+            source: 'llm' | 'fallback';
+          }> = [
             {
               url: 'https://example.com/',
               finalUrl: 'https://example.com/',

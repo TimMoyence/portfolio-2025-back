@@ -48,7 +48,9 @@ export class ProjectsController {
     example: 'PUBLISHED',
   })
   @ApiOkResponse({ type: ProjectListResponseDto })
-  async findAll(@Query() query: ProjectListQueryDto): Promise<ProjectListResponseDto> {
+  async findAll(
+    @Query() query: ProjectListQueryDto,
+  ): Promise<ProjectListResponseDto> {
     const result = await this.listUseCase.execute({
       page: query.page,
       limit: query.limit,
@@ -59,7 +61,9 @@ export class ProjectsController {
     });
 
     return {
-      items: result.items.map((project) => ProjectResponseDto.fromDomain(project)),
+      items: result.items.map((project) =>
+        ProjectResponseDto.fromDomain(project),
+      ),
       meta: {
         page: result.page,
         limit: result.limit,

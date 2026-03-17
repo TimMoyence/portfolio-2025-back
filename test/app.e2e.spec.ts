@@ -64,7 +64,10 @@ describe('API coherence and connectivity (e2e transportless)', () => {
           useValue: createAuditRequestsUseCase,
         },
         { provide: GetAuditSummaryUseCase, useValue: getAuditSummaryUseCase },
-        { provide: StreamAuditEventsUseCase, useValue: streamAuditEventsUseCase },
+        {
+          provide: StreamAuditEventsUseCase,
+          useValue: streamAuditEventsUseCase,
+        },
         {
           provide: AuthenticateUserUseCase,
           useValue: authenticateUserUseCase,

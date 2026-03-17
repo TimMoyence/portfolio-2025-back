@@ -71,7 +71,11 @@ export class ProjectRequestDto {
   @MaxLength(50, { each: true })
   stack?: string[];
 
-  @ApiProperty({ example: 'PUBLISHED', required: false, enum: PROJECT_STATUSES })
+  @ApiProperty({
+    example: 'PUBLISHED',
+    required: false,
+    enum: PROJECT_STATUSES,
+  })
   @IsOptional()
   @IsString()
   @IsIn(PROJECT_STATUSES)

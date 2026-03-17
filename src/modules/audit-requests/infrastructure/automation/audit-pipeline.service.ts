@@ -428,7 +428,10 @@ export class AuditPipelineService {
     ): Promise<void> => {
       writeQueue = writeQueue.then(async () => {
         if (progressEvent.section && progressEvent.sectionStatus) {
-          synthesisStatus.set(progressEvent.section, progressEvent.sectionStatus);
+          synthesisStatus.set(
+            progressEvent.section,
+            progressEvent.sectionStatus,
+          );
         }
         const done = synthesisSections.filter((section) => {
           const status = synthesisStatus.get(section);
@@ -439,7 +442,12 @@ export class AuditPipelineService {
           );
         }).length;
         await this.repo.updateState(input.auditId, {
-          progress: this.interpolateProgress(done, synthesisSections.length, 85, 95),
+          progress: this.interpolateProgress(
+            done,
+            synthesisSections.length,
+            85,
+            95,
+          ),
           step: input.progressStep,
           keyChecks: {
             ...input.progressKeyChecksBase,

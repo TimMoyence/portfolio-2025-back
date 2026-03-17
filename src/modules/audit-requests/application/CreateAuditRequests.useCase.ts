@@ -16,7 +16,9 @@ export class CreateAuditRequestsUseCase {
     private readonly auditMailer: AuditRequestMailerService,
   ) {}
 
-  async execute(data: CreateAuditRequestCommand): Promise<AuditRequestResponse> {
+  async execute(
+    data: CreateAuditRequestCommand,
+  ): Promise<AuditRequestResponse> {
     const request = AuditRequestMapper.fromCreateCommand(data);
     const response = await this.repo.create(request);
 

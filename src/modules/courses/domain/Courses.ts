@@ -18,7 +18,12 @@ export class Courses {
     const course = new Courses();
     course.slug = this.requireSlug(props.slug, 'course slug');
     course.title = this.requireText(props.title, 'course title', 2, 160);
-    course.summary = this.requireText(props.summary, 'course summary', 10, 2000);
+    course.summary = this.requireText(
+      props.summary,
+      'course summary',
+      10,
+      2000,
+    );
     course.coverImage = this.optionalText(
       props.coverImage,
       'course cover image',

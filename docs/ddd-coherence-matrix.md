@@ -18,28 +18,28 @@
 
 ## Matrice de coherence
 
-| Axe | Observation | Risque | Priorite | Etat |
-|---|---|---:|---:|---|
-| Frontiere Interface/Application | Des DTO HTTP etaient dans `application/dto` | Moyen | P0 | Corrige (phase 1) |
-| Application -> Interface coupling | `contacts` dependait d'un DTO de requete HTTP | Moyen | P0 | Corrige (phase 1) |
-| Commande applicative explicite | Pas de `Command` explicite sur les flux `contacts`, `cookie-consents`, `audit-requests` | Moyen | P0 | Corrige (phase 1) |
-| Reponses metier vs HTTP | Presence de `httpCode` dans des objets de domaine (`*Response`) | Moyen | P1 | Corrige (phase 2) |
-| Invariants metier transverses | Validation email/phone/locale dupliquee ou implicite | Moyen | P1 | Corrige (phase 3) |
-| Couches domain/application | Certaines entites domaine restaient anemiques (invariants riches limites) | Faible/Moyen | P1 | Corrige (phase 5 sur contextes actifs) |
-| Tests coherence API | Couverture insuffisante des contrats HTTP/validation/sse/auth | Moyen | P1 | Corrige (phase 4) |
-| Bounded contexts inactifs | Modules non branches en runtime mais presents en code | Moyen | P1 | Corrige (phase 5 avec feature flag explicite) |
-| Ubiquitous language | Nommage heterogene (`Token.ts` vs `token.ts`, imports Nest internes) | Faible | P2 | Corrige (phase 6) |
-| Legacy API coverage | Couverture e2e legacy (`services/projects/courses/redirects`) insuffisante | Faible/Moyen | P2 | Corrige (phase 7) |
-| Legacy naming debt | Nom historique `CoursesRessources` ambigu | Faible | P2 | Corrige (phase 7 non-breaking) |
-| Legacy interface contracts | Controllers legacy acceptaient des objets domaine bruts (`@Body() Domain`) | Moyen | P1 | Corrige (phase 8) |
-| Legacy domain invariants | Aggregats legacy anemiques (`id` only) sans validation metier explicite | Moyen | P1 | Corrige (phase 8) |
-| Imports Nest publics | Certains repositories utilisaient des chemins internes TypeORM decorators | Faible | P2 | Corrige (phase 8) |
-| Legacy response contracts | Reponses POST legacy non formalisees via DTO explicites | Moyen | P1 | Corrige (phase 9) |
-| Legacy repository integration | Pas de tests repository sur DB reelle en CI | Moyen | P1 | Corrige (phase 9) |
-| Legacy read model | Endpoints GET legacy non branches aux repositories (retours statiques) | Moyen | P1 | Corrige (phase 10) |
-| OpenAPI contract drift | Absence de garde-fou schema sur endpoints legacy | Moyen | P1 | Corrige (phase 10) |
-| Legacy list filters/indexes | Filtres metier optionnels absents et indexes SQL non alignes | Moyen | P1 | Corrige (phase 11) |
-| Legacy list perf budgets | Absence de garde-fou p95/p99 sur pagination/tri des lectures legacy | Moyen | P1 | Corrige (phase 11) |
+| Axe                               | Observation                                                                             |       Risque | Priorite | Etat                                          |
+| --------------------------------- | --------------------------------------------------------------------------------------- | -----------: | -------: | --------------------------------------------- |
+| Frontiere Interface/Application   | Des DTO HTTP etaient dans `application/dto`                                             |        Moyen |       P0 | Corrige (phase 1)                             |
+| Application -> Interface coupling | `contacts` dependait d'un DTO de requete HTTP                                           |        Moyen |       P0 | Corrige (phase 1)                             |
+| Commande applicative explicite    | Pas de `Command` explicite sur les flux `contacts`, `cookie-consents`, `audit-requests` |        Moyen |       P0 | Corrige (phase 1)                             |
+| Reponses metier vs HTTP           | Presence de `httpCode` dans des objets de domaine (`*Response`)                         |        Moyen |       P1 | Corrige (phase 2)                             |
+| Invariants metier transverses     | Validation email/phone/locale dupliquee ou implicite                                    |        Moyen |       P1 | Corrige (phase 3)                             |
+| Couches domain/application        | Certaines entites domaine restaient anemiques (invariants riches limites)               | Faible/Moyen |       P1 | Corrige (phase 5 sur contextes actifs)        |
+| Tests coherence API               | Couverture insuffisante des contrats HTTP/validation/sse/auth                           |        Moyen |       P1 | Corrige (phase 4)                             |
+| Bounded contexts inactifs         | Modules non branches en runtime mais presents en code                                   |        Moyen |       P1 | Corrige (phase 5 avec feature flag explicite) |
+| Ubiquitous language               | Nommage heterogene (`Token.ts` vs `token.ts`, imports Nest internes)                    |       Faible |       P2 | Corrige (phase 6)                             |
+| Legacy API coverage               | Couverture e2e legacy (`services/projects/courses/redirects`) insuffisante              | Faible/Moyen |       P2 | Corrige (phase 7)                             |
+| Legacy naming debt                | Nom historique `CoursesRessources` ambigu                                               |       Faible |       P2 | Corrige (phase 7 non-breaking)                |
+| Legacy interface contracts        | Controllers legacy acceptaient des objets domaine bruts (`@Body() Domain`)              |        Moyen |       P1 | Corrige (phase 8)                             |
+| Legacy domain invariants          | Aggregats legacy anemiques (`id` only) sans validation metier explicite                 |        Moyen |       P1 | Corrige (phase 8)                             |
+| Imports Nest publics              | Certains repositories utilisaient des chemins internes TypeORM decorators               |       Faible |       P2 | Corrige (phase 8)                             |
+| Legacy response contracts         | Reponses POST legacy non formalisees via DTO explicites                                 |        Moyen |       P1 | Corrige (phase 9)                             |
+| Legacy repository integration     | Pas de tests repository sur DB reelle en CI                                             |        Moyen |       P1 | Corrige (phase 9)                             |
+| Legacy read model                 | Endpoints GET legacy non branches aux repositories (retours statiques)                  |        Moyen |       P1 | Corrige (phase 10)                            |
+| OpenAPI contract drift            | Absence de garde-fou schema sur endpoints legacy                                        |        Moyen |       P1 | Corrige (phase 10)                            |
+| Legacy list filters/indexes       | Filtres metier optionnels absents et indexes SQL non alignes                            |        Moyen |       P1 | Corrige (phase 11)                            |
+| Legacy list perf budgets          | Absence de garde-fou p95/p99 sur pagination/tri des lectures legacy                     |        Moyen |       P1 | Corrige (phase 11)                            |
 
 ## Decisions prises en phase 1
 

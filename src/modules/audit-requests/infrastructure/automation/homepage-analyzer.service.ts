@@ -82,7 +82,9 @@ export class HomepageAnalyzerService {
       contentLength: fetchResult.contentLength,
       server: fetchResult.headers['server'] ?? null,
       xPoweredBy: fetchResult.headers['x-powered-by'] ?? null,
-      setCookiePatterns: extractSetCookiePatterns(fetchResult.headers['set-cookie']),
+      setCookiePatterns: extractSetCookiePatterns(
+        fetchResult.headers['set-cookie'],
+      ),
       cacheHeaders: pickHeaders(fetchResult.headers, CACHE_HEADER_KEYS),
       securityHeaders: pickHeaders(fetchResult.headers, SECURITY_HEADER_KEYS),
       title,
@@ -109,5 +111,4 @@ export class HomepageAnalyzerService {
       internalLinks,
     };
   }
-
 }

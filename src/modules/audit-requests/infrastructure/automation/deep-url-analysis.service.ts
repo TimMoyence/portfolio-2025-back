@@ -511,7 +511,11 @@ export class DeepUrlAnalysisService {
       findings,
       noindexConflicts > 0,
       'noindex_conflicts',
-      localizedText(locale, "Conflits d'indexabilite", 'Indexability conflicts'),
+      localizedText(
+        locale,
+        "Conflits d'indexabilite",
+        'Indexability conflicts',
+      ),
       localizedText(
         locale,
         `${noindexConflicts} URL(s) repondent correctement mais ne sont pas indexables.`,
@@ -1051,5 +1055,4 @@ export class DeepUrlAnalysisService {
       return '/';
     }
   }
-
 }

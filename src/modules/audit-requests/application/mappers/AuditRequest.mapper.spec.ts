@@ -18,7 +18,7 @@ describe('AuditRequestMapper', () => {
       ...baseCommand,
       websiteName: '  Example Studio  ',
       contactValue: '  HELLO@Example.com ',
-      locale: 'en-US',
+      locale: 'en',
     });
 
     expect(mapped.websiteName).toBe('Example Studio');

@@ -34,7 +34,11 @@ export class ServiceRequestDto {
   @MaxLength(500)
   icon?: string;
 
-  @ApiProperty({ example: 'PUBLISHED', required: false, enum: SERVICE_STATUSES })
+  @ApiProperty({
+    example: 'PUBLISHED',
+    required: false,
+    enum: SERVICE_STATUSES,
+  })
   @IsOptional()
   @IsString()
   @IsIn(SERVICE_STATUSES)

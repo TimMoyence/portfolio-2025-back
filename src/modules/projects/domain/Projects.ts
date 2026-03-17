@@ -38,8 +38,18 @@ export class Projects {
       'project cover image',
       500,
     );
-    project.gallery = this.optionalStringArray(props.gallery, 'project gallery', 20, 500);
-    project.stack = this.optionalStringArray(props.stack, 'project stack', 30, 50);
+    project.gallery = this.optionalStringArray(
+      props.gallery,
+      'project gallery',
+      20,
+      500,
+    );
+    project.stack = this.optionalStringArray(
+      props.stack,
+      'project stack',
+      30,
+      50,
+    );
     project.status = this.resolveStatus(props.status);
     project.order = this.resolveOrder(props.order);
     return project;

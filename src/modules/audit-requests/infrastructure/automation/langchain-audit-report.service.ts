@@ -1580,5 +1580,4 @@ export class LangchainAuditReportService {
       return 0;
     }
   }
-
 }

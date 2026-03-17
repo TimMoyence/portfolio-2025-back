@@ -1,150 +1,102 @@
-## Docker & Compose
+# Portfolio 2025 Backend
 
-- Build image: `docker build -t ghcr.io/<owner>/portfolio-2025-back:dev .`
-- Run locally: `docker run --rm -p 3000:3000 --env-file deploy/backend.env.example ghcr.io/<owner>/portfolio-2025-back:dev`.
-- Production stack: copy `deploy/.env.example` to `deploy/.env` and `deploy/backend.env.example` to `deploy/backend.env`, then `docker compose -f deploy/compose.yaml up -d`. Postgres data is persisted in the `db_data` volume.
+API NestJS 11 du projet Portfolio 2025. Le backend suit une architecture en couches `interfaces -> application -> domain -> infrastructure` et expose a la fois des routes CRUD classiques et un pipeline d'audit asynchrone base sur queue, SSE, persistence Postgres et synthese assistee par LLM.
 
-## CI/CD (GitHub Actions)
+## Documentation d'ingenierie
 
-- Workflow `.github/workflows/ci.yml` runs unit/integration tests, e2e transportless tests, e2e HTTP socket tests, then builds with pnpm and pushes images to GHCR on `main` using tags `latest` and the commit SHA.
-- Deploy step (optional) pulls the freshly built image over SSH and restarts only the `api` service via `docker compose`, ensuring only the build output is promoted.
-- Required secrets for deploy: `DEPLOY_HOST`, `DEPLOY_USER`, `SSH_PRIVATE_KEY`, `DEPLOY_REGISTRY_USER`, `DEPLOY_REGISTRY_TOKEN`. Optional: `DEPLOY_PATH` (default `/opt/portfolio-2025`), `DEPLOY_COMPOSE_FILE` (default `/opt/portfolio-2025/compose.yaml`).
+- [Guide de contribution](./CONTRIBUTING.md)
+- [Standards d'ingenierie](./docs/engineering-standards.md)
+- [Garde-fous IA et prompt injection](./docs/ai-security-guardrails.md)
+- [Gouvernance base de donnees](./docs/database-governance.md)
+- [Matrice de coherence DDD](./docs/ddd-coherence-matrix.md)
 
-commande to add new migration :
+## Architecture
 
-```bash
-npm run migration:new --name=TheNameInCamelCase
-```
+- `interfaces` : controllers, DTO, validation d'entree et mapping transport.
+- `application` : use cases, orchestration et contrats applicatifs.
+- `domain` : vocabulaire metier, invariants et objets de domaine.
+- `infrastructure` : TypeORM, mail, queue, HTTP sortant et integrations tierces.
 
-## Project setup
+Regle non negociable : le domaine ne depend jamais de Nest, TypeORM ou d'un detail de transport.
 
-```bash
-$ pnpm install
-```
-
-## Compile and run the project
+## Prise en main rapide
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
+pnpm run start:dev
 ```
 
-## API documentation
+Une fois l'API demarree :
 
-Swagger UI is available once the server is running:
+- Swagger est disponible sur `http://localhost:3000/docs`
+- le prefixe d'API est pilote par `API_PREFIX`
+- le flux d'audit SSE principal repose sur :
+  - `POST /audits`
+  - `GET /audits/:id/stream`
+  - `GET /audits/:id/summary`
 
-1. Start the API (for example `pnpm run start:dev`).
-2. Open `http://localhost:3000/docs` (or `/${SWAGGER_PATH}` if you override the path) to explore the automatically generated OpenAPI specification.
-
-The documentation is backed by DTO metadata, so request/response shapes always stay in sync with the codebase.
-
-Route prefix is controlled by `API_PREFIX` (default recommended: `api/v1/portfolio25` for compatibility with the frontend configuration).
-
-### Auth & Users
-
-- `POST /auth/login` — authenticate with email/password and receive a JWT plus the sanitized user payload.
-- `PATCH /auth/change-password` — change a user's password by providing the current and new password (hashed transparently before persisting).
-- `GET /users` & CRUD routes — manage users; all responses omit sensitive hashes.
-
-### Audit SSE flow
-
-- `POST /audits` — create an audit request and enqueue async processing.
-- `GET /audits/:id/stream` — Server-Sent Events stream (`progress`, `completed`, `failed`, `heartbeat`).
-- `GET /audits/:id/summary` — recovery endpoint for the persisted user summary.
-
-Main env keys for this flow:
-
-- `ENABLE_LEGACY_CMS_CONTEXTS` to opt-in legacy modules (`services`, `projects`, `courses`, `redirects`); default `false`.
-- `AUDIT_QUEUE_ENABLED`, `AUDIT_QUEUE_NAME`, `REDIS_URL` (or `REDIS_HOST` + `REDIS_PORT`).
-- `AUDIT_FETCH_TIMEOUT_MS`, `AUDIT_MAX_REDIRECTS`, `AUDIT_HTML_MAX_BYTES`, `AUDIT_TEXT_MAX_BYTES`.
-- `AUDIT_SITEMAP_SAMPLE_SIZE`, `AUDIT_SITEMAP_MAX_URLS`, `AUDIT_SITEMAP_ANALYZE_LIMIT`, `AUDIT_PAGE_AI_CIRCUIT_BREAKER_MIN_SAMPLES`, `AUDIT_PAGE_AI_CIRCUIT_BREAKER_FAILURE_RATIO`.
-- `OPENAI_API_KEY`, `AUDIT_LLM_MODEL`, `AUDIT_LLM_TIMEOUT_MS`, `AUDIT_LLM_SUMMARY_TIMEOUT_MS`, `AUDIT_LLM_EXPERT_TIMEOUT_MS`, `AUDIT_LLM_PROFILE`, `AUDIT_LLM_PROFILE_CANARY_PERCENT`, `AUDIT_LLM_GLOBAL_TIMEOUT_MS`, `AUDIT_LLM_SECTION_TIMEOUT_MS`, `AUDIT_LLM_SECTION_RETRY_MAX`, `AUDIT_LLM_SECTION_RETRY_MIN_REMAINING_MS`, `AUDIT_LLM_INFLIGHT_MAX`, `AUDIT_LLM_RETRIES`, `AUDIT_LLM_LANGUAGE`.
-- `AUDIT_REPORT_TO` (fallbacks to `CONTACT_NOTIFICATION_TO`).
-
-LLM rollout notes:
-
-- Use `AUDIT_LLM_PROFILE=parallel_sections_v1` for map/reduce fan-out synthesis.
-- Use `AUDIT_LLM_PROFILE_CANARY_PERCENT` (0..100) for deterministic canary rollout by `auditId`.
-- `AUDIT_LLM_GLOBAL_TIMEOUT_MS` is a hard wall-clock budget for the synthesis stage.
-
-## Run tests
+## Commandes utiles
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# e2e HTTP socket tests (CI profile)
-$ pnpm run test:e2e:http
-
-# DB integration tests (repositories + list performance)
-# one-shot local run (starts a dedicated Postgres container, runs tests, tears down)
-$ pnpm run test:integration:db:local
-
-# or manually:
-$ pnpm run db:integration:up
-$ pnpm run test:integration:db:run
-$ pnpm run db:integration:down
-
-# test coverage
-$ pnpm run test:cov
+pnpm run lint
+pnpm run format:check
+pnpm run typecheck
+pnpm test -- --runInBand --watchman=false
+pnpm run test:e2e
+pnpm run test:e2e:http
+pnpm run build
+pnpm run ci:check
 ```
 
-DB integration runs against a dedicated local Postgres on `127.0.0.1:55432` with
-`DB_USERNAME=postgres`, `DB_PASSWORD=postgres`, `DB_NAME=portfolio_2025_ci`.
-This avoids collisions with your main local database and fixes issues like
-`role "postgres" does not exist`.
+## Hooks Git et verrous locaux
 
-## Deployment
+Apres `pnpm install`, Husky installe automatiquement trois hooks :
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- `pre-commit` : lance `lint-staged` sur les fichiers indexes ;
+- `commit-msg` : impose un message au format Conventional Commit ;
+- `pre-push` : lance `pnpm run ci:check`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+La CI GitHub complete ces garde-fous avec lint, format, typecheck, tests unitaires, e2e, integration DB et build.
+
+## Base de donnees et migrations
+
+Creer une migration :
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm run migration:new --name=TheNameInCamelCase
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Tests d'integration base de donnees :
 
-Create a migrate service in deploy folder to run migrations on deployment server
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
+```bash
+pnpm run test:integration:db:local
 ```
 
+Ou manuellement :
+
+```bash
+pnpm run db:integration:up
+pnpm run test:integration:db:run
+pnpm run db:integration:down
 ```
+
+Le flux local d'integration utilise une base Postgres dediee sur `127.0.0.1:55432` pour eviter tout conflit avec la base de dev principale.
+
+## Audit asynchrone et IA
+
+Variables d'environnement importantes :
+
+- queue et Redis : `AUDIT_QUEUE_ENABLED`, `AUDIT_QUEUE_NAME`, `REDIS_URL`
+- fetch et limites reseau : `AUDIT_FETCH_TIMEOUT_MS`, `AUDIT_MAX_REDIRECTS`, `AUDIT_HTML_MAX_BYTES`, `AUDIT_TEXT_MAX_BYTES`
+- exploration sitemap : `AUDIT_SITEMAP_SAMPLE_SIZE`, `AUDIT_SITEMAP_MAX_URLS`, `AUDIT_SITEMAP_ANALYZE_LIMIT`
+- LLM : `OPENAI_API_KEY`, `AUDIT_LLM_MODEL`, `AUDIT_LLM_PROFILE`, `AUDIT_LLM_GLOBAL_TIMEOUT_MS`, `AUDIT_LLM_RETRIES`, `AUDIT_LLM_LANGUAGE`
+
+Les details de securisation contre le prompt injection et les contenus non fiables sont documentes dans [docs/ai-security-guardrails.md](./docs/ai-security-guardrails.md).
+
+## Docker et deploiement
+
+- Image locale : `docker build -t ghcr.io/<owner>/portfolio-2025-back:dev .`
+- Run local containerise : `docker run --rm -p 3000:3000 --env-file deploy/backend.env.example ghcr.io/<owner>/portfolio-2025-back:dev`
+- Stack de production : copier `deploy/.env.example` vers `deploy/.env` et `deploy/backend.env.example` vers `deploy/backend.env`, puis lancer `docker compose -f deploy/compose.yaml up -d`
+
+Le workflow [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) construit l'image, publie sur GHCR et peut relancer le service `api` via SSH quand la branche `main` est mise a jour.
