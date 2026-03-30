@@ -20,6 +20,7 @@ import { CookieConsentRequestDto } from '../src/modules/cookie-consents/interfac
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
+import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { LoginDto } from '../src/modules/users/interfaces/dto/Login.dto';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 
@@ -74,6 +75,10 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         },
         { provide: CreateUsersUseCase, useValue: createUsersUseCase },
         { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
+        {
+          provide: USERS_REPOSITORY,
+          useValue: { findById: jest.fn() },
+        },
       ],
     }).compile();
 
