@@ -3,6 +3,10 @@ import { Observable } from 'rxjs';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
 
+/** Duree maximale d'un stream SSE (30 minutes). */
+const SSE_GLOBAL_TIMEOUT_MS = 30 * 60 * 1000;
+
+/** Emet un flux SSE temps reel de la progression d'un audit. */
 @Injectable()
 export class StreamAuditEventsUseCase {
   constructor(
@@ -122,11 +126,27 @@ export class StreamAuditEventsUseCase {
         });
       }, 15000);
 
+      const globalTimer = setTimeout(() => {
+        if (!disposed) {
+          subscriber.next({
+            type: 'timeout',
+            data: {
+              auditId,
+              status: 'TIMEOUT',
+              error: `SSE stream closed after ${SSE_GLOBAL_TIMEOUT_MS}ms`,
+              updatedAt: new Date().toISOString(),
+            },
+          });
+          finish();
+        }
+      }, SSE_GLOBAL_TIMEOUT_MS);
+
       const finish = (): void => {
         if (disposed) return;
         disposed = true;
         clearInterval(pollTimer);
         clearInterval(heartbeatTimer);
+        clearTimeout(globalTimer);
         subscriber.complete();
       };
 
@@ -137,6 +157,7 @@ export class StreamAuditEventsUseCase {
           disposed = true;
           clearInterval(pollTimer);
           clearInterval(heartbeatTimer);
+          clearTimeout(globalTimer);
         }
       };
     });
