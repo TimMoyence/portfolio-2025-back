@@ -15,4 +15,6 @@ export interface JwtPayload {
   iss: string;
   /** Audience cible du token */
   aud: string;
+  /** Roles de l'utilisateur */
+  roles: string[];
 }

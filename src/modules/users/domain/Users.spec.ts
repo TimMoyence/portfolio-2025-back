@@ -10,6 +10,7 @@ describe('Users aggregate', () => {
       lastName: ' Doe ',
       phone: '00 1 212 555 0100',
       isActive: true,
+      roles: [],
       updatedOrCreatedBy: ' system ',
     });
 

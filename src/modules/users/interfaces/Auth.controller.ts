@@ -1,4 +1,13 @@
-import { Body, Controller, Patch, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Patch,
+  Post,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -11,6 +20,8 @@ import type { Request } from 'express';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
+import type { IUsersRepository } from '../domain/IUsers.repository';
+import { USERS_REPOSITORY } from '../domain/token';
 import type { JwtPayload } from '../application/services/JwtPayload';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
 import { CreateUserDto } from './dto/CreateUser.dto';
@@ -26,6 +37,8 @@ export class AuthController {
     private readonly authenticateUserUseCase: AuthenticateUserUseCase,
     private readonly createUsersUseCase: CreateUsersUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
+    @Inject(USERS_REPOSITORY)
+    private readonly usersRepository: IUsersRepository,
   ) {}
 
   @Public()
@@ -62,14 +75,26 @@ export class AuthController {
     return UserResponseDto.fromDomain(updatedUser);
   }
 
+  @Public()
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
-  @ApiBearerAuth()
   @ApiOkResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Registration failed' })
-  @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   async register(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
     const result = await this.createUsersUseCase.execute(dto);
     return UserResponseDto.fromDomain(result);
+  }
+
+  @Get('me')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid or expired token' })
+  async me(@Req() req: Request): Promise<UserResponseDto> {
+    const payload = req['user'] as JwtPayload;
+    const user = await this.usersRepository.findById(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return UserResponseDto.fromDomain(user);
   }
 }

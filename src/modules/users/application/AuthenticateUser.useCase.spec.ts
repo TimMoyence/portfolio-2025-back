@@ -50,6 +50,7 @@ describe('AuthenticateUserUseCase', () => {
       lastName: 'Doe',
       phone: null,
       isActive: true,
+      roles: [],
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,
@@ -70,6 +71,7 @@ describe('AuthenticateUserUseCase', () => {
     expect(jwtTokenService.sign).toHaveBeenCalledWith({
       sub: user.id,
       email: user.email,
+      roles: [],
     });
     expect(result).toEqual({ accessToken: 'jwt-token', expiresIn: 3600, user });
   });
@@ -91,6 +93,7 @@ describe('AuthenticateUserUseCase', () => {
       lastName: 'Ctive',
       phone: null,
       isActive: false,
+      roles: [],
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,
@@ -114,6 +117,7 @@ describe('AuthenticateUserUseCase', () => {
       lastName: 'Smith',
       phone: null,
       isActive: true,
+      roles: [],
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,

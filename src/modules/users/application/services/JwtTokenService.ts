@@ -142,6 +142,10 @@ export class JwtTokenService {
       throw new Error('Invalid email claim');
     }
 
+    const roles = Array.isArray(decoded.roles)
+      ? (decoded.roles as string[])
+      : [];
+
     return {
       sub,
       email,
@@ -149,6 +153,7 @@ export class JwtTokenService {
       exp: expiresAt as number,
       iss: decoded.iss as string,
       aud: decoded.aud as string,
+      roles,
     };
   }
 

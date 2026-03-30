@@ -36,6 +36,7 @@ describe('UpdateUsersUseCase', () => {
       lastName: 'Doe',
       phone: null,
       isActive: true,
+      roles: [],
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,

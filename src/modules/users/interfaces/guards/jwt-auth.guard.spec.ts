@@ -47,6 +47,7 @@ describe('JwtAuthGuard', () => {
       exp: 9999999999,
       iss: 'portfolio-2025',
       aud: 'portfolio-2025-api',
+      roles: [],
     };
     jwtTokenService.verify.mockReturnValue(payload);
     reflector.getAllAndOverride.mockReturnValue(false);

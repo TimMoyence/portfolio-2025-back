@@ -28,6 +28,9 @@ export class UsersEntity {
   @Column({ default: true })
   isActive!: boolean;
 
+  @Column({ type: 'simple-array', default: '' })
+  roles: string[];
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

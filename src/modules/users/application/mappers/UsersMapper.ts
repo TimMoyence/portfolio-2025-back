@@ -16,6 +16,7 @@ export class UsersMapper {
         lastName: command.lastName,
         phone: command.phone ?? null,
         isActive: command.isActive ?? true,
+        roles: command.roles ?? [],
         updatedOrCreatedBy: command.updatedOrCreatedBy ?? null,
       }),
     );

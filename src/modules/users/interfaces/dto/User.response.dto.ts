@@ -21,6 +21,9 @@ export class UserResponseDto {
   @ApiProperty({ example: true })
   isActive: boolean;
 
+  @ApiProperty({ example: ['budget'], type: [String] })
+  roles: string[];
+
   @ApiProperty({ type: String, example: '2025-01-01T00:00:00.000Z' })
   createdAt?: Date;
 
@@ -38,6 +41,7 @@ export class UserResponseDto {
     dto.lastName = user.lastName;
     dto.phone = user.phone ?? null;
     dto.isActive = user.isActive;
+    dto.roles = user.roles ?? [];
     dto.createdAt = user.createdAt;
     dto.updatedAt = user.updatedAt;
     dto.updatedOrCreatedBy = user.updatedOrCreatedBy ?? null;

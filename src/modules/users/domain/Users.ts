@@ -9,6 +9,7 @@ export interface CreateUserProps {
   lastName: string;
   phone?: string | null;
   isActive?: boolean;
+  roles?: string[];
   updatedOrCreatedBy?: string | null;
 }
 
@@ -31,6 +32,7 @@ export class Users {
   lastName: string;
   phone: string | null;
   isActive: boolean;
+  roles: string[];
   createdAt?: Date;
   updatedAt?: Date;
   updatedOrCreatedBy: string | null;
@@ -65,6 +67,7 @@ export class Users {
     user.lastName = lastName;
     user.phone = phone?.value ?? null;
     user.isActive = props.isActive ?? true;
+    user.roles = Array.isArray(props.roles) ? props.roles : [];
     user.createdAt = new Date();
     user.updatedAt = new Date();
     user.updatedOrCreatedBy = this.optionalActor(props.updatedOrCreatedBy);

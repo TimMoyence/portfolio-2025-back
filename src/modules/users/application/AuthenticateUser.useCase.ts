@@ -41,6 +41,7 @@ export class AuthenticateUserUseCase {
     const { token, expiresIn } = this.jwtTokenService.sign({
       sub: user.id,
       email: user.email,
+      roles: user.roles ?? [],
     });
 
     return {

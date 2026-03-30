@@ -42,6 +42,7 @@ describe('CreateUsersUseCase', () => {
       lastName: dto.lastName,
       phone: null,
       isActive: true,
+      roles: [],
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: 'self-registration',
