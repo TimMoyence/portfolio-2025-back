@@ -29,7 +29,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --watchman=false",
     "test:e2e:http": "jest --config ./test/jest-e2e-http.json --watchman=false",
-    "test:integration:db": "jest --config ./test/jest-db-integration.json --watchman=false",
+    "test:integration:db": "jest --config ./test/jest-db-integration.json --watchman=false --runInBand",
     "db:integration:up": "docker compose -p portfolio2025-dbint -f ./test/db-integration.compose.yaml up -d --wait",
     "db:integration:down": "docker compose -p portfolio2025-dbint -f ./test/db-integration.compose.yaml down -v --remove-orphans",
     "test:integration:db:run": "RUN_DB_INTEGRATION=true DB_HOST=127.0.0.1 DB_PORT=55432 DB_USERNAME=postgres DB_PASSWORD=postgres DB_NAME=portfolio_2025_ci npm run test:integration:db -- --runInBand",
