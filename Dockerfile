@@ -14,7 +14,7 @@ RUN rm -rf dist && pnpm build
 FROM base AS production-deps
 ENV NODE_ENV=production
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 FROM node:22-slim AS runner
 WORKDIR /app
