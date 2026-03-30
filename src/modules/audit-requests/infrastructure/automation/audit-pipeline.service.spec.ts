@@ -1,12 +1,94 @@
 import { AuditSnapshot } from '../../domain/AuditProcessing';
+import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
+import type { AuditRequestMailerService } from '../AuditRequestMailer.service';
 import { AuditPipelineService } from './audit-pipeline.service';
 import type { AuditAutomationConfig } from './audit.config';
-import type { LlmSynthesisProgressEvent } from './langchain-audit-report.service';
+import type { DeepUrlAnalysisService } from './deep-url-analysis.service';
+import type { HomepageAnalyzerService } from './homepage-analyzer.service';
+import type {
+  LangchainAuditReportService,
+  LlmSynthesisProgressEvent,
+} from './langchain-audit-report.service';
+import type { PageAiRecapService } from './page-ai-recap.service';
+import type { SafeFetchService } from './safe-fetch.service';
+import type { ScoringService } from './scoring.service';
+import type { SitemapDiscoveryService } from './sitemap-discovery.service';
+import type { UrlIndexabilityService } from './url-indexability.service';
 import { normalizeAuditUrl } from './url-normalizer.util';
 
 jest.mock('./url-normalizer.util', () => ({
   normalizeAuditUrl: jest.fn(),
 }));
+
+/**
+ * Fabrique les stubs minimaux pour chaque dependance concrete du pipeline.
+ * Les `as unknown as jest.Mocked<T>` sont necessaires car les classes
+ * possedent des membres prives non satisfiables par un objet litteral.
+ */
+function buildStubDeps(
+  repoOverrides?: Partial<jest.Mocked<IAuditRequestsRepository>>,
+) {
+  const repo: jest.Mocked<IAuditRequestsRepository> = {
+    create: jest.fn(),
+    findById: jest.fn(),
+    findSummaryById: jest.fn(),
+    updateState: jest.fn(),
+    ...repoOverrides,
+  };
+
+  return {
+    repo,
+    safeFetch: {
+      fetchText: jest.fn(),
+      fetchHeaders: jest.fn(),
+    } as unknown as jest.Mocked<SafeFetchService>,
+    homepageAnalyzer: {
+      analyze: jest.fn(),
+    } as unknown as jest.Mocked<HomepageAnalyzerService>,
+    deepUrlAnalysis: {
+      analyze: jest.fn(),
+      inferTechFingerprint: jest.fn(),
+    } as unknown as jest.Mocked<DeepUrlAnalysisService>,
+    sitemapDiscovery: {
+      discover: jest.fn(),
+    } as unknown as jest.Mocked<SitemapDiscoveryService>,
+    urlIndexability: {
+      analyzeUrls: jest.fn(),
+    } as unknown as jest.Mocked<UrlIndexabilityService>,
+    pageAiRecap: {
+      analyzePages: jest.fn(),
+    } as unknown as jest.Mocked<PageAiRecapService>,
+    scoring: {
+      compute: jest.fn(),
+    } as unknown as jest.Mocked<ScoringService>,
+    llmReport: {
+      generate: jest.fn(),
+    } as unknown as jest.Mocked<LangchainAuditReportService>,
+    mailer: {
+      sendAuditNotification: jest.fn(),
+      sendAuditReportNotification: jest.fn(),
+    } as unknown as jest.Mocked<AuditRequestMailerService>,
+  };
+}
+
+function buildPipelineService(
+  deps: ReturnType<typeof buildStubDeps>,
+  pipelineConfig: AuditAutomationConfig,
+): AuditPipelineService {
+  return new AuditPipelineService(
+    deps.repo,
+    pipelineConfig,
+    deps.safeFetch,
+    deps.homepageAnalyzer,
+    deps.deepUrlAnalysis,
+    deps.sitemapDiscovery,
+    deps.urlIndexability,
+    deps.pageAiRecap,
+    deps.scoring,
+    deps.llmReport,
+    deps.mailer,
+  );
+}
 
 describe('AuditPipelineService', () => {
   const config: AuditAutomationConfig = {
@@ -214,8 +296,10 @@ describe('AuditPipelineService', () => {
       hostname: 'example.com',
     });
 
-    const repo = {
+    const repo: jest.Mocked<IAuditRequestsRepository> = {
+      create: jest.fn(),
       findById: jest.fn().mockResolvedValue(audit),
+      findSummaryById: jest.fn(),
       updateState: jest.fn().mockResolvedValue(undefined),
     };
     const safeFetch = {
@@ -230,16 +314,17 @@ describe('AuditPipelineService', () => {
         totalMs: 900,
         contentLength: 300,
       }),
-    };
+      fetchHeaders: jest.fn(),
+    } as unknown as jest.Mocked<SafeFetchService>;
     const homepageAnalyzer = {
       analyze: jest.fn().mockReturnValue(homepageSnapshot),
-    };
+    } as unknown as jest.Mocked<HomepageAnalyzerService>;
     const sitemapDiscovery = {
       discover: jest.fn().mockResolvedValue({
         sitemapUrls: ['https://example.com/sitemap.xml'],
         urls: ['https://example.com/', 'https://example.com/about'],
       }),
-    };
+    } as unknown as jest.Mocked<SitemapDiscoveryService>;
     const urlIndexability = {
       analyzeUrls: jest.fn().mockImplementation(
         async (
@@ -261,7 +346,7 @@ describe('AuditPipelineService', () => {
           return indexabilityResults;
         },
       ),
-    };
+    } as unknown as jest.Mocked<UrlIndexabilityService>;
     const scoring = {
       compute: jest
         .fn()
@@ -287,7 +372,7 @@ describe('AuditPipelineService', () => {
           quickWins: ['Ajouter des données structurées avancées'],
           keyChecks: { deep: true },
         }),
-    };
+    } as unknown as jest.Mocked<ScoringService>;
     const deepUrlAnalysis = {
       analyze: jest.fn().mockReturnValue({
         findings: [
@@ -311,7 +396,7 @@ describe('AuditPipelineService', () => {
         alternatives: ['PHP runtime'],
         unknowns: [],
       }),
-    };
+    } as unknown as jest.Mocked<DeepUrlAnalysisService>;
     const llmReport = {
       generate: jest.fn().mockImplementation(
         async (
@@ -350,7 +435,7 @@ describe('AuditPipelineService', () => {
           };
         },
       ),
-    };
+    } as unknown as jest.Mocked<LangchainAuditReportService>;
     const pageAiRecap = {
       analyzePages: jest.fn().mockImplementation(
         async (
@@ -422,23 +507,24 @@ describe('AuditPipelineService', () => {
           };
         },
       ),
-    };
+    } as unknown as jest.Mocked<PageAiRecapService>;
     const mailer = {
+      sendAuditNotification: jest.fn(),
       sendAuditReportNotification: jest.fn().mockResolvedValue(undefined),
-    };
+    } as unknown as jest.Mocked<AuditRequestMailerService>;
 
     const service = new AuditPipelineService(
-      repo as never,
+      repo,
       config,
-      safeFetch as never,
-      homepageAnalyzer as never,
-      deepUrlAnalysis as never,
-      sitemapDiscovery as never,
-      urlIndexability as never,
-      pageAiRecap as never,
-      scoring as never,
-      llmReport as never,
-      mailer as never,
+      safeFetch,
+      homepageAnalyzer,
+      deepUrlAnalysis,
+      sitemapDiscovery,
+      urlIndexability,
+      pageAiRecap,
+      scoring,
+      llmReport,
+      mailer,
     );
 
     await service.run('audit-1');
@@ -506,6 +592,7 @@ describe('AuditPipelineService', () => {
         (state) => state.processingStatus === 'RUNNING' && state.summaryText,
       ),
     ).toBe(false);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mailer.sendAuditReportNotification).toHaveBeenCalledTimes(1);
   });
 
@@ -514,27 +601,15 @@ describe('AuditPipelineService', () => {
       new Error('Normalization failed'),
     );
 
-    const repo = {
+    const deps = buildStubDeps({
       findById: jest.fn().mockResolvedValue(audit),
       updateState: jest.fn().mockResolvedValue(undefined),
-    };
-    const service = new AuditPipelineService(
-      repo as never,
-      config,
-      { fetchText: jest.fn() } as never,
-      { analyze: jest.fn() } as never,
-      { analyze: jest.fn() } as never,
-      { discover: jest.fn() } as never,
-      { analyzeUrls: jest.fn() } as never,
-      { analyzePages: jest.fn() } as never,
-      { compute: jest.fn() } as never,
-      { generate: jest.fn() } as never,
-      { sendAuditReportNotification: jest.fn() } as never,
-    );
+    });
+    const service = buildPipelineService(deps, config);
 
     await service.run('audit-1');
 
-    const lastCall = repo.updateState.mock.calls.at(-1) as
+    const lastCall = deps.repo.updateState.mock.calls.at(-1) as
       | [string, Record<string, unknown>]
       | undefined;
     expect(lastCall).toBeDefined();
@@ -550,30 +625,10 @@ describe('AuditPipelineService', () => {
   });
 
   it('selects locale-first urls before neutral and alternate locale urls', () => {
-    const service = new AuditPipelineService(
-      { findById: jest.fn(), updateState: jest.fn() } as never,
-      config,
-      { fetchText: jest.fn() } as never,
-      { analyze: jest.fn() } as never,
-      { analyze: jest.fn() } as never,
-      { discover: jest.fn() } as never,
-      { analyzeUrls: jest.fn() } as never,
-      { analyzePages: jest.fn() } as never,
-      { compute: jest.fn() } as never,
-      { generate: jest.fn() } as never,
-      { sendAuditReportNotification: jest.fn() } as never,
-    );
+    const deps = buildStubDeps();
+    const service = buildPipelineService(deps, config);
 
-    const serviceWithSelector = service as unknown as {
-      selectUrlsForLocale: (
-        candidateUrls: string[],
-        homepageUrl: string,
-        locale: 'fr' | 'en',
-        limit: number,
-      ) => string[];
-    };
-
-    const selected = serviceWithSelector.selectUrlsForLocale(
+    const selected = service['selectUrlsForLocale'](
       [
         'https://example.com/en/home',
         'https://example.com/fr/services',
