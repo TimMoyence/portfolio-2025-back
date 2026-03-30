@@ -17,6 +17,7 @@ import { CreateCookieConsentsUseCase } from '../src/modules/cookie-consents/appl
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
+import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import { CreateCoursesUseCase } from '../src/modules/courses/application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../src/modules/courses/application/ListCourses.useCase';
@@ -86,6 +87,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         },
         { provide: CreateUsersUseCase, useValue: createUsersUseCase },
         { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
+        { provide: USERS_REPOSITORY, useValue: { findById: jest.fn() } },
         { provide: ListServicesUseCase, useValue: listServicesUseCase },
         { provide: CreateServicesUseCase, useValue: createServicesUseCase },
         { provide: ListProjectsUseCase, useValue: listProjectsUseCase },
