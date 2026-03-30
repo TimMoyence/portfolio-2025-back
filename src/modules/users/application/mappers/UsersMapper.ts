@@ -1,5 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
-import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
+import { mapDomainValidation } from '../../../../common/application/mappers/map-domain-validation';
 import { Users } from '../../domain/Users';
 import type { CreateUserCommand } from '../dto/CreateUser.command';
 import type { UpdateUserCommand } from '../dto/UpdateUser.command';
@@ -9,8 +8,8 @@ export class UsersMapper {
     command: CreateUserCommand,
     passwordHash: string,
   ): Users {
-    try {
-      return Users.create({
+    return mapDomainValidation(() =>
+      Users.create({
         email: command.email,
         passwordHash,
         firstName: command.firstName,
@@ -18,13 +17,8 @@ export class UsersMapper {
         phone: command.phone ?? null,
         isActive: command.isActive ?? true,
         updatedOrCreatedBy: command.updatedOrCreatedBy ?? null,
-      });
-    } catch (error) {
-      if (error instanceof DomainValidationError) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
-    }
+      }),
+    );
   }
 
   /** @deprecated Utiliser fromCreateCommand a la place. */
@@ -36,8 +30,8 @@ export class UsersMapper {
     command: UpdateUserCommand,
     passwordHash?: string,
   ): Partial<Users> {
-    try {
-      return Users.update({
+    return mapDomainValidation(() =>
+      Users.update({
         email: command.email,
         passwordHash,
         firstName: command.firstName,
@@ -45,13 +39,8 @@ export class UsersMapper {
         phone: command.phone,
         isActive: command.isActive,
         updatedOrCreatedBy: command.updatedOrCreatedBy,
-      });
-    } catch (error) {
-      if (error instanceof DomainValidationError) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
-    }
+      }),
+    );
   }
 
   /** @deprecated Utiliser fromUpdateCommand a la place. */

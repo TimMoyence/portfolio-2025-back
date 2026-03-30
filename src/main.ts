@@ -13,6 +13,9 @@ async function bootstrap() {
     ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
     : [];
 
+  // CSRF : non necessaire — l'API utilise des Bearer tokens dans le header
+  // Authorization (pas de cookies d'auth). Les attaques CSRF ne fonctionnent
+  // qu'avec des credentials envoyes automatiquement par le navigateur (cookies).
   app.enableCors({
     origin: corsOrigins,
     credentials: true,

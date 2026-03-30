@@ -26,6 +26,7 @@ import {
 } from './report-quality-gate.service';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
+import { sanitizePromptInput } from './shared/prompt-sanitize.util';
 
 const userSummarySchema = z.object({
   summaryText: z.string().min(1),
@@ -554,8 +555,8 @@ export class LangchainAuditReportService {
 
     return {
       locale: input.locale,
-      website: input.websiteName,
-      normalizedUrl: input.normalizedUrl,
+      website: sanitizePromptInput(input.websiteName),
+      normalizedUrl: sanitizePromptInput(input.normalizedUrl),
       keyChecks: input.keyChecks,
       quickWins: input.quickWins.slice(0, caps.quickWins),
       pillarScores: input.pillarScores,

@@ -4,7 +4,7 @@ import type { JwtPayload } from './JwtPayload';
 import { createHmac } from 'crypto';
 
 describe('JwtTokenService', () => {
-  const JWT_SECRET = 'test-secret-key-for-unit-tests';
+  const JWT_SECRET = 'test-secret-key-for-unit-tests-32';
   let configService: jest.Mocked<ConfigService>;
   let service: JwtTokenService;
 
@@ -25,6 +25,17 @@ describe('JwtTokenService', () => {
       const result = service.sign({ sub: 'user-1', email: 'a@b.com' });
       expect(result.token.split('.')).toHaveLength(3);
       expect(result.expiresIn).toBe(3600);
+    });
+
+    it('devrait rejeter un secret trop court', () => {
+      configService.get.mockImplementation((key: string) => {
+        if (key === 'JWT_SECRET') return 'short';
+        return undefined;
+      });
+
+      expect(() => service.sign({ sub: 'u', email: 'a@b.com' })).toThrow(
+        'JWT_SECRET must be at least 32 characters',
+      );
     });
   });
 

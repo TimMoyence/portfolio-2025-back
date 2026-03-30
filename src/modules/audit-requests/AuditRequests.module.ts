@@ -33,16 +33,25 @@ const AUDIT_REQUESTS_USE_CASES = [
   StreamAuditEventsUseCase,
 ];
 
-const AUDIT_AUTOMATION_SERVICES = [
+// Crawl & analyse technique
+const AUDIT_CRAWL_SERVICES = [
   SafeFetchService,
   HomepageAnalyzerService,
-  DeepUrlAnalysisService,
   SitemapDiscoveryService,
   UrlIndexabilityService,
+  DeepUrlAnalysisService,
+];
+
+// Scoring, IA et synthese
+const AUDIT_SYNTHESIS_SERVICES = [
   ScoringService,
-  ReportQualityGateService,
   PageAiRecapService,
   LangchainAuditReportService,
+  ReportQualityGateService,
+];
+
+// Orchestration et queue
+const AUDIT_ORCHESTRATION_SERVICES = [
   AuditPipelineService,
   AuditQueueService,
   AuditWorkerService,
@@ -53,7 +62,9 @@ const AUDIT_AUTOMATION_SERVICES = [
   controllers: [AuditsController],
   providers: [
     ...AUDIT_REQUESTS_USE_CASES,
-    ...AUDIT_AUTOMATION_SERVICES,
+    ...AUDIT_CRAWL_SERVICES,
+    ...AUDIT_SYNTHESIS_SERVICES,
+    ...AUDIT_ORCHESTRATION_SERVICES,
     AuditRequestMailerService,
     {
       provide: AUDIT_AUTOMATION_CONFIG,

@@ -20,11 +20,10 @@ export class JwtTokenService {
 
   constructor(private readonly configService: ConfigService) {}
 
+  private static readonly MIN_SECRET_LENGTH = 32;
+
   sign(payload: Record<string, unknown>): SignedToken {
-    const secret = this.configService.get<string>('JWT_SECRET');
-    if (!secret) {
-      throw new Error('JWT_SECRET is not defined');
-    }
+    const secret = this.getValidatedSecret();
 
     const expiresInValue =
       this.configService.get<string>('JWT_EXPIRES_IN') ?? '3600s';
@@ -99,10 +98,7 @@ export class JwtTokenService {
 
     const [header, payload, signature] = parts;
 
-    const secret = this.configService.get<string>('JWT_SECRET');
-    if (!secret) {
-      throw new Error('JWT_SECRET is not defined');
-    }
+    const secret = this.getValidatedSecret();
 
     // Verifier la signature HMAC-SHA256
     const expectedSignature = this.createSignature(
@@ -137,14 +133,36 @@ export class JwtTokenService {
       throw new Error('Invalid audience');
     }
 
+    const sub = decoded.sub;
+    const email = decoded.email;
+    if (!sub || typeof sub !== 'string') {
+      throw new Error('Invalid subject claim');
+    }
+    if (!email || typeof email !== 'string') {
+      throw new Error('Invalid email claim');
+    }
+
     return {
-      sub: decoded.sub as string,
-      email: decoded.email as string,
+      sub,
+      email,
       iat: decoded.issuedAtTime as number,
       exp: expiresAt as number,
       iss: decoded.iss as string,
       aud: decoded.aud as string,
     };
+  }
+
+  private getValidatedSecret(): string {
+    const secret = this.configService.get<string>('JWT_SECRET');
+    if (!secret) {
+      throw new Error('JWT_SECRET is not defined');
+    }
+    if (secret.length < JwtTokenService.MIN_SECRET_LENGTH) {
+      throw new Error(
+        `JWT_SECRET must be at least ${JwtTokenService.MIN_SECRET_LENGTH} characters`,
+      );
+    }
+    return secret;
   }
 
   private createSignature(data: string, secret: string): string {

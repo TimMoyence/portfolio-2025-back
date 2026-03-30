@@ -6,6 +6,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
@@ -29,6 +30,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @ApiOkResponse({ type: AuthResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
@@ -61,6 +63,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Registration failed' })
