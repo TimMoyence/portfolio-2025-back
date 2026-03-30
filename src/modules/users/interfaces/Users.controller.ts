@@ -19,9 +19,9 @@ import { DeleteUsersUseCase } from '../application/DeleteUsers.useCase';
 import { ListOneUserUseCase } from '../application/ListOneUser.useCase';
 import { ListUsersUseCase } from '../application/ListUsers.useCase';
 import { UpdateUsersUseCase } from '../application/UpdateUsers.useCase';
-import { CreateUserDto } from '../application/dto/CreateUser.dto';
-import { UpdateUserDto } from '../application/dto/UpdateUser.dto';
-import { UserResponseDto } from './dto.response/User.response.dto';
+import { CreateUserDto } from './dto/CreateUser.dto';
+import { UpdateUserDto } from './dto/UpdateUser.dto';
+import { UserResponseDto } from './dto/User.response.dto';
 
 @ApiTags('users')
 @Controller('users')

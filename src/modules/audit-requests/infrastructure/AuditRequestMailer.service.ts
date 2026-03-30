@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import { AuditRequest } from '../domain/AuditRequest';
+import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
 import { AuditLocale, resolveAuditLocale } from '../domain/audit-locale.util';
 
 export interface AuditReportNotificationPayload {
@@ -13,8 +14,71 @@ export interface AuditReportNotificationPayload {
   fullReport: Record<string, unknown>;
 }
 
+/** Donnees pre-calculees pour les templates text/html du rapport. */
+interface ReportTemplateData {
+  auditId: string;
+  websiteName: string;
+  contactMethod: string;
+  contactValue: string;
+  summaryText: string;
+  locale: AuditLocale;
+  serializedReport: string;
+  explanation: string;
+  executiveSummary: string;
+  conversionAndClarity: string;
+  speedAndPerformance: string;
+  seoFoundations: string;
+  credibilityAndTrust: string;
+  techAndScalability: string;
+  scorecardAndBusinessOpportunities: string;
+  stackPrimary: string;
+  stackConfidence: number;
+  stackEvidence: string[];
+  stackUnknowns: string[];
+  stackAlternatives: string[];
+  prioritiesText: string;
+  priorityMatrixText: string;
+  pageRecapHighlightsText: string;
+  todoText: string;
+  invoiceText: string;
+  weekPlanText: string;
+  monthPlanText: string;
+  fastPlanText: string;
+  backlogText: string;
+  costText: string;
+  qualityGateText: string;
+  stackFingerprintText: string;
+  diagnosticChaptersText: string;
+  prioritiesHtml: string;
+  priorityMatrixHtml: string;
+  pageRecapHighlightsHtml: string;
+  todoHtml: string;
+  invoiceHtml: string;
+  weekPlanHtml: string;
+  monthPlanHtml: string;
+  fastPlanHtml: string;
+  backlogHtml: string;
+  qualityGateReasonsHtml: string;
+  stackEvidenceHtml: string;
+  stackAlternativesHtml: string;
+  stackUnknownsHtml: string;
+  estimatedHours: number;
+  totalEstimatedHours: number;
+  estimatedCostMin: number;
+  estimatedCostMax: number;
+  costCurrency: string;
+  fastTrackHours: number;
+  fastTrackCostMin: number;
+  fastTrackCostMax: number;
+  qualityGateStatus: string;
+  qualityGateRetried: boolean;
+  qualityGateFallback: boolean;
+  clientMessageTemplate: string;
+  clientLongEmailSnippet: string;
+}
+
 @Injectable()
-export class AuditRequestMailerService {
+export class AuditRequestMailerService implements IAuditNotifierPort {
   private readonly logger = new Logger(AuditRequestMailerService.name);
   private readonly transporter?: Transporter;
   private readonly to = process.env.CONTACT_NOTIFICATION_TO;
@@ -60,7 +124,20 @@ NOUVELLE DEMANDE D'AUDIT
 Site / activité : ${websiteName}
 Contact        : ${contactMethod} — ${contactValue}
       `.trim(),
-      html: `
+      html: this.buildNotificationHtml(
+        websiteName,
+        contactMethod,
+        contactValue,
+      ),
+    });
+  }
+
+  private buildNotificationHtml(
+    websiteName: string,
+    contactMethod: string,
+    contactValue: string,
+  ): string {
+    return `
         <div style="font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; padding:24px;">
           <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
             <h2 style="margin-top:0; color:#333;">🔍 Nouvelle demande d'audit SEO</h2>
@@ -68,11 +145,11 @@ Contact        : ${contactMethod} — ${contactValue}
             <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
               <tr>
                 <td style="padding:6px 0; font-weight:bold; width:140px;">Site / activité</td>
-                <td style="padding:6px 0;">${websiteName}</td>
+                <td style="padding:6px 0;">${this.escapeHtml(websiteName)}</td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Contact</td>
-                <td style="padding:6px 0;">${contactMethod} — ${contactValue}</td>
+                <td style="padding:6px 0;">${this.escapeHtml(contactMethod)} — ${this.escapeHtml(contactValue)}</td>
               </tr>
             </table>
 
@@ -81,8 +158,7 @@ Contact        : ${contactMethod} — ${contactValue}
             </p>
           </div>
         </div>
-      `,
-    });
+      `;
   }
 
   async sendAuditReportNotification(
@@ -556,6 +632,68 @@ ${scorecardAndBusinessOpportunities}`;
       ? `<ul style="padding-left:20px; margin:4px 0;">${stackUnknowns.map((entry) => `<li>${this.escapeHtml(entry)}</li>`).join('')}</ul>`
       : `<p style="margin:4px 0;">${locale === 'en' ? 'none' : 'aucune'}</p>`;
 
+    const reportData: ReportTemplateData = {
+      auditId,
+      websiteName,
+      contactMethod,
+      contactValue,
+      summaryText,
+      locale,
+      serializedReport,
+      explanation,
+      executiveSummary,
+      conversionAndClarity,
+      speedAndPerformance,
+      seoFoundations,
+      credibilityAndTrust,
+      techAndScalability,
+      scorecardAndBusinessOpportunities,
+      stackPrimary,
+      stackConfidence,
+      stackEvidence,
+      stackUnknowns,
+      stackAlternatives,
+      prioritiesText,
+      priorityMatrixText,
+      pageRecapHighlightsText,
+      todoText,
+      invoiceText,
+      weekPlanText,
+      monthPlanText,
+      fastPlanText,
+      backlogText,
+      costText,
+      qualityGateText,
+      stackFingerprintText,
+      diagnosticChaptersText,
+      prioritiesHtml,
+      priorityMatrixHtml,
+      pageRecapHighlightsHtml,
+      todoHtml,
+      invoiceHtml,
+      weekPlanHtml,
+      monthPlanHtml,
+      fastPlanHtml,
+      backlogHtml,
+      qualityGateReasonsHtml,
+      stackEvidenceHtml,
+      stackAlternativesHtml,
+      stackUnknownsHtml,
+      estimatedHours,
+      totalEstimatedHours,
+      estimatedCostMin,
+      estimatedCostMax,
+      costCurrency,
+      fastTrackHours,
+      fastTrackCostMin,
+      fastTrackCostMax,
+      qualityGateStatus,
+      qualityGateRetried,
+      qualityGateFallback,
+      clientMessageTemplate,
+      clientLongEmailSnippet,
+    };
+
     await this.transporter.sendMail({
       from: this.from,
       to: this.reportTo,
@@ -563,146 +701,155 @@ ${scorecardAndBusinessOpportunities}`;
         locale === 'en'
           ? `📊 Technical Audit Report Completed — ${websiteName}`
           : `📊 Rapport d'audit technique termine — ${websiteName}`,
-      text: `
+      text: this.buildReportText(reportData),
+      html: this.buildReportHtml(reportData),
+    });
+  }
+
+  private buildReportText(d: ReportTemplateData): string {
+    return `
 RAPPORT D'AUDIT TERMINE
 -----------------------
 
-Audit ID      : ${auditId}
-Site          : ${websiteName}
-Contact       : ${contactMethod} — ${contactValue}
+Audit ID      : ${d.auditId}
+Site          : ${d.websiteName}
+Contact       : ${d.contactMethod} — ${d.contactValue}
 
 Resume utilisateur:
-${summaryText}
+${d.summaryText}
 
 Explication du rapport:
-${explanation}
+${d.explanation}
 
 Synthese executive:
-${executiveSummary}
+${d.executiveSummary}
 
 Quality Gate:
-${qualityGateText}
+${d.qualityGateText}
 
-${diagnosticChaptersText}
+${d.diagnosticChaptersText}
 
-${stackFingerprintText}
+${d.stackFingerprintText}
 
 Matrice des priorites techniques:
-${prioritiesText || 'Aucune action prioritaire detaillee'}
+${d.prioritiesText || 'Aucune action prioritaire detaillee'}
 
 Matrice action P0/P1/P2 (technique):
-${priorityMatrixText || 'Aucune action matrice detaillee'}
+${d.priorityMatrixText || 'Aucune action matrice detaillee'}
 
 Signaux issus des recaps page-par-page:
-${pageRecapHighlightsText || 'Aucun signal critique recaps'}
+${d.pageRecapHighlightsText || 'Aucun signal critique recaps'}
 
 Todo implementation (mode PM):
-${todoText || 'Aucune todo detaillee'}
+${d.todoText || 'Aucune todo detaillee'}
 
 Scope de facturation recommande:
-${invoiceText || 'Aucun lot detaille'}
+${d.invoiceText || 'Aucun lot detaille'}
 
-Charge totale estimee: ${estimatedHours}h
+Charge totale estimee: ${d.estimatedHours}h
 
 Plan de mise en oeuvre - cette semaine:
-${weekPlanText || 'Aucun plan semaine detaille'}
+${d.weekPlanText || 'Aucun plan semaine detaille'}
 
 Plan de mise en oeuvre - ce mois:
-${monthPlanText || 'Aucun plan mois detaille'}
+${d.monthPlanText || 'Aucun plan mois detaille'}
 
 Template message client (copier/coller):
-${clientMessageTemplate}
+${d.clientMessageTemplate}
 
 Message client long (extrait):
-${clientLongEmailSnippet}
+${d.clientLongEmailSnippet}
 
 Plan d'implémentation rapide:
-${fastPlanText || 'Aucun plan rapide détaillé'}
+${d.fastPlanText || 'Aucun plan rapide détaillé'}
 
 Backlog d'implémentation:
-${backlogText || 'Aucun backlog détaillé'}
+${d.backlogText || 'Aucun backlog détaillé'}
 
-${costText}
+${d.costText}
 
 Rapport complet (JSON):
-${serializedReport}
-      `.trim(),
-      html: `
+${d.serializedReport}
+      `.trim();
+  }
+
+  private buildReportHtml(d: ReportTemplateData): string {
+    return `
         <div style="font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; padding:24px;">
           <div style="max-width:720px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
-            <h2 style="margin-top:0; color:#333;">${locale === 'en' ? '📊 Technical Audit Report Completed' : "📊 Rapport d'audit technique termine"}</h2>
-            <p style="margin-bottom:8px;"><strong>Audit ID:</strong> ${auditId}</p>
-            <p style="margin-bottom:8px;"><strong>Site:</strong> ${websiteName}</p>
-            <p style="margin-bottom:16px;"><strong>Contact:</strong> ${contactMethod} — ${contactValue}</p>
+            <h2 style="margin-top:0; color:#333;">${d.locale === 'en' ? '📊 Technical Audit Report Completed' : "📊 Rapport d'audit technique termine"}</h2>
+            <p style="margin-bottom:8px;"><strong>Audit ID:</strong> ${this.escapeHtml(d.auditId)}</p>
+            <p style="margin-bottom:8px;"><strong>Site:</strong> ${this.escapeHtml(d.websiteName)}</p>
+            <p style="margin-bottom:16px;"><strong>Contact:</strong> ${this.escapeHtml(d.contactMethod)} — ${this.escapeHtml(d.contactValue)}</p>
 
             <h3 style="margin-bottom:8px;">Résumé utilisateur</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(summaryText)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.summaryText)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Explication du rapport</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(explanation)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.explanation)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Synthèse exécutive</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(executiveSummary)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.executiveSummary)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Quality Gate</h3>
             <p style="white-space:pre-line; color:#333;">
-              <strong>Status:</strong> ${this.escapeHtml(qualityGateStatus)}<br/>
-              <strong>Retried once:</strong> ${qualityGateRetried ? 'yes' : 'no'}<br/>
-              <strong>Fallback mode:</strong> ${qualityGateFallback ? 'yes' : 'no'}
+              <strong>Status:</strong> ${this.escapeHtml(d.qualityGateStatus)}<br/>
+              <strong>Retried once:</strong> ${d.qualityGateRetried ? 'yes' : 'no'}<br/>
+              <strong>Fallback mode:</strong> ${d.qualityGateFallback ? 'yes' : 'no'}
             </p>
             <p style="margin-top:0; margin-bottom:4px;"><strong>Reasons:</strong></p>
             <ul style="padding-left:20px; color:#333; margin-top:4px;">
-              ${qualityGateReasonsHtml}
+              ${d.qualityGateReasonsHtml}
             </ul>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Conversion & clarté</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(conversionAndClarity)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.conversionAndClarity)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Vitesse & performance</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(speedAndPerformance)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.speedAndPerformance)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">SEO fondations</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(seoFoundations)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.seoFoundations)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Crédibilité & confiance</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(credibilityAndTrust)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.credibilityAndTrust)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Tech & scalabilité</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(techAndScalability)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.techAndScalability)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Scorecard claire + quick wins + business opportunities</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(scorecardAndBusinessOpportunities)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.scorecardAndBusinessOpportunities)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Stack fingerprint</h3>
             <p style="white-space:pre-line; color:#333;">
-              <strong>Primary stack:</strong> ${this.escapeHtml(stackPrimary)}<br/>
-              <strong>Confidence:</strong> ${Math.round(stackConfidence * 100)}%
+              <strong>Primary stack:</strong> ${this.escapeHtml(d.stackPrimary)}<br/>
+              <strong>Confidence:</strong> ${Math.round(d.stackConfidence * 100)}%
             </p>
             <p style="margin:6px 0 2px;"><strong>Evidence:</strong></p>
-            ${stackEvidenceHtml}
+            ${d.stackEvidenceHtml}
             <p style="margin:6px 0 2px;"><strong>Alternatives:</strong></p>
-            ${stackAlternativesHtml}
+            ${d.stackAlternativesHtml}
             <p style="margin:6px 0 2px;"><strong>Unknowns:</strong></p>
-            ${stackUnknownsHtml}
+            ${d.stackUnknownsHtml}
 
-            <h3 style="margin-top:16px; margin-bottom:8px;">${locale === 'en' ? 'Technical Priority Matrix' : 'Matrice des priorites techniques'}</h3>
+            <h3 style="margin-top:16px; margin-bottom:8px;">${d.locale === 'en' ? 'Technical Priority Matrix' : 'Matrice des priorites techniques'}</h3>
             <ol style="padding-left:20px; color:#333;">
-              ${prioritiesHtml || '<li>Aucune action détaillée.</li>'}
+              ${d.prioritiesHtml || '<li>Aucune action détaillée.</li>'}
             </ol>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Matrice action P0/P1/P2</h3>
             <ol style="padding-left:20px; color:#333;">
-              ${priorityMatrixHtml || '<li>Aucune action matrice détaillée.</li>'}
+              ${d.priorityMatrixHtml || '<li>Aucune action matrice détaillée.</li>'}
             </ol>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Signaux recaps page-par-page</h3>
             <ol style="padding-left:20px; color:#333;">
-              ${pageRecapHighlightsHtml || '<li>Aucun signal recap détaillé.</li>'}
+              ${d.pageRecapHighlightsHtml || '<li>Aucun signal recap détaillé.</li>'}
             </ol>
 
-            <h3 style="margin-top:16px; margin-bottom:8px;">Todo d’implémentation (pilotage PM)</h3>
+            <h3 style="margin-top:16px; margin-bottom:8px;">Todo d'implémentation (pilotage PM)</h3>
             <ol style="padding-left:20px; color:#333;">
-              ${todoHtml || '<li>Aucune todo détaillée.</li>'}
+              ${d.todoHtml || '<li>Aucune todo détaillée.</li>'}
             </ol>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Préformat devis/facture</h3>
@@ -716,50 +863,49 @@ ${serializedReport}
                 </tr>
               </thead>
               <tbody>
-                ${invoiceHtml || '<tr><td colspan="4" style="padding:8px; border:1px solid #e5e7eb;">Aucun lot détaillé.</td></tr>'}
+                ${d.invoiceHtml || '<tr><td colspan="4" style="padding:8px; border:1px solid #e5e7eb;">Aucun lot détaillé.</td></tr>'}
               </tbody>
             </table>
-            <p style="margin-top:8px; font-size:13px; color:#333;"><strong>Charge totale estimée:</strong> ${estimatedHours}h</p>
+            <p style="margin-top:8px; font-size:13px; color:#333;"><strong>Charge totale estimée:</strong> ${d.estimatedHours}h</p>
 
-            <h3 style="margin-top:16px; margin-bottom:8px;">Plan d’exécution - cette semaine</h3>
+            <h3 style="margin-top:16px; margin-bottom:8px;">Plan d'exécution - cette semaine</h3>
             <ol style="padding-left:20px; color:#333;">
-              ${weekPlanHtml || '<li>Aucun plan hebdo détaillé.</li>'}
+              ${d.weekPlanHtml || '<li>Aucun plan hebdo détaillé.</li>'}
             </ol>
 
-            <h3 style="margin-top:16px; margin-bottom:8px;">Plan d’exécution - ce mois</h3>
+            <h3 style="margin-top:16px; margin-bottom:8px;">Plan d'exécution - ce mois</h3>
             <ol style="padding-left:20px; color:#333;">
-              ${monthPlanHtml || '<li>Aucun plan mensuel détaillé.</li>'}
+              ${d.monthPlanHtml || '<li>Aucun plan mensuel détaillé.</li>'}
             </ol>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Template prêt à envoyer au client</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(clientMessageTemplate)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.clientMessageTemplate)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Message client long (extrait)</h3>
-            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(clientLongEmailSnippet)}</p>
+            <p style="white-space:pre-line; color:#333;">${this.escapeHtml(d.clientLongEmailSnippet)}</p>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Plan d'implémentation rapide</h3>
             <ol style="padding-left:20px; color:#333;">
-              ${fastPlanHtml || '<li>Aucun plan rapide détaillé.</li>'}
+              ${d.fastPlanHtml || '<li>Aucun plan rapide détaillé.</li>'}
             </ol>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Backlog d'implémentation</h3>
             <ol style="padding-left:20px; color:#333;">
-              ${backlogHtml || '<li>Aucun backlog détaillé.</li>'}
+              ${d.backlogHtml || '<li>Aucun backlog détaillé.</li>'}
             </ol>
 
             <h3 style="margin-top:16px; margin-bottom:8px;">Estimation coût et charge</h3>
             <p style="white-space:pre-line; color:#333;">
-              <strong>Total:</strong> ${totalEstimatedHours}h<br/>
-              <strong>Fourchette:</strong> ${estimatedCostMin} à ${estimatedCostMax} ${this.escapeHtml(costCurrency)}<br/>
-              <strong>Fast-track:</strong> ${fastTrackHours}h (${fastTrackCostMin} à ${fastTrackCostMax} ${this.escapeHtml(costCurrency)})
+              <strong>Total:</strong> ${d.totalEstimatedHours}h<br/>
+              <strong>Fourchette:</strong> ${d.estimatedCostMin} à ${d.estimatedCostMax} ${this.escapeHtml(d.costCurrency)}<br/>
+              <strong>Fast-track:</strong> ${d.fastTrackHours}h (${d.fastTrackCostMin} à ${d.fastTrackCostMax} ${this.escapeHtml(d.costCurrency)})
             </p>
 
             <h3 style="margin:16px 0 8px;">Rapport complet (JSON)</h3>
-            <pre style="max-height:360px; overflow:auto; background:#111; color:#eee; padding:12px; border-radius:6px;">${this.escapeHtml(serializedReport)}</pre>
+            <pre style="max-height:360px; overflow:auto; background:#111; color:#eee; padding:12px; border-radius:6px;">${this.escapeHtml(d.serializedReport)}</pre>
           </div>
         </div>
-      `,
-    });
+      `;
   }
 
   private buildPriorityActions(

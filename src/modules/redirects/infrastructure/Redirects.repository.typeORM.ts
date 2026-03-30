@@ -33,7 +33,7 @@ export class RedirectsRepositoryTypeORM implements IRedirectsRepository {
       .getManyAndCount();
 
     return createPaginatedResult(
-      entities as unknown as Redirects[],
+      entities.map((e) => this.toDomain(e)),
       total,
       query.page,
       query.limit,
@@ -42,9 +42,24 @@ export class RedirectsRepositoryTypeORM implements IRedirectsRepository {
 
   async create(data: Redirects): Promise<Redirects> {
     const saved = await this.repo.save(
-      data as unknown as Partial<RedirectsEntity>,
+      this.repo.create({
+        slug: data.slug,
+        targetUrl: data.targetUrl,
+        enabled: data.enabled,
+        clicks: data.clicks,
+      }),
     );
-    return saved as unknown as Redirects;
+    return this.toDomain(saved);
+  }
+
+  private toDomain(entity: RedirectsEntity): Redirects {
+    const redirect = new Redirects();
+    redirect.id = entity.id;
+    redirect.slug = entity.slug;
+    redirect.targetUrl = entity.targetUrl;
+    redirect.enabled = entity.enabled;
+    redirect.clicks = entity.clicks;
+    return redirect;
   }
 
   private resolveSortColumn(sortBy: RedirectSortBy): string {

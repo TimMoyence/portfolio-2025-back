@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../users/interfaces/decorators/public.decorator';
 import { CreateCoursesUseCase } from '../application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../application/ListCourses.useCase';
 import { CreateCourseCommand } from '../application/dto/CreateCourse.command';
@@ -20,6 +22,7 @@ export class CoursesController {
     private readonly createUseCase: CreateCoursesUseCase,
   ) {}
 
+  @Public()
   @Get()
   @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
   @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
@@ -58,6 +61,7 @@ export class CoursesController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @ApiCreatedResponse({ type: CourseResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
   async create(@Body() dto: CourseRequestDto): Promise<CourseResponseDto> {

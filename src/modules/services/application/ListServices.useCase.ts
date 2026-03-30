@@ -5,6 +5,7 @@ import type { ServiceListQuery } from '../domain/ServiceList.query';
 import type { Services } from '../domain/Services';
 import { SERVICES_REPOSITORY } from '../domain/token';
 
+/** Recupere la liste paginee des services selon les criteres de filtrage et tri. */
 @Injectable()
 export class ListServicesUseCase {
   constructor(

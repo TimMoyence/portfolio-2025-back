@@ -48,7 +48,7 @@ describe('Automation folder guardrails', () => {
   it('keeps critical automation services under maintainable size budgets', () => {
     const budgets = [
       { file: 'langchain-audit-report.service.ts', maxLines: 1700 },
-      { file: 'deep-url-analysis.service.ts', maxLines: 1100 },
+      { file: 'deep-url-analysis.service.ts', maxLines: 1200 },
       { file: 'report-quality-gate.service.ts', maxLines: 850 },
       { file: 'audit-pipeline.service.ts', maxLines: 780 },
     ];

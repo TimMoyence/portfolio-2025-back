@@ -5,6 +5,7 @@ import { PROJECTS_REPOSITORY } from '../domain/token';
 import { CreateProjectCommand } from './dto/CreateProject.command';
 import { ProjectMapper } from './mappers/Project.mapper';
 
+/** Orchestre la creation d'un projet a partir d'une commande applicative. */
 @Injectable()
 export class CreateProjectsUseCase {
   constructor(

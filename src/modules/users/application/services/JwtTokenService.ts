@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHmac } from 'crypto';
+import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
   token: string;
@@ -8,8 +9,15 @@ interface SignedToken {
   expiresAt: number;
 }
 
+/**
+ * Service de gestion des JWT (signature et verification).
+ * Utilise HMAC-SHA256 via le module `crypto` natif de Node.js.
+ */
 @Injectable()
 export class JwtTokenService {
+  private static readonly ISSUER = 'portfolio-2025';
+  private static readonly AUDIENCE = 'portfolio-2025-api';
+
   constructor(private readonly configService: ConfigService) {}
 
   sign(payload: Record<string, unknown>): SignedToken {
@@ -24,7 +32,13 @@ export class JwtTokenService {
     const issuedAtTime = Math.floor(Date.now() / 1000);
     const expiresAt = issuedAtTime + expiresIn;
 
-    const tokenPayload = { ...payload, issuedAtTime, expiresAt };
+    const tokenPayload = {
+      ...payload,
+      iss: JwtTokenService.ISSUER,
+      aud: JwtTokenService.AUDIENCE,
+      issuedAtTime,
+      expiresAt,
+    };
     const header = { alg: 'HS256', typ: 'JWT' };
 
     const encodedHeader = this.base64UrlEncode(JSON.stringify(header));
@@ -68,6 +82,69 @@ export class JwtTokenService {
 
   private base64UrlEncode(value: string): string {
     return Buffer.from(value).toString('base64url');
+  }
+
+  /**
+   * Verifie un JWT et retourne le payload decode.
+   *
+   * @param token - Le JWT a verifier (format header.payload.signature)
+   * @returns Le payload decode du token
+   * @throws Error si le token est malformed, la signature invalide ou le token expire
+   */
+  verify(token: string): JwtPayload {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Malformed token');
+    }
+
+    const [header, payload, signature] = parts;
+
+    const secret = this.configService.get<string>('JWT_SECRET');
+    if (!secret) {
+      throw new Error('JWT_SECRET is not defined');
+    }
+
+    // Verifier la signature HMAC-SHA256
+    const expectedSignature = this.createSignature(
+      `${header}.${payload}`,
+      secret,
+    );
+    if (signature !== expectedSignature) {
+      throw new Error('Invalid signature');
+    }
+
+    // Decoder le payload
+    let decoded: Record<string, unknown>;
+    try {
+      decoded = JSON.parse(
+        Buffer.from(payload, 'base64url').toString('utf8'),
+      ) as Record<string, unknown>;
+    } catch {
+      throw new Error('Malformed token');
+    }
+
+    // Verifier l'expiration (champ `expiresAt` utilise par sign())
+    const expiresAt = decoded.expiresAt as number | undefined;
+    if (expiresAt !== undefined && expiresAt < Math.floor(Date.now() / 1000)) {
+      throw new Error('Token expired');
+    }
+
+    // Verifier l'issuer et l'audience
+    if (decoded.iss !== JwtTokenService.ISSUER) {
+      throw new Error('Invalid issuer');
+    }
+    if (decoded.aud !== JwtTokenService.AUDIENCE) {
+      throw new Error('Invalid audience');
+    }
+
+    return {
+      sub: decoded.sub as string,
+      email: decoded.email as string,
+      iat: decoded.issuedAtTime as number,
+      exp: expiresAt as number,
+      iss: decoded.iss as string,
+      aud: decoded.aud as string,
+    };
   }
 
   private createSignature(data: string, secret: string): string {

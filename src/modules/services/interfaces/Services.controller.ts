@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../users/interfaces/decorators/public.decorator';
 import { CreateServicesUseCase } from '../application/CreateServices.useCase';
 import { ListServicesUseCase } from '../application/ListServices.useCase';
 import { CreateServiceCommand } from '../application/dto/CreateService.command';
@@ -20,6 +22,7 @@ export class ServicesController {
     private readonly createUseCase: CreateServicesUseCase,
   ) {}
 
+  @Public()
   @Get()
   @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
   @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
@@ -67,6 +70,7 @@ export class ServicesController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @ApiCreatedResponse({ type: ServiceResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
   async create(@Body() dto: ServiceRequestDto): Promise<ServiceResponseDto> {

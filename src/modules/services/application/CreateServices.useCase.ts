@@ -5,6 +5,7 @@ import { SERVICES_REPOSITORY } from '../domain/token';
 import { CreateServiceCommand } from './dto/CreateService.command';
 import { ServiceMapper } from './mappers/Service.mapper';
 
+/** Orchestre la creation d'un service a partir d'une commande applicative. */
 @Injectable()
 export class CreateServicesUseCase {
   constructor(

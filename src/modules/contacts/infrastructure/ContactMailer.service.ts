@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import { Contacts } from '../domain/Contacts';
+import type { IContactNotifier } from '../domain/IContactNotifier';
 
 @Injectable()
-export class ContactMailerService {
+export class ContactMailerService implements IContactNotifier {
   private readonly logger = new Logger(ContactMailerService.name);
   private readonly transporter?: Transporter;
   private readonly to = process.env.CONTACT_NOTIFICATION_TO;
@@ -64,32 +65,32 @@ ${message}
             <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
               <tr>
                 <td style="padding:6px 0; font-weight:bold; width:120px;">Nom</td>
-                <td style="padding:6px 0;">${fullName}</td>
+                <td style="padding:6px 0;">${this.escapeHtml(fullName)}</td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Email</td>
                 <td style="padding:6px 0;">
-                  <a href="mailto:${email}">${email}</a>
+                  <a href="mailto:${this.escapeHtml(email)}">${this.escapeHtml(email)}</a>
                 </td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Téléphone</td>
-                <td style="padding:6px 0;">${phone ?? 'Non renseigné'}</td>
+                <td style="padding:6px 0;">${this.escapeHtml(phone ?? 'Non renseigné')}</td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Rôle</td>
-                <td style="padding:6px 0;">${role ?? 'Non renseigné'}</td>
+                <td style="padding:6px 0;">${this.escapeHtml(role ?? 'Non renseigné')}</td>
               </tr>
               <tr>
                 <td style="padding:6px 0; font-weight:bold;">Sujet</td>
-                <td style="padding:6px 0;">${subject}</td>
+                <td style="padding:6px 0;">${this.escapeHtml(subject)}</td>
               </tr>
             </table>
 
             <div style="margin-top:16px;">
               <p style="font-weight:bold; margin-bottom:8px;">Message :</p>
               <div style="white-space:pre-line; background:#fafafa; border-left:4px solid #4f46e5; padding:12px;">
-                ${message}
+                ${this.escapeHtml(message)}
               </div>
             </div>
 
@@ -102,5 +103,15 @@ ${message}
         </div>
       `,
     });
+  }
+
+  /** Echappe les caracteres HTML speciaux pour prevenir les injections XSS. */
+  protected escapeHtml(input: string): string {
+    return input
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
   }
 }

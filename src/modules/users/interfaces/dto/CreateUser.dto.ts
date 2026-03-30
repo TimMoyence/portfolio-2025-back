@@ -5,11 +5,14 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
+import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
 
-export class CreateUserDto {
+/** DTO HTTP pour la creation d'un utilisateur (validation + Swagger). */
+export class CreateUserDto implements CreateUserCommand {
   @ApiProperty({ example: 'john@example.com' })
   @IsEmail()
   email: string;
@@ -17,7 +20,13 @@ export class CreateUserDto {
   @ApiProperty({ example: 'StrongPassword123!' })
   @IsString()
   @IsNotEmpty()
-  @MinLength(6)
+  @MinLength(12, {
+    message: 'Le mot de passe doit contenir au moins 12 caracteres.',
+  })
+  @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
+    message:
+      'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',
+  })
   password: string;
 
   @ApiProperty({ example: 'John' })

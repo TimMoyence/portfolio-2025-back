@@ -14,6 +14,8 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { Public } from '../../users/interfaces/decorators/public.decorator';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
 import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';
@@ -37,6 +39,8 @@ export class AuditsController {
     private readonly streamUseCase: StreamAuditEventsUseCase,
   ) {}
 
+  @Public()
+  @Throttle({ default: { limit: 3, ttl: 3600000 } })
   @Post()
   @ApiCreatedResponse({ type: AuditRequestResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
@@ -69,6 +73,7 @@ export class AuditsController {
     return responseDto;
   }
 
+  @Public()
   @Get(':id/summary')
   @ApiOkResponse({ type: AuditSummaryResponseDto })
   async summary(
@@ -87,6 +92,8 @@ export class AuditsController {
     };
   }
 
+  @Public()
+  @SkipThrottle()
   @Sse(':id/stream')
   stream(@Param('id') auditId: string): Observable<MessageEvent> {
     return this.streamUseCase.execute(auditId);

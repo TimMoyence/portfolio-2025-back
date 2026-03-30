@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../users/interfaces/decorators/public.decorator';
 import { CreateProjectsUseCase } from '../application/CreateProjects.useCase';
 import { ListProjectsUseCase } from '../application/ListProjects.useCase';
 import { CreateProjectCommand } from '../application/dto/CreateProject.command';
@@ -20,6 +22,7 @@ export class ProjectsController {
     private readonly createUseCase: CreateProjectsUseCase,
   ) {}
 
+  @Public()
   @Get()
   @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
   @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
@@ -74,6 +77,7 @@ export class ProjectsController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @ApiCreatedResponse({ type: ProjectResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
   async create(@Body() dto: ProjectRequestDto): Promise<ProjectResponseDto> {

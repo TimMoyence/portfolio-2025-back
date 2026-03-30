@@ -5,6 +5,7 @@ import { REDIRECTS_REPOSITORY } from '../domain/token';
 import { CreateRedirectCommand } from './dto/CreateRedirect.command';
 import { RedirectMapper } from './mappers/Redirect.mapper';
 
+/** Orchestre la creation d'une redirection courte a partir d'une commande applicative. */
 @Injectable()
 export class CreateRedirectsUseCase {
   constructor(

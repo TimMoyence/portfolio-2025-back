@@ -37,6 +37,45 @@ export interface TechFingerprint {
   unknowns: string[];
 }
 
+/** Donnees accumulees lors du parcours des URLs. */
+interface UrlMetricsAccumulator {
+  titleMap: Map<string, string[]>;
+  metaMap: Map<string, string[]>;
+  missingTitle: number;
+  missingMeta: number;
+  badTitleLength: number;
+  badMetaLength: number;
+  badH1Count: number;
+  missingLang: number;
+  languageMismatch: number;
+  canonicalIssues: number;
+  canonicalSelfReferenceMismatch: number;
+  noindexConflicts: number;
+  urlPatternIssues: number;
+  errorUrls: string[];
+  slowUrls: string[];
+  canonicalIssueUrls: string[];
+  canonicalMismatchUrls: string[];
+  noindexUrls: string[];
+  thinContentUrls: string[];
+  weakInternalLinkingUrls: string[];
+  missingStructuredDataUrls: string[];
+  missingOpenGraphUrls: string[];
+  languageMismatchUrls: string[];
+  urlPatternIssueUrls: string[];
+  contentDepthBuckets: {
+    veryThin: number;
+    thin: number;
+    normal: number;
+    rich: number;
+  };
+  internalLinkDistribution: { none: number; weak: number; strong: number };
+  templatePatternCount: Map<string, string[]>;
+  duplicateTitles: Array<{ value: string; urls: string[] }>;
+  duplicateMetas: Array<{ value: string; urls: string[] }>;
+  templateDuplicatePatterns: Array<{ template: string; urls: string[] }>;
+}
+
 @Injectable()
 export class DeepUrlAnalysisService {
   analyze(
@@ -79,7 +118,23 @@ export class DeepUrlAnalysisService {
       };
     }
 
-    const findings: DeepUrlFinding[] = [];
+    const acc = this.collectUrlMetrics(urls, locale);
+    const findings = this.emitFindings(acc, urls, locale);
+
+    findings.sort(
+      (a, b) => severityRank(b.severity) - severityRank(a.severity),
+    );
+
+    return {
+      findings,
+      metrics: this.buildMetrics(acc, urls.length),
+    };
+  }
+
+  private collectUrlMetrics(
+    urls: UrlIndexabilityResult[],
+    locale: AuditLocale,
+  ): UrlMetricsAccumulator {
     const titleMap = new Map<string, string[]>();
     const metaMap = new Map<string, string[]>();
 
@@ -234,17 +289,58 @@ export class DeepUrlAnalysisService {
         urls: templateUrls,
       }));
 
+    return {
+      titleMap,
+      metaMap,
+      missingTitle,
+      missingMeta,
+      badTitleLength,
+      badMetaLength,
+      badH1Count,
+      missingLang,
+      languageMismatch,
+      canonicalIssues,
+      canonicalSelfReferenceMismatch,
+      noindexConflicts,
+      urlPatternIssues,
+      errorUrls,
+      slowUrls,
+      canonicalIssueUrls,
+      canonicalMismatchUrls,
+      noindexUrls,
+      thinContentUrls,
+      weakInternalLinkingUrls,
+      missingStructuredDataUrls,
+      missingOpenGraphUrls,
+      languageMismatchUrls,
+      urlPatternIssueUrls,
+      contentDepthBuckets,
+      internalLinkDistribution,
+      templatePatternCount,
+      duplicateTitles,
+      duplicateMetas,
+      templateDuplicatePatterns,
+    };
+  }
+
+  private emitFindings(
+    acc: UrlMetricsAccumulator,
+    urls: UrlIndexabilityResult[],
+    locale: AuditLocale,
+  ): DeepUrlFinding[] {
+    const findings: DeepUrlFinding[] = [];
+
     this.pushIfNeeded(
       findings,
-      missingTitle > 0,
+      acc.missingTitle > 0,
       'missing_title',
       localizedText(locale, 'Balises title manquantes', 'Missing title tags'),
       localizedText(
         locale,
-        `${missingTitle} URL(s) sans balise title.`,
-        `${missingTitle} URL(s) are missing a title tag.`,
+        `${acc.missingTitle} URL(s) sans balise title.`,
+        `${acc.missingTitle} URL(s) are missing a title tag.`,
       ),
-      this.severityFromRatio(missingTitle, urls.length),
+      this.severityFromRatio(acc.missingTitle, urls.length),
       0.92,
       'traffic',
       urls.filter((entry) => !entry.title).map((entry) => entry.url),
@@ -257,7 +353,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      missingMeta > 0,
+      acc.missingMeta > 0,
       'missing_meta_description',
       localizedText(
         locale,
@@ -266,10 +362,10 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${missingMeta} URL(s) sans meta description.`,
-        `${missingMeta} URL(s) are missing a meta description.`,
+        `${acc.missingMeta} URL(s) sans meta description.`,
+        `${acc.missingMeta} URL(s) are missing a meta description.`,
       ),
-      this.severityFromRatio(missingMeta, urls.length),
+      this.severityFromRatio(acc.missingMeta, urls.length),
       0.9,
       'traffic',
       urls
@@ -284,18 +380,18 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      duplicateTitles.length > 0,
+      acc.duplicateTitles.length > 0,
       'duplicate_titles',
       localizedText(locale, 'Titles dupliques', 'Duplicate titles'),
       localizedText(
         locale,
-        `${duplicateTitles.length} groupe(s) de titles dupliques detectes.`,
-        `${duplicateTitles.length} duplicate title group(s) detected.`,
+        `${acc.duplicateTitles.length} groupe(s) de titles dupliques detectes.`,
+        `${acc.duplicateTitles.length} duplicate title group(s) detected.`,
       ),
-      this.severityFromRatio(duplicateTitles.length, urls.length),
+      this.severityFromRatio(acc.duplicateTitles.length, urls.length),
       0.86,
       'indexation',
-      duplicateTitles.flatMap((group) => group.urls),
+      acc.duplicateTitles.flatMap((group) => group.urls),
       localizedText(
         locale,
         'Rendre chaque title unique pour eviter la cannibalisation SEO.',
@@ -305,7 +401,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      duplicateMetas.length > 0,
+      acc.duplicateMetas.length > 0,
       'duplicate_meta_descriptions',
       localizedText(
         locale,
@@ -314,13 +410,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${duplicateMetas.length} groupe(s) de meta descriptions dupliquees detectes.`,
-        `${duplicateMetas.length} duplicate meta description group(s) detected.`,
+        `${acc.duplicateMetas.length} groupe(s) de meta descriptions dupliquees detectes.`,
+        `${acc.duplicateMetas.length} duplicate meta description group(s) detected.`,
       ),
-      this.severityFromRatio(duplicateMetas.length, urls.length),
+      this.severityFromRatio(acc.duplicateMetas.length, urls.length),
       0.82,
       'traffic',
-      duplicateMetas.flatMap((group) => group.urls),
+      acc.duplicateMetas.flatMap((group) => group.urls),
       localizedText(
         locale,
         'Differencier les meta descriptions par page et intention utilisateur.',
@@ -330,7 +426,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      badTitleLength > 0,
+      acc.badTitleLength > 0,
       'title_length_quality',
       localizedText(
         locale,
@@ -339,10 +435,10 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${badTitleLength} URL(s) ont un title trop court ou trop long.`,
-        `${badTitleLength} URL(s) have a title that is too short or too long.`,
+        `${acc.badTitleLength} URL(s) ont un title trop court ou trop long.`,
+        `${acc.badTitleLength} URL(s) have a title that is too short or too long.`,
       ),
-      this.severityFromRatio(badTitleLength, urls.length),
+      this.severityFromRatio(acc.badTitleLength, urls.length),
       0.78,
       'traffic',
       urls
@@ -360,7 +456,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      badMetaLength > 0,
+      acc.badMetaLength > 0,
       'meta_length_quality',
       localizedText(
         locale,
@@ -369,10 +465,10 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${badMetaLength} URL(s) ont une meta description hors plage recommandee.`,
-        `${badMetaLength} URL(s) have a meta description outside the recommended range.`,
+        `${acc.badMetaLength} URL(s) ont une meta description hors plage recommandee.`,
+        `${acc.badMetaLength} URL(s) have a meta description outside the recommended range.`,
       ),
-      this.severityFromRatio(badMetaLength, urls.length),
+      this.severityFromRatio(acc.badMetaLength, urls.length),
       0.74,
       'traffic',
       urls
@@ -390,15 +486,15 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      badH1Count > 0,
+      acc.badH1Count > 0,
       'h1_structure',
       localizedText(locale, 'Structure H1 non conforme', 'H1 structure issues'),
       localizedText(
         locale,
-        `${badH1Count} URL(s) n'ont pas exactement un H1.`,
-        `${badH1Count} URL(s) do not have exactly one H1.`,
+        `${acc.badH1Count} URL(s) n'ont pas exactement un H1.`,
+        `${acc.badH1Count} URL(s) do not have exactly one H1.`,
       ),
-      this.severityFromRatio(badH1Count, urls.length),
+      this.severityFromRatio(acc.badH1Count, urls.length),
       0.8,
       'indexation',
       urls
@@ -413,15 +509,15 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      missingLang > 0,
+      acc.missingLang > 0,
       'missing_lang',
       localizedText(locale, 'Attribut lang manquant', 'Missing lang attribute'),
       localizedText(
         locale,
-        `${missingLang} URL(s) sans attribut lang explicite.`,
-        `${missingLang} URL(s) are missing an explicit lang attribute.`,
+        `${acc.missingLang} URL(s) sans attribut lang explicite.`,
+        `${acc.missingLang} URL(s) are missing an explicit lang attribute.`,
       ),
-      this.severityFromRatio(missingLang, urls.length),
+      this.severityFromRatio(acc.missingLang, urls.length),
       0.72,
       'conversion',
       urls.filter((entry) => !entry.htmlLang).map((entry) => entry.url),
@@ -434,7 +530,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      languageMismatch > 0,
+      acc.languageMismatch > 0,
       'language_mismatch',
       localizedText(
         locale,
@@ -443,13 +539,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${languageMismatch} URL(s) ont un html[lang] en conflit avec la locale cible.`,
-        `${languageMismatch} URL(s) have html[lang] conflicting with selected locale.`,
+        `${acc.languageMismatch} URL(s) ont un html[lang] en conflit avec la locale cible.`,
+        `${acc.languageMismatch} URL(s) have html[lang] conflicting with selected locale.`,
       ),
-      this.severityFromRatio(languageMismatch, urls.length),
+      this.severityFromRatio(acc.languageMismatch, urls.length),
       0.82,
       'traffic',
-      languageMismatchUrls,
+      acc.languageMismatchUrls,
       localizedText(
         locale,
         "Aligner html[lang], templates et contenu avec la locale cible de l'audit.",
@@ -459,7 +555,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      canonicalIssues > 0,
+      acc.canonicalIssues > 0,
       'canonical_consistency',
       localizedText(
         locale,
@@ -468,13 +564,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${canonicalIssues} URL(s) avec canonical absente ou multiple.`,
-        `${canonicalIssues} URL(s) with missing or multiple canonical tags.`,
+        `${acc.canonicalIssues} URL(s) avec canonical absente ou multiple.`,
+        `${acc.canonicalIssues} URL(s) with missing or multiple canonical tags.`,
       ),
-      this.severityFromRatio(canonicalIssues, urls.length),
+      this.severityFromRatio(acc.canonicalIssues, urls.length),
       0.87,
       'indexation',
-      canonicalIssueUrls,
+      acc.canonicalIssueUrls,
       localizedText(
         locale,
         "Assurer une canonical unique et coherente avec l'URL preferee.",
@@ -484,7 +580,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      canonicalSelfReferenceMismatch > 0,
+      acc.canonicalSelfReferenceMismatch > 0,
       'canonical_self_reference_mismatch',
       localizedText(
         locale,
@@ -493,13 +589,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${canonicalSelfReferenceMismatch} URL(s) ont une canonical differente de l'URL finale.`,
-        `${canonicalSelfReferenceMismatch} URL(s) have canonical URLs different from final URLs.`,
+        `${acc.canonicalSelfReferenceMismatch} URL(s) ont une canonical differente de l'URL finale.`,
+        `${acc.canonicalSelfReferenceMismatch} URL(s) have canonical URLs different from final URLs.`,
       ),
-      this.severityFromRatio(canonicalSelfReferenceMismatch, urls.length),
+      this.severityFromRatio(acc.canonicalSelfReferenceMismatch, urls.length),
       0.84,
       'indexation',
-      canonicalMismatchUrls,
+      acc.canonicalMismatchUrls,
       localizedText(
         locale,
         "Faire pointer la canonical vers l'URL canonique finale de la page.",
@@ -509,7 +605,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      noindexConflicts > 0,
+      acc.noindexConflicts > 0,
       'noindex_conflicts',
       localizedText(
         locale,
@@ -518,13 +614,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${noindexConflicts} URL(s) repondent correctement mais ne sont pas indexables.`,
-        `${noindexConflicts} URL(s) return a valid response but are not indexable.`,
+        `${acc.noindexConflicts} URL(s) repondent correctement mais ne sont pas indexables.`,
+        `${acc.noindexConflicts} URL(s) return a valid response but are not indexable.`,
       ),
-      this.severityFromRatio(noindexConflicts, urls.length),
+      this.severityFromRatio(acc.noindexConflicts, urls.length),
       0.9,
       'indexation',
-      noindexUrls,
+      acc.noindexUrls,
       localizedText(
         locale,
         'Supprimer les directives noindex non intentionnelles (meta/x-robots-tag).',
@@ -534,18 +630,18 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      errorUrls.length > 0,
+      acc.errorUrls.length > 0,
       'http_errors',
       localizedText(locale, 'Erreurs HTTP detectees', 'Detected HTTP errors'),
       localizedText(
         locale,
-        `${errorUrls.length} URL(s) retournent une erreur ou sont inaccessibles.`,
-        `${errorUrls.length} URL(s) return an error or are inaccessible.`,
+        `${acc.errorUrls.length} URL(s) retournent une erreur ou sont inaccessibles.`,
+        `${acc.errorUrls.length} URL(s) return an error or are inaccessible.`,
       ),
-      this.severityFromRatio(errorUrls.length, urls.length),
+      this.severityFromRatio(acc.errorUrls.length, urls.length),
       0.95,
       'traffic',
-      errorUrls,
+      acc.errorUrls,
       localizedText(
         locale,
         'Corriger les pages en 4xx/5xx pour restaurer indexation et conversion.',
@@ -555,18 +651,18 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      slowUrls.length > 0,
+      acc.slowUrls.length > 0,
       'slow_pages',
       localizedText(locale, 'Temps de reponse eleve', 'High response times'),
       localizedText(
         locale,
-        `${slowUrls.length} URL(s) depassent ~2200ms de reponse.`,
-        `${slowUrls.length} URL(s) exceed ~2200ms response time.`,
+        `${acc.slowUrls.length} URL(s) depassent ~2200ms de reponse.`,
+        `${acc.slowUrls.length} URL(s) exceed ~2200ms response time.`,
       ),
-      this.severityFromRatio(slowUrls.length, urls.length),
+      this.severityFromRatio(acc.slowUrls.length, urls.length),
       0.76,
       'conversion',
-      slowUrls,
+      acc.slowUrls,
       localizedText(
         locale,
         'Optimiser backend/caching/poids des pages pour accelerer le rendu.',
@@ -576,18 +672,18 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      thinContentUrls.length > 0,
+      acc.thinContentUrls.length > 0,
       'thin_content',
       localizedText(locale, 'Contenu insuffisant', 'Thin content pages'),
       localizedText(
         locale,
-        `${thinContentUrls.length} URL(s) semblent trop pauvres en contenu editorial.`,
-        `${thinContentUrls.length} URL(s) appear to have thin editorial content.`,
+        `${acc.thinContentUrls.length} URL(s) semblent trop pauvres en contenu editorial.`,
+        `${acc.thinContentUrls.length} URL(s) appear to have thin editorial content.`,
       ),
-      this.severityFromRatio(thinContentUrls.length, urls.length),
+      this.severityFromRatio(acc.thinContentUrls.length, urls.length),
       0.68,
       'traffic',
-      thinContentUrls,
+      acc.thinContentUrls,
       localizedText(
         locale,
         'Enrichir les pages (intention, preuves, FAQ, sections utiles) pour augmenter la profondeur semantique.',
@@ -597,7 +693,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      weakInternalLinkingUrls.length > 0,
+      acc.weakInternalLinkingUrls.length > 0,
       'weak_internal_linking',
       localizedText(
         locale,
@@ -606,13 +702,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${weakInternalLinkingUrls.length} URL(s) ont un maillage interne faible.`,
-        `${weakInternalLinkingUrls.length} URL(s) have weak internal linking.`,
+        `${acc.weakInternalLinkingUrls.length} URL(s) ont un maillage interne faible.`,
+        `${acc.weakInternalLinkingUrls.length} URL(s) have weak internal linking.`,
       ),
-      this.severityFromRatio(weakInternalLinkingUrls.length, urls.length),
+      this.severityFromRatio(acc.weakInternalLinkingUrls.length, urls.length),
       0.69,
       'indexation',
-      weakInternalLinkingUrls,
+      acc.weakInternalLinkingUrls,
       localizedText(
         locale,
         'Ajouter des liens internes contextuels vers les pages business prioritaires.',
@@ -622,7 +718,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      urlPatternIssues > 0,
+      acc.urlPatternIssues > 0,
       'url_pattern_quality',
       localizedText(
         locale,
@@ -631,13 +727,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${urlPatternIssues} URL(s) contiennent des patterns peu SEO-friendly (query string, uppercase, underscore, slash multiples).`,
-        `${urlPatternIssues} URL(s) contain non SEO-friendly patterns (query string, uppercase, underscore, multiple slashes).`,
+        `${acc.urlPatternIssues} URL(s) contiennent des patterns peu SEO-friendly (query string, uppercase, underscore, slash multiples).`,
+        `${acc.urlPatternIssues} URL(s) contain non SEO-friendly patterns (query string, uppercase, underscore, multiple slashes).`,
       ),
-      this.severityFromRatio(urlPatternIssues, urls.length),
+      this.severityFromRatio(acc.urlPatternIssues, urls.length),
       0.71,
       'traffic',
-      urlPatternIssueUrls,
+      acc.urlPatternIssueUrls,
       localizedText(
         locale,
         'Standardiser les URLs en slug lisible, lowercase, sans paramètres inutiles.',
@@ -647,7 +743,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      templateDuplicatePatterns.length > 0,
+      acc.templateDuplicatePatterns.length > 0,
       'template_duplicate_pattern',
       localizedText(
         locale,
@@ -656,13 +752,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${templateDuplicatePatterns.length} pattern(s) template presentent une repetition elevee.`,
-        `${templateDuplicatePatterns.length} template pattern(s) show high duplication.`,
+        `${acc.templateDuplicatePatterns.length} pattern(s) template presentent une repetition elevee.`,
+        `${acc.templateDuplicatePatterns.length} template pattern(s) show high duplication.`,
       ),
-      this.severityFromRatio(templateDuplicatePatterns.length, urls.length),
+      this.severityFromRatio(acc.templateDuplicatePatterns.length, urls.length),
       0.66,
       'indexation',
-      templateDuplicatePatterns.flatMap((entry) => entry.urls),
+      acc.templateDuplicatePatterns.flatMap((entry) => entry.urls),
       localizedText(
         locale,
         'Consolider les templates similaires et renforcer la differenciation semantique.',
@@ -672,7 +768,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      missingStructuredDataUrls.length > 0,
+      acc.missingStructuredDataUrls.length > 0,
       'missing_structured_data',
       localizedText(
         locale,
@@ -681,13 +777,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${missingStructuredDataUrls.length} URL(s) sans schema.org exploitable.`,
-        `${missingStructuredDataUrls.length} URL(s) are missing usable schema.org structured data.`,
+        `${acc.missingStructuredDataUrls.length} URL(s) sans schema.org exploitable.`,
+        `${acc.missingStructuredDataUrls.length} URL(s) are missing usable schema.org structured data.`,
       ),
-      this.severityFromRatio(missingStructuredDataUrls.length, urls.length),
+      this.severityFromRatio(acc.missingStructuredDataUrls.length, urls.length),
       0.73,
       'conversion',
-      missingStructuredDataUrls,
+      acc.missingStructuredDataUrls,
       localizedText(
         locale,
         'Ajouter des schemas adaptes (Organization, LocalBusiness, Product, FAQ, Breadcrumb).',
@@ -697,7 +793,7 @@ export class DeepUrlAnalysisService {
 
     this.pushIfNeeded(
       findings,
-      missingOpenGraphUrls.length > 0,
+      acc.missingOpenGraphUrls.length > 0,
       'missing_open_graph',
       localizedText(
         locale,
@@ -706,13 +802,13 @@ export class DeepUrlAnalysisService {
       ),
       localizedText(
         locale,
-        `${missingOpenGraphUrls.length} URL(s) sans metadonnees OpenGraph.`,
-        `${missingOpenGraphUrls.length} URL(s) are missing OpenGraph metadata.`,
+        `${acc.missingOpenGraphUrls.length} URL(s) sans metadonnees OpenGraph.`,
+        `${acc.missingOpenGraphUrls.length} URL(s) are missing OpenGraph metadata.`,
       ),
-      this.severityFromRatio(missingOpenGraphUrls.length, urls.length),
+      this.severityFromRatio(acc.missingOpenGraphUrls.length, urls.length),
       0.67,
       'conversion',
-      missingOpenGraphUrls,
+      acc.missingOpenGraphUrls,
       localizedText(
         locale,
         'Definir au minimum og:title, og:description et og:image sur les pages strategiques.',
@@ -720,37 +816,37 @@ export class DeepUrlAnalysisService {
       ),
     );
 
-    findings.sort(
-      (a, b) => severityRank(b.severity) - severityRank(a.severity),
-    );
+    return findings;
+  }
 
+  private buildMetrics(
+    acc: UrlMetricsAccumulator,
+    urlCount: number,
+  ): Record<string, unknown> {
     return {
-      findings,
-      metrics: {
-        analyzedUrls: urls.length,
-        duplicateTitles: duplicateTitles.length,
-        duplicateMetaDescriptions: duplicateMetas.length,
-        missingTitle,
-        missingMetaDescription: missingMeta,
-        badTitleLength,
-        badMetaLength,
-        badH1Count,
-        missingLang,
-        languageMismatch,
-        canonicalIssues,
-        canonicalSelfReferenceMismatch,
-        noindexConflicts,
-        urlPatternIssues,
-        httpErrors: errorUrls.length,
-        slowPages: slowUrls.length,
-        thinContentPages: thinContentUrls.length,
-        contentDepthBuckets,
-        weakInternalLinking: weakInternalLinkingUrls.length,
-        internalLinkDistribution,
-        templateDuplicatePatterns: templateDuplicatePatterns.length,
-        missingStructuredDataPages: missingStructuredDataUrls.length,
-        missingOpenGraphPages: missingOpenGraphUrls.length,
-      },
+      analyzedUrls: urlCount,
+      duplicateTitles: acc.duplicateTitles.length,
+      duplicateMetaDescriptions: acc.duplicateMetas.length,
+      missingTitle: acc.missingTitle,
+      missingMetaDescription: acc.missingMeta,
+      badTitleLength: acc.badTitleLength,
+      badMetaLength: acc.badMetaLength,
+      badH1Count: acc.badH1Count,
+      missingLang: acc.missingLang,
+      languageMismatch: acc.languageMismatch,
+      canonicalIssues: acc.canonicalIssues,
+      canonicalSelfReferenceMismatch: acc.canonicalSelfReferenceMismatch,
+      noindexConflicts: acc.noindexConflicts,
+      urlPatternIssues: acc.urlPatternIssues,
+      httpErrors: acc.errorUrls.length,
+      slowPages: acc.slowUrls.length,
+      thinContentPages: acc.thinContentUrls.length,
+      contentDepthBuckets: acc.contentDepthBuckets,
+      weakInternalLinking: acc.weakInternalLinkingUrls.length,
+      internalLinkDistribution: acc.internalLinkDistribution,
+      templateDuplicatePatterns: acc.templateDuplicatePatterns.length,
+      missingStructuredDataPages: acc.missingStructuredDataUrls.length,
+      missingOpenGraphPages: acc.missingOpenGraphUrls.length,
     };
   }
 

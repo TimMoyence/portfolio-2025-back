@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateUsersUseCase } from './application/CreateUsers.useCase';
 import { DeleteUsersUseCase } from './application/DeleteUsers.useCase';
@@ -14,6 +15,7 @@ import { JwtTokenService } from './application/services/JwtTokenService';
 import { AuthenticateUserUseCase } from './application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from './application/ChangePassword.useCase';
 import { AuthController } from './interfaces/Auth.controller';
+import { JwtAuthGuard } from './interfaces/guards/jwt-auth.guard';
 
 const USERS_USE_CASES = [
   ListUsersUseCase,
@@ -36,7 +38,11 @@ const USERS_USE_CASES = [
       provide: USERS_REPOSITORY,
       useClass: UsersRepositoryTypeORM,
     },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
-  exports: [USERS_REPOSITORY],
+  exports: [USERS_REPOSITORY, JwtTokenService],
 })
 export class UsersModule {}

@@ -1,11 +1,60 @@
 import { Logger } from '@nestjs/common';
 import type { AuditAutomationConfig } from './audit.config';
 import {
+  type ExpertReport,
   LangchainAuditInput,
   LangchainAuditReportService,
 } from './langchain-audit-report.service';
 import { DeadlineBudget } from './llm-execution.guardrails';
 import { ReportQualityGateService } from './report-quality-gate.service';
+
+/**
+ * @internal Interface de test exposant les methodes privees du service LangchainAuditReport.
+ *
+ * Justification : les methodes privees (generateUserSummary, generateExpertReport,
+ * buildFallbackExpertReport, buildSectionPayloads, generateSectionOnce,
+ * generateFanoutSectionsWithDeadline) orchestrent les appels LLM. Les tester
+ * via l'interface publique generate() necessiterait une cle OpenAI reelle et
+ * rendrait les tests non deterministes. Ce type permet un acces controle
+ * pour le mock et le spy des couches internes uniquement en contexte de test.
+ */
+interface LangchainServiceTestable {
+  generate: LangchainAuditReportService['generate'];
+  generateUserSummary: (...args: unknown[]) => Promise<string>;
+  generateExpertReport: (...args: unknown[]) => Promise<ExpertReport>;
+  buildFallbackExpertReport: (
+    inputValue: LangchainAuditInput,
+    reason: string,
+  ) => ExpertReport;
+  buildSectionPayloads: (inputValue: LangchainAuditInput) => {
+    executiveSection: Record<string, unknown>;
+    prioritySection: Record<string, unknown>;
+    executionSection: Record<string, unknown>;
+    clientCommsSection: Record<string, unknown>;
+  };
+  generateSectionOnce: (
+    llm: unknown,
+    section: string,
+    payload: Record<string, unknown>,
+    locale: string,
+    retryMode: boolean,
+    budget: unknown,
+    options: unknown,
+  ) => Promise<unknown>;
+  generateFanoutSectionsWithDeadline: (
+    llm: unknown,
+    payloads: {
+      executiveSection: Record<string, unknown>;
+      prioritySection: Record<string, unknown>;
+      executionSection: Record<string, unknown>;
+      clientCommsSection: Record<string, unknown>;
+    },
+    locale: 'fr' | 'en',
+    inputValue: LangchainAuditInput,
+    budget: DeadlineBudget,
+    options?: unknown,
+  ) => Promise<Record<string, unknown>>;
+}
 
 describe('LangchainAuditReportService', () => {
   let logSpy: jest.SpyInstance;
@@ -85,7 +134,7 @@ describe('LangchainAuditReportService', () => {
       {
         code: 'missing_meta_description',
         title: 'Meta descriptions manquantes',
-        description: 'Plusieurs pages n’ont pas de meta description.',
+        description: "Plusieurs pages n'ont pas de meta description.",
         severity: 'high',
         confidence: 0.9,
         impact: 'traffic',
@@ -138,6 +187,13 @@ describe('LangchainAuditReportService', () => {
     },
   };
 
+  /** Cast de commodite pour acceder aux methodes privees en contexte de test. */
+  function asTestable(
+    service: LangchainAuditReportService,
+  ): LangchainServiceTestable {
+    return service as unknown as LangchainServiceTestable;
+  }
+
   it('returns deterministic fallback with cost estimate when api key is missing', async () => {
     const service = new LangchainAuditReportService(
       config,
@@ -169,18 +225,13 @@ describe('LangchainAuditReportService', () => {
       new ReportQualityGateService(),
     );
 
+    const testable = asTestable(service);
     jest
-      .spyOn(
-        service as unknown as { generateUserSummary: () => Promise<string> },
-        'generateUserSummary',
-      )
+      .spyOn(testable, 'generateUserSummary')
       .mockResolvedValue('Summary generated.');
     const timeoutError = new Error('TimeoutError: Request timed out.');
     jest
-      .spyOn(
-        service as unknown as { generateExpertReport: () => Promise<unknown> },
-        'generateExpertReport',
-      )
+      .spyOn(testable, 'generateExpertReport')
       .mockRejectedValue(timeoutError);
 
     const result = await service.generate(input);
@@ -213,6 +264,7 @@ describe('LangchainAuditReportService', () => {
         reasons: [],
       }));
 
+    /** Mock partiel : seule la methode apply est utilisee dans ce chemin de test. */
     const qualityGate = {
       apply: applyMock,
     } as unknown as ReportQualityGateService;
@@ -225,33 +277,14 @@ describe('LangchainAuditReportService', () => {
       qualityGate,
     );
 
-    const compactReport = (
-      service as unknown as {
-        buildFallbackExpertReport: (
-          inputValue: LangchainAuditInput,
-          reason: string,
-        ) => Record<string, unknown>;
-      }
-    ).buildFallbackExpertReport(input, 'compact');
-    const fullReport = (
-      service as unknown as {
-        buildFallbackExpertReport: (
-          inputValue: LangchainAuditInput,
-          reason: string,
-        ) => Record<string, unknown>;
-      }
-    ).buildFallbackExpertReport(input, 'full');
+    const testable = asTestable(service);
+    const compactReport = testable.buildFallbackExpertReport(input, 'compact');
+    const fullReport = testable.buildFallbackExpertReport(input, 'full');
     jest
-      .spyOn(
-        service as unknown as { generateUserSummary: () => Promise<string> },
-        'generateUserSummary',
-      )
+      .spyOn(testable, 'generateUserSummary')
       .mockResolvedValue('Summary generated.');
     const expertSpy = jest
-      .spyOn(
-        service as unknown as { generateExpertReport: () => Promise<unknown> },
-        'generateExpertReport',
-      )
+      .spyOn(testable, 'generateExpertReport')
       .mockResolvedValueOnce(compactReport)
       .mockResolvedValueOnce(fullReport);
 
@@ -278,43 +311,13 @@ describe('LangchainAuditReportService', () => {
       },
       new ReportQualityGateService(),
     );
-    const payloads = (
-      service as unknown as {
-        buildSectionPayloads: (
-          inputValue: LangchainAuditInput,
-        ) => Record<string, unknown>;
-      }
-    ).buildSectionPayloads(input) as {
-      executiveSection: Record<string, unknown>;
-      prioritySection: Record<string, unknown>;
-      executionSection: Record<string, unknown>;
-      clientCommsSection: Record<string, unknown>;
-    };
-    const fallbackReport = (
-      service as unknown as {
-        buildFallbackExpertReport: (
-          inputValue: LangchainAuditInput,
-          reason: string,
-        ) => Record<string, unknown>;
-      }
-    ).buildFallbackExpertReport(input, 'seed');
+    const testable = asTestable(service);
+    const payloads = testable.buildSectionPayloads(input);
+    const fallbackReport = testable.buildFallbackExpertReport(input, 'seed');
     const calls: Record<string, number> = {};
 
     jest
-      .spyOn(
-        service as unknown as {
-          generateSectionOnce: (
-            llm: unknown,
-            section: string,
-            payload: Record<string, unknown>,
-            locale: string,
-            retryMode: boolean,
-            budget: unknown,
-            options: unknown,
-          ) => Promise<unknown>;
-        },
-        'generateSectionOnce',
-      )
+      .spyOn(testable, 'generateSectionOnce')
       .mockImplementation((_llm, section) => {
         calls[section] = (calls[section] ?? 0) + 1;
         if (section === 'prioritySection' && calls[section] === 1) {
@@ -349,22 +352,7 @@ describe('LangchainAuditReportService', () => {
         });
       });
 
-    const sectionResult = await (
-      service as unknown as {
-        generateFanoutSectionsWithDeadline: (
-          llm: unknown,
-          payloadValue: {
-            executiveSection: Record<string, unknown>;
-            prioritySection: Record<string, unknown>;
-            executionSection: Record<string, unknown>;
-            clientCommsSection: Record<string, unknown>;
-          },
-          locale: 'fr' | 'en',
-          inputValue: LangchainAuditInput,
-          budget: DeadlineBudget,
-        ) => Promise<Record<string, unknown>>;
-      }
-    ).generateFanoutSectionsWithDeadline(
+    const sectionResult = await testable.generateFanoutSectionsWithDeadline(
       {},
       payloads,
       'fr',

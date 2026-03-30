@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../users/interfaces/decorators/public.decorator';
 import { CreateRedirectsUseCase } from '../application/CreateRedirects.useCase';
 import { ListRedirectsUseCase } from '../application/ListRedirects.useCase';
 import { CreateRedirectCommand } from '../application/dto/CreateRedirect.command';
@@ -20,6 +22,7 @@ export class RedirectsController {
     private readonly createUseCase: CreateRedirectsUseCase,
   ) {}
 
+  @Public()
   @Get()
   @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
   @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
@@ -67,6 +70,7 @@ export class RedirectsController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @ApiCreatedResponse({ type: RedirectResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
   async create(@Body() dto: RedirectRequestDto): Promise<RedirectResponseDto> {

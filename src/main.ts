@@ -1,15 +1,17 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const isProd = process.env.NODE_ENV === 'production';
+
   const corsOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
-    : true;
+    : [];
 
   app.enableCors({
     origin: corsOrigins,
@@ -17,14 +19,28 @@ async function bootstrap() {
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   });
 
-  app.use((_: Request, res: Response, next: () => void) => {
-    res.removeHeader('X-Powered-By');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('Referrer-Policy', 'no-referrer');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    next();
-  });
+  app.use(
+    helmet({
+      contentSecurityPolicy: isProd
+        ? {
+            directives: {
+              defaultSrc: ["'self'"],
+              scriptSrc: ["'self'"],
+              styleSrc: ["'self'", "'unsafe-inline'"],
+              imgSrc: ["'self'", 'data:', 'https:'],
+              connectSrc: ["'self'"],
+              fontSrc: ["'self'"],
+              objectSrc: ["'none'"],
+              frameAncestors: ["'none'"],
+            },
+          }
+        : false,
+      strictTransportSecurity: {
+        maxAge: 63072000,
+        includeSubDomains: true,
+      },
+    }),
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -37,16 +53,18 @@ async function bootstrap() {
 
   app.setGlobalPrefix(process.env.API_PREFIX ?? 'api');
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Portfolio 2025 API')
-    .setDescription('HTTP API documentation for the portfolio backend')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  const swaggerPath = process.env.SWAGGER_PATH ?? 'docs';
-  SwaggerModule.setup(swaggerPath, app, document, {
-    swaggerOptions: { persistAuthorization: true },
-  });
+  if (!isProd) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Portfolio 2025 API')
+      .setDescription('HTTP API documentation for the portfolio backend')
+      .setVersion('1.0')
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    const swaggerPath = process.env.SWAGGER_PATH ?? 'docs';
+    SwaggerModule.setup(swaggerPath, app, document, {
+      swaggerOptions: { persistAuthorization: true },
+    });
+  }
 
   await app.listen(process.env.PORT ? Number(process.env.PORT) : 3000);
 }

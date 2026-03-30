@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { requireText } from '../../../common/domain/validation/domain-validators';
 import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
@@ -18,6 +19,7 @@ export interface CreateContactProps {
   termsMethod?: string;
 }
 
+/** Entite domaine representant une demande de contact. */
 export class Contacts {
   id?: string;
   email: string;
@@ -46,11 +48,11 @@ export class Contacts {
       throw new DomainValidationError('Invalid contact phone number');
     }
 
-    const firstName = this.requireText(props.firstName, 'first name', 1, 50);
-    const lastName = this.requireText(props.lastName, 'last name', 1, 50);
-    const subject = this.requireText(props.subject, 'subject', 2, 100);
-    const message = this.requireText(props.message, 'message', 10, 2000);
-    const role = this.requireText(props.role, 'role', 2, 100);
+    const firstName = requireText(props.firstName, 'contact first name', 1, 50);
+    const lastName = requireText(props.lastName, 'contact last name', 1, 50);
+    const subject = requireText(props.subject, 'contact subject', 2, 100);
+    const message = requireText(props.message, 'contact message', 10, 2000);
+    const role = requireText(props.role, 'contact role', 2, 100);
 
     if (typeof props.terms !== 'boolean') {
       throw new DomainValidationError('Invalid terms flag');
@@ -88,22 +90,6 @@ export class Contacts {
     contact.termsAcceptedAt = props.termsAcceptedAt;
 
     return contact;
-  }
-
-  private static requireText(
-    raw: string,
-    field: string,
-    min: number,
-    max: number,
-  ): string {
-    if (typeof raw !== 'string') {
-      throw new DomainValidationError(`Invalid contact ${field}`);
-    }
-    const trimmed = raw.trim();
-    if (trimmed.length < min || trimmed.length > max) {
-      throw new DomainValidationError(`Invalid contact ${field}`);
-    }
-    return trimmed;
   }
 
   private static optionalText(raw: unknown, max: number): string | undefined {

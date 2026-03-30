@@ -1,6 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { CreateContactsUseCase } from '../application/CreateContacts.useCase';
 import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
+import { Public } from '../../users/interfaces/decorators/public.decorator';
 import { CreateContactCommand } from '../application/dto/CreateContact.command';
 import { ContactResponseDto } from './dto/contact.response.dto';
 import { ContactRequestDto } from './dto/contact.request.dto';
@@ -9,11 +11,8 @@ import { ContactRequestDto } from './dto/contact.request.dto';
 export class ContactsController {
   constructor(private readonly createUseCase: CreateContactsUseCase) {}
 
-  @Get()
-  findAll() {
-    return [];
-  }
-
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @Post()
   @ApiCreatedResponse({ type: ContactResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })

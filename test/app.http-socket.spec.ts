@@ -362,7 +362,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .post('/api/auth/login')
       .send({
         email: 'john@example.com',
-        password: 'wrong-password',
+        password: 'WrongPassword1!',
       })
       .expect(401);
   });

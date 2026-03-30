@@ -7,8 +7,10 @@ import {
 } from '../../../common/domain/pagination.types';
 import { IProjectsRepository } from '../domain/IProjects.repository';
 import { ProjectListQuery, ProjectSortBy } from '../domain/ProjectList.query';
-import { Projects } from '../domain/Projects';
+import { ProjectStatus, ProjectType, Projects } from '../domain/Projects';
 import { ProjectsEntity } from './entities/Projects.entity';
+import { ProjectType as ProjectTypeEnum } from './enums/ProjectType.enum';
+import { PublishStatus } from './enums/PublishStatus.enum';
 
 @Injectable()
 export class ProjectsRepositoryTypeORM implements IProjectsRepository {
@@ -33,7 +35,7 @@ export class ProjectsRepositoryTypeORM implements IProjectsRepository {
       .getManyAndCount();
 
     return createPaginatedResult(
-      entities as unknown as Projects[],
+      entities.map((e) => this.toDomain(e)),
       total,
       query.page,
       query.limit,
@@ -41,10 +43,34 @@ export class ProjectsRepositoryTypeORM implements IProjectsRepository {
   }
 
   async create(data: Projects): Promise<Projects> {
-    const saved = await this.repo.save(
-      data as unknown as Partial<ProjectsEntity>,
-    );
-    return saved as unknown as Projects;
+    const entity = this.repo.create({
+      slug: data.slug,
+      type: data.type as ProjectTypeEnum,
+      repoUrl: data.repoUrl,
+      liveUrl: data.liveUrl,
+      coverImage: data.coverImage,
+      gallery: data.gallery,
+      stack: data.stack,
+      status: data.status as PublishStatus,
+      order: data.order,
+    });
+    const saved = await this.repo.save(entity);
+    return this.toDomain(saved);
+  }
+
+  private toDomain(entity: ProjectsEntity): Projects {
+    const project = new Projects();
+    project.id = entity.id;
+    project.slug = entity.slug;
+    project.type = entity.type as ProjectType;
+    project.repoUrl = entity.repoUrl;
+    project.liveUrl = entity.liveUrl;
+    project.coverImage = entity.coverImage;
+    project.gallery = entity.gallery ?? [];
+    project.stack = entity.stack ?? [];
+    project.status = entity.status as ProjectStatus;
+    project.order = entity.order;
+    return project;
   }
 
   private resolveSortColumn(sortBy: ProjectSortBy): string {

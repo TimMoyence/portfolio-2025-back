@@ -403,18 +403,7 @@ export class LangchainAuditReportService {
         fallback: candidate.usedExpertFallback,
       };
 
-      for (const warning of candidate.warnings) {
-        if (warning.type === 'summary') {
-          this.logger.warn(`LLM user summary failed: ${warning.message}`);
-          adminReport.summaryWarning = localizedText(
-            locale,
-            'Resume utilisateur LLM indisponible. Resume deterministe utilise.',
-            'LLM user summary failed. Deterministic summary used.',
-          );
-        } else {
-          this.logger.warn(`LLM expert report failed: ${warning.message}`);
-        }
-      }
+      this.applyWarningsToReport(adminReport, candidate.warnings, locale);
 
       if (!gate.valid) {
         adminReport.qualityWarning = localizedText(
@@ -510,18 +499,7 @@ export class LangchainAuditReportService {
       sectionPayloadBytes,
     };
 
-    for (const warning of warnings) {
-      if (warning.type === 'summary') {
-        this.logger.warn(`LLM user summary failed: ${warning.message}`);
-        adminReport.summaryWarning = localizedText(
-          locale,
-          'Resume utilisateur LLM indisponible. Resume deterministe utilise.',
-          'LLM user summary failed. Deterministic summary used.',
-        );
-      } else {
-        this.logger.warn(`LLM expert section failed: ${warning.message}`);
-      }
-    }
+    this.applyWarningsToReport(adminReport, warnings, locale);
 
     if (!gate.valid) {
       adminReport.qualityWarning = localizedText(
@@ -563,51 +541,16 @@ export class LangchainAuditReportService {
               pageRecaps: 8,
             };
 
-    const compactFindings = input.deepFindings
-      .slice(0, caps.findings)
-      .map((finding) => ({
-        code: finding.code,
-        title: finding.title,
-        description: finding.description,
-        severity: finding.severity,
-        confidence: finding.confidence,
-        impact: finding.impact,
-        recommendation: finding.recommendation,
-        affectedUrls: finding.affectedUrls.slice(0, caps.affectedUrls),
-      }));
-    const compactSampledUrls = input.sampledUrls
-      .slice(0, caps.sampledUrls)
-      .map((entry) => ({
-        url: entry.url,
-        statusCode: entry.statusCode,
-        indexable: entry.indexable,
-        canonical: entry.canonical,
-        title: entry.title ?? null,
-        metaDescription: entry.metaDescription ?? null,
-        h1Count: entry.h1Count ?? 0,
-        htmlLang: entry.htmlLang ?? null,
-        canonicalCount: entry.canonicalCount ?? 0,
-        responseTimeMs: entry.responseTimeMs ?? null,
-        server: entry.server ?? null,
-        xPoweredBy: entry.xPoweredBy ?? null,
-        setCookiePatterns: (entry.setCookiePatterns ?? []).slice(0, 8),
-        cacheHeaders: entry.cacheHeaders ?? {},
-        securityHeaders: entry.securityHeaders ?? {},
-        error: entry.error,
-      }));
-    const compactPageRecaps = input.pageRecaps
-      .slice(0, caps.pageRecaps)
-      .map((entry) => ({
-        url: entry.url,
-        priority: entry.priority,
-        wordingScore: entry.wordingScore,
-        trustScore: entry.trustScore,
-        ctaScore: entry.ctaScore,
-        seoCopyScore: entry.seoCopyScore,
-        topIssues: entry.topIssues.slice(0, 3),
-        recommendations: entry.recommendations.slice(0, 3),
-        source: entry.source,
-      }));
+    const compactFindings = this.compactFindings(
+      input,
+      caps.findings,
+      caps.affectedUrls,
+    );
+    const compactSampledUrls = this.compactSampledUrls(input, caps.sampledUrls);
+    const compactPageRecaps = this.compactPageRecapsBasic(
+      input,
+      caps.pageRecaps,
+    );
 
     return {
       locale: input.locale,
@@ -621,6 +564,80 @@ export class LangchainAuditReportService {
       pageRecaps: compactPageRecaps,
       pageSummary: input.pageSummary,
       techFingerprint: input.techFingerprint,
+      ...this.buildEvidenceBuckets(
+        input,
+        compactFindings,
+        compactSampledUrls,
+        compactPageRecaps,
+      ),
+    };
+  }
+
+  private compactFindings(
+    input: LangchainAuditInput,
+    maxFindings: number,
+    maxAffectedUrls: number,
+  ): Array<Record<string, unknown>> {
+    return input.deepFindings.slice(0, maxFindings).map((finding) => ({
+      code: finding.code,
+      title: finding.title,
+      description: finding.description,
+      severity: finding.severity,
+      confidence: finding.confidence,
+      impact: finding.impact,
+      recommendation: finding.recommendation,
+      affectedUrls: finding.affectedUrls.slice(0, maxAffectedUrls),
+    }));
+  }
+
+  private compactSampledUrls(
+    input: LangchainAuditInput,
+    maxUrls: number,
+  ): Array<Record<string, unknown>> {
+    return input.sampledUrls.slice(0, maxUrls).map((entry) => ({
+      url: entry.url,
+      statusCode: entry.statusCode,
+      indexable: entry.indexable,
+      canonical: entry.canonical,
+      title: entry.title ?? null,
+      metaDescription: entry.metaDescription ?? null,
+      h1Count: entry.h1Count ?? 0,
+      htmlLang: entry.htmlLang ?? null,
+      canonicalCount: entry.canonicalCount ?? 0,
+      responseTimeMs: entry.responseTimeMs ?? null,
+      server: entry.server ?? null,
+      xPoweredBy: entry.xPoweredBy ?? null,
+      setCookiePatterns: (entry.setCookiePatterns ?? []).slice(0, 8),
+      cacheHeaders: entry.cacheHeaders ?? {},
+      securityHeaders: entry.securityHeaders ?? {},
+      error: entry.error,
+    }));
+  }
+
+  private compactPageRecapsBasic(
+    input: LangchainAuditInput,
+    maxRecaps: number,
+  ): Array<Record<string, unknown>> {
+    return input.pageRecaps.slice(0, maxRecaps).map((entry) => ({
+      url: entry.url,
+      priority: entry.priority,
+      wordingScore: entry.wordingScore,
+      trustScore: entry.trustScore,
+      ctaScore: entry.ctaScore,
+      seoCopyScore: entry.seoCopyScore,
+      topIssues: entry.topIssues.slice(0, 3),
+      recommendations: entry.recommendations.slice(0, 3),
+      source: entry.source,
+    }));
+  }
+
+  private buildEvidenceBuckets(
+    input: LangchainAuditInput,
+    compactFindings: Array<Record<string, unknown>>,
+    compactSampledUrls: Array<Record<string, unknown>>,
+    compactPageRecaps: Array<Record<string, unknown>>,
+  ): Record<string, unknown> {
+    return {
       evidenceBuckets: {
         crawl: {
           keyChecks: input.keyChecks,
@@ -1549,6 +1566,25 @@ export class LangchainAuditReportService {
     reason: string,
   ): ExpertReport {
     return buildFallbackExpertReport(input, reason);
+  }
+
+  private applyWarningsToReport(
+    adminReport: Record<string, unknown>,
+    warnings: Array<{ type: 'summary' | 'expert'; message: string }>,
+    locale: AuditLocale,
+  ): void {
+    for (const warning of warnings) {
+      if (warning.type === 'summary') {
+        this.logger.warn(`LLM user summary failed: ${warning.message}`);
+        adminReport.summaryWarning = localizedText(
+          locale,
+          'Resume utilisateur LLM indisponible. Resume deterministe utilise.',
+          'LLM user summary failed. Deterministic summary used.',
+        );
+      } else {
+        this.logger.warn(`LLM expert report failed: ${warning.message}`);
+      }
+    }
   }
 
   private async emitProgress(

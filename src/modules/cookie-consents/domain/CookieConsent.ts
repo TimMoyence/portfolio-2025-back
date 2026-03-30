@@ -1,4 +1,8 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import {
+  requireText,
+  optionalMetadata,
+} from '../../../common/domain/validation/domain-validators';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 
 export interface CookieConsentPreferences {
@@ -27,6 +31,7 @@ export interface CreateCookieConsentProps {
   referer?: string | null;
 }
 
+/** Entite domaine representant un consentement cookies conforme RGPD. */
 export class CookieConsent {
   id?: string;
   policyVersion: string;
@@ -40,14 +45,14 @@ export class CookieConsent {
   referer?: string | null;
 
   static create(props: CreateCookieConsentProps): CookieConsent {
-    const policyVersion = this.requireText(
+    const policyVersion = requireText(
       props.policyVersion,
-      'policy version',
+      'cookie consent policy version',
       1,
       50,
     );
     const locale = LocaleCode.resolve(props.locale, 'fr').value;
-    const region = this.requireText(props.region, 'region', 1, 20);
+    const region = requireText(props.region, 'cookie consent region', 1, 20);
 
     if (!['banner', 'settings'].includes(props.source)) {
       throw new DomainValidationError('Invalid cookie consent source');
@@ -88,33 +93,10 @@ export class CookieConsent {
     consent.source = props.source;
     consent.action = props.action;
     consent.preferences = preferences;
-    consent.ip = this.optionalMetadata(props.ip);
-    consent.userAgent = this.optionalMetadata(props.userAgent);
-    consent.referer = this.optionalMetadata(props.referer);
+    consent.ip = optionalMetadata(props.ip);
+    consent.userAgent = optionalMetadata(props.userAgent);
+    consent.referer = optionalMetadata(props.referer);
 
     return consent;
-  }
-
-  private static requireText(
-    raw: unknown,
-    field: string,
-    min: number,
-    max: number,
-  ): string {
-    if (typeof raw !== 'string') {
-      throw new DomainValidationError(`Invalid cookie consent ${field}`);
-    }
-    const trimmed = raw.trim();
-    if (trimmed.length < min || trimmed.length > max) {
-      throw new DomainValidationError(`Invalid cookie consent ${field}`);
-    }
-    return trimmed;
-  }
-
-  private static optionalMetadata(raw: unknown): string | null {
-    if (raw === null || raw === undefined) return null;
-    if (typeof raw !== 'string') return null;
-    const trimmed = raw.trim();
-    return trimmed.length > 0 ? trimmed : null;
   }
 }

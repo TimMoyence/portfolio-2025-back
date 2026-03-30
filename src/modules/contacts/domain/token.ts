@@ -1,1 +1,2 @@
 export const CONTACTS_REPOSITORY = Symbol('CONTACTS_REPOSITORY');
+export const CONTACT_NOTIFIER = Symbol('CONTACT_NOTIFIER');

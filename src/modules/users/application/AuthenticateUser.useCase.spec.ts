@@ -3,7 +3,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { Users } from '../domain/Users';
 import { AuthenticateUserUseCase } from './AuthenticateUser.useCase';
-import { LoginDto } from './dto/Login.dto';
+import type { LoginCommand } from './dto/Login.command';
 import { JwtTokenService } from './services/JwtTokenService';
 import { PasswordService } from './services/PasswordService';
 
@@ -56,7 +56,10 @@ describe('AuthenticateUserUseCase', () => {
     };
     repo.findByEmail.mockResolvedValue(user);
 
-    const dto: LoginDto = { email: 'john@example.com', password: 'password' };
+    const dto: LoginCommand = {
+      email: 'john@example.com',
+      password: 'password',
+    };
 
     const result = await useCase.execute(dto);
 

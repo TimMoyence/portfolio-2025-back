@@ -3,7 +3,7 @@ import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { Users } from '../domain/Users';
 import { ChangePasswordUseCase } from './ChangePassword.useCase';
-import { ChangePasswordDto } from './dto/ChangePassword.dto';
+import type { ChangePasswordCommand } from './dto/ChangePassword.command';
 import { PasswordService } from './services/PasswordService';
 
 describe('ChangePasswordUseCase', () => {
@@ -47,7 +47,7 @@ describe('ChangePasswordUseCase', () => {
     const updatedUser = { ...user, passwordHash: 'new-hash' } as Users;
     repo.update.mockResolvedValue(updatedUser);
 
-    const dto: ChangePasswordDto = {
+    const dto: ChangePasswordCommand = {
       userId: 'user-1',
       currentPassword: 'OldPassword123',
       newPassword: 'NewPassword456',

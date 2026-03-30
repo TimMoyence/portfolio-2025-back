@@ -1,9 +1,8 @@
 // src/database/data-source.ts
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-// Charge .env seulement en dev/local. En prod, Compose fournit déjà les vars.
+// Charge .env seulement en dev/local. En prod, Compose fournit deja les vars.
 const nodeEnv = (process.env.NODE_ENV ?? '').trim();
-console.log(`Running in ${nodeEnv} environment.`);
 if (nodeEnv !== 'production') {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('dotenv/config');

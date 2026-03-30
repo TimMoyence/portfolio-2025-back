@@ -26,7 +26,7 @@ export class CoursesRepositoryTypeORM implements ICoursesRepository {
       .getManyAndCount();
 
     return createPaginatedResult(
-      entities as unknown as Courses[],
+      entities.map((e) => this.toDomain(e)),
       total,
       query.page,
       query.limit,
@@ -35,9 +35,24 @@ export class CoursesRepositoryTypeORM implements ICoursesRepository {
 
   async create(data: Courses): Promise<Courses> {
     const saved = await this.repo.save(
-      data as unknown as Partial<CoursesEntity>,
+      this.repo.create({
+        slug: data.slug,
+        title: data.title,
+        summary: data.summary,
+        coverImage: data.coverImage,
+      }),
     );
-    return saved as unknown as Courses;
+    return this.toDomain(saved);
+  }
+
+  private toDomain(entity: CoursesEntity): Courses {
+    const course = new Courses();
+    course.id = entity.id;
+    course.slug = entity.slug;
+    course.title = entity.title;
+    course.summary = entity.summary;
+    course.coverImage = entity.coverImage;
+    return course;
   }
 
   private resolveSortColumn(sortBy: CourseSortBy): string {

@@ -22,6 +22,7 @@ export interface UpdateUserProps {
   updatedOrCreatedBy?: string | null;
 }
 
+/** Entite domaine representant un utilisateur du portfolio. */
 export class Users {
   id?: string;
   email: string;

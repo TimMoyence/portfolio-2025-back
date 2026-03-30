@@ -2,7 +2,7 @@
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { Users } from '../domain/Users';
 import { CreateUsersUseCase } from './CreateUsers.useCase';
-import { CreateUserDto } from './dto/CreateUser.dto';
+import type { CreateUserCommand } from './dto/CreateUser.command';
 import { PasswordService } from './services/PasswordService';
 
 describe('CreateUsersUseCase', () => {
@@ -27,7 +27,7 @@ describe('CreateUsersUseCase', () => {
   });
 
   it('maps the DTO and persists the user', async () => {
-    const dto: CreateUserDto = {
+    const dto: CreateUserCommand = {
       email: 'john@example.com',
       password: 'SecurePassword123!',
       firstName: 'John',

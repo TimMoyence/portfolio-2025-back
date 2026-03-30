@@ -5,6 +5,7 @@ import type { RedirectListQuery } from '../domain/RedirectList.query';
 import type { Redirects } from '../domain/Redirects';
 import { REDIRECTS_REPOSITORY } from '../domain/token';
 
+/** Recupere la liste paginee des redirections selon les criteres de filtrage et tri. */
 @Injectable()
 export class ListRedirectsUseCase {
   constructor(

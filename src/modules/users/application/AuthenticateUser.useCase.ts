@@ -1,8 +1,8 @@
-import { Inject, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import { Users } from '../domain/Users';
-import { LoginDto } from './dto/Login.dto';
+import type { LoginCommand } from './dto/Login.command';
 import { JwtTokenService } from './services/JwtTokenService';
 import { PasswordService } from './services/PasswordService';
 
@@ -12,6 +12,8 @@ export interface AuthResult {
   user: Users;
 }
 
+/** Authentifie un utilisateur par email/mot de passe et retourne un JWT. */
+@Injectable()
 export class AuthenticateUserUseCase {
   constructor(
     @Inject(USERS_REPOSITORY)
@@ -20,7 +22,7 @@ export class AuthenticateUserUseCase {
     private readonly jwtTokenService: JwtTokenService,
   ) {}
 
-  async execute(dto: LoginDto): Promise<AuthResult> {
+  async execute(dto: LoginCommand): Promise<AuthResult> {
     const user = await this.repo.findByEmail(dto.email);
 
     if (!user || !user.isActive) {

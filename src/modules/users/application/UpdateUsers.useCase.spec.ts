@@ -2,7 +2,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { IUsersRepository } from '../domain/IUsers.repository';
 import { Users } from '../domain/Users';
-import { UpdateUserDto } from './dto/UpdateUser.dto';
+import type { UpdateUserCommand } from './dto/UpdateUser.command';
 import { PasswordService } from './services/PasswordService';
 import { UpdateUsersUseCase } from './UpdateUsers.useCase';
 
@@ -42,7 +42,7 @@ describe('UpdateUsersUseCase', () => {
     };
     repo.findById.mockResolvedValue(user);
 
-    const dto: UpdateUserDto = {
+    const dto: UpdateUserCommand = {
       firstName: 'Johnny',
       phone: '123456789',
     };
@@ -68,7 +68,7 @@ describe('UpdateUsersUseCase', () => {
     repo.findById.mockResolvedValue(null);
 
     await expect(
-      useCase.execute('missing', {} as UpdateUserDto),
+      useCase.execute('missing', {} as UpdateUserCommand),
     ).rejects.toBeInstanceOf(NotFoundException);
     expect(repo.update).not.toHaveBeenCalled();
   });

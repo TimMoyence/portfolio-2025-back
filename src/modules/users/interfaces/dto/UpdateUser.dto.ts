@@ -7,8 +7,10 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import type { UpdateUserCommand } from '../../application/dto/UpdateUser.command';
 
-export class UpdateUserDto {
+/** DTO HTTP pour la mise a jour d'un utilisateur (validation + Swagger). */
+export class UpdateUserDto implements UpdateUserCommand {
   @ApiPropertyOptional({ example: 'john@example.com' })
   @IsOptional()
   @IsEmail()

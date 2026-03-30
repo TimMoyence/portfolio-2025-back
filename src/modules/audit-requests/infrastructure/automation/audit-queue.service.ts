@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { JobsOptions, Queue } from 'bullmq';
+import type { IAuditQueuePort } from '../../domain/IAuditQueue.port';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
 import { AuditPipelineService } from './audit-pipeline.service';
@@ -9,7 +10,7 @@ export interface AuditQueueJob {
 }
 
 @Injectable()
-export class AuditQueueService implements OnModuleDestroy {
+export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
   private readonly logger = new Logger(AuditQueueService.name);
   private readonly queue?: Queue<AuditQueueJob>;
   private readonly redisConnection?: {

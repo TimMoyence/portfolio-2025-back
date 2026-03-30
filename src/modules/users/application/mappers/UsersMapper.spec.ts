@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
-import { CreateUserDto } from '../dto/CreateUser.dto';
-import { UpdateUserDto } from '../dto/UpdateUser.dto';
+import type { CreateUserCommand } from '../dto/CreateUser.command';
+import type { UpdateUserCommand } from '../dto/UpdateUser.command';
 import { UsersMapper } from './UsersMapper';
 
 describe('UsersMapper', () => {
-  const baseCreateDto: CreateUserDto = {
+  const baseCreateCommand: CreateUserCommand = {
     email: 'john@example.com',
     password: 'StrongPassword123!',
     firstName: 'John',
@@ -12,9 +12,9 @@ describe('UsersMapper', () => {
   };
 
   it('normalizes email and phone on create', () => {
-    const mapped = UsersMapper.fromCreateDto(
+    const mapped = UsersMapper.fromCreateCommand(
       {
-        ...baseCreateDto,
+        ...baseCreateCommand,
         email: '  JOHN.DOE@Example.com ',
         phone: '00 1 212 555 0100',
       },
@@ -28,9 +28,9 @@ describe('UsersMapper', () => {
 
   it('throws when create email or phone is invalid', () => {
     expect(() =>
-      UsersMapper.fromCreateDto(
+      UsersMapper.fromCreateCommand(
         {
-          ...baseCreateDto,
+          ...baseCreateCommand,
           email: 'invalid',
         },
         'hash',
@@ -38,9 +38,9 @@ describe('UsersMapper', () => {
     ).toThrow(BadRequestException);
 
     expect(() =>
-      UsersMapper.fromCreateDto(
+      UsersMapper.fromCreateCommand(
         {
-          ...baseCreateDto,
+          ...baseCreateCommand,
           phone: 'invalid-phone',
         },
         'hash',
@@ -49,13 +49,13 @@ describe('UsersMapper', () => {
   });
 
   it('normalizes and maps partial fields on update', () => {
-    const dto: UpdateUserDto = {
+    const command: UpdateUserCommand = {
       email: '  Jane.Doe@Example.com ',
       phone: '  ',
       isActive: false,
     };
 
-    const mapped = UsersMapper.fromUpdateDto(dto);
+    const mapped = UsersMapper.fromUpdateCommand(command);
 
     expect(mapped.email).toBe('jane.doe@example.com');
     expect(mapped.phone).toBeNull();
@@ -65,7 +65,7 @@ describe('UsersMapper', () => {
 
   it('throws when update phone is provided and invalid', () => {
     expect(() =>
-      UsersMapper.fromUpdateDto({
+      UsersMapper.fromUpdateCommand({
         phone: 'invalid',
       }),
     ).toThrow(BadRequestException);

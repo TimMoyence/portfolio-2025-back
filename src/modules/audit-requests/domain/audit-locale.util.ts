@@ -1,3 +1,7 @@
+/**
+ * Locales supportees pour le module audit.
+ * Structurellement identique a SupportedLocale de common/domain/value-objects/LocaleCode.
+ */
 export type AuditLocale = 'fr' | 'en';
 
 export function resolveAuditLocale(

@@ -1,7 +1,10 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { PublishableStatus } from '../../../common/domain/types/publishable-status';
+import { optionalText } from '../../../common/domain/validation/domain-validators';
+import { Slug } from '../../../common/domain/value-objects/Slug';
 
 export type ProjectType = 'CLIENT' | 'SIDE';
-export type ProjectStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+export type ProjectStatus = PublishableStatus;
 
 export interface CreateProjectProps {
   slug: string;
@@ -15,6 +18,7 @@ export interface CreateProjectProps {
   order?: number;
 }
 
+/** Entite domaine representant un projet du portfolio. */
 export class Projects {
   id?: string;
   slug: string;
@@ -29,11 +33,11 @@ export class Projects {
 
   static create(props: CreateProjectProps): Projects {
     const project = new Projects();
-    project.slug = this.requireSlug(props.slug, 'project slug');
+    project.slug = Slug.parse(props.slug, 'project slug').toString();
     project.type = this.resolveType(props.type);
     project.repoUrl = this.optionalUrl(props.repoUrl, 'project repo URL');
     project.liveUrl = this.optionalUrl(props.liveUrl, 'project live URL');
-    project.coverImage = this.optionalText(
+    project.coverImage = optionalText(
       props.coverImage,
       'project cover image',
       500,
@@ -53,48 +57,6 @@ export class Projects {
     project.status = this.resolveStatus(props.status);
     project.order = this.resolveOrder(props.order);
     return project;
-  }
-
-  private static requireSlug(raw: unknown, field: string): string {
-    if (typeof raw !== 'string') {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    const slug = raw.trim().toLowerCase();
-    if (slug.length < 2 || slug.length > 120) {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    return slug;
-  }
-
-  private static optionalText(
-    raw: unknown,
-    field: string,
-    max: number,
-  ): string | undefined {
-    if (raw === undefined || raw === null) {
-      return undefined;
-    }
-
-    if (typeof raw !== 'string') {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    const value = raw.trim();
-    if (value.length === 0) {
-      return undefined;
-    }
-
-    if (value.length > max) {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    return value;
   }
 
   private static optionalUrl(raw: unknown, field: string): string | undefined {

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -12,12 +14,18 @@ const runtimeContexts = resolveRuntimeContexts();
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 30,
+      },
+    ]),
     TypeOrmModule.forRootAsync({
       useFactory: async (): Promise<TypeOrmModuleOptions> => {
         const sslEnabled =
           process.env.DB_SSL === 'true' || process.env.DATABASE_SSL === 'true';
         const sslOption = sslEnabled
-          ? { rejectUnauthorized: false }
+          ? { rejectUnauthorized: process.env.NODE_ENV === 'production' }
           : undefined;
 
         const databaseUrl =
@@ -34,8 +42,9 @@ const runtimeContexts = resolveRuntimeContexts();
             : undefined);
 
         const synchronize =
-          process.env.TYPEORM_SYNCHRONIZE === 'true' ||
-          process.env.DB_SYNCHRONIZE === 'true';
+          process.env.NODE_ENV !== 'production' &&
+          (process.env.TYPEORM_SYNCHRONIZE === 'true' ||
+            process.env.DB_SYNCHRONIZE === 'true');
 
         const baseOptions: TypeOrmModuleOptions = {
           type: 'postgres',
@@ -114,6 +123,12 @@ const runtimeContexts = resolveRuntimeContexts();
     ...runtimeContexts.runtimeModules,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

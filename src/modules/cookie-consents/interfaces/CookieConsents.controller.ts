@@ -1,5 +1,6 @@
 import { Body, Controller, HttpStatus, Post, Req } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { Public } from '../../users/interfaces/decorators/public.decorator';
 import type { Request } from 'express';
 import { CreateCookieConsentsUseCase } from '../application/CreateCookieConsents.useCase';
 import { CreateCookieConsentCommand } from '../application/dto/CreateCookieConsent.command';
@@ -10,6 +11,7 @@ import { CookieConsentRequestDto } from './dto/cookie-consent.request.dto';
 export class CookieConsentsController {
   constructor(private readonly createUseCase: CreateCookieConsentsUseCase) {}
 
+  @Public()
   @Post()
   @ApiCreatedResponse({ type: CookieConsentResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })

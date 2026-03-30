@@ -1,7 +1,19 @@
 import { NotFoundException } from '@nestjs/common';
+import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { GetAuditSummaryUseCase } from './GetAuditSummary.useCase';
 
 describe('GetAuditSummaryUseCase', () => {
+  let repo: jest.Mocked<IAuditRequestsRepository>;
+
+  beforeEach(() => {
+    repo = {
+      create: jest.fn(),
+      findById: jest.fn(),
+      findSummaryById: jest.fn(),
+      updateState: jest.fn(),
+    };
+  });
+
   it('returns persisted summary when audit exists', async () => {
     const summary = {
       auditId: 'audit-1',
@@ -13,19 +25,15 @@ describe('GetAuditSummaryUseCase', () => {
       quickWins: ['Ajouter des données structurées'],
       pillarScores: { seo: 80 },
     };
-    const repo = {
-      findSummaryById: jest.fn().mockResolvedValue(summary),
-    };
-    const useCase = new GetAuditSummaryUseCase(repo as never);
+    repo.findSummaryById.mockResolvedValue(summary);
+    const useCase = new GetAuditSummaryUseCase(repo);
 
     await expect(useCase.execute('audit-1')).resolves.toEqual(summary);
   });
 
   it('throws not found when audit is missing', async () => {
-    const repo = {
-      findSummaryById: jest.fn().mockResolvedValue(null),
-    };
-    const useCase = new GetAuditSummaryUseCase(repo as never);
+    repo.findSummaryById.mockResolvedValue(null);
+    const useCase = new GetAuditSummaryUseCase(repo);
 
     await expect(useCase.execute('missing-audit')).rejects.toBeInstanceOf(
       NotFoundException,

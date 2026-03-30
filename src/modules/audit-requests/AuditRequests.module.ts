@@ -5,6 +5,8 @@ import { GetAuditSummaryUseCase } from './application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from './application/StreamAuditEvents.useCase';
 import {
   AUDIT_AUTOMATION_CONFIG,
+  AUDIT_NOTIFIER,
+  AUDIT_QUEUE,
   AUDIT_REQUESTS_REPOSITORY,
 } from './domain/token';
 import { AuditRequestMailerService } from './infrastructure/AuditRequestMailer.service';
@@ -60,6 +62,14 @@ const AUDIT_AUTOMATION_SERVICES = [
     {
       provide: AUDIT_REQUESTS_REPOSITORY,
       useClass: AuditRequestsRepositoryTypeORM,
+    },
+    {
+      provide: AUDIT_QUEUE,
+      useExisting: AuditQueueService,
+    },
+    {
+      provide: AUDIT_NOTIFIER,
+      useExisting: AuditRequestMailerService,
     },
   ],
   exports: [AUDIT_REQUESTS_REPOSITORY, AuditQueueService],

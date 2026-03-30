@@ -7,8 +7,9 @@ import {
 } from '../../../common/domain/pagination.types';
 import { IServicesRepository } from '../domain/IServices.repository';
 import { ServiceListQuery, ServiceSortBy } from '../domain/ServiceList.query';
-import { Services } from '../domain/Services';
+import { ServiceStatus, Services } from '../domain/Services';
 import { ServicesEntity } from './entities/Services.entity';
+import { PublishStatus } from '../../projects/infrastructure/enums/PublishStatus.enum';
 
 @Injectable()
 export class ServicesRepositoryTypeORM implements IServicesRepository {
@@ -30,7 +31,7 @@ export class ServicesRepositoryTypeORM implements IServicesRepository {
       .getManyAndCount();
 
     return createPaginatedResult(
-      entities as unknown as Services[],
+      entities.map((e) => this.toDomain(e)),
       total,
       query.page,
       query.limit,
@@ -38,10 +39,26 @@ export class ServicesRepositoryTypeORM implements IServicesRepository {
   }
 
   async create(data: Services): Promise<Services> {
-    const saved = await this.repo.save(
-      data as unknown as Partial<ServicesEntity>,
-    );
-    return saved as unknown as Services;
+    const entity = this.repo.create({
+      slug: data.slug,
+      name: data.name,
+      icon: data.icon,
+      status: data.status as PublishStatus,
+      order: data.order,
+    });
+    const saved = await this.repo.save(entity);
+    return this.toDomain(saved);
+  }
+
+  private toDomain(entity: ServicesEntity): Services {
+    const service = new Services();
+    service.id = entity.id;
+    service.slug = entity.slug;
+    service.name = entity.name;
+    service.icon = entity.icon;
+    service.status = entity.status as ServiceStatus;
+    service.order = entity.order;
+    return service;
   }
 
   private resolveSortColumn(sortBy: ServiceSortBy): string {

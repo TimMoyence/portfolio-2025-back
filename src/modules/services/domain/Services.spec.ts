@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import type { ServiceStatus } from './Services';
 import { Services } from './Services';
 
 describe('Services aggregate', () => {
@@ -19,11 +20,13 @@ describe('Services aggregate', () => {
   });
 
   it('throws for invalid status', () => {
+    // Simule une valeur invalide provenant d'une source externe non typee
+    const invalidStatus = 'UNKNOWN' as ServiceStatus;
     expect(() =>
       Services.create({
         slug: 'technical-seo',
         name: 'Technical SEO',
-        status: 'UNKNOWN' as never,
+        status: invalidStatus,
       }),
     ).toThrow(DomainValidationError);
   });

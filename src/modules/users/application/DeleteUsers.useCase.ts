@@ -1,8 +1,10 @@
-import { Inject, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import { Users } from '../domain/Users';
 
+/** Desactive un utilisateur par son identifiant (suppression logique). */
+@Injectable()
 export class DeleteUsersUseCase {
   constructor(
     @Inject(USERS_REPOSITORY)

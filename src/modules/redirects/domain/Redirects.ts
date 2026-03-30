@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { Slug } from '../../../common/domain/value-objects/Slug';
 
 export interface CreateRedirectProps {
   slug: string;
@@ -7,6 +8,7 @@ export interface CreateRedirectProps {
   clicks?: number;
 }
 
+/** Entite domaine representant une redirection d'URL courte. */
 export class Redirects {
   id?: string;
   slug: string;
@@ -16,7 +18,7 @@ export class Redirects {
 
   static create(props: CreateRedirectProps): Redirects {
     const redirect = new Redirects();
-    redirect.slug = this.requireSlug(props.slug, 'redirect slug');
+    redirect.slug = Slug.parse(props.slug, 'redirect slug').toString();
     redirect.targetUrl = this.requireUrl(
       props.targetUrl,
       'redirect target URL',
@@ -24,23 +26,6 @@ export class Redirects {
     redirect.enabled = this.resolveEnabled(props.enabled);
     redirect.clicks = this.resolveClicks(props.clicks);
     return redirect;
-  }
-
-  private static requireSlug(raw: unknown, field: string): string {
-    if (typeof raw !== 'string') {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    const slug = raw.trim().toLowerCase();
-    if (slug.length < 2 || slug.length > 120) {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    return slug;
   }
 
   private static requireUrl(raw: unknown, field: string): string {

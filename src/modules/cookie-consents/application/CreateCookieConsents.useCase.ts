@@ -5,6 +5,7 @@ import { COOKIE_CONSENTS_REPOSITORY } from '../domain/token';
 import { CreateCookieConsentCommand } from './dto/CreateCookieConsent.command';
 import { CookieConsentMapper } from './mappers/CookieConsent.mapper';
 
+/** Enregistre un consentement cookies avec ses preferences et metadonnees. */
 @Injectable()
 export class CreateCookieConsentsUseCase {
   constructor(

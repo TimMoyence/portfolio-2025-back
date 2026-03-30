@@ -1,17 +1,21 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import type { IContactNotifier } from '../domain/IContactNotifier';
 import type { IContactsRepository } from '../domain/IContacts.repository';
 import { MessageContactResponse } from '../domain/MessageContactResponse';
-import { CONTACTS_REPOSITORY } from '../domain/token';
-import { ContactMailerService } from '../infrastructure/ContactMailer.service';
+import { CONTACT_NOTIFIER, CONTACTS_REPOSITORY } from '../domain/token';
 import { CreateContactCommand } from './dto/CreateContact.command';
 import { ContactMapper } from './mappers/Contact.mapper';
 
+/** Orchestre la creation d'un contact et l'envoi de notification. */
 @Injectable()
 export class CreateContactsUseCase {
+  private readonly logger = new Logger(CreateContactsUseCase.name);
+
   constructor(
     @Inject(CONTACTS_REPOSITORY)
     private repo: IContactsRepository,
-    private readonly contactMailer: ContactMailerService,
+    @Inject(CONTACT_NOTIFIER)
+    private readonly notifier: IContactNotifier,
   ) {}
 
   async execute(data: CreateContactCommand): Promise<MessageContactResponse> {
@@ -19,9 +23,11 @@ export class CreateContactsUseCase {
     const response = await this.repo.create(contact);
 
     // Fire-and-forget email notification; log errors without blocking user flow
-    void this.contactMailer
+    void this.notifier
       .sendContactNotification(contact)
-      .catch((err) => console.warn('Contact notification failed', err));
+      .catch((err: unknown) =>
+        this.logger.warn('Contact notification failed', err),
+      );
 
     return response;
   }

@@ -1,13 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { pbkdf2Sync, timingSafeEqual } from 'crypto';
+import { pbkdf2Sync, randomBytes, timingSafeEqual } from 'crypto';
 
+/**
+ * Service de hachage et verification des mots de passe via PBKDF2-SHA512.
+ *
+ * Genere un sel aleatoire unique par utilisateur (32 octets).
+ * Le hash est stocke au format `sel_hex:hash_hex`.
+ *
+ * Supporte egalement le format legacy (hash sans sel, utilisant un secret statique)
+ * pour la retrocompatibilite avec les comptes existants.
+ */
 @Injectable()
 export class PasswordService {
   private readonly secret: string;
   private readonly iterations = 120000;
   private readonly keyLength = 64;
   private readonly digest = 'sha512';
+  private readonly saltLength = 32;
 
   constructor(private readonly configService: ConfigService) {
     this.secret =
@@ -18,20 +28,66 @@ export class PasswordService {
     }
   }
 
+  /**
+   * Hache un mot de passe avec un sel aleatoire unique.
+   * @returns Hash au format `sel_hex:hash_hex`
+   */
   hash(password: string): string {
-    return pbkdf2Sync(
+    const salt = randomBytes(this.saltLength);
+    const derivedKey = pbkdf2Sync(
+      password,
+      salt,
+      this.iterations,
+      this.keyLength,
+      this.digest,
+    );
+    return `${salt.toString('hex')}:${derivedKey.toString('hex')}`;
+  }
+
+  /**
+   * Verifie un mot de passe contre un hash stocke.
+   * Detecte automatiquement le format (nouveau avec sel ou legacy sans sel).
+   */
+  verify(password: string, storedHash: string): boolean {
+    if (storedHash.includes(':')) {
+      return this.verifyWithSalt(password, storedHash);
+    }
+    return this.verifyLegacy(password, storedHash);
+  }
+
+  /** Verification avec le nouveau format `sel_hex:hash_hex`. */
+  private verifyWithSalt(password: string, storedHash: string): boolean {
+    const [saltHex, hashHex] = storedHash.split(':');
+    const salt = Buffer.from(saltHex, 'hex');
+    const storedBuffer = Buffer.from(hashHex, 'hex');
+
+    const derivedKey = pbkdf2Sync(
+      password,
+      salt,
+      this.iterations,
+      this.keyLength,
+      this.digest,
+    );
+
+    if (derivedKey.length !== storedBuffer.length) {
+      return false;
+    }
+
+    return timingSafeEqual(derivedKey, storedBuffer);
+  }
+
+  /** Verification avec l'ancien format (hash PBKDF2 utilisant le secret statique comme sel). */
+  private verifyLegacy(password: string, storedHash: string): boolean {
+    const hashed = pbkdf2Sync(
       password,
       this.secret,
       this.iterations,
       this.keyLength,
       this.digest,
     ).toString('hex');
-  }
 
-  verify(password: string, hash: string): boolean {
-    const hashed = this.hash(password);
     const hashedBuffer = Buffer.from(hashed, 'hex');
-    const storedBuffer = Buffer.from(hash, 'hex');
+    const storedBuffer = Buffer.from(storedHash, 'hex');
 
     if (hashedBuffer.length !== storedBuffer.length) {
       return false;

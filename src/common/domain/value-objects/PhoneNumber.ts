@@ -1,3 +1,4 @@
+/** Value Object immutable representant un numero de telephone normalise. */
 export class PhoneNumber {
   private constructor(private readonly normalizedValue: string) {}
 
