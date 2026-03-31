@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsIn,
   IsNumber,
   IsOptional,
   IsString,
   Max,
+  MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -15,6 +17,7 @@ import {
 export class FavoriteCityDto {
   @ApiProperty({ example: 'Paris', description: 'Nom de la ville' })
   @IsString()
+  @MaxLength(100)
   name: string;
 
   @ApiProperty({ example: 48.8566, description: 'Latitude' })
@@ -31,6 +34,7 @@ export class FavoriteCityDto {
 
   @ApiProperty({ example: 'France', description: 'Pays' })
   @IsString()
+  @MaxLength(100)
   country: string;
 }
 
@@ -56,6 +60,7 @@ export class UpdatePreferencesDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => FavoriteCityDto)
+  @ArrayMaxSize(20)
   favoriteCities?: FavoriteCityDto[];
 
   @ApiProperty({
@@ -66,5 +71,6 @@ export class UpdatePreferencesDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @ArrayMaxSize(100)
   tooltipsSeen?: string[];
 }

@@ -214,7 +214,11 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
         );
         throw new Error(`OpenWeatherMap timeout (${FETCH_TIMEOUT_MS}ms)`);
       }
-      this.logger.warn(`Erreur OpenWeatherMap: ${String(error)}`);
+      const safeMessage =
+        error instanceof Error
+          ? error.message.replace(/appid=[^&\s]+/g, 'appid=***')
+          : 'Unknown error';
+      this.logger.warn(`Erreur OpenWeatherMap: ${safeMessage}`);
       throw error;
     } finally {
       clearTimeout(timeout);

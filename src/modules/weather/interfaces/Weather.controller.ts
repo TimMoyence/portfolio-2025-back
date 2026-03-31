@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import type { JwtPayload } from '../../users/application/services/JwtPayload';
+import { Roles } from '../../users/interfaces/decorators/roles.decorator';
+import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
 import { Public } from '../../users/interfaces/decorators/public.decorator';
 import { GetAirQualityUseCase } from '../application/GetAirQuality.useCase';
 import { GetEnsembleUseCase } from '../application/GetEnsemble.useCase';
@@ -37,6 +48,7 @@ import { WeatherPreferencesDto } from './dto/WeatherPreferences.dto';
 /** Controleur exposant les endpoints meteo. */
 @ApiTags('weather')
 @Controller('weather')
+@UseGuards(RolesGuard)
 export class WeatherController {
   constructor(
     private readonly getGeocodingUseCase: GetGeocodingUseCase,
@@ -63,8 +75,9 @@ export class WeatherController {
     });
   }
 
-  /** Previsions meteo (authentification JWT requise). */
+  /** Previsions meteo (authentification JWT + role weather requis). */
   @Get('forecast')
+  @Roles('weather')
   @ApiBearerAuth()
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async getForecast(@Query() dto: ForecastQueryDto): Promise<ForecastResult> {
@@ -75,8 +88,9 @@ export class WeatherController {
     });
   }
 
-  /** Qualite de l'air (authentification JWT requise). */
+  /** Qualite de l'air (role weather requis). */
   @Get('air-quality')
+  @Roles('weather')
   @ApiBearerAuth()
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async getAirQuality(
@@ -90,8 +104,9 @@ export class WeatherController {
 
   // --- Previsions expert ---
 
-  /** Previsions d'ensemble multi-modeles (authentification JWT requise). */
+  /** Previsions d'ensemble multi-modeles (role weather requis). */
   @Get('ensemble')
+  @Roles('weather')
   @ApiBearerAuth()
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async getEnsemble(@Query() dto: ForecastQueryDto): Promise<EnsembleResult> {
@@ -101,8 +116,9 @@ export class WeatherController {
     });
   }
 
-  /** Donnees meteo historiques (authentification JWT requise). */
+  /** Donnees meteo historiques (role weather requis). */
   @Get('historical')
+  @Roles('weather')
   @ApiBearerAuth()
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async getHistorical(
@@ -120,6 +136,7 @@ export class WeatherController {
 
   /** Recupere les preferences meteo de l'utilisateur connecte. */
   @Get('preferences')
+  @Roles('weather')
   @ApiBearerAuth()
   async getPreferences(@Req() req: Request): Promise<WeatherPreferencesDto> {
     const user = req['user'] as JwtPayload;
@@ -129,6 +146,7 @@ export class WeatherController {
 
   /** Met a jour les preferences meteo de l'utilisateur connecte. */
   @Patch('preferences')
+  @Roles('weather')
   @ApiBearerAuth()
   async updatePreferences(
     @Req() req: Request,
@@ -146,6 +164,7 @@ export class WeatherController {
 
   /** Enregistre l'utilisation du dashboard meteo pour l'utilisateur connecte. */
   @Post('preferences/record-usage')
+  @Roles('weather')
   @ApiBearerAuth()
   async recordUsage(@Req() req: Request): Promise<void> {
     const user = req['user'] as JwtPayload;
@@ -154,8 +173,9 @@ export class WeatherController {
 
   // --- Donnees detaillees (OpenWeatherMap) ---
 
-  /** Donnees meteo detaillees courantes. */
+  /** Donnees meteo detaillees courantes (role weather requis). */
   @Get('current-detailed')
+  @Roles('weather')
   @ApiBearerAuth()
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async getCurrentDetailed(
@@ -168,8 +188,9 @@ export class WeatherController {
     return DetailedCurrentWeatherDto.fromDomain(data);
   }
 
-  /** Previsions detaillees (OpenWeatherMap). */
+  /** Previsions detaillees (role weather requis). */
   @Get('forecast-detailed')
+  @Roles('weather')
   @ApiBearerAuth()
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async getForecastDetailed(

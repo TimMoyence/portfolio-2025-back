@@ -215,7 +215,8 @@ export class OpenMeteoProxyService implements IWeatherProxy {
       return (await response.json()) as T;
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
-        this.logger.warn(`Timeout apres ${FETCH_TIMEOUT_MS}ms pour ${url}`);
+        const safeUrl = new URL(url).pathname;
+        this.logger.warn(`Timeout apres ${FETCH_TIMEOUT_MS}ms pour ${safeUrl}`);
         throw new Error(`Open-Meteo timeout (${FETCH_TIMEOUT_MS}ms)`);
       }
       this.logger.warn(`Erreur Open-Meteo: ${String(error)}`);
