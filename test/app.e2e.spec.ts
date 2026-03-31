@@ -17,6 +17,7 @@ import { ContactRequestDto } from '../src/modules/contacts/interfaces/dto/contac
 import { CreateCookieConsentsUseCase } from '../src/modules/cookie-consents/application/CreateCookieConsents.useCase';
 import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { CookieConsentRequestDto } from '../src/modules/cookie-consents/interfaces/dto/cookie-consent.request.dto';
+import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
@@ -38,6 +39,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   const getAuditSummaryUseCase = { execute: jest.fn() };
   const streamAuditEventsUseCase = { execute: jest.fn() };
   const authenticateUserUseCase = { execute: jest.fn() };
+  const authenticateGoogleUserUseCase = { execute: jest.fn() };
   const createUsersUseCase = { execute: jest.fn() };
   const changePasswordUseCase = { execute: jest.fn() };
 
@@ -72,6 +74,10 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         {
           provide: AuthenticateUserUseCase,
           useValue: authenticateUserUseCase,
+        },
+        {
+          provide: AuthenticateGoogleUserUseCase,
+          useValue: authenticateGoogleUserUseCase,
         },
         { provide: CreateUsersUseCase, useValue: createUsersUseCase },
         { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
