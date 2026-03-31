@@ -14,6 +14,7 @@ describe('DeleteUsersUseCase', () => {
       create: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findByGoogleId: jest.fn(),
       update: jest.fn(),
       deactivate: jest.fn(),
     };

@@ -30,6 +30,10 @@ export class ChangePasswordUseCase {
       throw new UnauthorizedException('Inactive user cannot change password');
     }
 
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('No password set for this account');
+    }
+
     const validCurrentPassword = this.passwordService.verify(
       dto.currentPassword,
       user.passwordHash,

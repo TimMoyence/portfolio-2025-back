@@ -15,6 +15,8 @@ import { AuditQueueJob, AuditQueueService } from './audit-queue.service';
 export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(AuditWorkerService.name);
   private worker?: Worker<AuditQueueJob>;
+  private connectionErrors = 0;
+  private static readonly MAX_CONNECTION_ERRORS = 3;
 
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
@@ -46,7 +48,15 @@ export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.worker.on('error', (error) => {
-      this.logger.warn(`Audit worker error: ${String(error)}`);
+      this.connectionErrors++;
+      if (this.connectionErrors <= AuditWorkerService.MAX_CONNECTION_ERRORS) {
+        this.logger.warn(`Audit worker error: ${String(error)}`);
+      }
+      if (this.connectionErrors === AuditWorkerService.MAX_CONNECTION_ERRORS) {
+        this.logger.warn(
+          'Redis unreachable — audit worker disabled, falling back to in-process execution.',
+        );
+      }
     });
   }
 

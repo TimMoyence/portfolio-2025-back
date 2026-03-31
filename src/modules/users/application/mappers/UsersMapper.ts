@@ -51,4 +51,24 @@ export class UsersMapper {
   ): Partial<Users> {
     return this.fromUpdateCommand(dto, passwordHash);
   }
+
+  /** Cree un utilisateur domaine a partir des donnees Google OAuth. */
+  static fromGoogleAuth(props: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    googleId: string;
+    roles: string[];
+  }): Users {
+    return mapDomainValidation(() =>
+      Users.create({
+        email: props.email,
+        firstName: props.firstName,
+        lastName: props.lastName,
+        googleId: props.googleId,
+        roles: props.roles,
+        updatedOrCreatedBy: 'google-oauth',
+      }),
+    );
+  }
 }

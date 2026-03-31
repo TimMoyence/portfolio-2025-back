@@ -6,6 +6,7 @@ import { ProjectsModule } from '../modules/projects/Projects.module';
 import { RedirectsModule } from '../modules/redirects/Redirects.module';
 import { ServicesModule } from '../modules/services/Services.module';
 import { UsersModule } from '../modules/users/Users.module';
+import { WeatherModule } from '../modules/weather/Weather.module';
 import { resolveRuntimeContexts } from './runtime-contexts';
 
 describe('resolveRuntimeContexts', () => {
@@ -18,6 +19,7 @@ describe('resolveRuntimeContexts', () => {
       ContactsModule,
       CookieConsentsModule,
       AuditRequestsModule,
+      WeatherModule,
     ]);
     expect(selection.runtimeModules).toEqual(selection.coreModules);
   });
@@ -39,6 +41,7 @@ describe('resolveRuntimeContexts', () => {
       ContactsModule,
       CookieConsentsModule,
       AuditRequestsModule,
+      WeatherModule,
       ServicesModule,
       ProjectsModule,
       CoursesModule,

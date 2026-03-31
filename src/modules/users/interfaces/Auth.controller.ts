@@ -12,11 +12,13 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
+import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
@@ -25,6 +27,7 @@ import { USERS_REPOSITORY } from '../domain/token';
 import type { JwtPayload } from '../application/services/JwtPayload';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
 import { CreateUserDto } from './dto/CreateUser.dto';
+import { GoogleAuthDto } from './dto/GoogleAuth.dto';
 import { LoginDto } from './dto/Login.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UserResponseDto } from './dto/User.response.dto';
@@ -35,6 +38,7 @@ import { Public } from './decorators/public.decorator';
 export class AuthController {
   constructor(
     private readonly authenticateUserUseCase: AuthenticateUserUseCase,
+    private readonly authenticateGoogleUserUseCase: AuthenticateGoogleUserUseCase,
     private readonly createUsersUseCase: CreateUsersUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
     @Inject(USERS_REPOSITORY)
@@ -49,6 +53,23 @@ export class AuthController {
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     const result = await this.authenticateUserUseCase.execute(dto);
 
+    return {
+      accessToken: result.accessToken,
+      expiresIn: result.expiresIn,
+      user: UserResponseDto.fromDomain(result.user),
+    };
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 10, ttl: 3600000 } })
+  @Post('google')
+  @ApiOperation({ summary: 'Authentification via Google OAuth' })
+  @ApiOkResponse({ type: AuthResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid Google token' })
+  async googleAuth(@Body() dto: GoogleAuthDto): Promise<AuthResponseDto> {
+    const result = await this.authenticateGoogleUserUseCase.execute(
+      dto.idToken,
+    );
     return {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,

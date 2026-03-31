@@ -29,6 +29,10 @@ export class AuthenticateUserUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const passwordMatches = this.passwordService.verify(
       dto.password,
       user.passwordHash,

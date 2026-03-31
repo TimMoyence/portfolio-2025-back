@@ -38,6 +38,32 @@ describe('Users aggregate', () => {
     expect(partial.updatedAt).toBeInstanceOf(Date);
   });
 
+  it('creates user with googleId and without passwordHash', () => {
+    const user = Users.create({
+      email: 'google@example.com',
+      firstName: 'Google',
+      lastName: 'User',
+      googleId: 'google-sub-123',
+      roles: ['budget'],
+      updatedOrCreatedBy: 'google-oauth',
+    });
+
+    expect(user.email).toBe('google@example.com');
+    expect(user.googleId).toBe('google-sub-123');
+    expect(user.passwordHash).toBeNull();
+    expect(user.roles).toEqual(['budget']);
+  });
+
+  it('throws without googleId and without passwordHash', () => {
+    expect(() =>
+      Users.create({
+        email: 'nopwd@example.com',
+        firstName: 'No',
+        lastName: 'Password',
+      }),
+    ).toThrow(DomainValidationError);
+  });
+
   it('throws for invalid user email', () => {
     expect(() =>
       Users.create({

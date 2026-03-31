@@ -17,6 +17,7 @@ describe('UpdateUsersUseCase', () => {
       create: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findByGoogleId: jest.fn(),
       update: jest.fn(),
       deactivate: jest.fn(),
     };
@@ -37,6 +38,7 @@ describe('UpdateUsersUseCase', () => {
       phone: null,
       isActive: true,
       roles: [],
+      googleId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,

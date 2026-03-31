@@ -25,6 +25,10 @@ export class UsersRepositoryTypeORM implements IUsersRepository {
     return this.repo.findOne({ where: { email } });
   }
 
+  async findByGoogleId(googleId: string): Promise<UsersEntity | null> {
+    return this.repo.findOne({ where: { googleId } });
+  }
+
   async update(id: string, data: Partial<UsersEntity>): Promise<UsersEntity> {
     await this.repo.update({ id }, data);
     const updated = await this.findById(id);

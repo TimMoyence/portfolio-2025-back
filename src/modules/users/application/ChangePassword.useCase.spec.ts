@@ -17,6 +17,7 @@ describe('ChangePasswordUseCase', () => {
       create: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findByGoogleId: jest.fn(),
       update: jest.fn(),
       deactivate: jest.fn(),
     };
@@ -39,6 +40,7 @@ describe('ChangePasswordUseCase', () => {
       phone: null,
       isActive: true,
       roles: [],
+      googleId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: 'system',
@@ -85,7 +87,7 @@ describe('ChangePasswordUseCase', () => {
   });
 
   it('throws when current password is invalid', async () => {
-    const user = {
+    const user: Users = {
       id: 'user-1',
       email: 'john@example.com',
       passwordHash: 'old-hash',
@@ -94,10 +96,11 @@ describe('ChangePasswordUseCase', () => {
       phone: null,
       isActive: true,
       roles: [],
+      googleId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,
-    } as Users;
+    };
     repo.findById.mockResolvedValue(user);
     passwordService.verify.mockReturnValue(false);
 
@@ -112,7 +115,7 @@ describe('ChangePasswordUseCase', () => {
   });
 
   it('rejects inactive users even if the password matches', async () => {
-    const inactiveUser = {
+    const inactiveUser: Users = {
       id: 'user-2',
       email: 'inactive@example.com',
       passwordHash: 'hash',
@@ -120,10 +123,12 @@ describe('ChangePasswordUseCase', () => {
       lastName: 'Ctive',
       phone: null,
       isActive: false,
+      roles: [],
+      googleId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: 'system',
-    } as Users;
+    };
 
     repo.findById.mockResolvedValue(inactiveUser);
 

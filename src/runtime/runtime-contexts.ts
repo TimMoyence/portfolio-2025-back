@@ -7,6 +7,7 @@ import { ProjectsModule } from '../modules/projects/Projects.module';
 import { RedirectsModule } from '../modules/redirects/Redirects.module';
 import { ServicesModule } from '../modules/services/Services.module';
 import { UsersModule } from '../modules/users/Users.module';
+import { WeatherModule } from '../modules/weather/Weather.module';
 
 export interface RuntimeContextsSelection {
   readonly coreModules: Array<Type<unknown>>;
@@ -27,6 +28,7 @@ export function resolveRuntimeContexts(
     ContactsModule,
     CookieConsentsModule,
     AuditRequestsModule,
+    WeatherModule,
   ];
 
   const legacyModules: Array<Type<unknown>> = [

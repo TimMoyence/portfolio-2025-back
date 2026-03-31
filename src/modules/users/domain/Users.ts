@@ -4,13 +4,14 @@ import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 
 export interface CreateUserProps {
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   firstName: string;
   lastName: string;
   phone?: string | null;
   isActive?: boolean;
   roles?: string[];
   updatedOrCreatedBy?: string | null;
+  googleId?: string | null;
 }
 
 export interface UpdateUserProps {
@@ -21,18 +22,20 @@ export interface UpdateUserProps {
   phone?: string | null;
   isActive?: boolean;
   updatedOrCreatedBy?: string | null;
+  googleId?: string | null;
 }
 
 /** Entite domaine representant un utilisateur du portfolio. */
 export class Users {
   id?: string;
   email: string;
-  passwordHash: string;
+  passwordHash: string | null;
   firstName: string;
   lastName: string;
   phone: string | null;
   isActive: boolean;
   roles: string[];
+  googleId: string | null;
   createdAt?: Date;
   updatedAt?: Date;
   updatedOrCreatedBy: string | null;
@@ -44,8 +47,8 @@ export class Users {
     }
 
     if (
-      typeof props.passwordHash !== 'string' ||
-      props.passwordHash.length < 1
+      !props.googleId &&
+      (typeof props.passwordHash !== 'string' || props.passwordHash.length < 1)
     ) {
       throw new DomainValidationError('Invalid user password hash');
     }
@@ -62,12 +65,13 @@ export class Users {
 
     const user = new Users();
     user.email = email.value;
-    user.passwordHash = props.passwordHash;
+    user.passwordHash = props.passwordHash ?? null;
     user.firstName = firstName;
     user.lastName = lastName;
     user.phone = phone?.value ?? null;
     user.isActive = props.isActive ?? true;
     user.roles = Array.isArray(props.roles) ? props.roles : [];
+    user.googleId = props.googleId ?? null;
     user.createdAt = new Date();
     user.updatedAt = new Date();
     user.updatedOrCreatedBy = this.optionalActor(props.updatedOrCreatedBy);

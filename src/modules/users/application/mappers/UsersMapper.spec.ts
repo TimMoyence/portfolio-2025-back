@@ -70,4 +70,22 @@ describe('UsersMapper', () => {
       }),
     ).toThrow(BadRequestException);
   });
+
+  it('creates a domain user from Google OAuth data', () => {
+    const user = UsersMapper.fromGoogleAuth({
+      email: 'google@example.com',
+      firstName: 'Google',
+      lastName: 'User',
+      googleId: 'google-sub-456',
+      roles: ['budget', 'weather'],
+    });
+
+    expect(user.email).toBe('google@example.com');
+    expect(user.firstName).toBe('Google');
+    expect(user.lastName).toBe('User');
+    expect(user.googleId).toBe('google-sub-456');
+    expect(user.passwordHash).toBeNull();
+    expect(user.roles).toEqual(['budget', 'weather']);
+    expect(user.updatedOrCreatedBy).toBe('google-oauth');
+  });
 });

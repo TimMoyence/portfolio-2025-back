@@ -9,17 +9,24 @@ export interface AuditQueueJob {
   auditId: string;
 }
 
+export interface RedisConnectionOptions {
+  host: string;
+  port: number;
+  username?: string;
+  password?: string;
+  tls?: Record<string, never>;
+  maxRetriesPerRequest?: number | null;
+  retryStrategy?: (times: number) => number | null;
+}
+
 @Injectable()
 export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
   private readonly logger = new Logger(AuditQueueService.name);
   private readonly queue?: Queue<AuditQueueJob>;
-  private readonly redisConnection?: {
-    host: string;
-    port: number;
-    username?: string;
-    password?: string;
-    tls?: Record<string, never>;
-  };
+  private redisErrors = 0;
+  private queueDisabledAtRuntime = false;
+  private static readonly MAX_REDIS_ERRORS = 3;
+  private readonly redisConnection?: RedisConnectionOptions;
 
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
@@ -36,6 +43,18 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
     this.queue = new Queue<AuditQueueJob>(this.config.queueName, {
       connection,
     });
+    this.queue.on('error', (error) => {
+      this.redisErrors++;
+      if (this.redisErrors <= AuditQueueService.MAX_REDIS_ERRORS) {
+        this.logger.warn(`Audit queue Redis error: ${String(error)}`);
+      }
+      if (this.redisErrors === AuditQueueService.MAX_REDIS_ERRORS) {
+        this.logger.warn(
+          'Redis unreachable — audit queue disabled, falling back to in-process execution.',
+        );
+        this.queueDisabledAtRuntime = true;
+      }
+    });
   }
 
   get queueName(): string {
@@ -47,11 +66,13 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
   }
 
   get isQueueEnabled(): boolean {
-    return Boolean(this.queue && this.config.queueEnabled);
+    return Boolean(
+      this.queue && this.config.queueEnabled && !this.queueDisabledAtRuntime,
+    );
   }
 
   async enqueue(auditId: string): Promise<void> {
-    if (!this.queue) {
+    if (!this.queue || this.queueDisabledAtRuntime) {
       this.runInline(auditId);
       return;
     }
@@ -109,20 +130,24 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
     }
   }
 
-  private buildConnection():
-    | {
-        host: string;
-        port: number;
-        username?: string;
-        password?: string;
-        tls?: Record<string, never>;
-      }
-    | undefined {
+  private buildConnection(): RedisConnectionOptions | undefined {
+    const ioredisDefaults: Pick<
+      RedisConnectionOptions,
+      'maxRetriesPerRequest' | 'retryStrategy'
+    > = {
+      maxRetriesPerRequest: null,
+      retryStrategy: (times: number) => {
+        if (times > AuditQueueService.MAX_REDIS_ERRORS) return null;
+        return Math.min(times * 500, 3000);
+      },
+    };
+
     if (this.config.redisUrl) {
       const url = new URL(this.config.redisUrl);
       const username = decodeURIComponent(url.username || '');
       const password = decodeURIComponent(url.password || '');
       return {
+        ...ioredisDefaults,
         host: url.hostname,
         port: Number.parseInt(url.port || '6379', 10),
         ...(username ? { username } : {}),
@@ -133,6 +158,7 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
 
     if (this.config.redisHost && this.config.redisPort) {
       return {
+        ...ioredisDefaults,
         host: this.config.redisHost,
         port: this.config.redisPort,
         username: this.config.redisUsername,

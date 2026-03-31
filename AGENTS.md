@@ -56,6 +56,27 @@ L'agent respecte strictement cette stack. Il n'introduit pas de framework, ORM, 
   - tests e2e pour les contrats HTTP, SSE et parcours critiques.
 - Si un test automatise pertinent n'est vraiment pas possible, l'agent doit le justifier explicitement et mettre en place la meilleure couverture alternative realiste.
 
+## Factories de test obligatoires (DRY)
+
+- **Interdit de dupliquer les objets mock dans chaque fichier `.spec.ts`.**
+- Toutes les factories partagees vivent dans `test/factories/`.
+- Creer ou reutiliser une factory pour chaque objet mock recurrent :
+  - `buildUser(overrides?)` — objet `Users` avec valeurs par defaut
+  - `createMockUsersRepo()` — repo mock avec tous les `jest.fn()`
+  - `createMockJwtService()` — service JWT mock
+  - `createMockPasswordService()` — service password mock
+  - `buildAuthResult(overrides?)` — resultat d'authentification
+- Chaque nouveau module cree ses propres factories dans `test/factories/` (ex: `buildForecastResult()`).
+- Pattern builder avec overrides pour les cas specifiques :
+  ```typescript
+  // OK
+  const user = buildUser({ email: 'test@example.com', roles: ['budget'] });
+  const repo = createMockUsersRepo();
+  // INTERDIT
+  const repo = { findAll: jest.fn(), create: jest.fn(), ... }; // copie dans chaque spec
+  ```
+- Si une factory n'existe pas encore, l'agent la cree avant d'ecrire les tests.
+
 ## Regles de code
 
 - JSDoc obligatoire sur :

@@ -19,6 +19,7 @@ describe('AuthenticateUserUseCase', () => {
       create: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findByGoogleId: jest.fn(),
       update: jest.fn(),
       deactivate: jest.fn(),
     };
@@ -51,6 +52,7 @@ describe('AuthenticateUserUseCase', () => {
       phone: null,
       isActive: true,
       roles: [],
+      googleId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,
@@ -94,6 +96,7 @@ describe('AuthenticateUserUseCase', () => {
       phone: null,
       isActive: false,
       roles: [],
+      googleId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,
@@ -103,6 +106,30 @@ describe('AuthenticateUserUseCase', () => {
 
     await expect(
       useCase.execute({ email: 'inactive@example.com', password: 'password' }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+    expect(passwordService.verify).not.toHaveBeenCalled();
+    expect(jwtTokenService.sign).not.toHaveBeenCalled();
+  });
+
+  it('throws when user has no password hash (Google-only account)', async () => {
+    const googleUser: Users = {
+      id: 'user-google',
+      email: 'google@example.com',
+      passwordHash: null,
+      firstName: 'Google',
+      lastName: 'User',
+      phone: null,
+      isActive: true,
+      roles: [],
+      googleId: 'google-123',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      updatedOrCreatedBy: null,
+    };
+    repo.findByEmail.mockResolvedValue(googleUser);
+
+    await expect(
+      useCase.execute({ email: 'google@example.com', password: 'password' }),
     ).rejects.toBeInstanceOf(UnauthorizedException);
     expect(passwordService.verify).not.toHaveBeenCalled();
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
@@ -118,6 +145,7 @@ describe('AuthenticateUserUseCase', () => {
       phone: null,
       isActive: true,
       roles: [],
+      googleId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       updatedOrCreatedBy: null,
