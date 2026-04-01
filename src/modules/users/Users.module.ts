@@ -8,7 +8,12 @@ import { DeleteUsersUseCase } from './application/DeleteUsers.useCase';
 import { ListUsersUseCase } from './application/ListUsers.useCase';
 import { ListOneUserUseCase } from './application/ListOneUser.useCase';
 import { UpdateUsersUseCase } from './application/UpdateUsers.useCase';
-import { GOOGLE_CLIENT_ID, USERS_REPOSITORY } from './domain/token';
+import {
+  GOOGLE_CLIENT_ID,
+  PASSWORD_RESET_NOTIFIER,
+  PASSWORD_RESET_TOKENS_REPOSITORY,
+  USERS_REPOSITORY,
+} from './domain/token';
 import { UsersEntity } from './infrastructure/entities/Users.entity';
 import { UsersRepositoryTypeORM } from './infrastructure/Users.repository.typeORM';
 import { UsersController } from './interfaces/Users.controller';
@@ -18,6 +23,12 @@ import { AuthenticateUserUseCase } from './application/AuthenticateUser.useCase'
 import { ChangePasswordUseCase } from './application/ChangePassword.useCase';
 import { AuthController } from './interfaces/Auth.controller';
 import { JwtAuthGuard } from './interfaces/guards/jwt-auth.guard';
+import { PasswordResetTokenEntity } from './infrastructure/entities/PasswordResetToken.entity';
+import { PasswordResetTokensRepositoryTypeORM } from './infrastructure/PasswordResetTokens.repository.typeORM';
+import { PasswordResetMailerService } from './infrastructure/PasswordResetMailer.service';
+import { RequestPasswordResetUseCase } from './application/RequestPasswordReset.useCase';
+import { ResetPasswordUseCase } from './application/ResetPassword.useCase';
+import { SetPasswordUseCase } from './application/SetPassword.useCase';
 
 const USERS_USE_CASES = [
   ListUsersUseCase,
@@ -28,10 +39,13 @@ const USERS_USE_CASES = [
   AuthenticateUserUseCase,
   AuthenticateGoogleUserUseCase,
   ChangePasswordUseCase,
+  RequestPasswordResetUseCase,
+  ResetPasswordUseCase,
+  SetPasswordUseCase,
 ];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UsersEntity])],
+  imports: [TypeOrmModule.forFeature([UsersEntity, PasswordResetTokenEntity])],
   controllers: [UsersController, AuthController],
   providers: [
     ...USERS_USE_CASES,
@@ -40,6 +54,14 @@ const USERS_USE_CASES = [
     {
       provide: USERS_REPOSITORY,
       useClass: UsersRepositoryTypeORM,
+    },
+    {
+      provide: PASSWORD_RESET_TOKENS_REPOSITORY,
+      useClass: PasswordResetTokensRepositoryTypeORM,
+    },
+    {
+      provide: PASSWORD_RESET_NOTIFIER,
+      useClass: PasswordResetMailerService,
     },
     {
       provide: GOOGLE_CLIENT_ID,

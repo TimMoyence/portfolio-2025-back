@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Inject,
   Patch,
   Post,
@@ -11,6 +12,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -22,13 +24,20 @@ import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogle
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
+import { RequestPasswordResetUseCase } from '../application/RequestPasswordReset.useCase';
+import { ResetPasswordUseCase } from '../application/ResetPassword.useCase';
+import { SetPasswordUseCase } from '../application/SetPassword.useCase';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import type { JwtPayload } from '../application/services/JwtPayload';
+import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
 import { CreateUserDto } from './dto/CreateUser.dto';
+import { ForgotPasswordDto } from './dto/ForgotPassword.dto';
 import { GoogleAuthDto } from './dto/GoogleAuth.dto';
 import { LoginDto } from './dto/Login.dto';
+import { ResetPasswordDto } from './dto/ResetPassword.dto';
+import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UserResponseDto } from './dto/User.response.dto';
 import { Public } from './decorators/public.decorator';
@@ -41,6 +50,9 @@ export class AuthController {
     private readonly authenticateGoogleUserUseCase: AuthenticateGoogleUserUseCase,
     private readonly createUsersUseCase: CreateUsersUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
+    private readonly requestPasswordResetUseCase: RequestPasswordResetUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly setPasswordUseCase: SetPasswordUseCase,
     @Inject(USERS_REPOSITORY)
     private readonly usersRepository: IUsersRepository,
   ) {}
@@ -90,6 +102,63 @@ export class AuthController {
   ): Promise<UserResponseDto> {
     const user = req['user'] as JwtPayload;
     const updatedUser = await this.changePasswordUseCase.execute({
+      ...dto,
+      userId: user.sub,
+    });
+    return UserResponseDto.fromDomain(updatedUser);
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @HttpCode(200)
+  @Throttle({ default: { limit: 3, ttl: 3600000 } })
+  @ApiOperation({
+    summary: 'Envoie un email de reinitialisation de mot de passe',
+  })
+  @ApiOkResponse({ type: AuthMessageResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  async forgotPassword(
+    @Body() dto: ForgotPasswordDto,
+  ): Promise<AuthMessageResponseDto> {
+    return this.requestPasswordResetUseCase.execute(dto);
+  }
+
+  @Public()
+  @Post('reset-password')
+  @HttpCode(200)
+  @Throttle({ default: { limit: 10, ttl: 3600000 } })
+  @ApiOperation({
+    summary: 'Reinitialise le mot de passe via un token de reset',
+  })
+  @ApiOkResponse({ type: AuthMessageResponseDto })
+  @ApiBadRequestResponse({
+    description: 'Validation failed or invalid/expired token',
+  })
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+  ): Promise<AuthMessageResponseDto> {
+    return this.resetPasswordUseCase.execute(dto);
+  }
+
+  @Post('set-password')
+  @HttpCode(200)
+  @Throttle({ default: { limit: 5, ttl: 3600000 } })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Definit un mot de passe pour un compte Google-only',
+  })
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid credentials or inactive user',
+  })
+  @ApiConflictResponse({ description: 'Password is already configured' })
+  async setPassword(
+    @Body() dto: SetPasswordDto,
+    @Req() req: Request,
+  ): Promise<UserResponseDto> {
+    const user = req['user'] as JwtPayload;
+    const updatedUser = await this.setPasswordUseCase.execute({
       ...dto,
       userId: user.sub,
     });
