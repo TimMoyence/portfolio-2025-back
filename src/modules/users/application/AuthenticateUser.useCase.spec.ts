@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { UnauthorizedException } from '@nestjs/common';
-import { IUsersRepository } from '../domain/IUsers.repository';
-import { Users } from '../domain/Users';
+import type { IUsersRepository } from '../domain/IUsers.repository';
 import { AuthenticateUserUseCase } from './AuthenticateUser.useCase';
 import type { LoginCommand } from './dto/Login.command';
-import { JwtTokenService } from './services/JwtTokenService';
-import { PasswordService } from './services/PasswordService';
+import type { JwtTokenService } from './services/JwtTokenService';
+import type { PasswordService } from './services/PasswordService';
+import {
+  buildUser,
+  createMockUsersRepo,
+  createMockPasswordService,
+  createMockJwtService,
+} from '../../../../test/factories/user.factory';
 
 describe('AuthenticateUserUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
@@ -14,26 +19,15 @@ describe('AuthenticateUserUseCase', () => {
   let useCase: AuthenticateUserUseCase;
 
   beforeEach(() => {
-    repo = {
-      findAll: jest.fn(),
-      create: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      findByGoogleId: jest.fn(),
-      update: jest.fn(),
-      deactivate: jest.fn(),
-    };
-
-    passwordService = {
-      hash: jest.fn(),
-      verify: jest.fn().mockReturnValue(true),
-    } as unknown as jest.Mocked<PasswordService>;
-
-    jwtTokenService = {
-      sign: jest
-        .fn()
-        .mockReturnValue({ token: 'jwt-token', expiresIn: 3600, expiresAt: 0 }),
-    } as unknown as jest.Mocked<JwtTokenService>;
+    repo = createMockUsersRepo();
+    passwordService = createMockPasswordService();
+    passwordService.verify.mockReturnValue(true);
+    jwtTokenService = createMockJwtService();
+    jwtTokenService.sign.mockReturnValue({
+      token: 'jwt-token',
+      expiresIn: 3600,
+      expiresAt: 0,
+    });
 
     useCase = new AuthenticateUserUseCase(
       repo,
@@ -43,20 +37,10 @@ describe('AuthenticateUserUseCase', () => {
   });
 
   it('returns a token when credentials are valid', async () => {
-    const user: Users = {
-      id: 'user-1',
+    const user = buildUser({
       email: 'john@example.com',
       passwordHash: 'hashed',
-      firstName: 'John',
-      lastName: 'Doe',
-      phone: null,
-      isActive: true,
-      roles: [],
-      googleId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      updatedOrCreatedBy: null,
-    };
+    });
     repo.findByEmail.mockResolvedValue(user);
 
     const dto: LoginCommand = {
@@ -87,20 +71,14 @@ describe('AuthenticateUserUseCase', () => {
   });
 
   it('throws when the user is inactive', async () => {
-    const inactiveUser: Users = {
+    const inactiveUser = buildUser({
       id: 'user-2',
       email: 'inactive@example.com',
       passwordHash: 'hashed',
       firstName: 'Ina',
       lastName: 'Ctive',
-      phone: null,
       isActive: false,
-      roles: [],
-      googleId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      updatedOrCreatedBy: null,
-    };
+    });
 
     repo.findByEmail.mockResolvedValue(inactiveUser);
 
@@ -112,20 +90,14 @@ describe('AuthenticateUserUseCase', () => {
   });
 
   it('throws when user has no password hash (Google-only account)', async () => {
-    const googleUser: Users = {
+    const googleUser = buildUser({
       id: 'user-google',
       email: 'google@example.com',
       passwordHash: null,
       firstName: 'Google',
       lastName: 'User',
-      phone: null,
-      isActive: true,
-      roles: [],
       googleId: 'google-123',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      updatedOrCreatedBy: null,
-    };
+    });
     repo.findByEmail.mockResolvedValue(googleUser);
 
     await expect(
@@ -136,20 +108,13 @@ describe('AuthenticateUserUseCase', () => {
   });
 
   it('throws when the password does not match', async () => {
-    const user: Users = {
+    const user = buildUser({
       id: 'user-3',
       email: 'johnny@example.com',
       passwordHash: 'hashed',
       firstName: 'John',
       lastName: 'Smith',
-      phone: null,
-      isActive: true,
-      roles: [],
-      googleId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      updatedOrCreatedBy: null,
-    };
+    });
     repo.findByEmail.mockResolvedValue(user);
     passwordService.verify.mockReturnValue(false);
 

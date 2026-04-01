@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { UnauthorizedException } from '@nestjs/common';
 import type { IUsersRepository } from '../domain/IUsers.repository';
-import type { Users } from '../domain/Users';
 import { AuthenticateGoogleUserUseCase } from './AuthenticateGoogleUser.useCase';
 import type { JwtTokenService } from './services/JwtTokenService';
+import {
+  buildUser,
+  createMockUsersRepo,
+  createMockJwtService,
+} from '../../../../test/factories/user.factory';
 
 /**
  * Mock du module google-auth-library.
@@ -25,46 +29,19 @@ const GOOGLE_PAYLOAD = {
   family_name: 'Doe',
 };
 
-/** Utilisateur domaine de reference pour les tests. */
-function makeUser(overrides: Partial<Users> = {}): Users {
-  return {
-    id: 'user-1',
-    email: 'john@gmail.com',
-    passwordHash: 'hashed',
-    firstName: 'John',
-    lastName: 'Doe',
-    phone: null,
-    isActive: true,
-    roles: ['budget'],
-    googleId: 'google-sub-123',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    updatedOrCreatedBy: null,
-    ...overrides,
-  };
-}
-
 describe('AuthenticateGoogleUserUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let jwtTokenService: jest.Mocked<JwtTokenService>;
   let useCase: AuthenticateGoogleUserUseCase;
 
   beforeEach(() => {
-    repo = {
-      findAll: jest.fn(),
-      create: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      findByGoogleId: jest.fn(),
-      update: jest.fn(),
-      deactivate: jest.fn(),
-    };
-
-    jwtTokenService = {
-      sign: jest
-        .fn()
-        .mockReturnValue({ token: 'jwt-token', expiresIn: 3600, expiresAt: 0 }),
-    } as unknown as jest.Mocked<JwtTokenService>;
+    repo = createMockUsersRepo();
+    jwtTokenService = createMockJwtService();
+    jwtTokenService.sign.mockReturnValue({
+      token: 'jwt-token',
+      expiresIn: 3600,
+      expiresAt: 0,
+    });
 
     mockVerifyIdToken.mockReset();
     mockVerifyIdToken.mockResolvedValue({
@@ -79,7 +56,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
   });
 
   it('retourne AuthResult quand le user est trouve par googleId', async () => {
-    const user = makeUser();
+    const user = buildUser();
     repo.findByGoogleId.mockResolvedValue(user);
 
     const result = await useCase.execute('valid-id-token');
@@ -98,7 +75,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
   });
 
   it('lie le googleId et retourne AuthResult quand le user est trouve par email', async () => {
-    const user = makeUser({ googleId: null });
+    const user = buildUser({ googleId: null });
     repo.findByGoogleId.mockResolvedValue(null);
     repo.findByEmail.mockResolvedValue(user);
     repo.update.mockResolvedValue({ ...user, googleId: 'google-sub-123' });
@@ -113,7 +90,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
   });
 
   it('cree un nouveau compte quand aucun user existant', async () => {
-    const created = makeUser({ id: 'new-user' });
+    const created = buildUser({ id: 'new-user' });
     repo.findByGoogleId.mockResolvedValue(null);
     repo.findByEmail.mockResolvedValue(null);
     repo.create.mockResolvedValue(created);
@@ -143,7 +120,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
   });
 
   it('lance UnauthorizedException quand le user trouve par googleId est inactif', async () => {
-    const inactiveUser = makeUser({ isActive: false });
+    const inactiveUser = buildUser({ isActive: false });
     repo.findByGoogleId.mockResolvedValue(inactiveUser);
 
     await expect(useCase.execute('valid-id-token')).rejects.toBeInstanceOf(

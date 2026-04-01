@@ -4,6 +4,7 @@ import type {
   IWeatherProxy,
   GeocodingResult,
 } from '../domain/IWeatherProxy.port';
+import { createMockWeatherProxy } from '../../../../test/factories/weather.factory';
 
 describe('GetGeocodingUseCase', () => {
   let useCase: GetGeocodingUseCase;
@@ -24,13 +25,7 @@ describe('GetGeocodingUseCase', () => {
   };
 
   beforeEach(() => {
-    proxy = {
-      searchCity: jest.fn(),
-      getForecast: jest.fn(),
-      getAirQuality: jest.fn(),
-      getEnsemble: jest.fn(),
-      getHistorical: jest.fn(),
-    };
+    proxy = createMockWeatherProxy();
     useCase = new GetGeocodingUseCase(proxy);
   });
 

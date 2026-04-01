@@ -1,39 +1,11 @@
 import type { MessageEvent } from '@nestjs/common';
 import { firstValueFrom, take, toArray } from 'rxjs';
-import type { AuditSnapshot } from '../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { StreamAuditEventsUseCase } from './StreamAuditEvents.useCase';
-
-function buildAuditSnapshot(
-  overrides: Partial<AuditSnapshot> = {},
-): AuditSnapshot {
-  return {
-    id: 'audit-1',
-    requestId: 'req-1',
-    websiteName: 'example.com',
-    contactMethod: 'EMAIL',
-    contactValue: 'test@example.com',
-    locale: 'fr',
-    done: false,
-    processingStatus: 'RUNNING',
-    progress: 50,
-    step: 'crawling',
-    error: null,
-    normalizedUrl: 'https://example.com/',
-    finalUrl: 'https://example.com/',
-    redirectChain: [],
-    keyChecks: {},
-    quickWins: [],
-    pillarScores: {},
-    summaryText: null,
-    fullReport: null,
-    createdAt: new Date('2026-01-01T00:00:00Z'),
-    updatedAt: new Date('2026-01-01T00:00:00Z'),
-    startedAt: new Date('2026-01-01T00:00:00Z'),
-    finishedAt: null,
-    ...overrides,
-  };
-}
+import {
+  buildAuditSnapshot,
+  createMockAuditRequestsRepo,
+} from '../../../../test/factories/audit-requests.factory';
 
 describe('StreamAuditEventsUseCase', () => {
   let useCase: StreamAuditEventsUseCase;
@@ -41,12 +13,7 @@ describe('StreamAuditEventsUseCase', () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    repo = {
-      create: jest.fn(),
-      findById: jest.fn(),
-      findSummaryById: jest.fn(),
-      updateState: jest.fn(),
-    };
+    repo = createMockAuditRequestsRepo();
     useCase = new StreamAuditEventsUseCase(repo);
   });
 

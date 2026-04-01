@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { IUsersRepository } from '../domain/IUsers.repository';
-import { Users } from '../domain/Users';
+import type { IUsersRepository } from '../domain/IUsers.repository';
 import { CreateUsersUseCase } from './CreateUsers.useCase';
 import type { CreateUserCommand } from './dto/CreateUser.command';
-import { PasswordService } from './services/PasswordService';
+import type { PasswordService } from './services/PasswordService';
+import {
+  buildUser,
+  createMockUsersRepo,
+  createMockPasswordService,
+} from '../../../../test/factories/user.factory';
 
 describe('CreateUsersUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
@@ -11,19 +15,9 @@ describe('CreateUsersUseCase', () => {
   let useCase: CreateUsersUseCase;
 
   beforeEach(() => {
-    repo = {
-      findAll: jest.fn(),
-      create: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      findByGoogleId: jest.fn(),
-      update: jest.fn(),
-      deactivate: jest.fn(),
-    };
-    passwordService = {
-      hash: jest.fn().mockReturnValue('hashed-password'),
-      verify: jest.fn(),
-    } as unknown as jest.Mocked<PasswordService>;
+    repo = createMockUsersRepo();
+    passwordService = createMockPasswordService();
+    passwordService.hash.mockReturnValue('hashed-password');
     useCase = new CreateUsersUseCase(repo, passwordService);
   });
 
@@ -35,20 +29,14 @@ describe('CreateUsersUseCase', () => {
       lastName: 'Doe',
     };
 
-    const savedUser: Users = {
+    const savedUser = buildUser({
       id: 'uuid',
       email: dto.email,
       passwordHash: 'hashed-password',
       firstName: dto.firstName,
       lastName: dto.lastName,
-      phone: null,
-      isActive: true,
-      roles: [],
-      googleId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
       updatedOrCreatedBy: 'self-registration',
-    };
+    });
     repo.create.mockResolvedValue(savedUser);
 
     const result = await useCase.execute(dto);

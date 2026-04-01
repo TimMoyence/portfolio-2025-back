@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { IUsersRepository } from '../domain/IUsers.repository';
-import { Users } from '../domain/Users';
+import type { IUsersRepository } from '../domain/IUsers.repository';
+import type { Users } from '../domain/Users';
 import { ChangePasswordUseCase } from './ChangePassword.useCase';
 import type { ChangePasswordCommand } from './dto/ChangePassword.command';
-import { PasswordService } from './services/PasswordService';
+import type { PasswordService } from './services/PasswordService';
+import {
+  buildUser,
+  createMockUsersRepo,
+  createMockPasswordService,
+} from '../../../../test/factories/user.factory';
 
 describe('ChangePasswordUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
@@ -12,39 +17,22 @@ describe('ChangePasswordUseCase', () => {
   let useCase: ChangePasswordUseCase;
 
   beforeEach(() => {
-    repo = {
-      findAll: jest.fn(),
-      create: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      findByGoogleId: jest.fn(),
-      update: jest.fn(),
-      deactivate: jest.fn(),
-    };
-
-    passwordService = {
-      hash: jest.fn().mockReturnValue('new-hash'),
-      verify: jest.fn().mockReturnValue(true),
-    } as unknown as jest.Mocked<PasswordService>;
+    repo = createMockUsersRepo();
+    passwordService = createMockPasswordService();
+    passwordService.hash.mockReturnValue('new-hash');
+    passwordService.verify.mockReturnValue(true);
 
     useCase = new ChangePasswordUseCase(repo, passwordService);
   });
 
   it('changes the password when current password matches', async () => {
-    const user: Users = {
-      id: 'user-1',
+    const user = buildUser({
       email: 'john@example.com',
       passwordHash: 'old-hash',
       firstName: 'John',
       lastName: 'Doe',
-      phone: null,
-      isActive: true,
-      roles: [],
-      googleId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
       updatedOrCreatedBy: 'system',
-    };
+    });
     repo.findById.mockResolvedValue(user);
 
     const updatedUser = { ...user, passwordHash: 'new-hash' } as Users;
@@ -87,20 +75,12 @@ describe('ChangePasswordUseCase', () => {
   });
 
   it('throws when current password is invalid', async () => {
-    const user: Users = {
-      id: 'user-1',
+    const user = buildUser({
       email: 'john@example.com',
       passwordHash: 'old-hash',
       firstName: 'John',
       lastName: 'Doe',
-      phone: null,
-      isActive: true,
-      roles: [],
-      googleId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      updatedOrCreatedBy: null,
-    };
+    });
     repo.findById.mockResolvedValue(user);
     passwordService.verify.mockReturnValue(false);
 
@@ -115,20 +95,15 @@ describe('ChangePasswordUseCase', () => {
   });
 
   it('rejects inactive users even if the password matches', async () => {
-    const inactiveUser: Users = {
+    const inactiveUser = buildUser({
       id: 'user-2',
       email: 'inactive@example.com',
       passwordHash: 'hash',
       firstName: 'Ina',
       lastName: 'Ctive',
-      phone: null,
       isActive: false,
-      roles: [],
-      googleId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
       updatedOrCreatedBy: 'system',
-    };
+    });
 
     repo.findById.mockResolvedValue(inactiveUser);
 
