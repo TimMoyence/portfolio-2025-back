@@ -4,6 +4,7 @@ import type { BudgetEntry } from '../../src/modules/budget/domain/BudgetEntry';
 import type { IBudgetGroupRepository } from '../../src/modules/budget/domain/IBudgetGroup.repository';
 import type { IBudgetCategoryRepository } from '../../src/modules/budget/domain/IBudgetCategory.repository';
 import type { IBudgetEntryRepository } from '../../src/modules/budget/domain/IBudgetEntry.repository';
+import type { IBudgetShareNotifier } from '../../src/modules/budget/domain/IBudgetShareNotifier';
 
 /** Construit un objet BudgetGroup domaine avec des valeurs par defaut. */
 export function buildBudgetGroup(
@@ -86,5 +87,12 @@ export function createMockBudgetEntryRepo(): jest.Mocked<IBudgetEntryRepository>
     createMany: jest.fn(),
     findByFilters: jest.fn(),
     findById: jest.fn(),
+  };
+}
+
+/** Cree un mock du notifier de partage de budget. */
+export function createMockBudgetShareNotifier(): jest.Mocked<IBudgetShareNotifier> {
+  return {
+    sendBudgetShareNotification: jest.fn(),
   };
 }

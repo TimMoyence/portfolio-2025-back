@@ -5,6 +5,7 @@ import {
   BUDGET_CATEGORY_REPOSITORY,
   BUDGET_ENTRY_REPOSITORY,
   BUDGET_GROUP_REPOSITORY,
+  BUDGET_SHARE_NOTIFIER,
 } from './domain/token';
 import { BudgetCategoryEntity } from './infrastructure/entities/BudgetCategory.entity';
 import { BudgetEntryEntity } from './infrastructure/entities/BudgetEntry.entity';
@@ -13,6 +14,7 @@ import { BudgetGroupMemberEntity } from './infrastructure/entities/BudgetGroupMe
 import { BudgetCategoryRepositoryTypeORM } from './infrastructure/BudgetCategory.repository.typeORM';
 import { BudgetEntryRepositoryTypeORM } from './infrastructure/BudgetEntry.repository.typeORM';
 import { BudgetGroupRepositoryTypeORM } from './infrastructure/BudgetGroup.repository.typeORM';
+import { BudgetShareMailerService } from './infrastructure/BudgetShareMailer.service';
 import { BudgetController } from './interfaces/Budget.controller';
 import { CreateBudgetCategoryUseCase } from './application/services/CreateBudgetCategory.useCase';
 import { CreateBudgetEntryUseCase } from './application/services/CreateBudgetEntry.useCase';
@@ -66,6 +68,10 @@ const BUDGET_USE_CASES = [
     {
       provide: BUDGET_ENTRY_REPOSITORY,
       useClass: BudgetEntryRepositoryTypeORM,
+    },
+    {
+      provide: BUDGET_SHARE_NOTIFIER,
+      useClass: BudgetShareMailerService,
     },
   ],
 })
