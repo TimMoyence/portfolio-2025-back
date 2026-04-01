@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class ImportBudgetEntriesDto {
   @ApiProperty({ example: 'group-uuid' })
@@ -9,5 +9,6 @@ export class ImportBudgetEntriesDto {
   @ApiProperty({ description: 'Contenu CSV brut' })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(5_000_000)
   csvContent: string;
 }

@@ -40,6 +40,6 @@ export class CreateBudgetEntryDto {
 
   @ApiPropertyOptional({ example: 'COMPLETED' })
   @IsOptional()
-  @IsString()
+  @IsIn(['COMPLETED', 'PENDING'])
   state?: string;
 }

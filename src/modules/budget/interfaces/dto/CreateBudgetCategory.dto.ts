@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Matches,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -24,11 +25,14 @@ export class CreateBudgetCategoryDto {
   @ApiPropertyOptional({ example: '#22C55E' })
   @IsOptional()
   @IsString()
+  @Matches(/^#[0-9a-fA-F]{6}$/)
+  @MaxLength(7)
   color?: string;
 
   @ApiPropertyOptional({ example: 'shopping-cart' })
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   icon?: string;
 
   @ApiProperty({ enum: ['FIXED', 'VARIABLE'], example: 'VARIABLE' })

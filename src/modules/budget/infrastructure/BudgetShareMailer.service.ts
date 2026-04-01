@@ -58,11 +58,11 @@ export class BudgetShareMailerService implements IBudgetShareNotifier {
     await this.transporter.sendMail({
       from: this.from,
       to: payload.targetEmail,
-      subject: `${payload.ownerFirstName} vous invite sur le budget "${payload.groupName}"`,
+      subject: `${this.escapeHtml(payload.ownerFirstName)} vous invite sur le budget "${this.escapeHtml(payload.groupName)}"`,
       text: [
-        `Bonjour ${payload.targetFirstName},`,
+        `Bonjour ${this.escapeHtml(payload.targetFirstName)},`,
         '',
-        `${payload.ownerFirstName} ${payload.ownerLastName} vous a invite a rejoindre le budget partage "${payload.groupName}".`,
+        `${this.escapeHtml(payload.ownerFirstName)} ${this.escapeHtml(payload.ownerLastName)} vous a invite a rejoindre le budget partage "${this.escapeHtml(payload.groupName)}".`,
         '',
         `Connectez-vous pour y acceder : ${budgetUrl}`,
         '',

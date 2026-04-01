@@ -2,6 +2,7 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import type { BudgetType } from './BudgetCategory';
 
 const VALID_BUDGET_TYPES = ['FIXED', 'VARIABLE'] as const;
+const VALID_STATES = ['COMPLETED', 'PENDING'] as const;
 
 export interface CreateBudgetEntryProps {
   groupId: string;
@@ -65,6 +66,12 @@ export class BudgetEntry {
     entry.description = description;
     entry.amount = props.amount;
     entry.type = props.type as BudgetType;
+    if (
+      props.state &&
+      !VALID_STATES.includes(props.state as (typeof VALID_STATES)[number])
+    ) {
+      throw new DomainValidationError('Invalid budget entry state');
+    }
     entry.state = props.state ?? 'COMPLETED';
     entry.createdAt = new Date();
     entry.updatedAt = new Date();

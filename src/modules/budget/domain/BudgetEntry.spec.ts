@@ -56,4 +56,32 @@ describe('BudgetEntry', () => {
       }),
     ).toThrow(DomainValidationError);
   });
+
+  it('devrait refuser un state invalide', () => {
+    expect(() =>
+      BudgetEntry.create({
+        groupId: 'group-1',
+        createdByUserId: 'user-1',
+        date: '2026-03-15',
+        description: 'Test',
+        amount: -10,
+        type: 'VARIABLE',
+        state: 'INVALID',
+      }),
+    ).toThrow(DomainValidationError);
+  });
+
+  it('devrait accepter le state PENDING', () => {
+    const entry = BudgetEntry.create({
+      groupId: 'group-1',
+      createdByUserId: 'user-1',
+      date: '2026-03-15',
+      description: 'Test',
+      amount: -10,
+      type: 'VARIABLE',
+      state: 'PENDING',
+    });
+
+    expect(entry.state).toBe('PENDING');
+  });
 });
