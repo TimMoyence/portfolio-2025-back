@@ -40,7 +40,9 @@ export class ShareBudgetUseCase {
     }
     const targetUser = await this.usersRepo.findByEmail(command.targetEmail);
     if (!targetUser || !targetUser.id) {
-      throw new NotFoundException('Target user not found');
+      throw new NotFoundException(
+        `Aucun compte trouve pour ${command.targetEmail}. L'utilisateur doit d'abord creer un compte avec cette adresse email.`,
+      );
     }
     const alreadyMember = await this.groupRepo.isMember(
       command.groupId,

@@ -26,7 +26,7 @@ export class BudgetShareMailerService implements IBudgetShareNotifier {
       this.transporter = createTransport({
         host,
         port,
-        secure: port === 465,
+        secure: process.env.SMTP_SECURE === 'true' || port === 465,
         auth: { user, pass },
       }) as Transporter;
       return;

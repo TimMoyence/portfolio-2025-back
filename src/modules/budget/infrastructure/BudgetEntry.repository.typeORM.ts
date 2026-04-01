@@ -51,4 +51,13 @@ export class BudgetEntryRepositoryTypeORM implements IBudgetEntryRepository {
     const entity = await this.repo.findOne({ where: { id } });
     return entity as unknown as BudgetEntry | null;
   }
+
+  async update(id: string, data: Partial<BudgetEntry>): Promise<BudgetEntry> {
+    await this.repo.update({ id }, data as Partial<BudgetEntryEntity>);
+    const updated = await this.findById(id);
+    if (!updated) {
+      throw new Error(`Budget entry ${id} not found after update`);
+    }
+    return updated;
+  }
 }

@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -29,6 +31,7 @@ import { GetBudgetGroupsUseCase } from '../application/services/GetBudgetGroups.
 import { GetBudgetEntriesUseCase } from '../application/services/GetBudgetEntries.useCase';
 import { GetBudgetSummaryUseCase } from '../application/services/GetBudgetSummary.useCase';
 import { ImportBudgetEntriesUseCase } from '../application/services/ImportBudgetEntries.useCase';
+import { UpdateBudgetEntryUseCase } from '../application/services/UpdateBudgetEntry.useCase';
 import { ShareBudgetUseCase } from '../application/services/ShareBudget.useCase';
 import { BudgetCategoryResponseDto } from './dto/BudgetCategory.response.dto';
 import { BudgetEntryResponseDto } from './dto/BudgetEntry.response.dto';
@@ -39,6 +42,7 @@ import { CreateBudgetEntryDto } from './dto/CreateBudgetEntry.dto';
 import { CreateBudgetGroupDto } from './dto/CreateBudgetGroup.dto';
 import { ImportBudgetEntriesDto } from './dto/ImportBudgetEntries.dto';
 import { ShareBudgetDto } from './dto/ShareBudget.dto';
+import { UpdateBudgetEntryDto } from './dto/UpdateBudgetEntry.dto';
 
 /**
  * Controleur REST du module Budget.
@@ -59,6 +63,7 @@ export class BudgetController {
     private readonly getEntries: GetBudgetEntriesUseCase,
     private readonly getSummary: GetBudgetSummaryUseCase,
     private readonly importEntries: ImportBudgetEntriesUseCase,
+    private readonly updateEntry: UpdateBudgetEntryUseCase,
     private readonly createCategory: CreateBudgetCategoryUseCase,
     private readonly getCategories: GetBudgetCategoriesUseCase,
     private readonly shareBudget: ShareBudgetUseCase,
@@ -105,6 +110,23 @@ export class BudgetController {
       amount: dto.amount,
       type: dto.type,
       state: dto.state,
+    });
+    return BudgetEntryMapper.toResponse(entry);
+  }
+
+  @Patch('entries/:id')
+  @ApiOperation({ summary: "Mettre a jour la categorie d'une entree" })
+  @ApiOkResponse({ type: BudgetEntryResponseDto })
+  async updateBudgetEntry(
+    @Param('id') id: string,
+    @Body() dto: UpdateBudgetEntryDto,
+    @Req() req: Request,
+  ) {
+    const user = req['user'] as JwtPayload;
+    const entry = await this.updateEntry.execute({
+      userId: user.sub,
+      entryId: id,
+      categoryId: dto.categoryId,
     });
     return BudgetEntryMapper.toResponse(entry);
   }

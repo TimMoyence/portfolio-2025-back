@@ -87,6 +87,7 @@ export function createMockBudgetEntryRepo(): jest.Mocked<IBudgetEntryRepository>
     createMany: jest.fn(),
     findByFilters: jest.fn(),
     findById: jest.fn(),
+    update: jest.fn(),
   };
 }
 

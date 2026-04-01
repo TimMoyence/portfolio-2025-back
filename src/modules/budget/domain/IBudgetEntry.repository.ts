@@ -13,4 +13,5 @@ export interface IBudgetEntryRepository {
   createMany(data: BudgetEntry[]): Promise<BudgetEntry[]>;
   findByFilters(filters: BudgetEntryFilters): Promise<BudgetEntry[]>;
   findById(id: string): Promise<BudgetEntry | null>;
+  update(id: string, data: Partial<BudgetEntry>): Promise<BudgetEntry>;
 }
