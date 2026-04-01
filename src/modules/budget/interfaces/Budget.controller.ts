@@ -25,6 +25,7 @@ import { CreateBudgetCategoryUseCase } from '../application/services/CreateBudge
 import { CreateBudgetEntryUseCase } from '../application/services/CreateBudgetEntry.useCase';
 import { CreateBudgetGroupUseCase } from '../application/services/CreateBudgetGroup.useCase';
 import { GetBudgetCategoriesUseCase } from '../application/services/GetBudgetCategories.useCase';
+import { GetBudgetGroupsUseCase } from '../application/services/GetBudgetGroups.useCase';
 import { GetBudgetEntriesUseCase } from '../application/services/GetBudgetEntries.useCase';
 import { GetBudgetSummaryUseCase } from '../application/services/GetBudgetSummary.useCase';
 import { ImportBudgetEntriesUseCase } from '../application/services/ImportBudgetEntries.useCase';
@@ -53,6 +54,7 @@ import { ShareBudgetDto } from './dto/ShareBudget.dto';
 export class BudgetController {
   constructor(
     private readonly createGroup: CreateBudgetGroupUseCase,
+    private readonly getGroups: GetBudgetGroupsUseCase,
     private readonly createEntry: CreateBudgetEntryUseCase,
     private readonly getEntries: GetBudgetEntriesUseCase,
     private readonly getSummary: GetBudgetSummaryUseCase,
@@ -75,6 +77,15 @@ export class BudgetController {
       userId: user.sub,
     });
     return BudgetGroupMapper.toResponse(group);
+  }
+
+  @Get('groups')
+  @ApiOperation({ summary: 'Lister les groupes de budget du user' })
+  @ApiOkResponse({ type: [BudgetGroupResponseDto] })
+  async listBudgetGroups(@Req() req: Request) {
+    const user = req['user'] as JwtPayload;
+    const groups = await this.getGroups.execute(user.sub);
+    return groups.map((g) => BudgetGroupMapper.toResponse(g));
   }
 
   @Post('entries')

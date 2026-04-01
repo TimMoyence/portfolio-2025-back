@@ -19,6 +19,7 @@ import { CreateBudgetEntryUseCase } from './application/services/CreateBudgetEnt
 import { CreateBudgetGroupUseCase } from './application/services/CreateBudgetGroup.useCase';
 import { GetBudgetCategoriesUseCase } from './application/services/GetBudgetCategories.useCase';
 import { GetBudgetEntriesUseCase } from './application/services/GetBudgetEntries.useCase';
+import { GetBudgetGroupsUseCase } from './application/services/GetBudgetGroups.useCase';
 import { GetBudgetSummaryUseCase } from './application/services/GetBudgetSummary.useCase';
 import { ImportBudgetEntriesUseCase } from './application/services/ImportBudgetEntries.useCase';
 import { ShareBudgetUseCase } from './application/services/ShareBudget.useCase';
@@ -27,6 +28,7 @@ const BUDGET_USE_CASES = [
   CreateBudgetGroupUseCase,
   CreateBudgetEntryUseCase,
   GetBudgetEntriesUseCase,
+  GetBudgetGroupsUseCase,
   GetBudgetSummaryUseCase,
   ImportBudgetEntriesUseCase,
   CreateBudgetCategoryUseCase,
