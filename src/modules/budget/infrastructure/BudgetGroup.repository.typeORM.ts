@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import type { BudgetGroup } from '../domain/BudgetGroup';
+import { BudgetGroup } from '../domain/BudgetGroup';
 import type { IBudgetGroupRepository } from '../domain/IBudgetGroup.repository';
 import { BudgetGroupEntity } from './entities/BudgetGroup.entity';
 import { BudgetGroupMemberEntity } from './entities/BudgetGroupMember.entity';
@@ -16,19 +16,21 @@ export class BudgetGroupRepositoryTypeORM implements IBudgetGroupRepository {
   ) {}
 
   async create(data: BudgetGroup): Promise<BudgetGroup> {
-    const group = await this.groupRepo.save(data as Partial<BudgetGroupEntity>);
-    await this.memberRepo.save({ groupId: group.id, userId: group.ownerId });
-    return group as unknown as BudgetGroup;
+    const entity = await this.groupRepo.save(
+      data as Partial<BudgetGroupEntity>,
+    );
+    await this.memberRepo.save({ groupId: entity.id, userId: entity.ownerId });
+    return this.toDomain(entity);
   }
 
   async findById(id: string): Promise<BudgetGroup | null> {
     const entity = await this.groupRepo.findOne({ where: { id } });
-    return entity as unknown as BudgetGroup | null;
+    return this.toDomainOrNull(entity);
   }
 
   async findByOwnerId(userId: string): Promise<BudgetGroup[]> {
     const entities = await this.groupRepo.find({ where: { ownerId: userId } });
-    return entities as unknown as BudgetGroup[];
+    return entities.map((e) => this.toDomain(e));
   }
 
   async findByMemberId(userId: string): Promise<BudgetGroup[]> {
@@ -39,7 +41,7 @@ export class BudgetGroupRepositoryTypeORM implements IBudgetGroupRepository {
       .createQueryBuilder('g')
       .where('g.id IN (:...ids)', { ids: groupIds })
       .getMany();
-    return entities as unknown as BudgetGroup[];
+    return entities.map((e) => this.toDomain(e));
   }
 
   async addMember(groupId: string, userId: string): Promise<void> {
@@ -49,5 +51,20 @@ export class BudgetGroupRepositoryTypeORM implements IBudgetGroupRepository {
   async isMember(groupId: string, userId: string): Promise<boolean> {
     const count = await this.memberRepo.count({ where: { groupId, userId } });
     return count > 0;
+  }
+
+  private toDomain(entity: BudgetGroupEntity): BudgetGroup {
+    const group = new BudgetGroup();
+    group.id = entity.id;
+    group.name = entity.name;
+    group.ownerId = entity.ownerId;
+    group.createdAt = entity.createdAt;
+    group.updatedAt = entity.updatedAt;
+    return group;
+  }
+
+  private toDomainOrNull(entity: BudgetGroupEntity | null): BudgetGroup | null {
+    if (!entity) return null;
+    return this.toDomain(entity);
   }
 }

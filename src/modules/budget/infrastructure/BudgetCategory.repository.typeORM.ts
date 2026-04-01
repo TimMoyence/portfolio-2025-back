@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
-import type { BudgetCategory } from '../domain/BudgetCategory';
+import { BudgetCategory } from '../domain/BudgetCategory';
+import type { BudgetType } from '../domain/BudgetCategory';
 import type { IBudgetCategoryRepository } from '../domain/IBudgetCategory.repository';
 import { BudgetCategoryEntity } from './entities/BudgetCategory.entity';
 
@@ -16,7 +17,7 @@ export class BudgetCategoryRepositoryTypeORM
 
   async create(data: BudgetCategory): Promise<BudgetCategory> {
     const entity = await this.repo.save(data as Partial<BudgetCategoryEntity>);
-    return entity as unknown as BudgetCategory;
+    return this.toDomain(entity);
   }
 
   async findByGroupId(groupId: string): Promise<BudgetCategory[]> {
@@ -24,7 +25,7 @@ export class BudgetCategoryRepositoryTypeORM
       where: [{ groupId }, { groupId: IsNull() }],
       order: { displayOrder: 'ASC' },
     });
-    return entities as unknown as BudgetCategory[];
+    return entities.map((e) => this.toDomain(e));
   }
 
   async findDefaults(): Promise<BudgetCategory[]> {
@@ -32,11 +33,32 @@ export class BudgetCategoryRepositoryTypeORM
       where: { groupId: IsNull() },
       order: { displayOrder: 'ASC' },
     });
-    return entities as unknown as BudgetCategory[];
+    return entities.map((e) => this.toDomain(e));
   }
 
   async findById(id: string): Promise<BudgetCategory | null> {
     const entity = await this.repo.findOne({ where: { id } });
-    return entity as unknown as BudgetCategory | null;
+    return this.toDomainOrNull(entity);
+  }
+
+  private toDomain(entity: BudgetCategoryEntity): BudgetCategory {
+    const cat = new BudgetCategory();
+    cat.id = entity.id;
+    cat.groupId = entity.groupId;
+    cat.name = entity.name;
+    cat.color = entity.color;
+    cat.icon = entity.icon;
+    cat.budgetType = entity.budgetType as BudgetType;
+    cat.budgetLimit = Number(entity.budgetLimit);
+    cat.displayOrder = entity.displayOrder;
+    cat.createdAt = entity.createdAt;
+    return cat;
+  }
+
+  private toDomainOrNull(
+    entity: BudgetCategoryEntity | null,
+  ): BudgetCategory | null {
+    if (!entity) return null;
+    return this.toDomain(entity);
   }
 }
