@@ -32,6 +32,10 @@ Une fois l'API demarree :
 
 - Swagger est disponible sur `http://localhost:3000/docs`
 - le prefixe d'API est pilote par `API_PREFIX`
+- les flux auth exposes incluent :
+  - `POST /auth/forgot-password`
+  - `POST /auth/reset-password`
+  - `POST /auth/set-password` (JWT requis)
 - le flux d'audit SSE principal repose sur :
   - `POST /audits`
   - `GET /audits/:id/stream`

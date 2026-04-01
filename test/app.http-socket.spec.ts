@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   INestApplication,
   UnauthorizedException,
   ValidationPipe,
@@ -18,6 +19,9 @@ import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
+import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
+import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
+import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import { CreateCoursesUseCase } from '../src/modules/courses/application/CreateCourses.useCase';
@@ -45,6 +49,9 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   const authenticateGoogleUserUseCase = { execute: jest.fn() };
   const createUsersUseCase = { execute: jest.fn() };
   const changePasswordUseCase = { execute: jest.fn() };
+  const requestPasswordResetUseCase = { execute: jest.fn() };
+  const resetPasswordUseCase = { execute: jest.fn() };
+  const setPasswordUseCase = { execute: jest.fn() };
   const createServicesUseCase = { execute: jest.fn() };
   const listServicesUseCase = { execute: jest.fn() };
   const createProjectsUseCase = { execute: jest.fn() };
@@ -93,6 +100,12 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         },
         { provide: CreateUsersUseCase, useValue: createUsersUseCase },
         { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
+        {
+          provide: RequestPasswordResetUseCase,
+          useValue: requestPasswordResetUseCase,
+        },
+        { provide: ResetPasswordUseCase, useValue: resetPasswordUseCase },
+        { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
         { provide: USERS_REPOSITORY, useValue: { findById: jest.fn() } },
         { provide: ListServicesUseCase, useValue: listServicesUseCase },
         { provide: CreateServicesUseCase, useValue: createServicesUseCase },
@@ -269,6 +282,28 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       enabled: true,
       clicks: 0,
     });
+
+    requestPasswordResetUseCase.execute.mockResolvedValue({
+      message:
+        'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
+    });
+    resetPasswordUseCase.execute.mockResolvedValue({
+      message: 'Mot de passe reinitialise avec succes.',
+    });
+    setPasswordUseCase.execute.mockResolvedValue({
+      id: 'user-1',
+      email: 'john@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+      phone: null,
+      isActive: true,
+      roles: ['weather'],
+      passwordHash: 'new-hash',
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedOrCreatedBy: 'self-service',
+      googleId: 'google-id',
+    });
   });
 
   afterAll(async () => {
@@ -373,6 +408,33 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         password: 'WrongPassword1!',
       })
       .expect(401);
+  });
+
+  it('POST /api/auth/forgot-password returns generic success message', async () => {
+    const response = await request(getHttpServer())
+      .post('/api/auth/forgot-password')
+      .send({ email: 'john@example.com' })
+      .expect(200);
+
+    expect(response.body).toEqual({
+      message:
+        'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
+    });
+  });
+
+  it('POST /api/auth/reset-password returns 400 when token is invalid', async () => {
+    resetPasswordUseCase.execute.mockRejectedValueOnce(
+      new BadRequestException('Invalid token'),
+    );
+
+    await request(getHttpServer())
+      .post('/api/auth/reset-password')
+      .send({
+        token:
+          '4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c',
+        newPassword: 'NewPassword123!',
+      })
+      .expect(400);
   });
 
   it('GET /api/services exposes paginated contract', async () => {

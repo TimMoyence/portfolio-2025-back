@@ -21,8 +21,14 @@ import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
+import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
+import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
+import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
+import { ForgotPasswordDto } from '../src/modules/users/interfaces/dto/ForgotPassword.dto';
 import { LoginDto } from '../src/modules/users/interfaces/dto/Login.dto';
+import { ResetPasswordDto } from '../src/modules/users/interfaces/dto/ResetPassword.dto';
+import { SetPasswordDto } from '../src/modules/users/interfaces/dto/SetPassword.dto';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 
 describe('API coherence and connectivity (e2e transportless)', () => {
@@ -42,6 +48,9 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   const authenticateGoogleUserUseCase = { execute: jest.fn() };
   const createUsersUseCase = { execute: jest.fn() };
   const changePasswordUseCase = { execute: jest.fn() };
+  const requestPasswordResetUseCase = { execute: jest.fn() };
+  const resetPasswordUseCase = { execute: jest.fn() };
+  const setPasswordUseCase = { execute: jest.fn() };
 
   let contactsController: ContactsController;
   let cookieConsentsController: CookieConsentsController;
@@ -81,6 +90,15 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         },
         { provide: CreateUsersUseCase, useValue: createUsersUseCase },
         { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
+        {
+          provide: RequestPasswordResetUseCase,
+          useValue: requestPasswordResetUseCase,
+        },
+        {
+          provide: ResetPasswordUseCase,
+          useValue: resetPasswordUseCase,
+        },
+        { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
         {
           provide: USERS_REPOSITORY,
           useValue: { findById: jest.fn() },
@@ -150,6 +168,28 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         updatedAt: new Date('2026-01-01T00:00:00.000Z'),
         updatedOrCreatedBy: 'system',
       },
+    });
+
+    requestPasswordResetUseCase.execute.mockResolvedValue({
+      message:
+        'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
+    });
+    resetPasswordUseCase.execute.mockResolvedValue({
+      message: 'Mot de passe reinitialise avec succes.',
+    });
+    setPasswordUseCase.execute.mockResolvedValue({
+      id: 'user-1',
+      email: 'john@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+      phone: null,
+      isActive: true,
+      roles: ['weather'],
+      passwordHash: 'new-hash',
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedOrCreatedBy: 'self-service',
+      googleId: 'google-id',
     });
   });
 
@@ -329,5 +369,58 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     await expect(authController.login(dto)).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
+  });
+
+  it('returns generic message for forgot password flow', async () => {
+    const dto = await validateBody(
+      { email: 'john@example.com' },
+      ForgotPasswordDto,
+    );
+
+    const response = await authController.forgotPassword(dto);
+
+    expect(response).toEqual({
+      message:
+        'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
+    });
+    expect(requestPasswordResetUseCase.execute).toHaveBeenCalledWith(dto);
+  });
+
+  it('returns bad request for invalid reset token', async () => {
+    resetPasswordUseCase.execute.mockRejectedValueOnce(
+      new BadRequestException('Invalid token'),
+    );
+    const dto = await validateBody(
+      {
+        token:
+          '4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c',
+        newPassword: 'NewPassword123!',
+      },
+      ResetPasswordDto,
+    );
+
+    await expect(authController.resetPassword(dto)).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+  });
+
+  it('injects user id from JWT payload when setting password', async () => {
+    const dto = await validateBody(
+      { newPassword: 'NewPassword123!' },
+      SetPasswordDto,
+    );
+    const req = {
+      user: { sub: 'user-1' },
+    } as unknown as Request;
+
+    const response = await authController.setPassword(dto, req);
+
+    expect(setPasswordUseCase.execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: 'user-1',
+        newPassword: 'NewPassword123!',
+      }),
+    );
+    expect(response.id).toBe('user-1');
   });
 });

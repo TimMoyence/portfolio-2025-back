@@ -33,6 +33,12 @@ export class UserResponseDto {
   @ApiPropertyOptional({ example: 'system', nullable: true })
   updatedOrCreatedBy: string | null;
 
+  @ApiProperty({
+    example: true,
+    description: 'Indique si le compte a un mot de passe defini.',
+  })
+  hasPassword: boolean;
+
   static fromDomain(user: Users): UserResponseDto {
     const dto = new UserResponseDto();
     dto.id = user.id ?? '';
@@ -45,6 +51,8 @@ export class UserResponseDto {
     dto.createdAt = user.createdAt;
     dto.updatedAt = user.updatedAt;
     dto.updatedOrCreatedBy = user.updatedOrCreatedBy ?? null;
+    dto.hasPassword =
+      typeof user.passwordHash === 'string' && user.passwordHash.length > 0;
     return dto;
   }
 }
