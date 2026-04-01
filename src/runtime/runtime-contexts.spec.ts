@@ -1,4 +1,5 @@
 import { AuditRequestsModule } from '../modules/audit-requests/AuditRequests.module';
+import { BudgetModule } from '../modules/budget/Budget.module';
 import { ContactsModule } from '../modules/contacts/Contacts.module';
 import { CookieConsentsModule } from '../modules/cookie-consents/CookieConsents.module';
 import { CoursesModule } from '../modules/courses/Courses.module';
@@ -20,6 +21,7 @@ describe('resolveRuntimeContexts', () => {
       CookieConsentsModule,
       AuditRequestsModule,
       WeatherModule,
+      BudgetModule,
     ]);
     expect(selection.runtimeModules).toEqual(selection.coreModules);
   });
@@ -42,6 +44,7 @@ describe('resolveRuntimeContexts', () => {
       CookieConsentsModule,
       AuditRequestsModule,
       WeatherModule,
+      BudgetModule,
       ServicesModule,
       ProjectsModule,
       CoursesModule,
