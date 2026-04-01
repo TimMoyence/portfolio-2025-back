@@ -1,0 +1,209 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import type { Request } from 'express';
+import type { JwtPayload } from '../../users/application/services/JwtPayload';
+import { Roles } from '../../users/interfaces/decorators/roles.decorator';
+import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
+import { BudgetCategoryMapper } from '../application/mappers/BudgetCategoryMapper';
+import { BudgetEntryMapper } from '../application/mappers/BudgetEntryMapper';
+import { BudgetGroupMapper } from '../application/mappers/BudgetGroupMapper';
+import { CreateBudgetCategoryUseCase } from '../application/services/CreateBudgetCategory.useCase';
+import { CreateBudgetEntryUseCase } from '../application/services/CreateBudgetEntry.useCase';
+import { CreateBudgetGroupUseCase } from '../application/services/CreateBudgetGroup.useCase';
+import { GetBudgetCategoriesUseCase } from '../application/services/GetBudgetCategories.useCase';
+import { GetBudgetEntriesUseCase } from '../application/services/GetBudgetEntries.useCase';
+import { GetBudgetSummaryUseCase } from '../application/services/GetBudgetSummary.useCase';
+import { ImportBudgetEntriesUseCase } from '../application/services/ImportBudgetEntries.useCase';
+import { ShareBudgetUseCase } from '../application/services/ShareBudget.useCase';
+import { BudgetCategoryResponseDto } from './dto/BudgetCategory.response.dto';
+import { BudgetEntryResponseDto } from './dto/BudgetEntry.response.dto';
+import { BudgetGroupResponseDto } from './dto/BudgetGroup.response.dto';
+import { BudgetSummaryResponseDto } from './dto/BudgetSummary.response.dto';
+import { CreateBudgetCategoryDto } from './dto/CreateBudgetCategory.dto';
+import { CreateBudgetEntryDto } from './dto/CreateBudgetEntry.dto';
+import { CreateBudgetGroupDto } from './dto/CreateBudgetGroup.dto';
+import { ImportBudgetEntriesDto } from './dto/ImportBudgetEntries.dto';
+import { ShareBudgetDto } from './dto/ShareBudget.dto';
+
+/**
+ * Controleur REST du module Budget.
+ *
+ * Expose 8 endpoints pour la gestion des groupes, entrees,
+ * categories et le partage de budget. Protege par le role 'budget'.
+ */
+@ApiTags('budget')
+@ApiBearerAuth()
+@Controller('budget')
+@UseGuards(RolesGuard)
+@Roles('budget')
+export class BudgetController {
+  constructor(
+    private readonly createGroup: CreateBudgetGroupUseCase,
+    private readonly createEntry: CreateBudgetEntryUseCase,
+    private readonly getEntries: GetBudgetEntriesUseCase,
+    private readonly getSummary: GetBudgetSummaryUseCase,
+    private readonly importEntries: ImportBudgetEntriesUseCase,
+    private readonly createCategory: CreateBudgetCategoryUseCase,
+    private readonly getCategories: GetBudgetCategoriesUseCase,
+    private readonly shareBudget: ShareBudgetUseCase,
+  ) {}
+
+  @Post('groups')
+  @ApiOperation({ summary: 'Creer un groupe de budget' })
+  @ApiOkResponse({ type: BudgetGroupResponseDto })
+  async createBudgetGroup(
+    @Body() dto: CreateBudgetGroupDto,
+    @Req() req: Request,
+  ) {
+    const user = req['user'] as JwtPayload;
+    const group = await this.createGroup.execute({
+      name: dto.name,
+      userId: user.sub,
+    });
+    return BudgetGroupMapper.toResponse(group);
+  }
+
+  @Post('entries')
+  @ApiOperation({ summary: 'Creer une entree de budget' })
+  @ApiOkResponse({ type: BudgetEntryResponseDto })
+  async createBudgetEntry(
+    @Body() dto: CreateBudgetEntryDto,
+    @Req() req: Request,
+  ) {
+    const user = req['user'] as JwtPayload;
+    const entry = await this.createEntry.execute({
+      userId: user.sub,
+      groupId: dto.groupId,
+      categoryId: dto.categoryId,
+      date: dto.date,
+      description: dto.description,
+      amount: dto.amount,
+      type: dto.type,
+      state: dto.state,
+    });
+    return BudgetEntryMapper.toResponse(entry);
+  }
+
+  @Get('entries')
+  @ApiOperation({ summary: 'Lister les entrees de budget filtrees' })
+  @ApiQuery({ name: 'groupId', required: true })
+  @ApiQuery({ name: 'month', required: false })
+  @ApiQuery({ name: 'year', required: false })
+  @ApiQuery({ name: 'category', required: false })
+  @ApiOkResponse({ type: [BudgetEntryResponseDto] })
+  async listBudgetEntries(
+    @Query('groupId') groupId: string,
+    @Query('month') month?: string,
+    @Query('year') year?: string,
+    @Query('category') categoryId?: string,
+    @Req() req?: Request,
+  ) {
+    const user = req!['user'] as JwtPayload;
+    const entries = await this.getEntries.execute({
+      userId: user.sub,
+      groupId,
+      month: month ? parseInt(month, 10) : undefined,
+      year: year ? parseInt(year, 10) : undefined,
+      categoryId,
+    });
+    return entries.map((e) => BudgetEntryMapper.toResponse(e));
+  }
+
+  @Get('summary')
+  @ApiOperation({ summary: 'Resume mensuel par categorie' })
+  @ApiQuery({ name: 'groupId', required: true })
+  @ApiQuery({ name: 'month', required: true })
+  @ApiQuery({ name: 'year', required: true })
+  @ApiOkResponse({ type: BudgetSummaryResponseDto })
+  async budgetSummary(
+    @Query('groupId') groupId: string,
+    @Query('month') month: string,
+    @Query('year') year: string,
+    @Req() req: Request,
+  ) {
+    const user = req['user'] as JwtPayload;
+    return this.getSummary.execute({
+      userId: user.sub,
+      groupId,
+      month: parseInt(month, 10),
+      year: parseInt(year, 10),
+    });
+  }
+
+  @Post('entries/import')
+  @ApiOperation({ summary: 'Importer des entrees depuis un CSV' })
+  @ApiOkResponse({ type: [BudgetEntryResponseDto] })
+  async importBudgetEntries(
+    @Body() dto: ImportBudgetEntriesDto,
+    @Req() req: Request,
+  ) {
+    const user = req['user'] as JwtPayload;
+    const entries = await this.importEntries.execute({
+      userId: user.sub,
+      groupId: dto.groupId,
+      csvContent: dto.csvContent,
+    });
+    return entries.map((e) => BudgetEntryMapper.toResponse(e));
+  }
+
+  @Post('categories')
+  @ApiOperation({ summary: 'Creer une categorie personnalisee' })
+  @ApiOkResponse({ type: BudgetCategoryResponseDto })
+  async createBudgetCategory(
+    @Body() dto: CreateBudgetCategoryDto,
+    @Req() req: Request,
+  ) {
+    const user = req['user'] as JwtPayload;
+    const category = await this.createCategory.execute({
+      userId: user.sub,
+      groupId: dto.groupId,
+      name: dto.name,
+      color: dto.color,
+      icon: dto.icon,
+      budgetType: dto.budgetType,
+      budgetLimit: dto.budgetLimit,
+    });
+    return BudgetCategoryMapper.toResponse(category);
+  }
+
+  @Get('categories')
+  @ApiOperation({ summary: 'Lister les categories (defaut + custom)' })
+  @ApiQuery({ name: 'groupId', required: true })
+  @ApiOkResponse({ type: [BudgetCategoryResponseDto] })
+  async listBudgetCategories(
+    @Query('groupId') groupId: string,
+    @Req() req: Request,
+  ) {
+    const user = req['user'] as JwtPayload;
+    const categories = await this.getCategories.execute({
+      userId: user.sub,
+      groupId,
+    });
+    return categories.map((c) => BudgetCategoryMapper.toResponse(c));
+  }
+
+  @Post('share')
+  @ApiOperation({ summary: 'Partager le budget avec un autre utilisateur' })
+  async shareBudgetGroup(@Body() dto: ShareBudgetDto, @Req() req: Request) {
+    const user = req['user'] as JwtPayload;
+    return this.shareBudget.execute({
+      userId: user.sub,
+      groupId: dto.groupId,
+      targetEmail: dto.targetEmail,
+    });
+  }
+}
