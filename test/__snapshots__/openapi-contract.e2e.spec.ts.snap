@@ -1,5 +1,1471 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`OpenAPI core contract keeps AuditRequests path contracts stable 1`] = `
+{
+  "/api/audits": {
+    "post": {
+      "operationId": "AuditsController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuditRequestRequestDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditRequestResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "tags": [
+        "Audits",
+      ],
+    },
+  },
+  "/api/audits/{id}/stream": {
+    "get": {
+      "operationId": "AuditsController_stream",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "tags": [
+        "Audits",
+      ],
+    },
+  },
+  "/api/audits/{id}/summary": {
+    "get": {
+      "operationId": "AuditsController_summary",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditSummaryResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "tags": [
+        "Audits",
+      ],
+    },
+  },
+}
+`;
+
+exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
+{
+  "/api/auth/change-password": {
+    "patch": {
+      "operationId": "AuthController_changePassword",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ChangePasswordDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+        "401": {
+          "description": "Invalid credentials or inactive user",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/forgot-password": {
+    "post": {
+      "operationId": "AuthController_forgotPassword",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ForgotPasswordDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthMessageResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "summary": "Envoie un email de reinitialisation de mot de passe",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/google": {
+    "post": {
+      "operationId": "AuthController_googleAuth",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GoogleAuthDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "401": {
+          "description": "Invalid Google token",
+        },
+      },
+      "summary": "Authentification via Google OAuth",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/login": {
+    "post": {
+      "operationId": "AuthController_login",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LoginDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "401": {
+          "description": "Invalid credentials",
+        },
+      },
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/me": {
+    "get": {
+      "operationId": "AuthController_me",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "401": {
+          "description": "Invalid or expired token",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/register": {
+    "post": {
+      "operationId": "AuthController_register",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateUserDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Registration failed",
+        },
+      },
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/reset-password": {
+    "post": {
+      "operationId": "AuthController_resetPassword",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ResetPasswordDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthMessageResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed or invalid/expired token",
+        },
+      },
+      "summary": "Reinitialise le mot de passe via un token de reset",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/set-password": {
+    "post": {
+      "operationId": "AuthController_setPassword",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SetPasswordDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+        "401": {
+          "description": "Invalid credentials or inactive user",
+        },
+        "409": {
+          "description": "Password is already configured",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Definit un mot de passe pour un compte Google-only",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+}
+`;
+
+exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
+{
+  "/api/budget/categories": {
+    "get": {
+      "operationId": "BudgetController_listBudgetCategories",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/BudgetCategoryResponseDto",
+                },
+                "type": "array",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Lister les categories (defaut + custom)",
+      "tags": [
+        "budget",
+      ],
+    },
+    "post": {
+      "operationId": "BudgetController_createBudgetCategory",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateBudgetCategoryDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetCategoryResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Creer une categorie personnalisee",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/entries": {
+    "get": {
+      "operationId": "BudgetController_listBudgetEntries",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "month",
+          "required": false,
+          "schema": {
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "year",
+          "required": false,
+          "schema": {
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "category",
+          "required": false,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/BudgetEntryResponseDto",
+                },
+                "type": "array",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Lister les entrees de budget filtrees",
+      "tags": [
+        "budget",
+      ],
+    },
+    "post": {
+      "operationId": "BudgetController_createBudgetEntry",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateBudgetEntryDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetEntryResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Creer une entree de budget",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/entries/import": {
+    "post": {
+      "operationId": "BudgetController_importBudgetEntries",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ImportBudgetEntriesDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/BudgetEntryResponseDto",
+                },
+                "type": "array",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Importer des entrees depuis un CSV",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/entries/{id}": {
+    "patch": {
+      "operationId": "BudgetController_updateBudgetEntry",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateBudgetEntryDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetEntryResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Mettre a jour la categorie d'une entree",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/groups": {
+    "get": {
+      "operationId": "BudgetController_listBudgetGroups",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/BudgetGroupResponseDto",
+                },
+                "type": "array",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Lister les groupes de budget du user",
+      "tags": [
+        "budget",
+      ],
+    },
+    "post": {
+      "operationId": "BudgetController_createBudgetGroup",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateBudgetGroupDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetGroupResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Creer un groupe de budget",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/share": {
+    "post": {
+      "operationId": "BudgetController_shareBudgetGroup",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShareBudgetDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Partager le budget avec un autre utilisateur",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/summary": {
+    "get": {
+      "operationId": "BudgetController_budgetSummary",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "month",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "year",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetSummaryResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Resume mensuel par categorie",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+}
+`;
+
+exports[`OpenAPI core contract keeps Contacts path contracts stable 1`] = `
+{
+  "/api/contacts": {
+    "post": {
+      "operationId": "ContactsController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ContactRequestDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "tags": [
+        "Contacts",
+      ],
+    },
+  },
+}
+`;
+
+exports[`OpenAPI core contract keeps CookieConsents path contracts stable 1`] = `
+{
+  "/api/cookie-consents": {
+    "post": {
+      "operationId": "CookieConsentsController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CookieConsentRequestDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CookieConsentResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "tags": [
+        "CookieConsents",
+      ],
+    },
+  },
+}
+`;
+
+exports[`OpenAPI core contract keeps Users path contracts stable 1`] = `
+{
+  "/api/users": {
+    "get": {
+      "operationId": "UsersController_findAll",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/UserResponseDto",
+                },
+                "type": "array",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "tags": [
+        "users",
+      ],
+    },
+    "post": {
+      "operationId": "UsersController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateUserDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+      },
+      "tags": [
+        "users",
+      ],
+    },
+  },
+  "/api/users/{id}": {
+    "delete": {
+      "operationId": "UsersController_delete",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "404": {
+          "description": "User not found",
+        },
+      },
+      "tags": [
+        "users",
+      ],
+    },
+    "get": {
+      "operationId": "UsersController_findOne",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "tags": [
+        "users",
+      ],
+    },
+    "patch": {
+      "operationId": "UsersController_update",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateUserDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation failed",
+        },
+        "404": {
+          "description": "User not found",
+        },
+      },
+      "tags": [
+        "users",
+      ],
+    },
+  },
+}
+`;
+
+exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
+{
+  "/api/weather/air-quality": {
+    "get": {
+      "operationId": "WeatherController_getAirQuality",
+      "parameters": [
+        {
+          "description": "Latitude",
+          "in": "query",
+          "name": "latitude",
+          "required": true,
+          "schema": {
+            "example": 48.8566,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Longitude",
+          "in": "query",
+          "name": "longitude",
+          "required": true,
+          "schema": {
+            "example": 2.3522,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Fuseau horaire",
+          "in": "query",
+          "name": "timezone",
+          "required": false,
+          "schema": {
+            "example": "auto",
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/current-detailed": {
+    "get": {
+      "operationId": "WeatherController_getCurrentDetailed",
+      "parameters": [
+        {
+          "description": "Latitude",
+          "in": "query",
+          "name": "latitude",
+          "required": true,
+          "schema": {
+            "example": 48.8566,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Longitude",
+          "in": "query",
+          "name": "longitude",
+          "required": true,
+          "schema": {
+            "example": 2.3522,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Fuseau horaire",
+          "in": "query",
+          "name": "timezone",
+          "required": false,
+          "schema": {
+            "example": "auto",
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/ensemble": {
+    "get": {
+      "operationId": "WeatherController_getEnsemble",
+      "parameters": [
+        {
+          "description": "Latitude",
+          "in": "query",
+          "name": "latitude",
+          "required": true,
+          "schema": {
+            "example": 48.8566,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Longitude",
+          "in": "query",
+          "name": "longitude",
+          "required": true,
+          "schema": {
+            "example": 2.3522,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Fuseau horaire",
+          "in": "query",
+          "name": "timezone",
+          "required": false,
+          "schema": {
+            "example": "auto",
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/forecast": {
+    "get": {
+      "operationId": "WeatherController_getForecast",
+      "parameters": [
+        {
+          "description": "Latitude",
+          "in": "query",
+          "name": "latitude",
+          "required": true,
+          "schema": {
+            "example": 48.8566,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Longitude",
+          "in": "query",
+          "name": "longitude",
+          "required": true,
+          "schema": {
+            "example": 2.3522,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Fuseau horaire",
+          "in": "query",
+          "name": "timezone",
+          "required": false,
+          "schema": {
+            "example": "auto",
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/forecast-detailed": {
+    "get": {
+      "operationId": "WeatherController_getForecastDetailed",
+      "parameters": [
+        {
+          "description": "Latitude",
+          "in": "query",
+          "name": "latitude",
+          "required": true,
+          "schema": {
+            "example": 48.8566,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Longitude",
+          "in": "query",
+          "name": "longitude",
+          "required": true,
+          "schema": {
+            "example": 2.3522,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Fuseau horaire",
+          "in": "query",
+          "name": "timezone",
+          "required": false,
+          "schema": {
+            "example": "auto",
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/geocoding": {
+    "get": {
+      "operationId": "WeatherController_searchCity",
+      "parameters": [
+        {
+          "description": "Nom de la ville a rechercher",
+          "in": "query",
+          "name": "name",
+          "required": true,
+          "schema": {
+            "example": "Paris",
+            "type": "string",
+          },
+        },
+        {
+          "description": "Langue des resultats",
+          "in": "query",
+          "name": "language",
+          "required": false,
+          "schema": {
+            "example": "fr",
+            "type": "string",
+          },
+        },
+        {
+          "description": "Nombre maximum de resultats",
+          "in": "query",
+          "name": "count",
+          "required": false,
+          "schema": {
+            "example": 5,
+            "type": "number",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/historical": {
+    "get": {
+      "operationId": "WeatherController_getHistorical",
+      "parameters": [
+        {
+          "description": "Latitude",
+          "in": "query",
+          "name": "latitude",
+          "required": true,
+          "schema": {
+            "example": 48.8566,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Longitude",
+          "in": "query",
+          "name": "longitude",
+          "required": true,
+          "schema": {
+            "example": 2.3522,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Date de debut (format ISO)",
+          "in": "query",
+          "name": "startDate",
+          "required": true,
+          "schema": {
+            "example": "2025-01-01",
+            "type": "string",
+          },
+        },
+        {
+          "description": "Date de fin (format ISO, max 365 jours, passe uniquement)",
+          "in": "query",
+          "name": "endDate",
+          "required": true,
+          "schema": {
+            "example": "2025-01-31",
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/preferences": {
+    "get": {
+      "operationId": "WeatherController_getPreferences",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+    "patch": {
+      "operationId": "WeatherController_updatePreferences",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdatePreferencesDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/preferences/record-usage": {
+    "post": {
+      "operationId": "WeatherController_recordUsage",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+}
+`;
+
 exports[`OpenAPI legacy contract (phase 11) keeps legacy DTO schemas stable 1`] = `
 {
   "CourseListResponseDto": {

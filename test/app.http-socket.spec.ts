@@ -345,9 +345,11 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       })
       .expect(400);
 
-    expect(response.body.message).toContain(
-      'property injected should not exist',
-    );
+    const detail = response.body.detail as string | string[];
+    const messages = Array.isArray(detail) ? detail : [String(detail)];
+    expect(
+      messages.some((m) => m.includes('property injected should not exist')),
+    ).toBe(true);
   });
 
   it('POST /api/audits resolves locale from referer when not provided', async () => {
@@ -371,7 +373,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
 
   it('GET /api/audits/:id/summary returns summary snapshot', async () => {
     const response = await request(getHttpServer())
-      .get('/api/audits/audit-1/summary')
+      .get('/api/audits/00000000-0000-4000-a000-000000000001/summary')
       .expect(200);
 
     expect(response.body).toEqual({
@@ -388,7 +390,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
 
   it('GET /api/audits/:id/stream exposes SSE event stream', async () => {
     const response = await request(getHttpServer())
-      .get('/api/audits/audit-1/stream')
+      .get('/api/audits/00000000-0000-4000-a000-000000000001/stream')
       .expect(200)
       .expect('Content-Type', /text\/event-stream/);
 
@@ -698,9 +700,11 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       })
       .expect(400);
 
-    expect(response.body.message).toContain(
-      'property injected should not exist',
-    );
+    const detail = response.body.detail as string | string[];
+    const messages = Array.isArray(detail) ? detail : [String(detail)];
+    expect(
+      messages.some((m) => m.includes('property injected should not exist')),
+    ).toBe(true);
   });
 
   it('GET /api/services rejects invalid sort query', async () => {
@@ -708,9 +712,8 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/services?sortBy=invalid')
       .expect(400);
 
-    const messages = Array.isArray(response.body.message)
-      ? response.body.message
-      : [String(response.body.message)];
+    const detail = response.body.detail as string | string[];
+    const messages = Array.isArray(detail) ? detail : [String(detail)];
     expect(
       messages.some((message) =>
         message.includes('sortBy must be one of the following values'),
@@ -723,6 +726,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/redirects?enabled=not-a-boolean')
       .expect(400);
 
-    expect(response.body.message).toContain('enabled must be a boolean value');
+    const detail = response.body.detail as string | string[];
+    const messages = Array.isArray(detail) ? detail : [String(detail)];
+    expect(
+      messages.some((m) => m.includes('enabled must be a boolean value')),
+    ).toBe(true);
   });
 });

@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddLegacyListQueryIndexes1771585098371
-  implements MigrationInterface
-{
+export class AddLegacyListQueryIndexes1771585098371 implements MigrationInterface {
   name = 'AddLegacyListQueryIndexes1771585098371';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

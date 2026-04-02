@@ -4,8 +4,10 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -19,12 +21,16 @@ import { DeleteUsersUseCase } from '../application/DeleteUsers.useCase';
 import { ListOneUserUseCase } from '../application/ListOneUser.useCase';
 import { ListUsersUseCase } from '../application/ListUsers.useCase';
 import { UpdateUsersUseCase } from '../application/UpdateUsers.useCase';
+import { Roles } from './decorators/roles.decorator';
+import { RolesGuard } from './guards/roles.guard';
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { UserResponseDto } from './dto/User.response.dto';
 
 @ApiTags('users')
 @Controller('users')
+@UseGuards(RolesGuard)
+@Roles('admin')
 export class UsersController {
   constructor(
     private readonly listUsersUseCase: ListUsersUseCase,
@@ -43,7 +49,9 @@ export class UsersController {
 
   @Get(':id')
   @ApiOkResponse({ type: UserResponseDto })
-  async findOne(@Param('id') id: string): Promise<UserResponseDto | null> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<UserResponseDto | null> {
     const user = await this.listOneUserUseCase.execute(id);
     return user ? UserResponseDto.fromDomain(user) : null;
   }
@@ -61,7 +69,7 @@ export class UsersController {
   @ApiBadRequestResponse({ description: 'Validation failed' })
   @ApiNotFoundResponse({ description: 'User not found' })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateUserDto,
   ): Promise<UserResponseDto> {
     const user = await this.updateUseCase.execute(id, dto);
@@ -71,7 +79,9 @@ export class UsersController {
   @Delete(':id')
   @ApiOkResponse({ type: UserResponseDto })
   @ApiNotFoundResponse({ description: 'User not found' })
-  async delete(@Param('id') id: string): Promise<UserResponseDto> {
+  async delete(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<UserResponseDto> {
     const user = await this.deleteUseCase.execute(id);
     return UserResponseDto.fromDomain(user);
   }

@@ -56,4 +56,5 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 help.md
 deploy/backend.env
+deploy/.env
 generate-architecture.mjs

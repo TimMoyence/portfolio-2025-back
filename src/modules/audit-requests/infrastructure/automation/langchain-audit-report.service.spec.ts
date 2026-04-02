@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import {
   type ExpertReport,
@@ -74,44 +75,13 @@ describe('LangchainAuditReportService', () => {
     warnSpy.mockRestore();
   });
 
-  const config: AuditAutomationConfig = {
-    queueEnabled: true,
-    queueName: 'audit_requests',
-    queueConcurrency: 1,
-    queueAttempts: 1,
-    queueBackoffMs: 0,
-    jobTimeoutMs: 60_000,
+  const config: AuditAutomationConfig = buildAuditAutomationConfig({
     fetchTimeoutMs: 8_000,
-    maxRedirects: 5,
-    htmlMaxBytes: 1_000_000,
-    textMaxBytes: 1_000_000,
-    sitemapSampleSize: 10,
-    sitemapMaxUrls: 50_000,
-    sitemapAnalyzeLimit: 150,
-    urlAnalyzeConcurrency: 6,
-    pageAnalyzeLimit: 30,
-    pageAiConcurrency: 3,
-    pageAiTimeoutMs: 8000,
-    llmModel: 'gpt-4o-mini',
-    llmTimeoutMs: 25_000,
-    llmSummaryTimeoutMs: 20_000,
-    llmExpertTimeoutMs: 60_000,
     llmProfile: 'stability_first_sequential',
-    llmProfileCanaryPercent: 100,
-    llmGlobalTimeoutMs: 45_000,
-    llmSectionTimeoutMs: 18_000,
-    llmSectionRetryMax: 1,
-    llmSectionRetryMinRemainingMs: 8_000,
-    llmInflightMax: 8,
-    llmRetries: 0,
-    llmLanguage: 'fr',
-    pageAiCircuitBreakerMinSamples: 6,
-    pageAiCircuitBreakerFailureRatio: 0.5,
     rateHourlyMin: 90,
     rateHourlyMax: 130,
-    rateCurrency: 'EUR',
     openAiApiKey: undefined,
-  };
+  });
 
   const input: LangchainAuditInput = {
     locale: 'fr',

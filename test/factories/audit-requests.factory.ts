@@ -1,5 +1,6 @@
 import type { IAuditRequestsRepository } from '../../src/modules/audit-requests/domain/IAuditRequests.repository';
 import type { IAuditNotifierPort } from '../../src/modules/audit-requests/domain/IAuditNotifier.port';
+import type { IAuditQueuePort } from '../../src/modules/audit-requests/domain/IAuditQueue.port';
 import { AuditRequest } from '../../src/modules/audit-requests/domain/AuditRequest';
 import type { AuditSnapshot } from '../../src/modules/audit-requests/domain/AuditProcessing';
 
@@ -66,5 +67,12 @@ export function createMockAuditRequestsRepo(): jest.Mocked<IAuditRequestsReposit
 export function createMockAuditNotifier(): jest.Mocked<IAuditNotifierPort> {
   return {
     sendAuditNotification: jest.fn(),
+  };
+}
+
+/** Cree un mock du port de file d'attente des audits. */
+export function createMockAuditQueue(): jest.Mocked<IAuditQueuePort> {
+  return {
+    enqueue: jest.fn(),
   };
 }

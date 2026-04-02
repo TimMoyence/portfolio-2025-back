@@ -8,9 +8,7 @@ import { ICookieConsentsRepository } from '../domain/ICookieConsents.repository'
 import { CookieConsentEntity } from './entities/CookieConsent.entity';
 
 @Injectable()
-export class CookieConsentsRepositoryTypeORM
-  implements ICookieConsentsRepository
-{
+export class CookieConsentsRepositoryTypeORM implements ICookieConsentsRepository {
   constructor(
     @InjectRepository(CookieConsentEntity)
     private readonly repo: Repository<CookieConsentEntity>,

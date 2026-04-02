@@ -17,7 +17,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "lint:fix": "pnpm run lint --fix",
     "test": "jest --watchman=false",
-    "test:cov": "jest --coverage",
+    "test:cov": "jest --coverage --reporters=default --reporters=jest-ratchet",
     "test:cov:ci": "pnpm exec jest --coverage --runInBand --watchman=false",
     "typecheck": "pnpm exec tsc --noEmit -p tsconfig.json",
     "ci:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm exec jest --runInBand --watchman=false && pnpm run build",
@@ -33,7 +33,8 @@
     "db:integration:up": "docker compose -p portfolio2025-dbint -f ./test/db-integration.compose.yaml up -d --wait",
     "db:integration:down": "docker compose -p portfolio2025-dbint -f ./test/db-integration.compose.yaml down -v --remove-orphans",
     "test:integration:db:run": "RUN_DB_INTEGRATION=true DB_HOST=127.0.0.1 DB_PORT=55432 DB_USERNAME=postgres DB_PASSWORD=postgres DB_NAME=portfolio_2025_ci npm run test:integration:db -- --runInBand",
-    "test:integration:db:local": "bash ./test/run-db-integration-local.sh"
+    "test:integration:db:local": "bash ./test/run-db-integration-local.sh",
+    "test:mutation": "stryker run"
   },
   "lint-staged": {
     "*.ts": [
@@ -44,64 +45,82 @@
     ]
   },
   "dependencies": {
-    "@langchain/openai": "^1.2.7",
+    "@langchain/core": "^1.1.38",
+    "@langchain/openai": "^1.4.1",
     "@nestjs/axios": "^4.0.1",
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/platform-express": "^11.0.1",
-    "@nestjs/swagger": "^11.2.0",
+    "@nestjs/common": "^11.1.17",
+    "@nestjs/config": "^4.0.3",
+    "@nestjs/core": "^11.1.17",
+    "@nestjs/platform-express": "^11.1.17",
+    "@nestjs/swagger": "^11.2.6",
     "@nestjs/throttler": "^6.5.0",
     "@nestjs/typeorm": "^11.0.0",
-    "@types/nodemailer": "^7.0.5",
-    "bullmq": "^5.61.2",
-    "cheerio": "^1.1.2",
+    "@types/nodemailer": "^7.0.11",
+    "axios": "1.14.0",
+    "bullmq": "^5.72.1",
+    "cheerio": "^1.2.0",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.2",
-    "fast-xml-parser": "^5.3.0",
+    "class-validator": "^0.14.4",
+    "fast-xml-parser": "^5.5.9",
     "google-auth-library": "^10.6.2",
     "helmet": "^8.1.0",
-    "ioredis": "^5.8.1",
-    "ipaddr.js": "^2.2.0",
-    "langchain": "^1.2.24",
-    "nodemailer": "^7.0.12",
-    "openai": "^6.8.1",
-    "pg": "^8.16.3",
+    "ioredis": "^5.10.1",
+    "ipaddr.js": "^2.3.0",
+    "langchain": "^1.2.39",
+    "nodemailer": "^7.0.13",
+    "openai": "^6.33.0",
+    "pg": "^8.20.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
-    "typeorm": "^0.3.27",
-    "undici": "^7.16.0",
-    "zod": "^4.1.5"
+    "rxjs": "^7.8.2",
+    "typeorm": "^0.3.28",
+    "undici": "^7.24.7",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
-    "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.18.0",
-    "@nestjs/cli": "^11.0.0",
-    "@nestjs/schematics": "^11.0.0",
-    "@nestjs/testing": "^11.0.1",
-    "@types/express": "^5.0.0",
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^9.39.4",
+    "@nestjs/cli": "^11.0.17",
+    "@nestjs/schematics": "^11.0.10",
+    "@nestjs/testing": "^11.1.17",
+    "@stryker-mutator/core": "^9.6.0",
+    "@stryker-mutator/jest-runner": "^9.6.0",
+    "@stryker-mutator/typescript-checker": "^9.6.0",
+    "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.18.8",
-    "@types/supertest": "^6.0.2",
-    "dotenv": "^17.2.4",
-    "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.2",
-    "globals": "^16.0.0",
+    "@types/node": "^22.19.15",
+    "@types/supertest": "^6.0.3",
+    "dotenv": "^17.4.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "fast-check": "^4.6.0",
+    "globals": "^16.5.0",
     "husky": "^9.1.7",
-    "jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "jest-ratchet": "^2.0.3",
     "lint-staged": "^16.4.0",
-    "prettier": "^3.4.2",
+    "prettier": "^3.8.1",
     "source-map-support": "^0.5.21",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
-    "ts-loader": "^9.5.2",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.9",
+    "ts-loader": "^9.5.7",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.58.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "axios": ">=1.13.5",
+      "path-to-regexp@>=8.0.0 <8.4.0": ">=8.4.0",
+      "picomatch@>=4.0.0 <4.0.4": ">=4.0.4",
+      "lodash@<=4.17.23": ">=4.18.0",
+      "minimatch@<3.1.3": ">=3.1.3",
+      "minimatch@>=9.0.0 <9.0.6": ">=9.0.6",
+      "yargs-parser@>=6.0.0 <13.1.2": ">=13.1.2"
+    }
   },
   "jest": {
     "moduleFileExtensions": [
@@ -119,18 +138,22 @@
     ],
     "coverageReporters": [
       "text-summary",
+      "json-summary",
       "lcov",
       "html"
     ],
     "coverageThreshold": {
       "global": {
-        "statements": 65,
-        "branches": 50,
-        "functions": 52,
-        "lines": 65
+        "statements": 68.87,
+        "branches": 55.09,
+        "functions": 53.55,
+        "lines": 68.97
       }
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "reporters": [
+      "default"
+    ]
   }
 }

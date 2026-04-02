@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AuditLangchainIntegration1771323743536
-  implements MigrationInterface
-{
+export class AuditLangchainIntegration1771323743536 implements MigrationInterface {
   name = 'AuditLangchainIntegration1771323743536';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

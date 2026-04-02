@@ -1,25 +1,32 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { ListUsersUseCase } from './ListUsers.useCase';
-import { IUsersRepository } from '../domain/IUsers.repository';
-import { Users } from '../domain/Users';
+import type { IUsersRepository } from '../domain/IUsers.repository';
+import {
+  createMockUsersRepo,
+  buildUser,
+} from '../../../../test/factories/user.factory';
 
 describe('ListUsersUseCase', () => {
-  it('returns all users from the repository', async () => {
-    const repo: jest.Mocked<IUsersRepository> = {
-      findAll: jest.fn(),
-      create: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      findByGoogleId: jest.fn(),
-      update: jest.fn(),
-      deactivate: jest.fn(),
-    };
-    const useCase = new ListUsersUseCase(repo);
+  let repo: jest.Mocked<IUsersRepository>;
+  let useCase: ListUsersUseCase;
 
-    const users = [{ id: '1' } as Users, { id: '2' } as Users];
+  beforeEach(() => {
+    repo = createMockUsersRepo();
+    useCase = new ListUsersUseCase(repo);
+  });
+
+  it('devrait retourner tous les utilisateurs depuis le repository', async () => {
+    const users = [buildUser({ id: '1' }), buildUser({ id: '2' })];
     repo.findAll.mockResolvedValue(users);
 
     await expect(useCase.execute()).resolves.toBe(users);
+    expect(repo.findAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('devrait retourner une liste vide si aucun utilisateur', async () => {
+    repo.findAll.mockResolvedValue([]);
+
+    await expect(useCase.execute()).resolves.toEqual([]);
     expect(repo.findAll).toHaveBeenCalledTimes(1);
   });
 });

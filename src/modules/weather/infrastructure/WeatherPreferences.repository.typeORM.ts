@@ -8,9 +8,7 @@ import { WeatherUserPreferencesEntity } from './entities/WeatherUserPreferences.
 
 /** Implementation TypeORM du repository de preferences meteo. */
 @Injectable()
-export class WeatherPreferencesRepositoryTypeORM
-  implements IWeatherPreferencesRepository
-{
+export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesRepository {
   constructor(
     @InjectRepository(WeatherUserPreferencesEntity)
     private readonly repo: Repository<WeatherUserPreferencesEntity>,

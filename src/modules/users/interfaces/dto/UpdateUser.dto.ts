@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsOptional,
   IsString,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -19,7 +20,13 @@ export class UpdateUserDto implements UpdateUserCommand {
   @ApiPropertyOptional({ example: 'NewPassword456!' })
   @IsOptional()
   @IsString()
-  @MinLength(6)
+  @MinLength(12, {
+    message: 'Le mot de passe doit contenir au moins 12 caracteres.',
+  })
+  @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
+    message:
+      'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',
+  })
   password?: string;
 
   @ApiPropertyOptional({ example: 'John' })

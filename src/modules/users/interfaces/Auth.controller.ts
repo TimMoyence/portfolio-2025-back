@@ -171,7 +171,11 @@ export class AuthController {
   @ApiOkResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Registration failed' })
   async register(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
-    const result = await this.createUsersUseCase.execute(dto);
+    const result = await this.createUsersUseCase.execute({
+      ...dto,
+      roles: [],
+      updatedOrCreatedBy: 'self-registration',
+    });
     return UserResponseDto.fromDomain(result);
   }
 

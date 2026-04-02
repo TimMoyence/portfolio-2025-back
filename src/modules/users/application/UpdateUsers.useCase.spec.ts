@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { NotFoundException } from '@nestjs/common';
-import { IUsersRepository } from '../domain/IUsers.repository';
-import { Users } from '../domain/Users';
+import type { IUsersRepository } from '../domain/IUsers.repository';
 import type { UpdateUserCommand } from './dto/UpdateUser.command';
-import { PasswordService } from './services/PasswordService';
+import type { PasswordService } from './services/PasswordService';
 import { UpdateUsersUseCase } from './UpdateUsers.useCase';
+import {
+  createMockUsersRepo,
+  createMockPasswordService,
+  buildUser,
+} from '../../../../test/factories/user.factory';
 
 describe('UpdateUsersUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
@@ -12,37 +16,14 @@ describe('UpdateUsersUseCase', () => {
   let useCase: UpdateUsersUseCase;
 
   beforeEach(() => {
-    repo = {
-      findAll: jest.fn(),
-      create: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      findByGoogleId: jest.fn(),
-      update: jest.fn(),
-      deactivate: jest.fn(),
-    };
-    passwordService = {
-      hash: jest.fn().mockReturnValue('new-hash'),
-      verify: jest.fn(),
-    } as unknown as jest.Mocked<PasswordService>;
+    repo = createMockUsersRepo();
+    passwordService = createMockPasswordService();
+    passwordService.hash.mockReturnValue('new-hash');
     useCase = new UpdateUsersUseCase(repo, passwordService);
   });
 
-  it('updates the user when it exists', async () => {
-    const user: Users = {
-      id: 'user-1',
-      email: 'john@example.com',
-      passwordHash: 'hash',
-      firstName: 'John',
-      lastName: 'Doe',
-      phone: null,
-      isActive: true,
-      roles: [],
-      googleId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      updatedOrCreatedBy: null,
-    };
+  it('devrait mettre a jour l utilisateur quand il existe', async () => {
+    const user = buildUser({ id: 'user-1', email: 'john@example.com' });
     repo.findById.mockResolvedValue(user);
 
     const dto: UpdateUserCommand = {
@@ -50,7 +31,12 @@ describe('UpdateUsersUseCase', () => {
       phone: '123456789',
     };
 
-    const updatedUser = { ...user, ...dto } as Users;
+    const updatedUser = buildUser({
+      id: 'user-1',
+      email: 'john@example.com',
+      firstName: 'Johnny',
+      phone: '123456789',
+    });
     repo.update.mockResolvedValue(updatedUser);
 
     const result = await useCase.execute('user-1', dto);
@@ -67,7 +53,7 @@ describe('UpdateUsersUseCase', () => {
     expect(result).toBe(updatedUser);
   });
 
-  it('throws when the user does not exist', async () => {
+  it('devrait lever une exception quand l utilisateur n existe pas', async () => {
     repo.findById.mockResolvedValue(null);
 
     await expect(

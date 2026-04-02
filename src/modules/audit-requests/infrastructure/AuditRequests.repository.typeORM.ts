@@ -14,9 +14,7 @@ import { resolveAuditLocale } from '../domain/audit-locale.util';
 import { AuditRequestEntity } from './entities/AuditRequest.entity';
 
 @Injectable()
-export class AuditRequestsRepositoryTypeORM
-  implements IAuditRequestsRepository
-{
+export class AuditRequestsRepositoryTypeORM implements IAuditRequestsRepository {
   constructor(
     @InjectRepository(AuditRequestEntity)
     private readonly repo: Repository<AuditRequestEntity>,

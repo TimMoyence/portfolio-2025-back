@@ -7,9 +7,7 @@ import type { IBudgetCategoryRepository } from '../domain/IBudgetCategory.reposi
 import { BudgetCategoryEntity } from './entities/BudgetCategory.entity';
 
 @Injectable()
-export class BudgetCategoryRepositoryTypeORM
-  implements IBudgetCategoryRepository
-{
+export class BudgetCategoryRepositoryTypeORM implements IBudgetCategoryRepository {
   constructor(
     @InjectRepository(BudgetCategoryEntity)
     private readonly repo: Repository<BudgetCategoryEntity>,

@@ -1,8 +1,6 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class SeedDefaultBudgetCategories1775400000003
-  implements MigrationInterface
-{
+export class SeedDefaultBudgetCategories1775400000003 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     const categories = [
       {

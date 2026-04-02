@@ -1,29 +1,24 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { NotFoundException } from '@nestjs/common';
 import { DeleteUsersUseCase } from './DeleteUsers.useCase';
-import { IUsersRepository } from '../domain/IUsers.repository';
-import { Users } from '../domain/Users';
+import type { IUsersRepository } from '../domain/IUsers.repository';
+import {
+  createMockUsersRepo,
+  buildUser,
+} from '../../../../test/factories/user.factory';
 
 describe('DeleteUsersUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let useCase: DeleteUsersUseCase;
 
   beforeEach(() => {
-    repo = {
-      findAll: jest.fn(),
-      create: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      findByGoogleId: jest.fn(),
-      update: jest.fn(),
-      deactivate: jest.fn(),
-    };
+    repo = createMockUsersRepo();
     useCase = new DeleteUsersUseCase(repo);
   });
 
-  it('soft deletes a user when it exists', async () => {
-    const user = { id: 'user-1' } as Users;
-    const deactivated = { ...user, isActive: false } as Users;
+  it('devrait desactiver l utilisateur quand il existe', async () => {
+    const user = buildUser({ id: 'user-1' });
+    const deactivated = buildUser({ id: 'user-1', isActive: false });
     repo.findById.mockResolvedValue(user);
     repo.deactivate.mockResolvedValue(deactivated);
 
@@ -34,7 +29,7 @@ describe('DeleteUsersUseCase', () => {
     expect(result).toBe(deactivated);
   });
 
-  it('throws when the user does not exist', async () => {
+  it('devrait lever une exception quand l utilisateur n existe pas', async () => {
     repo.findById.mockResolvedValue(null);
 
     await expect(useCase.execute('missing')).rejects.toBeInstanceOf(

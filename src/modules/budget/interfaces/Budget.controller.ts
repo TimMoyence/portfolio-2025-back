@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -118,7 +119,7 @@ export class BudgetController {
   @ApiOperation({ summary: "Mettre a jour la categorie d'une entree" })
   @ApiOkResponse({ type: BudgetEntryResponseDto })
   async updateBudgetEntry(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateBudgetEntryDto,
     @Req() req: Request,
   ) {

@@ -1,3 +1,4 @@
+import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import type { AuditPipelineService } from './audit-pipeline.service';
 import type { AuditQueueService } from './audit-queue.service';
@@ -19,13 +20,10 @@ const { Worker } = require('bullmq') as { Worker: jest.Mock };
 import { AuditWorkerService } from './audit-worker.service';
 
 describe('AuditWorkerService', () => {
-  const config: Pick<
-    AuditAutomationConfig,
-    'queueConcurrency' | 'jobTimeoutMs'
-  > = {
+  const config: AuditAutomationConfig = buildAuditAutomationConfig({
     queueConcurrency: 2,
-    jobTimeoutMs: 5000,
-  };
+    jobTimeoutMs: 5_000,
+  });
 
   const mockPipeline: jest.Mocked<Pick<AuditPipelineService, 'run'>> = {
     run: jest.fn().mockResolvedValue(undefined),
@@ -57,7 +55,7 @@ describe('AuditWorkerService', () => {
   ): AuditWorkerService {
     const queueService = buildQueueService(queueOverrides);
     return new AuditWorkerService(
-      config as AuditAutomationConfig,
+      config,
       queueService as jest.Mocked<AuditQueueService>,
       mockPipeline as jest.Mocked<AuditPipelineService>,
     );

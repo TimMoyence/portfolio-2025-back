@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createHmac } from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
 import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
@@ -100,12 +100,17 @@ export class JwtTokenService {
 
     const secret = this.getValidatedSecret();
 
-    // Verifier la signature HMAC-SHA256
+    // Verifier la signature HMAC-SHA256 (timing-safe)
     const expectedSignature = this.createSignature(
       `${header}.${payload}`,
       secret,
     );
-    if (signature !== expectedSignature) {
+    const sigBuffer = Buffer.from(signature, 'base64url');
+    const expectedBuffer = Buffer.from(expectedSignature, 'base64url');
+    if (
+      sigBuffer.length !== expectedBuffer.length ||
+      !timingSafeEqual(sigBuffer, expectedBuffer)
+    ) {
       throw new Error('Invalid signature');
     }
 
