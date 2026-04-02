@@ -13,4 +13,7 @@ export interface IRefreshTokensRepository {
 
   /** Revoque un refresh token par son identifiant. */
   revokeById(id: string): Promise<void>;
+
+  /** Supprime les refresh tokens expirés ou révoqués depuis plus de 7 jours. */
+  purgeExpired(): Promise<number>;
 }

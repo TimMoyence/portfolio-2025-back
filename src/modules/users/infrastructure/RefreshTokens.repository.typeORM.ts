@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../domain/RefreshToken';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
@@ -39,6 +39,15 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
 
   async revokeById(id: string): Promise<void> {
     await this.repo.update({ id }, { revoked: true });
+  }
+
+  async purgeExpired(): Promise<number> {
+    const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const result = await this.repo.delete([
+      { revoked: true, createdAt: LessThan(cutoff) },
+      { expiresAt: LessThan(new Date()) },
+    ]);
+    return typeof result.affected === 'number' ? result.affected : 0;
   }
 
   private toDomain(entity: RefreshTokenEntity): RefreshToken {
