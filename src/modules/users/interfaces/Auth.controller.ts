@@ -29,7 +29,6 @@ import { ResetPasswordUseCase } from '../application/ResetPassword.useCase';
 import { SetPasswordUseCase } from '../application/SetPassword.useCase';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
-import type { JwtPayload } from '../application/services/JwtPayload';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
 import { CreateUserDto } from './dto/CreateUser.dto';
@@ -100,7 +99,7 @@ export class AuthController {
     @Body() dto: ChangePasswordDto,
     @Req() req: Request,
   ): Promise<UserResponseDto> {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const updatedUser = await this.changePasswordUseCase.execute({
       ...dto,
       userId: user.sub,
@@ -157,7 +156,7 @@ export class AuthController {
     @Body() dto: SetPasswordDto,
     @Req() req: Request,
   ): Promise<UserResponseDto> {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const updatedUser = await this.setPasswordUseCase.execute({
       ...dto,
       userId: user.sub,
@@ -184,7 +183,7 @@ export class AuthController {
   @ApiOkResponse({ type: UserResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid or expired token' })
   async me(@Req() req: Request): Promise<UserResponseDto> {
-    const payload = req['user'] as JwtPayload;
+    const payload = req.user!;
     const user = await this.usersRepository.findById(payload.sub);
     if (!user) {
       throw new UnauthorizedException('User not found');

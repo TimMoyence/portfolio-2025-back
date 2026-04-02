@@ -18,7 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
-import type { JwtPayload } from '../../users/application/services/JwtPayload';
 import { Roles } from '../../users/interfaces/decorators/roles.decorator';
 import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
 import { BudgetCategoryMapper } from '../application/mappers/BudgetCategoryMapper';
@@ -77,7 +76,7 @@ export class BudgetController {
     @Body() dto: CreateBudgetGroupDto,
     @Req() req: Request,
   ) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const group = await this.createGroup.execute({
       name: dto.name,
       userId: user.sub,
@@ -89,7 +88,7 @@ export class BudgetController {
   @ApiOperation({ summary: 'Lister les groupes de budget du user' })
   @ApiOkResponse({ type: [BudgetGroupResponseDto] })
   async listBudgetGroups(@Req() req: Request) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const groups = await this.getGroups.execute(user.sub);
     return groups.map((g) => BudgetGroupMapper.toResponse(g));
   }
@@ -101,7 +100,7 @@ export class BudgetController {
     @Body() dto: CreateBudgetEntryDto,
     @Req() req: Request,
   ) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const entry = await this.createEntry.execute({
       userId: user.sub,
       groupId: dto.groupId,
@@ -123,7 +122,7 @@ export class BudgetController {
     @Body() dto: UpdateBudgetEntryDto,
     @Req() req: Request,
   ) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const entry = await this.updateEntry.execute({
       userId: user.sub,
       entryId: id,
@@ -146,7 +145,7 @@ export class BudgetController {
     @Query('category') categoryId?: string,
     @Req() req?: Request,
   ) {
-    const user = req!['user'] as JwtPayload;
+    const user = req!.user!;
     const entries = await this.getEntries.execute({
       userId: user.sub,
       groupId,
@@ -169,7 +168,7 @@ export class BudgetController {
     @Query('year') year: string,
     @Req() req: Request,
   ) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     return this.getSummary.execute({
       userId: user.sub,
       groupId,
@@ -185,7 +184,7 @@ export class BudgetController {
     @Body() dto: ImportBudgetEntriesDto,
     @Req() req: Request,
   ) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const entries = await this.importEntries.execute({
       userId: user.sub,
       groupId: dto.groupId,
@@ -201,7 +200,7 @@ export class BudgetController {
     @Body() dto: CreateBudgetCategoryDto,
     @Req() req: Request,
   ) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const category = await this.createCategory.execute({
       userId: user.sub,
       groupId: dto.groupId,
@@ -222,7 +221,7 @@ export class BudgetController {
     @Query('groupId') groupId: string,
     @Req() req: Request,
   ) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const categories = await this.getCategories.execute({
       userId: user.sub,
       groupId,
@@ -233,7 +232,7 @@ export class BudgetController {
   @Post('share')
   @ApiOperation({ summary: 'Partager le budget avec un autre utilisateur' })
   async shareBudgetGroup(@Body() dto: ShareBudgetDto, @Req() req: Request) {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     return this.shareBudget.execute({
       userId: user.sub,
       groupId: dto.groupId,
