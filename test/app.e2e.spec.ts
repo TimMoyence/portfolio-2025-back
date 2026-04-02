@@ -38,7 +38,6 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
-    transformOptions: { enableImplicitConversion: true },
   });
 
   const createContactsUseCase = { execute: jest.fn() };

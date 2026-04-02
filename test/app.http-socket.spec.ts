@@ -125,7 +125,6 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         whitelist: true,
         forbidNonWhitelisted: true,
         transform: true,
-        transformOptions: { enableImplicitConversion: true },
       }),
     );
 
