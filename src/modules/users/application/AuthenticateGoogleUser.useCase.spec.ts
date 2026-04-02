@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { UnauthorizedException } from '@nestjs/common';
+import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { AuthenticateGoogleUserUseCase } from './AuthenticateGoogleUser.useCase';
 import type { JwtTokenService } from './services/JwtTokenService';
@@ -8,6 +9,7 @@ import {
   createMockUsersRepo,
   createMockJwtService,
 } from '../../../../test/factories/user.factory';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 
 /**
  * Mock du module google-auth-library.
@@ -31,16 +33,25 @@ const GOOGLE_PAYLOAD = {
 
 describe('AuthenticateGoogleUserUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
+  let refreshTokensRepo: jest.Mocked<IRefreshTokensRepository>;
   let jwtTokenService: jest.Mocked<JwtTokenService>;
   let useCase: AuthenticateGoogleUserUseCase;
 
   beforeEach(() => {
     repo = createMockUsersRepo();
+    refreshTokensRepo = createMockRefreshTokensRepo();
     jwtTokenService = createMockJwtService();
     jwtTokenService.sign.mockReturnValue({
       token: 'jwt-token',
-      expiresIn: 3600,
+      expiresIn: 900,
       expiresAt: 0,
+    });
+    refreshTokensRepo.create.mockResolvedValue({
+      id: 'rt-1',
+      userId: 'user-1',
+      tokenHash: 'hashed',
+      expiresAt: new Date(),
+      revoked: false,
     });
 
     mockVerifyIdToken.mockReset();
@@ -50,6 +61,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
 
     useCase = new AuthenticateGoogleUserUseCase(
       repo,
+      refreshTokensRepo,
       jwtTokenService,
       'fake-client-id',
     );
@@ -67,11 +79,11 @@ describe('AuthenticateGoogleUserUseCase', () => {
       email: user.email,
       roles: user.roles,
     });
-    expect(result).toEqual({
-      accessToken: 'jwt-token',
-      expiresIn: 3600,
-      user,
-    });
+    expect(result.accessToken).toBe('jwt-token');
+    expect(result.expiresIn).toBe(900);
+    expect(result.refreshToken).toBeDefined();
+    expect(result.user).toBe(user);
+    expect(refreshTokensRepo.create).toHaveBeenCalled();
   });
 
   it('lie le googleId et retourne AuthResult quand le user est trouve par email', async () => {
@@ -87,6 +99,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
       googleId: 'google-sub-123',
     });
     expect(result.accessToken).toBe('jwt-token');
+    expect(result.refreshToken).toBeDefined();
   });
 
   it('cree un nouveau compte quand aucun user existant', async () => {
@@ -99,6 +112,7 @@ describe('AuthenticateGoogleUserUseCase', () => {
 
     expect(repo.create).toHaveBeenCalled();
     expect(result.user).toBe(created);
+    expect(result.refreshToken).toBeDefined();
   });
 
   it('lance UnauthorizedException quand le token Google est invalide', async () => {

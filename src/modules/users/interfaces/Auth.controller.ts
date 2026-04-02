@@ -24,8 +24,10 @@ import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogle
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
+import { RefreshTokensUseCase } from '../application/RefreshTokens.useCase';
 import { RequestPasswordResetUseCase } from '../application/RequestPasswordReset.useCase';
 import { ResetPasswordUseCase } from '../application/ResetPassword.useCase';
+import { RevokeTokenUseCase } from '../application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../application/SetPassword.useCase';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
@@ -35,6 +37,7 @@ import { CreateUserDto } from './dto/CreateUser.dto';
 import { ForgotPasswordDto } from './dto/ForgotPassword.dto';
 import { GoogleAuthDto } from './dto/GoogleAuth.dto';
 import { LoginDto } from './dto/Login.dto';
+import { RefreshTokenDto } from './dto/RefreshToken.dto';
 import { ResetPasswordDto } from './dto/ResetPassword.dto';
 import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
@@ -49,6 +52,8 @@ export class AuthController {
     private readonly authenticateGoogleUserUseCase: AuthenticateGoogleUserUseCase,
     private readonly createUsersUseCase: CreateUsersUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
+    private readonly refreshTokensUseCase: RefreshTokensUseCase,
+    private readonly revokeTokenUseCase: RevokeTokenUseCase,
     private readonly requestPasswordResetUseCase: RequestPasswordResetUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
     private readonly setPasswordUseCase: SetPasswordUseCase,
@@ -67,6 +72,7 @@ export class AuthController {
     return {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,
+      refreshToken: result.refreshToken,
       user: UserResponseDto.fromDomain(result.user),
     };
   }
@@ -84,8 +90,40 @@ export class AuthController {
     return {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,
+      refreshToken: result.refreshToken,
       user: UserResponseDto.fromDomain(result.user),
     };
+  }
+
+  @Public()
+  @Post('refresh')
+  @HttpCode(200)
+  @Throttle({ default: { limit: 10, ttl: 3600000 } })
+  @ApiOperation({
+    summary: 'Rafraichit le couple access + refresh token (rotation)',
+  })
+  @ApiOkResponse({ type: AuthResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid or expired refresh token' })
+  async refresh(@Body() dto: RefreshTokenDto): Promise<AuthResponseDto> {
+    const result = await this.refreshTokensUseCase.execute(dto.refreshToken);
+    return {
+      accessToken: result.accessToken,
+      expiresIn: result.expiresIn,
+      refreshToken: result.refreshToken,
+      user: UserResponseDto.fromDomain(result.user),
+    };
+  }
+
+  @Public()
+  @Post('logout')
+  @HttpCode(200)
+  @Throttle({ default: { limit: 10, ttl: 3600000 } })
+  @ApiOperation({ summary: 'Revoque le refresh token (deconnexion)' })
+  @ApiOkResponse({ type: AuthMessageResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid refresh token' })
+  async logout(@Body() dto: RefreshTokenDto): Promise<AuthMessageResponseDto> {
+    await this.revokeTokenUseCase.execute(dto.refreshToken);
+    return { message: 'Deconnexion reussie.' };
   }
 
   @Patch('change-password')

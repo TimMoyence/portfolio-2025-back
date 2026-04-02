@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { UnauthorizedException } from '@nestjs/common';
+import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { AuthenticateUserUseCase } from './AuthenticateUser.useCase';
 import type { LoginCommand } from './dto/Login.command';
@@ -11,26 +12,37 @@ import {
   createMockPasswordService,
   createMockJwtService,
 } from '../../../../test/factories/user.factory';
+import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 
 describe('AuthenticateUserUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
+  let refreshTokensRepo: jest.Mocked<IRefreshTokensRepository>;
   let passwordService: jest.Mocked<PasswordService>;
   let jwtTokenService: jest.Mocked<JwtTokenService>;
   let useCase: AuthenticateUserUseCase;
 
   beforeEach(() => {
     repo = createMockUsersRepo();
+    refreshTokensRepo = createMockRefreshTokensRepo();
     passwordService = createMockPasswordService();
     passwordService.verify.mockReturnValue(true);
     jwtTokenService = createMockJwtService();
     jwtTokenService.sign.mockReturnValue({
       token: 'jwt-token',
-      expiresIn: 3600,
+      expiresIn: 900,
       expiresAt: 0,
+    });
+    refreshTokensRepo.create.mockResolvedValue({
+      id: 'rt-1',
+      userId: 'user-1',
+      tokenHash: 'hashed',
+      expiresAt: new Date(),
+      revoked: false,
     });
 
     useCase = new AuthenticateUserUseCase(
       repo,
+      refreshTokensRepo,
       passwordService,
       jwtTokenService,
     );
@@ -59,7 +71,11 @@ describe('AuthenticateUserUseCase', () => {
       email: user.email,
       roles: [],
     });
-    expect(result).toEqual({ accessToken: 'jwt-token', expiresIn: 3600, user });
+    expect(result.accessToken).toBe('jwt-token');
+    expect(result.expiresIn).toBe(900);
+    expect(result.refreshToken).toBeDefined();
+    expect(result.user).toBe(user);
+    expect(refreshTokensRepo.create).toHaveBeenCalled();
   });
 
   it('throws when credentials are invalid', async () => {

@@ -240,6 +240,41 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
       ],
     },
   },
+  "/api/auth/logout": {
+    "post": {
+      "operationId": "AuthController_logout",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RefreshTokenDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthMessageResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "401": {
+          "description": "Invalid refresh token",
+        },
+      },
+      "summary": "Revoque le refresh token (deconnexion)",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
   "/api/auth/me": {
     "get": {
       "operationId": "AuthController_me",
@@ -264,6 +299,41 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/refresh": {
+    "post": {
+      "operationId": "AuthController_refresh",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RefreshTokenDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "401": {
+          "description": "Invalid or expired refresh token",
+        },
+      },
+      "summary": "Rafraichit le couple access + refresh token (rotation)",
       "tags": [
         "auth",
       ],

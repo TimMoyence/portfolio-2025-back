@@ -54,8 +54,10 @@ import { AuthController } from '../src/modules/users/interfaces/Auth.controller'
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
 import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/AuthenticateGoogleUser.useCase';
 import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
+import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
 import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
+import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 
@@ -217,6 +219,8 @@ describe('OpenAPI core contract', () => {
         { provide: AuthenticateUserUseCase, useValue: stub() },
         { provide: AuthenticateGoogleUserUseCase, useValue: stub() },
         { provide: ChangePasswordUseCase, useValue: stub() },
+        { provide: RefreshTokensUseCase, useValue: stub() },
+        { provide: RevokeTokenUseCase, useValue: stub() },
         { provide: RequestPasswordResetUseCase, useValue: stub() },
         { provide: ResetPasswordUseCase, useValue: stub() },
         { provide: SetPasswordUseCase, useValue: stub() },

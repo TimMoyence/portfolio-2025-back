@@ -4,16 +4,26 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
+import { randomBytes } from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
+import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
+import { TokenHash } from '../domain/TokenHash';
 import { Users } from '../domain/Users';
-import { GOOGLE_CLIENT_ID, USERS_REPOSITORY } from '../domain/token';
+import {
+  GOOGLE_CLIENT_ID,
+  REFRESH_TOKENS_REPOSITORY,
+  USERS_REPOSITORY,
+} from '../domain/token';
 import type { AuthResult } from './AuthenticateUser.useCase';
 import { JwtTokenService } from './services/JwtTokenService';
 import { UsersMapper } from './mappers/UsersMapper';
 
 /** Roles attribues par defaut a un nouvel utilisateur Google. */
 const DEFAULT_GOOGLE_ROLES = ['budget', 'weather', 'sebastian'];
+
+/** Duree de vie par defaut d'un refresh token : 30 jours en millisecondes. */
+const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Authentifie un utilisateur via son Google ID token (popup GIS). */
 @Injectable()
@@ -23,6 +33,8 @@ export class AuthenticateGoogleUserUseCase {
 
   constructor(
     @Inject(USERS_REPOSITORY) private readonly repo: IUsersRepository,
+    @Inject(REFRESH_TOKENS_REPOSITORY)
+    private readonly refreshTokensRepo: IRefreshTokensRepository,
     private readonly jwtTokenService: JwtTokenService,
     @Inject(GOOGLE_CLIENT_ID) private readonly googleClientId: string,
   ) {
@@ -93,13 +105,29 @@ export class AuthenticateGoogleUserUseCase {
     }
   }
 
-  /** Signe un JWT et retourne le resultat d'authentification. */
-  private signResult(user: Users): AuthResult {
+  /** Signe un JWT, cree un refresh token et retourne le resultat d'authentification. */
+  private async signResult(user: Users): Promise<AuthResult> {
     const { token, expiresIn } = this.jwtTokenService.sign({
       sub: user.id,
       email: user.email,
       roles: user.roles ?? [],
     });
-    return { accessToken: token, expiresIn, user };
+
+    const rawRefreshToken = randomBytes(32).toString('hex');
+    const tokenHash = TokenHash.fromRaw(rawRefreshToken).value;
+
+    await this.refreshTokensRepo.create({
+      userId: user.id!,
+      tokenHash,
+      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+      revoked: false,
+    });
+
+    return {
+      accessToken: token,
+      expiresIn,
+      refreshToken: rawRefreshToken,
+      user,
+    };
   }
 }

@@ -26,7 +26,7 @@ export class JwtTokenService {
     const secret = this.getValidatedSecret();
 
     const expiresInValue =
-      this.configService.get<string>('JWT_EXPIRES_IN') ?? '3600s';
+      this.configService.get<string>('JWT_EXPIRES_IN') ?? '900s';
     const expiresIn = this.parseExpiresIn(expiresInValue);
     const issuedAtTime = Math.floor(Date.now() / 1000);
     const expiresAt = issuedAtTime + expiresIn;
@@ -59,7 +59,7 @@ export class JwtTokenService {
 
     if (!match) {
       const numeric = Number(value);
-      return Number.isFinite(numeric) ? numeric : 3600;
+      return Number.isFinite(numeric) ? numeric : 900;
     }
 
     const amount = Number(match[1]);
@@ -75,7 +75,7 @@ export class JwtTokenService {
       case 'd':
         return amount * 86400;
       default:
-        return 3600;
+        return 900;
     }
   }
 
