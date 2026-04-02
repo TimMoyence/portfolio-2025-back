@@ -1,10 +1,14 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { LoggerModule } from 'nestjs-pino';
+import { randomUUID } from 'crypto';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { HealthModule } from './common/interfaces/health/health.module';
+import { CorrelationIdMiddleware } from './common/interfaces/middleware/correlation-id.middleware';
 
 import { ensureDatabaseExists } from './database/ensure-database';
 import { resolveRuntimeContexts } from './runtime/runtime-contexts';
@@ -14,6 +18,25 @@ const runtimeContexts = resolveRuntimeContexts();
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport:
+          process.env.NODE_ENV !== 'production'
+            ? {
+                target: 'pino-pretty',
+                options: { colorize: true, singleLine: true },
+              }
+            : undefined,
+        autoLogging: true,
+        quietReqLogger: true,
+        genReqId: (req) =>
+          (req.headers['x-request-id'] as string) ?? randomUUID(),
+        customProps: (req) => ({
+          correlationId: req.id,
+        }),
+        ...(process.env.NODE_ENV === 'test' ? { level: 'silent' } : {}),
+      },
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
@@ -121,6 +144,7 @@ const runtimeContexts = resolveRuntimeContexts();
       },
     }),
     ...runtimeContexts.runtimeModules,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
@@ -131,4 +155,8 @@ const runtimeContexts = resolveRuntimeContexts();
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(CorrelationIdMiddleware).forRoutes('*');
+  }
+}

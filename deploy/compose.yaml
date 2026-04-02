@@ -72,7 +72,7 @@ services:
         - CMD-SHELL
         - >
           node -e "const http=require('http');
-          const req=http.get('http://127.0.0.1:3000/api/v1/portfolio25',res=>process.exit(res.statusCode===200?0:1));
+          const req=http.get('http://127.0.0.1:3000/api/v1/portfolio25/health',res=>process.exit(res.statusCode===200?0:1));
           req.on('error',()=>process.exit(1));"
       interval: 10s
       timeout: 5s
