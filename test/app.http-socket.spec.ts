@@ -21,9 +21,12 @@ import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePa
 import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
 import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
+import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
+import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
+import { RolesGuard } from '../src/modules/users/interfaces/guards/roles.guard';
 import { CreateCoursesUseCase } from '../src/modules/courses/application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../src/modules/courses/application/ListCourses.useCase';
 import { CoursesController } from '../src/modules/courses/interfaces/Courses.controller';
@@ -49,6 +52,8 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   const authenticateGoogleUserUseCase = { execute: jest.fn() };
   const createUsersUseCase = { execute: jest.fn() };
   const changePasswordUseCase = { execute: jest.fn() };
+  const refreshTokensUseCase = { execute: jest.fn() };
+  const revokeTokenUseCase = { execute: jest.fn() };
   const requestPasswordResetUseCase = { execute: jest.fn() };
   const resetPasswordUseCase = { execute: jest.fn() };
   const setPasswordUseCase = { execute: jest.fn() };
@@ -100,6 +105,8 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         },
         { provide: CreateUsersUseCase, useValue: createUsersUseCase },
         { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
+        { provide: RefreshTokensUseCase, useValue: refreshTokensUseCase },
+        { provide: RevokeTokenUseCase, useValue: revokeTokenUseCase },
         {
           provide: RequestPasswordResetUseCase,
           useValue: requestPasswordResetUseCase,
@@ -116,7 +123,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         { provide: ListRedirectsUseCase, useValue: listRedirectsUseCase },
         { provide: CreateRedirectsUseCase, useValue: createRedirectsUseCase },
       ],
-    }).compile();
+    })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     app = moduleRef.createNestApplication();
 
@@ -344,7 +354,9 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       })
       .expect(400);
 
-    const detail = response.body.detail as string | string[];
+    const detail = (response.body.message ?? response.body.detail) as
+      | string
+      | string[];
     const messages = Array.isArray(detail) ? detail : [String(detail)];
     expect(
       messages.some((m) => m.includes('property injected should not exist')),
@@ -699,7 +711,9 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       })
       .expect(400);
 
-    const detail = response.body.detail as string | string[];
+    const detail = (response.body.message ?? response.body.detail) as
+      | string
+      | string[];
     const messages = Array.isArray(detail) ? detail : [String(detail)];
     expect(
       messages.some((m) => m.includes('property injected should not exist')),
@@ -711,7 +725,9 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/services?sortBy=invalid')
       .expect(400);
 
-    const detail = response.body.detail as string | string[];
+    const detail = (response.body.message ?? response.body.detail) as
+      | string
+      | string[];
     const messages = Array.isArray(detail) ? detail : [String(detail)];
     expect(
       messages.some((message) =>
@@ -725,7 +741,9 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/redirects?enabled=not-a-boolean')
       .expect(400);
 
-    const detail = response.body.detail as string | string[];
+    const detail = (response.body.message ?? response.body.detail) as
+      | string
+      | string[];
     const messages = Array.isArray(detail) ? detail : [String(detail)];
     expect(
       messages.some((m) => m.includes('enabled must be a boolean value')),
