@@ -17,6 +17,7 @@ export class GetForecastUseCase {
       command.latitude,
       command.longitude,
       command.timezone,
+      command.forecastDays,
     );
   }
 }

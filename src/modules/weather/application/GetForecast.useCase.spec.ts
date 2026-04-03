@@ -31,6 +31,7 @@ describe('GetForecastUseCase', () => {
       48.8566,
       2.3522,
       'Europe/Paris',
+      undefined,
     );
     expect(proxy.getForecast).toHaveBeenCalledTimes(1);
   });

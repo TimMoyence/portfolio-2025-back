@@ -84,6 +84,7 @@ export class WeatherController {
       latitude: dto.latitude,
       longitude: dto.longitude,
       timezone: dto.timezone,
+      forecastDays: dto.forecastDays,
     });
   }
 
@@ -157,6 +158,7 @@ export class WeatherController {
       level: dto.level,
       favoriteCities: dto.favoriteCities,
       tooltipsSeen: dto.tooltipsSeen,
+      units: dto.units,
     });
     return WeatherPreferencesDto.fromDomain(prefs);
   }

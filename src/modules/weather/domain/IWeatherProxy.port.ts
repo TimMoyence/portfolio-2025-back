@@ -136,6 +136,7 @@ export interface IWeatherProxy {
     latitude: number,
     longitude: number,
     timezone?: string,
+    forecastDays?: number,
   ): Promise<ForecastResult>;
   getAirQuality(latitude: number, longitude: number): Promise<AirQualityResult>;
 

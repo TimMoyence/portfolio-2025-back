@@ -30,6 +30,12 @@ export class WeatherUserPreferencesEntity {
   @Column({ name: 'tooltips_seen', type: 'jsonb', default: '[]' })
   tooltipsSeen: string[];
 
+  @Column({
+    type: 'jsonb',
+    default: '{"temperature":"celsius","speed":"kmh","pressure":"hpa"}',
+  })
+  units: { temperature: string; speed: string; pressure: string };
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

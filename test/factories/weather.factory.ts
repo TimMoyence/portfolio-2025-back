@@ -14,7 +14,10 @@ import type {
   IWeatherProxy,
 } from '../../src/modules/weather/domain/IWeatherProxy.port';
 import { WeatherUserPreferences } from '../../src/modules/weather/domain/WeatherUserPreferences';
-import type { WeatherLevel } from '../../src/modules/weather/domain/WeatherUserPreferences';
+import type {
+  UnitPreferences,
+  WeatherLevel,
+} from '../../src/modules/weather/domain/WeatherUserPreferences';
 
 /** Construit un objet WeatherUserPreferences avec des valeurs par defaut. */
 export function buildWeatherPreferences(
@@ -31,6 +34,7 @@ export function buildWeatherPreferences(
     daysUsed: number;
     lastUsedAt: Date | null;
     tooltipsSeen: string[];
+    units: UnitPreferences;
     createdAt: Date;
     updatedAt: Date;
   }>,
@@ -44,6 +48,11 @@ export function buildWeatherPreferences(
     daysUsed: overrides?.daysUsed ?? 0,
     lastUsedAt: overrides?.lastUsedAt ?? null,
     tooltipsSeen: overrides?.tooltipsSeen ?? [],
+    units: overrides?.units ?? {
+      temperature: 'celsius',
+      speed: 'kmh',
+      pressure: 'hpa',
+    },
     createdAt: overrides?.createdAt ?? now,
     updatedAt: overrides?.updatedAt ?? now,
   });

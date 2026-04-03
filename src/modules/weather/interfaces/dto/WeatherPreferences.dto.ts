@@ -30,6 +30,9 @@ export class WeatherPreferencesDto {
   @ApiProperty({ description: 'Identifiants des tooltips consultes' })
   tooltipsSeen: string[];
 
+  @ApiProperty({ description: "Preferences d'unites de mesure" })
+  units: { temperature: string; speed: string; pressure: string };
+
   @ApiProperty({ description: 'Date de creation' })
   createdAt: Date;
 
@@ -46,6 +49,7 @@ export class WeatherPreferencesDto {
     dto.daysUsed = prefs.daysUsed;
     dto.lastUsedAt = prefs.lastUsedAt;
     dto.tooltipsSeen = prefs.tooltipsSeen;
+    dto.units = prefs.units;
     dto.createdAt = prefs.createdAt;
     dto.updatedAt = prefs.updatedAt;
     return dto;

@@ -13,6 +13,42 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+/** DTO des preferences d'unites de mesure. */
+export class UnitPreferencesDto {
+  @ApiProperty({
+    example: 'celsius',
+    required: false,
+    description: 'Unite de temperature',
+    enum: ['celsius', 'fahrenheit'],
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['celsius', 'fahrenheit'])
+  temperature?: 'celsius' | 'fahrenheit';
+
+  @ApiProperty({
+    example: 'kmh',
+    required: false,
+    description: 'Unite de vitesse du vent',
+    enum: ['kmh', 'mph'],
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['kmh', 'mph'])
+  speed?: 'kmh' | 'mph';
+
+  @ApiProperty({
+    example: 'hpa',
+    required: false,
+    description: 'Unite de pression atmospherique',
+    enum: ['hpa', 'inhg'],
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['hpa', 'inhg'])
+  pressure?: 'hpa' | 'inhg';
+}
+
 /** DTO d'une ville favorite. */
 export class FavoriteCityDto {
   @ApiProperty({ example: 'Paris', description: 'Nom de la ville' })
@@ -73,4 +109,14 @@ export class UpdatePreferencesDto {
   @IsString({ each: true })
   @ArrayMaxSize(100)
   tooltipsSeen?: string[];
+
+  @ApiProperty({
+    type: UnitPreferencesDto,
+    required: false,
+    description: "Preferences d'unites de mesure",
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UnitPreferencesDto)
+  units?: UnitPreferencesDto;
 }

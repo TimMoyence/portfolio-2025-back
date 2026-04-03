@@ -42,6 +42,10 @@ export class UpdateUserPreferencesUseCase {
       updateData.favoriteCities = command.favoriteCities;
     if (command.tooltipsSeen !== undefined)
       updateData.tooltipsSeen = command.tooltipsSeen;
+    if (command.units !== undefined) {
+      // Fusion partielle : les champs non fournis conservent leur valeur actuelle
+      updateData.units = { ...prefs.units, ...command.units };
+    }
 
     return this.repo.update(prefs.id, updateData);
   }
