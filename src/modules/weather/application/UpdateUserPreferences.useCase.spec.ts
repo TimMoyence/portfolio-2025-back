@@ -89,4 +89,32 @@ describe('UpdateUserPreferencesUseCase', () => {
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(result.level).toBe('curious');
   });
+
+  it('devrait fusionner partiellement les unites', async () => {
+    const existing = buildWeatherPreferences({
+      userId: 'user-1',
+      units: { temperature: 'celsius', speed: 'kmh', pressure: 'hpa' },
+    });
+    const updated = buildWeatherPreferences({
+      userId: 'user-1',
+      units: { temperature: 'fahrenheit', speed: 'kmh', pressure: 'hpa' },
+    });
+    repo.findByUserId.mockResolvedValue(existing);
+    repo.update.mockResolvedValue(updated);
+
+    const result = await useCase.execute({
+      userId: 'user-1',
+      units: { temperature: 'fahrenheit' },
+    });
+
+    expect(result.units.temperature).toBe('fahrenheit');
+    expect(result.units.speed).toBe('kmh');
+    expect(result.units.pressure).toBe('hpa');
+    expect(repo.update).toHaveBeenCalledWith(
+      existing.id,
+      expect.objectContaining({
+        units: { temperature: 'fahrenheit', speed: 'kmh', pressure: 'hpa' },
+      }),
+    );
+  });
 });
