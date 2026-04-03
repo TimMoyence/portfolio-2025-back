@@ -1147,6 +1147,16 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
             "type": "string",
           },
         },
+        {
+          "description": "Nombre de jours de prevision (1-16)",
+          "in": "query",
+          "name": "forecastDays",
+          "required": false,
+          "schema": {
+            "example": 7,
+            "type": "number",
+          },
+        },
       ],
       "responses": {
         "200": {
@@ -1195,6 +1205,16 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "schema": {
             "example": "auto",
             "type": "string",
+          },
+        },
+        {
+          "description": "Nombre de jours de prevision (1-16)",
+          "in": "query",
+          "name": "forecastDays",
+          "required": false,
+          "schema": {
+            "example": 7,
+            "type": "number",
           },
         },
       ],
@@ -1247,6 +1267,16 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
             "type": "string",
           },
         },
+        {
+          "description": "Nombre de jours de prevision (1-16)",
+          "in": "query",
+          "name": "forecastDays",
+          "required": false,
+          "schema": {
+            "example": 7,
+            "type": "number",
+          },
+        },
       ],
       "responses": {
         "200": {
@@ -1297,6 +1327,16 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
             "type": "string",
           },
         },
+        {
+          "description": "Nombre de jours de prevision (1-16)",
+          "in": "query",
+          "name": "forecastDays",
+          "required": false,
+          "schema": {
+            "example": 7,
+            "type": "number",
+          },
+        },
       ],
       "responses": {
         "200": {
@@ -1345,6 +1385,16 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "schema": {
             "example": "auto",
             "type": "string",
+          },
+        },
+        {
+          "description": "Nombre de jours de prevision (1-16)",
+          "in": "query",
+          "name": "forecastDays",
+          "required": false,
+          "schema": {
+            "example": 7,
+            "type": "number",
           },
         },
       ],
