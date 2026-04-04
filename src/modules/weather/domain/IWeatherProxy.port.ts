@@ -1,3 +1,6 @@
+import type { WeatherAlertResult } from './WeatherAlert';
+export type { WeatherAlertResult } from './WeatherAlert';
+
 /** Ville retournee par l'API de geocodage. */
 export interface GeocodingCity {
   id: number;
@@ -150,4 +153,7 @@ export interface IWeatherProxy {
     startDate: string,
     endDate: string,
   ): Promise<HistoricalResult>;
+
+  /** Recupere les alertes meteo synthetiques pour des coordonnees donnees. */
+  getAlerts(latitude: number, longitude: number): Promise<WeatherAlertResult>;
 }

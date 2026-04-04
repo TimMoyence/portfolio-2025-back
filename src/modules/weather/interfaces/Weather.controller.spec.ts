@@ -9,6 +9,7 @@ import type { GetHistoricalUseCase } from '../application/GetHistorical.useCase'
 import type { GetUserPreferencesUseCase } from '../application/GetUserPreferences.useCase';
 import type { UpdateUserPreferencesUseCase } from '../application/UpdateUserPreferences.useCase';
 import type { RecordUsageUseCase } from '../application/RecordUsage.useCase';
+import type { GetWeatherAlertsUseCase } from '../application/GetWeatherAlerts.useCase';
 import type { IOpenWeatherMapProxy } from '../domain/IOpenWeatherMapProxy.port';
 import {
   buildWeatherPreferences,
@@ -25,6 +26,7 @@ describe('WeatherController', () => {
   let preferencesUseCase: jest.Mocked<GetUserPreferencesUseCase>;
   let updatePreferencesUseCase: jest.Mocked<UpdateUserPreferencesUseCase>;
   let recordUsageUseCase: jest.Mocked<RecordUsageUseCase>;
+  let alertsUseCase: jest.Mocked<GetWeatherAlertsUseCase>;
   let owmProxy: jest.Mocked<IOpenWeatherMapProxy>;
 
   beforeEach(() => {
@@ -36,6 +38,7 @@ describe('WeatherController', () => {
     preferencesUseCase = { execute: jest.fn() } as any;
     updatePreferencesUseCase = { execute: jest.fn() } as any;
     recordUsageUseCase = { execute: jest.fn() } as any;
+    alertsUseCase = { execute: jest.fn() } as any;
     owmProxy = {
       getCurrentDetailed: jest.fn(),
       getForecastDetailed: jest.fn(),
@@ -50,6 +53,7 @@ describe('WeatherController', () => {
       preferencesUseCase,
       updatePreferencesUseCase,
       recordUsageUseCase,
+      alertsUseCase,
       owmProxy,
     );
   });

@@ -8,7 +8,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
@@ -19,6 +25,7 @@ import { GetEnsembleUseCase } from '../application/GetEnsemble.useCase';
 import { GetForecastUseCase } from '../application/GetForecast.useCase';
 import { GetGeocodingUseCase } from '../application/GetGeocoding.useCase';
 import { GetHistoricalUseCase } from '../application/GetHistorical.useCase';
+import { GetWeatherAlertsUseCase } from '../application/GetWeatherAlerts.useCase';
 import { GetUserPreferencesUseCase } from '../application/GetUserPreferences.useCase';
 import { RecordUsageUseCase } from '../application/RecordUsage.useCase';
 import { UpdateUserPreferencesUseCase } from '../application/UpdateUserPreferences.useCase';
@@ -33,6 +40,7 @@ import type {
   ForecastResult,
   GeocodingResult,
   HistoricalResult,
+  WeatherAlertResult,
 } from '../domain/IWeatherProxy.port';
 import { OPENWEATHERMAP_PROXY } from '../domain/token';
 import { Inject } from '@nestjs/common';
@@ -58,6 +66,7 @@ export class WeatherController {
     private readonly getUserPreferencesUseCase: GetUserPreferencesUseCase,
     private readonly updateUserPreferencesUseCase: UpdateUserPreferencesUseCase,
     private readonly recordUsageUseCase: RecordUsageUseCase,
+    private readonly getWeatherAlertsUseCase: GetWeatherAlertsUseCase,
     @Inject(OPENWEATHERMAP_PROXY)
     private readonly owmProxy: IOpenWeatherMapProxy,
   ) {}
@@ -65,6 +74,8 @@ export class WeatherController {
   /** Recherche de villes par nom (acces public). */
   @Public()
   @Get('geocoding')
+  @ApiOperation({ summary: 'Rechercher des villes par nom (acces public)' })
+  @ApiOkResponse({ description: 'Liste des villes correspondantes' })
   @Throttle({ default: { limit: 30, ttl: 60000 } })
   async searchCity(@Query() dto: GeocodingQueryDto): Promise<GeocodingResult> {
     return this.getGeocodingUseCase.execute({
@@ -78,6 +89,11 @@ export class WeatherController {
   @Get('forecast')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtenir les previsions meteo' })
+  @ApiOkResponse({
+    description: 'Previsions meteo pour les coordonnees donnees',
+  })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async getForecast(@Query() dto: ForecastQueryDto): Promise<ForecastResult> {
     return this.getForecastUseCase.execute({
@@ -92,6 +108,9 @@ export class WeatherController {
   @Get('air-quality')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({ summary: "Obtenir l'indice de qualite de l'air" })
+  @ApiOkResponse({ description: "Donnees de qualite de l'air" })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async getAirQuality(
     @Query() dto: ForecastQueryDto,
@@ -108,6 +127,9 @@ export class WeatherController {
   @Get('ensemble')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({ summary: "Obtenir les previsions d'ensemble multi-modeles" })
+  @ApiOkResponse({ description: "Previsions d'ensemble multi-modeles" })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async getEnsemble(@Query() dto: ForecastQueryDto): Promise<EnsembleResult> {
     return this.getEnsembleUseCase.execute({
@@ -120,6 +142,9 @@ export class WeatherController {
   @Get('historical')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtenir les donnees meteo historiques' })
+  @ApiOkResponse({ description: 'Donnees meteo historiques' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async getHistorical(
     @Query() dto: HistoricalQueryDto,
@@ -132,12 +157,33 @@ export class WeatherController {
     });
   }
 
+  /** Alertes meteo synthetiques pour des coordonnees donnees. */
+  @Get('alerts')
+  @Roles('weather')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtenir les alertes meteo synthetiques' })
+  @ApiOkResponse({ description: 'Alertes meteo pour les coordonnees donnees' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
+  async getAlerts(@Query() dto: ForecastQueryDto): Promise<WeatherAlertResult> {
+    return this.getWeatherAlertsUseCase.execute({
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+    });
+  }
+
   // --- Preferences utilisateur ---
 
   /** Recupere les preferences meteo de l'utilisateur connecte. */
   @Get('preferences')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({ summary: "Recuperer les preferences meteo de l'utilisateur" })
+  @ApiOkResponse({
+    description: 'Preferences meteo',
+    type: WeatherPreferencesDto,
+  })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async getPreferences(@Req() req: Request): Promise<WeatherPreferencesDto> {
     const user = req.user!;
     const prefs = await this.getUserPreferencesUseCase.execute(user.sub);
@@ -148,6 +194,14 @@ export class WeatherController {
   @Patch('preferences')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Mettre a jour les preferences meteo de l'utilisateur",
+  })
+  @ApiOkResponse({
+    description: 'Preferences meteo mises a jour',
+    type: WeatherPreferencesDto,
+  })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async updatePreferences(
     @Req() req: Request,
     @Body() dto: UpdatePreferencesDto,
@@ -157,6 +211,7 @@ export class WeatherController {
       userId: user.sub,
       level: dto.level,
       favoriteCities: dto.favoriteCities,
+      defaultCityIndex: dto.defaultCityIndex,
       tooltipsSeen: dto.tooltipsSeen,
       units: dto.units,
     });
@@ -167,6 +222,9 @@ export class WeatherController {
   @Post('preferences/record-usage')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({ summary: "Enregistrer l'utilisation du dashboard meteo" })
+  @ApiOkResponse({ description: 'Utilisation enregistree' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async recordUsage(@Req() req: Request): Promise<void> {
     const user = req.user!;
     await this.recordUsageUseCase.execute({ userId: user.sub });
@@ -178,6 +236,14 @@ export class WeatherController {
   @Get('current-detailed')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Obtenir les donnees meteo detaillees courantes (OpenWeatherMap)',
+  })
+  @ApiOkResponse({
+    description: 'Donnees meteo detaillees courantes',
+    type: DetailedCurrentWeatherDto,
+  })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async getCurrentDetailed(
     @Query() dto: ForecastQueryDto,
@@ -193,6 +259,14 @@ export class WeatherController {
   @Get('forecast-detailed')
   @Roles('weather')
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Obtenir les previsions detaillees (OpenWeatherMap)',
+  })
+  @ApiOkResponse({
+    description: 'Previsions detaillees',
+    type: DetailedForecastDto,
+  })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   async getForecastDetailed(
     @Query() dto: ForecastQueryDto,

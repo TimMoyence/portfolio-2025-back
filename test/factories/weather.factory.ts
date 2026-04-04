@@ -12,6 +12,7 @@ import type {
   ForecastResult,
   HistoricalResult,
   IWeatherProxy,
+  WeatherAlertResult,
 } from '../../src/modules/weather/domain/IWeatherProxy.port';
 import { WeatherUserPreferences } from '../../src/modules/weather/domain/WeatherUserPreferences';
 import type {
@@ -31,6 +32,7 @@ export function buildWeatherPreferences(
       longitude: number;
       country: string;
     }[];
+    defaultCityIndex: number | null;
     daysUsed: number;
     lastUsedAt: Date | null;
     tooltipsSeen: string[];
@@ -45,6 +47,7 @@ export function buildWeatherPreferences(
     userId: overrides?.userId ?? 'user-1',
     level: overrides?.level ?? 'discovery',
     favoriteCities: overrides?.favoriteCities ?? [],
+    defaultCityIndex: overrides?.defaultCityIndex ?? null,
     daysUsed: overrides?.daysUsed ?? 0,
     lastUsedAt: overrides?.lastUsedAt ?? null,
     tooltipsSeen: overrides?.tooltipsSeen ?? [],
@@ -300,6 +303,24 @@ export function buildHistoricalResult(
   };
 }
 
+/** Construit un resultat d'alertes meteo avec des valeurs par defaut. */
+export function buildWeatherAlertResult(
+  overrides?: Partial<WeatherAlertResult>,
+): WeatherAlertResult {
+  return {
+    alerts: overrides?.alerts ?? [
+      {
+        type: 'vent',
+        severity: 'moderate',
+        headline: 'Vent fort',
+        description: "Rafales jusqu'a 65 km/h",
+        startTime: '2026-03-31T14:00:00.000Z',
+        endTime: '2026-03-31T17:00:00.000Z',
+      },
+    ],
+  };
+}
+
 /** Cree un mock du proxy meteo Open-Meteo avec tous les jest.fn(). */
 export function createMockWeatherProxy(): jest.Mocked<IWeatherProxy> {
   return {
@@ -308,5 +329,6 @@ export function createMockWeatherProxy(): jest.Mocked<IWeatherProxy> {
     getAirQuality: jest.fn(),
     getEnsemble: jest.fn(),
     getHistorical: jest.fn(),
+    getAlerts: jest.fn(),
   };
 }
