@@ -84,4 +84,95 @@ describe('BudgetEntry', () => {
 
     expect(entry.state).toBe('PENDING');
   });
+
+  it('devrait defaulter le state a COMPLETED', () => {
+    const entry = BudgetEntry.create({
+      groupId: 'group-1',
+      createdByUserId: 'user-1',
+      date: '2026-03-15',
+      description: 'Test',
+      amount: -10,
+      type: 'VARIABLE',
+    });
+
+    expect(entry.state).toBe('COMPLETED');
+  });
+
+  it('devrait refuser un groupId vide', () => {
+    expect(() =>
+      BudgetEntry.create({
+        groupId: '  ',
+        createdByUserId: 'user-1',
+        date: '2026-03-15',
+        description: 'Test',
+        amount: -10,
+        type: 'VARIABLE',
+      }),
+    ).toThrow(DomainValidationError);
+  });
+
+  it('devrait refuser un createdByUserId vide', () => {
+    expect(() =>
+      BudgetEntry.create({
+        groupId: 'group-1',
+        createdByUserId: '  ',
+        date: '2026-03-15',
+        description: 'Test',
+        amount: -10,
+        type: 'VARIABLE',
+      }),
+    ).toThrow(DomainValidationError);
+  });
+
+  it('devrait refuser un type invalide', () => {
+    expect(() =>
+      BudgetEntry.create({
+        groupId: 'group-1',
+        createdByUserId: 'user-1',
+        date: '2026-03-15',
+        description: 'Test',
+        amount: -10,
+        type: 'INVALID',
+      }),
+    ).toThrow(DomainValidationError);
+  });
+
+  it('devrait refuser un amount non-number', () => {
+    expect(() =>
+      BudgetEntry.create({
+        groupId: 'group-1',
+        createdByUserId: 'user-1',
+        date: '2026-03-15',
+        description: 'Test',
+        amount: 'abc' as unknown as number,
+        type: 'VARIABLE',
+      }),
+    ).toThrow(DomainValidationError);
+  });
+
+  it('devrait accepter categoryId null par defaut', () => {
+    const entry = BudgetEntry.create({
+      groupId: 'group-1',
+      createdByUserId: 'user-1',
+      date: '2026-03-15',
+      description: 'Test',
+      amount: -10,
+      type: 'FIXED',
+    });
+
+    expect(entry.categoryId).toBeNull();
+  });
+
+  it('devrait accepter un montant positif', () => {
+    const entry = BudgetEntry.create({
+      groupId: 'group-1',
+      createdByUserId: 'user-1',
+      date: '2026-03-15',
+      description: 'Salaire',
+      amount: 2500,
+      type: 'FIXED',
+    });
+
+    expect(entry.amount).toBe(2500);
+  });
 });

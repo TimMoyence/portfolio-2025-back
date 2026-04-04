@@ -62,6 +62,10 @@ export class BudgetEntryRepositoryTypeORM implements IBudgetEntryRepository {
     return updated;
   }
 
+  async delete(id: string): Promise<void> {
+    await this.repo.delete({ id });
+  }
+
   private toDomain(entity: BudgetEntryEntity): BudgetEntry {
     const entry = new BudgetEntry();
     entry.id = entity.id;

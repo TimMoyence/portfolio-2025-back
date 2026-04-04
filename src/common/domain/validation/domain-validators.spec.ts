@@ -53,6 +53,14 @@ describe('optionalText', () => {
       DomainValidationError,
     );
   });
+
+  it('devrait rejeter une valeur non-string (nombre)', () => {
+    expect(() => optionalText(42, 'test', 50)).toThrow(DomainValidationError);
+  });
+
+  it('devrait rejeter une valeur non-string (boolean)', () => {
+    expect(() => optionalText(true, 'test', 50)).toThrow(DomainValidationError);
+  });
 });
 
 describe('optionalMetadata', () => {

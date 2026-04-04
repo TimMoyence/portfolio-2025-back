@@ -1,5 +1,10 @@
 import { Body, Controller, HttpStatus, Post, Req } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import type { Request } from 'express';
 import { CreateCookieConsentsUseCase } from '../application/CreateCookieConsents.useCase';
@@ -7,14 +12,18 @@ import { CreateCookieConsentCommand } from '../application/dto/CreateCookieConse
 import { CookieConsentResponseDto } from './dto/cookie-consent.response.dto';
 import { CookieConsentRequestDto } from './dto/cookie-consent.request.dto';
 
+@ApiTags('cookie-consents')
 @Controller('cookie-consents')
 export class CookieConsentsController {
   constructor(private readonly createUseCase: CreateCookieConsentsUseCase) {}
 
   @Public()
   @Post()
+  @ApiOperation({
+    summary: 'Enregistrer un consentement cookie (acces public)',
+  })
   @ApiCreatedResponse({ type: CookieConsentResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
   async create(
     @Body() dto: CookieConsentRequestDto,
     @Req() req: Request,

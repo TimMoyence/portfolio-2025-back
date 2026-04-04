@@ -39,6 +39,18 @@ export class BudgetCategoryRepositoryTypeORM implements IBudgetCategoryRepositor
     return this.toDomainOrNull(entity);
   }
 
+  async update(
+    id: string,
+    data: Partial<BudgetCategory>,
+  ): Promise<BudgetCategory> {
+    await this.repo.update({ id }, data as Partial<BudgetCategoryEntity>);
+    const updated = await this.findById(id);
+    if (!updated) {
+      throw new Error(`Budget category ${id} not found after update`);
+    }
+    return updated;
+  }
+
   private toDomain(entity: BudgetCategoryEntity): BudgetCategory {
     const cat = new BudgetCategory();
     cat.id = entity.id;

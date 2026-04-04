@@ -8,6 +8,7 @@ import { randomUUID } from 'crypto';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthModule } from './common/interfaces/health/health.module';
+import { MetricsModule } from './common/interfaces/metrics/metrics.module';
 import { CorrelationIdMiddleware } from './common/interfaces/middleware/correlation-id.middleware';
 
 import { ensureDatabaseExists } from './database/ensure-database';
@@ -145,6 +146,7 @@ const runtimeContexts = resolveRuntimeContexts();
     }),
     ...runtimeContexts.runtimeModules,
     HealthModule,
+    MetricsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -24,4 +24,35 @@ describe('BudgetGroup', () => {
       DomainValidationError,
     );
   });
+
+  it('devrait trimmer le nom', () => {
+    const group = BudgetGroup.create({
+      name: '  Budget couple  ',
+      ownerId: 'user-1',
+    });
+    expect(group.name).toBe('Budget couple');
+  });
+
+  it('devrait trimmer le ownerId', () => {
+    const group = BudgetGroup.create({
+      name: 'Budget',
+      ownerId: '  user-1  ',
+    });
+    expect(group.ownerId).toBe('user-1');
+  });
+
+  it('devrait refuser un ownerId uniquement fait d espaces', () => {
+    expect(() =>
+      BudgetGroup.create({ name: 'Budget', ownerId: '   ' }),
+    ).toThrow(DomainValidationError);
+  });
+
+  it('devrait avoir createdAt et updatedAt', () => {
+    const group = BudgetGroup.create({
+      name: 'Budget',
+      ownerId: 'user-1',
+    });
+    expect(group.createdAt).toBeInstanceOf(Date);
+    expect(group.updatedAt).toBeInstanceOf(Date);
+  });
 });

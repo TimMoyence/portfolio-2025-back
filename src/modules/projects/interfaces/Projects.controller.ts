@@ -4,7 +4,10 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
@@ -17,6 +20,7 @@ import { ProjectListResponseDto } from './dto/project-list.response.dto';
 import { ProjectRequestDto } from './dto/project.request.dto';
 import { ProjectResponseDto } from './dto/project.response.dto';
 
+@ApiTags('projects')
 @Controller('projects')
 export class ProjectsController {
   constructor(
@@ -26,6 +30,7 @@ export class ProjectsController {
 
   @Public()
   @Get()
+  @ApiOperation({ summary: 'Lister les projets (acces public, pagine)' })
   @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
   @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
   @ApiQuery({
@@ -82,8 +87,10 @@ export class ProjectsController {
   @UseGuards(RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Creer un projet (admin)' })
   @ApiCreatedResponse({ type: ProjectResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async create(@Body() dto: ProjectRequestDto): Promise<ProjectResponseDto> {
     const command: CreateProjectCommand = {
       slug: dto.slug,

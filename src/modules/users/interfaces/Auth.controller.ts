@@ -64,8 +64,9 @@ export class AuthController {
   @Public()
   @Post('login')
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
+  @ApiOperation({ summary: 'Connexion par email et mot de passe' })
   @ApiOkResponse({ type: AuthResponseDto })
-  @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
+  @ApiUnauthorizedResponse({ description: 'Identifiants invalides' })
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     const result = await this.authenticateUserUseCase.execute(dto);
 
@@ -128,10 +129,11 @@ export class AuthController {
 
   @Patch('change-password')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Changer le mot de passe (utilisateur connecte)' })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
   @ApiUnauthorizedResponse({
-    description: 'Invalid credentials or inactive user',
+    description: 'Identifiants invalides ou utilisateur inactif',
   })
   async changePassword(
     @Body() dto: ChangePasswordDto,
@@ -205,8 +207,9 @@ export class AuthController {
   @Public()
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
+  @ApiOperation({ summary: "Inscription d'un nouvel utilisateur" })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiBadRequestResponse({ description: 'Registration failed' })
+  @ApiBadRequestResponse({ description: 'Inscription echouee' })
   async register(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
     const result = await this.createUsersUseCase.execute({
       ...dto,
@@ -218,8 +221,9 @@ export class AuthController {
 
   @Get('me')
   @ApiBearerAuth()
+  @ApiOperation({ summary: "Recuperer le profil de l'utilisateur connecte" })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiUnauthorizedResponse({ description: 'Invalid or expired token' })
+  @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
   async me(@Req() req: Request): Promise<UserResponseDto> {
     const payload = req.user!;
     const user = await this.usersRepository.findById(payload.sub);

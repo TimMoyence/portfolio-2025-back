@@ -77,6 +77,7 @@ export function createMockBudgetCategoryRepo(): jest.Mocked<IBudgetCategoryRepos
     findByGroupId: jest.fn(),
     findDefaults: jest.fn(),
     findById: jest.fn(),
+    update: jest.fn(),
   };
 }
 
@@ -88,6 +89,7 @@ export function createMockBudgetEntryRepo(): jest.Mocked<IBudgetEntryRepository>
     findByFilters: jest.fn(),
     findById: jest.fn(),
     update: jest.fn(),
+    delete: jest.fn(),
   };
 }
 

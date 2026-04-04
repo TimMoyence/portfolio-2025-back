@@ -11,10 +11,13 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
 import { DeleteUsersUseCase } from '../application/DeleteUsers.useCase';
@@ -28,6 +31,7 @@ import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { UserResponseDto } from './dto/User.response.dto';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 @UseGuards(RolesGuard)
 @Roles('admin')
@@ -41,14 +45,18 @@ export class UsersController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'Lister tous les utilisateurs (admin)' })
   @ApiOkResponse({ type: UserResponseDto, isArray: true })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async findAll(): Promise<UserResponseDto[]> {
     const users = await this.listUsersUseCase.execute();
     return users.map((user) => UserResponseDto.fromDomain(user));
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Recuperer un utilisateur par ID (admin)' })
   @ApiOkResponse({ type: UserResponseDto })
+  @ApiNotFoundResponse({ description: 'Utilisateur non trouve' })
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto | null> {
@@ -57,17 +65,19 @@ export class UsersController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Creer un utilisateur (admin)' })
   @ApiCreatedResponse({ type: UserResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
   async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
     const user = await this.createUseCase.execute(dto);
     return UserResponseDto.fromDomain(user);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Mettre a jour un utilisateur (admin)' })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
-  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiNotFoundResponse({ description: 'Utilisateur non trouve' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateUserDto,
@@ -77,8 +87,9 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Supprimer un utilisateur (admin)' })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiNotFoundResponse({ description: 'Utilisateur non trouve' })
   async delete(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {

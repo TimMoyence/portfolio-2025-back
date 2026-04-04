@@ -4,7 +4,10 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
@@ -17,6 +20,7 @@ import { ServiceListQueryDto } from './dto/service-list.query.dto';
 import { ServiceRequestDto } from './dto/service.request.dto';
 import { ServiceResponseDto } from './dto/service.response.dto';
 
+@ApiTags('services')
 @Controller('services')
 export class ServicesController {
   constructor(
@@ -26,6 +30,7 @@ export class ServicesController {
 
   @Public()
   @Get()
+  @ApiOperation({ summary: 'Lister les services (acces public, pagine)' })
   @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
   @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
   @ApiQuery({
@@ -75,8 +80,10 @@ export class ServicesController {
   @UseGuards(RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Creer un service (admin)' })
   @ApiCreatedResponse({ type: ServiceResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async create(@Body() dto: ServiceRequestDto): Promise<ServiceResponseDto> {
     const command: CreateServiceCommand = {
       slug: dto.slug,

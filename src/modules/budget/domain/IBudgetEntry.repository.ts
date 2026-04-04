@@ -14,4 +14,5 @@ export interface IBudgetEntryRepository {
   findByFilters(filters: BudgetEntryFilters): Promise<BudgetEntry[]>;
   findById(id: string): Promise<BudgetEntry | null>;
   update(id: string, data: Partial<BudgetEntry>): Promise<BudgetEntry>;
+  delete(id: string): Promise<void>;
 }

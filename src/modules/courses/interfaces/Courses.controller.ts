@@ -4,7 +4,10 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
@@ -17,6 +20,7 @@ import { CourseListResponseDto } from './dto/course-list.response.dto';
 import { CourseRequestDto } from './dto/course.request.dto';
 import { CourseResponseDto } from './dto/course.response.dto';
 
+@ApiTags('courses')
 @Controller('courses')
 export class CoursesController {
   constructor(
@@ -26,6 +30,7 @@ export class CoursesController {
 
   @Public()
   @Get()
+  @ApiOperation({ summary: 'Lister les formations (acces public, pagine)' })
   @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
   @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
   @ApiQuery({
@@ -66,8 +71,10 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Creer une formation (admin)' })
   @ApiCreatedResponse({ type: CourseResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async create(@Body() dto: CourseRequestDto): Promise<CourseResponseDto> {
     const command: CreateCourseCommand = {
       slug: dto.slug,

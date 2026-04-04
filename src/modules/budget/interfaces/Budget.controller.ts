@@ -11,11 +11,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
@@ -72,6 +74,8 @@ export class BudgetController {
   @Post('groups')
   @ApiOperation({ summary: 'Creer un groupe de budget' })
   @ApiOkResponse({ type: BudgetGroupResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async createBudgetGroup(
     @Body() dto: CreateBudgetGroupDto,
     @Req() req: Request,
@@ -96,6 +100,8 @@ export class BudgetController {
   @Post('entries')
   @ApiOperation({ summary: 'Creer une entree de budget' })
   @ApiOkResponse({ type: BudgetEntryResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async createBudgetEntry(
     @Body() dto: CreateBudgetEntryDto,
     @Req() req: Request,
@@ -180,6 +186,8 @@ export class BudgetController {
   @Post('entries/import')
   @ApiOperation({ summary: 'Importer des entrees depuis un CSV' })
   @ApiOkResponse({ type: [BudgetEntryResponseDto] })
+  @ApiBadRequestResponse({ description: 'Format CSV invalide' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async importBudgetEntries(
     @Body() dto: ImportBudgetEntriesDto,
     @Req() req: Request,
@@ -196,6 +204,8 @@ export class BudgetController {
   @Post('categories')
   @ApiOperation({ summary: 'Creer une categorie personnalisee' })
   @ApiOkResponse({ type: BudgetCategoryResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async createBudgetCategory(
     @Body() dto: CreateBudgetCategoryDto,
     @Req() req: Request,
@@ -231,6 +241,9 @@ export class BudgetController {
 
   @Post('share')
   @ApiOperation({ summary: 'Partager le budget avec un autre utilisateur' })
+  @ApiOkResponse({ description: 'Budget partage avec succes' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async shareBudgetGroup(@Body() dto: ShareBudgetDto, @Req() req: Request) {
     const user = req.user!;
     return this.shareBudget.execute({

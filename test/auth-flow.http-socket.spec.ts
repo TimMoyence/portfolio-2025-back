@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/await-thenable -- jwtTokenService.sign() est async via jose */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';

@@ -4,7 +4,10 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
@@ -17,6 +20,7 @@ import { RedirectListResponseDto } from './dto/redirect-list.response.dto';
 import { RedirectRequestDto } from './dto/redirect.request.dto';
 import { RedirectResponseDto } from './dto/redirect.response.dto';
 
+@ApiTags('redirects')
 @Controller('redirects')
 export class RedirectsController {
   constructor(
@@ -26,6 +30,7 @@ export class RedirectsController {
 
   @Public()
   @Get()
+  @ApiOperation({ summary: 'Lister les redirections (acces public, pagine)' })
   @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
   @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
   @ApiQuery({
@@ -75,8 +80,10 @@ export class RedirectsController {
   @UseGuards(RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Creer une redirection (admin)' })
   @ApiCreatedResponse({ type: RedirectResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
   async create(@Body() dto: RedirectRequestDto): Promise<RedirectResponseDto> {
     const command: CreateRedirectCommand = {
       slug: dto.slug,

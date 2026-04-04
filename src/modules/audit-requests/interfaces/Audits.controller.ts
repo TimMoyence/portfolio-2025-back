@@ -14,6 +14,8 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
@@ -32,6 +34,7 @@ import { AuditRequestRequestDto } from './dto/audit-request.request.dto';
 import { AuditRequestResponseDto } from './dto/audit-request.response.dto';
 import { AuditSummaryResponseDto } from './dto/audit-summary.response.dto';
 
+@ApiTags('audits')
 @Controller('audits')
 export class AuditsController {
   constructor(
@@ -43,8 +46,11 @@ export class AuditsController {
   @Public()
   @Throttle({ default: { limit: 3, ttl: 3600000 } })
   @Post()
+  @ApiOperation({
+    summary: "Soumettre une demande d'audit de site web (acces public)",
+  })
   @ApiCreatedResponse({ type: AuditRequestResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
   async create(
     @Body() dto: AuditRequestRequestDto,
     @Req() req: Request,
@@ -76,6 +82,7 @@ export class AuditsController {
 
   @Public()
   @Get(':id/summary')
+  @ApiOperation({ summary: "Recuperer le resume d'un audit" })
   @ApiOkResponse({ type: AuditSummaryResponseDto })
   async summary(
     @Param('id', ParseUUIDPipe) auditId: string,
@@ -96,6 +103,10 @@ export class AuditsController {
   @Public()
   @SkipThrottle()
   @Sse(':id/stream')
+  @ApiOperation({ summary: "Flux SSE des evenements d'avancement d'un audit" })
+  @ApiOkResponse({
+    description: "Flux SSE des evenements d'audit en temps reel",
+  })
   stream(
     @Param('id', ParseUUIDPipe) auditId: string,
   ): Observable<MessageEvent> {
