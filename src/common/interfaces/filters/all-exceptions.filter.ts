@@ -6,14 +6,14 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { DomainValidationError } from '../../domain/errors/DomainValidationError';
 
 /**
  * Filtre global d'exceptions qui formate toutes les erreurs au format RFC 7807 (Problem Details).
  *
  * - Les {@link HttpException} conservent leur status et message d'origine.
- * - Les {@link DomainValidationError} sont mappees en 400 Bad Request.
  * - Les erreurs inconnues retournent 500 avec un message generique en production.
+ *
+ * Note : les {@link DomainError} sont interceptees en amont par {@link DomainExceptionFilter}.
  *
  * @see https://www.rfc-editor.org/rfc/rfc7807
  */
@@ -40,9 +40,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const body = res as Record<string, unknown>;
         detail = (body.message as string | string[]) ?? exception.message;
       }
-    } else if (exception instanceof DomainValidationError) {
-      status = HttpStatus.BAD_REQUEST;
-      detail = exception.message;
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       detail =

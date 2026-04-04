@@ -1,5 +1,4 @@
 import { ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
-import { DomainValidationError } from '../../domain/errors/DomainValidationError';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
 describe('AllExceptionsFilter', () => {
@@ -41,19 +40,8 @@ describe('AllExceptionsFilter', () => {
     );
   });
 
-  it('devrait retourner 400 pour une DomainValidationError', () => {
-    const exception = new DomainValidationError('Le champ email est invalide');
-
-    filter.catch(exception, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: HttpStatus.BAD_REQUEST,
-        detail: 'Le champ email est invalide',
-      }),
-    );
-  });
+  // Note : les DomainError (dont DomainValidationError) sont interceptees
+  // en amont par DomainExceptionFilter ; elles n'atteignent plus ce filtre.
 
   it('devrait retourner 500 avec message generique pour une erreur inconnue en production', () => {
     const originalEnv = process.env.NODE_ENV;
