@@ -24,6 +24,7 @@ import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPass
 import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
+import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
@@ -57,6 +58,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   const requestPasswordResetUseCase = { execute: jest.fn() };
   const resetPasswordUseCase = { execute: jest.fn() };
   const setPasswordUseCase = { execute: jest.fn() };
+  const updateProfileUseCase = { execute: jest.fn() };
   const createServicesUseCase = { execute: jest.fn() };
   const listServicesUseCase = { execute: jest.fn() };
   const createProjectsUseCase = { execute: jest.fn() };
@@ -113,6 +115,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         },
         { provide: ResetPasswordUseCase, useValue: resetPasswordUseCase },
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
+        { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
         { provide: USERS_REPOSITORY, useValue: { findById: jest.fn() } },
         { provide: ListServicesUseCase, useValue: listServicesUseCase },
         { provide: CreateServicesUseCase, useValue: createServicesUseCase },

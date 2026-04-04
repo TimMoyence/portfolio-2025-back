@@ -17,12 +17,15 @@ import { UpdateBudgetEntryUseCase } from '../src/modules/budget/application/serv
 import { CreateBudgetCategoryUseCase } from '../src/modules/budget/application/services/CreateBudgetCategory.useCase';
 import { GetBudgetCategoriesUseCase } from '../src/modules/budget/application/services/GetBudgetCategories.useCase';
 import { ShareBudgetUseCase } from '../src/modules/budget/application/services/ShareBudget.useCase';
+import { DeleteBudgetEntryUseCase } from '../src/modules/budget/application/services/DeleteBudgetEntry.useCase';
+import { UpdateBudgetCategoryUseCase } from '../src/modules/budget/application/services/UpdateBudgetCategory.useCase';
 import { WeatherController } from '../src/modules/weather/interfaces/Weather.controller';
 import { GetGeocodingUseCase } from '../src/modules/weather/application/GetGeocoding.useCase';
 import { GetForecastUseCase } from '../src/modules/weather/application/GetForecast.useCase';
 import { GetAirQualityUseCase } from '../src/modules/weather/application/GetAirQuality.useCase';
 import { GetEnsembleUseCase } from '../src/modules/weather/application/GetEnsemble.useCase';
 import { GetHistoricalUseCase } from '../src/modules/weather/application/GetHistorical.useCase';
+import { GetWeatherAlertsUseCase } from '../src/modules/weather/application/GetWeatherAlerts.useCase';
 import { GetUserPreferencesUseCase } from '../src/modules/weather/application/GetUserPreferences.useCase';
 import { UpdateUserPreferencesUseCase } from '../src/modules/weather/application/UpdateUserPreferences.useCase';
 import { RecordUsageUseCase } from '../src/modules/weather/application/RecordUsage.useCase';
@@ -57,6 +60,8 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
   const createBudgetCategoryUseCase = { execute: jest.fn() };
   const getBudgetCategoriesUseCase = { execute: jest.fn() };
   const shareBudgetUseCase = { execute: jest.fn() };
+  const deleteBudgetEntryUseCase = { execute: jest.fn() };
+  const updateBudgetCategoryUseCase = { execute: jest.fn() };
 
   /* ---------- Mocks Weather ---------- */
   const getGeocodingUseCase = { execute: jest.fn() };
@@ -67,6 +72,7 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
   const getUserPreferencesUseCase = { execute: jest.fn() };
   const updateUserPreferencesUseCase = { execute: jest.fn() };
   const recordUsageUseCase = { execute: jest.fn() };
+  const getWeatherAlertsUseCase = { execute: jest.fn() };
   const owmProxy = {
     getCurrentDetailed: jest.fn(),
     getForecastDetailed: jest.fn(),
@@ -114,6 +120,14 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
           useValue: getBudgetCategoriesUseCase,
         },
         { provide: ShareBudgetUseCase, useValue: shareBudgetUseCase },
+        {
+          provide: DeleteBudgetEntryUseCase,
+          useValue: deleteBudgetEntryUseCase,
+        },
+        {
+          provide: UpdateBudgetCategoryUseCase,
+          useValue: updateBudgetCategoryUseCase,
+        },
         /* Weather */
         { provide: GetGeocodingUseCase, useValue: getGeocodingUseCase },
         { provide: GetForecastUseCase, useValue: getForecastUseCase },
@@ -129,6 +143,7 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
           useValue: updateUserPreferencesUseCase,
         },
         { provide: RecordUsageUseCase, useValue: recordUsageUseCase },
+        { provide: GetWeatherAlertsUseCase, useValue: getWeatherAlertsUseCase },
         { provide: OPENWEATHERMAP_PROXY, useValue: owmProxy },
       ],
     })

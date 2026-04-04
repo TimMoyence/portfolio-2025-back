@@ -13,6 +13,7 @@ import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken
 import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
+import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
@@ -40,6 +41,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   const requestPasswordResetUseCase = { execute: jest.fn() };
   const resetPasswordUseCase = { execute: jest.fn() };
   const setPasswordUseCase = { execute: jest.fn() };
+  const updateProfileUseCase = { execute: jest.fn() };
   const usersRepository = { findById: jest.fn() };
 
   const getHttpServer = (): Parameters<typeof request>[0] =>
@@ -74,6 +76,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
         },
         { provide: ResetPasswordUseCase, useValue: resetPasswordUseCase },
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
+        { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
         { provide: USERS_REPOSITORY, useValue: usersRepository },
         { provide: JwtTokenService, useValue: realJwtTokenService },
         Reflector,
