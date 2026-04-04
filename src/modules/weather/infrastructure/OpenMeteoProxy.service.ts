@@ -7,25 +7,12 @@ import type {
   HistoricalResult,
   IWeatherProxy,
 } from '../domain/IWeatherProxy.port';
+import type { WeatherAlertResult } from '../domain/WeatherAlert';
+import { WeatherAlertAnalyzer } from '../domain/WeatherAlertAnalyzer';
 import { WeatherCache } from './weather-cache';
 
 /** Delai d'attente maximal pour les appels Open-Meteo (ms). */
 const FETCH_TIMEOUT_MS = 8_000;
-
-/** TTL du cache pour les previsions (15 minutes). */
-const FORECAST_TTL_MS = 15 * 60 * 1_000;
-
-/** TTL du cache pour le geocodage (1 heure). */
-const GEOCODING_TTL_MS = 60 * 60 * 1_000;
-
-/** TTL du cache pour la qualite de l'air (30 minutes). */
-const AIR_QUALITY_TTL_MS = 30 * 60 * 1_000;
-
-/** TTL du cache pour les previsions d'ensemble (30 minutes). */
-const ENSEMBLE_TTL_MS = 30 * 60 * 1_000;
-
-/** TTL du cache pour les donnees historiques (1 heure). */
-const HISTORICAL_TTL_MS = 60 * 60 * 1_000;
 
 /** URL de base de l'API de geocodage Open-Meteo. */
 const GEOCODING_BASE = 'https://geocoding-api.open-meteo.com/v1/search';
@@ -50,6 +37,7 @@ const ARCHIVE_BASE = 'https://archive-api.open-meteo.com/v1/archive';
 export class OpenMeteoProxyService implements IWeatherProxy {
   private readonly logger = new Logger(OpenMeteoProxyService.name);
   private readonly cache = new WeatherCache();
+  private readonly alertAnalyzer = new WeatherAlertAnalyzer();
 
   /** Recherche de villes par nom via le geocodage Open-Meteo. */
   async searchCity(
@@ -64,7 +52,7 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     const url = `${GEOCODING_BASE}?name=${encodeURIComponent(name)}&count=${count}&language=${encodeURIComponent(language)}`;
     const data = await this.fetchJson<GeocodingResult>(url);
     const result: GeocodingResult = { results: data.results ?? [] };
-    this.cache.set(cacheKey, result, GEOCODING_TTL_MS);
+    this.cache.setWithStrategy(cacheKey, result, 'geocoding');
     return result;
   }
 
@@ -87,7 +75,12 @@ export class OpenMeteoProxyService implements IWeatherProxy {
       `&timezone=${encodeURIComponent(timezone)}&forecast_days=${forecastDays}`;
 
     const data = await this.fetchJson<ForecastResult>(url);
-    this.cache.set(cacheKey, data, FORECAST_TTL_MS);
+    this.cache.setWithStrategy(
+      cacheKey,
+      data,
+      'forecast',
+      data.current?.weather_code,
+    );
     return data;
   }
 
@@ -106,7 +99,7 @@ export class OpenMeteoProxyService implements IWeatherProxy {
       `&hourly=european_aqi,pm2_5,pm10,ozone&forecast_days=1`;
 
     const data = await this.fetchJson<AirQualityResult>(url);
-    this.cache.set(cacheKey, data, AIR_QUALITY_TTL_MS);
+    this.cache.setWithStrategy(cacheKey, data, 'air-quality');
     return data;
   }
 
@@ -177,7 +170,7 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     }
 
     const result: EnsembleResult = { models };
-    this.cache.set(cacheKey, result, ENSEMBLE_TTL_MS);
+    this.cache.setWithStrategy(cacheKey, result, 'ensemble');
     return result;
   }
 
@@ -199,8 +192,25 @@ export class OpenMeteoProxyService implements IWeatherProxy {
       `&timezone=auto`;
 
     const data = await this.fetchJson<HistoricalResult>(url);
-    this.cache.set(cacheKey, data, HISTORICAL_TTL_MS);
+    this.cache.setWithStrategy(cacheKey, data, 'historical');
     return data;
+  }
+
+  /** Recupere les alertes meteo synthetiques basees sur les previsions 24h. */
+  async getAlerts(
+    latitude: number,
+    longitude: number,
+  ): Promise<WeatherAlertResult> {
+    const cacheKey = `alerts:${latitude}:${longitude}`;
+    const cached = this.cache.get<WeatherAlertResult>(cacheKey);
+    if (cached) return cached;
+
+    // Utilise les previsions existantes (deja cachees) pour analyser les 24 prochaines heures
+    const forecast = await this.getForecast(latitude, longitude, 'auto', 2);
+    const alerts = this.alertAnalyzer.analyze(forecast);
+    const result: WeatherAlertResult = { alerts };
+    this.cache.setWithStrategy(cacheKey, result, 'alerts');
+    return result;
   }
 
   /** Effectue un appel HTTP GET avec timeout et gestion d'erreurs. */

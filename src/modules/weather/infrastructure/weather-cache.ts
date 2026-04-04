@@ -1,3 +1,5 @@
+import { computeWeatherTtl } from './weather-ttl-strategy';
+
 /** Nombre maximal d'entrees en cache (eviction LRU au-dela). */
 const DEFAULT_MAX_ENTRIES = 10_000;
 
@@ -35,6 +37,17 @@ export class WeatherCache {
     }
     this.store.set(key, { data, expiresAt: Date.now() + ttlMs });
     this.evict();
+  }
+
+  /** Stocke une valeur en calculant le TTL dynamiquement selon le type et les conditions. */
+  setWithStrategy(
+    key: string,
+    data: unknown,
+    dataType: string,
+    weatherCode?: number,
+  ): void {
+    const ttl = computeWeatherTtl(dataType, weatherCode);
+    this.set(key, data, ttl);
   }
 
   /** Supprime les entrees expirees puis les plus anciennes si le cache deborde. */
