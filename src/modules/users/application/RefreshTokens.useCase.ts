@@ -7,11 +7,9 @@ import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.reposito
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
+import { REFRESH_TOKEN_TTL_MS } from '../domain/auth.constants';
 import type { AuthResult } from './AuthenticateUser.useCase';
 import { JwtTokenService } from './services/JwtTokenService';
-
-/** Duree de vie par defaut d'un refresh token : 30 jours en millisecondes. */
-const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
  * Rafraichit un couple access + refresh token avec rotation.

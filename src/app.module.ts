@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { randomUUID } from 'crypto';
 import { AppController } from './app.controller';
@@ -44,6 +45,7 @@ const runtimeContexts = resolveRuntimeContexts();
         limit: 30,
       },
     ]),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory: async (): Promise<TypeOrmModuleOptions> => {
         const sslEnabled =

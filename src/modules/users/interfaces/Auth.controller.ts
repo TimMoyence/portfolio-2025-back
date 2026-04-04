@@ -29,6 +29,7 @@ import { RequestPasswordResetUseCase } from '../application/RequestPasswordReset
 import { ResetPasswordUseCase } from '../application/ResetPassword.useCase';
 import { RevokeTokenUseCase } from '../application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../application/SetPassword.useCase';
+import { UpdateProfileUseCase } from '../application/UpdateProfile.useCase';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
@@ -41,6 +42,7 @@ import { RefreshTokenDto } from './dto/RefreshToken.dto';
 import { ResetPasswordDto } from './dto/ResetPassword.dto';
 import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
+import { UpdateProfileDto } from './dto/UpdateProfile.dto';
 import { UserResponseDto } from './dto/User.response.dto';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 
@@ -57,6 +59,7 @@ export class AuthController {
     private readonly requestPasswordResetUseCase: RequestPasswordResetUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
     private readonly setPasswordUseCase: SetPasswordUseCase,
+    private readonly updateProfileUseCase: UpdateProfileUseCase,
     @Inject(USERS_REPOSITORY)
     private readonly usersRepository: IUsersRepository,
   ) {}
@@ -69,13 +72,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Identifiants invalides' })
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     const result = await this.authenticateUserUseCase.execute(dto);
-
-    return {
-      accessToken: result.accessToken,
-      expiresIn: result.expiresIn,
-      refreshToken: result.refreshToken,
-      user: UserResponseDto.fromDomain(result.user),
-    };
+    return AuthResponseDto.fromAuthResult(result);
   }
 
   @Public()
@@ -88,12 +85,7 @@ export class AuthController {
     const result = await this.authenticateGoogleUserUseCase.execute(
       dto.idToken,
     );
-    return {
-      accessToken: result.accessToken,
-      expiresIn: result.expiresIn,
-      refreshToken: result.refreshToken,
-      user: UserResponseDto.fromDomain(result.user),
-    };
+    return AuthResponseDto.fromAuthResult(result);
   }
 
   @Public()
@@ -107,12 +99,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Invalid or expired refresh token' })
   async refresh(@Body() dto: RefreshTokenDto): Promise<AuthResponseDto> {
     const result = await this.refreshTokensUseCase.execute(dto.refreshToken);
-    return {
-      accessToken: result.accessToken,
-      expiresIn: result.expiresIn,
-      refreshToken: result.refreshToken,
-      user: UserResponseDto.fromDomain(result.user),
-    };
+    return AuthResponseDto.fromAuthResult(result);
   }
 
   @Public()
@@ -217,6 +204,26 @@ export class AuthController {
       updatedOrCreatedBy: 'self-registration',
     });
     return UserResponseDto.fromDomain(result);
+  }
+
+  @Patch('profile')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Mettre a jour le profil de l'utilisateur connecte (self-update)",
+  })
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
+  async updateProfile(
+    @Body() dto: UpdateProfileDto,
+    @Req() req: Request,
+  ): Promise<UserResponseDto> {
+    const payload = req.user!;
+    const updatedUser = await this.updateProfileUseCase.execute(
+      payload.sub,
+      dto,
+    );
+    return UserResponseDto.fromDomain(updatedUser);
   }
 
   @Get('me')

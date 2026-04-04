@@ -34,6 +34,8 @@ import { PasswordResetMailerService } from './infrastructure/PasswordResetMailer
 import { RequestPasswordResetUseCase } from './application/RequestPasswordReset.useCase';
 import { ResetPasswordUseCase } from './application/ResetPassword.useCase';
 import { SetPasswordUseCase } from './application/SetPassword.useCase';
+import { UpdateProfileUseCase } from './application/UpdateProfile.useCase';
+import { RefreshTokenCleanupService } from './infrastructure/RefreshTokenCleanup.service';
 
 const USERS_USE_CASES = [
   ListUsersUseCase,
@@ -49,6 +51,7 @@ const USERS_USE_CASES = [
   RequestPasswordResetUseCase,
   ResetPasswordUseCase,
   SetPasswordUseCase,
+  UpdateProfileUseCase,
 ];
 
 @Module({
@@ -90,6 +93,7 @@ const USERS_USE_CASES = [
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    RefreshTokenCleanupService,
   ],
   exports: [USERS_REPOSITORY, JwtTokenService],
 })

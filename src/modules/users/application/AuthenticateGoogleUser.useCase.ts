@@ -11,15 +11,13 @@ import {
   REFRESH_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
 } from '../domain/token';
+import { REFRESH_TOKEN_TTL_MS } from '../domain/auth.constants';
 import type { AuthResult } from './AuthenticateUser.useCase';
 import { JwtTokenService } from './services/JwtTokenService';
 import { UsersMapper } from './mappers/UsersMapper';
 
 /** Roles attribues par defaut a un nouvel utilisateur Google. */
 const DEFAULT_GOOGLE_ROLES = ['budget', 'weather', 'sebastian'];
-
-/** Duree de vie par defaut d'un refresh token : 30 jours en millisecondes. */
-const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Authentifie un utilisateur via son Google ID token (popup GIS). */
 @Injectable()

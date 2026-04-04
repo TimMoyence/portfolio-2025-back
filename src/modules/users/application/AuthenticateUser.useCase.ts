@@ -9,9 +9,7 @@ import { User } from '../domain/User';
 import type { LoginCommand } from './dto/Login.command';
 import { JwtTokenService } from './services/JwtTokenService';
 import { PasswordService } from './services/PasswordService';
-
-/** Duree de vie par defaut d'un refresh token : 30 jours en millisecondes. */
-const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+import { REFRESH_TOKEN_TTL_MS } from '../domain/auth.constants';
 
 export interface AuthResult {
   accessToken: string;
