@@ -42,7 +42,7 @@ export class AuthenticateUserUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const passwordMatches = this.passwordService.verify(
+    const passwordMatches = await this.passwordService.verify(
       dto.password,
       user.passwordHash,
     );
@@ -51,7 +51,7 @@ export class AuthenticateUserUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const { token, expiresIn } = this.jwtTokenService.sign({
+    const { token, expiresIn } = await this.jwtTokenService.sign({
       sub: user.id,
       email: user.email,
       roles: user.roles ?? [],

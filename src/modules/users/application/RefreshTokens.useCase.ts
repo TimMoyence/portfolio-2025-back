@@ -52,7 +52,7 @@ export class RefreshTokensUseCase {
     }
 
     // Generer un nouveau couple access + refresh
-    const { token, expiresIn } = this.jwtTokenService.sign({
+    const { token, expiresIn } = await this.jwtTokenService.sign({
       sub: user.id,
       email: user.email,
       roles: user.roles ?? [],

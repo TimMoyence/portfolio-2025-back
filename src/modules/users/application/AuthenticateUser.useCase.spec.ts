@@ -25,9 +25,9 @@ describe('AuthenticateUserUseCase', () => {
     repo = createMockUsersRepo();
     refreshTokensRepo = createMockRefreshTokensRepo();
     passwordService = createMockPasswordService();
-    passwordService.verify.mockReturnValue(true);
+    passwordService.verify.mockResolvedValue(true);
     jwtTokenService = createMockJwtService();
-    jwtTokenService.sign.mockReturnValue({
+    jwtTokenService.sign.mockResolvedValue({
       token: 'jwt-token',
       expiresIn: 900,
       expiresAt: 0,
@@ -132,7 +132,7 @@ describe('AuthenticateUserUseCase', () => {
       lastName: 'Smith',
     });
     repo.findByEmail.mockResolvedValue(user);
-    passwordService.verify.mockReturnValue(false);
+    passwordService.verify.mockResolvedValue(false);
 
     await expect(
       useCase.execute({

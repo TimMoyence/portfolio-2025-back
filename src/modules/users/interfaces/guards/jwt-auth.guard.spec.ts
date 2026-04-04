@@ -39,7 +39,7 @@ describe('JwtAuthGuard', () => {
     } as unknown as ExecutionContext;
   }
 
-  it('devrait autoriser avec un Bearer token valide', () => {
+  it('devrait autoriser avec un Bearer token valide', async () => {
     const payload = {
       sub: 'user-1',
       email: 'a@b.com',
@@ -49,62 +49,66 @@ describe('JwtAuthGuard', () => {
       aud: 'portfolio-2025-api',
       roles: [],
     };
-    jwtTokenService.verify.mockReturnValue(payload);
+    jwtTokenService.verify.mockResolvedValue(payload);
     reflector.getAllAndOverride.mockReturnValue(false);
 
     const context = createMockContext({
       authorization: 'Bearer valid-token',
     });
 
-    expect(guard.canActivate(context)).toBe(true);
+    await expect(guard.canActivate(context)).resolves.toBe(true);
 
     const request = context.switchToHttp().getRequest();
     expect(request['user']).toEqual(payload);
     expect(jwtTokenService.verify).toHaveBeenCalledWith('valid-token');
   });
 
-  it('devrait rejeter sans header Authorization', () => {
+  it('devrait rejeter sans header Authorization', async () => {
     reflector.getAllAndOverride.mockReturnValue(false);
     const context = createMockContext({});
 
-    expect(() => guard.canActivate(context)).toThrow(UnauthorizedException);
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 
-  it('devrait rejeter avec un token invalide', () => {
+  it('devrait rejeter avec un token invalide', async () => {
     reflector.getAllAndOverride.mockReturnValue(false);
-    jwtTokenService.verify.mockImplementation(() => {
-      throw new Error('Invalid signature');
-    });
+    jwtTokenService.verify.mockRejectedValue(new Error('Invalid signature'));
 
     const context = createMockContext({
       authorization: 'Bearer invalid-token',
     });
 
-    expect(() => guard.canActivate(context)).toThrow(UnauthorizedException);
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 
-  it('devrait passer les routes marquees @Public()', () => {
+  it('devrait passer les routes marquees @Public()', async () => {
     reflector.getAllAndOverride.mockReturnValue(true);
     const context = createMockContext({});
 
-    expect(guard.canActivate(context)).toBe(true);
+    await expect(guard.canActivate(context)).resolves.toBe(true);
     expect(jwtTokenService.verify).not.toHaveBeenCalled();
   });
 
-  it('devrait rejeter un header Authorization sans prefixe Bearer', () => {
+  it('devrait rejeter un header Authorization sans prefixe Bearer', async () => {
     reflector.getAllAndOverride.mockReturnValue(false);
     const context = createMockContext({
       authorization: 'Basic dXNlcjpwYXNz',
     });
 
-    expect(() => guard.canActivate(context)).toThrow(UnauthorizedException);
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 
-  it('devrait utiliser la bonne cle de metadata pour @Public()', () => {
+  it('devrait utiliser la bonne cle de metadata pour @Public()', async () => {
     reflector.getAllAndOverride.mockReturnValue(true);
     const context = createMockContext({});
 
-    guard.canActivate(context);
+    await guard.canActivate(context);
 
     expect(reflector.getAllAndOverride).toHaveBeenCalledWith(
       IS_PUBLIC_KEY,

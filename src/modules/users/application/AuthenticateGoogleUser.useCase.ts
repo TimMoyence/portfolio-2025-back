@@ -107,7 +107,7 @@ export class AuthenticateGoogleUserUseCase {
 
   /** Signe un JWT, cree un refresh token et retourne le resultat d'authentification. */
   private async signResult(user: Users): Promise<AuthResult> {
-    const { token, expiresIn } = this.jwtTokenService.sign({
+    const { token, expiresIn } = await this.jwtTokenService.sign({
       sub: user.id,
       email: user.email,
       roles: user.roles ?? [],

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createHmac, timingSafeEqual } from 'crypto';
+import { SignJWT, jwtVerify, errors } from 'jose';
 import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
@@ -11,7 +11,7 @@ interface SignedToken {
 
 /**
  * Service de gestion des JWT (signature et verification).
- * Utilise HMAC-SHA256 via le module `crypto` natif de Node.js.
+ * Utilise la librairie `jose` pour les operations HMAC-SHA256 conformes RFC 7519.
  */
 @Injectable()
 export class JwtTokenService {
@@ -22,36 +22,33 @@ export class JwtTokenService {
 
   private static readonly MIN_SECRET_LENGTH = 32;
 
-  sign(payload: Record<string, unknown>): SignedToken {
-    const secret = this.getValidatedSecret();
+  /**
+   * Signe un payload et retourne un JWT avec ses metadonnees d'expiration.
+   *
+   * @param payload - Les donnees a inclure dans le token (sub, email, roles, etc.)
+   * @returns Le token signe avec sa duree de vie et son timestamp d'expiration
+   */
+  async sign(payload: Record<string, unknown>): Promise<SignedToken> {
+    const secret = this.getEncodedSecret();
 
     const expiresInValue =
       this.configService.get<string>('JWT_EXPIRES_IN') ?? '900s';
     const expiresIn = this.parseExpiresIn(expiresInValue);
-    const issuedAtTime = Math.floor(Date.now() / 1000);
-    const expiresAt = issuedAtTime + expiresIn;
+    const issuedAt = Math.floor(Date.now() / 1000);
+    const expiresAt = issuedAt + expiresIn;
 
-    const tokenPayload = {
+    const token = await new SignJWT({
       ...payload,
-      iss: JwtTokenService.ISSUER,
-      aud: JwtTokenService.AUDIENCE,
-      issuedAtTime,
-      expiresAt,
-    };
-    const header = { alg: 'HS256', typ: 'JWT' };
+      roles: (payload.roles as string[]) ?? [],
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt(issuedAt)
+      .setExpirationTime(expiresAt)
+      .setIssuer(JwtTokenService.ISSUER)
+      .setAudience(JwtTokenService.AUDIENCE)
+      .sign(secret);
 
-    const encodedHeader = this.base64UrlEncode(JSON.stringify(header));
-    const encodedPayload = this.base64UrlEncode(JSON.stringify(tokenPayload));
-    const signature = this.createSignature(
-      `${encodedHeader}.${encodedPayload}`,
-      secret,
-    );
-
-    return {
-      token: `${encodedHeader}.${encodedPayload}.${signature}`,
-      expiresIn,
-      expiresAt: expiresAt,
-    };
+    return { token, expiresIn, expiresAt };
   }
 
   private parseExpiresIn(value: string): number {
@@ -79,10 +76,6 @@ export class JwtTokenService {
     }
   }
 
-  private base64UrlEncode(value: string): string {
-    return Buffer.from(value).toString('base64url');
-  }
-
   /**
    * Verifie un JWT et retourne le payload decode.
    *
@@ -90,76 +83,49 @@ export class JwtTokenService {
    * @returns Le payload decode du token
    * @throws Error si le token est malformed, la signature invalide ou le token expire
    */
-  verify(token: string): JwtPayload {
-    const parts = token.split('.');
-    if (parts.length !== 3) {
-      throw new Error('Malformed token');
-    }
-
-    const [header, payload, signature] = parts;
-
-    const secret = this.getValidatedSecret();
-
-    // Verifier la signature HMAC-SHA256 (timing-safe)
-    const expectedSignature = this.createSignature(
-      `${header}.${payload}`,
-      secret,
-    );
-    const sigBuffer = Buffer.from(signature, 'base64url');
-    const expectedBuffer = Buffer.from(expectedSignature, 'base64url');
-    if (
-      sigBuffer.length !== expectedBuffer.length ||
-      !timingSafeEqual(sigBuffer, expectedBuffer)
-    ) {
-      throw new Error('Invalid signature');
-    }
-
-    // Decoder le payload
-    let decoded: Record<string, unknown>;
+  async verify(token: string): Promise<JwtPayload> {
     try {
-      decoded = JSON.parse(
-        Buffer.from(payload, 'base64url').toString('utf8'),
-      ) as Record<string, unknown>;
-    } catch {
+      const secret = this.getEncodedSecret();
+      const { payload } = await jwtVerify(token, secret, {
+        issuer: JwtTokenService.ISSUER,
+        audience: JwtTokenService.AUDIENCE,
+      });
+
+      const sub = payload.sub;
+      const email = payload.email as string | undefined;
+      if (!sub || typeof sub !== 'string')
+        throw new Error('Invalid subject claim');
+      if (!email || typeof email !== 'string')
+        throw new Error('Invalid email claim');
+
+      const roles = Array.isArray(payload.roles)
+        ? (payload.roles as string[])
+        : [];
+
+      return {
+        sub,
+        email,
+        iat: payload.iat!,
+        exp: payload.exp!,
+        iss: payload.iss!,
+        aud: payload.aud as string,
+        roles,
+      };
+    } catch (error) {
+      if (error instanceof errors.JWTExpired) throw new Error('Token expired');
+      if (error instanceof errors.JWTClaimValidationFailed) {
+        if (error.claim === 'iss') throw new Error('Invalid issuer');
+        if (error.claim === 'aud') throw new Error('Invalid audience');
+        throw new Error(error.message);
+      }
+      if (error instanceof errors.JWSSignatureVerificationFailed)
+        throw new Error('Invalid signature');
+      if (error instanceof errors.JWSInvalid)
+        throw new Error('Malformed token');
+      if (error instanceof Error && error.message.startsWith('Invalid'))
+        throw error;
       throw new Error('Malformed token');
     }
-
-    // Verifier l'expiration (champ `expiresAt` utilise par sign())
-    const expiresAt = decoded.expiresAt as number | undefined;
-    if (expiresAt !== undefined && expiresAt < Math.floor(Date.now() / 1000)) {
-      throw new Error('Token expired');
-    }
-
-    // Verifier l'issuer et l'audience
-    if (decoded.iss !== JwtTokenService.ISSUER) {
-      throw new Error('Invalid issuer');
-    }
-    if (decoded.aud !== JwtTokenService.AUDIENCE) {
-      throw new Error('Invalid audience');
-    }
-
-    const sub = decoded.sub;
-    const email = decoded.email;
-    if (!sub || typeof sub !== 'string') {
-      throw new Error('Invalid subject claim');
-    }
-    if (!email || typeof email !== 'string') {
-      throw new Error('Invalid email claim');
-    }
-
-    const roles = Array.isArray(decoded.roles)
-      ? (decoded.roles as string[])
-      : [];
-
-    return {
-      sub,
-      email,
-      iat: decoded.issuedAtTime as number,
-      exp: expiresAt as number,
-      iss: decoded.iss as string,
-      aud: decoded.aud as string,
-      roles,
-    };
   }
 
   private getValidatedSecret(): string {
@@ -175,7 +141,9 @@ export class JwtTokenService {
     return secret;
   }
 
-  private createSignature(data: string, secret: string): string {
-    return createHmac('sha256', secret).update(data).digest('base64url');
+  /** Encode le secret en Uint8Array pour utilisation avec jose. */
+  private getEncodedSecret(): Uint8Array {
+    const secret = this.getValidatedSecret();
+    return new TextEncoder().encode(secret);
   }
 }

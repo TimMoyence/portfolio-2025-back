@@ -24,7 +24,7 @@ describe('RefreshTokensUseCase', () => {
     refreshTokensRepo = createMockRefreshTokensRepo();
     usersRepo = createMockUsersRepo();
     jwtTokenService = createMockJwtService();
-    jwtTokenService.sign.mockReturnValue({
+    jwtTokenService.sign.mockResolvedValue({
       token: 'new-jwt-token',
       expiresIn: 900,
       expiresAt: 0,
