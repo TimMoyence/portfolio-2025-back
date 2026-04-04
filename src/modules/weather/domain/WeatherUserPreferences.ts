@@ -1,6 +1,22 @@
 /** Niveau d'experience de l'utilisateur avec le module meteo. */
 export type WeatherLevel = 'discovery' | 'curious' | 'expert';
 
+/** Unite de temperature. */
+export type TemperatureUnit = 'celsius' | 'fahrenheit';
+
+/** Unite de vitesse (vent). */
+export type SpeedUnit = 'kmh' | 'mph';
+
+/** Unite de pression atmospherique. */
+export type PressureUnit = 'hpa' | 'inhg';
+
+/** Preferences d'unites de mesure. */
+export interface UnitPreferences {
+  temperature: TemperatureUnit;
+  speed: SpeedUnit;
+  pressure: PressureUnit;
+}
+
 /** Ville favorite enregistree par l'utilisateur. */
 export interface FavoriteCity {
   name: string;
@@ -8,6 +24,13 @@ export interface FavoriteCity {
   longitude: number;
   country: string;
 }
+
+/** Valeurs par defaut pour les preferences d'unites. */
+export const DEFAULT_UNITS: UnitPreferences = {
+  temperature: 'celsius',
+  speed: 'kmh',
+  pressure: 'hpa',
+};
 
 /** Entite de domaine representant les preferences meteo d'un utilisateur. */
 export class WeatherUserPreferences {
@@ -18,6 +41,7 @@ export class WeatherUserPreferences {
   daysUsed: number;
   lastUsedAt: Date | null;
   tooltipsSeen: string[];
+  units: UnitPreferences;
   createdAt: Date;
   updatedAt: Date;
 
@@ -29,6 +53,7 @@ export class WeatherUserPreferences {
     daysUsed: number;
     lastUsedAt: Date | null;
     tooltipsSeen: string[];
+    units: UnitPreferences;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -39,6 +64,7 @@ export class WeatherUserPreferences {
     this.daysUsed = props.daysUsed;
     this.lastUsedAt = props.lastUsedAt;
     this.tooltipsSeen = props.tooltipsSeen;
+    this.units = props.units;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }
@@ -54,6 +80,7 @@ export class WeatherUserPreferences {
       daysUsed: 0,
       lastUsedAt: null,
       tooltipsSeen: [],
+      units: { ...DEFAULT_UNITS },
       createdAt: now,
       updatedAt: now,
     });
@@ -68,6 +95,7 @@ export class WeatherUserPreferences {
     daysUsed: number;
     lastUsedAt: Date | null;
     tooltipsSeen: string[];
+    units: UnitPreferences;
     createdAt: Date;
     updatedAt: Date;
   }): WeatherUserPreferences {

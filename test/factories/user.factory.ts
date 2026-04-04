@@ -70,7 +70,8 @@ export function buildJwtPayload(overrides?: Partial<JwtPayload>): JwtPayload {
 export function buildAuthResult(overrides?: Partial<AuthResult>): AuthResult {
   return {
     accessToken: 'jwt-token',
-    expiresIn: 3600,
+    expiresIn: 900,
+    refreshToken: 'raw-refresh-token',
     user: buildUser(),
     ...overrides,
   };

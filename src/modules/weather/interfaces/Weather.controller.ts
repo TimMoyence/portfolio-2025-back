@@ -11,7 +11,6 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
-import type { JwtPayload } from '../../users/application/services/JwtPayload';
 import { Roles } from '../../users/interfaces/decorators/roles.decorator';
 import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
 import { Public } from '../../users/interfaces/decorators/public.decorator';
@@ -85,6 +84,7 @@ export class WeatherController {
       latitude: dto.latitude,
       longitude: dto.longitude,
       timezone: dto.timezone,
+      forecastDays: dto.forecastDays,
     });
   }
 
@@ -139,7 +139,7 @@ export class WeatherController {
   @Roles('weather')
   @ApiBearerAuth()
   async getPreferences(@Req() req: Request): Promise<WeatherPreferencesDto> {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const prefs = await this.getUserPreferencesUseCase.execute(user.sub);
     return WeatherPreferencesDto.fromDomain(prefs);
   }
@@ -152,12 +152,13 @@ export class WeatherController {
     @Req() req: Request,
     @Body() dto: UpdatePreferencesDto,
   ): Promise<WeatherPreferencesDto> {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     const prefs = await this.updateUserPreferencesUseCase.execute({
       userId: user.sub,
       level: dto.level,
       favoriteCities: dto.favoriteCities,
       tooltipsSeen: dto.tooltipsSeen,
+      units: dto.units,
     });
     return WeatherPreferencesDto.fromDomain(prefs);
   }
@@ -167,7 +168,7 @@ export class WeatherController {
   @Roles('weather')
   @ApiBearerAuth()
   async recordUsage(@Req() req: Request): Promise<void> {
-    const user = req['user'] as JwtPayload;
+    const user = req.user!;
     await this.recordUsageUseCase.execute({ userId: user.sub });
   }
 

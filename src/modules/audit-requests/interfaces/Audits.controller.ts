@@ -5,6 +5,7 @@ import {
   HttpStatus,
   MessageEvent,
   Param,
+  ParseUUIDPipe,
   Post,
   Req,
   Sse,
@@ -77,7 +78,7 @@ export class AuditsController {
   @Get(':id/summary')
   @ApiOkResponse({ type: AuditSummaryResponseDto })
   async summary(
-    @Param('id') auditId: string,
+    @Param('id', ParseUUIDPipe) auditId: string,
   ): Promise<AuditSummaryResponseDto> {
     const summary = await this.summaryUseCase.execute(auditId);
     return {
@@ -95,7 +96,9 @@ export class AuditsController {
   @Public()
   @SkipThrottle()
   @Sse(':id/stream')
-  stream(@Param('id') auditId: string): Observable<MessageEvent> {
+  stream(
+    @Param('id', ParseUUIDPipe) auditId: string,
+  ): Observable<MessageEvent> {
     return this.streamUseCase.execute(auditId);
   }
 

@@ -73,8 +73,9 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     latitude: number,
     longitude: number,
     timezone = 'auto',
+    forecastDays = 7,
   ): Promise<ForecastResult> {
-    const cacheKey = `forecast:${latitude}:${longitude}:${timezone}`;
+    const cacheKey = `forecast:${latitude}:${longitude}:${timezone}:${forecastDays}`;
     const cached = this.cache.get<ForecastResult>(cacheKey);
     if (cached) return cached;
 
@@ -83,7 +84,7 @@ export class OpenMeteoProxyService implements IWeatherProxy {
       `&hourly=temperature_2m,weather_code,wind_speed_10m,precipitation,relative_humidity_2m,dew_point_2m,pressure_msl,uv_index,wind_direction_10m,wind_gusts_10m,cloud_cover,visibility` +
       `&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,uv_index_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant` +
       `&current=temperature_2m,weather_code,wind_speed_10m,apparent_temperature,relative_humidity_2m,pressure_msl,uv_index,wind_direction_10m,wind_gusts_10m,cloud_cover,visibility,dew_point_2m` +
-      `&timezone=${encodeURIComponent(timezone)}`;
+      `&timezone=${encodeURIComponent(timezone)}&forecast_days=${forecastDays}`;
 
     const data = await this.fetchJson<ForecastResult>(url);
     this.cache.set(cacheKey, data, FORECAST_TTL_MS);

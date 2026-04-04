@@ -2,15 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { IWeatherPreferencesRepository } from '../domain/IWeatherPreferences.repository';
-import type { WeatherLevel } from '../domain/WeatherUserPreferences';
+import type {
+  UnitPreferences,
+  WeatherLevel,
+} from '../domain/WeatherUserPreferences';
 import { WeatherUserPreferences } from '../domain/WeatherUserPreferences';
 import { WeatherUserPreferencesEntity } from './entities/WeatherUserPreferences.entity';
 
 /** Implementation TypeORM du repository de preferences meteo. */
 @Injectable()
-export class WeatherPreferencesRepositoryTypeORM
-  implements IWeatherPreferencesRepository
-{
+export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesRepository {
   constructor(
     @InjectRepository(WeatherUserPreferencesEntity)
     private readonly repo: Repository<WeatherUserPreferencesEntity>,
@@ -32,6 +33,7 @@ export class WeatherPreferencesRepositoryTypeORM
       daysUsed: prefs.daysUsed,
       lastUsedAt: prefs.lastUsedAt,
       tooltipsSeen: prefs.tooltipsSeen,
+      units: prefs.units,
     });
     const saved = await this.repo.save(entity);
     return this.toDomain(saved);
@@ -51,6 +53,7 @@ export class WeatherPreferencesRepositoryTypeORM
     if (data.lastUsedAt !== undefined) updateData.lastUsedAt = data.lastUsedAt;
     if (data.tooltipsSeen !== undefined)
       updateData.tooltipsSeen = data.tooltipsSeen;
+    if (data.units !== undefined) updateData.units = data.units;
 
     updateData.updatedAt = new Date();
 
@@ -78,6 +81,7 @@ export class WeatherPreferencesRepositoryTypeORM
       daysUsed: entity.daysUsed,
       lastUsedAt: entity.lastUsedAt,
       tooltipsSeen: entity.tooltipsSeen,
+      units: entity.units as UnitPreferences,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     });

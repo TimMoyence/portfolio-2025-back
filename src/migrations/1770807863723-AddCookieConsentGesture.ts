@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddCookieConsentGesture1770807863723
-  implements MigrationInterface
-{
+export class AddCookieConsentGesture1770807863723 implements MigrationInterface {
   name = 'AddCookieConsentGesture1770807863723';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

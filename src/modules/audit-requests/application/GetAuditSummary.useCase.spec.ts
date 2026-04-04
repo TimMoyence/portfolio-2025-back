@@ -1,17 +1,13 @@
 import { NotFoundException } from '@nestjs/common';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { GetAuditSummaryUseCase } from './GetAuditSummary.useCase';
+import { createMockAuditRequestsRepo } from '../../../../test/factories/audit-requests.factory';
 
 describe('GetAuditSummaryUseCase', () => {
   let repo: jest.Mocked<IAuditRequestsRepository>;
 
   beforeEach(() => {
-    repo = {
-      create: jest.fn(),
-      findById: jest.fn(),
-      findSummaryById: jest.fn(),
-      updateState: jest.fn(),
-    };
+    repo = createMockAuditRequestsRepo();
   });
 
   it('returns persisted summary when audit exists', async () => {

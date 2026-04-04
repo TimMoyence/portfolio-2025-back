@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
@@ -73,6 +74,7 @@ export class ContactRequestDto {
 
   @ApiProperty({ example: '2026-02-11T10:45:00.000Z', required: false })
   @IsOptional()
+  @Type(() => Date)
   @IsDate()
   termsAcceptedAt?: Date;
 }

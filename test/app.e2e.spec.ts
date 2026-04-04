@@ -21,8 +21,10 @@ import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
+import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
 import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
+import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { ForgotPasswordDto } from '../src/modules/users/interfaces/dto/ForgotPassword.dto';
@@ -36,7 +38,6 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
-    transformOptions: { enableImplicitConversion: true },
   });
 
   const createContactsUseCase = { execute: jest.fn() };
@@ -48,6 +49,8 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   const authenticateGoogleUserUseCase = { execute: jest.fn() };
   const createUsersUseCase = { execute: jest.fn() };
   const changePasswordUseCase = { execute: jest.fn() };
+  const refreshTokensUseCase = { execute: jest.fn() };
+  const revokeTokenUseCase = { execute: jest.fn() };
   const requestPasswordResetUseCase = { execute: jest.fn() };
   const resetPasswordUseCase = { execute: jest.fn() };
   const setPasswordUseCase = { execute: jest.fn() };
@@ -90,6 +93,8 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         },
         { provide: CreateUsersUseCase, useValue: createUsersUseCase },
         { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
+        { provide: RefreshTokensUseCase, useValue: refreshTokensUseCase },
+        { provide: RevokeTokenUseCase, useValue: revokeTokenUseCase },
         {
           provide: RequestPasswordResetUseCase,
           useValue: requestPasswordResetUseCase,
@@ -156,7 +161,8 @@ describe('API coherence and connectivity (e2e transportless)', () => {
 
     authenticateUserUseCase.execute.mockResolvedValue({
       accessToken: 'jwt-token',
-      expiresIn: 3600,
+      expiresIn: 900,
+      refreshToken: 'raw-refresh-token',
       user: {
         id: 'user-1',
         email: 'john@example.com',

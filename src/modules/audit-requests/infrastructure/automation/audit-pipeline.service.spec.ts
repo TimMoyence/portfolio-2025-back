@@ -1,3 +1,4 @@
+import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { AuditSnapshot } from '../../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import type { AuditRequestMailerService } from '../AuditRequestMailer.service';
@@ -91,43 +92,10 @@ function buildPipelineService(
 }
 
 describe('AuditPipelineService', () => {
-  const config: AuditAutomationConfig = {
-    queueEnabled: true,
-    queueName: 'audit_requests',
-    queueConcurrency: 1,
-    queueAttempts: 1,
-    queueBackoffMs: 0,
-    jobTimeoutMs: 60000,
-    fetchTimeoutMs: 5000,
-    maxRedirects: 5,
-    htmlMaxBytes: 1_000_000,
-    textMaxBytes: 1_000_000,
-    sitemapSampleSize: 10,
-    sitemapMaxUrls: 50_000,
+  const config: AuditAutomationConfig = buildAuditAutomationConfig({
     sitemapAnalyzeLimit: 10,
     urlAnalyzeConcurrency: 4,
-    pageAnalyzeLimit: 30,
-    pageAiConcurrency: 3,
-    pageAiTimeoutMs: 8000,
-    llmModel: 'gpt-4o-mini',
-    llmTimeoutMs: 25000,
-    llmSummaryTimeoutMs: 20000,
-    llmExpertTimeoutMs: 60000,
-    llmProfile: 'parallel_sections_v1',
-    llmProfileCanaryPercent: 100,
-    llmGlobalTimeoutMs: 45000,
-    llmSectionTimeoutMs: 18000,
-    llmSectionRetryMax: 1,
-    llmSectionRetryMinRemainingMs: 8000,
-    llmInflightMax: 8,
-    llmRetries: 0,
-    llmLanguage: 'fr',
-    pageAiCircuitBreakerMinSamples: 6,
-    pageAiCircuitBreakerFailureRatio: 0.5,
-    rateHourlyMin: 80,
-    rateHourlyMax: 120,
-    rateCurrency: 'EUR',
-  };
+  });
 
   const audit: AuditSnapshot = {
     id: 'audit-1',

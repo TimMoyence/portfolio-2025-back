@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createHmac } from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
 import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
@@ -26,7 +26,7 @@ export class JwtTokenService {
     const secret = this.getValidatedSecret();
 
     const expiresInValue =
-      this.configService.get<string>('JWT_EXPIRES_IN') ?? '3600s';
+      this.configService.get<string>('JWT_EXPIRES_IN') ?? '900s';
     const expiresIn = this.parseExpiresIn(expiresInValue);
     const issuedAtTime = Math.floor(Date.now() / 1000);
     const expiresAt = issuedAtTime + expiresIn;
@@ -59,7 +59,7 @@ export class JwtTokenService {
 
     if (!match) {
       const numeric = Number(value);
-      return Number.isFinite(numeric) ? numeric : 3600;
+      return Number.isFinite(numeric) ? numeric : 900;
     }
 
     const amount = Number(match[1]);
@@ -75,7 +75,7 @@ export class JwtTokenService {
       case 'd':
         return amount * 86400;
       default:
-        return 3600;
+        return 900;
     }
   }
 
@@ -100,12 +100,17 @@ export class JwtTokenService {
 
     const secret = this.getValidatedSecret();
 
-    // Verifier la signature HMAC-SHA256
+    // Verifier la signature HMAC-SHA256 (timing-safe)
     const expectedSignature = this.createSignature(
       `${header}.${payload}`,
       secret,
     );
-    if (signature !== expectedSignature) {
+    const sigBuffer = Buffer.from(signature, 'base64url');
+    const expectedBuffer = Buffer.from(expectedSignature, 'base64url');
+    if (
+      sigBuffer.length !== expectedBuffer.length ||
+      !timingSafeEqual(sigBuffer, expectedBuffer)
+    ) {
       throw new Error('Invalid signature');
     }
 

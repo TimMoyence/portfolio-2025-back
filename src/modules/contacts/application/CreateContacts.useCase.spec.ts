@@ -4,6 +4,10 @@ import type { IContactsRepository } from '../domain/IContacts.repository';
 import type { IContactNotifier } from '../domain/IContactNotifier';
 import { MessageContactResponse } from '../domain/MessageContactResponse';
 import { CreateContactCommand } from './dto/CreateContact.command';
+import {
+  createMockContactsRepo,
+  createMockContactNotifier,
+} from '../../../../test/factories/contacts.factory';
 
 describe('CreateContactsUseCase', () => {
   let useCase: CreateContactsUseCase;
@@ -22,13 +26,8 @@ describe('CreateContactsUseCase', () => {
   };
 
   beforeEach(() => {
-    repo = {
-      findAll: jest.fn(),
-      create: jest.fn(),
-    };
-    notifier = {
-      sendContactNotification: jest.fn(),
-    };
+    repo = createMockContactsRepo();
+    notifier = createMockContactNotifier();
     useCase = new CreateContactsUseCase(repo, notifier);
   });
 

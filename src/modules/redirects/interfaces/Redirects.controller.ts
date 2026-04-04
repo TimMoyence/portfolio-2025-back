@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -6,7 +6,9 @@ import {
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { Roles } from '../../users/interfaces/decorators/roles.decorator';
 import { Public } from '../../users/interfaces/decorators/public.decorator';
+import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
 import { CreateRedirectsUseCase } from '../application/CreateRedirects.useCase';
 import { ListRedirectsUseCase } from '../application/ListRedirects.useCase';
 import { CreateRedirectCommand } from '../application/dto/CreateRedirect.command';
@@ -70,6 +72,8 @@ export class RedirectsController {
   }
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: RedirectResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })

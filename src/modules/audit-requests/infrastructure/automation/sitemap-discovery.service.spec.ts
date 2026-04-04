@@ -1,45 +1,12 @@
+import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import { SafeFetchService } from './safe-fetch.service';
 import { SitemapDiscoveryService } from './sitemap-discovery.service';
 
 describe('SitemapDiscoveryService', () => {
-  const config: AuditAutomationConfig = {
-    queueEnabled: true,
-    queueName: 'audit_requests',
-    queueConcurrency: 1,
-    queueAttempts: 1,
-    queueBackoffMs: 0,
-    jobTimeoutMs: 60000,
-    fetchTimeoutMs: 5000,
-    maxRedirects: 5,
-    htmlMaxBytes: 1_000_000,
-    textMaxBytes: 1_000_000,
-    sitemapSampleSize: 10,
-    sitemapMaxUrls: 50_000,
-    sitemapAnalyzeLimit: 150,
+  const config: AuditAutomationConfig = buildAuditAutomationConfig({
     urlAnalyzeConcurrency: 4,
-    pageAnalyzeLimit: 30,
-    pageAiConcurrency: 3,
-    pageAiTimeoutMs: 8000,
-    llmModel: 'gpt-4o-mini',
-    llmTimeoutMs: 25000,
-    llmSummaryTimeoutMs: 20000,
-    llmExpertTimeoutMs: 60000,
-    llmProfile: 'parallel_sections_v1',
-    llmProfileCanaryPercent: 100,
-    llmGlobalTimeoutMs: 45000,
-    llmSectionTimeoutMs: 18000,
-    llmSectionRetryMax: 1,
-    llmSectionRetryMinRemainingMs: 8000,
-    llmInflightMax: 8,
-    llmRetries: 0,
-    llmLanguage: 'fr',
-    pageAiCircuitBreakerMinSamples: 6,
-    pageAiCircuitBreakerFailureRatio: 0.5,
-    rateHourlyMin: 80,
-    rateHourlyMax: 120,
-    rateCurrency: 'EUR',
-  };
+  });
 
   function createSafeFetchMock(
     map: Record<string, { status: number; body: string }>,

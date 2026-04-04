@@ -1,5 +1,6 @@
 import type {
   FavoriteCity,
+  UnitPreferences,
   WeatherLevel,
 } from '../../domain/WeatherUserPreferences';
 
@@ -9,4 +10,5 @@ export interface UpdatePreferencesCommand {
   level?: WeatherLevel;
   favoriteCities?: FavoriteCity[];
   tooltipsSeen?: string[];
+  units?: Partial<UnitPreferences>;
 }

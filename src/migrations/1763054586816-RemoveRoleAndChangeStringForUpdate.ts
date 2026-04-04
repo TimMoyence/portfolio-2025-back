@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class RemoveRoleAndChangeStringForUpdate1763054586816
-  implements MigrationInterface
-{
+export class RemoveRoleAndChangeStringForUpdate1763054586816 implements MigrationInterface {
   name = 'RemoveRoleAndChangeStringForUpdate1763054586816';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

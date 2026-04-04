@@ -43,8 +43,47 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_READ_SEARCH
+    mem_limit: 512m
+    cpus: 1.0
     networks:
       - private
+
+  # Sauvegarde quotidienne PostgreSQL avec rétention configurable
+  db-backup:
+    image: prodrigestivill/postgres-backup-local:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SCHEDULE: '@daily'
+      BACKUP_KEEP_DAYS: 7
+      BACKUP_KEEP_WEEKS: 4
+      BACKUP_KEEP_MONTHS: 6
+    volumes:
+      - db_backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - private
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 256m
+    cpus: 0.25
 
   api:
     image: ${BACK_IMAGE:?BACK_IMAGE is required}
@@ -56,6 +95,9 @@ services:
       PORT: '3000'
       API_PREFIX: 'api/v1/portfolio25'
       ENABLE_LEGACY_CMS_CONTEXTS: ${ENABLE_LEGACY_CMS_CONTEXTS:-false}
+    read_only: true
+    tmpfs:
+      - /tmp
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -72,7 +114,7 @@ services:
         - CMD-SHELL
         - >
           node -e "const http=require('http');
-          const req=http.get('http://127.0.0.1:3000/api/v1/portfolio25',res=>process.exit(res.statusCode===200?0:1));
+          const req=http.get('http://127.0.0.1:3000/api/v1/portfolio25/health',res=>process.exit(res.statusCode===200?0:1));
           req.on('error',()=>process.exit(1));"
       interval: 10s
       timeout: 5s
@@ -113,6 +155,9 @@ services:
       NODE_ENV: 'production'
       PORT: '4000'
       SSR_LOCALE: 'fr'
+    read_only: true
+    tmpfs:
+      - /tmp
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -145,6 +190,9 @@ services:
       NODE_ENV: 'production'
       PORT: '4000'
       SSR_LOCALE: 'en'
+    read_only: true
+    tmpfs:
+      - /tmp
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -179,4 +227,5 @@ networks:
 
 volumes:
   db_data:
+  db_backups:
   redis_data:

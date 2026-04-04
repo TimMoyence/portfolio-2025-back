@@ -25,4 +25,16 @@ export class ForecastQueryDto {
   @IsOptional()
   @IsString()
   timezone?: string = 'auto';
+
+  @ApiProperty({
+    example: 7,
+    required: false,
+    description: 'Nombre de jours de prevision (1-16)',
+  })
+  @IsOptional()
+  @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
+  @IsNumber()
+  @Min(1)
+  @Max(16)
+  forecastDays?: number;
 }

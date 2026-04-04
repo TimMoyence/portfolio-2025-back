@@ -7,15 +7,20 @@ import { CreateUsersUseCase } from './application/CreateUsers.useCase';
 import { DeleteUsersUseCase } from './application/DeleteUsers.useCase';
 import { ListUsersUseCase } from './application/ListUsers.useCase';
 import { ListOneUserUseCase } from './application/ListOneUser.useCase';
+import { RefreshTokensUseCase } from './application/RefreshTokens.useCase';
+import { RevokeTokenUseCase } from './application/RevokeToken.useCase';
 import { UpdateUsersUseCase } from './application/UpdateUsers.useCase';
 import {
   GOOGLE_CLIENT_ID,
   PASSWORD_RESET_NOTIFIER,
   PASSWORD_RESET_TOKENS_REPOSITORY,
+  REFRESH_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
 } from './domain/token';
 import { UsersEntity } from './infrastructure/entities/Users.entity';
+import { RefreshTokenEntity } from './infrastructure/entities/RefreshToken.entity';
 import { UsersRepositoryTypeORM } from './infrastructure/Users.repository.typeORM';
+import { RefreshTokensRepositoryTypeORM } from './infrastructure/RefreshTokens.repository.typeORM';
 import { UsersController } from './interfaces/Users.controller';
 import { PasswordService } from './application/services/PasswordService';
 import { JwtTokenService } from './application/services/JwtTokenService';
@@ -39,13 +44,21 @@ const USERS_USE_CASES = [
   AuthenticateUserUseCase,
   AuthenticateGoogleUserUseCase,
   ChangePasswordUseCase,
+  RefreshTokensUseCase,
+  RevokeTokenUseCase,
   RequestPasswordResetUseCase,
   ResetPasswordUseCase,
   SetPasswordUseCase,
 ];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UsersEntity, PasswordResetTokenEntity])],
+  imports: [
+    TypeOrmModule.forFeature([
+      UsersEntity,
+      PasswordResetTokenEntity,
+      RefreshTokenEntity,
+    ]),
+  ],
   controllers: [UsersController, AuthController],
   providers: [
     ...USERS_USE_CASES,
@@ -58,6 +71,10 @@ const USERS_USE_CASES = [
     {
       provide: PASSWORD_RESET_TOKENS_REPOSITORY,
       useClass: PasswordResetTokensRepositoryTypeORM,
+    },
+    {
+      provide: REFRESH_TOKENS_REPOSITORY,
+      useClass: RefreshTokensRepositoryTypeORM,
     },
     {
       provide: PASSWORD_RESET_NOTIFIER,

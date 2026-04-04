@@ -1,3 +1,4 @@
+import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import { SafeFetchService } from './safe-fetch.service';
 import * as ssrfGuard from './ssrf-guard.util';
@@ -54,16 +55,10 @@ function buildResponse(
 }
 
 describe('SafeFetchService', () => {
-  const config: jest.Mocked<
-    Pick<
-      AuditAutomationConfig,
-      'fetchTimeoutMs' | 'maxRedirects' | 'textMaxBytes'
-    >
-  > = {
-    fetchTimeoutMs: 5000,
+  const config: AuditAutomationConfig = buildAuditAutomationConfig({
     maxRedirects: 3,
     textMaxBytes: 1024,
-  };
+  });
 
   let service: SafeFetchService;
   let fetchSpy: jest.SpiedFunction<typeof global.fetch>;
@@ -73,7 +68,7 @@ describe('SafeFetchService', () => {
     mockedAssertSafeHttpUrl.mockReset();
     mockedAssertSafeHttpUrl.mockResolvedValue(undefined);
     fetchSpy = jest.spyOn(global, 'fetch');
-    service = new SafeFetchService(config as AuditAutomationConfig);
+    service = new SafeFetchService(config);
   });
 
   afterEach(() => {

@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
-import type { JwtPayload } from '../../application/services/JwtPayload';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
 /**
@@ -30,7 +29,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const user = request['user'] as JwtPayload | undefined;
+    const user = request.user;
 
     if (!user?.roles) {
       throw new ForbiddenException('Insufficient permissions');

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -6,7 +6,9 @@ import {
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { Roles } from '../../users/interfaces/decorators/roles.decorator';
 import { Public } from '../../users/interfaces/decorators/public.decorator';
+import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
 import { CreateCoursesUseCase } from '../application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../application/ListCourses.useCase';
 import { CreateCourseCommand } from '../application/dto/CreateCourse.command';
@@ -61,6 +63,8 @@ export class CoursesController {
   }
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: CourseResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
