@@ -7,10 +7,9 @@ import {
 } from '../../../common/domain/pagination.types';
 import { IProjectsRepository } from '../domain/IProjects.repository';
 import { ProjectListQuery, ProjectSortBy } from '../domain/ProjectList.query';
-import { ProjectStatus, ProjectType, Projects } from '../domain/Projects';
+import { ProjectType, Projects } from '../domain/Projects';
 import { ProjectsEntity } from './entities/Projects.entity';
 import { ProjectType as ProjectTypeEnum } from './enums/ProjectType.enum';
-import { PublishStatus } from './enums/PublishStatus.enum';
 
 @Injectable()
 export class ProjectsRepositoryTypeORM implements IProjectsRepository {
@@ -51,7 +50,7 @@ export class ProjectsRepositoryTypeORM implements IProjectsRepository {
       coverImage: data.coverImage,
       gallery: data.gallery,
       stack: data.stack,
-      status: data.status as PublishStatus,
+      status: data.status,
       order: data.order,
     });
     const saved = await this.repo.save(entity);
@@ -68,7 +67,7 @@ export class ProjectsRepositoryTypeORM implements IProjectsRepository {
     project.coverImage = entity.coverImage;
     project.gallery = entity.gallery ?? [];
     project.stack = entity.stack ?? [];
-    project.status = entity.status as ProjectStatus;
+    project.status = entity.status;
     project.order = entity.order;
     return project;
   }

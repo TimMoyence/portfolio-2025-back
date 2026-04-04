@@ -1,4 +1,7 @@
-import { PublishStatus } from '../../../projects/infrastructure/enums/PublishStatus.enum';
+import {
+  PUBLISHABLE_STATUSES,
+  type PublishableStatus,
+} from '../../../../common/domain/types/publishable-status';
 import {
   Column,
   CreateDateColumn,
@@ -28,10 +31,10 @@ export class ServicesEntity {
 
   @Column({
     type: 'enum',
-    enum: PublishStatus,
-    default: PublishStatus.PUBLISHED,
+    enum: PUBLISHABLE_STATUSES,
+    default: 'PUBLISHED',
   })
-  status: PublishStatus;
+  status: PublishableStatus;
 
   @Column({ type: 'int', default: 0 }) order: number;
 

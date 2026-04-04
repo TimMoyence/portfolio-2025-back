@@ -4,7 +4,7 @@ import { ProjectsRepositoryTypeORM } from '../src/modules/projects/infrastructur
 import { ProjectsEntity } from '../src/modules/projects/infrastructure/entities/Projects.entity';
 import { ProjectsTranslationsEntity } from '../src/modules/projects/infrastructure/entities/ProjectsTranslations.entity';
 import { ProjectType } from '../src/modules/projects/infrastructure/enums/ProjectType.enum';
-import { PublishStatus } from '../src/modules/projects/infrastructure/enums/PublishStatus.enum';
+import type { PublishableStatus } from '../src/common/domain/types/publishable-status';
 import { RedirectsRepositoryTypeORM } from '../src/modules/redirects/infrastructure/Redirects.repository.typeORM';
 import { RedirectsEntity } from '../src/modules/redirects/infrastructure/entities/Redirects.entity';
 import { ServicesRepositoryTypeORM } from '../src/modules/services/infrastructure/Services.repository.typeORM';
@@ -149,7 +149,10 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
         slug: `perf-service-${i}`,
         name: `Perf Service ${i}`,
         icon: undefined,
-        status: i % 3 === 0 ? PublishStatus.DRAFT : PublishStatus.PUBLISHED,
+        status:
+          i % 3 === 0
+            ? ('DRAFT' as PublishableStatus)
+            : ('PUBLISHED' as PublishableStatus),
         order: i,
         updatedOrCreatedBy: null,
       });
@@ -162,7 +165,10 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
         coverImage: `/images/perf-project-${i}.webp`,
         gallery: [`/images/perf-project-${i}-1.webp`],
         stack: ['nestjs', 'postgres'],
-        status: i % 3 === 0 ? PublishStatus.DRAFT : PublishStatus.PUBLISHED,
+        status:
+          i % 3 === 0
+            ? ('DRAFT' as PublishableStatus)
+            : ('PUBLISHED' as PublishableStatus),
         order: i,
         updatedOrCreatedBy: null,
       });

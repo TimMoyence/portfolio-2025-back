@@ -7,7 +7,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectType } from '../enums/ProjectType.enum';
-import { PublishStatus } from '../enums/PublishStatus.enum';
+import {
+  PUBLISHABLE_STATUSES,
+  type PublishableStatus,
+} from '../../../../common/domain/types/publishable-status';
 import { ProjectsTranslationsEntity } from './ProjectsTranslations.entity';
 
 @Index('IDX_projects_type_order', ['type', 'order'])
@@ -41,10 +44,10 @@ export class ProjectsEntity {
 
   @Column({
     type: 'enum',
-    enum: PublishStatus,
-    default: PublishStatus.PUBLISHED,
+    enum: PUBLISHABLE_STATUSES,
+    default: 'PUBLISHED',
   })
-  status: PublishStatus;
+  status: PublishableStatus;
 
   @OneToMany(() => ProjectsTranslationsEntity, (t) => t.project, {
     cascade: true,

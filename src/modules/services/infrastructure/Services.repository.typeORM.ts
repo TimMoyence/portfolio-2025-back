@@ -7,9 +7,8 @@ import {
 } from '../../../common/domain/pagination.types';
 import { IServicesRepository } from '../domain/IServices.repository';
 import { ServiceListQuery, ServiceSortBy } from '../domain/ServiceList.query';
-import { ServiceStatus, Services } from '../domain/Services';
+import { Services } from '../domain/Services';
 import { ServicesEntity } from './entities/Services.entity';
-import { PublishStatus } from '../../projects/infrastructure/enums/PublishStatus.enum';
 
 @Injectable()
 export class ServicesRepositoryTypeORM implements IServicesRepository {
@@ -43,7 +42,7 @@ export class ServicesRepositoryTypeORM implements IServicesRepository {
       slug: data.slug,
       name: data.name,
       icon: data.icon,
-      status: data.status as PublishStatus,
+      status: data.status,
       order: data.order,
     });
     const saved = await this.repo.save(entity);
@@ -56,7 +55,7 @@ export class ServicesRepositoryTypeORM implements IServicesRepository {
     service.slug = entity.slug;
     service.name = entity.name;
     service.icon = entity.icon;
-    service.status = entity.status as ServiceStatus;
+    service.status = entity.status;
     service.order = entity.order;
     return service;
   }
