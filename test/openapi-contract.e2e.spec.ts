@@ -26,6 +26,7 @@ import { GetHistoricalUseCase } from '../src/modules/weather/application/GetHist
 import { GetUserPreferencesUseCase } from '../src/modules/weather/application/GetUserPreferences.useCase';
 import { UpdateUserPreferencesUseCase } from '../src/modules/weather/application/UpdateUserPreferences.useCase';
 import { RecordUsageUseCase } from '../src/modules/weather/application/RecordUsage.useCase';
+import { GetWeatherAlertsUseCase } from '../src/modules/weather/application/GetWeatherAlerts.useCase';
 import { OPENWEATHERMAP_PROXY } from '../src/modules/weather/domain/token';
 
 /* ── Budget module ─────────────────────────────────────────────────── */
@@ -39,6 +40,8 @@ import { ImportBudgetEntriesUseCase } from '../src/modules/budget/application/se
 import { UpdateBudgetEntryUseCase } from '../src/modules/budget/application/services/UpdateBudgetEntry.useCase';
 import { CreateBudgetCategoryUseCase } from '../src/modules/budget/application/services/CreateBudgetCategory.useCase';
 import { GetBudgetCategoriesUseCase } from '../src/modules/budget/application/services/GetBudgetCategories.useCase';
+import { DeleteBudgetEntryUseCase } from '../src/modules/budget/application/services/DeleteBudgetEntry.useCase';
+import { UpdateBudgetCategoryUseCase } from '../src/modules/budget/application/services/UpdateBudgetCategory.useCase';
 import { ShareBudgetUseCase } from '../src/modules/budget/application/services/ShareBudget.useCase';
 
 /* ── Users module ──────────────────────────────────────────────────── */
@@ -59,6 +62,7 @@ import { RequestPasswordResetUseCase } from '../src/modules/users/application/Re
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
+import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 
 /* ── Contacts module ───────────────────────────────────────────────── */
@@ -194,6 +198,7 @@ describe('OpenAPI core contract', () => {
         { provide: GetUserPreferencesUseCase, useValue: stub() },
         { provide: UpdateUserPreferencesUseCase, useValue: stub() },
         { provide: RecordUsageUseCase, useValue: stub() },
+        { provide: GetWeatherAlertsUseCase, useValue: stub() },
         { provide: OPENWEATHERMAP_PROXY, useValue: {} },
 
         /* ── Budget ─────────────────────────────────────── */
@@ -206,6 +211,8 @@ describe('OpenAPI core contract', () => {
         { provide: UpdateBudgetEntryUseCase, useValue: stub() },
         { provide: CreateBudgetCategoryUseCase, useValue: stub() },
         { provide: GetBudgetCategoriesUseCase, useValue: stub() },
+        { provide: DeleteBudgetEntryUseCase, useValue: stub() },
+        { provide: UpdateBudgetCategoryUseCase, useValue: stub() },
         { provide: ShareBudgetUseCase, useValue: stub() },
 
         /* ── Users ──────────────────────────────────────── */
@@ -224,6 +231,7 @@ describe('OpenAPI core contract', () => {
         { provide: RequestPasswordResetUseCase, useValue: stub() },
         { provide: ResetPasswordUseCase, useValue: stub() },
         { provide: SetPasswordUseCase, useValue: stub() },
+        { provide: UpdateProfileUseCase, useValue: stub() },
         { provide: USERS_REPOSITORY, useValue: {} },
 
         /* ── Contacts ───────────────────────────────────── */

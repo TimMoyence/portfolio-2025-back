@@ -1,0 +1,53 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  SEBASTIAN_ENTRY_REPOSITORY,
+  SEBASTIAN_GOAL_REPOSITORY,
+} from './domain/token';
+import { SebastianEntryEntity } from './infrastructure/entities/SebastianEntry.entity';
+import { SebastianGoalEntity } from './infrastructure/entities/SebastianGoal.entity';
+import { SebastianEntryRepositoryTypeORM } from './infrastructure/SebastianEntry.repository.typeORM';
+import { SebastianGoalRepositoryTypeORM } from './infrastructure/SebastianGoal.repository.typeORM';
+import { SebastianController } from './interfaces/Sebastian.controller';
+import { AddEntryUseCase } from './application/services/AddEntry.useCase';
+import { ListEntriesUseCase } from './application/services/ListEntries.useCase';
+import { DeleteEntryUseCase } from './application/services/DeleteEntry.useCase';
+import { GetStatsUseCase } from './application/services/GetStats.useCase';
+import { SetGoalUseCase } from './application/services/SetGoal.useCase';
+import { ListGoalsUseCase } from './application/services/ListGoals.useCase';
+import { DeleteGoalUseCase } from './application/services/DeleteGoal.useCase';
+
+const SEBASTIAN_USE_CASES = [
+  AddEntryUseCase,
+  ListEntriesUseCase,
+  DeleteEntryUseCase,
+  GetStatsUseCase,
+  SetGoalUseCase,
+  ListGoalsUseCase,
+  DeleteGoalUseCase,
+];
+
+/**
+ * Module NestJS du domaine Sebastian.
+ *
+ * Enregistre les entites TypeORM, les repositories,
+ * les use cases et le controleur REST pour le suivi de consommation.
+ */
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([SebastianEntryEntity, SebastianGoalEntity]),
+  ],
+  controllers: [SebastianController],
+  providers: [
+    ...SEBASTIAN_USE_CASES,
+    {
+      provide: SEBASTIAN_ENTRY_REPOSITORY,
+      useClass: SebastianEntryRepositoryTypeORM,
+    },
+    {
+      provide: SEBASTIAN_GOAL_REPOSITORY,
+      useClass: SebastianGoalRepositoryTypeORM,
+    },
+  ],
+})
+export class SebastianModule {}

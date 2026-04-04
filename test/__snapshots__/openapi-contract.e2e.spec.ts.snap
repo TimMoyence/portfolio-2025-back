@@ -28,11 +28,12 @@ exports[`OpenAPI core contract keeps AuditRequests path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
         },
       },
+      "summary": "Soumettre une demande d'audit de site web (acces public)",
       "tags": [
-        "Audits",
+        "audits",
       ],
     },
   },
@@ -51,11 +52,12 @@ exports[`OpenAPI core contract keeps AuditRequests path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
-          "description": "",
+          "description": "Flux SSE des evenements d'audit en temps reel",
         },
       },
+      "summary": "Flux SSE des evenements d'avancement d'un audit",
       "tags": [
-        "Audits",
+        "audits",
       ],
     },
   },
@@ -84,8 +86,9 @@ exports[`OpenAPI core contract keeps AuditRequests path contracts stable 1`] = `
           "description": "",
         },
       },
+      "summary": "Recuperer le resume d'un audit",
       "tags": [
-        "Audits",
+        "audits",
       ],
     },
   },
@@ -120,10 +123,10 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
         },
         "401": {
-          "description": "Invalid credentials or inactive user",
+          "description": "Identifiants invalides ou utilisateur inactif",
         },
       },
       "security": [
@@ -131,6 +134,7 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Changer le mot de passe (utilisateur connecte)",
       "tags": [
         "auth",
       ],
@@ -232,9 +236,10 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "",
         },
         "401": {
-          "description": "Invalid credentials",
+          "description": "Identifiants invalides",
         },
       },
+      "summary": "Connexion par email et mot de passe",
       "tags": [
         "auth",
       ],
@@ -291,7 +296,7 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "",
         },
         "401": {
-          "description": "Invalid or expired token",
+          "description": "Token invalide ou expire",
         },
       },
       "security": [
@@ -299,6 +304,50 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Recuperer le profil de l'utilisateur connecte",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/profile": {
+    "patch": {
+      "operationId": "AuthController_updateProfile",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateProfileDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token invalide ou expire",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Mettre a jour le profil de l'utilisateur connecte (self-update)",
       "tags": [
         "auth",
       ],
@@ -365,9 +414,10 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Registration failed",
+          "description": "Inscription echouee",
         },
       },
+      "summary": "Inscription d'un nouvel utilisateur",
       "tags": [
         "auth",
       ],
@@ -521,6 +571,12 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
           },
           "description": "",
         },
+        "400": {
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
+        },
       },
       "security": [
         {
@@ -528,6 +584,55 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
         },
       ],
       "summary": "Creer une categorie personnalisee",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/categories/{id}": {
+    "patch": {
+      "operationId": "BudgetController_updateBudgetCategory",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateBudgetCategoryDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetCategoryResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Mettre a jour une categorie de budget",
       "tags": [
         "budget",
       ],
@@ -619,6 +724,12 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
           },
           "description": "",
         },
+        "400": {
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
+        },
       },
       "security": [
         {
@@ -659,6 +770,12 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
           },
           "description": "",
         },
+        "400": {
+          "description": "Format CSV invalide",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
+        },
       },
       "security": [
         {
@@ -672,6 +789,36 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
     },
   },
   "/api/budget/entries/{id}": {
+    "delete": {
+      "operationId": "BudgetController_deleteBudgetEntry",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "Entree supprimee avec succes",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Supprimer une entree de budget",
+      "tags": [
+        "budget",
+      ],
+    },
     "patch": {
       "operationId": "BudgetController_updateBudgetEntry",
       "parameters": [
@@ -770,6 +917,12 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
           },
           "description": "",
         },
+        "400": {
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
+        },
       },
       "security": [
         {
@@ -797,8 +950,14 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
         "required": true,
       },
       "responses": {
-        "201": {
-          "description": "",
+        "200": {
+          "description": "Budget partage avec succes",
+        },
+        "400": {
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -895,11 +1054,12 @@ exports[`OpenAPI core contract keeps Contacts path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
         },
       },
+      "summary": "Envoyer un message de contact (acces public)",
       "tags": [
-        "Contacts",
+        "contacts",
       ],
     },
   },
@@ -934,11 +1094,12 @@ exports[`OpenAPI core contract keeps CookieConsents path contracts stable 1`] = 
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
         },
       },
+      "summary": "Enregistrer un consentement cookie (acces public)",
       "tags": [
-        "CookieConsents",
+        "cookie-consents",
       ],
     },
   },
@@ -965,7 +1126,16 @@ exports[`OpenAPI core contract keeps Users path contracts stable 1`] = `
           },
           "description": "",
         },
+        "401": {
+          "description": "Token JWT invalide ou absent",
+        },
       },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Lister tous les utilisateurs (admin)",
       "tags": [
         "users",
       ],
@@ -995,9 +1165,15 @@ exports[`OpenAPI core contract keeps Users path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
         },
       },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Creer un utilisateur (admin)",
       "tags": [
         "users",
       ],
@@ -1028,9 +1204,15 @@ exports[`OpenAPI core contract keeps Users path contracts stable 1`] = `
           "description": "",
         },
         "404": {
-          "description": "User not found",
+          "description": "Utilisateur non trouve",
         },
       },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Supprimer un utilisateur (admin)",
       "tags": [
         "users",
       ],
@@ -1058,7 +1240,16 @@ exports[`OpenAPI core contract keeps Users path contracts stable 1`] = `
           },
           "description": "",
         },
+        "404": {
+          "description": "Utilisateur non trouve",
+        },
       },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Recuperer un utilisateur par ID (admin)",
       "tags": [
         "users",
       ],
@@ -1097,12 +1288,18 @@ exports[`OpenAPI core contract keeps Users path contracts stable 1`] = `
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
         },
         "404": {
-          "description": "User not found",
+          "description": "Utilisateur non trouve",
         },
       },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Mettre a jour un utilisateur (admin)",
       "tags": [
         "users",
       ],
@@ -1160,7 +1357,10 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
-          "description": "",
+          "description": "Donnees de qualite de l'air",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1168,6 +1368,71 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Obtenir l'indice de qualite de l'air",
+      "tags": [
+        "weather",
+      ],
+    },
+  },
+  "/api/weather/alerts": {
+    "get": {
+      "operationId": "WeatherController_getAlerts",
+      "parameters": [
+        {
+          "description": "Latitude",
+          "in": "query",
+          "name": "latitude",
+          "required": true,
+          "schema": {
+            "example": 48.8566,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Longitude",
+          "in": "query",
+          "name": "longitude",
+          "required": true,
+          "schema": {
+            "example": 2.3522,
+            "type": "number",
+          },
+        },
+        {
+          "description": "Fuseau horaire",
+          "in": "query",
+          "name": "timezone",
+          "required": false,
+          "schema": {
+            "example": "auto",
+            "type": "string",
+          },
+        },
+        {
+          "description": "Nombre de jours de prevision (1-16)",
+          "in": "query",
+          "name": "forecastDays",
+          "required": false,
+          "schema": {
+            "example": 7,
+            "type": "number",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "Alertes meteo pour les coordonnees donnees",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Obtenir les alertes meteo synthetiques",
       "tags": [
         "weather",
       ],
@@ -1220,7 +1485,17 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
-          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DetailedCurrentWeatherDto",
+              },
+            },
+          },
+          "description": "Donnees meteo detaillees courantes",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1228,6 +1503,7 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Obtenir les donnees meteo detaillees courantes (OpenWeatherMap)",
       "tags": [
         "weather",
       ],
@@ -1280,7 +1556,10 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
-          "description": "",
+          "description": "Previsions d'ensemble multi-modeles",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1288,6 +1567,7 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Obtenir les previsions d'ensemble multi-modeles",
       "tags": [
         "weather",
       ],
@@ -1340,7 +1620,10 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
-          "description": "",
+          "description": "Previsions meteo pour les coordonnees donnees",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1348,6 +1631,7 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Obtenir les previsions meteo",
       "tags": [
         "weather",
       ],
@@ -1400,7 +1684,17 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
-          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DetailedForecastDto",
+              },
+            },
+          },
+          "description": "Previsions detaillees",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1408,6 +1702,7 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Obtenir les previsions detaillees (OpenWeatherMap)",
       "tags": [
         "weather",
       ],
@@ -1450,9 +1745,10 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
-          "description": "",
+          "description": "Liste des villes correspondantes",
         },
       },
+      "summary": "Rechercher des villes par nom (acces public)",
       "tags": [
         "weather",
       ],
@@ -1505,7 +1801,10 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       ],
       "responses": {
         "200": {
-          "description": "",
+          "description": "Donnees meteo historiques",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1513,6 +1812,7 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Obtenir les donnees meteo historiques",
       "tags": [
         "weather",
       ],
@@ -1524,7 +1824,17 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       "parameters": [],
       "responses": {
         "200": {
-          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeatherPreferencesDto",
+              },
+            },
+          },
+          "description": "Preferences meteo",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1532,6 +1842,7 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Recuperer les preferences meteo de l'utilisateur",
       "tags": [
         "weather",
       ],
@@ -1551,7 +1862,17 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       },
       "responses": {
         "200": {
-          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeatherPreferencesDto",
+              },
+            },
+          },
+          "description": "Preferences meteo mises a jour",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1559,6 +1880,7 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Mettre a jour les preferences meteo de l'utilisateur",
       "tags": [
         "weather",
       ],
@@ -1569,8 +1891,11 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
       "operationId": "WeatherController_recordUsage",
       "parameters": [],
       "responses": {
-        "201": {
-          "description": "",
+        "200": {
+          "description": "Utilisation enregistree",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -1578,6 +1903,7 @@ exports[`OpenAPI core contract keeps Weather path contracts stable 1`] = `
           "bearer": [],
         },
       ],
+      "summary": "Enregistrer l'utilisation du dashboard meteo",
       "tags": [
         "weather",
       ],
@@ -2093,8 +2419,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "description": "",
         },
       },
+      "summary": "Lister les formations (acces public, pagine)",
       "tags": [
-        "Courses",
+        "courses",
       ],
     },
     "post": {
@@ -2122,7 +2449,10 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -2130,8 +2460,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "bearer": [],
         },
       ],
+      "summary": "Creer une formation (admin)",
       "tags": [
-        "Courses",
+        "courses",
       ],
     },
   },
@@ -2226,8 +2557,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "description": "",
         },
       },
+      "summary": "Lister les projets (acces public, pagine)",
       "tags": [
-        "Projects",
+        "projects",
       ],
     },
     "post": {
@@ -2255,7 +2587,10 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -2263,8 +2598,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "bearer": [],
         },
       ],
+      "summary": "Creer un projet (admin)",
       "tags": [
-        "Projects",
+        "projects",
       ],
     },
   },
@@ -2342,8 +2678,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "description": "",
         },
       },
+      "summary": "Lister les redirections (acces public, pagine)",
       "tags": [
-        "Redirects",
+        "redirects",
       ],
     },
     "post": {
@@ -2371,7 +2708,10 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -2379,8 +2719,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "bearer": [],
         },
       ],
+      "summary": "Creer une redirection (admin)",
       "tags": [
-        "Redirects",
+        "redirects",
       ],
     },
   },
@@ -2463,8 +2804,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "description": "",
         },
       },
+      "summary": "Lister les services (acces public, pagine)",
       "tags": [
-        "Services",
+        "services",
       ],
     },
     "post": {
@@ -2492,7 +2834,10 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "description": "",
         },
         "400": {
-          "description": "Validation failed",
+          "description": "Validation echouee",
+        },
+        "401": {
+          "description": "Token JWT invalide ou absent",
         },
       },
       "security": [
@@ -2500,8 +2845,9 @@ exports[`OpenAPI legacy contract (phase 11) keeps legacy path contracts stable 1
           "bearer": [],
         },
       ],
+      "summary": "Creer un service (admin)",
       "tags": [
-        "Services",
+        "services",
       ],
     },
   },

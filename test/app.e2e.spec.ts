@@ -26,6 +26,7 @@ import { RequestPasswordResetUseCase } from '../src/modules/users/application/Re
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
+import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { ForgotPasswordDto } from '../src/modules/users/interfaces/dto/ForgotPassword.dto';
 import { LoginDto } from '../src/modules/users/interfaces/dto/Login.dto';
@@ -54,6 +55,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   const requestPasswordResetUseCase = { execute: jest.fn() };
   const resetPasswordUseCase = { execute: jest.fn() };
   const setPasswordUseCase = { execute: jest.fn() };
+  const updateProfileUseCase = { execute: jest.fn() };
 
   let contactsController: ContactsController;
   let cookieConsentsController: CookieConsentsController;
@@ -104,6 +106,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
           useValue: resetPasswordUseCase,
         },
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
+        { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
         {
           provide: USERS_REPOSITORY,
           useValue: { findById: jest.fn() },
