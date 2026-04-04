@@ -5,5 +5,8 @@
   "testRegex": ".http-socket.spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(\\.pnpm/jose@[^/]+/node_modules/)?jose/)"
+  ]
 }
