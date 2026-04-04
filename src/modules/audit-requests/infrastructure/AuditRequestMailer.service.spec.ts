@@ -1,7 +1,9 @@
 import { createTransport } from 'nodemailer';
-import { AuditRequest } from '../domain/AuditRequest';
-import type { AuditReportNotificationPayload } from './AuditRequestMailer.service';
 import { AuditRequestMailerService } from './AuditRequestMailer.service';
+import {
+  buildAuditRequest,
+  buildAuditReportPayload,
+} from '../../../../test/factories/audit-requests.factory';
 import {
   createMockTransporter,
   setSmtpEnv,
@@ -24,138 +26,6 @@ class TestableAuditRequestMailer extends AuditRequestMailerService {
       this as unknown as { escapeHtml: (s: string) => string }
     ).escapeHtml(input);
   }
-}
-
-/** Construit un AuditRequest sans passer par la validation domaine (test infra uniquement). */
-function buildAuditRequest(
-  overrides: Partial<AuditRequest> = {},
-): AuditRequest {
-  const request = new AuditRequest();
-  request.id = overrides.id ?? 'audit-001';
-  request.websiteName = overrides.websiteName ?? 'mon-site.fr';
-  request.contactMethod = overrides.contactMethod ?? 'EMAIL';
-  request.contactValue = overrides.contactValue ?? 'client@example.com';
-  request.locale = overrides.locale ?? 'fr';
-  return request;
-}
-
-/** Construit un payload de rapport d audit minimal. */
-function buildReportPayload(
-  overrides: Partial<AuditReportNotificationPayload> = {},
-): AuditReportNotificationPayload {
-  return {
-    auditId: 'audit-001',
-    websiteName: 'mon-site.fr',
-    contactMethod: 'EMAIL',
-    contactValue: 'client@example.com',
-    locale: 'fr',
-    summaryText: 'Resume du rapport de test.',
-    fullReport: {
-      locale: 'fr',
-      llm: {
-        reportExplanation: 'Explication du rapport.',
-        executiveSummary: 'Resume executif.',
-        diagnosticChapters: {
-          conversionAndClarity: 'Analyse conversion.',
-          speedAndPerformance: 'Analyse vitesse.',
-          seoFoundations: 'Analyse SEO.',
-          credibilityAndTrust: 'Analyse confiance.',
-          techAndScalability: 'Analyse tech.',
-          scorecardAndBusinessOpportunities: 'Scorecard.',
-        },
-        techFingerprint: {
-          primaryStack: 'Next.js',
-          confidence: 0.85,
-          evidence: ['React hydration', 'Vercel headers'],
-          unknowns: ['CDN provider'],
-          alternatives: ['Gatsby'],
-        },
-        priorities: [
-          {
-            title: 'Corriger les meta descriptions',
-            severity: 'high',
-            whyItMatters: 'Impact SEO fort',
-            recommendedFix: 'Ajouter meta unique par page',
-            estimatedHours: 4,
-          },
-        ],
-        implementationTodo: [
-          {
-            phase: 'Phase 1',
-            objective: 'SEO basique',
-            deliverable: 'Meta tags',
-            estimatedHours: 8,
-            dependencies: ['Design valide'],
-          },
-        ],
-        whatToFixThisWeek: [
-          {
-            task: 'Meta descriptions',
-            goal: 'Indexation amelioree',
-            estimatedHours: 4,
-            risk: 'Faible',
-            dependencies: [],
-          },
-        ],
-        whatToFixThisMonth: [
-          {
-            task: 'Refonte navigation',
-            goal: 'UX amelioree',
-            estimatedHours: 16,
-            risk: 'Moyen',
-            dependencies: ['Design'],
-          },
-        ],
-        fastImplementationPlan: [
-          {
-            task: 'Fix title tags',
-            priority: 'high',
-            expectedImpact: 'CTR +15%',
-            whyItMatters: 'Google snippet',
-            implementationSteps: ['Audit titles', 'Rewrite', 'Deploy'],
-            estimatedHours: 3,
-          },
-        ],
-        implementationBacklog: [
-          {
-            task: 'Schema markup',
-            priority: 'medium',
-            details: 'Ajouter JSON-LD',
-            estimatedHours: 6,
-            dependencies: [],
-            acceptanceCriteria: ['Rich snippets valides'],
-          },
-        ],
-        invoiceScope: [
-          {
-            item: 'Lot SEO',
-            description: 'Optimisation SEO complete',
-            estimatedHours: 20,
-          },
-        ],
-        costEstimate: {
-          currency: 'EUR',
-          totalEstimatedHours: 40,
-          estimatedCostMin: 3200,
-          estimatedCostMax: 4800,
-          fastTrackHours: 20,
-          fastTrackCostMin: 1600,
-          fastTrackCostMax: 2400,
-        },
-        qualityGate: {
-          valid: true,
-          retried: false,
-          fallback: false,
-          reasons: ['All checks passed'],
-        },
-        clientMessageTemplate: 'Bonjour, voici les resultats.',
-        clientLongEmail: 'Email long detaille pour le client.',
-      },
-      findings: [],
-      scoring: { quickWins: [] },
-    },
-    ...overrides,
-  };
 }
 
 describe('AuditRequestMailerService', () => {
@@ -230,7 +100,11 @@ describe('AuditRequestMailerService', () => {
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       const service = new TestableAuditRequestMailer();
-      const request = buildAuditRequest();
+      const request = buildAuditRequest({
+        id: 'audit-001',
+        websiteName: 'mon-site.fr',
+        contactValue: 'client@example.com',
+      });
 
       // Act
       await service.sendAuditNotification(request);
@@ -325,7 +199,7 @@ describe('AuditRequestMailerService', () => {
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload();
+      const payload = buildAuditReportPayload();
 
       // Act
       await service.sendAuditReportNotification(payload);
@@ -360,7 +234,7 @@ describe('AuditRequestMailerService', () => {
       delete process.env.SMTP_USER;
       delete process.env.SMTP_PASS;
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload();
+      const payload = buildAuditReportPayload();
 
       // Act
       await service.sendAuditReportNotification(payload);
@@ -377,7 +251,7 @@ describe('AuditRequestMailerService', () => {
       delete process.env.AUDIT_REPORT_TO;
       delete process.env.CONTACT_NOTIFICATION_TO;
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload();
+      const payload = buildAuditReportPayload();
 
       // Act
       await service.sendAuditReportNotification(payload);
@@ -394,7 +268,7 @@ describe('AuditRequestMailerService', () => {
       delete process.env.AUDIT_REPORT_TO;
       // CONTACT_NOTIFICATION_TO est toujours defini
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload();
+      const payload = buildAuditReportPayload();
 
       // Act
       await service.sendAuditReportNotification(payload);
@@ -413,7 +287,7 @@ describe('AuditRequestMailerService', () => {
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload();
+      const payload = buildAuditReportPayload();
 
       // Act & Assert
       await expect(
@@ -427,7 +301,7 @@ describe('AuditRequestMailerService', () => {
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload({
+      const payload = buildAuditReportPayload({
         fullReport: {},
         locale: 'fr',
       });
@@ -450,7 +324,7 @@ describe('AuditRequestMailerService', () => {
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload({
+      const payload = buildAuditReportPayload({
         locale: 'en',
         fullReport: { locale: 'en' },
       });
@@ -472,7 +346,7 @@ describe('AuditRequestMailerService', () => {
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload();
+      const payload = buildAuditReportPayload();
 
       // Act
       await service.sendAuditReportNotification(payload);
@@ -492,7 +366,7 @@ describe('AuditRequestMailerService', () => {
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload();
+      const payload = buildAuditReportPayload();
 
       // Act
       await service.sendAuditReportNotification(payload);
@@ -520,7 +394,7 @@ describe('AuditRequestMailerService', () => {
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       const service = new TestableAuditRequestMailer();
-      const payload = buildReportPayload({
+      const payload = buildAuditReportPayload({
         websiteName: '<script>xss</script>',
       });
 

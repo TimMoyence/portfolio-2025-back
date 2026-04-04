@@ -3,6 +3,7 @@ import type { IAuditNotifierPort } from '../../src/modules/audit-requests/domain
 import type { IAuditQueuePort } from '../../src/modules/audit-requests/domain/IAuditQueue.port';
 import { AuditRequest } from '../../src/modules/audit-requests/domain/AuditRequest';
 import type { AuditSnapshot } from '../../src/modules/audit-requests/domain/AuditProcessing';
+import type { AuditReportNotificationPayload } from '../../src/modules/audit-requests/infrastructure/AuditRequestMailer.service';
 
 /** Construit un objet AuditRequest domaine avec des valeurs par defaut. */
 export function buildAuditRequest(
@@ -74,5 +75,124 @@ export function createMockAuditNotifier(): jest.Mocked<IAuditNotifierPort> {
 export function createMockAuditQueue(): jest.Mocked<IAuditQueuePort> {
   return {
     enqueue: jest.fn(),
+  };
+}
+
+/** Construit un payload de rapport d'audit avec des valeurs par defaut. */
+export function buildAuditReportPayload(
+  overrides?: Partial<AuditReportNotificationPayload>,
+): AuditReportNotificationPayload {
+  return {
+    auditId: 'audit-001',
+    websiteName: 'mon-site.fr',
+    contactMethod: 'EMAIL',
+    contactValue: 'client@example.com',
+    locale: 'fr',
+    summaryText: 'Resume du rapport de test.',
+    fullReport: {
+      locale: 'fr',
+      llm: {
+        reportExplanation: 'Explication du rapport.',
+        executiveSummary: 'Resume executif.',
+        diagnosticChapters: {
+          conversionAndClarity: 'Analyse conversion.',
+          speedAndPerformance: 'Analyse vitesse.',
+          seoFoundations: 'Analyse SEO.',
+          credibilityAndTrust: 'Analyse confiance.',
+          techAndScalability: 'Analyse tech.',
+          scorecardAndBusinessOpportunities: 'Scorecard.',
+        },
+        techFingerprint: {
+          primaryStack: 'Next.js',
+          confidence: 0.85,
+          evidence: ['React hydration', 'Vercel headers'],
+          unknowns: ['CDN provider'],
+          alternatives: ['Gatsby'],
+        },
+        priorities: [
+          {
+            title: 'Corriger les meta descriptions',
+            severity: 'high',
+            whyItMatters: 'Impact SEO fort',
+            recommendedFix: 'Ajouter meta unique par page',
+            estimatedHours: 4,
+          },
+        ],
+        implementationTodo: [
+          {
+            phase: 'Phase 1',
+            objective: 'SEO basique',
+            deliverable: 'Meta tags',
+            estimatedHours: 8,
+            dependencies: ['Design valide'],
+          },
+        ],
+        whatToFixThisWeek: [
+          {
+            task: 'Meta descriptions',
+            goal: 'Indexation amelioree',
+            estimatedHours: 4,
+            risk: 'Faible',
+            dependencies: [],
+          },
+        ],
+        whatToFixThisMonth: [
+          {
+            task: 'Refonte navigation',
+            goal: 'UX amelioree',
+            estimatedHours: 16,
+            risk: 'Moyen',
+            dependencies: ['Design'],
+          },
+        ],
+        fastImplementationPlan: [
+          {
+            task: 'Fix title tags',
+            priority: 'high',
+            expectedImpact: 'CTR +15%',
+            whyItMatters: 'Google snippet',
+            implementationSteps: ['Audit titles', 'Rewrite', 'Deploy'],
+            estimatedHours: 3,
+          },
+        ],
+        implementationBacklog: [
+          {
+            task: 'Schema markup',
+            priority: 'medium',
+            details: 'Ajouter JSON-LD',
+            estimatedHours: 6,
+            dependencies: [],
+            acceptanceCriteria: ['Rich snippets valides'],
+          },
+        ],
+        invoiceScope: [
+          {
+            item: 'Lot SEO',
+            description: 'Optimisation SEO complete',
+            estimatedHours: 20,
+          },
+        ],
+        costEstimate: {
+          currency: 'EUR',
+          totalEstimatedHours: 40,
+          estimatedCostMin: 3200,
+          estimatedCostMax: 4800,
+          fastTrackHours: 20,
+          fastTrackCostMin: 1600,
+          fastTrackCostMax: 2400,
+        },
+        qualityGate: {
+          valid: true,
+          retried: false,
+          fallback: false,
+          reasons: ['All checks passed'],
+        },
+        clientMessageTemplate: 'Bonjour, voici les resultats.',
+        clientLongEmail: 'Email long detaille pour le client.',
+      },
+      findings: [],
+      scoring: { quickWins: [] },
+    },
+    ...overrides,
   };
 }
