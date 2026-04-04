@@ -52,6 +52,12 @@ export class AuthenticateUserUseCase {
       throw new InvalidCredentialsError('Invalid credentials');
     }
 
+    // Rehash transparent si le hash utilise un algorithme obsolete (PBKDF2 → Argon2id)
+    if (this.passwordService.needsRehash(user.passwordHash)) {
+      const newHash = await this.passwordService.hash(dto.password);
+      await this.repo.update(user.id!, { passwordHash: newHash });
+    }
+
     const { token, expiresIn } = await this.jwtTokenService.sign({
       sub: user.id,
       email: user.email,

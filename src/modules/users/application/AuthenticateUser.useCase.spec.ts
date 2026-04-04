@@ -146,4 +146,50 @@ describe('AuthenticateUserUseCase', () => {
     );
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
   });
+
+  describe('rehash transparent', () => {
+    it('re-hache le mot de passe si needsRehash retourne true', async () => {
+      const user = buildUser({
+        email: 'legacy@example.com',
+        passwordHash: 'legacy-pbkdf2-hash',
+      });
+      repo.findByEmail.mockResolvedValue(user);
+      passwordService.needsRehash.mockReturnValue(true);
+      passwordService.hash.mockResolvedValue('$argon2id$new-hash');
+      repo.update.mockResolvedValue(user);
+
+      await useCase.execute({
+        email: 'legacy@example.com',
+        password: 'password',
+      });
+
+      expect(passwordService.needsRehash).toHaveBeenCalledWith(
+        'legacy-pbkdf2-hash',
+      );
+      expect(passwordService.hash).toHaveBeenCalledWith('password');
+      expect(repo.update).toHaveBeenCalledWith('user-1', {
+        passwordHash: '$argon2id$new-hash',
+      });
+    });
+
+    it('ne re-hache pas si needsRehash retourne false', async () => {
+      const user = buildUser({
+        email: 'modern@example.com',
+        passwordHash: '$argon2id$already-good',
+      });
+      repo.findByEmail.mockResolvedValue(user);
+      passwordService.needsRehash.mockReturnValue(false);
+
+      await useCase.execute({
+        email: 'modern@example.com',
+        password: 'password',
+      });
+
+      expect(passwordService.needsRehash).toHaveBeenCalledWith(
+        '$argon2id$already-good',
+      );
+      expect(passwordService.hash).not.toHaveBeenCalled();
+      expect(repo.update).not.toHaveBeenCalled();
+    });
+  });
 });
