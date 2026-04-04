@@ -42,7 +42,7 @@ export class ResetPasswordUseCase {
       throw new BadRequestException(this.invalidTokenMessage);
     }
 
-    const passwordHash = this.passwordService.hash(dto.newPassword);
+    const passwordHash = await this.passwordService.hash(dto.newPassword);
 
     await this.usersRepository.update(user.id, {
       passwordHash,

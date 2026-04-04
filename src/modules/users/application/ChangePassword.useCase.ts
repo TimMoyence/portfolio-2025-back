@@ -34,7 +34,7 @@ export class ChangePasswordUseCase {
       throw new UnauthorizedException('No password set for this account');
     }
 
-    const validCurrentPassword = this.passwordService.verify(
+    const validCurrentPassword = await this.passwordService.verify(
       dto.currentPassword,
       user.passwordHash,
     );
@@ -43,7 +43,7 @@ export class ChangePasswordUseCase {
       throw new UnauthorizedException('Current password is invalid');
     }
 
-    const newPasswordHash = this.passwordService.hash(dto.newPassword);
+    const newPasswordHash = await this.passwordService.hash(dto.newPassword);
 
     return this.repo.update(user.id as string, {
       passwordHash: newPasswordHash,

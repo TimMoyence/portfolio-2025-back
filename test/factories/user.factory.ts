@@ -36,11 +36,12 @@ export function createMockUsersRepo(): jest.Mocked<IUsersRepository> {
   };
 }
 
-/** Cree un mock du service de mot de passe. */
+/** Cree un mock du service de mot de passe (hash/verify sont async). */
 export function createMockPasswordService(): jest.Mocked<PasswordService> {
   return {
     hash: jest.fn(),
     verify: jest.fn(),
+    needsRehash: jest.fn(),
   } as unknown as jest.Mocked<PasswordService>;
 }
 

@@ -19,8 +19,8 @@ describe('ChangePasswordUseCase', () => {
   beforeEach(() => {
     repo = createMockUsersRepo();
     passwordService = createMockPasswordService();
-    passwordService.hash.mockReturnValue('new-hash');
-    passwordService.verify.mockReturnValue(true);
+    passwordService.hash.mockResolvedValue('new-hash');
+    passwordService.verify.mockResolvedValue(true);
 
     useCase = new ChangePasswordUseCase(repo, passwordService);
   });
@@ -82,7 +82,7 @@ describe('ChangePasswordUseCase', () => {
       lastName: 'Doe',
     });
     repo.findById.mockResolvedValue(user);
-    passwordService.verify.mockReturnValue(false);
+    passwordService.verify.mockResolvedValue(false);
 
     await expect(
       useCase.execute({

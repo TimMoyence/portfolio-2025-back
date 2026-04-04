@@ -15,7 +15,7 @@ export class CreateUsersUseCase {
     private readonly passwordService: PasswordService,
   ) {}
   async execute(dto: CreateUserCommand): Promise<Users> {
-    const passwordHash = this.passwordService.hash(dto.password);
+    const passwordHash = await this.passwordService.hash(dto.password);
     const updatedOrCreatedBy = dto.updatedOrCreatedBy ?? 'self-registration';
     const roles =
       updatedOrCreatedBy === 'self-registration' ? [] : (dto.roles ?? []);

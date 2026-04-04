@@ -19,42 +19,48 @@ describe('PasswordService', () => {
   });
 
   describe('hash', () => {
-    it('devrait hasher un mot de passe avec un sel unique (format sel:hash)', () => {
-      const hash = service.hash('MonMotDePasse123!');
+    it('devrait hasher un mot de passe au format argon2id', async () => {
+      const hash = await service.hash('MonMotDePasse123!');
 
-      expect(hash).toContain(':');
-      const [salt, derivedKey] = hash.split(':');
-      expect(salt).toHaveLength(64); // 32 bytes en hex
-      expect(derivedKey).toHaveLength(128); // 64 bytes en hex
+      expect(hash).toMatch(/^\$argon2id\$/);
+      expect(hash).not.toContain('::');
     });
 
-    it('devrait produire des hashes differents pour le meme mot de passe (sel aleatoire)', () => {
-      const hash1 = service.hash('IdenticalPassword1!');
-      const hash2 = service.hash('IdenticalPassword1!');
+    it('devrait produire des hashes differents pour le meme mot de passe (sel aleatoire)', async () => {
+      const hash1 = await service.hash('IdenticalPassword1!');
+      const hash2 = await service.hash('IdenticalPassword1!');
 
       expect(hash1).not.toBe(hash2);
-
-      const [salt1] = hash1.split(':');
-      const [salt2] = hash2.split(':');
-      expect(salt1).not.toBe(salt2);
     });
   });
 
   describe('verify', () => {
-    it('devrait verifier un hash avec sel unique', () => {
+    it('devrait verifier un hash argon2id correctement', async () => {
       const password = 'SecurePassword42!';
-      const hash = service.hash(password);
+      const hash = await service.hash(password);
 
-      expect(service.verify(password, hash)).toBe(true);
+      expect(await service.verify(password, hash)).toBe(true);
+      expect(await service.verify('WrongPassword!', hash)).toBe(false);
     });
 
-    it('devrait rejeter un mot de passe incorrect avec le nouveau format', () => {
-      const hash = service.hash('CorrectPassword1!');
+    it('devrait verifier un hash PBKDF2 avec sel (format hex:hex — retrocompatibilite)', async () => {
+      // Simuler l'ancien format avec sel unique : sel_hex:hash_hex
+      const salt = Buffer.from('a'.repeat(64), 'hex');
+      const derivedKey = pbkdf2Sync(
+        'SaltedPassword1!',
+        salt,
+        120000,
+        64,
+        'sha512',
+      );
+      const pbkdf2Hash = `${salt.toString('hex')}:${derivedKey.toString('hex')}`;
 
-      expect(service.verify('WrongPassword1!', hash)).toBe(false);
+      expect(pbkdf2Hash).toContain(':');
+      expect(await service.verify('SaltedPassword1!', pbkdf2Hash)).toBe(true);
+      expect(await service.verify('WrongPassword!', pbkdf2Hash)).toBe(false);
     });
 
-    it('devrait verifier un hash au format legacy (retrocompatibilite)', () => {
+    it('devrait verifier un hash au format legacy sans sel (retrocompatibilite)', async () => {
       // Simuler l'ancien format : hash sans sel (utilise le secret statique)
       const legacyHash = pbkdf2Sync(
         'LegacyPassword1!',
@@ -64,12 +70,35 @@ describe('PasswordService', () => {
         'sha512',
       ).toString('hex');
 
-      // Le hash legacy ne contient pas de ':'
       expect(legacyHash).not.toContain(':');
+      expect(await service.verify('LegacyPassword1!', legacyHash)).toBe(true);
+      expect(await service.verify('WrongPassword!', legacyHash)).toBe(false);
+    });
+  });
 
-      // La verification doit fonctionner avec l'ancien format
-      expect(service.verify('LegacyPassword1!', legacyHash)).toBe(true);
-      expect(service.verify('WrongPassword!', legacyHash)).toBe(false);
+  describe('needsRehash', () => {
+    it('devrait retourner false pour un hash argon2id', async () => {
+      const hash = await service.hash('TestPassword1!');
+
+      expect(service.needsRehash(hash)).toBe(false);
+    });
+
+    it('devrait retourner true pour un hash PBKDF2 avec sel', () => {
+      const pbkdf2Hash = 'abcdef1234567890:abcdef1234567890';
+
+      expect(service.needsRehash(pbkdf2Hash)).toBe(true);
+    });
+
+    it('devrait retourner true pour un hash PBKDF2 legacy sans sel', () => {
+      const legacyHash = pbkdf2Sync(
+        'LegacyPassword1!',
+        SECRET,
+        120000,
+        64,
+        'sha512',
+      ).toString('hex');
+
+      expect(service.needsRehash(legacyHash)).toBe(true);
     });
   });
 

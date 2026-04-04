@@ -35,7 +35,7 @@ export class SetPasswordUseCase {
       throw new ConflictException('Password is already configured');
     }
 
-    const passwordHash = this.passwordService.hash(dto.newPassword);
+    const passwordHash = await this.passwordService.hash(dto.newPassword);
 
     return this.usersRepository.update(user.id as string, {
       passwordHash,

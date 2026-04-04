@@ -18,7 +18,7 @@ describe('UpdateUsersUseCase', () => {
   beforeEach(() => {
     repo = createMockUsersRepo();
     passwordService = createMockPasswordService();
-    passwordService.hash.mockReturnValue('new-hash');
+    passwordService.hash.mockResolvedValue('new-hash');
     useCase = new UpdateUsersUseCase(repo, passwordService);
   });
 

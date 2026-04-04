@@ -23,7 +23,7 @@ export class UpdateUsersUseCase {
     }
 
     const passwordHash = dto.password
-      ? this.passwordService.hash(dto.password)
+      ? await this.passwordService.hash(dto.password)
       : undefined;
     const updatePayload = UsersMapper.fromUpdateCommand(dto, passwordHash);
     return this.repo.update(id, updatePayload);

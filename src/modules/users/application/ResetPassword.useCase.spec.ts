@@ -36,7 +36,7 @@ describe('ResetPasswordUseCase', () => {
 
     tokensRepository.findActiveByTokenHash.mockResolvedValue(token);
     usersRepository.findById.mockResolvedValue(user);
-    passwordService.hash.mockReturnValue('new-hash');
+    passwordService.hash.mockResolvedValue('new-hash');
     usersRepository.update.mockResolvedValue(updatedUser);
 
     const result = await useCase.execute({

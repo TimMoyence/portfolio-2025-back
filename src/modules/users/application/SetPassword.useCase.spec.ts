@@ -27,7 +27,7 @@ describe('SetPasswordUseCase', () => {
     const updatedUser = buildUser({ id: 'user-1', passwordHash: 'new-hash' });
 
     usersRepository.findById.mockResolvedValue(user);
-    passwordService.hash.mockReturnValue('new-hash');
+    passwordService.hash.mockResolvedValue('new-hash');
     usersRepository.update.mockResolvedValue(updatedUser);
 
     const result = await useCase.execute({
