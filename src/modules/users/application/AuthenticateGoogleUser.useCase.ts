@@ -1,15 +1,11 @@
-import {
-  Inject,
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { TokenHash } from '../domain/TokenHash';
-import { Users } from '../domain/Users';
+import { User } from '../domain/User';
 import {
   GOOGLE_CLIENT_ID,
   REFRESH_TOKENS_REPOSITORY,
@@ -47,7 +43,7 @@ export class AuthenticateGoogleUserUseCase {
     const email = payload.email;
 
     if (!email || !payload.email_verified) {
-      throw new UnauthorizedException('Google email not verified');
+      throw new InvalidCredentialsError('Google email not verified');
     }
 
     // 1. Chercher par googleId
@@ -61,7 +57,7 @@ export class AuthenticateGoogleUserUseCase {
     const byEmail = await this.repo.findByEmail(email);
     if (byEmail) {
       this.ensureActive(byEmail);
-      await this.repo.update(byEmail.id!, { googleId } as Partial<Users>);
+      await this.repo.update(byEmail.id!, { googleId } as Partial<User>);
       byEmail.googleId = googleId;
       return this.signResult(byEmail);
     }
@@ -87,26 +83,26 @@ export class AuthenticateGoogleUserUseCase {
       });
       const payload = ticket.getPayload();
       if (!payload) {
-        throw new UnauthorizedException('Invalid Google token');
+        throw new InvalidCredentialsError('Invalid Google token');
       }
       return payload;
     } catch (error) {
       this.logger.warn(
         `Google token verification failed (clientId=${this.googleClientId ? 'SET' : 'EMPTY'}): ${String(error)}`,
       );
-      throw new UnauthorizedException('Invalid Google token');
+      throw new InvalidCredentialsError('Invalid Google token');
     }
   }
 
   /** Verifie que le compte utilisateur est actif. */
   private ensureActive(user: { isActive: boolean }): void {
     if (!user.isActive) {
-      throw new UnauthorizedException('Account deactivated');
+      throw new InvalidCredentialsError('Account deactivated');
     }
   }
 
   /** Signe un JWT, cree un refresh token et retourne le resultat d'authentification. */
-  private async signResult(user: Users): Promise<AuthResult> {
+  private async signResult(user: User): Promise<AuthResult> {
     const { token, expiresIn } = await this.jwtTokenService.sign({
       sub: user.id,
       email: user.email,

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ForbiddenException } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors';
 import { GetBudgetEntriesUseCase } from './GetBudgetEntries.useCase';
 import type { IBudgetEntryRepository } from '../../domain/IBudgetEntry.repository';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
@@ -25,7 +25,7 @@ describe('GetBudgetEntriesUseCase', () => {
 
     await expect(
       useCase.execute({ userId: 'user-1', groupId: 'group-1' }),
-    ).rejects.toThrow(ForbiddenException);
+    ).rejects.toThrow(InsufficientPermissionsError);
   });
 
   it('devrait retourner les entrees filtrees', async () => {

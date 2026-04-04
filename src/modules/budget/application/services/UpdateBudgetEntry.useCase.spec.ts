@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
+import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import { UpdateBudgetEntryUseCase } from './UpdateBudgetEntry.useCase';
 import {
   buildBudgetEntry,
@@ -27,7 +28,7 @@ describe('UpdateBudgetEntryUseCase', () => {
         entryId: 'entry-1',
         categoryId: 'new-cat',
       }),
-    ).rejects.toThrow(NotFoundException);
+    ).rejects.toThrow(ResourceNotFoundError);
   });
 
   it("devrait rejeter si l'utilisateur n'est pas membre du groupe", async () => {
@@ -40,7 +41,7 @@ describe('UpdateBudgetEntryUseCase', () => {
         entryId: 'entry-1',
         categoryId: 'new-cat',
       }),
-    ).rejects.toThrow(ForbiddenException);
+    ).rejects.toThrow(InsufficientPermissionsError);
   });
 
   it("devrait mettre a jour la categoryId de l'entree", async () => {

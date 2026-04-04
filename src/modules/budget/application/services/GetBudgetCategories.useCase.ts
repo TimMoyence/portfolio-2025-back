@@ -1,4 +1,5 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
 import type { BudgetCategory } from '../../domain/BudgetCategory';
 import type { IBudgetCategoryRepository } from '../../domain/IBudgetCategory.repository';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
@@ -26,7 +27,9 @@ export class GetBudgetCategoriesUseCase {
       params.userId,
     );
     if (!isMember) {
-      throw new ForbiddenException('User is not a member of this budget group');
+      throw new InsufficientPermissionsError(
+        'User is not a member of this budget group',
+      );
     }
     return this.categoryRepo.findByGroupId(params.groupId);
   }

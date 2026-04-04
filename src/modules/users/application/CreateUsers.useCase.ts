@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
-import { Users } from '../domain/Users';
+import { User } from '../domain/User';
 import type { CreateUserCommand } from './dto/CreateUser.command';
 import { UsersMapper } from './mappers/UsersMapper';
 import { PasswordService } from './services/PasswordService';
@@ -14,7 +14,7 @@ export class CreateUsersUseCase {
     private repo: IUsersRepository,
     private readonly passwordService: PasswordService,
   ) {}
-  async execute(dto: CreateUserCommand): Promise<Users> {
+  async execute(dto: CreateUserCommand): Promise<User> {
     const passwordHash = await this.passwordService.hash(dto.password);
     const updatedOrCreatedBy = dto.updatedOrCreatedBy ?? 'self-registration';
     const roles =

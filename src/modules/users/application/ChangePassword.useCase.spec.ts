@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import type { IUsersRepository } from '../domain/IUsers.repository';
-import type { Users } from '../domain/Users';
+import type { User } from '../domain/User';
 import { ChangePasswordUseCase } from './ChangePassword.useCase';
 import type { ChangePasswordCommand } from './dto/ChangePassword.command';
 import type { PasswordService } from './services/PasswordService';
@@ -35,7 +36,7 @@ describe('ChangePasswordUseCase', () => {
     });
     repo.findById.mockResolvedValue(user);
 
-    const updatedUser = { ...user, passwordHash: 'new-hash' } as Users;
+    const updatedUser = { ...user, passwordHash: 'new-hash' } as User;
     repo.update.mockResolvedValue(updatedUser);
 
     const dto: ChangePasswordCommand = {
@@ -71,7 +72,7 @@ describe('ChangePasswordUseCase', () => {
         currentPassword: 'old',
         newPassword: 'new',
       }),
-    ).rejects.toBeInstanceOf(NotFoundException);
+    ).rejects.toBeInstanceOf(UserNotFoundError);
   });
 
   it('throws when current password is invalid', async () => {
@@ -90,7 +91,7 @@ describe('ChangePasswordUseCase', () => {
         currentPassword: 'wrong',
         newPassword: 'new',
       }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
     expect(repo.update).not.toHaveBeenCalled();
   });
 
@@ -113,7 +114,7 @@ describe('ChangePasswordUseCase', () => {
         currentPassword: 'whatever',
         newPassword: 'new-pass',
       }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
     expect(passwordService.verify).not.toHaveBeenCalled();
     expect(repo.update).not.toHaveBeenCalled();
   });

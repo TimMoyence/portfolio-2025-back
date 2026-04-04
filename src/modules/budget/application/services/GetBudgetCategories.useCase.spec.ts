@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ForbiddenException } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors';
 import { GetBudgetCategoriesUseCase } from './GetBudgetCategories.useCase';
 import type { IBudgetCategoryRepository } from '../../domain/IBudgetCategory.repository';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
@@ -25,7 +25,7 @@ describe('GetBudgetCategoriesUseCase', () => {
 
     await expect(
       useCase.execute({ userId: 'user-1', groupId: 'group-1' }),
-    ).rejects.toThrow(ForbiddenException);
+    ).rejects.toThrow(InsufficientPermissionsError);
   });
 
   it('devrait retourner les categories du groupe', async () => {

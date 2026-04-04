@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ForbiddenException } from '@nestjs/common';
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors';
 import { CreateBudgetCategoryUseCase } from './CreateBudgetCategory.useCase';
 import {
   buildBudgetCategory,
@@ -29,7 +29,7 @@ describe('CreateBudgetCategoryUseCase', () => {
         name: 'Custom',
         budgetType: 'VARIABLE',
       }),
-    ).rejects.toThrow(ForbiddenException);
+    ).rejects.toThrow(InsufficientPermissionsError);
   });
 
   it('devrait creer une categorie via le domaine et le repository', async () => {

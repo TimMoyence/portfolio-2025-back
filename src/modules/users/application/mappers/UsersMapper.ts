@@ -1,5 +1,5 @@
 import { mapDomainValidation } from '../../../../common/application/mappers/map-domain-validation';
-import { Users } from '../../domain/Users';
+import { User } from '../../domain/User';
 import type { CreateUserCommand } from '../dto/CreateUser.command';
 import type { UpdateUserCommand } from '../dto/UpdateUser.command';
 
@@ -7,9 +7,9 @@ export class UsersMapper {
   static fromCreateCommand(
     command: CreateUserCommand,
     passwordHash: string,
-  ): Users {
+  ): User {
     return mapDomainValidation(() =>
-      Users.create({
+      User.create({
         email: command.email,
         passwordHash,
         firstName: command.firstName,
@@ -23,16 +23,16 @@ export class UsersMapper {
   }
 
   /** @deprecated Utiliser fromCreateCommand a la place. */
-  static fromCreateDto(dto: CreateUserCommand, passwordHash: string): Users {
+  static fromCreateDto(dto: CreateUserCommand, passwordHash: string): User {
     return this.fromCreateCommand(dto, passwordHash);
   }
 
   static fromUpdateCommand(
     command: UpdateUserCommand,
     passwordHash?: string,
-  ): Partial<Users> {
+  ): Partial<User> {
     return mapDomainValidation(() =>
-      Users.update({
+      User.update({
         email: command.email,
         passwordHash,
         firstName: command.firstName,
@@ -48,7 +48,7 @@ export class UsersMapper {
   static fromUpdateDto(
     dto: UpdateUserCommand,
     passwordHash?: string,
-  ): Partial<Users> {
+  ): Partial<User> {
     return this.fromUpdateCommand(dto, passwordHash);
   }
 
@@ -59,9 +59,9 @@ export class UsersMapper {
     lastName: string;
     googleId: string;
     roles: string[];
-  }): Users {
+  }): User {
     return mapDomainValidation(() =>
-      Users.create({
+      User.create({
         email: props.email,
         firstName: props.firstName,
         lastName: props.lastName,

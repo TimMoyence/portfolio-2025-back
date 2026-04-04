@@ -1,4 +1,5 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import type { IWeatherPreferencesRepository } from '../domain/IWeatherPreferences.repository';
 import { WEATHER_PREFERENCES_REPOSITORY } from '../domain/token';
 import type { WeatherLevel } from '../domain/WeatherUserPreferences';
@@ -24,7 +25,7 @@ export class UpdateUserPreferencesUseCase {
     command: UpdatePreferencesCommand,
   ): Promise<WeatherUserPreferences> {
     if (command.level && !VALID_LEVELS.includes(command.level)) {
-      throw new BadRequestException(
+      throw new InvalidInputError(
         `Niveau invalide : ${command.level}. Valeurs autorisees : ${VALID_LEVELS.join(', ')}`,
       );
     }

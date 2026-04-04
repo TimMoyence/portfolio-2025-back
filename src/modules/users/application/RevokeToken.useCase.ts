@@ -1,4 +1,5 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY } from '../domain/token';
@@ -19,7 +20,7 @@ export class RevokeTokenUseCase {
     const stored = await this.refreshTokensRepo.findByTokenHash(tokenHash);
 
     if (!stored) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new InvalidCredentialsError('Invalid refresh token');
     }
 
     // Revoquer tous les tokens de l'utilisateur pour une securite maximale

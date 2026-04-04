@@ -1,12 +1,9 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
-import { Users } from '../domain/Users';
+import { User } from '../domain/User';
 import type { ChangePasswordCommand } from './dto/ChangePassword.command';
 import { PasswordService } from './services/PasswordService';
 
@@ -19,19 +16,19 @@ export class ChangePasswordUseCase {
     private readonly passwordService: PasswordService,
   ) {}
 
-  async execute(dto: ChangePasswordCommand): Promise<Users> {
+  async execute(dto: ChangePasswordCommand): Promise<User> {
     const user = await this.repo.findById(dto.userId);
 
     if (!user) {
-      throw new NotFoundException(`User with id ${dto.userId} was not found`);
+      throw new UserNotFoundError(`User with id ${dto.userId} was not found`);
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Inactive user cannot change password');
+      throw new InvalidCredentialsError('Inactive user cannot change password');
     }
 
     if (!user.passwordHash) {
-      throw new UnauthorizedException('No password set for this account');
+      throw new InvalidCredentialsError('No password set for this account');
     }
 
     const validCurrentPassword = await this.passwordService.verify(
@@ -40,7 +37,7 @@ export class ChangePasswordUseCase {
     );
 
     if (!validCurrentPassword) {
-      throw new UnauthorizedException('Current password is invalid');
+      throw new InvalidCredentialsError('Current password is invalid');
     }
 
     const newPasswordHash = await this.passwordService.hash(dto.newPassword);

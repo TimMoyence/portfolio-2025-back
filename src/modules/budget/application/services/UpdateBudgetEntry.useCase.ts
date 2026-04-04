@@ -1,9 +1,6 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
+import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import type { BudgetEntry } from '../../domain/BudgetEntry';
 import type { IBudgetEntryRepository } from '../../domain/IBudgetEntry.repository';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
@@ -26,7 +23,7 @@ export class UpdateBudgetEntryUseCase {
   async execute(command: UpdateBudgetEntryCommand): Promise<BudgetEntry> {
     const entry = await this.entryRepo.findById(command.entryId);
     if (!entry) {
-      throw new NotFoundException('Budget entry not found');
+      throw new ResourceNotFoundError('Budget entry not found');
     }
 
     const isMember = await this.groupRepo.isMember(
@@ -34,7 +31,9 @@ export class UpdateBudgetEntryUseCase {
       command.userId,
     );
     if (!isMember) {
-      throw new ForbiddenException('User is not a member of this budget group');
+      throw new InsufficientPermissionsError(
+        'User is not a member of this budget group',
+      );
     }
 
     return this.entryRepo.update(command.entryId, {

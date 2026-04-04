@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
-import { Users } from '../domain/Users';
+import { User } from '../domain/User';
 
 /** Recupere un utilisateur unique par son identifiant. */
 @Injectable()
@@ -11,7 +11,7 @@ export class ListOneUserUseCase {
     private readonly repo: IUsersRepository,
   ) {}
 
-  execute(id: string): Promise<Users | null> {
+  execute(id: string): Promise<User | null> {
     return this.repo.findById(id);
   }
 }

@@ -1,10 +1,11 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
-import { Users } from '../domain/Users';
+import { User } from '../domain/User';
 import type { LoginCommand } from './dto/Login.command';
 import { JwtTokenService } from './services/JwtTokenService';
 import { PasswordService } from './services/PasswordService';
@@ -16,7 +17,7 @@ export interface AuthResult {
   accessToken: string;
   expiresIn: number;
   refreshToken: string;
-  user: Users;
+  user: User;
 }
 
 /** Authentifie un utilisateur par email/mot de passe et retourne un JWT + refresh token. */
@@ -35,11 +36,11 @@ export class AuthenticateUserUseCase {
     const user = await this.repo.findByEmail(dto.email);
 
     if (!user || !user.isActive) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new InvalidCredentialsError('Invalid credentials');
     }
 
     if (!user.passwordHash) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new InvalidCredentialsError('Invalid credentials');
     }
 
     const passwordMatches = await this.passwordService.verify(
@@ -48,7 +49,7 @@ export class AuthenticateUserUseCase {
     );
 
     if (!passwordMatches) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new InvalidCredentialsError('Invalid credentials');
     }
 
     const { token, expiresIn } = await this.jwtTokenService.sign({

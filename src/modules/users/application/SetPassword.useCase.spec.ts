@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import {
-  ConflictException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import { SetPasswordUseCase } from './SetPassword.useCase';
 import {
   buildUser,
@@ -54,7 +52,7 @@ describe('SetPasswordUseCase', () => {
 
     await expect(
       useCase.execute({ userId: 'user-1', newPassword: 'NewPassword123!' }),
-    ).rejects.toBeInstanceOf(ConflictException);
+    ).rejects.toBeInstanceOf(ResourceConflictError);
 
     expect(usersRepository.update).not.toHaveBeenCalled();
   });
@@ -64,7 +62,7 @@ describe('SetPasswordUseCase', () => {
 
     await expect(
       useCase.execute({ userId: 'missing', newPassword: 'NewPassword123!' }),
-    ).rejects.toBeInstanceOf(NotFoundException);
+    ).rejects.toBeInstanceOf(UserNotFoundError);
 
     usersRepository.findById.mockResolvedValue(
       buildUser({ id: 'user-1', isActive: false, passwordHash: null }),
@@ -72,6 +70,6 @@ describe('SetPasswordUseCase', () => {
 
     await expect(
       useCase.execute({ userId: 'user-1', newPassword: 'NewPassword123!' }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });
 });

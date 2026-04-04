@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors';
 import { GetBudgetSummaryUseCase } from './GetBudgetSummary.useCase';
 import {
   createMockBudgetEntryRepo,
@@ -32,7 +32,7 @@ describe('GetBudgetSummaryUseCase', () => {
     groupRepo.isMember.mockResolvedValue(false);
 
     await expect(useCase.execute(defaultParams)).rejects.toThrow(
-      ForbiddenException,
+      InsufficientPermissionsError,
     );
   });
 

@@ -1,5 +1,8 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { TokenExpiredError } from '../../../common/domain/errors/TokenExpiredError';
+import { TokenReuseDetectedError } from '../../../common/domain/errors/TokenReuseDetectedError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { TokenHash } from '../domain/TokenHash';
@@ -29,17 +32,17 @@ export class RefreshTokensUseCase {
     const stored = await this.refreshTokensRepo.findByTokenHash(tokenHash);
 
     if (!stored) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new InvalidCredentialsError('Invalid refresh token');
     }
 
     if (stored.revoked) {
       // Detection de reutilisation : revoquer tous les tokens de l'utilisateur
       await this.refreshTokensRepo.revokeByUserId(stored.userId);
-      throw new UnauthorizedException('Refresh token reuse detected');
+      throw new TokenReuseDetectedError('Refresh token reuse detected');
     }
 
     if (stored.expiresAt < new Date()) {
-      throw new UnauthorizedException('Refresh token expired');
+      throw new TokenExpiredError('Refresh token expired');
     }
 
     // Revoquer l'ancien token (rotation)
@@ -48,7 +51,7 @@ export class RefreshTokensUseCase {
     const user = await this.usersRepo.findById(stored.userId);
 
     if (!user || !user.isActive) {
-      throw new UnauthorizedException('User not found or inactive');
+      throw new InvalidCredentialsError('User not found or inactive');
     }
 
     // Generer un nouveau couple access + refresh

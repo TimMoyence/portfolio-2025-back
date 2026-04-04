@@ -1,4 +1,5 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { TokenHash } from '../domain/TokenHash';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -33,13 +34,13 @@ export class ResetPasswordUseCase {
       await this.passwordResetTokensRepository.findActiveByTokenHash(tokenHash);
 
     if (!token || !token.id) {
-      throw new BadRequestException(this.invalidTokenMessage);
+      throw new InvalidInputError(this.invalidTokenMessage);
     }
 
     const user = await this.usersRepository.findById(token.userId);
 
     if (!user || !user.isActive || !user.id) {
-      throw new BadRequestException(this.invalidTokenMessage);
+      throw new InvalidInputError(this.invalidTokenMessage);
     }
 
     const passwordHash = await this.passwordService.hash(dto.newPassword);

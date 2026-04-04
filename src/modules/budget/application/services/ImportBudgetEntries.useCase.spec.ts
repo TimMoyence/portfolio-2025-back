@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ForbiddenException } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
 import { ImportBudgetEntriesUseCase } from './ImportBudgetEntries.useCase';
 import {
   createMockBudgetEntryRepo,
@@ -35,7 +35,7 @@ describe('ImportBudgetEntriesUseCase', () => {
         groupId: 'group-1',
         csvContent: 'Started Date,Description,Amount,State',
       }),
-    ).rejects.toThrow(ForbiddenException);
+    ).rejects.toThrow(InsufficientPermissionsError);
   });
 
   it('devrait parser un CSV valide et creer les entrees', async () => {

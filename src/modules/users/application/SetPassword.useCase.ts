@@ -1,13 +1,10 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
-import { Users } from '../domain/Users';
+import { User } from '../domain/User';
 import type { SetPasswordCommand } from './dto/SetPassword.command';
 import { PasswordService } from './services/PasswordService';
 
@@ -20,19 +17,19 @@ export class SetPasswordUseCase {
     private readonly passwordService: PasswordService,
   ) {}
 
-  async execute(dto: SetPasswordCommand): Promise<Users> {
+  async execute(dto: SetPasswordCommand): Promise<User> {
     const user = await this.usersRepository.findById(dto.userId);
 
     if (!user) {
-      throw new NotFoundException(`User with id ${dto.userId} was not found`);
+      throw new UserNotFoundError(`User with id ${dto.userId} was not found`);
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Inactive user cannot set password');
+      throw new InvalidCredentialsError('Inactive user cannot set password');
     }
 
     if (user.passwordHash) {
-      throw new ConflictException('Password is already configured');
+      throw new ResourceConflictError('Password is already configured');
     }
 
     const passwordHash = await this.passwordService.hash(dto.newPassword);

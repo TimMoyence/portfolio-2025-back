@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { BadRequestException } from '@nestjs/common';
+import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import { ResetPasswordUseCase } from './ResetPassword.useCase';
 import {
   buildUser,
@@ -61,7 +61,7 @@ describe('ResetPasswordUseCase', () => {
 
     await expect(
       useCase.execute({ token: 'invalid-token', newPassword: 'StrongPass1!' }),
-    ).rejects.toBeInstanceOf(BadRequestException);
+    ).rejects.toBeInstanceOf(InvalidInputError);
 
     expect(usersRepository.update).not.toHaveBeenCalled();
     expect(tokensRepository.markUsed).not.toHaveBeenCalled();
@@ -77,7 +77,7 @@ describe('ResetPasswordUseCase', () => {
 
     await expect(
       useCase.execute({ token: 'valid-token', newPassword: 'StrongPass1!' }),
-    ).rejects.toBeInstanceOf(BadRequestException);
+    ).rejects.toBeInstanceOf(InvalidInputError);
 
     usersRepository.findById.mockResolvedValue(
       buildUser({ id: 'user-1', isActive: false }),
@@ -85,6 +85,6 @@ describe('ResetPasswordUseCase', () => {
 
     await expect(
       useCase.execute({ token: 'valid-token', newPassword: 'StrongPass1!' }),
-    ).rejects.toBeInstanceOf(BadRequestException);
+    ).rejects.toBeInstanceOf(InvalidInputError);
   });
 });

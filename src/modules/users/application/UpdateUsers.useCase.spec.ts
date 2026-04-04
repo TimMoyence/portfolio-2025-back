@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { NotFoundException } from '@nestjs/common';
+import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import type { UpdateUserCommand } from './dto/UpdateUser.command';
 import type { PasswordService } from './services/PasswordService';
@@ -58,7 +58,7 @@ describe('UpdateUsersUseCase', () => {
 
     await expect(
       useCase.execute('missing', {} as UpdateUserCommand),
-    ).rejects.toBeInstanceOf(NotFoundException);
+    ).rejects.toBeInstanceOf(UserNotFoundError);
     expect(repo.update).not.toHaveBeenCalled();
   });
 });

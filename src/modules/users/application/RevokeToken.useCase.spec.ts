@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { UnauthorizedException } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import { RevokeTokenUseCase } from './RevokeToken.useCase';
 import {
@@ -29,11 +29,11 @@ describe('RevokeTokenUseCase', () => {
     );
   });
 
-  it('lance UnauthorizedException quand le token est inexistant', async () => {
+  it('lance InvalidCredentialsError quand le token est inexistant', async () => {
     refreshTokensRepo.findByTokenHash.mockResolvedValue(null);
 
     await expect(useCase.execute('unknown-token')).rejects.toBeInstanceOf(
-      UnauthorizedException,
+      InvalidCredentialsError,
     );
   });
 });

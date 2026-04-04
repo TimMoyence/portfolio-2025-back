@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { BadRequestException } from '@nestjs/common';
+import { InvalidInputError } from '../../../common/domain/errors';
 import {
   buildWeatherPreferences,
   createMockWeatherPreferencesRepo,
@@ -43,7 +43,7 @@ describe('UpdateUserPreferencesUseCase', () => {
         userId: 'user-1',
         level: 'invalid' as 'discovery',
       }),
-    ).rejects.toThrow(BadRequestException);
+    ).rejects.toThrow(InvalidInputError);
   });
 
   it('devrait mettre a jour les villes favorites', async () => {

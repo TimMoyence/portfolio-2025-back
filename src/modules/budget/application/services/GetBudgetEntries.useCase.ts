@@ -1,4 +1,5 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
 import type { BudgetEntry } from '../../domain/BudgetEntry';
 import type { IBudgetEntryRepository } from '../../domain/IBudgetEntry.repository';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
@@ -21,7 +22,9 @@ export class GetBudgetEntriesUseCase {
   async execute(query: GetBudgetEntriesQuery): Promise<BudgetEntry[]> {
     const isMember = await this.groupRepo.isMember(query.groupId, query.userId);
     if (!isMember) {
-      throw new ForbiddenException('User is not a member of this budget group');
+      throw new InsufficientPermissionsError(
+        'User is not a member of this budget group',
+      );
     }
     return this.entryRepo.findByFilters({
       groupId: query.groupId,

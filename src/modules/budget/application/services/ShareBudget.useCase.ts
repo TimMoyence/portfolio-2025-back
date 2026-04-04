@@ -1,11 +1,7 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
+import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
 import type { IBudgetShareNotifier } from '../../domain/IBudgetShareNotifier';
 import type { IUsersRepository } from '../../../users/domain/IUsers.repository';
@@ -35,14 +31,16 @@ export class ShareBudgetUseCase {
   ): Promise<{ shared: true; userId: string }> {
     const group = await this.groupRepo.findById(command.groupId);
     if (!group) {
-      throw new NotFoundException('Budget group not found');
+      throw new ResourceNotFoundError('Budget group not found');
     }
     if (group.ownerId !== command.userId) {
-      throw new ForbiddenException('Only the group owner can share the budget');
+      throw new InsufficientPermissionsError(
+        'Only the group owner can share the budget',
+      );
     }
     const targetUser = await this.usersRepo.findByEmail(command.targetEmail);
     if (!targetUser || !targetUser.id) {
-      throw new NotFoundException(
+      throw new ResourceNotFoundError(
         `Aucun compte trouve pour ${command.targetEmail}. L'utilisateur doit d'abord creer un compte avec cette adresse email.`,
       );
     }

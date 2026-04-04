@@ -1,4 +1,5 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import { AuditSummarySnapshot } from '../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
@@ -14,7 +15,7 @@ export class GetAuditSummaryUseCase {
   async execute(auditId: string): Promise<AuditSummarySnapshot> {
     const summary = await this.repo.findSummaryById(auditId);
     if (!summary) {
-      throw new NotFoundException('Audit not found.');
+      throw new ResourceNotFoundError('Audit not found.');
     }
     return summary;
   }

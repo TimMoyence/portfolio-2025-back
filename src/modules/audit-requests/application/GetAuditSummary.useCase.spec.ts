@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { ResourceNotFoundError } from '../../../common/domain/errors';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { GetAuditSummaryUseCase } from './GetAuditSummary.useCase';
 import { createMockAuditRequestsRepo } from '../../../../test/factories/audit-requests.factory';
@@ -32,7 +32,7 @@ describe('GetAuditSummaryUseCase', () => {
     const useCase = new GetAuditSummaryUseCase(repo);
 
     await expect(useCase.execute('missing-audit')).rejects.toBeInstanceOf(
-      NotFoundException,
+      ResourceNotFoundError,
     );
   });
 });

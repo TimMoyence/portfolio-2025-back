@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { UnauthorizedException } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { AuthenticateGoogleUserUseCase } from './AuthenticateGoogleUser.useCase';
@@ -115,30 +115,30 @@ describe('AuthenticateGoogleUserUseCase', () => {
     expect(result.refreshToken).toBeDefined();
   });
 
-  it('lance UnauthorizedException quand le token Google est invalide', async () => {
+  it('lance InvalidCredentialsError quand le token Google est invalide', async () => {
     mockVerifyIdToken.mockRejectedValue(new Error('Invalid token'));
 
     await expect(useCase.execute('bad-token')).rejects.toBeInstanceOf(
-      UnauthorizedException,
+      InvalidCredentialsError,
     );
   });
 
-  it("lance UnauthorizedException quand le email Google n'est pas verifie", async () => {
+  it("lance InvalidCredentialsError quand le email Google n'est pas verifie", async () => {
     mockVerifyIdToken.mockResolvedValue({
       getPayload: () => ({ ...GOOGLE_PAYLOAD, email_verified: false }),
     });
 
     await expect(useCase.execute('unverified-token')).rejects.toBeInstanceOf(
-      UnauthorizedException,
+      InvalidCredentialsError,
     );
   });
 
-  it('lance UnauthorizedException quand le user trouve par googleId est inactif', async () => {
+  it('lance InvalidCredentialsError quand le user trouve par googleId est inactif', async () => {
     const inactiveUser = buildUser({ isActive: false });
     repo.findByGoogleId.mockResolvedValue(inactiveUser);
 
     await expect(useCase.execute('valid-id-token')).rejects.toBeInstanceOf(
-      UnauthorizedException,
+      InvalidCredentialsError,
     );
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
   });

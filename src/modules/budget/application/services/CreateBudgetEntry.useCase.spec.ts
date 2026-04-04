@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ForbiddenException } from '@nestjs/common';
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors';
 import { CreateBudgetEntryUseCase } from './CreateBudgetEntry.useCase';
 import {
   buildBudgetEntry,
@@ -31,7 +31,7 @@ describe('CreateBudgetEntryUseCase', () => {
         amount: -50,
         type: 'VARIABLE',
       }),
-    ).rejects.toThrow(ForbiddenException);
+    ).rejects.toThrow(InsufficientPermissionsError);
   });
 
   it('devrait creer une entree via le domaine et le repository', async () => {

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { UnauthorizedException } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { TokenExpiredError } from '../../../common/domain/errors/TokenExpiredError';
+import { TokenReuseDetectedError } from '../../../common/domain/errors/TokenReuseDetectedError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { RefreshTokensUseCase } from './RefreshTokens.useCase';
@@ -57,45 +59,45 @@ describe('RefreshTokensUseCase', () => {
     expect(result.user).toBe(user);
   });
 
-  it('lance UnauthorizedException quand le token est inexistant', async () => {
+  it('lance InvalidCredentialsError quand le token est inexistant', async () => {
     refreshTokensRepo.findByTokenHash.mockResolvedValue(null);
 
     await expect(useCase.execute('unknown-token')).rejects.toBeInstanceOf(
-      UnauthorizedException,
+      InvalidCredentialsError,
     );
   });
 
-  it('revoque tous les tokens et lance UnauthorizedException quand le token est deja revoque (reutilisation)', async () => {
+  it('revoque tous les tokens et lance TokenReuseDetectedError quand le token est deja revoque (reutilisation)', async () => {
     const stored = buildRefreshToken({ revoked: true });
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
 
     await expect(useCase.execute('reused-token')).rejects.toBeInstanceOf(
-      UnauthorizedException,
+      TokenReuseDetectedError,
     );
     expect(refreshTokensRepo.revokeByUserId).toHaveBeenCalledWith(
       stored.userId,
     );
   });
 
-  it('lance UnauthorizedException quand le token est expire', async () => {
+  it('lance TokenExpiredError quand le token est expire', async () => {
     const stored = buildRefreshToken({
       expiresAt: new Date(Date.now() - 1000),
     });
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
 
     await expect(useCase.execute('expired-token')).rejects.toBeInstanceOf(
-      UnauthorizedException,
+      TokenExpiredError,
     );
   });
 
-  it("lance UnauthorizedException quand l'utilisateur est introuvable ou inactif", async () => {
+  it("lance InvalidCredentialsError quand l'utilisateur est introuvable ou inactif", async () => {
     const stored = buildRefreshToken();
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
     refreshTokensRepo.revokeById.mockResolvedValue(undefined);
     usersRepo.findById.mockResolvedValue(null);
 
     await expect(useCase.execute('valid-token')).rejects.toBeInstanceOf(
-      UnauthorizedException,
+      InvalidCredentialsError,
     );
   });
 });

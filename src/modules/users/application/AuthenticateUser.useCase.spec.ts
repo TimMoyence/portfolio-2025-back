@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { UnauthorizedException } from '@nestjs/common';
+import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { AuthenticateUserUseCase } from './AuthenticateUser.useCase';
@@ -83,7 +83,7 @@ describe('AuthenticateUserUseCase', () => {
 
     await expect(
       useCase.execute({ email: 'missing@example.com', password: 'password' }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });
 
   it('throws when the user is inactive', async () => {
@@ -100,7 +100,7 @@ describe('AuthenticateUserUseCase', () => {
 
     await expect(
       useCase.execute({ email: 'inactive@example.com', password: 'password' }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
     expect(passwordService.verify).not.toHaveBeenCalled();
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
   });
@@ -118,7 +118,7 @@ describe('AuthenticateUserUseCase', () => {
 
     await expect(
       useCase.execute({ email: 'google@example.com', password: 'password' }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
     expect(passwordService.verify).not.toHaveBeenCalled();
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
   });
@@ -139,7 +139,7 @@ describe('AuthenticateUserUseCase', () => {
         email: 'johnny@example.com',
         password: 'bad-password',
       }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
     expect(passwordService.verify).toHaveBeenCalledWith(
       'bad-password',
       user.passwordHash,

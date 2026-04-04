@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/interfaces/filters/all-exceptions.filter';
+import { DomainExceptionFilter } from './common/interfaces/filters/DomainExceptionFilter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -48,7 +49,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(new AllExceptionsFilter(), new DomainExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({

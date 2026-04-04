@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
+import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import type { ConfigService } from '@nestjs/config';
 import { ShareBudgetUseCase } from './ShareBudget.useCase';
 import {
@@ -63,7 +64,7 @@ describe('ShareBudgetUseCase', () => {
     groupRepo.findById.mockResolvedValue(null);
 
     await expect(useCase.execute(command)).rejects.toBeInstanceOf(
-      NotFoundException,
+      ResourceNotFoundError,
     );
   });
 
@@ -73,7 +74,7 @@ describe('ShareBudgetUseCase', () => {
     );
 
     await expect(useCase.execute(command)).rejects.toBeInstanceOf(
-      ForbiddenException,
+      InsufficientPermissionsError,
     );
   });
 
@@ -81,7 +82,7 @@ describe('ShareBudgetUseCase', () => {
     usersRepo.findByEmail.mockResolvedValue(null);
 
     await expect(useCase.execute(command)).rejects.toBeInstanceOf(
-      NotFoundException,
+      ResourceNotFoundError,
     );
   });
 
