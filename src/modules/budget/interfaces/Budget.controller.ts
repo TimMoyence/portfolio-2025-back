@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -34,6 +35,8 @@ import { GetBudgetEntriesUseCase } from '../application/services/GetBudgetEntrie
 import { GetBudgetSummaryUseCase } from '../application/services/GetBudgetSummary.useCase';
 import { ImportBudgetEntriesUseCase } from '../application/services/ImportBudgetEntries.useCase';
 import { UpdateBudgetEntryUseCase } from '../application/services/UpdateBudgetEntry.useCase';
+import { DeleteBudgetEntryUseCase } from '../application/services/DeleteBudgetEntry.useCase';
+import { UpdateBudgetCategoryUseCase } from '../application/services/UpdateBudgetCategory.useCase';
 import { ShareBudgetUseCase } from '../application/services/ShareBudget.useCase';
 import { BudgetCategoryResponseDto } from './dto/BudgetCategory.response.dto';
 import { BudgetEntryResponseDto } from './dto/BudgetEntry.response.dto';
@@ -45,12 +48,16 @@ import { CreateBudgetGroupDto } from './dto/CreateBudgetGroup.dto';
 import { ImportBudgetEntriesDto } from './dto/ImportBudgetEntries.dto';
 import { ShareBudgetDto } from './dto/ShareBudget.dto';
 import { UpdateBudgetEntryDto } from './dto/UpdateBudgetEntry.dto';
+import { UpdateBudgetCategoryDto } from './dto/UpdateBudgetCategory.dto';
 
 /**
- * Controleur REST du module Budget.
+ * Controleur REST principal du module Budget.
  *
- * Expose 8 endpoints pour la gestion des groupes, entrees,
+ * Expose les endpoints pour la gestion des groupes, entrees,
  * categories et le partage de budget. Protege par le role 'budget'.
+ *
+ * Les endpoints recurring et export PDF sont delegues a
+ * {@link BudgetRecurringController} et {@link BudgetExportController}.
  */
 @ApiTags('budget')
 @ApiBearerAuth()
@@ -68,6 +75,8 @@ export class BudgetController {
     private readonly updateEntry: UpdateBudgetEntryUseCase,
     private readonly createCategory: CreateBudgetCategoryUseCase,
     private readonly getCategories: GetBudgetCategoriesUseCase,
+    private readonly deleteEntry: DeleteBudgetEntryUseCase,
+    private readonly updateCategory: UpdateBudgetCategoryUseCase,
     private readonly shareBudget: ShareBudgetUseCase,
   ) {}
 
@@ -237,6 +246,40 @@ export class BudgetController {
       groupId,
     });
     return categories.map((c) => BudgetCategoryMapper.toResponse(c));
+  }
+
+  @Delete('entries/:id')
+  @ApiOperation({ summary: 'Supprimer une entree de budget' })
+  @ApiOkResponse({ description: 'Entree supprimee avec succes' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
+  async deleteBudgetEntry(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request,
+  ) {
+    const user = req.user!;
+    await this.deleteEntry.execute({ userId: user.sub, entryId: id });
+  }
+
+  @Patch('categories/:id')
+  @ApiOperation({ summary: 'Mettre a jour une categorie de budget' })
+  @ApiOkResponse({ type: BudgetCategoryResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
+  async updateBudgetCategory(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateBudgetCategoryDto,
+    @Req() req: Request,
+  ) {
+    const user = req.user!;
+    const category = await this.updateCategory.execute({
+      userId: user.sub,
+      categoryId: id,
+      name: dto.name,
+      color: dto.color,
+      icon: dto.icon,
+      budgetType: dto.budgetType,
+      budgetLimit: dto.budgetLimit,
+    });
+    return BudgetCategoryMapper.toResponse(category);
   }
 
   @Post('share')
