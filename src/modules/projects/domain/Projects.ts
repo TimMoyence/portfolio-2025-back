@@ -1,6 +1,10 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { PublishableStatus } from '../../../common/domain/types/publishable-status';
 import { optionalText } from '../../../common/domain/validation/domain-validators';
+import {
+  resolvePublishableStatus,
+  resolveOrder,
+} from '../../../common/domain/validation/status-order.utils';
 import { Slug } from '../../../common/domain/value-objects/Slug';
 
 export type ProjectType = 'CLIENT' | 'SIDE';
@@ -54,8 +58,8 @@ export class Projects {
       30,
       50,
     );
-    project.status = this.resolveStatus(props.status);
-    project.order = this.resolveOrder(props.order);
+    project.status = resolvePublishableStatus(props.status, 'project status');
+    project.order = resolveOrder(props.order, 'project order');
     return project;
   }
 
@@ -135,34 +139,5 @@ export class Projects {
     }
 
     return raw;
-  }
-
-  private static resolveStatus(raw: unknown): ProjectStatus {
-    if (raw === undefined || raw === null) {
-      return 'PUBLISHED';
-    }
-
-    if (raw !== 'DRAFT' && raw !== 'PUBLISHED' && raw !== 'ARCHIVED') {
-      throw new DomainValidationError('Invalid project status');
-    }
-
-    return raw;
-  }
-
-  private static resolveOrder(raw: unknown): number {
-    if (raw === undefined || raw === null) {
-      return 0;
-    }
-
-    if (!Number.isInteger(raw)) {
-      throw new DomainValidationError('Invalid project order');
-    }
-
-    const value = Number(raw);
-    if (value < 0 || value > 10000) {
-      throw new DomainValidationError('Invalid project order');
-    }
-
-    return value;
   }
 }
