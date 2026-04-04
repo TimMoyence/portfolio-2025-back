@@ -153,10 +153,10 @@
     ],
     "coverageThreshold": {
       "global": {
-        "statements": 74.69,
-        "branches": 63.04,
-        "functions": 61.94,
-        "lines": 75.08
+        "statements": 77,
+        "branches": 68,
+        "functions": 67,
+        "lines": 78
       }
     },
     "coverageDirectory": "../coverage",
