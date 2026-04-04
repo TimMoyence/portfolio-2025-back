@@ -214,6 +214,11 @@ export class WeatherController {
       defaultCityIndex: dto.defaultCityIndex,
       tooltipsSeen: dto.tooltipsSeen,
       units: dto.units,
+      overviewGranularity: dto.overviewGranularity as
+        | 'day'
+        | '3h'
+        | '1h'
+        | undefined,
     });
     return WeatherPreferencesDto.fromDomain(prefs);
   }

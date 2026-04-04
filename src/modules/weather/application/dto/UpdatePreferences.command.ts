@@ -1,5 +1,6 @@
 import type {
   FavoriteCity,
+  OverviewGranularity,
   UnitPreferences,
   WeatherLevel,
 } from '../../domain/WeatherUserPreferences';
@@ -12,4 +13,5 @@ export interface UpdatePreferencesCommand {
   defaultCityIndex?: number | null;
   tooltipsSeen?: string[];
   units?: Partial<UnitPreferences>;
+  overviewGranularity?: OverviewGranularity;
 }

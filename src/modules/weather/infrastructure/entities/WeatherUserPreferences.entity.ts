@@ -44,6 +44,14 @@ export class WeatherUserPreferencesEntity {
   })
   units: { temperature: string; speed: string; pressure: string };
 
+  @Column({
+    name: 'overview_granularity',
+    type: 'varchar',
+    length: 5,
+    default: 'day',
+  })
+  overviewGranularity!: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

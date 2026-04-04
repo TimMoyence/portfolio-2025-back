@@ -121,8 +121,10 @@ describe('WeatherController', () => {
       userId: 'user-1',
       level: 'curious',
       favoriteCities: undefined,
+      defaultCityIndex: undefined,
       tooltipsSeen: undefined,
       units: { temperature: 'fahrenheit' },
+      overviewGranularity: undefined,
     });
   });
 

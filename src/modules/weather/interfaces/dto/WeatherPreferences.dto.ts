@@ -39,6 +39,12 @@ export class WeatherPreferencesDto {
   @ApiProperty({ description: "Preferences d'unites de mesure" })
   units: { temperature: string; speed: string; pressure: string };
 
+  @ApiProperty({
+    description: "Granularite de la vue d'ensemble hebdomadaire",
+    enum: ['day', '3h', '1h'],
+  })
+  overviewGranularity: string;
+
   @ApiProperty({ description: 'Date de creation' })
   createdAt: Date;
 
@@ -57,6 +63,7 @@ export class WeatherPreferencesDto {
     dto.lastUsedAt = prefs.lastUsedAt;
     dto.tooltipsSeen = prefs.tooltipsSeen;
     dto.units = prefs.units;
+    dto.overviewGranularity = prefs.overviewGranularity;
     dto.createdAt = prefs.createdAt;
     dto.updatedAt = prefs.updatedAt;
     return dto;

@@ -49,6 +49,8 @@ export class UpdateUserPreferencesUseCase {
       // Fusion partielle : les champs non fournis conservent leur valeur actuelle
       updateData.units = { ...prefs.units, ...command.units };
     }
+    if (command.overviewGranularity !== undefined)
+      updateData.overviewGranularity = command.overviewGranularity;
 
     return this.repo.update(prefs.id, updateData);
   }

@@ -16,6 +16,7 @@ import type {
 } from '../../src/modules/weather/domain/IWeatherProxy.port';
 import { WeatherUserPreferences } from '../../src/modules/weather/domain/WeatherUserPreferences';
 import type {
+  OverviewGranularity,
   UnitPreferences,
   WeatherLevel,
 } from '../../src/modules/weather/domain/WeatherUserPreferences';
@@ -37,6 +38,7 @@ export function buildWeatherPreferences(
     lastUsedAt: Date | null;
     tooltipsSeen: string[];
     units: UnitPreferences;
+    overviewGranularity: OverviewGranularity;
     createdAt: Date;
     updatedAt: Date;
   }>,
@@ -56,6 +58,7 @@ export function buildWeatherPreferences(
       speed: 'kmh',
       pressure: 'hpa',
     },
+    overviewGranularity: overrides?.overviewGranularity ?? 'day',
     createdAt: overrides?.createdAt ?? now,
     updatedAt: overrides?.updatedAt ?? now,
   });

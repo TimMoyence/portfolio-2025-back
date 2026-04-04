@@ -90,6 +90,27 @@ describe('UpdateUserPreferencesUseCase', () => {
     expect(result.level).toBe('curious');
   });
 
+  it('devrait mettre a jour la granularite overview', async () => {
+    const existing = buildWeatherPreferences({ userId: 'user-1' });
+    const updated = buildWeatherPreferences({
+      userId: 'user-1',
+      overviewGranularity: '3h',
+    });
+    repo.findByUserId.mockResolvedValue(existing);
+    repo.update.mockResolvedValue(updated);
+
+    const result = await useCase.execute({
+      userId: 'user-1',
+      overviewGranularity: '3h',
+    });
+
+    expect(result.overviewGranularity).toBe('3h');
+    expect(repo.update).toHaveBeenCalledWith(
+      existing.id,
+      expect.objectContaining({ overviewGranularity: '3h' }),
+    );
+  });
+
   it('devrait fusionner partiellement les unites', async () => {
     const existing = buildWeatherPreferences({
       userId: 'user-1',

@@ -131,4 +131,14 @@ export class UpdatePreferencesDto {
   @ValidateNested()
   @Type(() => UnitPreferencesDto)
   units?: UnitPreferencesDto;
+
+  @ApiProperty({
+    example: 'day',
+    required: false,
+    description: "Granularite de la vue d'ensemble hebdomadaire",
+    enum: ['day', '3h', '1h'],
+  })
+  @IsOptional()
+  @IsIn(['day', '3h', '1h'])
+  overviewGranularity?: string;
 }

@@ -10,6 +10,9 @@ export type SpeedUnit = 'kmh' | 'mph';
 /** Unite de pression atmospherique. */
 export type PressureUnit = 'hpa' | 'inhg';
 
+/** Granularite de la vue d'ensemble hebdomadaire. */
+export type OverviewGranularity = 'day' | '3h' | '1h';
+
 /** Preferences d'unites de mesure. */
 export interface UnitPreferences {
   temperature: TemperatureUnit;
@@ -43,6 +46,7 @@ export class WeatherUserPreferences {
   lastUsedAt: Date | null;
   tooltipsSeen: string[];
   units: UnitPreferences;
+  overviewGranularity: OverviewGranularity;
   createdAt: Date;
   updatedAt: Date;
 
@@ -56,6 +60,7 @@ export class WeatherUserPreferences {
     lastUsedAt: Date | null;
     tooltipsSeen: string[];
     units: UnitPreferences;
+    overviewGranularity: OverviewGranularity;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -68,6 +73,7 @@ export class WeatherUserPreferences {
     this.lastUsedAt = props.lastUsedAt;
     this.tooltipsSeen = props.tooltipsSeen;
     this.units = props.units;
+    this.overviewGranularity = props.overviewGranularity;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }
@@ -85,6 +91,7 @@ export class WeatherUserPreferences {
       lastUsedAt: null,
       tooltipsSeen: [],
       units: { ...DEFAULT_UNITS },
+      overviewGranularity: 'day',
       createdAt: now,
       updatedAt: now,
     });
@@ -101,6 +108,7 @@ export class WeatherUserPreferences {
     lastUsedAt: Date | null;
     tooltipsSeen: string[];
     units: UnitPreferences;
+    overviewGranularity: OverviewGranularity;
     createdAt: Date;
     updatedAt: Date;
   }): WeatherUserPreferences {

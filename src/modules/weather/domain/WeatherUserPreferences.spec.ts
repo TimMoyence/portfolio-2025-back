@@ -16,6 +16,7 @@ describe('WeatherUserPreferences', () => {
       expect(prefs.lastUsedAt).toBeNull();
       expect(prefs.tooltipsSeen).toEqual([]);
       expect(prefs.units).toEqual(DEFAULT_UNITS);
+      expect(prefs.overviewGranularity).toBe('day');
       expect(prefs.id).toBe('');
       expect(prefs.createdAt).toBeInstanceOf(Date);
       expect(prefs.updatedAt).toBeInstanceOf(Date);
@@ -44,6 +45,7 @@ describe('WeatherUserPreferences', () => {
         lastUsedAt: now,
         tooltipsSeen: ['wind', 'pressure'],
         units: { temperature: 'fahrenheit', speed: 'mph', pressure: 'inhg' },
+        overviewGranularity: '3h',
         createdAt: now,
         updatedAt: now,
       });
@@ -59,6 +61,7 @@ describe('WeatherUserPreferences', () => {
       expect(prefs.units.temperature).toBe('fahrenheit');
       expect(prefs.units.speed).toBe('mph');
       expect(prefs.units.pressure).toBe('inhg');
+      expect(prefs.overviewGranularity).toBe('3h');
     });
   });
 

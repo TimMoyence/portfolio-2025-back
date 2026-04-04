@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { IWeatherPreferencesRepository } from '../domain/IWeatherPreferences.repository';
 import type {
+  OverviewGranularity,
   UnitPreferences,
   WeatherLevel,
 } from '../domain/WeatherUserPreferences';
@@ -35,6 +36,7 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
       lastUsedAt: prefs.lastUsedAt,
       tooltipsSeen: prefs.tooltipsSeen,
       units: prefs.units,
+      overviewGranularity: prefs.overviewGranularity,
     });
     const saved = await this.repo.save(entity);
     return this.toDomain(saved);
@@ -55,6 +57,8 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
     if (data.tooltipsSeen !== undefined)
       updateData.tooltipsSeen = data.tooltipsSeen;
     if (data.units !== undefined) updateData.units = data.units;
+    if (data.overviewGranularity !== undefined)
+      updateData.overviewGranularity = data.overviewGranularity;
     if (data.defaultCityIndex !== undefined)
       updateData.defaultCityIndex = data.defaultCityIndex;
 
@@ -86,6 +90,7 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
       lastUsedAt: entity.lastUsedAt,
       tooltipsSeen: entity.tooltipsSeen,
       units: entity.units as UnitPreferences,
+      overviewGranularity: entity.overviewGranularity as OverviewGranularity,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     });

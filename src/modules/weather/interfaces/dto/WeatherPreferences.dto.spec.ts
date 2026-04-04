@@ -43,6 +43,7 @@ describe('WeatherPreferencesDto', () => {
       speed: 'mph',
       pressure: 'inhg',
     });
+    expect(dto.overviewGranularity).toBe('day');
     expect(dto.createdAt).toEqual(new Date('2026-01-01'));
     expect(dto.updatedAt).toEqual(new Date('2026-03-31'));
   });
