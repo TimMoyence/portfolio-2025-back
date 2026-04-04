@@ -24,9 +24,13 @@ import {
   ReportQualityGateResult,
   ReportQualityGateService,
 } from './report-quality-gate.service';
+import {
+  buildPayload as buildLlmPayload,
+  buildSectionPayloads as buildLlmSectionPayloads,
+  payloadBytes as payloadBytesUtil,
+} from './llm-payload.builder';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
-import { sanitizePromptInput } from './shared/prompt-sanitize.util';
 
 const userSummarySchema = z.object({
   summaryText: z.string().min(1),
@@ -248,8 +252,6 @@ export interface LangchainAuditOutput {
   adminReport: Record<string, unknown>;
 }
 
-type LlmPayloadProfile = 'summary' | 'expert' | 'expert_compact';
-
 @Injectable()
 export class LangchainAuditReportService {
   private readonly logger = new Logger(LangchainAuditReportService.name);
@@ -307,16 +309,16 @@ export class LangchainAuditReportService {
     locale: AuditLocale,
     options: LangchainAuditGenerateOptions,
   ): Promise<LangchainAuditOutput> {
-    const summaryPayload = this.buildPayload(normalizedInput, 'summary');
-    const expertPayload = this.buildPayload(normalizedInput, 'expert');
-    const expertCompactPayload = this.buildPayload(
+    const summaryPayload = buildLlmPayload(normalizedInput, 'summary');
+    const expertPayload = buildLlmPayload(normalizedInput, 'expert');
+    const expertCompactPayload = buildLlmPayload(
       normalizedInput,
       'expert_compact',
     );
 
-    const summaryPayloadBytes = this.payloadBytes(summaryPayload);
-    const expertPayloadBytes = this.payloadBytes(expertPayload);
-    const expertCompactPayloadBytes = this.payloadBytes(expertCompactPayload);
+    const summaryPayloadBytes = payloadBytesUtil(summaryPayload);
+    const expertPayloadBytes = payloadBytesUtil(expertPayload);
+    const expertCompactPayloadBytes = payloadBytesUtil(expertCompactPayload);
     this.logger.log(
       `LLM profile=stability_first_sequential model=${this.config.llmModel} summaryTimeoutMs=${this.config.llmSummaryTimeoutMs} expertTimeoutMs=${this.config.llmExpertTimeoutMs} payloadBytes(summary=${summaryPayloadBytes},expert=${expertPayloadBytes},expertCompact=${expertCompactPayloadBytes})`,
     );
@@ -435,16 +437,16 @@ export class LangchainAuditReportService {
     options: LangchainAuditGenerateOptions,
   ): Promise<LangchainAuditOutput> {
     const budget = DeadlineBudget.fromNow(this.config.llmGlobalTimeoutMs);
-    const summaryPayload = this.buildPayload(normalizedInput, 'summary');
-    const sectionPayloads = this.buildSectionPayloads(normalizedInput);
+    const summaryPayload = buildLlmPayload(normalizedInput, 'summary');
+    const sectionPayloads = buildLlmSectionPayloads(normalizedInput);
     const sectionPayloadBytes = {
-      executiveSection: this.payloadBytes(sectionPayloads.executiveSection),
-      prioritySection: this.payloadBytes(sectionPayloads.prioritySection),
-      executionSection: this.payloadBytes(sectionPayloads.executionSection),
-      clientCommsSection: this.payloadBytes(sectionPayloads.clientCommsSection),
+      executiveSection: payloadBytesUtil(sectionPayloads.executiveSection),
+      prioritySection: payloadBytesUtil(sectionPayloads.prioritySection),
+      executionSection: payloadBytesUtil(sectionPayloads.executionSection),
+      clientCommsSection: payloadBytesUtil(sectionPayloads.clientCommsSection),
     };
     this.logger.log(
-      `LLM profile=parallel_sections_v1 model=${this.config.llmModel} globalTimeoutMs=${this.config.llmGlobalTimeoutMs} sectionTimeoutMs=${this.config.llmSectionTimeoutMs} payloadBytes(summary=${this.payloadBytes(summaryPayload)},executive=${sectionPayloadBytes.executiveSection},priority=${sectionPayloadBytes.prioritySection},execution=${sectionPayloadBytes.executionSection},clientComms=${sectionPayloadBytes.clientCommsSection})`,
+      `LLM profile=parallel_sections_v1 model=${this.config.llmModel} globalTimeoutMs=${this.config.llmGlobalTimeoutMs} sectionTimeoutMs=${this.config.llmSectionTimeoutMs} payloadBytes(summary=${payloadBytesUtil(summaryPayload)},executive=${sectionPayloadBytes.executiveSection},priority=${sectionPayloadBytes.prioritySection},execution=${sectionPayloadBytes.executionSection},clientComms=${sectionPayloadBytes.clientCommsSection})`,
     );
 
     const summaryLlm = this.createLlm(this.config.llmSummaryTimeoutMs);
@@ -513,167 +515,6 @@ export class LangchainAuditReportService {
     return { summaryText: gate.summaryText, adminReport };
   }
 
-  private buildPayload(
-    input: LangchainAuditInput,
-    profile: LlmPayloadProfile,
-  ): Record<string, unknown> {
-    const caps =
-      profile === 'summary'
-        ? {
-            quickWins: 6,
-            findings: 6,
-            affectedUrls: 4,
-            sampledUrls: 12,
-            pageRecaps: 12,
-          }
-        : profile === 'expert'
-          ? {
-              quickWins: 10,
-              findings: 10,
-              affectedUrls: 5,
-              sampledUrls: 12,
-              pageRecaps: 12,
-            }
-          : {
-              quickWins: 8,
-              findings: 6,
-              affectedUrls: 4,
-              sampledUrls: 8,
-              pageRecaps: 8,
-            };
-
-    const compactFindings = this.compactFindings(
-      input,
-      caps.findings,
-      caps.affectedUrls,
-    );
-    const compactSampledUrls = this.compactSampledUrls(input, caps.sampledUrls);
-    const compactPageRecaps = this.compactPageRecapsBasic(
-      input,
-      caps.pageRecaps,
-    );
-
-    return {
-      locale: input.locale,
-      website: sanitizePromptInput(input.websiteName),
-      normalizedUrl: sanitizePromptInput(input.normalizedUrl),
-      keyChecks: input.keyChecks,
-      quickWins: input.quickWins.slice(0, caps.quickWins),
-      pillarScores: input.pillarScores,
-      deepFindings: compactFindings,
-      sampledUrls: compactSampledUrls,
-      pageRecaps: compactPageRecaps,
-      pageSummary: input.pageSummary,
-      techFingerprint: input.techFingerprint,
-      ...this.buildEvidenceBuckets(
-        input,
-        compactFindings,
-        compactSampledUrls,
-        compactPageRecaps,
-      ),
-    };
-  }
-
-  private compactFindings(
-    input: LangchainAuditInput,
-    maxFindings: number,
-    maxAffectedUrls: number,
-  ): Array<Record<string, unknown>> {
-    return input.deepFindings.slice(0, maxFindings).map((finding) => ({
-      code: finding.code,
-      title: finding.title,
-      description: finding.description,
-      severity: finding.severity,
-      confidence: finding.confidence,
-      impact: finding.impact,
-      recommendation: finding.recommendation,
-      affectedUrls: finding.affectedUrls.slice(0, maxAffectedUrls),
-    }));
-  }
-
-  private compactSampledUrls(
-    input: LangchainAuditInput,
-    maxUrls: number,
-  ): Array<Record<string, unknown>> {
-    return input.sampledUrls.slice(0, maxUrls).map((entry) => ({
-      url: entry.url,
-      statusCode: entry.statusCode,
-      indexable: entry.indexable,
-      canonical: entry.canonical,
-      title: entry.title ?? null,
-      metaDescription: entry.metaDescription ?? null,
-      h1Count: entry.h1Count ?? 0,
-      htmlLang: entry.htmlLang ?? null,
-      canonicalCount: entry.canonicalCount ?? 0,
-      responseTimeMs: entry.responseTimeMs ?? null,
-      server: entry.server ?? null,
-      xPoweredBy: entry.xPoweredBy ?? null,
-      setCookiePatterns: (entry.setCookiePatterns ?? []).slice(0, 8),
-      cacheHeaders: entry.cacheHeaders ?? {},
-      securityHeaders: entry.securityHeaders ?? {},
-      error: entry.error,
-    }));
-  }
-
-  private compactPageRecapsBasic(
-    input: LangchainAuditInput,
-    maxRecaps: number,
-  ): Array<Record<string, unknown>> {
-    return input.pageRecaps.slice(0, maxRecaps).map((entry) => ({
-      url: entry.url,
-      priority: entry.priority,
-      wordingScore: entry.wordingScore,
-      trustScore: entry.trustScore,
-      ctaScore: entry.ctaScore,
-      seoCopyScore: entry.seoCopyScore,
-      topIssues: entry.topIssues.slice(0, 3),
-      recommendations: entry.recommendations.slice(0, 3),
-      source: entry.source,
-    }));
-  }
-
-  private buildEvidenceBuckets(
-    input: LangchainAuditInput,
-    compactFindings: Array<Record<string, unknown>>,
-    compactSampledUrls: Array<Record<string, unknown>>,
-    compactPageRecaps: Array<Record<string, unknown>>,
-  ): Record<string, unknown> {
-    return {
-      evidenceBuckets: {
-        crawl: {
-          keyChecks: input.keyChecks,
-          sampledUrlsSummary: {
-            totalInputUrls: input.sampledUrls.length,
-            usedInPrompt: compactSampledUrls.length,
-            nonIndexableCount: input.sampledUrls.filter(
-              (item) => !item.indexable,
-            ).length,
-            errorCount: input.sampledUrls.filter((item) => Boolean(item.error))
-              .length,
-          },
-        },
-        findings: compactFindings,
-        pageRecaps: compactPageRecaps,
-        techFingerprint: input.techFingerprint,
-      },
-      sampledUrlsSummary: {
-        totalInputUrls: input.sampledUrls.length,
-        usedInPrompt: compactSampledUrls.length,
-        nonIndexableCount: input.sampledUrls.filter((item) => !item.indexable)
-          .length,
-        errorCount: input.sampledUrls.filter((item) => Boolean(item.error))
-          .length,
-      },
-      pageRecapSummary: {
-        totalInputPages: input.pageRecaps.length,
-        usedInPrompt: compactPageRecaps.length,
-        highPriorityPages: input.pageRecaps.filter(
-          (item) => item.priority === 'high',
-        ).length,
-      },
-    };
-  }
-
   private resolveProfile(auditId?: string): AuditLlmProfile {
     const configured = this.config.llmProfile;
     if (configured !== 'parallel_sections_v1') {
@@ -698,127 +539,6 @@ export class LangchainAuditReportService {
       hash |= 0;
     }
     return Math.abs(hash) % 100;
-  }
-
-  private buildSectionPayloads(input: LangchainAuditInput): {
-    executiveSection: Record<string, unknown>;
-    prioritySection: Record<string, unknown>;
-    executionSection: Record<string, unknown>;
-    clientCommsSection: Record<string, unknown>;
-  } {
-    const compactFindings = input.deepFindings.slice(0, 10).map((finding) => ({
-      code: finding.code,
-      title: this.compactText(finding.title, 140),
-      description: this.compactText(finding.description, 260),
-      severity: finding.severity,
-      confidence: finding.confidence,
-      impact: finding.impact,
-      recommendation: this.compactText(finding.recommendation, 260),
-      affectedUrls: finding.affectedUrls.slice(0, 3),
-    }));
-
-    const compactRecaps = input.pageRecaps.slice(0, 10).map((entry) => ({
-      url: entry.url,
-      priority: entry.priority,
-      wordingScore: entry.wordingScore,
-      trustScore: entry.trustScore,
-      ctaScore: entry.ctaScore,
-      seoCopyScore: entry.seoCopyScore,
-      topIssues: entry.topIssues
-        .map((item) => this.compactText(item, 100))
-        .slice(0, 3),
-      recommendations: entry.recommendations
-        .map((item) => this.compactText(item, 120))
-        .slice(0, 3),
-      source: entry.source,
-    }));
-
-    const compactUrls = input.sampledUrls.slice(0, 10).map((entry) => ({
-      url: entry.url,
-      statusCode: entry.statusCode,
-      indexable: entry.indexable,
-      canonical: entry.canonical,
-      title: this.compactText(entry.title ?? '', 120) || null,
-      metaDescription:
-        this.compactText(entry.metaDescription ?? '', 180) || null,
-      h1Count: entry.h1Count ?? 0,
-      htmlLang: entry.htmlLang ?? null,
-      canonicalCount: entry.canonicalCount ?? 0,
-      responseTimeMs: entry.responseTimeMs ?? null,
-      server: entry.server ?? null,
-      xPoweredBy: entry.xPoweredBy ?? null,
-      setCookiePatterns: (entry.setCookiePatterns ?? []).slice(0, 8),
-      cacheHeaders: entry.cacheHeaders ?? {},
-      securityHeaders: entry.securityHeaders ?? {},
-      error: entry.error,
-    }));
-
-    const signalBuckets = {
-      crawl: {
-        keyChecks: input.keyChecks,
-        sampledUrls: compactUrls,
-      },
-      findings: compactFindings,
-      pageRecaps: compactRecaps,
-      quickWins: input.quickWins
-        .map((item) => this.compactText(item, 120))
-        .slice(0, 10),
-      techFingerprint: input.techFingerprint,
-    };
-
-    return {
-      executiveSection: {
-        locale: input.locale,
-        website: input.websiteName,
-        normalizedUrl: input.normalizedUrl,
-        keyChecks: input.keyChecks,
-        quickWins: signalBuckets.quickWins.slice(0, 6),
-        pillarScores: input.pillarScores,
-        pageSummary: input.pageSummary,
-        deepFindings: compactFindings.slice(0, 6),
-        techFingerprint: input.techFingerprint,
-        evidenceBuckets: signalBuckets,
-      },
-      prioritySection: {
-        locale: input.locale,
-        website: input.websiteName,
-        normalizedUrl: input.normalizedUrl,
-        quickWins: signalBuckets.quickWins.slice(0, 8),
-        deepFindings: compactFindings,
-        sampledUrls: compactUrls,
-        pageRecaps: compactRecaps,
-        techFingerprint: input.techFingerprint,
-        evidenceBuckets: signalBuckets,
-      },
-      executionSection: {
-        locale: input.locale,
-        website: input.websiteName,
-        normalizedUrl: input.normalizedUrl,
-        quickWins: signalBuckets.quickWins.slice(0, 10),
-        deepFindings: compactFindings,
-        pageRecaps: compactRecaps,
-        pageSummary: input.pageSummary,
-        sampledUrls: compactUrls,
-        techFingerprint: input.techFingerprint,
-        evidenceBuckets: signalBuckets,
-      },
-      clientCommsSection: {
-        locale: input.locale,
-        website: input.websiteName,
-        normalizedUrl: input.normalizedUrl,
-        quickWins: signalBuckets.quickWins.slice(0, 8),
-        topFindings: compactFindings.slice(0, 6),
-        pageSummary: input.pageSummary,
-        techFingerprint: input.techFingerprint,
-        evidenceBuckets: signalBuckets,
-      },
-    };
-  }
-
-  private compactText(value: string, maxChars: number): string {
-    const clean = value.replace(/\s+/g, ' ').trim();
-    if (clean.length <= maxChars) return clean;
-    return `${clean.slice(0, Math.max(0, maxChars - 3)).trimEnd()}...`;
   }
 
   private async generateSummaryWithDeadline(
@@ -1066,7 +786,7 @@ export class LangchainAuditReportService {
     ExecutiveSection | PrioritySection | ExecutionSection | ClientCommsSection
   > {
     const start = Date.now();
-    const payloadBytes = this.payloadBytes(payload);
+    const payloadBytes = payloadBytesUtil(payload);
     let succeeded = false;
     this.logger.log(
       `LLM ${section} attempt=${retryMode ? 2 : 1} payloadBytes=${payloadBytes} remainingBudgetMs=${budget.remainingMs()}`,
@@ -1569,6 +1289,16 @@ export class LangchainAuditReportService {
     return buildFallbackExpertReport(input, reason);
   }
 
+  /** Delegue a llm-payload.builder (conserve pour compatibilite interne/test). */
+  private buildSectionPayloads(input: LangchainAuditInput): {
+    executiveSection: Record<string, unknown>;
+    prioritySection: Record<string, unknown>;
+    executionSection: Record<string, unknown>;
+    clientCommsSection: Record<string, unknown>;
+  } {
+    return buildLlmSectionPayloads(input);
+  }
+
   private applyWarningsToReport(
     adminReport: Record<string, unknown>,
     warnings: Array<{ type: 'summary' | 'expert'; message: string }>,
@@ -1608,13 +1338,5 @@ export class LangchainAuditReportService {
       maxRetries: 0,
       temperature: 0.2,
     });
-  }
-
-  private payloadBytes(payload: Record<string, unknown>): number {
-    try {
-      return Buffer.byteLength(JSON.stringify(payload), 'utf8');
-    } catch {
-      return 0;
-    }
   }
 }
