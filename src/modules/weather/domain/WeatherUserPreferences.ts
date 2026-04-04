@@ -38,6 +38,7 @@ export class WeatherUserPreferences {
   userId: string;
   level: WeatherLevel;
   favoriteCities: FavoriteCity[];
+  defaultCityIndex: number | null;
   daysUsed: number;
   lastUsedAt: Date | null;
   tooltipsSeen: string[];
@@ -50,6 +51,7 @@ export class WeatherUserPreferences {
     userId: string;
     level: WeatherLevel;
     favoriteCities: FavoriteCity[];
+    defaultCityIndex: number | null;
     daysUsed: number;
     lastUsedAt: Date | null;
     tooltipsSeen: string[];
@@ -61,6 +63,7 @@ export class WeatherUserPreferences {
     this.userId = props.userId;
     this.level = props.level;
     this.favoriteCities = props.favoriteCities;
+    this.defaultCityIndex = props.defaultCityIndex;
     this.daysUsed = props.daysUsed;
     this.lastUsedAt = props.lastUsedAt;
     this.tooltipsSeen = props.tooltipsSeen;
@@ -77,6 +80,7 @@ export class WeatherUserPreferences {
       userId,
       level: 'discovery',
       favoriteCities: [],
+      defaultCityIndex: null,
       daysUsed: 0,
       lastUsedAt: null,
       tooltipsSeen: [],
@@ -92,6 +96,7 @@ export class WeatherUserPreferences {
     userId: string;
     level: WeatherLevel;
     favoriteCities: FavoriteCity[];
+    defaultCityIndex: number | null;
     daysUsed: number;
     lastUsedAt: Date | null;
     tooltipsSeen: string[];

@@ -41,6 +41,8 @@ export class UpdateUserPreferencesUseCase {
     if (command.level !== undefined) updateData.level = command.level;
     if (command.favoriteCities !== undefined)
       updateData.favoriteCities = command.favoriteCities;
+    if (command.defaultCityIndex !== undefined)
+      updateData.defaultCityIndex = command.defaultCityIndex;
     if (command.tooltipsSeen !== undefined)
       updateData.tooltipsSeen = command.tooltipsSeen;
     if (command.units !== undefined) {

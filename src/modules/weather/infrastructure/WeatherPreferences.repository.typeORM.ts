@@ -30,6 +30,7 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
       userId: prefs.userId,
       level: prefs.level,
       favoriteCities: prefs.favoriteCities,
+      defaultCityIndex: prefs.defaultCityIndex,
       daysUsed: prefs.daysUsed,
       lastUsedAt: prefs.lastUsedAt,
       tooltipsSeen: prefs.tooltipsSeen,
@@ -54,6 +55,8 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
     if (data.tooltipsSeen !== undefined)
       updateData.tooltipsSeen = data.tooltipsSeen;
     if (data.units !== undefined) updateData.units = data.units;
+    if (data.defaultCityIndex !== undefined)
+      updateData.defaultCityIndex = data.defaultCityIndex;
 
     updateData.updatedAt = new Date();
 
@@ -78,6 +81,7 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
       userId: entity.userId,
       level: entity.level as WeatherLevel,
       favoriteCities: entity.favoriteCities,
+      defaultCityIndex: entity.defaultCityIndex,
       daysUsed: entity.daysUsed,
       lastUsedAt: entity.lastUsedAt,
       tooltipsSeen: entity.tooltipsSeen,

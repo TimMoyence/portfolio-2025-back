@@ -21,6 +21,14 @@ export class WeatherUserPreferencesEntity {
   @Column({ name: 'favorite_cities', type: 'jsonb', default: '[]' })
   favoriteCities: FavoriteCity[];
 
+  @Column({
+    name: 'default_city_index',
+    type: 'int',
+    nullable: true,
+    default: null,
+  })
+  defaultCityIndex: number | null;
+
   @Column({ name: 'days_used', type: 'int', default: 0 })
   daysUsed: number;
 

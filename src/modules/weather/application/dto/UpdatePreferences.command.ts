@@ -9,6 +9,7 @@ export interface UpdatePreferencesCommand {
   userId: string;
   level?: WeatherLevel;
   favoriteCities?: FavoriteCity[];
+  defaultCityIndex?: number | null;
   tooltipsSeen?: string[];
   units?: Partial<UnitPreferences>;
 }

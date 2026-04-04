@@ -4,6 +4,7 @@ import {
   ArrayMaxSize,
   IsArray,
   IsIn,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -98,6 +99,17 @@ export class UpdatePreferencesDto {
   @Type(() => FavoriteCityDto)
   @ArrayMaxSize(20)
   favoriteCities?: FavoriteCityDto[];
+
+  @ApiProperty({
+    example: 0,
+    required: false,
+    nullable: true,
+    description: 'Index de la ville favorite par defaut (null pour aucune)',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  defaultCityIndex?: number | null;
 
   @ApiProperty({
     type: [String],

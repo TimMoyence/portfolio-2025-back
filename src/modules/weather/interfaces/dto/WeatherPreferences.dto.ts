@@ -18,6 +18,12 @@ export class WeatherPreferencesDto {
   @ApiProperty({ description: 'Villes favorites' })
   favoriteCities: unknown[];
 
+  @ApiProperty({
+    description: 'Index de la ville favorite par defaut',
+    nullable: true,
+  })
+  defaultCityIndex: number | null;
+
   @ApiProperty({ description: "Nombre de jours d'utilisation" })
   daysUsed: number;
 
@@ -46,6 +52,7 @@ export class WeatherPreferencesDto {
     dto.userId = prefs.userId;
     dto.level = prefs.level;
     dto.favoriteCities = prefs.favoriteCities;
+    dto.defaultCityIndex = prefs.defaultCityIndex;
     dto.daysUsed = prefs.daysUsed;
     dto.lastUsedAt = prefs.lastUsedAt;
     dto.tooltipsSeen = prefs.tooltipsSeen;
