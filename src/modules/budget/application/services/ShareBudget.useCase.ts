@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
 import type { IBudgetShareNotifier } from '../../domain/IBudgetShareNotifier';
 import type { IUsersRepository } from '../../../users/domain/IUsers.repository';
@@ -26,6 +27,7 @@ export class ShareBudgetUseCase {
     @Inject(USERS_REPOSITORY) private readonly usersRepo: IUsersRepository,
     @Inject(BUDGET_SHARE_NOTIFIER)
     private readonly notifier: IBudgetShareNotifier,
+    private readonly configService: ConfigService,
   ) {}
 
   async execute(
@@ -54,7 +56,11 @@ export class ShareBudgetUseCase {
 
     // Send notification email
     const owner = await this.usersRepo.findById(command.userId);
-    const budgetUrl = `${process.env.CORS_ORIGIN?.split(',')[0] ?? 'http://localhost:4200'}/atelier/budget`;
+    const corsOrigin = this.configService.get<string>(
+      'CORS_ORIGIN',
+      'http://localhost:4200',
+    );
+    const budgetUrl = `${corsOrigin.split(',')[0]}/atelier/budget`;
 
     try {
       await this.notifier.sendBudgetShareNotification({

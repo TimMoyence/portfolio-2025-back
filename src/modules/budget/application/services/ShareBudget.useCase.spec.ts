@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import type { ConfigService } from '@nestjs/config';
 import { ShareBudgetUseCase } from './ShareBudget.useCase';
 import {
   createMockBudgetGroupRepo,
@@ -19,6 +20,7 @@ describe('ShareBudgetUseCase', () => {
   let groupRepo: jest.Mocked<IBudgetGroupRepository>;
   let usersRepo: jest.Mocked<IUsersRepository>;
   let notifier: jest.Mocked<IBudgetShareNotifier>;
+  let configService: jest.Mocked<Pick<ConfigService, 'get'>>;
   let useCase: ShareBudgetUseCase;
 
   const command: ShareBudgetCommand = {
@@ -31,7 +33,13 @@ describe('ShareBudgetUseCase', () => {
     groupRepo = createMockBudgetGroupRepo();
     usersRepo = createMockUsersRepo();
     notifier = createMockBudgetShareNotifier();
-    useCase = new ShareBudgetUseCase(groupRepo, usersRepo, notifier);
+    configService = { get: jest.fn().mockReturnValue('http://localhost:4200') };
+    useCase = new ShareBudgetUseCase(
+      groupRepo,
+      usersRepo,
+      notifier,
+      configService as unknown as ConfigService,
+    );
 
     groupRepo.findById.mockResolvedValue(
       buildBudgetGroup({ id: 'group-1', ownerId: 'user-1' }),
