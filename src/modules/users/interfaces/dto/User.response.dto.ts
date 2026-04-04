@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Users } from '../../domain/Users';
+import { User } from '../../domain/User';
 
 /** DTO de reponse HTTP pour un utilisateur. */
 export class UserResponseDto {
@@ -39,7 +39,7 @@ export class UserResponseDto {
   })
   hasPassword: boolean;
 
-  static fromDomain(user: Users): UserResponseDto {
+  static fromDomain(user: User): UserResponseDto {
     const dto = new UserResponseDto();
     dto.id = user.id ?? '';
     dto.email = user.email;

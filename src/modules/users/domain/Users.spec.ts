@@ -1,9 +1,9 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import { Users } from './Users';
+import { User } from './User';
 
-describe('Users aggregate', () => {
+describe('User aggregate', () => {
   it('creates user with normalized email and phone', () => {
-    const user = Users.create({
+    const user = User.create({
       email: '  JOHN.DOE@Example.com ',
       passwordHash: 'hash',
       firstName: ' John ',
@@ -24,7 +24,7 @@ describe('Users aggregate', () => {
   });
 
   it('builds normalized partial update', () => {
-    const partial = Users.update({
+    const partial = User.update({
       email: '  jane.doe@Example.com ',
       phone: '  ',
       isActive: false,
@@ -39,7 +39,7 @@ describe('Users aggregate', () => {
   });
 
   it('creates user with googleId and without passwordHash', () => {
-    const user = Users.create({
+    const user = User.create({
       email: 'google@example.com',
       firstName: 'Google',
       lastName: 'User',
@@ -56,7 +56,7 @@ describe('Users aggregate', () => {
 
   it('throws without googleId and without passwordHash', () => {
     expect(() =>
-      Users.create({
+      User.create({
         email: 'nopwd@example.com',
         firstName: 'No',
         lastName: 'Password',
@@ -66,7 +66,7 @@ describe('Users aggregate', () => {
 
   it('throws for invalid user email', () => {
     expect(() =>
-      Users.create({
+      User.create({
         email: 'invalid',
         passwordHash: 'hash',
         firstName: 'John',

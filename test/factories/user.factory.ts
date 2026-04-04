@@ -1,13 +1,13 @@
 import type { IUsersRepository } from '../../src/modules/users/domain/IUsers.repository';
-import { Users } from '../../src/modules/users/domain/Users';
+import { User } from '../../src/modules/users/domain/User';
 import type { PasswordService } from '../../src/modules/users/application/services/PasswordService';
 import type { JwtTokenService } from '../../src/modules/users/application/services/JwtTokenService';
 import type { AuthResult } from '../../src/modules/users/application/AuthenticateUser.useCase';
 import type { JwtPayload } from '../../src/modules/users/application/services/JwtPayload';
 
-/** Construit un objet Users domaine avec des valeurs par defaut. */
-export function buildUser(overrides?: Partial<Users>): Users {
-  const user = new Users();
+/** Construit un objet User domaine avec des valeurs par defaut. */
+export function buildUser(overrides?: Partial<User>): User {
+  const user = new User();
   user.id = 'user-1';
   user.email = 'test@example.com';
   user.passwordHash = 'salt:hash';

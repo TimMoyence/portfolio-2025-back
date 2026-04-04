@@ -26,7 +26,7 @@ export interface UpdateUserProps {
 }
 
 /** Entite domaine representant un utilisateur du portfolio. */
-export class Users {
+export class User {
   id?: string;
   email: string;
   passwordHash: string | null;
@@ -40,7 +40,7 @@ export class Users {
   updatedAt?: Date;
   updatedOrCreatedBy: string | null;
 
-  static create(props: CreateUserProps): Users {
+  static create(props: CreateUserProps): User {
     const email = EmailAddress.parse(props.email);
     if (!email) {
       throw new DomainValidationError('Invalid user email');
@@ -63,7 +63,7 @@ export class Users {
       throw new DomainValidationError('Invalid user phone number');
     }
 
-    const user = new Users();
+    const user = new User();
     user.email = email.value;
     user.passwordHash = props.passwordHash ?? null;
     user.firstName = firstName;
@@ -79,8 +79,8 @@ export class Users {
     return user;
   }
 
-  static update(props: UpdateUserProps): Partial<Users> {
-    const partial: Partial<Users> = {};
+  static update(props: UpdateUserProps): Partial<User> {
+    const partial: Partial<User> = {};
 
     if (props.email !== undefined) {
       const email = EmailAddress.parse(props.email);
