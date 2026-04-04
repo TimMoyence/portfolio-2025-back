@@ -26,7 +26,7 @@ import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
-import { RolesGuard } from '../src/modules/users/interfaces/guards/roles.guard';
+import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 import { CreateCoursesUseCase } from '../src/modules/courses/application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../src/modules/courses/application/ListCourses.useCase';
 import { CoursesController } from '../src/modules/courses/interfaces/Courses.controller';

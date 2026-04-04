@@ -27,7 +27,7 @@ import { GetUserPreferencesUseCase } from '../src/modules/weather/application/Ge
 import { UpdateUserPreferencesUseCase } from '../src/modules/weather/application/UpdateUserPreferences.useCase';
 import { RecordUsageUseCase } from '../src/modules/weather/application/RecordUsage.useCase';
 import { OPENWEATHERMAP_PROXY } from '../src/modules/weather/domain/token';
-import { RolesGuard } from '../src/modules/users/interfaces/guards/roles.guard';
+import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 import {
   buildBudgetGroup,
   buildBudgetEntry,

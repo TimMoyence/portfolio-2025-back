@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
-import { JwtTokenService } from '../../application/services/JwtTokenService';
-import type { JwtPayload } from '../../application/services/JwtPayload';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { JwtTokenService } from '../../../modules/users/application/services/JwtTokenService';
+import type { JwtPayload } from '../../../modules/users/application/services/JwtPayload';
+import { IS_PUBLIC_KEY } from './public.decorator';
 
 /** Extension du type Request pour y attacher le payload JWT. */
 interface AuthenticatedRequest extends Request {
@@ -27,7 +27,7 @@ export class JwtAuthGuard implements CanActivate {
     private readonly reflector: Reflector,
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -49,7 +49,7 @@ export class JwtAuthGuard implements CanActivate {
     const token = authHeader.slice(7);
 
     try {
-      const payload = await this.jwtTokenService.verify(token);
+      const payload = this.jwtTokenService.verify(token);
       request.user = payload;
       return true;
     } catch {

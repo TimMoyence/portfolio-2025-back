@@ -18,8 +18,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
-import { Roles } from '../../users/interfaces/decorators/roles.decorator';
-import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
+import { Roles } from '../../../common/interfaces/auth/roles.decorator';
+import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { BudgetCategoryMapper } from '../application/mappers/BudgetCategoryMapper';
 import { BudgetEntryMapper } from '../application/mappers/BudgetEntryMapper';
 import { BudgetGroupMapper } from '../application/mappers/BudgetGroupMapper';

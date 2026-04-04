@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/await-thenable -- jwtTokenService.sign() est async via jose */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +15,7 @@ import { RequestPasswordResetUseCase } from '../src/modules/users/application/Re
 import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
-import { JwtAuthGuard } from '../src/modules/users/interfaces/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { buildUser, buildAuthResult } from './factories/user.factory';
 

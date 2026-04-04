@@ -6,7 +6,7 @@ import {
   MemoryHealthIndicator,
 } from '@nestjs/terminus';
 import { SkipThrottle } from '@nestjs/throttler';
-import { Public } from '../../../modules/users/interfaces/decorators/public.decorator';
+import { Public } from '../auth/public.decorator';
 
 /**
  * Controller de health check.

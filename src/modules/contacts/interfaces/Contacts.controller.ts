@@ -2,7 +2,7 @@ import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { CreateContactsUseCase } from '../application/CreateContacts.useCase';
 import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { Public } from '../../users/interfaces/decorators/public.decorator';
+import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { CreateContactCommand } from '../application/dto/CreateContact.command';
 import { ContactResponseDto } from './dto/contact.response.dto';
 import { ContactRequestDto } from './dto/contact.request.dto';

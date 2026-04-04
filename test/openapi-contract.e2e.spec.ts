@@ -76,7 +76,7 @@ import { GetAuditSummaryUseCase } from '../src/modules/audit-requests/applicatio
 import { StreamAuditEventsUseCase } from '../src/modules/audit-requests/application/StreamAuditEvents.useCase';
 
 /* ── Guard ─────────────────────────────────────────────────────────── */
-import { RolesGuard } from '../src/modules/users/interfaces/guards/roles.guard';
+import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 
 /** Stub factory : { execute: jest.fn() } */
 const stub = () => ({ execute: jest.fn() });

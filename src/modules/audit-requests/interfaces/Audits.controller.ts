@@ -16,7 +16,7 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
-import { Public } from '../../users/interfaces/decorators/public.decorator';
+import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
 import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';

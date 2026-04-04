@@ -6,9 +6,9 @@ import {
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
-import { Roles } from '../../users/interfaces/decorators/roles.decorator';
-import { Public } from '../../users/interfaces/decorators/public.decorator';
-import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
+import { Roles } from '../../../common/interfaces/auth/roles.decorator';
+import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CreateRedirectsUseCase } from '../application/CreateRedirects.useCase';
 import { ListRedirectsUseCase } from '../application/ListRedirects.useCase';
 import { CreateRedirectCommand } from '../application/dto/CreateRedirect.command';

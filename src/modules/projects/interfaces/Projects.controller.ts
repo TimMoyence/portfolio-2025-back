@@ -6,9 +6,9 @@ import {
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
-import { Roles } from '../../users/interfaces/decorators/roles.decorator';
-import { Public } from '../../users/interfaces/decorators/public.decorator';
-import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
+import { Roles } from '../../../common/interfaces/auth/roles.decorator';
+import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CreateProjectsUseCase } from '../application/CreateProjects.useCase';
 import { ListProjectsUseCase } from '../application/ListProjects.useCase';
 import { CreateProjectCommand } from '../application/dto/CreateProject.command';

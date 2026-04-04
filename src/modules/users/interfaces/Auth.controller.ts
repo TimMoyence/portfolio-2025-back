@@ -33,16 +33,16 @@ import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
+import { CreateUserDto } from './dto/CreateUser.dto';
 import { ForgotPasswordDto } from './dto/ForgotPassword.dto';
 import { GoogleAuthDto } from './dto/GoogleAuth.dto';
 import { LoginDto } from './dto/Login.dto';
-import { RegisterDto } from './dto/Register.dto';
 import { RefreshTokenDto } from './dto/RefreshToken.dto';
 import { ResetPasswordDto } from './dto/ResetPassword.dto';
 import { SetPasswordDto } from './dto/SetPassword.dto';
 import { AuthResponseDto } from './dto/Auth.response.dto';
 import { UserResponseDto } from './dto/User.response.dto';
-import { Public } from './decorators/public.decorator';
+import { Public } from '../../../common/interfaces/auth/public.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -207,7 +207,7 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Registration failed' })
-  async register(@Body() dto: RegisterDto): Promise<UserResponseDto> {
+  async register(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
     const result = await this.createUsersUseCase.execute({
       ...dto,
       roles: [],

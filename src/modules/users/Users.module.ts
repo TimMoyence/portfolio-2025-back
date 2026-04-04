@@ -27,7 +27,7 @@ import { JwtTokenService } from './application/services/JwtTokenService';
 import { AuthenticateUserUseCase } from './application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from './application/ChangePassword.useCase';
 import { AuthController } from './interfaces/Auth.controller';
-import { JwtAuthGuard } from './interfaces/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/interfaces/auth/jwt-auth.guard';
 import { PasswordResetTokenEntity } from './infrastructure/entities/PasswordResetToken.entity';
 import { PasswordResetTokensRepositoryTypeORM } from './infrastructure/PasswordResetTokens.repository.typeORM';
 import { PasswordResetMailerService } from './infrastructure/PasswordResetMailer.service';

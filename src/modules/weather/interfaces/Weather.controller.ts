@@ -11,9 +11,9 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
-import { Roles } from '../../users/interfaces/decorators/roles.decorator';
-import { RolesGuard } from '../../users/interfaces/guards/roles.guard';
-import { Public } from '../../users/interfaces/decorators/public.decorator';
+import { Roles } from '../../../common/interfaces/auth/roles.decorator';
+import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
+import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { GetAirQualityUseCase } from '../application/GetAirQuality.useCase';
 import { GetEnsembleUseCase } from '../application/GetEnsemble.useCase';
 import { GetForecastUseCase } from '../application/GetForecast.useCase';
