@@ -22,7 +22,6 @@ async function bootstrap() {
   // qu'avec des credentials envoyes automatiquement par le navigateur (cookies).
   app.enableCors({
     origin: corsOrigins,
-    credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   });
 

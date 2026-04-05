@@ -35,6 +35,7 @@ import { RequestPasswordResetUseCase } from './application/RequestPasswordReset.
 import { ResetPasswordUseCase } from './application/ResetPassword.useCase';
 import { SetPasswordUseCase } from './application/SetPassword.useCase';
 import { UpdateProfileUseCase } from './application/UpdateProfile.useCase';
+import { GetCurrentUserUseCase } from './application/GetCurrentUser.useCase';
 import { RefreshTokenCleanupService } from './infrastructure/RefreshTokenCleanup.service';
 
 const USERS_USE_CASES = [
@@ -52,6 +53,7 @@ const USERS_USE_CASES = [
   ResetPasswordUseCase,
   SetPasswordUseCase,
   UpdateProfileUseCase,
+  GetCurrentUserUseCase,
 ];
 
 @Module({
