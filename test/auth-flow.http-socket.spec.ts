@@ -16,7 +16,7 @@ import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword
 import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
-import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
+import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
 import { buildUser, buildAuthResult } from './factories/user.factory';
 
 /**
@@ -42,7 +42,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   const resetPasswordUseCase = { execute: jest.fn() };
   const setPasswordUseCase = { execute: jest.fn() };
   const updateProfileUseCase = { execute: jest.fn() };
-  const usersRepository = { findById: jest.fn() };
+  const getCurrentUserUseCase = { execute: jest.fn() };
 
   const getHttpServer = (): Parameters<typeof request>[0] =>
     app.getHttpServer() as Parameters<typeof request>[0];
@@ -77,7 +77,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
         { provide: ResetPasswordUseCase, useValue: resetPasswordUseCase },
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
         { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
-        { provide: USERS_REPOSITORY, useValue: usersRepository },
+        { provide: GetCurrentUserUseCase, useValue: getCurrentUserUseCase },
         { provide: JwtTokenService, useValue: realJwtTokenService },
         Reflector,
         {
@@ -155,7 +155,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       roles: user.roles,
     });
 
-    usersRepository.findById.mockResolvedValue(user);
+    getCurrentUserUseCase.execute.mockResolvedValue(user);
 
     const res = await request(getHttpServer())
       .get('/api/auth/me')
@@ -303,7 +303,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     const firstToken = loginRes.body.accessToken as string;
 
     /* 2. Acces protege avec le premier token */
-    usersRepository.findById.mockResolvedValue(user);
+    getCurrentUserUseCase.execute.mockResolvedValue(user);
 
     await request(getHttpServer())
       .get('/api/auth/me')
