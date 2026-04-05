@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import { AddEntryUseCase } from './AddEntry.useCase';
+import { EvaluateBadgesUseCase } from './EvaluateBadges.useCase';
 import {
   buildSebastianEntry,
   createMockSebastianEntryRepo,
@@ -9,10 +10,15 @@ import {
 describe('AddEntryUseCase', () => {
   let useCase: AddEntryUseCase;
   let entryRepo: ReturnType<typeof createMockSebastianEntryRepo>;
+  let evaluateBadges: jest.Mocked<Pick<EvaluateBadgesUseCase, 'execute'>>;
 
   beforeEach(() => {
     entryRepo = createMockSebastianEntryRepo();
-    useCase = new AddEntryUseCase(entryRepo);
+    evaluateBadges = { execute: jest.fn().mockResolvedValue([]) };
+    useCase = new AddEntryUseCase(
+      entryRepo,
+      evaluateBadges as unknown as EvaluateBadgesUseCase,
+    );
   });
 
   it('devrait creer une entree via le domaine et le repository', async () => {
@@ -59,5 +65,34 @@ describe('AddEntryUseCase', () => {
     const createdEntry = entryRepo.create.mock.calls[0][0];
     expect(createdEntry.unit).toBe('standard_drink');
     expect(createdEntry.category).toBe('alcohol');
+  });
+
+  it('devrait appeler EvaluateBadges apres la creation', async () => {
+    const entry = buildSebastianEntry();
+    entryRepo.create.mockResolvedValue(entry);
+
+    await useCase.execute({
+      userId: 'user-1',
+      category: 'coffee',
+      quantity: 2,
+      date: '2026-03-15',
+    });
+
+    expect(evaluateBadges.execute).toHaveBeenCalledWith('user-1');
+  });
+
+  it('ne devrait pas bloquer si EvaluateBadges echoue', async () => {
+    const entry = buildSebastianEntry();
+    entryRepo.create.mockResolvedValue(entry);
+    evaluateBadges.execute.mockRejectedValue(new Error('badge error'));
+
+    const result = await useCase.execute({
+      userId: 'user-1',
+      category: 'coffee',
+      quantity: 2,
+      date: '2026-03-15',
+    });
+
+    expect(result).toEqual(entry);
   });
 });
