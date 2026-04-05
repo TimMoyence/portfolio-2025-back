@@ -112,6 +112,10 @@ export class EvaluateBadgesUseCase {
     days: number,
     now: Date,
   ): boolean {
+    if (!this.hasEnoughHistory(entries, days, now)) {
+      return false;
+    }
+
     const alcoholDates = this.getEntryDateStrings(
       entries.filter((e) => e.category === 'alcohol'),
     );
@@ -148,8 +152,12 @@ export class EvaluateBadgesUseCase {
     return false;
   }
 
-  /** dry-week : 0 entrees alcool sur les 7 derniers jours. */
+  /** dry-week : 0 entrees alcool sur les 7 derniers jours (necessite 7j d'historique). */
   private evaluateDryWeek(entries: SebastianEntry[], now: Date): boolean {
+    if (!this.hasEnoughHistory(entries, 7, now)) {
+      return false;
+    }
+
     const sevenDaysAgo = new Date(now.getTime() - 7 * 86_400_000);
     const recentAlcohol = entries.filter(
       (e) => e.category === 'alcohol' && e.date >= sevenDaysAgo,
@@ -168,6 +176,10 @@ export class EvaluateBadgesUseCase {
   ): boolean {
     const activeGoals = goals.filter((g) => g.isActive && g.period === 'daily');
     if (activeGoals.length === 0) {
+      return false;
+    }
+
+    if (!this.hasEnoughHistory(entries, 30, now)) {
       return false;
     }
 
@@ -206,6 +218,10 @@ export class EvaluateBadgesUseCase {
       return false;
     }
 
+    if (!this.hasEnoughHistory(entries, 30, now)) {
+      return false;
+    }
+
     return this.evaluateConsecutiveDaysUnderGoal(entries, activeGoals, 30, now);
   }
 
@@ -220,6 +236,10 @@ export class EvaluateBadgesUseCase {
   ): boolean {
     const activeGoals = goals.filter((g) => g.isActive && g.period === 'daily');
     if (activeGoals.length === 0) {
+      return false;
+    }
+
+    if (!this.hasEnoughHistory(entries, 14, now)) {
       return false;
     }
 
@@ -305,5 +325,27 @@ export class EvaluateBadgesUseCase {
     return new Date(date.getTime() - days * 86_400_000)
       .toISOString()
       .slice(0, 10);
+  }
+
+  /**
+   * Verifie que l'utilisateur a au moins N jours d'historique
+   * entre sa premiere entree et maintenant.
+   */
+  private hasEnoughHistory(
+    entries: SebastianEntry[],
+    requiredDays: number,
+    now: Date,
+  ): boolean {
+    if (entries.length === 0) {
+      return false;
+    }
+
+    const firstEntryDate = entries.reduce(
+      (min, e) => (e.date < min ? e.date : min),
+      entries[0].date,
+    );
+    const diffMs = now.getTime() - firstEntryDate.getTime();
+    const diffDays = Math.floor(diffMs / 86_400_000);
+    return diffDays >= requiredDays;
   }
 }
