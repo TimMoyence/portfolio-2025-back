@@ -37,19 +37,9 @@ describe('EvaluateBadgesUseCase', () => {
     );
   });
 
-  it('devrait retourner un tableau vide quand tous les badges eligibles sont deja debloques', async () => {
-    // Avec 0 entrees, zen-monk-7, zen-monk-30 et dry-week sont satisfaits
-    // On les marque comme deja debloques pour verifier qu'on ne les recree pas
-    const alreadyUnlocked = ['zen-monk-7', 'zen-monk-30', 'dry-week'].map(
-      (key) =>
-        SebastianBadge.fromPersistence({
-          id: `badge-${key}`,
-          userId,
-          badgeKey: key,
-          category: 'alcohol',
-          unlockedAt: new Date(),
-        }),
-    );
+  it('devrait retourner un tableau vide quand aucun badge eligible', async () => {
+    // Avec 0 entrees, aucun badge n'est satisfait (pas d'historique)
+    const alreadyUnlocked: SebastianBadge[] = [];
     badgeRepo.findByUserId.mockResolvedValue(alreadyUnlocked);
 
     const result = await useCase.execute(userId);
@@ -98,8 +88,9 @@ describe('EvaluateBadgesUseCase', () => {
   describe('zen-monk-7', () => {
     it('devrait debloquer apres 7 jours consecutifs sans alcool', async () => {
       // Uniquement des entrees cafe, aucune entree alcool
+      // Premiere entree il y a 10 jours pour avoir assez d'historique
       const now = new Date();
-      const coffeeEntries = Array.from({ length: 7 }, (_, i) =>
+      const coffeeEntries = Array.from({ length: 10 }, (_, i) =>
         buildSebastianEntry({
           id: `entry-${i}`,
           category: 'coffee',
@@ -112,6 +103,23 @@ describe('EvaluateBadgesUseCase', () => {
 
       const badge = result.find((b) => b.badgeKey === 'zen-monk-7');
       expect(badge).toBeDefined();
+    });
+
+    it('ne devrait pas debloquer si historique < 7 jours', async () => {
+      const now = new Date();
+      const coffeeEntries = Array.from({ length: 3 }, (_, i) =>
+        buildSebastianEntry({
+          id: `entry-${i}`,
+          category: 'coffee',
+          date: new Date(now.getTime() - i * 86_400_000),
+        }),
+      );
+      entryRepo.findByFilters.mockResolvedValue(coffeeEntries);
+
+      const result = await useCase.execute(userId);
+
+      const badge = result.find((b) => b.badgeKey === 'zen-monk-7');
+      expect(badge).toBeUndefined();
     });
 
     it('ne devrait pas debloquer si alcool dans les 7 derniers jours', async () => {
@@ -173,8 +181,30 @@ describe('EvaluateBadgesUseCase', () => {
   });
 
   describe('dry-week', () => {
-    it('devrait debloquer quand 0 alcool sur les 7 derniers jours', async () => {
-      // Seulement des cafes recents
+    it('devrait debloquer quand 0 alcool sur les 7 derniers jours (avec historique)', async () => {
+      // Premiere entree il y a 10 jours pour avoir assez d'historique
+      const now = new Date();
+      const entries = [
+        buildSebastianEntry({
+          id: 'entry-old',
+          category: 'coffee',
+          date: new Date(now.getTime() - 10 * 86_400_000),
+        }),
+        buildSebastianEntry({
+          id: 'entry-recent',
+          category: 'coffee',
+          date: new Date(now.getTime() - 86_400_000),
+        }),
+      ];
+      entryRepo.findByFilters.mockResolvedValue(entries);
+
+      const result = await useCase.execute(userId);
+
+      const badge = result.find((b) => b.badgeKey === 'dry-week');
+      expect(badge).toBeDefined();
+    });
+
+    it('ne devrait pas debloquer si historique < 7 jours', async () => {
       const now = new Date();
       const entries = [
         buildSebastianEntry({
@@ -187,7 +217,7 @@ describe('EvaluateBadgesUseCase', () => {
       const result = await useCase.execute(userId);
 
       const badge = result.find((b) => b.badgeKey === 'dry-week');
-      expect(badge).toBeDefined();
+      expect(badge).toBeUndefined();
     });
 
     it('ne devrait pas debloquer avec alcool dans les 7 derniers jours', async () => {
@@ -345,7 +375,7 @@ describe('EvaluateBadgesUseCase', () => {
 
       const result = await useCase.execute(userId);
 
-      // Devrait avoir au moins first-log, early-bird, night-owl, dry-week, zen-monk-7
+      // Devrait avoir first-log, early-bird, night-owl + dry-week/zen-monk-7 (entree du 15/03, >7j d'historique)
       const keys = result.map((b) => b.badgeKey);
       expect(keys).toContain('first-log');
       expect(keys).toContain('early-bird');
