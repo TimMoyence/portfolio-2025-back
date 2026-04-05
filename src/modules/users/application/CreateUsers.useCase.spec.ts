@@ -58,7 +58,7 @@ describe('CreateUsersUseCase', () => {
     expect(result).toBe(savedUser);
   });
 
-  it('devrait forcer roles vides quand updatedOrCreatedBy est self-registration', async () => {
+  it('devrait attribuer les roles par defaut et ignorer les roles fournis quand self-registration', async () => {
     const dto: CreateUserCommand = {
       email: 'attacker@example.com',
       password: 'Hack123!',
@@ -67,13 +67,18 @@ describe('CreateUsersUseCase', () => {
       roles: ['admin', 'budget'],
     };
 
-    const savedUser = buildUser({ email: dto.email, roles: [] });
+    const savedUser = buildUser({
+      email: dto.email,
+      roles: ['budget', 'weather', 'sebastian'],
+    });
     repo.create.mockResolvedValue(savedUser);
 
     await useCase.execute(dto);
 
     expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ roles: [] }),
+      expect.objectContaining({
+        roles: ['budget', 'weather', 'sebastian'],
+      }),
     );
   });
 
