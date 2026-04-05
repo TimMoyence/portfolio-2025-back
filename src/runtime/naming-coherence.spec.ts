@@ -46,7 +46,6 @@ describe('Cross-context naming coherence', () => {
   it('uses canonical course resource entity filename in imports', () => {
     const offending = files.filter((file) => {
       if (!file.endsWith('.ts')) return false;
-      if (file.endsWith('/CoursesRessources.entity.ts')) return false;
       const content = readFileSync(file, 'utf8');
       return content.includes('CoursesRessources.entity');
     });

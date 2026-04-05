@@ -3,11 +3,9 @@ import {
   Controller,
   Get,
   HttpCode,
-  Inject,
   Patch,
   Post,
   Req,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -30,8 +28,7 @@ import { ResetPasswordUseCase } from '../application/ResetPassword.useCase';
 import { RevokeTokenUseCase } from '../application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../application/SetPassword.useCase';
 import { UpdateProfileUseCase } from '../application/UpdateProfile.useCase';
-import type { IUsersRepository } from '../domain/IUsers.repository';
-import { USERS_REPOSITORY } from '../domain/token';
+import { GetCurrentUserUseCase } from '../application/GetCurrentUser.useCase';
 import { AuthMessageResponseDto } from './dto/AuthMessage.response.dto';
 import { ChangePasswordDto } from './dto/ChangePassword.dto';
 import { CreateUserDto } from './dto/CreateUser.dto';
@@ -60,8 +57,7 @@ export class AuthController {
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
     private readonly setPasswordUseCase: SetPasswordUseCase,
     private readonly updateProfileUseCase: UpdateProfileUseCase,
-    @Inject(USERS_REPOSITORY)
-    private readonly usersRepository: IUsersRepository,
+    private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
   ) {}
 
   @Public()
@@ -233,10 +229,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Token invalide ou expire' })
   async me(@Req() req: Request): Promise<UserResponseDto> {
     const payload = req.user!;
-    const user = await this.usersRepository.findById(payload.sub);
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
+    const user = await this.getCurrentUserUseCase.execute(payload.sub);
     return UserResponseDto.fromDomain(user);
   }
 }
