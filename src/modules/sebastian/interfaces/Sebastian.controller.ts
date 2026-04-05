@@ -28,13 +28,23 @@ import { GetStatsUseCase } from '../application/services/GetStats.useCase';
 import { SetGoalUseCase } from '../application/services/SetGoal.useCase';
 import { ListGoalsUseCase } from '../application/services/ListGoals.useCase';
 import { DeleteGoalUseCase } from '../application/services/DeleteGoal.useCase';
+import { GetTrendDataUseCase } from '../application/services/GetTrendData.useCase';
+import { CalculateHealthScoreUseCase } from '../application/services/CalculateHealthScore.useCase';
+import { ListBadgesUseCase } from '../application/services/ListBadges.useCase';
+import { GetPeriodReportUseCase } from '../application/services/GetPeriodReport.useCase';
 import { CreateEntryDto } from './dto/CreateEntry.dto';
 import { ListEntriesDto } from './dto/ListEntries.dto';
 import { GetStatsDto } from './dto/GetStats.dto';
 import { CreateGoalDto } from './dto/CreateGoal.dto';
+import { GetTrendsDto } from './dto/GetTrends.dto';
+import { GetPeriodReportDto } from './dto/GetPeriodReport.dto';
 import { EntryResponseDto } from './dto/EntryResponse.dto';
 import { GoalResponseDto } from './dto/GoalResponse.dto';
 import { StatsResponseDto } from './dto/StatsResponse.dto';
+import { TrendResponseDto } from './dto/TrendResponse.dto';
+import { HealthScoreResponseDto } from './dto/HealthScoreResponse.dto';
+import { BadgeStatusDto } from './dto/BadgeResponse.dto';
+import { PeriodReportResponseDto } from './dto/PeriodReportResponse.dto';
 
 /**
  * Controleur REST du module Sebastian.
@@ -56,6 +66,10 @@ export class SebastianController {
     private readonly setGoal: SetGoalUseCase,
     private readonly listGoals: ListGoalsUseCase,
     private readonly deleteGoal: DeleteGoalUseCase,
+    private readonly getTrendData: GetTrendDataUseCase,
+    private readonly calculateHealthScore: CalculateHealthScoreUseCase,
+    private readonly listBadges: ListBadgesUseCase,
+    private readonly getPeriodReport: GetPeriodReportUseCase,
   ) {}
 
   @Post('entries')
@@ -148,5 +162,48 @@ export class SebastianController {
   ) {
     const user = req.user!;
     await this.deleteGoal.execute({ userId: user.sub, goalId: id });
+  }
+
+  @Get('stats/trends')
+  @ApiOperation({ summary: 'Obtenir les donnees de tendance' })
+  @ApiOkResponse({ type: TrendResponseDto })
+  async getTrends(@Query() dto: GetTrendsDto, @Req() req: Request) {
+    const user = req.user!;
+    const result = await this.getTrendData.execute({
+      userId: user.sub,
+      period: dto.period as '7d' | '30d',
+    });
+    return TrendResponseDto.fromResult(result);
+  }
+
+  @Get('stats/health-score')
+  @ApiOperation({ summary: 'Obtenir le score de sante' })
+  @ApiOkResponse({ type: HealthScoreResponseDto })
+  async getHealthScore(@Req() req: Request) {
+    const user = req.user!;
+    const result = await this.calculateHealthScore.execute(user.sub);
+    return HealthScoreResponseDto.fromResult(result);
+  }
+
+  @Get('stats/report')
+  @ApiOperation({ summary: 'Obtenir un rapport de periode' })
+  @ApiOkResponse({ type: PeriodReportResponseDto })
+  async getReport(@Query() dto: GetPeriodReportDto, @Req() req: Request) {
+    const user = req.user!;
+    const result = await this.getPeriodReport.execute({
+      userId: user.sub,
+      period: dto.period as 'week' | 'month' | 'quarter',
+      startDate: dto.startDate,
+    });
+    return PeriodReportResponseDto.fromResult(result);
+  }
+
+  @Get('badges')
+  @ApiOperation({ summary: 'Lister les badges et leur statut' })
+  @ApiOkResponse({ type: [BadgeStatusDto] })
+  async getAllBadges(@Req() req: Request) {
+    const user = req.user!;
+    const badges = await this.listBadges.execute(user.sub);
+    return badges.map((b) => BadgeStatusDto.fromResult(b));
   }
 }

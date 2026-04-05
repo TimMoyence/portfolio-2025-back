@@ -8,10 +8,18 @@ import type { GetStatsUseCase } from '../application/services/GetStats.useCase';
 import type { SetGoalUseCase } from '../application/services/SetGoal.useCase';
 import type { ListGoalsUseCase } from '../application/services/ListGoals.useCase';
 import type { DeleteGoalUseCase } from '../application/services/DeleteGoal.useCase';
+import type { GetTrendDataUseCase } from '../application/services/GetTrendData.useCase';
+import type { CalculateHealthScoreUseCase } from '../application/services/CalculateHealthScore.useCase';
+import type { ListBadgesUseCase } from '../application/services/ListBadges.useCase';
+import type { GetPeriodReportUseCase } from '../application/services/GetPeriodReport.useCase';
 import {
   buildSebastianEntry,
   buildSebastianGoal,
   buildStatsResult,
+  buildTrendData,
+  buildHealthScore,
+  buildBadgeStatus,
+  buildPeriodReport,
 } from '../../../../test/factories/sebastian.factory';
 
 describe('SebastianController', () => {
@@ -23,6 +31,10 @@ describe('SebastianController', () => {
   let setGoalUseCase: jest.Mocked<SetGoalUseCase>;
   let listGoalsUseCase: jest.Mocked<ListGoalsUseCase>;
   let deleteGoalUseCase: jest.Mocked<DeleteGoalUseCase>;
+  let getTrendDataUseCase: jest.Mocked<GetTrendDataUseCase>;
+  let calculateHealthScoreUseCase: jest.Mocked<CalculateHealthScoreUseCase>;
+  let listBadgesUseCase: jest.Mocked<ListBadgesUseCase>;
+  let getPeriodReportUseCase: jest.Mocked<GetPeriodReportUseCase>;
 
   const mockReq = { user: { sub: 'user-1' } } as unknown as Request;
 
@@ -48,6 +60,18 @@ describe('SebastianController', () => {
     deleteGoalUseCase = {
       execute: jest.fn(),
     } as unknown as jest.Mocked<DeleteGoalUseCase>;
+    getTrendDataUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<GetTrendDataUseCase>;
+    calculateHealthScoreUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<CalculateHealthScoreUseCase>;
+    listBadgesUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<ListBadgesUseCase>;
+    getPeriodReportUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<GetPeriodReportUseCase>;
 
     controller = new SebastianController(
       addEntryUseCase,
@@ -57,6 +81,10 @@ describe('SebastianController', () => {
       setGoalUseCase,
       listGoalsUseCase,
       deleteGoalUseCase,
+      getTrendDataUseCase,
+      calculateHealthScoreUseCase,
+      listBadgesUseCase,
+      getPeriodReportUseCase,
     );
   });
 
@@ -159,5 +187,58 @@ describe('SebastianController', () => {
       userId: 'user-1',
       goalId: 'goal-1',
     });
+  });
+
+  it('devrait deleguer getTrends au use case GetTrendData', async () => {
+    const trends = buildTrendData();
+    getTrendDataUseCase.execute.mockResolvedValue(trends);
+
+    const result = await controller.getTrends({ period: '7d' }, mockReq);
+
+    expect(getTrendDataUseCase.execute).toHaveBeenCalledWith({
+      userId: 'user-1',
+      period: '7d',
+    });
+    expect(result.period).toBe('7d');
+    expect(result.dataPoints).toHaveLength(7);
+  });
+
+  it('devrait deleguer getHealthScore au use case CalculateHealthScore', async () => {
+    const score = buildHealthScore();
+    calculateHealthScoreUseCase.execute.mockResolvedValue(score);
+
+    const result = await controller.getHealthScore(mockReq);
+
+    expect(calculateHealthScoreUseCase.execute).toHaveBeenCalledWith('user-1');
+    expect(result.score).toBe(85);
+    expect(result.phase).toBe(1);
+  });
+
+  it('devrait deleguer getReport au use case GetPeriodReport', async () => {
+    const report = buildPeriodReport();
+    getPeriodReportUseCase.execute.mockResolvedValue(report);
+
+    const result = await controller.getReport(
+      { period: 'week', startDate: '2026-03-30' },
+      mockReq,
+    );
+
+    expect(getPeriodReportUseCase.execute).toHaveBeenCalledWith({
+      userId: 'user-1',
+      period: 'week',
+      startDate: '2026-03-30',
+    });
+    expect(result.period).toBe('week');
+  });
+
+  it('devrait deleguer getAllBadges au use case ListBadges', async () => {
+    const badges = [buildBadgeStatus()];
+    listBadgesUseCase.execute.mockResolvedValue(badges);
+
+    const result = await controller.getAllBadges(mockReq);
+
+    expect(listBadgesUseCase.execute).toHaveBeenCalledWith('user-1');
+    expect(result).toHaveLength(1);
+    expect(result[0].key).toBe('first-log');
   });
 });
