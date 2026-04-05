@@ -27,7 +27,7 @@ import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPass
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
-import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
+import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
 import { ForgotPasswordDto } from '../src/modules/users/interfaces/dto/ForgotPassword.dto';
 import { LoginDto } from '../src/modules/users/interfaces/dto/Login.dto';
 import { ResetPasswordDto } from '../src/modules/users/interfaces/dto/ResetPassword.dto';
@@ -108,8 +108,8 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
         { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
         {
-          provide: USERS_REPOSITORY,
-          useValue: { findById: jest.fn() },
+          provide: GetCurrentUserUseCase,
+          useValue: { execute: jest.fn() },
         },
       ],
     }).compile();

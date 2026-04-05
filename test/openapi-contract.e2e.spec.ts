@@ -63,7 +63,7 @@ import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPass
 import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
-import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
+import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
 
 /* ── Contacts module ───────────────────────────────────────────────── */
 import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
@@ -232,7 +232,7 @@ describe('OpenAPI core contract', () => {
         { provide: ResetPasswordUseCase, useValue: stub() },
         { provide: SetPasswordUseCase, useValue: stub() },
         { provide: UpdateProfileUseCase, useValue: stub() },
-        { provide: USERS_REPOSITORY, useValue: {} },
+        { provide: GetCurrentUserUseCase, useValue: stub() },
 
         /* ── Contacts ───────────────────────────────────── */
         { provide: CreateContactsUseCase, useValue: stub() },
