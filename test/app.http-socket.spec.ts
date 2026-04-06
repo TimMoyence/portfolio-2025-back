@@ -27,6 +27,7 @@ import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword
 import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
+import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 import { CreateCoursesUseCase } from '../src/modules/courses/application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../src/modules/courses/application/ListCourses.useCase';
@@ -117,6 +118,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
         { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
         { provide: GetCurrentUserUseCase, useValue: { execute: jest.fn() } },
+        AuthAuditLogger,
         { provide: ListServicesUseCase, useValue: listServicesUseCase },
         { provide: CreateServicesUseCase, useValue: createServicesUseCase },
         { provide: ListProjectsUseCase, useValue: listProjectsUseCase },

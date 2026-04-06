@@ -17,6 +17,7 @@ import { UpdateProfileUseCase } from '../src/modules/users/application/UpdatePro
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
+import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
 import { buildUser, buildAuthResult } from './factories/user.factory';
 
 /**
@@ -78,6 +79,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
         { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
         { provide: GetCurrentUserUseCase, useValue: getCurrentUserUseCase },
+        AuthAuditLogger,
         { provide: JwtTokenService, useValue: realJwtTokenService },
         Reflector,
         {
