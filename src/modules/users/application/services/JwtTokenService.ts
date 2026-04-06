@@ -41,7 +41,7 @@ export class JwtTokenService {
       ...payload,
       roles: (payload.roles as string[]) ?? [],
     })
-      .setProtectedHeader({ alg: 'HS256' })
+      .setProtectedHeader({ alg: 'HS256', kid: this.getKid() })
       .setIssuedAt(issuedAt)
       .setExpirationTime(expiresAt)
       .setIssuer(JwtTokenService.ISSUER)
@@ -78,6 +78,8 @@ export class JwtTokenService {
 
   /**
    * Verifie un JWT et retourne le payload decode.
+   * Supporte la rotation de cles : si la verification avec le secret courant echoue
+   * et qu'un `JWT_SECRET_PREVIOUS` est configure, retente avec l'ancien secret.
    *
    * @param token - Le JWT a verifier (format header.payload.signature)
    * @returns Le payload decode du token
@@ -85,7 +87,30 @@ export class JwtTokenService {
    */
   async verify(token: string): Promise<JwtPayload> {
     try {
-      const secret = this.getEncodedSecret();
+      return await this.verifyWithSecret(token, this.getEncodedSecret());
+    } catch (firstError) {
+      const previousSecret = this.getPreviousSecret();
+      if (!previousSecret) throw firstError;
+      try {
+        return await this.verifyWithSecret(token, previousSecret);
+      } catch {
+        throw firstError;
+      }
+    }
+  }
+
+  /**
+   * Verifie un JWT avec un secret donne et retourne le payload decode.
+   *
+   * @param token - Le JWT a verifier
+   * @param secret - Le secret encode en Uint8Array
+   * @returns Le payload decode du token
+   */
+  private async verifyWithSecret(
+    token: string,
+    secret: Uint8Array,
+  ): Promise<JwtPayload> {
+    try {
       const { payload } = await jwtVerify(token, secret, {
         issuer: JwtTokenService.ISSUER,
         audience: JwtTokenService.AUDIENCE,
@@ -145,5 +170,18 @@ export class JwtTokenService {
   private getEncodedSecret(): Uint8Array {
     const secret = this.getValidatedSecret();
     return new TextEncoder().encode(secret);
+  }
+
+  /** Retourne le secret JWT precedent pour la rotation de cles (optionnel). */
+  private getPreviousSecret(): Uint8Array | null {
+    const secret = this.configService.get<string>('JWT_SECRET_PREVIOUS');
+    if (!secret || secret.length < JwtTokenService.MIN_SECRET_LENGTH)
+      return null;
+    return new TextEncoder().encode(secret);
+  }
+
+  /** Retourne le kid (Key ID) pour le header JWT : 'v2' si rotation active, 'v1' sinon. */
+  private getKid(): string {
+    return this.configService.get<string>('JWT_SECRET_PREVIOUS') ? 'v2' : 'v1';
   }
 }

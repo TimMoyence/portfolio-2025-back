@@ -12,12 +12,10 @@ import {
   USERS_REPOSITORY,
 } from '../domain/token';
 import { REFRESH_TOKEN_TTL_MS } from '../domain/auth.constants';
+import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
 import type { AuthResult } from './AuthenticateUser.useCase';
 import { JwtTokenService } from './services/JwtTokenService';
 import { UsersMapper } from './mappers/UsersMapper';
-
-/** Roles attribues par defaut a un nouvel utilisateur Google. */
-const DEFAULT_GOOGLE_ROLES = ['budget', 'weather', 'sebastian'];
 
 /** Authentifie un utilisateur via son Google ID token (popup GIS). */
 @Injectable()
@@ -66,7 +64,7 @@ export class AuthenticateGoogleUserUseCase {
       firstName: payload.given_name ?? email.split('@')[0],
       lastName: payload.family_name ?? '',
       googleId,
-      roles: DEFAULT_GOOGLE_ROLES,
+      roles: DEFAULT_SELF_REGISTRATION_ROLES,
     });
     const created = await this.repo.create(newUser);
     return this.signResult(created);

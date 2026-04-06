@@ -2,12 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import { User } from '../domain/User';
+import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
 import type { CreateUserCommand } from './dto/CreateUser.command';
 import { UsersMapper } from './mappers/UsersMapper';
 import { PasswordService } from './services/PasswordService';
-
-/** Roles attribues par defaut a un nouvel utilisateur inscrit par email. */
-const DEFAULT_SELF_REGISTRATION_ROLES = ['budget', 'weather', 'sebastian'];
 
 /** Orchestre la creation d'un utilisateur avec hachage du mot de passe. */
 @Injectable()

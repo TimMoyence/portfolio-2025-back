@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsEmail,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -11,6 +12,7 @@ import {
   MinLength,
 } from 'class-validator';
 import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
+import { VALID_ROLES } from '../../domain/roles';
 
 /** DTO HTTP pour la creation d'un utilisateur (validation + Swagger). */
 export class CreateUserDto implements CreateUserCommand {
@@ -63,6 +65,10 @@ export class CreateUserDto implements CreateUserCommand {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @IsIn(VALID_ROLES as unknown as string[], {
+    each: true,
+    message: 'Chaque role doit etre un role valide',
+  })
   roles?: string[];
 
   @ApiPropertyOptional({ example: 'system', nullable: true })

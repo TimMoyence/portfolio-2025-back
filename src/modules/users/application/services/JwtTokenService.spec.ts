@@ -1,15 +1,17 @@
 import { ConfigService } from '@nestjs/config';
-import { SignJWT } from 'jose';
+import { SignJWT, decodeProtectedHeader } from 'jose';
 import { JwtTokenService } from './JwtTokenService';
 import type { JwtPayload } from './JwtPayload';
 
 describe('JwtTokenService', () => {
   const JWT_SECRET = 'test-secret-key-for-unit-tests-32';
+  const JWT_SECRET_PREVIOUS = 'old-secret-key-for-rotation-test!';
   let configService: jest.Mocked<ConfigService>;
   let service: JwtTokenService;
 
   /** Encode le secret en Uint8Array pour la creation de tokens de test avec jose. */
-  const encodeSecret = (): Uint8Array => new TextEncoder().encode(JWT_SECRET);
+  const encodeSecret = (secret = JWT_SECRET): Uint8Array =>
+    new TextEncoder().encode(secret);
 
   beforeEach(() => {
     configService = {
@@ -139,6 +141,103 @@ describe('JwtTokenService', () => {
         .sign(secret);
 
       await expect(service.verify(token)).rejects.toThrow('Invalid audience');
+    });
+  });
+
+  describe('rotation de cles (kid)', () => {
+    it('devrait inclure kid v1 dans le header JWT sans secret precedent', async () => {
+      const { token } = await service.sign({
+        sub: 'user-1',
+        email: 'a@b.com',
+      });
+
+      const header = decodeProtectedHeader(token);
+      expect(header.kid).toBe('v1');
+      expect(header.alg).toBe('HS256');
+    });
+
+    it('devrait inclure kid v2 dans le header JWT avec secret precedent', async () => {
+      configService.get.mockImplementation((key: string) => {
+        if (key === 'JWT_SECRET') return JWT_SECRET;
+        if (key === 'JWT_EXPIRES_IN') return '3600s';
+        if (key === 'JWT_SECRET_PREVIOUS') return JWT_SECRET_PREVIOUS;
+        return undefined;
+      });
+
+      const { token } = await service.sign({
+        sub: 'user-1',
+        email: 'a@b.com',
+      });
+
+      const header = decodeProtectedHeader(token);
+      expect(header.kid).toBe('v2');
+    });
+
+    it('devrait verifier un token signe avec la cle courante', async () => {
+      const { token } = await service.sign({
+        sub: 'user-1',
+        email: 'a@b.com',
+      });
+
+      const payload: JwtPayload = await service.verify(token);
+      expect(payload.sub).toBe('user-1');
+      expect(payload.email).toBe('a@b.com');
+    });
+
+    it('devrait verifier un token signe avec la cle precedente quand JWT_SECRET_PREVIOUS est configure', async () => {
+      // Signer un token avec l'ancien secret
+      const oldSecret = encodeSecret(JWT_SECRET_PREVIOUS);
+      const token = await new SignJWT({
+        sub: 'user-1',
+        email: 'a@b.com',
+        roles: [],
+      })
+        .setProtectedHeader({ alg: 'HS256', kid: 'v1' })
+        .setIssuedAt()
+        .setExpirationTime('1h')
+        .setIssuer('portfolio-2025')
+        .setAudience('portfolio-2025-api')
+        .sign(oldSecret);
+
+      // Configurer le service avec le nouveau secret + ancien secret
+      configService.get.mockImplementation((key: string) => {
+        if (key === 'JWT_SECRET') return JWT_SECRET;
+        if (key === 'JWT_EXPIRES_IN') return '3600s';
+        if (key === 'JWT_SECRET_PREVIOUS') return JWT_SECRET_PREVIOUS;
+        return undefined;
+      });
+
+      const payload: JwtPayload = await service.verify(token);
+      expect(payload.sub).toBe('user-1');
+      expect(payload.email).toBe('a@b.com');
+    });
+
+    it('devrait rejeter un token signe avec une cle inconnue', async () => {
+      const unknownSecret = encodeSecret('unknown-secret-that-is-long-enough!');
+      const token = await new SignJWT({
+        sub: 'user-1',
+        email: 'a@b.com',
+        roles: [],
+      })
+        .setProtectedHeader({ alg: 'HS256', kid: 'v0' })
+        .setIssuedAt()
+        .setExpirationTime('1h')
+        .setIssuer('portfolio-2025')
+        .setAudience('portfolio-2025-api')
+        .sign(unknownSecret);
+
+      // Sans JWT_SECRET_PREVIOUS configure
+      await expect(service.verify(token)).rejects.toThrow('Invalid signature');
+
+      // Avec JWT_SECRET_PREVIOUS configure (mais aucun ne correspond)
+      configService.get.mockImplementation((key: string) => {
+        if (key === 'JWT_SECRET') return JWT_SECRET;
+        if (key === 'JWT_EXPIRES_IN') return '3600s';
+        if (key === 'JWT_SECRET_PREVIOUS') return JWT_SECRET_PREVIOUS;
+        return undefined;
+      });
+
+      await expect(service.verify(token)).rejects.toThrow('Invalid signature');
     });
   });
 });

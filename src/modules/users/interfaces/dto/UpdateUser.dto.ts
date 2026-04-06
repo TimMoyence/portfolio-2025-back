@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsEmail,
+  IsIn,
   IsOptional,
   IsString,
   Matches,
@@ -10,6 +11,7 @@ import {
   MinLength,
 } from 'class-validator';
 import type { UpdateUserCommand } from '../../application/dto/UpdateUser.command';
+import { VALID_ROLES } from '../../domain/roles';
 
 /** DTO HTTP pour la mise a jour d'un utilisateur (validation + Swagger). */
 export class UpdateUserDto implements UpdateUserCommand {
@@ -58,6 +60,10 @@ export class UpdateUserDto implements UpdateUserCommand {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @IsIn(VALID_ROLES as unknown as string[], {
+    each: true,
+    message: 'Chaque role doit etre un role valide',
+  })
   roles?: string[];
 
   @ApiPropertyOptional({ example: true })
