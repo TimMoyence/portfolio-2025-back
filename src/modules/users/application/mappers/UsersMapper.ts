@@ -39,6 +39,7 @@ export class UsersMapper {
         lastName: command.lastName,
         phone: command.phone,
         isActive: command.isActive,
+        roles: command.roles,
         updatedOrCreatedBy: command.updatedOrCreatedBy,
       }),
     );

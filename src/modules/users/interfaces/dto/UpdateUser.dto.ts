@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsArray,
   IsBoolean,
   IsEmail,
   IsOptional,
@@ -48,6 +49,16 @@ export class UpdateUserDto implements UpdateUserCommand {
   @IsString()
   @MaxLength(30)
   phone?: string | null;
+
+  @ApiPropertyOptional({
+    example: ['budget', 'weather'],
+    type: [String],
+    description: 'Liste des roles. Reserve aux administrateurs.',
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  roles?: string[];
 
   @ApiPropertyOptional({ example: true })
   @IsOptional()

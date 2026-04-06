@@ -53,6 +53,30 @@ describe('UpdateUsersUseCase', () => {
     expect(result).toBe(updatedUser);
   });
 
+  it('devrait mettre a jour les roles de l utilisateur', async () => {
+    const user = buildUser({ id: 'user-1', roles: [] });
+    repo.findById.mockResolvedValue(user);
+
+    const dto: UpdateUserCommand = { roles: ['budget', 'weather'] };
+
+    const updatedUser = buildUser({
+      id: 'user-1',
+      roles: ['budget', 'weather'],
+    });
+    repo.update.mockResolvedValue(updatedUser);
+
+    const result = await useCase.execute('user-1', dto);
+
+    expect(repo.update).toHaveBeenCalledWith(
+      'user-1',
+      expect.objectContaining({
+        roles: ['budget', 'weather'],
+        updatedAt: expect.any(Date),
+      }),
+    );
+    expect(result.roles).toEqual(['budget', 'weather']);
+  });
+
   it('devrait lever une exception quand l utilisateur n existe pas', async () => {
     repo.findById.mockResolvedValue(null);
 

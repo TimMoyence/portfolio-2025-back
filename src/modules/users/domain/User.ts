@@ -21,6 +21,7 @@ export interface UpdateUserProps {
   lastName?: string;
   phone?: string | null;
   isActive?: boolean;
+  roles?: string[];
   updatedOrCreatedBy?: string | null;
   googleId?: string | null;
 }
@@ -123,6 +124,13 @@ export class User {
         throw new DomainValidationError('Invalid user active flag');
       }
       partial.isActive = props.isActive;
+    }
+
+    if (props.roles !== undefined) {
+      if (!Array.isArray(props.roles)) {
+        throw new DomainValidationError('Invalid user roles');
+      }
+      partial.roles = props.roles;
     }
 
     if (props.updatedOrCreatedBy !== undefined) {

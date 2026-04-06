@@ -6,5 +6,6 @@ export interface UpdateUserCommand {
   lastName?: string;
   phone?: string | null;
   isActive?: boolean;
+  roles?: string[];
   updatedOrCreatedBy?: string | null;
 }
