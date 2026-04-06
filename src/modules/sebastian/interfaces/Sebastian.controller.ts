@@ -32,6 +32,9 @@ import { GetTrendDataUseCase } from '../application/services/GetTrendData.useCas
 import { CalculateHealthScoreUseCase } from '../application/services/CalculateHealthScore.useCase';
 import { ListBadgesUseCase } from '../application/services/ListBadges.useCase';
 import { GetPeriodReportUseCase } from '../application/services/GetPeriodReport.useCase';
+import { CalculateBacUseCase } from '../application/services/CalculateBac.useCase';
+import { SetProfileUseCase } from '../application/services/SetProfile.useCase';
+import { GetProfileUseCase } from '../application/services/GetProfile.useCase';
 import { CreateEntryDto } from './dto/CreateEntry.dto';
 import { ListEntriesDto } from './dto/ListEntries.dto';
 import { GetStatsDto } from './dto/GetStats.dto';
@@ -45,6 +48,9 @@ import { TrendResponseDto } from './dto/TrendResponse.dto';
 import { HealthScoreResponseDto } from './dto/HealthScoreResponse.dto';
 import { BadgeStatusDto } from './dto/BadgeResponse.dto';
 import { PeriodReportResponseDto } from './dto/PeriodReportResponse.dto';
+import { BacResponseDto } from './dto/BacResponse.dto';
+import { CreateProfileDto } from './dto/CreateProfile.dto';
+import { ProfileResponseDto } from './dto/ProfileResponse.dto';
 
 /**
  * Controleur REST du module Sebastian.
@@ -70,6 +76,9 @@ export class SebastianController {
     private readonly calculateHealthScore: CalculateHealthScoreUseCase,
     private readonly listBadges: ListBadgesUseCase,
     private readonly getPeriodReport: GetPeriodReportUseCase,
+    private readonly calculateBac: CalculateBacUseCase,
+    private readonly setProfileUseCase: SetProfileUseCase,
+    private readonly getProfileUseCase: GetProfileUseCase,
   ) {}
 
   @Post('entries')
@@ -85,6 +94,9 @@ export class SebastianController {
       quantity: dto.quantity,
       date: dto.date,
       notes: dto.notes,
+      drinkType: dto.drinkType,
+      alcoholDegree: dto.alcoholDegree,
+      volumeCl: dto.volumeCl,
     });
     return EntryResponseDto.fromDomain(entry);
   }
@@ -205,5 +217,37 @@ export class SebastianController {
     const user = req.user!;
     const badges = await this.listBadges.execute(user.sub);
     return badges.map((b) => BadgeStatusDto.fromResult(b));
+  }
+
+  @Get('bac')
+  @ApiOperation({ summary: "Obtenir le taux d'alcoolemie actuel" })
+  @ApiOkResponse({ type: BacResponseDto })
+  async getBac(@Req() req: Request) {
+    const user = req.user!;
+    const result = await this.calculateBac.execute({ userId: user.sub });
+    return BacResponseDto.fromResult(result);
+  }
+
+  @Post('profile')
+  @ApiOperation({ summary: 'Definir le profil pour le calcul BAC' })
+  @ApiOkResponse({ type: ProfileResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation echouee' })
+  async setProfile(@Body() dto: CreateProfileDto, @Req() req: Request) {
+    const user = req.user!;
+    const profile = await this.setProfileUseCase.execute({
+      userId: user.sub,
+      weightKg: dto.weightKg,
+      widmarkR: dto.widmarkR,
+    });
+    return ProfileResponseDto.fromDomain(profile);
+  }
+
+  @Get('profile')
+  @ApiOperation({ summary: 'Obtenir le profil BAC' })
+  @ApiOkResponse({ type: ProfileResponseDto })
+  async getProfile(@Req() req: Request) {
+    const user = req.user!;
+    const profile = await this.getProfileUseCase.execute(user.sub);
+    return ProfileResponseDto.fromDomain(profile);
   }
 }

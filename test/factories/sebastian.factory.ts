@@ -4,6 +4,8 @@ import type { SebastianBadge } from '../../src/modules/sebastian/domain/Sebastia
 import type { ISebastianEntryRepository } from '../../src/modules/sebastian/domain/ISebastianEntry.repository';
 import type { ISebastianGoalRepository } from '../../src/modules/sebastian/domain/ISebastianGoal.repository';
 import type { ISebastianBadgeRepository } from '../../src/modules/sebastian/domain/ISebastianBadge.repository';
+import type { SebastianProfile } from '../../src/modules/sebastian/domain/SebastianProfile';
+import type { ISebastianProfileRepository } from '../../src/modules/sebastian/domain/ISebastianProfile.repository';
 import type { TrendResult } from '../../src/modules/sebastian/application/services/GetTrendData.useCase';
 import type { HealthScoreResult } from '../../src/modules/sebastian/application/services/CalculateHealthScore.useCase';
 import type { PeriodReportResult } from '../../src/modules/sebastian/application/services/GetPeriodReport.useCase';
@@ -22,8 +24,35 @@ export function buildSebastianEntry(
     date: new Date('2026-03-15'),
     notes: null,
     createdAt: new Date('2026-01-01'),
+    drinkType: null,
+    alcoholDegree: null,
+    volumeCl: null,
+    consumedAt: null,
     ...overrides,
   } as SebastianEntry;
+}
+
+/** Construit un objet SebastianProfile domaine avec des valeurs par defaut. */
+export function buildSebastianProfile(
+  overrides?: Partial<SebastianProfile>,
+): SebastianProfile {
+  return {
+    id: 'profile-1',
+    userId: 'user-1',
+    weightKg: 70,
+    widmarkR: 0.68,
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+    ...overrides,
+  } as SebastianProfile;
+}
+
+/** Cree un mock complet du repository profils Sebastian. */
+export function createMockSebastianProfileRepo(): jest.Mocked<ISebastianProfileRepository> {
+  return {
+    findByUserId: jest.fn(),
+    createOrUpdate: jest.fn(),
+  };
 }
 
 /** Construit un objet SebastianGoal domaine avec des valeurs par defaut. */

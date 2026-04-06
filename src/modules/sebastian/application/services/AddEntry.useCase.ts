@@ -24,6 +24,9 @@ export class AddEntryUseCase {
       quantity: command.quantity,
       date: command.date,
       notes: command.notes,
+      drinkType: command.drinkType,
+      alcoholDegree: command.alcoholDegree,
+      volumeCl: command.volumeCl,
     });
     const saved = await this.entryRepo.create(entry);
 

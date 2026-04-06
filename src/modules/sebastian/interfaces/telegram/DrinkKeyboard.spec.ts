@@ -6,11 +6,13 @@ import {
 
 describe('DrinkKeyboard', () => {
   describe('buildDrinkTypeKeyboard', () => {
-    it('cree un clavier avec 3 boutons de type', () => {
+    it('cree un clavier avec 5 boutons repartis sur 3 lignes', () => {
       const kb = buildDrinkTypeKeyboard();
-      // InlineKeyboard a la propriete inline_keyboard
       expect(kb.inline_keyboard).toBeDefined();
-      expect(kb.inline_keyboard[0]).toHaveLength(3);
+      expect(kb.inline_keyboard).toHaveLength(3);
+      expect(kb.inline_keyboard[0]).toHaveLength(2);
+      expect(kb.inline_keyboard[1]).toHaveLength(2);
+      expect(kb.inline_keyboard[2]).toHaveLength(1);
     });
   });
 

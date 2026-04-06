@@ -3,8 +3,12 @@ import { InlineKeyboard } from 'grammy';
 /** Cree le clavier inline pour la selection de boisson. */
 export function buildDrinkTypeKeyboard(): InlineKeyboard {
   return new InlineKeyboard()
-    .text('Biere (1 verre)', 'select_type:beer')
-    .text('Pinte (2 verres)', 'select_type:pint')
+    .text('Biere', 'select_type:beer')
+    .text('Vin', 'select_type:wine')
+    .row()
+    .text('Champagne', 'select_type:champagne')
+    .text('Pinte', 'select_type:pint')
+    .row()
     .text('Cafe', 'select_type:coffee');
 }
 

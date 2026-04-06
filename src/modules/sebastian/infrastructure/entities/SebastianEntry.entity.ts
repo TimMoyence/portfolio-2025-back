@@ -29,6 +29,30 @@ export class SebastianEntryEntity {
   @Column({ type: 'text', nullable: true })
   notes: string | null;
 
+  @Column({ name: 'drink_type', type: 'varchar', length: 20, nullable: true })
+  drinkType: string | null;
+
+  @Column({
+    name: 'alcohol_degree',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: true,
+  })
+  alcoholDegree: number | null;
+
+  @Column({
+    name: 'volume_cl',
+    type: 'decimal',
+    precision: 6,
+    scale: 1,
+    nullable: true,
+  })
+  volumeCl: number | null;
+
+  @Column({ name: 'consumed_at', type: 'timestamp', nullable: true })
+  consumedAt: Date | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

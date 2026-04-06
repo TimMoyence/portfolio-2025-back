@@ -81,6 +81,10 @@ describe('SebastianEntry', () => {
         date: new Date('2026-03-15'),
         notes: 'Biere',
         createdAt: new Date('2026-01-01'),
+        drinkType: null,
+        alcoholDegree: null,
+        volumeCl: null,
+        consumedAt: null,
       });
 
       expect(entry.id).toBe('entry-1');

@@ -12,6 +12,9 @@ import type { GetTrendDataUseCase } from '../application/services/GetTrendData.u
 import type { CalculateHealthScoreUseCase } from '../application/services/CalculateHealthScore.useCase';
 import type { ListBadgesUseCase } from '../application/services/ListBadges.useCase';
 import type { GetPeriodReportUseCase } from '../application/services/GetPeriodReport.useCase';
+import type { CalculateBacUseCase } from '../application/services/CalculateBac.useCase';
+import type { SetProfileUseCase } from '../application/services/SetProfile.useCase';
+import type { GetProfileUseCase } from '../application/services/GetProfile.useCase';
 import {
   buildSebastianEntry,
   buildSebastianGoal,
@@ -73,6 +76,16 @@ describe('SebastianController', () => {
       execute: jest.fn(),
     } as unknown as jest.Mocked<GetPeriodReportUseCase>;
 
+    const calculateBacUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<CalculateBacUseCase>;
+    const setProfileUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<SetProfileUseCase>;
+    const getProfileUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<GetProfileUseCase>;
+
     controller = new SebastianController(
       addEntryUseCase,
       listEntriesUseCase,
@@ -85,6 +98,9 @@ describe('SebastianController', () => {
       calculateHealthScoreUseCase,
       listBadgesUseCase,
       getPeriodReportUseCase,
+      calculateBacUseCase,
+      setProfileUseCase,
+      getProfileUseCase,
     );
   });
 

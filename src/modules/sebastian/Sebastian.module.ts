@@ -5,15 +5,18 @@ import {
   SEBASTIAN_GOAL_REPOSITORY,
   SEBASTIAN_BADGE_REPOSITORY,
   TELEGRAM_LINK_REPOSITORY,
+  SEBASTIAN_PROFILE_REPOSITORY,
 } from './domain/token';
 import { SebastianEntryEntity } from './infrastructure/entities/SebastianEntry.entity';
 import { SebastianGoalEntity } from './infrastructure/entities/SebastianGoal.entity';
 import { SebastianBadgeEntity } from './infrastructure/entities/SebastianBadge.entity';
 import { TelegramLinkEntity } from './infrastructure/entities/TelegramLink.entity';
+import { SebastianProfileEntity } from './infrastructure/entities/SebastianProfile.entity';
 import { SebastianEntryRepositoryTypeORM } from './infrastructure/SebastianEntry.repository.typeORM';
 import { SebastianGoalRepositoryTypeORM } from './infrastructure/SebastianGoal.repository.typeORM';
 import { SebastianBadgeRepositoryTypeORM } from './infrastructure/SebastianBadge.repository.typeORM';
 import { TelegramLinkRepositoryTypeORM } from './infrastructure/TelegramLink.repository.typeORM';
+import { SebastianProfileRepositoryTypeORM } from './infrastructure/SebastianProfile.repository.typeORM';
 import { TelegramBotService } from './infrastructure/TelegramBotService';
 import { SebastianController } from './interfaces/Sebastian.controller';
 import { SebastianBotHandler } from './interfaces/telegram/SebastianBot.handler';
@@ -29,6 +32,9 @@ import { CalculateHealthScoreUseCase } from './application/services/CalculateHea
 import { EvaluateBadgesUseCase } from './application/services/EvaluateBadges.useCase';
 import { ListBadgesUseCase } from './application/services/ListBadges.useCase';
 import { GetPeriodReportUseCase } from './application/services/GetPeriodReport.useCase';
+import { CalculateBacUseCase } from './application/services/CalculateBac.useCase';
+import { SetProfileUseCase } from './application/services/SetProfile.useCase';
+import { GetProfileUseCase } from './application/services/GetProfile.useCase';
 import { LinkTelegramUserUseCase } from './application/services/LinkTelegramUser.useCase';
 import { ResolveTelegramUserUseCase } from './application/services/ResolveTelegramUser.useCase';
 import { RegisterDrinksFromTelegramUseCase } from './application/services/RegisterDrinksFromTelegram.useCase';
@@ -47,6 +53,9 @@ const SEBASTIAN_USE_CASES = [
   EvaluateBadgesUseCase,
   ListBadgesUseCase,
   GetPeriodReportUseCase,
+  CalculateBacUseCase,
+  SetProfileUseCase,
+  GetProfileUseCase,
 ];
 
 const SEBASTIAN_TELEGRAM_PROVIDERS = [
@@ -71,6 +80,7 @@ const SEBASTIAN_TELEGRAM_PROVIDERS = [
       SebastianGoalEntity,
       SebastianBadgeEntity,
       TelegramLinkEntity,
+      SebastianProfileEntity,
     ]),
     UsersModule,
   ],
@@ -93,6 +103,10 @@ const SEBASTIAN_TELEGRAM_PROVIDERS = [
     {
       provide: TELEGRAM_LINK_REPOSITORY,
       useClass: TelegramLinkRepositoryTypeORM,
+    },
+    {
+      provide: SEBASTIAN_PROFILE_REPOSITORY,
+      useClass: SebastianProfileRepositoryTypeORM,
     },
   ],
 })

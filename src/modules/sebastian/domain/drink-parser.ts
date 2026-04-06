@@ -5,6 +5,9 @@ export interface ParsedDrink {
   unit: 'standard_drink' | 'cup';
   source: string;
   displayCount: number;
+  drinkType?: 'beer' | 'wine' | 'champagne' | 'coffee';
+  alcoholDegree?: number;
+  volumeCl?: number;
 }
 
 /** Resultat du parsing d'un message. */
@@ -57,6 +60,34 @@ const DRINK_DEFINITIONS: DrinkDefinition[] = [
     source: 'pint',
   },
   {
+    pattern: /\bcoupes?\s*(?:de\s+)?champagne\b/i,
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'champagne',
+  },
+  {
+    pattern: /\bverres?\s*(?:de\s+)?vin\b/i,
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'wine',
+  },
+  {
+    pattern: /\bchampagnes?\b/i,
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'champagne',
+  },
+  {
+    pattern: /\bvins?\b/i,
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'wine',
+  },
+  {
     pattern: /\bbi[eè]res?\b/i,
     category: 'alcohol',
     multiplier: 1,
@@ -86,6 +117,30 @@ const DRINK_DEFINITIONS: DrinkDefinition[] = [
   },
 ];
 
+/** Correspondance source → type de boisson pour enrichir les ParsedDrink. */
+const SOURCE_TO_DRINK_TYPE: Record<
+  string,
+  'beer' | 'wine' | 'champagne' | 'coffee'
+> = {
+  beer: 'beer',
+  pint: 'beer',
+  wine: 'wine',
+  champagne: 'champagne',
+  coffee: 'coffee',
+};
+
+/** Valeurs par defaut (degre, volume) par source de boisson. */
+const SOURCE_TO_DEFAULTS: Record<
+  string,
+  { alcoholDegree: number; volumeCl: number }
+> = {
+  beer: { alcoholDegree: 5, volumeCl: 25 },
+  pint: { alcoholDegree: 5, volumeCl: 50 },
+  wine: { alcoholDegree: 12, volumeCl: 12.5 },
+  champagne: { alcoholDegree: 12, volumeCl: 12.5 },
+  coffee: { alcoholDegree: 0, volumeCl: 0 },
+};
+
 const NUMBER_PATTERN = /(\d+)/;
 
 /** Extrait un nombre (chiffre ou ecrit) d'un token. */
@@ -96,7 +151,7 @@ function parseNumber(token: string): number | null {
   return written ?? null;
 }
 
-/** Parse les commandes slash depuis un message (/pint 4 /coffee 2). */
+/** Parse les commandes slash depuis un message (/pint 4 /vin 2 14° 12.5cl). */
 function parseSlashCommands(text: string): {
   drinks: ParsedDrink[];
   remaining: string;
@@ -105,12 +160,14 @@ function parseSlashCommands(text: string): {
   let remaining = text;
 
   const slashPattern =
-    /\/(pint|beer|coffee|biere|bière|cafe|café|pinte)(?:\s+(\d+))?/gi;
+    /\/(pint|beer|coffee|biere|bière|cafe|café|pinte|vin|champagne)(?:\s+(\d+))?(?:\s+(\d+(?:\.\d+)?)\s*[°%])?(?:\s+(\d+(?:\.\d+)?)\s*cl)?/gi;
   let match: RegExpExecArray | null;
 
   while ((match = slashPattern.exec(text)) !== null) {
     const command = match[1].toLowerCase();
     const count = match[2] ? parseInt(match[2], 10) : 1;
+    const degreeOverride = match[3] ? parseFloat(match[3]) : undefined;
+    const volumeOverride = match[4] ? parseFloat(match[4]) : undefined;
 
     let category: 'alcohol' | 'coffee';
     let multiplier: number;
@@ -127,6 +184,16 @@ function parseSlashCommands(text: string): {
       multiplier = 1;
       unit = 'standard_drink';
       source = 'beer';
+    } else if (/^vin$/i.test(command)) {
+      category = 'alcohol';
+      multiplier = 1;
+      unit = 'standard_drink';
+      source = 'wine';
+    } else if (/^champagne$/i.test(command)) {
+      category = 'alcohol';
+      multiplier = 1;
+      unit = 'standard_drink';
+      source = 'champagne';
     } else {
       category = 'coffee';
       multiplier = 1;
@@ -134,12 +201,21 @@ function parseSlashCommands(text: string): {
       source = 'coffee';
     }
 
+    const defaults = SOURCE_TO_DEFAULTS[source] ?? {
+      alcoholDegree: 0,
+      volumeCl: 0,
+    };
+    const drinkType = SOURCE_TO_DRINK_TYPE[source];
+
     drinks.push({
       category,
       quantity: count * multiplier,
       unit,
       source,
       displayCount: count,
+      drinkType,
+      alcoholDegree: degreeOverride ?? defaults.alcoholDegree,
+      volumeCl: volumeOverride ?? defaults.volumeCl,
     });
 
     remaining = remaining.replace(match[0], ' ');
@@ -171,12 +247,20 @@ function parseNaturalLanguage(text: string): {
     const parsedCount = parseNumber(lastToken);
     const count = parsedCount ?? 1;
 
+    const nlpDefaults = SOURCE_TO_DEFAULTS[def.source] ?? {
+      alcoholDegree: 0,
+      volumeCl: 0,
+    };
+
     drinks.push({
       category: def.category,
       quantity: count * def.multiplier,
       unit: def.unit,
       source: def.source,
       displayCount: count,
+      drinkType: SOURCE_TO_DRINK_TYPE[def.source],
+      alcoholDegree: nlpDefaults.alcoholDegree,
+      volumeCl: nlpDefaults.volumeCl,
     });
 
     // Retire la partie matchee du texte (nombre + boisson) par position

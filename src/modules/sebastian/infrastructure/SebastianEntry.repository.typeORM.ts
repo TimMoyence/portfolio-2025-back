@@ -63,6 +63,11 @@ export class SebastianEntryRepositoryTypeORM implements ISebastianEntryRepositor
       date: entity.date,
       notes: entity.notes,
       createdAt: entity.createdAt,
+      drinkType: entity.drinkType,
+      alcoholDegree:
+        entity.alcoholDegree != null ? Number(entity.alcoholDegree) : null,
+      volumeCl: entity.volumeCl != null ? Number(entity.volumeCl) : null,
+      consumedAt: entity.consumedAt,
     });
   }
 

@@ -5,4 +5,7 @@ export interface AddEntryCommand {
   quantity: number;
   date: string;
   notes?: string | null;
+  drinkType?: string;
+  alcoholDegree?: number | null;
+  volumeCl?: number | null;
 }

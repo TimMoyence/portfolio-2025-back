@@ -35,6 +35,9 @@ export class RegisterDrinksFromTelegramUseCase {
         quantity: drink.quantity,
         date: today,
         notes: 'via Telegram',
+        drinkType: drink.drinkType,
+        alcoholDegree: drink.alcoholDegree,
+        volumeCl: drink.volumeCl,
       });
       entries.push(entry);
     }

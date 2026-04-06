@@ -27,4 +27,19 @@ export class CreateEntryDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiPropertyOptional({ enum: ['beer', 'wine', 'champagne', 'coffee'] })
+  @IsOptional()
+  @IsIn(['beer', 'wine', 'champagne', 'coffee'])
+  drinkType?: string;
+
+  @ApiPropertyOptional({ example: 5.0 })
+  @IsOptional()
+  @IsNumber()
+  alcoholDegree?: number;
+
+  @ApiPropertyOptional({ example: 25 })
+  @IsOptional()
+  @IsNumber()
+  volumeCl?: number;
 }

@@ -21,6 +21,7 @@ function mockContext(overrides: Record<string, unknown> = {}): any {
 function createMockBot(): {
   command: jest.Mock;
   on: jest.Mock;
+  api: { setMyCommands: jest.Mock };
   handlers: Record<string, AnyFn>;
   messageHandlers: Array<[string, AnyFn]>;
 } {
@@ -33,6 +34,7 @@ function createMockBot(): {
     on: jest.fn((event: string, fn: AnyFn) => {
       messageHandlers.push([event, fn]);
     }),
+    api: { setMyCommands: jest.fn().mockResolvedValue(true) },
     handlers,
     messageHandlers,
   };
@@ -50,10 +52,12 @@ describe('SebastianBotHandler', () => {
     linkUser = { execute: jest.fn() };
     resolveUser = { execute: jest.fn() };
     registerDrinks = { execute: jest.fn() };
+    const calculateBac = { execute: jest.fn() } as any;
     handler = new SebastianBotHandler(
       linkUser as unknown as LinkTelegramUserUseCase,
       resolveUser as unknown as ResolveTelegramUserUseCase,
       registerDrinks as unknown as RegisterDrinksFromTelegramUseCase,
+      calculateBac,
     );
   });
 
@@ -190,7 +194,7 @@ describe('SebastianBotHandler', () => {
           displayCount: 4,
         },
       ]);
-      expect(msg).toContain('4 pinte(s)');
+      expect(msg).toContain('4 pintes');
       expect(msg).toContain('8 verres standard');
     });
 
@@ -211,8 +215,8 @@ describe('SebastianBotHandler', () => {
           displayCount: 2,
         },
       ]);
-      expect(msg).toContain('pinte(s)');
-      expect(msg).toContain('cafe(s)');
+      expect(msg).toContain('pintes');
+      expect(msg).toContain('cafes');
     });
   });
 });
