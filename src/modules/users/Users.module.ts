@@ -22,6 +22,7 @@ import { RefreshTokenEntity } from './infrastructure/entities/RefreshToken.entit
 import { UsersRepositoryTypeORM } from './infrastructure/Users.repository.typeORM';
 import { RefreshTokensRepositoryTypeORM } from './infrastructure/RefreshTokens.repository.typeORM';
 import { UsersController } from './interfaces/Users.controller';
+import { AuthAuditLogger } from './application/services/AuthAuditLogger';
 import { PasswordService } from './application/services/PasswordService';
 import { JwtTokenService } from './application/services/JwtTokenService';
 import { AuthenticateUserUseCase } from './application/AuthenticateUser.useCase';
@@ -67,6 +68,7 @@ const USERS_USE_CASES = [
   controllers: [UsersController, AuthController],
   providers: [
     ...USERS_USE_CASES,
+    AuthAuditLogger,
     PasswordService,
     JwtTokenService,
     {

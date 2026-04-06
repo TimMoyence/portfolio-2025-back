@@ -32,6 +32,7 @@ import { ForgotPasswordDto } from '../src/modules/users/interfaces/dto/ForgotPas
 import { LoginDto } from '../src/modules/users/interfaces/dto/Login.dto';
 import { ResetPasswordDto } from '../src/modules/users/interfaces/dto/ResetPassword.dto';
 import { SetPasswordDto } from '../src/modules/users/interfaces/dto/SetPassword.dto';
+import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 
 describe('API coherence and connectivity (e2e transportless)', () => {
@@ -111,6 +112,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
           provide: GetCurrentUserUseCase,
           useValue: { execute: jest.fn() },
         },
+        AuthAuditLogger,
       ],
     }).compile();
 
@@ -375,7 +377,8 @@ describe('API coherence and connectivity (e2e transportless)', () => {
       LoginDto,
     );
 
-    await expect(authController.login(dto)).rejects.toBeInstanceOf(
+    const req = makeRequestMock({ 'user-agent': 'test-agent' });
+    await expect(authController.login(dto, req)).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
   });

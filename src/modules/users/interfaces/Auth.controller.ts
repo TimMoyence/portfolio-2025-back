@@ -18,6 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
+import { AuthAuditLogger } from '../application/services/AuthAuditLogger';
 import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
@@ -58,7 +59,18 @@ export class AuthController {
     private readonly setPasswordUseCase: SetPasswordUseCase,
     private readonly updateProfileUseCase: UpdateProfileUseCase,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
+    private readonly auditLogger: AuthAuditLogger,
   ) {}
+
+  /** Extrait l'adresse IP depuis la requête HTTP. */
+  private extractIp(req: Request): string {
+    return req.ip ?? req.headers['x-forwarded-for']?.toString() ?? 'unknown';
+  }
+
+  /** Extrait le User-Agent depuis la requête HTTP. */
+  private extractUserAgent(req: Request): string {
+    return req.headers['user-agent'] ?? 'unknown';
+  }
 
   @Public()
   @Post('login')
@@ -66,9 +78,35 @@ export class AuthController {
   @ApiOperation({ summary: 'Connexion par email et mot de passe' })
   @ApiOkResponse({ type: AuthResponseDto })
   @ApiUnauthorizedResponse({ description: 'Identifiants invalides' })
-  async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
-    const result = await this.authenticateUserUseCase.execute(dto);
-    return AuthResponseDto.fromAuthResult(result);
+  async login(
+    @Body() dto: LoginDto,
+    @Req() req: Request,
+  ): Promise<AuthResponseDto> {
+    const ip = this.extractIp(req);
+    const userAgent = this.extractUserAgent(req);
+
+    try {
+      const result = await this.authenticateUserUseCase.execute(dto);
+      this.auditLogger.log({
+        event: 'LOGIN_SUCCESS',
+        email: dto.email,
+        userId: result.user.id,
+        ip,
+        userAgent,
+        timestamp: new Date(),
+      });
+      return AuthResponseDto.fromAuthResult(result);
+    } catch (error) {
+      this.auditLogger.log({
+        event: 'LOGIN_FAILURE',
+        email: dto.email,
+        ip,
+        userAgent,
+        timestamp: new Date(),
+        details: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   }
 
   @Public()
@@ -77,11 +115,36 @@ export class AuthController {
   @ApiOperation({ summary: 'Authentification via Google OAuth' })
   @ApiOkResponse({ type: AuthResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid Google token' })
-  async googleAuth(@Body() dto: GoogleAuthDto): Promise<AuthResponseDto> {
-    const result = await this.authenticateGoogleUserUseCase.execute(
-      dto.idToken,
-    );
-    return AuthResponseDto.fromAuthResult(result);
+  async googleAuth(
+    @Body() dto: GoogleAuthDto,
+    @Req() req: Request,
+  ): Promise<AuthResponseDto> {
+    const ip = this.extractIp(req);
+    const userAgent = this.extractUserAgent(req);
+
+    try {
+      const result = await this.authenticateGoogleUserUseCase.execute(
+        dto.idToken,
+      );
+      this.auditLogger.log({
+        event: 'GOOGLE_AUTH_SUCCESS',
+        email: result.user.email,
+        userId: result.user.id,
+        ip,
+        userAgent,
+        timestamp: new Date(),
+      });
+      return AuthResponseDto.fromAuthResult(result);
+    } catch (error) {
+      this.auditLogger.log({
+        event: 'GOOGLE_AUTH_FAILURE',
+        ip,
+        userAgent,
+        timestamp: new Date(),
+        details: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   }
 
   @Public()
@@ -93,9 +156,34 @@ export class AuthController {
   })
   @ApiOkResponse({ type: AuthResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid or expired refresh token' })
-  async refresh(@Body() dto: RefreshTokenDto): Promise<AuthResponseDto> {
-    const result = await this.refreshTokensUseCase.execute(dto.refreshToken);
-    return AuthResponseDto.fromAuthResult(result);
+  async refresh(
+    @Body() dto: RefreshTokenDto,
+    @Req() req: Request,
+  ): Promise<AuthResponseDto> {
+    const ip = this.extractIp(req);
+    const userAgent = this.extractUserAgent(req);
+
+    try {
+      const result = await this.refreshTokensUseCase.execute(dto.refreshToken);
+      this.auditLogger.log({
+        event: 'TOKEN_REFRESH',
+        userId: result.user.id,
+        email: result.user.email,
+        ip,
+        userAgent,
+        timestamp: new Date(),
+      });
+      return AuthResponseDto.fromAuthResult(result);
+    } catch (error) {
+      this.auditLogger.log({
+        event: 'TOKEN_REFRESH_FAILURE',
+        ip,
+        userAgent,
+        timestamp: new Date(),
+        details: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   }
 
   @Public()
@@ -105,8 +193,20 @@ export class AuthController {
   @ApiOperation({ summary: 'Revoque le refresh token (deconnexion)' })
   @ApiOkResponse({ type: AuthMessageResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid refresh token' })
-  async logout(@Body() dto: RefreshTokenDto): Promise<AuthMessageResponseDto> {
+  async logout(
+    @Body() dto: RefreshTokenDto,
+    @Req() req: Request,
+  ): Promise<AuthMessageResponseDto> {
+    const ip = this.extractIp(req);
+    const userAgent = this.extractUserAgent(req);
+
     await this.revokeTokenUseCase.execute(dto.refreshToken);
+    this.auditLogger.log({
+      event: 'LOGOUT',
+      ip,
+      userAgent,
+      timestamp: new Date(),
+    });
     return { message: 'Deconnexion reussie.' };
   }
 
