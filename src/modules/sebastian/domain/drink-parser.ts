@@ -6,8 +6,8 @@ export interface ParsedDrink {
   source: string;
   displayCount: number;
   drinkType?: 'beer' | 'wine' | 'champagne' | 'coffee';
-  alcoholDegree?: number;
-  volumeCl?: number;
+  alcoholDegree?: number | null;
+  volumeCl?: number | null;
 }
 
 /** Resultat du parsing d'un message. */
@@ -132,13 +132,13 @@ const SOURCE_TO_DRINK_TYPE: Record<
 /** Valeurs par defaut (degre, volume) par source de boisson. */
 const SOURCE_TO_DEFAULTS: Record<
   string,
-  { alcoholDegree: number; volumeCl: number }
+  { alcoholDegree: number | null; volumeCl: number | null }
 > = {
   beer: { alcoholDegree: 5, volumeCl: 25 },
   pint: { alcoholDegree: 5, volumeCl: 50 },
   wine: { alcoholDegree: 12, volumeCl: 12.5 },
   champagne: { alcoholDegree: 12, volumeCl: 12.5 },
-  coffee: { alcoholDegree: 0, volumeCl: 0 },
+  coffee: { alcoholDegree: null, volumeCl: null },
 };
 
 const NUMBER_PATTERN = /(\d+)/;
@@ -202,8 +202,8 @@ function parseSlashCommands(text: string): {
     }
 
     const defaults = SOURCE_TO_DEFAULTS[source] ?? {
-      alcoholDegree: 0,
-      volumeCl: 0,
+      alcoholDegree: null,
+      volumeCl: null,
     };
     const drinkType = SOURCE_TO_DRINK_TYPE[source];
 
@@ -248,8 +248,8 @@ function parseNaturalLanguage(text: string): {
     const count = parsedCount ?? 1;
 
     const nlpDefaults = SOURCE_TO_DEFAULTS[def.source] ?? {
-      alcoholDegree: 0,
-      volumeCl: 0,
+      alcoholDegree: null,
+      volumeCl: null,
     };
 
     drinks.push({

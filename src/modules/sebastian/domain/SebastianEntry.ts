@@ -23,12 +23,16 @@ export type DrinkType = (typeof VALID_DRINK_TYPES)[number];
 /** Valeurs par defaut pour chaque type de boisson (degre, volume, categorie). */
 export const DRINK_TYPE_DEFAULTS: Record<
   DrinkType,
-  { category: SebastianCategory; alcoholDegree: number; volumeCl: number }
+  {
+    category: SebastianCategory;
+    alcoholDegree: number | null;
+    volumeCl: number | null;
+  }
 > = {
   beer: { category: 'alcohol', alcoholDegree: 5, volumeCl: 25 },
   wine: { category: 'alcohol', alcoholDegree: 12, volumeCl: 12.5 },
   champagne: { category: 'alcohol', alcoholDegree: 12, volumeCl: 12.5 },
-  coffee: { category: 'coffee', alcoholDegree: 0, volumeCl: 0 },
+  coffee: { category: 'coffee', alcoholDegree: null, volumeCl: null },
 };
 
 /** Correspondance entre categorie et unite attendue. */

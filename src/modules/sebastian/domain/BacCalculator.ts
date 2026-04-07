@@ -40,17 +40,17 @@ function getEntryAlcoholParams(
 
   if (entry.drinkType) {
     const defaults = DRINK_TYPE_DEFAULTS[entry.drinkType];
-    return {
-      alcoholDegree: entry.alcoholDegree ?? defaults.alcoholDegree,
-      volumeCl: entry.volumeCl ?? defaults.volumeCl,
-    };
+    const degree = entry.alcoholDegree ?? defaults.alcoholDegree;
+    const volume = entry.volumeCl ?? defaults.volumeCl;
+    if (degree == null || volume == null) return null;
+    return { alcoholDegree: degree, volumeCl: volume };
   }
 
   /* Entrees legacy sans drinkType : on assume une biere standard par standard_drink. */
   const beerDefaults = DRINK_TYPE_DEFAULTS['beer'];
   return {
-    alcoholDegree: entry.alcoholDegree ?? beerDefaults.alcoholDegree,
-    volumeCl: entry.volumeCl ?? beerDefaults.volumeCl,
+    alcoholDegree: entry.alcoholDegree ?? beerDefaults.alcoholDegree ?? 5,
+    volumeCl: entry.volumeCl ?? beerDefaults.volumeCl ?? 25,
   };
 }
 
