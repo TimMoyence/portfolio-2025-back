@@ -68,6 +68,45 @@ describe('SebastianEntry', () => {
         SebastianEntry.create({ ...validProps, date: 'not-a-date' }),
       ).toThrow(DomainValidationError);
     });
+
+    it('devrait creer une entree avec drinkType cocktail', () => {
+      const entry = SebastianEntry.create({
+        ...validProps,
+        drinkType: 'cocktail',
+      });
+
+      expect(entry.category).toBe('alcohol');
+      expect(entry.drinkType).toBe('cocktail');
+      expect(entry.alcoholDegree).toBe(15);
+      expect(entry.volumeCl).toBe(20);
+      expect(entry.unit).toBe('standard_drink');
+    });
+
+    it('devrait creer une entree avec drinkType spiritueux', () => {
+      const entry = SebastianEntry.create({
+        ...validProps,
+        drinkType: 'spiritueux',
+      });
+
+      expect(entry.category).toBe('alcohol');
+      expect(entry.drinkType).toBe('spiritueux');
+      expect(entry.alcoholDegree).toBe(40);
+      expect(entry.volumeCl).toBe(4);
+      expect(entry.unit).toBe('standard_drink');
+    });
+
+    it('devrait creer une entree avec drinkType cidre', () => {
+      const entry = SebastianEntry.create({
+        ...validProps,
+        drinkType: 'cidre',
+      });
+
+      expect(entry.category).toBe('alcohol');
+      expect(entry.drinkType).toBe('cidre');
+      expect(entry.alcoholDegree).toBe(5);
+      expect(entry.volumeCl).toBe(25);
+      expect(entry.unit).toBe('standard_drink');
+    });
   });
 
   describe('fromPersistence()', () => {

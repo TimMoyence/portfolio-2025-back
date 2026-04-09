@@ -16,6 +16,9 @@ export const VALID_DRINK_TYPES = [
   'wine',
   'champagne',
   'coffee',
+  'cocktail',
+  'spiritueux',
+  'cidre',
 ] as const;
 /** Type de boisson. */
 export type DrinkType = (typeof VALID_DRINK_TYPES)[number];
@@ -33,6 +36,9 @@ export const DRINK_TYPE_DEFAULTS: Record<
   wine: { category: 'alcohol', alcoholDegree: 12, volumeCl: 12.5 },
   champagne: { category: 'alcohol', alcoholDegree: 12, volumeCl: 12.5 },
   coffee: { category: 'coffee', alcoholDegree: null, volumeCl: null },
+  cocktail: { category: 'alcohol', alcoholDegree: 15, volumeCl: 20 },
+  spiritueux: { category: 'alcohol', alcoholDegree: 40, volumeCl: 4 },
+  cidre: { category: 'alcohol', alcoholDegree: 5, volumeCl: 25 },
 };
 
 /** Correspondance entre categorie et unite attendue. */
