@@ -57,6 +57,8 @@ export interface CreateSebastianEntryProps {
   drinkType?: string;
   alcoholDegree?: number | null;
   volumeCl?: number | null;
+  /** Timestamp ISO 8601 optionnel de consommation. Si absent, utilise l'heure courante. */
+  consumedAt?: string;
 }
 
 /** Proprietes pour reconstruire une entree depuis la persistence. */
@@ -167,7 +169,15 @@ export class SebastianEntry {
     entry.drinkType = drinkType;
     entry.alcoholDegree = alcoholDegree;
     entry.volumeCl = volumeCl;
-    entry.consumedAt = new Date();
+    if (props.consumedAt) {
+      const parsedConsumedAt = new Date(props.consumedAt);
+      if (isNaN(parsedConsumedAt.getTime())) {
+        throw new DomainValidationError('consumedAt invalide');
+      }
+      entry.consumedAt = parsedConsumedAt;
+    } else {
+      entry.consumedAt = new Date();
+    }
     return entry;
   }
 

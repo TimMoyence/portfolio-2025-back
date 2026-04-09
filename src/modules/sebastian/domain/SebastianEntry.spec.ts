@@ -107,6 +107,30 @@ describe('SebastianEntry', () => {
       expect(entry.volumeCl).toBe(25);
       expect(entry.unit).toBe('standard_drink');
     });
+
+    it('devrait utiliser consumedAt personnalise si fourni', () => {
+      const entry = SebastianEntry.create({
+        ...validProps,
+        consumedAt: '2026-04-08T22:08:00.000Z',
+      });
+      expect(entry.consumedAt).toEqual(new Date('2026-04-08T22:08:00.000Z'));
+    });
+
+    it('devrait utiliser la date courante si consumedAt non fourni', () => {
+      const before = new Date();
+      const entry = SebastianEntry.create(validProps);
+      const after = new Date();
+      expect(entry.consumedAt!.getTime()).toBeGreaterThanOrEqual(
+        before.getTime(),
+      );
+      expect(entry.consumedAt!.getTime()).toBeLessThanOrEqual(after.getTime());
+    });
+
+    it('devrait rejeter un consumedAt invalide', () => {
+      expect(() =>
+        SebastianEntry.create({ ...validProps, consumedAt: 'not-a-date' }),
+      ).toThrow(DomainValidationError);
+    });
   });
 
   describe('fromPersistence()', () => {

@@ -81,6 +81,26 @@ describe('AddEntryUseCase', () => {
     expect(evaluateBadges.execute).toHaveBeenCalledWith('user-1');
   });
 
+  it('devrait propager consumedAt au domaine', async () => {
+    const entry = buildSebastianEntry({
+      consumedAt: new Date('2026-04-08T22:08:00.000Z'),
+    });
+    entryRepo.create.mockResolvedValue(entry);
+
+    await useCase.execute({
+      userId: 'user-1',
+      category: 'coffee',
+      quantity: 2,
+      date: '2026-03-15',
+      consumedAt: '2026-04-08T22:08:00.000Z',
+    });
+
+    const createdEntry = entryRepo.create.mock.calls[0][0];
+    expect(createdEntry.consumedAt).toEqual(
+      new Date('2026-04-08T22:08:00.000Z'),
+    );
+  });
+
   it('ne devrait pas bloquer si EvaluateBadges echoue', async () => {
     const entry = buildSebastianEntry();
     entryRepo.create.mockResolvedValue(entry);

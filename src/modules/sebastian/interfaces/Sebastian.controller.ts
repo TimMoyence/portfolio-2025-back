@@ -97,6 +97,7 @@ export class SebastianController {
       drinkType: dto.drinkType,
       alcoholDegree: dto.alcoholDegree,
       volumeCl: dto.volumeCl,
+      consumedAt: dto.consumedAt,
     });
     return EntryResponseDto.fromDomain(entry);
   }

@@ -8,4 +8,6 @@ export interface AddEntryCommand {
   drinkType?: string;
   alcoholDegree?: number | null;
   volumeCl?: number | null;
+  /** Timestamp ISO 8601 optionnel de consommation. */
+  consumedAt?: string;
 }
