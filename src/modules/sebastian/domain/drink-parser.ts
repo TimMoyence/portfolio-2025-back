@@ -5,9 +5,17 @@ export interface ParsedDrink {
   unit: 'standard_drink' | 'cup';
   source: string;
   displayCount: number;
-  drinkType?: 'beer' | 'wine' | 'champagne' | 'coffee';
+  drinkType?:
+    | 'beer'
+    | 'wine'
+    | 'champagne'
+    | 'coffee'
+    | 'cocktail'
+    | 'spiritueux'
+    | 'cidre';
   alcoholDegree?: number | null;
   volumeCl?: number | null;
+  consumedAt?: string;
 }
 
 /** Resultat du parsing d'un message. */
@@ -16,6 +24,10 @@ export interface DrinkParseResult {
   confident: boolean;
   rawInput: string;
 }
+
+// ---------------------------------------------------------------------------
+// Nombres ecrits (FR + EN)
+// ---------------------------------------------------------------------------
 
 const WRITTEN_NUMBERS: Record<string, number> = {
   // English
@@ -42,6 +54,10 @@ const WRITTEN_NUMBERS: Record<string, number> = {
   neuf: 9,
   dix: 10,
 };
+
+// ---------------------------------------------------------------------------
+// Definitions NLP (langage naturel)
+// ---------------------------------------------------------------------------
 
 interface DrinkDefinition {
   pattern: RegExp;
@@ -88,6 +104,27 @@ const DRINK_DEFINITIONS: DrinkDefinition[] = [
     source: 'wine',
   },
   {
+    pattern: /\bcocktails?\b/i,
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'cocktail',
+  },
+  {
+    pattern: /\bspiritueux\b/i,
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'spiritueux',
+  },
+  {
+    pattern: /\bcidres?\b/i,
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'cidre',
+  },
+  {
     pattern: /\bbi[eè]res?\b/i,
     category: 'alcohol',
     multiplier: 1,
@@ -117,16 +154,23 @@ const DRINK_DEFINITIONS: DrinkDefinition[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Correspondances source → drinkType et defaults
+// ---------------------------------------------------------------------------
+
 /** Correspondance source → type de boisson pour enrichir les ParsedDrink. */
 const SOURCE_TO_DRINK_TYPE: Record<
   string,
-  'beer' | 'wine' | 'champagne' | 'coffee'
+  'beer' | 'wine' | 'champagne' | 'coffee' | 'cocktail' | 'spiritueux' | 'cidre'
 > = {
   beer: 'beer',
   pint: 'beer',
   wine: 'wine',
   champagne: 'champagne',
   coffee: 'coffee',
+  cocktail: 'cocktail',
+  spiritueux: 'spiritueux',
+  cidre: 'cidre',
 };
 
 /** Valeurs par defaut (degre, volume) par source de boisson. */
@@ -138,8 +182,188 @@ const SOURCE_TO_DEFAULTS: Record<
   pint: { alcoholDegree: 5, volumeCl: 50 },
   wine: { alcoholDegree: 12, volumeCl: 12.5 },
   champagne: { alcoholDegree: 12, volumeCl: 12.5 },
+  cocktail: { alcoholDegree: 15, volumeCl: 20 },
+  spiritueux: { alcoholDegree: 40, volumeCl: 4 },
+  cidre: { alcoholDegree: 5, volumeCl: 25 },
   coffee: { alcoholDegree: null, volumeCl: null },
 };
+
+// ---------------------------------------------------------------------------
+// Jours relatifs
+// ---------------------------------------------------------------------------
+
+/** Mapping nom de jour → index JS (0=dimanche, 1=lundi ... 6=samedi). */
+const DAY_NAME_TO_INDEX: Record<string, number> = {
+  // Francais
+  lundi: 1,
+  mardi: 2,
+  mercredi: 3,
+  jeudi: 4,
+  vendredi: 5,
+  samedi: 6,
+  dimanche: 0,
+  // English
+  monday: 1,
+  tuesday: 2,
+  wednesday: 3,
+  thursday: 4,
+  friday: 5,
+  saturday: 6,
+  sunday: 0,
+};
+
+/**
+ * Resout un token jour vers une Date.
+ * - "hier" / "yesterday" → hier
+ * - Nom de jour → le dernier passe. Si aujourd'hui = ce jour, reste aujourd'hui.
+ * Retourne null si le token n'est pas un jour reconnu.
+ */
+function resolveDay(token: string): Date | null {
+  const lower = token.toLowerCase();
+
+  if (lower === 'hier' || lower === 'yesterday') {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  const targetIndex = DAY_NAME_TO_INDEX[lower];
+  if (targetIndex === undefined) return null;
+
+  const now = new Date();
+  const currentDay = now.getDay();
+  let diff = currentDay - targetIndex;
+  if (diff < 0) diff += 7;
+  // Si diff === 0, c'est aujourd'hui → on garde aujourd'hui
+  const d = new Date();
+  d.setDate(d.getDate() - diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/**
+ * Parse un token d'heure.
+ * Formats reconnus : "22h", "22:08", "22h00".
+ * Retourne null si le token n'est pas une heure.
+ */
+function parseTime(token: string): { hours: number; minutes: number } | null {
+  // 22h, 14h
+  const hOnly = /^(\d{1,2})h$/i.exec(token);
+  if (hOnly) {
+    return { hours: parseInt(hOnly[1], 10), minutes: 0 };
+  }
+
+  // 22h00, 22h30
+  const hm = /^(\d{1,2})h(\d{2})$/i.exec(token);
+  if (hm) {
+    return { hours: parseInt(hm[1], 10), minutes: parseInt(hm[2], 10) };
+  }
+
+  // 22:08, 22:00
+  const colon = /^(\d{1,2}):(\d{2})$/i.exec(token);
+  if (colon) {
+    return { hours: parseInt(colon[1], 10), minutes: parseInt(colon[2], 10) };
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Commandes slash v2
+// ---------------------------------------------------------------------------
+
+interface SlashCommandDef {
+  category: 'alcohol' | 'coffee';
+  multiplier: number;
+  unit: 'standard_drink' | 'cup';
+  source: string;
+}
+
+/** Record de toutes les commandes slash reconnues. */
+const SLASH_COMMANDS: Record<string, SlashCommandDef> = {
+  pint: {
+    category: 'alcohol',
+    multiplier: 2,
+    unit: 'standard_drink',
+    source: 'pint',
+  },
+  pinte: {
+    category: 'alcohol',
+    multiplier: 2,
+    unit: 'standard_drink',
+    source: 'pint',
+  },
+  beer: {
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'beer',
+  },
+  biere: {
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'beer',
+  },
+  bière: {
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'beer',
+  },
+  vin: {
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'wine',
+  },
+  champagne: {
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'champagne',
+  },
+  cocktail: {
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'cocktail',
+  },
+  spiritueux: {
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'spiritueux',
+  },
+  cidre: {
+    category: 'alcohol',
+    multiplier: 1,
+    unit: 'standard_drink',
+    source: 'cidre',
+  },
+  coffee: {
+    category: 'coffee',
+    multiplier: 1,
+    unit: 'cup',
+    source: 'coffee',
+  },
+  cafe: {
+    category: 'coffee',
+    multiplier: 1,
+    unit: 'cup',
+    source: 'coffee',
+  },
+  café: {
+    category: 'coffee',
+    multiplier: 1,
+    unit: 'cup',
+    source: 'coffee',
+  },
+};
+
+/** Liste des noms de commandes pour le regex de decoupe. */
+const SLASH_COMMAND_NAMES = Object.keys(SLASH_COMMANDS).join('|');
 
 const NUMBER_PATTERN = /(\d+)/;
 
@@ -151,7 +375,12 @@ function parseNumber(token: string): number | null {
   return written ?? null;
 }
 
-/** Parse les commandes slash depuis un message (/pint 4 /vin 2 14° 12.5cl). */
+/**
+ * Parse les commandes slash depuis un message.
+ * Grammaire v2 : /command [qts:N] [jour] [soir] [heure] [degre]
+ * - Nombre seul = degre
+ * - qts:N = quantite (defaut: 1)
+ */
 function parseSlashCommands(text: string): {
   drinks: ParsedDrink[];
   remaining: string;
@@ -159,66 +388,115 @@ function parseSlashCommands(text: string): {
   const drinks: ParsedDrink[] = [];
   let remaining = text;
 
-  const slashPattern =
-    /\/(pint|beer|coffee|biere|bière|cafe|café|pinte|vin|champagne)(?:\s+(\d+))?(?:\s+(\d+(?:\.\d+)?)\s*[°%])?(?:\s+(\d+(?:\.\d+)?)\s*cl)?/gi;
-  let match: RegExpExecArray | null;
+  // Decoupe le texte en segments par commande slash
+  const splitPattern = new RegExp(
+    `(?=\\/(?:${SLASH_COMMAND_NAMES})(?:\\s|$))`,
+    'gi',
+  );
+  const segments = text.split(splitPattern).filter((s) => s.trim());
 
-  while ((match = slashPattern.exec(text)) !== null) {
-    const command = match[1].toLowerCase();
-    const count = match[2] ? parseInt(match[2], 10) : 1;
-    const degreeOverride = match[3] ? parseFloat(match[3]) : undefined;
-    const volumeOverride = match[4] ? parseFloat(match[4]) : undefined;
+  for (const segment of segments) {
+    // Extrait la commande du segment
+    const cmdMatch = new RegExp(
+      `^\\/(${SLASH_COMMAND_NAMES})(?:\\s|$)`,
+      'i',
+    ).exec(segment.trim());
+    if (!cmdMatch) continue;
 
-    let category: 'alcohol' | 'coffee';
-    let multiplier: number;
-    let unit: 'standard_drink' | 'cup';
-    let source: string;
+    const commandName = cmdMatch[1].toLowerCase();
+    const def = SLASH_COMMANDS[commandName];
+    if (!def) continue;
 
-    if (/^pint(?:e)?$/i.test(command)) {
-      category = 'alcohol';
-      multiplier = 2;
-      unit = 'standard_drink';
-      source = 'pint';
-    } else if (/^(?:beer|bi[eè]re)$/i.test(command)) {
-      category = 'alcohol';
-      multiplier = 1;
-      unit = 'standard_drink';
-      source = 'beer';
-    } else if (/^vin$/i.test(command)) {
-      category = 'alcohol';
-      multiplier = 1;
-      unit = 'standard_drink';
-      source = 'wine';
-    } else if (/^champagne$/i.test(command)) {
-      category = 'alcohol';
-      multiplier = 1;
-      unit = 'standard_drink';
-      source = 'champagne';
-    } else {
-      category = 'coffee';
-      multiplier = 1;
-      unit = 'cup';
-      source = 'coffee';
+    // Retire la commande du remaining
+    remaining = remaining.replace(segment.trim(), '');
+
+    // Parse les arguments (tout ce qui suit la commande)
+    const argsStr = segment.trim().substring(cmdMatch[0].length).trim();
+    const tokens = argsStr ? argsStr.split(/\s+/) : [];
+
+    let displayCount = 1;
+    let degreeOverride: number | undefined;
+    let dayDate: Date | null = null;
+    let time: { hours: number; minutes: number } | null = null;
+    let soirAfterDay = false;
+
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+      const tokenLower = token.toLowerCase();
+
+      // qts:N
+      const qtsMatch = /^qts:(\d+)$/i.exec(token);
+      if (qtsMatch) {
+        displayCount = parseInt(qtsMatch[1], 10);
+        continue;
+      }
+
+      // "soir" (doit suivre un jour — hier/yesterday ou nom de jour)
+      if (tokenLower === 'soir' && dayDate !== null) {
+        soirAfterDay = true;
+        continue;
+      }
+
+      // Jour (hier, yesterday, lundi-dimanche, monday-sunday)
+      const resolvedDay = resolveDay(tokenLower);
+      if (resolvedDay) {
+        dayDate = resolvedDay;
+        continue;
+      }
+
+      // Heure (22h, 22:08, 22h00)
+      const parsedTime = parseTime(token);
+      if (parsedTime) {
+        time = parsedTime;
+        continue;
+      }
+
+      // Nombre seul = degre
+      const num = /^(\d+)$/.exec(token);
+      if (num) {
+        degreeOverride = parseInt(num[1], 10);
+        continue;
+      }
     }
 
-    const defaults = SOURCE_TO_DEFAULTS[source] ?? {
+    const defaults = SOURCE_TO_DEFAULTS[def.source] ?? {
       alcoholDegree: null,
       volumeCl: null,
     };
-    const drinkType = SOURCE_TO_DRINK_TYPE[source];
+    const drinkType = SOURCE_TO_DRINK_TYPE[def.source];
 
-    drinks.push({
-      category,
-      quantity: count * multiplier,
-      unit,
-      source,
-      displayCount: count,
+    // Construire consumedAt si jour ou heure present
+    let consumedAt: string | undefined;
+    if (dayDate || time || soirAfterDay) {
+      const baseDate = dayDate ?? new Date();
+      if (!dayDate) {
+        // Heure seule → aujourd'hui
+        baseDate.setHours(0, 0, 0, 0);
+      }
+      if (soirAfterDay && !time) {
+        baseDate.setHours(21, 0, 0, 0);
+      } else if (time) {
+        baseDate.setHours(time.hours, time.minutes, 0, 0);
+      }
+      consumedAt = baseDate.toISOString();
+    }
+
+    const drink: ParsedDrink = {
+      category: def.category,
+      quantity: displayCount * def.multiplier,
+      unit: def.unit,
+      source: def.source,
+      displayCount,
       drinkType,
       alcoholDegree: degreeOverride ?? defaults.alcoholDegree,
-      volumeCl: volumeOverride ?? defaults.volumeCl,
-    });
+      volumeCl: defaults.volumeCl,
+    };
 
-    remaining = remaining.replace(match[0], ' ');
+    if (consumedAt !== undefined) {
+      drink.consumedAt = consumedAt;
+    }
+
+    drinks.push(drink);
   }
 
   return { drinks, remaining: remaining.trim() };
