@@ -68,6 +68,69 @@ describe('SebastianEntry', () => {
         SebastianEntry.create({ ...validProps, date: 'not-a-date' }),
       ).toThrow(DomainValidationError);
     });
+
+    it('devrait creer une entree avec drinkType cocktail', () => {
+      const entry = SebastianEntry.create({
+        ...validProps,
+        drinkType: 'cocktail',
+      });
+
+      expect(entry.category).toBe('alcohol');
+      expect(entry.drinkType).toBe('cocktail');
+      expect(entry.alcoholDegree).toBe(15);
+      expect(entry.volumeCl).toBe(20);
+      expect(entry.unit).toBe('standard_drink');
+    });
+
+    it('devrait creer une entree avec drinkType spiritueux', () => {
+      const entry = SebastianEntry.create({
+        ...validProps,
+        drinkType: 'spiritueux',
+      });
+
+      expect(entry.category).toBe('alcohol');
+      expect(entry.drinkType).toBe('spiritueux');
+      expect(entry.alcoholDegree).toBe(40);
+      expect(entry.volumeCl).toBe(4);
+      expect(entry.unit).toBe('standard_drink');
+    });
+
+    it('devrait creer une entree avec drinkType cidre', () => {
+      const entry = SebastianEntry.create({
+        ...validProps,
+        drinkType: 'cidre',
+      });
+
+      expect(entry.category).toBe('alcohol');
+      expect(entry.drinkType).toBe('cidre');
+      expect(entry.alcoholDegree).toBe(5);
+      expect(entry.volumeCl).toBe(25);
+      expect(entry.unit).toBe('standard_drink');
+    });
+
+    it('devrait utiliser consumedAt personnalise si fourni', () => {
+      const entry = SebastianEntry.create({
+        ...validProps,
+        consumedAt: '2026-04-08T22:08:00.000Z',
+      });
+      expect(entry.consumedAt).toEqual(new Date('2026-04-08T22:08:00.000Z'));
+    });
+
+    it('devrait utiliser la date courante si consumedAt non fourni', () => {
+      const before = new Date();
+      const entry = SebastianEntry.create(validProps);
+      const after = new Date();
+      expect(entry.consumedAt!.getTime()).toBeGreaterThanOrEqual(
+        before.getTime(),
+      );
+      expect(entry.consumedAt!.getTime()).toBeLessThanOrEqual(after.getTime());
+    });
+
+    it('devrait rejeter un consumedAt invalide', () => {
+      expect(() =>
+        SebastianEntry.create({ ...validProps, consumedAt: 'not-a-date' }),
+      ).toThrow(DomainValidationError);
+    });
   });
 
   describe('fromPersistence()', () => {

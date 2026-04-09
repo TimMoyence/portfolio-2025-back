@@ -16,6 +16,9 @@ export const VALID_DRINK_TYPES = [
   'wine',
   'champagne',
   'coffee',
+  'cocktail',
+  'spiritueux',
+  'cidre',
 ] as const;
 /** Type de boisson. */
 export type DrinkType = (typeof VALID_DRINK_TYPES)[number];
@@ -33,6 +36,9 @@ export const DRINK_TYPE_DEFAULTS: Record<
   wine: { category: 'alcohol', alcoholDegree: 12, volumeCl: 12.5 },
   champagne: { category: 'alcohol', alcoholDegree: 12, volumeCl: 12.5 },
   coffee: { category: 'coffee', alcoholDegree: null, volumeCl: null },
+  cocktail: { category: 'alcohol', alcoholDegree: 15, volumeCl: 20 },
+  spiritueux: { category: 'alcohol', alcoholDegree: 40, volumeCl: 4 },
+  cidre: { category: 'alcohol', alcoholDegree: 5, volumeCl: 25 },
 };
 
 /** Correspondance entre categorie et unite attendue. */
@@ -51,6 +57,8 @@ export interface CreateSebastianEntryProps {
   drinkType?: string;
   alcoholDegree?: number | null;
   volumeCl?: number | null;
+  /** Timestamp ISO 8601 optionnel de consommation. Si absent, utilise l'heure courante. */
+  consumedAt?: string;
 }
 
 /** Proprietes pour reconstruire une entree depuis la persistence. */
@@ -161,7 +169,15 @@ export class SebastianEntry {
     entry.drinkType = drinkType;
     entry.alcoholDegree = alcoholDegree;
     entry.volumeCl = volumeCl;
-    entry.consumedAt = new Date();
+    if (props.consumedAt) {
+      const parsedConsumedAt = new Date(props.consumedAt);
+      if (isNaN(parsedConsumedAt.getTime())) {
+        throw new DomainValidationError('consumedAt invalide');
+      }
+      entry.consumedAt = parsedConsumedAt;
+    } else {
+      entry.consumedAt = new Date();
+    }
     return entry;
   }
 

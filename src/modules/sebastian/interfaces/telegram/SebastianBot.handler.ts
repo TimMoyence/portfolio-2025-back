@@ -43,6 +43,9 @@ export class SebastianBotHandler {
     bot.command('pinte', (ctx) => this.handleDrinkCommand(ctx));
     bot.command('vin', (ctx) => this.handleDrinkCommand(ctx));
     bot.command('champagne', (ctx) => this.handleDrinkCommand(ctx));
+    bot.command('cocktail', (ctx) => this.handleDrinkCommand(ctx));
+    bot.command('spiritueux', (ctx) => this.handleDrinkCommand(ctx));
+    bot.command('cidre', (ctx) => this.handleDrinkCommand(ctx));
     bot.command('menu', (ctx) => this.handleMenu(ctx));
     bot.command('help', (ctx) => this.handleMenu(ctx));
     bot.command('taux', (ctx) => this.handleBac(ctx));
@@ -57,6 +60,9 @@ export class SebastianBotHandler {
         { command: 'pint', description: 'Enregistrer une pinte' },
         { command: 'vin', description: 'Enregistrer un verre de vin' },
         { command: 'champagne', description: 'Enregistrer du champagne' },
+        { command: 'cocktail', description: 'Enregistrer un cocktail' },
+        { command: 'spiritueux', description: 'Enregistrer un spiritueux' },
+        { command: 'cidre', description: 'Enregistrer un cidre' },
         { command: 'coffee', description: 'Enregistrer un cafe' },
         { command: 'cafe', description: 'Enregistrer un cafe (FR)' },
         { command: 'taux', description: "Voir votre taux d'alcoolemie" },
@@ -229,6 +235,9 @@ export class SebastianBotHandler {
       '/pint [qty] - Pinte',
       '/vin [qty] [deg] - Vin',
       '/champagne [qty] - Champagne',
+      '/cocktail [qty] - Cocktail',
+      '/spiritueux [qty] - Spiritueux',
+      '/cidre [qty] - Cidre',
       '/coffee [qty] - Cafe',
       '',
       "/taux - Taux d'alcoolemie actuel",
@@ -327,6 +336,39 @@ export class SebastianBotHandler {
           alcoholDegree: 12,
           volumeCl: 12.5,
         };
+      case 'cocktail':
+        return {
+          category: 'alcohol',
+          quantity: count,
+          unit: 'standard_drink',
+          source: 'cocktail',
+          displayCount: count,
+          drinkType: 'cocktail',
+          alcoholDegree: 15,
+          volumeCl: 20,
+        };
+      case 'spiritueux':
+        return {
+          category: 'alcohol',
+          quantity: count,
+          unit: 'standard_drink',
+          source: 'spiritueux',
+          displayCount: count,
+          drinkType: 'spiritueux',
+          alcoholDegree: 40,
+          volumeCl: 4,
+        };
+      case 'cidre':
+        return {
+          category: 'alcohol',
+          quantity: count,
+          unit: 'standard_drink',
+          source: 'cidre',
+          displayCount: count,
+          drinkType: 'cidre',
+          alcoholDegree: 5,
+          volumeCl: 25,
+        };
       case 'coffee':
       default:
         return {
@@ -350,6 +392,12 @@ export class SebastianBotHandler {
         return 'verres de vin';
       case 'champagne':
         return 'coupes de champagne';
+      case 'cocktail':
+        return 'cocktails';
+      case 'spiritueux':
+        return 'spiritueux';
+      case 'cidre':
+        return 'cidres';
       case 'coffee':
         return 'cafes';
       default:

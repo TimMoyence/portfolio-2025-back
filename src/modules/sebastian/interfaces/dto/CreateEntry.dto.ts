@@ -28,9 +28,27 @@ export class CreateEntryDto {
   @IsString()
   notes?: string;
 
-  @ApiPropertyOptional({ enum: ['beer', 'wine', 'champagne', 'coffee'] })
+  @ApiPropertyOptional({
+    enum: [
+      'beer',
+      'wine',
+      'champagne',
+      'coffee',
+      'cocktail',
+      'spiritueux',
+      'cidre',
+    ],
+  })
   @IsOptional()
-  @IsIn(['beer', 'wine', 'champagne', 'coffee'])
+  @IsIn([
+    'beer',
+    'wine',
+    'champagne',
+    'coffee',
+    'cocktail',
+    'spiritueux',
+    'cidre',
+  ])
   drinkType?: string;
 
   @ApiPropertyOptional({ example: 5.0 })
@@ -42,4 +60,13 @@ export class CreateEntryDto {
   @IsOptional()
   @IsNumber()
   volumeCl?: number;
+
+  @ApiPropertyOptional({
+    example: '2026-04-08T22:08:00.000Z',
+    description:
+      "Timestamp de consommation (ISO 8601). Si absent, utilise l'heure courante.",
+  })
+  @IsOptional()
+  @IsDateString()
+  consumedAt?: string;
 }
