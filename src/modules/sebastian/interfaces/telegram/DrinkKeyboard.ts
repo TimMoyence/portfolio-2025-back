@@ -9,6 +9,10 @@ export function buildDrinkTypeKeyboard(): InlineKeyboard {
     .text('Champagne', 'select_type:champagne')
     .text('Pinte', 'select_type:pint')
     .row()
+    .text('Cocktail', 'select_type:cocktail')
+    .text('Spiritueux', 'select_type:spiritueux')
+    .row()
+    .text('Cidre', 'select_type:cidre')
     .text('Cafe', 'select_type:coffee');
 }
 

@@ -29,15 +29,20 @@ export class RegisterDrinksFromTelegramUseCase {
     const entries: SebastianEntry[] = [];
 
     for (const drink of command.drinks) {
+      const drinkDate = drink.consumedAt
+        ? drink.consumedAt.split('T')[0]
+        : today;
+
       const entry = await this.addEntry.execute({
         userId: resolved.userId,
         category: drink.category,
         quantity: drink.quantity,
-        date: today,
+        date: drinkDate,
         notes: 'via Telegram',
         drinkType: drink.drinkType,
         alcoholDegree: drink.alcoholDegree,
         volumeCl: drink.volumeCl,
+        ...(drink.consumedAt ? { consumedAt: drink.consumedAt } : {}),
       });
       entries.push(entry);
     }
