@@ -10,6 +10,7 @@ import { UsersModule } from '../modules/users/Users.module';
 import { BudgetModule } from '../modules/budget/Budget.module';
 import { SebastianModule } from '../modules/sebastian/Sebastian.module';
 import { LeadMagnetsModule } from '../modules/lead-magnets/LeadMagnets.module';
+import { PresentationsModule } from '../modules/presentations/Presentations.module';
 import { WeatherModule } from '../modules/weather/Weather.module';
 
 export interface RuntimeContextsSelection {
@@ -35,6 +36,7 @@ export function resolveRuntimeContexts(
     BudgetModule,
     SebastianModule,
     LeadMagnetsModule,
+    PresentationsModule,
   ];
 
   const legacyModules: Array<Type<unknown>> = [
