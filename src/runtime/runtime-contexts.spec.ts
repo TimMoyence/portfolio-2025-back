@@ -8,6 +8,7 @@ import { ProjectsModule } from '../modules/projects/Projects.module';
 import { RedirectsModule } from '../modules/redirects/Redirects.module';
 import { ServicesModule } from '../modules/services/Services.module';
 import { UsersModule } from '../modules/users/Users.module';
+import { LeadMagnetsModule } from '../modules/lead-magnets/LeadMagnets.module';
 import { WeatherModule } from '../modules/weather/Weather.module';
 import { resolveRuntimeContexts } from './runtime-contexts';
 
@@ -24,6 +25,7 @@ describe('resolveRuntimeContexts', () => {
       WeatherModule,
       BudgetModule,
       SebastianModule,
+      LeadMagnetsModule,
     ]);
     expect(selection.runtimeModules).toEqual(selection.coreModules);
   });
@@ -48,6 +50,7 @@ describe('resolveRuntimeContexts', () => {
       WeatherModule,
       BudgetModule,
       SebastianModule,
+      LeadMagnetsModule,
       ServicesModule,
       ProjectsModule,
       CoursesModule,
