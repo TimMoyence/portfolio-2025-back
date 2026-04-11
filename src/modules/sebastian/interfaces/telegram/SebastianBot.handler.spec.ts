@@ -2,11 +2,25 @@ import { SebastianBotHandler } from './SebastianBot.handler';
 import type { LinkTelegramUserUseCase } from '../../application/services/LinkTelegramUser.useCase';
 import type { ResolveTelegramUserUseCase } from '../../application/services/ResolveTelegramUser.useCase';
 import type { RegisterDrinksFromTelegramUseCase } from '../../application/services/RegisterDrinksFromTelegram.useCase';
+import type { CalculateBacUseCase } from '../../application/services/CalculateBac.useCase';
+import {
+  createMockSebastianBotUseCases,
+  type MockSebastianBotUseCases,
+} from '../../../../../test/factories/sebastian.factory';
+import { TelegramLink } from '../../domain/TelegramLink';
 
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-type AnyFn = (...args: any[]) => any;
+type AnyFn = (...args: unknown[]) => unknown;
 
-function mockContext(overrides: Record<string, unknown> = {}): any {
+/** Cree un contexte grammy minimal pour les tests. */
+function mockContext(overrides: Record<string, unknown> = {}): {
+  from: { id: number };
+  message: { text: string };
+  reply: jest.Mock;
+  editMessageText: jest.Mock;
+  answerCallbackQuery: jest.Mock;
+  callbackQuery: null;
+  [key: string]: unknown;
+} {
   return {
     from: { id: 123456 },
     message: { text: '' },
@@ -18,6 +32,7 @@ function mockContext(overrides: Record<string, unknown> = {}): any {
   };
 }
 
+/** Cree un mock de bot grammy qui capture les handlers enregistres. */
 function createMockBot(): {
   command: jest.Mock;
   on: jest.Mock;
@@ -42,41 +57,38 @@ function createMockBot(): {
 
 describe('SebastianBotHandler', () => {
   let handler: SebastianBotHandler;
-  let linkUser: jest.Mocked<Pick<LinkTelegramUserUseCase, 'execute'>>;
-  let resolveUser: jest.Mocked<Pick<ResolveTelegramUserUseCase, 'execute'>>;
-  let registerDrinks: jest.Mocked<
-    Pick<RegisterDrinksFromTelegramUseCase, 'execute'>
-  >;
+  let useCases: MockSebastianBotUseCases;
 
   beforeEach(() => {
-    linkUser = { execute: jest.fn() };
-    resolveUser = { execute: jest.fn() };
-    registerDrinks = { execute: jest.fn() };
-    const calculateBac = { execute: jest.fn() } as any;
+    useCases = createMockSebastianBotUseCases();
     handler = new SebastianBotHandler(
-      linkUser as unknown as LinkTelegramUserUseCase,
-      resolveUser as unknown as ResolveTelegramUserUseCase,
-      registerDrinks as unknown as RegisterDrinksFromTelegramUseCase,
-      calculateBac,
+      useCases.linkUser as unknown as LinkTelegramUserUseCase,
+      useCases.resolveUser as unknown as ResolveTelegramUserUseCase,
+      useCases.registerDrinks as unknown as RegisterDrinksFromTelegramUseCase,
+      useCases.calculateBac as unknown as CalculateBacUseCase,
     );
   });
 
   describe('handleStart', () => {
     it("demande l'email si non lie", async () => {
-      resolveUser.execute.mockResolvedValue(null);
+      useCases.resolveUser.execute.mockResolvedValue(null);
       const ctx = mockContext();
       const bot = createMockBot();
-      handler.register(bot as any);
+      handler.register(
+        bot as unknown as Parameters<typeof handler.register>[0],
+      );
       await bot.handlers['start'](ctx);
 
       expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('email'));
     });
 
     it('informe si deja lie', async () => {
-      resolveUser.execute.mockResolvedValue({ userId: 'user-1' });
+      useCases.resolveUser.execute.mockResolvedValue({ userId: 'user-1' });
       const ctx = mockContext();
       const bot = createMockBot();
-      handler.register(bot as any);
+      handler.register(
+        bot as unknown as Parameters<typeof handler.register>[0],
+      );
       await bot.handlers['start'](ctx);
 
       expect(ctx.reply).toHaveBeenCalledWith(
@@ -87,14 +99,16 @@ describe('SebastianBotHandler', () => {
 
   describe('handleDrinkCommand', () => {
     it('enregistre /pint 4 et confirme', async () => {
-      resolveUser.execute.mockResolvedValue({ userId: 'user-1' });
-      registerDrinks.execute.mockResolvedValue([]);
+      useCases.resolveUser.execute.mockResolvedValue({ userId: 'user-1' });
+      useCases.registerDrinks.execute.mockResolvedValue([]);
       const ctx = mockContext({ message: { text: '/pint 4' } });
       const bot = createMockBot();
-      handler.register(bot as any);
+      handler.register(
+        bot as unknown as Parameters<typeof handler.register>[0],
+      );
       await bot.handlers['pint'](ctx);
 
-      expect(registerDrinks.execute).toHaveBeenCalledWith(
+      expect(useCases.registerDrinks.execute).toHaveBeenCalledWith(
         expect.objectContaining({ telegramUserId: 123456 }),
       );
       expect(ctx.reply).toHaveBeenCalledWith(
@@ -103,10 +117,12 @@ describe('SebastianBotHandler', () => {
     });
 
     it('refuse si non lie', async () => {
-      resolveUser.execute.mockResolvedValue(null);
+      useCases.resolveUser.execute.mockResolvedValue(null);
       const ctx = mockContext({ message: { text: '/pint' } });
       const bot = createMockBot();
-      handler.register(bot as any);
+      handler.register(
+        bot as unknown as Parameters<typeof handler.register>[0],
+      );
       await bot.handlers['pint'](ctx);
 
       expect(ctx.reply).toHaveBeenCalledWith(
@@ -117,19 +133,22 @@ describe('SebastianBotHandler', () => {
 
   describe('handleTextMessage — email linking', () => {
     it('lie le compte apres /start puis email', async () => {
-      resolveUser.execute.mockResolvedValue(null);
+      useCases.resolveUser.execute.mockResolvedValue(null);
       const startCtx = mockContext();
       const bot = createMockBot();
-      handler.register(bot as any);
+      handler.register(
+        bot as unknown as Parameters<typeof handler.register>[0],
+      );
       await bot.handlers['start'](startCtx);
 
-      linkUser.execute.mockResolvedValue({
-        link: {
-          id: 'link-1',
-          telegramUserId: 123456,
-          userId: 'user-1',
-          linkedAt: new Date(),
-        } as any,
+      const link = TelegramLink.fromPersistence({
+        id: 'link-1',
+        telegramUserId: 123456,
+        userId: 'user-1',
+        linkedAt: new Date(),
+      });
+      useCases.linkUser.execute.mockResolvedValue({
+        link,
         firstName: 'Jean',
       });
       const emailCtx = mockContext({ message: { text: 'test@example.com' } });
@@ -138,7 +157,7 @@ describe('SebastianBotHandler', () => {
       );
       await textHandler![1](emailCtx);
 
-      expect(linkUser.execute).toHaveBeenCalledWith({
+      expect(useCases.linkUser.execute).toHaveBeenCalledWith({
         telegramUserId: 123456,
         email: 'test@example.com',
       });
@@ -150,27 +169,31 @@ describe('SebastianBotHandler', () => {
 
   describe('handleTextMessage — NLP', () => {
     it('enregistre "2 bieres" si confiant', async () => {
-      resolveUser.execute.mockResolvedValue({ userId: 'user-1' });
-      registerDrinks.execute.mockResolvedValue([]);
+      useCases.resolveUser.execute.mockResolvedValue({ userId: 'user-1' });
+      useCases.registerDrinks.execute.mockResolvedValue([]);
       const ctx = mockContext({ message: { text: '2 bieres' } });
       const bot = createMockBot();
-      handler.register(bot as any);
+      handler.register(
+        bot as unknown as Parameters<typeof handler.register>[0],
+      );
       const textHandler = bot.messageHandlers.find(
         ([e]) => e === 'message:text',
       );
       await textHandler![1](ctx);
 
-      expect(registerDrinks.execute).toHaveBeenCalled();
+      expect(useCases.registerDrinks.execute).toHaveBeenCalled();
       expect(ctx.reply).toHaveBeenCalledWith(
         expect.stringContaining('Enregistre'),
       );
     });
 
     it('affiche le clavier si non confiant', async () => {
-      resolveUser.execute.mockResolvedValue({ userId: 'user-1' });
+      useCases.resolveUser.execute.mockResolvedValue({ userId: 'user-1' });
       const ctx = mockContext({ message: { text: 'hello world' } });
       const bot = createMockBot();
-      handler.register(bot as any);
+      handler.register(
+        bot as unknown as Parameters<typeof handler.register>[0],
+      );
       const textHandler = bot.messageHandlers.find(
         ([e]) => e === 'message:text',
       );

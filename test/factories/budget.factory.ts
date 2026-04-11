@@ -7,6 +7,18 @@ import type { IBudgetCategoryRepository } from '../../src/modules/budget/domain/
 import type { IBudgetEntryRepository } from '../../src/modules/budget/domain/IBudgetEntry.repository';
 import type { IRecurringEntryRepository } from '../../src/modules/budget/domain/IRecurringEntry.repository';
 import type { IBudgetShareNotifier } from '../../src/modules/budget/domain/IBudgetShareNotifier';
+import type { CreateBudgetGroupUseCase } from '../../src/modules/budget/application/services/CreateBudgetGroup.useCase';
+import type { GetBudgetGroupsUseCase } from '../../src/modules/budget/application/services/GetBudgetGroups.useCase';
+import type { CreateBudgetEntryUseCase } from '../../src/modules/budget/application/services/CreateBudgetEntry.useCase';
+import type { GetBudgetEntriesUseCase } from '../../src/modules/budget/application/services/GetBudgetEntries.useCase';
+import type { GetBudgetSummaryUseCase } from '../../src/modules/budget/application/services/GetBudgetSummary.useCase';
+import type { ImportBudgetEntriesUseCase } from '../../src/modules/budget/application/services/ImportBudgetEntries.useCase';
+import type { UpdateBudgetEntryUseCase } from '../../src/modules/budget/application/services/UpdateBudgetEntry.useCase';
+import type { DeleteBudgetEntryUseCase } from '../../src/modules/budget/application/services/DeleteBudgetEntry.useCase';
+import type { CreateBudgetCategoryUseCase } from '../../src/modules/budget/application/services/CreateBudgetCategory.useCase';
+import type { GetBudgetCategoriesUseCase } from '../../src/modules/budget/application/services/GetBudgetCategories.useCase';
+import type { UpdateBudgetCategoryUseCase } from '../../src/modules/budget/application/services/UpdateBudgetCategory.useCase';
+import type { ShareBudgetUseCase } from '../../src/modules/budget/application/services/ShareBudget.useCase';
 
 /** Construit un objet BudgetGroup domaine avec des valeurs par defaut. */
 export function buildBudgetGroup(
@@ -134,5 +146,39 @@ export function createMockRecurringEntryRepo(): jest.Mocked<IRecurringEntryRepos
     update: jest.fn(),
     delete: jest.fn(),
     findActiveByGroupId: jest.fn(),
+  };
+}
+
+/** Typage des mocks de use cases du module Budget. */
+export interface MockBudgetUseCases {
+  createGroup: jest.Mocked<Pick<CreateBudgetGroupUseCase, 'execute'>>;
+  getGroups: jest.Mocked<Pick<GetBudgetGroupsUseCase, 'execute'>>;
+  createEntry: jest.Mocked<Pick<CreateBudgetEntryUseCase, 'execute'>>;
+  getEntries: jest.Mocked<Pick<GetBudgetEntriesUseCase, 'execute'>>;
+  getSummary: jest.Mocked<Pick<GetBudgetSummaryUseCase, 'execute'>>;
+  importEntries: jest.Mocked<Pick<ImportBudgetEntriesUseCase, 'execute'>>;
+  updateEntry: jest.Mocked<Pick<UpdateBudgetEntryUseCase, 'execute'>>;
+  deleteEntry: jest.Mocked<Pick<DeleteBudgetEntryUseCase, 'execute'>>;
+  createCategory: jest.Mocked<Pick<CreateBudgetCategoryUseCase, 'execute'>>;
+  getCategories: jest.Mocked<Pick<GetBudgetCategoriesUseCase, 'execute'>>;
+  updateCategory: jest.Mocked<Pick<UpdateBudgetCategoryUseCase, 'execute'>>;
+  shareBudget: jest.Mocked<Pick<ShareBudgetUseCase, 'execute'>>;
+}
+
+/** Cree des mocks types pour tous les use cases du BudgetController. */
+export function createMockBudgetUseCases(): MockBudgetUseCases {
+  return {
+    createGroup: { execute: jest.fn() },
+    getGroups: { execute: jest.fn() },
+    createEntry: { execute: jest.fn() },
+    getEntries: { execute: jest.fn() },
+    getSummary: { execute: jest.fn() },
+    importEntries: { execute: jest.fn() },
+    updateEntry: { execute: jest.fn() },
+    deleteEntry: { execute: jest.fn() },
+    createCategory: { execute: jest.fn() },
+    getCategories: { execute: jest.fn() },
+    updateCategory: { execute: jest.fn() },
+    shareBudget: { execute: jest.fn() },
   };
 }

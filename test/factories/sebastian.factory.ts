@@ -10,6 +10,10 @@ import type { TrendResult } from '../../src/modules/sebastian/application/servic
 import type { HealthScoreResult } from '../../src/modules/sebastian/application/services/CalculateHealthScore.useCase';
 import type { PeriodReportResult } from '../../src/modules/sebastian/application/services/GetPeriodReport.useCase';
 import type { BadgeStatusResult } from '../../src/modules/sebastian/application/services/ListBadges.useCase';
+import type { LinkTelegramUserUseCase } from '../../src/modules/sebastian/application/services/LinkTelegramUser.useCase';
+import type { ResolveTelegramUserUseCase } from '../../src/modules/sebastian/application/services/ResolveTelegramUser.useCase';
+import type { RegisterDrinksFromTelegramUseCase } from '../../src/modules/sebastian/application/services/RegisterDrinksFromTelegram.useCase';
+import type { CalculateBacUseCase } from '../../src/modules/sebastian/application/services/CalculateBac.useCase';
 
 /** Construit un objet SebastianEntry domaine avec des valeurs par defaut. */
 export function buildSebastianEntry(
@@ -220,5 +224,25 @@ export function buildBadgeStatus(
     unlocked: true,
     unlockedAt: '2026-04-01T00:00:00.000Z',
     ...overrides,
+  };
+}
+
+/** Typage des mocks de use cases du bot Telegram Sebastian. */
+export interface MockSebastianBotUseCases {
+  linkUser: jest.Mocked<Pick<LinkTelegramUserUseCase, 'execute'>>;
+  resolveUser: jest.Mocked<Pick<ResolveTelegramUserUseCase, 'execute'>>;
+  registerDrinks: jest.Mocked<
+    Pick<RegisterDrinksFromTelegramUseCase, 'execute'>
+  >;
+  calculateBac: jest.Mocked<Pick<CalculateBacUseCase, 'execute'>>;
+}
+
+/** Cree des mocks types pour tous les use cases du SebastianBotHandler. */
+export function createMockSebastianBotUseCases(): MockSebastianBotUseCases {
+  return {
+    linkUser: { execute: jest.fn() },
+    resolveUser: { execute: jest.fn() },
+    registerDrinks: { execute: jest.fn() },
+    calculateBac: { execute: jest.fn() },
   };
 }

@@ -20,6 +20,17 @@ import type {
   UnitPreferences,
   WeatherLevel,
 } from '../../src/modules/weather/domain/WeatherUserPreferences';
+import type { GetGeocodingUseCase } from '../../src/modules/weather/application/GetGeocoding.useCase';
+import type { GetForecastUseCase } from '../../src/modules/weather/application/GetForecast.useCase';
+import type { GetAirQualityUseCase } from '../../src/modules/weather/application/GetAirQuality.useCase';
+import type { GetEnsembleUseCase } from '../../src/modules/weather/application/GetEnsemble.useCase';
+import type { GetHistoricalUseCase } from '../../src/modules/weather/application/GetHistorical.useCase';
+import type { GetUserPreferencesUseCase } from '../../src/modules/weather/application/GetUserPreferences.useCase';
+import type { UpdateUserPreferencesUseCase } from '../../src/modules/weather/application/UpdateUserPreferences.useCase';
+import type { RecordUsageUseCase } from '../../src/modules/weather/application/RecordUsage.useCase';
+import type { GetWeatherAlertsUseCase } from '../../src/modules/weather/application/GetWeatherAlerts.useCase';
+import type { GetCurrentDetailedWeatherUseCase } from '../../src/modules/weather/application/GetCurrentDetailedWeather.useCase';
+import type { GetForecastDetailedWeatherUseCase } from '../../src/modules/weather/application/GetForecastDetailedWeather.useCase';
 
 /** Construit un objet WeatherUserPreferences avec des valeurs par defaut. */
 export function buildWeatherPreferences(
@@ -333,5 +344,41 @@ export function createMockWeatherProxy(): jest.Mocked<IWeatherProxy> {
     getEnsemble: jest.fn(),
     getHistorical: jest.fn(),
     getAlerts: jest.fn(),
+  };
+}
+
+/** Typage des mocks de use cases du module Weather. */
+export interface MockWeatherUseCases {
+  geocoding: jest.Mocked<Pick<GetGeocodingUseCase, 'execute'>>;
+  forecast: jest.Mocked<Pick<GetForecastUseCase, 'execute'>>;
+  airQuality: jest.Mocked<Pick<GetAirQualityUseCase, 'execute'>>;
+  ensemble: jest.Mocked<Pick<GetEnsembleUseCase, 'execute'>>;
+  historical: jest.Mocked<Pick<GetHistoricalUseCase, 'execute'>>;
+  preferences: jest.Mocked<Pick<GetUserPreferencesUseCase, 'execute'>>;
+  updatePreferences: jest.Mocked<Pick<UpdateUserPreferencesUseCase, 'execute'>>;
+  recordUsage: jest.Mocked<Pick<RecordUsageUseCase, 'execute'>>;
+  alerts: jest.Mocked<Pick<GetWeatherAlertsUseCase, 'execute'>>;
+  currentDetailed: jest.Mocked<
+    Pick<GetCurrentDetailedWeatherUseCase, 'execute'>
+  >;
+  forecastDetailed: jest.Mocked<
+    Pick<GetForecastDetailedWeatherUseCase, 'execute'>
+  >;
+}
+
+/** Cree des mocks types pour tous les use cases du WeatherController. */
+export function createMockWeatherUseCases(): MockWeatherUseCases {
+  return {
+    geocoding: { execute: jest.fn() },
+    forecast: { execute: jest.fn() },
+    airQuality: { execute: jest.fn() },
+    ensemble: { execute: jest.fn() },
+    historical: { execute: jest.fn() },
+    preferences: { execute: jest.fn() },
+    updatePreferences: { execute: jest.fn() },
+    recordUsage: { execute: jest.fn() },
+    alerts: { execute: jest.fn() },
+    currentDetailed: { execute: jest.fn() },
+    forecastDetailed: { execute: jest.fn() },
   };
 }

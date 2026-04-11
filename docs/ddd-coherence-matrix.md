@@ -8,6 +8,11 @@
 - `contacts` (formulaire de contact + notification email)
 - `cookie-consents` (trace RGPD du consentement)
 - `audit-requests` (demande d'audit + pipeline async + SSE)
+- `weather` (app meteo — previsions, qualite air, alertes, circuit breaker)
+- `budget` (app budget — groupes, categories, entrees, recurrences, export)
+- `sebastian` (app suivi alcool — entries, goals, badges, BAC, Telegram bot)
+- `lead-magnets` (capture email + PDF toolkit)
+- `presentations` (interactions slides in-memory)
 
 ### Contextes legacy (charges uniquement si `ENABLE_LEGACY_CMS_CONTEXTS=true`)
 
