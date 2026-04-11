@@ -11,6 +11,7 @@ import { AppService } from './app.service';
 import { HealthModule } from './common/interfaces/health/health.module';
 import { MetricsModule } from './common/interfaces/metrics/metrics.module';
 import { CorrelationIdMiddleware } from './common/interfaces/middleware/correlation-id.middleware';
+import { validateEnv } from './config/env.validation';
 
 import { ensureDatabaseExists } from './database/ensure-database';
 import { resolveRuntimeContexts } from './runtime/runtime-contexts';
@@ -19,7 +20,7 @@ const runtimeContexts = resolveRuntimeContexts();
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     LoggerModule.forRoot({
       pinoHttp: {
         transport:
