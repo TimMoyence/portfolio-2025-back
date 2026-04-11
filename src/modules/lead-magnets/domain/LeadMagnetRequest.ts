@@ -1,6 +1,7 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { requireText } from '../../../common/domain/validation/domain-validators';
 import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
+import type { InteractionProfile } from './InteractionProfile';
 
 export interface CreateLeadMagnetRequestProps {
   firstName: string;
@@ -9,6 +10,7 @@ export interface CreateLeadMagnetRequestProps {
   termsVersion: string;
   termsLocale: string;
   termsAcceptedAt: Date;
+  profile?: InteractionProfile;
 }
 
 /** Entite domaine representant une demande de lead magnet (boite a outils). */
@@ -20,6 +22,8 @@ export class LeadMagnetRequest {
   termsVersion: string;
   termsLocale: string;
   termsAcceptedAt: Date;
+  accessToken?: string;
+  profile?: InteractionProfile;
   createdAt?: Date;
 
   static create(props: CreateLeadMagnetRequestProps): LeadMagnetRequest {
@@ -59,6 +63,7 @@ export class LeadMagnetRequest {
     request.termsVersion = termsVersion;
     request.termsLocale = termsLocale;
     request.termsAcceptedAt = props.termsAcceptedAt;
+    request.profile = props.profile;
     return request;
   }
 }

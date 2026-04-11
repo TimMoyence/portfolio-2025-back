@@ -3,6 +3,7 @@ import {
   createMockLeadMagnetRequestRepo,
   createMockLeadMagnetNotifier,
   createMockToolkitPdfGenerator,
+  createMockToolkitContentAssembler,
 } from '../../../../../test/factories/lead-magnet-request.factory';
 import { RequestToolkitUseCase } from '../RequestToolkit.useCase';
 import type { RequestToolkitCommand } from '../dto/RequestToolkit.command';
@@ -12,6 +13,7 @@ describe('RequestToolkitUseCase', () => {
   let repo: ReturnType<typeof createMockLeadMagnetRequestRepo>;
   let notifier: ReturnType<typeof createMockLeadMagnetNotifier>;
   let pdfGenerator: ReturnType<typeof createMockToolkitPdfGenerator>;
+  let assembler: ReturnType<typeof createMockToolkitContentAssembler>;
 
   const validCommand: RequestToolkitCommand = {
     firstName: 'Marie',
@@ -26,7 +28,13 @@ describe('RequestToolkitUseCase', () => {
     repo = createMockLeadMagnetRequestRepo();
     notifier = createMockLeadMagnetNotifier();
     pdfGenerator = createMockToolkitPdfGenerator();
-    useCase = new RequestToolkitUseCase(repo, notifier, pdfGenerator);
+    assembler = createMockToolkitContentAssembler();
+    useCase = new RequestToolkitUseCase(
+      repo,
+      notifier,
+      pdfGenerator,
+      assembler,
+    );
   });
 
   it('should persist the request and send the email', async () => {
@@ -36,9 +44,11 @@ describe('RequestToolkitUseCase', () => {
     await new Promise((resolve) => setImmediate(resolve));
 
     expect(repo.create).toHaveBeenCalledTimes(1);
+    expect(assembler.assemble).toHaveBeenCalledTimes(1);
     expect(pdfGenerator.generate).toHaveBeenCalledTimes(1);
     expect(notifier.sendToolkitEmail).toHaveBeenCalledTimes(1);
     expect(result.message).toContain('marie@example.com');
+    expect(result.accessToken).toBeDefined();
   });
 
   it('should skip if recent duplicate exists (< 24h)', async () => {

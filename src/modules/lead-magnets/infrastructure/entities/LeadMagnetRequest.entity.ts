@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import type { InteractionProfile } from '../../domain/InteractionProfile';
 
 @Entity({ name: 'lead_magnet_requests' })
 export class LeadMagnetRequestEntity {
@@ -23,6 +24,18 @@ export class LeadMagnetRequestEntity {
 
   @Column({ name: 'terms_accepted_at', type: 'timestamptz' })
   termsAcceptedAt: Date;
+
+  @Index('idx_lead_magnet_requests_access_token', { unique: true })
+  @Column({
+    name: 'access_token',
+    type: 'uuid',
+    generated: 'uuid',
+    nullable: true,
+  })
+  accessToken: string;
+
+  @Column({ type: 'jsonb', default: '{}' })
+  profile: InteractionProfile;
 
   @Column({ name: 'created_at', type: 'timestamptz', default: () => 'NOW()' })
   createdAt: Date;

@@ -5,6 +5,16 @@ import type { RequestToolkitCommand } from '../dto/RequestToolkit.command';
 /** Mappe une commande RequestToolkit vers l'entite domaine LeadMagnetRequest. */
 export class LeadMagnetRequestMapper {
   static fromCommand(command: RequestToolkitCommand): LeadMagnetRequest {
-    return mapDomainValidation(() => LeadMagnetRequest.create(command));
+    return mapDomainValidation(() =>
+      LeadMagnetRequest.create({
+        firstName: command.firstName,
+        email: command.email,
+        formationSlug: command.formationSlug,
+        termsVersion: command.termsVersion,
+        termsLocale: command.termsLocale,
+        termsAcceptedAt: command.termsAcceptedAt,
+        profile: command.profile,
+      }),
+    );
   }
 }

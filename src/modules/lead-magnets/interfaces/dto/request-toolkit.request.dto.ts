@@ -1,13 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
   IsIn,
+  IsOptional,
   IsString,
   MaxLength,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
+import { InteractionProfileDto } from './interaction-profile.dto';
 
 export class RequestToolkitRequestDto {
   @ApiProperty({ example: 'Marie' })
@@ -39,4 +42,10 @@ export class RequestToolkitRequestDto {
   @Type(() => Date)
   @IsDate()
   termsAcceptedAt: Date;
+
+  @ApiPropertyOptional({ type: InteractionProfileDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => InteractionProfileDto)
+  profile?: InteractionProfileDto;
 }

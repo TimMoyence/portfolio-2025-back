@@ -1,3 +1,5 @@
+import type { InteractionProfile } from '../../domain/InteractionProfile';
+
 /** Commande pour demander l'envoi d'une boite a outils (lead magnet). */
 export interface RequestToolkitCommand {
   firstName: string;
@@ -6,4 +8,5 @@ export interface RequestToolkitCommand {
   termsVersion: string;
   termsLocale: string;
   termsAcceptedAt: Date;
+  profile?: InteractionProfile;
 }
