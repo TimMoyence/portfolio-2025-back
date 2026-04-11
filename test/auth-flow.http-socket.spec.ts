@@ -2,6 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
+import cookieParser from 'cookie-parser';
 import request from 'supertest';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
@@ -17,13 +18,17 @@ import { UpdateProfileUseCase } from '../src/modules/users/application/UpdatePro
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
+import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
+import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
 import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
+import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { buildUser, buildAuthResult } from './factories/user.factory';
 
 /**
  * Tests E2E du flow d'authentification SANS bypass de guard.
  * Utilise le vrai JwtTokenService pour signer/verifier les tokens,
  * et le vrai JwtAuthGuard pour proteger les routes.
+ * Le refresh token circule via un cookie HttpOnly (pas dans le body).
  */
 describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   let app: INestApplication;
@@ -44,9 +49,24 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   const setPasswordUseCase = { execute: jest.fn() };
   const updateProfileUseCase = { execute: jest.fn() };
   const getCurrentUserUseCase = { execute: jest.fn() };
+  const verifyEmailUseCase = { execute: jest.fn() };
+  const resendVerificationEmailUseCase = { execute: jest.fn() };
 
   const getHttpServer = (): Parameters<typeof request>[0] =>
     app.getHttpServer() as Parameters<typeof request>[0];
+
+  /**
+   * Extrait la valeur brute du cookie refresh_token depuis les headers Set-Cookie.
+   */
+  function extractRefreshCookie(res: request.Response): string | undefined {
+    const cookies = res.headers['set-cookie'] as string[] | undefined;
+    if (!cookies) return undefined;
+    const match = (Array.isArray(cookies) ? cookies : [cookies]).find((c) =>
+      c.startsWith('refresh_token='),
+    );
+    if (!match) return undefined;
+    return match.split(';')[0].split('=').slice(1).join('=');
+  }
 
   beforeAll(async () => {
     const configService = new ConfigService({
@@ -79,7 +99,20 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
         { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
         { provide: GetCurrentUserUseCase, useValue: getCurrentUserUseCase },
+        { provide: VerifyEmailUseCase, useValue: verifyEmailUseCase },
+        {
+          provide: ResendVerificationEmailUseCase,
+          useValue: resendVerificationEmailUseCase,
+        },
         AuthAuditLogger,
+        {
+          provide: USERS_REPOSITORY,
+          useValue: {
+            findById: jest
+              .fn()
+              .mockResolvedValue(buildUser({ emailVerified: true })),
+          },
+        },
         { provide: JwtTokenService, useValue: realJwtTokenService },
         Reflector,
         {
@@ -92,6 +125,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     jwtTokenService = realJwtTokenService;
 
     app = moduleRef.createNestApplication();
+    app.use(cookieParser());
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -112,7 +146,8 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   /* =================================================================
-   *  1. Login → retourne accessToken, refreshToken, expiresIn, user
+   *  1. Login → retourne accessToken, expiresIn, user
+   *     Le refreshToken est positionne dans un cookie HttpOnly.
    * ================================================================= */
 
   it('POST /api/auth/login retourne un token JWT valide et le profil', async () => {
@@ -138,11 +173,14 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       .expect(201);
 
     expect(res.body).toHaveProperty('accessToken');
-    expect(res.body).toHaveProperty('refreshToken', 'opaque-refresh-token');
     expect(res.body).toHaveProperty('expiresIn');
     expect(res.body).toHaveProperty('user');
     expect(res.body.user).toHaveProperty('email', 'test@example.com');
     expect(res.body.user).toHaveProperty('roles');
+
+    /* Le refresh token est dans le cookie, pas dans le body */
+    const refreshCookie = extractRefreshCookie(res);
+    expect(refreshCookie).toBe('opaque-refresh-token');
   });
 
   /* =================================================================
@@ -212,7 +250,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   /* =================================================================
-   *  5. Refresh → nouveau couple de tokens
+   *  5. Refresh → nouveau couple de tokens (cookie-based)
    * ================================================================= */
 
   it('POST /api/auth/refresh retourne un nouveau couple de tokens', async () => {
@@ -234,20 +272,19 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
 
     const res = await request(getHttpServer())
       .post('/api/auth/refresh')
-      .send({ refreshToken: 'opaque-refresh-token' })
+      .set('Cookie', 'refresh_token=opaque-refresh-token')
       .expect(200);
 
     expect(res.body).toHaveProperty('accessToken');
-    expect(res.body).toHaveProperty('refreshToken', 'nouveau-refresh-token');
     expect(res.body).toHaveProperty('expiresIn');
     expect(res.body).toHaveProperty('user');
+
+    const refreshCookie = extractRefreshCookie(res);
+    expect(refreshCookie).toBe('nouveau-refresh-token');
   });
 
-  it('POST /api/auth/refresh rejette sans refreshToken (400)', async () => {
-    await request(getHttpServer())
-      .post('/api/auth/refresh')
-      .send({})
-      .expect(400);
+  it('POST /api/auth/refresh rejette sans cookie refresh_token (401)', async () => {
+    await request(getHttpServer()).post('/api/auth/refresh').expect(401);
   });
 
   /* =================================================================
@@ -259,7 +296,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
 
     const res = await request(getHttpServer())
       .post('/api/auth/logout')
-      .send({ refreshToken: 'opaque-refresh-token' })
+      .set('Cookie', 'refresh_token=opaque-refresh-token')
       .expect(200);
 
     expect(res.body).toHaveProperty('message');
@@ -268,11 +305,13 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     );
   });
 
-  it('POST /api/auth/logout rejette sans refreshToken (400)', async () => {
-    await request(getHttpServer())
+  it('POST /api/auth/logout sans cookie retourne 200 (graceful)', async () => {
+    const res = await request(getHttpServer())
       .post('/api/auth/logout')
-      .send({})
-      .expect(400);
+      .expect(200);
+
+    expect(res.body).toHaveProperty('message');
+    expect(revokeTokenUseCase.execute).not.toHaveBeenCalled();
   });
 
   /* =================================================================
@@ -303,6 +342,8 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       .expect(201);
 
     const firstToken = loginRes.body.accessToken as string;
+    const firstRefreshCookie = extractRefreshCookie(loginRes);
+    expect(firstRefreshCookie).toBe('refresh-v1');
 
     /* 2. Acces protege avec le premier token */
     getCurrentUserUseCase.execute.mockResolvedValue(user);
@@ -312,7 +353,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       .set('Authorization', `Bearer ${firstToken}`)
       .expect(200);
 
-    /* 3. Refresh */
+    /* 3. Refresh via cookie */
     const secondSigned = await jwtTokenService.sign({
       sub: user.id,
       email: user.email,
@@ -329,10 +370,12 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
 
     const refreshRes = await request(getHttpServer())
       .post('/api/auth/refresh')
-      .send({ refreshToken: 'refresh-v1' })
+      .set('Cookie', `refresh_token=${firstRefreshCookie!}`)
       .expect(200);
 
     const secondToken = refreshRes.body.accessToken as string;
+    const secondRefreshCookie = extractRefreshCookie(refreshRes);
+    expect(secondRefreshCookie).toBe('refresh-v2');
 
     /* 4. Acces protege avec le nouveau token */
     await request(getHttpServer())
@@ -340,12 +383,12 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       .set('Authorization', `Bearer ${secondToken}`)
       .expect(200);
 
-    /* 5. Logout */
+    /* 5. Logout via cookie */
     revokeTokenUseCase.execute.mockResolvedValue(undefined);
 
     await request(getHttpServer())
       .post('/api/auth/logout')
-      .send({ refreshToken: 'refresh-v2' })
+      .set('Cookie', `refresh_token=${secondRefreshCookie!}`)
       .expect(200);
   });
 });

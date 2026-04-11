@@ -26,6 +26,8 @@ import { GetAirQualityUseCase } from '../src/modules/weather/application/GetAirQ
 import { GetEnsembleUseCase } from '../src/modules/weather/application/GetEnsemble.useCase';
 import { GetHistoricalUseCase } from '../src/modules/weather/application/GetHistorical.useCase';
 import { GetWeatherAlertsUseCase } from '../src/modules/weather/application/GetWeatherAlerts.useCase';
+import { GetCurrentDetailedWeatherUseCase } from '../src/modules/weather/application/GetCurrentDetailedWeather.useCase';
+import { GetForecastDetailedWeatherUseCase } from '../src/modules/weather/application/GetForecastDetailedWeather.useCase';
 import { GetUserPreferencesUseCase } from '../src/modules/weather/application/GetUserPreferences.useCase';
 import { UpdateUserPreferencesUseCase } from '../src/modules/weather/application/UpdateUserPreferences.useCase';
 import { RecordUsageUseCase } from '../src/modules/weather/application/RecordUsage.useCase';
@@ -73,6 +75,8 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
   const updateUserPreferencesUseCase = { execute: jest.fn() };
   const recordUsageUseCase = { execute: jest.fn() };
   const getWeatherAlertsUseCase = { execute: jest.fn() };
+  const getCurrentDetailedWeatherUseCase = { execute: jest.fn() };
+  const getForecastDetailedWeatherUseCase = { execute: jest.fn() };
   const owmProxy = {
     getCurrentDetailed: jest.fn(),
     getForecastDetailed: jest.fn(),
@@ -144,6 +148,14 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
         },
         { provide: RecordUsageUseCase, useValue: recordUsageUseCase },
         { provide: GetWeatherAlertsUseCase, useValue: getWeatherAlertsUseCase },
+        {
+          provide: GetCurrentDetailedWeatherUseCase,
+          useValue: getCurrentDetailedWeatherUseCase,
+        },
+        {
+          provide: GetForecastDetailedWeatherUseCase,
+          useValue: getForecastDetailedWeatherUseCase,
+        },
         { provide: OPENWEATHERMAP_PROXY, useValue: owmProxy },
       ],
     })
@@ -236,6 +248,12 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
       buildWeatherPreferences({ level: 'curious' }),
     );
     recordUsageUseCase.execute.mockResolvedValue(undefined);
+    getCurrentDetailedWeatherUseCase.execute.mockResolvedValue(
+      buildDetailedCurrentWeather(),
+    );
+    getForecastDetailedWeatherUseCase.execute.mockResolvedValue(
+      buildDetailedForecastResult(),
+    );
     owmProxy.getCurrentDetailed.mockResolvedValue(
       buildDetailedCurrentWeather(),
     );

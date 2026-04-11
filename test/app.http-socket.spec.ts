@@ -28,7 +28,10 @@ import { UpdateProfileUseCase } from '../src/modules/users/application/UpdatePro
 import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
+import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
+import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
+import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import { CreateCoursesUseCase } from '../src/modules/courses/application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../src/modules/courses/application/ListCourses.useCase';
 import { CoursesController } from '../src/modules/courses/interfaces/Courses.controller';
@@ -118,6 +121,11 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
         { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
         { provide: GetCurrentUserUseCase, useValue: { execute: jest.fn() } },
+        { provide: VerifyEmailUseCase, useValue: { execute: jest.fn() } },
+        {
+          provide: ResendVerificationEmailUseCase,
+          useValue: { execute: jest.fn() },
+        },
         AuthAuditLogger,
         { provide: ListServicesUseCase, useValue: listServicesUseCase },
         { provide: CreateServicesUseCase, useValue: createServicesUseCase },
@@ -130,6 +138,8 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       ],
     })
       .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
       .compile();
 
