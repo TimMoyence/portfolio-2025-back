@@ -58,13 +58,14 @@ export class AuthenticateGoogleUserUseCase {
       return this.signResult(byEmail);
     }
 
-    // 3. Creer un nouveau compte
+    // 3. Creer un nouveau compte (emailVerified=true car Google a deja verifie)
     const newUser = UsersMapper.fromGoogleAuth({
       email,
       firstName: payload.given_name ?? email.split('@')[0],
       lastName: payload.family_name ?? '',
       googleId,
       roles: DEFAULT_SELF_REGISTRATION_ROLES,
+      emailVerified: true,
     });
     const created = await this.repo.create(newUser);
     return this.signResult(created);

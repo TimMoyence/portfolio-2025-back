@@ -1,14 +1,24 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  ExecutionContext,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtTokenService } from '../../../modules/users/application/services/JwtTokenService';
+import type { IUsersRepository } from '../../../modules/users/domain/IUsers.repository';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { IS_PUBLIC_KEY } from './public.decorator';
+import {
+  buildUser,
+  createMockUsersRepo,
+} from '../../../../test/factories/user.factory';
 
 describe('JwtAuthGuard', () => {
   let guard: JwtAuthGuard;
   let jwtTokenService: jest.Mocked<JwtTokenService>;
   let reflector: jest.Mocked<Reflector>;
+  let usersRepo: jest.Mocked<IUsersRepository>;
 
   beforeEach(() => {
     jwtTokenService = {
@@ -20,14 +30,18 @@ describe('JwtAuthGuard', () => {
       getAllAndOverride: jest.fn(),
     } as unknown as jest.Mocked<Reflector>;
 
-    guard = new JwtAuthGuard(jwtTokenService, reflector);
+    usersRepo = createMockUsersRepo();
+
+    guard = new JwtAuthGuard(jwtTokenService, reflector, usersRepo);
   });
 
   function createMockContext(
     headers: Record<string, string | undefined> = {},
+    path = '/api/v1/portfolio25/test',
   ): ExecutionContext {
     const request = {
       headers,
+      path,
     } as unknown as Record<string, unknown>;
 
     return {
@@ -39,7 +53,7 @@ describe('JwtAuthGuard', () => {
     } as unknown as ExecutionContext;
   }
 
-  it('devrait autoriser avec un Bearer token valide', async () => {
+  it('devrait autoriser avec un Bearer token valide et email verifie', async () => {
     const payload = {
       sub: 'user-1',
       email: 'a@b.com',
@@ -51,6 +65,7 @@ describe('JwtAuthGuard', () => {
     };
     jwtTokenService.verify.mockResolvedValue(payload);
     reflector.getAllAndOverride.mockReturnValue(false);
+    usersRepo.findById.mockResolvedValue(buildUser({ emailVerified: true }));
 
     const context = createMockContext({
       authorization: 'Bearer valid-token',
@@ -114,5 +129,73 @@ describe('JwtAuthGuard', () => {
       IS_PUBLIC_KEY,
       expect.arrayContaining([expect.any(Function), expect.any(Function)]),
     );
+  });
+
+  it('devrait rejeter avec 403 quand emailVerified est false', async () => {
+    const payload = {
+      sub: 'user-unverified',
+      email: 'unverified@b.com',
+      iat: 1000,
+      exp: 9999999999,
+      iss: 'portfolio-2025',
+      aud: 'portfolio-2025-api',
+      roles: [],
+    };
+    jwtTokenService.verify.mockResolvedValue(payload);
+    reflector.getAllAndOverride.mockReturnValue(false);
+    usersRepo.findById.mockResolvedValue(
+      buildUser({ id: 'user-unverified', emailVerified: false }),
+    );
+
+    const context = createMockContext({
+      authorization: 'Bearer valid-token',
+    });
+
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      ForbiddenException,
+    );
+  });
+
+  it('devrait autoriser un email non verifie sur /auth/verify-email', async () => {
+    const payload = {
+      sub: 'user-unverified',
+      email: 'unverified@b.com',
+      iat: 1000,
+      exp: 9999999999,
+      iss: 'portfolio-2025',
+      aud: 'portfolio-2025-api',
+      roles: [],
+    };
+    jwtTokenService.verify.mockResolvedValue(payload);
+    reflector.getAllAndOverride.mockReturnValue(false);
+    // Pas besoin de mock usersRepo ici car le path est exempt
+
+    const context = createMockContext(
+      { authorization: 'Bearer valid-token' },
+      '/api/v1/portfolio25/auth/verify-email',
+    );
+
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+  });
+
+  it('devrait autoriser un email non verifie sur /auth/logout', async () => {
+    const payload = {
+      sub: 'user-unverified',
+      email: 'unverified@b.com',
+      iat: 1000,
+      exp: 9999999999,
+      iss: 'portfolio-2025',
+      aud: 'portfolio-2025-api',
+      roles: [],
+    };
+    jwtTokenService.verify.mockResolvedValue(payload);
+    reflector.getAllAndOverride.mockReturnValue(false);
+
+    const context = createMockContext(
+      { authorization: 'Bearer valid-token' },
+      '/api/v1/portfolio25/auth/logout',
+    );
+
+    await expect(guard.canActivate(context)).resolves.toBe(true);
   });
 });

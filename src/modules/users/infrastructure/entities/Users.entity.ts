@@ -34,6 +34,9 @@ export class UsersEntity {
   @Column({ type: 'simple-array', default: '' })
   roles: string[];
 
+  @Column({ name: 'email_verified', type: 'boolean', default: false })
+  emailVerified: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

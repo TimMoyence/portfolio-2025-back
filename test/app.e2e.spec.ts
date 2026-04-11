@@ -28,12 +28,15 @@ import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken
 import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
 import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
+import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
+import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
 import { ForgotPasswordDto } from '../src/modules/users/interfaces/dto/ForgotPassword.dto';
 import { LoginDto } from '../src/modules/users/interfaces/dto/Login.dto';
 import { ResetPasswordDto } from '../src/modules/users/interfaces/dto/ResetPassword.dto';
 import { SetPasswordDto } from '../src/modules/users/interfaces/dto/SetPassword.dto';
 import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
+import type { Response } from 'express';
 
 describe('API coherence and connectivity (e2e transportless)', () => {
   const validationPipe = new ValidationPipe({
@@ -57,6 +60,8 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   const resetPasswordUseCase = { execute: jest.fn() };
   const setPasswordUseCase = { execute: jest.fn() };
   const updateProfileUseCase = { execute: jest.fn() };
+  const verifyEmailUseCase = { execute: jest.fn() };
+  const resendVerificationEmailUseCase = { execute: jest.fn() };
 
   let contactsController: ContactsController;
   let cookieConsentsController: CookieConsentsController;
@@ -111,6 +116,11 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         {
           provide: GetCurrentUserUseCase,
           useValue: { execute: jest.fn() },
+        },
+        { provide: VerifyEmailUseCase, useValue: verifyEmailUseCase },
+        {
+          provide: ResendVerificationEmailUseCase,
+          useValue: resendVerificationEmailUseCase,
         },
         AuthAuditLogger,
       ],
@@ -222,10 +232,21 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     return {
       headers,
       ip,
+      cookies: {},
       get(name: string) {
         return headers[name.toLowerCase()];
       },
     } as unknown as Request;
+  }
+
+  function makeResponseMock(): Response {
+    const res: Partial<Response> = {
+      cookie: jest.fn().mockReturnThis() as unknown as Response['cookie'],
+      clearCookie: jest
+        .fn()
+        .mockReturnThis() as unknown as Response['clearCookie'],
+    };
+    return res as Response;
   }
 
   it('creates a contact from a validated payload and returns HTTP contract shape', async () => {
@@ -378,7 +399,8 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     );
 
     const req = makeRequestMock({ 'user-agent': 'test-agent' });
-    await expect(authController.login(dto, req)).rejects.toBeInstanceOf(
+    const res = makeResponseMock();
+    await expect(authController.login(dto, req, res)).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
   });

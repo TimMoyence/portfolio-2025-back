@@ -60,6 +60,7 @@ export class UsersMapper {
     lastName: string;
     googleId: string;
     roles: string[];
+    emailVerified?: boolean;
   }): User {
     return mapDomainValidation(() =>
       User.create({
@@ -68,6 +69,7 @@ export class UsersMapper {
         lastName: props.lastName,
         googleId: props.googleId,
         roles: props.roles,
+        emailVerified: props.emailVerified ?? true,
         updatedOrCreatedBy: 'google-oauth',
       }),
     );

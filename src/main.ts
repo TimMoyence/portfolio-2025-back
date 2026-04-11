@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
@@ -17,13 +18,17 @@ async function bootstrap() {
     ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
     : [];
 
-  // CSRF : non necessaire — l'API utilise des Bearer tokens dans le header
-  // Authorization (pas de cookies d'auth). Les attaques CSRF ne fonctionnent
-  // qu'avec des credentials envoyes automatiquement par le navigateur (cookies).
+  // CORS avec credentials: true pour le cookie HttpOnly refresh_token.
+  // Le Bearer token reste dans le header Authorization pour les requetes API.
+  // Le cookie n'est emis que sur le path /auth/refresh avec SameSite=Strict,
+  // ce qui limite l'exposition CSRF aux requetes same-site uniquement.
   app.enableCors({
     origin: corsOrigins,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    credentials: true,
   });
+
+  app.use(cookieParser());
 
   app.use(
     helmet({

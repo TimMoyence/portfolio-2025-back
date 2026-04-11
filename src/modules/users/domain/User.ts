@@ -12,6 +12,7 @@ export interface CreateUserProps {
   roles?: string[];
   updatedOrCreatedBy?: string | null;
   googleId?: string | null;
+  emailVerified?: boolean;
 }
 
 export interface UpdateUserProps {
@@ -24,6 +25,7 @@ export interface UpdateUserProps {
   roles?: string[];
   updatedOrCreatedBy?: string | null;
   googleId?: string | null;
+  emailVerified?: boolean;
 }
 
 /** Entite domaine representant un utilisateur du portfolio. */
@@ -37,6 +39,7 @@ export class User {
   isActive: boolean;
   roles: string[];
   googleId: string | null;
+  emailVerified: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   updatedOrCreatedBy: string | null;
@@ -73,6 +76,7 @@ export class User {
     user.isActive = props.isActive ?? true;
     user.roles = Array.isArray(props.roles) ? props.roles : [];
     user.googleId = props.googleId ?? null;
+    user.emailVerified = props.emailVerified ?? false;
     user.createdAt = new Date();
     user.updatedAt = new Date();
     user.updatedOrCreatedBy = this.optionalActor(props.updatedOrCreatedBy);
@@ -135,6 +139,13 @@ export class User {
 
     if (props.updatedOrCreatedBy !== undefined) {
       partial.updatedOrCreatedBy = this.optionalActor(props.updatedOrCreatedBy);
+    }
+
+    if (props.emailVerified !== undefined) {
+      if (typeof props.emailVerified !== 'boolean') {
+        throw new DomainValidationError('Invalid email verified flag');
+      }
+      partial.emailVerified = props.emailVerified;
     }
 
     partial.updatedAt = new Date();

@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
+import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import type { IEmailVerificationNotifier } from '../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -9,33 +10,36 @@ import {
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
 } from '../domain/token';
-import { User } from '../domain/User';
-import type { CreateUserCommand } from './dto/CreateUser.command';
-import { UsersMapper } from './mappers/UsersMapper';
-import { PasswordService } from './services/PasswordService';
 
 /** Duree de validite du token de verification email : 24 heures. */
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 
+/** Rate limit : maximum 3 renvois par heure (en ms). */
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX = 3;
+
+export interface ResendVerificationResult {
+  message: string;
+}
+
 /**
- * Orchestre la creation d'un utilisateur avec hachage du mot de passe.
- * Apres creation, genere un token de verification email et envoie
- * un email de confirmation. Le compte est cree avec emailVerified=false
- * et les roles ne sont attribues qu'apres verification.
+ * Renvoie un email de verification a un utilisateur non encore verifie.
+ * Rate limited a 3 envois par heure pour eviter les abus.
  */
 @Injectable()
-export class CreateUsersUseCase {
-  private readonly logger = new Logger(CreateUsersUseCase.name);
+export class ResendVerificationEmailUseCase {
+  private readonly logger = new Logger(ResendVerificationEmailUseCase.name);
   private readonly verificationUrlBase: string;
+  private readonly genericMessage =
+    'Si un compte non verifie existe avec cet email, un nouveau lien de verification a ete envoye.';
 
   constructor(
     @Inject(USERS_REPOSITORY)
-    private repo: IUsersRepository,
+    private readonly usersRepo: IUsersRepository,
     @Inject(EMAIL_VERIFICATION_TOKENS_REPOSITORY)
     private readonly emailVerificationTokensRepo: IEmailVerificationTokensRepository,
     @Inject(EMAIL_VERIFICATION_NOTIFIER)
     private readonly emailVerificationNotifier: IEmailVerificationNotifier,
-    private readonly passwordService: PasswordService,
     private readonly configService: ConfigService,
   ) {
     this.verificationUrlBase = this.configService.get<string>(
@@ -44,34 +48,38 @@ export class CreateUsersUseCase {
     );
   }
 
-  async execute(dto: CreateUserCommand): Promise<User> {
-    const passwordHash = await this.passwordService.hash(dto.password);
-    const updatedOrCreatedBy = dto.updatedOrCreatedBy ?? 'self-registration';
-    const isSelfRegistration = updatedOrCreatedBy === 'self-registration';
+  async execute(email: string): Promise<ResendVerificationResult> {
+    const user = await this.usersRepo.findByEmail(email);
 
-    // Inscription publique : pas de roles avant verification email
-    const roles = isSelfRegistration ? [] : (dto.roles ?? []);
-
-    const user = UsersMapper.fromCreateCommand(
-      { ...dto, updatedOrCreatedBy, roles },
-      passwordHash,
-    );
-    const created = await this.repo.create(user);
-
-    // Envoyer un email de verification pour les inscriptions publiques
-    if (isSelfRegistration && created.id) {
-      await this.sendVerificationEmail(created);
+    // Reponse generique pour ne pas reveler l'existence d'un compte
+    if (!user || !user.id || !user.isActive) {
+      return { message: this.genericMessage };
     }
 
-    return created;
-  }
+    if (user.emailVerified) {
+      return { message: this.genericMessage };
+    }
 
-  /** Genere un token de verification et envoie l'email. */
-  private async sendVerificationEmail(user: User): Promise<void> {
+    // Rate limit check
+    const recentCount =
+      await this.emailVerificationTokensRepo.countRecentByUserId(
+        user.id,
+        RATE_LIMIT_WINDOW_MS,
+      );
+
+    if (recentCount >= RATE_LIMIT_MAX) {
+      throw new InvalidInputError(
+        'Trop de demandes de verification. Veuillez reessayer dans une heure.',
+      );
+    }
+
+    // Supprimer les anciens tokens et en creer un nouveau
+    await this.emailVerificationTokensRepo.deleteByUserId(user.id);
+
     const rawToken = randomBytes(32).toString('hex');
 
     await this.emailVerificationTokensRepo.create({
-      userId: user.id!,
+      userId: user.id,
       token: rawToken,
       expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_TTL_MS),
     });
@@ -86,9 +94,11 @@ export class CreateUsersUseCase {
       });
     } catch (error) {
       this.logger.error(
-        `Email verification send failed for ${user.email}: ${String(error)}`,
+        `Resend verification email failed for ${user.email}: ${String(error)}`,
       );
     }
+
+    return { message: this.genericMessage };
   }
 
   private buildVerificationUrl(rawToken: string): string {

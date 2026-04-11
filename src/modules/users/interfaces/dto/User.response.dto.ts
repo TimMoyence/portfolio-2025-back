@@ -39,6 +39,12 @@ export class UserResponseDto {
   })
   hasPassword: boolean;
 
+  @ApiProperty({
+    example: true,
+    description: "Indique si l'adresse email a ete verifiee.",
+  })
+  emailVerified: boolean;
+
   static fromDomain(user: User): UserResponseDto {
     const dto = new UserResponseDto();
     dto.id = user.id ?? '';
@@ -53,6 +59,7 @@ export class UserResponseDto {
     dto.updatedOrCreatedBy = user.updatedOrCreatedBy ?? null;
     dto.hasPassword =
       typeof user.passwordHash === 'string' && user.passwordHash.length > 0;
+    dto.emailVerified = user.emailVerified ?? false;
     return dto;
   }
 }
