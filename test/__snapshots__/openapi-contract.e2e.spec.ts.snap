@@ -249,16 +249,6 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
     "post": {
       "operationId": "AuthController_logout",
       "parameters": [],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/RefreshTokenDto",
-            },
-          },
-        },
-        "required": true,
-      },
       "responses": {
         "200": {
           "content": {
@@ -357,16 +347,6 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
     "post": {
       "operationId": "AuthController_refresh",
       "parameters": [],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/RefreshTokenDto",
-            },
-          },
-        },
-        "required": true,
-      },
       "responses": {
         "200": {
           "content": {
@@ -407,7 +387,7 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserResponseDto",
+                "$ref": "#/components/schemas/AuthMessageResponseDto",
               },
             },
           },
@@ -417,7 +397,42 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
           "description": "Inscription echouee",
         },
       },
-      "summary": "Inscription d'un nouvel utilisateur",
+      "summary": "Inscription d'un nouvel utilisateur. Un email de verification est envoye.",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/resend-verification": {
+    "post": {
+      "operationId": "AuthController_resendVerification",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ResendVerificationDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthMessageResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "400": {
+          "description": "Trop de demandes",
+        },
+      },
+      "summary": "Renvoie l'email de verification (rate limited 3/h)",
       "tags": [
         "auth",
       ],
@@ -499,6 +514,40 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
         },
       ],
       "summary": "Definit un mot de passe pour un compte Google-only",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/verify-email": {
+    "get": {
+      "operationId": "AuthController_verifyEmail",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthMessageResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "401": {
+          "description": "Token invalide ou expire",
+        },
+      },
+      "summary": "Verifie l'adresse email via le token envoye",
       "tags": [
         "auth",
       ],

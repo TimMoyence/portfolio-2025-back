@@ -27,6 +27,8 @@ import { GetUserPreferencesUseCase } from '../src/modules/weather/application/Ge
 import { UpdateUserPreferencesUseCase } from '../src/modules/weather/application/UpdateUserPreferences.useCase';
 import { RecordUsageUseCase } from '../src/modules/weather/application/RecordUsage.useCase';
 import { GetWeatherAlertsUseCase } from '../src/modules/weather/application/GetWeatherAlerts.useCase';
+import { GetCurrentDetailedWeatherUseCase } from '../src/modules/weather/application/GetCurrentDetailedWeather.useCase';
+import { GetForecastDetailedWeatherUseCase } from '../src/modules/weather/application/GetForecastDetailedWeather.useCase';
 import { OPENWEATHERMAP_PROXY } from '../src/modules/weather/domain/token';
 
 /* ── Budget module ─────────────────────────────────────────────────── */
@@ -65,6 +67,8 @@ import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword
 import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
 import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
+import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
+import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
 
 /* ── Contacts module ───────────────────────────────────────────────── */
 import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
@@ -200,6 +204,8 @@ describe('OpenAPI core contract', () => {
         { provide: UpdateUserPreferencesUseCase, useValue: stub() },
         { provide: RecordUsageUseCase, useValue: stub() },
         { provide: GetWeatherAlertsUseCase, useValue: stub() },
+        { provide: GetCurrentDetailedWeatherUseCase, useValue: stub() },
+        { provide: GetForecastDetailedWeatherUseCase, useValue: stub() },
         { provide: OPENWEATHERMAP_PROXY, useValue: {} },
 
         /* ── Budget ─────────────────────────────────────── */
@@ -234,6 +240,8 @@ describe('OpenAPI core contract', () => {
         { provide: SetPasswordUseCase, useValue: stub() },
         { provide: UpdateProfileUseCase, useValue: stub() },
         { provide: GetCurrentUserUseCase, useValue: stub() },
+        { provide: VerifyEmailUseCase, useValue: stub() },
+        { provide: ResendVerificationEmailUseCase, useValue: stub() },
         AuthAuditLogger,
 
         /* ── Contacts ───────────────────────────────────── */
