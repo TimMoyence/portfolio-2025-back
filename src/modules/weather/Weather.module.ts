@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GetAirQualityUseCase } from './application/GetAirQuality.useCase';
+import { GetCurrentDetailedWeatherUseCase } from './application/GetCurrentDetailedWeather.useCase';
 import { GetEnsembleUseCase } from './application/GetEnsemble.useCase';
 import { GetForecastUseCase } from './application/GetForecast.useCase';
+import { GetForecastDetailedWeatherUseCase } from './application/GetForecastDetailedWeather.useCase';
 import { GetGeocodingUseCase } from './application/GetGeocoding.useCase';
 import { GetHistoricalUseCase } from './application/GetHistorical.useCase';
 import { GetWeatherAlertsUseCase } from './application/GetWeatherAlerts.useCase';
@@ -33,6 +35,8 @@ const WEATHER_USE_CASES = [
   GetUserPreferencesUseCase,
   UpdateUserPreferencesUseCase,
   RecordUsageUseCase,
+  GetCurrentDetailedWeatherUseCase,
+  GetForecastDetailedWeatherUseCase,
 ];
 
 @Module({

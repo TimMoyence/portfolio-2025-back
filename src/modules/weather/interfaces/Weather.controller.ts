@@ -21,19 +21,16 @@ import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { GetAirQualityUseCase } from '../application/GetAirQuality.useCase';
+import { GetCurrentDetailedWeatherUseCase } from '../application/GetCurrentDetailedWeather.useCase';
 import { GetEnsembleUseCase } from '../application/GetEnsemble.useCase';
 import { GetForecastUseCase } from '../application/GetForecast.useCase';
+import { GetForecastDetailedWeatherUseCase } from '../application/GetForecastDetailedWeather.useCase';
 import { GetGeocodingUseCase } from '../application/GetGeocoding.useCase';
 import { GetHistoricalUseCase } from '../application/GetHistorical.useCase';
 import { GetWeatherAlertsUseCase } from '../application/GetWeatherAlerts.useCase';
 import { GetUserPreferencesUseCase } from '../application/GetUserPreferences.useCase';
 import { RecordUsageUseCase } from '../application/RecordUsage.useCase';
 import { UpdateUserPreferencesUseCase } from '../application/UpdateUserPreferences.useCase';
-import type {
-  DetailedCurrentWeather,
-  DetailedForecastResult,
-  IOpenWeatherMapProxy,
-} from '../domain/IOpenWeatherMapProxy.port';
 import type {
   AirQualityResult,
   EnsembleResult,
@@ -42,8 +39,6 @@ import type {
   HistoricalResult,
   WeatherAlertResult,
 } from '../domain/IWeatherProxy.port';
-import { OPENWEATHERMAP_PROXY } from '../domain/token';
-import { Inject } from '@nestjs/common';
 import { DetailedCurrentWeatherDto } from './dto/DetailedCurrentWeather.dto';
 import { DetailedForecastDto } from './dto/DetailedForecast.dto';
 import { ForecastQueryDto } from './dto/ForecastQuery.dto';
@@ -67,8 +62,8 @@ export class WeatherController {
     private readonly updateUserPreferencesUseCase: UpdateUserPreferencesUseCase,
     private readonly recordUsageUseCase: RecordUsageUseCase,
     private readonly getWeatherAlertsUseCase: GetWeatherAlertsUseCase,
-    @Inject(OPENWEATHERMAP_PROXY)
-    private readonly owmProxy: IOpenWeatherMapProxy,
+    private readonly getCurrentDetailedWeatherUseCase: GetCurrentDetailedWeatherUseCase,
+    private readonly getForecastDetailedWeatherUseCase: GetForecastDetailedWeatherUseCase,
   ) {}
 
   /** Recherche de villes par nom (acces public). */
@@ -253,7 +248,7 @@ export class WeatherController {
   async getCurrentDetailed(
     @Query() dto: ForecastQueryDto,
   ): Promise<DetailedCurrentWeatherDto> {
-    const data: DetailedCurrentWeather = await this.owmProxy.getCurrentDetailed(
+    const data = await this.getCurrentDetailedWeatherUseCase.execute(
       dto.latitude,
       dto.longitude,
     );
@@ -276,8 +271,10 @@ export class WeatherController {
   async getForecastDetailed(
     @Query() dto: ForecastQueryDto,
   ): Promise<DetailedForecastDto> {
-    const data: DetailedForecastResult =
-      await this.owmProxy.getForecastDetailed(dto.latitude, dto.longitude);
+    const data = await this.getForecastDetailedWeatherUseCase.execute(
+      dto.latitude,
+      dto.longitude,
+    );
     return DetailedForecastDto.fromDomain(data);
   }
 }

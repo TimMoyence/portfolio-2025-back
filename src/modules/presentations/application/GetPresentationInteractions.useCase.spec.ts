@@ -1,5 +1,5 @@
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import type { IPresentationsRepository } from '../domain/IPresentations.repository';
 import type { PresentationInteractions } from '../domain/SlideInteraction';
 import { PRESENTATIONS_REPOSITORY } from '../domain/token';
@@ -59,11 +59,11 @@ describe('GetPresentationInteractionsUseCase', () => {
     expect(repo.findBySlug).toHaveBeenCalledWith('ia-solopreneurs');
   });
 
-  it('devrait lever NotFoundException pour un slug inconnu', async () => {
+  it('devrait lever ResourceNotFoundError pour un slug inconnu', async () => {
     repo.findBySlug.mockResolvedValue(null);
 
     await expect(useCase.execute('inexistant')).rejects.toThrow(
-      NotFoundException,
+      ResourceNotFoundError,
     );
   });
 });
