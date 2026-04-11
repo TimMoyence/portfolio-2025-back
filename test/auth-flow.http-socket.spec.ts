@@ -59,7 +59,9 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
    * Extrait la valeur brute du cookie refresh_token depuis les headers Set-Cookie.
    */
   function extractRefreshCookie(res: request.Response): string | undefined {
-    const cookies = res.headers['set-cookie'] as string[] | undefined;
+    const cookies = res.headers['set-cookie'] as unknown as
+      | string[]
+      | undefined;
     if (!cookies) return undefined;
     const match = (Array.isArray(cookies) ? cookies : [cookies]).find((c) =>
       c.startsWith('refresh_token='),
