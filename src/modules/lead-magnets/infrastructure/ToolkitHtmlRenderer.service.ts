@@ -304,7 +304,10 @@ export class ToolkitHtmlRendererService {
         const steps = wf.steps
           .map(
             (step) => `<li class="workflow-step">
-            <span class="step-number">${step.step}</span>
+            <svg class="step-number" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="19" fill="${this.accent}"/>
+              <text x="20" y="27" text-anchor="middle" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" fill="#ffffff">${step.step}</text>
+            </svg>
             <div class="step-content">
               <p class="step-action">${this.escape(step.action)}</p>
               <p class="step-detail"><span class="step-tool">${this.escape(step.tool)}</span> — ${this.escape(step.detail)}</p>
@@ -362,7 +365,7 @@ export class ToolkitHtmlRendererService {
       })
       .join('');
 
-    return `<section class="page section">
+    return `<section class="page section section-templates">
       ${this.sectionHeader('04', '📋 Templates', "Prêts à l'emploi")}
       <div class="template-grid">${cards}</div>
       ${this.pageFooter()}
@@ -502,6 +505,12 @@ export class ToolkitHtmlRendererService {
          sur la meme page. */
       .page.section + .page.section {
         margin-top: 16mm;
+      }
+      /* La section Templates demarre toujours sur une nouvelle page
+         (le user le veut explicitement). */
+      .section-templates {
+        page-break-before: always;
+        margin-top: 0 !important;
       }
       .cover.page {
         /* La cover deborde les marges Puppeteer en utilisant des marges
@@ -1021,17 +1030,9 @@ export class ToolkitHtmlRendererService {
       }
       .step-number {
         flex-shrink: 0;
-        width: 7mm;
-        height: 7mm;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-        color: #ffffff;
-        font-size: 10pt;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 1mm 2mm rgba(45, 133, 118, 0.25);
+        width: 8mm;
+        height: 8mm;
+        display: block;
       }
       .step-content {
         flex: 1;
