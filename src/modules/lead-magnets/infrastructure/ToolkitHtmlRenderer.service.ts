@@ -11,11 +11,55 @@ import type {
  * Construit le document HTML complet utilise par Puppeteer pour generer le
  * PDF du guide IA personnalise. Toute la mise en page est faite en CSS
  * (grille, flex, variables, typographie systeme) — aucune coordonnee manuelle.
+ *
+ * Le document est organise en 6 sections paginees A4 :
+ *  0. Couverture (gradient + titre serif + badges profil)
+ *  1. Page "Pourquoi ce guide" avec stats solopreneurs 2026
+ *  2. Cheatsheet (16 outils par categorie, chips couleur)
+ *  3. Prompts (cartes enrichies avec description, example, tip)
+ *  4. Workflows (etapes numerotees + chips outils)
+ *  5. Templates (grille, bordure couleur plateforme)
+ *  6. Prompt genere (optionnel, sur mesure)
  */
 @Injectable()
 export class ToolkitHtmlRendererService {
   /** Couleur d'accent Asili. */
   private readonly accent = '#4fb3a2';
+
+  /**
+   * Palette de couleurs par categorie d outils / prompts.
+   * Ces cles sont normalisees (lowercase, sans accents) avant lookup.
+   */
+  private readonly categoryColors: Record<
+    string,
+    { bg: string; text: string; border: string }
+  > = {
+    'recherche & veille': { bg: '#e0f0fe', text: '#0b5394', border: '#3b82f6' },
+    'creation de contenu': {
+      bg: '#f3e8ff',
+      text: '#6b21a8',
+      border: '#a855f7',
+    },
+    automatisation: { bg: '#ffedd5', text: '#9a3412', border: '#f97316' },
+    'prospection & vente': {
+      bg: '#fce7f3',
+      text: '#9d174d',
+      border: '#ec4899',
+    },
+    productivite: { bg: '#dcfce7', text: '#166534', border: '#22c55e' },
+    // prompts
+    prospection: { bg: '#fce7f3', text: '#9d174d', border: '#ec4899' },
+    contenu: { bg: '#f3e8ff', text: '#6b21a8', border: '#a855f7' },
+    'site web': { bg: '#e0f0fe', text: '#0b5394', border: '#3b82f6' },
+    'gestion client': { bg: '#dcfce7', text: '#166534', border: '#22c55e' },
+  };
+
+  /** Couleurs des plateformes de templates. */
+  private readonly platformColors: Record<string, string> = {
+    notion: '#0f172a',
+    zapier: '#ff4a00',
+    make: '#6d28d9',
+  };
 
   /** Construit le document HTML complet pour un contenu de toolkit. */
   render(content: ToolkitContent): string {
@@ -26,6 +70,7 @@ export class ToolkitHtmlRendererService {
     });
 
     const cover = this.renderCover(content, date);
+    const stats = this.renderStatsPage();
     const cheatsheet = this.renderCheatsheet(content.cheatsheet);
     const prompts = this.renderPrompts(content.prompts);
     const workflows = this.renderWorkflows(content.workflows);
@@ -43,6 +88,7 @@ export class ToolkitHtmlRendererService {
   </head>
   <body>
     ${cover}
+    ${stats}
     ${cheatsheet}
     ${prompts}
     ${workflows}
@@ -56,7 +102,7 @@ export class ToolkitHtmlRendererService {
   /*  Sections                                                           */
   /* ------------------------------------------------------------------ */
 
-  /** Page de couverture: titre, prenom, profil, badges. */
+  /** Page de couverture: titre serif, gradient deco, badges profil. */
   private renderCover(content: ToolkitContent, date: string): string {
     const recap = content.recap;
     const firstName = this.escape(recap.firstName);
@@ -81,11 +127,15 @@ export class ToolkitHtmlRendererService {
       : '';
 
     return `<section class="page cover">
-      <div class="cover-gradient"></div>
+      <div class="cover-gradient">
+        <div class="cover-shape cover-shape-1"></div>
+        <div class="cover-shape cover-shape-2"></div>
+        <div class="cover-shape cover-shape-3"></div>
+      </div>
       <div class="cover-content">
-        <p class="cover-eyebrow">Asili Design — Guide personnalisé</p>
+        <p class="cover-eyebrow">🚀 Asili Design — Guide personnalisé</p>
         <h1 class="cover-title">L'IA au service<br/>des solopreneurs</h1>
-        <p class="cover-subtitle">Votre boîte à outils sur mesure pour transformer votre activité avec l'IA.</p>
+        <p class="cover-subtitle">Votre boîte à outils sur mesure pour transformer votre activité avec l'IA en 2026.</p>
         <div class="cover-meta">
           <p class="cover-prepared">Préparé pour <strong>${firstName}</strong></p>
           <p class="cover-date">${this.escape(date)}</p>
@@ -96,7 +146,47 @@ export class ToolkitHtmlRendererService {
         <span>asilidesign.fr</span>
         <span>•</span>
         <span>Guide généré sur mesure</span>
+        <span>•</span>
+        <span>Édition 2026</span>
       </footer>
+    </section>`;
+  }
+
+  /** Page "Pourquoi ce guide ?" avec stats solopreneurs. */
+  private renderStatsPage(): string {
+    return `<section class="page section stats-page">
+      ${this.sectionHeader('00', 'Pourquoi ce guide ?', 'Les chiffres qui changent tout en 2026')}
+      <div class="stats-intro">
+        <p>L'IA n'est plus un gadget : elle redéfinit ce qu'un solopreneur peut accomplir seul. Les chiffres 2026 parlent d'eux-mêmes.</p>
+      </div>
+      <div class="stats-grid">
+        <article class="stat-card">
+          <div class="stat-number">74<span class="stat-percent">%</span></div>
+          <p class="stat-label">des solopreneurs scalent leur activité sans embaucher grâce à l'IA</p>
+        </article>
+        <article class="stat-card">
+          <div class="stat-number">64<span class="stat-percent">%</span></div>
+          <p class="stat-label">affirment que leur business n'aurait pas grandi sans l'IA</p>
+        </article>
+        <article class="stat-card">
+          <div class="stat-number">91<span class="stat-percent">%</span></div>
+          <p class="stat-label">constatent une réduction significative de leur charge administrative</p>
+        </article>
+        <article class="stat-card highlight">
+          <div class="stat-number">2-4<span class="stat-percent">h</span></div>
+          <p class="stat-label">économisées par semaine grâce aux workflows automatisés</p>
+        </article>
+      </div>
+      <div class="stats-promise">
+        <p class="stats-promise-title">Ce que vous allez trouver dans ce guide</p>
+        <ul class="stats-promise-list">
+          <li><strong>16 outils IA</strong> à jour avril 2026, avec prix, arbre de décision et astuce d'utilisation</li>
+          <li><strong>15 prompts professionnels</strong> structurés (contexte / instructions / format / ton) prêts à copier</li>
+          <li><strong>3 workflows complets</strong> pas-à-pas pour automatiser prospection, contenu et veille</li>
+          <li><strong>8 templates</strong> Notion, Zapier et Make à installer en 5 minutes</li>
+        </ul>
+      </div>
+      ${this.pageFooter()}
     </section>`;
   }
 
@@ -113,33 +203,43 @@ export class ToolkitHtmlRendererService {
 
     const groups = Array.from(byCategory.entries())
       .map(([category, tools]) => {
-        const cards = tools.map((tool) => this.renderToolCard(tool)).join('');
+        const palette = this.paletteFor(category);
+        const cards = tools
+          .map((tool) => this.renderToolCard(tool, palette))
+          .join('');
         return `<div class="category">
-          <h3 class="category-title">${this.escape(category)}</h3>
+          <h3 class="category-title" style="color: ${palette.text}; border-left-color: ${palette.border};">${this.escape(category)}</h3>
           <div class="tool-grid">${cards}</div>
         </div>`;
       })
       .join('');
 
     return `<section class="page section">
-      ${this.sectionHeader('01', 'Cheatsheet', 'Vos outils IA sélectionnés')}
+      ${this.sectionHeader('01', '🧰 Cheatsheet', 'Vos outils IA sélectionnés')}
       ${groups}
       ${this.pageFooter()}
     </section>`;
   }
 
   /** Carte individuelle pour un outil dans la cheatsheet. */
-  private renderToolCard(tool: CheatsheetEntry): string {
+  private renderToolCard(
+    tool: CheatsheetEntry,
+    palette: { bg: string; text: string; border: string },
+  ): string {
     const used = tool.alreadyUsed
       ? '<span class="chip chip-used">Déjà utilisé</span>'
-      : '<span class="chip chip-new">Nouveau</span>';
+      : '<span class="chip chip-new">À découvrir</span>';
     const url = tool.url.replace(/^https?:\/\//, '');
-    return `<article class="tool-card">
+    const decision = tool.decision
+      ? `<p class="tool-decision">${this.escape(tool.decision)}</p>`
+      : '';
+    return `<article class="tool-card" style="border-top: 3px solid ${palette.border};">
       <header class="tool-card-header">
         <h4 class="tool-name">${this.escape(tool.tool)}</h4>
         <span class="tool-price">${this.escape(tool.price)}</span>
       </header>
-      <p class="tool-tip">${this.escape(tool.tip)}</p>
+      <p class="tool-tip">💡 ${this.escape(tool.tip)}</p>
+      ${decision}
       <footer class="tool-card-footer">
         <a class="tool-link" href="https://${this.escape(url)}">${this.escape(url)}</a>
         ${used}
@@ -147,28 +247,41 @@ export class ToolkitHtmlRendererService {
     </article>`;
   }
 
-  /** Page prompts personnalises avec code blocks. */
+  /** Page prompts avec cartes enrichies (description / code / example / tip). */
   private renderPrompts(prompts: PromptEntry[]): string {
     if (!prompts.length) return '';
 
     const cards = prompts
       .map((prompt) => {
-        return `<article class="prompt-card">
+        const palette = this.paletteFor(prompt.category);
+        const description = prompt.description
+          ? `<p class="prompt-description">${this.escape(prompt.description)}</p>`
+          : '';
+        const example = prompt.example
+          ? `<div class="prompt-example"><span class="prompt-example-label">Cas d'usage</span><p>${this.escape(prompt.example)}</p></div>`
+          : '';
+        const tip = prompt.tip
+          ? `<div class="prompt-tip"><span class="prompt-tip-label">💡 Astuce d'itération</span><p>${this.escape(prompt.tip)}</p></div>`
+          : '';
+        return `<article class="prompt-card" style="border-left-color: ${palette.border};">
         <header class="prompt-header">
-          <h4 class="prompt-title">${this.escape(prompt.title)}</h4>
           <div class="prompt-pills">
-            <span class="pill pill-category">${this.escape(prompt.category)}</span>
+            <span class="pill" style="background: ${palette.bg}; color: ${palette.text};">${this.escape(prompt.category)}</span>
             <span class="pill pill-level">${this.escape(this.levelLabel(prompt.level))}</span>
             <span class="pill pill-tool">${this.escape(prompt.tool)}</span>
           </div>
+          <h4 class="prompt-title">${this.escape(prompt.title)}</h4>
+          ${description}
         </header>
         <pre class="prompt-code">${this.escape(prompt.prompt)}</pre>
+        ${example}
+        ${tip}
       </article>`;
       })
       .join('');
 
     return `<section class="page section">
-      ${this.sectionHeader('02', 'Prompts', 'Personnalisés selon votre niveau')}
+      ${this.sectionHeader('02', '✍️ Prompts', 'Personnalisés selon votre niveau')}
       <div class="prompt-list">${cards}</div>
       ${this.pageFooter()}
     </section>`;
@@ -210,30 +323,31 @@ export class ToolkitHtmlRendererService {
       .join('');
 
     return `<section class="page section">
-      ${this.sectionHeader('03', 'Workflows', 'Automatisations clés en main')}
+      ${this.sectionHeader('03', '⚡ Workflows', 'Automatisations clés en main')}
       <div class="workflow-list">${cards}</div>
       ${this.pageFooter()}
     </section>`;
   }
 
-  /** Page templates avec cartes plateforme. */
+  /** Page templates avec cartes colorees selon la plateforme. */
   private renderTemplates(templates: TemplateEntry[]): string {
     if (!templates.length) return '';
 
     const cards = templates
       .map((tpl) => {
+        const color = this.platformColorFor(tpl.platform);
         const budget =
           tpl.minBudget > 0
             ? `<span class="template-budget">À partir de ${tpl.minBudget} €/mois</span>`
-            : '';
-        return `<article class="template-card">
+            : '<span class="template-budget template-budget-free">Gratuit</span>';
+        return `<article class="template-card" style="border-top: 4px solid ${color};">
           <header class="template-header">
             <h4 class="template-name">${this.escape(tpl.name)}</h4>
-            <span class="platform-badge">${this.escape(tpl.platform)}</span>
+            <span class="platform-badge" style="background: ${color};">${this.escape(tpl.platform)}</span>
           </header>
           <p class="template-description">${this.escape(tpl.description)}</p>
           <footer class="template-footer">
-            <a class="template-link" href="${this.escape(tpl.url)}">Ouvrir le template →</a>
+            <a class="template-link" href="${this.escape(tpl.url)}">Ouvrir →</a>
             ${budget}
           </footer>
         </article>`;
@@ -241,7 +355,7 @@ export class ToolkitHtmlRendererService {
       .join('');
 
     return `<section class="page section">
-      ${this.sectionHeader('04', 'Templates', "Prêts à l'emploi")}
+      ${this.sectionHeader('04', '📋 Templates', "Prêts à l'emploi")}
       <div class="template-grid">${cards}</div>
       ${this.pageFooter()}
     </section>`;
@@ -250,7 +364,7 @@ export class ToolkitHtmlRendererService {
   /** Page bonus avec le prompt genere par l'IA. */
   private renderGeneratedPrompt(generatedPrompt: string): string {
     return `<section class="page section">
-      ${this.sectionHeader('05', 'Votre prompt', 'Sur mesure pour votre activité')}
+      ${this.sectionHeader('05', '✨ Votre prompt', 'Sur mesure pour votre activité')}
       <div class="generated-box">
         <pre class="generated-text">${this.escape(generatedPrompt)}</pre>
       </div>
@@ -266,7 +380,7 @@ export class ToolkitHtmlRendererService {
     return `<header class="section-header">
       <span class="section-number">${num}</span>
       <div>
-        <h2 class="section-title">${this.escape(title)}</h2>
+        <h2 class="section-title">${title}</h2>
         <p class="section-subtitle">${this.escape(subtitle)}</p>
       </div>
     </header>`;
@@ -276,7 +390,7 @@ export class ToolkitHtmlRendererService {
     return `<footer class="page-footer">
       <span>asilidesign.fr/formations</span>
       <span>•</span>
-      <span>Guide IA Solopreneurs</span>
+      <span>Guide IA Solopreneurs 2026</span>
       <span>•</span>
       <span>asilidesign.fr/contact</span>
     </footer>`;
@@ -293,6 +407,37 @@ export class ToolkitHtmlRendererService {
       default:
         return level;
     }
+  }
+
+  /** Normalise une cle de categorie (minuscules, sans accents, trim). */
+  private normalizeKey(raw: string): string {
+    return raw
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+
+  /** Retourne la palette couleur associee a une categorie, avec fallback accent. */
+  private paletteFor(category: string): {
+    bg: string;
+    text: string;
+    border: string;
+  } {
+    const key = this.normalizeKey(category);
+    return (
+      this.categoryColors[key] ?? {
+        bg: '#e7f6f3',
+        text: '#2d8576',
+        border: this.accent,
+      }
+    );
+  }
+
+  /** Retourne la couleur de bordure pour une plateforme de template. */
+  private platformColorFor(platform: string): string {
+    const key = this.normalizeKey(platform);
+    return this.platformColors[key] ?? this.accent;
   }
 
   /** Echappe les caracteres HTML pour eviter toute injection. */
@@ -321,6 +466,10 @@ export class ToolkitHtmlRendererService {
         --line: #e7e5e0;
         --bg: #ffffff;
         --bg-soft: #f7f7f4;
+        --yellow-bg: #fef9c3;
+        --yellow-ink: #854d0e;
+        --blue-bg: #eff6ff;
+        --blue-ink: #1d4ed8;
       }
       * { box-sizing: border-box; margin: 0; padding: 0; }
       html, body {
@@ -349,27 +498,45 @@ export class ToolkitHtmlRendererService {
         padding: 0;
         display: flex;
         flex-direction: column;
-        background: linear-gradient(160deg, #ffffff 0%, var(--accent-soft) 100%);
+        background: linear-gradient(160deg, #ffffff 0%, var(--accent-soft) 40%, #fff 100%);
       }
       .cover-gradient {
-        height: 90mm;
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+        height: 110mm;
+        background:
+          radial-gradient(circle at 20% 30%, rgba(255,255,255,0.2) 0%, transparent 50%),
+          linear-gradient(135deg, var(--accent) 0%, #3a9a8a 50%, var(--accent-dark) 100%);
         position: relative;
+        overflow: hidden;
       }
-      .cover-gradient::after {
-        content: '';
+      .cover-shape {
         position: absolute;
-        right: -20mm;
-        top: -20mm;
-        width: 90mm;
-        height: 90mm;
-        background: rgba(255, 255, 255, 0.08);
         border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .cover-shape-1 {
+        width: 120mm;
+        height: 120mm;
+        right: -30mm;
+        top: -40mm;
+      }
+      .cover-shape-2 {
+        width: 60mm;
+        height: 60mm;
+        left: -20mm;
+        bottom: -25mm;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .cover-shape-3 {
+        width: 25mm;
+        height: 25mm;
+        right: 30mm;
+        bottom: 15mm;
+        background: rgba(255, 255, 255, 0.15);
       }
       .cover-content {
         flex: 1;
         padding: 20mm 22mm 0 22mm;
-        margin-top: -40mm;
+        margin-top: -60mm;
         position: relative;
         z-index: 2;
       }
@@ -377,26 +544,30 @@ export class ToolkitHtmlRendererService {
         text-transform: uppercase;
         letter-spacing: 2pt;
         font-size: 9pt;
-        color: rgba(255, 255, 255, 0.85);
-        margin-bottom: 6mm;
+        color: rgba(255, 255, 255, 0.95);
+        margin-bottom: 8mm;
+        font-weight: 600;
       }
       .cover-title {
-        font-size: 36pt;
-        line-height: 1.05;
-        font-weight: 800;
+        font-family: Georgia, "Times New Roman", "Liberation Serif", serif;
+        font-size: 42pt;
+        line-height: 1.02;
+        font-weight: 700;
         color: #ffffff;
-        letter-spacing: -0.5pt;
-        margin-bottom: 8mm;
+        letter-spacing: -1pt;
+        margin-bottom: 10mm;
+        text-shadow: 0 2mm 6mm rgba(0, 0, 0, 0.08);
       }
       .cover-subtitle {
         font-size: 13pt;
-        line-height: 1.5;
+        line-height: 1.55;
         color: var(--ink);
-        max-width: 140mm;
-        margin-bottom: 16mm;
+        max-width: 150mm;
+        margin-bottom: 18mm;
+        font-weight: 400;
       }
       .cover-meta {
-        margin-bottom: 12mm;
+        margin-bottom: 14mm;
       }
       .cover-prepared {
         font-size: 12pt;
@@ -404,6 +575,7 @@ export class ToolkitHtmlRendererService {
       }
       .cover-prepared strong {
         color: var(--accent-dark);
+        font-size: 14pt;
       }
       .cover-date {
         font-size: 10pt;
@@ -423,7 +595,7 @@ export class ToolkitHtmlRendererService {
         background: #ffffff;
         border: 1px solid var(--line);
         border-radius: 4mm;
-        box-shadow: 0 1mm 3mm rgba(12, 9, 2, 0.04);
+        box-shadow: 0 2mm 5mm rgba(12, 9, 2, 0.06);
       }
       .badge-label {
         font-size: 7.5pt;
@@ -461,7 +633,8 @@ export class ToolkitHtmlRendererService {
         font-variant-numeric: tabular-nums;
       }
       .section-title {
-        font-size: 22pt;
+        font-family: Georgia, "Times New Roman", "Liberation Serif", serif;
+        font-size: 24pt;
         font-weight: 700;
         color: var(--ink);
         line-height: 1.1;
@@ -472,6 +645,85 @@ export class ToolkitHtmlRendererService {
         margin-top: 1mm;
       }
 
+      /* ----- Stats page ----- */
+      .stats-intro {
+        margin-bottom: 8mm;
+        font-size: 11pt;
+        line-height: 1.6;
+        color: var(--ink);
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5mm;
+        margin-bottom: 10mm;
+      }
+      .stat-card {
+        padding: 6mm 7mm;
+        background: linear-gradient(135deg, #ffffff 0%, var(--accent-soft) 100%);
+        border: 1px solid var(--line);
+        border-radius: 4mm;
+        page-break-inside: avoid;
+        box-shadow: 0 1mm 4mm rgba(12, 9, 2, 0.04);
+      }
+      .stat-card.highlight {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      }
+      .stat-card.highlight .stat-number,
+      .stat-card.highlight .stat-label {
+        color: #ffffff;
+      }
+      .stat-number {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 42pt;
+        font-weight: 700;
+        color: var(--accent-dark);
+        line-height: 1;
+        margin-bottom: 3mm;
+      }
+      .stat-percent {
+        font-size: 24pt;
+        margin-left: 1mm;
+      }
+      .stat-label {
+        font-size: 10pt;
+        line-height: 1.45;
+        color: var(--ink);
+      }
+      .stats-promise {
+        padding: 6mm 7mm;
+        background: var(--bg-soft);
+        border-left: 4px solid var(--accent);
+        border-radius: 2mm;
+        page-break-inside: avoid;
+      }
+      .stats-promise-title {
+        font-size: 12pt;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 4mm;
+      }
+      .stats-promise-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 3mm;
+      }
+      .stats-promise-list li {
+        font-size: 10pt;
+        line-height: 1.55;
+        color: var(--ink);
+        padding-left: 6mm;
+        position: relative;
+      }
+      .stats-promise-list li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-weight: 700;
+      }
+
       /* ----- Cheatsheet ----- */
       .category {
         margin-bottom: 8mm;
@@ -480,10 +732,10 @@ export class ToolkitHtmlRendererService {
         font-size: 11pt;
         text-transform: uppercase;
         letter-spacing: 1pt;
-        color: var(--accent-dark);
         margin-bottom: 4mm;
         padding-left: 3mm;
         border-left: 3px solid var(--accent);
+        font-weight: 700;
       }
       .tool-grid {
         display: grid;
@@ -496,13 +748,15 @@ export class ToolkitHtmlRendererService {
         border: 1px solid var(--line);
         border-radius: 3mm;
         page-break-inside: avoid;
+        display: flex;
+        flex-direction: column;
+        gap: 2mm;
       }
       .tool-card-header {
         display: flex;
         justify-content: space-between;
         align-items: baseline;
         gap: 3mm;
-        margin-bottom: 2mm;
       }
       .tool-name {
         font-size: 11pt;
@@ -510,31 +764,39 @@ export class ToolkitHtmlRendererService {
         color: var(--ink);
       }
       .tool-price {
-        font-size: 8.5pt;
+        font-size: 7.5pt;
         font-weight: 600;
         color: var(--accent-dark);
         background: var(--accent-soft);
         padding: 0.5mm 2mm;
         border-radius: 2mm;
         white-space: nowrap;
+        text-align: right;
       }
       .tool-tip {
         font-size: 9pt;
         line-height: 1.45;
+        color: var(--ink);
+      }
+      .tool-decision {
+        font-size: 8.5pt;
+        line-height: 1.4;
         color: var(--muted);
-        margin-bottom: 3mm;
+        font-style: italic;
       }
       .tool-card-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 2mm;
+        margin-top: 1mm;
       }
       .tool-link {
         font-size: 8.5pt;
         color: var(--accent-dark);
         text-decoration: none;
         word-break: break-all;
+        font-weight: 500;
       }
       .chip {
         font-size: 7.5pt;
@@ -563,34 +825,39 @@ export class ToolkitHtmlRendererService {
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 3mm;
-        border-left: 3mm solid var(--accent);
+        border-left: 4mm solid var(--accent);
         page-break-inside: avoid;
       }
       .prompt-header {
         margin-bottom: 3mm;
       }
-      .prompt-title {
-        font-size: 12pt;
-        font-weight: 700;
-        color: var(--ink);
-        margin-bottom: 2mm;
-      }
       .prompt-pills {
         display: flex;
         flex-wrap: wrap;
         gap: 2mm;
+        margin-bottom: 2mm;
+      }
+      .prompt-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 14pt;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 2mm;
+        line-height: 1.2;
+      }
+      .prompt-description {
+        font-size: 9.5pt;
+        line-height: 1.5;
+        color: var(--muted);
+        margin-bottom: 3mm;
       }
       .pill {
-        font-size: 7.5pt;
-        font-weight: 600;
-        padding: 0.5mm 2.5mm;
+        font-size: 7pt;
+        font-weight: 700;
+        padding: 0.8mm 2.5mm;
         border-radius: 10mm;
         text-transform: uppercase;
         letter-spacing: 0.5pt;
-      }
-      .pill-category {
-        background: var(--accent-soft);
-        color: var(--accent-dark);
       }
       .pill-level {
         background: #fff4d6;
@@ -601,8 +868,8 @@ export class ToolkitHtmlRendererService {
         color: #3730a3;
       }
       .prompt-code {
-        font-family: "SF Mono", "Cascadia Code", "Liberation Mono", Menlo, monospace;
-        font-size: 9pt;
+        font-family: "SF Mono", "Cascadia Code", "Liberation Mono", Menlo, Consolas, monospace;
+        font-size: 8.5pt;
         line-height: 1.55;
         color: var(--ink);
         background: #ffffff;
@@ -611,6 +878,49 @@ export class ToolkitHtmlRendererService {
         border: 1px solid var(--line);
         white-space: pre-wrap;
         word-wrap: break-word;
+      }
+      .prompt-example {
+        margin-top: 3mm;
+        padding: 3mm 4mm;
+        background: var(--blue-bg);
+        border-radius: 2mm;
+        border-left: 2px solid var(--blue-ink);
+      }
+      .prompt-example-label {
+        font-size: 7pt;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6pt;
+        color: var(--blue-ink);
+        display: block;
+        margin-bottom: 1mm;
+      }
+      .prompt-example p {
+        font-size: 8.5pt;
+        line-height: 1.5;
+        color: var(--ink);
+        font-style: italic;
+      }
+      .prompt-tip {
+        margin-top: 2mm;
+        padding: 3mm 4mm;
+        background: var(--yellow-bg);
+        border-radius: 2mm;
+        border-left: 2px solid var(--yellow-ink);
+      }
+      .prompt-tip-label {
+        font-size: 7pt;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6pt;
+        color: var(--yellow-ink);
+        display: block;
+        margin-bottom: 1mm;
+      }
+      .prompt-tip p {
+        font-size: 8.5pt;
+        line-height: 1.5;
+        color: var(--ink);
       }
 
       /* ----- Workflows ----- */
@@ -632,7 +942,8 @@ export class ToolkitHtmlRendererService {
         border-bottom: 1px solid var(--line);
       }
       .workflow-title {
-        font-size: 13pt;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 14pt;
         font-weight: 700;
         color: var(--ink);
         margin-bottom: 2mm;
@@ -641,6 +952,7 @@ export class ToolkitHtmlRendererService {
         font-size: 9.5pt;
         color: var(--muted);
         margin-bottom: 3mm;
+        line-height: 1.5;
       }
       .workflow-meta {
         display: flex;
@@ -671,16 +983,17 @@ export class ToolkitHtmlRendererService {
       }
       .step-number {
         flex-shrink: 0;
-        width: 6mm;
-        height: 6mm;
+        width: 7mm;
+        height: 7mm;
         border-radius: 50%;
-        background: var(--accent);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
         color: #ffffff;
-        font-size: 9pt;
+        font-size: 10pt;
         font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 1mm 2mm rgba(45, 133, 118, 0.25);
       }
       .step-content {
         flex: 1;
@@ -694,9 +1007,10 @@ export class ToolkitHtmlRendererService {
         font-size: 8.5pt;
         color: var(--muted);
         margin-top: 0.5mm;
+        line-height: 1.45;
       }
       .step-tool {
-        font-weight: 600;
+        font-weight: 700;
         color: var(--accent-dark);
       }
       .workflow-tools {
@@ -707,9 +1021,9 @@ export class ToolkitHtmlRendererService {
         border-top: 1px solid var(--line);
       }
       .tool-badge {
-        font-size: 8pt;
-        font-weight: 500;
-        padding: 0.5mm 2.5mm;
+        font-size: 7.5pt;
+        font-weight: 600;
+        padding: 0.8mm 2.5mm;
         background: #ffffff;
         border: 1px solid var(--line);
         border-radius: 10mm;
@@ -743,12 +1057,12 @@ export class ToolkitHtmlRendererService {
         font-weight: 700;
         color: var(--ink);
         flex: 1;
+        line-height: 1.25;
       }
       .platform-badge {
-        font-size: 7.5pt;
-        font-weight: 600;
-        padding: 0.5mm 2mm;
-        background: var(--accent);
+        font-size: 7pt;
+        font-weight: 700;
+        padding: 0.8mm 2.5mm;
         color: #ffffff;
         border-radius: 2mm;
         text-transform: uppercase;
@@ -772,19 +1086,24 @@ export class ToolkitHtmlRendererService {
       }
       .template-link {
         font-size: 9pt;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--accent-dark);
         text-decoration: none;
       }
       .template-budget {
         font-size: 8pt;
         color: var(--muted);
+        font-weight: 500;
+      }
+      .template-budget-free {
+        color: var(--accent-dark);
+        font-weight: 700;
       }
 
       /* ----- Generated prompt ----- */
       .generated-box {
         padding: 6mm;
-        background: var(--accent-soft);
+        background: linear-gradient(135deg, var(--accent-soft) 0%, #ffffff 100%);
         border: 1px solid var(--accent);
         border-radius: 3mm;
       }

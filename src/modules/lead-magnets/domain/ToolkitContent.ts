@@ -16,6 +16,12 @@ export interface PromptEntry {
   level: 'debutant' | 'intermediaire' | 'avance';
   prompt: string;
   tool: string;
+  /** Description courte de ce que le prompt produit (1 phrase). Optionnel pour retrocompat. */
+  description?: string;
+  /** Exemple concret d utilisation (variables remplies). Optionnel pour retrocompat. */
+  example?: string;
+  /** Conseil d iteration pour ameliorer la sortie. Optionnel pour retrocompat. */
+  tip?: string;
 }
 
 /** Etape individuelle dans un workflow automatise. */

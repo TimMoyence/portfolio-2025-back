@@ -109,6 +109,47 @@ describe('ToolkitHtmlRendererService', () => {
       expect(html).toContain('Ecris un message pour');
     });
 
+    it('rend la description, l exemple et l astuce quand ils sont fournis', () => {
+      const html = service.render(
+        buildContent({
+          prompts: [
+            {
+              category: 'Prospection',
+              title: 'Message enrichi',
+              level: 'debutant',
+              prompt: 'Ecris un message',
+              tool: 'Claude',
+              description: 'Produit un message court et humain.',
+              example: 'Exemple : cible=consultant, signal=post LinkedIn.',
+              tip: 'Iterez en changeant uniquement la variable signal.',
+            },
+          ],
+        }),
+      );
+      expect(html).toContain('Produit un message court et humain.');
+      expect(html).toContain('Exemple : cible=consultant');
+      expect(html).toContain('Iterez en changeant uniquement');
+      // Les labels des blocs enrichis (labels litteraux dans le template)
+      expect(html).toContain("Cas d'usage");
+      expect(html).toContain("Astuce d'it");
+    });
+
+    it('omet les blocs description / example / tip quand ils sont absents', () => {
+      const html = service.render(buildContent());
+      // Le fixture par defaut ne fournit ni description ni example ni tip
+      // donc les labels litteraux des blocs enrichis ne doivent pas apparaitre.
+      expect(html).not.toContain("Cas d'usage");
+      expect(html).not.toContain("Astuce d'it");
+    });
+
+    it('rend la page stats avec les chiffres cles solopreneurs', () => {
+      const html = service.render(buildContent());
+      expect(html).toContain('Pourquoi ce guide');
+      expect(html).toContain('74');
+      expect(html).toContain('64');
+      expect(html).toContain('91');
+    });
+
     it('rend les workflows avec etapes numerotees', () => {
       const html = service.render(buildContent());
       expect(html).toContain('Prospection automatisee');

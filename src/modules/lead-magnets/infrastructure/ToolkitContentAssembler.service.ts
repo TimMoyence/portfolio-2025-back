@@ -85,6 +85,9 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
       level: p.level,
       prompt: p.prompt,
       tool: p.tool,
+      description: p.description,
+      example: p.example,
+      tip: p.tip,
     }));
   }
 
