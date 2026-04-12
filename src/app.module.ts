@@ -10,6 +10,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthModule } from './common/interfaces/health/health.module';
 import { MetricsModule } from './common/interfaces/metrics/metrics.module';
+import { SecurityModule } from './common/interfaces/security/security.module';
 import { CorrelationIdMiddleware } from './common/interfaces/middleware/correlation-id.middleware';
 import { validateEnv } from './config/env.validation';
 
@@ -149,6 +150,7 @@ const runtimeContexts = resolveRuntimeContexts();
     }),
     ...runtimeContexts.runtimeModules,
     HealthModule,
+    SecurityModule,
     MetricsModule,
   ],
   controllers: [AppController],
