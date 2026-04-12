@@ -39,8 +39,16 @@ export class ToolkitPdfGeneratorService
       const pdf = await page.pdf({
         format: 'A4',
         printBackground: true,
-        margin: { top: '0', bottom: '0', left: '0', right: '0' },
-        preferCSSPageSize: true,
+        // Marges physiques uniformes appliquees a TOUTES les pages physiques.
+        // La cover utilise position: absolute pour deborder ces marges et
+        // remplir entierement la premiere page.
+        margin: {
+          top: '28mm',
+          bottom: '24mm',
+          left: '22mm',
+          right: '22mm',
+        },
+        preferCSSPageSize: false,
       });
       return Buffer.from(pdf);
     } finally {

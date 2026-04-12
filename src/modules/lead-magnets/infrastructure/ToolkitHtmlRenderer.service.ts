@@ -227,7 +227,7 @@ export class ToolkitHtmlRendererService {
   /** Carte individuelle pour un outil dans la cheatsheet. */
   private renderToolCard(
     tool: CheatsheetEntry,
-    palette: { bg: string; text: string; border: string },
+    _palette: { bg: string; text: string; border: string },
     soloCard = false,
   ): string {
     const used = tool.alreadyUsed
@@ -238,8 +238,10 @@ export class ToolkitHtmlRendererService {
       ? `<p class="tool-decision">${this.escape(tool.decision)}</p>`
       : '';
     // Une carte solo s etend sur toute la largeur de la grille 2 colonnes.
-    const soloStyle = soloCard ? ' grid-column: 1 / -1;' : '';
-    return `<article class="tool-card" style="border-top: 3px solid ${palette.border};${soloStyle}">
+    // Pas de border-top colore : la couleur de categorie est portee uniquement
+    // par le titre de categorie pour eviter "couleurs sur couleurs".
+    const soloStyle = soloCard ? 'style="grid-column: 1 / -1;"' : '';
+    return `<article class="tool-card" ${soloStyle}>
       <header class="tool-card-header">
         <h4 class="tool-name">${this.escape(tool.tool)}</h4>
         <span class="tool-price">${this.escape(tool.price)}</span>
@@ -392,14 +394,14 @@ export class ToolkitHtmlRendererService {
     </header>`;
   }
 
+  /**
+   * Footer de page neutre. Retourne une chaine vide pour eviter
+   * les problemes de positionnement absolu apres suppression du
+   * min-height: 297mm sur .page (le contenu doit pouvoir flow naturellement).
+   * Le footer est rendu via la marge @page de Puppeteer si necessaire.
+   */
   private pageFooter(): string {
-    return `<footer class="page-footer">
-      <span>asilidesign.fr/formations</span>
-      <span>•</span>
-      <span>Guide IA Solopreneurs 2026</span>
-      <span>•</span>
-      <span>asilidesign.fr/contact</span>
-    </footer>`;
+    return '';
   }
 
   private levelLabel(level: string): string {
@@ -459,10 +461,9 @@ export class ToolkitHtmlRendererService {
   /** Styles CSS embarques (variables, grille, typographie). */
   private css(): string {
     return `
-      @page {
-        size: A4;
-        margin: 0;
-      }
+      /* Pas de @page : les marges sont gerees par Puppeteer en options.
+         Cela garantit que les marges sont appliquees sur TOUTES les pages
+         physiques, y compris celles creees par overflow naturel. */
       :root {
         --accent: ${this.accent};
         --accent-soft: #e7f6f3;
@@ -488,12 +489,28 @@ export class ToolkitHtmlRendererService {
         -webkit-font-smoothing: antialiased;
       }
       .page {
-        width: 210mm;
-        min-height: 297mm;
-        padding: 28mm 22mm 28mm 22mm;
-        page-break-after: always;
         position: relative;
         background: var(--bg);
+      }
+      /* Seule la cover force un saut de page apres elle. Les sections
+         suivantes coulent naturellement, separees visuellement par leur
+         section-header (gros numero + titre serif + ligne accent). */
+      .cover.page {
+        page-break-after: always;
+      }
+      /* Espace de separation entre sections quand elles s enchainent
+         sur la meme page. */
+      .page.section + .page.section {
+        margin-top: 16mm;
+      }
+      .cover.page {
+        /* La cover deborde les marges Puppeteer en utilisant des marges
+           negatives equivalentes aux marges physiques de la page (28/24/22/22).
+           Resultat : la cover prend bien toute la premiere page A4. */
+        margin: -28mm -22mm -24mm -22mm;
+        width: 210mm;
+        height: 297mm;
+        padding: 0;
       }
       .page:last-child {
         page-break-after: auto;
@@ -502,7 +519,6 @@ export class ToolkitHtmlRendererService {
       /* ----- Cover ----- */
       .cover {
         padding: 0;
-        min-height: 297mm;
         display: flex;
         flex-direction: column;
         position: relative;
@@ -598,28 +614,27 @@ export class ToolkitHtmlRendererService {
       .badges {
         display: flex;
         flex-wrap: wrap;
-        gap: 4mm;
+        gap: 3mm;
       }
       .badge {
         display: inline-flex;
-        flex-direction: column;
-        gap: 1mm;
-        padding: 4mm 6mm;
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 4mm;
-        box-shadow: 0 2mm 5mm rgba(0, 0, 0, 0.12);
+        align-items: baseline;
+        gap: 2mm;
+        padding: 2.5mm 5mm;
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 99mm;
       }
       .badge-label {
         font-size: 7.5pt;
         text-transform: uppercase;
         letter-spacing: 0.8pt;
-        color: var(--muted);
+        color: rgba(255, 255, 255, 0.7);
       }
       .badge-value {
-        font-size: 11pt;
+        font-size: 10pt;
         font-weight: 700;
-        color: var(--accent-dark);
+        color: #ffffff;
       }
       .cover-footer {
         position: relative;
@@ -639,6 +654,8 @@ export class ToolkitHtmlRendererService {
         margin-bottom: 12mm;
         padding-bottom: 6mm;
         border-bottom: 2px solid var(--accent);
+        page-break-after: avoid;
+        page-break-inside: avoid;
       }
       .section-number {
         font-size: 28pt;
@@ -675,11 +692,10 @@ export class ToolkitHtmlRendererService {
       }
       .stat-card {
         padding: 6mm 7mm;
-        background: linear-gradient(135deg, #ffffff 0%, var(--accent-soft) 100%);
+        background: transparent;
         border: 1px solid var(--line);
         border-radius: 4mm;
         page-break-inside: avoid;
-        box-shadow: 0 1mm 4mm rgba(12, 9, 2, 0.04);
       }
       .stat-card.highlight {
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
@@ -707,7 +723,8 @@ export class ToolkitHtmlRendererService {
       }
       .stats-promise {
         padding: 6mm 7mm;
-        background: var(--bg-soft);
+        background: transparent;
+        border: 1px solid var(--line);
         border-left: 4px solid var(--accent);
         border-radius: 2mm;
         page-break-inside: avoid;
@@ -742,7 +759,6 @@ export class ToolkitHtmlRendererService {
       /* ----- Cheatsheet ----- */
       .category {
         margin-bottom: 10mm;
-        page-break-inside: avoid;
       }
       .category-title {
         font-size: 11pt;
@@ -752,6 +768,7 @@ export class ToolkitHtmlRendererService {
         padding-left: 3mm;
         border-left: 3px solid var(--accent);
         font-weight: 700;
+        page-break-after: avoid;
       }
       .tool-grid {
         display: grid;
@@ -760,7 +777,7 @@ export class ToolkitHtmlRendererService {
       }
       .tool-card {
         padding: 5mm 6mm;
-        background: var(--bg-soft);
+        background: transparent;
         border: 1px solid var(--line);
         border-radius: 3mm;
         page-break-inside: avoid;
@@ -838,7 +855,7 @@ export class ToolkitHtmlRendererService {
       }
       .prompt-card {
         padding: 7mm 8mm;
-        background: var(--bg-soft);
+        background: transparent;
         border: 1px solid var(--line);
         border-radius: 3mm;
         border-left: 4mm solid var(--accent);
@@ -890,7 +907,7 @@ export class ToolkitHtmlRendererService {
         font-size: 8.5pt;
         line-height: 1.6;
         color: var(--ink);
-        background: #ffffff;
+        background: var(--bg-soft);
         padding: 6mm 7mm;
         border-radius: 2mm;
         border: 1px solid var(--line);
@@ -947,7 +964,7 @@ export class ToolkitHtmlRendererService {
       }
       .workflow-card {
         padding: 6mm 7mm;
-        background: var(--bg-soft);
+        background: transparent;
         border: 1px solid var(--line);
         border-radius: 3mm;
         page-break-inside: avoid;
@@ -1059,7 +1076,7 @@ export class ToolkitHtmlRendererService {
       }
       .template-card {
         padding: 6mm 7mm;
-        background: var(--bg-soft);
+        background: transparent;
         border: 1px solid var(--line);
         border-radius: 3mm;
         page-break-inside: avoid;
@@ -1124,7 +1141,7 @@ export class ToolkitHtmlRendererService {
       /* ----- Generated prompt ----- */
       .generated-box {
         padding: 6mm;
-        background: linear-gradient(135deg, var(--accent-soft) 0%, #ffffff 100%);
+        background: transparent;
         border: 1px solid var(--accent);
         border-radius: 3mm;
       }
@@ -1137,20 +1154,6 @@ export class ToolkitHtmlRendererService {
         word-wrap: break-word;
       }
 
-      /* ----- Page footer ----- */
-      .page-footer {
-        position: absolute;
-        bottom: 14mm;
-        left: 22mm;
-        right: 22mm;
-        display: flex;
-        justify-content: center;
-        gap: 3mm;
-        font-size: 8pt;
-        color: var(--muted);
-        padding-top: 4mm;
-        border-top: 1px solid var(--line);
-      }
     `;
   }
 }
