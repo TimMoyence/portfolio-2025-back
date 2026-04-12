@@ -11,6 +11,7 @@ import {
 import { LeadMagnetMailerService } from './infrastructure/LeadMagnetMailer.service';
 import { LeadMagnetRequestRepositoryTypeORM } from './infrastructure/LeadMagnetRequest.repository.typeorm';
 import { ToolkitContentAssemblerService } from './infrastructure/ToolkitContentAssembler.service';
+import { ToolkitHtmlRendererService } from './infrastructure/ToolkitHtmlRenderer.service';
 import { ToolkitPdfGeneratorService } from './infrastructure/ToolkitPdfGenerator.service';
 import { LeadMagnetRequestEntity } from './infrastructure/entities/LeadMagnetRequest.entity';
 import { LeadMagnetsController } from './interfaces/LeadMagnets.controller';
@@ -29,6 +30,7 @@ import { LeadMagnetsController } from './interfaces/LeadMagnets.controller';
       provide: LEAD_MAGNET_NOTIFIER,
       useClass: LeadMagnetMailerService,
     },
+    ToolkitHtmlRendererService,
     {
       provide: TOOLKIT_PDF_GENERATOR,
       useClass: ToolkitPdfGeneratorService,

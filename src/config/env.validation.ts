@@ -98,8 +98,16 @@ const envSchema = z.object({
   SMTP_PASS: z.string().optional(),
   SMTP_SECURE: z.string().default('false'),
   SMTP_FROM: z.string().optional(),
+  SMTP_REPLY_TO: z.string().optional(),
   CONTACT_NOTIFICATION_TO: z.string().optional(),
   AUDIT_REPORT_TO: z.string().optional(),
+
+  // --- Frontend / liens externes ---
+  FRONTEND_URL: z.string().optional(),
+
+  // --- Puppeteer (optionnel, surcharge le binaire Chromium) ---
+  PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),
 
   // --- Weather (optionnel) ---
   OPENWEATHERMAP_API_KEY: z.string().optional(),
