@@ -490,7 +490,7 @@ export class ToolkitHtmlRendererService {
       .page {
         width: 210mm;
         min-height: 297mm;
-        padding: 25mm 22mm 22mm 22mm;
+        padding: 28mm 22mm 28mm 22mm;
         page-break-after: always;
         position: relative;
         background: var(--bg);
@@ -742,12 +742,13 @@ export class ToolkitHtmlRendererService {
       /* ----- Cheatsheet ----- */
       .category {
         margin-bottom: 10mm;
+        page-break-inside: avoid;
       }
       .category-title {
         font-size: 11pt;
         text-transform: uppercase;
         letter-spacing: 1pt;
-        margin-bottom: 4mm;
+        margin-bottom: 5mm;
         padding-left: 3mm;
         border-left: 3px solid var(--accent);
         font-weight: 700;
@@ -836,35 +837,37 @@ export class ToolkitHtmlRendererService {
         gap: 8mm;
       }
       .prompt-card {
-        padding: 6mm 7mm;
+        padding: 7mm 8mm;
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 3mm;
         border-left: 4mm solid var(--accent);
         page-break-inside: avoid;
+        display: flex;
+        flex-direction: column;
+        gap: 5mm;
       }
       .prompt-header {
-        margin-bottom: 3mm;
+        display: flex;
+        flex-direction: column;
+        gap: 3mm;
       }
       .prompt-pills {
         display: flex;
         flex-wrap: wrap;
         gap: 2mm;
-        margin-bottom: 2mm;
       }
       .prompt-title {
         font-family: Georgia, "Times New Roman", serif;
         font-size: 14pt;
         font-weight: 700;
         color: var(--ink);
-        margin-bottom: 2mm;
         line-height: 1.2;
       }
       .prompt-description {
         font-size: 9.5pt;
-        line-height: 1.5;
+        line-height: 1.55;
         color: var(--muted);
-        margin-bottom: 3mm;
       }
       .pill {
         font-size: 7pt;
@@ -885,18 +888,17 @@ export class ToolkitHtmlRendererService {
       .prompt-code {
         font-family: "SF Mono", "Cascadia Code", "Liberation Mono", Menlo, Consolas, monospace;
         font-size: 8.5pt;
-        line-height: 1.55;
+        line-height: 1.6;
         color: var(--ink);
         background: #ffffff;
-        padding: 5mm 6mm;
+        padding: 6mm 7mm;
         border-radius: 2mm;
         border: 1px solid var(--line);
         white-space: pre-wrap;
         word-wrap: break-word;
       }
       .prompt-example {
-        margin-top: 4mm;
-        padding: 3mm 4mm;
+        padding: 4mm 5mm;
         background: var(--blue-bg);
         border-radius: 2mm;
         border-left: 2px solid var(--blue-ink);
@@ -908,17 +910,16 @@ export class ToolkitHtmlRendererService {
         letter-spacing: 0.6pt;
         color: var(--blue-ink);
         display: block;
-        margin-bottom: 1mm;
+        margin-bottom: 2mm;
       }
       .prompt-example p {
         font-size: 8.5pt;
-        line-height: 1.5;
+        line-height: 1.55;
         color: var(--ink);
         font-style: italic;
       }
       .prompt-tip {
-        margin-top: 3mm;
-        padding: 3mm 4mm;
+        padding: 4mm 5mm;
         background: var(--yellow-bg);
         border-radius: 2mm;
         border-left: 2px solid var(--yellow-ink);
@@ -930,11 +931,11 @@ export class ToolkitHtmlRendererService {
         letter-spacing: 0.6pt;
         color: var(--yellow-ink);
         display: block;
-        margin-bottom: 1mm;
+        margin-bottom: 2mm;
       }
       .prompt-tip p {
         font-size: 8.5pt;
-        line-height: 1.5;
+        line-height: 1.55;
         color: var(--ink);
       }
 
@@ -1139,7 +1140,7 @@ export class ToolkitHtmlRendererService {
       /* ----- Page footer ----- */
       .page-footer {
         position: absolute;
-        bottom: 10mm;
+        bottom: 14mm;
         left: 22mm;
         right: 22mm;
         display: flex;
