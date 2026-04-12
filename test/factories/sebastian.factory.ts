@@ -1,3 +1,4 @@
+import type { IBadgesEvaluationQueuePort } from '../../src/modules/sebastian/domain/IBadgesEvaluationQueue.port';
 import type { SebastianEntry } from '../../src/modules/sebastian/domain/SebastianEntry';
 import type { SebastianGoal } from '../../src/modules/sebastian/domain/SebastianGoal';
 import type { SebastianBadge } from '../../src/modules/sebastian/domain/SebastianBadge';
@@ -141,6 +142,13 @@ export function createMockSebastianBadgeRepo(): jest.Mocked<ISebastianBadgeRepos
     create: jest.fn(),
     findByUserId: jest.fn(),
     findByUserIdAndKey: jest.fn(),
+  };
+}
+
+/** Cree un mock du port de queue d'evaluation des badges. */
+export function createMockBadgesEvaluationQueue(): jest.Mocked<IBadgesEvaluationQueuePort> {
+  return {
+    enqueue: jest.fn().mockResolvedValue(undefined),
   };
 }
 

@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
+  BADGES_EVALUATION_QUEUE,
+  SEBASTIAN_BADGES_AUTOMATION_CONFIG,
   SEBASTIAN_ENTRY_REPOSITORY,
   SEBASTIAN_GOAL_REPOSITORY,
   SEBASTIAN_BADGE_REPOSITORY,
   TELEGRAM_LINK_REPOSITORY,
   SEBASTIAN_PROFILE_REPOSITORY,
 } from './domain/token';
+import { BadgesEvaluationQueueService } from './infrastructure/automation/badges-evaluation-queue.service';
+import { BadgesEvaluationWorkerService } from './infrastructure/automation/badges-evaluation-worker.service';
+import { loadSebastianBadgesAutomationConfig } from './infrastructure/automation/badges.config';
 import { SebastianEntryEntity } from './infrastructure/entities/SebastianEntry.entity';
 import { SebastianGoalEntity } from './infrastructure/entities/SebastianGoal.entity';
 import { SebastianBadgeEntity } from './infrastructure/entities/SebastianBadge.entity';
@@ -66,6 +71,11 @@ const SEBASTIAN_TELEGRAM_PROVIDERS = [
   TelegramBotService,
 ];
 
+const SEBASTIAN_BADGES_AUTOMATION_PROVIDERS = [
+  BadgesEvaluationQueueService,
+  BadgesEvaluationWorkerService,
+];
+
 /**
  * Module NestJS du domaine Sebastian.
  *
@@ -88,6 +98,7 @@ const SEBASTIAN_TELEGRAM_PROVIDERS = [
   providers: [
     ...SEBASTIAN_USE_CASES,
     ...SEBASTIAN_TELEGRAM_PROVIDERS,
+    ...SEBASTIAN_BADGES_AUTOMATION_PROVIDERS,
     {
       provide: SEBASTIAN_ENTRY_REPOSITORY,
       useClass: SebastianEntryRepositoryTypeORM,
@@ -107,6 +118,14 @@ const SEBASTIAN_TELEGRAM_PROVIDERS = [
     {
       provide: SEBASTIAN_PROFILE_REPOSITORY,
       useClass: SebastianProfileRepositoryTypeORM,
+    },
+    {
+      provide: SEBASTIAN_BADGES_AUTOMATION_CONFIG,
+      useFactory: loadSebastianBadgesAutomationConfig,
+    },
+    {
+      provide: BADGES_EVALUATION_QUEUE,
+      useExisting: BadgesEvaluationQueueService,
     },
   ],
 })

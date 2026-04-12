@@ -1,24 +1,21 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import { AddEntryUseCase } from './AddEntry.useCase';
-import { EvaluateBadgesUseCase } from './EvaluateBadges.useCase';
 import {
   buildSebastianEntry,
+  createMockBadgesEvaluationQueue,
   createMockSebastianEntryRepo,
 } from '../../../../../test/factories/sebastian.factory';
 
 describe('AddEntryUseCase', () => {
   let useCase: AddEntryUseCase;
   let entryRepo: ReturnType<typeof createMockSebastianEntryRepo>;
-  let evaluateBadges: jest.Mocked<Pick<EvaluateBadgesUseCase, 'execute'>>;
+  let badgesQueue: ReturnType<typeof createMockBadgesEvaluationQueue>;
 
   beforeEach(() => {
     entryRepo = createMockSebastianEntryRepo();
-    evaluateBadges = { execute: jest.fn().mockResolvedValue([]) };
-    useCase = new AddEntryUseCase(
-      entryRepo,
-      evaluateBadges as unknown as EvaluateBadgesUseCase,
-    );
+    badgesQueue = createMockBadgesEvaluationQueue();
+    useCase = new AddEntryUseCase(entryRepo, badgesQueue);
   });
 
   it('devrait creer une entree via le domaine et le repository', async () => {
@@ -67,7 +64,7 @@ describe('AddEntryUseCase', () => {
     expect(createdEntry.category).toBe('alcohol');
   });
 
-  it('devrait appeler EvaluateBadges apres la creation', async () => {
+  it('devrait enfiler un job badges apres la creation (au lieu d appeler EvaluateBadges directement)', async () => {
     const entry = buildSebastianEntry();
     entryRepo.create.mockResolvedValue(entry);
 
@@ -78,7 +75,8 @@ describe('AddEntryUseCase', () => {
       date: '2026-03-15',
     });
 
-    expect(evaluateBadges.execute).toHaveBeenCalledWith('user-1');
+    expect(badgesQueue.enqueue).toHaveBeenCalledTimes(1);
+    expect(badgesQueue.enqueue).toHaveBeenCalledWith('user-1');
   });
 
   it('devrait propager consumedAt au domaine', async () => {
@@ -101,10 +99,10 @@ describe('AddEntryUseCase', () => {
     );
   });
 
-  it('ne devrait pas bloquer si EvaluateBadges echoue', async () => {
+  it("ne devrait pas bloquer si l'enqueue badges echoue", async () => {
     const entry = buildSebastianEntry();
     entryRepo.create.mockResolvedValue(entry);
-    evaluateBadges.execute.mockRejectedValue(new Error('badge error'));
+    badgesQueue.enqueue.mockRejectedValue(new Error('redis down'));
 
     const result = await useCase.execute({
       userId: 'user-1',
@@ -114,5 +112,57 @@ describe('AddEntryUseCase', () => {
     });
 
     expect(result).toEqual(entry);
+  });
+
+  it('devrait logger le nom, le message et un extrait de stack quand l enqueue rejette une Error', async () => {
+    const entry = buildSebastianEntry();
+    entryRepo.create.mockResolvedValue(entry);
+    const enqueueError = new Error('boom: queue connection refused');
+    enqueueError.name = 'QueueEnqueueError';
+    badgesQueue.enqueue.mockRejectedValue(enqueueError);
+    const warnSpy = jest
+      .spyOn(useCase['logger'], 'warn')
+      .mockImplementation(() => undefined);
+
+    await useCase.execute({
+      userId: 'user-42',
+      category: 'coffee',
+      quantity: 2,
+      date: '2026-03-15',
+    });
+
+    // Laisser la microtask fire-and-forget se resoudre.
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    const logged = String(warnSpy.mock.calls[0][0]);
+    expect(logged).toContain('user-42');
+    expect(logged).toContain('QueueEnqueueError');
+    expect(logged).toContain('boom: queue connection refused');
+    expect(logged).toContain('stack=');
+  });
+
+  it('devrait logger la forme string quand l enqueue rejette une valeur non-Error', async () => {
+    const entry = buildSebastianEntry();
+    entryRepo.create.mockResolvedValue(entry);
+    badgesQueue.enqueue.mockRejectedValue('plain string failure');
+    const warnSpy = jest
+      .spyOn(useCase['logger'], 'warn')
+      .mockImplementation(() => undefined);
+
+    await useCase.execute({
+      userId: 'user-99',
+      category: 'coffee',
+      quantity: 2,
+      date: '2026-03-15',
+    });
+
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    const logged = String(warnSpy.mock.calls[0][0]);
+    expect(logged).toContain('user-99');
+    expect(logged).toContain('plain string failure');
+    expect(logged).not.toContain('stack=');
   });
 });

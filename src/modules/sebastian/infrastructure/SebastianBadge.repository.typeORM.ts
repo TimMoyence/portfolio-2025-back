@@ -13,9 +13,42 @@ export class SebastianBadgeRepositoryTypeORM implements ISebastianBadgeRepositor
     private readonly repo: Repository<SebastianBadgeEntity>,
   ) {}
 
+  /**
+   * Persiste un badge de maniere idempotente.
+   *
+   * En cas de violation de la contrainte unique `(user_id, badge_key)`
+   * (race condition entre deux evaluations concurrentes), l'insertion
+   * est silencieusement ignoree et le badge existant est retourne. Cela
+   * garantit qu'un meme utilisateur ne puisse jamais avoir deux instances
+   * d'un meme badge, tout en absorbant les inserts concurrents.
+   */
   async create(data: SebastianBadge): Promise<SebastianBadge> {
-    const entity = await this.repo.save(data as Partial<SebastianBadgeEntity>);
-    return this.toDomain(entity);
+    const result = await this.repo
+      .createQueryBuilder()
+      .insert()
+      .into(SebastianBadgeEntity)
+      .values(data as Partial<SebastianBadgeEntity>)
+      .orIgnore()
+      .returning('*')
+      .execute();
+
+    const rawRows = (result.raw as SebastianBadgeEntity[] | undefined) ?? [];
+    const inserted: SebastianBadgeEntity | undefined = rawRows[0];
+    if (inserted) {
+      return this.toDomain(inserted);
+    }
+
+    // Pas d'insertion : un badge existait deja — on retourne l'existant.
+    const existing = await this.repo.findOne({
+      where: { userId: data.userId, badgeKey: data.badgeKey },
+    });
+    if (!existing) {
+      // Cas theoriquement impossible (insert ignore sans conflit reel).
+      throw new Error(
+        `SebastianBadgeRepository: create returned no row and findOne failed for (${data.userId}, ${data.badgeKey})`,
+      );
+    }
+    return this.toDomain(existing);
   }
 
   async findByUserId(userId: string): Promise<SebastianBadge[]> {

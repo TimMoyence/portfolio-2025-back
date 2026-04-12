@@ -72,6 +72,37 @@ const envSchema = z.object({
   AUDIT_QUEUE_BACKOFF_MS: z.coerce.number().int().positive().default(2000),
   AUDIT_JOB_TIMEOUT_MS: z.coerce.number().int().positive().default(180000),
 
+  // --- Sebastian badges queue (optionnel) ---
+  SEBASTIAN_BADGES_QUEUE_ENABLED: z.string().default('true'),
+  SEBASTIAN_BADGES_QUEUE_NAME: z
+    .string()
+    .default('sebastian_badges_evaluation'),
+  SEBASTIAN_BADGES_QUEUE_CONCURRENCY: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(1),
+  SEBASTIAN_BADGES_QUEUE_ATTEMPTS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(3),
+  SEBASTIAN_BADGES_QUEUE_BACKOFF_MS: z.coerce
+    .number()
+    .int()
+    .nonnegative()
+    .default(500),
+  SEBASTIAN_BADGES_JOB_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(30_000),
+  SEBASTIAN_BADGES_DEDUPE_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .nonnegative()
+    .default(5_000),
+
   // --- Audit fetch (optionnel) ---
   AUDIT_FETCH_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
   AUDIT_MAX_REDIRECTS: z.coerce.number().int().nonnegative().optional(),
@@ -117,6 +148,19 @@ const envSchema = z.object({
 
   // --- Metrics (optionnel) ---
   METRICS_TOKEN: z.string().optional(),
+
+  // --- Security (optionnel) ---
+  SECURITY_SUSPICIOUS_SCORE_THRESHOLD: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(25),
+  SECURITY_REPORT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(24 * 60 * 60 * 1000),
+  SECURITY_TOP_EVENTS_LIMIT: z.coerce.number().int().positive().default(10),
 
   // --- Runtime contexts (optionnel) ---
   ENABLE_LEGACY_CMS_CONTEXTS: z.string().default('false'),
