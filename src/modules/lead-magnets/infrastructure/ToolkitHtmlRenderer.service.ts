@@ -204,8 +204,11 @@ export class ToolkitHtmlRendererService {
     const groups = Array.from(byCategory.entries())
       .map(([category, tools]) => {
         const palette = this.paletteFor(category);
+        // Si la categorie ne contient qu un seul outil, la carte prend toute
+        // la largeur de la grille pour eviter une colonne orpheline.
+        const soloCard = tools.length === 1;
         const cards = tools
-          .map((tool) => this.renderToolCard(tool, palette))
+          .map((tool) => this.renderToolCard(tool, palette, soloCard))
           .join('');
         return `<div class="category">
           <h3 class="category-title" style="color: ${palette.text}; border-left-color: ${palette.border};">${this.escape(category)}</h3>
@@ -225,6 +228,7 @@ export class ToolkitHtmlRendererService {
   private renderToolCard(
     tool: CheatsheetEntry,
     palette: { bg: string; text: string; border: string },
+    soloCard = false,
   ): string {
     const used = tool.alreadyUsed
       ? '<span class="chip chip-used">Déjà utilisé</span>'
@@ -233,7 +237,9 @@ export class ToolkitHtmlRendererService {
     const decision = tool.decision
       ? `<p class="tool-decision">${this.escape(tool.decision)}</p>`
       : '';
-    return `<article class="tool-card" style="border-top: 3px solid ${palette.border};">
+    // Une carte solo s etend sur toute la largeur de la grille 2 colonnes.
+    const soloStyle = soloCard ? ' grid-column: 1 / -1;' : '';
+    return `<article class="tool-card" style="border-top: 3px solid ${palette.border};${soloStyle}">
       <header class="tool-card-header">
         <h4 class="tool-name">${this.escape(tool.tool)}</h4>
         <span class="tool-price">${this.escape(tool.price)}</span>
@@ -484,7 +490,7 @@ export class ToolkitHtmlRendererService {
       .page {
         width: 210mm;
         min-height: 297mm;
-        padding: 22mm 20mm 18mm 20mm;
+        padding: 25mm 22mm 22mm 22mm;
         page-break-after: always;
         position: relative;
         background: var(--bg);
@@ -496,17 +502,24 @@ export class ToolkitHtmlRendererService {
       /* ----- Cover ----- */
       .cover {
         padding: 0;
+        min-height: 297mm;
         display: flex;
         flex-direction: column;
-        background: linear-gradient(160deg, #ffffff 0%, var(--accent-soft) 40%, #fff 100%);
-      }
-      .cover-gradient {
-        height: 110mm;
-        background:
-          radial-gradient(circle at 20% 30%, rgba(255,255,255,0.2) 0%, transparent 50%),
-          linear-gradient(135deg, var(--accent) 0%, #3a9a8a 50%, var(--accent-dark) 100%);
         position: relative;
         overflow: hidden;
+        background:
+          radial-gradient(circle at 20% 30%, rgba(255,255,255,0.18) 0%, transparent 55%),
+          radial-gradient(circle at 80% 80%, rgba(255,255,255,0.10) 0%, transparent 55%),
+          linear-gradient(135deg, var(--accent) 0%, #3a9a8a 50%, var(--accent-dark) 100%);
+      }
+      /* Le bloc cover-gradient est un conteneur absolu pour les formes
+         decoratives, mais n est plus responsable du fond lui-meme. */
+      .cover-gradient {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 1;
       }
       .cover-shape {
         position: absolute;
@@ -514,29 +527,28 @@ export class ToolkitHtmlRendererService {
         background: rgba(255, 255, 255, 0.08);
       }
       .cover-shape-1 {
-        width: 120mm;
-        height: 120mm;
-        right: -30mm;
-        top: -40mm;
+        width: 140mm;
+        height: 140mm;
+        right: -40mm;
+        top: -50mm;
       }
       .cover-shape-2 {
-        width: 60mm;
-        height: 60mm;
-        left: -20mm;
-        bottom: -25mm;
-        background: rgba(255, 255, 255, 0.12);
+        width: 90mm;
+        height: 90mm;
+        left: -30mm;
+        bottom: 60mm;
+        background: rgba(255, 255, 255, 0.10);
       }
       .cover-shape-3 {
-        width: 25mm;
-        height: 25mm;
-        right: 30mm;
-        bottom: 15mm;
-        background: rgba(255, 255, 255, 0.15);
+        width: 40mm;
+        height: 40mm;
+        right: 40mm;
+        bottom: 80mm;
+        background: rgba(255, 255, 255, 0.14);
       }
       .cover-content {
         flex: 1;
-        padding: 20mm 22mm 0 22mm;
-        margin-top: -60mm;
+        padding: 45mm 25mm 0 25mm;
         position: relative;
         z-index: 2;
       }
@@ -545,25 +557,25 @@ export class ToolkitHtmlRendererService {
         letter-spacing: 2pt;
         font-size: 9pt;
         color: rgba(255, 255, 255, 0.95);
-        margin-bottom: 8mm;
+        margin-bottom: 12mm;
         font-weight: 600;
       }
       .cover-title {
         font-family: Georgia, "Times New Roman", "Liberation Serif", serif;
-        font-size: 42pt;
+        font-size: 44pt;
         line-height: 1.02;
         font-weight: 700;
         color: #ffffff;
         letter-spacing: -1pt;
-        margin-bottom: 10mm;
-        text-shadow: 0 2mm 6mm rgba(0, 0, 0, 0.08);
+        margin-bottom: 12mm;
+        text-shadow: 0 2mm 6mm rgba(0, 0, 0, 0.15);
       }
       .cover-subtitle {
         font-size: 13pt;
         line-height: 1.55;
-        color: var(--ink);
+        color: rgba(255, 255, 255, 0.92);
         max-width: 150mm;
-        margin-bottom: 18mm;
+        margin-bottom: 22mm;
         font-weight: 400;
       }
       .cover-meta {
@@ -571,15 +583,16 @@ export class ToolkitHtmlRendererService {
       }
       .cover-prepared {
         font-size: 12pt;
-        color: var(--ink);
+        color: rgba(255, 255, 255, 0.95);
       }
       .cover-prepared strong {
-        color: var(--accent-dark);
+        color: #ffffff;
         font-size: 14pt;
+        font-weight: 700;
       }
       .cover-date {
         font-size: 10pt;
-        color: var(--muted);
+        color: rgba(255, 255, 255, 0.8);
         margin-top: 2mm;
       }
       .badges {
@@ -592,10 +605,10 @@ export class ToolkitHtmlRendererService {
         flex-direction: column;
         gap: 1mm;
         padding: 4mm 6mm;
-        background: #ffffff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         border-radius: 4mm;
-        box-shadow: 0 2mm 5mm rgba(12, 9, 2, 0.06);
+        box-shadow: 0 2mm 5mm rgba(0, 0, 0, 0.12);
       }
       .badge-label {
         font-size: 7.5pt;
@@ -605,15 +618,17 @@ export class ToolkitHtmlRendererService {
       }
       .badge-value {
         font-size: 11pt;
-        font-weight: 600;
-        color: var(--ink);
+        font-weight: 700;
+        color: var(--accent-dark);
       }
       .cover-footer {
-        padding: 8mm 22mm 12mm;
+        position: relative;
+        z-index: 2;
+        padding: 8mm 25mm 14mm;
         display: flex;
         gap: 3mm;
         font-size: 9pt;
-        color: var(--muted);
+        color: rgba(255, 255, 255, 0.85);
       }
 
       /* ----- Section header ----- */
@@ -621,7 +636,7 @@ export class ToolkitHtmlRendererService {
         display: flex;
         align-items: center;
         gap: 6mm;
-        margin-bottom: 10mm;
+        margin-bottom: 12mm;
         padding-bottom: 6mm;
         border-bottom: 2px solid var(--accent);
       }
@@ -726,7 +741,7 @@ export class ToolkitHtmlRendererService {
 
       /* ----- Cheatsheet ----- */
       .category {
-        margin-bottom: 8mm;
+        margin-bottom: 10mm;
       }
       .category-title {
         font-size: 11pt;
@@ -743,14 +758,14 @@ export class ToolkitHtmlRendererService {
         gap: 4mm;
       }
       .tool-card {
-        padding: 4mm 5mm;
+        padding: 5mm 6mm;
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 3mm;
         page-break-inside: avoid;
         display: flex;
         flex-direction: column;
-        gap: 2mm;
+        gap: 2.5mm;
       }
       .tool-card-header {
         display: flex;
@@ -818,10 +833,10 @@ export class ToolkitHtmlRendererService {
       .prompt-list {
         display: flex;
         flex-direction: column;
-        gap: 6mm;
+        gap: 8mm;
       }
       .prompt-card {
-        padding: 5mm 6mm;
+        padding: 6mm 7mm;
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 3mm;
@@ -873,14 +888,14 @@ export class ToolkitHtmlRendererService {
         line-height: 1.55;
         color: var(--ink);
         background: #ffffff;
-        padding: 4mm 5mm;
+        padding: 5mm 6mm;
         border-radius: 2mm;
         border: 1px solid var(--line);
         white-space: pre-wrap;
         word-wrap: break-word;
       }
       .prompt-example {
-        margin-top: 3mm;
+        margin-top: 4mm;
         padding: 3mm 4mm;
         background: var(--blue-bg);
         border-radius: 2mm;
@@ -902,7 +917,7 @@ export class ToolkitHtmlRendererService {
         font-style: italic;
       }
       .prompt-tip {
-        margin-top: 2mm;
+        margin-top: 3mm;
         padding: 3mm 4mm;
         background: var(--yellow-bg);
         border-radius: 2mm;
@@ -927,14 +942,19 @@ export class ToolkitHtmlRendererService {
       .workflow-list {
         display: flex;
         flex-direction: column;
-        gap: 7mm;
+        gap: 10mm;
       }
       .workflow-card {
-        padding: 5mm 6mm;
+        padding: 6mm 7mm;
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 3mm;
         page-break-inside: avoid;
+      }
+      /* A partir du second workflow, chaque carte demarre sur une nouvelle
+         page pour eviter les pages a moitie vides. */
+      .workflow-card + .workflow-card {
+        page-break-before: always;
       }
       .workflow-header {
         margin-bottom: 4mm;
@@ -1037,7 +1057,7 @@ export class ToolkitHtmlRendererService {
         gap: 5mm;
       }
       .template-card {
-        padding: 5mm 6mm;
+        padding: 6mm 7mm;
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 3mm;
@@ -1119,9 +1139,9 @@ export class ToolkitHtmlRendererService {
       /* ----- Page footer ----- */
       .page-footer {
         position: absolute;
-        bottom: 8mm;
-        left: 20mm;
-        right: 20mm;
+        bottom: 10mm;
+        left: 22mm;
+        right: 22mm;
         display: flex;
         justify-content: center;
         gap: 3mm;
