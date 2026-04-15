@@ -1,6 +1,10 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
+import type {
+  ExpertReportSynthesis,
+  PerPageDetailedAnalysis,
+} from '../../domain/AuditReportTiers';
 import {
   AuditLocale,
   resolveAuditLocale,
@@ -53,12 +57,45 @@ const techFingerprintSchema = z.object({
   unknowns: z.array(z.string()),
 });
 
+const engineScoreInputSchema = z.object({
+  engine: z.enum(['google', 'bing_chatgpt', 'perplexity', 'gemini_overviews']),
+  score: z.number().min(0).max(100),
+  indexable: z.boolean(),
+  strengths: z.array(z.string()).max(5),
+  blockers: z.array(z.string()).max(5),
+  opportunities: z.array(z.string()).max(5),
+});
+
+const engineCoverageInputSchema = z.object({
+  google: engineScoreInputSchema,
+  bingChatGpt: engineScoreInputSchema,
+  perplexity: engineScoreInputSchema,
+  geminiOverviews: engineScoreInputSchema,
+});
+
+const perPageDetailedAnalysisSchema = z.object({
+  url: z.string().min(1),
+  title: z.string(),
+  engineScores: engineCoverageInputSchema,
+  topIssues: z.array(z.string()).max(6),
+  recommendations: z.array(z.string()).max(6),
+  evidence: z.array(z.string()).max(6),
+});
+
+const clientEmailDraftSchema = z.object({
+  subject: z.string().min(1).max(100),
+  body: z.string().min(1),
+});
+
 const expertReportSchema = z.object({
   executiveSummary: z.string(),
   reportExplanation: z.string(),
   strengths: z.array(z.string()),
   diagnosticChapters: diagnosticChaptersSchema,
   techFingerprint: techFingerprintSchema,
+  perPageAnalysis: z.array(perPageDetailedAnalysisSchema),
+  clientEmailDraft: clientEmailDraftSchema,
+  internalNotes: z.string(),
   priorities: z.array(
     z.object({
       title: z.string(),
@@ -159,11 +196,14 @@ const executionSectionSchema = z.object({
   credibilityAndTrust: z.string(),
   techAndScalability: z.string(),
   techFingerprint: techFingerprintSchema,
+  perPageAnalysis: expertReportSchema.shape.perPageAnalysis,
+  internalNotes: expertReportSchema.shape.internalNotes,
 });
 
 const clientCommsSectionSchema = z.object({
   clientMessageTemplate: expertReportSchema.shape.clientMessageTemplate,
   clientLongEmail: expertReportSchema.shape.clientLongEmail,
+  clientEmailDraft: expertReportSchema.shape.clientEmailDraft,
 });
 
 export type ExpertReport = z.infer<typeof expertReportSchema>;
@@ -236,6 +276,46 @@ export interface LangchainAuditInput {
     topIssues: string[];
     recommendations: string[];
     source: 'llm' | 'fallback';
+    /**
+     * Optionnel en Phase 5 pour compatibilite ascendante : si present,
+     * passe directement dans les payloads LLM et dans le fallback pour
+     * construire `perPageAnalysis`.
+     */
+    engineScores?: {
+      google: {
+        engine: 'google';
+        score: number;
+        indexable: boolean;
+        strengths: string[];
+        blockers: string[];
+        opportunities: string[];
+      };
+      bingChatGpt: {
+        engine: 'bing_chatgpt';
+        score: number;
+        indexable: boolean;
+        strengths: string[];
+        blockers: string[];
+        opportunities: string[];
+      };
+      perplexity: {
+        engine: 'perplexity';
+        score: number;
+        indexable: boolean;
+        strengths: string[];
+        blockers: string[];
+        opportunities: string[];
+      };
+      geminiOverviews: {
+        engine: 'gemini_overviews';
+        score: number;
+        indexable: boolean;
+        strengths: string[];
+        blockers: string[];
+        opportunities: string[];
+      };
+    };
+    title?: string | null;
   }>;
   pageSummary: Record<string, unknown>;
   techFingerprint: {
@@ -250,6 +330,12 @@ export interface LangchainAuditInput {
 export interface LangchainAuditOutput {
   summaryText: string;
   adminReport: Record<string, unknown>;
+  /**
+   * Projection typee `ExpertReportSynthesis` destinee au Tier Expert
+   * (rapport technique a Tim). Contient perPageAnalysis, cross-findings,
+   * priority backlog, clientEmailDraft et internalNotes.
+   */
+  expertSynthesis: ExpertReportSynthesis;
 }
 
 @Injectable()
@@ -424,7 +510,15 @@ export class LangchainAuditReportService {
         },
       };
 
-      return { summaryText: gate.summaryText, adminReport };
+      return {
+        summaryText: gate.summaryText,
+        adminReport,
+        expertSynthesis: this.buildExpertSynthesis(
+          gate.summaryText,
+          adminReport,
+          normalizedInput,
+        ),
+      };
     } catch (error) {
       this.logger.warn(`LLM generation failed: ${String(error)}`);
       return this.fallback(normalizedInput, String(error), options);
@@ -512,7 +606,15 @@ export class LangchainAuditReportService {
       );
     }
 
-    return { summaryText: gate.summaryText, adminReport };
+    return {
+      summaryText: gate.summaryText,
+      adminReport,
+      expertSynthesis: this.buildExpertSynthesis(
+        gate.summaryText,
+        adminReport,
+        normalizedInput,
+      ),
+    };
   }
 
   private resolveProfile(auditId?: string): AuditLlmProfile {
@@ -763,12 +865,20 @@ export class LangchainAuditReportService {
             implementationBacklog: executionSection.implementationBacklog,
             invoiceScope: executionSection.invoiceScope,
             techFingerprint: executionSection.techFingerprint,
+            perPageAnalysis:
+              executionSection.perPageAnalysis ??
+              fallbackReport.perPageAnalysis,
+            internalNotes:
+              executionSection.internalNotes ?? fallbackReport.internalNotes,
           }
         : {}),
       ...(clientCommsSection
         ? {
             clientMessageTemplate: clientCommsSection.clientMessageTemplate,
             clientLongEmail: clientCommsSection.clientLongEmail,
+            clientEmailDraft:
+              clientCommsSection.clientEmailDraft ??
+              fallbackReport.clientEmailDraft,
           }
         : {}),
     };
@@ -987,8 +1097,8 @@ export class LangchainAuditReportService {
           role: 'system',
           content:
             locale === 'fr'
-              ? 'Tu produis uniquement la partie execution avancee: implementationTodo, whatToFixThisWeek, whatToFixThisMonth, fastImplementationPlan, implementationBacklog, invoiceScope, conversionAndClarity, speedAndPerformance, credibilityAndTrust, techAndScalability et techFingerprint. Reponds en francais uniquement. Chaque chapitre doit etre detaille, bien ecrite, exploitable, et relie a des preuves. Mentionne CMS/framework/runtime principal avec confiance et evidences.'
-              : 'Return only advanced execution outputs: implementationTodo, whatToFixThisWeek, whatToFixThisMonth, fastImplementationPlan, implementationBacklog, invoiceScope, conversionAndClarity, speedAndPerformance, credibilityAndTrust, techAndScalability, and techFingerprint. English only. Chapters must be implementation-ready and evidence-linked. State one primary CMS/framework/runtime guess with confidence and evidence.',
+              ? "Tu produis uniquement la partie execution avancee: implementationTodo, whatToFixThisWeek, whatToFixThisMonth, fastImplementationPlan, implementationBacklog, invoiceScope, conversionAndClarity, speedAndPerformance, credibilityAndTrust, techAndScalability, techFingerprint, perPageAnalysis et internalNotes. Reponds en francais uniquement. Chaque chapitre doit etre detaille, bien ecrit, exploitable et relie a des preuves. Mentionne CMS/framework/runtime principal avec confiance et evidences. Pour perPageAnalysis: une entree par URL analysee (max 10) avec url, title, engineScores (4 moteurs: google, bingChatGpt, perplexity, geminiOverviews chacun avec score, indexable, strengths/blockers/opportunities), topIssues, recommendations et evidence. Pour internalNotes: notes internes pour Tim avant l'appel client, ton franc et direct, en 5-10 lignes maxi (risques, leviers, points a preparer)."
+              : 'Return only advanced execution outputs: implementationTodo, whatToFixThisWeek, whatToFixThisMonth, fastImplementationPlan, implementationBacklog, invoiceScope, conversionAndClarity, speedAndPerformance, credibilityAndTrust, techAndScalability, techFingerprint, perPageAnalysis, and internalNotes. English only. Chapters must be implementation-ready and evidence-linked. State one primary CMS/framework/runtime guess with confidence and evidence. For perPageAnalysis: one entry per analyzed URL (max 10) with url, title, engineScores (4 engines: google, bingChatGpt, perplexity, geminiOverviews, each with score, indexable, strengths/blockers/opportunities), topIssues, recommendations, and evidence. For internalNotes: internal notes for Tim before the client call, direct tone, 5-10 lines max (risks, levers, points to prepare).',
         },
         ...(retryMode
           ? [
@@ -1021,8 +1131,8 @@ export class LangchainAuditReportService {
           role: 'system',
           content:
             locale === 'fr'
-              ? "Tu produis uniquement clientMessageTemplate et clientLongEmail. Francais uniquement. clientMessageTemplate doit etre un rapport engageant donnant envie de continuer et d'avoir plus d'informations. clientLongEmail doit rester professionnel, actionnable, et coherent avec les priorites techniques sans inventer de donnees, Il doit etre complet et permettre d'avoir une vision global dans manque aujorud'hui et des actions demain."
-              : 'Return only clientMessageTemplate and clientLongEmail. English only. clientMessageTemplate must be short (3-5 lines). clientLongEmail must stay professional, actionable, and aligned with technical priorities without inventing facts.',
+              ? "Tu produis uniquement clientMessageTemplate, clientLongEmail et clientEmailDraft. Francais uniquement. clientMessageTemplate doit etre un rapport engageant donnant envie de continuer et d'avoir plus d'informations. clientLongEmail doit rester professionnel, actionnable et coherent avec les priorites techniques sans inventer de donnees. Pour clientEmailDraft: email pret a envoyer, ton mix court et long, accrocheur sur les constats, teaser PDF, CTA vers un appel. Structure: subject 50-70 caracteres accrocheur, body compose de 4 paragraphes (P1 ouverture + constat #1 en 3 lignes, P2 constat #2 avec impact business chiffre si possible en 3 lignes, P3 teaser PDF en 2 lignes 'votre rapport complet attache contient...', P4 CTA planifier un appel de 30 min), signature 'Tim / Asili Design'."
+              : "Return only clientMessageTemplate, clientLongEmail, and clientEmailDraft. English only. clientMessageTemplate must be short (3-5 lines). clientLongEmail must stay professional, actionable, and aligned with technical priorities without inventing facts. For clientEmailDraft: ready-to-send email, mix short and long tone, catchy on findings, PDF teaser, CTA to a call. Structure: subject 50-70 chars catchy, body with 4 paragraphs (P1 personalized opener + finding #1 in 3 lines, P2 finding #2 with quantified business impact if possible in 3 lines, P3 PDF teaser in 2 lines 'your full report attached contains...', P4 CTA to schedule a 30-minute call), signature 'Tim / Asili Design'.",
         },
         ...(retryMode
           ? [
@@ -1106,15 +1216,15 @@ export class LangchainAuditReportService {
           role: 'system',
           content:
             locale === 'fr'
-              ? "Tu es un expert SEO technique, engineering web senior et PM delivery. Reponds uniquement en francais, ton technique et orienté execution. Fournis un rapport operationnel complet avec causes racines, remediation precise, dependances, criteres d'acceptation, priorisation impact/effort, et chapitres diagnostiques longs: conversionAndClarity, speedAndPerformance, seoFoundations, credibilityAndTrust, techAndScalability, scorecardAndBusinessOpportunities, plus techFingerprint (primaryStack, confidence, evidence, alternatives, unknowns). Utilise uniquement les donnees disponibles. Si non prouvable: Non verifiable."
-              : 'You are a senior technical SEO, web engineering, and delivery PM expert. Respond only in English with an execution-first tone. Produce a complete implementation report with root causes, concrete remediations, dependencies, acceptance criteria, impact/effort prioritization, and long diagnostic chapters: conversionAndClarity, speedAndPerformance, seoFoundations, credibilityAndTrust, techAndScalability, scorecardAndBusinessOpportunities, plus techFingerprint (primaryStack, confidence, evidence, alternatives, unknowns). Use only provided data. If not provable, write Not verifiable.',
+              ? "Tu es un expert SEO technique, engineering web senior et PM delivery. Reponds uniquement en francais, ton technique et orienté execution. Fournis un rapport operationnel complet avec causes racines, remediation precise, dependances, criteres d'acceptation, priorisation impact/effort, et chapitres diagnostiques longs: conversionAndClarity, speedAndPerformance, seoFoundations, credibilityAndTrust, techAndScalability, scorecardAndBusinessOpportunities, plus techFingerprint (primaryStack, confidence, evidence, alternatives, unknowns). Tu produis aussi perPageAnalysis (une entree par URL avec engineScores 4 moteurs + topIssues + recommendations + evidence), clientEmailDraft (subject accrocheur 50-70 chars + body 4 paragraphes mixant court/long accrocheur teaser PDF CTA appel) et internalNotes (notes internes pour Tim, 5-10 lignes, ton direct). Utilise uniquement les donnees disponibles. Si non prouvable: Non verifiable."
+              : 'You are a senior technical SEO, web engineering, and delivery PM expert. Respond only in English with an execution-first tone. Produce a complete implementation report with root causes, concrete remediations, dependencies, acceptance criteria, impact/effort prioritization, and long diagnostic chapters: conversionAndClarity, speedAndPerformance, seoFoundations, credibilityAndTrust, techAndScalability, scorecardAndBusinessOpportunities, plus techFingerprint (primaryStack, confidence, evidence, alternatives, unknowns). Also produce perPageAnalysis (one entry per URL with engineScores 4 engines + topIssues + recommendations + evidence), clientEmailDraft (catchy subject 50-70 chars + 4-paragraph body mixing short/long, catchy, PDF teaser, call CTA), and internalNotes (internal notes for Tim, 5-10 lines, direct tone). Use only provided data. If not provable, write Not verifiable.',
         },
         {
           role: 'system',
           content:
             locale === 'fr'
-              ? 'Contrainte stricte: claims evidence-first, pas de speculation, pas de langue mixte. Limites visees: urlLevelImprovements max 8, implementationTodo max 8, whatToFixThisWeek max 5, whatToFixThisMonth max 6, fastImplementationPlan max 5, implementationBacklog max 10, invoiceScope max 10.'
-              : 'Strict constraint: evidence-first claims, no speculation, no mixed language. Target limits: urlLevelImprovements up to 8, implementationTodo up to 8, whatToFixThisWeek up to 5, whatToFixThisMonth up to 6, fastImplementationPlan up to 5, implementationBacklog up to 10, invoiceScope up to 10.',
+              ? 'Contrainte stricte: claims evidence-first, pas de speculation, pas de langue mixte. Limites visees: urlLevelImprovements max 8, implementationTodo max 8, whatToFixThisWeek max 5, whatToFixThisMonth max 6, fastImplementationPlan max 5, implementationBacklog max 10, invoiceScope max 10, perPageAnalysis max 10.'
+              : 'Strict constraint: evidence-first claims, no speculation, no mixed language. Target limits: urlLevelImprovements up to 8, implementationTodo up to 8, whatToFixThisWeek up to 5, whatToFixThisMonth up to 6, fastImplementationPlan up to 5, implementationBacklog up to 10, invoiceScope up to 10, perPageAnalysis up to 10.',
         },
         ...(compactMode
           ? [
@@ -1178,6 +1288,11 @@ export class LangchainAuditReportService {
     return {
       summaryText: gate.summaryText,
       adminReport,
+      expertSynthesis: this.buildExpertSynthesis(
+        gate.summaryText,
+        adminReport,
+        input,
+      ),
     };
   }
 
@@ -1338,5 +1453,146 @@ export class LangchainAuditReportService {
       maxRetries: 0,
       temperature: 0.2,
     });
+  }
+
+  /**
+   * Projette un rapport admin enrichi vers le type domaine
+   * `ExpertReportSynthesis` (Tier Expert). Construit
+   * `perPageAnalysis`, `crossPageFindings`, `priorityBacklog`,
+   * `clientEmailDraft` et `internalNotes` en garantissant des defauts
+   * deterministes si le LLM a omis certains champs.
+   */
+  private buildExpertSynthesis(
+    summaryText: string,
+    adminReport: Record<string, unknown>,
+    input: LangchainAuditInput,
+  ): ExpertReportSynthesis {
+    const executiveSummary =
+      typeof adminReport.executiveSummary === 'string' &&
+      adminReport.executiveSummary.trim().length > 0
+        ? adminReport.executiveSummary
+        : summaryText;
+
+    const perPageAnalysis = this.projectPerPageAnalysis(
+      adminReport.perPageAnalysis,
+    );
+
+    const crossPageFindings = input.deepFindings.map((finding) => ({
+      title: finding.title,
+      severity: finding.severity as 'critical' | 'high' | 'medium' | 'low',
+      affectedUrls: [...finding.affectedUrls],
+      rootCause: finding.description,
+      remediation: finding.recommendation,
+    }));
+
+    const priorityBacklog = Array.isArray(adminReport.implementationBacklog)
+      ? (adminReport.implementationBacklog as Array<Record<string, unknown>>)
+          .slice(0, 12)
+          .map((entry) => ({
+            title: typeof entry.task === 'string' ? entry.task : '',
+            impact: this.toImpact(entry.priority),
+            effort: this.toEffort(entry.estimatedHours),
+            acceptanceCriteria: Array.isArray(entry.acceptanceCriteria)
+              ? (entry.acceptanceCriteria as string[]).map(String)
+              : [],
+          }))
+          .filter((entry) => entry.title.length > 0)
+      : [];
+
+    const clientEmailDraft =
+      this.normalizeClientEmailDraft(adminReport.clientEmailDraft) ??
+      this.buildFallbackEmailDraft(input);
+
+    const internalNotes =
+      typeof adminReport.internalNotes === 'string' &&
+      adminReport.internalNotes.trim().length > 0
+        ? adminReport.internalNotes.trim()
+        : this.buildFallbackNotes(input);
+
+    return {
+      executiveSummary,
+      perPageAnalysis,
+      crossPageFindings,
+      priorityBacklog,
+      clientEmailDraft,
+      internalNotes,
+    };
+  }
+
+  private projectPerPageAnalysis(
+    raw: unknown,
+  ): ReadonlyArray<PerPageDetailedAnalysis> {
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .map((entry): PerPageDetailedAnalysis | null => {
+        if (!entry || typeof entry !== 'object') return null;
+        const record = entry as Record<string, unknown>;
+        const url = typeof record.url === 'string' ? record.url : '';
+        if (!url) return null;
+        const engineScores = record.engineScores as
+          | PerPageDetailedAnalysis['engineScores']
+          | undefined;
+        if (!engineScores) return null;
+        return {
+          url,
+          title: typeof record.title === 'string' ? record.title : '',
+          engineScores,
+          topIssues: Array.isArray(record.topIssues)
+            ? (record.topIssues as string[]).map(String).slice(0, 6)
+            : [],
+          recommendations: Array.isArray(record.recommendations)
+            ? (record.recommendations as string[]).map(String).slice(0, 6)
+            : [],
+          evidence: Array.isArray(record.evidence)
+            ? (record.evidence as string[]).map(String).slice(0, 6)
+            : [],
+        };
+      })
+      .filter((entry): entry is PerPageDetailedAnalysis => entry !== null);
+  }
+
+  private normalizeClientEmailDraft(
+    raw: unknown,
+  ): { subject: string; body: string } | null {
+    if (!raw || typeof raw !== 'object') return null;
+    const record = raw as Record<string, unknown>;
+    const subject = typeof record.subject === 'string' ? record.subject : '';
+    const body = typeof record.body === 'string' ? record.body : '';
+    if (!subject.trim() || !body.trim()) return null;
+    return { subject: subject.trim(), body: body.trim() };
+  }
+
+  private buildFallbackEmailDraft(input: LangchainAuditInput): {
+    subject: string;
+    body: string;
+  } {
+    const subject =
+      input.locale === 'en'
+        ? `Audit findings for ${input.websiteName}`
+        : `Audit ${input.websiteName} : vos priorites`;
+    const body =
+      input.locale === 'en'
+        ? `Hello,\n\nThe audit of ${input.websiteName} is ready. I would love to walk you through it in 30 minutes.\n\nTim / Asili Design`
+        : `Bonjour,\n\nL'audit de ${input.websiteName} est pret. J'aimerais vous le presenter en 30 minutes.\n\nTim / Asili Design`;
+    return { subject, body };
+  }
+
+  private buildFallbackNotes(input: LangchainAuditInput): string {
+    return input.locale === 'en'
+      ? `Internal notes for ${input.websiteName}: review the priorities and prepare the 30-minute pitch.`
+      : `Notes internes pour ${input.websiteName} : revue des priorites et preparation du pitch 30 minutes.`;
+  }
+
+  private toImpact(value: unknown): 'high' | 'medium' | 'low' {
+    if (value === 'high') return 'high';
+    if (value === 'low') return 'low';
+    return 'medium';
+  }
+
+  private toEffort(value: unknown): 'high' | 'medium' | 'low' {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return 'medium';
+    if (value >= 8) return 'high';
+    if (value <= 3) return 'low';
+    return 'medium';
   }
 }

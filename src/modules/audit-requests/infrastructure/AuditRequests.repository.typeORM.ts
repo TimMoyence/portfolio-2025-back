@@ -106,6 +106,12 @@ export class AuditRequestsRepositoryTypeORM implements IAuditRequestsRepository 
     if (state.summaryText !== undefined)
       payload.summaryText = state.summaryText;
     if (state.fullReport !== undefined) payload.fullReport = state.fullReport;
+    if (state.clientReport !== undefined)
+      payload.clientReport = state.clientReport;
+    if (state.expertReport !== undefined)
+      payload.expertReport = state.expertReport;
+    if (state.engineCoverage !== undefined)
+      payload.engineCoverage = state.engineCoverage;
     if (state.done !== undefined) payload.done = state.done;
     if (state.startedAt !== undefined) payload.startedAt = state.startedAt;
     if (state.finishedAt !== undefined) payload.finishedAt = state.finishedAt;
@@ -139,6 +145,9 @@ export class AuditRequestsRepositoryTypeORM implements IAuditRequestsRepository 
       pillarScores: this.safeNumberObject(entity.pillarScores),
       summaryText: entity.summaryText ?? null,
       fullReport: this.safeNullableObject(entity.fullReport),
+      clientReport: entity.clientReport ?? null,
+      expertReport: entity.expertReport ?? null,
+      engineCoverage: entity.engineCoverage ?? null,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       startedAt: entity.startedAt ?? null,

@@ -5,6 +5,11 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
+import type {
+  ClientReportSynthesis,
+  ExpertReportSynthesis,
+} from '../../domain/AuditReportTiers';
+import type { EngineCoverage } from '../../domain/EngineCoverage';
 
 @Entity({ name: 'audit_requests' })
 export class AuditRequestEntity {
@@ -61,6 +66,15 @@ export class AuditRequestEntity {
 
   @Column({ type: 'jsonb', nullable: true })
   fullReport?: Record<string, unknown> | null;
+
+  @Column({ type: 'jsonb', name: 'client_report', nullable: true })
+  clientReport?: ClientReportSynthesis | null;
+
+  @Column({ type: 'jsonb', name: 'expert_report', nullable: true })
+  expertReport?: ExpertReportSynthesis | null;
+
+  @Column({ type: 'jsonb', name: 'engine_coverage', nullable: true })
+  engineCoverage?: EngineCoverage | null;
 
   @Column({ type: 'timestamp', nullable: true })
   startedAt?: Date | null;

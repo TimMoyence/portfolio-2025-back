@@ -2,6 +2,7 @@ import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-
 import { AuditSnapshot } from '../../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import type { AuditRequestMailerService } from '../AuditRequestMailer.service';
+import type { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
 import { AuditPipelineService } from './audit-pipeline.service';
 import type { AuditAutomationConfig } from './audit.config';
 import type { DeepUrlAnalysisService } from './deep-url-analysis.service';
@@ -10,6 +11,7 @@ import type {
   LangchainAuditReportService,
   LlmSynthesisProgressEvent,
 } from './langchain-audit-report.service';
+import type { LlmsTxtAnalyzerService } from './llms-txt-analyzer.service';
 import type { PageAiRecapService } from './page-ai-recap.service';
 import type { SafeFetchService } from './safe-fetch.service';
 import type { ScoringService } from './scoring.service';
@@ -69,6 +71,21 @@ function buildStubDeps(
       sendAuditNotification: jest.fn(),
       sendAuditReportNotification: jest.fn(),
     } as unknown as jest.Mocked<AuditRequestMailerService>,
+    llmsTxtAnalyzer: {
+      analyze: jest.fn().mockResolvedValue({
+        present: false,
+        url: 'https://example.com/llms.txt',
+        sizeBytes: 0,
+        sections: [],
+        hasFullVariant: false,
+        complianceScore: 0,
+        issues: ['Fichier llms.txt absent'],
+      }),
+    } as unknown as jest.Mocked<LlmsTxtAnalyzerService>,
+    deliveryOrchestrator: {
+      runForAudit: jest.fn().mockResolvedValue(undefined),
+      deliver: jest.fn().mockResolvedValue(undefined),
+    } as unknown as jest.Mocked<AuditDeliveryOrchestrator>,
   };
 }
 
@@ -88,6 +105,8 @@ function buildPipelineService(
     deps.scoring,
     deps.llmReport,
     deps.mailer,
+    deps.llmsTxtAnalyzer,
+    deps.deliveryOrchestrator,
   );
 }
 
@@ -271,16 +290,31 @@ describe('AuditPipelineService', () => {
       updateState: jest.fn().mockResolvedValue(undefined),
     };
     const safeFetch = {
-      fetchText: jest.fn().mockResolvedValue({
-        requestedUrl: 'https://example.com/',
-        finalUrl: 'https://example.com/',
-        redirectChain: [],
-        statusCode: 200,
-        headers: {},
-        body: '<html></html>',
-        ttfbMs: 300,
-        totalMs: 900,
-        contentLength: 300,
+      fetchText: jest.fn().mockImplementation((url: string) => {
+        if (url.endsWith('/robots.txt')) {
+          return Promise.resolve({
+            requestedUrl: url,
+            finalUrl: url,
+            redirectChain: [],
+            statusCode: 200,
+            headers: {},
+            body: 'User-agent: *\nAllow: /\n',
+            ttfbMs: 50,
+            totalMs: 100,
+            contentLength: 30,
+          });
+        }
+        return Promise.resolve({
+          requestedUrl: url,
+          finalUrl: 'https://example.com/',
+          redirectChain: [],
+          statusCode: 200,
+          headers: {},
+          body: '<html></html>',
+          ttfbMs: 300,
+          totalMs: 900,
+          contentLength: 300,
+        });
       }),
       fetchHeaders: jest.fn(),
     } as unknown as jest.Mocked<SafeFetchService>;
@@ -423,12 +457,30 @@ describe('AuditPipelineService', () => {
                 topIssues: string[];
                 recommendations: string[];
                 source: 'llm' | 'fallback';
+                engineScores: {
+                  google: unknown;
+                  bingChatGpt: unknown;
+                  perplexity: unknown;
+                  geminiOverviews: unknown;
+                };
               },
               done: number,
               total: number,
             ) => void | Promise<void>;
           },
         ) => {
+          type EngineScoreStub = {
+            engine:
+              | 'google'
+              | 'bing_chatgpt'
+              | 'perplexity'
+              | 'gemini_overviews';
+            score: number;
+            indexable: boolean;
+            strengths: string[];
+            blockers: string[];
+            opportunities: string[];
+          };
           const recaps: Array<{
             url: string;
             finalUrl: string;
@@ -442,6 +494,12 @@ describe('AuditPipelineService', () => {
             topIssues: string[];
             recommendations: string[];
             source: 'llm' | 'fallback';
+            engineScores: {
+              google: EngineScoreStub;
+              bingChatGpt: EngineScoreStub;
+              perplexity: EngineScoreStub;
+              geminiOverviews: EngineScoreStub;
+            };
           }> = [
             {
               url: 'https://example.com/',
@@ -456,6 +514,40 @@ describe('AuditPipelineService', () => {
               topIssues: ['Meta'],
               recommendations: ['Improve meta'],
               source: 'fallback',
+              engineScores: {
+                google: {
+                  engine: 'google' as const,
+                  score: 60,
+                  indexable: true,
+                  strengths: [],
+                  blockers: [],
+                  opportunities: [],
+                },
+                bingChatGpt: {
+                  engine: 'bing_chatgpt' as const,
+                  score: 55,
+                  indexable: true,
+                  strengths: [],
+                  blockers: [],
+                  opportunities: [],
+                },
+                perplexity: {
+                  engine: 'perplexity' as const,
+                  score: 50,
+                  indexable: true,
+                  strengths: [],
+                  blockers: [],
+                  opportunities: [],
+                },
+                geminiOverviews: {
+                  engine: 'gemini_overviews' as const,
+                  score: 55,
+                  indexable: true,
+                  strengths: [],
+                  blockers: [],
+                  opportunities: [],
+                },
+              },
             },
           ];
           if (options?.onRecapReady) {
@@ -480,6 +572,21 @@ describe('AuditPipelineService', () => {
       sendAuditNotification: jest.fn(),
       sendAuditReportNotification: jest.fn().mockResolvedValue(undefined),
     } as unknown as jest.Mocked<AuditRequestMailerService>;
+    const llmsTxtAnalyzer = {
+      analyze: jest.fn().mockResolvedValue({
+        present: true,
+        url: 'https://example.com/llms.txt',
+        sizeBytes: 512,
+        sections: [{ title: 'Docs', links: 3 }],
+        hasFullVariant: true,
+        complianceScore: 80,
+        issues: [],
+      }),
+    } as unknown as jest.Mocked<LlmsTxtAnalyzerService>;
+    const deliveryOrchestrator = {
+      runForAudit: jest.fn().mockResolvedValue(undefined),
+      deliver: jest.fn().mockResolvedValue(undefined),
+    } as unknown as jest.Mocked<AuditDeliveryOrchestrator>;
 
     const service = new AuditPipelineService(
       repo,
@@ -493,6 +600,8 @@ describe('AuditPipelineService', () => {
       scoring,
       llmReport,
       mailer,
+      llmsTxtAnalyzer,
+      deliveryOrchestrator,
     );
 
     await service.run('audit-1');
@@ -560,8 +669,42 @@ describe('AuditPipelineService', () => {
         (state) => state.processingStatus === 'RUNNING' && state.summaryText,
       ),
     ).toBe(false);
+    // Loop #2 : l'envoi admin legacy a ete retire du pipeline pour eviter un
+    // double email (l'orchestrateur de delivery gere desormais toutes les notifications).
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mailer.sendAuditReportNotification).toHaveBeenCalledTimes(1);
+    expect(mailer.sendAuditReportNotification).not.toHaveBeenCalled();
+
+    // Phase 7 — delivery orchestrator invoked once
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(deliveryOrchestrator.runForAudit).toHaveBeenCalledTimes(1);
+
+    // Phase 3 — llms.txt analysis wired
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(llmsTxtAnalyzer.analyze).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(llmsTxtAnalyzer.analyze).toHaveBeenCalledWith('https://example.com');
+
+    // Phase 3 — robots.txt passed to UrlIndexability
+
+    const analyzeUrlsCall = urlIndexability.analyzeUrls.mock.calls[0];
+    expect(analyzeUrlsCall[1]).toBeDefined();
+    expect((analyzeUrlsCall[1] as { robotsTxt?: string }).robotsTxt).toContain(
+      'User-agent',
+    );
+
+    // Phase 3 — llmsTxt result persisted in keyChecks
+    const stateWithLlmsTxt = updates.find((state) => {
+      const keyChecks = state.keyChecks as Record<string, unknown> | undefined;
+      return keyChecks?.llmsTxt !== undefined;
+    });
+    expect(stateWithLlmsTxt).toBeDefined();
+    if (stateWithLlmsTxt) {
+      const keyChecks = stateWithLlmsTxt.keyChecks as Record<string, unknown>;
+      expect((keyChecks.llmsTxt as Record<string, unknown>).present).toBe(true);
+      expect(
+        (keyChecks.llmsTxt as Record<string, unknown>).complianceScore,
+      ).toBe(80);
+    }
   });
 
   it('marks the audit as failed when an exception occurs', async () => {

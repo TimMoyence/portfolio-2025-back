@@ -1,8 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { load } from 'cheerio';
+import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
+import { AiHeadersAnalyzerService } from './ai-headers-analyzer.service';
 import type { AuditAutomationConfig } from './audit.config';
+import { CitationWorthinessService } from './citation-worthiness.service';
 import { SafeFetchService } from './safe-fetch.service';
+import { StructuredDataQualityService } from './structured-data-quality.service';
 import {
   CACHE_HEADER_KEYS,
   SECURITY_HEADER_KEYS,
@@ -13,6 +17,13 @@ import {
 } from './shared/html-signals.util';
 
 export interface UrlIndexabilityResult {
+  /**
+   * Signaux IA agrégés pour l'URL (bots access, citabilité,
+   * qualité des données structurées). `null` quand la requête échoue.
+   * Optionnel pour la compatibilité ascendante — devient disponible
+   * dès qu'un caller passe `robotsTxt` à `analyzeUrls`.
+   */
+  aiSignals?: AiIndexabilitySignals | null;
   url: string;
   finalUrl: string | null;
   statusCode: number | null;
@@ -62,16 +73,35 @@ export interface AnalyzeUrlsOptions {
     done: number,
     total: number,
   ) => void | Promise<void>;
+  /**
+   * Contenu brut du fichier `robots.txt` récupéré une seule fois au niveau
+   * site par le pipeline. Passé au `AiHeadersAnalyzerService` pour chaque
+   * URL afin d'éviter un fetch par page.
+   */
+  robotsTxt?: string;
 }
 
+/**
+ * Service d'analyse technique d'une URL (statut, meta, liens internes,
+ * signaux d'indexabilité) enrichi des signaux IA (accès des bots,
+ * citabilité, qualité des données structurées).
+ */
 @Injectable()
 export class UrlIndexabilityService {
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
     private readonly config: AuditAutomationConfig,
     private readonly safeFetch: SafeFetchService,
+    private readonly aiHeadersAnalyzer: AiHeadersAnalyzerService,
+    private readonly citationWorthiness: CitationWorthinessService,
+    private readonly structuredDataQuality: StructuredDataQualityService,
   ) {}
 
+  /**
+   * Analyse en parallèle un ensemble d'URL. Retourne un tableau de
+   * résultats dans l'ordre d'entrée. Si `options.robotsTxt` est fourni,
+   * chaque résultat contient un objet `aiSignals` non null.
+   */
   async analyzeUrls(
     urls: string[],
     options: AnalyzeUrlsOptions = {},
@@ -91,7 +121,10 @@ export class UrlIndexabilityService {
         const index = cursor;
         cursor += 1;
         if (index >= urls.length) return;
-        const result = await this.analyzeSingleUrl(urls[index]);
+        const result = await this.analyzeSingleUrl(
+          urls[index],
+          options.robotsTxt ?? '',
+        );
         results[index] = result;
         done += 1;
         if (options.onUrlAnalyzed) {
@@ -104,7 +137,10 @@ export class UrlIndexabilityService {
     return results;
   }
 
-  private async analyzeSingleUrl(url: string): Promise<UrlIndexabilityResult> {
+  private async analyzeSingleUrl(
+    url: string,
+    robotsTxt: string,
+  ): Promise<UrlIndexabilityResult> {
     try {
       const response = await this.safeFetch.fetchText(url);
       const html = response.body ?? '';
@@ -159,7 +195,22 @@ export class UrlIndexabilityService {
       const textExcerpt = this.extractTextExcerpt($('body').text());
       const ctaHints = this.extractCtaHints($);
 
+      const jsonLdBlocks = this.extractJsonLdBlocks($);
+      const aiSignals: AiIndexabilitySignals = {
+        llmsTxt: null,
+        aiBotsAccess: this.aiHeadersAnalyzer.analyze(
+          robotsTxt,
+          response.headers,
+        ),
+        citationWorthiness: this.citationWorthiness.analyze(
+          html,
+          response.finalUrl || url,
+        ),
+        structuredDataQuality: this.structuredDataQuality.analyze(jsonLdBlocks),
+      };
+
       return {
+        aiSignals,
         url,
         finalUrl: response.finalUrl,
         statusCode: response.statusCode,
@@ -209,6 +260,7 @@ export class UrlIndexabilityService {
       };
     } catch (error) {
       return {
+        aiSignals: null,
         url,
         finalUrl: null,
         statusCode: null,
@@ -264,6 +316,32 @@ export class UrlIndexabilityService {
     const normalized = text.replace(/\s+/g, ' ').trim();
     if (!normalized) return '';
     return normalized.slice(0, 420);
+  }
+
+  /**
+   * Extrait et parse les blocs JSON-LD d'une page HTML. Les blocs invalides
+   * (JSON malformé) sont ignorés silencieusement — c'est le rôle du
+   * `StructuredDataQualityService` d'évaluer ceux qui sont valides.
+   */
+  private extractJsonLdBlocks($: ReturnType<typeof load>): unknown[] {
+    const blocks: unknown[] = [];
+    $('script[type="application/ld+json"]')
+      .toArray()
+      .forEach((node) => {
+        const raw = $(node).text().trim();
+        if (!raw) return;
+        try {
+          const parsed: unknown = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            for (const entry of parsed) blocks.push(entry);
+          } else {
+            blocks.push(parsed);
+          }
+        } catch {
+          // JSON-LD malformé : ignoré, le score restera bas
+        }
+      });
+    return blocks;
   }
 
   private extractCtaHints($: ReturnType<typeof load>): string[] {

@@ -1,8 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import { AuditRequest } from '../domain/AuditRequest';
-import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
+import type {
+  ClientReportMailInput,
+  ExpertReportMailInput,
+  IAuditNotifierPort,
+} from '../domain/IAuditNotifier.port';
 import { AuditLocale, resolveAuditLocale } from '../domain/audit-locale.util';
+import { pillarLabel } from './automation/shared/pillar-labels.util';
 
 export interface AuditReportNotificationPayload {
   auditId: string;
@@ -1135,6 +1140,343 @@ ${d.serializedReport}
     const clean = input.replace(/\s+/g, ' ').trim();
     if (clean.length <= maxChars) return clean;
     return `${clean.slice(0, Math.max(0, maxChars - 3)).trimEnd()}...`;
+  }
+
+  /**
+   * Envoie au client final la synthese strategique (ClientReportSynthesis)
+   * avec pieces jointes si le PDF a pu etre genere. Ne leve jamais : si le
+   * transporter est absent ou si l'email est vide, la methode est un no-op.
+   */
+  async sendClientReport(input: ClientReportMailInput): Promise<void> {
+    if (!this.transporter) return;
+    if (!input.to || input.to.trim().length === 0) return;
+
+    const subject = `Votre audit Growth — ${input.websiteName}`;
+    const html = this.buildClientReportHtml(input);
+    const text = this.buildClientReportText(input);
+    const replyTo = this.reportTo ?? this.to;
+
+    const attachments = input.pdfBuffer
+      ? [
+          {
+            filename: `growth-audit-${this.slugify(input.websiteName)}.pdf`,
+            content: input.pdfBuffer,
+            contentType: 'application/pdf',
+          },
+        ]
+      : undefined;
+
+    await this.transporter.sendMail({
+      from: this.from,
+      to: input.to,
+      replyTo,
+      subject,
+      text,
+      html,
+      attachments,
+    });
+  }
+
+  /**
+   * Envoie a Tim la synthese expert avec le draft de mail client, les
+   * constats transverses, le backlog priorise et le PDF obligatoire.
+   */
+  async sendExpertReport(input: ExpertReportMailInput): Promise<void> {
+    if (!this.transporter) return;
+    const to = this.reportTo ?? this.to;
+    if (!to) return;
+
+    const subject = `[Audit Expert] ${input.websiteName}`;
+    const html = this.buildExpertReportHtml(input);
+    const text = this.buildExpertReportText(input);
+
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject,
+      text,
+      html,
+      attachments: [
+        {
+          filename: `growth-audit-expert-${this.slugify(input.websiteName)}.pdf`,
+          content: input.pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    });
+  }
+
+  private buildClientReportHtml(input: ClientReportMailInput): string {
+    const report = input.clientReport;
+    const greeting = input.firstName
+      ? `Bonjour ${this.escapeHtml(input.firstName)},`
+      : 'Bonjour,';
+
+    const topFindingsHtml = report.topFindings
+      .map(
+        (finding) => `
+          <li style="margin-bottom:8px;">
+            <strong>[${this.escapeHtml(finding.severity.toUpperCase())}] ${this.escapeHtml(finding.title)}</strong><br/>
+            <span>${this.escapeHtml(finding.impact)}</span>
+          </li>`,
+      )
+      .join('');
+
+    const pillarsHtml = report.pillarScorecard
+      .map(
+        (pillar) => `
+          <tr>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${this.escapeHtml(pillarLabel(pillar.pillar))}</td>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">${pillar.score}/${pillar.target}</td>
+            <td style="padding:6px 8px; border:1px solid #e5e7eb;">${this.escapeHtml(pillar.status)}</td>
+          </tr>`,
+      )
+      .join('');
+
+    const quickWinsHtml = report.quickWins
+      .map(
+        (qw) => `
+          <li style="margin-bottom:8px;">
+            <strong>${this.escapeHtml(qw.title)}</strong> — <em>${this.escapeHtml(qw.effort)}</em><br/>
+            <span>${this.escapeHtml(qw.businessImpact)}</span>
+          </li>`,
+      )
+      .join('');
+
+    return `
+      <div style="font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; padding:24px;">
+        <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
+          <h2 style="margin-top:0; color:#111;">Votre audit Growth — ${this.escapeHtml(input.websiteName)}</h2>
+          <p>${greeting}</p>
+          <p>Voici la synthèse stratégique de votre audit.</p>
+
+          <h3 style="margin-top:20px;">Executive summary</h3>
+          <p style="white-space:pre-line; color:#333;">${this.escapeHtml(report.executiveSummary)}</p>
+
+          <h3 style="margin-top:20px;">Visibilité Google vs IA</h3>
+          <p style="color:#333;">
+            <strong>Google :</strong> ${report.googleVsAiMatrix.googleVisibility.score}/100 — ${this.escapeHtml(report.googleVsAiMatrix.googleVisibility.summary)}<br/>
+            <strong>IA :</strong> ${report.googleVsAiMatrix.aiVisibility.score}/100 — ${this.escapeHtml(report.googleVsAiMatrix.aiVisibility.summary)}
+          </p>
+
+          <h3 style="margin-top:20px;">Top findings</h3>
+          <ul style="padding-left:20px; color:#333;">
+            ${topFindingsHtml || '<li>Aucun point critique détecté.</li>'}
+          </ul>
+
+          <h3 style="margin-top:20px;">Scorecard 7 piliers</h3>
+          <table style="width:100%; border-collapse:collapse; font-size:13px; color:#333;">
+            <thead>
+              <tr>
+                <th style="padding:6px 8px; border:1px solid #e5e7eb; text-align:left;">Pilier</th>
+                <th style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">Score / cible</th>
+                <th style="padding:6px 8px; border:1px solid #e5e7eb; text-align:left;">Statut</th>
+              </tr>
+            </thead>
+            <tbody>${pillarsHtml}</tbody>
+          </table>
+
+          <h3 style="margin-top:20px;">Quick wins prioritaires</h3>
+          <ul style="padding-left:20px; color:#333;">
+            ${quickWinsHtml}
+          </ul>
+
+          <div style="margin-top:24px; padding:16px; background:#111; color:#fff; border-radius:6px;">
+            <strong>${this.escapeHtml(report.cta.title)}</strong><br/>
+            <span>${this.escapeHtml(report.cta.description)}</span><br/>
+            <span style="display:inline-block; margin-top:8px; padding:6px 12px; background:#fff; color:#111; border-radius:4px;">${this.escapeHtml(report.cta.actionLabel)}</span>
+          </div>
+
+          <p style="font-size:12px; color:#666; margin-top:24px;">
+            ${input.pdfBuffer ? 'Le rapport complet est joint à cet email.' : 'Le rapport détaillé vous sera envoyé dans un second temps.'}
+          </p>
+        </div>
+      </div>
+    `;
+  }
+
+  private buildClientReportText(input: ClientReportMailInput): string {
+    const report = input.clientReport;
+    const lines: string[] = [];
+    lines.push(`VOTRE AUDIT GROWTH — ${input.websiteName}`);
+    lines.push('');
+    lines.push(input.firstName ? `Bonjour ${input.firstName},` : 'Bonjour,');
+    lines.push('');
+    lines.push('Executive summary :');
+    lines.push(report.executiveSummary);
+    lines.push('');
+    lines.push(
+      `Google : ${report.googleVsAiMatrix.googleVisibility.score}/100 — ${report.googleVsAiMatrix.googleVisibility.summary}`,
+    );
+    lines.push(
+      `IA : ${report.googleVsAiMatrix.aiVisibility.score}/100 — ${report.googleVsAiMatrix.aiVisibility.summary}`,
+    );
+    lines.push('');
+    lines.push('Top findings :');
+    for (const finding of report.topFindings) {
+      lines.push(
+        `- [${finding.severity.toUpperCase()}] ${finding.title} — ${finding.impact}`,
+      );
+    }
+    lines.push('');
+    lines.push('Scorecard 7 piliers :');
+    for (const pillar of report.pillarScorecard) {
+      lines.push(
+        `- ${pillarLabel(pillar.pillar)}: ${pillar.score}/${pillar.target} (${pillar.status})`,
+      );
+    }
+    lines.push('');
+    lines.push('Quick wins :');
+    for (const qw of report.quickWins) {
+      lines.push(`- ${qw.title} (${qw.effort}) — ${qw.businessImpact}`);
+    }
+    lines.push('');
+    lines.push(`${report.cta.title} — ${report.cta.description}`);
+    lines.push(`Action : ${report.cta.actionLabel}`);
+    lines.push('');
+    lines.push(
+      input.pdfBuffer
+        ? 'Le rapport complet est joint a cet email.'
+        : 'Le rapport detaille vous sera envoye dans un second temps.',
+    );
+    return lines.join('\n');
+  }
+
+  private buildExpertReportHtml(input: ExpertReportMailInput): string {
+    const expert = input.expertReport;
+    const client = input.clientReport;
+    const contactHtml =
+      input.clientContact.method === 'PHONE'
+        ? `<p style="margin:0 0 8px; padding:12px; background:#fff4e5; border-left:4px solid #f59e0b;"><strong>Contact TELEPHONE — appel requis :</strong> ${this.escapeHtml(input.clientContact.value)}</p>`
+        : `<p style="margin:0 0 8px;"><strong>Contact EMAIL :</strong> ${this.escapeHtml(input.clientContact.value)}</p>`;
+
+    const crossFindingsHtml = expert.crossPageFindings
+      .slice(0, 5)
+      .map(
+        (finding) => `
+          <li style="margin-bottom:10px;">
+            <strong>[${this.escapeHtml(finding.severity.toUpperCase())}] ${this.escapeHtml(finding.title)}</strong><br/>
+            <span><em>Root cause :</em> ${this.escapeHtml(finding.rootCause)}</span><br/>
+            <span><em>Remediation :</em> ${this.escapeHtml(finding.remediation)}</span><br/>
+            <span><em>Affected URLs :</em> ${this.escapeHtml(finding.affectedUrls.join(', ') || '—')}</span>
+          </li>`,
+      )
+      .join('');
+
+    const backlogHtml = expert.priorityBacklog
+      .map(
+        (item) => `
+          <li style="margin-bottom:10px;">
+            <strong>${this.escapeHtml(item.title)}</strong> — impact ${this.escapeHtml(item.impact)} / effort ${this.escapeHtml(item.effort)}<br/>
+            <em>Acceptance :</em> ${this.escapeHtml(item.acceptanceCriteria.join(' | ') || '—')}
+          </li>`,
+      )
+      .join('');
+
+    const clientMatrixHtml = `
+      <ul style="padding-left:20px; color:#333;">
+        <li>Google : ${client.googleVsAiMatrix.googleVisibility.score}/100 — ${this.escapeHtml(client.googleVsAiMatrix.googleVisibility.summary)}</li>
+        <li>IA : ${client.googleVsAiMatrix.aiVisibility.score}/100 — ${this.escapeHtml(client.googleVsAiMatrix.aiVisibility.summary)}</li>
+      </ul>`;
+
+    return `
+      <div style="font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; padding:24px;">
+        <div style="max-width:760px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
+          <h2 style="margin-top:0;">[Audit Expert] ${this.escapeHtml(input.websiteName)}</h2>
+          <p style="margin:0 0 8px;"><strong>Audit ID :</strong> ${this.escapeHtml(input.auditId)}</p>
+          ${contactHtml}
+
+          <h3 style="margin-top:20px;">Executive summary expert</h3>
+          <p style="white-space:pre-line; color:#333;">${this.escapeHtml(expert.executiveSummary)}</p>
+
+          <h3 style="margin-top:20px;">Synthese client (Google vs IA)</h3>
+          ${clientMatrixHtml}
+
+          <h3 style="margin-top:20px;">Draft mail client (a copier/coller)</h3>
+          <div style="padding:16px; background:#f9fafb; border:1px dashed #cbd5e1; border-radius:6px;">
+            <p style="margin:0 0 8px;"><strong>Subject :</strong> ${this.escapeHtml(expert.clientEmailDraft.subject)}</p>
+            <pre style="margin:0; white-space:pre-wrap; font-family:inherit; color:#111;">${this.escapeHtml(expert.clientEmailDraft.body)}</pre>
+          </div>
+
+          <h3 style="margin-top:20px;">Internal notes</h3>
+          <p style="white-space:pre-line; color:#333;">${this.escapeHtml(expert.internalNotes)}</p>
+
+          <h3 style="margin-top:20px;">Cross-page findings (top 5)</h3>
+          <ul style="padding-left:20px; color:#333;">
+            ${crossFindingsHtml || '<li>Aucun.</li>'}
+          </ul>
+
+          <h3 style="margin-top:20px;">Priority backlog</h3>
+          <ul style="padding-left:20px; color:#333;">
+            ${backlogHtml || '<li>Aucun.</li>'}
+          </ul>
+
+          <p style="font-size:12px; color:#666; margin-top:24px;">PDF complet en piece jointe.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  private buildExpertReportText(input: ExpertReportMailInput): string {
+    const expert = input.expertReport;
+    const client = input.clientReport;
+    const lines: string[] = [];
+    lines.push(`[AUDIT EXPERT] ${input.websiteName}`);
+    lines.push(`Audit ID : ${input.auditId}`);
+    lines.push(
+      input.clientContact.method === 'PHONE'
+        ? `Contact TELEPHONE — appel requis : ${input.clientContact.value}`
+        : `Contact EMAIL : ${input.clientContact.value}`,
+    );
+    lines.push('');
+    lines.push('Executive summary expert :');
+    lines.push(expert.executiveSummary);
+    lines.push('');
+    lines.push('Synthese client (Google vs IA) :');
+    lines.push(
+      `- Google : ${client.googleVsAiMatrix.googleVisibility.score}/100 — ${client.googleVsAiMatrix.googleVisibility.summary}`,
+    );
+    lines.push(
+      `- IA : ${client.googleVsAiMatrix.aiVisibility.score}/100 — ${client.googleVsAiMatrix.aiVisibility.summary}`,
+    );
+    lines.push('');
+    lines.push('--- Draft mail client (a copier/coller) ---');
+    lines.push(`Subject : ${expert.clientEmailDraft.subject}`);
+    lines.push('');
+    lines.push(expert.clientEmailDraft.body);
+    lines.push('--- fin draft ---');
+    lines.push('');
+    lines.push('Internal notes :');
+    lines.push(expert.internalNotes);
+    lines.push('');
+    lines.push('Cross-page findings (top 5) :');
+    for (const finding of expert.crossPageFindings.slice(0, 5)) {
+      lines.push(
+        `- [${finding.severity.toUpperCase()}] ${finding.title} — root cause : ${finding.rootCause} — remediation : ${finding.remediation}`,
+      );
+    }
+    lines.push('');
+    lines.push('Priority backlog :');
+    for (const item of expert.priorityBacklog) {
+      lines.push(
+        `- ${item.title} (impact ${item.impact} / effort ${item.effort})`,
+      );
+    }
+    lines.push('');
+    lines.push('PDF complet en piece jointe.');
+    return lines.join('\n');
+  }
+
+  private slugify(input: string): string {
+    return (
+      input
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 60) || 'audit'
+    );
   }
 
   private escapeHtml(input: string): string {

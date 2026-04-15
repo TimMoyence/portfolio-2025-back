@@ -177,6 +177,10 @@ export function buildFallbackExpertReport(
     estimatedHours: todo.estimatedHours,
   }));
 
+  const perPageAnalysis = buildFallbackPerPageAnalysis(input);
+  const clientEmailDraft = buildFallbackClientEmailDraft(input);
+  const internalNotes = buildFallbackInternalNotes(input);
+
   return {
     executiveSummary: localizedText(
       input.locale,
@@ -236,6 +240,9 @@ export function buildFallbackExpertReport(
     fastImplementationPlan,
     implementationBacklog,
     invoiceScope,
+    perPageAnalysis,
+    clientEmailDraft,
+    internalNotes,
     warning: 'LLM fallback used',
     reason,
     keyChecks: input.keyChecks,
@@ -244,7 +251,148 @@ export function buildFallbackExpertReport(
     sampledUrls: input.sampledUrls,
     pageRecaps: input.pageRecaps,
     pageSummary: input.pageSummary,
-  } as ExpertReport;
+  } as unknown as ExpertReport;
+}
+
+/**
+ * Construit un tableau `perPageAnalysis` deterministe depuis les
+ * `pageRecaps` de l'input. Chaque entree reutilise `engineScores` si
+ * present, sinon tombe sur un score neutre 4 moteurs.
+ */
+function buildFallbackPerPageAnalysis(
+  input: LangchainAuditInput,
+): Array<Record<string, unknown>> {
+  const locale = input.locale;
+  const defaultEngineScore = (
+    engine: 'google' | 'bing_chatgpt' | 'perplexity' | 'gemini_overviews',
+  ): Record<string, unknown> => ({
+    engine,
+    score: 50,
+    indexable: true,
+    strengths: [],
+    blockers: [
+      localizedText(
+        locale,
+        'Donnees insuffisantes pour ce moteur',
+        'Insufficient data for this engine',
+      ),
+    ],
+    opportunities: [],
+  });
+
+  return input.pageRecaps.slice(0, 10).map((recap) => ({
+    url: recap.url,
+    title:
+      recap.title ?? localizedText(locale, 'Page sans titre', 'Untitled page'),
+    engineScores: recap.engineScores ?? {
+      google: defaultEngineScore('google'),
+      bingChatGpt: defaultEngineScore('bing_chatgpt'),
+      perplexity: defaultEngineScore('perplexity'),
+      geminiOverviews: defaultEngineScore('gemini_overviews'),
+    },
+    topIssues: (recap.topIssues ?? []).slice(0, 6),
+    recommendations: (recap.recommendations ?? []).slice(0, 6),
+    evidence: [
+      localizedText(
+        locale,
+        `Recap source: ${recap.source}`,
+        `Recap source: ${recap.source}`,
+      ),
+    ],
+  }));
+}
+
+/**
+ * Construit un `clientEmailDraft` deterministe depuis les findings
+ * principaux et les quickWins. Utilise quand le LLM est indisponible.
+ */
+function buildFallbackClientEmailDraft(input: LangchainAuditInput): {
+  subject: string;
+  body: string;
+} {
+  const locale = input.locale;
+  const topFinding = input.deepFindings[0];
+  const secondFinding = input.deepFindings[1];
+
+  const subject =
+    locale === 'en'
+      ? `Audit findings for ${input.websiteName}: quick wins inside`
+      : `Audit ${input.websiteName}: vos priorites et premiers leviers`;
+
+  const constatOne = topFinding
+    ? `${topFinding.title}. ${topFinding.description}`
+    : localizedText(
+        locale,
+        'Plusieurs points prioritaires ont ete identifies dans le rapport.',
+        'Several priority items have been identified in the report.',
+      );
+  const constatTwo = secondFinding
+    ? `${secondFinding.title}. ${secondFinding.description}`
+    : localizedText(
+        locale,
+        "Des leviers de conversion et d'indexation sont exploitables rapidement.",
+        'Conversion and indexation levers are actionable in the short term.',
+      );
+
+  const body =
+    locale === 'en'
+      ? `Hello,
+
+After completing the audit of ${input.websiteName}, I wanted to share the two findings that caught my attention. ${constatOne}
+
+${constatTwo} — we see this regularly on similar projects and the fix is faster than you might think.
+
+Your full report is attached: it contains the priority backlog, the implementation plan, and the budget estimate.
+
+Would you have 30 minutes to go through it together and prioritize what to ship first?
+
+Tim / Asili Design`
+      : `Bonjour,
+
+Je viens de finaliser l'audit de ${input.websiteName} et je voulais partager les deux constats qui m'ont le plus interpelle. ${constatOne}
+
+${constatTwo} — on voit ce cas regulierement sur des projets similaires et la correction est plus rapide qu'on ne l'imagine.
+
+Votre rapport complet est attache : il contient le backlog priorise, le plan de mise en oeuvre et l'estimation budgetaire.
+
+Auriez-vous 30 minutes pour le parcourir ensemble et prioriser ce qui doit partir en premier ?
+
+Tim / Asili Design`;
+
+  return { subject, body };
+}
+
+/**
+ * Construit des `internalNotes` deterministes a partir des pillars et
+ * findings. Destinees a Tim avant l'appel client (pas d'exposition).
+ */
+function buildFallbackInternalNotes(input: LangchainAuditInput): string {
+  const lowestPillar = Object.entries(input.pillarScores)
+    .filter(([, score]) => Number.isFinite(score))
+    .sort((a, b) => a[1] - b[1])[0];
+  const topFinding = input.deepFindings[0];
+
+  if (input.locale === 'en') {
+    return [
+      `Internal notes for the call with ${input.websiteName}:`,
+      `- Weakest pillar: ${lowestPillar ? `${lowestPillar[0]} (${lowestPillar[1]})` : 'unknown'}.`,
+      topFinding
+        ? `- Highlight ${topFinding.title} (${topFinding.severity}).`
+        : '- No critical finding identified; push the PDF value.',
+      '- Keep the call outcome-focused: agree on the next 30 days.',
+      '- Offer the fast-track implementation batch as a first commercial step.',
+    ].join('\n');
+  }
+
+  return [
+    `Notes internes pour l'appel avec ${input.websiteName} :`,
+    `- Pilier le plus faible : ${lowestPillar ? `${lowestPillar[0]} (${lowestPillar[1]})` : 'inconnu'}.`,
+    topFinding
+      ? `- Mettre en avant ${topFinding.title} (${topFinding.severity}).`
+      : '- Aucun constat critique ; vendre la valeur du PDF.',
+    "- Garder l'appel oriente resultat : s'aligner sur les 30 prochains jours.",
+    '- Proposer le lot fast-track comme premier jalon commercial.',
+  ].join('\n');
 }
 
 export function ensurePriorityDepth(
@@ -312,8 +460,23 @@ export function ensurePriorityDepth(
   };
 }
 
+/**
+ * Shape minimale requise par `withDeterministicCost` (sous-ensemble
+ * de l'ExpertReport). Decouple cette fonction du type Zod complet
+ * pour permettre aux ExpertReportShape (quality gate) comme aux
+ * ExpertReport (zod) de l'appeler.
+ */
+export interface DeterministicCostInput {
+  invoiceScope: Array<{ estimatedHours: number }>;
+  implementationBacklog: Array<{ estimatedHours: number }>;
+  implementationTodo: Array<{ estimatedHours: number }>;
+  priorities: Array<{ estimatedHours: number }>;
+  fastImplementationPlan: Array<{ estimatedHours: number }>;
+  [key: string]: unknown;
+}
+
 export function withDeterministicCost(
-  report: ExpertReport,
+  report: DeterministicCostInput,
   locale: AuditLocale,
   config: DeterministicCostConfig,
 ): Record<string, unknown> {

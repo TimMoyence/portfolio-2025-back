@@ -67,7 +67,9 @@ export function createMockAuditRequestsRepo(): jest.Mocked<IAuditRequestsReposit
 /** Cree un mock du notifier d'audit. */
 export function createMockAuditNotifier(): jest.Mocked<IAuditNotifierPort> {
   return {
-    sendAuditNotification: jest.fn(),
+    sendAuditNotification: jest.fn().mockResolvedValue(undefined),
+    sendClientReport: jest.fn().mockResolvedValue(undefined),
+    sendExpertReport: jest.fn().mockResolvedValue(undefined),
   };
 }
 

@@ -2,6 +2,7 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
+import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
@@ -15,6 +16,22 @@ import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
+const engineScoreSchema = z.object({
+  engine: z.enum(['google', 'bing_chatgpt', 'perplexity', 'gemini_overviews']),
+  score: z.number().min(0).max(100),
+  indexable: z.boolean(),
+  strengths: z.array(z.string()).max(5),
+  blockers: z.array(z.string()).max(5),
+  opportunities: z.array(z.string()).max(5),
+});
+
+const engineCoverageSchema = z.object({
+  google: engineScoreSchema,
+  bingChatGpt: engineScoreSchema,
+  perplexity: engineScoreSchema,
+  geminiOverviews: engineScoreSchema,
+});
+
 const pageRecapSchema = z.object({
   summary: z.string().min(1),
   topIssues: z.array(z.string()).max(6),
@@ -25,6 +42,7 @@ const pageRecapSchema = z.object({
   seoCopyScore: z.number().min(0).max(100),
   priority: z.enum(['high', 'medium', 'low']),
   language: z.enum(['fr', 'en', 'mixed', 'unknown']),
+  engineScores: engineCoverageSchema,
 });
 
 export interface PageAiRecap {
@@ -40,6 +58,12 @@ export interface PageAiRecap {
   topIssues: string[];
   recommendations: string[];
   source: 'llm' | 'fallback';
+  /**
+   * Couverture multi-moteurs (Google, Bing/ChatGPT, Perplexity, Gemini
+   * Overviews) pour la page. Produite par le LLM ou reconstruite de
+   * facon deterministe via les signaux AI en mode fallback.
+   */
+  engineScores: EngineCoverage;
 }
 
 export interface PageAiRecapSummary {
@@ -236,6 +260,13 @@ export class PageAiRecapService {
                   role: 'system',
                   content:
                     locale === 'fr'
+                      ? "Tu dois aussi evaluer la couverture de la page par 4 moteurs distincts, en te basant sur les signaux aiSignals du payload (aiBotsAccess, citationWorthiness, structuredDataQuality) et les meta/headers. Produis un objet engineScores avec 4 entrees: google (Rich Results eligibility, hints Core Web Vitals, EEAT), bingChatGpt (structured data, IndexNow, acces des bots bingbot/chatgpt-user), perplexity (contenu citable, llms.txt, sources/dates/auteur), geminiOverviews (FAQPage/HowTo/Article, densite de contenu). Chaque entree contient engine (identifiant), score 0-100, indexable (bool), strengths/blockers/opportunities (max 5 chacun, courtes phrases actionnables). Base-toi uniquement sur les donnees fournies, sinon 'Non verifiable'."
+                      : "You must also evaluate the page coverage by 4 distinct engines, based on the aiSignals payload (aiBotsAccess, citationWorthiness, structuredDataQuality) and meta/headers. Produce an engineScores object with 4 entries: google (Rich Results eligibility, Core Web Vitals hints, EEAT), bingChatGpt (structured data, IndexNow, bingbot/chatgpt-user access), perplexity (citable content, llms.txt, sources/dates/author), geminiOverviews (FAQPage/HowTo/Article schemas, content density). Each entry has engine (id), score 0-100, indexable (bool), strengths/blockers/opportunities (max 5 each, short actionable phrases). Only use provided data, otherwise write 'Not verifiable'.",
+                },
+                {
+                  role: 'system',
+                  content:
+                    locale === 'fr'
                       ? "Contrainte stricte: aucune langue melangee, aucune speculation sans preuve. Si une donnee manque, ecris 'Non verifiable'."
                       : "Strict rule: no mixed language and no unsupported speculation. If data is missing, write 'Not verifiable'.",
                 },
@@ -269,6 +300,7 @@ export class PageAiRecapService {
             .filter(Boolean)
             .slice(0, 6),
           source: 'llm',
+          engineScores: this.normalizeEngineCoverage(result.engineScores),
         },
         llmAttempted: true,
         llmFailed: false,
@@ -318,6 +350,51 @@ export class PageAiRecapService {
       hasAnalytics: page.hasAnalytics ?? false,
       hasTagManager: page.hasTagManager ?? false,
       hasPixel: page.hasPixel ?? false,
+      aiSignals: page.aiSignals ?? null,
+    };
+  }
+
+  /**
+   * Normalise un objet engineScores produit par le LLM : borne les scores,
+   * tronque les listes, et garantit que l'identifiant engine est correct.
+   */
+  private normalizeEngineCoverage(
+    coverage: z.infer<typeof engineCoverageSchema>,
+  ): EngineCoverage {
+    return {
+      google: this.normalizeEngineScore(coverage.google, 'google'),
+      bingChatGpt: this.normalizeEngineScore(
+        coverage.bingChatGpt,
+        'bing_chatgpt',
+      ),
+      perplexity: this.normalizeEngineScore(coverage.perplexity, 'perplexity'),
+      geminiOverviews: this.normalizeEngineScore(
+        coverage.geminiOverviews,
+        'gemini_overviews',
+      ),
+    };
+  }
+
+  private normalizeEngineScore(
+    value: z.infer<typeof engineScoreSchema>,
+    expected: EngineScore['engine'],
+  ): EngineScore {
+    return {
+      engine: expected,
+      score: this.clampScore(value.score),
+      indexable: Boolean(value.indexable),
+      strengths: value.strengths
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .slice(0, 5),
+      blockers: value.blockers
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .slice(0, 5),
+      opportunities: value.opportunities
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .slice(0, 5),
     };
   }
 
@@ -473,6 +550,252 @@ export class PageAiRecapService {
       topIssues: Array.from(new Set(topIssues)).slice(0, 6),
       recommendations: Array.from(new Set(recommendations)).slice(0, 6),
       source: 'fallback',
+      engineScores: this.buildFallbackEngineCoverage(locale, page),
+    };
+  }
+
+  /**
+   * Construit un EngineCoverage deterministe a partir des signaux AI de la
+   * page (aiBotsAccess, citationWorthiness, structuredDataQuality) et des
+   * meta techniques. Utilise par le fallback et quand le LLM est indisponible.
+   */
+  private buildFallbackEngineCoverage(
+    locale: AuditLocale,
+    page: UrlIndexabilityResult,
+  ): EngineCoverage {
+    const signals = page.aiSignals ?? null;
+    const indexable = Boolean(page.indexable);
+    const hasStructured = Boolean(page.hasStructuredData);
+    const richResults =
+      signals?.structuredDataQuality.googleRichResultsEligible;
+    const aiFriendly = signals?.structuredDataQuality.aiFriendly ?? false;
+    const citation = signals?.citationWorthiness;
+    const bots = signals?.aiBotsAccess;
+
+    const googleStrengths: string[] = [];
+    const googleBlockers: string[] = [];
+    const googleOpps: string[] = [];
+    let googleScore = 55;
+    if (indexable) {
+      googleScore += 10;
+      googleStrengths.push(
+        localizedText(locale, 'Page indexable', 'Page is indexable'),
+      );
+    } else {
+      googleScore -= 25;
+      googleBlockers.push(
+        localizedText(locale, 'Page non indexable', 'Page is non-indexable'),
+      );
+    }
+    if (richResults) {
+      googleScore += 15;
+      googleStrengths.push(
+        localizedText(
+          locale,
+          'Eligible aux Rich Results',
+          'Eligible for Rich Results',
+        ),
+      );
+    } else {
+      googleOpps.push(
+        localizedText(
+          locale,
+          'Ajouter des schemas eligibles Rich Results',
+          'Add Rich Results eligible schemas',
+        ),
+      );
+    }
+    if ((page.responseTimeMs ?? 0) > 2500) {
+      googleScore -= 10;
+      googleBlockers.push(
+        localizedText(
+          locale,
+          'Temps de reponse eleve (signal Core Web Vitals)',
+          'High response time (Core Web Vitals signal)',
+        ),
+      );
+    }
+
+    const bingStrengths: string[] = [];
+    const bingBlockers: string[] = [];
+    const bingOpps: string[] = [];
+    let bingScore = 50;
+    if (hasStructured) {
+      bingScore += 10;
+      bingStrengths.push(
+        localizedText(
+          locale,
+          'Donnees structurees presentes',
+          'Structured data present',
+        ),
+      );
+    } else {
+      bingOpps.push(
+        localizedText(
+          locale,
+          'Ajouter des donnees structurees JSON-LD',
+          'Add JSON-LD structured data',
+        ),
+      );
+    }
+    if (bots?.chatGptUser === 'allowed') {
+      bingScore += 15;
+      bingStrengths.push(
+        localizedText(
+          locale,
+          'ChatGPT-User autorise par robots.txt',
+          'ChatGPT-User allowed by robots.txt',
+        ),
+      );
+    } else if (bots?.chatGptUser === 'disallowed') {
+      bingScore -= 15;
+      bingBlockers.push(
+        localizedText(
+          locale,
+          'ChatGPT-User bloque par robots.txt',
+          'ChatGPT-User blocked by robots.txt',
+        ),
+      );
+    }
+    bingOpps.push(
+      localizedText(
+        locale,
+        'Activer IndexNow pour Bing',
+        'Enable IndexNow for Bing',
+      ),
+    );
+
+    const perplexityStrengths: string[] = [];
+    const perplexityBlockers: string[] = [];
+    const perplexityOpps: string[] = [];
+    let perplexityScore = 50;
+    if (citation) {
+      perplexityScore = Math.round((perplexityScore + citation.score) / 2);
+      if (citation.hasSources) {
+        perplexityStrengths.push(
+          localizedText(
+            locale,
+            'Sources citables presentes',
+            'Citable sources present',
+          ),
+        );
+      }
+      if (citation.hasAuthor) {
+        perplexityStrengths.push(
+          localizedText(locale, 'Auteur identifie', 'Author identified'),
+        );
+      }
+      if (!citation.hasFacts) {
+        perplexityOpps.push(
+          localizedText(
+            locale,
+            'Ajouter des faits datables et chiffres',
+            'Add datable facts and figures',
+          ),
+        );
+      }
+    }
+    if (bots?.perplexityBot === 'disallowed') {
+      perplexityScore -= 15;
+      perplexityBlockers.push(
+        localizedText(
+          locale,
+          'PerplexityBot bloque par robots.txt',
+          'PerplexityBot blocked by robots.txt',
+        ),
+      );
+    }
+    if (!signals?.llmsTxt?.present) {
+      perplexityOpps.push(
+        localizedText(
+          locale,
+          'Publier un fichier llms.txt',
+          'Publish an llms.txt file',
+        ),
+      );
+    }
+
+    const geminiStrengths: string[] = [];
+    const geminiBlockers: string[] = [];
+    const geminiOpps: string[] = [];
+    let geminiScore = 50;
+    if (aiFriendly) {
+      geminiScore += 15;
+      geminiStrengths.push(
+        localizedText(
+          locale,
+          'Schemas AI-friendly detectes',
+          'AI-friendly schemas detected',
+        ),
+      );
+    } else {
+      geminiOpps.push(
+        localizedText(
+          locale,
+          'Ajouter FAQPage / HowTo / Article',
+          'Add FAQPage / HowTo / Article schemas',
+        ),
+      );
+    }
+    if ((page.wordCount ?? 0) >= 400) {
+      geminiScore += 10;
+      geminiStrengths.push(
+        localizedText(locale, 'Contenu dense', 'Dense content'),
+      );
+    } else if ((page.wordCount ?? 0) < 150) {
+      geminiScore -= 10;
+      geminiBlockers.push(
+        localizedText(
+          locale,
+          'Contenu trop faible pour AI Overviews',
+          'Content too thin for AI Overviews',
+        ),
+      );
+    }
+    if (bots?.googleExtended === 'disallowed') {
+      geminiScore -= 10;
+      geminiBlockers.push(
+        localizedText(
+          locale,
+          'Google-Extended bloque',
+          'Google-Extended blocked',
+        ),
+      );
+    }
+
+    return {
+      google: {
+        engine: 'google',
+        score: this.clampScore(googleScore),
+        indexable,
+        strengths: Array.from(new Set(googleStrengths)).slice(0, 5),
+        blockers: Array.from(new Set(googleBlockers)).slice(0, 5),
+        opportunities: Array.from(new Set(googleOpps)).slice(0, 5),
+      },
+      bingChatGpt: {
+        engine: 'bing_chatgpt',
+        score: this.clampScore(bingScore),
+        indexable: bots?.chatGptUser !== 'disallowed' && indexable,
+        strengths: Array.from(new Set(bingStrengths)).slice(0, 5),
+        blockers: Array.from(new Set(bingBlockers)).slice(0, 5),
+        opportunities: Array.from(new Set(bingOpps)).slice(0, 5),
+      },
+      perplexity: {
+        engine: 'perplexity',
+        score: this.clampScore(perplexityScore),
+        indexable: bots?.perplexityBot !== 'disallowed' && indexable,
+        strengths: Array.from(new Set(perplexityStrengths)).slice(0, 5),
+        blockers: Array.from(new Set(perplexityBlockers)).slice(0, 5),
+        opportunities: Array.from(new Set(perplexityOpps)).slice(0, 5),
+      },
+      geminiOverviews: {
+        engine: 'gemini_overviews',
+        score: this.clampScore(geminiScore),
+        indexable: bots?.googleExtended !== 'disallowed' && indexable,
+        strengths: Array.from(new Set(geminiStrengths)).slice(0, 5),
+        blockers: Array.from(new Set(geminiBlockers)).slice(0, 5),
+        opportunities: Array.from(new Set(geminiOpps)).slice(0, 5),
+      },
     };
   }
 

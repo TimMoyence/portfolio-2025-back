@@ -1,4 +1,9 @@
 import { AuditLocale } from './audit-locale.util';
+import type {
+  ClientReportSynthesis,
+  ExpertReportSynthesis,
+} from './AuditReportTiers';
+import type { EngineCoverage } from './EngineCoverage';
 
 export type AuditProcessingStatus =
   | 'PENDING'
@@ -26,6 +31,9 @@ export interface AuditSnapshot {
   pillarScores: Record<string, number>;
   summaryText: string | null;
   fullReport: Record<string, unknown> | null;
+  clientReport?: ClientReportSynthesis | null;
+  expertReport?: ExpertReportSynthesis | null;
+  engineCoverage?: EngineCoverage | null;
   createdAt: Date;
   updatedAt: Date;
   startedAt: Date | null;
@@ -56,6 +64,9 @@ export interface UpdateAuditStateInput {
   pillarScores?: Record<string, number>;
   summaryText?: string | null;
   fullReport?: Record<string, unknown> | null;
+  clientReport?: ClientReportSynthesis | null;
+  expertReport?: ExpertReportSynthesis | null;
+  engineCoverage?: EngineCoverage | null;
   done?: boolean;
   startedAt?: Date | null;
   finishedAt?: Date | null;

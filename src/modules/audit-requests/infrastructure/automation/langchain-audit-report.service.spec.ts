@@ -186,6 +186,46 @@ describe('LangchainAuditReportService', () => {
     );
   });
 
+  it('projects an ExpertReportSynthesis with the 3 new fields in fallback mode', async () => {
+    const service = new LangchainAuditReportService(
+      config,
+      new ReportQualityGateService(),
+    );
+    const result = await service.generate(input);
+
+    expect(result.expertSynthesis).toBeDefined();
+    expect(result.expertSynthesis.perPageAnalysis.length).toBeGreaterThan(0);
+    expect(
+      result.expertSynthesis.clientEmailDraft.subject.length,
+    ).toBeGreaterThan(0);
+    expect(result.expertSynthesis.clientEmailDraft.body.length).toBeGreaterThan(
+      200,
+    );
+    expect(result.expertSynthesis.internalNotes.length).toBeGreaterThan(10);
+    expect(result.expertSynthesis.crossPageFindings.length).toBeGreaterThan(0);
+    expect(result.expertSynthesis.executiveSummary.length).toBeGreaterThan(0);
+  });
+
+  it('includes perPageAnalysis and clientEmailDraft in the adminReport fallback', async () => {
+    const service = new LangchainAuditReportService(
+      config,
+      new ReportQualityGateService(),
+    );
+    const result = await service.generate(input);
+    const admin = result.adminReport;
+
+    expect(admin['perPageAnalysis']).toBeInstanceOf(Array);
+    expect((admin['perPageAnalysis'] as unknown[]).length).toBeGreaterThan(0);
+    const draft = admin['clientEmailDraft'] as {
+      subject: string;
+      body: string;
+    };
+    expect(draft.subject.length).toBeGreaterThan(0);
+    expect(draft.body.length).toBeGreaterThan(200);
+    expect(typeof admin['internalNotes']).toBe('string');
+    expect((admin['internalNotes'] as string).length).toBeGreaterThan(10);
+  });
+
   it('keeps client summary and uses expert fallback when compact expert times out', async () => {
     const service = new LangchainAuditReportService(
       {

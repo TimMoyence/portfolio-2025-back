@@ -67,6 +67,112 @@ describe('PageAiRecapService', () => {
     expect(result.summary.llmRecaps).toBe(0);
   });
 
+  it('produces a deterministic engineScores coverage in fallback mode', async () => {
+    const service = new PageAiRecapService(config);
+    const result = await service.analyzePages({
+      locale: 'en',
+      websiteName: 'example.com',
+      normalizedUrl: 'https://example.com',
+      pages: [
+        {
+          ...page,
+          aiSignals: {
+            llmsTxt: null,
+            aiBotsAccess: {
+              gptBot: 'allowed',
+              chatGptUser: 'allowed',
+              perplexityBot: 'allowed',
+              claudeBot: 'allowed',
+              googleExtended: 'allowed',
+              xRobotsNoAi: false,
+              xRobotsNoImageAi: false,
+            },
+            citationWorthiness: {
+              score: 72,
+              hasFacts: true,
+              hasSources: true,
+              hasDates: true,
+              hasAuthor: true,
+              contentDensity: 'high',
+            },
+            structuredDataQuality: {
+              score: 80,
+              total: 2,
+              types: ['Organization', 'FAQPage'],
+              googleRichResultsEligible: true,
+              aiFriendly: true,
+              invalidBlocks: [],
+            },
+          },
+        },
+      ],
+    });
+
+    const recap = result.recaps[0];
+    expect(recap.engineScores).toBeDefined();
+    expect(recap.engineScores.google.engine).toBe('google');
+    expect(recap.engineScores.bingChatGpt.engine).toBe('bing_chatgpt');
+    expect(recap.engineScores.perplexity.engine).toBe('perplexity');
+    expect(recap.engineScores.geminiOverviews.engine).toBe('gemini_overviews');
+    expect(recap.engineScores.google.score).toBeGreaterThanOrEqual(0);
+    expect(recap.engineScores.google.score).toBeLessThanOrEqual(100);
+    expect(recap.engineScores.google.indexable).toBe(true);
+    expect(recap.engineScores.geminiOverviews.strengths.length).toBeGreaterThan(
+      0,
+    );
+  });
+
+  it('flags blocked bots and non-indexable pages in the engineScores fallback', async () => {
+    const service = new PageAiRecapService(config);
+    const result = await service.analyzePages({
+      locale: 'fr',
+      websiteName: 'example.com',
+      normalizedUrl: 'https://example.com',
+      pages: [
+        {
+          ...page,
+          indexable: false,
+          aiSignals: {
+            llmsTxt: null,
+            aiBotsAccess: {
+              gptBot: 'disallowed',
+              chatGptUser: 'disallowed',
+              perplexityBot: 'disallowed',
+              claudeBot: 'disallowed',
+              googleExtended: 'disallowed',
+              xRobotsNoAi: true,
+              xRobotsNoImageAi: false,
+            },
+            citationWorthiness: {
+              score: 20,
+              hasFacts: false,
+              hasSources: false,
+              hasDates: false,
+              hasAuthor: false,
+              contentDensity: 'low',
+            },
+            structuredDataQuality: {
+              score: 10,
+              total: 0,
+              types: [],
+              googleRichResultsEligible: false,
+              aiFriendly: false,
+              invalidBlocks: [],
+            },
+          },
+        },
+      ],
+    });
+
+    const coverage = result.recaps[0].engineScores;
+    expect(coverage.google.indexable).toBe(false);
+    expect(coverage.bingChatGpt.indexable).toBe(false);
+    expect(coverage.perplexity.indexable).toBe(false);
+    expect(coverage.geminiOverviews.indexable).toBe(false);
+    expect(coverage.bingChatGpt.blockers.length).toBeGreaterThan(0);
+    expect(coverage.perplexity.blockers.length).toBeGreaterThan(0);
+  });
+
   it('opens circuit breaker and skips remaining llm page calls on repeated failures', async () => {
     const service = new PageAiRecapService({
       ...config,
@@ -92,8 +198,16 @@ describe('PageAiRecapService', () => {
         },
         'analyzeSinglePage',
       )
-      .mockImplementation((_locale, currentPage) =>
-        Promise.resolve({
+      .mockImplementation((_locale, currentPage) => {
+        const emptyEngine = {
+          engine: 'google' as const,
+          score: 0,
+          indexable: false,
+          strengths: [],
+          blockers: [],
+          opportunities: [],
+        };
+        return Promise.resolve({
           recap: {
             url: currentPage.url,
             finalUrl: currentPage.finalUrl,
@@ -107,11 +221,17 @@ describe('PageAiRecapService', () => {
             topIssues: ['timeout'],
             recommendations: ['retry later'],
             source: 'fallback',
+            engineScores: {
+              google: emptyEngine,
+              bingChatGpt: { ...emptyEngine, engine: 'bing_chatgpt' },
+              perplexity: { ...emptyEngine, engine: 'perplexity' },
+              geminiOverviews: { ...emptyEngine, engine: 'gemini_overviews' },
+            },
           },
           llmAttempted: true,
           llmFailed: true,
-        }),
-      );
+        });
+      });
 
     const result = await service.analyzePages({
       locale: 'en',

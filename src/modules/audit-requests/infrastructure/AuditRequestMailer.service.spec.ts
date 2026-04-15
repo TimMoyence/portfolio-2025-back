@@ -408,6 +408,334 @@ describe('AuditRequestMailerService', () => {
     });
   });
 
+  describe('sendClientReport', () => {
+    const buildClientReport = () => ({
+      executiveSummary:
+        'Votre site a un potentiel enorme mais quelques blocages.',
+      topFindings: [
+        {
+          title: 'Meta descriptions manquantes',
+          impact: 'Perte de CTR estimee a 15%',
+          severity: 'high' as const,
+        },
+      ],
+      googleVsAiMatrix: {
+        googleVisibility: { score: 78, summary: 'Bonne indexation Google' },
+        aiVisibility: { score: 42, summary: 'Peu cite par les LLMs' },
+      },
+      pillarScorecard: [
+        { pillar: 'seo', score: 70, target: 80, status: 'warning' as const },
+        {
+          pillar: 'performance',
+          score: 65,
+          target: 80,
+          status: 'warning' as const,
+        },
+        { pillar: 'technical', score: 85, target: 80, status: 'ok' as const },
+        { pillar: 'trust', score: 60, target: 80, status: 'warning' as const },
+        {
+          pillar: 'conversion',
+          score: 55,
+          target: 80,
+          status: 'critical' as const,
+        },
+        {
+          pillar: 'aiVisibility',
+          score: 40,
+          target: 80,
+          status: 'critical' as const,
+        },
+        {
+          pillar: 'citationWorthiness',
+          score: 50,
+          target: 80,
+          status: 'warning' as const,
+        },
+      ],
+      quickWins: [
+        {
+          title: 'Ajouter meta descriptions',
+          businessImpact: '+15% CTR',
+          effort: 'low' as const,
+        },
+        {
+          title: 'Optimiser images',
+          businessImpact: 'Chargement plus rapide',
+          effort: 'low' as const,
+        },
+        {
+          title: 'Schema Organization',
+          businessImpact: 'Rich results',
+          effort: 'medium' as const,
+        },
+      ],
+      cta: {
+        title: 'Prenons 30 minutes',
+        description: 'Pour prioriser les actions ensemble',
+        actionLabel: 'Reserver un creneau',
+      },
+    });
+
+    it('devrait envoyer le rapport client sans pdf', async () => {
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const service = new TestableAuditRequestMailer();
+
+      await service.sendClientReport({
+        to: 'client@example.com',
+        firstName: 'Alice',
+        websiteName: 'mon-site.fr',
+        clientReport: buildClientReport(),
+        pdfBuffer: null,
+      });
+
+      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(call.to).toBe('client@example.com');
+      expect(call.subject).toBe('Votre audit Growth — mon-site.fr');
+      expect(call.attachments).toBeUndefined();
+      expect(call.text).toContain('Alice');
+      expect(call.text).toContain('Meta descriptions manquantes');
+      expect(call.text).toContain('+15% CTR');
+      expect(call.html).toContain('Reserver un creneau');
+      expect(call.replyTo).toBe(DEFAULT_AUDIT_ENV.AUDIT_REPORT_TO);
+    });
+
+    it('devrait attacher le PDF quand pdfBuffer est fourni', async () => {
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const service = new TestableAuditRequestMailer();
+      const pdf = Buffer.from('%PDF-1.4 fake');
+
+      await service.sendClientReport({
+        to: 'client@example.com',
+        firstName: null,
+        websiteName: 'mon-site.fr',
+        clientReport: buildClientReport(),
+        pdfBuffer: pdf,
+      });
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(call.attachments).toHaveLength(1);
+      expect(call.attachments[0].filename).toContain('mon-site-fr');
+      expect(call.attachments[0].content).toBe(pdf);
+      expect(call.attachments[0].contentType).toBe('application/pdf');
+    });
+
+    it('devrait escape les champs LLM contenant du HTML', async () => {
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const service = new TestableAuditRequestMailer();
+      const report = buildClientReport();
+      const dangerousReport = {
+        ...report,
+        executiveSummary: '<script>alert(1)</script>',
+      };
+
+      await service.sendClientReport({
+        to: 'client@example.com',
+        firstName: null,
+        websiteName: 'mon-site.fr',
+        clientReport: dangerousReport,
+        pdfBuffer: null,
+      });
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(call.html).not.toContain('<script>alert(1)</script>');
+      expect(call.html).toContain('&lt;script&gt;');
+    });
+
+    it('devrait ne rien faire si le transporter est absent', async () => {
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      delete process.env.SMTP_HOST;
+      delete process.env.SMTP_PORT;
+      delete process.env.SMTP_USER;
+      delete process.env.SMTP_PASS;
+      const service = new TestableAuditRequestMailer();
+
+      await expect(
+        service.sendClientReport({
+          to: 'client@example.com',
+          firstName: null,
+          websiteName: 'mon-site.fr',
+          clientReport: buildClientReport(),
+          pdfBuffer: null,
+        }),
+      ).resolves.toBeUndefined();
+    });
+
+    it('devrait ne rien faire si le destinataire est vide', async () => {
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const service = new TestableAuditRequestMailer();
+
+      await service.sendClientReport({
+        to: '',
+        firstName: null,
+        websiteName: 'mon-site.fr',
+        clientReport: buildClientReport(),
+        pdfBuffer: null,
+      });
+
+      expect(mockTransporter.sendMail).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('sendExpertReport', () => {
+    const buildClientReport = () => ({
+      executiveSummary: 'Synthese client',
+      topFindings: [],
+      googleVsAiMatrix: {
+        googleVisibility: { score: 78, summary: 'OK Google' },
+        aiVisibility: { score: 42, summary: 'A ameliorer LLMs' },
+      },
+      pillarScorecard: [],
+      quickWins: [],
+      cta: {
+        title: 'CTA',
+        description: 'Description',
+        actionLabel: 'Action',
+      },
+    });
+
+    const buildExpertReport = () => ({
+      executiveSummary: 'Synthese expert detaillee',
+      perPageAnalysis: [],
+      crossPageFindings: [
+        {
+          title: 'Canonicals inconsistantes',
+          severity: 'high' as const,
+          affectedUrls: ['https://ex.fr/a', 'https://ex.fr/b'],
+          rootCause: 'CMS genere des URLs dupliquees',
+          remediation: 'Forcer canonical absolu',
+        },
+      ],
+      priorityBacklog: [
+        {
+          title: 'Corriger canonicals',
+          impact: 'high' as const,
+          effort: 'medium' as const,
+          acceptanceCriteria: ['Tous les canonicals sont absolus'],
+        },
+      ],
+      clientEmailDraft: {
+        subject: 'Resultats audit — actions prioritaires',
+        body: 'Bonjour,\n\nVoici les 3 axes majeurs...\n',
+      },
+      internalNotes: 'Attention: le client a deja refuse une refonte.',
+    });
+
+    it('devrait envoyer le rapport expert avec PDF attache', async () => {
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const service = new TestableAuditRequestMailer();
+      const pdf = Buffer.from('%PDF-1.4 expert');
+
+      await service.sendExpertReport({
+        websiteName: 'mon-site.fr',
+        auditId: 'audit-42',
+        clientContact: { method: 'EMAIL', value: 'client@example.com' },
+        clientReport: buildClientReport(),
+        expertReport: buildExpertReport(),
+        pdfBuffer: pdf,
+      });
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(call.to).toBe(DEFAULT_AUDIT_ENV.AUDIT_REPORT_TO);
+      expect(call.subject).toBe('[Audit Expert] mon-site.fr');
+      expect(call.attachments).toHaveLength(1);
+      expect(call.attachments[0].content).toBe(pdf);
+      expect(call.text).toContain('audit-42');
+      expect(call.text).toContain('Synthese expert detaillee');
+      // Inclut le draft mail client
+      expect(call.text).toContain(
+        'Subject : Resultats audit — actions prioritaires',
+      );
+      expect(call.text).toContain('Voici les 3 axes majeurs');
+      // Inclut les findings cross-page
+      expect(call.text).toContain('Canonicals inconsistantes');
+      // Inclut le backlog
+      expect(call.text).toContain('Corriger canonicals');
+      // Inclut les internal notes
+      expect(call.text).toContain('refuse une refonte');
+    });
+
+    it('devrait signaler un contact PHONE avec une alerte visuelle', async () => {
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const service = new TestableAuditRequestMailer();
+
+      await service.sendExpertReport({
+        websiteName: 'mon-site.fr',
+        auditId: 'audit-42',
+        clientContact: { method: 'PHONE', value: '+33612345678' },
+        clientReport: buildClientReport(),
+        expertReport: buildExpertReport(),
+        pdfBuffer: Buffer.from('pdf'),
+      });
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(call.text).toContain('TELEPHONE');
+      expect(call.text).toContain('+33612345678');
+      expect(call.html).toContain('appel requis');
+      expect(call.html).toContain('+33612345678');
+    });
+
+    it('devrait escape le HTML dans le draft client', async () => {
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const service = new TestableAuditRequestMailer();
+      const expert = {
+        ...buildExpertReport(),
+        clientEmailDraft: {
+          subject: '<script>xss</script>',
+          body: '<img src=x onerror=1>',
+        },
+      };
+
+      await service.sendExpertReport({
+        websiteName: 'mon-site.fr',
+        auditId: 'audit-42',
+        clientContact: { method: 'EMAIL', value: 'client@example.com' },
+        clientReport: buildClientReport(),
+        expertReport: expert,
+        pdfBuffer: Buffer.from('pdf'),
+      });
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(call.html).not.toContain('<script>xss</script>');
+      expect(call.html).not.toContain('<img src=x');
+      expect(call.html).toContain('&lt;script&gt;xss&lt;/script&gt;');
+    });
+
+    it('devrait ne rien faire sans transporter', async () => {
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      delete process.env.SMTP_HOST;
+      delete process.env.SMTP_PORT;
+      delete process.env.SMTP_USER;
+      delete process.env.SMTP_PASS;
+      const service = new TestableAuditRequestMailer();
+
+      await expect(
+        service.sendExpertReport({
+          websiteName: 'mon-site.fr',
+          auditId: 'audit-42',
+          clientContact: { method: 'EMAIL', value: 'client@example.com' },
+          clientReport: buildClientReport(),
+          expertReport: buildExpertReport(),
+          pdfBuffer: Buffer.from('pdf'),
+        }),
+      ).resolves.toBeUndefined();
+    });
+  });
+
   describe('escapeHtml', () => {
     it('devrait echapper tous les caracteres HTML dangereux', () => {
       // Arrange

@@ -1,10 +1,55 @@
 import { Injectable } from '@nestjs/common';
+import type {
+  AiBotsAccess,
+  LlmsTxtAnalysis,
+} from '../../domain/AiIndexability';
+import type { StructuredDataQualityResult } from '../../domain/StructuredDataQuality';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
+/**
+ * Scores bornés 0-100 pour les 7 piliers de l'audit.
+ *
+ * Les 5 premiers sont historiques (phase 0). `aiVisibility` et
+ * `citationWorthiness` sont introduits en phase 4 pour mesurer
+ * la compatibilité du site avec les moteurs IA générative.
+ */
+export interface PillarScores {
+  seo: number;
+  performance: number;
+  technical: number;
+  trust: number;
+  conversion: number;
+  aiVisibility: number;
+  citationWorthiness: number;
+  // Index signature pour rester compatible avec les consumers legacy
+  // typés `Record<string, number>` (entité TypeORM, StreamAuditEvents,
+  // LLM payload builder, etc.).
+  [key: string]: number;
+}
+
+/**
+ * Entrée du scorer `aiVisibility` — combine un signal site-level
+ * (llms.txt) et des signaux agrégés sur l'échantillon de pages.
+ */
+export interface AiVisibilityInput {
+  llmsTxt: LlmsTxtAnalysis | null;
+  aiBotsAccess: ReadonlyArray<AiBotsAccess>;
+  structuredDataQuality: ReadonlyArray<StructuredDataQualityResult>;
+}
+
+/**
+ * Options site-level passées au scorer — typiquement le résultat
+ * de `LlmsTxtAnalyzerService.analyze()` récupéré une fois au niveau
+ * domaine par le pipeline.
+ */
+export interface ScoringSiteSignals {
+  llmsTxt?: LlmsTxtAnalysis | null;
+}
+
 export interface AuditScoreResult {
-  pillarScores: Record<string, number>;
+  pillarScores: PillarScores;
   quickWins: string[];
   keyChecks: Record<string, unknown>;
 }
@@ -16,6 +61,7 @@ export class ScoringService {
     sitemapUrls: string[],
     sampledUrls: UrlIndexabilityResult[],
     locale: AuditLocale = 'fr',
+    siteSignals: ScoringSiteSignals = {},
   ): AuditScoreResult {
     const t = this.copy(locale);
     const quickWins: string[] = [];
@@ -149,12 +195,34 @@ export class ScoringService {
       quickWins.push(t.quickWins.cookies);
     }
 
-    const pillarScores = {
+    // Piliers IA — agrégation des signaux issus des sampledUrls + site.
+    const aiBotsAccess = sampledUrls
+      .map((entry) => entry.aiSignals?.aiBotsAccess)
+      .filter((signal): signal is AiBotsAccess => Boolean(signal));
+    const structuredDataQuality = sampledUrls
+      .map((entry) => entry.aiSignals?.structuredDataQuality)
+      .filter((signal): signal is StructuredDataQualityResult =>
+        Boolean(signal),
+      );
+    const citationScores = sampledUrls
+      .map((entry) => entry.aiSignals?.citationWorthiness?.score)
+      .filter((score): score is number => typeof score === 'number');
+
+    const aiVisibility = this.scoreAiVisibility({
+      llmsTxt: siteSignals.llmsTxt ?? null,
+      aiBotsAccess,
+      structuredDataQuality,
+    });
+    const citationWorthiness = this.scoreCitationWorthiness(citationScores);
+
+    const pillarScores: PillarScores = {
       seo: this.clamp(seo),
       performance: this.clamp(performance),
       technical: this.clamp(technical),
       trust: this.clamp(trust),
       conversion: this.clamp(conversion),
+      aiVisibility,
+      citationWorthiness,
     };
 
     return {
@@ -208,6 +276,53 @@ export class ScoringService {
         },
       },
     };
+  }
+
+  /**
+   * Calcule le score `aiVisibility` (0-100) d'un site en combinant :
+   * - base fixe (20)
+   * - présence du fichier `llms.txt` (+20)
+   * - `complianceScore` du `llms.txt` pondéré (max +15)
+   * - proportion des pages où `gptBot` et `googleExtended` sont autorisés (+25 max)
+   * - proportion des pages avec `structuredDataQuality.aiFriendly` (+20 max)
+   *
+   * Le résultat est borné 0-100. En absence totale de signaux, renvoie 20
+   * (base), ce qui reflète une visibilité IA minimale non évaluable.
+   */
+  scoreAiVisibility(input: AiVisibilityInput): number {
+    let score = 20;
+    if (input.llmsTxt?.present) {
+      score += 20;
+      score += Math.min(15, input.llmsTxt.complianceScore * 0.15);
+    }
+
+    if (input.aiBotsAccess.length > 0) {
+      const friendly = input.aiBotsAccess.filter(
+        (bots) =>
+          bots.gptBot !== 'disallowed' && bots.googleExtended !== 'disallowed',
+      ).length;
+      score += (friendly / input.aiBotsAccess.length) * 25;
+    }
+
+    if (input.structuredDataQuality.length > 0) {
+      const aiFriendly = input.structuredDataQuality.filter(
+        (sd) => sd.aiFriendly,
+      ).length;
+      score += (aiFriendly / input.structuredDataQuality.length) * 20;
+    }
+
+    return this.clamp(score);
+  }
+
+  /**
+   * Calcule le score `citationWorthiness` (0-100) comme moyenne arithmétique
+   * arrondie des scores par page fournis par `CitationWorthinessService`.
+   * Renvoie 0 si l'échantillon est vide (aucune page analysée).
+   */
+  scoreCitationWorthiness(perPageScores: ReadonlyArray<number>): number {
+    if (perPageScores.length === 0) return 0;
+    const sum = perPageScores.reduce((acc, value) => acc + value, 0);
+    return this.clamp(sum / perPageScores.length);
   }
 
   private clamp(value: number): number {

@@ -122,6 +122,7 @@ export class StreamAuditEventsUseCase {
           keyChecks: audit.keyChecks,
           quickWins: audit.quickWins,
           pillarScores: audit.pillarScores,
+          clientReport: audit.clientReport ?? null,
           updatedAt,
         },
       };

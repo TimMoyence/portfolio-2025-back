@@ -11,6 +11,7 @@ import {
 } from '../../domain/token';
 import { AuditRequestMailerService } from '../AuditRequestMailer.service';
 import type { AuditAutomationConfig } from './audit.config';
+import { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
 import {
   DeepUrlAnalysisResult,
   DeepUrlAnalysisService,
@@ -22,11 +23,13 @@ import {
   LangchainAuditOutput,
   LlmSynthesisProgressEvent,
 } from './langchain-audit-report.service';
+import { LlmsTxtAnalyzerService } from './llms-txt-analyzer.service';
 import {
   PageAiRecap,
   PageAiRecapService,
   PageAiRecapSummary,
 } from './page-ai-recap.service';
+import type { LlmsTxtAnalysis } from '../../domain/AiIndexability';
 import { ScoringService } from './scoring.service';
 import { SafeFetchService } from './safe-fetch.service';
 import { SitemapDiscoveryService } from './sitemap-discovery.service';
@@ -54,6 +57,8 @@ export class AuditPipelineService {
     private readonly scoring: ScoringService,
     private readonly llmReport: LangchainAuditReportService,
     private readonly mailer: AuditRequestMailerService,
+    private readonly llmsTxtAnalyzer: LlmsTxtAnalyzerService,
+    private readonly deliveryOrchestrator: AuditDeliveryOrchestrator,
   ) {}
 
   async run(auditId: string): Promise<void> {
@@ -95,6 +100,14 @@ export class AuditPipelineService {
         },
       };
 
+      const homepageOrigin = this.safeOrigin(homepage.finalUrl);
+      const llmsTxtAnalysis = await this.runLlmsTxtAnalysis(homepageOrigin);
+      const robotsTxt = await this.fetchRobotsTxt(homepageOrigin);
+      const technicalKeyChecksWithAi = {
+        ...technicalKeyChecks,
+        llmsTxt: llmsTxtAnalysis,
+      };
+
       await this.repo.updateState(auditId, {
         progress: 20,
         step: t.steps.homepageBaselineReady,
@@ -102,7 +115,7 @@ export class AuditPipelineService {
         redirectChain: homepage.redirectChain,
         quickWins: fastScoring.quickWins.slice(0, 3),
         pillarScores: fastScoring.pillarScores,
-        keyChecks: technicalKeyChecks,
+        keyChecks: technicalKeyChecksWithAi,
       });
 
       await this.repo.updateState(auditId, {
@@ -130,8 +143,9 @@ export class AuditPipelineService {
       const pageSnapshots = await this.analyzeTechnicalPagesPhase({
         auditId,
         urls: selectedUrls,
-        baseKeyChecks: technicalKeyChecks,
+        baseKeyChecks: technicalKeyChecksWithAi,
         stepForProgress: t.steps.pagesTechnical,
+        robotsTxt,
       });
 
       const deepUrlAnalysis = this.deepUrlAnalysis.analyze(
@@ -148,6 +162,7 @@ export class AuditPipelineService {
         sitemapResult.sitemapUrls,
         pageSnapshots,
         locale,
+        { llmsTxt: llmsTxtAnalysis },
       );
 
       await this.repo.updateState(auditId, {
@@ -159,6 +174,7 @@ export class AuditPipelineService {
         ...scoring.keyChecks,
         deepUrlAnalysis: deepUrlAnalysis.metrics,
         techFingerprint,
+        llmsTxt: llmsTxtAnalysis,
       };
       const pageAi = await this.analyzePageAiPhase({
         auditId,
@@ -261,21 +277,23 @@ export class AuditPipelineService {
         finishedAt: new Date(),
       });
 
-      void this.mailer
-        .sendAuditReportNotification({
-          auditId,
-          websiteName: audit.websiteName,
-          contactMethod: audit.contactMethod,
-          contactValue: audit.contactValue,
-          locale,
-          summaryText: llmOutput.summaryText,
-          fullReport,
-        })
-        .catch((error) =>
-          this.logger.warn(
-            `Audit report email failed for ${auditId}: ${String(error)}`,
-          ),
-        );
+      // Note: l'ancien envoi `sendAuditReportNotification` (dump JSON admin legacy)
+      // a ete retire en Loop #2 pour eviter un double email admin. Le chemin
+      // officiel passe desormais par `deliveryOrchestrator.runForAudit` qui orchestre
+      // la generation et l'envoi des rapports (notification, client, expert).
+      await this.deliveryOrchestrator.runForAudit({
+        auditId,
+        locale,
+        websiteName: audit.websiteName,
+        contactMethod: audit.contactMethod,
+        contactValue: audit.contactValue,
+        normalizedUrl: normalized.normalizedUrl,
+        pillarScores: scoring.pillarScores,
+        quickWins: fullQuickWins,
+        pageRecaps: pageAi.recaps,
+        expertReport: llmOutput.expertSynthesis,
+        deepFindings: deepUrlAnalysis.findings,
+      });
     } catch (error) {
       await this.repo.updateState(auditId, {
         processingStatus: 'FAILED',
@@ -296,6 +314,7 @@ export class AuditPipelineService {
     urls: string[];
     baseKeyChecks: Record<string, unknown>;
     stepForProgress: (done: number, total: number) => string;
+    robotsTxt: string;
   }): Promise<UrlIndexabilityResult[]> {
     let writeQueue = Promise.resolve();
     let lastDone = 0;
@@ -330,11 +349,76 @@ export class AuditPipelineService {
     };
 
     const pageSnapshots = await this.urlIndexability.analyzeUrls(input.urls, {
+      robotsTxt: input.robotsTxt,
       onUrlAnalyzed: async (result, done, total) =>
         enqueueUpdate(done, total, result.url),
     });
     await writeQueue;
     return pageSnapshots;
+  }
+
+  /**
+   * Analyse le fichier `llms.txt` au niveau site. Ne lève jamais — un échec
+   * retourne un résultat "absent" typé pour ne pas casser le pipeline.
+   */
+  private async runLlmsTxtAnalysis(
+    origin: string | null,
+  ): Promise<LlmsTxtAnalysis> {
+    if (!origin) {
+      return {
+        present: false,
+        url: '',
+        sizeBytes: 0,
+        sections: [],
+        hasFullVariant: false,
+        complianceScore: 0,
+        issues: ['Origine invalide'],
+      };
+    }
+    try {
+      return await this.llmsTxtAnalyzer.analyze(origin);
+    } catch (error) {
+      this.logger.warn(
+        `llms.txt analysis failed for ${origin}: ${String(error)}`,
+      );
+      return {
+        present: false,
+        url: `${origin}/llms.txt`,
+        sizeBytes: 0,
+        sections: [],
+        hasFullVariant: false,
+        complianceScore: 0,
+        issues: ['Analyse llms.txt échouée'],
+      };
+    }
+  }
+
+  /**
+   * Récupère `robots.txt` une seule fois au niveau site pour le passer au
+   * `AiHeadersAnalyzerService` via `UrlIndexabilityService.analyzeUrls`.
+   * En cas d'erreur réseau ou de 404, retourne une chaîne vide.
+   */
+  private async fetchRobotsTxt(origin: string | null): Promise<string> {
+    if (!origin) return '';
+    const url = `${origin}/robots.txt`;
+    try {
+      const response = await this.safeFetch.fetchText(url);
+      if (response.statusCode < 400 && response.body) {
+        return response.body;
+      }
+      return '';
+    } catch (error) {
+      this.logger.warn(`robots.txt fetch failed for ${url}: ${String(error)}`);
+      return '';
+    }
+  }
+
+  private safeOrigin(url: string): string | null {
+    try {
+      return new URL(url).origin;
+    } catch {
+      return null;
+    }
   }
 
   private async analyzePageAiPhase(input: {
@@ -647,7 +731,6 @@ export class AuditPipelineService {
         candidateUrls: input.candidateUrls.length,
         selectedUrls: input.selectedUrls.length,
         sampledUrls: input.pageSnapshots,
-        deepUrlAnalysis: input.pageSnapshots,
       },
       pages: {
         snapshots: input.pageSnapshots,
