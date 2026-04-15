@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
 import { AuditLocale } from '../../domain/audit-locale.util';
 import { localizedText } from './shared/locale-text.util';
+import {
+  ACTIONABLE_PILLARS,
+  PILLAR_KEYS,
+  type ActionablePillarKey,
+} from './scoring.service';
 
 /**
  * Resultat de validation d'un rapport (client ou expert). `valid` est
@@ -14,15 +19,11 @@ export interface TierValidationResult {
   shouldFallback: boolean;
 }
 
-const REQUIRED_CLIENT_PILLARS: ReadonlyArray<string> = [
-  'seo',
-  'performance',
-  'technical',
-  'trust',
-  'conversion',
-  'aiVisibility',
-  'citationWorthiness',
-];
+/**
+ * Cles des piliers attendus dans un rapport client. Source unique :
+ * `PILLAR_KEYS` dans `scoring.service.ts` — garantit la synchro si la liste evolue.
+ */
+const REQUIRED_CLIENT_PILLARS: ReadonlyArray<string> = PILLAR_KEYS;
 
 const MARKDOWN_PATTERN = /(^|[^\w])[*#]{1,3}[^\s]|^\s*-\s+|```/m;
 
@@ -381,11 +382,23 @@ export class ReportQualityGateService {
     return priorities.slice(0, this.maxPriorities);
   }
 
+  /**
+   * Genere des actions prioritaires derivees des scores de piliers.
+   * Itere uniquement sur `ACTIONABLE_PILLARS` (5 piliers historiques),
+   * les piliers avances `aiVisibility` et `citationWorthiness` etant
+   * exclus tant que leurs recommandations business ne sont pas validees.
+   *
+   * Le `switch` sur `ActionablePillarKey` est exhaustif par construction :
+   * toute evolution de l'union levera une erreur de compilation grace au
+   * `satisfies never` dans la branche par defaut.
+   */
   private pillarBasedActions(
     pillarScores: Record<string, number>,
     locale: AuditLocale,
   ): ExpertPriority[] {
-    const entries = Object.entries(pillarScores)
+    const entries = ACTIONABLE_PILLARS.map(
+      (key) => [key, pillarScores[key]] as const,
+    )
       .filter(([, score]) => Number.isFinite(score))
       .sort((a, b) => a[1] - b[1]);
 
@@ -393,118 +406,131 @@ export class ReportQualityGateService {
 
     for (const [pillar, score] of entries) {
       if (score >= 90) continue;
-      switch (pillar.toLowerCase()) {
-        case 'seo':
-          actions.push({
-            title: localizedText(
-              locale,
-              'Corriger la qualite SEO on-page sur les templates prioritaires',
-              'Fix on-page SEO quality on priority templates',
-            ),
-            severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: localizedText(
-              locale,
-              'Le deficit SEO degrade la visibilite organique et la couverture des intentions.',
-              'SEO gaps reduce organic visibility and intent coverage.',
-            ),
-            recommendedFix: localizedText(
-              locale,
-              'Standardiser title/meta/H1/canonical/lang sur les pages a fort potentiel.',
-              'Standardize title/meta/H1/canonical/lang on high-potential pages.',
-            ),
-            estimatedHours: score < 65 ? 8 : 5,
-          });
-          break;
-        case 'performance':
-          actions.push({
-            title: localizedText(
-              locale,
-              'Optimiser les pages lentes et le budget de rendu',
-              'Optimize slow pages and rendering budget',
-            ),
-            severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: localizedText(
-              locale,
-              'La lenteur penalise conversion, crawl budget et experience utilisateur.',
-              'Slowness hurts conversion, crawl budget, and user experience.',
-            ),
-            recommendedFix: localizedText(
-              locale,
-              'Prioriser cache, poids des assets, critical CSS et reduction JS.',
-              'Prioritize caching, asset weight reduction, critical CSS, and JS reduction.',
-            ),
-            estimatedHours: score < 65 ? 10 : 6,
-          });
-          break;
-        case 'technical':
-          actions.push({
-            title: localizedText(
-              locale,
-              "Stabiliser l'indexabilite et la conformite technique",
-              'Stabilize indexability and technical compliance',
-            ),
-            severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: localizedText(
-              locale,
-              'Les defauts techniques bloquent la decouverte et la consolidation SEO.',
-              'Technical defects block discovery and SEO consolidation.',
-            ),
-            recommendedFix: localizedText(
-              locale,
-              'Auditer robots, canonicals, statuts HTTP, sitemap et redirections.',
-              'Audit robots, canonicals, HTTP status, sitemap, and redirects.',
-            ),
-            estimatedHours: score < 65 ? 9 : 6,
-          });
-          break;
-        case 'trust':
-          actions.push({
-            title: localizedText(
-              locale,
-              'Renforcer les signaux de confiance et le marquage schema.org',
-              'Strengthen trust signals and schema.org coverage',
-            ),
-            severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: localizedText(
-              locale,
-              'Les signaux de confiance influencent CTR, conversion et perception de marque.',
-              'Trust signals influence CTR, conversion, and brand perception.',
-            ),
-            recommendedFix: localizedText(
-              locale,
-              'Ajouter schemas, preuves sociales, mentions legale et coherence marque.',
-              'Add schema, social proof, legal pages, and brand consistency signals.',
-            ),
-            estimatedHours: score < 65 ? 7 : 4,
-          });
-          break;
-        case 'conversion':
-          actions.push({
-            title: localizedText(
-              locale,
-              'Ameliorer le tunnel de conversion et les points de contact',
-              'Improve conversion funnel and contact touchpoints',
-            ),
-            severity: score < 65 ? 'high' : 'medium',
-            whyItMatters: localizedText(
-              locale,
-              'Les frictions de conversion reduisent la valeur business des visites SEO.',
-              'Conversion friction reduces business value of SEO traffic.',
-            ),
-            recommendedFix: localizedText(
-              locale,
-              'Renforcer CTA, formulaires et navigation vers les pages commerciales.',
-              'Strengthen CTA, forms, and paths to commercial pages.',
-            ),
-            estimatedHours: score < 65 ? 8 : 5,
-          });
-          break;
-        default:
-          break;
-      }
+      actions.push(this.buildPillarAction(pillar, score, locale));
     }
 
     return actions;
+  }
+
+  /**
+   * Construit une action prioritaire pour un pilier actionnable donne.
+   * Utilise un `switch` exhaustif sur `ActionablePillarKey` — toute nouvelle
+   * cle dans l'union provoquera une erreur de compilation jusqu'a ce
+   * qu'une branche soit ajoutee.
+   */
+  private buildPillarAction(
+    pillar: ActionablePillarKey,
+    score: number,
+    locale: AuditLocale,
+  ): ExpertPriority {
+    switch (pillar) {
+      case 'seo':
+        return {
+          title: localizedText(
+            locale,
+            'Corriger la qualite SEO on-page sur les templates prioritaires',
+            'Fix on-page SEO quality on priority templates',
+          ),
+          severity: score < 65 ? 'high' : 'medium',
+          whyItMatters: localizedText(
+            locale,
+            'Le deficit SEO degrade la visibilite organique et la couverture des intentions.',
+            'SEO gaps reduce organic visibility and intent coverage.',
+          ),
+          recommendedFix: localizedText(
+            locale,
+            'Standardiser title/meta/H1/canonical/lang sur les pages a fort potentiel.',
+            'Standardize title/meta/H1/canonical/lang on high-potential pages.',
+          ),
+          estimatedHours: score < 65 ? 8 : 5,
+        };
+      case 'performance':
+        return {
+          title: localizedText(
+            locale,
+            'Optimiser les pages lentes et le budget de rendu',
+            'Optimize slow pages and rendering budget',
+          ),
+          severity: score < 65 ? 'high' : 'medium',
+          whyItMatters: localizedText(
+            locale,
+            'La lenteur penalise conversion, crawl budget et experience utilisateur.',
+            'Slowness hurts conversion, crawl budget, and user experience.',
+          ),
+          recommendedFix: localizedText(
+            locale,
+            'Prioriser cache, poids des assets, critical CSS et reduction JS.',
+            'Prioritize caching, asset weight reduction, critical CSS, and JS reduction.',
+          ),
+          estimatedHours: score < 65 ? 10 : 6,
+        };
+      case 'technical':
+        return {
+          title: localizedText(
+            locale,
+            "Stabiliser l'indexabilite et la conformite technique",
+            'Stabilize indexability and technical compliance',
+          ),
+          severity: score < 65 ? 'high' : 'medium',
+          whyItMatters: localizedText(
+            locale,
+            'Les defauts techniques bloquent la decouverte et la consolidation SEO.',
+            'Technical defects block discovery and SEO consolidation.',
+          ),
+          recommendedFix: localizedText(
+            locale,
+            'Auditer robots, canonicals, statuts HTTP, sitemap et redirections.',
+            'Audit robots, canonicals, HTTP status, sitemap, and redirects.',
+          ),
+          estimatedHours: score < 65 ? 9 : 6,
+        };
+      case 'trust':
+        return {
+          title: localizedText(
+            locale,
+            'Renforcer les signaux de confiance et le marquage schema.org',
+            'Strengthen trust signals and schema.org coverage',
+          ),
+          severity: score < 65 ? 'high' : 'medium',
+          whyItMatters: localizedText(
+            locale,
+            'Les signaux de confiance influencent CTR, conversion et perception de marque.',
+            'Trust signals influence CTR, conversion, and brand perception.',
+          ),
+          recommendedFix: localizedText(
+            locale,
+            'Ajouter schemas, preuves sociales, mentions legale et coherence marque.',
+            'Add schema, social proof, legal pages, and brand consistency signals.',
+          ),
+          estimatedHours: score < 65 ? 7 : 4,
+        };
+      case 'conversion':
+        return {
+          title: localizedText(
+            locale,
+            'Ameliorer le tunnel de conversion et les points de contact',
+            'Improve conversion funnel and contact touchpoints',
+          ),
+          severity: score < 65 ? 'high' : 'medium',
+          whyItMatters: localizedText(
+            locale,
+            'Les frictions de conversion reduisent la valeur business des visites SEO.',
+            'Conversion friction reduces business value of SEO traffic.',
+          ),
+          recommendedFix: localizedText(
+            locale,
+            'Renforcer CTA, formulaires et navigation vers les pages commerciales.',
+            'Strengthen CTA, forms, and paths to commercial pages.',
+          ),
+          estimatedHours: score < 65 ? 8 : 5,
+        };
+      default: {
+        // Exhaustive check : toute nouvelle cle dans ActionablePillarKey
+        // declenchera une erreur de compilation ici.
+        const _exhaustive: never = pillar;
+        throw new Error(`Unhandled actionable pillar: ${String(_exhaustive)}`);
+      }
+    }
   }
 
   private genericActions(

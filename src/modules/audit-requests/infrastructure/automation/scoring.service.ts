@@ -9,25 +9,64 @@ import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
 /**
- * Scores bornés 0-100 pour les 7 piliers de l'audit.
+ * Cle litterale d'un pilier d'audit. Union fermee — toute modification
+ * necessite de mettre a jour `PILLAR_KEYS` et les consommateurs aval
+ * (report quality gate, frontend model, entity mapper si besoin).
+ */
+export type PillarKey =
+  | 'seo'
+  | 'performance'
+  | 'technical'
+  | 'trust'
+  | 'conversion'
+  | 'aiVisibility'
+  | 'citationWorthiness';
+
+/**
+ * Scores bornes 0-100 pour les 7 piliers de l'audit.
  *
  * Les 5 premiers sont historiques (phase 0). `aiVisibility` et
  * `citationWorthiness` sont introduits en phase 4 pour mesurer
- * la compatibilité du site avec les moteurs IA générative.
+ * la compatibilite du site avec les moteurs IA generative.
+ *
+ * Le type est strict (pas d'index signature) pour forcer l'exhaustivite
+ * cote producteur. Les consommateurs "loose" (entite TypeORM, stream
+ * events, langchain input) continuent d'utiliser `Record<string, number>`
+ * comme boundary type — `PillarScores` reste assignable a `Record<string, number>`
+ * par inference structurelle.
  */
-export interface PillarScores {
-  seo: number;
-  performance: number;
-  technical: number;
-  trust: number;
-  conversion: number;
-  aiVisibility: number;
-  citationWorthiness: number;
-  // Index signature pour rester compatible avec les consumers legacy
-  // typés `Record<string, number>` (entité TypeORM, StreamAuditEvents,
-  // LLM payload builder, etc.).
-  [key: string]: number;
-}
+export type PillarScores = Record<PillarKey, number>;
+
+/** Liste ordonnee des 7 cles de piliers — source unique pour l'iteration typee. */
+export const PILLAR_KEYS: readonly PillarKey[] = [
+  'seo',
+  'performance',
+  'technical',
+  'trust',
+  'conversion',
+  'aiVisibility',
+  'citationWorthiness',
+] as const;
+
+/**
+ * Sous-ensemble de piliers qui pilotent la generation d'actions prioritaires
+ * dans `ReportQualityGateService.pillarBasedActions`. `aiVisibility` et
+ * `citationWorthiness` sont scores mais n'emettent pas d'actions — a activer
+ * quand les recommandations business correspondantes seront validees.
+ */
+export type ActionablePillarKey = Exclude<
+  PillarKey,
+  'aiVisibility' | 'citationWorthiness'
+>;
+
+/** Iteration ordonnee des piliers actionnables (5 entrees). */
+export const ACTIONABLE_PILLARS: readonly ActionablePillarKey[] = [
+  'seo',
+  'performance',
+  'technical',
+  'trust',
+  'conversion',
+] as const;
 
 /**
  * Entrée du scorer `aiVisibility` — combine un signal site-level
