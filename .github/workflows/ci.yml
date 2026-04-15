@@ -191,11 +191,11 @@ jobs:
             cd "$WORKDIR"
             echo "${{ secrets.DEPLOY_REGISTRY_TOKEN }}" | docker login ghcr.io -u "${{ secrets.DEPLOY_REGISTRY_USER }}" --password-stdin || true
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
-            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" pull api migrate
+            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" pull api migrate
 
             # Run migrations on THE SAME project/network/db
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
-            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" run --rm migrate
+            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" run --rm migrate
 
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
-            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" up -d --no-deps api
+            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" up -d --no-deps api
