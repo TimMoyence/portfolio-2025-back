@@ -152,6 +152,26 @@ describe('SuspiciousRequestInterceptor', () => {
     expect(top[0].lastReasons).toContain('ua:python-requests');
   });
 
+  it.each(['127.0.0.1', '::ffff:127.0.0.1', '::1'])(
+    'bypass le scoring pour les IPs loopback (%s)',
+    async (loopbackIp) => {
+      const req: FakeRequest = {
+        method: 'GET',
+        url: '/api/v1/portfolio25',
+        headers: { 'user-agent': undefined, 'accept-language': undefined },
+        ip: loopbackIp,
+      };
+      const res: FakeResponse = { statusCode: 200, writableEnded: true };
+      const handler: CallHandler = { handle: () => of({ ok: true }) };
+
+      await firstValueFrom(
+        interceptor.intercept(buildContext(req, res), handler),
+      );
+
+      expect(await store.getTopIPs(10, 60_000)).toHaveLength(0);
+    },
+  );
+
   it('ne leve jamais meme si le store casse', async () => {
     const broken: InMemorySecurityEventsStore = Object.assign(
       new InMemorySecurityEventsStore(),

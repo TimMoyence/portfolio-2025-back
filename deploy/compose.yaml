@@ -34,7 +34,6 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      # On évite l'interpolation de variables dans compose
       test:
         [
           'CMD-SHELL',
@@ -58,7 +57,6 @@ services:
     networks:
       - private
 
-  # Sauvegarde quotidienne PostgreSQL avec rétention configurable
   db-backup:
     image: prodrigestivill/postgres-backup-local:16
     restart: unless-stopped
@@ -136,7 +134,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # Important: pas de build ici, on exécute le JS compilé
     command:
       [
         'node',
