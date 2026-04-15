@@ -1,7 +1,6 @@
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { AuditSnapshot } from '../../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
-import type { AuditRequestMailerService } from '../AuditRequestMailer.service';
 import type { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
 import { AuditPipelineService } from './audit-pipeline.service';
 import type { AuditAutomationConfig } from './audit.config';
@@ -67,10 +66,6 @@ function buildStubDeps(
     llmReport: {
       generate: jest.fn(),
     } as unknown as jest.Mocked<LangchainAuditReportService>,
-    mailer: {
-      sendAuditNotification: jest.fn(),
-      sendAuditReportNotification: jest.fn(),
-    } as unknown as jest.Mocked<AuditRequestMailerService>,
     llmsTxtAnalyzer: {
       analyze: jest.fn().mockResolvedValue({
         present: false,
@@ -104,7 +99,6 @@ function buildPipelineService(
     deps.pageAiRecap,
     deps.scoring,
     deps.llmReport,
-    deps.mailer,
     deps.llmsTxtAnalyzer,
     deps.deliveryOrchestrator,
   );
@@ -568,10 +562,6 @@ describe('AuditPipelineService', () => {
         },
       ),
     } as unknown as jest.Mocked<PageAiRecapService>;
-    const mailer = {
-      sendAuditNotification: jest.fn(),
-      sendAuditReportNotification: jest.fn().mockResolvedValue(undefined),
-    } as unknown as jest.Mocked<AuditRequestMailerService>;
     const llmsTxtAnalyzer = {
       analyze: jest.fn().mockResolvedValue({
         present: true,
@@ -599,7 +589,6 @@ describe('AuditPipelineService', () => {
       pageAiRecap,
       scoring,
       llmReport,
-      mailer,
       llmsTxtAnalyzer,
       deliveryOrchestrator,
     );
@@ -669,10 +658,6 @@ describe('AuditPipelineService', () => {
         (state) => state.processingStatus === 'RUNNING' && state.summaryText,
       ),
     ).toBe(false);
-    // Loop #2 : l'envoi admin legacy a ete retire du pipeline pour eviter un
-    // double email (l'orchestrateur de delivery gere desormais toutes les notifications).
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mailer.sendAuditReportNotification).not.toHaveBeenCalled();
 
     // Phase 7 — delivery orchestrator invoked once
     // eslint-disable-next-line @typescript-eslint/unbound-method

@@ -1,28 +1,34 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
-import type {
-  ExpertReportSynthesis,
-  PerPageDetailedAnalysis,
-} from '../../domain/AuditReportTiers';
 import {
   AuditLocale,
   resolveAuditLocale,
 } from '../../domain/audit-locale.util';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
-import type { AuditAutomationConfig, AuditLlmProfile } from './audit.config';
+import type { AuditAutomationConfig } from './audit.config';
+import {
+  CHAT_OPENAI_FACTORY,
+  type ChatOpenAIFactory,
+} from './chat-openai.factory';
+import type {
+  LangchainAuditGenerateOptions,
+  LangchainAuditInput,
+  LangchainAuditOutput,
+  LlmSynthesisProgressEvent,
+} from './contracts/langchain-contracts';
+import {
+  buildExpertSynthesis,
+  resolveProfile,
+} from './langchain-synthesis.util';
 import {
   buildFallbackExpertReport,
   buildFallbackSummary,
   ensurePriorityDepth,
   withDeterministicCost,
 } from './langchain-fallback-report.builder';
-import {
-  DeadlineBudget,
-  LlmInFlightLimiter,
-  getSharedLlmInFlightLimiter,
-  withHardTimeout,
-} from './llm-execution.guardrails';
+import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
+import { LLM_EXECUTOR, type LlmExecutor } from './llm-executor.port';
 import {
   ReportQualityGateContext,
   ReportQualityGateResult,
@@ -35,6 +41,19 @@ import {
 } from './llm-payload.builder';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
+
+/**
+ * Re-exports des contrats publics du service. Les consommateurs
+ * externes a `automation/` doivent importer via ce fichier afin de
+ * conserver un unique point d'entree (verifie par le guardrail ESLint).
+ */
+export type {
+  LangchainAuditGenerateOptions,
+  LangchainAuditInput,
+  LangchainAuditOutput,
+  LlmSynthesisProgressEvent,
+  SynthesisSectionName,
+} from './contracts/langchain-contracts';
 
 const userSummarySchema = z.object({
   summaryText: z.string().min(1),
@@ -217,139 +236,19 @@ type FanoutSectionName =
   | 'executionSection'
   | 'clientCommsSection';
 
-type SynthesisSectionName = 'summary' | FanoutSectionName;
-type SynthesisSectionStatus = 'started' | 'completed' | 'failed' | 'fallback';
-
-export interface LlmSynthesisProgressEvent {
-  section: SynthesisSectionName;
-  sectionStatus: SynthesisSectionStatus;
-  iaSubTask: string;
-}
-
-export interface LangchainAuditGenerateOptions {
-  onProgress?: (progress: LlmSynthesisProgressEvent) => void | Promise<void>;
-}
-
-export interface LangchainAuditInput {
-  auditId?: string;
-  locale: AuditLocale;
-  websiteName: string;
-  normalizedUrl: string;
-  keyChecks: Record<string, unknown>;
-  quickWins: string[];
-  pillarScores: Record<string, number>;
-  deepFindings: Array<{
-    code: string;
-    title: string;
-    description: string;
-    severity: 'high' | 'medium' | 'low';
-    confidence: number;
-    impact: 'traffic' | 'indexation' | 'conversion';
-    affectedUrls: string[];
-    recommendation: string;
-  }>;
-  sampledUrls: Array<{
-    url: string;
-    statusCode: number | null;
-    indexable: boolean;
-    canonical: string | null;
-    title?: string | null;
-    metaDescription?: string | null;
-    h1Count?: number;
-    htmlLang?: string | null;
-    canonicalCount?: number;
-    responseTimeMs?: number | null;
-    server?: string | null;
-    xPoweredBy?: string | null;
-    setCookiePatterns?: string[];
-    cacheHeaders?: Record<string, string>;
-    securityHeaders?: Record<string, string>;
-    error: string | null;
-  }>;
-  pageRecaps: Array<{
-    url: string;
-    priority: 'high' | 'medium' | 'low';
-    wordingScore: number;
-    trustScore: number;
-    ctaScore: number;
-    seoCopyScore: number;
-    topIssues: string[];
-    recommendations: string[];
-    source: 'llm' | 'fallback';
-    /**
-     * Optionnel en Phase 5 pour compatibilite ascendante : si present,
-     * passe directement dans les payloads LLM et dans le fallback pour
-     * construire `perPageAnalysis`.
-     */
-    engineScores?: {
-      google: {
-        engine: 'google';
-        score: number;
-        indexable: boolean;
-        strengths: string[];
-        blockers: string[];
-        opportunities: string[];
-      };
-      bingChatGpt: {
-        engine: 'bing_chatgpt';
-        score: number;
-        indexable: boolean;
-        strengths: string[];
-        blockers: string[];
-        opportunities: string[];
-      };
-      perplexity: {
-        engine: 'perplexity';
-        score: number;
-        indexable: boolean;
-        strengths: string[];
-        blockers: string[];
-        opportunities: string[];
-      };
-      geminiOverviews: {
-        engine: 'gemini_overviews';
-        score: number;
-        indexable: boolean;
-        strengths: string[];
-        blockers: string[];
-        opportunities: string[];
-      };
-    };
-    title?: string | null;
-  }>;
-  pageSummary: Record<string, unknown>;
-  techFingerprint: {
-    primaryStack: string;
-    confidence: number;
-    evidence: string[];
-    alternatives: string[];
-    unknowns: string[];
-  };
-}
-
-export interface LangchainAuditOutput {
-  summaryText: string;
-  adminReport: Record<string, unknown>;
-  /**
-   * Projection typee `ExpertReportSynthesis` destinee au Tier Expert
-   * (rapport technique a Tim). Contient perPageAnalysis, cross-findings,
-   * priority backlog, clientEmailDraft et internalNotes.
-   */
-  expertSynthesis: ExpertReportSynthesis;
-}
-
 @Injectable()
 export class LangchainAuditReportService {
   private readonly logger = new Logger(LangchainAuditReportService.name);
-  private readonly llmLimiter: LlmInFlightLimiter;
 
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
     private readonly config: AuditAutomationConfig,
     private readonly qualityGate: ReportQualityGateService,
-  ) {
-    this.llmLimiter = getSharedLlmInFlightLimiter(this.config.llmInflightMax);
-  }
+    @Inject(CHAT_OPENAI_FACTORY)
+    private readonly chatOpenAIFactory: ChatOpenAIFactory,
+    @Inject(LLM_EXECUTOR)
+    private readonly llmExecutor: LlmExecutor,
+  ) {}
 
   async generate(
     input: LangchainAuditInput,
@@ -372,7 +271,7 @@ export class LangchainAuditReportService {
       );
     }
 
-    const profile = this.resolveProfile(normalizedInput.auditId);
+    const profile = resolveProfile(normalizedInput.auditId, this.config);
     if (profile === 'parallel_sections_v1') {
       try {
         return await this.generateParallelSectionsProfile(
@@ -513,7 +412,7 @@ export class LangchainAuditReportService {
       return {
         summaryText: gate.summaryText,
         adminReport,
-        expertSynthesis: this.buildExpertSynthesis(
+        expertSynthesis: buildExpertSynthesis(
           gate.summaryText,
           adminReport,
           normalizedInput,
@@ -609,38 +508,12 @@ export class LangchainAuditReportService {
     return {
       summaryText: gate.summaryText,
       adminReport,
-      expertSynthesis: this.buildExpertSynthesis(
+      expertSynthesis: buildExpertSynthesis(
         gate.summaryText,
         adminReport,
         normalizedInput,
       ),
     };
-  }
-
-  private resolveProfile(auditId?: string): AuditLlmProfile {
-    const configured = this.config.llmProfile;
-    if (configured !== 'parallel_sections_v1') {
-      return 'stability_first_sequential';
-    }
-
-    const canaryPercent = this.config.llmProfileCanaryPercent;
-    if (canaryPercent >= 100) return 'parallel_sections_v1';
-    if (canaryPercent <= 0) return 'stability_first_sequential';
-    if (!auditId) return 'parallel_sections_v1';
-
-    const bucket = this.hashToPercent(auditId);
-    return bucket < canaryPercent
-      ? 'parallel_sections_v1'
-      : 'stability_first_sequential';
-  }
-
-  private hashToPercent(value: string): number {
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-      hash = (hash << 5) - hash + value.charCodeAt(i);
-      hash |= 0;
-    }
-    return Math.abs(hash) % 100;
   }
 
   private async generateSummaryWithDeadline(
@@ -1157,7 +1030,7 @@ export class LangchainAuditReportService {
     budget: DeadlineBudget,
     run: (signal: AbortSignal) => Promise<T>,
   ): Promise<T> {
-    return this.llmLimiter.run(() =>
+    return this.llmExecutor.execute(() =>
       withHardTimeout(`llm:${label}`, timeoutMs, run, budget),
     );
   }
@@ -1288,7 +1161,7 @@ export class LangchainAuditReportService {
     return {
       summaryText: gate.summaryText,
       adminReport,
-      expertSynthesis: this.buildExpertSynthesis(
+      expertSynthesis: buildExpertSynthesis(
         gate.summaryText,
         adminReport,
         input,
@@ -1446,153 +1319,6 @@ export class LangchainAuditReportService {
   }
 
   private createLlm(timeoutMs: number): ChatOpenAI {
-    return new ChatOpenAI({
-      apiKey: this.config.openAiApiKey,
-      model: this.config.llmModel,
-      timeout: timeoutMs,
-      maxRetries: 0,
-      temperature: 0.2,
-    });
-  }
-
-  /**
-   * Projette un rapport admin enrichi vers le type domaine
-   * `ExpertReportSynthesis` (Tier Expert). Construit
-   * `perPageAnalysis`, `crossPageFindings`, `priorityBacklog`,
-   * `clientEmailDraft` et `internalNotes` en garantissant des defauts
-   * deterministes si le LLM a omis certains champs.
-   */
-  private buildExpertSynthesis(
-    summaryText: string,
-    adminReport: Record<string, unknown>,
-    input: LangchainAuditInput,
-  ): ExpertReportSynthesis {
-    const executiveSummary =
-      typeof adminReport.executiveSummary === 'string' &&
-      adminReport.executiveSummary.trim().length > 0
-        ? adminReport.executiveSummary
-        : summaryText;
-
-    const perPageAnalysis = this.projectPerPageAnalysis(
-      adminReport.perPageAnalysis,
-    );
-
-    const crossPageFindings = input.deepFindings.map((finding) => ({
-      title: finding.title,
-      severity: finding.severity as 'critical' | 'high' | 'medium' | 'low',
-      affectedUrls: [...finding.affectedUrls],
-      rootCause: finding.description,
-      remediation: finding.recommendation,
-    }));
-
-    const priorityBacklog = Array.isArray(adminReport.implementationBacklog)
-      ? (adminReport.implementationBacklog as Array<Record<string, unknown>>)
-          .slice(0, 12)
-          .map((entry) => ({
-            title: typeof entry.task === 'string' ? entry.task : '',
-            impact: this.toImpact(entry.priority),
-            effort: this.toEffort(entry.estimatedHours),
-            acceptanceCriteria: Array.isArray(entry.acceptanceCriteria)
-              ? (entry.acceptanceCriteria as string[]).map(String)
-              : [],
-          }))
-          .filter((entry) => entry.title.length > 0)
-      : [];
-
-    const clientEmailDraft =
-      this.normalizeClientEmailDraft(adminReport.clientEmailDraft) ??
-      this.buildFallbackEmailDraft(input);
-
-    const internalNotes =
-      typeof adminReport.internalNotes === 'string' &&
-      adminReport.internalNotes.trim().length > 0
-        ? adminReport.internalNotes.trim()
-        : this.buildFallbackNotes(input);
-
-    return {
-      executiveSummary,
-      perPageAnalysis,
-      crossPageFindings,
-      priorityBacklog,
-      clientEmailDraft,
-      internalNotes,
-    };
-  }
-
-  private projectPerPageAnalysis(
-    raw: unknown,
-  ): ReadonlyArray<PerPageDetailedAnalysis> {
-    if (!Array.isArray(raw)) return [];
-    return raw
-      .map((entry): PerPageDetailedAnalysis | null => {
-        if (!entry || typeof entry !== 'object') return null;
-        const record = entry as Record<string, unknown>;
-        const url = typeof record.url === 'string' ? record.url : '';
-        if (!url) return null;
-        const engineScores = record.engineScores as
-          | PerPageDetailedAnalysis['engineScores']
-          | undefined;
-        if (!engineScores) return null;
-        return {
-          url,
-          title: typeof record.title === 'string' ? record.title : '',
-          engineScores,
-          topIssues: Array.isArray(record.topIssues)
-            ? (record.topIssues as string[]).map(String).slice(0, 6)
-            : [],
-          recommendations: Array.isArray(record.recommendations)
-            ? (record.recommendations as string[]).map(String).slice(0, 6)
-            : [],
-          evidence: Array.isArray(record.evidence)
-            ? (record.evidence as string[]).map(String).slice(0, 6)
-            : [],
-        };
-      })
-      .filter((entry): entry is PerPageDetailedAnalysis => entry !== null);
-  }
-
-  private normalizeClientEmailDraft(
-    raw: unknown,
-  ): { subject: string; body: string } | null {
-    if (!raw || typeof raw !== 'object') return null;
-    const record = raw as Record<string, unknown>;
-    const subject = typeof record.subject === 'string' ? record.subject : '';
-    const body = typeof record.body === 'string' ? record.body : '';
-    if (!subject.trim() || !body.trim()) return null;
-    return { subject: subject.trim(), body: body.trim() };
-  }
-
-  private buildFallbackEmailDraft(input: LangchainAuditInput): {
-    subject: string;
-    body: string;
-  } {
-    const subject =
-      input.locale === 'en'
-        ? `Audit findings for ${input.websiteName}`
-        : `Audit ${input.websiteName} : vos priorites`;
-    const body =
-      input.locale === 'en'
-        ? `Hello,\n\nThe audit of ${input.websiteName} is ready. I would love to walk you through it in 30 minutes.\n\nTim / Asili Design`
-        : `Bonjour,\n\nL'audit de ${input.websiteName} est pret. J'aimerais vous le presenter en 30 minutes.\n\nTim / Asili Design`;
-    return { subject, body };
-  }
-
-  private buildFallbackNotes(input: LangchainAuditInput): string {
-    return input.locale === 'en'
-      ? `Internal notes for ${input.websiteName}: review the priorities and prepare the 30-minute pitch.`
-      : `Notes internes pour ${input.websiteName} : revue des priorites et preparation du pitch 30 minutes.`;
-  }
-
-  private toImpact(value: unknown): 'high' | 'medium' | 'low' {
-    if (value === 'high') return 'high';
-    if (value === 'low') return 'low';
-    return 'medium';
-  }
-
-  private toEffort(value: unknown): 'high' | 'medium' | 'low' {
-    if (typeof value !== 'number' || !Number.isFinite(value)) return 'medium';
-    if (value >= 8) return 'high';
-    if (value <= 3) return 'low';
-    return 'medium';
+    return this.chatOpenAIFactory.create(timeoutMs);
   }
 }

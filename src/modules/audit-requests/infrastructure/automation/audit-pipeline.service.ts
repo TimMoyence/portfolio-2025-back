@@ -9,7 +9,6 @@ import {
   AUDIT_AUTOMATION_CONFIG,
   AUDIT_REQUESTS_REPOSITORY,
 } from '../../domain/token';
-import { AuditRequestMailerService } from '../AuditRequestMailer.service';
 import type { AuditAutomationConfig } from './audit.config';
 import { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
 import {
@@ -56,7 +55,6 @@ export class AuditPipelineService {
     private readonly pageAiRecap: PageAiRecapService,
     private readonly scoring: ScoringService,
     private readonly llmReport: LangchainAuditReportService,
-    private readonly mailer: AuditRequestMailerService,
     private readonly llmsTxtAnalyzer: LlmsTxtAnalyzerService,
     private readonly deliveryOrchestrator: AuditDeliveryOrchestrator,
   ) {}

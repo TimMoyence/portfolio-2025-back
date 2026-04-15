@@ -1,13 +1,34 @@
 import { Logger } from '@nestjs/common';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
+import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
 import type { AuditAutomationConfig } from './audit.config';
+import { DefaultChatOpenAIFactory } from './chat-openai.factory';
 import {
   type ExpertReport,
   LangchainAuditInput,
   LangchainAuditReportService,
 } from './langchain-audit-report.service';
 import { DeadlineBudget } from './llm-execution.guardrails';
+import { SharedLlmExecutor } from './llm-executor.port';
 import { ReportQualityGateService } from './report-quality-gate.service';
+
+/**
+ * Helper local : instancie le service avec les dependances par defaut
+ * (factory ChatOpenAI + executor partage) pour garder les tests lisibles
+ * apres l'ajout des ports LLM en C4a. Chaque test injecte son propre
+ * config/qualityGate.
+ */
+function createService(
+  config: AuditAutomationConfig,
+  qualityGate: ReportQualityGateService,
+): LangchainAuditReportService {
+  return new LangchainAuditReportService(
+    config,
+    qualityGate,
+    new DefaultChatOpenAIFactory(config),
+    new SharedLlmExecutor(config),
+  );
+}
 
 /**
  * @internal Interface de test exposant les methodes privees du service LangchainAuditReport.
@@ -83,79 +104,7 @@ describe('LangchainAuditReportService', () => {
     openAiApiKey: undefined,
   });
 
-  const input: LangchainAuditInput = {
-    locale: 'fr',
-    websiteName: 'example.com',
-    normalizedUrl: 'https://example.com',
-    keyChecks: { accessibility: { https: true } },
-    quickWins: [
-      'Ajouter des meta descriptions sur les pages clés',
-      'Corriger les canonicals manquantes',
-      'Réduire le TTFB des pages les plus lentes',
-    ],
-    pillarScores: {
-      seo: 72,
-      performance: 60,
-      technical: 68,
-      trust: 74,
-      conversion: 65,
-    },
-    deepFindings: [
-      {
-        code: 'missing_meta_description',
-        title: 'Meta descriptions manquantes',
-        description: "Plusieurs pages n'ont pas de meta description.",
-        severity: 'high',
-        confidence: 0.9,
-        impact: 'traffic',
-        affectedUrls: ['https://example.com/a'],
-        recommendation: 'Ajouter des metas uniques orientées intention.',
-      },
-    ],
-    sampledUrls: [
-      {
-        url: 'https://example.com/a',
-        statusCode: 200,
-        indexable: true,
-        canonical: 'https://example.com/a',
-        title: 'Page A',
-        metaDescription: null,
-        h1Count: 1,
-        htmlLang: 'fr',
-        canonicalCount: 1,
-        responseTimeMs: 1400,
-        error: null,
-      },
-    ],
-    pageRecaps: [
-      {
-        url: 'https://example.com/a',
-        priority: 'high',
-        wordingScore: 60,
-        trustScore: 55,
-        ctaScore: 50,
-        seoCopyScore: 58,
-        topIssues: ['Missing CTA'],
-        recommendations: ['Add primary CTA block'],
-        source: 'fallback',
-      },
-    ],
-    pageSummary: {
-      totalPages: 1,
-      llmRecaps: 0,
-      fallbackRecaps: 1,
-      priorityCounts: { high: 1, medium: 0, low: 0 },
-      averageScores: { wording: 60, trust: 55, cta: 50, seoCopy: 58 },
-      topRecurringIssues: ['missing cta'],
-    },
-    techFingerprint: {
-      primaryStack: 'WordPress',
-      confidence: 0.76,
-      evidence: ['WordPress hint detected on https://example.com/a'],
-      alternatives: ['PHP runtime'],
-      unknowns: [],
-    },
-  };
+  const input: LangchainAuditInput = buildLangchainAuditInput();
 
   /** Cast de commodite pour acceder aux methodes privees en contexte de test. */
   function asTestable(
@@ -165,10 +114,7 @@ describe('LangchainAuditReportService', () => {
   }
 
   it('returns deterministic fallback with cost estimate when api key is missing', async () => {
-    const service = new LangchainAuditReportService(
-      config,
-      new ReportQualityGateService(),
-    );
+    const service = createService(config, new ReportQualityGateService());
     const result = await service.generate(input);
     const admin = result.adminReport;
     const cost = admin['costEstimate'] as Record<string, unknown>;
@@ -187,10 +133,7 @@ describe('LangchainAuditReportService', () => {
   });
 
   it('projects an ExpertReportSynthesis with the 3 new fields in fallback mode', async () => {
-    const service = new LangchainAuditReportService(
-      config,
-      new ReportQualityGateService(),
-    );
+    const service = createService(config, new ReportQualityGateService());
     const result = await service.generate(input);
 
     expect(result.expertSynthesis).toBeDefined();
@@ -207,10 +150,7 @@ describe('LangchainAuditReportService', () => {
   });
 
   it('includes perPageAnalysis and clientEmailDraft in the adminReport fallback', async () => {
-    const service = new LangchainAuditReportService(
-      config,
-      new ReportQualityGateService(),
-    );
+    const service = createService(config, new ReportQualityGateService());
     const result = await service.generate(input);
     const admin = result.adminReport;
 
@@ -227,11 +167,8 @@ describe('LangchainAuditReportService', () => {
   });
 
   it('keeps client summary and uses expert fallback when compact expert times out', async () => {
-    const service = new LangchainAuditReportService(
-      {
-        ...config,
-        openAiApiKey: 'test-key',
-      },
+    const service = createService(
+      { ...config, openAiApiKey: 'test-key' },
       new ReportQualityGateService(),
     );
 
@@ -279,11 +216,8 @@ describe('LangchainAuditReportService', () => {
       apply: applyMock,
     } as unknown as ReportQualityGateService;
 
-    const service = new LangchainAuditReportService(
-      {
-        ...config,
-        openAiApiKey: 'test-key',
-      },
+    const service = createService(
+      { ...config, openAiApiKey: 'test-key' },
       qualityGate,
     );
 
@@ -311,7 +245,7 @@ describe('LangchainAuditReportService', () => {
   });
 
   it('retries one failed fan-out section once when budget allows', async () => {
-    const service = new LangchainAuditReportService(
+    const service = createService(
       {
         ...config,
         openAiApiKey: 'test-key',

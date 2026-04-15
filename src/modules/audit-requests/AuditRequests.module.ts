@@ -10,8 +10,12 @@ import {
   AUDIT_QUEUE,
   AUDIT_REQUESTS_REPOSITORY,
 } from './domain/token';
-import { AuditRequestMailerService } from './infrastructure/AuditRequestMailer.service';
 import { AuditRequestsRepositoryTypeORM } from './infrastructure/AuditRequests.repository.typeORM';
+import { AuditClientReportMailer } from './infrastructure/mail/audit-client-report.mailer';
+import { AuditExpertReportMailer } from './infrastructure/mail/audit-expert-report.mailer';
+import { AuditNotificationMailer } from './infrastructure/mail/audit-notification.mailer';
+import { AuditNotifierFacade } from './infrastructure/mail/audit-notifier.facade';
+import { SmtpTransporterProvider } from './infrastructure/mail/smtp-transporter.provider';
 import { AiHeadersAnalyzerService } from './infrastructure/automation/ai-headers-analyzer.service';
 import { AuditDeliveryOrchestrator } from './infrastructure/automation/audit-delivery.orchestrator';
 import { AuditPdfGeneratorService } from './infrastructure/automation/audit-pdf-generator.service';
@@ -20,9 +24,17 @@ import { AuditQueueService } from './infrastructure/automation/audit-queue.servi
 import { AuditReportHtmlRendererService } from './infrastructure/automation/audit-report-html-renderer.service';
 import { AuditWorkerService } from './infrastructure/automation/audit-worker.service';
 import { loadAuditAutomationConfig } from './infrastructure/automation/audit.config';
+import {
+  CHAT_OPENAI_FACTORY,
+  DefaultChatOpenAIFactory,
+} from './infrastructure/automation/chat-openai.factory';
 import { CitationWorthinessService } from './infrastructure/automation/citation-worthiness.service';
 import { DeepUrlAnalysisService } from './infrastructure/automation/deep-url-analysis.service';
 import { HomepageAnalyzerService } from './infrastructure/automation/homepage-analyzer.service';
+import {
+  LLM_EXECUTOR,
+  SharedLlmExecutor,
+} from './infrastructure/automation/llm-executor.port';
 import { LangchainAuditReportService } from './infrastructure/automation/langchain-audit-report.service';
 import { LangchainClientReportService } from './infrastructure/automation/langchain-client-report.service';
 import { LlmsTxtAnalyzerService } from './infrastructure/automation/llms-txt-analyzer.service';
@@ -68,6 +80,18 @@ const AUDIT_SYNTHESIS_SERVICES = [
   ReportQualityGateService,
 ];
 
+// Abstractions LLM partagees (C4a) — factory ChatOpenAI + limiter d'execution
+const AUDIT_LLM_ABSTRACTIONS = [
+  {
+    provide: CHAT_OPENAI_FACTORY,
+    useClass: DefaultChatOpenAIFactory,
+  },
+  {
+    provide: LLM_EXECUTOR,
+    useClass: SharedLlmExecutor,
+  },
+];
+
 // Orchestration et queue
 const AUDIT_ORCHESTRATION_SERVICES = [
   AuditDeliveryOrchestrator,
@@ -90,9 +114,14 @@ const AUDIT_PDF_SERVICES = [
     ...AUDIT_CRAWL_SERVICES,
     ...AUDIT_AI_ANALYSIS_SERVICES,
     ...AUDIT_SYNTHESIS_SERVICES,
+    ...AUDIT_LLM_ABSTRACTIONS,
     ...AUDIT_ORCHESTRATION_SERVICES,
     ...AUDIT_PDF_SERVICES,
-    AuditRequestMailerService,
+    SmtpTransporterProvider,
+    AuditNotificationMailer,
+    AuditClientReportMailer,
+    AuditExpertReportMailer,
+    AuditNotifierFacade,
     {
       provide: AUDIT_AUTOMATION_CONFIG,
       useFactory: loadAuditAutomationConfig,
@@ -107,7 +136,7 @@ const AUDIT_PDF_SERVICES = [
     },
     {
       provide: AUDIT_NOTIFIER,
-      useExisting: AuditRequestMailerService,
+      useExisting: AuditNotifierFacade,
     },
     {
       provide: AUDIT_PDF_GENERATOR,

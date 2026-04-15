@@ -3,7 +3,7 @@ import type { IAuditNotifierPort } from '../../src/modules/audit-requests/domain
 import type { IAuditQueuePort } from '../../src/modules/audit-requests/domain/IAuditQueue.port';
 import { AuditRequest } from '../../src/modules/audit-requests/domain/AuditRequest';
 import type { AuditSnapshot } from '../../src/modules/audit-requests/domain/AuditProcessing';
-import type { AuditReportNotificationPayload } from '../../src/modules/audit-requests/infrastructure/AuditRequestMailer.service';
+import type { LangchainAuditInput } from '../../src/modules/audit-requests/infrastructure/automation/langchain-audit-report.service';
 
 /** Construit un objet AuditRequest domaine avec des valeurs par defaut. */
 export function buildAuditRequest(
@@ -80,120 +80,87 @@ export function createMockAuditQueue(): jest.Mocked<IAuditQueuePort> {
   };
 }
 
-/** Construit un payload de rapport d'audit avec des valeurs par defaut. */
-export function buildAuditReportPayload(
-  overrides?: Partial<AuditReportNotificationPayload>,
-): AuditReportNotificationPayload {
+/**
+ * Construit un `LangchainAuditInput` avec des valeurs par defaut realistes.
+ *
+ * Utilise comme fixture partagee pour tous les tests touchant au pipeline
+ * LangChain (service monolithique, sous-services apres split C4b, specs
+ * d'integration). Override fin-grain possible via `overrides`.
+ */
+export function buildLangchainAuditInput(
+  overrides?: Partial<LangchainAuditInput>,
+): LangchainAuditInput {
   return {
-    auditId: 'audit-001',
-    websiteName: 'mon-site.fr',
-    contactMethod: 'EMAIL',
-    contactValue: 'client@example.com',
     locale: 'fr',
-    summaryText: 'Resume du rapport de test.',
-    fullReport: {
-      locale: 'fr',
-      llm: {
-        reportExplanation: 'Explication du rapport.',
-        executiveSummary: 'Resume executif.',
-        diagnosticChapters: {
-          conversionAndClarity: 'Analyse conversion.',
-          speedAndPerformance: 'Analyse vitesse.',
-          seoFoundations: 'Analyse SEO.',
-          credibilityAndTrust: 'Analyse confiance.',
-          techAndScalability: 'Analyse tech.',
-          scorecardAndBusinessOpportunities: 'Scorecard.',
-        },
-        techFingerprint: {
-          primaryStack: 'Next.js',
-          confidence: 0.85,
-          evidence: ['React hydration', 'Vercel headers'],
-          unknowns: ['CDN provider'],
-          alternatives: ['Gatsby'],
-        },
-        priorities: [
-          {
-            title: 'Corriger les meta descriptions',
-            severity: 'high',
-            whyItMatters: 'Impact SEO fort',
-            recommendedFix: 'Ajouter meta unique par page',
-            estimatedHours: 4,
-          },
-        ],
-        implementationTodo: [
-          {
-            phase: 'Phase 1',
-            objective: 'SEO basique',
-            deliverable: 'Meta tags',
-            estimatedHours: 8,
-            dependencies: ['Design valide'],
-          },
-        ],
-        whatToFixThisWeek: [
-          {
-            task: 'Meta descriptions',
-            goal: 'Indexation amelioree',
-            estimatedHours: 4,
-            risk: 'Faible',
-            dependencies: [],
-          },
-        ],
-        whatToFixThisMonth: [
-          {
-            task: 'Refonte navigation',
-            goal: 'UX amelioree',
-            estimatedHours: 16,
-            risk: 'Moyen',
-            dependencies: ['Design'],
-          },
-        ],
-        fastImplementationPlan: [
-          {
-            task: 'Fix title tags',
-            priority: 'high',
-            expectedImpact: 'CTR +15%',
-            whyItMatters: 'Google snippet',
-            implementationSteps: ['Audit titles', 'Rewrite', 'Deploy'],
-            estimatedHours: 3,
-          },
-        ],
-        implementationBacklog: [
-          {
-            task: 'Schema markup',
-            priority: 'medium',
-            details: 'Ajouter JSON-LD',
-            estimatedHours: 6,
-            dependencies: [],
-            acceptanceCriteria: ['Rich snippets valides'],
-          },
-        ],
-        invoiceScope: [
-          {
-            item: 'Lot SEO',
-            description: 'Optimisation SEO complete',
-            estimatedHours: 20,
-          },
-        ],
-        costEstimate: {
-          currency: 'EUR',
-          totalEstimatedHours: 40,
-          estimatedCostMin: 3200,
-          estimatedCostMax: 4800,
-          fastTrackHours: 20,
-          fastTrackCostMin: 1600,
-          fastTrackCostMax: 2400,
-        },
-        qualityGate: {
-          valid: true,
-          retried: false,
-          fallback: false,
-          reasons: ['All checks passed'],
-        },
-        clientMessageTemplate: 'Bonjour, voici les resultats.',
-        clientLongEmail: 'Email long detaille pour le client.',
+    websiteName: 'example.com',
+    normalizedUrl: 'https://example.com',
+    keyChecks: { accessibility: { https: true } },
+    quickWins: [
+      'Ajouter des meta descriptions sur les pages cles',
+      'Corriger les canonicals manquantes',
+      'Reduire le TTFB des pages les plus lentes',
+    ],
+    pillarScores: {
+      seo: 72,
+      performance: 60,
+      technical: 68,
+      trust: 74,
+      conversion: 65,
+    },
+    deepFindings: [
+      {
+        code: 'missing_meta_description',
+        title: 'Meta descriptions manquantes',
+        description: "Plusieurs pages n'ont pas de meta description.",
+        severity: 'high',
+        confidence: 0.9,
+        impact: 'traffic',
+        affectedUrls: ['https://example.com/a'],
+        recommendation: 'Ajouter des metas uniques orientees intention.',
       },
-      findings: [],
-      scoring: { quickWins: [] },
+    ],
+    sampledUrls: [
+      {
+        url: 'https://example.com/a',
+        statusCode: 200,
+        indexable: true,
+        canonical: 'https://example.com/a',
+        title: 'Page A',
+        metaDescription: null,
+        h1Count: 1,
+        htmlLang: 'fr',
+        canonicalCount: 1,
+        responseTimeMs: 1400,
+        error: null,
+      },
+    ],
+    pageRecaps: [
+      {
+        url: 'https://example.com/a',
+        priority: 'high',
+        wordingScore: 60,
+        trustScore: 55,
+        ctaScore: 50,
+        seoCopyScore: 58,
+        topIssues: ['Missing CTA'],
+        recommendations: ['Add primary CTA block'],
+        source: 'fallback',
+      },
+    ],
+    pageSummary: {
+      totalPages: 1,
+      llmRecaps: 0,
+      fallbackRecaps: 1,
+      priorityCounts: { high: 1, medium: 0, low: 0 },
+      averageScores: { wording: 60, trust: 55, cta: 50, seoCopy: 58 },
+      topRecurringIssues: ['missing cta'],
+    },
+    techFingerprint: {
+      primaryStack: 'WordPress',
+      confidence: 0.76,
+      evidence: ['WordPress hint detected on https://example.com/a'],
+      alternatives: ['PHP runtime'],
+      unknowns: [],
     },
     ...overrides,
   };
