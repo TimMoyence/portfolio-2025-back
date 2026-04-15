@@ -153,7 +153,7 @@ describe('SuspiciousRequestInterceptor', () => {
   });
 
   it.each(['127.0.0.1', '::ffff:127.0.0.1', '::1'])(
-    'bypass le scoring pour les IPs loopback (%s)',
+    'bypass le scoring pour les IPs loopback via req.ip (%s)',
     async (loopbackIp) => {
       const req: FakeRequest = {
         method: 'GET',
@@ -171,6 +171,24 @@ describe('SuspiciousRequestInterceptor', () => {
       expect(await store.getTopIPs(10, 60_000)).toHaveLength(0);
     },
   );
+
+  it('bypass le scoring via socket.remoteAddress si req.ip est absent', async () => {
+    const req: FakeRequest = {
+      method: 'GET',
+      url: '/api/v1/portfolio25/health',
+      headers: { 'user-agent': undefined, 'accept-language': undefined },
+      ip: undefined,
+      socket: { remoteAddress: '127.0.0.1' },
+    };
+    const res: FakeResponse = { statusCode: 200, writableEnded: true };
+    const handler: CallHandler = { handle: () => of({ ok: true }) };
+
+    await firstValueFrom(
+      interceptor.intercept(buildContext(req, res), handler),
+    );
+
+    expect(await store.getTopIPs(10, 60_000)).toHaveLength(0);
+  });
 
   it('ne leve jamais meme si le store casse', async () => {
     const broken: InMemorySecurityEventsStore = Object.assign(

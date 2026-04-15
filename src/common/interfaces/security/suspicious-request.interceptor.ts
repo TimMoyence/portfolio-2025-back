@@ -51,9 +51,10 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
     const req = httpCtx.getRequest<Request>();
 
     // Requetes loopback = trafic interne (Docker health checks, sondes).
-    // Pas besoin de scorer ni loguer.
-    const ip = req.ip ?? req.socket?.remoteAddress ?? '';
-    if (LOOPBACK_IPS.has(ip)) {
+    // On utilise l'IP brute du socket (pas X-Forwarded-For) car les
+    // health checks Docker ne passent pas par le reverse-proxy.
+    const socketIp = req.ip ?? req.socket?.remoteAddress ?? '';
+    if (LOOPBACK_IPS.has(socketIp)) {
       return next.handle();
     }
 
