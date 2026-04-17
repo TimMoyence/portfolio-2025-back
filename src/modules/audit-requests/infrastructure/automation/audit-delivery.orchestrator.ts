@@ -4,6 +4,7 @@ import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
 } from '../../domain/AuditReportTiers';
+import { detectBusinessType } from '../../domain/BusinessType';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import type { IAuditNotifierPort } from '../../domain/IAuditNotifier.port';
 import type { IAuditPdfGenerator } from '../../domain/IAuditPdfGenerator';
@@ -36,6 +37,12 @@ export interface RunDeliveryInput {
   readonly pageRecaps: ReadonlyArray<PageAiRecap>;
   readonly expertReport: ExpertReportSynthesis | undefined;
   readonly deepFindings: DeepUrlAnalysisResult['findings'];
+  /**
+   * Stack technique detectee par {@link DeepUrlAnalysisService.inferTechFingerprint}
+   * (P1.1). Utilisee pour deduire un {@link BusinessType} et contextualiser
+   * le prompt client. `null` si le signal est insuffisant.
+   */
+  readonly primaryStack?: string | null;
 }
 
 /**
@@ -55,6 +62,8 @@ export interface AuditDeliveryContext {
   readonly pageRecaps: ReadonlyArray<PageAiRecap>;
   readonly expertReport: ExpertReportSynthesis;
   readonly findings: ReadonlyArray<ClientReportFinding>;
+  /** Stack technique detectee (P1.1) — propagee au contexte LLM client. */
+  readonly primaryStack?: string | null;
 }
 
 /**
@@ -123,6 +132,7 @@ export class AuditDeliveryOrchestrator {
         pageRecaps: input.pageRecaps,
         expertReport: input.expertReport,
         findings,
+        primaryStack: input.primaryStack ?? null,
       });
     } catch (error) {
       this.logger.warn(
@@ -209,6 +219,11 @@ export class AuditDeliveryOrchestrator {
     context: AuditDeliveryContext,
     engineCoverage: EngineCoverage,
   ): Promise<ClientReportSynthesis> {
+    // P1.1 : detection du type d'activite depuis le techFingerprint produit
+    // par le pipeline amont. Injecte dans le prompt LLM pour des recos
+    // sectorielles plutot que generiques.
+    const businessType = detectBusinessType(context.primaryStack ?? '');
+
     const clientContext: ClientReportContext = {
       locale: context.locale,
       websiteName: context.websiteName,
@@ -218,6 +233,7 @@ export class AuditDeliveryOrchestrator {
       quickWins: context.quickWins,
       aggregateAiSignals: null,
       engineCoverage,
+      businessType,
     };
     try {
       return await this.clientReportService.generate(clientContext);
@@ -242,10 +258,11 @@ export class AuditDeliveryOrchestrator {
       void this.notifier
         .sendClientReport({
           to: context.contactValue,
-          firstName: null,
+          firstName: this.extractFirstName(context.contactValue),
           websiteName: context.websiteName,
           clientReport,
           pdfBuffer,
+          bookingUrl: process.env.AUDIT_BOOKING_URL ?? null,
         })
         .catch((error) =>
           this.logger.warn(
@@ -359,5 +376,25 @@ export class AuditDeliveryOrchestrator {
       perplexity: empty('perplexity'),
       geminiOverviews: empty('gemini_overviews'),
     };
+  }
+
+  /**
+   * Deduit un prenom lisible depuis le local-part d'une adresse email
+   * (`tim.moyence@outlook.fr` → `Tim`). Retourne null quand le format
+   * n'est pas exploitable (numerique, trop court, ou valeur non-email).
+   * Utilise pour personnaliser la salutation du mail client (P0.6).
+   */
+  private extractFirstName(contactValue: string): string | null {
+    const trimmed = contactValue.trim();
+    if (!trimmed.includes('@')) return null;
+    const [localPart] = trimmed.split('@');
+    if (!localPart) return null;
+
+    const firstToken = localPart.split(/[._+-]/)[0]?.trim() ?? '';
+    if (firstToken.length < 2) return null;
+    if (/^\d+$/.test(firstToken)) return null;
+
+    const normalized = firstToken.toLowerCase();
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
   }
 }

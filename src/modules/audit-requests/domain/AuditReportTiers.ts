@@ -9,7 +9,7 @@ export interface ClientReportSynthesis {
   readonly topFindings: ReadonlyArray<{
     readonly title: string;
     readonly impact: string;
-    readonly severity: 'critical' | 'high' | 'medium';
+    readonly severity: 'high' | 'medium' | 'low';
   }>;
   readonly googleVsAiMatrix: {
     readonly googleVisibility: {

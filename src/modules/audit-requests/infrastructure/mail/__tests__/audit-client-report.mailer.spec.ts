@@ -109,6 +109,59 @@ describe('AuditClientReportMailer', () => {
     expect(call.replyTo).toBe(DEFAULT_AUDIT_ENV.AUDIT_REPORT_TO);
   });
 
+  describe('P0.5 — CTA email cliquable', () => {
+    it('rend le CTA comme un <a href> pointant vers bookingUrl quand fourni', async () => {
+      mockTransporter = createMockTransporter();
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const mailer = new AuditClientReportMailer(
+        mockTransporter as unknown as SmtpTransporter,
+      );
+
+      await mailer.sendClientReport({
+        to: 'client@example.com',
+        firstName: 'Alice',
+        websiteName: 'mon-site.fr',
+        clientReport: buildClientReport(),
+        pdfBuffer: null,
+        bookingUrl: 'https://cal.com/asili/audit-call',
+      });
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(call.html).toContain('href="https://cal.com/asili/audit-call"');
+      expect(call.html).toContain('target="_blank"');
+      expect(call.html).toContain('rel="noopener noreferrer"');
+      expect(call.text).toContain('https://cal.com/asili/audit-call');
+    });
+
+    it('fallback sur /fr/contact Asili quand aucune URL booking configuree', async () => {
+      mockTransporter = createMockTransporter();
+      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const originalBookingUrl = process.env.AUDIT_BOOKING_URL;
+      delete process.env.AUDIT_BOOKING_URL;
+
+      try {
+        const mailer = new AuditClientReportMailer(
+          mockTransporter as unknown as SmtpTransporter,
+        );
+
+        await mailer.sendClientReport({
+          to: 'client@example.com',
+          firstName: null,
+          websiteName: 'mon-site.fr',
+          clientReport: buildClientReport(),
+          pdfBuffer: null,
+        });
+
+        const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+        expect(call.html).toContain('href="https://asilidesign.fr/fr/contact"');
+      } finally {
+        if (originalBookingUrl !== undefined) {
+          process.env.AUDIT_BOOKING_URL = originalBookingUrl;
+        }
+      }
+    });
+  });
+
   it('devrait attacher le PDF quand pdfBuffer est fourni', async () => {
     mockTransporter = createMockTransporter();
     cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);

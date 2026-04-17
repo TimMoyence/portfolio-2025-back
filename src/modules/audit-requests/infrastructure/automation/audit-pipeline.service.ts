@@ -291,6 +291,7 @@ export class AuditPipelineService {
         pageRecaps: pageAi.recaps,
         expertReport: llmOutput.expertSynthesis,
         deepFindings: deepUrlAnalysis.findings,
+        primaryStack: techFingerprint.primaryStack,
       });
     } catch (error) {
       await this.repo.updateState(auditId, {

@@ -171,6 +171,54 @@ describe('AuditDeliveryOrchestrator', () => {
       const clientCall = notifier.sendClientReport.mock.calls[0][0];
       expect(clientCall.to).toBe('client@example.com');
       expect(clientCall.pdfBuffer).toBeInstanceOf(Buffer);
+      // P0.6 : le prenom est deduit du local-part de l'email.
+      expect(clientCall.firstName).toBe('Client');
+    });
+
+    describe('P0.6 — extraction firstName depuis email', () => {
+      it('deduit le prenom depuis tim.moyence@outlook.fr', async () => {
+        repo.findById.mockResolvedValue(baseSnapshot);
+
+        await orchestrator.runForAudit({
+          auditId: baseSnapshot.id,
+          locale: 'fr',
+          websiteName: 'example.com',
+          contactMethod: 'EMAIL',
+          contactValue: 'tim.moyence@outlook.fr',
+          normalizedUrl: 'https://example.com/',
+          pillarScores: {},
+          quickWins: [],
+          pageRecaps: [buildPageRecap()],
+          expertReport: buildExpertReport(),
+          deepFindings: [],
+        });
+        await new Promise((resolve) => setImmediate(resolve));
+
+        const clientCall = notifier.sendClientReport.mock.calls[0][0];
+        expect(clientCall.firstName).toBe('Tim');
+      });
+
+      it('retourne null pour les emails non exploitables (prenoms numeriques)', async () => {
+        repo.findById.mockResolvedValue(baseSnapshot);
+
+        await orchestrator.runForAudit({
+          auditId: baseSnapshot.id,
+          locale: 'fr',
+          websiteName: 'example.com',
+          contactMethod: 'EMAIL',
+          contactValue: '12345@example.com',
+          normalizedUrl: 'https://example.com/',
+          pillarScores: {},
+          quickWins: [],
+          pageRecaps: [buildPageRecap()],
+          expertReport: buildExpertReport(),
+          deepFindings: [],
+        });
+        await new Promise((resolve) => setImmediate(resolve));
+
+        const clientCall = notifier.sendClientReport.mock.calls[0][0];
+        expect(clientCall.firstName).toBeNull();
+      });
     });
 
     it('skip sendClientReport quand le contact est PHONE', async () => {

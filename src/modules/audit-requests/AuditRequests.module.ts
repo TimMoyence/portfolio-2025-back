@@ -4,11 +4,13 @@ import { CreateAuditRequestsUseCase } from './application/CreateAuditRequests.us
 import { GetAuditSummaryUseCase } from './application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from './application/StreamAuditEvents.useCase';
 import { AUDIT_PDF_GENERATOR } from './domain/IAuditPdfGenerator';
+import { SelfAuditGuard } from './domain/SelfAuditGuard';
 import {
   AUDIT_AUTOMATION_CONFIG,
   AUDIT_NOTIFIER,
   AUDIT_QUEUE,
   AUDIT_REQUESTS_REPOSITORY,
+  AUDIT_SELF_GUARD,
 } from './domain/token';
 import { AuditRequestsRepositoryTypeORM } from './infrastructure/AuditRequests.repository.typeORM';
 import { AuditClientReportMailer } from './infrastructure/mail/audit-client-report.mailer';
@@ -141,6 +143,19 @@ const AUDIT_PDF_SERVICES = [
     {
       provide: AUDIT_PDF_GENERATOR,
       useExisting: AuditPdfGeneratorService,
+    },
+    {
+      provide: AUDIT_SELF_GUARD,
+      useFactory: (): SelfAuditGuard => {
+        const raw = process.env.AUDIT_SELF_DOMAINS?.trim();
+        const domains = raw
+          ? raw
+              .split(',')
+              .map((entry) => entry.trim())
+              .filter((entry) => entry.length > 0)
+          : ['asilidesign.fr'];
+        return new SelfAuditGuard(domains);
+      },
     },
   ],
   exports: [AUDIT_REQUESTS_REPOSITORY, AuditQueueService],

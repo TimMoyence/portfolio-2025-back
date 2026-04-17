@@ -152,13 +152,16 @@ export class PageAiRecapService {
     let llmFailures = 0;
     let breakerOpen = false;
 
+    // P1.4 : temperature 0 pour determinisme complet + cacheability des
+    // prompts systemes (les scores doivent etre reproductibles pour un
+    // meme input).
     const llm = this.config.openAiApiKey
       ? new ChatOpenAI({
           apiKey: this.config.openAiApiKey,
           model: this.config.llmModel,
           timeout: this.config.pageAiTimeoutMs,
           maxRetries: 0,
-          temperature: 0.2,
+          temperature: 0,
         })
       : null;
 
@@ -271,6 +274,13 @@ export class PageAiRecapService {
                       : "Strict rule: no mixed language and no unsupported speculation. If data is missing, write 'Not verifiable'.",
                 },
                 {
+                  role: 'system',
+                  content:
+                    locale === 'fr'
+                      ? "P1.4 anti-hallucination moteurs: chaque score engineScores.*.score doit citer au moins une evidence observable dans le payload. Si aucune evidence n'est disponible pour un moteur, le score doit etre exactement 50 et blockers doit contenir 'Non verifiable'. Ne jamais inventer un score optimiste sans preuve."
+                      : "P1.4 anti-hallucination for engines: each engineScores.*.score must cite at least one evidence observable in the payload. If no evidence is available for an engine, the score must be exactly 50 and blockers must contain 'Not verifiable'. Never invent an optimistic score without evidence.",
+                },
+                {
                   role: 'user',
                   content: JSON.stringify(payload),
                 },
@@ -379,18 +389,28 @@ export class PageAiRecapService {
     value: z.infer<typeof engineScoreSchema>,
     expected: EngineScore['engine'],
   ): EngineScore {
+    const blockers = value.blockers
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .slice(0, 5);
+
+    // P3.1 : post-process guarantee. Si le LLM a note "Not verifiable" dans
+    // les blockers, force le score a 50 exactement (meme si le modele a
+    // hallucine un score optimiste). Couvre les deux locales du prompt.
+    const hasUnverifiable = blockers.some((entry) =>
+      /not verifiable|non verifiable/i.test(entry),
+    );
+    const score = hasUnverifiable ? 50 : this.clampScore(value.score);
+
     return {
       engine: expected,
-      score: this.clampScore(value.score),
+      score,
       indexable: Boolean(value.indexable),
       strengths: value.strengths
         .map((entry) => entry.trim())
         .filter(Boolean)
         .slice(0, 5),
-      blockers: value.blockers
-        .map((entry) => entry.trim())
-        .filter(Boolean)
-        .slice(0, 5),
+      blockers,
       opportunities: value.opportunities
         .map((entry) => entry.trim())
         .filter(Boolean)
