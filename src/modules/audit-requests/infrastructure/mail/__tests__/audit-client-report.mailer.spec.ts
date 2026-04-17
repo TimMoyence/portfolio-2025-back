@@ -127,9 +127,7 @@ describe('AuditClientReportMailer', () => {
       });
 
       const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.html).toContain(
-        '<a\n              href="https://cal.com/asili/audit-call"',
-      );
+      expect(call.html).toContain('href="https://cal.com/asili/audit-call"');
       expect(call.html).toContain('target="_blank"');
       expect(call.html).toContain('rel="noopener noreferrer"');
       expect(call.text).toContain('https://cal.com/asili/audit-call');

@@ -389,18 +389,28 @@ export class PageAiRecapService {
     value: z.infer<typeof engineScoreSchema>,
     expected: EngineScore['engine'],
   ): EngineScore {
+    const blockers = value.blockers
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .slice(0, 5);
+
+    // P3.1 : post-process guarantee. Si le LLM a note "Not verifiable" dans
+    // les blockers, force le score a 50 exactement (meme si le modele a
+    // hallucine un score optimiste). Couvre les deux locales du prompt.
+    const hasUnverifiable = blockers.some((entry) =>
+      /not verifiable|non verifiable/i.test(entry),
+    );
+    const score = hasUnverifiable ? 50 : this.clampScore(value.score);
+
     return {
       engine: expected,
-      score: this.clampScore(value.score),
+      score,
       indexable: Boolean(value.indexable),
       strengths: value.strengths
         .map((entry) => entry.trim())
         .filter(Boolean)
         .slice(0, 5),
-      blockers: value.blockers
-        .map((entry) => entry.trim())
-        .filter(Boolean)
-        .slice(0, 5),
+      blockers,
       opportunities: value.opportunities
         .map((entry) => entry.trim())
         .filter(Boolean)
