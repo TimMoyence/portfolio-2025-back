@@ -28,6 +28,11 @@ import {
   withDeterministicCost,
 } from './langchain-fallback-report.builder';
 import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
+import {
+  UNTRUSTED_DATA_DISCLAIMER_EN,
+  UNTRUSTED_DATA_DISCLAIMER_FR,
+  wrapUntrustedUserPayload,
+} from './shared/prompt-sanitize.util';
 import { LLM_EXECUTOR, type LlmExecutor } from './llm-executor.port';
 import {
   ReportQualityGateContext,
@@ -899,6 +904,13 @@ export class LangchainAuditReportService {
     return chain.invoke(
       [
         {
+          role: 'system' as const,
+          content:
+            locale === 'fr'
+              ? UNTRUSTED_DATA_DISCLAIMER_FR
+              : UNTRUSTED_DATA_DISCLAIMER_EN,
+        },
+        {
           role: 'system',
           content:
             locale === 'fr'
@@ -916,7 +928,7 @@ export class LangchainAuditReportService {
               },
             ]
           : []),
-        { role: 'user', content: JSON.stringify(payload) },
+        { role: 'user', content: wrapUntrustedUserPayload(payload) },
       ],
       { signal },
     );
@@ -932,6 +944,13 @@ export class LangchainAuditReportService {
     const chain = llm.withStructuredOutput(prioritySectionSchema);
     return chain.invoke(
       [
+        {
+          role: 'system' as const,
+          content:
+            locale === 'fr'
+              ? UNTRUSTED_DATA_DISCLAIMER_FR
+              : UNTRUSTED_DATA_DISCLAIMER_EN,
+        },
         {
           role: 'system',
           content:
@@ -950,7 +969,7 @@ export class LangchainAuditReportService {
               },
             ]
           : []),
-        { role: 'user', content: JSON.stringify(payload) },
+        { role: 'user', content: wrapUntrustedUserPayload(payload) },
       ],
       { signal },
     );
@@ -966,6 +985,13 @@ export class LangchainAuditReportService {
     const chain = llm.withStructuredOutput(executionSectionSchema);
     return chain.invoke(
       [
+        {
+          role: 'system' as const,
+          content:
+            locale === 'fr'
+              ? UNTRUSTED_DATA_DISCLAIMER_FR
+              : UNTRUSTED_DATA_DISCLAIMER_EN,
+        },
         {
           role: 'system',
           content:
@@ -984,7 +1010,7 @@ export class LangchainAuditReportService {
               },
             ]
           : []),
-        { role: 'user', content: JSON.stringify(payload) },
+        { role: 'user', content: wrapUntrustedUserPayload(payload) },
       ],
       { signal },
     );
@@ -1000,6 +1026,13 @@ export class LangchainAuditReportService {
     const chain = llm.withStructuredOutput(clientCommsSectionSchema);
     return chain.invoke(
       [
+        {
+          role: 'system' as const,
+          content:
+            locale === 'fr'
+              ? UNTRUSTED_DATA_DISCLAIMER_FR
+              : UNTRUSTED_DATA_DISCLAIMER_EN,
+        },
         {
           role: 'system',
           content:
@@ -1018,7 +1051,7 @@ export class LangchainAuditReportService {
               },
             ]
           : []),
-        { role: 'user', content: JSON.stringify(payload) },
+        { role: 'user', content: wrapUntrustedUserPayload(payload) },
       ],
       { signal },
     );
@@ -1046,6 +1079,13 @@ export class LangchainAuditReportService {
     const result = await chain.invoke(
       [
         {
+          role: 'system' as const,
+          content:
+            locale === 'fr'
+              ? UNTRUSTED_DATA_DISCLAIMER_FR
+              : UNTRUSTED_DATA_DISCLAIMER_EN,
+        },
+        {
           role: 'system',
           content:
             locale === 'fr'
@@ -1065,7 +1105,7 @@ export class LangchainAuditReportService {
           : []),
         {
           role: 'user',
-          content: JSON.stringify(payload),
+          content: wrapUntrustedUserPayload(payload),
         },
       ],
       { signal },
@@ -1085,6 +1125,13 @@ export class LangchainAuditReportService {
     const chain = llm.withStructuredOutput(expertReportSchema);
     return chain.invoke(
       [
+        {
+          role: 'system' as const,
+          content:
+            locale === 'fr'
+              ? UNTRUSTED_DATA_DISCLAIMER_FR
+              : UNTRUSTED_DATA_DISCLAIMER_EN,
+        },
         {
           role: 'system',
           content:
@@ -1123,7 +1170,7 @@ export class LangchainAuditReportService {
           : []),
         {
           role: 'user',
-          content: JSON.stringify(payload),
+          content: wrapUntrustedUserPayload(payload),
         },
       ],
       { signal },
