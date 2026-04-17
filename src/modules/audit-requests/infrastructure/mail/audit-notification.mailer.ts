@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { AuditRequest } from '../../domain/AuditRequest';
+import { buildMailLayout } from './mail-layout.util';
 import { escapeHtml } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
@@ -55,27 +56,28 @@ Contact        : ${contactMethod} — ${contactValue}
     contactMethod: string,
     contactValue: string,
   ): string {
-    return `
-        <div style="font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; padding:24px;">
-          <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
-            <h2 style="margin-top:0; color:#333;">🔍 Nouvelle demande d'audit SEO</h2>
+    const bodyHtml = `
+      <table style="width:100%;border-collapse:collapse;margin:0 0 20px;">
+        <tr>
+          <td style="padding:8px 0;font-weight:600;width:140px;color:#374151;">Site / activité</td>
+          <td style="padding:8px 0;color:#111;">${escapeHtml(websiteName)}</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 0;font-weight:600;color:#374151;">Contact</td>
+          <td style="padding:8px 0;color:#111;">${escapeHtml(contactMethod)} — ${escapeHtml(contactValue)}</td>
+        </tr>
+      </table>
+      <p class="text-muted" style="font-size:13px;color:#6b7280;margin:0;">
+        Demande envoyée depuis la page d'audit gratuit du site.
+      </p>
+    `;
 
-            <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
-              <tr>
-                <td style="padding:6px 0; font-weight:bold; width:140px;">Site / activité</td>
-                <td style="padding:6px 0;">${escapeHtml(websiteName)}</td>
-              </tr>
-              <tr>
-                <td style="padding:6px 0; font-weight:bold;">Contact</td>
-                <td style="padding:6px 0;">${escapeHtml(contactMethod)} — ${escapeHtml(contactValue)}</td>
-              </tr>
-            </table>
-
-            <p style="font-size:12px; color:#666; margin:0;">
-              Demande envoyée depuis la page d'audit gratuit du site.
-            </p>
-          </div>
-        </div>
-      `;
+    return buildMailLayout({
+      heroTitle: "Nouvelle demande d'audit SEO",
+      heroSubtitle: 'Notification interne — audit soumis via /growth-audit',
+      preheader: `Nouvelle demande pour ${websiteName} (${contactMethod})`,
+      bodyHtml,
+      showUnsubscribe: false,
+    });
   }
 }

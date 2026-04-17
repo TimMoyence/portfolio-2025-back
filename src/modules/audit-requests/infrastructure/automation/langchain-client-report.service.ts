@@ -422,10 +422,10 @@ export class LangchainClientReportService {
     ]);
 
     return {
-      executiveSummary: localizedText(
+      executiveSummary: this.buildFallbackExecutiveSummary(
+        context,
         locale,
-        `Audit finalise pour ${context.websiteName}. Des leviers concrets sont identifies pour ameliorer la visibilite Google et la presence sur les moteurs IA. Un appel de 30 minutes permet de prioriser le plan.`,
-        `Audit completed for ${context.websiteName}. Concrete levers are identified to improve Google visibility and AI engine presence. A 30-minute call will help prioritize the plan.`,
+        sortedFindings,
       ),
       topFindings: ensuredFindings,
       googleVsAiMatrix: {
@@ -462,6 +462,107 @@ export class LangchainClientReportService {
         actionLabel: localizedText(locale, "Reserver l'appel", 'Book the call'),
       },
     };
+  }
+
+  /**
+   * Construit un executive summary contextualise depuis les vrais findings du
+   * site audit (P4.2). Remplace le template generique pour que si OpenAI est
+   * down, le client recoive toujours un rapport personnalise avec ses propres
+   * donnees (top finding, severity, score Google/IA).
+   */
+  private buildFallbackExecutiveSummary(
+    context: ClientReportContext,
+    locale: AuditLocale,
+    sortedFindings: ReadonlyArray<ClientReportFinding>,
+  ): string {
+    const topFinding = sortedFindings[0];
+    const totalFindings = sortedFindings.length;
+    const googleScore = this.averageScore([
+      context.pillarScores.seo,
+      context.pillarScores.performance,
+      context.pillarScores.technical,
+    ]);
+    const aiScore = this.averageScore([
+      context.pillarScores.aiVisibility,
+      context.pillarScores.citationWorthiness,
+      context.pillarScores.trust,
+    ]);
+
+    const businessHint = this.resolveBusinessHint(context.businessType, locale);
+
+    if (!topFinding) {
+      return localizedText(
+        locale,
+        `Audit finalise pour ${context.websiteName}. Aucun blocage critique detecte. Visibilite Google ${googleScore}/100, IA ${aiScore}/100. ${businessHint} Un appel de 30 minutes permet de prioriser les ameliorations fines.`,
+        `Audit completed for ${context.websiteName}. No critical blocker detected. Google visibility ${googleScore}/100, AI ${aiScore}/100. ${businessHint} A 30-minute call will help prioritize fine-grained improvements.`,
+      );
+    }
+
+    const severityLabel = localizedText(
+      locale,
+      topFinding.severity === 'high'
+        ? 'priorite haute'
+        : topFinding.severity === 'medium'
+          ? 'priorite moyenne'
+          : 'priorite basse',
+      topFinding.severity === 'high'
+        ? 'high priority'
+        : topFinding.severity === 'medium'
+          ? 'medium priority'
+          : 'low priority',
+    );
+
+    const remainingCount = totalFindings - 1;
+    const remainingSentence =
+      remainingCount > 0
+        ? localizedText(
+            locale,
+            ` ${remainingCount} autre${remainingCount > 1 ? 's' : ''} levier${remainingCount > 1 ? 's' : ''} ${remainingCount > 1 ? 'sont identifies' : 'est identifie'} dans le rapport.`,
+            ` ${remainingCount} other lever${remainingCount > 1 ? 's' : ''} ${remainingCount > 1 ? 'are' : 'is'} documented in the report.`,
+          )
+        : '';
+
+    return localizedText(
+      locale,
+      `Audit finalise pour ${context.websiteName}. Point prioritaire (${severityLabel}) : ${topFinding.title}.${remainingSentence} Visibilite Google ${googleScore}/100, IA ${aiScore}/100. ${businessHint} Un appel de 30 minutes permet de prioriser le plan.`,
+      `Audit completed for ${context.websiteName}. Priority finding (${severityLabel}): ${topFinding.title}.${remainingSentence} Google visibility ${googleScore}/100, AI ${aiScore}/100. ${businessHint} A 30-minute call will help prioritize the plan.`,
+    );
+  }
+
+  /**
+   * Phrase courte adaptee au businessType pour le fallback (P4.2). Ne
+   * remplace pas les directives injectees dans le prompt LLM (P1.1) mais
+   * assure une trace sectorielle dans le rendu deterministe.
+   */
+  private resolveBusinessHint(
+    businessType: BusinessType | undefined,
+    locale: AuditLocale,
+  ): string {
+    if (!businessType || businessType === 'unknown') return '';
+    const fr: Record<Exclude<BusinessType, 'unknown'>, string> = {
+      ecommerce:
+        'Contexte e-commerce : focus panier, fiches produits et Core Web Vitals.',
+      saas: 'Contexte SaaS : focus pricing, signup et signaux de trust.',
+      portfolio:
+        'Contexte portfolio : focus cas clients, temoignages et CTA unique.',
+      agency: 'Contexte agence : focus offres packagees et etudes de cas.',
+      media:
+        'Contexte media/editorial : focus E-E-A-T, structured data Article et cluster.',
+      service: 'Contexte service local : focus SEO local et FAQ visible.',
+    };
+    const en: Record<Exclude<BusinessType, 'unknown'>, string> = {
+      ecommerce:
+        'E-commerce context: focus on cart, product pages and Core Web Vitals.',
+      saas: 'SaaS context: focus on pricing, signup and trust signals.',
+      portfolio:
+        'Portfolio context: focus on case studies, testimonials and single CTA.',
+      agency:
+        'Agency context: focus on packaged offers and sector case studies.',
+      media:
+        'Media/editorial context: focus on E-E-A-T, Article structured data and cluster.',
+      service: 'Local service context: focus on local SEO and visible FAQ.',
+    };
+    return locale === 'fr' ? fr[businessType] : en[businessType];
   }
 
   private buildFallbackQuickWins(
