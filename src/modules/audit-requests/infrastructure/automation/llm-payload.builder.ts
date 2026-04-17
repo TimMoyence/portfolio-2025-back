@@ -218,8 +218,10 @@ function compactSampledUrls(
     statusCode: entry.statusCode,
     indexable: entry.indexable,
     canonical: entry.canonical,
-    title: entry.title ?? null,
-    metaDescription: entry.metaDescription ?? null,
+    title: entry.title ? sanitizePromptInput(entry.title) : null,
+    metaDescription: entry.metaDescription
+      ? sanitizePromptInput(entry.metaDescription)
+      : null,
     h1Count: entry.h1Count ?? 0,
     htmlLang: entry.htmlLang ?? null,
     canonicalCount: entry.canonicalCount ?? 0,
