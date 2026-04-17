@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ExpertReportMailInput } from '../../domain/IAuditNotifier.port';
+import { buildMailLayout } from './mail-layout.util';
 import { escapeHtml, slugify } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
@@ -54,8 +55,8 @@ export class AuditExpertReportMailer {
     const client = input.clientReport;
     const contactHtml =
       input.clientContact.method === 'PHONE'
-        ? `<p style="margin:0 0 8px; padding:12px; background:#fff4e5; border-left:4px solid #f59e0b;"><strong>Contact TELEPHONE — appel requis :</strong> ${escapeHtml(input.clientContact.value)}</p>`
-        : `<p style="margin:0 0 8px;"><strong>Contact EMAIL :</strong> ${escapeHtml(input.clientContact.value)}</p>`;
+        ? `<p style="margin:0 0 12px;padding:12px;background:#fff4e5;border-left:4px solid #f59e0b;color:#7c2d12;"><strong>Contact TELEPHONE — appel requis :</strong> ${escapeHtml(input.clientContact.value)}</p>`
+        : `<p style="margin:0 0 12px;color:#374151;"><strong>Contact EMAIL :</strong> ${escapeHtml(input.clientContact.value)}</p>`;
 
     const crossFindingsHtml = expert.crossPageFindings
       .slice(0, 5)
@@ -81,47 +82,53 @@ export class AuditExpertReportMailer {
       .join('');
 
     const clientMatrixHtml = `
-      <ul style="padding-left:20px; color:#333;">
+      <ul style="padding-left:20px;color:#374151;">
         <li>Google : ${client.googleVsAiMatrix.googleVisibility.score}/100 — ${escapeHtml(client.googleVsAiMatrix.googleVisibility.summary)}</li>
         <li>IA : ${client.googleVsAiMatrix.aiVisibility.score}/100 — ${escapeHtml(client.googleVsAiMatrix.aiVisibility.summary)}</li>
       </ul>`;
 
-    return `
-      <div style="font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; padding:24px;">
-        <div style="max-width:760px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
-          <h2 style="margin-top:0;">[Audit Expert] ${escapeHtml(input.websiteName)}</h2>
-          <p style="margin:0 0 8px;"><strong>Audit ID :</strong> ${escapeHtml(input.auditId)}</p>
-          ${contactHtml}
+    const bodyHtml = `
+      <p style="margin:0 0 12px;"><strong>Audit ID :</strong> <code style="font-family:monospace;background:#f3f4f6;padding:2px 6px;border-radius:4px;">${escapeHtml(input.auditId)}</code></p>
+      ${contactHtml}
 
-          <h3 style="margin-top:20px;">Executive summary expert</h3>
-          <p style="white-space:pre-line; color:#333;">${escapeHtml(expert.executiveSummary)}</p>
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Executive summary expert</h2>
+      <p style="white-space:pre-line;color:#374151;">${escapeHtml(expert.executiveSummary)}</p>
 
-          <h3 style="margin-top:20px;">Synthese client (Google vs IA)</h3>
-          ${clientMatrixHtml}
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Synthese client (Google vs IA)</h2>
+      ${clientMatrixHtml}
 
-          <h3 style="margin-top:20px;">Draft mail client (a copier/coller)</h3>
-          <div style="padding:16px; background:#f9fafb; border:1px dashed #cbd5e1; border-radius:6px;">
-            <p style="margin:0 0 8px;"><strong>Subject :</strong> ${escapeHtml(expert.clientEmailDraft.subject)}</p>
-            <pre style="margin:0; white-space:pre-wrap; font-family:inherit; color:#111;">${escapeHtml(expert.clientEmailDraft.body)}</pre>
-          </div>
-
-          <h3 style="margin-top:20px;">Internal notes</h3>
-          <p style="white-space:pre-line; color:#333;">${escapeHtml(expert.internalNotes)}</p>
-
-          <h3 style="margin-top:20px;">Cross-page findings (top 5)</h3>
-          <ul style="padding-left:20px; color:#333;">
-            ${crossFindingsHtml || '<li>Aucun.</li>'}
-          </ul>
-
-          <h3 style="margin-top:20px;">Priority backlog</h3>
-          <ul style="padding-left:20px; color:#333;">
-            ${backlogHtml || '<li>Aucun.</li>'}
-          </ul>
-
-          <p style="font-size:12px; color:#666; margin-top:24px;">PDF complet en piece jointe.</p>
-        </div>
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Draft mail client (a copier/coller)</h2>
+      <div style="padding:16px;background:#f9fafb;border:1px dashed #cbd5e1;border-radius:8px;">
+        <p style="margin:0 0 8px;color:#374151;"><strong>Subject :</strong> ${escapeHtml(expert.clientEmailDraft.subject)}</p>
+        <pre style="margin:0;white-space:pre-wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#111;font-size:14px;">${escapeHtml(expert.clientEmailDraft.body)}</pre>
       </div>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Internal notes</h2>
+      <p style="white-space:pre-line;color:#374151;">${escapeHtml(expert.internalNotes)}</p>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Cross-page findings (top 5)</h2>
+      <ul style="padding-left:20px;color:#374151;">
+        ${crossFindingsHtml || '<li>Aucun.</li>'}
+      </ul>
+
+      <h2 style="margin:24px 0 8px 0;font-size:16px;">Priority backlog</h2>
+      <ul style="padding-left:20px;color:#374151;">
+        ${backlogHtml || '<li>Aucun.</li>'}
+      </ul>
+
+      <p class="text-muted" style="font-size:12px;color:#6b7280;margin-top:24px;">
+        PDF complet en piece jointe.
+      </p>
     `;
+
+    return buildMailLayout({
+      heroTitle: `[Audit Expert] ${input.websiteName}`,
+      heroSubtitle:
+        'Rapport technique complet + draft mail client + backlog priorisé',
+      preheader: `Audit expert livré pour ${input.websiteName} — ${expert.crossPageFindings.length} findings, ${expert.priorityBacklog.length} backlog items`,
+      bodyHtml,
+      showUnsubscribe: false,
+    });
   }
 
   private buildExpertReportText(input: ExpertReportMailInput): string {
