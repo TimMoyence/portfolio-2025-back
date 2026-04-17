@@ -3,6 +3,8 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
+import type { BusinessType } from '../../domain/BusinessType';
+import { businessTypePromptHint } from '../../domain/BusinessType';
 import type { EngineCoverage } from '../../domain/EngineCoverage';
 import {
   AuditLocale,
@@ -99,6 +101,12 @@ export interface ClientReportContext {
   readonly quickWins: ReadonlyArray<string>;
   readonly aggregateAiSignals: AiIndexabilitySignals | null;
   readonly engineCoverage: EngineCoverage | null;
+  /**
+   * Type d'activite detecte (P1.1). Permet au LLM d'adapter les
+   * recommandations au modele economique observe (ecommerce, saas,
+   * portfolio...). `'unknown'` ou absent = prompt generique.
+   */
+  readonly businessType?: BusinessType;
 }
 
 const PILLAR_ORDER: ReadonlyArray<string> = [
@@ -158,6 +166,23 @@ export class LangchainClientReportService {
       const chain = llm.withStructuredOutput(clientReportSchema);
       const payload = this.buildPayload(context);
 
+      const systemMessages = [
+        {
+          role: 'system' as const,
+          content: this.systemPrompt(locale),
+        },
+        {
+          role: 'system' as const,
+          content: this.antiHallucinationPrompt(locale),
+        },
+      ];
+      if (context.businessType && context.businessType !== 'unknown') {
+        systemMessages.push({
+          role: 'system' as const,
+          content: businessTypePromptHint(context.businessType, locale),
+        });
+      }
+
       const llmResult = await this.llmLimiter.run(() =>
         withHardTimeout<ClientReportZodOutput>(
           'langchain:client_report',
@@ -165,14 +190,7 @@ export class LangchainClientReportService {
           (signal) =>
             chain.invoke(
               [
-                {
-                  role: 'system',
-                  content: this.systemPrompt(locale),
-                },
-                {
-                  role: 'system',
-                  content: this.antiHallucinationPrompt(locale),
-                },
+                ...systemMessages,
                 { role: 'user', content: JSON.stringify(payload) },
               ],
               { signal },
@@ -235,6 +253,7 @@ export class LangchainClientReportService {
       locale: context.locale,
       website: context.websiteName,
       normalizedUrl: context.normalizedUrl,
+      businessType: context.businessType ?? 'unknown',
       pillarScores: context.pillarScores,
       findings: context.findings.slice(0, 8).map((entry) => ({
         title: entry.title,

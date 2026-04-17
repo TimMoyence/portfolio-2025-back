@@ -78,6 +78,7 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
     }
 
     const options: JobsOptions = {
+      jobId: auditId,
       attempts: this.config.queueAttempts,
       backoff: { type: 'fixed', delay: this.config.queueBackoffMs },
       removeOnComplete: true,
@@ -85,6 +86,9 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
     };
 
     try {
+      // P1.5 idempotence : `jobId: auditId` fait refuser silencieusement
+      // les duplicates par BullMQ (pas de double enqueue, pas de double
+      // cout LLM si le client resoumet ou si l'API retente).
       await this.queue.add('audit.process', { auditId }, options);
     } catch (error) {
       this.logger.warn(
