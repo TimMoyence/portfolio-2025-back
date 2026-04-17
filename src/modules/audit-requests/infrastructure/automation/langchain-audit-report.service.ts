@@ -1,5 +1,11 @@
 import { ChatOpenAI } from '@langchain/openai';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
+import { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
+import {
+  invokeWithLlmTracking,
+  type LlmInvocationContext,
+  type LlmInvocationOptions,
+} from '../../../../common/infrastructure/llm/llm-usage-tracking.util';
 import { z } from 'zod';
 import {
   AuditLocale,
@@ -253,7 +259,42 @@ export class LangchainAuditReportService {
     private readonly chatOpenAIFactory: ChatOpenAIFactory,
     @Inject(LLM_EXECUTOR)
     private readonly llmExecutor: LlmExecutor,
+    @Optional()
+    private readonly metricsService?: MetricsService,
   ) {}
+
+  /**
+   * Construit le contexte d'invocation LLM pour `invokeWithLlmTracking`.
+   * Chaque section du pipeline audit attribue sa propre label "section"
+   * aux metriques Prometheus (llm_tokens_total, llm_latency_seconds).
+   */
+  private buildLlmContext(
+    section: string,
+    locale: AuditLocale,
+  ): LlmInvocationContext {
+    return { section, locale, model: this.config.llmModel };
+  }
+
+  /**
+   * Enveloppe `chain.invoke` avec le tracking Prometheus : tokens consommes,
+   * latence, statut (success|error). Le handler callback LangChain est
+   * transparent pour le flux metier et n'altere pas le resultat parse.
+   */
+  private invokeTracked<T>(
+    chain: { invoke: (messages: any, options?: any) => Promise<T> },
+    messages: unknown,
+    section: string,
+    locale: AuditLocale,
+    signal?: AbortSignal,
+  ): Promise<T> {
+    return invokeWithLlmTracking<T>(
+      (m: unknown, o: LlmInvocationOptions) => chain.invoke(m, o),
+      messages,
+      this.buildLlmContext(section, locale),
+      this.metricsService ?? null,
+      signal,
+    );
+  }
 
   async generate(
     input: LangchainAuditInput,
@@ -901,7 +942,8 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<ExecutiveSection> {
     const chain = llm.withStructuredOutput(executiveSectionSchema);
-    return chain.invoke(
+    return this.invokeTracked(
+      chain,
       [
         {
           role: 'system' as const,
@@ -930,7 +972,9 @@ export class LangchainAuditReportService {
           : []),
         { role: 'user', content: wrapUntrustedUserPayload(payload) },
       ],
-      { signal },
+      'executive',
+      locale,
+      signal,
     );
   }
 
@@ -942,7 +986,8 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<PrioritySection> {
     const chain = llm.withStructuredOutput(prioritySectionSchema);
-    return chain.invoke(
+    return this.invokeTracked(
+      chain,
       [
         {
           role: 'system' as const,
@@ -971,7 +1016,9 @@ export class LangchainAuditReportService {
           : []),
         { role: 'user', content: wrapUntrustedUserPayload(payload) },
       ],
-      { signal },
+      'priority',
+      locale,
+      signal,
     );
   }
 
@@ -983,7 +1030,8 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<ExecutionSection> {
     const chain = llm.withStructuredOutput(executionSectionSchema);
-    return chain.invoke(
+    return this.invokeTracked(
+      chain,
       [
         {
           role: 'system' as const,
@@ -1012,7 +1060,9 @@ export class LangchainAuditReportService {
           : []),
         { role: 'user', content: wrapUntrustedUserPayload(payload) },
       ],
-      { signal },
+      'execution',
+      locale,
+      signal,
     );
   }
 
@@ -1024,7 +1074,8 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<ClientCommsSection> {
     const chain = llm.withStructuredOutput(clientCommsSectionSchema);
-    return chain.invoke(
+    return this.invokeTracked(
+      chain,
       [
         {
           role: 'system' as const,
@@ -1053,7 +1104,9 @@ export class LangchainAuditReportService {
           : []),
         { role: 'user', content: wrapUntrustedUserPayload(payload) },
       ],
-      { signal },
+      'client_comms',
+      locale,
+      signal,
     );
   }
 
@@ -1076,7 +1129,8 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<string> {
     const chain = llm.withStructuredOutput(userSummarySchema);
-    const result = await chain.invoke(
+    const result = await this.invokeTracked(
+      chain,
       [
         {
           role: 'system' as const,
@@ -1108,7 +1162,9 @@ export class LangchainAuditReportService {
           content: wrapUntrustedUserPayload(payload),
         },
       ],
-      { signal },
+      'user_summary',
+      locale,
+      signal,
     );
 
     return result.summaryText;
@@ -1123,7 +1179,8 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<ExpertReport> {
     const chain = llm.withStructuredOutput(expertReportSchema);
-    return chain.invoke(
+    return this.invokeTracked(
+      chain,
       [
         {
           role: 'system' as const,
@@ -1173,7 +1230,9 @@ export class LangchainAuditReportService {
           content: wrapUntrustedUserPayload(payload),
         },
       ],
-      { signal },
+      'expert_report',
+      locale,
+      signal,
     );
   }
 
