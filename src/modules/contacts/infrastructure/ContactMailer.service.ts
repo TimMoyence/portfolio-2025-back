@@ -1,35 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { createTransport, Transporter } from 'nodemailer';
+import type { Transporter } from 'nodemailer';
+import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import { Contacts } from '../domain/Contacts';
 import type { IContactNotifier } from '../domain/IContactNotifier';
 
 @Injectable()
 export class ContactMailerService implements IContactNotifier {
   private readonly logger = new Logger(ContactMailerService.name);
-  private readonly transporter?: Transporter;
+  private readonly transporter: Transporter | null;
   private readonly to = process.env.CONTACT_NOTIFICATION_TO;
   private readonly from = process.env.SMTP_FROM;
 
   constructor() {
-    const host = process.env.SMTP_HOST;
-    const port = process.env.SMTP_PORT
-      ? Number(process.env.SMTP_PORT)
-      : undefined;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-
-    if (host && port && user && pass) {
-      this.transporter = createTransport({
-        host,
-        port,
-        secure: port === 465,
-        auth: { user, pass },
-      }) as Transporter;
-    } else {
-      this.logger.warn(
-        'Contact mailer disabled: MAIL_HOST/MAIL_PORT/MAIL_USER/MAIL_PASS not fully configured',
-      );
-    }
+    this.transporter = createOptionalSmtpTransporter(
+      this.logger,
+      'Contact mailer',
+    );
   }
 
   async sendContactNotification(contact: Contacts): Promise<void> {

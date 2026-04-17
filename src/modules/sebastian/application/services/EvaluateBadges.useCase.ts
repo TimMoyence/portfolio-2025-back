@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ISebastianBadgeRepository } from '../../domain/ISebastianBadge.repository';
-import type { ISebastianEntryRepository } from '../../domain/ISebastianEntry.repository';
+import type {
+  ISebastianEntryRepository,
+  SebastianEntryFilters,
+} from '../../domain/ISebastianEntry.repository';
 import type { ISebastianGoalRepository } from '../../domain/ISebastianGoal.repository';
 import {
   SEBASTIAN_BADGE_REPOSITORY,
@@ -30,16 +33,37 @@ export class EvaluateBadgesUseCase {
     private readonly goalRepo: ISebastianGoalRepository,
   ) {}
 
+  /** Badges qui necessitent l'historique complet (1-shot, jamais reset une fois debloques). */
+  private static readonly GLOBAL_HISTORY_BADGES = [
+    'first-log',
+    'espresso-machine',
+    'early-bird',
+    'night-owl',
+  ];
+
   /** Execute l'evaluation des badges et retourne les nouveaux badges debloques. */
   async execute(userId: string): Promise<SebastianBadge[]> {
     const now = new Date();
-    const [existingBadges, entries, goals] = await Promise.all([
-      this.badgeRepo.findByUserId(userId),
-      this.entryRepo.findByFilters({ userId }),
+
+    // Optimisation N+1 : on charge d'abord les badges existants pour savoir
+    // si tous les badges "historique complet" sont deja debloques. Si oui,
+    // on limite le fetch d'entrees aux 30 derniers jours (window max des
+    // badges restants : zen-monk-30, goal-crusher, perfect-month).
+    const existingBadges = await this.badgeRepo.findByUserId(userId);
+    const unlockedKeys = new Set(existingBadges.map((b) => b.badgeKey));
+    const allGlobalsUnlocked =
+      EvaluateBadgesUseCase.GLOBAL_HISTORY_BADGES.every((key) =>
+        unlockedKeys.has(key),
+      );
+
+    const entryFilters: SebastianEntryFilters = allGlobalsUnlocked
+      ? { userId, from: this.subtractDays(now, 30) }
+      : { userId };
+
+    const [entries, goals] = await Promise.all([
+      this.entryRepo.findByFilters(entryFilters),
       this.goalRepo.findByUserId(userId),
     ]);
-
-    const unlockedKeys = new Set(existingBadges.map((b) => b.badgeKey));
     const newBadges: SebastianBadge[] = [];
 
     for (const catalogEntry of BADGE_CATALOG) {

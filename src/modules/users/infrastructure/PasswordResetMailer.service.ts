@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { createTransport, Transporter } from 'nodemailer';
+import type { Transporter } from 'nodemailer';
+import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import type {
   IPasswordResetNotifier,
   PasswordResetNotificationPayload,
@@ -9,29 +10,13 @@ import type {
 @Injectable()
 export class PasswordResetMailerService implements IPasswordResetNotifier {
   private readonly logger = new Logger(PasswordResetMailerService.name);
-  private readonly transporter?: Transporter;
+  private readonly transporter: Transporter | null;
   private readonly from = process.env.SMTP_FROM;
 
   constructor() {
-    const host = process.env.SMTP_HOST;
-    const port = process.env.SMTP_PORT
-      ? Number(process.env.SMTP_PORT)
-      : undefined;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-
-    if (host && port && user && pass) {
-      this.transporter = createTransport({
-        host,
-        port,
-        secure: process.env.SMTP_SECURE === 'true' || port === 465,
-        auth: { user, pass },
-      }) as Transporter;
-      return;
-    }
-
-    this.logger.warn(
-      'Password reset mailer disabled: SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS not fully configured',
+    this.transporter = createOptionalSmtpTransporter(
+      this.logger,
+      'Password reset mailer',
     );
   }
 
