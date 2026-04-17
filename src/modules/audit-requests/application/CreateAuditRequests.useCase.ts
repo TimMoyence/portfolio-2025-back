@@ -3,10 +3,12 @@ import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
 import type { IAuditQueuePort } from '../domain/IAuditQueue.port';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
+import { SelfAuditGuard } from '../domain/SelfAuditGuard';
 import {
   AUDIT_NOTIFIER,
   AUDIT_QUEUE,
   AUDIT_REQUESTS_REPOSITORY,
+  AUDIT_SELF_GUARD,
 } from '../domain/token';
 import { CreateAuditRequestCommand } from './dto/CreateAuditRequest.command';
 import { AuditRequestMapper } from './mappers/AuditRequest.mapper';
@@ -23,11 +25,15 @@ export class CreateAuditRequestsUseCase {
     private readonly queueService: IAuditQueuePort,
     @Inject(AUDIT_NOTIFIER)
     private readonly notifier: IAuditNotifierPort,
+    @Inject(AUDIT_SELF_GUARD)
+    private readonly selfGuard: SelfAuditGuard,
   ) {}
 
   async execute(
     data: CreateAuditRequestCommand,
   ): Promise<AuditRequestResponse> {
+    this.selfGuard.ensureNotSelf(data.websiteName);
+
     const request = AuditRequestMapper.fromCreateCommand(data);
     const response = await this.repo.create(request);
 

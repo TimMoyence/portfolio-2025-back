@@ -242,10 +242,11 @@ export class AuditDeliveryOrchestrator {
       void this.notifier
         .sendClientReport({
           to: context.contactValue,
-          firstName: null,
+          firstName: this.extractFirstName(context.contactValue),
           websiteName: context.websiteName,
           clientReport,
           pdfBuffer,
+          bookingUrl: process.env.AUDIT_BOOKING_URL ?? null,
         })
         .catch((error) =>
           this.logger.warn(
@@ -359,5 +360,25 @@ export class AuditDeliveryOrchestrator {
       perplexity: empty('perplexity'),
       geminiOverviews: empty('gemini_overviews'),
     };
+  }
+
+  /**
+   * Deduit un prenom lisible depuis le local-part d'une adresse email
+   * (`tim.moyence@outlook.fr` → `Tim`). Retourne null quand le format
+   * n'est pas exploitable (numerique, trop court, ou valeur non-email).
+   * Utilise pour personnaliser la salutation du mail client (P0.6).
+   */
+  private extractFirstName(contactValue: string): string | null {
+    const trimmed = contactValue.trim();
+    if (!trimmed.includes('@')) return null;
+    const [localPart] = trimmed.split('@');
+    if (!localPart) return null;
+
+    const firstToken = localPart.split(/[._+-]/)[0]?.trim() ?? '';
+    if (firstToken.length < 2) return null;
+    if (/^\d+$/.test(firstToken)) return null;
+
+    const normalized = firstToken.toLowerCase();
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
   }
 }

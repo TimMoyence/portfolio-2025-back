@@ -133,7 +133,12 @@ export class AuditClientReportMailer {
           <div style="margin-top:24px; padding:16px; background:#111; color:#fff; border-radius:6px;">
             <strong>${escapeHtml(report.cta.title)}</strong><br/>
             <span>${escapeHtml(report.cta.description)}</span><br/>
-            <span style="display:inline-block; margin-top:8px; padding:6px 12px; background:#fff; color:#111; border-radius:4px;">${escapeHtml(report.cta.actionLabel)}</span>
+            <a
+              href="${escapeHtml(this.resolveBookingUrl(input))}"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="display:inline-block; margin-top:12px; padding:10px 18px; background:#fff; color:#111; border-radius:6px; text-decoration:none; font-weight:600;"
+            >${escapeHtml(report.cta.actionLabel)}</a>
           </div>
 
           <p style="font-size:12px; color:#666; margin-top:24px;">
@@ -142,6 +147,20 @@ export class AuditClientReportMailer {
         </div>
       </div>
     `;
+  }
+
+  /**
+   * Retourne l'URL cible du CTA client. Priorise `input.bookingUrl` si
+   * fourni par l'orchestrateur, sinon fallback sur `AUDIT_BOOKING_URL`
+   * env, puis sur la page `/contact` d'Asili Design. Jamais vide pour
+   * garantir que le CTA est toujours cliquable (P0.5).
+   */
+  private resolveBookingUrl(input: ClientReportMailInput): string {
+    const explicit = input.bookingUrl?.trim();
+    if (explicit) return explicit;
+    const fromEnv = process.env.AUDIT_BOOKING_URL?.trim();
+    if (fromEnv) return fromEnv;
+    return 'https://asilidesign.fr/fr/contact';
   }
 
   private buildClientReportText(input: ClientReportMailInput): string {
@@ -181,7 +200,9 @@ export class AuditClientReportMailer {
     }
     lines.push('');
     lines.push(`${report.cta.title} — ${report.cta.description}`);
-    lines.push(`Action : ${report.cta.actionLabel}`);
+    lines.push(
+      `Action : ${report.cta.actionLabel} → ${this.resolveBookingUrl(input)}`,
+    );
     lines.push('');
     lines.push(
       input.pdfBuffer

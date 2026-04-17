@@ -17,7 +17,7 @@ import {
 } from './llm-execution.guardrails';
 import { localizedText } from './shared/locale-text.util';
 
-const severitySchema = z.enum(['critical', 'high', 'medium']);
+const severitySchema = z.enum(['high', 'medium', 'low']);
 const pillarStatusSchema = z.enum(['critical', 'warning', 'ok']);
 const effortSchema = z.enum(['low', 'medium', 'high']);
 
@@ -197,7 +197,7 @@ export class LangchainClientReportService {
         '- Pas de markdown, pas de HTML',
         "- Pas de speculation (si une donnee manque, ecris 'Non verifiable')",
         '- Executive summary en 3 phrases max, oriente impact business',
-        '- Top findings : 3-5 max, avec severity critique/high/medium',
+        "- Top findings : 3-5 max, avec severity high/medium/low (doit refleter fidelement la severity source — jamais d'inflation)",
         '- Google vs AI matrix : 2 scores 0-100 + 1 phrase chacun',
         '- Pillar scorecard : exactement 7 piliers (seo, performance, technical, trust, conversion, aiVisibility, citationWorthiness)',
         '- Quick wins : 3-5 max, chacun avec un impact business concret',
@@ -214,7 +214,7 @@ export class LangchainClientReportService {
       '- No markdown, no HTML',
       "- No speculation (if data is missing, write 'Not verifiable')",
       '- Executive summary: max 3 sentences, business-impact oriented',
-      '- Top findings: 3-5 max, severity critical/high/medium',
+      '- Top findings: 3-5 max, severity high/medium/low (must mirror source severity — never inflate)',
       '- Google vs AI matrix: 2 scores 0-100 + 1 sentence each',
       '- Pillar scorecard: exactly 7 pillars (seo, performance, technical, trust, conversion, aiVisibility, citationWorthiness)',
       '- Quick wins: 3-5 max, each with a concrete business impact',
@@ -359,7 +359,7 @@ export class LangchainClientReportService {
         `Impact ${finding.impact}: ${finding.description}`,
         `${finding.impact} impact: ${finding.description}`,
       ),
-      severity: this.mapClientSeverity(finding.severity),
+      severity: finding.severity,
     }));
 
     const fallbackFinding = {
@@ -541,14 +541,6 @@ export class LangchainClientReportService {
     if (severity === 'high') return 3;
     if (severity === 'medium') return 2;
     return 1;
-  }
-
-  private mapClientSeverity(
-    severity: 'high' | 'medium' | 'low',
-  ): 'critical' | 'high' | 'medium' {
-    if (severity === 'high') return 'critical';
-    if (severity === 'medium') return 'high';
-    return 'medium';
   }
 
   private averageScore(values: Array<number | undefined>): number {

@@ -104,13 +104,16 @@ describe('LangchainClientReportService', () => {
     expect(result.cta.actionLabel.length).toBeGreaterThan(0);
   });
 
-  it('maps high severity to critical in the client synthesis', async () => {
+  it('preserves source severity verbatim — no inflation low→medium→high→critical (P0.1)', async () => {
     const service = new LangchainClientReportService(config);
     const result = await service.generate(baseContext());
     const top = result.topFindings[0];
 
-    expect(top.severity).toBe('critical');
+    expect(top.severity).toBe('high');
     expect(top.title).toContain('Meta descriptions');
+
+    const second = result.topFindings[1];
+    expect(second?.severity).toBe('medium');
   });
 
   it('computes google vs ai matrix from pillar scores when falling back', async () => {

@@ -15,6 +15,12 @@ export interface ClientReportMailInput {
   readonly websiteName: string;
   readonly clientReport: ClientReportSynthesis;
   readonly pdfBuffer: Buffer | null;
+  /**
+   * URL cible du CTA "Reserver l'appel" dans le mail client. Si null, le
+   * mailer utilise `process.env.AUDIT_BOOKING_URL` puis la page contact
+   * d'Asili Design comme fallback.
+   */
+  readonly bookingUrl?: string | null;
 }
 
 /**

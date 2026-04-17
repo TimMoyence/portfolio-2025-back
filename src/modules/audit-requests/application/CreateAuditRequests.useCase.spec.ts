@@ -4,6 +4,10 @@ import type { IAuditRequestsRepository } from '../domain/IAuditRequests.reposito
 import type { IAuditNotifierPort } from '../domain/IAuditNotifier.port';
 import type { IAuditQueuePort } from '../domain/IAuditQueue.port';
 import { AuditRequestResponse } from '../domain/AuditRequestResponse';
+import {
+  SelfAuditForbiddenError,
+  SelfAuditGuard,
+} from '../domain/SelfAuditGuard';
 import { CreateAuditRequestCommand } from './dto/CreateAuditRequest.command';
 import {
   createMockAuditRequestsRepo,
@@ -16,6 +20,7 @@ describe('CreateAuditRequestsUseCase', () => {
   let repo: jest.Mocked<IAuditRequestsRepository>;
   let queueService: jest.Mocked<IAuditQueuePort>;
   let notifier: jest.Mocked<IAuditNotifierPort>;
+  let selfGuard: SelfAuditGuard;
 
   const validCommand: CreateAuditRequestCommand = {
     websiteName: 'example.com',
@@ -36,7 +41,13 @@ describe('CreateAuditRequestsUseCase', () => {
     repo = createMockAuditRequestsRepo();
     queueService = createMockAuditQueue();
     notifier = createMockAuditNotifier();
-    useCase = new CreateAuditRequestsUseCase(repo, queueService, notifier);
+    selfGuard = new SelfAuditGuard(['asilidesign.fr']);
+    useCase = new CreateAuditRequestsUseCase(
+      repo,
+      queueService,
+      notifier,
+      selfGuard,
+    );
 
     repo.create.mockResolvedValue(expectedResponse);
     queueService.enqueue.mockResolvedValue(undefined);
@@ -81,5 +92,40 @@ describe('CreateAuditRequestsUseCase', () => {
 
     // Assert
     expect(queueService.enqueue).toHaveBeenCalledWith('audit-custom-456');
+  });
+
+  describe('P0.2 — SelfAuditGuard protection', () => {
+    it('devrait rejeter un audit sur le domaine self (asilidesign.fr)', async () => {
+      const selfCommand: CreateAuditRequestCommand = {
+        ...validCommand,
+        websiteName: 'asilidesign.fr',
+      };
+
+      await expect(useCase.execute(selfCommand)).rejects.toThrow(
+        SelfAuditForbiddenError,
+      );
+      expect(repo.create).not.toHaveBeenCalled();
+      expect(queueService.enqueue).not.toHaveBeenCalled();
+      expect(notifier.sendAuditNotification).not.toHaveBeenCalled();
+    });
+
+    it('devrait rejeter un audit sur un sous-domaine self', async () => {
+      const selfCommand: CreateAuditRequestCommand = {
+        ...validCommand,
+        websiteName: 'https://api.asilidesign.fr/path',
+      };
+
+      await expect(useCase.execute(selfCommand)).rejects.toThrow(
+        SelfAuditForbiddenError,
+      );
+      expect(repo.create).not.toHaveBeenCalled();
+    });
+
+    it('devrait accepter un audit sur un domaine tiers (example.com)', async () => {
+      await expect(useCase.execute(validCommand)).resolves.toEqual(
+        expectedResponse,
+      );
+      expect(repo.create).toHaveBeenCalledTimes(1);
+    });
   });
 });
