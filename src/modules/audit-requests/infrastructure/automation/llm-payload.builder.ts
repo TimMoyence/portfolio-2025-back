@@ -109,8 +109,10 @@ export function buildSectionPayloads(input: LangchainAuditInput): {
     statusCode: entry.statusCode,
     indexable: entry.indexable,
     canonical: entry.canonical,
-    title: compactText(entry.title ?? '', 120) || null,
-    metaDescription: compactText(entry.metaDescription ?? '', 180) || null,
+    title: sanitizePromptInput(compactText(entry.title ?? '', 120)) || null,
+    metaDescription:
+      sanitizePromptInput(compactText(entry.metaDescription ?? '', 180)) ||
+      null,
     h1Count: entry.h1Count ?? 0,
     htmlLang: entry.htmlLang ?? null,
     canonicalCount: entry.canonicalCount ?? 0,
@@ -136,11 +138,14 @@ export function buildSectionPayloads(input: LangchainAuditInput): {
     techFingerprint: input.techFingerprint,
   };
 
+  const safeWebsite = sanitizePromptInput(input.websiteName);
+  const safeNormalizedUrl = sanitizePromptInput(input.normalizedUrl);
+
   return {
     executiveSection: {
       locale: input.locale,
-      website: input.websiteName,
-      normalizedUrl: input.normalizedUrl,
+      website: safeWebsite,
+      normalizedUrl: safeNormalizedUrl,
       keyChecks: input.keyChecks,
       quickWins: signalBuckets.quickWins.slice(0, 6),
       pillarScores: input.pillarScores,
@@ -151,8 +156,8 @@ export function buildSectionPayloads(input: LangchainAuditInput): {
     },
     prioritySection: {
       locale: input.locale,
-      website: input.websiteName,
-      normalizedUrl: input.normalizedUrl,
+      website: safeWebsite,
+      normalizedUrl: safeNormalizedUrl,
       quickWins: signalBuckets.quickWins.slice(0, 8),
       deepFindings: compactedFindings,
       sampledUrls: compactedUrls,
@@ -162,8 +167,8 @@ export function buildSectionPayloads(input: LangchainAuditInput): {
     },
     executionSection: {
       locale: input.locale,
-      website: input.websiteName,
-      normalizedUrl: input.normalizedUrl,
+      website: safeWebsite,
+      normalizedUrl: safeNormalizedUrl,
       quickWins: signalBuckets.quickWins.slice(0, 10),
       deepFindings: compactedFindings,
       pageRecaps: compactedRecaps,
@@ -174,8 +179,8 @@ export function buildSectionPayloads(input: LangchainAuditInput): {
     },
     clientCommsSection: {
       locale: input.locale,
-      website: input.websiteName,
-      normalizedUrl: input.normalizedUrl,
+      website: safeWebsite,
+      normalizedUrl: safeNormalizedUrl,
       quickWins: signalBuckets.quickWins.slice(0, 8),
       topFindings: compactedFindings.slice(0, 6),
       pageSummary: input.pageSummary,

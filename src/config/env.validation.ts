@@ -52,7 +52,7 @@ const envSchema = z.object({
 
   // --- Security (critiques) ---
   JWT_SECRET: z.string().min(1, 'JWT_SECRET est requis'),
-  JWT_EXPIRES_IN: z.string().default('86400s'),
+  JWT_EXPIRES_IN: z.string().default('900s'),
   SECURE_KEY_FOR_PASSWORD_HASHING: z
     .string()
     .min(1, 'SECURE_KEY_FOR_PASSWORD_HASHING est requis'),

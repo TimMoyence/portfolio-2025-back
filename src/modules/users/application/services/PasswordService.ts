@@ -19,6 +19,7 @@ export class PasswordService {
   private readonly iterations = 120000;
   private readonly keyLength = 64;
   private readonly digest = 'sha512';
+  private dummyHashPromise: Promise<string> | null = null;
 
   constructor(private readonly configService: ConfigService) {
     this.secret =
@@ -27,6 +28,22 @@ export class PasswordService {
     if (!this.secret) {
       throw new Error('SECURE_KEY_FOR_PASSWORD_HASHING is not defined');
     }
+  }
+
+  /**
+   * Execute un verify Argon2id contre un hash factice pour egaliser
+   * le temps de reponse quand un utilisateur n'existe pas, est inactif,
+   * ou n'a pas de hash (compte Google-only). Protege contre l'enumeration
+   * d'utilisateurs par analyse du timing de la route de login.
+   */
+  async performDummyVerify(password: string): Promise<void> {
+    if (!this.dummyHashPromise) {
+      this.dummyHashPromise = argon2.hash('dummy-password-for-timing-safety', {
+        type: argon2.argon2id,
+      });
+    }
+    const dummy = await this.dummyHashPromise;
+    await argon2.verify(dummy, password).catch(() => false);
   }
 
   /**
