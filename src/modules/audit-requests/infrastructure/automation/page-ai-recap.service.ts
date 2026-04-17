@@ -152,13 +152,16 @@ export class PageAiRecapService {
     let llmFailures = 0;
     let breakerOpen = false;
 
+    // P1.4 : temperature 0 pour determinisme complet + cacheability des
+    // prompts systemes (les scores doivent etre reproductibles pour un
+    // meme input).
     const llm = this.config.openAiApiKey
       ? new ChatOpenAI({
           apiKey: this.config.openAiApiKey,
           model: this.config.llmModel,
           timeout: this.config.pageAiTimeoutMs,
           maxRetries: 0,
-          temperature: 0.2,
+          temperature: 0,
         })
       : null;
 
@@ -269,6 +272,13 @@ export class PageAiRecapService {
                     locale === 'fr'
                       ? "Contrainte stricte: aucune langue melangee, aucune speculation sans preuve. Si une donnee manque, ecris 'Non verifiable'."
                       : "Strict rule: no mixed language and no unsupported speculation. If data is missing, write 'Not verifiable'.",
+                },
+                {
+                  role: 'system',
+                  content:
+                    locale === 'fr'
+                      ? "P1.4 anti-hallucination moteurs: chaque score engineScores.*.score doit citer au moins une evidence observable dans le payload. Si aucune evidence n'est disponible pour un moteur, le score doit etre exactement 50 et blockers doit contenir 'Non verifiable'. Ne jamais inventer un score optimiste sans preuve."
+                      : "P1.4 anti-hallucination for engines: each engineScores.*.score must cite at least one evidence observable in the payload. If no evidence is available for an engine, the score must be exactly 50 and blockers must contain 'Not verifiable'. Never invent an optimistic score without evidence.",
                 },
                 {
                   role: 'user',
