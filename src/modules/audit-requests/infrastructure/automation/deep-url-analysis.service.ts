@@ -1,5 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { AuditLocale } from '../../domain/audit-locale.util';
+import {
+  AFFECTED_URLS_MAX,
+  CONTENT_DEPTH_NORMAL,
+  CONTENT_DEPTH_THIN,
+  CONTENT_DEPTH_VERY_THIN,
+  INTERNAL_LINKS_WEAK_MAX,
+  META_LENGTH_MAX,
+  META_LENGTH_MIN,
+  SEVERITY_RATIO_HIGH,
+  SEVERITY_RATIO_MEDIUM,
+  TEMPLATE_DUPLICATE_MIN,
+  TITLE_LENGTH_MAX,
+  TITLE_LENGTH_MIN,
+} from './audit-thresholds.config';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { localizedText } from './shared/locale-text.util';
 import { severityRank } from './shared/severity.util';
@@ -183,7 +197,10 @@ export class DeepUrlAnalysisService {
         missingTitle += 1;
       } else {
         titleMap.set(title, [...(titleMap.get(title) ?? []), pageUrl]);
-        if (title.length < 20 || title.length > 65) {
+        if (
+          title.length < TITLE_LENGTH_MIN ||
+          title.length > TITLE_LENGTH_MAX
+        ) {
           badTitleLength += 1;
         }
       }
@@ -192,7 +209,7 @@ export class DeepUrlAnalysisService {
         missingMeta += 1;
       } else {
         metaMap.set(meta, [...(metaMap.get(meta) ?? []), pageUrl]);
-        if (meta.length < 80 || meta.length > 170) {
+        if (meta.length < META_LENGTH_MIN || meta.length > META_LENGTH_MAX) {
           badMetaLength += 1;
         }
       }
@@ -283,7 +300,9 @@ export class DeepUrlAnalysisService {
     const duplicateTitles = this.duplicates(titleMap);
     const duplicateMetas = this.duplicates(metaMap);
     const templateDuplicatePatterns = [...templatePatternCount.entries()]
-      .filter(([, templateUrls]) => templateUrls.length >= 3)
+      .filter(
+        ([, templateUrls]) => templateUrls.length >= TEMPLATE_DUPLICATE_MIN,
+      )
       .map(([template, templateUrls]) => ({
         template,
         urls: templateUrls,
@@ -444,7 +463,7 @@ export class DeepUrlAnalysisService {
       urls
         .filter((entry) => {
           const len = (entry.title ?? '').trim().length;
-          return len > 0 && (len < 20 || len > 65);
+          return len > 0 && (len < TITLE_LENGTH_MIN || len > TITLE_LENGTH_MAX);
         })
         .map((entry) => entry.url),
       localizedText(
@@ -474,7 +493,7 @@ export class DeepUrlAnalysisService {
       urls
         .filter((entry) => {
           const len = (entry.metaDescription ?? '').trim().length;
-          return len > 0 && (len < 80 || len > 170);
+          return len > 0 && (len < META_LENGTH_MIN || len > META_LENGTH_MAX);
         })
         .map((entry) => entry.url),
       localizedText(
@@ -1064,7 +1083,10 @@ export class DeepUrlAnalysisService {
       severity,
       confidence: Math.max(0, Math.min(1, confidence)),
       impact,
-      affectedUrls: Array.from(new Set(affectedUrls)).slice(0, 30),
+      affectedUrls: Array.from(new Set(affectedUrls)).slice(
+        0,
+        AFFECTED_URLS_MAX,
+      ),
       recommendation,
     });
   }
@@ -1083,8 +1105,8 @@ export class DeepUrlAnalysisService {
 
   private severityFromRatio(affected: number, total: number): FindingSeverity {
     const ratio = total > 0 ? affected / total : 0;
-    if (ratio >= 0.5) return 'high';
-    if (ratio >= 0.2) return 'medium';
+    if (ratio >= SEVERITY_RATIO_HIGH) return 'high';
+    if (ratio >= SEVERITY_RATIO_MEDIUM) return 'medium';
     return 'low';
   }
 
@@ -1123,9 +1145,10 @@ export class DeepUrlAnalysisService {
   private classifyContentDepth(
     wordCount: number,
   ): 'veryThin' | 'thin' | 'normal' | 'rich' {
-    if (wordCount <= 0 || wordCount < 120) return 'veryThin';
-    if (wordCount < 260) return 'thin';
-    if (wordCount < 900) return 'normal';
+    if (wordCount <= 0 || wordCount < CONTENT_DEPTH_VERY_THIN)
+      return 'veryThin';
+    if (wordCount < CONTENT_DEPTH_THIN) return 'thin';
+    if (wordCount < CONTENT_DEPTH_NORMAL) return 'normal';
     return 'rich';
   }
 
@@ -1133,7 +1156,7 @@ export class DeepUrlAnalysisService {
     internalLinkCount: number,
   ): 'none' | 'weak' | 'strong' {
     if (internalLinkCount <= 0) return 'none';
-    if (internalLinkCount < 3) return 'weak';
+    if (internalLinkCount < INTERNAL_LINKS_WEAK_MAX) return 'weak';
     return 'strong';
   }
 
