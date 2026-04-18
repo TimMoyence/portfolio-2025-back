@@ -34,6 +34,7 @@ import {
   ANTHROPIC_CHAT_FACTORY,
   DefaultAnthropicChatFactory,
 } from './infrastructure/automation/anthropic-chat.factory';
+import { CachingSectionRunner } from './infrastructure/automation/section-generators';
 import { CitationWorthinessService } from './infrastructure/automation/citation-worthiness.service';
 import { DeepUrlAnalysisService } from './infrastructure/automation/deep-url-analysis.service';
 import { HomepageAnalyzerService } from './infrastructure/automation/homepage-analyzer.service';
@@ -97,6 +98,7 @@ const AUDIT_LLM_ABSTRACTIONS = [
     provide: ANTHROPIC_CHAT_FACTORY,
     useClass: DefaultAnthropicChatFactory,
   },
+  CachingSectionRunner,
   {
     provide: LLM_EXECUTOR,
     useClass: SharedLlmExecutor,
