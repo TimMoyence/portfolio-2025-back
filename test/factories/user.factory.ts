@@ -48,6 +48,7 @@ export function createMockPasswordService(): jest.Mocked<PasswordService> {
     hash: jest.fn(),
     verify: jest.fn(),
     needsRehash: jest.fn(),
+    performDummyVerify: jest.fn().mockResolvedValue(undefined),
   } as unknown as jest.Mocked<PasswordService>;
 }
 

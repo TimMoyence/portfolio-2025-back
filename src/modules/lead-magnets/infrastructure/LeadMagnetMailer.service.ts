@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { createTransport, Transporter } from 'nodemailer';
+import type { Transporter } from 'nodemailer';
+import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import type { ILeadMagnetNotifier } from '../domain/ILeadMagnetNotifier';
 import type { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 
@@ -7,7 +8,7 @@ import type { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 @Injectable()
 export class LeadMagnetMailerService implements ILeadMagnetNotifier {
   private readonly logger = new Logger(LeadMagnetMailerService.name);
-  private readonly transporter?: Transporter;
+  private readonly transporter: Transporter | null;
   private readonly from = process.env.SMTP_FROM;
   /** Email de reponse — defaut vers l'email personnel de Tim. */
   private readonly replyTo =
@@ -16,25 +17,10 @@ export class LeadMagnetMailerService implements ILeadMagnetNotifier {
     process.env.FRONTEND_URL ?? 'https://asilidesign.fr';
 
   constructor() {
-    const host = process.env.SMTP_HOST;
-    const port = process.env.SMTP_PORT
-      ? Number(process.env.SMTP_PORT)
-      : undefined;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-
-    if (host && port && user && pass) {
-      this.transporter = createTransport({
-        host,
-        port,
-        secure: port === 465,
-        auth: { user, pass },
-      }) as Transporter;
-    } else {
-      this.logger.warn(
-        'Lead magnet mailer disabled: SMTP not fully configured',
-      );
-    }
+    this.transporter = createOptionalSmtpTransporter(
+      this.logger,
+      'Lead magnet mailer',
+    );
   }
 
   async sendToolkitEmail(

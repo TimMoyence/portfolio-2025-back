@@ -74,10 +74,26 @@ const runtimeContexts = resolveRuntimeContexts();
           (process.env.TYPEORM_SYNCHRONIZE === 'true' ||
             process.env.DB_SYNCHRONIZE === 'true');
 
+        // Pool PG dimensionne pour l'usage concurrent API + BullMQ workers
+        // (audit worker hammer la DB pendant pipeline 180s). Defaut node-postgres
+        // 10 saturait facilement. Configurable via DB_POOL_MAX.
+        const poolMax = Number(process.env.DB_POOL_MAX ?? 30);
+        const poolIdleTimeoutMs = Number(
+          process.env.DB_POOL_IDLE_TIMEOUT_MS ?? 30_000,
+        );
+        const poolConnectTimeoutMs = Number(
+          process.env.DB_POOL_CONNECT_TIMEOUT_MS ?? 5_000,
+        );
+
         const baseOptions: TypeOrmModuleOptions = {
           type: 'postgres',
           autoLoadEntities: true,
           synchronize,
+          extra: {
+            max: poolMax,
+            idleTimeoutMillis: poolIdleTimeoutMs,
+            connectionTimeoutMillis: poolConnectTimeoutMs,
+          },
           ...(sslOption ? { ssl: sslOption } : {}),
         };
 

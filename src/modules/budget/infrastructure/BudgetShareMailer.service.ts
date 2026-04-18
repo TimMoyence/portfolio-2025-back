@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { createTransport, type Transporter } from 'nodemailer';
+import { type Transporter } from 'nodemailer';
+import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import type {
   BudgetShareNotificationPayload,
   IBudgetShareNotifier,
@@ -13,28 +14,10 @@ export class BudgetShareMailerService implements IBudgetShareNotifier {
   private readonly from: string;
 
   constructor() {
-    const host = process.env.SMTP_HOST;
-    const port = process.env.SMTP_PORT
-      ? Number(process.env.SMTP_PORT)
-      : undefined;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-
     this.from = process.env.SMTP_FROM ?? "'Portfolio' <no-reply@example.com>";
-
-    if (host && port && user && pass) {
-      this.transporter = createTransport({
-        host,
-        port,
-        secure: process.env.SMTP_SECURE === 'true' || port === 465,
-        auth: { user, pass },
-      }) as Transporter;
-      return;
-    }
-
-    this.transporter = null;
-    this.logger.warn(
-      'Budget share mailer disabled: SMTP configuration incomplete',
+    this.transporter = createOptionalSmtpTransporter(
+      this.logger,
+      'Budget share mailer',
     );
   }
 

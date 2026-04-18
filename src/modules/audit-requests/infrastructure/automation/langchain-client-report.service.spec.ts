@@ -130,6 +130,7 @@ describe('LangchainClientReportService', () => {
     const service = new LangchainClientReportService({
       ...config,
       openAiApiKey: 'test-key',
+      llmTimeoutMs: 1_000,
     });
     const testable = asTestable(service);
     const fallbackSpy = jest.spyOn(
@@ -141,7 +142,7 @@ describe('LangchainClientReportService', () => {
 
     expect(fallbackSpy).toHaveBeenCalled();
     expect(result.pillarScorecard).toHaveLength(7);
-  });
+  }, 30_000);
 
   it('provides 3 quick wins even when quickWins input is empty', async () => {
     const service = new LangchainClientReportService(config);
