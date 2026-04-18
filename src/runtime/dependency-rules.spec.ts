@@ -147,4 +147,68 @@ describe('Règles de dépendances inter-couches', () => {
 
     expect(violations).toEqual([]);
   });
+
+  /**
+   * Whitelist des modules auxquels un module metier peut accéder directement
+   * via `../../../users/...`. Users est whitelisté car il porte la notion
+   * transverse d'identité + rôles (ex : Budget et Sebastian scopent leurs
+   * données par `userId` et s'appuient sur le role-guard Users).
+   *
+   * Extension ultérieure : étendre la whitelist si un nouveau module
+   * transverse émerge (ex : Audit, Notifications), sinon rester strict
+   * pour éviter le couplage implicite entre modules métiers.
+   */
+  const CROSS_MODULE_IMPORT_WHITELIST: ReadonlyArray<string> = [
+    'modules/users/',
+  ];
+
+  /**
+   * Resout les imports relatifs (`../../../users/...`) vers leur chemin
+   * `modules/X/...` canonique pour les comparer à la whitelist.
+   */
+  function isCrossModuleImport(
+    importSpecifier: string,
+    filePath: string,
+  ): string | null {
+    if (
+      !importSpecifier.startsWith('../') &&
+      !importSpecifier.startsWith('./')
+    ) {
+      return null;
+    }
+    const absoluteImport = join(join(filePath, '..'), importSpecifier);
+    const modulesIndex = absoluteImport.indexOf('/modules/');
+    if (modulesIndex < 0) return null;
+    const afterModules = absoluteImport.slice(
+      modulesIndex + '/modules/'.length,
+    );
+    const [targetModule] = afterModules.split('/');
+    const sourceModule = filePath
+      .slice(filePath.indexOf('/modules/') + '/modules/'.length)
+      .split('/')[0];
+    if (!targetModule || !sourceModule) return null;
+    if (targetModule === sourceModule) return null;
+    return `modules/${targetModule}/`;
+  }
+
+  it("les modules metiers ne doivent pas importer depuis d'autres modules metiers (hors whitelist Users)", () => {
+    const allModuleFiles = eligibleTsFiles(collectFiles(modulesRoot));
+    const violations: string[] = [];
+
+    for (const file of allModuleFiles) {
+      const imports = extractImports(file);
+      for (const imp of imports) {
+        const target = isCrossModuleImport(imp, file);
+        if (!target) continue;
+        const allowed = CROSS_MODULE_IMPORT_WHITELIST.some((prefix) =>
+          target.startsWith(prefix),
+        );
+        if (!allowed) {
+          violations.push(`${file} importe : ${imp} (${target})`);
+        }
+      }
+    }
+
+    expect(violations).toEqual([]);
+  });
 });
