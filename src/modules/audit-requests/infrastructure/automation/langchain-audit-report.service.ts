@@ -16,12 +16,6 @@ import {
   CHAT_OPENAI_FACTORY,
   type ChatOpenAIFactory,
 } from './chat-openai.factory';
-import {
-  ANTHROPIC_CHAT_FACTORY,
-  type AnthropicChatFactory,
-} from './anthropic-chat.factory';
-import { invokeAnthropicStructuredSection } from './anthropic-section-synthesis.util';
-import type { ZodType } from 'zod';
 import type {
   LangchainAuditGenerateOptions,
   LangchainAuditInput,
@@ -39,28 +33,16 @@ import {
   withDeterministicCost,
 } from './langchain-fallback-report.builder';
 import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
+import { PROMPT_VERSION } from './prompts/v1/audit-system-prompts';
 import {
-  UNTRUSTED_DATA_DISCLAIMER_EN,
-  UNTRUSTED_DATA_DISCLAIMER_FR,
-  wrapUntrustedUserPayload,
-} from './shared/prompt-sanitize.util';
-import {
-  clientCommsRetryConstraint,
-  clientCommsSystemMain,
-  executiveRetryConstraint,
-  executiveSystemMain,
-  executionRetryConstraint,
-  executionSystemMain,
-  expertReportCompactConstraint,
-  expertReportRetryConstraint,
-  expertReportStrictConstraint,
-  expertReportSystemMain,
-  priorityRetryConstraint,
-  prioritySystemMain,
-  PROMPT_VERSION,
-  userSummaryRetryConstraint,
-  userSummarySystemMain,
-} from './prompts/v1/audit-system-prompts';
+  CachingSectionRunner,
+  generateClientCommsSection as runClientCommsGenerator,
+  generateExecutionSection as runExecutionGenerator,
+  generateExecutiveSection as runExecutiveGenerator,
+  generateExpertReport as runExpertReportGenerator,
+  generatePrioritySection as runPriorityGenerator,
+  generateUserSummary as runUserSummaryGenerator,
+} from './section-generators';
 import { LLM_EXECUTOR, type LlmExecutor } from './llm-executor.port';
 import {
   ReportQualityGateContext,
@@ -88,19 +70,13 @@ export type {
   SynthesisSectionName,
 } from './contracts/langchain-contracts';
 
-import {
-  clientCommsSectionSchema,
-  executiveSectionSchema,
-  executionSectionSchema,
-  expertReportSchema,
-  prioritySectionSchema,
-  userSummarySchema,
-  type ClientCommsSection,
-  type ExecutiveSection,
-  type ExecutionSection,
-  type ExpertReport,
-  type FanoutSectionName,
-  type PrioritySection,
+import type {
+  ClientCommsSection,
+  ExecutiveSection,
+  ExecutionSection,
+  ExpertReport,
+  FanoutSectionName,
+  PrioritySection,
 } from './schemas/audit-report.schemas';
 
 export type { ExpertReport } from './schemas/audit-report.schemas';
@@ -117,59 +93,10 @@ export class LangchainAuditReportService {
     private readonly chatOpenAIFactory: ChatOpenAIFactory,
     @Inject(LLM_EXECUTOR)
     private readonly llmExecutor: LlmExecutor,
+    private readonly cachingRunner: CachingSectionRunner,
     @Optional()
     private readonly metricsService?: MetricsService,
-    @Optional()
-    @Inject(ANTHROPIC_CHAT_FACTORY)
-    private readonly anthropicChatFactory?: AnthropicChatFactory,
   ) {}
-
-  /**
-   * Tente d'invoquer une section via Anthropic (prompt caching ephemeral)
-   * et retombe sur l'appel OpenAI existant en cas d'echec ou si Anthropic
-   * est desactive. Le fallback garantit zero regression si la cle Anthropic
-   * est absente, si le SDK leve une erreur, ou si le schema n'est pas
-   * respecte. Les exceptions d'annulation (`AbortError`) sont relayees
-   * telles quelles sans fallback pour honorer le signal.
-   */
-  private async trySectionWithCachingFallback<T>(
-    section: string,
-    schema: ZodType<T>,
-    systemBlocks: string[],
-    payload: Record<string, unknown>,
-    locale: AuditLocale,
-    signal: AbortSignal | undefined,
-    openAiFallback: () => Promise<T>,
-  ): Promise<T> {
-    if (!this.anthropicChatFactory?.isEnabled()) {
-      return openAiFallback();
-    }
-
-    try {
-      const timeoutMs = this.config.llmSectionTimeoutMs;
-      const client = this.anthropicChatFactory.create(timeoutMs);
-      return await invokeAnthropicStructuredSection<T>({
-        client,
-        model: this.anthropicChatFactory.model(),
-        section,
-        locale,
-        schema,
-        systemBlocks,
-        userContent: wrapUntrustedUserPayload(payload),
-        signal,
-        metrics: this.metricsService ?? null,
-        logger: this.logger,
-      });
-    } catch (error) {
-      if (signal?.aborted) {
-        throw error;
-      }
-      this.logger.warn(
-        `Anthropic ${section} failed, fallback to OpenAI: ${String(error)}`,
-      );
-      return openAiFallback();
-    }
-  }
 
   /**
    * Construit le contexte d'invocation LLM pour `invokeWithLlmTracking`.
@@ -844,163 +771,77 @@ export class LangchainAuditReportService {
     }
   }
 
-  private async generateExecutiveSection(
+  private readonly invokeTrackedBound = this.invokeTracked.bind(this) as <T>(
+    chain: {
+      invoke: (messages: unknown, options?: LlmInvocationOptions) => Promise<T>;
+    },
+    messages: unknown,
+    section: string,
+    locale: AuditLocale,
+    signal?: AbortSignal,
+  ) => Promise<T>;
+
+  private generateExecutiveSection(
     llm: ChatOpenAI,
     payload: Record<string, unknown>,
     locale: AuditLocale,
     retryMode: boolean,
     signal?: AbortSignal,
   ): Promise<ExecutiveSection> {
-    const systemBlocks = [
-      locale === 'fr'
-        ? UNTRUSTED_DATA_DISCLAIMER_FR
-        : UNTRUSTED_DATA_DISCLAIMER_EN,
-      executiveSystemMain(locale),
-      ...(retryMode ? [executiveRetryConstraint(locale)] : []),
-    ];
-    return this.trySectionWithCachingFallback<ExecutiveSection>(
-      'executive',
-      executiveSectionSchema,
-      systemBlocks,
-      payload,
-      locale,
-      signal,
-      () => {
-        const chain = llm.withStructuredOutput(executiveSectionSchema);
-        return this.invokeTracked(
-          chain,
-          [
-            ...systemBlocks.map((content) => ({
-              role: 'system' as const,
-              content,
-            })),
-            { role: 'user', content: wrapUntrustedUserPayload(payload) },
-          ],
-          'executive',
-          locale,
-          signal,
-        );
+    return runExecutiveGenerator(
+      {
+        cachingRunner: this.cachingRunner,
+        invokeTracked: this.invokeTrackedBound,
       },
+      { llm, payload, locale, retryMode, signal },
     );
   }
 
-  private async generatePrioritySection(
+  private generatePrioritySection(
     llm: ChatOpenAI,
     payload: Record<string, unknown>,
     locale: AuditLocale,
     retryMode: boolean,
     signal?: AbortSignal,
   ): Promise<PrioritySection> {
-    const systemBlocks = [
-      locale === 'fr'
-        ? UNTRUSTED_DATA_DISCLAIMER_FR
-        : UNTRUSTED_DATA_DISCLAIMER_EN,
-      prioritySystemMain(locale),
-      ...(retryMode ? [priorityRetryConstraint(locale)] : []),
-    ];
-    return this.trySectionWithCachingFallback<PrioritySection>(
-      'priority',
-      prioritySectionSchema,
-      systemBlocks,
-      payload,
-      locale,
-      signal,
-      () => {
-        const chain = llm.withStructuredOutput(prioritySectionSchema);
-        return this.invokeTracked(
-          chain,
-          [
-            ...systemBlocks.map((content) => ({
-              role: 'system' as const,
-              content,
-            })),
-            { role: 'user', content: wrapUntrustedUserPayload(payload) },
-          ],
-          'priority',
-          locale,
-          signal,
-        );
+    return runPriorityGenerator(
+      {
+        cachingRunner: this.cachingRunner,
+        invokeTracked: this.invokeTrackedBound,
       },
+      { llm, payload, locale, retryMode, signal },
     );
   }
 
-  private async generateExecutionSection(
+  private generateExecutionSection(
     llm: ChatOpenAI,
     payload: Record<string, unknown>,
     locale: AuditLocale,
     retryMode: boolean,
     signal?: AbortSignal,
   ): Promise<ExecutionSection> {
-    const systemBlocks = [
-      locale === 'fr'
-        ? UNTRUSTED_DATA_DISCLAIMER_FR
-        : UNTRUSTED_DATA_DISCLAIMER_EN,
-      executionSystemMain(locale),
-      ...(retryMode ? [executionRetryConstraint(locale)] : []),
-    ];
-    return this.trySectionWithCachingFallback<ExecutionSection>(
-      'execution',
-      executionSectionSchema,
-      systemBlocks,
-      payload,
-      locale,
-      signal,
-      () => {
-        const chain = llm.withStructuredOutput(executionSectionSchema);
-        return this.invokeTracked(
-          chain,
-          [
-            ...systemBlocks.map((content) => ({
-              role: 'system' as const,
-              content,
-            })),
-            { role: 'user', content: wrapUntrustedUserPayload(payload) },
-          ],
-          'execution',
-          locale,
-          signal,
-        );
+    return runExecutionGenerator(
+      {
+        cachingRunner: this.cachingRunner,
+        invokeTracked: this.invokeTrackedBound,
       },
+      { llm, payload, locale, retryMode, signal },
     );
   }
 
-  private async generateClientCommsSection(
+  private generateClientCommsSection(
     llm: ChatOpenAI,
     payload: Record<string, unknown>,
     locale: AuditLocale,
     retryMode: boolean,
     signal?: AbortSignal,
   ): Promise<ClientCommsSection> {
-    const systemBlocks = [
-      locale === 'fr'
-        ? UNTRUSTED_DATA_DISCLAIMER_FR
-        : UNTRUSTED_DATA_DISCLAIMER_EN,
-      clientCommsSystemMain(locale),
-      ...(retryMode ? [clientCommsRetryConstraint(locale)] : []),
-    ];
-    return this.trySectionWithCachingFallback<ClientCommsSection>(
-      'client_comms',
-      clientCommsSectionSchema,
-      systemBlocks,
-      payload,
-      locale,
-      signal,
-      () => {
-        const chain = llm.withStructuredOutput(clientCommsSectionSchema);
-        return this.invokeTracked(
-          chain,
-          [
-            ...systemBlocks.map((content) => ({
-              role: 'system' as const,
-              content,
-            })),
-            { role: 'user', content: wrapUntrustedUserPayload(payload) },
-          ],
-          'client_comms',
-          locale,
-          signal,
-        );
+    return runClientCommsGenerator(
+      {
+        cachingRunner: this.cachingRunner,
+        invokeTracked: this.invokeTrackedBound,
       },
+      { llm, payload, locale, retryMode, signal },
     );
   }
 
@@ -1015,50 +856,20 @@ export class LangchainAuditReportService {
     );
   }
 
-  private async generateUserSummary(
+  private generateUserSummary(
     llm: ChatOpenAI,
     payload: Record<string, unknown>,
     locale: AuditLocale,
     retryMode = false,
     signal?: AbortSignal,
   ): Promise<string> {
-    const chain = llm.withStructuredOutput(userSummarySchema);
-    const result = await this.invokeTracked(
-      chain,
-      [
-        {
-          role: 'system' as const,
-          content:
-            locale === 'fr'
-              ? UNTRUSTED_DATA_DISCLAIMER_FR
-              : UNTRUSTED_DATA_DISCLAIMER_EN,
-        },
-        {
-          role: 'system',
-          content: userSummarySystemMain(locale),
-        },
-        ...(retryMode
-          ? [
-              {
-                role: 'system' as const,
-                content: userSummaryRetryConstraint(locale),
-              },
-            ]
-          : []),
-        {
-          role: 'user',
-          content: wrapUntrustedUserPayload(payload),
-        },
-      ],
-      'user_summary',
-      locale,
-      signal,
+    return runUserSummaryGenerator(
+      { invokeTracked: this.invokeTrackedBound },
+      { llm, payload, locale, retryMode, signal },
     );
-
-    return result.summaryText;
   }
 
-  private async generateExpertReport(
+  private generateExpertReport(
     llm: ChatOpenAI,
     payload: Record<string, unknown>,
     locale: AuditLocale,
@@ -1066,49 +877,9 @@ export class LangchainAuditReportService {
     compactMode = false,
     signal?: AbortSignal,
   ): Promise<ExpertReport> {
-    const chain = llm.withStructuredOutput(expertReportSchema);
-    return this.invokeTracked(
-      chain,
-      [
-        {
-          role: 'system' as const,
-          content:
-            locale === 'fr'
-              ? UNTRUSTED_DATA_DISCLAIMER_FR
-              : UNTRUSTED_DATA_DISCLAIMER_EN,
-        },
-        {
-          role: 'system',
-          content: expertReportSystemMain(locale),
-        },
-        {
-          role: 'system',
-          content: expertReportStrictConstraint(locale),
-        },
-        ...(compactMode
-          ? [
-              {
-                role: 'system' as const,
-                content: expertReportCompactConstraint(locale),
-              },
-            ]
-          : []),
-        ...(retryMode
-          ? [
-              {
-                role: 'system' as const,
-                content: expertReportRetryConstraint(locale),
-              },
-            ]
-          : []),
-        {
-          role: 'user',
-          content: wrapUntrustedUserPayload(payload),
-        },
-      ],
-      'expert_report',
-      locale,
-      signal,
+    return runExpertReportGenerator(
+      { invokeTracked: this.invokeTrackedBound },
+      { llm, payload, locale, retryMode, compactMode, signal },
     );
   }
 
