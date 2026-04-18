@@ -16,6 +16,12 @@ import {
   CHAT_OPENAI_FACTORY,
   type ChatOpenAIFactory,
 } from './chat-openai.factory';
+import {
+  ANTHROPIC_CHAT_FACTORY,
+  type AnthropicChatFactory,
+} from './anthropic-chat.factory';
+import { invokeAnthropicStructuredSection } from './anthropic-section-synthesis.util';
+import type { ZodType } from 'zod';
 import type {
   LangchainAuditGenerateOptions,
   LangchainAuditInput,
@@ -113,7 +119,57 @@ export class LangchainAuditReportService {
     private readonly llmExecutor: LlmExecutor,
     @Optional()
     private readonly metricsService?: MetricsService,
+    @Optional()
+    @Inject(ANTHROPIC_CHAT_FACTORY)
+    private readonly anthropicChatFactory?: AnthropicChatFactory,
   ) {}
+
+  /**
+   * Tente d'invoquer une section via Anthropic (prompt caching ephemeral)
+   * et retombe sur l'appel OpenAI existant en cas d'echec ou si Anthropic
+   * est desactive. Le fallback garantit zero regression si la cle Anthropic
+   * est absente, si le SDK leve une erreur, ou si le schema n'est pas
+   * respecte. Les exceptions d'annulation (`AbortError`) sont relayees
+   * telles quelles sans fallback pour honorer le signal.
+   */
+  private async trySectionWithCachingFallback<T>(
+    section: string,
+    schema: ZodType<T>,
+    systemBlocks: string[],
+    payload: Record<string, unknown>,
+    locale: AuditLocale,
+    signal: AbortSignal | undefined,
+    openAiFallback: () => Promise<T>,
+  ): Promise<T> {
+    if (!this.anthropicChatFactory?.isEnabled()) {
+      return openAiFallback();
+    }
+
+    try {
+      const timeoutMs = this.config.llmSectionTimeoutMs;
+      const client = this.anthropicChatFactory.create(timeoutMs);
+      return await invokeAnthropicStructuredSection<T>({
+        client,
+        model: this.anthropicChatFactory.model(),
+        section,
+        locale,
+        schema,
+        systemBlocks,
+        userContent: wrapUntrustedUserPayload(payload),
+        signal,
+        metrics: this.metricsService ?? null,
+        logger: this.logger,
+      });
+    } catch (error) {
+      if (signal?.aborted) {
+        throw error;
+      }
+      this.logger.warn(
+        `Anthropic ${section} failed, fallback to OpenAI: ${String(error)}`,
+      );
+      return openAiFallback();
+    }
+  }
 
   /**
    * Construit le contexte d'invocation LLM pour `invokeWithLlmTracking`.
@@ -795,34 +851,36 @@ export class LangchainAuditReportService {
     retryMode: boolean,
     signal?: AbortSignal,
   ): Promise<ExecutiveSection> {
-    const chain = llm.withStructuredOutput(executiveSectionSchema);
-    return this.invokeTracked(
-      chain,
-      [
-        {
-          role: 'system' as const,
-          content:
-            locale === 'fr'
-              ? UNTRUSTED_DATA_DISCLAIMER_FR
-              : UNTRUSTED_DATA_DISCLAIMER_EN,
-        },
-        {
-          role: 'system',
-          content: executiveSystemMain(locale),
-        },
-        ...(retryMode
-          ? [
-              {
-                role: 'system' as const,
-                content: executiveRetryConstraint(locale),
-              },
-            ]
-          : []),
-        { role: 'user', content: wrapUntrustedUserPayload(payload) },
-      ],
+    const systemBlocks = [
+      locale === 'fr'
+        ? UNTRUSTED_DATA_DISCLAIMER_FR
+        : UNTRUSTED_DATA_DISCLAIMER_EN,
+      executiveSystemMain(locale),
+      ...(retryMode ? [executiveRetryConstraint(locale)] : []),
+    ];
+    return this.trySectionWithCachingFallback<ExecutiveSection>(
       'executive',
+      executiveSectionSchema,
+      systemBlocks,
+      payload,
       locale,
       signal,
+      () => {
+        const chain = llm.withStructuredOutput(executiveSectionSchema);
+        return this.invokeTracked(
+          chain,
+          [
+            ...systemBlocks.map((content) => ({
+              role: 'system' as const,
+              content,
+            })),
+            { role: 'user', content: wrapUntrustedUserPayload(payload) },
+          ],
+          'executive',
+          locale,
+          signal,
+        );
+      },
     );
   }
 
@@ -833,34 +891,36 @@ export class LangchainAuditReportService {
     retryMode: boolean,
     signal?: AbortSignal,
   ): Promise<PrioritySection> {
-    const chain = llm.withStructuredOutput(prioritySectionSchema);
-    return this.invokeTracked(
-      chain,
-      [
-        {
-          role: 'system' as const,
-          content:
-            locale === 'fr'
-              ? UNTRUSTED_DATA_DISCLAIMER_FR
-              : UNTRUSTED_DATA_DISCLAIMER_EN,
-        },
-        {
-          role: 'system',
-          content: prioritySystemMain(locale),
-        },
-        ...(retryMode
-          ? [
-              {
-                role: 'system' as const,
-                content: priorityRetryConstraint(locale),
-              },
-            ]
-          : []),
-        { role: 'user', content: wrapUntrustedUserPayload(payload) },
-      ],
+    const systemBlocks = [
+      locale === 'fr'
+        ? UNTRUSTED_DATA_DISCLAIMER_FR
+        : UNTRUSTED_DATA_DISCLAIMER_EN,
+      prioritySystemMain(locale),
+      ...(retryMode ? [priorityRetryConstraint(locale)] : []),
+    ];
+    return this.trySectionWithCachingFallback<PrioritySection>(
       'priority',
+      prioritySectionSchema,
+      systemBlocks,
+      payload,
       locale,
       signal,
+      () => {
+        const chain = llm.withStructuredOutput(prioritySectionSchema);
+        return this.invokeTracked(
+          chain,
+          [
+            ...systemBlocks.map((content) => ({
+              role: 'system' as const,
+              content,
+            })),
+            { role: 'user', content: wrapUntrustedUserPayload(payload) },
+          ],
+          'priority',
+          locale,
+          signal,
+        );
+      },
     );
   }
 
@@ -871,34 +931,36 @@ export class LangchainAuditReportService {
     retryMode: boolean,
     signal?: AbortSignal,
   ): Promise<ExecutionSection> {
-    const chain = llm.withStructuredOutput(executionSectionSchema);
-    return this.invokeTracked(
-      chain,
-      [
-        {
-          role: 'system' as const,
-          content:
-            locale === 'fr'
-              ? UNTRUSTED_DATA_DISCLAIMER_FR
-              : UNTRUSTED_DATA_DISCLAIMER_EN,
-        },
-        {
-          role: 'system',
-          content: executionSystemMain(locale),
-        },
-        ...(retryMode
-          ? [
-              {
-                role: 'system' as const,
-                content: executionRetryConstraint(locale),
-              },
-            ]
-          : []),
-        { role: 'user', content: wrapUntrustedUserPayload(payload) },
-      ],
+    const systemBlocks = [
+      locale === 'fr'
+        ? UNTRUSTED_DATA_DISCLAIMER_FR
+        : UNTRUSTED_DATA_DISCLAIMER_EN,
+      executionSystemMain(locale),
+      ...(retryMode ? [executionRetryConstraint(locale)] : []),
+    ];
+    return this.trySectionWithCachingFallback<ExecutionSection>(
       'execution',
+      executionSectionSchema,
+      systemBlocks,
+      payload,
       locale,
       signal,
+      () => {
+        const chain = llm.withStructuredOutput(executionSectionSchema);
+        return this.invokeTracked(
+          chain,
+          [
+            ...systemBlocks.map((content) => ({
+              role: 'system' as const,
+              content,
+            })),
+            { role: 'user', content: wrapUntrustedUserPayload(payload) },
+          ],
+          'execution',
+          locale,
+          signal,
+        );
+      },
     );
   }
 
@@ -909,34 +971,36 @@ export class LangchainAuditReportService {
     retryMode: boolean,
     signal?: AbortSignal,
   ): Promise<ClientCommsSection> {
-    const chain = llm.withStructuredOutput(clientCommsSectionSchema);
-    return this.invokeTracked(
-      chain,
-      [
-        {
-          role: 'system' as const,
-          content:
-            locale === 'fr'
-              ? UNTRUSTED_DATA_DISCLAIMER_FR
-              : UNTRUSTED_DATA_DISCLAIMER_EN,
-        },
-        {
-          role: 'system',
-          content: clientCommsSystemMain(locale),
-        },
-        ...(retryMode
-          ? [
-              {
-                role: 'system' as const,
-                content: clientCommsRetryConstraint(locale),
-              },
-            ]
-          : []),
-        { role: 'user', content: wrapUntrustedUserPayload(payload) },
-      ],
+    const systemBlocks = [
+      locale === 'fr'
+        ? UNTRUSTED_DATA_DISCLAIMER_FR
+        : UNTRUSTED_DATA_DISCLAIMER_EN,
+      clientCommsSystemMain(locale),
+      ...(retryMode ? [clientCommsRetryConstraint(locale)] : []),
+    ];
+    return this.trySectionWithCachingFallback<ClientCommsSection>(
       'client_comms',
+      clientCommsSectionSchema,
+      systemBlocks,
+      payload,
       locale,
       signal,
+      () => {
+        const chain = llm.withStructuredOutput(clientCommsSectionSchema);
+        return this.invokeTracked(
+          chain,
+          [
+            ...systemBlocks.map((content) => ({
+              role: 'system' as const,
+              content,
+            })),
+            { role: 'user', content: wrapUntrustedUserPayload(payload) },
+          ],
+          'client_comms',
+          locale,
+          signal,
+        );
+      },
     );
   }
 

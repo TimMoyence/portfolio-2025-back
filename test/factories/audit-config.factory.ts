@@ -46,6 +46,8 @@ export function buildAuditAutomationConfig(
     rateHourlyMin: 80,
     rateHourlyMax: 120,
     rateCurrency: 'EUR',
+    anthropicModel: 'claude-sonnet-4-6',
+    enableAnthropicCaching: false,
     ...overrides,
   };
 }

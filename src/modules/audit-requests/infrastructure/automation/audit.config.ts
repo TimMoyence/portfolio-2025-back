@@ -45,6 +45,9 @@ export interface AuditAutomationConfig {
   rateCurrency: string;
   reportTo?: string;
   openAiApiKey?: string;
+  anthropicApiKey?: string;
+  anthropicModel: string;
+  enableAnthropicCaching: boolean;
 }
 
 function envInt(name: string, fallback: number): number {
@@ -173,5 +176,8 @@ export function loadAuditAutomationConfig(): AuditAutomationConfig {
     reportTo:
       envString('AUDIT_REPORT_TO') ?? envString('CONTACT_NOTIFICATION_TO'),
     openAiApiKey: envString('OPENAI_API_KEY'),
+    anthropicApiKey: envString('AUDIT_ANTHROPIC_API_KEY'),
+    anthropicModel: envString('AUDIT_ANTHROPIC_MODEL') ?? 'claude-sonnet-4-6',
+    enableAnthropicCaching: envBool('AUDIT_ENABLE_ANTHROPIC_CACHING', true),
   };
 }

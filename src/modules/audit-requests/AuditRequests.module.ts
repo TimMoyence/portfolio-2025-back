@@ -30,6 +30,10 @@ import {
   CHAT_OPENAI_FACTORY,
   DefaultChatOpenAIFactory,
 } from './infrastructure/automation/chat-openai.factory';
+import {
+  ANTHROPIC_CHAT_FACTORY,
+  DefaultAnthropicChatFactory,
+} from './infrastructure/automation/anthropic-chat.factory';
 import { CitationWorthinessService } from './infrastructure/automation/citation-worthiness.service';
 import { DeepUrlAnalysisService } from './infrastructure/automation/deep-url-analysis.service';
 import { HomepageAnalyzerService } from './infrastructure/automation/homepage-analyzer.service';
@@ -82,11 +86,16 @@ const AUDIT_SYNTHESIS_SERVICES = [
   ReportQualityGateService,
 ];
 
-// Abstractions LLM partagees (C4a) — factory ChatOpenAI + limiter d'execution
+// Abstractions LLM partagees (C4a) — factory ChatOpenAI + factory Anthropic
+// (prompt caching ephemeral, -70% coup input tokens) + limiter d'execution.
 const AUDIT_LLM_ABSTRACTIONS = [
   {
     provide: CHAT_OPENAI_FACTORY,
     useClass: DefaultChatOpenAIFactory,
+  },
+  {
+    provide: ANTHROPIC_CHAT_FACTORY,
+    useClass: DefaultAnthropicChatFactory,
   },
   {
     provide: LLM_EXECUTOR,
