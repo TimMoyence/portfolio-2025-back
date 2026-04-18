@@ -1,6 +1,8 @@
 import { Logger } from '@nestjs/common';
+import { z } from 'zod';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import { buildLangchainAuditInput } from '../../../../../test/factories/audit-requests.factory';
+import type { AnthropicChatFactory } from './anthropic-chat.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import { DefaultChatOpenAIFactory } from './chat-openai.factory';
 import {
@@ -21,12 +23,15 @@ import { ReportQualityGateService } from './report-quality-gate.service';
 function createService(
   config: AuditAutomationConfig,
   qualityGate: ReportQualityGateService,
+  anthropicChatFactory?: AnthropicChatFactory,
 ): LangchainAuditReportService {
   return new LangchainAuditReportService(
     config,
     qualityGate,
     new DefaultChatOpenAIFactory(config),
     new SharedLlmExecutor(config),
+    undefined,
+    anthropicChatFactory,
   );
 }
 
@@ -308,5 +313,196 @@ describe('LangchainAuditReportService', () => {
     expect(sectionResult['retryCount']).toBe(1);
     expect(sectionResult['usedFallback']).toBe(false);
     expect(sectionResult['failedSections']).toEqual([]);
+  });
+
+  describe('Anthropic caching fallback (T2 — P5.A)', () => {
+    interface CachingFallbackPrivate {
+      trySectionWithCachingFallback: <T>(
+        section: string,
+        schema: z.ZodType<T>,
+        systemBlocks: string[],
+        payload: Record<string, unknown>,
+        locale: string,
+        signal: AbortSignal | undefined,
+        openAiFallback: () => Promise<T>,
+      ) => Promise<T>;
+    }
+
+    function asCachingTestable(
+      service: LangchainAuditReportService,
+    ): CachingFallbackPrivate {
+      return service as unknown as CachingFallbackPrivate;
+    }
+
+    const schema = z.object({ ok: z.boolean() });
+
+    it('takes the OpenAI path when the anthropic factory is absent', async () => {
+      const service = createService(config, new ReportQualityGateService());
+      const openAi = jest.fn().mockResolvedValue({ ok: true });
+
+      const result = await asCachingTestable(
+        service,
+      ).trySectionWithCachingFallback(
+        'executive',
+        schema,
+        ['main'],
+        { dummy: 1 },
+        'fr',
+        undefined,
+        openAi,
+      );
+
+      expect(result).toEqual({ ok: true });
+      expect(openAi).toHaveBeenCalledTimes(1);
+    });
+
+    it('takes the OpenAI path when the factory reports disabled', async () => {
+      const createSpy = jest.fn();
+      const disabledFactory: AnthropicChatFactory = {
+        isEnabled: () => false,
+        model: () => 'claude-sonnet-4-6',
+        create: createSpy,
+      };
+      const service = createService(
+        config,
+        new ReportQualityGateService(),
+        disabledFactory,
+      );
+      const openAi = jest.fn().mockResolvedValue({ ok: true });
+
+      await asCachingTestable(service).trySectionWithCachingFallback(
+        'executive',
+        schema,
+        ['main'],
+        {},
+        'fr',
+        undefined,
+        openAi,
+      );
+
+      expect(createSpy).not.toHaveBeenCalled();
+      expect(openAi).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back to OpenAI when the anthropic client throws a non-abort error', async () => {
+      const failingClient = {
+        messages: {
+          create: jest
+            .fn()
+            .mockRejectedValue(new Error('Anthropic 503 Service Unavailable')),
+        },
+      };
+      const createSpy = jest.fn().mockReturnValue(failingClient);
+      const factory: AnthropicChatFactory = {
+        isEnabled: () => true,
+        model: () => 'claude-sonnet-4-6',
+        create: createSpy,
+      };
+      const service = createService(
+        config,
+        new ReportQualityGateService(),
+        factory,
+      );
+      const openAi = jest.fn().mockResolvedValue({ ok: true });
+
+      const result = await asCachingTestable(
+        service,
+      ).trySectionWithCachingFallback(
+        'priority',
+        schema,
+        ['main'],
+        {},
+        'fr',
+        undefined,
+        openAi,
+      );
+
+      expect(result).toEqual({ ok: true });
+      expect(createSpy).toHaveBeenCalledTimes(1);
+      expect(openAi).toHaveBeenCalledTimes(1);
+    });
+
+    it('propagates AbortError without falling back when the signal is aborted', async () => {
+      const abortError = new Error('AbortError');
+      const abortedClient = {
+        messages: { create: jest.fn().mockRejectedValue(abortError) },
+      };
+      const factory: AnthropicChatFactory = {
+        isEnabled: () => true,
+        model: () => 'claude-sonnet-4-6',
+        create: jest.fn().mockReturnValue(abortedClient),
+      };
+      const service = createService(
+        config,
+        new ReportQualityGateService(),
+        factory,
+      );
+      const openAi = jest.fn().mockResolvedValue({ ok: true });
+      const controller = new AbortController();
+      controller.abort();
+
+      await expect(
+        asCachingTestable(service).trySectionWithCachingFallback(
+          'priority',
+          schema,
+          ['main'],
+          {},
+          'fr',
+          controller.signal,
+          openAi,
+        ),
+      ).rejects.toBe(abortError);
+
+      expect(openAi).not.toHaveBeenCalled();
+    });
+
+    it('returns the Anthropic payload without calling OpenAI on success', async () => {
+      const anthropicClient = {
+        messages: {
+          create: jest.fn().mockResolvedValue({
+            content: [
+              {
+                type: 'tool_use',
+                id: 'toolu_1',
+                name: 'emit_executive',
+                input: { ok: true },
+              },
+            ],
+            usage: {
+              input_tokens: 10,
+              output_tokens: 5,
+              cache_creation_input_tokens: 0,
+              cache_read_input_tokens: 0,
+            },
+          }),
+        },
+      };
+      const factory: AnthropicChatFactory = {
+        isEnabled: () => true,
+        model: () => 'claude-sonnet-4-6',
+        create: jest.fn().mockReturnValue(anthropicClient),
+      };
+      const service = createService(
+        config,
+        new ReportQualityGateService(),
+        factory,
+      );
+      const openAi = jest.fn();
+
+      const result = await asCachingTestable(
+        service,
+      ).trySectionWithCachingFallback(
+        'executive',
+        schema,
+        ['main'],
+        {},
+        'fr',
+        undefined,
+        openAi,
+      );
+
+      expect(result).toEqual({ ok: true });
+      expect(openAi).not.toHaveBeenCalled();
+    });
   });
 });

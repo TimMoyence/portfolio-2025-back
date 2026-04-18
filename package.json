@@ -46,6 +46,7 @@
     ]
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
     "@langchain/core": "^1.1.39",
     "@langchain/openai": "^1.4.1",
     "@nestjs/axios": "^4.0.1",
