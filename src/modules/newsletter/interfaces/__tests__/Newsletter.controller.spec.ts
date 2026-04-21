@@ -29,7 +29,11 @@ function buildMockUseCases() {
 
   const subscribeUC = new SubscribeNewsletterUseCase(repo, mailer, scheduler);
   const confirmUC = new ConfirmSubscriptionUseCase(repo, mailer, scheduler);
-  const unsubscribeUC = new UnsubscribeNewsletterUseCase(repo, mailer);
+  const unsubscribeUC = new UnsubscribeNewsletterUseCase(
+    repo,
+    mailer,
+    scheduler,
+  );
 
   jest.spyOn(subscribeUC, 'execute').mockResolvedValue({
     created: true,
@@ -40,11 +44,12 @@ function buildMockUseCases() {
   const confirmed = buildNewsletterSubscriber();
   jest
     .spyOn(confirmUC, 'execute')
-    .mockResolvedValue({ status: confirmed.status });
+    .mockResolvedValue({ status: confirmed.status, alreadyConfirmed: false });
 
   const unsubscribed = buildNewsletterSubscriber();
   jest.spyOn(unsubscribeUC, 'execute').mockResolvedValue({
     status: unsubscribed.status,
+    alreadyUnsubscribed: false,
   });
 
   return { subscribeUC, confirmUC, unsubscribeUC };
