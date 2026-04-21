@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  ApiAcceptedResponse,
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -63,7 +64,7 @@ export class NewsletterController {
     summary:
       'Inscription a la newsletter (double opt-in, acces public, 3 req/h/IP)',
   })
-  @ApiOkResponse({ type: SubscribeNewsletterResponseDto })
+  @ApiAcceptedResponse({ type: SubscribeNewsletterResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
   @ApiTooManyRequestsResponse({ description: 'Trop de requetes' })
   async subscribeEndpoint(
