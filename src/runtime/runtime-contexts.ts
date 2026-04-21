@@ -10,6 +10,7 @@ import { UsersModule } from '../modules/users/Users.module';
 import { BudgetModule } from '../modules/budget/Budget.module';
 import { SebastianModule } from '../modules/sebastian/Sebastian.module';
 import { LeadMagnetsModule } from '../modules/lead-magnets/LeadMagnets.module';
+import { NewsletterModule } from '../modules/newsletter/Newsletter.module';
 import { PresentationsModule } from '../modules/presentations/Presentations.module';
 import { WeatherModule } from '../modules/weather/Weather.module';
 
@@ -36,6 +37,7 @@ export function resolveRuntimeContexts(
     BudgetModule,
     SebastianModule,
     LeadMagnetsModule,
+    NewsletterModule,
     PresentationsModule,
   ];
 
