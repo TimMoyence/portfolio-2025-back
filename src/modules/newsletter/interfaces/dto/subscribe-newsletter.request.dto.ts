@@ -10,6 +10,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { SUPPORTED_FORMATION_SLUGS } from '../../domain/SupportedFormationSlugs';
 
 /** DTO d'entree de l'endpoint `POST /newsletter/subscribe`. */
 export class SubscribeNewsletterRequestDto {
@@ -30,9 +31,12 @@ export class SubscribeNewsletterRequestDto {
   @MaxLength(10)
   locale: string;
 
-  @ApiProperty({ example: 'ia-solopreneurs' })
+  @ApiProperty({
+    example: 'ia-solopreneurs',
+    enum: SUPPORTED_FORMATION_SLUGS,
+  })
   @IsString()
-  @IsIn(['ia-solopreneurs'])
+  @IsIn(SUPPORTED_FORMATION_SLUGS as unknown as readonly string[])
   @MaxLength(100)
   sourceFormationSlug: string;
 
