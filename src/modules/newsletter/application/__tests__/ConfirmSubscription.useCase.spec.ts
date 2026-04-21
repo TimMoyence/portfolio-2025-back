@@ -60,6 +60,21 @@ describe('ConfirmSubscriptionUseCase', () => {
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
+  it('ne propage pas l\u2019erreur si sendWelcome echoue (fire-and-forget)', async () => {
+    const subscriber = buildNewsletterSubscriber();
+    subscriber.id = 'sub-id';
+    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
+    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
+    mailer.sendWelcome.mockRejectedValueOnce(new Error('SMTP down'));
+
+    await expect(
+      useCase.execute(subscriber.confirmToken),
+    ).resolves.toBeDefined();
+    await flushPromises();
+    // Le use-case ne leve pas : l'erreur est swallow par .catch()
+    expect(repo.update).toHaveBeenCalled();
+  });
+
   it('leve DomainValidationError si le subscriber est unsubscribed', async () => {
     const subscriber = buildNewsletterSubscriber();
     subscriber.id = 'sub-id';
