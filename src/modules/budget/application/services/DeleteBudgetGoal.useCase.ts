@@ -7,11 +7,7 @@ import {
   BUDGET_GOAL_REPOSITORY,
   BUDGET_GROUP_REPOSITORY,
 } from '../../domain/token';
-
-export interface DeleteBudgetGoalCommand {
-  goalId: string;
-  userId: string;
-}
+import type { DeleteBudgetGoalCommand } from '../dto/DeleteBudgetGoal.command';
 
 /**
  * Supprime un BudgetGoal. Verifie l'existence puis l'appartenance du
