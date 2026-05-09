@@ -4,77 +4,31 @@ import { BudgetEntry } from '../../domain/BudgetEntry';
 import type { IBudgetCategoryRepository } from '../../domain/IBudgetCategory.repository';
 import type { IBudgetEntryRepository } from '../../domain/IBudgetEntry.repository';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
+import type { ICategoryInferenceStrategy } from '../../domain/ICategoryInferenceStrategy';
 import {
   BUDGET_CATEGORY_REPOSITORY,
   BUDGET_ENTRY_REPOSITORY,
   BUDGET_GROUP_REPOSITORY,
+  CATEGORY_INFERENCE_STRATEGY,
 } from '../../domain/token';
 import type { ImportBudgetEntriesCommand } from '../dto/ImportBudgetEntries.command';
 
-/** Regles d'inference de categorie basees sur la description. */
-const CATEGORY_RULES: Array<{ keywords: string[]; categoryName: string }> = [
-  { keywords: ['loick babin', 'les voutes'], categoryName: 'Loyer' },
-  { keywords: ['edf'], categoryName: 'Electricité & Internet' },
-  {
-    keywords: ['free telecom', 'mobile tim & maria'],
-    categoryName: 'Forfait telephone Tim & Maria',
-  },
-  {
-    keywords: ['internet', 'bbox', 'orange', 'sfr', 'bouygues'],
-    categoryName: 'Electricité & Internet',
-  },
-  { keywords: ['maif'], categoryName: 'Assur. Habitation' },
-  {
-    keywords: ['citiz', 'uber', 'kmlocal'],
-    categoryName: 'Voiture utilisation',
-  },
-  {
-    keywords: ['amazon', 'netflix', 'ororo'],
-    categoryName: 'Netflix & Amazon & Ororo',
-  },
-  {
-    keywords: [
-      'carrefour',
-      'e.leclerc',
-      'picard',
-      'lidl',
-      'bio coop',
-      'casado primeurs',
-      'le destin fromager',
-      'bigazzi',
-      'babel bread',
-      'ly kim hak',
-      'qu4tre qu4rts',
-      'anom cafe club',
-      'boucherie',
-      'origines',
-    ],
-    categoryName: 'Courses',
-  },
-  { keywords: ['pharmacie'], categoryName: 'Achat pour la beauté' },
-  {
-    keywords: [
-      'pub',
-      'kitchen',
-      'restaurant',
-      'darwi',
-      'cassonade',
-      'arlu',
-      'magasin general',
-      'les brocs',
-      'del arte',
-    ],
-    categoryName: 'Restaurant',
-  },
-  { keywords: ['fleurs', 'garcia aurore'], categoryName: 'Gifts' },
-  { keywords: ["art'tick"], categoryName: 'Entertainment' },
-  {
-    keywords: ['salle de sport', 'fitness', 'gym', 'basic fit'],
-    categoryName: 'Salle de sport',
-  },
-];
+const BOM_REGEX = new RegExp('^' + String.fromCharCode(0xfeff));
+const DIACRITICS_REGEX = new RegExp(
+  '[' + String.fromCharCode(0x0300) + '-' + String.fromCharCode(0x036f) + ']',
+  'g',
+);
 
-/** Importe des entrees de budget depuis un contenu CSV. */
+/**
+ * Importe des entrees de budget depuis un contenu CSV (format Revolut ou
+ * compatible). Verifie l'appartenance au groupe, parse le CSV, infere la
+ * categorie de chaque ligne via une {@link ICategoryInferenceStrategy} injectee,
+ * puis persiste l'ensemble en bulk via le repository.
+ *
+ * Aucune regle d'inference (et donc aucune donnee personnelle de matching) n'est
+ * hardcodee dans ce use case : toute la logique categorisation est externalisee
+ * derriere le port pour respect RGPD et testabilite.
+ */
 @Injectable()
 export class ImportBudgetEntriesUseCase {
   constructor(
@@ -84,6 +38,8 @@ export class ImportBudgetEntriesUseCase {
     private readonly groupRepo: IBudgetGroupRepository,
     @Inject(BUDGET_CATEGORY_REPOSITORY)
     private readonly categoryRepo: IBudgetCategoryRepository,
+    @Inject(CATEGORY_INFERENCE_STRATEGY)
+    private readonly inferenceStrategy: ICategoryInferenceStrategy,
   ) {}
 
   async execute(command: ImportBudgetEntriesCommand): Promise<BudgetEntry[]> {
@@ -106,7 +62,7 @@ export class ImportBudgetEntriesUseCase {
       const amount = this.parseCsvAmount(
         this.readRowValue(row, ['Amount', 'Montant']),
       );
-      const inferredName = this.inferCategoryName(
+      const inferredName = this.inferenceStrategy.infer(
         description,
         this.readRowValue(row, ['Type']),
         amount,
@@ -130,46 +86,6 @@ export class ImportBudgetEntriesUseCase {
     });
 
     return this.entryRepo.createMany(entries);
-  }
-
-  private inferCategoryName(
-    description: string,
-    type: string,
-    amount: number,
-  ): string | null {
-    const normalized = this.normalizeText(description);
-    const normalizedType = this.normalizeText(type);
-
-    if (amount > 0) {
-      if (
-        normalized.includes('tim moyence') ||
-        normalized.includes('maria naumenko')
-      ) {
-        return 'Contribution';
-      }
-      if (normalized.includes('pocket withdrawal')) {
-        return 'Pockets';
-      }
-    }
-
-    for (const rule of CATEGORY_RULES) {
-      if (rule.keywords.some((kw) => normalized.includes(kw))) {
-        return rule.categoryName;
-      }
-    }
-
-    const exactCategoryMatch = CATEGORY_RULES.find(
-      (rule) => this.normalizeText(rule.categoryName) === normalized,
-    );
-    if (exactCategoryMatch) {
-      return exactCategoryMatch.categoryName;
-    }
-
-    if (normalizedType.includes('transfer') && normalized.includes('pocket')) {
-      return 'Pockets';
-    }
-
-    return 'Autres';
   }
 
   private parseCsv(csvText: string): Record<string, string>[] {
@@ -250,14 +166,11 @@ export class ImportBudgetEntriesUseCase {
   }
 
   private normalizeHeader(value: string): string {
-    return value.replace(/^\uFEFF/, '').trim();
+    return value.replace(BOM_REGEX, '').trim();
   }
 
-  private normalizeText(value: string): string {
-    return value
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+  private normalizeHeaderForMatch(value: string): string {
+    return value.toLowerCase().normalize('NFD').replace(DIACRITICS_REGEX, '');
   }
 
   private readRowValue(row: Record<string, string>, keys: string[]): string {
@@ -269,12 +182,13 @@ export class ImportBudgetEntriesUseCase {
     }
 
     const normalizedEntries = Object.entries(row).map(
-      ([key, value]) => [this.normalizeText(key), value] as const,
+      ([key, value]) => [this.normalizeHeaderForMatch(key), value] as const,
     );
 
     for (const key of keys) {
       const found = normalizedEntries.find(
-        ([normalizedKey]) => normalizedKey === this.normalizeText(key),
+        ([normalizedKey]) =>
+          normalizedKey === this.normalizeHeaderForMatch(key),
       );
       if (found) {
         return found[1];
