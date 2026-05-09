@@ -8,8 +8,16 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from './common/interfaces/filters/DomainExceptionFilter';
 
+function logBootstrapStep(message: string): void {
+  if (process.env.BOOTSTRAP_DEBUG === 'true') {
+    console.log(`[bootstrap] ${message}`);
+  }
+}
+
 async function bootstrap() {
+  logBootstrapStep('starting bootstrap');
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  logBootstrapStep('nest application created');
   app.useLogger(app.get(Logger));
 
   const isProd = process.env.NODE_ENV === 'production';
@@ -80,6 +88,8 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
 
+  logBootstrapStep('starting listen');
   await app.listen(process.env.PORT ? Number(process.env.PORT) : 3000);
+  logBootstrapStep('listen complete');
 }
 void bootstrap();

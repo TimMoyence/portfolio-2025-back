@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { OAuth2Client } from 'google-auth-library';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -17,11 +16,30 @@ import type { AuthResult } from './AuthenticateUser.useCase';
 import { JwtTokenService } from './services/JwtTokenService';
 import { UsersMapper } from './mappers/UsersMapper';
 
+interface GoogleTokenPayload {
+  sub: string;
+  email?: string;
+  email_verified?: boolean;
+  given_name?: string;
+  family_name?: string;
+}
+
+interface GoogleTokenTicket {
+  getPayload(): GoogleTokenPayload | undefined;
+}
+
+interface GoogleAuthClient {
+  verifyIdToken(options: {
+    idToken: string;
+    audience: string;
+  }): Promise<GoogleTokenTicket>;
+}
+
 /** Authentifie un utilisateur via son Google ID token (popup GIS). */
 @Injectable()
 export class AuthenticateGoogleUserUseCase {
   private readonly logger = new Logger(AuthenticateGoogleUserUseCase.name);
-  private readonly client: OAuth2Client;
+  private client?: GoogleAuthClient;
 
   constructor(
     @Inject(USERS_REPOSITORY) private readonly repo: IUsersRepository,
@@ -29,9 +47,7 @@ export class AuthenticateGoogleUserUseCase {
     private readonly refreshTokensRepo: IRefreshTokensRepository,
     private readonly jwtTokenService: JwtTokenService,
     @Inject(GOOGLE_CLIENT_ID) private readonly googleClientId: string,
-  ) {
-    this.client = new OAuth2Client(this.googleClientId);
-  }
+  ) {}
 
   async execute(idToken: string): Promise<AuthResult> {
     const payload = await this.verifyGoogleToken(idToken);
@@ -74,7 +90,7 @@ export class AuthenticateGoogleUserUseCase {
   /** Verifie le token Google ID et retourne le payload. */
   private async verifyGoogleToken(idToken: string) {
     try {
-      const ticket = await this.client.verifyIdToken({
+      const ticket = await this.getClient().verifyIdToken({
         idToken,
         audience: this.googleClientId,
       });
@@ -89,6 +105,18 @@ export class AuthenticateGoogleUserUseCase {
       );
       throw new InvalidCredentialsError('Invalid Google token');
     }
+  }
+
+  private getClient(): GoogleAuthClient {
+    if (!this.client) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { OAuth2Client } = require('google-auth-library') as {
+        OAuth2Client: new (clientId: string) => GoogleAuthClient;
+      };
+      this.client = new OAuth2Client(this.googleClientId);
+    }
+
+    return this.client;
   }
 
   /** Verifie que le compte utilisateur est actif. */

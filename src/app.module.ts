@@ -6,6 +6,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { randomUUID } from 'crypto';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthModule } from './common/interfaces/health/health.module';
@@ -18,6 +19,12 @@ import { ensureDatabaseExists } from './database/ensure-database';
 import { resolveRuntimeContexts } from './runtime/runtime-contexts';
 
 const runtimeContexts = resolveRuntimeContexts();
+
+function logBootstrapStep(message: string): void {
+  if (process.env.BOOTSTRAP_DEBUG === 'true') {
+    console.log(`[bootstrap] ${message}`);
+  }
+}
 
 @Module({
   imports: [
@@ -50,6 +57,7 @@ const runtimeContexts = resolveRuntimeContexts();
     ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory: async (): Promise<TypeOrmModuleOptions> => {
+        logBootstrapStep('typeorm factory start');
         const sslEnabled =
           process.env.DB_SSL === 'true' || process.env.DATABASE_SSL === 'true';
         const sslOption = sslEnabled
@@ -87,7 +95,7 @@ const runtimeContexts = resolveRuntimeContexts();
 
         const baseOptions: TypeOrmModuleOptions = {
           type: 'postgres',
-          autoLoadEntities: true,
+          entities: [join(__dirname, '**/*.entity.{js,ts}')],
           synchronize,
           extra: {
             max: poolMax,
@@ -150,6 +158,7 @@ const runtimeContexts = resolveRuntimeContexts();
               ssl: sslOption,
             });
           } else if (host && username) {
+            logBootstrapStep(`ensuring database ${databaseFromEnv}`);
             await ensureDatabaseExists({
               host,
               port: port ? Number(port) : undefined,
@@ -161,6 +170,7 @@ const runtimeContexts = resolveRuntimeContexts();
           }
         }
 
+        logBootstrapStep('typeorm factory done');
         return connectionOptions;
       },
     }),

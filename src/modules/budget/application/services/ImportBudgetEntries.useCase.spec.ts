@@ -170,6 +170,29 @@ describe('ImportBudgetEntriesUseCase', () => {
     expect(calledEntries[0].description).toBe('Carrefour, City');
   });
 
+  it('devrait parser un CSV separe par point-virgule avec montant europeen', async () => {
+    const gymCategory = buildBudgetCategory({
+      id: 'cat-gym',
+      name: 'Salle de sport',
+    });
+
+    groupRepo.isMember.mockResolvedValue(true);
+    categoryRepo.findByGroupId.mockResolvedValue([gymCategory]);
+    entryRepo.createMany.mockResolvedValue([buildBudgetEntry()]);
+
+    const csv =
+      'Date;Description;Montant;State\n2026-03-15;Basic Fit;-45,00;COMPLETED';
+    await useCase.execute({
+      userId: 'user-1',
+      groupId: 'group-1',
+      csvContent: csv,
+    });
+
+    const [calledEntries] = entryRepo.createMany.mock.calls[0];
+    expect(calledEntries[0].amount).toBe(-45);
+    expect(calledEntries[0].categoryId).toBe('cat-gym');
+  });
+
   it('devrait inferer Pockets pour pocket withdrawal positif', async () => {
     const pocketsCategory = buildBudgetCategory({
       id: 'cat-pockets',
