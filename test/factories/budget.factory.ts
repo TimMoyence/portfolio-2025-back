@@ -82,6 +82,9 @@ export function createMockBudgetGroupRepo(): jest.Mocked<IBudgetGroupRepository>
     findByMemberId: jest.fn(),
     addMember: jest.fn(),
     isMember: jest.fn(),
+    isOwner: jest.fn(),
+    findMembersWithUsers: jest.fn(),
+    removeMember: jest.fn(),
   };
 }
 
