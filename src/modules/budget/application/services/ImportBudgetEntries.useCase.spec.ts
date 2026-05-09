@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
 import { ImportBudgetEntriesUseCase } from './ImportBudgetEntries.useCase';
+import type { ICategoryInferenceStrategy } from '../../domain/ICategoryInferenceStrategy';
+import { RevolutCategoryInferenceStrategy } from '../../infrastructure/inference/RevolutCategoryInferenceStrategy';
+import { defaultCategoryRulesConfig } from '../../infrastructure/inference/category-rules.config';
 import {
   createMockBudgetEntryRepo,
   createMockBudgetGroupRepo,
@@ -14,15 +17,20 @@ describe('ImportBudgetEntriesUseCase', () => {
   let entryRepo: ReturnType<typeof createMockBudgetEntryRepo>;
   let groupRepo: ReturnType<typeof createMockBudgetGroupRepo>;
   let categoryRepo: ReturnType<typeof createMockBudgetCategoryRepo>;
+  let inferenceStrategy: RevolutCategoryInferenceStrategy;
 
   beforeEach(() => {
     entryRepo = createMockBudgetEntryRepo();
     groupRepo = createMockBudgetGroupRepo();
     categoryRepo = createMockBudgetCategoryRepo();
+    inferenceStrategy = new RevolutCategoryInferenceStrategy(
+      defaultCategoryRulesConfig,
+    );
     useCase = new ImportBudgetEntriesUseCase(
       entryRepo,
       groupRepo,
       categoryRepo,
+      inferenceStrategy,
     );
   });
 
@@ -86,28 +94,6 @@ describe('ImportBudgetEntriesUseCase', () => {
 
     const [calledEntries] = entryRepo.createMany.mock.calls[0];
     expect(calledEntries[0].categoryId).toBe('cat-courses');
-  });
-
-  it('devrait inferer la categorie Contribution pour montant positif Tim', async () => {
-    const contributionCategory = buildBudgetCategory({
-      id: 'cat-contrib',
-      name: 'Contribution',
-    });
-
-    groupRepo.isMember.mockResolvedValue(true);
-    categoryRepo.findByGroupId.mockResolvedValue([contributionCategory]);
-    entryRepo.createMany.mockResolvedValue([buildBudgetEntry()]);
-
-    const csv =
-      'Started Date,Description,Amount,State\n2026-03-15,Tim Moyence,1500,COMPLETED';
-    await useCase.execute({
-      userId: 'user-1',
-      groupId: 'group-1',
-      csvContent: csv,
-    });
-
-    const [calledEntries] = entryRepo.createMany.mock.calls[0];
-    expect(calledEntries[0].categoryId).toBe('cat-contrib');
   });
 
   it('devrait retourner Autres pour une description non reconnue', async () => {
@@ -213,5 +199,44 @@ describe('ImportBudgetEntriesUseCase', () => {
 
     const [calledEntries] = entryRepo.createMany.mock.calls[0];
     expect(calledEntries[0].categoryId).toBe('cat-pockets');
+  });
+
+  it('devrait deleguer l inference de categorie au ICategoryInferenceStrategy injecte', async () => {
+    const fixedCategory = buildBudgetCategory({
+      id: 'cat-fixed',
+      name: 'CategorieX',
+    });
+
+    groupRepo.isMember.mockResolvedValue(true);
+    categoryRepo.findByGroupId.mockResolvedValue([fixedCategory]);
+    entryRepo.createMany.mockResolvedValue([buildBudgetEntry()]);
+
+    const inferFn = jest
+      .fn<string | null, [string, string, number]>()
+      .mockReturnValue('CategorieX');
+    const fakeStrategy: ICategoryInferenceStrategy = { infer: inferFn };
+
+    const useCaseWithMock = new ImportBudgetEntriesUseCase(
+      entryRepo,
+      groupRepo,
+      categoryRepo,
+      fakeStrategy,
+    );
+
+    const csv =
+      'Started Date,Description,Amount,Type,State\n' +
+      '2026-03-15,Random merchant,-12,CARD_PAYMENT,COMPLETED\n' +
+      '2026-03-16,Another shop,-7,CARD_PAYMENT,COMPLETED';
+    await useCaseWithMock.execute({
+      userId: 'user-1',
+      groupId: 'group-1',
+      csvContent: csv,
+    });
+
+    expect(inferFn).toHaveBeenCalledTimes(2);
+    const [calledEntries] = entryRepo.createMany.mock.calls[0];
+    expect(calledEntries).toHaveLength(2);
+    expect(calledEntries[0].categoryId).toBe('cat-fixed');
+    expect(calledEntries[1].categoryId).toBe('cat-fixed');
   });
 });

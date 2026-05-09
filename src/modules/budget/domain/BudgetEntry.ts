@@ -45,8 +45,14 @@ export class BudgetEntry {
       throw new DomainValidationError('Invalid budget entry description');
     }
 
-    if (typeof props.amount !== 'number' || props.amount === 0) {
-      throw new DomainValidationError('Budget entry amount must be non-zero');
+    if (
+      typeof props.amount !== 'number' ||
+      !Number.isFinite(props.amount) ||
+      props.amount === 0
+    ) {
+      throw new DomainValidationError(
+        'Budget entry amount must be a finite non-zero number',
+      );
     }
 
     const parsedDate = new Date(props.date);

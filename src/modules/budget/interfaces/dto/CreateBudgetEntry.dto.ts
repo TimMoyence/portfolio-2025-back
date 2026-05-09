@@ -7,7 +7,9 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Max,
   MaxLength,
+  Min,
 } from 'class-validator';
 
 export class CreateBudgetEntryDto {
@@ -30,8 +32,10 @@ export class CreateBudgetEntryDto {
   @MaxLength(255)
   description: string;
 
-  @ApiProperty({ example: -85.5 })
-  @IsNumber()
+  @ApiProperty({ example: -85.5, minimum: -1_000_000, maximum: 1_000_000 })
+  @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 2 })
+  @Min(-1_000_000)
+  @Max(1_000_000)
   amount: number;
 
   @ApiProperty({ enum: ['FIXED', 'VARIABLE'], example: 'VARIABLE' })

@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
@@ -36,7 +37,13 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  // Limite globale du body parser : 600 KB couvre les imports CSV
+  // (max 500 KB cote DTO @MaxLength) avec une marge pour l'overhead
+  // JSON. Au-dela, body-parser repond 413 avant que le DTO ne soit
+  // construit, evitant un DoS event-loop (HIGH-2 audit 2026-05-09).
+  app.use(json({ limit: '600kb' }));
+  app.use(urlencoded({ extended: true, limit: '600kb' }));
+
   app.use(cookieParser());
 
   app.use(

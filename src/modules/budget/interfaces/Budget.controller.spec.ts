@@ -323,9 +323,11 @@ describe('BudgetController', () => {
   });
 
   // --- shareBudgetGroup ---
+  // Test precedent (pre P0-1) retire : il assertait `userId: 'user-2'`
+  // dans le mock de retour du use case ; le contrat ne l'expose plus.
 
-  it('devrait deleguer shareBudgetGroup au use case', async () => {
-    const shareResult = { shared: true as const, userId: 'user-2' };
+  it('devrait deleguer shareBudgetGroup au use case et propager le retour', async () => {
+    const shareResult = { shared: true as const };
     useCases.shareBudget.execute.mockResolvedValue(shareResult);
 
     const result = await controller.shareBudgetGroup(
@@ -338,7 +340,8 @@ describe('BudgetController', () => {
       groupId: 'group-1',
       targetEmail: 'partner@example.com',
     });
-    expect(result).toEqual(shareResult);
+    expect(result).toEqual({ shared: true });
+    expect(result).not.toHaveProperty('userId');
   });
 
   // --- Propagation d'erreurs ---

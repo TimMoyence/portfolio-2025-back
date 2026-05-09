@@ -18,8 +18,10 @@ import {
   ApiOperation,
   ApiQuery,
   ApiTags,
+  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
@@ -283,10 +285,14 @@ export class BudgetController {
   }
 
   @Post('share')
+  @Throttle({ default: { limit: 5, ttl: 3600000 } })
   @ApiOperation({ summary: 'Partager le budget avec un autre utilisateur' })
   @ApiOkResponse({ description: 'Budget partage avec succes' })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
   @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
+  @ApiTooManyRequestsResponse({
+    description: 'Trop de tentatives de partage (5/heure max, anti spam)',
+  })
   async shareBudgetGroup(@Body() dto: ShareBudgetDto, @Req() req: Request) {
     const user = req.user!;
     return this.shareBudget.execute({

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { BudgetGroup } from '../domain/BudgetGroup';
 import type { IBudgetGroupRepository } from '../domain/IBudgetGroup.repository';
 import { BudgetGroupEntity } from './entities/BudgetGroup.entity';
@@ -13,14 +13,28 @@ export class BudgetGroupRepositoryTypeORM implements IBudgetGroupRepository {
     private readonly groupRepo: Repository<BudgetGroupEntity>,
     @InjectRepository(BudgetGroupMemberEntity)
     private readonly memberRepo: Repository<BudgetGroupMemberEntity>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
+  /**
+   * Cree atomiquement un groupe et son owner-membre dans une seule
+   * transaction (P0-4 audit 2026-05-09). Avant le fix, les deux saves
+   * etaient consecutives sans transaction : si la 2eme echouait, on
+   * laissait un groupe orphelin sans owner-membre — invariant casse.
+   */
   async create(data: BudgetGroup): Promise<BudgetGroup> {
-    const entity = await this.groupRepo.save(
-      data as Partial<BudgetGroupEntity>,
-    );
-    await this.memberRepo.save({ groupId: entity.id, userId: entity.ownerId });
-    return this.toDomain(entity);
+    return this.dataSource.transaction(async (manager) => {
+      const entity = await manager.save(
+        BudgetGroupEntity,
+        data as Partial<BudgetGroupEntity>,
+      );
+      await manager.save(BudgetGroupMemberEntity, {
+        groupId: entity.id,
+        userId: entity.ownerId,
+      });
+      return this.toDomain(entity);
+    });
   }
 
   async findById(id: string): Promise<BudgetGroup | null> {

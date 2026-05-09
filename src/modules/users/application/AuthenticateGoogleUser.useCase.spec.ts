@@ -142,4 +142,21 @@ describe('AuthenticateGoogleUserUseCase', () => {
     );
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
   });
+
+  it('refuse de lier googleId quand byEmail.emailVerified est false (anti-takeover)', async () => {
+    const unverifiedUser = buildUser({
+      googleId: null,
+      emailVerified: false,
+    });
+    repo.findByGoogleId.mockResolvedValue(null);
+    repo.findByEmail.mockResolvedValue(unverifiedUser);
+
+    await expect(useCase.execute('valid-id-token')).rejects.toBeInstanceOf(
+      InvalidCredentialsError,
+    );
+
+    expect(repo.update).not.toHaveBeenCalled();
+    expect(jwtTokenService.sign).not.toHaveBeenCalled();
+    expect(refreshTokensRepo.create).not.toHaveBeenCalled();
+  });
 });

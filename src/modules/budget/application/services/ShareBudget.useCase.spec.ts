@@ -7,6 +7,7 @@ import {
   createMockBudgetGroupRepo,
   buildBudgetGroup,
   createMockBudgetShareNotifier,
+  createMockBudgetShareAttemptRepo,
 } from '../../../../../test/factories/budget.factory';
 import {
   createMockUsersRepo,
@@ -15,12 +16,14 @@ import {
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
 import type { IUsersRepository } from '../../../users/domain/IUsers.repository';
 import type { IBudgetShareNotifier } from '../../domain/IBudgetShareNotifier';
+import type { IBudgetShareAttemptRepository } from '../../domain/IBudgetShareAttempt.repository';
 import type { ShareBudgetCommand } from '../dto/ShareBudget.command';
 
 describe('ShareBudgetUseCase', () => {
   let groupRepo: jest.Mocked<IBudgetGroupRepository>;
   let usersRepo: jest.Mocked<IUsersRepository>;
   let notifier: jest.Mocked<IBudgetShareNotifier>;
+  let shareAttemptRepo: jest.Mocked<IBudgetShareAttemptRepository>;
   let configService: jest.Mocked<Pick<ConfigService, 'get'>>;
   let useCase: ShareBudgetUseCase;
 
@@ -34,11 +37,13 @@ describe('ShareBudgetUseCase', () => {
     groupRepo = createMockBudgetGroupRepo();
     usersRepo = createMockUsersRepo();
     notifier = createMockBudgetShareNotifier();
+    shareAttemptRepo = createMockBudgetShareAttemptRepo();
     configService = { get: jest.fn().mockReturnValue('http://localhost:4200') };
     useCase = new ShareBudgetUseCase(
       groupRepo,
       usersRepo,
       notifier,
+      shareAttemptRepo,
       configService as unknown as ConfigService,
     );
 
@@ -58,6 +63,8 @@ describe('ShareBudgetUseCase', () => {
       buildUser({ id: 'user-1', firstName: 'Jean', lastName: 'Dupont' }),
     );
     notifier.sendBudgetShareNotification.mockResolvedValue(undefined);
+    shareAttemptRepo.findRecent.mockResolvedValue(null);
+    shareAttemptRepo.record.mockResolvedValue(undefined);
   });
 
   it("devrait rejeter si le groupe n'existe pas", async () => {
@@ -86,31 +93,125 @@ describe('ShareBudgetUseCase', () => {
     );
   });
 
-  it("devrait ajouter le membre et envoyer l'email", async () => {
-    const result = await useCase.execute(command);
+  // 3 tests retires (commit P0-1) qui assertaient `userId: 'user-2'`
+  // dans le retour ; le contrat ne l'expose plus. Couverture remplacee
+  // par les tests behavioraux ci-dessous + assertions sur le retour.
+
+  it('devrait appeler addMember sur le repo lors d un partage initial', async () => {
+    await useCase.execute(command);
 
     expect(groupRepo.addMember).toHaveBeenCalledWith('group-1', 'user-2');
-    expect(notifier.sendBudgetShareNotification).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({ shared: true, userId: 'user-2' });
   });
 
-  it('devrait ne pas re-ajouter un membre deja present', async () => {
+  it('devrait declencher l envoi du mail lors d un partage initial', async () => {
+    await useCase.execute(command);
+
+    expect(notifier.sendBudgetShareNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('devrait skip addMember si la cible est deja membre', async () => {
     groupRepo.isMember.mockResolvedValue(true);
 
-    const result = await useCase.execute(command);
+    await useCase.execute(command);
 
     expect(groupRepo.addMember).not.toHaveBeenCalled();
-    expect(result).toEqual({ shared: true, userId: 'user-2' });
   });
 
-  it("devrait continuer meme si l'envoi d'email echoue", async () => {
+  it("devrait retourner shared: true meme si l'envoi d'email echoue", async () => {
     notifier.sendBudgetShareNotification.mockRejectedValue(
       new Error('SMTP error'),
     );
 
     const result = await useCase.execute(command);
 
-    expect(result).toEqual({ shared: true, userId: 'user-2' });
+    expect(result.shared).toBe(true);
+  });
+
+  it('P0-1 — la response ne doit PAS exposer userId interne', async () => {
+    const result = await useCase.execute(command);
+
+    expect(result).toEqual({ shared: true });
+    expect(result).not.toHaveProperty('userId');
+  });
+
+  it('P0-1 — meme retour sans userId quand cible deja membre', async () => {
+    groupRepo.isMember.mockResolvedValue(true);
+
+    const result = await useCase.execute(command);
+
+    expect(result).toEqual({ shared: true });
+    expect(result).not.toHaveProperty('userId');
+  });
+
+  it('P0-4 — addMember en violation UNIQUE doit etre traite comme idempotent (race)', async () => {
+    groupRepo.isMember.mockResolvedValue(false);
+    groupRepo.addMember.mockRejectedValue(
+      new Error(
+        'duplicate key value violates unique constraint "budget_group_members_group_id_user_id_key"',
+      ),
+    );
+
+    const result = await useCase.execute(command);
+
+    // Race condition idempotente : on retourne shared sans throw,
+    // ni mail (la cible est deja membre, ajoute par l'autre branche).
+    expect(result).toEqual({ shared: true });
+    expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
+    expect(shareAttemptRepo.record).not.toHaveBeenCalled();
+  });
+
+  it('P0-4 — devrait propager les autres erreurs de addMember (non-unique)', async () => {
+    groupRepo.isMember.mockResolvedValue(false);
+    groupRepo.addMember.mockRejectedValue(new Error('connection refused'));
+
+    await expect(useCase.execute(command)).rejects.toThrow(
+      'connection refused',
+    );
+  });
+
+  it('CRIT-2 — ne devrait PAS envoyer de mail si la cible est deja membre (anti spam)', async () => {
+    groupRepo.isMember.mockResolvedValue(true);
+
+    await useCase.execute(command);
+
+    expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
+    expect(shareAttemptRepo.record).not.toHaveBeenCalled();
+  });
+
+  it('CRIT-2 — ne devrait PAS envoyer de mail si une tentative recente existe (cooldown)', async () => {
+    shareAttemptRepo.findRecent.mockResolvedValue({
+      sentAt: new Date(Date.now() - 60_000),
+    });
+
+    await useCase.execute(command);
+
+    expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
+    expect(shareAttemptRepo.record).not.toHaveBeenCalled();
+  });
+
+  it("CRIT-2 — devrait enregistrer la tentative avant l'envoi du mail (cooldown SMTP-fail-safe)", async () => {
+    await useCase.execute(command);
+
+    expect(shareAttemptRepo.record).toHaveBeenCalledWith(
+      'group-1',
+      'cible@example.com',
+      expect.any(Date),
+    );
+  });
+
+  it('CRIT-2 — devrait passer la fenetre de cooldown au repo (5 minutes)', async () => {
+    await useCase.execute(command);
+
+    expect(shareAttemptRepo.findRecent).toHaveBeenCalledWith(
+      'group-1',
+      'cible@example.com',
+      expect.any(Date),
+    );
+    const sinceArg =
+      shareAttemptRepo.findRecent.mock.calls[0]?.[2] ?? new Date(0);
+    const elapsedMs = Date.now() - sinceArg.getTime();
+    expect(elapsedMs).toBeGreaterThanOrEqual(5 * 60 * 1000 - 1000);
+    expect(elapsedMs).toBeLessThanOrEqual(5 * 60 * 1000 + 1000);
   });
 
   it('devrait passer les bonnes valeurs au notifier', async () => {

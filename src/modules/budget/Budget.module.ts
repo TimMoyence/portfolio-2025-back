@@ -5,17 +5,28 @@ import {
   BUDGET_CATEGORY_REPOSITORY,
   BUDGET_ENTRY_REPOSITORY,
   BUDGET_GROUP_REPOSITORY,
+  BUDGET_PDF_RENDERER,
+  BUDGET_SHARE_ATTEMPT_REPOSITORY,
   BUDGET_SHARE_NOTIFIER,
+  CATEGORY_INFERENCE_STRATEGY,
   RECURRING_ENTRY_REPOSITORY,
 } from './domain/token';
+import { BudgetPdfRenderer } from './infrastructure/pdf/BudgetPdfRenderer';
+import { RevolutCategoryInferenceStrategy } from './infrastructure/inference/RevolutCategoryInferenceStrategy';
+import {
+  defaultCategoryRulesConfig,
+  type CategoryRulesConfig,
+} from './infrastructure/inference/category-rules.config';
 import { BudgetCategoryEntity } from './infrastructure/entities/BudgetCategory.entity';
 import { BudgetEntryEntity } from './infrastructure/entities/BudgetEntry.entity';
 import { RecurringEntryEntity } from './infrastructure/entities/RecurringEntry.entity';
 import { BudgetGroupEntity } from './infrastructure/entities/BudgetGroup.entity';
 import { BudgetGroupMemberEntity } from './infrastructure/entities/BudgetGroupMember.entity';
+import { BudgetShareAttemptEntity } from './infrastructure/entities/BudgetShareAttempt.entity';
 import { BudgetCategoryRepositoryTypeORM } from './infrastructure/BudgetCategory.repository.typeORM';
 import { BudgetEntryRepositoryTypeORM } from './infrastructure/BudgetEntry.repository.typeORM';
 import { BudgetGroupRepositoryTypeORM } from './infrastructure/BudgetGroup.repository.typeORM';
+import { BudgetShareAttemptRepositoryTypeORM } from './infrastructure/BudgetShareAttempt.repository.typeORM';
 import { RecurringEntryRepositoryTypeORM } from './infrastructure/RecurringEntry.repository.typeORM';
 import { BudgetShareMailerService } from './infrastructure/BudgetShareMailer.service';
 import { BudgetController } from './interfaces/Budget.controller';
@@ -75,6 +86,7 @@ const BUDGET_USE_CASES = [
       BudgetCategoryEntity,
       BudgetEntryEntity,
       RecurringEntryEntity,
+      BudgetShareAttemptEntity,
     ]),
     UsersModule,
   ],
@@ -102,9 +114,55 @@ const BUDGET_USE_CASES = [
       useClass: BudgetShareMailerService,
     },
     {
+      provide: BUDGET_SHARE_ATTEMPT_REPOSITORY,
+      useClass: BudgetShareAttemptRepositoryTypeORM,
+    },
+    {
       provide: RECURRING_ENTRY_REPOSITORY,
       useClass: RecurringEntryRepositoryTypeORM,
+    },
+    {
+      provide: BUDGET_PDF_RENDERER,
+      useClass: BudgetPdfRenderer,
+    },
+    {
+      provide: CATEGORY_INFERENCE_STRATEGY,
+      useFactory: (): RevolutCategoryInferenceStrategy => {
+        const config = loadCategoryRulesConfig();
+        return new RevolutCategoryInferenceStrategy(config);
+      },
     },
   ],
 })
 export class BudgetModule {}
+
+/**
+ * Charge la configuration des regles d'inference de categorie.
+ *
+ * Si `BUDGET_CATEGORY_RULES_PATH` est defini et pointe vers un fichier JSON
+ * lisible, ce fichier prevaut sur la config par defaut anonymisee. Permet aux
+ * utilisateurs finaux de fournir leurs propres regles personnelles (RGPD :
+ * keywords contenant des donnees nominatives) sans les commiter dans le repo.
+ *
+ * En cas d'erreur de parse ou d'IO, on fallback sur la config par defaut et on
+ * log un warning : ne jamais bloquer l'app au boot pour une config optionnelle.
+ */
+function loadCategoryRulesConfig(): CategoryRulesConfig {
+  const externalPath = process.env.BUDGET_CATEGORY_RULES_PATH;
+  if (!externalPath) {
+    return defaultCategoryRulesConfig;
+  }
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('node:fs') as typeof import('node:fs');
+    const raw = fs.readFileSync(externalPath, 'utf-8');
+    return JSON.parse(raw) as CategoryRulesConfig;
+  } catch (error) {
+    console.warn(
+      `[BudgetModule] Failed to load BUDGET_CATEGORY_RULES_PATH=${externalPath}, falling back to default rules:`,
+      error,
+    );
+    return defaultCategoryRulesConfig;
+  }
+}

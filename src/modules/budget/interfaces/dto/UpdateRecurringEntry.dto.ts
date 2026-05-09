@@ -26,9 +26,15 @@ export class UpdateRecurringEntryDto {
   @MaxLength(255)
   description?: string;
 
-  @ApiPropertyOptional({ example: -1300 })
+  @ApiPropertyOptional({
+    example: -1300,
+    minimum: -1_000_000,
+    maximum: 1_000_000,
+  })
   @IsOptional()
-  @IsNumber()
+  @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 2 })
+  @Min(-1_000_000)
+  @Max(1_000_000)
   amount?: number;
 
   @ApiPropertyOptional({ enum: ['FIXED', 'VARIABLE'] })

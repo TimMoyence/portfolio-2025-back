@@ -1,5 +1,7 @@
 import { InsufficientPermissionsError } from '../../../../common/domain/errors';
 import { ExportBudgetPdfUseCase } from './ExportBudgetPdf.useCase';
+import { BudgetPdfRenderer } from '../../infrastructure/pdf/BudgetPdfRenderer';
+import type { IBudgetPdfRenderer } from '../../domain/IBudgetPdfRenderer';
 import {
   createMockBudgetEntryRepo,
   createMockBudgetGroupRepo,
@@ -14,6 +16,7 @@ describe('ExportBudgetPdfUseCase', () => {
   let entryRepo: ReturnType<typeof createMockBudgetEntryRepo>;
   let categoryRepo: ReturnType<typeof createMockBudgetCategoryRepo>;
   let groupRepo: ReturnType<typeof createMockBudgetGroupRepo>;
+  let renderer: BudgetPdfRenderer;
 
   const defaultCommand: ExportBudgetPdfCommand = {
     userId: 'user-1',
@@ -26,7 +29,13 @@ describe('ExportBudgetPdfUseCase', () => {
     entryRepo = createMockBudgetEntryRepo();
     categoryRepo = createMockBudgetCategoryRepo();
     groupRepo = createMockBudgetGroupRepo();
-    useCase = new ExportBudgetPdfUseCase(entryRepo, categoryRepo, groupRepo);
+    renderer = new BudgetPdfRenderer();
+    useCase = new ExportBudgetPdfUseCase(
+      entryRepo,
+      categoryRepo,
+      groupRepo,
+      renderer,
+    );
   });
 
   it("devrait rejeter si l'utilisateur n'est pas membre du groupe", async () => {
@@ -85,5 +94,38 @@ describe('ExportBudgetPdfUseCase', () => {
     expect(buffer.length).toBeGreaterThan(0);
     const header = buffer.subarray(0, 4).toString('ascii');
     expect(header).toBe('%PDF');
+  });
+
+  it('devrait deleguer le rendu au IBudgetPdfRenderer avec les donnees fetchees', async () => {
+    groupRepo.isMember.mockResolvedValue(true);
+    const entries = [buildBudgetEntry({ amount: -42, categoryId: 'cat-1' })];
+    const categories = [buildBudgetCategory({ id: 'cat-1', name: 'Courses' })];
+    entryRepo.findByFilters.mockResolvedValue(entries);
+    categoryRepo.findByGroupId.mockResolvedValue(categories);
+
+    const renderFn = jest
+      .fn<Promise<Buffer>, [unknown]>()
+      .mockResolvedValue(Buffer.from('rendered-by-mock'));
+    const fakeRenderer: IBudgetPdfRenderer = { render: renderFn };
+
+    const useCaseWithMock = new ExportBudgetPdfUseCase(
+      entryRepo,
+      categoryRepo,
+      groupRepo,
+      fakeRenderer,
+    );
+
+    const buffer = await useCaseWithMock.execute(defaultCommand);
+
+    expect(renderFn).toHaveBeenCalledTimes(1);
+    expect(renderFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: defaultCommand,
+        entries,
+        categories,
+        generatedAt: expect.any(Date),
+      }),
+    );
+    expect(buffer.toString()).toBe('rendered-by-mock');
   });
 });
