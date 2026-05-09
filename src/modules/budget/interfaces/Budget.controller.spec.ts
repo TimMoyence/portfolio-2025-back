@@ -12,10 +12,14 @@ import type { CreateBudgetCategoryUseCase } from '../application/services/Create
 import type { GetBudgetCategoriesUseCase } from '../application/services/GetBudgetCategories.useCase';
 import type { UpdateBudgetCategoryUseCase } from '../application/services/UpdateBudgetCategory.useCase';
 import type { ShareBudgetUseCase } from '../application/services/ShareBudget.useCase';
+import type { GetBudgetGroupMembersUseCase } from '../application/services/GetBudgetGroupMembers.useCase';
+import type { RemoveBudgetGroupMemberUseCase } from '../application/services/RemoveBudgetGroupMember.useCase';
+import type { GetBudgetEntriesMonthsUseCase } from '../application/services/GetBudgetEntriesMonths.useCase';
 import {
   buildBudgetGroup,
   buildBudgetEntry,
   buildBudgetCategory,
+  buildBudgetMember,
 } from '../../../../test/factories/budget.factory';
 import {
   createMockBudgetUseCases,
@@ -44,6 +48,9 @@ describe('BudgetController', () => {
       useCases.deleteEntry as unknown as DeleteBudgetEntryUseCase,
       useCases.updateCategory as unknown as UpdateBudgetCategoryUseCase,
       useCases.shareBudget as unknown as ShareBudgetUseCase,
+      useCases.getMembers as unknown as GetBudgetGroupMembersUseCase,
+      useCases.removeMember as unknown as RemoveBudgetGroupMemberUseCase,
+      useCases.getEntriesMonths as unknown as GetBudgetEntriesMonthsUseCase,
     );
   });
 
@@ -368,5 +375,56 @@ describe('BudgetController', () => {
         mockReq,
       ),
     ).rejects.toThrow('Entry not found');
+  });
+
+  // --- listGroupMembers ---
+
+  describe('GET /budget/groups/:groupId/members', () => {
+    it('appelle getMembers UC et mappe les membres en DTO ISO', async () => {
+      const members = [
+        buildBudgetMember({ userId: 'owner-id', isOwner: true }),
+        buildBudgetMember({ userId: 'invited-id', email: 'b@x.fr' }),
+      ];
+      useCases.getMembers.execute.mockResolvedValueOnce(members);
+      const result = await controller.listGroupMembers('group-uuid', mockReq);
+      expect(useCases.getMembers.execute).toHaveBeenCalledWith({
+        groupId: 'group-uuid',
+        userId: 'user-1',
+      });
+      expect(result).toHaveLength(2);
+      expect(result[0].isOwner).toBe(true);
+      expect(typeof result[0].joinedAt).toBe('string');
+    });
+  });
+
+  // --- removeGroupMember ---
+
+  describe('DELETE /budget/groups/:groupId/members/:userId', () => {
+    it('appelle removeMember UC avec actorUserId du JWT', async () => {
+      useCases.removeMember.execute.mockResolvedValueOnce(undefined);
+      await controller.removeGroupMember('group-uuid', 'target-uuid', mockReq);
+      expect(useCases.removeMember.execute).toHaveBeenCalledWith({
+        groupId: 'group-uuid',
+        actorUserId: 'user-1',
+        targetUserId: 'target-uuid',
+      });
+    });
+  });
+
+  // --- listEntriesMonths ---
+
+  describe('GET /budget/entries/months', () => {
+    it('appelle getEntriesMonths UC avec userId du JWT', async () => {
+      useCases.getEntriesMonths.execute.mockResolvedValueOnce([
+        { month: 5, year: 2026 },
+        { month: 4, year: 2026 },
+      ]);
+      const result = await controller.listEntriesMonths('group-uuid', mockReq);
+      expect(useCases.getEntriesMonths.execute).toHaveBeenCalledWith({
+        groupId: 'group-uuid',
+        userId: 'user-1',
+      });
+      expect(result).toHaveLength(2);
+    });
   });
 });

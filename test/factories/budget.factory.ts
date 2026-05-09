@@ -28,6 +28,9 @@ import type { CreateBudgetCategoryUseCase } from '../../src/modules/budget/appli
 import type { GetBudgetCategoriesUseCase } from '../../src/modules/budget/application/services/GetBudgetCategories.useCase';
 import type { UpdateBudgetCategoryUseCase } from '../../src/modules/budget/application/services/UpdateBudgetCategory.useCase';
 import type { ShareBudgetUseCase } from '../../src/modules/budget/application/services/ShareBudget.useCase';
+import type { GetBudgetGroupMembersUseCase } from '../../src/modules/budget/application/services/GetBudgetGroupMembers.useCase';
+import type { RemoveBudgetGroupMemberUseCase } from '../../src/modules/budget/application/services/RemoveBudgetGroupMember.useCase';
+import type { GetBudgetEntriesMonthsUseCase } from '../../src/modules/budget/application/services/GetBudgetEntriesMonths.useCase';
 
 /** Construit un objet BudgetGroup domaine avec des valeurs par defaut. */
 export function buildBudgetGroup(
@@ -210,6 +213,9 @@ export interface MockBudgetUseCases {
   getCategories: jest.Mocked<Pick<GetBudgetCategoriesUseCase, 'execute'>>;
   updateCategory: jest.Mocked<Pick<UpdateBudgetCategoryUseCase, 'execute'>>;
   shareBudget: jest.Mocked<Pick<ShareBudgetUseCase, 'execute'>>;
+  getMembers: jest.Mocked<Pick<GetBudgetGroupMembersUseCase, 'execute'>>;
+  removeMember: jest.Mocked<Pick<RemoveBudgetGroupMemberUseCase, 'execute'>>;
+  getEntriesMonths: jest.Mocked<Pick<GetBudgetEntriesMonthsUseCase, 'execute'>>;
 }
 
 /** Construit un objet BudgetGoal domaine avec des valeurs par defaut. */
@@ -270,5 +276,8 @@ export function createMockBudgetUseCases(): MockBudgetUseCases {
     getCategories: { execute: jest.fn() },
     updateCategory: { execute: jest.fn() },
     shareBudget: { execute: jest.fn() },
+    getMembers: { execute: jest.fn() },
+    removeMember: { execute: jest.fn() },
+    getEntriesMonths: { execute: jest.fn() },
   };
 }
