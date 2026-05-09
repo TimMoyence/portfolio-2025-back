@@ -8,6 +8,8 @@ import type { IBudgetEntryRepository } from '../../src/modules/budget/domain/IBu
 import type { IRecurringEntryRepository } from '../../src/modules/budget/domain/IRecurringEntry.repository';
 import type { IBudgetShareNotifier } from '../../src/modules/budget/domain/IBudgetShareNotifier';
 import type { IBudgetShareAttemptRepository } from '../../src/modules/budget/domain/IBudgetShareAttempt.repository';
+import type { BudgetMemberContribution } from '../../src/modules/budget/domain/BudgetMemberContribution';
+import type { IBudgetMemberContributionRepository } from '../../src/modules/budget/domain/IBudgetMemberContribution.repository';
 import type { CreateBudgetGroupUseCase } from '../../src/modules/budget/application/services/CreateBudgetGroup.useCase';
 import type { GetBudgetGroupsUseCase } from '../../src/modules/budget/application/services/GetBudgetGroups.useCase';
 import type { CreateBudgetEntryUseCase } from '../../src/modules/budget/application/services/CreateBudgetEntry.useCase';
@@ -158,6 +160,32 @@ export function createMockRecurringEntryRepo(): jest.Mocked<IRecurringEntryRepos
     update: jest.fn(),
     delete: jest.fn(),
     findActiveByGroupId: jest.fn(),
+  };
+}
+
+/** Construit un objet BudgetMemberContribution domaine avec des valeurs par defaut. */
+export function buildBudgetMemberContribution(
+  overrides?: Partial<BudgetMemberContribution>,
+): BudgetMemberContribution {
+  return {
+    id: 'contrib-1',
+    groupId: 'group-1',
+    userId: 'user-1',
+    month: 5,
+    year: 2026,
+    monthlySalary: 2500,
+    createdAt: new Date('2026-05-01'),
+    updatedAt: new Date('2026-05-01'),
+    ...overrides,
+  } as BudgetMemberContribution;
+}
+
+/** Cree un mock complet du repository contributions de membres. */
+export function createMockBudgetMemberContributionRepo(): jest.Mocked<IBudgetMemberContributionRepository> {
+  return {
+    findByGroupAndPeriod: jest.fn(),
+    upsertForUser: jest.fn(),
+    findLastForUserBefore: jest.fn(),
   };
 }
 
