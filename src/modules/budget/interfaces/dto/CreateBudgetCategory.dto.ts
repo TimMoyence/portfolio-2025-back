@@ -33,6 +33,7 @@ export class CreateBudgetCategoryDto {
   @ApiPropertyOptional({ example: 'shopping-cart' })
   @IsOptional()
   @IsString()
+  @Matches(/^[a-z0-9-]+$/)
   @MaxLength(50)
   icon?: string;
 

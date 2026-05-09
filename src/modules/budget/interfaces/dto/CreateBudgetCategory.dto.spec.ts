@@ -47,4 +47,27 @@ describe('CreateBudgetCategoryDto — HIGH-1 IsNumber strict', () => {
     const violations = await getViolations(600);
     expect(violations).toEqual([]);
   });
+
+  describe('icon — HIGH-3 alignement avec Update', () => {
+    async function getIconViolations(icon: unknown): Promise<string[]> {
+      const dto = plainToInstance(CreateBudgetCategoryDto, {
+        ...baseDto,
+        budgetLimit: 100,
+        icon,
+      });
+      const errors = await validate(dto);
+      const fieldErr = errors.find((e) => e.property === 'icon');
+      return fieldErr ? Object.keys(fieldErr.constraints ?? {}) : [];
+    }
+
+    it('devrait rejeter icon avec caracteres non slug', async () => {
+      const violations = await getIconViolations('<script>alert(1)</script>');
+      expect(violations.length).toBeGreaterThan(0);
+    });
+
+    it('devrait accepter icon slug valide', async () => {
+      const violations = await getIconViolations('shopping-cart');
+      expect(violations).toEqual([]);
+    });
+  });
 });
