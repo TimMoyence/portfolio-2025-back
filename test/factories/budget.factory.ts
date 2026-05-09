@@ -1,6 +1,11 @@
 import type { BudgetGroup } from '../../src/modules/budget/domain/BudgetGroup';
 import type { BudgetCategory } from '../../src/modules/budget/domain/BudgetCategory';
 import type { BudgetEntry } from '../../src/modules/budget/domain/BudgetEntry';
+import type {
+  BudgetGoal,
+  BudgetGoalKind,
+} from '../../src/modules/budget/domain/BudgetGoal';
+import type { IBudgetGoalRepository } from '../../src/modules/budget/domain/IBudgetGoal.repository';
 import type { RecurringEntry } from '../../src/modules/budget/domain/RecurringEntry';
 import type { IBudgetGroupRepository } from '../../src/modules/budget/domain/IBudgetGroup.repository';
 import type { IBudgetCategoryRepository } from '../../src/modules/budget/domain/IBudgetCategory.repository';
@@ -203,6 +208,35 @@ export interface MockBudgetUseCases {
   getCategories: jest.Mocked<Pick<GetBudgetCategoriesUseCase, 'execute'>>;
   updateCategory: jest.Mocked<Pick<UpdateBudgetCategoryUseCase, 'execute'>>;
   shareBudget: jest.Mocked<Pick<ShareBudgetUseCase, 'execute'>>;
+}
+
+/** Construit un objet BudgetGoal domaine avec des valeurs par defaut. */
+export function buildBudgetGoal(overrides?: Partial<BudgetGoal>): BudgetGoal {
+  return {
+    id: 'goal-1',
+    groupId: 'group-1',
+    createdByUserId: 'user-1',
+    name: 'Vacances',
+    kind: 'SAVINGS' as BudgetGoalKind,
+    targetAmount: 1000,
+    categoryId: null,
+    deadline: null,
+    isActive: true,
+    createdAt: new Date('2026-05-01'),
+    updatedAt: new Date('2026-05-01'),
+    ...overrides,
+  } as BudgetGoal;
+}
+
+/** Cree un mock complet du repository des objectifs de budget. */
+export function createMockBudgetGoalRepo(): jest.Mocked<IBudgetGoalRepository> {
+  return {
+    create: jest.fn(),
+    findById: jest.fn(),
+    findByGroupId: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  };
 }
 
 /** Cree des mocks types pour tous les use cases du BudgetController. */
