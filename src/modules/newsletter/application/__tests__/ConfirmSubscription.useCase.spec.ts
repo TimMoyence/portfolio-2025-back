@@ -6,6 +6,7 @@ import {
   createMockNewsletterMailer,
   createMockNewsletterSubscriberRepo,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
+import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import { ConfirmSubscriptionUseCase } from '../ConfirmSubscription.useCase';
 
 describe('ConfirmSubscriptionUseCase', () => {
@@ -85,8 +86,34 @@ describe('ConfirmSubscriptionUseCase', () => {
       /Cannot confirm an unsubscribed/,
     );
   });
-});
 
-function flushPromises(): Promise<void> {
-  return new Promise<void>((resolve) => setImmediate(resolve));
-}
+  it('rejette un token expire (> 7j) comme un token inconnu (E-SEC-4)', async () => {
+    const subscriber = buildNewsletterSubscriber();
+    subscriber.id = 'sub-id';
+    subscriber.confirmTokenExpiresAt = new Date(
+      Date.now() - 24 * 60 * 60 * 1000,
+    );
+    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
+
+    await expect(
+      useCase.execute(subscriber.confirmToken),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    expect(repo.update).not.toHaveBeenCalled();
+    expect(mailer.sendWelcome).not.toHaveBeenCalled();
+    expect(scheduler.schedule).not.toHaveBeenCalled();
+  });
+
+  it("ne propage pas l'erreur si scheduler.schedule echoue (fire-and-forget)", async () => {
+    const subscriber = buildNewsletterSubscriber();
+    subscriber.id = 'sub-id';
+    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
+    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
+    scheduler.schedule.mockRejectedValueOnce(new Error('BullMQ down'));
+
+    await expect(
+      useCase.execute(subscriber.confirmToken),
+    ).resolves.toBeDefined();
+    await flushPromises();
+    expect(scheduler.schedule).toHaveBeenCalledTimes(1);
+  });
+});

@@ -26,14 +26,14 @@ import { SubscribeNewsletterRequestDto } from './dto/subscribe-newsletter.reques
 import { SubscribeNewsletterResponseDto } from './dto/subscribe-newsletter.response.dto';
 
 /**
- * Regex UUID v4 stricte. `ParseUUIDPipe` aurait repondu 400 — ce qui
- * constitue un oracle d'enumeration pour differencier "token non
- * conforme" d'un "token inconnu". On filtre au niveau applicatif et on
- * uniformise en 404 (comportement d'un token non trouve) pour ne pas
- * fuiter l'information aux bots.
+ * Regex UUID v4 stricte (RFC 4122). Position 14 = `4` (version bit),
+ * position 19 = `[89ab]` (variant bits). `ParseUUIDPipe` aurait repondu
+ * 400 — ce qui constitue un oracle d'enumeration pour differencier
+ * "token non conforme" d'un "token inconnu". On filtre ici et on
+ * uniformise en 404 pour ne pas fuiter l'information aux bots.
  */
 const UUID_V4_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /**
  * Controleur HTTP du bounded context Newsletter.

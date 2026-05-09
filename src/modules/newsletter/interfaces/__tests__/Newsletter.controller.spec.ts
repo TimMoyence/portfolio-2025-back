@@ -27,7 +27,7 @@ function buildMockUseCases() {
   const mailer = createMockNewsletterMailer();
   const scheduler = createMockEmailDripScheduler();
 
-  const subscribeUC = new SubscribeNewsletterUseCase(repo, mailer, scheduler);
+  const subscribeUC = new SubscribeNewsletterUseCase(repo, mailer);
   const confirmUC = new ConfirmSubscriptionUseCase(repo, mailer, scheduler);
   const unsubscribeUC = new UnsubscribeNewsletterUseCase(
     repo,
@@ -80,8 +80,17 @@ describe('NewsletterController', () => {
         termsVersion: VALID_DTO.termsVersion,
         termsAcceptedAt: VALID_DTO.termsAcceptedAt,
       });
-      expect(result.message).toBeDefined();
       expect(typeof result.message).toBe('string');
+      // E-SEC-2 / RGPD : le message ne doit JAMAIS reveler si l'email
+      // existe deja (oracle d'enumeration). Verifie la couverture des
+      // formulations a eviter et la presence d'une instruction de
+      // confirmation generique.
+      expect(result.message).not.toMatch(
+        /d[eé]j[aà].*inscrit|existant|d[eé]j[aà].*confirm[eé]|enregistr[eé]/i,
+      );
+      expect(result.message).toMatch(
+        /confirm(ation|er|ez)|v[eé]rifiez|boite|link/i,
+      );
     });
   });
 

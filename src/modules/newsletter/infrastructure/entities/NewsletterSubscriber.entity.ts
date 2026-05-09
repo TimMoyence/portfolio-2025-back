@@ -45,6 +45,17 @@ export class NewsletterSubscriberEntity {
   @Column({ name: 'terms_accepted_at', type: 'timestamptz' })
   termsAcceptedAt: Date;
 
+  @Index('idx_newsletter_confirm_token_expires_at')
+  @Column({ name: 'confirm_token_expires_at', type: 'timestamptz' })
+  confirmTokenExpiresAt: Date;
+
+  @Column({
+    name: 'last_confirmation_sent_at',
+    type: 'timestamptz',
+    nullable: true,
+  })
+  lastConfirmationSentAt: Date | null;
+
   @Column({ name: 'confirmed_at', type: 'timestamptz', nullable: true })
   confirmedAt: Date | null;
 

@@ -6,6 +6,7 @@ import {
   createMockNewsletterMailer,
   createMockNewsletterSubscriberRepo,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
+import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import { UnsubscribeNewsletterUseCase } from '../UnsubscribeNewsletter.useCase';
 
 describe('UnsubscribeNewsletterUseCase', () => {
@@ -71,8 +72,34 @@ describe('UnsubscribeNewsletterUseCase', () => {
       useCase.execute('00000000-0000-0000-0000-000000000000'),
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
-});
 
-function flushPromises(): Promise<void> {
-  return new Promise<void>((resolve) => setImmediate(resolve));
-}
+  it("ne propage pas l'erreur si scheduler.cancel echoue (fire-and-forget)", async () => {
+    const subscriber = buildNewsletterSubscriber();
+    subscriber.id = 'sub-id';
+    subscriber.confirm();
+    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
+    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
+    scheduler.cancel.mockRejectedValueOnce(new Error('BullMQ down'));
+
+    await expect(
+      useCase.execute(subscriber.unsubscribeToken),
+    ).resolves.toBeDefined();
+    await flushPromises();
+    expect(scheduler.cancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("ne propage pas l'erreur si sendUnsubscribeAck echoue (fire-and-forget)", async () => {
+    const subscriber = buildNewsletterSubscriber();
+    subscriber.id = 'sub-id';
+    subscriber.confirm();
+    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
+    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
+    mailer.sendUnsubscribeAck.mockRejectedValueOnce(new Error('SMTP down'));
+
+    await expect(
+      useCase.execute(subscriber.unsubscribeToken),
+    ).resolves.toBeDefined();
+    await flushPromises();
+    expect(mailer.sendUnsubscribeAck).toHaveBeenCalledTimes(1);
+  });
+});

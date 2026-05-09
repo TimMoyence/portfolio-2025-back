@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { buildNewsletterSubscriber } from '../../../../../test/factories/newsletter-subscriber.factory';
 
 // Mock createOptionalSmtpTransporter avant l'import du service pour injecter
@@ -13,12 +14,18 @@ jest.mock(
 
 import { NewsletterMailerService } from '../NewsletterMailer.service';
 
+function buildMockConfigService(): ConfigService {
+  return {
+    get: jest.fn().mockReturnValue(undefined),
+  } as unknown as ConfigService;
+}
+
 describe('NewsletterMailerService', () => {
   let mailer: NewsletterMailerService;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mailer = new NewsletterMailerService();
+    mailer = new NewsletterMailerService(buildMockConfigService());
   });
 
   it('s\u2019instancie sans erreur', () => {
@@ -103,7 +110,7 @@ describe('NewsletterMailerService', () => {
   describe('comportement sans transporter (SMTP non configure)', () => {
     it('ne leve pas d\u2019erreur si le transporter est null', async () => {
       const subscriber = buildNewsletterSubscriber();
-      // Forcer le transporter a null via cast pour simuler l'absence de SMTP.
+      // Forcer le transporter a null via cast interne pour simuler l'absence de SMTP.
       (mailer as unknown as Record<string, unknown>)['transporter'] = null;
 
       await expect(

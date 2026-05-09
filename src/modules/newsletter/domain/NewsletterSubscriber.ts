@@ -21,6 +21,16 @@ export interface CreateNewsletterSubscriberProps {
   firstName?: string;
 }
 
+/** TTL du magic link de confirmation en millisecondes (7 jours). */
+export const CONFIRM_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * Cooldown minimum entre deux envois de confirmation pour un meme
+ * subscriber `pending`. Empeche le mail-bombing d'une boite tiers via
+ * re-souscriptions repetees (E-SEC-14).
+ */
+export const CONFIRMATION_RESEND_COOLDOWN_MS = 10 * 60 * 1000;
+
 /** Entite domaine representant un abonne a la newsletter. */
 export class NewsletterSubscriber {
   id?: string;
@@ -33,6 +43,8 @@ export class NewsletterSubscriber {
   unsubscribeToken: string;
   termsVersion: string;
   termsAcceptedAt: Date;
+  confirmTokenExpiresAt: Date;
+  lastConfirmationSentAt: Date | null;
   confirmedAt: Date | null;
   unsubscribedAt: Date | null;
   createdAt?: Date;
@@ -80,9 +92,50 @@ export class NewsletterSubscriber {
     subscriber.unsubscribeToken = randomUUID();
     subscriber.termsVersion = termsVersion;
     subscriber.termsAcceptedAt = props.termsAcceptedAt;
+    subscriber.confirmTokenExpiresAt = new Date(
+      props.termsAcceptedAt.getTime() + CONFIRM_TOKEN_TTL_MS,
+    );
+    subscriber.lastConfirmationSentAt = null;
     subscriber.confirmedAt = null;
     subscriber.unsubscribedAt = null;
     return subscriber;
+  }
+
+  /**
+   * Indique si le token de confirmation est expire a l'instant `now`.
+   * Renvoie `false` pour les subscribers `confirmed`/`unsubscribed` car
+   * le token n'est plus consomable de toute facon.
+   */
+  isConfirmTokenExpired(now: Date = new Date()): boolean {
+    return now.getTime() > this.confirmTokenExpiresAt.getTime();
+  }
+
+  /**
+   * Retourne `true` si un nouvel email de confirmation peut etre envoye
+   * a l'instant `now`. Applique un cooldown de 10 minutes depuis le
+   * dernier envoi pour empecher le mail-bombing (E-SEC-14).
+   */
+  canResendConfirmation(now: Date = new Date()): boolean {
+    if (this.lastConfirmationSentAt === null) return true;
+    const elapsed = now.getTime() - this.lastConfirmationSentAt.getTime();
+    return elapsed >= CONFIRMATION_RESEND_COOLDOWN_MS;
+  }
+
+  /**
+   * Fait tourner le magic link : genere un nouveau `confirmToken`, reset
+   * son expiration et efface `lastConfirmationSentAt`. Appele quand le
+   * token est expire et qu'un nouvel email est redemande — le caller
+   * reste responsable d'appeler `markConfirmationSent(now)` apres
+   * l'envoi SMTP reussi.
+   */
+  rotateConfirmToken(now: Date = new Date()): void {
+    this.confirmToken = randomUUID();
+    this.confirmTokenExpiresAt = new Date(now.getTime() + CONFIRM_TOKEN_TTL_MS);
+  }
+
+  /** Tamponne l'envoi de l'email de confirmation (cooldown + audit). */
+  markConfirmationSent(now: Date = new Date()): void {
+    this.lastConfirmationSentAt = now;
   }
 
   /**

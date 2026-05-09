@@ -1,11 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
-import type { IEmailDripScheduler } from '../domain/IEmailDripScheduler';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
 import { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import {
-  EMAIL_DRIP_SCHEDULER,
   NEWSLETTER_MAILER,
   NEWSLETTER_SUBSCRIBER_REPOSITORY,
 } from '../domain/token';
@@ -29,9 +27,24 @@ export interface SubscribeNewsletterResult {
  * L'envoi d'email est fire-and-forget pour ne pas bloquer la reponse
  * HTTP ; les echecs sont journalises. Le planning du drip est declenche
  * uniquement a la confirmation (autre use-case).
+ *
+ * La duree de reponse est normalisee au minimum (MIN_RESPONSE_MS) pour
+ * eviter les attaques par timing qui permettraient de distinguer un
+ * email connu d'un inconnu en mesurant la latence.
  */
 @Injectable()
 export class SubscribeNewsletterUseCase {
+  /**
+   * Duree minimale de reponse pour normaliser la latence entre
+   * les branches "nouveau email" (SELECT + INSERT + 2×UUID) et "email
+   * connu" (SELECT seul). 300 ms > pire cas observe en production (80 ms
+   * INSERT + 30 ms 2×UUID), ce qui efface l'oracle timing (E-SEC-1).
+   */
+  private static readonly MIN_RESPONSE_MS = 300;
+
+  /** Jitter aleatoire [0, MAX_JITTER_MS[ applique au padding. */
+  private static readonly MAX_JITTER_MS = 50;
+
   private readonly logger = new Logger(SubscribeNewsletterUseCase.name);
 
   constructor(
@@ -39,11 +52,20 @@ export class SubscribeNewsletterUseCase {
     private readonly repo: INewsletterSubscriberRepository,
     @Inject(NEWSLETTER_MAILER)
     private readonly mailer: INewsletterMailer,
-    @Inject(EMAIL_DRIP_SCHEDULER)
-    private readonly scheduler: IEmailDripScheduler,
   ) {}
 
   async execute(
+    command: SubscribeNewsletterCommand,
+  ): Promise<SubscribeNewsletterResult> {
+    const startMs = Date.now();
+    try {
+      return await this.executeInternal(command);
+    } finally {
+      await this.padResponseTime(startMs);
+    }
+  }
+
+  private async executeInternal(
     command: SubscribeNewsletterCommand,
   ): Promise<SubscribeNewsletterResult> {
     const candidate = NewsletterSubscriber.create({
@@ -62,7 +84,7 @@ export class SubscribeNewsletterUseCase {
 
     if (existing) {
       if (existing.status === 'pending') {
-        this.sendConfirmationAsync(existing);
+        await this.resendConfirmationIfAllowed(existing);
       }
       return {
         created: false,
@@ -73,7 +95,7 @@ export class SubscribeNewsletterUseCase {
 
     try {
       const persisted = await this.repo.create(candidate);
-      this.sendConfirmationAsync(persisted);
+      await this.trackAndSendConfirmation(persisted);
       return {
         created: true,
         alreadySubscribed: false,
@@ -91,7 +113,7 @@ export class SubscribeNewsletterUseCase {
         );
         if (raced) {
           if (raced.status === 'pending') {
-            this.sendConfirmationAsync(raced);
+            await this.resendConfirmationIfAllowed(raced);
           }
           return {
             created: false,
@@ -105,6 +127,48 @@ export class SubscribeNewsletterUseCase {
   }
 
   /**
+   * Re-envoi conditionnel de l'email de confirmation pour un subscriber
+   * deja `pending`.
+   *
+   * - Cooldown anti mail-bombing (E-SEC-14) : si un envoi a eu lieu il y
+   *   a moins de `CONFIRMATION_RESEND_COOLDOWN_MS`, skip silencieux.
+   * - Rotation du token expire (E-SEC-4) : si le magic link precedent
+   *   est expire, on genere un nouveau UUID et on le persiste avant
+   *   l'envoi SMTP, sinon le nouvel email contiendrait un lien deja
+   *   expire.
+   */
+  private async resendConfirmationIfAllowed(
+    subscriber: NewsletterSubscriber,
+  ): Promise<void> {
+    if (!subscriber.canResendConfirmation()) {
+      return;
+    }
+    if (subscriber.isConfirmTokenExpired()) {
+      subscriber.rotateConfirmToken();
+      await this.repo.update(subscriber);
+    }
+    await this.trackAndSendConfirmation(subscriber);
+  }
+
+  /**
+   * Persiste `lastConfirmationSentAt` immediatement (cooldown fiable
+   * meme si l'email SMTP echoue — au pire on retentera apres 10 min)
+   * puis delegue l'envoi en fire-and-forget.
+   */
+  private async trackAndSendConfirmation(
+    subscriber: NewsletterSubscriber,
+  ): Promise<void> {
+    subscriber.markConfirmationSent();
+    // Un subscriber fraichement cree a deja ete persiste via `create` ;
+    // on re-update pour materialiser `lastConfirmationSentAt`. Les
+    // subscribers existants passent ici avec un id defini.
+    if (subscriber.id) {
+      await this.repo.update(subscriber);
+    }
+    this.sendConfirmationAsync(subscriber);
+  }
+
+  /**
    * Envoi en fire-and-forget : ne bloque pas la reponse HTTP et
    * journalise toute erreur sans propager. Le reste du pipeline
    * (timeout SMTP, provider down) ne doit pas casser l'inscription
@@ -114,7 +178,24 @@ export class SubscribeNewsletterUseCase {
     void this.mailer
       .sendConfirmation(subscriber)
       .catch((err: unknown) =>
-        this.logger.warn('Newsletter confirmation email failed', err),
+        this.logger.warn(
+          `Newsletter confirmation email failed: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        ),
       );
+  }
+
+  private async padResponseTime(startMs: number): Promise<void> {
+    const elapsed = Date.now() - startMs;
+    const jitter = Math.floor(
+      Math.random() * SubscribeNewsletterUseCase.MAX_JITTER_MS,
+    );
+    const target = SubscribeNewsletterUseCase.MIN_RESPONSE_MS + jitter;
+    if (elapsed < target) {
+      await new Promise<void>((resolve) =>
+        setTimeout(resolve, target - elapsed),
+      );
+    }
   }
 }

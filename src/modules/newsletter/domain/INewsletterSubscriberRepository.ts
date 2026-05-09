@@ -21,6 +21,23 @@ export interface INewsletterSubscriberRepository {
   /** Recherche par unsubscribe token — endpoint `/unsubscribe`. */
   findByUnsubscribeToken(token: string): Promise<NewsletterSubscriber | null>;
 
-  /** Persiste un changement d'etat (confirm / unsubscribe / bounced). */
+  /**
+   * Persiste les mutations d'etat et de cycle de vie du subscriber.
+   *
+   * Champs effectivement sauves (scope volontairement restreint aux
+   * transitions gerees par le domaine) :
+   *  - `status` (pending | confirmed | unsubscribed | bounced)
+   *  - `confirmToken` (rotation apres expiration)
+   *  - `confirmTokenExpiresAt` (renouvellement TTL 7j)
+   *  - `lastConfirmationSentAt` (cooldown anti mail-bombing)
+   *  - `confirmedAt`
+   *  - `unsubscribedAt`
+   *
+   * Champs **non** touches : `email`, `firstName`, `locale`,
+   * `sourceFormationSlug`, `termsVersion`, `termsAcceptedAt`. Un futur
+   * besoin "update profile" (RGPD rectification, changement de locale)
+   * devra introduire une methode dediee (`updateProfile`) pour rester
+   * explicite et eviter les mutations silencieuses.
+   */
   update(subscriber: NewsletterSubscriber): Promise<NewsletterSubscriber>;
 }

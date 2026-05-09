@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
@@ -19,13 +20,18 @@ import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 export class NewsletterMailerService implements INewsletterMailer {
   private readonly logger = new Logger(NewsletterMailerService.name);
   private readonly transporter: Transporter | null;
-  private readonly from = process.env.SMTP_FROM;
-  private readonly replyTo =
-    process.env.SMTP_REPLY_TO ?? 'tim.moyence@gmail.com';
-  private readonly frontendUrl =
-    process.env.FRONTEND_URL ?? 'https://asilidesign.fr';
+  private readonly from: string | undefined;
+  private readonly replyTo: string;
+  private readonly frontendUrl: string;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
+    this.from = this.configService.get<string>('SMTP_FROM');
+    this.replyTo =
+      this.configService.get<string>('SMTP_REPLY_TO') ??
+      'tim.moyence@gmail.com';
+    this.frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') ??
+      'https://asilidesign.fr';
     this.transporter = createOptionalSmtpTransporter(
       this.logger,
       'Newsletter mailer',

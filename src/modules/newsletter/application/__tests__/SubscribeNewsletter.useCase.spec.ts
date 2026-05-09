@@ -2,10 +2,10 @@
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import {
   buildNewsletterSubscriber,
-  createMockEmailDripScheduler,
   createMockNewsletterMailer,
   createMockNewsletterSubscriberRepo,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
+import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import { SubscribeNewsletterUseCase } from '../SubscribeNewsletter.useCase';
 import type { SubscribeNewsletterCommand } from '../dto/SubscribeNewsletter.command';
 
@@ -21,14 +21,12 @@ describe('SubscribeNewsletterUseCase', () => {
 
   let repo: ReturnType<typeof createMockNewsletterSubscriberRepo>;
   let mailer: ReturnType<typeof createMockNewsletterMailer>;
-  let scheduler: ReturnType<typeof createMockEmailDripScheduler>;
   let useCase: SubscribeNewsletterUseCase;
 
   beforeEach(() => {
     repo = createMockNewsletterSubscriberRepo();
     mailer = createMockNewsletterMailer();
-    scheduler = createMockEmailDripScheduler();
-    useCase = new SubscribeNewsletterUseCase(repo, mailer, scheduler);
+    useCase = new SubscribeNewsletterUseCase(repo, mailer);
   });
 
   it('cree un abonne et envoie l\u2019email de confirmation sur un email nouveau', async () => {
@@ -122,8 +120,68 @@ describe('SubscribeNewsletterUseCase', () => {
     repo.create.mockRejectedValueOnce(new Error('DB down'));
     await expect(useCase.execute(validCommand)).rejects.toThrow('DB down');
   });
-});
 
-function flushPromises(): Promise<void> {
-  return new Promise<void>((resolve) => setImmediate(resolve));
-}
+  it('applique le cooldown anti mail-bombing (10 min) sur un pending re-souscrit', async () => {
+    const existing = buildNewsletterSubscriber();
+    existing.id = 'existing-id';
+    // Dernier envoi il y a 2 minutes — en-deca du cooldown.
+    existing.markConfirmationSent(new Date(Date.now() - 2 * 60 * 1000));
+    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
+
+    const result = await useCase.execute(validCommand);
+    await flushPromises();
+
+    expect(result.alreadySubscribed).toBe(true);
+    expect(mailer.sendConfirmation).not.toHaveBeenCalled();
+  });
+
+  it('renvoie un email apres le cooldown (> 10 min depuis le dernier envoi)', async () => {
+    const existing = buildNewsletterSubscriber();
+    existing.id = 'existing-id';
+    existing.markConfirmationSent(new Date(Date.now() - 15 * 60 * 1000));
+    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
+
+    await useCase.execute(validCommand);
+    await flushPromises();
+
+    expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
+  });
+
+  it('fait tourner le confirmToken quand il est expire avant de renvoyer', async () => {
+    const existing = buildNewsletterSubscriber();
+    existing.id = 'existing-id';
+    existing.confirmTokenExpiresAt = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const previousToken = existing.confirmToken;
+    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
+
+    await useCase.execute(validCommand);
+    await flushPromises();
+
+    expect(existing.confirmToken).not.toBe(previousToken);
+    expect(existing.confirmTokenExpiresAt.getTime()).toBeGreaterThan(
+      Date.now(),
+    );
+    expect(repo.update).toHaveBeenCalled();
+  });
+
+  it('persiste `lastConfirmationSentAt` apres un envoi (audit + cooldown)', async () => {
+    const existing = buildNewsletterSubscriber();
+    existing.id = 'existing-id';
+    expect(existing.lastConfirmationSentAt).toBeNull();
+    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
+
+    await useCase.execute(validCommand);
+    await flushPromises();
+
+    expect(existing.lastConfirmationSentAt).not.toBeNull();
+    expect(repo.update).toHaveBeenCalledWith(existing);
+  });
+
+  it('respecte le padding de reponse minimum (anti timing-attack)', async () => {
+    const start = Date.now();
+    await useCase.execute(validCommand);
+    const elapsed = Date.now() - start;
+    // MIN_RESPONSE_MS = 300 ; tolerance -5 ms pour l'arrondi Date.now().
+    expect(elapsed).toBeGreaterThanOrEqual(295);
+  });
+});

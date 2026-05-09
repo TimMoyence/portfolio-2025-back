@@ -10,13 +10,16 @@ import type { INewsletterSubscriberRepository } from '../../src/modules/newslett
 export function buildNewsletterSubscriber(
   overrides?: Partial<NewsletterSubscriber>,
 ): NewsletterSubscriber {
+  // Utilise `new Date()` pour que le token de confirmation soit toujours
+  // valide a l'instant du test (TTL 7j). Les tests qui veulent un token
+  // expire overrident `confirmTokenExpiresAt` explicitement.
   const subscriber = NewsletterSubscriber.create({
     email: 'marie@example.com',
     firstName: 'Marie',
     locale: 'fr',
     sourceFormationSlug: 'ia-solopreneurs',
     termsVersion: '2026-04-10',
-    termsAcceptedAt: new Date('2026-04-10T10:00:00Z'),
+    termsAcceptedAt: new Date(),
   });
   Object.assign(subscriber, overrides ?? {});
   return subscriber;

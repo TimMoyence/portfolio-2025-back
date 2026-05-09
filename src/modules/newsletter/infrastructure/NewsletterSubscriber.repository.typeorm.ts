@@ -31,6 +31,8 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
       unsubscribeToken: subscriber.unsubscribeToken,
       termsVersion: subscriber.termsVersion,
       termsAcceptedAt: subscriber.termsAcceptedAt,
+      confirmTokenExpiresAt: subscriber.confirmTokenExpiresAt,
+      lastConfirmationSentAt: subscriber.lastConfirmationSentAt,
       confirmedAt: subscriber.confirmedAt,
       unsubscribedAt: subscriber.unsubscribedAt,
     });
@@ -96,6 +98,12 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
     return entity ? this.toDomain(entity) : null;
   }
 
+  /**
+   * Persiste les mutations d'etat et de cycle de vie du subscriber.
+   * Scope volontairement restreint — voir `INewsletterSubscriberRepository.update`
+   * pour la liste exhaustive des champs mutables et la regle de non-mutation
+   * silencieuse des champs profil.
+   */
   async update(
     subscriber: NewsletterSubscriber,
   ): Promise<NewsletterSubscriber> {
@@ -106,6 +114,9 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
       { id: subscriber.id },
       {
         status: subscriber.status,
+        confirmToken: subscriber.confirmToken,
+        confirmTokenExpiresAt: subscriber.confirmTokenExpiresAt,
+        lastConfirmationSentAt: subscriber.lastConfirmationSentAt,
         confirmedAt: subscriber.confirmedAt,
         unsubscribedAt: subscriber.unsubscribedAt,
       },
@@ -130,6 +141,8 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
     subscriber.unsubscribeToken = entity.unsubscribeToken;
     subscriber.termsVersion = entity.termsVersion;
     subscriber.termsAcceptedAt = entity.termsAcceptedAt;
+    subscriber.confirmTokenExpiresAt = entity.confirmTokenExpiresAt;
+    subscriber.lastConfirmationSentAt = entity.lastConfirmationSentAt;
     subscriber.confirmedAt = entity.confirmedAt;
     subscriber.unsubscribedAt = entity.unsubscribedAt;
     subscriber.createdAt = entity.createdAt;
