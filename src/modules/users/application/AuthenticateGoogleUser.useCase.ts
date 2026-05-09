@@ -65,10 +65,21 @@ export class AuthenticateGoogleUserUseCase {
       return this.signResult(byGoogleId);
     }
 
-    // 2. Chercher par email → lier le googleId
+    // 2. Chercher par email → lier le googleId UNIQUEMENT si l'email a deja ete verifie
+    //    cote local (sinon un attaquant peut s'inscrire avec l'email d'une cible sans
+    //    verif puis se logger en Google avec ce meme email pour s'approprier le compte
+    //    = HIGH-6 account takeover).
     const byEmail = await this.repo.findByEmail(email);
     if (byEmail) {
       this.ensureActive(byEmail);
+      if (!byEmail.emailVerified) {
+        this.logger.warn(
+          `Refused Google link for unverified local account (userId=${byEmail.id ?? 'unknown'})`,
+        );
+        throw new InvalidCredentialsError(
+          'Local account email not verified — refusing Google link',
+        );
+      }
       await this.repo.update(byEmail.id!, { googleId } as Partial<User>);
       byEmail.googleId = googleId;
       return this.signResult(byEmail);
