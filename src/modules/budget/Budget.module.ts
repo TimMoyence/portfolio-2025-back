@@ -5,10 +5,12 @@ import {
   BUDGET_CATEGORY_REPOSITORY,
   BUDGET_ENTRY_REPOSITORY,
   BUDGET_GROUP_REPOSITORY,
+  BUDGET_PDF_RENDERER,
   BUDGET_SHARE_ATTEMPT_REPOSITORY,
   BUDGET_SHARE_NOTIFIER,
   RECURRING_ENTRY_REPOSITORY,
 } from './domain/token';
+import { BudgetPdfRenderer } from './infrastructure/pdf/BudgetPdfRenderer';
 import { BudgetCategoryEntity } from './infrastructure/entities/BudgetCategory.entity';
 import { BudgetEntryEntity } from './infrastructure/entities/BudgetEntry.entity';
 import { RecurringEntryEntity } from './infrastructure/entities/RecurringEntry.entity';
@@ -112,6 +114,10 @@ const BUDGET_USE_CASES = [
     {
       provide: RECURRING_ENTRY_REPOSITORY,
       useClass: RecurringEntryRepositoryTypeORM,
+    },
+    {
+      provide: BUDGET_PDF_RENDERER,
+      useClass: BudgetPdfRenderer,
     },
   ],
 })
