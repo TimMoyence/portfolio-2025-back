@@ -9,6 +9,7 @@ import type { MigrationInterface, QueryRunner } from 'typeorm';
  *  - target_amount >= 0
  *  - chk_goal_category : CATEGORY_LIMIT exige category_id NOT NULL
  *  - cascade ON DELETE depuis budget_groups, SET NULL sur budget_categories
+ *  - index supplementaire (group_id, is_active) pour la lecture des objectifs actifs
  */
 export class CreateBudgetGoals1777200000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -30,6 +31,10 @@ export class CreateBudgetGoals1777200000000 implements MigrationInterface {
           OR ("kind" <> 'CATEGORY_LIMIT')
         )
       )
+    `);
+    await queryRunner.query(`
+      CREATE INDEX "idx_goals_group_active"
+        ON "budget_goals" ("group_id", "is_active")
     `);
   }
 
