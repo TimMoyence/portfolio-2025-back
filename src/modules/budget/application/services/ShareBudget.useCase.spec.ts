@@ -93,31 +93,54 @@ describe('ShareBudgetUseCase', () => {
     );
   });
 
-  it("devrait ajouter le membre et envoyer l'email", async () => {
-    const result = await useCase.execute(command);
+  // 3 tests retires (commit P0-1) qui assertaient `userId: 'user-2'`
+  // dans le retour ; le contrat ne l'expose plus. Couverture remplacee
+  // par les tests behavioraux ci-dessous + assertions sur le retour.
+
+  it('devrait appeler addMember sur le repo lors d un partage initial', async () => {
+    await useCase.execute(command);
 
     expect(groupRepo.addMember).toHaveBeenCalledWith('group-1', 'user-2');
-    expect(notifier.sendBudgetShareNotification).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({ shared: true, userId: 'user-2' });
   });
 
-  it('devrait ne pas re-ajouter un membre deja present', async () => {
+  it('devrait declencher l envoi du mail lors d un partage initial', async () => {
+    await useCase.execute(command);
+
+    expect(notifier.sendBudgetShareNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('devrait skip addMember si la cible est deja membre', async () => {
     groupRepo.isMember.mockResolvedValue(true);
 
-    const result = await useCase.execute(command);
+    await useCase.execute(command);
 
     expect(groupRepo.addMember).not.toHaveBeenCalled();
-    expect(result).toEqual({ shared: true, userId: 'user-2' });
   });
 
-  it("devrait continuer meme si l'envoi d'email echoue", async () => {
+  it("devrait retourner shared: true meme si l'envoi d'email echoue", async () => {
     notifier.sendBudgetShareNotification.mockRejectedValue(
       new Error('SMTP error'),
     );
 
     const result = await useCase.execute(command);
 
-    expect(result).toEqual({ shared: true, userId: 'user-2' });
+    expect(result.shared).toBe(true);
+  });
+
+  it('P0-1 — la response ne doit PAS exposer userId interne', async () => {
+    const result = await useCase.execute(command);
+
+    expect(result).toEqual({ shared: true });
+    expect(result).not.toHaveProperty('userId');
+  });
+
+  it('P0-1 — meme retour sans userId quand cible deja membre', async () => {
+    groupRepo.isMember.mockResolvedValue(true);
+
+    const result = await useCase.execute(command);
+
+    expect(result).toEqual({ shared: true });
+    expect(result).not.toHaveProperty('userId');
   });
 
   it('CRIT-2 — ne devrait PAS envoyer de mail si la cible est deja membre (anti spam)', async () => {

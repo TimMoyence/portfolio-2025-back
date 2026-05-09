@@ -43,9 +43,7 @@ export class ShareBudgetUseCase {
     private readonly configService: ConfigService,
   ) {}
 
-  async execute(
-    command: ShareBudgetCommand,
-  ): Promise<{ shared: true; userId: string }> {
+  async execute(command: ShareBudgetCommand): Promise<{ shared: true }> {
     const group = await this.groupRepo.findById(command.groupId);
     if (!group) {
       throw new ResourceNotFoundError('Budget group not found');
@@ -68,7 +66,7 @@ export class ShareBudgetUseCase {
 
     if (alreadyMember) {
       // Idempotent : pas de mutation, pas de mail (CRIT-2 anti-spam).
-      return { shared: true, userId: targetUser.id };
+      return { shared: true };
     }
 
     await this.groupRepo.addMember(command.groupId, targetUser.id);
@@ -87,7 +85,7 @@ export class ShareBudgetUseCase {
       this.logger.warn(
         `Cooldown actif sur ${command.targetEmail} pour groupe ${command.groupId}, mail skip`,
       );
-      return { shared: true, userId: targetUser.id };
+      return { shared: true };
     }
 
     const owner = await this.usersRepo.findById(command.userId);
@@ -120,6 +118,6 @@ export class ShareBudgetUseCase {
       );
     }
 
-    return { shared: true, userId: targetUser.id };
+    return { shared: true };
   }
 }
