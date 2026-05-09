@@ -15,6 +15,7 @@ import type { IBudgetShareNotifier } from '../../src/modules/budget/domain/IBudg
 import type { IBudgetShareAttemptRepository } from '../../src/modules/budget/domain/IBudgetShareAttempt.repository';
 import type { BudgetMemberContribution } from '../../src/modules/budget/domain/BudgetMemberContribution';
 import type { IBudgetMemberContributionRepository } from '../../src/modules/budget/domain/IBudgetMemberContribution.repository';
+import type { BudgetMember } from '../../src/modules/budget/domain/BudgetMember';
 import type { CreateBudgetGroupUseCase } from '../../src/modules/budget/application/services/CreateBudgetGroup.useCase';
 import type { GetBudgetGroupsUseCase } from '../../src/modules/budget/application/services/GetBudgetGroups.useCase';
 import type { CreateBudgetEntryUseCase } from '../../src/modules/budget/application/services/CreateBudgetEntry.useCase';
@@ -237,6 +238,20 @@ export function createMockBudgetGoalRepo(): jest.Mocked<IBudgetGoalRepository> {
     update: jest.fn(),
     delete: jest.fn(),
   };
+}
+
+/** Construit un objet BudgetMember (vue lecture enrichie) avec des valeurs par defaut. */
+export function buildBudgetMember(
+  overrides?: Partial<BudgetMember>,
+): BudgetMember {
+  return {
+    userId: 'user-1',
+    email: 'user1@example.com',
+    displayName: 'Utilisateur 1',
+    isOwner: false,
+    joinedAt: new Date('2026-01-15'),
+    ...overrides,
+  } as BudgetMember;
 }
 
 /** Cree des mocks types pour tous les use cases du BudgetController. */
