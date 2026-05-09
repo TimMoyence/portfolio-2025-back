@@ -5,6 +5,7 @@ import {
   BUDGET_CATEGORY_REPOSITORY,
   BUDGET_ENTRY_REPOSITORY,
   BUDGET_GROUP_REPOSITORY,
+  BUDGET_SHARE_ATTEMPT_REPOSITORY,
   BUDGET_SHARE_NOTIFIER,
   RECURRING_ENTRY_REPOSITORY,
 } from './domain/token';
@@ -13,9 +14,11 @@ import { BudgetEntryEntity } from './infrastructure/entities/BudgetEntry.entity'
 import { RecurringEntryEntity } from './infrastructure/entities/RecurringEntry.entity';
 import { BudgetGroupEntity } from './infrastructure/entities/BudgetGroup.entity';
 import { BudgetGroupMemberEntity } from './infrastructure/entities/BudgetGroupMember.entity';
+import { BudgetShareAttemptEntity } from './infrastructure/entities/BudgetShareAttempt.entity';
 import { BudgetCategoryRepositoryTypeORM } from './infrastructure/BudgetCategory.repository.typeORM';
 import { BudgetEntryRepositoryTypeORM } from './infrastructure/BudgetEntry.repository.typeORM';
 import { BudgetGroupRepositoryTypeORM } from './infrastructure/BudgetGroup.repository.typeORM';
+import { BudgetShareAttemptRepositoryTypeORM } from './infrastructure/BudgetShareAttempt.repository.typeORM';
 import { RecurringEntryRepositoryTypeORM } from './infrastructure/RecurringEntry.repository.typeORM';
 import { BudgetShareMailerService } from './infrastructure/BudgetShareMailer.service';
 import { BudgetController } from './interfaces/Budget.controller';
@@ -75,6 +78,7 @@ const BUDGET_USE_CASES = [
       BudgetCategoryEntity,
       BudgetEntryEntity,
       RecurringEntryEntity,
+      BudgetShareAttemptEntity,
     ]),
     UsersModule,
   ],
@@ -100,6 +104,10 @@ const BUDGET_USE_CASES = [
     {
       provide: BUDGET_SHARE_NOTIFIER,
       useClass: BudgetShareMailerService,
+    },
+    {
+      provide: BUDGET_SHARE_ATTEMPT_REPOSITORY,
+      useClass: BudgetShareAttemptRepositoryTypeORM,
     },
     {
       provide: RECURRING_ENTRY_REPOSITORY,

@@ -7,6 +7,7 @@ import type { IBudgetCategoryRepository } from '../../src/modules/budget/domain/
 import type { IBudgetEntryRepository } from '../../src/modules/budget/domain/IBudgetEntry.repository';
 import type { IRecurringEntryRepository } from '../../src/modules/budget/domain/IRecurringEntry.repository';
 import type { IBudgetShareNotifier } from '../../src/modules/budget/domain/IBudgetShareNotifier';
+import type { IBudgetShareAttemptRepository } from '../../src/modules/budget/domain/IBudgetShareAttempt.repository';
 import type { CreateBudgetGroupUseCase } from '../../src/modules/budget/application/services/CreateBudgetGroup.useCase';
 import type { GetBudgetGroupsUseCase } from '../../src/modules/budget/application/services/GetBudgetGroups.useCase';
 import type { CreateBudgetEntryUseCase } from '../../src/modules/budget/application/services/CreateBudgetEntry.useCase';
@@ -111,6 +112,14 @@ export function createMockBudgetEntryRepo(): jest.Mocked<IBudgetEntryRepository>
 export function createMockBudgetShareNotifier(): jest.Mocked<IBudgetShareNotifier> {
   return {
     sendBudgetShareNotification: jest.fn(),
+  };
+}
+
+/** Cree un mock complet du repository de tentatives de partage. */
+export function createMockBudgetShareAttemptRepo(): jest.Mocked<IBudgetShareAttemptRepository> {
+  return {
+    findRecent: jest.fn(),
+    record: jest.fn(),
   };
 }
 
