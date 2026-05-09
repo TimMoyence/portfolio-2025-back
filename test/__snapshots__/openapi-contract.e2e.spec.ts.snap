@@ -1008,6 +1008,9 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
         "401": {
           "description": "Token JWT invalide ou absent",
         },
+        "429": {
+          "description": "Trop de tentatives de partage (5/heure max, anti spam)",
+        },
       },
       "security": [
         {
