@@ -24,11 +24,32 @@ import type { ShareBudgetCommand } from '../dto/ShareBudget.command';
  *    (groupId, targetEmail) en complement du `@Throttle` HTTP du
  *    controleur (utile cross-instance et pour les tentatives espacees
  *    au-dela du TTL throttler mais toujours indesirables).
+ *
+ * Atomicite (P0-4 audit 2026-05-09) :
+ *  - le check `isMember` + `addMember` n'est pas atomique cross-instance
+ *    (deux invitations concurrentes peuvent passer le check). On
+ *    s'appuie sur la contrainte UNIQUE (group_id, user_id) du schema
+ *    pour garantir l'invariant ; en cas de collision, on retombe sur
+ *    le chemin idempotent (mailer skip car la cible est desormais
+ *    membre via l'autre branche).
  */
 @Injectable()
 export class ShareBudgetUseCase {
   /** Fenetre de cooldown anti mail-bombing : 5 minutes. */
   private static readonly COOLDOWN_MS = 5 * 60 * 1000;
+
+  /**
+   * Detecte une violation de contrainte UNIQUE remontee par TypeORM/pg.
+   * Utilise pour rendre `addMember` idempotent en cas de race condition
+   * (P0-4) sans dependre du driver Postgres a runtime.
+   */
+  private static isUniqueViolation(error: unknown): boolean {
+    if (error === null || typeof error !== 'object') return false;
+    const code = (error as { code?: string }).code;
+    if (code === '23505') return true;
+    const message = (error as { message?: string }).message;
+    return typeof message === 'string' && message.includes('unique constraint');
+  }
 
   private readonly logger = new Logger(ShareBudgetUseCase.name);
 
@@ -69,7 +90,21 @@ export class ShareBudgetUseCase {
       return { shared: true };
     }
 
-    await this.groupRepo.addMember(command.groupId, targetUser.id);
+    try {
+      await this.groupRepo.addMember(command.groupId, targetUser.id);
+    } catch (error) {
+      if (ShareBudgetUseCase.isUniqueViolation(error)) {
+        // P0-4 race : une autre invitation concurrente a deja ajoute la
+        // cible entre `isMember` et `addMember`. Idempotent : on stoppe
+        // ici (pas de mail, pas de record) — l'autre branche envoie le
+        // mail si necessaire.
+        this.logger.warn(
+          `Race detectee sur addMember (${command.groupId}, ${command.targetEmail}), traitee comme alreadyMember`,
+        );
+        return { shared: true };
+      }
+      throw error;
+    }
 
     const cooldownStart = new Date(Date.now() - ShareBudgetUseCase.COOLDOWN_MS);
     const recent = await this.shareAttemptRepo.findRecent(

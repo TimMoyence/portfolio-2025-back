@@ -143,6 +143,32 @@ describe('ShareBudgetUseCase', () => {
     expect(result).not.toHaveProperty('userId');
   });
 
+  it('P0-4 — addMember en violation UNIQUE doit etre traite comme idempotent (race)', async () => {
+    groupRepo.isMember.mockResolvedValue(false);
+    groupRepo.addMember.mockRejectedValue(
+      new Error(
+        'duplicate key value violates unique constraint "budget_group_members_group_id_user_id_key"',
+      ),
+    );
+
+    const result = await useCase.execute(command);
+
+    // Race condition idempotente : on retourne shared sans throw,
+    // ni mail (la cible est deja membre, ajoute par l'autre branche).
+    expect(result).toEqual({ shared: true });
+    expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
+    expect(shareAttemptRepo.record).not.toHaveBeenCalled();
+  });
+
+  it('P0-4 — devrait propager les autres erreurs de addMember (non-unique)', async () => {
+    groupRepo.isMember.mockResolvedValue(false);
+    groupRepo.addMember.mockRejectedValue(new Error('connection refused'));
+
+    await expect(useCase.execute(command)).rejects.toThrow(
+      'connection refused',
+    );
+  });
+
   it('CRIT-2 — ne devrait PAS envoyer de mail si la cible est deja membre (anti spam)', async () => {
     groupRepo.isMember.mockResolvedValue(true);
 
