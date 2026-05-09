@@ -4,7 +4,9 @@ import { UsersModule } from '../users/Users.module';
 import {
   BUDGET_CATEGORY_REPOSITORY,
   BUDGET_ENTRY_REPOSITORY,
+  BUDGET_GOAL_REPOSITORY,
   BUDGET_GROUP_REPOSITORY,
+  BUDGET_MEMBER_CONTRIBUTION_REPOSITORY,
   BUDGET_PDF_RENDERER,
   BUDGET_SHARE_ATTEMPT_REPOSITORY,
   BUDGET_SHARE_NOTIFIER,
@@ -23,15 +25,21 @@ import { RecurringEntryEntity } from './infrastructure/entities/RecurringEntry.e
 import { BudgetGroupEntity } from './infrastructure/entities/BudgetGroup.entity';
 import { BudgetGroupMemberEntity } from './infrastructure/entities/BudgetGroupMember.entity';
 import { BudgetShareAttemptEntity } from './infrastructure/entities/BudgetShareAttempt.entity';
+import { BudgetMemberContributionEntity } from './infrastructure/entities/BudgetMemberContribution.entity';
+import { BudgetGoalEntity } from './infrastructure/entities/BudgetGoal.entity';
 import { BudgetCategoryRepositoryTypeORM } from './infrastructure/BudgetCategory.repository.typeORM';
 import { BudgetEntryRepositoryTypeORM } from './infrastructure/BudgetEntry.repository.typeORM';
 import { BudgetGroupRepositoryTypeORM } from './infrastructure/BudgetGroup.repository.typeORM';
 import { BudgetShareAttemptRepositoryTypeORM } from './infrastructure/BudgetShareAttempt.repository.typeORM';
 import { RecurringEntryRepositoryTypeORM } from './infrastructure/RecurringEntry.repository.typeORM';
+import { BudgetMemberContributionRepositoryTypeORM } from './infrastructure/BudgetMemberContribution.repository.typeORM';
+import { BudgetGoalRepositoryTypeORM } from './infrastructure/BudgetGoal.repository.typeORM';
 import { BudgetShareMailerService } from './infrastructure/BudgetShareMailer.service';
 import { BudgetController } from './interfaces/Budget.controller';
 import { BudgetRecurringController } from './interfaces/BudgetRecurring.controller';
 import { BudgetExportController } from './interfaces/BudgetExport.controller';
+import { BudgetContributionsController } from './interfaces/BudgetContributions.controller';
+import { BudgetGoalsController } from './interfaces/BudgetGoals.controller';
 import { CreateBudgetCategoryUseCase } from './application/services/CreateBudgetCategory.useCase';
 import { CreateBudgetEntryUseCase } from './application/services/CreateBudgetEntry.useCase';
 import { CreateBudgetGroupUseCase } from './application/services/CreateBudgetGroup.useCase';
@@ -50,6 +58,15 @@ import { GetRecurringEntriesUseCase } from './application/services/GetRecurringE
 import { UpdateRecurringEntryUseCase } from './application/services/UpdateRecurringEntry.useCase';
 import { DeleteRecurringEntryUseCase } from './application/services/DeleteRecurringEntry.useCase';
 import { ApplyRecurringEntriesUseCase } from './application/services/ApplyRecurringEntries.useCase';
+import { GetBudgetContributionsUseCase } from './application/services/GetBudgetContributions.useCase';
+import { UpsertMyBudgetContributionUseCase } from './application/services/UpsertMyBudgetContribution.useCase';
+import { CreateBudgetGoalUseCase } from './application/services/CreateBudgetGoal.useCase';
+import { GetBudgetGoalsWithProgressUseCase } from './application/services/GetBudgetGoalsWithProgress.useCase';
+import { UpdateBudgetGoalUseCase } from './application/services/UpdateBudgetGoal.useCase';
+import { DeleteBudgetGoalUseCase } from './application/services/DeleteBudgetGoal.useCase';
+import { GetBudgetGroupMembersUseCase } from './application/services/GetBudgetGroupMembers.useCase';
+import { RemoveBudgetGroupMemberUseCase } from './application/services/RemoveBudgetGroupMember.useCase';
+import { GetBudgetEntriesMonthsUseCase } from './application/services/GetBudgetEntriesMonths.useCase';
 
 const BUDGET_USE_CASES = [
   CreateBudgetGroupUseCase,
@@ -70,6 +87,15 @@ const BUDGET_USE_CASES = [
   UpdateRecurringEntryUseCase,
   DeleteRecurringEntryUseCase,
   ApplyRecurringEntriesUseCase,
+  GetBudgetContributionsUseCase,
+  UpsertMyBudgetContributionUseCase,
+  CreateBudgetGoalUseCase,
+  GetBudgetGoalsWithProgressUseCase,
+  UpdateBudgetGoalUseCase,
+  DeleteBudgetGoalUseCase,
+  GetBudgetGroupMembersUseCase,
+  RemoveBudgetGroupMemberUseCase,
+  GetBudgetEntriesMonthsUseCase,
 ];
 
 /**
@@ -87,6 +113,8 @@ const BUDGET_USE_CASES = [
       BudgetEntryEntity,
       RecurringEntryEntity,
       BudgetShareAttemptEntity,
+      BudgetMemberContributionEntity,
+      BudgetGoalEntity,
     ]),
     UsersModule,
   ],
@@ -94,6 +122,8 @@ const BUDGET_USE_CASES = [
     BudgetController,
     BudgetRecurringController,
     BudgetExportController,
+    BudgetContributionsController,
+    BudgetGoalsController,
   ],
   providers: [
     ...BUDGET_USE_CASES,
@@ -131,6 +161,14 @@ const BUDGET_USE_CASES = [
         const config = loadCategoryRulesConfig();
         return new RevolutCategoryInferenceStrategy(config);
       },
+    },
+    {
+      provide: BUDGET_MEMBER_CONTRIBUTION_REPOSITORY,
+      useClass: BudgetMemberContributionRepositoryTypeORM,
+    },
+    {
+      provide: BUDGET_GOAL_REPOSITORY,
+      useClass: BudgetGoalRepositoryTypeORM,
     },
   ],
 })
