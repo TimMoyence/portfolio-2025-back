@@ -7,6 +7,7 @@ import {
   IsString,
   IsUUID,
   Matches,
+  Max,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -39,9 +40,10 @@ export class CreateBudgetCategoryDto {
   @IsIn(['FIXED', 'VARIABLE'])
   budgetType: string;
 
-  @ApiPropertyOptional({ example: 600 })
+  @ApiPropertyOptional({ example: 600, minimum: 0, maximum: 1_000_000 })
   @IsOptional()
-  @IsNumber()
+  @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 2 })
   @Min(0)
+  @Max(1_000_000)
   budgetLimit?: number;
 }

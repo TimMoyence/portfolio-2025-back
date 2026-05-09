@@ -175,4 +175,43 @@ describe('BudgetEntry', () => {
 
     expect(entry.amount).toBe(2500);
   });
+
+  it('HIGH-1 — devrait refuser un amount Infinity', () => {
+    expect(() =>
+      BudgetEntry.create({
+        groupId: 'group-1',
+        createdByUserId: 'user-1',
+        date: '2026-03-15',
+        description: 'Test',
+        amount: Number.POSITIVE_INFINITY,
+        type: 'VARIABLE',
+      }),
+    ).toThrow(DomainValidationError);
+  });
+
+  it('HIGH-1 — devrait refuser un amount -Infinity', () => {
+    expect(() =>
+      BudgetEntry.create({
+        groupId: 'group-1',
+        createdByUserId: 'user-1',
+        date: '2026-03-15',
+        description: 'Test',
+        amount: Number.NEGATIVE_INFINITY,
+        type: 'VARIABLE',
+      }),
+    ).toThrow(DomainValidationError);
+  });
+
+  it('HIGH-1 — devrait refuser un amount NaN', () => {
+    expect(() =>
+      BudgetEntry.create({
+        groupId: 'group-1',
+        createdByUserId: 'user-1',
+        date: '2026-03-15',
+        description: 'Test',
+        amount: Number.NaN,
+        type: 'VARIABLE',
+      }),
+    ).toThrow(DomainValidationError);
+  });
 });
