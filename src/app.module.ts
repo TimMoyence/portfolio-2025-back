@@ -38,7 +38,11 @@ function logBootstrapStep(message: string): void {
                 options: { colorize: true, singleLine: true },
               }
             : undefined,
-        autoLogging: true,
+        autoLogging: {
+          // Filtre le bruit des sondes Docker healthcheck qui frappent /health
+          // toutes les 10s — un log par requete pollue les logs prod sans valeur.
+          ignore: (req) => req.url?.includes('/health') ?? false,
+        },
         quietReqLogger: true,
         genReqId: (req) =>
           (req.headers['x-request-id'] as string) ?? randomUUID(),
