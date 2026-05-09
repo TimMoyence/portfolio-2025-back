@@ -66,6 +66,14 @@ export class BudgetEntryRepositoryTypeORM implements IBudgetEntryRepository {
     await this.repo.delete({ id });
   }
 
+  findDistinctMonths(
+    groupId: string,
+  ): Promise<Array<{ month: number; year: number }>> {
+    return Promise.reject(
+      new Error(`findDistinctMonths not yet implemented for ${groupId}`),
+    );
+  }
+
   private toDomain(entity: BudgetEntryEntity): BudgetEntry {
     const entry = new BudgetEntry();
     entry.id = entity.id;

@@ -116,6 +116,7 @@ export function createMockBudgetEntryRepo(): jest.Mocked<IBudgetEntryRepository>
     findById: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    findDistinctMonths: jest.fn(),
   };
 }
 
