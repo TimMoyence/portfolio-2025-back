@@ -4,6 +4,7 @@ import type { BudgetEntry } from '../../src/modules/budget/domain/BudgetEntry';
 import type {
   BudgetGoal,
   BudgetGoalKind,
+  BudgetGoalWithProgress,
 } from '../../src/modules/budget/domain/BudgetGoal';
 import type { IBudgetGoalRepository } from '../../src/modules/budget/domain/IBudgetGoal.repository';
 import type { RecurringEntry } from '../../src/modules/budget/domain/RecurringEntry';
@@ -216,6 +217,28 @@ export interface MockBudgetUseCases {
   getMembers: jest.Mocked<Pick<GetBudgetGroupMembersUseCase, 'execute'>>;
   removeMember: jest.Mocked<Pick<RemoveBudgetGroupMemberUseCase, 'execute'>>;
   getEntriesMonths: jest.Mocked<Pick<GetBudgetEntriesMonthsUseCase, 'execute'>>;
+}
+
+/** Construit un objet BudgetGoalWithProgress domaine avec des valeurs par defaut. */
+export function buildBudgetGoalWithProgress(
+  overrides?: Partial<BudgetGoalWithProgress>,
+): BudgetGoalWithProgress {
+  return {
+    id: 'goal-1',
+    groupId: 'group-1',
+    createdByUserId: 'user-1',
+    name: 'Vacances',
+    kind: 'SAVINGS' as BudgetGoalKind,
+    targetAmount: 1000,
+    categoryId: null,
+    deadline: null,
+    isActive: true,
+    currentAmount: 250,
+    progressPercent: 25,
+    createdAt: new Date('2026-05-01'),
+    updatedAt: new Date('2026-05-01'),
+    ...overrides,
+  } as BudgetGoalWithProgress;
 }
 
 /** Construit un objet BudgetGoal domaine avec des valeurs par defaut. */
