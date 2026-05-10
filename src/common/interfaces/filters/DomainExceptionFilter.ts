@@ -9,11 +9,19 @@ import { DomainValidationError } from '../../domain/errors/DomainValidationError
 import { InvalidCredentialsError } from '../../domain/errors/InvalidCredentialsError';
 import { InsufficientPermissionsError } from '../../domain/errors/InsufficientPermissionsError';
 import { InvalidInputError } from '../../domain/errors/InvalidInputError';
+import { RateLimitExceededError } from '../../domain/errors/RateLimitExceededError';
 import { ResourceConflictError } from '../../domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../domain/errors/ResourceNotFoundError';
 import { TokenExpiredError } from '../../domain/errors/TokenExpiredError';
 import { TokenReuseDetectedError } from '../../domain/errors/TokenReuseDetectedError';
 import { UserNotFoundError } from '../../domain/errors/UserNotFoundError';
+import {
+  InvalidInvitationTokenError,
+  InvitationAlreadyConsumedError,
+  InvitationEmailMismatchError,
+  InvitationExpiredError,
+  InvitationRevokedError,
+} from '../../../modules/budget/domain/errors/InvitationErrors';
 
 /**
  * Filtre global qui intercepte les {@link DomainError} et les mappe
@@ -32,13 +40,22 @@ export class DomainExceptionFilter implements ExceptionFilter {
 
     const status = this.resolveHttpStatus(exception);
 
-    response.status(status).json({
+    const body: Record<string, unknown> = {
       type: `https://httpstatuses.com/${status}`,
       title: HttpStatus[status] ?? 'Error',
       status,
       detail: exception.message,
       instance: request.url,
-    });
+    };
+
+    // Propage le code stable (RFC 7807 extension) quand l'erreur le fournit.
+    // Permet au frontend de brancher des UX differenciees sans parser le detail.
+    const code = (exception as { code?: string }).code;
+    if (typeof code === 'string') {
+      body.code = code;
+    }
+
+    response.status(status).json(body);
   }
 
   /** Determine le code HTTP a partir du type d'erreur domaine. */
@@ -69,8 +86,30 @@ export class DomainExceptionFilter implements ExceptionFilter {
       return HttpStatus.BAD_REQUEST;
     }
 
-    if (exception instanceof ResourceConflictError) {
+    if (
+      exception instanceof ResourceConflictError ||
+      exception instanceof InvitationAlreadyConsumedError
+    ) {
       return HttpStatus.CONFLICT;
+    }
+
+    if (exception instanceof RateLimitExceededError) {
+      return HttpStatus.TOO_MANY_REQUESTS;
+    }
+
+    if (exception instanceof InvalidInvitationTokenError) {
+      return HttpStatus.NOT_FOUND;
+    }
+
+    if (
+      exception instanceof InvitationExpiredError ||
+      exception instanceof InvitationRevokedError
+    ) {
+      return HttpStatus.GONE;
+    }
+
+    if (exception instanceof InvitationEmailMismatchError) {
+      return HttpStatus.FORBIDDEN;
     }
 
     // Fallback pour les DomainError non mappees
