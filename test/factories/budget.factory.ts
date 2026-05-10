@@ -34,6 +34,7 @@ import type { ShareBudgetUseCase } from '../../src/modules/budget/application/se
 import type { GetBudgetGroupMembersUseCase } from '../../src/modules/budget/application/services/GetBudgetGroupMembers.useCase';
 import type { RemoveBudgetGroupMemberUseCase } from '../../src/modules/budget/application/services/RemoveBudgetGroupMember.useCase';
 import type { GetBudgetEntriesMonthsUseCase } from '../../src/modules/budget/application/services/GetBudgetEntriesMonths.useCase';
+import type { ListPendingInvitationsUseCase } from '../../src/modules/budget/application/services/ListPendingInvitations.useCase';
 
 /** Construit un objet BudgetGroup domaine avec des valeurs par defaut. */
 export function buildBudgetGroup(
@@ -221,6 +222,9 @@ export interface MockBudgetUseCases {
   getMembers: jest.Mocked<Pick<GetBudgetGroupMembersUseCase, 'execute'>>;
   removeMember: jest.Mocked<Pick<RemoveBudgetGroupMemberUseCase, 'execute'>>;
   getEntriesMonths: jest.Mocked<Pick<GetBudgetEntriesMonthsUseCase, 'execute'>>;
+  listPendingInvitations: jest.Mocked<
+    Pick<ListPendingInvitationsUseCase, 'execute'>
+  >;
 }
 
 /** Construit un objet BudgetGoalWithProgress domaine avec des valeurs par defaut. */
@@ -339,5 +343,6 @@ export function createMockBudgetUseCases(): MockBudgetUseCases {
     getMembers: { execute: jest.fn() },
     removeMember: { execute: jest.fn() },
     getEntriesMonths: { execute: jest.fn() },
+    listPendingInvitations: { execute: jest.fn() },
   };
 }

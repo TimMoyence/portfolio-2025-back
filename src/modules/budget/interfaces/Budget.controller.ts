@@ -45,6 +45,7 @@ import { ShareBudgetUseCase } from '../application/services/ShareBudget.useCase'
 import { GetBudgetGroupMembersUseCase } from '../application/services/GetBudgetGroupMembers.useCase';
 import { RemoveBudgetGroupMemberUseCase } from '../application/services/RemoveBudgetGroupMember.useCase';
 import { GetBudgetEntriesMonthsUseCase } from '../application/services/GetBudgetEntriesMonths.useCase';
+import { ListPendingInvitationsUseCase } from '../application/services/ListPendingInvitations.useCase';
 import type { BudgetMember } from '../domain/BudgetMember';
 import { BudgetCategoryResponseDto } from './dto/BudgetCategory.response.dto';
 import { BudgetEntryResponseDto } from './dto/BudgetEntry.response.dto';
@@ -58,6 +59,7 @@ import { ShareBudgetDto } from './dto/ShareBudget.dto';
 import { UpdateBudgetEntryDto } from './dto/UpdateBudgetEntry.dto';
 import { UpdateBudgetCategoryDto } from './dto/UpdateBudgetCategory.dto';
 import { BudgetMemberResponseDto } from './dto/BudgetMember.response.dto';
+import { PendingInvitationsListResponseDto } from './dto/PendingInvitation.response.dto';
 
 /**
  * Controleur REST principal du module Budget.
@@ -90,6 +92,7 @@ export class BudgetController {
     private readonly getMembers: GetBudgetGroupMembersUseCase,
     private readonly removeMember: RemoveBudgetGroupMemberUseCase,
     private readonly getEntriesMonths: GetBudgetEntriesMonthsUseCase,
+    private readonly listPendingInvitations: ListPendingInvitationsUseCase,
   ) {}
 
   @Post('groups')
@@ -334,6 +337,30 @@ export class BudgetController {
   ): Promise<void> {
     const actorUserId = req.user!.sub;
     await this.removeMember.execute({ groupId, actorUserId, targetUserId });
+  }
+
+  @Get('groups/:groupId/invitations/pending')
+  @ApiOperation({
+    summary: 'Lister les invitations en attente du groupe (owner-only)',
+  })
+  @ApiOkResponse({ type: PendingInvitationsListResponseDto })
+  async listGroupPendingInvitations(
+    @Param('groupId', new ParseUUIDPipe()) groupId: string,
+    @Req() req: Request,
+  ): Promise<PendingInvitationsListResponseDto> {
+    const userId = req.user!.sub;
+    const invitations = await this.listPendingInvitations.execute({
+      groupId,
+      userId,
+    });
+    return {
+      invitations: invitations.map((invitation) => ({
+        id: invitation.id,
+        targetEmail: invitation.targetEmail,
+        expiresAt: invitation.expiresAt.toISOString(),
+        createdAt: invitation.createdAt.toISOString(),
+      })),
+    };
   }
 
   @Get('entries/months')

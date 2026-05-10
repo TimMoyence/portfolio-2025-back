@@ -15,6 +15,9 @@ import type { ShareBudgetUseCase } from '../application/services/ShareBudget.use
 import type { GetBudgetGroupMembersUseCase } from '../application/services/GetBudgetGroupMembers.useCase';
 import type { RemoveBudgetGroupMemberUseCase } from '../application/services/RemoveBudgetGroupMember.useCase';
 import type { GetBudgetEntriesMonthsUseCase } from '../application/services/GetBudgetEntriesMonths.useCase';
+import type { ListPendingInvitationsUseCase } from '../application/services/ListPendingInvitations.useCase';
+import { InsufficientPermissionsError } from '../../../common/domain/errors/InsufficientPermissionsError';
+import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import {
   buildBudgetGroup,
   buildBudgetEntry,
@@ -51,6 +54,7 @@ describe('BudgetController', () => {
       useCases.getMembers as unknown as GetBudgetGroupMembersUseCase,
       useCases.removeMember as unknown as RemoveBudgetGroupMemberUseCase,
       useCases.getEntriesMonths as unknown as GetBudgetEntriesMonthsUseCase,
+      useCases.listPendingInvitations as unknown as ListPendingInvitationsUseCase,
     );
   });
 
@@ -333,7 +337,7 @@ describe('BudgetController', () => {
   // Test precedent (pre P0-1) retire : il assertait `userId: 'user-2'`
   // dans le mock de retour du use case ; le contrat ne l'expose plus.
 
-  it('devrait deleguer shareBudgetGroup au use case et propager le retour', async () => {
+  it('devrait deleguer shareBudgetGroup au use case et propager le retour shared', async () => {
     const shareResult = { status: 'shared' as const };
     useCases.shareBudget.execute.mockResolvedValue(shareResult);
 
@@ -349,6 +353,31 @@ describe('BudgetController', () => {
     });
     expect(result).toEqual({ status: 'shared' });
     expect(result).not.toHaveProperty('userId');
+  });
+
+  it('devrait propager le statut already-member depuis shareBudget', async () => {
+    useCases.shareBudget.execute.mockResolvedValue({
+      status: 'already-member',
+    });
+
+    const result = await controller.shareBudgetGroup(
+      { groupId: 'group-1', targetEmail: 'partner@example.com' },
+      mockReq,
+    );
+
+    expect(result).toEqual({ status: 'already-member' });
+  });
+
+  it('devrait propager le statut invited depuis shareBudget (magic-link)', async () => {
+    useCases.shareBudget.execute.mockResolvedValue({ status: 'invited' });
+
+    const result = await controller.shareBudgetGroup(
+      { groupId: 'group-1', targetEmail: 'newuser@example.com' },
+      mockReq,
+    );
+
+    expect(result).toEqual({ status: 'invited' });
+    expect(result).not.toHaveProperty('shared');
   });
 
   // --- Propagation d'erreurs ---
@@ -425,6 +454,80 @@ describe('BudgetController', () => {
         userId: 'user-1',
       });
       expect(result).toHaveLength(2);
+    });
+  });
+
+  // --- listGroupPendingInvitations ---
+
+  describe('GET /budget/groups/:groupId/invitations/pending', () => {
+    it('appelle listPendingInvitations UC et mappe les invitations en DTO ISO', async () => {
+      const view = [
+        {
+          id: 'inv-1',
+          targetEmail: 'bob@example.com',
+          expiresAt: new Date('2026-05-17T00:00:00.000Z'),
+          createdAt: new Date('2026-05-10T00:00:00.000Z'),
+        },
+        {
+          id: 'inv-2',
+          targetEmail: 'carol@example.com',
+          expiresAt: new Date('2026-05-18T12:30:00.000Z'),
+          createdAt: new Date('2026-05-11T12:30:00.000Z'),
+        },
+      ];
+      useCases.listPendingInvitations.execute.mockResolvedValueOnce(view);
+
+      const result = await controller.listGroupPendingInvitations(
+        'group-uuid',
+        mockReq,
+      );
+
+      expect(useCases.listPendingInvitations.execute).toHaveBeenCalledWith({
+        groupId: 'group-uuid',
+        userId: 'user-1',
+      });
+      expect(result.invitations).toHaveLength(2);
+      expect(result.invitations[0]).toEqual({
+        id: 'inv-1',
+        targetEmail: 'bob@example.com',
+        expiresAt: '2026-05-17T00:00:00.000Z',
+        createdAt: '2026-05-10T00:00:00.000Z',
+      });
+      expect(typeof result.invitations[1].expiresAt).toBe('string');
+      expect(typeof result.invitations[1].createdAt).toBe('string');
+    });
+
+    it('renvoie une liste vide si aucune invitation pending', async () => {
+      useCases.listPendingInvitations.execute.mockResolvedValueOnce([]);
+
+      const result = await controller.listGroupPendingInvitations(
+        'group-uuid',
+        mockReq,
+      );
+
+      expect(result).toEqual({ invitations: [] });
+    });
+
+    it('propage ResourceNotFoundError si le groupe est introuvable', async () => {
+      useCases.listPendingInvitations.execute.mockRejectedValueOnce(
+        new ResourceNotFoundError('Le groupe budget est introuvable.'),
+      );
+
+      await expect(
+        controller.listGroupPendingInvitations('group-uuid', mockReq),
+      ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    });
+
+    it('propage InsufficientPermissionsError si le demandeur n est pas owner', async () => {
+      useCases.listPendingInvitations.execute.mockRejectedValueOnce(
+        new InsufficientPermissionsError(
+          'Seul le owner du groupe peut lister les invitations pending.',
+        ),
+      );
+
+      await expect(
+        controller.listGroupPendingInvitations('group-uuid', mockReq),
+      ).rejects.toBeInstanceOf(InsufficientPermissionsError);
     });
   });
 });
