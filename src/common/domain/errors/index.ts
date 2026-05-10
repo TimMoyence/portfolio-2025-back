@@ -8,3 +8,4 @@ export { ResourceNotFoundError } from './ResourceNotFoundError';
 export { TokenExpiredError } from './TokenExpiredError';
 export { TokenReuseDetectedError } from './TokenReuseDetectedError';
 export { UserNotFoundError } from './UserNotFoundError';
+export { RateLimitExceededError } from './RateLimitExceededError';
