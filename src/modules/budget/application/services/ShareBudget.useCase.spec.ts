@@ -1,22 +1,26 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
+import { RateLimitExceededError } from '../../../../common/domain/errors/RateLimitExceededError';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import type { ConfigService } from '@nestjs/config';
 import { ShareBudgetUseCase } from './ShareBudget.useCase';
 import {
-  createMockBudgetGroupRepo,
   buildBudgetGroup,
-  createMockBudgetShareNotifier,
+  buildBudgetInvitation,
+  createMockBudgetGroupRepo,
+  createMockBudgetInvitationRepo,
   createMockBudgetShareAttemptRepo,
+  createMockBudgetShareNotifier,
 } from '../../../../../test/factories/budget.factory';
 import {
-  createMockUsersRepo,
   buildUser,
+  createMockUsersRepo,
 } from '../../../../../test/factories/user.factory';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
-import type { IUsersRepository } from '../../../users/domain/IUsers.repository';
-import type { IBudgetShareNotifier } from '../../domain/IBudgetShareNotifier';
+import type { IBudgetInvitationRepository } from '../../domain/IBudgetInvitation.repository';
 import type { IBudgetShareAttemptRepository } from '../../domain/IBudgetShareAttempt.repository';
+import type { IBudgetShareNotifier } from '../../domain/IBudgetShareNotifier';
+import type { IUsersRepository } from '../../../users/domain/IUsers.repository';
 import type { ShareBudgetCommand } from '../dto/ShareBudget.command';
 
 describe('ShareBudgetUseCase', () => {
@@ -24,6 +28,7 @@ describe('ShareBudgetUseCase', () => {
   let usersRepo: jest.Mocked<IUsersRepository>;
   let notifier: jest.Mocked<IBudgetShareNotifier>;
   let shareAttemptRepo: jest.Mocked<IBudgetShareAttemptRepository>;
+  let invitationRepo: jest.Mocked<IBudgetInvitationRepository>;
   let configService: jest.Mocked<Pick<ConfigService, 'get'>>;
   let useCase: ShareBudgetUseCase;
 
@@ -38,6 +43,7 @@ describe('ShareBudgetUseCase', () => {
     usersRepo = createMockUsersRepo();
     notifier = createMockBudgetShareNotifier();
     shareAttemptRepo = createMockBudgetShareAttemptRepo();
+    invitationRepo = createMockBudgetInvitationRepo();
     configService = { get: jest.fn().mockReturnValue('http://localhost:4200') };
     useCase = new ShareBudgetUseCase(
       groupRepo,
@@ -45,6 +51,7 @@ describe('ShareBudgetUseCase', () => {
       notifier,
       shareAttemptRepo,
       configService as unknown as ConfigService,
+      invitationRepo,
     );
 
     groupRepo.findById.mockResolvedValue(
@@ -63,8 +70,13 @@ describe('ShareBudgetUseCase', () => {
       buildUser({ id: 'user-1', firstName: 'Jean', lastName: 'Dupont' }),
     );
     notifier.sendBudgetShareNotification.mockResolvedValue(undefined);
+    notifier.sendBudgetInvitation.mockResolvedValue(undefined);
     shareAttemptRepo.findRecent.mockResolvedValue(null);
     shareAttemptRepo.record.mockResolvedValue(undefined);
+    shareAttemptRepo.countByInviterSince.mockResolvedValue(0);
+    invitationRepo.findActiveByGroupAndEmail.mockResolvedValue(null);
+    invitationRepo.create.mockResolvedValue(buildBudgetInvitation());
+    invitationRepo.markRevoked.mockResolvedValue(undefined);
   });
 
   it("devrait rejeter si le groupe n'existe pas", async () => {
@@ -85,17 +97,11 @@ describe('ShareBudgetUseCase', () => {
     );
   });
 
-  it("devrait rejeter si l'email cible n'a pas de compte", async () => {
-    usersRepo.findByEmail.mockResolvedValue(null);
+  it('partage avec un utilisateur existant retourne status "shared"', async () => {
+    const result = await useCase.execute(command);
 
-    await expect(useCase.execute(command)).rejects.toBeInstanceOf(
-      ResourceNotFoundError,
-    );
+    expect(result).toEqual({ status: 'shared' });
   });
-
-  // 3 tests retires (commit P0-1) qui assertaient `userId: 'user-2'`
-  // dans le retour ; le contrat ne l'expose plus. Couverture remplacee
-  // par les tests behavioraux ci-dessous + assertions sur le retour.
 
   it('devrait appeler addMember sur le repo lors d un partage initial', async () => {
     await useCase.execute(command);
@@ -103,44 +109,73 @@ describe('ShareBudgetUseCase', () => {
     expect(groupRepo.addMember).toHaveBeenCalledWith('group-1', 'user-2');
   });
 
-  it('devrait declencher l envoi du mail lors d un partage initial', async () => {
+  it('devrait declencher l envoi du mail "shared" lors d un partage initial', async () => {
     await useCase.execute(command);
 
     expect(notifier.sendBudgetShareNotification).toHaveBeenCalledTimes(1);
   });
 
-  it('devrait skip addMember si la cible est deja membre', async () => {
+  it('retourne "already-member" si la cible est deja membre', async () => {
     groupRepo.isMember.mockResolvedValue(true);
 
-    await useCase.execute(command);
+    const result = await useCase.execute(command);
 
+    expect(result).toEqual({ status: 'already-member' });
+    expect(groupRepo.addMember).not.toHaveBeenCalled();
+    expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
+    expect(notifier.sendBudgetInvitation).not.toHaveBeenCalled();
+  });
+
+  it('retourne "invited" et envoie un mail magic-link si la cible n a pas de compte', async () => {
+    groupRepo.findById.mockResolvedValue(
+      buildBudgetGroup({ id: 'group-1', ownerId: 'user-1', name: 'Couple' }),
+    );
+    usersRepo.findByEmail.mockResolvedValue(null);
+    usersRepo.findById.mockResolvedValue(
+      buildUser({ id: 'user-1', firstName: 'Tim', lastName: 'Moyence' }),
+    );
+    invitationRepo.findActiveByGroupAndEmail.mockResolvedValue(null);
+    invitationRepo.create.mockResolvedValue(buildBudgetInvitation());
+
+    const result = await useCase.execute({
+      groupId: 'group-1',
+      targetEmail: 'bob@example.com',
+      userId: 'user-1',
+    });
+
+    expect(result).toEqual({ status: 'invited' });
+    expect(invitationRepo.create).toHaveBeenCalledTimes(1);
+    expect(notifier.sendBudgetInvitation).toHaveBeenCalledTimes(1);
+    expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
     expect(groupRepo.addMember).not.toHaveBeenCalled();
   });
 
-  it("devrait retourner shared: true meme si l'envoi d'email echoue", async () => {
-    notifier.sendBudgetShareNotification.mockRejectedValue(
-      new Error('SMTP error'),
+  it('revoque l invitation existante et en cree une nouvelle si re-share', async () => {
+    usersRepo.findByEmail.mockResolvedValue(null);
+    invitationRepo.findActiveByGroupAndEmail.mockResolvedValue(
+      buildBudgetInvitation({ id: 'inv-old' }),
+    );
+    invitationRepo.create.mockResolvedValue(
+      buildBudgetInvitation({ id: 'inv-new' }),
     );
 
-    const result = await useCase.execute(command);
+    await useCase.execute(command);
 
-    expect(result.shared).toBe(true);
+    expect(invitationRepo.markRevoked).toHaveBeenCalledWith(
+      'inv-old',
+      expect.any(Date),
+    );
+    expect(invitationRepo.create).toHaveBeenCalledTimes(1);
   });
 
-  it('P0-1 — la response ne doit PAS exposer userId interne', async () => {
-    const result = await useCase.execute(command);
+  it('throw RateLimitExceededError si quota 5/24h depasse', async () => {
+    shareAttemptRepo.countByInviterSince.mockResolvedValue(5);
 
-    expect(result).toEqual({ shared: true });
-    expect(result).not.toHaveProperty('userId');
-  });
+    await expect(useCase.execute(command)).rejects.toBeInstanceOf(
+      RateLimitExceededError,
+    );
 
-  it('P0-1 — meme retour sans userId quand cible deja membre', async () => {
-    groupRepo.isMember.mockResolvedValue(true);
-
-    const result = await useCase.execute(command);
-
-    expect(result).toEqual({ shared: true });
-    expect(result).not.toHaveProperty('userId');
+    expect(usersRepo.findByEmail).not.toHaveBeenCalled();
   });
 
   it('P0-4 — addMember en violation UNIQUE doit etre traite comme idempotent (race)', async () => {
@@ -155,7 +190,7 @@ describe('ShareBudgetUseCase', () => {
 
     // Race condition idempotente : on retourne shared sans throw,
     // ni mail (la cible est deja membre, ajoute par l'autre branche).
-    expect(result).toEqual({ shared: true });
+    expect(result).toEqual({ status: 'shared' });
     expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
     expect(shareAttemptRepo.record).not.toHaveBeenCalled();
   });
@@ -167,15 +202,6 @@ describe('ShareBudgetUseCase', () => {
     await expect(useCase.execute(command)).rejects.toThrow(
       'connection refused',
     );
-  });
-
-  it('CRIT-2 — ne devrait PAS envoyer de mail si la cible est deja membre (anti spam)', async () => {
-    groupRepo.isMember.mockResolvedValue(true);
-
-    await useCase.execute(command);
-
-    expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
-    expect(shareAttemptRepo.record).not.toHaveBeenCalled();
   });
 
   it('CRIT-2 — ne devrait PAS envoyer de mail si une tentative recente existe (cooldown)', async () => {
@@ -215,17 +241,7 @@ describe('ShareBudgetUseCase', () => {
     expect(elapsedMs).toBeLessThanOrEqual(5 * 60 * 1000 + 1000);
   });
 
-  it('devrait passer les bonnes valeurs au notifier', async () => {
-    usersRepo.findByEmail.mockResolvedValue(
-      buildUser({
-        id: 'user-2',
-        email: 'cible@example.com',
-        firstName: 'Marie',
-      }),
-    );
-    usersRepo.findById.mockResolvedValue(
-      buildUser({ id: 'user-1', firstName: 'Jean', lastName: 'Dupont' }),
-    );
+  it('devrait passer les bonnes valeurs au notifier "shared"', async () => {
     groupRepo.findById.mockResolvedValue(
       buildBudgetGroup({
         id: 'group-1',

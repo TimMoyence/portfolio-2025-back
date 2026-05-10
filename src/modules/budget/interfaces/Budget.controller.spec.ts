@@ -334,7 +334,7 @@ describe('BudgetController', () => {
   // dans le mock de retour du use case ; le contrat ne l'expose plus.
 
   it('devrait deleguer shareBudgetGroup au use case et propager le retour', async () => {
-    const shareResult = { shared: true as const };
+    const shareResult = { status: 'shared' as const };
     useCases.shareBudget.execute.mockResolvedValue(shareResult);
 
     const result = await controller.shareBudgetGroup(
@@ -347,7 +347,7 @@ describe('BudgetController', () => {
       groupId: 'group-1',
       targetEmail: 'partner@example.com',
     });
-    expect(result).toEqual({ shared: true });
+    expect(result).toEqual({ status: 'shared' });
     expect(result).not.toHaveProperty('userId');
   });
 
