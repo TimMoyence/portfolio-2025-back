@@ -128,6 +128,7 @@ export function createMockBudgetEntryRepo(): jest.Mocked<IBudgetEntryRepository>
 export function createMockBudgetShareNotifier(): jest.Mocked<IBudgetShareNotifier> {
   return {
     sendBudgetShareNotification: jest.fn(),
+    sendBudgetInvitation: jest.fn(),
   };
 }
 

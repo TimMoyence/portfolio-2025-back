@@ -210,6 +210,50 @@ describe('BudgetShareMailerService', () => {
     });
   });
 
+  describe('sendBudgetInvitation', () => {
+    it('envoie un email avec le lien d invitation et la date d expiration', async () => {
+      process.env.SMTP_HOST = 'localhost';
+      process.env.SMTP_PORT = '1025';
+      const service = new TestableBudgetShareMailer();
+      const sendMail = jest.fn().mockResolvedValue(undefined);
+      (service as any).transporter = { sendMail };
+
+      await service.sendBudgetInvitation({
+        targetEmail: 'bob@example.com',
+        ownerFirstName: 'Tim',
+        ownerLastName: 'Moyence',
+        groupName: 'Couple',
+        inviteUrl: 'https://asilidesign.fr/fr/register?invite=abc123',
+        expiresAt: new Date('2026-05-17T12:00:00Z'),
+      });
+
+      expect(sendMail).toHaveBeenCalledTimes(1);
+      const args = sendMail.mock.calls[0][0];
+      expect(args.to).toBe('bob@example.com');
+      expect(args.subject).toContain('Tim');
+      expect(args.html).toContain(
+        'https://asilidesign.fr/fr/register?invite=abc123',
+      );
+      expect(args.html).toContain('Couple');
+      expect(args.text).toContain('17/05/2026');
+    });
+
+    it('skip silencieux si SMTP non configure', async () => {
+      delete process.env.SMTP_HOST;
+      const service = new TestableBudgetShareMailer();
+      await expect(
+        service.sendBudgetInvitation({
+          targetEmail: 'bob@example.com',
+          ownerFirstName: 'Tim',
+          ownerLastName: 'Moyence',
+          groupName: 'Couple',
+          inviteUrl: 'https://x',
+          expiresAt: new Date(),
+        }),
+      ).resolves.toBeUndefined();
+    });
+  });
+
   describe('escapeHtml', () => {
     it('devrait echapper tous les caracteres HTML dangereux', () => {
       // Arrange

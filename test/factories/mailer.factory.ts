@@ -13,6 +13,7 @@ export function createMockPasswordResetNotifier(): jest.Mocked<IPasswordResetNot
 export function createMockBudgetShareNotifier(): jest.Mocked<IBudgetShareNotifier> {
   return {
     sendBudgetShareNotification: jest.fn(),
+    sendBudgetInvitation: jest.fn(),
   };
 }
 

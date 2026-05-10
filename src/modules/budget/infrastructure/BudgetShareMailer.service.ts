@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { type Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import type {
+  BudgetInvitationNotificationPayload,
   BudgetShareNotificationPayload,
   IBudgetShareNotifier,
 } from '../domain/IBudgetShareNotifier';
@@ -71,6 +72,62 @@ export class BudgetShareMailerService implements IBudgetShareNotifier {
     });
 
     this.logger.log(`Budget share email sent to ${payload.targetEmail}`);
+  }
+
+  async sendBudgetInvitation(
+    payload: BudgetInvitationNotificationPayload,
+  ): Promise<void> {
+    if (!this.transporter) {
+      this.logger.warn(
+        `Budget invitation email skipped (no SMTP): ${payload.targetEmail}`,
+      );
+      return;
+    }
+
+    const ownerName = this.escapeHtml(
+      `${payload.ownerFirstName} ${payload.ownerLastName}`,
+    );
+    const groupName = this.escapeHtml(payload.groupName);
+    const inviteUrl = payload.inviteUrl;
+    const expiresFr = payload.expiresAt.toLocaleDateString('fr-FR', {
+      timeZone: 'Europe/Paris',
+    });
+
+    await this.transporter.sendMail({
+      from: this.from,
+      to: payload.targetEmail,
+      subject: `${this.escapeHtml(payload.ownerFirstName)} t'invite a rejoindre son budget "${groupName}"`,
+      text: [
+        'Bonjour,',
+        '',
+        `${this.escapeHtml(payload.ownerFirstName)} ${this.escapeHtml(payload.ownerLastName)} t'invite a rejoindre son budget partage "${this.escapeHtml(payload.groupName)}" sur Asili Design.`,
+        '',
+        `Cree ton compte pour acceder au budget : ${inviteUrl}`,
+        '',
+        `Cette invitation est valable jusqu'au ${expiresFr}.`,
+        '',
+        'A bientot,',
+        "L'equipe Asili Design",
+      ].join('\n'),
+      html: `
+        <div style="font-family:Arial,Helvetica,sans-serif;background:#f7f7f7;padding:24px;">
+          <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:8px;padding:24px;">
+            <h2 style="margin-top:0;color:#111;">Invitation a rejoindre un budget</h2>
+            <p>Bonjour,</p>
+            <p><strong>${ownerName}</strong> t'invite a rejoindre son budget partage <strong>${groupName}</strong> sur Asili Design.</p>
+            <p>Cree ton compte pour acceder au budget partage :</p>
+            <div style="text-align:center;margin:24px 0;">
+              <a href="${inviteUrl}" style="display:inline-block;background:#0f7b65;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:bold;">
+                Rejoindre le budget
+              </a>
+            </div>
+            <p style="color:#888;font-size:12px;">Cette invitation est valable jusqu'au ${expiresFr}. Au-dela, demande a ${this.escapeHtml(payload.ownerFirstName)} de te re-partager le budget.</p>
+          </div>
+        </div>
+      `,
+    });
+
+    this.logger.log(`Budget invitation email sent to ${payload.targetEmail}`);
   }
 
   /** Echappe les caracteres HTML speciaux pour eviter les injections. */
