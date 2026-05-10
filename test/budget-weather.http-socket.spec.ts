@@ -22,6 +22,7 @@ import { UpdateBudgetCategoryUseCase } from '../src/modules/budget/application/s
 import { GetBudgetGroupMembersUseCase } from '../src/modules/budget/application/services/GetBudgetGroupMembers.useCase';
 import { RemoveBudgetGroupMemberUseCase } from '../src/modules/budget/application/services/RemoveBudgetGroupMember.useCase';
 import { GetBudgetEntriesMonthsUseCase } from '../src/modules/budget/application/services/GetBudgetEntriesMonths.useCase';
+import { ListPendingInvitationsUseCase } from '../src/modules/budget/application/services/ListPendingInvitations.useCase';
 import { WeatherController } from '../src/modules/weather/interfaces/Weather.controller';
 import { GetGeocodingUseCase } from '../src/modules/weather/application/GetGeocoding.useCase';
 import { GetForecastUseCase } from '../src/modules/weather/application/GetForecast.useCase';
@@ -70,6 +71,7 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
   const getBudgetGroupMembersUseCase = { execute: jest.fn() };
   const removeBudgetGroupMemberUseCase = { execute: jest.fn() };
   const getBudgetEntriesMonthsUseCase = { execute: jest.fn() };
+  const listPendingInvitationsUseCase = { execute: jest.fn() };
 
   /* ---------- Mocks Weather ---------- */
   const getGeocodingUseCase = { execute: jest.fn() };
@@ -149,6 +151,10 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
         {
           provide: GetBudgetEntriesMonthsUseCase,
           useValue: getBudgetEntriesMonthsUseCase,
+        },
+        {
+          provide: ListPendingInvitationsUseCase,
+          useValue: listPendingInvitationsUseCase,
         },
         /* Weather */
         { provide: GetGeocodingUseCase, useValue: getGeocodingUseCase },

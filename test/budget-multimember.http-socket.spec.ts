@@ -24,6 +24,7 @@ import { UpdateBudgetCategoryUseCase } from '../src/modules/budget/application/s
 import { GetBudgetGroupMembersUseCase } from '../src/modules/budget/application/services/GetBudgetGroupMembers.useCase';
 import { RemoveBudgetGroupMemberUseCase } from '../src/modules/budget/application/services/RemoveBudgetGroupMember.useCase';
 import { GetBudgetEntriesMonthsUseCase } from '../src/modules/budget/application/services/GetBudgetEntriesMonths.useCase';
+import { ListPendingInvitationsUseCase } from '../src/modules/budget/application/services/ListPendingInvitations.useCase';
 import { GetBudgetContributionsUseCase } from '../src/modules/budget/application/services/GetBudgetContributions.useCase';
 import { UpsertMyBudgetContributionUseCase } from '../src/modules/budget/application/services/UpsertMyBudgetContribution.useCase';
 import { CreateBudgetGoalUseCase } from '../src/modules/budget/application/services/CreateBudgetGoal.useCase';
@@ -69,6 +70,7 @@ describe('Budget multi-membres — contrat HTTP (e2e)', () => {
   const getBudgetGroupMembersUseCase = { execute: jest.fn() };
   const removeBudgetGroupMemberUseCase = { execute: jest.fn() };
   const getBudgetEntriesMonthsUseCase = { execute: jest.fn() };
+  const listPendingInvitationsUseCase = { execute: jest.fn() };
 
   /* ---------- Mocks BudgetContributionsController ---------- */
   const getBudgetContributionsUseCase = { execute: jest.fn() };
@@ -149,6 +151,10 @@ describe('Budget multi-membres — contrat HTTP (e2e)', () => {
         {
           provide: GetBudgetEntriesMonthsUseCase,
           useValue: getBudgetEntriesMonthsUseCase,
+        },
+        {
+          provide: ListPendingInvitationsUseCase,
+          useValue: listPendingInvitationsUseCase,
         },
         /* BudgetContributionsController */
         {
