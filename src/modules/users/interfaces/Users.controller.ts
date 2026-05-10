@@ -69,8 +69,8 @@ export class UsersController {
   @ApiCreatedResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
   async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
-    const user = await this.createUseCase.execute(dto);
-    return UserResponseDto.fromDomain(user);
+    const result = await this.createUseCase.execute(dto);
+    return UserResponseDto.fromDomain(result.user);
   }
 
   @Patch(':id')

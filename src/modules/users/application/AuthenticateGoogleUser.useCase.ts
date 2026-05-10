@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { AcceptBudgetInvitationUseCase } from '../../budget/application/services/AcceptBudgetInvitation.useCase';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { TokenHash } from '../domain/TokenHash';
@@ -47,9 +48,19 @@ export class AuthenticateGoogleUserUseCase {
     private readonly refreshTokensRepo: IRefreshTokensRepository,
     private readonly jwtTokenService: JwtTokenService,
     @Inject(GOOGLE_CLIENT_ID) private readonly googleClientId: string,
+    private readonly acceptBudgetInvitationUseCase: AcceptBudgetInvitationUseCase,
   ) {}
 
-  async execute(idToken: string): Promise<AuthResult> {
+  /**
+   * Authentifie via un Google ID token et retourne un AuthResult.
+   *
+   * Si `inviteToken` est fourni (flow magic-link de partage de budget), tente
+   * d'auto-accepter l'invitation apres login/inscription. L'echec de
+   * l'acceptation (token expire, mismatch email, etc.) est silencieux : il
+   * n'empeche pas le login Google de reussir — l'utilisateur pourra retenter
+   * via l'endpoint dedie ou recevoir un nouveau lien.
+   */
+  async execute(idToken: string, inviteToken?: string): Promise<AuthResult> {
     const payload = await this.verifyGoogleToken(idToken);
     const googleId = payload.sub;
     const email = payload.email;
@@ -58,11 +69,41 @@ export class AuthenticateGoogleUserUseCase {
       throw new InvalidCredentialsError('Google email not verified');
     }
 
+    const authenticatedUser = await this.resolveOrCreateUser(
+      googleId,
+      email,
+      payload,
+    );
+
+    const result = await this.signResult(authenticatedUser);
+
+    if (inviteToken && inviteToken.length > 0) {
+      await this.tryAcceptBudgetInvitation(
+        inviteToken,
+        authenticatedUser.id!,
+        authenticatedUser.email,
+      );
+    }
+
+    return result;
+  }
+
+  /**
+   * Resout l'utilisateur correspondant au token Google :
+   * 1. Lookup par googleId
+   * 2. Sinon lookup par email + lien du googleId (anti-takeover)
+   * 3. Sinon creation d'un nouveau compte
+   */
+  private async resolveOrCreateUser(
+    googleId: string,
+    email: string,
+    payload: GoogleTokenPayload,
+  ): Promise<User> {
     // 1. Chercher par googleId
     const byGoogleId = await this.repo.findByGoogleId(googleId);
     if (byGoogleId) {
       this.ensureActive(byGoogleId);
-      return this.signResult(byGoogleId);
+      return byGoogleId;
     }
 
     // 2. Chercher par email → lier le googleId UNIQUEMENT si l'email a deja ete verifie
@@ -82,7 +123,7 @@ export class AuthenticateGoogleUserUseCase {
       }
       await this.repo.update(byEmail.id!, { googleId } as Partial<User>);
       byEmail.googleId = googleId;
-      return this.signResult(byEmail);
+      return byEmail;
     }
 
     // 3. Creer un nouveau compte (emailVerified=true car Google a deja verifie)
@@ -94,8 +135,29 @@ export class AuthenticateGoogleUserUseCase {
       roles: DEFAULT_SELF_REGISTRATION_ROLES,
       emailVerified: true,
     });
-    const created = await this.repo.create(newUser);
-    return this.signResult(created);
+    return this.repo.create(newUser);
+  }
+
+  /**
+   * Tente d'accepter une invitation budget apres login/inscription Google.
+   * Toute erreur est loggee mais swallowed pour ne pas faire echouer le login.
+   */
+  private async tryAcceptBudgetInvitation(
+    inviteToken: string,
+    userId: string,
+    userEmail: string,
+  ): Promise<void> {
+    try {
+      await this.acceptBudgetInvitationUseCase.execute({
+        tokenClear: inviteToken,
+        acceptedByUserId: userId,
+        acceptedByEmail: userEmail,
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Auto-accept budget invitation failed after Google login (userId=${userId}): ${String(error)}`,
+      );
+    }
   }
 
   /** Verifie le token Google ID et retourne le payload. */

@@ -95,7 +95,10 @@ describe('UsersController', () => {
 
   it('devrait deleguer create au use case CreateUsers', async () => {
     const user = buildUser();
-    useCases.createUsers.execute.mockResolvedValue(user);
+    useCases.createUsers.execute.mockResolvedValue({
+      user,
+      inviteWarning: null,
+    });
 
     const dto = {
       email: 'new@example.com',

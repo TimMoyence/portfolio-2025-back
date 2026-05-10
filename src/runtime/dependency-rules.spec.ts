@@ -191,6 +191,23 @@ describe('Règles de dépendances inter-couches', () => {
     return `modules/${targetModule}/`;
   }
 
+  /**
+   * Exceptions ciblees : couplage explicite et documente entre modules
+   * metiers, accepte pour des features cross-module a invariants
+   * synchrones (ex : auto-accept invitation budget apres register/login).
+   * Format : `${sourceFile}|${importTarget}`. Toute nouvelle exception
+   * doit etre justifiee par une feature documentee dans un plan.
+   */
+  const CROSS_MODULE_EXCEPTIONS: ReadonlyArray<string> = [
+    // Flow invitation budget magic-link (plan 2026-05-10) : auto-accept
+    // synchrone au moment du register/login pour materialiser le partage
+    // sans round-trip frontend supplementaire. Couplage Users -> Budget
+    // assume car la feature lie identite + appartenance groupe.
+    'modules/users/application/CreateUsers.useCase.ts|modules/budget/',
+    'modules/users/application/AuthenticateGoogleUser.useCase.ts|modules/budget/',
+    'modules/users/interfaces/Auth.controller.ts|modules/budget/',
+  ];
+
   it("les modules metiers ne doivent pas importer depuis d'autres modules metiers (hors whitelist Users)", () => {
     const allModuleFiles = eligibleTsFiles(collectFiles(modulesRoot));
     const violations: string[] = [];
@@ -203,9 +220,11 @@ describe('Règles de dépendances inter-couches', () => {
         const allowed = CROSS_MODULE_IMPORT_WHITELIST.some((prefix) =>
           target.startsWith(prefix),
         );
-        if (!allowed) {
-          violations.push(`${file} importe : ${imp} (${target})`);
-        }
+        if (allowed) continue;
+        const relativeFile = file.slice(file.indexOf('modules/'));
+        const exceptionKey = `${relativeFile}|${target}`;
+        if (CROSS_MODULE_EXCEPTIONS.includes(exceptionKey)) continue;
+        violations.push(`${file} importe : ${imp} (${target})`);
       }
     }
 

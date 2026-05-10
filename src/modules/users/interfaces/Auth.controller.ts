@@ -190,6 +190,7 @@ export class AuthController {
     try {
       const result = await this.authenticateGoogleUserUseCase.execute(
         dto.idToken,
+        dto.inviteToken,
       );
       this.setRefreshCookie(res, result.refreshToken);
       this.auditLogger.log({
@@ -379,15 +380,19 @@ export class AuthController {
   @ApiOkResponse({ type: AuthMessageResponseDto })
   @ApiBadRequestResponse({ description: 'Inscription echouee' })
   async register(@Body() dto: CreateUserDto): Promise<AuthMessageResponseDto> {
-    await this.createUsersUseCase.execute({
+    const result = await this.createUsersUseCase.execute({
       ...dto,
       roles: [],
       updatedOrCreatedBy: 'self-registration',
     });
-    return {
+    const response: AuthMessageResponseDto = {
       message:
         'Inscription reussie. Un email de verification a ete envoye a votre adresse.',
     };
+    if (result.inviteWarning) {
+      response.inviteWarning = result.inviteWarning;
+    }
+    return response;
   }
 
   @Public()

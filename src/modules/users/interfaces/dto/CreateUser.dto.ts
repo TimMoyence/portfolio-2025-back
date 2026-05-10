@@ -75,4 +75,13 @@ export class CreateUserDto implements CreateUserCommand {
   @IsOptional()
   @IsString()
   updatedOrCreatedBy?: string | null;
+
+  @ApiPropertyOptional({
+    example: 'abc123def456',
+    description:
+      "Token clair d'invitation budget magic-link. Si fourni, l'utilisateur rejoint automatiquement le groupe a la fin de l'inscription.",
+  })
+  @IsOptional()
+  @IsString()
+  inviteToken?: string;
 }
