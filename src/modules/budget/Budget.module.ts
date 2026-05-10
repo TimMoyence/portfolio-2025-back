@@ -6,6 +6,7 @@ import {
   BUDGET_ENTRY_REPOSITORY,
   BUDGET_GOAL_REPOSITORY,
   BUDGET_GROUP_REPOSITORY,
+  BUDGET_INVITATION_REPOSITORY,
   BUDGET_MEMBER_CONTRIBUTION_REPOSITORY,
   BUDGET_PDF_RENDERER,
   BUDGET_SHARE_ATTEMPT_REPOSITORY,
@@ -27,6 +28,7 @@ import { BudgetGroupMemberEntity } from './infrastructure/entities/BudgetGroupMe
 import { BudgetShareAttemptEntity } from './infrastructure/entities/BudgetShareAttempt.entity';
 import { BudgetMemberContributionEntity } from './infrastructure/entities/BudgetMemberContribution.entity';
 import { BudgetGoalEntity } from './infrastructure/entities/BudgetGoal.entity';
+import { BudgetInvitationEntity } from './infrastructure/entities/BudgetInvitation.entity';
 import { BudgetCategoryRepositoryTypeORM } from './infrastructure/BudgetCategory.repository.typeORM';
 import { BudgetEntryRepositoryTypeORM } from './infrastructure/BudgetEntry.repository.typeORM';
 import { BudgetGroupRepositoryTypeORM } from './infrastructure/BudgetGroup.repository.typeORM';
@@ -34,6 +36,7 @@ import { BudgetShareAttemptRepositoryTypeORM } from './infrastructure/BudgetShar
 import { RecurringEntryRepositoryTypeORM } from './infrastructure/RecurringEntry.repository.typeORM';
 import { BudgetMemberContributionRepositoryTypeORM } from './infrastructure/BudgetMemberContribution.repository.typeORM';
 import { BudgetGoalRepositoryTypeORM } from './infrastructure/BudgetGoal.repository.typeORM';
+import { BudgetInvitationTypeOrmRepository } from './infrastructure/BudgetInvitation.repository.typeORM';
 import { BudgetShareMailerService } from './infrastructure/BudgetShareMailer.service';
 import { BudgetController } from './interfaces/Budget.controller';
 import { BudgetRecurringController } from './interfaces/BudgetRecurring.controller';
@@ -115,6 +118,7 @@ const BUDGET_USE_CASES = [
       BudgetShareAttemptEntity,
       BudgetMemberContributionEntity,
       BudgetGoalEntity,
+      BudgetInvitationEntity,
     ]),
     UsersModule,
   ],
@@ -169,6 +173,10 @@ const BUDGET_USE_CASES = [
     {
       provide: BUDGET_GOAL_REPOSITORY,
       useClass: BudgetGoalRepositoryTypeORM,
+    },
+    {
+      provide: BUDGET_INVITATION_REPOSITORY,
+      useClass: BudgetInvitationTypeOrmRepository,
     },
   ],
 })
