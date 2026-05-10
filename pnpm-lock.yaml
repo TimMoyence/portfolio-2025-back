@@ -78,6 +78,9 @@ importers:
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
       fast-xml-parser:
         specifier: ^5.5.9
         version: 5.5.9
