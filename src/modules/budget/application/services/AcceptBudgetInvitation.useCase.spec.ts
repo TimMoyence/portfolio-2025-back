@@ -66,11 +66,22 @@ describe('AcceptBudgetInvitationUseCase', () => {
 
       expect(result).toEqual({ groupId: 'group-1', groupName: 'Couple' });
       expect(groupRepo.addMember).toHaveBeenCalledWith('group-1', 'user-99');
+      expect(groupRepo.addMember).toHaveBeenCalledTimes(1);
       expect(invitationRepo.markAccepted).toHaveBeenCalledWith(
         'inv-1',
         'user-99',
         expect.any(Date),
       );
+      expect(invitationRepo.markAccepted).toHaveBeenCalledTimes(1);
+    });
+
+    it('trim le tokenClear avant le hash (tolere les espaces accidentels)', async () => {
+      await useCase.execute({
+        ...baseCommand,
+        tokenClear: `  ${tokenClear}\n`,
+      });
+
+      expect(invitationRepo.findByTokenHash).toHaveBeenCalledWith(tokenHash);
     });
 
     it('recalcule le hash SHA-256 du tokenClear pour matcher en base (invariant critique)', async () => {
@@ -92,6 +103,15 @@ describe('AcceptBudgetInvitationUseCase', () => {
       await expect(
         useCase.execute({ ...baseCommand, tokenClear: 'unknown' }),
       ).rejects.toBeInstanceOf(InvalidInvitationTokenError);
+      expect(groupRepo.addMember).not.toHaveBeenCalled();
+      expect(invitationRepo.markAccepted).not.toHaveBeenCalled();
+    });
+
+    it('rejette un tokenClear vide ou whitespace-only', async () => {
+      await expect(
+        useCase.execute({ ...baseCommand, tokenClear: '   ' }),
+      ).rejects.toBeInstanceOf(InvalidInvitationTokenError);
+      expect(invitationRepo.findByTokenHash).not.toHaveBeenCalled();
       expect(groupRepo.addMember).not.toHaveBeenCalled();
       expect(invitationRepo.markAccepted).not.toHaveBeenCalled();
     });
@@ -221,6 +241,39 @@ describe('AcceptBudgetInvitationUseCase', () => {
         expect.any(Date),
       );
       expect(result).toEqual({ groupId: 'group-1', groupName: 'Couple' });
+    });
+
+    it('idempotence : si markAccepted throw apres addMember, retry avec meme token reussit', async () => {
+      invitationRepo.findByTokenHash.mockResolvedValue(
+        buildBudgetInvitation({
+          id: 'inv-1',
+          groupId: 'group-1',
+          targetEmail: 'bob@example.com',
+          tokenHash,
+        }),
+      );
+      groupRepo.findById.mockResolvedValue(
+        buildBudgetGroup({ id: 'group-1', name: 'Couple' }),
+      );
+      groupRepo.isMember
+        .mockResolvedValueOnce(false)
+        .mockResolvedValueOnce(true);
+      groupRepo.addMember.mockResolvedValue(undefined);
+      invitationRepo.markAccepted
+        .mockRejectedValueOnce(new Error('connection lost'))
+        .mockResolvedValueOnce(undefined);
+
+      // Premier appel : markAccepted throw apres addMember reussi
+      await expect(useCase.execute(baseCommand)).rejects.toThrow(
+        'connection lost',
+      );
+
+      // Retry : addMember skip (deja membre), markAccepted reussit
+      const result = await useCase.execute(baseCommand);
+
+      expect(groupRepo.addMember).toHaveBeenCalledTimes(1); // pas de double-add
+      expect(invitationRepo.markAccepted).toHaveBeenCalledTimes(2);
+      expect(result.groupId).toBe('group-1');
     });
   });
 });

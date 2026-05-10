@@ -23,8 +23,9 @@ import type {
  * Use case d'acceptation d'une invitation magic-link de partage de budget.
  *
  * Etapes :
- * 1. Re-hash du `tokenClear` recu du mail en SHA-256 (le clair n'est jamais
- *    persiste cote serveur).
+ * 1. Trim + re-hash du `tokenClear` recu du mail en SHA-256 (le clair n'est
+ *    jamais persiste cote serveur). Token vide apres trim =>
+ *    `InvalidInvitationTokenError`.
  * 2. Lookup de l'invitation par hash. Token inconnu => `InvalidInvitationTokenError`.
  * 3. Verifications d'etat de l'invitation dans l'ordre :
  *    - revoquee => `InvitationRevokedError`
@@ -34,6 +35,12 @@ import type {
  * 4. Lookup du groupe cible. Supprime entre temps => `ResourceNotFoundError`.
  * 5. Ajout du membre (idempotent : skip si deja membre, swallow PG23505 sur
  *    race) puis marquage de l'invitation comme acceptee.
+ *
+ * Atomicite : addMember et markAccepted ne sont pas wrappes dans une
+ * transaction (use case orchestre 2 ports differents). Si markAccepted
+ * echoue apres un addMember reussi, l'utilisateur est membre mais
+ * l'invitation reste pending — le retry du token est idempotent
+ * (isMember=true => skip addMember + markAccepted re-tente).
  */
 @Injectable()
 export class AcceptBudgetInvitationUseCase {
@@ -49,8 +56,12 @@ export class AcceptBudgetInvitationUseCase {
   async execute(
     command: AcceptBudgetInvitationCommand,
   ): Promise<AcceptBudgetInvitationResult> {
+    const normalizedToken = command.tokenClear.trim();
+    if (normalizedToken.length === 0) {
+      throw new InvalidInvitationTokenError();
+    }
     const tokenHash = createHash('sha256')
-      .update(command.tokenClear)
+      .update(normalizedToken)
       .digest('hex');
 
     const invitation = await this.invitationRepo.findByTokenHash(tokenHash);
