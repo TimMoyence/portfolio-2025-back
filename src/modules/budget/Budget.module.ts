@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/Users.module';
 import {
@@ -124,7 +124,7 @@ const BUDGET_USE_CASES = [
       BudgetGoalEntity,
       BudgetInvitationEntity,
     ]),
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   controllers: [
     BudgetController,
@@ -183,7 +183,11 @@ const BUDGET_USE_CASES = [
       useClass: BudgetInvitationTypeOrmRepository,
     },
   ],
-  exports: [AcceptBudgetInvitationUseCase],
+  exports: [
+    AcceptBudgetInvitationUseCase,
+    BUDGET_INVITATION_REPOSITORY,
+    BUDGET_GROUP_REPOSITORY,
+  ],
 })
 export class BudgetModule {}
 
