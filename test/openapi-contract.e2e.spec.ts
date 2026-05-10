@@ -33,6 +33,8 @@ import { OPENWEATHERMAP_PROXY } from '../src/modules/weather/domain/token';
 
 /* ── Budget module ─────────────────────────────────────────────────── */
 import { BudgetController } from '../src/modules/budget/interfaces/Budget.controller';
+import { BudgetContributionsController } from '../src/modules/budget/interfaces/BudgetContributions.controller';
+import { BudgetGoalsController } from '../src/modules/budget/interfaces/BudgetGoals.controller';
 import { CreateBudgetGroupUseCase } from '../src/modules/budget/application/services/CreateBudgetGroup.useCase';
 import { GetBudgetGroupsUseCase } from '../src/modules/budget/application/services/GetBudgetGroups.useCase';
 import { CreateBudgetEntryUseCase } from '../src/modules/budget/application/services/CreateBudgetEntry.useCase';
@@ -45,6 +47,15 @@ import { GetBudgetCategoriesUseCase } from '../src/modules/budget/application/se
 import { DeleteBudgetEntryUseCase } from '../src/modules/budget/application/services/DeleteBudgetEntry.useCase';
 import { UpdateBudgetCategoryUseCase } from '../src/modules/budget/application/services/UpdateBudgetCategory.useCase';
 import { ShareBudgetUseCase } from '../src/modules/budget/application/services/ShareBudget.useCase';
+import { GetBudgetContributionsUseCase } from '../src/modules/budget/application/services/GetBudgetContributions.useCase';
+import { UpsertMyBudgetContributionUseCase } from '../src/modules/budget/application/services/UpsertMyBudgetContribution.useCase';
+import { CreateBudgetGoalUseCase } from '../src/modules/budget/application/services/CreateBudgetGoal.useCase';
+import { GetBudgetGoalsWithProgressUseCase } from '../src/modules/budget/application/services/GetBudgetGoalsWithProgress.useCase';
+import { UpdateBudgetGoalUseCase } from '../src/modules/budget/application/services/UpdateBudgetGoal.useCase';
+import { DeleteBudgetGoalUseCase } from '../src/modules/budget/application/services/DeleteBudgetGoal.useCase';
+import { GetBudgetGroupMembersUseCase } from '../src/modules/budget/application/services/GetBudgetGroupMembers.useCase';
+import { RemoveBudgetGroupMemberUseCase } from '../src/modules/budget/application/services/RemoveBudgetGroupMember.useCase';
+import { GetBudgetEntriesMonthsUseCase } from '../src/modules/budget/application/services/GetBudgetEntriesMonths.useCase';
 
 /* ── Users module ──────────────────────────────────────────────────── */
 import { UsersController } from '../src/modules/users/interfaces/Users.controller';
@@ -184,6 +195,8 @@ describe('OpenAPI core contract', () => {
       controllers: [
         WeatherController,
         BudgetController,
+        BudgetContributionsController,
+        BudgetGoalsController,
         UsersController,
         AuthController,
         ContactsController,
@@ -221,6 +234,15 @@ describe('OpenAPI core contract', () => {
         { provide: DeleteBudgetEntryUseCase, useValue: stub() },
         { provide: UpdateBudgetCategoryUseCase, useValue: stub() },
         { provide: ShareBudgetUseCase, useValue: stub() },
+        { provide: GetBudgetContributionsUseCase, useValue: stub() },
+        { provide: UpsertMyBudgetContributionUseCase, useValue: stub() },
+        { provide: CreateBudgetGoalUseCase, useValue: stub() },
+        { provide: GetBudgetGoalsWithProgressUseCase, useValue: stub() },
+        { provide: UpdateBudgetGoalUseCase, useValue: stub() },
+        { provide: DeleteBudgetGoalUseCase, useValue: stub() },
+        { provide: GetBudgetGroupMembersUseCase, useValue: stub() },
+        { provide: RemoveBudgetGroupMemberUseCase, useValue: stub() },
+        { provide: GetBudgetEntriesMonthsUseCase, useValue: stub() },
 
         /* ── Users ──────────────────────────────────────── */
         { provide: ListUsersUseCase, useValue: stub() },
