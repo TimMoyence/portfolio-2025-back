@@ -2,6 +2,7 @@
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
+import importPlugin from 'eslint-plugin-import-x';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -10,6 +11,39 @@ export default tseslint.config(
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
+  // --- Garde-fou C2 : no-extraneous-dependencies --------------------------
+  // Detecte tout import valeur depuis un package absent de
+  // dependencies/devDependencies (cf bug express cdf24cb).
+  {
+    plugins: { 'import-x': importPlugin },
+    settings: {
+      'import-x/resolver': {
+        typescript: { project: 'tsconfig.json' },
+        node: true,
+      },
+    },
+    rules: {
+      'import-x/no-extraneous-dependencies': [
+        'error',
+        {
+          devDependencies: [
+            '**/*.spec.ts',
+            '**/*.test.ts',
+            'test/**/*.ts',
+            'test/**/*.{js,mjs,cjs}',
+            'src/**/__tests__/**',
+            '**/*.config.{js,mjs,cjs,ts}',
+            'eslint.config.mjs',
+            'jest.config.{js,mjs,cjs,ts}',
+            'generate-architecture.mjs',
+          ],
+          optionalDependencies: false,
+          peerDependencies: false,
+          bundledDependencies: false,
+        },
+      ],
+    },
+  },
   eslintPluginPrettierRecommended,
   {
     languageOptions: {
