@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { createHash } from 'crypto';
 import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
 import { RateLimitExceededError } from '../../../../common/domain/errors/RateLimitExceededError';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
@@ -212,7 +213,9 @@ describe('ShareBudgetUseCase', () => {
     await useCase.execute(command);
 
     expect(notifier.sendBudgetShareNotification).not.toHaveBeenCalled();
-    expect(shareAttemptRepo.record).not.toHaveBeenCalled();
+    // Le cooldown skip seulement le mail — la tentative est tracee
+    // pour que le quota 5/24h ne puisse pas etre bypass via spam.
+    expect(shareAttemptRepo.record).toHaveBeenCalledTimes(1);
   });
 
   it("CRIT-2 — devrait enregistrer la tentative avant l'envoi du mail (cooldown SMTP-fail-safe)", async () => {
@@ -260,5 +263,62 @@ describe('ShareBudgetUseCase', () => {
         groupName: 'Budget couple T&M',
       }),
     );
+  });
+
+  it('persiste tokenHash = sha256(tokenClear), JAMAIS le clair', async () => {
+    groupRepo.findById.mockResolvedValue(
+      buildBudgetGroup({ ownerId: 'user-1' }),
+    );
+    usersRepo.findByEmail.mockResolvedValue(null);
+    usersRepo.findById.mockResolvedValue(buildUser({ id: 'user-1' }));
+    invitationRepo.findActiveByGroupAndEmail.mockResolvedValue(null);
+    invitationRepo.create.mockResolvedValue(buildBudgetInvitation());
+    shareAttemptRepo.findRecent.mockResolvedValue(null);
+    shareAttemptRepo.countByInviterSince.mockResolvedValue(0);
+
+    await useCase.execute({
+      groupId: 'group-1',
+      targetEmail: 'bob@example.com',
+      userId: 'user-1',
+    });
+
+    const createCall = invitationRepo.create.mock.calls[0][0];
+    expect(createCall.tokenHash).toMatch(/^[a-f0-9]{64}$/); // sha256 hex
+    // L URL d invite doit contenir le clair, et le tokenHash doit etre sa version sha256
+    const sendCall = notifier.sendBudgetInvitation.mock.calls[0][0];
+    const tokenClear = new URL(sendCall.inviteUrl).searchParams.get('invite');
+    expect(tokenClear).toBeTruthy();
+    expect(tokenClear).not.toBe(createCall.tokenHash);
+    // Verifier que sha256(tokenClear) === tokenHash
+    const expectedHash = createHash('sha256')
+      .update(tokenClear as string)
+      .digest('hex');
+    expect(createCall.tokenHash).toBe(expectedHash);
+  });
+
+  it('race PG23505 sur invitation.create -> retry findActiveByGroupAndEmail', async () => {
+    groupRepo.findById.mockResolvedValue(
+      buildBudgetGroup({ ownerId: 'user-1' }),
+    );
+    usersRepo.findByEmail.mockResolvedValue(null);
+    usersRepo.findById.mockResolvedValue(buildUser({ id: 'user-1' }));
+    invitationRepo.findActiveByGroupAndEmail
+      .mockResolvedValueOnce(null) // 1er check : pas d existing
+      .mockResolvedValueOnce(buildBudgetInvitation({ id: 'inv-race' })); // retry trouve la concurrente
+    const uniqueError = Object.assign(new Error('unique constraint'), {
+      code: '23505',
+    });
+    invitationRepo.create.mockRejectedValue(uniqueError);
+    shareAttemptRepo.findRecent.mockResolvedValue(null);
+    shareAttemptRepo.countByInviterSince.mockResolvedValue(0);
+
+    const result = await useCase.execute({
+      groupId: 'group-1',
+      targetEmail: 'bob@example.com',
+      userId: 'user-1',
+    });
+
+    expect(result).toEqual({ status: 'invited' });
+    expect(invitationRepo.findActiveByGroupAndEmail).toHaveBeenCalledTimes(2);
   });
 });

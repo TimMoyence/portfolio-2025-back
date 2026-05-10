@@ -4,6 +4,7 @@ import { createHash, randomBytes } from 'crypto';
 import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
 import { RateLimitExceededError } from '../../../../common/domain/errors/RateLimitExceededError';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
+import type { BudgetInvitation } from '../../domain/BudgetInvitation';
 import type { IBudgetGroupRepository } from '../../domain/IBudgetGroup.repository';
 import type { IBudgetInvitationRepository } from '../../domain/IBudgetInvitation.repository';
 import type { IBudgetShareAttemptRepository } from '../../domain/IBudgetShareAttempt.repository';
@@ -118,19 +119,21 @@ export class ShareBudgetUseCase {
         throw error;
       }
 
-      if (recent) {
-        this.logger.warn(
-          `Cooldown actif sur ${command.targetEmail}, mail skip (branche A)`,
-        );
-        return { status: 'shared' };
-      }
-
+      // Trace TOUJOURS la tentative — meme en cooldown — pour que
+      // le quota 5/24h ne puisse pas etre bypass via spam pendant cooldown.
       await this.shareAttemptRepo.record(
         command.groupId,
         command.targetEmail,
         now,
         command.userId,
       );
+
+      if (recent) {
+        this.logger.warn(
+          `Cooldown actif sur ${command.targetEmail}, mail skip (branche A)`,
+        );
+        return { status: 'shared' };
+      }
 
       const owner = await this.usersRepo.findById(command.userId);
       const corsOrigin = this.configService.get<string>(
@@ -172,7 +175,7 @@ export class ShareBudgetUseCase {
       now.getTime() + ShareBudgetUseCase.INVITATION_TTL_MS,
     );
 
-    let invitation;
+    let invitation: BudgetInvitation;
     try {
       invitation = await this.invitationRepo.create({
         groupId: command.groupId,
@@ -197,19 +200,21 @@ export class ShareBudgetUseCase {
       }
     }
 
-    if (recent) {
-      this.logger.warn(
-        `Cooldown actif sur ${command.targetEmail}, mail skip (branche B)`,
-      );
-      return { status: 'invited' };
-    }
-
+    // Trace TOUJOURS la tentative — meme en cooldown — pour que
+    // le quota 5/24h ne puisse pas etre bypass via spam pendant cooldown.
     await this.shareAttemptRepo.record(
       command.groupId,
       command.targetEmail,
       now,
       command.userId,
     );
+
+    if (recent) {
+      this.logger.warn(
+        `Cooldown actif sur ${command.targetEmail}, mail skip (branche B)`,
+      );
+      return { status: 'invited' };
+    }
 
     const owner = await this.usersRepo.findById(command.userId);
     const corsOrigin = this.configService.get<string>(
