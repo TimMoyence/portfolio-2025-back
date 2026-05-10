@@ -210,6 +210,79 @@ exports[`OpenAPI core contract keeps Auth path contracts stable 1`] = `
       ],
     },
   },
+  "/api/auth/invitations/by-token/{token}": {
+    "get": {
+      "operationId": "AuthController_previewBudgetInvitation",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationPreviewResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "404": {
+          "description": "Invitation introuvable ou plus valide",
+        },
+      },
+      "summary": "Preview publique d'une invitation budget par token",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
+  "/api/auth/invitations/{token}/accept": {
+    "post": {
+      "operationId": "AuthController_acceptBudgetInvitation",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptInvitationResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+        "401": {
+          "description": "Token JWT invalide ou expire",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Accepte une invitation budget (auth requise)",
+      "tags": [
+        "auth",
+      ],
+    },
+  },
   "/api/auth/login": {
     "post": {
       "operationId": "AuthController_login",
@@ -1245,6 +1318,42 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
         },
       ],
       "summary": "Creer un groupe de budget",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/groups/{groupId}/invitations/pending": {
+    "get": {
+      "operationId": "BudgetController_listGroupPendingInvitations",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PendingInvitationsListResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Lister les invitations en attente du groupe (owner-only)",
       "tags": [
         "budget",
       ],

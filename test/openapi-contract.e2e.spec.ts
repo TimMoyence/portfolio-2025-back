@@ -56,6 +56,13 @@ import { DeleteBudgetGoalUseCase } from '../src/modules/budget/application/servi
 import { GetBudgetGroupMembersUseCase } from '../src/modules/budget/application/services/GetBudgetGroupMembers.useCase';
 import { RemoveBudgetGroupMemberUseCase } from '../src/modules/budget/application/services/RemoveBudgetGroupMember.useCase';
 import { GetBudgetEntriesMonthsUseCase } from '../src/modules/budget/application/services/GetBudgetEntriesMonths.useCase';
+import { ListPendingInvitationsUseCase } from '../src/modules/budget/application/services/ListPendingInvitations.useCase';
+import { AcceptBudgetInvitationUseCase } from '../src/modules/budget/application/services/AcceptBudgetInvitation.useCase';
+import {
+  BUDGET_GROUP_REPOSITORY,
+  BUDGET_INVITATION_REPOSITORY,
+} from '../src/modules/budget/domain/token';
+import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 
 /* ── Users module ──────────────────────────────────────────────────── */
 import { UsersController } from '../src/modules/users/interfaces/Users.controller';
@@ -243,6 +250,44 @@ describe('OpenAPI core contract', () => {
         { provide: GetBudgetGroupMembersUseCase, useValue: stub() },
         { provide: RemoveBudgetGroupMemberUseCase, useValue: stub() },
         { provide: GetBudgetEntriesMonthsUseCase, useValue: stub() },
+        { provide: ListPendingInvitationsUseCase, useValue: stub() },
+        { provide: AcceptBudgetInvitationUseCase, useValue: stub() },
+        {
+          provide: BUDGET_INVITATION_REPOSITORY,
+          useValue: {
+            create: jest.fn(),
+            findByTokenHash: jest.fn(),
+            findActiveByGroupAndEmail: jest.fn(),
+            findPendingByGroup: jest.fn(),
+            markAccepted: jest.fn(),
+            markRevoked: jest.fn(),
+          },
+        },
+        {
+          provide: BUDGET_GROUP_REPOSITORY,
+          useValue: {
+            findById: jest.fn(),
+            create: jest.fn(),
+            findByOwner: jest.fn(),
+            findByMember: jest.fn(),
+            isMember: jest.fn(),
+            addMember: jest.fn(),
+            removeMember: jest.fn(),
+            listMembers: jest.fn(),
+          },
+        },
+        {
+          provide: USERS_REPOSITORY,
+          useValue: {
+            findById: jest.fn(),
+            findByEmail: jest.fn(),
+            findAll: jest.fn(),
+            create: jest.fn(),
+            findByGoogleId: jest.fn(),
+            update: jest.fn(),
+            deactivate: jest.fn(),
+          },
+        },
 
         /* ── Users ──────────────────────────────────────── */
         { provide: ListUsersUseCase, useValue: stub() },
