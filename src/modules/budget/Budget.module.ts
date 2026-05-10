@@ -70,6 +70,8 @@ import { DeleteBudgetGoalUseCase } from './application/services/DeleteBudgetGoal
 import { GetBudgetGroupMembersUseCase } from './application/services/GetBudgetGroupMembers.useCase';
 import { RemoveBudgetGroupMemberUseCase } from './application/services/RemoveBudgetGroupMember.useCase';
 import { GetBudgetEntriesMonthsUseCase } from './application/services/GetBudgetEntriesMonths.useCase';
+import { AcceptBudgetInvitationUseCase } from './application/services/AcceptBudgetInvitation.useCase';
+import { ListPendingInvitationsUseCase } from './application/services/ListPendingInvitations.useCase';
 
 const BUDGET_USE_CASES = [
   CreateBudgetGroupUseCase,
@@ -99,6 +101,8 @@ const BUDGET_USE_CASES = [
   GetBudgetGroupMembersUseCase,
   RemoveBudgetGroupMemberUseCase,
   GetBudgetEntriesMonthsUseCase,
+  AcceptBudgetInvitationUseCase,
+  ListPendingInvitationsUseCase,
 ];
 
 /**
@@ -179,6 +183,7 @@ const BUDGET_USE_CASES = [
       useClass: BudgetInvitationTypeOrmRepository,
     },
   ],
+  exports: [AcceptBudgetInvitationUseCase],
 })
 export class BudgetModule {}
 
