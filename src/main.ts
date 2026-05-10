@@ -1,8 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
-import { json, urlencoded } from 'express';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
@@ -17,7 +17,9 @@ function logBootstrapStep(message: string): void {
 
 async function bootstrap() {
   logBootstrapStep('starting bootstrap');
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
   logBootstrapStep('nest application created');
   app.useLogger(app.get(Logger));
 
@@ -41,8 +43,10 @@ async function bootstrap() {
   // (max 500 KB cote DTO @MaxLength) avec une marge pour l'overhead
   // JSON. Au-dela, body-parser repond 413 avant que le DTO ne soit
   // construit, evitant un DoS event-loop (HIGH-2 audit 2026-05-09).
-  app.use(json({ limit: '600kb' }));
-  app.use(urlencoded({ extended: true, limit: '600kb' }));
+  // API native NestExpressApplication : pas besoin d'importer express
+  // directement (NestExpressBodyParserOptions.limit, pnpm 9 isolated).
+  app.useBodyParser('json', { limit: '600kb' });
+  app.useBodyParser('urlencoded', { limit: '600kb', extended: true });
 
   app.use(cookieParser());
 

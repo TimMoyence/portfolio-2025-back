@@ -65,7 +65,6 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.4",
     "cookie-parser": "^1.4.7",
-    "express": "^5.2.1",
     "fast-xml-parser": "^5.5.9",
     "google-auth-library": "^10.6.2",
     "grammy": "^1.42.0",
