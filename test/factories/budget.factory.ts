@@ -17,6 +17,8 @@ import type { IBudgetShareAttemptRepository } from '../../src/modules/budget/dom
 import type { BudgetMemberContribution } from '../../src/modules/budget/domain/BudgetMemberContribution';
 import type { IBudgetMemberContributionRepository } from '../../src/modules/budget/domain/IBudgetMemberContribution.repository';
 import type { BudgetMember } from '../../src/modules/budget/domain/BudgetMember';
+import type { BudgetInvitation } from '../../src/modules/budget/domain/BudgetInvitation';
+import type { IBudgetInvitationRepository } from '../../src/modules/budget/domain/IBudgetInvitation.repository';
 import type { CreateBudgetGroupUseCase } from '../../src/modules/budget/application/services/CreateBudgetGroup.useCase';
 import type { GetBudgetGroupsUseCase } from '../../src/modules/budget/application/services/GetBudgetGroups.useCase';
 import type { CreateBudgetEntryUseCase } from '../../src/modules/budget/application/services/CreateBudgetEntry.useCase';
@@ -284,6 +286,39 @@ export function buildBudgetMember(
     joinedAt: new Date('2026-01-15'),
     ...overrides,
   } as BudgetMember;
+}
+
+/** Construit une BudgetInvitation domaine avec des valeurs par defaut. */
+export function buildBudgetInvitation(
+  overrides?: Partial<BudgetInvitation>,
+): BudgetInvitation {
+  return {
+    id: 'inv-1',
+    groupId: 'group-1',
+    inviterUserId: 'user-1',
+    targetEmail: 'bob@example.com',
+    tokenHash: 'a'.repeat(64),
+    expiresAt: new Date('2026-05-17T00:00:00Z'),
+    acceptedAt: null,
+    acceptedByUserId: null,
+    revokedAt: null,
+    createdAt: new Date('2026-05-10T00:00:00Z'),
+    isPending: () => true,
+    isExpired: () => false,
+    ...overrides,
+  } as BudgetInvitation;
+}
+
+/** Mock type du IBudgetInvitationRepository pour Jest. */
+export function createMockBudgetInvitationRepo(): jest.Mocked<IBudgetInvitationRepository> {
+  return {
+    create: jest.fn(),
+    findByTokenHash: jest.fn(),
+    findActiveByGroupAndEmail: jest.fn(),
+    findPendingByGroup: jest.fn(),
+    markAccepted: jest.fn(),
+    markRevoked: jest.fn(),
+  };
 }
 
 /** Cree des mocks types pour tous les use cases du BudgetController. */
