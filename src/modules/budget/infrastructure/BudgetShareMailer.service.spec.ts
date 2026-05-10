@@ -212,12 +212,13 @@ describe('BudgetShareMailerService', () => {
 
   describe('sendBudgetInvitation', () => {
     it('envoie un email avec le lien d invitation et la date d expiration', async () => {
-      process.env.SMTP_HOST = 'localhost';
-      process.env.SMTP_PORT = '1025';
+      // Arrange
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv();
       const service = new TestableBudgetShareMailer();
-      const sendMail = jest.fn().mockResolvedValue(undefined);
-      (service as any).transporter = { sendMail };
 
+      // Act
       await service.sendBudgetInvitation({
         targetEmail: 'bob@example.com',
         ownerFirstName: 'Tim',
@@ -227,8 +228,10 @@ describe('BudgetShareMailerService', () => {
         expiresAt: new Date('2026-05-17T12:00:00Z'),
       });
 
-      expect(sendMail).toHaveBeenCalledTimes(1);
-      const args = sendMail.mock.calls[0][0];
+      // Assert
+      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
+      const args = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(args.from).toBe(DEFAULT_SMTP_ENV.SMTP_FROM);
       expect(args.to).toBe('bob@example.com');
       expect(args.subject).toContain('Tim');
       expect(args.html).toContain(
@@ -239,8 +242,15 @@ describe('BudgetShareMailerService', () => {
     });
 
     it('skip silencieux si SMTP non configure', async () => {
+      // Arrange — pas de config SMTP
+      cleanupEnv = setSmtpEnv();
       delete process.env.SMTP_HOST;
+      delete process.env.SMTP_PORT;
+      delete process.env.SMTP_USER;
+      delete process.env.SMTP_PASS;
       const service = new TestableBudgetShareMailer();
+
+      // Act & Assert — ne doit pas throw
       await expect(
         service.sendBudgetInvitation({
           targetEmail: 'bob@example.com',
@@ -251,6 +261,59 @@ describe('BudgetShareMailerService', () => {
           expiresAt: new Date(),
         }),
       ).resolves.toBeUndefined();
+      expect(mockedCreateTransport).not.toHaveBeenCalled();
+    });
+
+    it('propage les erreurs SMTP au caller', async () => {
+      // Arrange
+      mockTransporter = createMockTransporter();
+      (mockTransporter.sendMail as jest.Mock).mockRejectedValue(
+        new Error('Connection refused'),
+      );
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv();
+      const service = new TestableBudgetShareMailer();
+
+      // Act & Assert
+      await expect(
+        service.sendBudgetInvitation({
+          targetEmail: 'bob@example.com',
+          ownerFirstName: 'Tim',
+          ownerLastName: 'Moyence',
+          groupName: 'Couple',
+          inviteUrl: 'https://x',
+          expiresAt: new Date('2026-05-17T12:00:00Z'),
+        }),
+      ).rejects.toThrow('Connection refused');
+    });
+
+    it('echappe les caracteres HTML dans le subject et le body HTML', async () => {
+      // Arrange
+      mockTransporter = createMockTransporter();
+      mockedCreateTransport.mockReturnValue(mockTransporter as never);
+      cleanupEnv = setSmtpEnv();
+      const service = new TestableBudgetShareMailer();
+
+      // Act
+      await service.sendBudgetInvitation({
+        targetEmail: 'bob@example.com',
+        ownerFirstName: '<script>alert(1)</script>',
+        ownerLastName: 'Doe & "Doe"',
+        groupName: '<img src=x onerror=alert(1)>',
+        inviteUrl: 'https://x',
+        expiresAt: new Date('2026-05-17T12:00:00Z'),
+      });
+
+      // Assert
+      const args = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(args.subject).not.toContain('<script>');
+      expect(args.subject).toContain('&lt;script&gt;');
+      expect(args.html).not.toContain('<script>');
+      expect(args.html).toContain('&lt;script&gt;');
+      expect(args.html).not.toContain('<img src=x onerror=');
+      expect(args.html).toContain('&lt;img');
+      expect(args.html).toContain('&quot;');
+      expect(args.html).toContain('&amp;');
     });
   });
 

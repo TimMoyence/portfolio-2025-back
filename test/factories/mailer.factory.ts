@@ -1,19 +1,10 @@
 import type { Transporter } from 'nodemailer';
 import type { IPasswordResetNotifier } from '../../src/modules/users/domain/IPasswordResetNotifier';
-import type { IBudgetShareNotifier } from '../../src/modules/budget/domain/IBudgetShareNotifier';
 
 /** Cree un mock du notifier de reset password. */
 export function createMockPasswordResetNotifier(): jest.Mocked<IPasswordResetNotifier> {
   return {
     sendPasswordResetEmail: jest.fn(),
-  };
-}
-
-/** Cree un mock du notifier de partage de budget. */
-export function createMockBudgetShareNotifier(): jest.Mocked<IBudgetShareNotifier> {
-  return {
-    sendBudgetShareNotification: jest.fn(),
-    sendBudgetInvitation: jest.fn(),
   };
 }
 
