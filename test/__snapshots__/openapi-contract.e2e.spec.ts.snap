@@ -687,6 +687,96 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
       ],
     },
   },
+  "/api/budget/contributions": {
+    "get": {
+      "operationId": "BudgetContributionsController_list",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+        {
+          "in": "query",
+          "name": "month",
+          "required": true,
+          "schema": {
+            "type": "number",
+          },
+        },
+        {
+          "in": "query",
+          "name": "year",
+          "required": true,
+          "schema": {
+            "type": "number",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/BudgetContributionResponseDto",
+                },
+                "type": "array",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Liste les contributions du groupe pour une periode",
+      "tags": [
+        "budget",
+      ],
+    },
+    "put": {
+      "operationId": "BudgetContributionsController_upsert",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpsertContributionDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetContributionResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Upsert ma contribution mensuelle",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
   "/api/budget/entries": {
     "get": {
       "operationId": "BudgetController_listBudgetEntries",
@@ -837,6 +927,35 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
       ],
     },
   },
+  "/api/budget/entries/months": {
+    "get": {
+      "operationId": "BudgetController_listEntriesMonths",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Liste les couples (month, year) ou des entrees existent",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
   "/api/budget/entries/{id}": {
     "delete": {
       "operationId": "BudgetController_deleteBudgetEntry",
@@ -913,6 +1032,153 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
       ],
     },
   },
+  "/api/budget/goals": {
+    "get": {
+      "operationId": "BudgetGoalsController_list",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/BudgetGoalWithProgressResponseDto",
+                },
+                "type": "array",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Liste les objectifs avec progression actuelle",
+      "tags": [
+        "budget",
+      ],
+    },
+    "post": {
+      "operationId": "BudgetGoalsController_create",
+      "parameters": [],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateGoalDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetGoalWithProgressResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Cree un objectif de budget",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/goals/{id}": {
+    "delete": {
+      "operationId": "BudgetGoalsController_remove",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "204": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Supprime un objectif",
+      "tags": [
+        "budget",
+      ],
+    },
+    "patch": {
+      "operationId": "BudgetGoalsController_update",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateGoalDto",
+            },
+          },
+        },
+        "required": true,
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetGoalWithProgressResponseDto",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Met a jour un objectif",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
   "/api/budget/groups": {
     "get": {
       "operationId": "BudgetController_listBudgetGroups",
@@ -979,6 +1245,82 @@ exports[`OpenAPI core contract keeps Budget path contracts stable 1`] = `
         },
       ],
       "summary": "Creer un groupe de budget",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/groups/{groupId}/members": {
+    "get": {
+      "operationId": "BudgetController_listGroupMembers",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/BudgetMemberResponseDto",
+                },
+                "type": "array",
+              },
+            },
+          },
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Liste les membres d'un groupe budget enrichis",
+      "tags": [
+        "budget",
+      ],
+    },
+  },
+  "/api/budget/groups/{groupId}/members/{userId}": {
+    "delete": {
+      "operationId": "BudgetController_removeGroupMember",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "groupId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+        {
+          "in": "path",
+          "name": "userId",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "responses": {
+        "204": {
+          "description": "",
+        },
+      },
+      "security": [
+        {
+          "bearer": [],
+        },
+      ],
+      "summary": "Retire un membre du groupe (owner uniquement)",
       "tags": [
         "budget",
       ],

@@ -15,4 +15,8 @@ export interface IBudgetEntryRepository {
   findById(id: string): Promise<BudgetEntry | null>;
   update(id: string, data: Partial<BudgetEntry>): Promise<BudgetEntry>;
   delete(id: string): Promise<void>;
+  /** Liste les couples (month, year) distincts ou des entrees existent pour un groupe, ordonne le plus recent en premier. */
+  findDistinctMonths(
+    groupId: string,
+  ): Promise<Array<{ month: number; year: number }>>;
 }

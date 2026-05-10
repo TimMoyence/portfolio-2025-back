@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -40,6 +42,10 @@ import { UpdateBudgetEntryUseCase } from '../application/services/UpdateBudgetEn
 import { DeleteBudgetEntryUseCase } from '../application/services/DeleteBudgetEntry.useCase';
 import { UpdateBudgetCategoryUseCase } from '../application/services/UpdateBudgetCategory.useCase';
 import { ShareBudgetUseCase } from '../application/services/ShareBudget.useCase';
+import { GetBudgetGroupMembersUseCase } from '../application/services/GetBudgetGroupMembers.useCase';
+import { RemoveBudgetGroupMemberUseCase } from '../application/services/RemoveBudgetGroupMember.useCase';
+import { GetBudgetEntriesMonthsUseCase } from '../application/services/GetBudgetEntriesMonths.useCase';
+import type { BudgetMember } from '../domain/BudgetMember';
 import { BudgetCategoryResponseDto } from './dto/BudgetCategory.response.dto';
 import { BudgetEntryResponseDto } from './dto/BudgetEntry.response.dto';
 import { BudgetGroupResponseDto } from './dto/BudgetGroup.response.dto';
@@ -51,6 +57,7 @@ import { ImportBudgetEntriesDto } from './dto/ImportBudgetEntries.dto';
 import { ShareBudgetDto } from './dto/ShareBudget.dto';
 import { UpdateBudgetEntryDto } from './dto/UpdateBudgetEntry.dto';
 import { UpdateBudgetCategoryDto } from './dto/UpdateBudgetCategory.dto';
+import { BudgetMemberResponseDto } from './dto/BudgetMember.response.dto';
 
 /**
  * Controleur REST principal du module Budget.
@@ -80,6 +87,9 @@ export class BudgetController {
     private readonly deleteEntry: DeleteBudgetEntryUseCase,
     private readonly updateCategory: UpdateBudgetCategoryUseCase,
     private readonly shareBudget: ShareBudgetUseCase,
+    private readonly getMembers: GetBudgetGroupMembersUseCase,
+    private readonly removeMember: RemoveBudgetGroupMemberUseCase,
+    private readonly getEntriesMonths: GetBudgetEntriesMonthsUseCase,
   ) {}
 
   @Post('groups')
@@ -300,5 +310,51 @@ export class BudgetController {
       groupId: dto.groupId,
       targetEmail: dto.targetEmail,
     });
+  }
+
+  @Get('groups/:groupId/members')
+  @ApiOperation({ summary: "Liste les membres d'un groupe budget enrichis" })
+  @ApiOkResponse({ type: BudgetMemberResponseDto, isArray: true })
+  async listGroupMembers(
+    @Param('groupId', new ParseUUIDPipe()) groupId: string,
+    @Req() req: Request,
+  ): Promise<BudgetMemberResponseDto[]> {
+    const userId = req.user!.sub;
+    const members = await this.getMembers.execute({ groupId, userId });
+    return members.map((m) => this.toMemberResponse(m));
+  }
+
+  @Delete('groups/:groupId/members/:userId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Retire un membre du groupe (owner uniquement)' })
+  async removeGroupMember(
+    @Param('groupId', new ParseUUIDPipe()) groupId: string,
+    @Param('userId', new ParseUUIDPipe()) targetUserId: string,
+    @Req() req: Request,
+  ): Promise<void> {
+    const actorUserId = req.user!.sub;
+    await this.removeMember.execute({ groupId, actorUserId, targetUserId });
+  }
+
+  @Get('entries/months')
+  @ApiOperation({
+    summary: 'Liste les couples (month, year) ou des entrees existent',
+  })
+  async listEntriesMonths(
+    @Query('groupId', new ParseUUIDPipe()) groupId: string,
+    @Req() req: Request,
+  ): Promise<Array<{ month: number; year: number }>> {
+    const userId = req.user!.sub;
+    return this.getEntriesMonths.execute({ groupId, userId });
+  }
+
+  private toMemberResponse(m: BudgetMember): BudgetMemberResponseDto {
+    return {
+      userId: m.userId,
+      email: m.email,
+      displayName: m.displayName,
+      isOwner: m.isOwner,
+      joinedAt: m.joinedAt.toISOString(),
+    };
   }
 }

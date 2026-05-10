@@ -18,7 +18,7 @@ describe('BudgetGroupRepositoryTypeORM — P0-4 transaction atomique', () => {
   let groupRepoTypeOrm: jest.Mocked<Repository<BudgetGroupEntity>>;
   let memberRepoTypeOrm: jest.Mocked<Repository<BudgetGroupMemberEntity>>;
   let manager: jest.Mocked<Pick<EntityManager, 'save'>>;
-  let dataSource: jest.Mocked<Pick<DataSource, 'transaction'>>;
+  let dataSource: jest.Mocked<Pick<DataSource, 'transaction' | 'query'>>;
   let repo: BudgetGroupRepositoryTypeORM;
 
   beforeEach(() => {
@@ -32,6 +32,7 @@ describe('BudgetGroupRepositoryTypeORM — P0-4 transaction atomique', () => {
       save: jest.fn(),
       find: jest.fn(),
       count: jest.fn(),
+      delete: jest.fn(),
     } as unknown as jest.Mocked<Repository<BudgetGroupMemberEntity>>;
     manager = {
       save: jest.fn(),
@@ -40,7 +41,8 @@ describe('BudgetGroupRepositoryTypeORM — P0-4 transaction atomique', () => {
       transaction: jest.fn(async (cb: (m: EntityManager) => Promise<unknown>) =>
         cb(manager as unknown as EntityManager),
       ),
-    } as unknown as jest.Mocked<Pick<DataSource, 'transaction'>>;
+      query: jest.fn(),
+    } as unknown as jest.Mocked<Pick<DataSource, 'transaction' | 'query'>>;
     repo = new BudgetGroupRepositoryTypeORM(
       groupRepoTypeOrm,
       memberRepoTypeOrm,
@@ -101,5 +103,105 @@ describe('BudgetGroupRepositoryTypeORM — P0-4 transaction atomique', () => {
     // interne lorsque le callback rejette ; ce qui compte cote test
     // est que l'erreur ne soit PAS swallow.
     expect(dataSource.transaction).toHaveBeenCalledTimes(1);
+  });
+
+  describe('isOwner', () => {
+    it('retourne true si userId === group.ownerId', async () => {
+      groupRepoTypeOrm.findOne.mockResolvedValueOnce({
+        id: 'g1',
+        ownerId: 'u1',
+      } as BudgetGroupEntity);
+      expect(await repo.isOwner('g1', 'u1')).toBe(true);
+    });
+
+    it('retourne false si userId !== group.ownerId', async () => {
+      groupRepoTypeOrm.findOne.mockResolvedValueOnce({
+        id: 'g1',
+        ownerId: 'u-other',
+      } as BudgetGroupEntity);
+      expect(await repo.isOwner('g1', 'u1')).toBe(false);
+    });
+
+    it('retourne false si group inexistant', async () => {
+      groupRepoTypeOrm.findOne.mockResolvedValueOnce(null);
+      expect(await repo.isOwner('g-missing', 'u1')).toBe(false);
+    });
+  });
+
+  describe('findMembersWithUsers', () => {
+    it('retourne les membres avec isOwner correct (owner first)', async () => {
+      dataSource.query.mockResolvedValueOnce([
+        {
+          user_id: 'owner-id',
+          email: 'owner@x.fr',
+          first_name: 'Alice',
+          joined_at: new Date('2026-01-01'),
+          is_owner: true,
+        },
+        {
+          user_id: 'invited-id',
+          email: 'bob@x.fr',
+          first_name: 'Bob',
+          joined_at: new Date('2026-02-01'),
+          is_owner: false,
+        },
+      ]);
+      const members = await repo.findMembersWithUsers('g1');
+      expect(members).toHaveLength(2);
+      expect(members[0]).toEqual({
+        userId: 'owner-id',
+        email: 'owner@x.fr',
+        displayName: 'Alice',
+        isOwner: true,
+        joinedAt: new Date('2026-01-01'),
+      });
+      expect(members[1].isOwner).toBe(false);
+    });
+
+    it('retourne [] si aucun membre / group inexistant', async () => {
+      dataSource.query.mockResolvedValueOnce([]);
+      expect(await repo.findMembersWithUsers('g-missing')).toEqual([]);
+    });
+
+    it('displayName fallback sur email split si first_name null', async () => {
+      dataSource.query.mockResolvedValueOnce([
+        {
+          user_id: 'u1',
+          email: 'noname@x.fr',
+          first_name: null,
+          joined_at: new Date('2026-01-01'),
+          is_owner: false,
+        },
+      ]);
+      const members = await repo.findMembersWithUsers('g1');
+      expect(members[0].displayName).toBe('noname');
+    });
+
+    it('passe le groupId en parametre $1 (anti SQL injection)', async () => {
+      dataSource.query.mockResolvedValueOnce([]);
+      await repo.findMembersWithUsers('g1');
+      expect(dataSource.query).toHaveBeenCalledWith(expect.any(String), ['g1']);
+    });
+  });
+
+  describe('removeMember', () => {
+    it('appelle memberRepo.delete avec groupId+userId', async () => {
+      (memberRepoTypeOrm as unknown as { delete: jest.Mock }).delete = jest
+        .fn()
+        .mockResolvedValueOnce({ affected: 1 });
+      await repo.removeMember('g1', 'u-target');
+      expect(
+        (memberRepoTypeOrm as unknown as { delete: jest.Mock }).delete,
+      ).toHaveBeenCalledWith({ groupId: 'g1', userId: 'u-target' });
+    });
+
+    it("idempotent : ne throw pas si la ligne n'existe pas", async () => {
+      (memberRepoTypeOrm as unknown as { delete: jest.Mock }).delete = jest
+        .fn()
+        .mockResolvedValueOnce({ affected: 0 });
+      await expect(
+        repo.removeMember('g1', 'u-missing'),
+      ).resolves.toBeUndefined();
+    });
   });
 });

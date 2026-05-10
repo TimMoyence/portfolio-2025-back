@@ -66,6 +66,25 @@ export class BudgetEntryRepositoryTypeORM implements IBudgetEntryRepository {
     await this.repo.delete({ id });
   }
 
+  async findDistinctMonths(
+    groupId: string,
+  ): Promise<Array<{ month: number; year: number }>> {
+    const rows: Array<{ month: string | number; year: string | number }> =
+      await this.repo
+        .createQueryBuilder('e')
+        .select('EXTRACT(MONTH FROM e.date)::int', 'month')
+        .addSelect('EXTRACT(YEAR FROM e.date)::int', 'year')
+        .where('e.group_id = :groupId', { groupId })
+        .distinct(true)
+        .orderBy('year', 'DESC')
+        .addOrderBy('month', 'DESC')
+        .getRawMany();
+    return rows.map((r) => ({
+      month: Number(r.month),
+      year: Number(r.year),
+    }));
+  }
+
   private toDomain(entity: BudgetEntryEntity): BudgetEntry {
     const entry = new BudgetEntry();
     entry.id = entity.id;

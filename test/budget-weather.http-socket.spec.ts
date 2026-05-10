@@ -19,6 +19,9 @@ import { GetBudgetCategoriesUseCase } from '../src/modules/budget/application/se
 import { ShareBudgetUseCase } from '../src/modules/budget/application/services/ShareBudget.useCase';
 import { DeleteBudgetEntryUseCase } from '../src/modules/budget/application/services/DeleteBudgetEntry.useCase';
 import { UpdateBudgetCategoryUseCase } from '../src/modules/budget/application/services/UpdateBudgetCategory.useCase';
+import { GetBudgetGroupMembersUseCase } from '../src/modules/budget/application/services/GetBudgetGroupMembers.useCase';
+import { RemoveBudgetGroupMemberUseCase } from '../src/modules/budget/application/services/RemoveBudgetGroupMember.useCase';
+import { GetBudgetEntriesMonthsUseCase } from '../src/modules/budget/application/services/GetBudgetEntriesMonths.useCase';
 import { WeatherController } from '../src/modules/weather/interfaces/Weather.controller';
 import { GetGeocodingUseCase } from '../src/modules/weather/application/GetGeocoding.useCase';
 import { GetForecastUseCase } from '../src/modules/weather/application/GetForecast.useCase';
@@ -64,6 +67,9 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
   const shareBudgetUseCase = { execute: jest.fn() };
   const deleteBudgetEntryUseCase = { execute: jest.fn() };
   const updateBudgetCategoryUseCase = { execute: jest.fn() };
+  const getBudgetGroupMembersUseCase = { execute: jest.fn() };
+  const removeBudgetGroupMemberUseCase = { execute: jest.fn() };
+  const getBudgetEntriesMonthsUseCase = { execute: jest.fn() };
 
   /* ---------- Mocks Weather ---------- */
   const getGeocodingUseCase = { execute: jest.fn() };
@@ -131,6 +137,18 @@ describe('Budget & Weather — contrat HTTP (e2e)', () => {
         {
           provide: UpdateBudgetCategoryUseCase,
           useValue: updateBudgetCategoryUseCase,
+        },
+        {
+          provide: GetBudgetGroupMembersUseCase,
+          useValue: getBudgetGroupMembersUseCase,
+        },
+        {
+          provide: RemoveBudgetGroupMemberUseCase,
+          useValue: removeBudgetGroupMemberUseCase,
+        },
+        {
+          provide: GetBudgetEntriesMonthsUseCase,
+          useValue: getBudgetEntriesMonthsUseCase,
         },
         /* Weather */
         { provide: GetGeocodingUseCase, useValue: getGeocodingUseCase },

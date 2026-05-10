@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { BudgetGroup } from '../domain/BudgetGroup';
+import type { BudgetMember } from '../domain/BudgetMember';
 import type { IBudgetGroupRepository } from '../domain/IBudgetGroup.repository';
 import { BudgetGroupEntity } from './entities/BudgetGroup.entity';
 import { BudgetGroupMemberEntity } from './entities/BudgetGroupMember.entity';
@@ -65,6 +66,55 @@ export class BudgetGroupRepositoryTypeORM implements IBudgetGroupRepository {
   async isMember(groupId: string, userId: string): Promise<boolean> {
     const count = await this.memberRepo.count({ where: { groupId, userId } });
     return count > 0;
+  }
+
+  /** Retourne true si userId est l'owner du groupe (group inexistant => false). */
+  async isOwner(groupId: string, userId: string): Promise<boolean> {
+    const group = await this.groupRepo.findOne({
+      where: { id: groupId },
+      select: ['ownerId'],
+    });
+    return group?.ownerId === userId;
+  }
+
+  /**
+   * Liste les membres d'un groupe enrichis avec leurs infos user
+   * (email, prenom, owner flag, date d'invitation). Owner first puis
+   * ordre d'invitation chronologique. Requete SQL parametree ($1) pour
+   * eviter toute injection.
+   */
+  async findMembersWithUsers(groupId: string): Promise<BudgetMember[]> {
+    const rows: Array<{
+      user_id: string;
+      email: string;
+      first_name: string | null;
+      joined_at: Date;
+      is_owner: boolean;
+    }> = await this.dataSource.query(
+      `SELECT u.id AS user_id,
+              u.email AS email,
+              u.first_name AS first_name,
+              m.joined_at AS joined_at,
+              (g.owner_id = u.id) AS is_owner
+       FROM budget_group_members m
+       JOIN users u ON u.id = m.user_id
+       JOIN budget_groups g ON g.id = m.group_id
+       WHERE m.group_id = $1
+       ORDER BY (g.owner_id = u.id) DESC, m.joined_at ASC`,
+      [groupId],
+    );
+    return rows.map((r) => ({
+      userId: r.user_id,
+      email: r.email,
+      displayName: r.first_name ?? r.email.split('@')[0],
+      isOwner: r.is_owner,
+      joinedAt: r.joined_at,
+    }));
+  }
+
+  /** Retire un membre du groupe. Idempotent (delete sans erreur si absent). */
+  async removeMember(groupId: string, userId: string): Promise<void> {
+    await this.memberRepo.delete({ groupId, userId });
   }
 
   private toDomain(entity: BudgetGroupEntity): BudgetGroup {
