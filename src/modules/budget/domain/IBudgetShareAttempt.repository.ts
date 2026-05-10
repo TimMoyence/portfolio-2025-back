@@ -19,6 +19,20 @@ export interface IBudgetShareAttemptRepository {
     since: Date,
   ): Promise<{ sentAt: Date } | null>;
 
-  /** Persiste une nouvelle tentative reussie. */
-  record(groupId: string, targetEmail: string, sentAt: Date): Promise<void>;
+  /**
+   * Persiste une nouvelle tentative reussie.
+   * `inviterUserId` peut etre null pour les tentatives historiques pre-feature.
+   */
+  record(
+    groupId: string,
+    targetEmail: string,
+    sentAt: Date,
+    inviterUserId: string,
+  ): Promise<void>;
+
+  /**
+   * Compte les tentatives d'un inviter depuis une date (quota
+   * applicatif anti mail-bombing : 5 par 24h).
+   */
+  countByInviterSince(inviterUserId: string, since: Date): Promise<number>;
 }

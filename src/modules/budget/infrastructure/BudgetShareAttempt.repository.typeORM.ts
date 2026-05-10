@@ -31,7 +31,19 @@ export class BudgetShareAttemptRepositoryTypeORM implements IBudgetShareAttemptR
     groupId: string,
     targetEmail: string,
     sentAt: Date,
+    inviterUserId: string,
   ): Promise<void> {
-    await this.repo.save({ groupId, targetEmail, sentAt });
+    await this.repo.save(
+      this.repo.create({ groupId, targetEmail, sentAt, inviterUserId }),
+    );
+  }
+
+  async countByInviterSince(
+    inviterUserId: string,
+    since: Date,
+  ): Promise<number> {
+    return this.repo.count({
+      where: { inviterUserId, sentAt: MoreThanOrEqual(since) },
+    });
   }
 }

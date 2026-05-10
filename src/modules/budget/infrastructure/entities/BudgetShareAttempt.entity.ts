@@ -13,6 +13,7 @@ import {
  */
 @Entity({ name: 'budget_share_attempts' })
 @Index('idx_budget_share_attempts_lookup', ['groupId', 'targetEmail', 'sentAt'])
+@Index('idx_budget_share_attempts_inviter_quota', ['inviterUserId', 'sentAt'])
 export class BudgetShareAttemptEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -22,6 +23,9 @@ export class BudgetShareAttemptEntity {
 
   @Column({ name: 'target_email', type: 'varchar', length: 254 })
   targetEmail: string;
+
+  @Column({ name: 'inviter_user_id', type: 'uuid', nullable: true })
+  inviterUserId: string | null;
 
   @Column({ name: 'sent_at', type: 'timestamptz' })
   sentAt: Date;

@@ -196,6 +196,7 @@ describe('ShareBudgetUseCase', () => {
       'group-1',
       'cible@example.com',
       expect.any(Date),
+      'user-1',
     );
   });
 

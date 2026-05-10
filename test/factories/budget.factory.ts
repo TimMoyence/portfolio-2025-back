@@ -136,6 +136,7 @@ export function createMockBudgetShareAttemptRepo(): jest.Mocked<IBudgetShareAtte
   return {
     findRecent: jest.fn(),
     record: jest.fn(),
+    countByInviterSince: jest.fn(),
   };
 }
 

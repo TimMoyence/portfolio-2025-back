@@ -136,6 +136,7 @@ export class ShareBudgetUseCase {
       command.groupId,
       command.targetEmail,
       new Date(),
+      command.userId,
     );
 
     try {
