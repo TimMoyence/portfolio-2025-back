@@ -20,8 +20,10 @@ export interface IBudgetShareAttemptRepository {
   ): Promise<{ sentAt: Date } | null>;
 
   /**
-   * Persiste une nouvelle tentative reussie.
-   * `inviterUserId` peut etre null pour les tentatives historiques pre-feature.
+   * Persiste une nouvelle tentative reussie. Le parametre `inviterUserId`
+   * est obligatoire pour toute nouvelle tentative. La colonne en base est
+   * nullable uniquement pour les lignes historiques pre-feature qu'il n'a
+   * pas ete possible de backfill.
    */
   record(
     groupId: string,
