@@ -59,3 +59,6 @@ deploy/backend.env
 deploy/.env
 generate-architecture.mjs
 .gitnexus
+
+# Claude Code workspaces
+.claude/worktrees
