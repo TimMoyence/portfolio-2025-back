@@ -329,8 +329,32 @@ describe('BudgetController', () => {
       icon: 'utensils',
       budgetType: 'VARIABLE',
       budgetLimit: 800,
+      groupId: undefined,
     });
     expect(result.name).toBe('Alimentation');
+  });
+
+  it('devrait propager groupId au use case (auto-clone defaut)', async () => {
+    const category = buildBudgetCategory({ name: 'Alimentation' });
+    useCases.updateCategory.execute.mockResolvedValue(category);
+
+    const dto = {
+      budgetLimit: 600,
+      groupId: 'group-42',
+    };
+
+    await controller.updateBudgetCategory('cat-default', dto, mockReq);
+
+    expect(useCases.updateCategory.execute).toHaveBeenCalledWith({
+      userId: 'user-1',
+      categoryId: 'cat-default',
+      name: undefined,
+      color: undefined,
+      icon: undefined,
+      budgetType: undefined,
+      budgetLimit: 600,
+      groupId: 'group-42',
+    });
   });
 
   // --- shareBudgetGroup ---
