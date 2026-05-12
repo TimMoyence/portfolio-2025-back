@@ -18,11 +18,27 @@ export class BudgetCategoryRepositoryTypeORM implements IBudgetCategoryRepositor
     return this.toDomain(entity);
   }
 
+  /**
+   * Retourne les categories visibles pour un groupe : per-group + defauts
+   * non encore overrides (i.e. ceux dont l'id n'apparait pas dans
+   * `replaces_default_id` de ce groupe).
+   */
   async findByGroupId(groupId: string): Promise<BudgetCategory[]> {
-    const entities = await this.repo.find({
-      where: [{ groupId }, { groupId: IsNull() }],
-      order: { displayOrder: 'ASC' },
-    });
+    const entities = await this.repo
+      .createQueryBuilder('cat')
+      .where('cat.group_id = :groupId', { groupId })
+      .orWhere(
+        `cat.group_id IS NULL
+          AND cat.id NOT IN (
+            SELECT clone.replaces_default_id
+            FROM budget_categories clone
+            WHERE clone.group_id = :groupId
+              AND clone.replaces_default_id IS NOT NULL
+          )`,
+        { groupId },
+      )
+      .orderBy('cat.display_order', 'ASC')
+      .getMany();
     return entities.map((e) => this.toDomain(e));
   }
 
@@ -36,6 +52,16 @@ export class BudgetCategoryRepositoryTypeORM implements IBudgetCategoryRepositor
 
   async findById(id: string): Promise<BudgetCategory | null> {
     const entity = await this.repo.findOne({ where: { id } });
+    return this.toDomainOrNull(entity);
+  }
+
+  async findCloneInGroup(
+    groupId: string,
+    defaultCategoryId: string,
+  ): Promise<BudgetCategory | null> {
+    const entity = await this.repo.findOne({
+      where: { groupId, replacesDefaultId: defaultCategoryId },
+    });
     return this.toDomainOrNull(entity);
   }
 
@@ -61,6 +87,7 @@ export class BudgetCategoryRepositoryTypeORM implements IBudgetCategoryRepositor
     cat.budgetType = entity.budgetType as BudgetType;
     cat.budgetLimit = Number(entity.budgetLimit);
     cat.displayOrder = entity.displayOrder;
+    cat.replacesDefaultId = entity.replacesDefaultId;
     cat.createdAt = entity.createdAt;
     return cat;
   }
