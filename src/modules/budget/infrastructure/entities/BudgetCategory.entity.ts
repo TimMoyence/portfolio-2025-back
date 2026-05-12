@@ -42,6 +42,16 @@ export class BudgetCategoryEntity {
   @Column({ name: 'display_order', type: 'integer', default: 0 })
   displayOrder: number;
 
+  /**
+   * Id de la categorie par defaut (group_id IS NULL) dont cette ligne est
+   * un clone par-groupe. Permet a `findByGroupId` d'exclure les defauts
+   * deja overrides pour le groupe et a `UpdateBudgetCategoryUseCase` de
+   * trouver le clone existant pour le mettre a jour au lieu d'en creer un
+   * second. Migration : 1777500000000-AddReplacesDefaultIdToBudgetCategories.
+   */
+  @Column({ name: 'replaces_default_id', type: 'uuid', nullable: true })
+  replacesDefaultId: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

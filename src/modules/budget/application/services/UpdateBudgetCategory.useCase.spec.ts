@@ -31,10 +31,12 @@ describe('UpdateBudgetCategoryUseCase', () => {
     ).rejects.toThrow(ResourceNotFoundError);
   });
 
-  it("devrait rejeter la modification d'une categorie par defaut (groupId null)", async () => {
+  it("devrait rejeter la modification d'une categorie par defaut SANS groupId fourni", async () => {
     const globalCategory = buildBudgetCategory({ groupId: null });
     categoryRepo.findById.mockResolvedValue(globalCategory);
 
+    // Pas de groupId dans la command -> impossible de savoir dans quel
+    // groupe cloner. Refus pour proteger la categorie globale.
     await expect(
       useCase.execute({
         userId: 'user-1',
@@ -42,6 +44,121 @@ describe('UpdateBudgetCategoryUseCase', () => {
         name: 'Modifie',
       }),
     ).rejects.toThrow(InsufficientPermissionsError);
+  });
+
+  describe('auto-clone categorie par defaut', () => {
+    it('clone la categorie par defaut dans le groupe quand aucun clone existant', async () => {
+      const defaultCategory = buildBudgetCategory({
+        id: 'cat-default',
+        groupId: null,
+        name: 'Alimentation',
+        color: '#22C55E',
+        icon: 'shopping-cart',
+        budgetType: 'VARIABLE',
+        budgetLimit: 0,
+        displayOrder: 8,
+      });
+      const createdClone = buildBudgetCategory({
+        id: 'cat-clone',
+        groupId: 'group-1',
+        name: 'Alimentation',
+        color: '#22C55E',
+        icon: 'shopping-cart',
+        budgetType: 'VARIABLE',
+        budgetLimit: 800,
+        displayOrder: 8,
+        replacesDefaultId: 'cat-default',
+      });
+
+      categoryRepo.findById.mockResolvedValue(defaultCategory);
+      groupRepo.isMember.mockResolvedValue(true);
+      categoryRepo.findCloneInGroup.mockResolvedValue(null);
+      categoryRepo.create.mockResolvedValue(createdClone);
+
+      const result = await useCase.execute({
+        userId: 'user-1',
+        categoryId: 'cat-default',
+        groupId: 'group-1',
+        budgetLimit: 800,
+      });
+
+      expect(categoryRepo.findCloneInGroup).toHaveBeenCalledWith(
+        'group-1',
+        'cat-default',
+      );
+      expect(categoryRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          groupId: 'group-1',
+          replacesDefaultId: 'cat-default',
+          name: 'Alimentation',
+          color: '#22C55E',
+          icon: 'shopping-cart',
+          budgetType: 'VARIABLE',
+          budgetLimit: 800,
+          displayOrder: 8,
+        }),
+      );
+      expect(categoryRepo.update).not.toHaveBeenCalled();
+      expect(result).toEqual(createdClone);
+    });
+
+    it('met a jour le clone existant au lieu d en creer un second', async () => {
+      const defaultCategory = buildBudgetCategory({
+        id: 'cat-default',
+        groupId: null,
+      });
+      const existingClone = buildBudgetCategory({
+        id: 'cat-clone',
+        groupId: 'group-1',
+        replacesDefaultId: 'cat-default',
+        budgetLimit: 500,
+      });
+      const updatedClone = buildBudgetCategory({
+        id: 'cat-clone',
+        groupId: 'group-1',
+        replacesDefaultId: 'cat-default',
+        budgetLimit: 900,
+      });
+
+      categoryRepo.findById.mockResolvedValue(defaultCategory);
+      groupRepo.isMember.mockResolvedValue(true);
+      categoryRepo.findCloneInGroup.mockResolvedValue(existingClone);
+      categoryRepo.update.mockResolvedValue(updatedClone);
+
+      const result = await useCase.execute({
+        userId: 'user-1',
+        categoryId: 'cat-default',
+        groupId: 'group-1',
+        budgetLimit: 900,
+      });
+
+      expect(categoryRepo.update).toHaveBeenCalledWith('cat-clone', {
+        budgetLimit: 900,
+      });
+      expect(categoryRepo.create).not.toHaveBeenCalled();
+      expect(result).toEqual(updatedClone);
+    });
+
+    it("refuse le clone si l'utilisateur n'est pas membre du groupe cible", async () => {
+      const defaultCategory = buildBudgetCategory({
+        id: 'cat-default',
+        groupId: null,
+      });
+      categoryRepo.findById.mockResolvedValue(defaultCategory);
+      groupRepo.isMember.mockResolvedValue(false);
+
+      await expect(
+        useCase.execute({
+          userId: 'intruder',
+          categoryId: 'cat-default',
+          groupId: 'group-1',
+          budgetLimit: 800,
+        }),
+      ).rejects.toThrow(InsufficientPermissionsError);
+
+      expect(categoryRepo.create).not.toHaveBeenCalled();
+      expect(categoryRepo.update).not.toHaveBeenCalled();
+    });
   });
 
   it("devrait rejeter si l'utilisateur n'est pas membre du groupe", async () => {

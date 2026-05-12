@@ -293,6 +293,7 @@ export class BudgetController {
       icon: dto.icon,
       budgetType: dto.budgetType,
       budgetLimit: dto.budgetLimit,
+      groupId: dto.groupId,
     });
     return BudgetCategoryMapper.toResponse(category);
   }

@@ -11,6 +11,13 @@ export interface CreateBudgetCategoryProps {
   budgetType: string;
   budgetLimit?: number;
   displayOrder?: number;
+  /**
+   * Id de la categorie par defaut (group_id IS NULL) dont celle-ci est un
+   * clone par-groupe. Non null uniquement pour les clones crees via
+   * UpdateBudgetCategoryUseCase quand l'utilisateur modifie une categorie
+   * par defaut.
+   */
+  replacesDefaultId?: string | null;
 }
 
 /** Entite domaine representant une categorie de budget. */
@@ -23,6 +30,8 @@ export class BudgetCategory {
   budgetType: BudgetType;
   budgetLimit: number;
   displayOrder: number;
+  /** Voir CreateBudgetCategoryProps.replacesDefaultId. */
+  replacesDefaultId: string | null;
   createdAt?: Date;
 
   static create(props: CreateBudgetCategoryProps): BudgetCategory {
@@ -50,6 +59,7 @@ export class BudgetCategory {
     cat.budgetType = props.budgetType as BudgetType;
     cat.budgetLimit = budgetLimit;
     cat.displayOrder = props.displayOrder ?? 0;
+    cat.replacesDefaultId = props.replacesDefaultId ?? null;
     cat.createdAt = new Date();
     return cat;
   }

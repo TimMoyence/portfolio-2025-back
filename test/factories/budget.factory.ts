@@ -63,6 +63,7 @@ export function buildBudgetCategory(
     budgetType: 'VARIABLE',
     budgetLimit: 600,
     displayOrder: 8,
+    replacesDefaultId: null,
     createdAt: new Date('2026-01-01'),
     ...overrides,
   } as BudgetCategory;
@@ -110,6 +111,7 @@ export function createMockBudgetCategoryRepo(): jest.Mocked<IBudgetCategoryRepos
     findByGroupId: jest.fn(),
     findDefaults: jest.fn(),
     findById: jest.fn(),
+    findCloneInGroup: jest.fn(),
     update: jest.fn(),
   };
 }
