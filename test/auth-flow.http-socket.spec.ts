@@ -153,7 +153,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
    * ================================================================= */
 
   it('POST /api/auth/login retourne un token JWT valide et le profil', async () => {
-    const user = buildUser({ roles: ['budget', 'weather'] });
+    const user = buildUser({ roles: ['weather'] });
     const signed = await jwtTokenService.sign({
       sub: user.id,
       email: user.email,
@@ -190,7 +190,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
    * ================================================================= */
 
   it('GET /api/auth/me avec Bearer valide retourne le profil utilisateur', async () => {
-    const user = buildUser({ roles: ['budget'] });
+    const user = buildUser({ roles: ['weather'] });
     const signed = await jwtTokenService.sign({
       sub: user.id,
       email: user.email,
@@ -321,7 +321,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
    * ================================================================= */
 
   it('flow complet : login, acces protege, refresh, re-acces, logout', async () => {
-    const user = buildUser({ roles: ['budget', 'weather'] });
+    const user = buildUser({ roles: ['weather'] });
 
     /* 1. Login */
     const firstSigned = await jwtTokenService.sign({
