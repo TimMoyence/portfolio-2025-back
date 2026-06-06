@@ -2,7 +2,6 @@ import { VALID_ROLES, DEFAULT_SELF_REGISTRATION_ROLES } from './roles';
 
 describe('roles', () => {
   it('devrait contenir tous les roles attendus', () => {
-    expect(VALID_ROLES).toContain('budget');
     expect(VALID_ROLES).toContain('weather');
     expect(VALID_ROLES).toContain('sebastian');
     expect(VALID_ROLES).toContain('admin');

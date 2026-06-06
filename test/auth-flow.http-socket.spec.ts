@@ -22,11 +22,6 @@ import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail
 import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
 import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
-import { AcceptBudgetInvitationUseCase } from '../src/modules/budget/application/services/AcceptBudgetInvitation.useCase';
-import {
-  BUDGET_GROUP_REPOSITORY,
-  BUDGET_INVITATION_REPOSITORY,
-} from '../src/modules/budget/domain/token';
 import { buildUser, buildAuthResult } from './factories/user.factory';
 
 /**
@@ -113,34 +108,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
         },
         AuthAuditLogger,
         {
-          provide: AcceptBudgetInvitationUseCase,
-          useValue: { execute: jest.fn() },
-        },
-        {
-          provide: BUDGET_INVITATION_REPOSITORY,
-          useValue: {
-            create: jest.fn(),
-            findByTokenHash: jest.fn(),
-            findActiveByGroupAndEmail: jest.fn(),
-            findPendingByGroup: jest.fn(),
-            markAccepted: jest.fn(),
-            markRevoked: jest.fn(),
-          },
-        },
-        {
-          provide: BUDGET_GROUP_REPOSITORY,
-          useValue: {
-            findById: jest.fn(),
-            create: jest.fn(),
-            findByOwner: jest.fn(),
-            findByMember: jest.fn(),
-            isMember: jest.fn(),
-            addMember: jest.fn(),
-            removeMember: jest.fn(),
-            listMembers: jest.fn(),
-          },
-        },
-        {
           provide: USERS_REPOSITORY,
           useValue: {
             findById: jest
@@ -186,7 +153,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
    * ================================================================= */
 
   it('POST /api/auth/login retourne un token JWT valide et le profil', async () => {
-    const user = buildUser({ roles: ['budget', 'weather'] });
+    const user = buildUser({ roles: ['weather'] });
     const signed = await jwtTokenService.sign({
       sub: user.id,
       email: user.email,
@@ -223,7 +190,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
    * ================================================================= */
 
   it('GET /api/auth/me avec Bearer valide retourne le profil utilisateur', async () => {
-    const user = buildUser({ roles: ['budget'] });
+    const user = buildUser({ roles: ['weather'] });
     const signed = await jwtTokenService.sign({
       sub: user.id,
       email: user.email,
@@ -354,7 +321,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
    * ================================================================= */
 
   it('flow complet : login, acces protege, refresh, re-acces, logout', async () => {
-    const user = buildUser({ roles: ['budget', 'weather'] });
+    const user = buildUser({ roles: ['weather'] });
 
     /* 1. Login */
     const firstSigned = await jwtTokenService.sign({

@@ -77,7 +77,7 @@ describe('UsersMapper', () => {
       firstName: 'Google',
       lastName: 'User',
       googleId: 'google-sub-456',
-      roles: ['budget', 'weather'],
+      roles: ['sebastian', 'weather'],
     });
 
     expect(user.email).toBe('google@example.com');
@@ -85,7 +85,7 @@ describe('UsersMapper', () => {
     expect(user.lastName).toBe('User');
     expect(user.googleId).toBe('google-sub-456');
     expect(user.passwordHash).toBeNull();
-    expect(user.roles).toEqual(['budget', 'weather']);
+    expect(user.roles).toEqual(['sebastian', 'weather']);
     expect(user.updatedOrCreatedBy).toBe('google-oauth');
   });
 });

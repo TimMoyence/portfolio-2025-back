@@ -44,11 +44,6 @@ import { RedirectsController } from '../src/modules/redirects/interfaces/Redirec
 import { CreateServicesUseCase } from '../src/modules/services/application/CreateServices.useCase';
 import { ListServicesUseCase } from '../src/modules/services/application/ListServices.useCase';
 import { ServicesController } from '../src/modules/services/interfaces/Services.controller';
-import { AcceptBudgetInvitationUseCase } from '../src/modules/budget/application/services/AcceptBudgetInvitation.useCase';
-import {
-  BUDGET_GROUP_REPOSITORY,
-  BUDGET_INVITATION_REPOSITORY,
-} from '../src/modules/budget/domain/token';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 
 describe('API coherence and connectivity (e2e http socket)', () => {
@@ -133,34 +128,6 @@ describe('API coherence and connectivity (e2e http socket)', () => {
           useValue: { execute: jest.fn() },
         },
         AuthAuditLogger,
-        {
-          provide: AcceptBudgetInvitationUseCase,
-          useValue: { execute: jest.fn() },
-        },
-        {
-          provide: BUDGET_INVITATION_REPOSITORY,
-          useValue: {
-            create: jest.fn(),
-            findByTokenHash: jest.fn(),
-            findActiveByGroupAndEmail: jest.fn(),
-            findPendingByGroup: jest.fn(),
-            markAccepted: jest.fn(),
-            markRevoked: jest.fn(),
-          },
-        },
-        {
-          provide: BUDGET_GROUP_REPOSITORY,
-          useValue: {
-            findById: jest.fn(),
-            create: jest.fn(),
-            findByOwner: jest.fn(),
-            findByMember: jest.fn(),
-            isMember: jest.fn(),
-            addMember: jest.fn(),
-            removeMember: jest.fn(),
-            listMembers: jest.fn(),
-          },
-        },
         {
           provide: USERS_REPOSITORY,
           useValue: {

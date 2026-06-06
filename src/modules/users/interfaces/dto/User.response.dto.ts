@@ -21,7 +21,7 @@ export class UserResponseDto {
   @ApiProperty({ example: true })
   isActive: boolean;
 
-  @ApiProperty({ example: ['budget'], type: [String] })
+  @ApiProperty({ example: ['weather'], type: [String] })
   roles: string[];
 
   @ApiProperty({ type: String, example: '2025-01-01T00:00:00.000Z' })

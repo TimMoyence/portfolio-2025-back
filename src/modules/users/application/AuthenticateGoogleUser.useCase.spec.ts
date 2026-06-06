@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
-import type { AcceptBudgetInvitationUseCase } from '../../budget/application/services/AcceptBudgetInvitation.useCase';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { AuthenticateGoogleUserUseCase } from './AuthenticateGoogleUser.useCase';
@@ -36,9 +35,6 @@ describe('AuthenticateGoogleUserUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let refreshTokensRepo: jest.Mocked<IRefreshTokensRepository>;
   let jwtTokenService: jest.Mocked<JwtTokenService>;
-  let acceptBudgetInvitationUseCase: jest.Mocked<
-    Pick<AcceptBudgetInvitationUseCase, 'execute'>
-  >;
   let useCase: AuthenticateGoogleUserUseCase;
 
   beforeEach(() => {
@@ -57,9 +53,6 @@ describe('AuthenticateGoogleUserUseCase', () => {
       expiresAt: new Date(),
       revoked: false,
     });
-    acceptBudgetInvitationUseCase = {
-      execute: jest.fn(),
-    };
 
     mockVerifyIdToken.mockReset();
     mockVerifyIdToken.mockResolvedValue({
@@ -71,7 +64,6 @@ describe('AuthenticateGoogleUserUseCase', () => {
       refreshTokensRepo,
       jwtTokenService,
       'fake-client-id',
-      acceptBudgetInvitationUseCase as unknown as AcceptBudgetInvitationUseCase,
     );
   });
 
@@ -166,91 +158,5 @@ describe('AuthenticateGoogleUserUseCase', () => {
     expect(repo.update).not.toHaveBeenCalled();
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
     expect(refreshTokensRepo.create).not.toHaveBeenCalled();
-  });
-
-  describe('inviteToken (auto-accept invitation budget)', () => {
-    it('auto-accepte une invitation pending apres login Google si inviteToken fourni', async () => {
-      const user = buildUser({ id: 'user-google', email: 'john@gmail.com' });
-      repo.findByGoogleId.mockResolvedValue(user);
-      acceptBudgetInvitationUseCase.execute.mockResolvedValue({
-        groupId: 'group-1',
-        groupName: 'Foyer',
-      });
-
-      const result = await useCase.execute(
-        'valid-id-token',
-        'invite-token-abc',
-      );
-
-      expect(acceptBudgetInvitationUseCase.execute).toHaveBeenCalledWith({
-        tokenClear: 'invite-token-abc',
-        acceptedByUserId: 'user-google',
-        acceptedByEmail: 'john@gmail.com',
-      });
-      expect(result.accessToken).toBe('jwt-token');
-      expect(result.user).toBe(user);
-    });
-
-    it('auto-accepte une invitation apres creation de compte Google (nouveau user)', async () => {
-      const created = buildUser({
-        id: 'new-google-user',
-        email: 'john@gmail.com',
-      });
-      repo.findByGoogleId.mockResolvedValue(null);
-      repo.findByEmail.mockResolvedValue(null);
-      repo.create.mockResolvedValue(created);
-      acceptBudgetInvitationUseCase.execute.mockResolvedValue({
-        groupId: 'group-9',
-        groupName: 'Voyages',
-      });
-
-      const result = await useCase.execute(
-        'valid-id-token',
-        'invite-token-xyz',
-      );
-
-      expect(repo.create).toHaveBeenCalled();
-      expect(acceptBudgetInvitationUseCase.execute).toHaveBeenCalledWith({
-        tokenClear: 'invite-token-xyz',
-        acceptedByUserId: 'new-google-user',
-        acceptedByEmail: 'john@gmail.com',
-      });
-      expect(result.user).toBe(created);
-    });
-
-    it('ne fait pas echouer le login si l accept invitation throw', async () => {
-      const user = buildUser({ id: 'user-google', email: 'john@gmail.com' });
-      repo.findByGoogleId.mockResolvedValue(user);
-      acceptBudgetInvitationUseCase.execute.mockRejectedValue(
-        new Error('Invitation expired'),
-      );
-
-      const result = await useCase.execute('valid-id-token', 'bad-token');
-
-      expect(acceptBudgetInvitationUseCase.execute).toHaveBeenCalled();
-      // Login reussit malgre l'echec d'acceptation
-      expect(result.accessToken).toBe('jwt-token');
-      expect(result.refreshToken).toBeDefined();
-      expect(result.user).toBe(user);
-    });
-
-    it('ne touche pas au use case accept si inviteToken absent', async () => {
-      const user = buildUser();
-      repo.findByGoogleId.mockResolvedValue(user);
-
-      const result = await useCase.execute('valid-id-token');
-
-      expect(acceptBudgetInvitationUseCase.execute).not.toHaveBeenCalled();
-      expect(result.accessToken).toBe('jwt-token');
-    });
-
-    it('ne touche pas au use case accept si inviteToken vide', async () => {
-      const user = buildUser();
-      repo.findByGoogleId.mockResolvedValue(user);
-
-      await useCase.execute('valid-id-token', '');
-
-      expect(acceptBudgetInvitationUseCase.execute).not.toHaveBeenCalled();
-    });
   });
 });
