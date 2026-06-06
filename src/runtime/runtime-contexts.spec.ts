@@ -1,5 +1,4 @@
 import { AuditRequestsModule } from '../modules/audit-requests/AuditRequests.module';
-import { BudgetModule } from '../modules/budget/Budget.module';
 import { SebastianModule } from '../modules/sebastian/Sebastian.module';
 import { ContactsModule } from '../modules/contacts/Contacts.module';
 import { CookieConsentsModule } from '../modules/cookie-consents/CookieConsents.module';
@@ -25,7 +24,6 @@ describe('resolveRuntimeContexts', () => {
       CookieConsentsModule,
       AuditRequestsModule,
       WeatherModule,
-      BudgetModule,
       SebastianModule,
       LeadMagnetsModule,
       NewsletterModule,
@@ -52,7 +50,6 @@ describe('resolveRuntimeContexts', () => {
       CookieConsentsModule,
       AuditRequestsModule,
       WeatherModule,
-      BudgetModule,
       SebastianModule,
       LeadMagnetsModule,
       NewsletterModule,

@@ -12,13 +12,6 @@ import { TokenReuseDetectedError } from '../../domain/errors/TokenReuseDetectedE
 import { ResourceConflictError } from '../../domain/errors/ResourceConflictError';
 import { DomainValidationError } from '../../domain/errors/DomainValidationError';
 import { RateLimitExceededError } from '../../domain/errors/RateLimitExceededError';
-import {
-  InvalidInvitationTokenError,
-  InvitationAlreadyConsumedError,
-  InvitationExpiredError,
-  InvitationRevokedError,
-  InvitationEmailMismatchError,
-} from '../../../modules/budget/domain/errors/InvitationErrors';
 
 /** Sous-classe concrete de DomainError pour tester le fallback 500. */
 class UnknownDomainError extends DomainError {
@@ -168,84 +161,6 @@ describe('DomainExceptionFilter', () => {
     );
     const body = jsonFn.mock.calls[0][0] as Record<string, unknown>;
     expect(body).not.toHaveProperty('code');
-  });
-
-  it('mappe InvalidInvitationTokenError vers 404 avec code INVITATION_NOT_FOUND', () => {
-    const { host, statusFn, jsonFn } = createMockHost('/api/invitations/x');
-    const error = new InvalidInvitationTokenError();
-
-    filter.catch(error, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: 404,
-        code: 'INVITATION_NOT_FOUND',
-      }),
-    );
-  });
-
-  it('mappe InvitationAlreadyConsumedError vers 409 avec code INVITATION_ALREADY_CONSUMED', () => {
-    const { host, statusFn, jsonFn } = createMockHost();
-    const error = new InvitationAlreadyConsumedError();
-
-    filter.catch(error, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.CONFLICT);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: 409,
-        code: 'INVITATION_ALREADY_CONSUMED',
-      }),
-    );
-  });
-
-  it('mappe InvitationExpiredError vers 410 avec code INVITATION_EXPIRED', () => {
-    const { host, statusFn, jsonFn } = createMockHost();
-    const error = new InvitationExpiredError();
-
-    filter.catch(error, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.GONE);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: 410,
-        code: 'INVITATION_EXPIRED',
-      }),
-    );
-  });
-
-  it('mappe InvitationRevokedError vers 410 avec code INVITATION_REVOKED', () => {
-    const { host, statusFn, jsonFn } = createMockHost();
-    const error = new InvitationRevokedError();
-
-    filter.catch(error, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.GONE);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: 410,
-        code: 'INVITATION_REVOKED',
-      }),
-    );
-  });
-
-  it('mappe InvitationEmailMismatchError vers 403 avec code INVITATION_EMAIL_MISMATCH', () => {
-    const { host, statusFn, jsonFn } = createMockHost();
-    const error = new InvitationEmailMismatchError(
-      'cible@example.com',
-      'autre@example.com',
-    );
-
-    filter.catch(error, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: 403,
-        code: 'INVITATION_EMAIL_MISMATCH',
-      }),
-    );
   });
 
   it('inclut le format RFC 7807 complet dans la reponse', () => {

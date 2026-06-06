@@ -7,7 +7,6 @@ import { ProjectsModule } from '../modules/projects/Projects.module';
 import { RedirectsModule } from '../modules/redirects/Redirects.module';
 import { ServicesModule } from '../modules/services/Services.module';
 import { UsersModule } from '../modules/users/Users.module';
-import { BudgetModule } from '../modules/budget/Budget.module';
 import { SebastianModule } from '../modules/sebastian/Sebastian.module';
 import { LeadMagnetsModule } from '../modules/lead-magnets/LeadMagnets.module';
 import { NewsletterModule } from '../modules/newsletter/Newsletter.module';
@@ -34,7 +33,6 @@ export function resolveRuntimeContexts(
     CookieConsentsModule,
     AuditRequestsModule,
     WeatherModule,
-    BudgetModule,
     SebastianModule,
     LeadMagnetsModule,
     NewsletterModule,

@@ -15,13 +15,6 @@ import { ResourceNotFoundError } from '../../domain/errors/ResourceNotFoundError
 import { TokenExpiredError } from '../../domain/errors/TokenExpiredError';
 import { TokenReuseDetectedError } from '../../domain/errors/TokenReuseDetectedError';
 import { UserNotFoundError } from '../../domain/errors/UserNotFoundError';
-import {
-  InvalidInvitationTokenError,
-  InvitationAlreadyConsumedError,
-  InvitationEmailMismatchError,
-  InvitationExpiredError,
-  InvitationRevokedError,
-} from '../../../modules/budget/domain/errors/InvitationErrors';
 
 /**
  * Filtre global qui intercepte les {@link DomainError} et les mappe
@@ -86,30 +79,12 @@ export class DomainExceptionFilter implements ExceptionFilter {
       return HttpStatus.BAD_REQUEST;
     }
 
-    if (
-      exception instanceof ResourceConflictError ||
-      exception instanceof InvitationAlreadyConsumedError
-    ) {
+    if (exception instanceof ResourceConflictError) {
       return HttpStatus.CONFLICT;
     }
 
     if (exception instanceof RateLimitExceededError) {
       return HttpStatus.TOO_MANY_REQUESTS;
-    }
-
-    if (exception instanceof InvalidInvitationTokenError) {
-      return HttpStatus.NOT_FOUND;
-    }
-
-    if (
-      exception instanceof InvitationExpiredError ||
-      exception instanceof InvitationRevokedError
-    ) {
-      return HttpStatus.GONE;
-    }
-
-    if (exception instanceof InvitationEmailMismatchError) {
-      return HttpStatus.FORBIDDEN;
     }
 
     // Fallback pour les DomainError non mappees

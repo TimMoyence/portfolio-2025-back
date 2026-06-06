@@ -1,8 +1,7 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BudgetModule } from '../budget/Budget.module';
 import { AuthenticateGoogleUserUseCase } from './application/AuthenticateGoogleUser.useCase';
 import { CreateUsersUseCase } from './application/CreateUsers.useCase';
 import { DeleteUsersUseCase } from './application/DeleteUsers.useCase';
@@ -75,7 +74,6 @@ const USERS_USE_CASES = [
       RefreshTokenEntity,
       EmailVerificationTokenEntity,
     ]),
-    forwardRef(() => BudgetModule),
   ],
   controllers: [UsersController, AuthController],
   providers: [
