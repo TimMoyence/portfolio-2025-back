@@ -36,11 +36,6 @@ import { ResetPasswordDto } from '../src/modules/users/interfaces/dto/ResetPassw
 import { SetPasswordDto } from '../src/modules/users/interfaces/dto/SetPassword.dto';
 import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
-import { AcceptBudgetInvitationUseCase } from '../src/modules/budget/application/services/AcceptBudgetInvitation.useCase';
-import {
-  BUDGET_GROUP_REPOSITORY,
-  BUDGET_INVITATION_REPOSITORY,
-} from '../src/modules/budget/domain/token';
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import type { Response } from 'express';
 
@@ -130,10 +125,6 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         },
         AuthAuditLogger,
         {
-          provide: AcceptBudgetInvitationUseCase,
-          useValue: { execute: jest.fn() },
-        },
-        {
           provide: USERS_REPOSITORY,
           useValue: {
             findById: jest.fn(),
@@ -143,30 +134,6 @@ describe('API coherence and connectivity (e2e transportless)', () => {
             findByGoogleId: jest.fn(),
             update: jest.fn(),
             deactivate: jest.fn(),
-          },
-        },
-        {
-          provide: BUDGET_INVITATION_REPOSITORY,
-          useValue: {
-            create: jest.fn(),
-            findByTokenHash: jest.fn(),
-            findActiveByGroupAndEmail: jest.fn(),
-            findPendingByGroup: jest.fn(),
-            markAccepted: jest.fn(),
-            markRevoked: jest.fn(),
-          },
-        },
-        {
-          provide: BUDGET_GROUP_REPOSITORY,
-          useValue: {
-            findById: jest.fn(),
-            create: jest.fn(),
-            findByOwner: jest.fn(),
-            findByMember: jest.fn(),
-            isMember: jest.fn(),
-            addMember: jest.fn(),
-            removeMember: jest.fn(),
-            listMembers: jest.fn(),
           },
         },
       ],

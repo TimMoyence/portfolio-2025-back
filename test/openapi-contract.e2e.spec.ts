@@ -31,39 +31,6 @@ import { GetCurrentDetailedWeatherUseCase } from '../src/modules/weather/applica
 import { GetForecastDetailedWeatherUseCase } from '../src/modules/weather/application/GetForecastDetailedWeather.useCase';
 import { OPENWEATHERMAP_PROXY } from '../src/modules/weather/domain/token';
 
-/* ── Budget module ─────────────────────────────────────────────────── */
-import { BudgetController } from '../src/modules/budget/interfaces/Budget.controller';
-import { BudgetContributionsController } from '../src/modules/budget/interfaces/BudgetContributions.controller';
-import { BudgetGoalsController } from '../src/modules/budget/interfaces/BudgetGoals.controller';
-import { CreateBudgetGroupUseCase } from '../src/modules/budget/application/services/CreateBudgetGroup.useCase';
-import { GetBudgetGroupsUseCase } from '../src/modules/budget/application/services/GetBudgetGroups.useCase';
-import { CreateBudgetEntryUseCase } from '../src/modules/budget/application/services/CreateBudgetEntry.useCase';
-import { GetBudgetEntriesUseCase } from '../src/modules/budget/application/services/GetBudgetEntries.useCase';
-import { GetBudgetSummaryUseCase } from '../src/modules/budget/application/services/GetBudgetSummary.useCase';
-import { ImportBudgetEntriesUseCase } from '../src/modules/budget/application/services/ImportBudgetEntries.useCase';
-import { UpdateBudgetEntryUseCase } from '../src/modules/budget/application/services/UpdateBudgetEntry.useCase';
-import { CreateBudgetCategoryUseCase } from '../src/modules/budget/application/services/CreateBudgetCategory.useCase';
-import { GetBudgetCategoriesUseCase } from '../src/modules/budget/application/services/GetBudgetCategories.useCase';
-import { DeleteBudgetEntryUseCase } from '../src/modules/budget/application/services/DeleteBudgetEntry.useCase';
-import { UpdateBudgetCategoryUseCase } from '../src/modules/budget/application/services/UpdateBudgetCategory.useCase';
-import { ShareBudgetUseCase } from '../src/modules/budget/application/services/ShareBudget.useCase';
-import { GetBudgetContributionsUseCase } from '../src/modules/budget/application/services/GetBudgetContributions.useCase';
-import { UpsertMyBudgetContributionUseCase } from '../src/modules/budget/application/services/UpsertMyBudgetContribution.useCase';
-import { CreateBudgetGoalUseCase } from '../src/modules/budget/application/services/CreateBudgetGoal.useCase';
-import { GetBudgetGoalsWithProgressUseCase } from '../src/modules/budget/application/services/GetBudgetGoalsWithProgress.useCase';
-import { UpdateBudgetGoalUseCase } from '../src/modules/budget/application/services/UpdateBudgetGoal.useCase';
-import { DeleteBudgetGoalUseCase } from '../src/modules/budget/application/services/DeleteBudgetGoal.useCase';
-import { GetBudgetGroupMembersUseCase } from '../src/modules/budget/application/services/GetBudgetGroupMembers.useCase';
-import { RemoveBudgetGroupMemberUseCase } from '../src/modules/budget/application/services/RemoveBudgetGroupMember.useCase';
-import { GetBudgetEntriesMonthsUseCase } from '../src/modules/budget/application/services/GetBudgetEntriesMonths.useCase';
-import { ListPendingInvitationsUseCase } from '../src/modules/budget/application/services/ListPendingInvitations.useCase';
-import { AcceptBudgetInvitationUseCase } from '../src/modules/budget/application/services/AcceptBudgetInvitation.useCase';
-import {
-  BUDGET_GROUP_REPOSITORY,
-  BUDGET_INVITATION_REPOSITORY,
-} from '../src/modules/budget/domain/token';
-import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
-
 /* ── Users module ──────────────────────────────────────────────────── */
 import { UsersController } from '../src/modules/users/interfaces/Users.controller';
 import { ListUsersUseCase } from '../src/modules/users/application/ListUsers.useCase';
@@ -201,9 +168,6 @@ describe('OpenAPI core contract', () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [
         WeatherController,
-        BudgetController,
-        BudgetContributionsController,
-        BudgetGoalsController,
         UsersController,
         AuthController,
         ContactsController,
@@ -227,67 +191,6 @@ describe('OpenAPI core contract', () => {
         { provide: GetCurrentDetailedWeatherUseCase, useValue: stub() },
         { provide: GetForecastDetailedWeatherUseCase, useValue: stub() },
         { provide: OPENWEATHERMAP_PROXY, useValue: {} },
-
-        /* ── Budget ─────────────────────────────────────── */
-        { provide: CreateBudgetGroupUseCase, useValue: stub() },
-        { provide: GetBudgetGroupsUseCase, useValue: stub() },
-        { provide: CreateBudgetEntryUseCase, useValue: stub() },
-        { provide: GetBudgetEntriesUseCase, useValue: stub() },
-        { provide: GetBudgetSummaryUseCase, useValue: stub() },
-        { provide: ImportBudgetEntriesUseCase, useValue: stub() },
-        { provide: UpdateBudgetEntryUseCase, useValue: stub() },
-        { provide: CreateBudgetCategoryUseCase, useValue: stub() },
-        { provide: GetBudgetCategoriesUseCase, useValue: stub() },
-        { provide: DeleteBudgetEntryUseCase, useValue: stub() },
-        { provide: UpdateBudgetCategoryUseCase, useValue: stub() },
-        { provide: ShareBudgetUseCase, useValue: stub() },
-        { provide: GetBudgetContributionsUseCase, useValue: stub() },
-        { provide: UpsertMyBudgetContributionUseCase, useValue: stub() },
-        { provide: CreateBudgetGoalUseCase, useValue: stub() },
-        { provide: GetBudgetGoalsWithProgressUseCase, useValue: stub() },
-        { provide: UpdateBudgetGoalUseCase, useValue: stub() },
-        { provide: DeleteBudgetGoalUseCase, useValue: stub() },
-        { provide: GetBudgetGroupMembersUseCase, useValue: stub() },
-        { provide: RemoveBudgetGroupMemberUseCase, useValue: stub() },
-        { provide: GetBudgetEntriesMonthsUseCase, useValue: stub() },
-        { provide: ListPendingInvitationsUseCase, useValue: stub() },
-        { provide: AcceptBudgetInvitationUseCase, useValue: stub() },
-        {
-          provide: BUDGET_INVITATION_REPOSITORY,
-          useValue: {
-            create: jest.fn(),
-            findByTokenHash: jest.fn(),
-            findActiveByGroupAndEmail: jest.fn(),
-            findPendingByGroup: jest.fn(),
-            markAccepted: jest.fn(),
-            markRevoked: jest.fn(),
-          },
-        },
-        {
-          provide: BUDGET_GROUP_REPOSITORY,
-          useValue: {
-            findById: jest.fn(),
-            create: jest.fn(),
-            findByOwner: jest.fn(),
-            findByMember: jest.fn(),
-            isMember: jest.fn(),
-            addMember: jest.fn(),
-            removeMember: jest.fn(),
-            listMembers: jest.fn(),
-          },
-        },
-        {
-          provide: USERS_REPOSITORY,
-          useValue: {
-            findById: jest.fn(),
-            findByEmail: jest.fn(),
-            findAll: jest.fn(),
-            create: jest.fn(),
-            findByGoogleId: jest.fn(),
-            update: jest.fn(),
-            deactivate: jest.fn(),
-          },
-        },
 
         /* ── Users ──────────────────────────────────────── */
         { provide: ListUsersUseCase, useValue: stub() },
@@ -350,10 +253,6 @@ describe('OpenAPI core contract', () => {
 
   it('keeps Weather path contracts stable', () => {
     expect(pathsContaining('weather')).toMatchSnapshot();
-  });
-
-  it('keeps Budget path contracts stable', () => {
-    expect(pathsContaining('budget')).toMatchSnapshot();
   });
 
   it('keeps Users path contracts stable', () => {
