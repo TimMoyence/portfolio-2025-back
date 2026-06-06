@@ -51,16 +51,18 @@ describe('RolesGuard', () => {
   });
 
   it('devrait autoriser si l utilisateur possede un des roles requis', () => {
-    reflector.getAllAndOverride.mockReturnValue(['admin', 'budget']);
-    const payload = buildJwtPayload({ roles: ['budget'] });
+    reflector.getAllAndOverride.mockReturnValue(['admin', 'sebastian']);
+    const payload = buildJwtPayload({ roles: ['sebastian'] });
     const context = createMockContext(payload);
 
     expect(guard.canActivate(context)).toBe(true);
   });
 
   it('devrait autoriser si l utilisateur possede tous les roles requis', () => {
-    reflector.getAllAndOverride.mockReturnValue(['admin', 'budget']);
-    const payload = buildJwtPayload({ roles: ['admin', 'budget', 'weather'] });
+    reflector.getAllAndOverride.mockReturnValue(['admin', 'sebastian']);
+    const payload = buildJwtPayload({
+      roles: ['admin', 'sebastian', 'weather'],
+    });
     const context = createMockContext(payload);
 
     expect(guard.canActivate(context)).toBe(true);
@@ -68,7 +70,7 @@ describe('RolesGuard', () => {
 
   it('devrait rejeter avec ForbiddenException si l utilisateur n a aucun role requis', () => {
     reflector.getAllAndOverride.mockReturnValue(['admin']);
-    const payload = buildJwtPayload({ roles: ['budget'] });
+    const payload = buildJwtPayload({ roles: ['sebastian'] });
     const context = createMockContext(payload);
 
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);

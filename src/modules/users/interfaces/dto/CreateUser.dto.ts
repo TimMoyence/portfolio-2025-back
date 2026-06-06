@@ -58,7 +58,7 @@ export class CreateUserDto implements CreateUserCommand {
   isActive?: boolean;
 
   @ApiPropertyOptional({
-    example: ['budget'],
+    example: ['weather'],
     default: [],
     type: [String],
   })

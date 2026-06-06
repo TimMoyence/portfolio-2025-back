@@ -53,7 +53,7 @@ export class UpdateUserDto implements UpdateUserCommand {
   phone?: string | null;
 
   @ApiPropertyOptional({
-    example: ['budget', 'weather'],
+    example: ['sebastian', 'weather'],
     type: [String],
     description: 'Liste des roles. Reserve aux administrateurs.',
   })

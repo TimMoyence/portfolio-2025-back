@@ -57,11 +57,11 @@ describe('UpdateUsersUseCase', () => {
     const user = buildUser({ id: 'user-1', roles: [] });
     repo.findById.mockResolvedValue(user);
 
-    const dto: UpdateUserCommand = { roles: ['budget', 'weather'] };
+    const dto: UpdateUserCommand = { roles: ['sebastian', 'weather'] };
 
     const updatedUser = buildUser({
       id: 'user-1',
-      roles: ['budget', 'weather'],
+      roles: ['sebastian', 'weather'],
     });
     repo.update.mockResolvedValue(updatedUser);
 
@@ -70,11 +70,11 @@ describe('UpdateUsersUseCase', () => {
     expect(repo.update).toHaveBeenCalledWith(
       'user-1',
       expect.objectContaining({
-        roles: ['budget', 'weather'],
+        roles: ['sebastian', 'weather'],
         updatedAt: expect.any(Date),
       }),
     );
-    expect(result.roles).toEqual(['budget', 'weather']);
+    expect(result.roles).toEqual(['sebastian', 'weather']);
   });
 
   it('devrait lever une exception quand l utilisateur n existe pas', async () => {

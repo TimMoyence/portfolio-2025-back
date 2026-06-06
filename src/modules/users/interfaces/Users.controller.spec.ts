@@ -45,7 +45,7 @@ describe('UsersController', () => {
 
   it('devrait mapper correctement les champs du UserResponseDto', async () => {
     const user = buildUser({
-      roles: ['admin', 'budget'],
+      roles: ['admin', 'sebastian'],
       phone: '+33612345678',
     });
     useCases.listUsers.execute.mockResolvedValue([user]);
@@ -56,7 +56,7 @@ describe('UsersController', () => {
     expect(result[0].firstName).toBe(user.firstName);
     expect(result[0].lastName).toBe(user.lastName);
     expect(result[0].phone).toBe('+33612345678');
-    expect(result[0].roles).toEqual(['admin', 'budget']);
+    expect(result[0].roles).toEqual(['admin', 'sebastian']);
     expect(result[0].isActive).toBe(true);
     expect(result[0].hasPassword).toBe(true);
   });
