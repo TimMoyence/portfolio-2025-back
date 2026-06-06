@@ -1,15 +1,6 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
-import { DomainError } from '../../../common/domain/errors/DomainError';
-import { AcceptBudgetInvitationUseCase } from '../../budget/application/services/AcceptBudgetInvitation.useCase';
-import {
-  InvalidInvitationTokenError,
-  InvitationAlreadyConsumedError,
-  InvitationEmailMismatchError,
-  InvitationExpiredError,
-  InvitationRevokedError,
-} from '../../budget/domain/errors/InvitationErrors';
 import type { IEmailVerificationNotifier } from '../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -49,8 +40,6 @@ export class CreateUsersUseCase {
     private readonly emailVerificationNotifier: IEmailVerificationNotifier,
     private readonly passwordService: PasswordService,
     private readonly configService: ConfigService,
-    @Inject(forwardRef(() => AcceptBudgetInvitationUseCase))
-    private readonly acceptBudgetInvitation: AcceptBudgetInvitationUseCase,
   ) {
     this.verificationUrlBase = this.configService.get<string>(
       'EMAIL_VERIFICATION_URL_BASE',
@@ -77,63 +66,7 @@ export class CreateUsersUseCase {
       await this.sendVerificationEmail(created);
     }
 
-    // Auto-acceptation d'invitation budget (magic-link). Optionnel : si une
-    // erreur metier connue est levee (token invalide, expire, mismatch, etc.)
-    // on log + retourne un warning sans faire echouer l'inscription. Les
-    // erreurs techniques (DB, reseau) sont re-throw pour que l'orchestrateur
-    // amont les traite normalement.
-    const inviteWarning = await this.tryAcceptInvitation(dto, created);
-
-    return { user: created, inviteWarning };
-  }
-
-  /**
-   * Tente d'auto-accepter une invitation budget si `dto.inviteToken` est
-   * fourni. Retourne `null` si pas de token ou si l'acceptation reussit.
-   * Retourne un warning si une erreur metier d'invitation est levee.
-   */
-  private async tryAcceptInvitation(
-    dto: CreateUserCommand,
-    created: User,
-  ): Promise<{ code: string; message: string } | null> {
-    if (!dto.inviteToken || !created.id) {
-      return null;
-    }
-    try {
-      await this.acceptBudgetInvitation.execute({
-        tokenClear: dto.inviteToken,
-        acceptedByUserId: created.id,
-        acceptedByEmail: created.email,
-      });
-      return null;
-    } catch (error) {
-      if (CreateUsersUseCase.isInvitationDomainError(error)) {
-        this.logger.warn(
-          `Invitation auto-accept failed for ${created.email}: ${error.message}`,
-        );
-        return {
-          code:
-            (error as DomainError & { code?: string }).code ??
-            'INVITATION_ERROR',
-          message: error.message,
-        };
-      }
-      throw error;
-    }
-  }
-
-  /**
-   * Type-guard pour les erreurs metier d'invitation. Toute autre erreur
-   * (technique, base de donnees) est re-throw pour ne pas masquer un bug.
-   */
-  private static isInvitationDomainError(error: unknown): error is DomainError {
-    return (
-      error instanceof InvalidInvitationTokenError ||
-      error instanceof InvitationAlreadyConsumedError ||
-      error instanceof InvitationRevokedError ||
-      error instanceof InvitationExpiredError ||
-      error instanceof InvitationEmailMismatchError
-    );
+    return { user: created };
   }
 
   /** Genere un token de verification et envoie l'email. */

@@ -97,7 +97,6 @@ describe('UsersController', () => {
     const user = buildUser();
     useCases.createUsers.execute.mockResolvedValue({
       user,
-      inviteWarning: null,
     });
 
     const dto = {

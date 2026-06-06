@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { ConfigService } from '@nestjs/config';
-import type { AcceptBudgetInvitationUseCase } from '../../budget/application/services/AcceptBudgetInvitation.useCase';
-import {
-  InvalidInvitationTokenError,
-  InvitationEmailMismatchError,
-  InvitationExpiredError,
-} from '../../budget/domain/errors/InvitationErrors';
 import type { IEmailVerificationNotifier } from '../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -18,14 +12,6 @@ import {
   createMockPasswordService,
 } from '../../../../test/factories/user.factory';
 import { createMockEmailVerificationTokensRepo } from '../../../../test/factories/email-verification-token.factory';
-
-function createMockAcceptBudgetInvitation(): jest.Mocked<
-  Pick<AcceptBudgetInvitationUseCase, 'execute'>
-> {
-  return {
-    execute: jest.fn(),
-  };
-}
 
 function createMockConfigService(): jest.Mocked<ConfigService> {
   return {
@@ -45,9 +31,6 @@ describe('CreateUsersUseCase', () => {
   let emailVerificationNotifier: jest.Mocked<IEmailVerificationNotifier>;
   let passwordService: jest.Mocked<PasswordService>;
   let configService: jest.Mocked<ConfigService>;
-  let acceptBudgetInvitation: jest.Mocked<
-    Pick<AcceptBudgetInvitationUseCase, 'execute'>
-  >;
   let useCase: CreateUsersUseCase;
 
   beforeEach(() => {
@@ -56,7 +39,6 @@ describe('CreateUsersUseCase', () => {
     emailVerificationNotifier = createMockEmailVerificationNotifier();
     passwordService = createMockPasswordService();
     configService = createMockConfigService();
-    acceptBudgetInvitation = createMockAcceptBudgetInvitation();
     passwordService.hash.mockResolvedValue('hashed-password');
     emailVerificationTokensRepo.create.mockResolvedValue({
       id: 'evt-1',
@@ -71,7 +53,6 @@ describe('CreateUsersUseCase', () => {
       emailVerificationNotifier,
       passwordService,
       configService,
-      acceptBudgetInvitation as unknown as AcceptBudgetInvitationUseCase,
     );
   });
 
@@ -110,131 +91,6 @@ describe('CreateUsersUseCase', () => {
     );
     expect(passwordService.hash).toHaveBeenCalledWith(dto.password);
     expect(result.user).toBe(savedUser);
-    expect(result.inviteWarning).toBeNull();
-  });
-
-  it("n'appelle pas acceptBudgetInvitation si inviteToken est absent", async () => {
-    const dto: CreateUserCommand = {
-      email: 'no-invite@example.com',
-      password: 'SecurePassword123!',
-      firstName: 'NoInvite',
-      lastName: 'User',
-    };
-    repo.create.mockResolvedValue(buildUser({ id: 'uuid', email: dto.email }));
-
-    await useCase.execute(dto);
-
-    expect(acceptBudgetInvitation.execute).not.toHaveBeenCalled();
-  });
-
-  it('auto-accepte une invitation pending si inviteToken est fourni', async () => {
-    const dto: CreateUserCommand = {
-      email: 'invitee@example.com',
-      password: 'SecurePassword123!',
-      firstName: 'Invitee',
-      lastName: 'User',
-      inviteToken: 'magic-token-abc',
-    };
-    const savedUser = buildUser({
-      id: 'user-123',
-      email: dto.email,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-    });
-    repo.create.mockResolvedValue(savedUser);
-    acceptBudgetInvitation.execute.mockResolvedValue({
-      groupId: 'group-1',
-      groupName: 'Couple',
-    });
-
-    const result = await useCase.execute(dto);
-
-    expect(acceptBudgetInvitation.execute).toHaveBeenCalledWith({
-      tokenClear: 'magic-token-abc',
-      acceptedByUserId: 'user-123',
-      acceptedByEmail: dto.email,
-    });
-    expect(result.user).toBe(savedUser);
-    expect(result.inviteWarning).toBeNull();
-  });
-
-  it('ne fait pas echouer l inscription si l acceptation invitation throw une erreur metier', async () => {
-    const dto: CreateUserCommand = {
-      email: 'invitee@example.com',
-      password: 'SecurePassword123!',
-      firstName: 'Invitee',
-      lastName: 'User',
-      inviteToken: 'bad-token',
-    };
-    const savedUser = buildUser({
-      id: 'user-456',
-      email: dto.email,
-    });
-    repo.create.mockResolvedValue(savedUser);
-    acceptBudgetInvitation.execute.mockRejectedValue(
-      new InvitationEmailMismatchError('owner@example.com', dto.email),
-    );
-
-    const result = await useCase.execute(dto);
-
-    expect(result.user).toBe(savedUser);
-    expect(result.inviteWarning).toEqual({
-      code: 'INVITATION_EMAIL_MISMATCH',
-      message: expect.stringContaining(dto.email),
-    });
-  });
-
-  it("retourne un inviteWarning si le token d'invitation est invalide", async () => {
-    const dto: CreateUserCommand = {
-      email: 'invitee@example.com',
-      password: 'SecurePassword123!',
-      firstName: 'Invitee',
-      lastName: 'User',
-      inviteToken: 'unknown',
-    };
-    repo.create.mockResolvedValue(buildUser({ id: 'u1', email: dto.email }));
-    acceptBudgetInvitation.execute.mockRejectedValue(
-      new InvalidInvitationTokenError(),
-    );
-
-    const result = await useCase.execute(dto);
-
-    expect(result.user).toBeDefined();
-    expect(result.inviteWarning?.code).toBe('INVITATION_NOT_FOUND');
-  });
-
-  it("retourne un inviteWarning si l'invitation est expiree", async () => {
-    const dto: CreateUserCommand = {
-      email: 'invitee@example.com',
-      password: 'SecurePassword123!',
-      firstName: 'Invitee',
-      lastName: 'User',
-      inviteToken: 'expired',
-    };
-    repo.create.mockResolvedValue(buildUser({ id: 'u2', email: dto.email }));
-    acceptBudgetInvitation.execute.mockRejectedValue(
-      new InvitationExpiredError(),
-    );
-
-    const result = await useCase.execute(dto);
-
-    expect(result.inviteWarning?.code).toBe('INVITATION_EXPIRED');
-  });
-
-  it("re-throw les erreurs inattendues lors de l'auto-acceptation (non-domaine)", async () => {
-    const dto: CreateUserCommand = {
-      email: 'invitee@example.com',
-      password: 'SecurePassword123!',
-      firstName: 'Invitee',
-      lastName: 'User',
-      inviteToken: 'token-x',
-    };
-    repo.create.mockResolvedValue(buildUser({ id: 'u3', email: dto.email }));
-    acceptBudgetInvitation.execute.mockRejectedValue(
-      new Error('DB connection lost'),
-    );
-
-    await expect(useCase.execute(dto)).rejects.toThrow('DB connection lost');
   });
 
   it('devrait envoyer un email de verification pour les inscriptions publiques', async () => {
