@@ -1,4 +1,5 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import type { ILeadMagnetRequestRepository } from '../../domain/ILeadMagnetRequestRepository';
 import type { IToolkitContentAssembler } from '../../domain/IToolkitContentAssembler';
 import type { InteractionProfile } from '../../domain/InteractionProfile';
@@ -23,7 +24,7 @@ export class GetToolkitByTokenUseCase {
   async execute(query: GetToolkitByTokenQuery): Promise<ToolkitContent> {
     const request = await this.repo.findByToken(query.accessToken);
     if (!request) {
-      throw new NotFoundException('Guide introuvable pour ce token.');
+      throw new ResourceNotFoundError('Guide introuvable pour ce token.');
     }
 
     const profile: InteractionProfile | null = request.profile ?? null;
