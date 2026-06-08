@@ -1,5 +1,9 @@
 import { validateEnv } from './env.validation';
 
+// Faux secrets de test (>=32 car. pour la validation min(32)) — valeurs factices, non sensibles.
+const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow
+const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow
+
 /**
  * Variables d'environnement minimales valides pour les tests.
  * Contient toutes les variables critiques requises par le schema.
@@ -11,9 +15,8 @@ function buildValidEnv(
     DB_HOST: '127.0.0.1',
     DB_PORT: '5432',
     DB_NAME: 'portfolio_test',
-    JWT_SECRET: 'test-jwt-secret-at-least-32-characters-long',
-    SECURE_KEY_FOR_PASSWORD_HASHING:
-      'test-hashing-key-at-least-32-characters-long',
+    JWT_SECRET: TEST_JWT_SECRET,
+    SECURE_KEY_FOR_PASSWORD_HASHING: TEST_HASHING_KEY,
     GOOGLE_CLIENT_ID: 'test-google-client-id.apps.googleusercontent.com',
     ...overrides,
   };
@@ -28,9 +31,7 @@ describe('validateEnv', () => {
     expect(result.DB_HOST).toBe('127.0.0.1');
     expect(result.DB_PORT).toBe(5432);
     expect(result.DB_NAME).toBe('portfolio_test');
-    expect(result.JWT_SECRET).toBe(
-      'test-jwt-secret-at-least-32-characters-long',
-    );
+    expect(result.JWT_SECRET).toBe(TEST_JWT_SECRET);
   });
 
   it('devrait appliquer les valeurs par defaut pour les variables optionnelles', () => {
