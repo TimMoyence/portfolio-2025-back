@@ -7,6 +7,12 @@
  * pour eviter la race condition sur la contrainte unique
  * `(user_id, badge_key)`.
  */
+import {
+  envBool,
+  envInt,
+  envString,
+} from '../../../../config/env-readers.util';
+
 export interface SebastianBadgesAutomationConfig {
   queueEnabled: boolean;
   queueName: string;
@@ -21,24 +27,6 @@ export interface SebastianBadgesAutomationConfig {
   redisPort?: number;
   redisUsername?: string;
   redisPassword?: string;
-}
-
-function envInt(name: string, fallback: number): number {
-  const raw = process.env[name];
-  const parsed = Number.parseInt(raw ?? '', 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function envBool(name: string, fallback: boolean): boolean {
-  const raw = (process.env[name] ?? '').toLowerCase();
-  if (raw === 'true') return true;
-  if (raw === 'false') return false;
-  return fallback;
-}
-
-function envString(name: string): string | undefined {
-  const value = process.env[name]?.trim();
-  return value && value.length > 0 ? value : undefined;
 }
 
 /** Charge la configuration depuis l'environnement avec des valeurs par defaut. */

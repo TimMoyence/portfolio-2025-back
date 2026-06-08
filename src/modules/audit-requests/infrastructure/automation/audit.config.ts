@@ -1,3 +1,10 @@
+import {
+  envBool,
+  envFloat,
+  envInt,
+  envString,
+} from '../../../../config/env-readers.util';
+
 export type AuditLlmProfile =
   | 'stability_first_sequential'
   | 'parallel_sections_v1';
@@ -48,30 +55,6 @@ export interface AuditAutomationConfig {
   anthropicApiKey?: string;
   anthropicModel: string;
   enableAnthropicCaching: boolean;
-}
-
-function envInt(name: string, fallback: number): number {
-  const raw = process.env[name];
-  const parsed = Number.parseInt(raw ?? '', 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function envFloat(name: string, fallback: number): number {
-  const raw = process.env[name];
-  const parsed = Number.parseFloat(raw ?? '');
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function envBool(name: string, fallback: boolean): boolean {
-  const raw = (process.env[name] ?? '').toLowerCase();
-  if (raw === 'true') return true;
-  if (raw === 'false') return false;
-  return fallback;
-}
-
-function envString(name: string): string | undefined {
-  const value = process.env[name]?.trim();
-  return value && value.length > 0 ? value : undefined;
 }
 
 export function loadAuditAutomationConfig(): AuditAutomationConfig {
