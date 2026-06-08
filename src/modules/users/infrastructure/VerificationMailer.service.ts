@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type {
   IEmailVerificationNotifier,
   EmailVerificationNotificationPayload,
@@ -69,11 +70,6 @@ export class VerificationMailerService implements IEmailVerificationNotifier {
 
   /** Echappe les caracteres HTML speciaux pour eviter les injections. */
   private escapeHtml(input: string): string {
-    return input
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+    return escapeHtml(input);
   }
 }

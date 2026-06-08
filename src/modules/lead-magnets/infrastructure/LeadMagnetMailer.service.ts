@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type { ILeadMagnetNotifier } from '../domain/ILeadMagnetNotifier';
 import type { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 
@@ -59,11 +60,6 @@ export class LeadMagnetMailerService implements ILeadMagnetNotifier {
 
   /** Echappe les caracteres HTML speciaux pour prevenir les injections XSS. */
   private escapeHtml(input: string): string {
-    return input
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+    return escapeHtml(input);
   }
 }

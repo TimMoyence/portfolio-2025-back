@@ -6,18 +6,11 @@
  */
 
 /**
- * Echappe les caracteres HTML sensibles (`&`, `<`, `>`, `"`, `'`) pour eviter
- * toute injection dans les templates HTML generes cote mailer. A appliquer
- * sur toute donnee d'origine externe ou LLM inseree dans un template.
+ * Re-export de l'util commun `escapeHtml` (echappement HTML anti-XSS) afin de
+ * preserver les imports historiques `from './mail-rendering.util'` sans
+ * dupliquer la table d'echappement.
  */
-export function escapeHtml(input: string): string {
-  return input
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
+export { escapeHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
 /**
  * Convertit une chaine (typiquement un nom de site) en slug ASCII safe pour
