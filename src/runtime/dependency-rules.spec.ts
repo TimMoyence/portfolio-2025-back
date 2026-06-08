@@ -83,6 +83,13 @@ describe('Règles de dépendances inter-couches', () => {
   const domainFiles = collectLayerFiles(modulesRoot, 'domain');
   const applicationFiles = collectLayerFiles(modulesRoot, 'application');
 
+  // Le domaine transverse (`src/common/domain`) doit respecter les mêmes
+  // invariants de pureté que les domaines de module : aucune dépendance
+  // framework/infrastructure ne doit y fuiter.
+  const commonDomainFiles = eligibleTsFiles(
+    collectFiles(join(process.cwd(), 'src/common/domain')),
+  );
+
   it('les fichiers domain/ ne doivent pas importer depuis infrastructure/', () => {
     const violations: string[] = [];
 
@@ -113,11 +120,35 @@ describe('Règles de dépendances inter-couches', () => {
     expect(violations).toEqual([]);
   });
 
-  it('les fichiers domain/ ne doivent pas importer de dépendances framework (@nestjs, typeorm, bullmq)', () => {
-    const forbiddenPackages = ['@nestjs', 'typeorm', 'bullmq'];
+  it('les fichiers domain/ ne doivent pas importer de dépendances framework/infrastructure', () => {
+    const forbiddenPackages = [
+      '@nestjs',
+      'typeorm',
+      'bullmq',
+      'argon2',
+      'jose',
+      'prom-client',
+      'nestjs-pino',
+      'pino',
+      'nodemailer',
+      '@anthropic-ai',
+      '@langchain',
+      'ioredis',
+      'axios',
+      'openai',
+      'grammy',
+      'pdfkit',
+      'puppeteer',
+      'cheerio',
+      'pg',
+      'google-auth-library',
+    ];
     const violations: string[] = [];
 
-    for (const file of domainFiles) {
+    // Couvre les domaines de module ET le domaine transverse `common/domain`.
+    const allDomainFiles = [...domainFiles, ...commonDomainFiles];
+
+    for (const file of allDomainFiles) {
       const imports = extractImports(file);
       const forbidden = imports.filter((imp) =>
         forbiddenPackages.some(
