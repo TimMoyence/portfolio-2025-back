@@ -11,8 +11,9 @@ function buildValidEnv(
     DB_HOST: '127.0.0.1',
     DB_PORT: '5432',
     DB_NAME: 'portfolio_test',
-    JWT_SECRET: 'test-jwt-secret-at-least-1-char',
-    SECURE_KEY_FOR_PASSWORD_HASHING: 'test-hashing-key',
+    JWT_SECRET: 'test-jwt-secret-at-least-32-characters-long',
+    SECURE_KEY_FOR_PASSWORD_HASHING:
+      'test-hashing-key-at-least-32-characters-long',
     GOOGLE_CLIENT_ID: 'test-google-client-id.apps.googleusercontent.com',
     ...overrides,
   };
@@ -27,7 +28,9 @@ describe('validateEnv', () => {
     expect(result.DB_HOST).toBe('127.0.0.1');
     expect(result.DB_PORT).toBe(5432);
     expect(result.DB_NAME).toBe('portfolio_test');
-    expect(result.JWT_SECRET).toBe('test-jwt-secret-at-least-1-char');
+    expect(result.JWT_SECRET).toBe(
+      'test-jwt-secret-at-least-32-characters-long',
+    );
   });
 
   it('devrait appliquer les valeurs par defaut pour les variables optionnelles', () => {
@@ -58,6 +61,22 @@ describe('validateEnv', () => {
     const env = buildValidEnv({ SECURE_KEY_FOR_PASSWORD_HASHING: undefined });
 
     expect(() => validateEnv(env)).toThrow('SECURE_KEY_FOR_PASSWORD_HASHING');
+  });
+
+  it('devrait rejeter un JWT_SECRET de moins de 32 caracteres', () => {
+    const env = buildValidEnv({ JWT_SECRET: 'trop-court' });
+
+    expect(() => validateEnv(env)).toThrow('JWT_SECRET');
+    expect(() => validateEnv(env)).toThrow('32');
+  });
+
+  it('devrait rejeter un SECURE_KEY_FOR_PASSWORD_HASHING de moins de 32 caracteres', () => {
+    const env = buildValidEnv({
+      SECURE_KEY_FOR_PASSWORD_HASHING: 'trop-court',
+    });
+
+    expect(() => validateEnv(env)).toThrow('SECURE_KEY_FOR_PASSWORD_HASHING');
+    expect(() => validateEnv(env)).toThrow('32');
   });
 
   it('devrait lancer une erreur si GOOGLE_CLIENT_ID est manquant', () => {
