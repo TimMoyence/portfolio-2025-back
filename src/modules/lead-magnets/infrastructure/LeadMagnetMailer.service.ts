@@ -10,9 +10,9 @@ export class LeadMagnetMailerService implements ILeadMagnetNotifier {
   private readonly logger = new Logger(LeadMagnetMailerService.name);
   private readonly transporter: Transporter | null;
   private readonly from = process.env.SMTP_FROM;
-  /** Email de reponse — defaut vers l'email personnel de Tim. */
+  /** Email de reponse — defaut sur le domaine asilidesign.fr. */
   private readonly replyTo =
-    process.env.SMTP_REPLY_TO ?? 'tim.moyence@gmail.com';
+    process.env.SMTP_REPLY_TO ?? 'contact@asilidesign.fr';
   private readonly frontendUrl =
     process.env.FRONTEND_URL ?? 'https://asilidesign.fr';
 
