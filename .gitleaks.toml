@@ -1,0 +1,15 @@
+# Configuration gitleaks — étend les règles par défaut.
+# But : éviter les faux positifs sur les fixtures de test qui contiennent
+# de FAUX secrets (valeurs factices ≥32 caractères imposées par la validation
+# min(32) des secrets). Ces valeurs ne sont pas sensibles.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Faux secrets dans les fixtures de test (valeurs factices, non sensibles)"
+paths = [
+  '''src/config/env\.validation\.spec\.ts''',
+]
+regexes = [
+  '''test-(jwt-secret|hashing-key)-at-least-32-characters-long''',
+]
