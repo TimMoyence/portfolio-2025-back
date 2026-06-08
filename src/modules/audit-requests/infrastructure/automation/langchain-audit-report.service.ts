@@ -131,6 +131,13 @@ export class LangchainAuditReportService {
     );
   }
 
+  /**
+   * Produit le rapport d'audit complet (synthese + rapport expert) via le LLM.
+   * Normalise d'abord la locale cible, puis tente le profil parallele avant de
+   * retomber sur le profil sequentiel. En l'absence de cle OpenAI ou en cas
+   * d'echec du profil parallele, bascule sur un fallback degrade sans jamais
+   * propager d'exception au pipeline appelant.
+   */
   async generate(
     input: LangchainAuditInput,
     options: LangchainAuditGenerateOptions = {},

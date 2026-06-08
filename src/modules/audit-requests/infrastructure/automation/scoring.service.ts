@@ -95,6 +95,12 @@ export interface AuditScoreResult {
 
 @Injectable()
 export class ScoringService {
+  /**
+   * Calcule les scores par pilier (SEO, etc.) a partir du snapshot homepage,
+   * du sitemap et de l'echantillon d'URLs analysees. Chaque signal manquant
+   * applique une penalite bornee et alimente la liste des quick wins.
+   * Retourne aussi les key checks bruts pour la synthese du rapport.
+   */
   compute(
     homepage: HomepageAuditSnapshot,
     sitemapUrls: string[],
