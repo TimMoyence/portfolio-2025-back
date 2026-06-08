@@ -1,3 +1,5 @@
+import type { BaseLanguageModelInput } from '@langchain/core/language_models/base';
+import type { RunnableConfig } from '@langchain/core/runnables';
 import { ChatOpenAI } from '@langchain/openai';
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
@@ -116,14 +118,24 @@ export class LangchainAuditReportService {
    * transparent pour le flux metier et n'altere pas le resultat parse.
    */
   private invokeTracked<T>(
-    chain: { invoke: (messages: any, options?: any) => Promise<T> },
+    chain: {
+      invoke: (
+        messages: BaseLanguageModelInput,
+        options?: Partial<RunnableConfig>,
+      ) => Promise<T>;
+    },
     messages: unknown,
     section: string,
     locale: AuditLocale,
     signal?: AbortSignal,
   ): Promise<T> {
     return invokeWithLlmTracking<T>(
-      (m: unknown, o: LlmInvocationOptions) => chain.invoke(m, o),
+      // `invokeWithLlmTracking` type le payload comme `unknown` (surface
+      // generique), mais a l'execution c'est bien le `messages` transmis au
+      // LLM : on le re-affine vers `BaseLanguageModelInput` au seul point de
+      // jonction, sans alterer le runtime.
+      (m: unknown, o: LlmInvocationOptions) =>
+        chain.invoke(m as BaseLanguageModelInput, o),
       messages,
       this.buildLlmContext(section, locale),
       this.metricsService ?? null,
@@ -780,7 +792,10 @@ export class LangchainAuditReportService {
 
   private readonly invokeTrackedBound = this.invokeTracked.bind(this) as <T>(
     chain: {
-      invoke: (messages: unknown, options?: LlmInvocationOptions) => Promise<T>;
+      invoke: (
+        messages: BaseLanguageModelInput,
+        options?: Partial<RunnableConfig>,
+      ) => Promise<T>;
     },
     messages: unknown,
     section: string,
