@@ -4,6 +4,7 @@ import {
   FALLBACK_CATEGORY_PALETTE,
   PLATFORM_COLORS,
 } from './toolkit-palette';
+import { escapeHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
 /**
  * Utilitaires purs partages par les sections du renderer HTML du toolkit
@@ -55,17 +56,11 @@ export function levelLabel(level: string): string {
 }
 
 /**
- * Echappe les caracteres HTML pour eviter toute injection dans les
- * sections (titres, descriptions, contenus utilisateur).
+ * Re-export de l'util commun `escapeHtml` (echappement HTML anti-XSS) afin de
+ * preserver les imports historiques `from './toolkit-html.utils'` sans
+ * dupliquer la table d'echappement.
  */
-export function escapeHtml(value: string): string {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
+export { escapeHtml };
 
 /** Construit l'en-tete standard d'une section (gros numero + titre + sous-titre). */
 export function sectionHeader(

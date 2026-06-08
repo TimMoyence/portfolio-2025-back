@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 
@@ -158,11 +159,6 @@ Tim`,
 
   /** Echappe les caracteres HTML speciaux pour prevenir les injections XSS. */
   private escapeHtml(input: string): string {
-    return input
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+    return escapeHtml(input);
   }
 }

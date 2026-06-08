@@ -7,6 +7,7 @@ import type {
 } from '../../domain/AuditReportTiers';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { pillarLabel } from './shared/pillar-labels.util';
+import { escapeHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
 /**
  * Construit le document HTML complet utilise par Puppeteer pour generer le
@@ -472,12 +473,7 @@ export class AuditReportHtmlRendererService {
 
   /** Echappe les caracteres HTML pour eviter toute injection XSS. */
   private escapeHtml(value: string): string {
-    return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+    return escapeHtml(value);
   }
 
   /** Styles CSS embarques pour le rendu Puppeteer A4. */

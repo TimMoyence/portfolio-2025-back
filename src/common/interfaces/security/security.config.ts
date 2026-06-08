@@ -6,6 +6,8 @@
  * L'intercepteur est toujours actif en mode "log-only" par defaut :
  * il ne bloque jamais les requetes legitimes, il les trace uniquement.
  */
+import { envInt } from '../../../config/env-readers.util';
+
 export interface SecurityConfig {
   /** Score minimum pour qu'une requete soit consideree suspecte et logguee. */
   suspiciousScoreThreshold: number;
@@ -13,12 +15,6 @@ export interface SecurityConfig {
   reportWindowMs: number;
   /** Taille max du Top-N retourne par l'endpoint metrics/security. */
   topEventsLimit: number;
-}
-
-function envInt(name: string, fallback: number): number {
-  const raw = process.env[name];
-  const parsed = Number.parseInt(raw ?? '', 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
 }
 
 /** Charge la configuration securite depuis l'environnement. */

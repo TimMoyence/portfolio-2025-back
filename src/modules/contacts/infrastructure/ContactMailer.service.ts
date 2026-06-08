@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import { Contacts } from '../domain/Contacts';
 import type { IContactNotifier } from '../domain/IContactNotifier';
 
@@ -93,11 +94,6 @@ ${message}
 
   /** Echappe les caracteres HTML speciaux pour prevenir les injections XSS. */
   protected escapeHtml(input: string): string {
-    return input
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+    return escapeHtml(input);
   }
 }

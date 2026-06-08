@@ -1,5 +1,6 @@
 import { Logger, Provider } from '@nestjs/common';
-import { createTransport, Transporter } from 'nodemailer';
+import { Transporter } from 'nodemailer';
+import { createOptionalSmtpTransporter } from '../../../../common/infrastructure/mail/smtp-transporter.util';
 
 /**
  * Token d'injection Nest pour le transporter SMTP partage par les mailers
@@ -28,25 +29,6 @@ export const SmtpTransporterProvider: Provider = {
   provide: SMTP_TRANSPORTER,
   useFactory: (): SmtpTransporter => {
     const logger = new Logger('SmtpTransporterProvider');
-    const host = process.env.SMTP_HOST;
-    const port = process.env.SMTP_PORT
-      ? Number(process.env.SMTP_PORT)
-      : undefined;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-
-    if (!host || !port || !user || !pass) {
-      logger.warn(
-        'Audit request mailer disabled: SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS not fully configured',
-      );
-      return null;
-    }
-
-    return createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
-    }) as Transporter;
+    return createOptionalSmtpTransporter(logger, 'Audit request mailer');
   },
 };

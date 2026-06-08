@@ -1,4 +1,5 @@
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
+import { createMockAuditRequestsRepo } from '../../../../../test/factories/audit-requests.factory';
 import { AuditSnapshot } from '../../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import type { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
@@ -31,10 +32,7 @@ function buildStubDeps(
   repoOverrides?: Partial<jest.Mocked<IAuditRequestsRepository>>,
 ) {
   const repo: jest.Mocked<IAuditRequestsRepository> = {
-    create: jest.fn(),
-    findById: jest.fn(),
-    findSummaryById: jest.fn(),
-    updateState: jest.fn(),
+    ...createMockAuditRequestsRepo(),
     ...repoOverrides,
   };
 
@@ -278,9 +276,8 @@ describe('AuditPipelineService', () => {
     });
 
     const repo: jest.Mocked<IAuditRequestsRepository> = {
-      create: jest.fn(),
+      ...createMockAuditRequestsRepo(),
       findById: jest.fn().mockResolvedValue(audit),
-      findSummaryById: jest.fn(),
       updateState: jest.fn().mockResolvedValue(undefined),
     };
     const safeFetch = {
