@@ -75,4 +75,25 @@ describe('MetricsAuthGuard', () => {
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
     expect(() => guard.canActivate(context)).toThrow('Invalid metrics token');
   });
+
+  it('devrait accepter le token exact (comparaison constante en temps)', () => {
+    const configService = createMockConfigService(VALID_TOKEN);
+    const guard = new MetricsAuthGuard(configService);
+    const context = createMockContext(`Bearer ${VALID_TOKEN}`);
+
+    expect(guard.canActivate(context)).toBe(true);
+  });
+
+  it('devrait refuser un token de meme longueur mais 1 octet different', () => {
+    const configService = createMockConfigService(VALID_TOKEN);
+    const guard = new MetricsAuthGuard(configService);
+    // Meme longueur que VALID_TOKEN, dernier caractere modifie.
+    const almostToken = `${VALID_TOKEN.slice(0, -1)}X`;
+    expect(almostToken).toHaveLength(VALID_TOKEN.length);
+
+    const context = createMockContext(`Bearer ${almostToken}`);
+
+    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    expect(() => guard.canActivate(context)).toThrow('Invalid metrics token');
+  });
 });

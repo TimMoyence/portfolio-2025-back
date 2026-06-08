@@ -79,10 +79,17 @@ export class JwtAuthGuard implements CanActivate {
     }
   }
 
-  /** Verifie que l'email de l'utilisateur est verifie. */
+  /**
+   * Verifie que le compte existe encore et que son email est verifie.
+   * Un JWT valide dont le compte a ete supprime doit etre rejete (401)
+   * plutot que de laisser passer silencieusement.
+   */
   private async ensureEmailVerified(userId: string): Promise<void> {
     const user = await this.usersRepo.findById(userId);
-    if (user && !user.emailVerified) {
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur introuvable');
+    }
+    if (!user.emailVerified) {
       throw new ForbiddenException('Email non verifie');
     }
   }

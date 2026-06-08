@@ -28,7 +28,7 @@ export class NewsletterMailerService implements INewsletterMailer {
     this.from = this.configService.get<string>('SMTP_FROM');
     this.replyTo =
       this.configService.get<string>('SMTP_REPLY_TO') ??
-      'tim.moyence@gmail.com';
+      'contact@asilidesign.fr';
     this.frontendUrl =
       this.configService.get<string>('FRONTEND_URL') ??
       'https://asilidesign.fr';

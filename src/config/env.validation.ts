@@ -51,11 +51,16 @@ const envSchema = z.object({
   TYPEORM_SYNCHRONIZE: z.string().optional(),
 
   // --- Security (critiques) ---
-  JWT_SECRET: z.string().min(1, 'JWT_SECRET est requis'),
+  JWT_SECRET: z
+    .string()
+    .min(32, 'JWT_SECRET doit faire au moins 32 caracteres'),
   JWT_EXPIRES_IN: z.string().default('900s'),
   SECURE_KEY_FOR_PASSWORD_HASHING: z
     .string()
-    .min(1, 'SECURE_KEY_FOR_PASSWORD_HASHING est requis'),
+    .min(
+      32,
+      'SECURE_KEY_FOR_PASSWORD_HASHING doit faire au moins 32 caracteres',
+    ),
   GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID est requis'),
   PASSWORD_RESET_URL_BASE: z.string().optional(),
 

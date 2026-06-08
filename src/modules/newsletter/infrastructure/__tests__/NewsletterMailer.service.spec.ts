@@ -95,6 +95,32 @@ describe('NewsletterMailerService', () => {
     });
   });
 
+  describe('reply-to par defaut', () => {
+    it('utilise un reply-to @asilidesign.fr (jamais gmail) quand SMTP_REPLY_TO est absent', async () => {
+      const subscriber = buildNewsletterSubscriber();
+
+      await mailer.sendConfirmation(subscriber);
+
+      const [call] = mockSendMail.mock.calls as [[{ replyTo: string }]];
+      expect(call[0].replyTo).toMatch(/@asilidesign\.fr$/);
+      expect(call[0].replyTo).not.toContain('gmail.com');
+    });
+
+    it('privilegie SMTP_REPLY_TO quand la variable est definie', async () => {
+      const configWithReplyTo = {
+        get: jest.fn((key: string) =>
+          key === 'SMTP_REPLY_TO' ? 'override@example.org' : undefined,
+        ),
+      } as unknown as ConfigService;
+      const mailerWithReplyTo = new NewsletterMailerService(configWithReplyTo);
+
+      await mailerWithReplyTo.sendConfirmation(buildNewsletterSubscriber());
+
+      const [call] = mockSendMail.mock.calls as [[{ replyTo: string }]];
+      expect(call[0].replyTo).toBe('override@example.org');
+    });
+  });
+
   describe('sendUnsubscribeAck', () => {
     it('appelle sendMail avec le sujet de desabonnement', async () => {
       const subscriber = buildNewsletterSubscriber();

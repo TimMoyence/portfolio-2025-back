@@ -156,6 +156,30 @@ describe('JwtAuthGuard', () => {
     );
   });
 
+  it('devrait rejeter (401) quand le compte du JWT n existe plus', async () => {
+    const payload = {
+      sub: 'user-deleted',
+      email: 'deleted@b.com',
+      iat: 1000,
+      exp: 9999999999,
+      iss: 'portfolio-2025',
+      aud: 'portfolio-2025-api',
+      roles: [],
+    };
+    jwtTokenService.verify.mockResolvedValue(payload);
+    reflector.getAllAndOverride.mockReturnValue(false);
+    // Compte supprime detenant encore un JWT valide.
+    usersRepo.findById.mockResolvedValue(null);
+
+    const context = createMockContext({
+      authorization: 'Bearer valid-token',
+    });
+
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException,
+    );
+  });
+
   it('devrait autoriser un email non verifie sur /auth/verify-email', async () => {
     const payload = {
       sub: 'user-unverified',
