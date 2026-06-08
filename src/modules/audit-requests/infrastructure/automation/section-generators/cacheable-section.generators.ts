@@ -1,3 +1,5 @@
+import type { BaseLanguageModelInput } from '@langchain/core/language_models/base';
+import type { RunnableConfig } from '@langchain/core/runnables';
 import type { ChatOpenAI } from '@langchain/openai';
 import type { AuditLocale } from '../../../domain/audit-locale.util';
 import type {
@@ -38,7 +40,12 @@ import {
 /** Signature du callback de tracking fourni par le service parent. */
 
 export type InvokeTrackedFn = <T>(
-  chain: { invoke: (messages: any, options?: any) => Promise<T> },
+  chain: {
+    invoke: (
+      messages: BaseLanguageModelInput,
+      options?: Partial<RunnableConfig>,
+    ) => Promise<T>;
+  },
   messages: unknown,
   section: string,
   locale: AuditLocale,
