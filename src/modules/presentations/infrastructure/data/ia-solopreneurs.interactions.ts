@@ -252,6 +252,21 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
     ],
   },
 
+  'cas-pratique': {
+    scroll: [
+      {
+        type: 'prompt-builder',
+        context:
+          'Newsletter hebdo IA — 30 min de veille pour 1 article par semaine',
+        promptTemplate:
+          'Tu es expert {{sector}}. Voici les 3 actualités IA majeures de cette semaine : [colle ici les résultats Perplexity]. Rédige un résumé newsletter de 250 mots, ton direct, sans jargon, avec un takeaway actionnable par actualité.',
+        placeholder: 'Ex: SaaS B2B, e-commerce, conseil RH, freelance dev',
+        // ctaLabel laissé absent volontairement : le composant utilise
+        // le label i18n par défaut (`@@slidePromptBuilder.copy`).
+      },
+    ],
+  },
+
   'recap-8020': {
     present: [
       {
