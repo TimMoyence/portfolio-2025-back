@@ -62,3 +62,11 @@ generate-architecture.mjs
 
 # Claude Code workspaces
 .claude/worktrees
+
+# Skills de cluster regenerees par GitNexus a chaque commit (hook post-commit) :
+# artefacts locaux, non versionnes pour eviter le churn.
+.claude/skills/generated/
+
+# Hook local de re-index GitNexus : chemin absolu machine + script cible non
+# versionne, donc inutilisable sur un autre clone.
+.husky/post-commit
