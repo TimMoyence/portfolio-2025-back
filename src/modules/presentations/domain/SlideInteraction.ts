@@ -43,10 +43,29 @@ export interface SelfRatingInteraction {
   labels: { min: string; max: string };
 }
 
+/**
+ * Mini-exercice live : matérialise un cas pratique en générant un
+ * prompt prêt à copier après que l'audience saisit un paramètre
+ * (`{{sector}}`). Substitution exécutée côté front, pas de transit
+ * réseau de la valeur.
+ */
+export interface PromptBuilderInteraction {
+  type: 'prompt-builder';
+  /** Phrase de contexte / persona affichée en haut de l'exercice. */
+  context: string;
+  /** Template de prompt avec placeholder `{{sector}}`. */
+  promptTemplate: string;
+  /** Helper text affiché dans l'input. */
+  placeholder: string;
+  /** Libellé du bouton de copie ; défaut côté composant. */
+  ctaLabel?: string;
+}
+
 export type ScrollInteraction =
   | ReflectionInteraction
   | ChecklistInteraction
-  | SelfRatingInteraction;
+  | SelfRatingInteraction
+  | PromptBuilderInteraction;
 
 /** Interactions attachées à une slide, indexées par mode d'affichage */
 export interface SlideInteractions {
