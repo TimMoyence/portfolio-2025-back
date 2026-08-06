@@ -84,8 +84,17 @@ describe('invokeWithLlmTracking', () => {
 
   it('compte l’appel et observe la latence en succes', async () => {
     const metrics = createMockMetrics();
+    // Horloge figee a 2500 ms d'ecart : `startedAt` puis la mesure de fin.
+    const now = jest
+      .spyOn(Date, 'now')
+      .mockReturnValueOnce(1_000)
+      .mockReturnValueOnce(1_000)
+      .mockReturnValueOnce(3_500)
+      .mockReturnValueOnce(3_500);
 
     await runTracked(buildUsageMetadataOutput(), metrics);
+
+    now.mockRestore();
 
     expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith({
       model: 'gpt-test',
@@ -96,11 +105,12 @@ describe('invokeWithLlmTracking', () => {
     expect(metrics.llmLatencySeconds.observe).toHaveBeenCalledTimes(1);
     const [, latencySeconds] = metrics.llmLatencySeconds.observe.mock
       .calls[0] as [unknown, number];
-    // Borne haute indispensable : l'histogramme Prometheus est en
-    // SECONDES. Sans elle, une regression d'unite (facteur 1000, valeur
-    // en millisecondes) satisferait encore l'assertion.
-    expect(latencySeconds).toBeGreaterThanOrEqual(0);
-    expect(latencySeconds).toBeLessThan(5);
+    // Valeur EXACTE, horloge figee : l'histogramme Prometheus est en
+    // secondes. Une simple borne ne suffisait pas — un appel de test
+    // durant moins de 5 ms satisfait `< 5` que la valeur soit en
+    // secondes ou en millisecondes, laissant passer une regression
+    // d'unite d'un facteur 1000.
+    expect(latencySeconds).toBe(2.5);
   });
 
   it('extrait les tokens du format usage_metadata (LangChain 2024+)', async () => {

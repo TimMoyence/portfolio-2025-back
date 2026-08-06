@@ -280,6 +280,32 @@ describe('SuspiciousRequestInterceptor', () => {
     expect(top[0].ip).toBe('198.51.100.9');
   });
 
+  it('normalise l’IP IPv4-mappee-IPv6 avant de l’enregistrer', async () => {
+    // Sans normalisation a ce niveau, `::ffff:203.0.113.7` et
+    // `203.0.113.7` comptent comme deux clients distincts dans les
+    // agregats, et la forme mappee n'est pas exploitable par les outils
+    // de bannissement en amont.
+    const req: FakeRequest = {
+      method: 'POST',
+      url: '/api/v1/portfolio25/cookie-consents',
+      headers: {
+        'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
+        'accept-language': 'en-US,en;q=0.9',
+      },
+      ip: '::ffff:203.0.113.7',
+    };
+    const res: FakeResponse = { statusCode: 201, writableEnded: true };
+    const handler: CallHandler = { handle: () => of({}) };
+
+    await firstValueFrom(
+      interceptor.intercept(buildContext(req, res), handler),
+    );
+
+    const top = await store.getTopIPs(10, 60_000);
+    expect(top[0].ip).toBe('203.0.113.7');
+  });
+
   it('ne leve jamais meme si le store casse', async () => {
     const broken: InMemorySecurityEventsStore = Object.assign(
       new InMemorySecurityEventsStore(),

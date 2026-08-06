@@ -379,6 +379,32 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     );
   });
 
+  it('records the resolved client ip on an audit request, never the forged header', async () => {
+    const dto = await validateBody(
+      {
+        websiteName: 'Example Studio',
+        contactMethod: 'EMAIL',
+        contactValue: 'hello@example.com',
+        locale: 'fr',
+      },
+      AuditRequestRequestDto,
+    );
+    const req = makeRequestMock(
+      { 'x-forwarded-for': '203.0.113.10, 10.0.0.1' },
+      '10.0.0.2',
+    );
+
+    await auditsController.create(dto, req);
+
+    // Endpoint public : sans ce filet, un retour au parsing de
+    // `X-Forwarded-For` laisserait l'appelant choisir l'IP persistee,
+    // et la CI ne le verrait pas.
+    const [command] = jest.mocked(createAuditRequestsUseCase.execute).mock
+      .calls[0] as [{ ip: string | null }];
+    expect(command.ip).toBe('10.0.0.2');
+    expect(command.ip).not.toBe('203.0.113.10');
+  });
+
   it('returns summary snapshot for a given audit id', async () => {
     const response = await auditsController.summary('audit-1');
 

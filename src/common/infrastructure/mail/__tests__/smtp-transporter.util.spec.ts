@@ -64,11 +64,26 @@ describe('createOptionalSmtpTransporter', () => {
     cleanup();
   });
 
-  /** Repart d'un environnement vierge : chaque test pose ce qu'il teste. */
+  /**
+   * Repart d'un environnement vierge : chaque test pose ce qu'il teste.
+   *
+   * Seules les cles que `setSmtpEnv` sait restaurer sont retirees. Vider
+   * tout `SMTP_*` laisserait `SMTP_REPLY_TO` — validee par le schema
+   * d'environnement — non restauree apres le fichier.
+   */
   function clearSmtpEnv(): void {
-    for (const key of Object.keys(process.env)) {
-      if (key.startsWith('SMTP_')) delete process.env[key];
-    }
+    const restorable = [
+      'SMTP_HOST',
+      'SMTP_PORT',
+      'SMTP_USER',
+      'SMTP_PASS',
+      'SMTP_SECURE',
+      'SMTP_FROM',
+      'SMTP_DKIM_DOMAIN',
+      'SMTP_DKIM_SELECTOR',
+      'SMTP_DKIM_PRIVATE_KEY',
+    ];
+    for (const key of restorable) delete process.env[key];
   }
 
   function configureSmtp(): void {
@@ -203,6 +218,24 @@ describe('createOptionalSmtpTransporter', () => {
       // nodemailer avale l'exception de signature et envoie le message
       // SANS en-tete DKIM : sans ce controle, le deploiement se croirait
       // conforme RFC 8058 sans que rien ne le signale.
+      expect(lastOptions().dkim).toBeUndefined();
+      expect(logger.error).toHaveBeenCalled();
+    });
+
+    it('refuse une cle qui n’est pas RSA', () => {
+      // La RFC 6376 ne definit que `rsa-sha256`. Une cle EC passerait la
+      // validation PEM mais produirait une signature ECDSA qu'aucun
+      // verificateur DKIM n'accepte — echec silencieux a nouveau.
+      const ecKey = generateKeyPairSync('ec', {
+        namedCurve: 'prime256v1',
+        privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+        publicKeyEncoding: { type: 'spki', format: 'pem' },
+      }).privateKey;
+      configureSmtp();
+      enableDkim({ SMTP_DKIM_PRIVATE_KEY: ecKey });
+
+      createOptionalSmtpTransporter(logger, 'Test');
+
       expect(lastOptions().dkim).toBeUndefined();
       expect(logger.error).toHaveBeenCalled();
     });
