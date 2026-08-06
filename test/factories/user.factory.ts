@@ -9,6 +9,7 @@ import type { ListOneUserUseCase } from '../../src/modules/users/application/Lis
 import type { CreateUsersUseCase } from '../../src/modules/users/application/CreateUsers.useCase';
 import type { UpdateUsersUseCase } from '../../src/modules/users/application/UpdateUsers.useCase';
 import type { DeleteUsersUseCase } from '../../src/modules/users/application/DeleteUsers.useCase';
+import type { AuthAuditLogger } from '../../src/modules/users/application/services/AuthAuditLogger';
 
 /** Construit un objet User domaine avec des valeurs par defaut. */
 export function buildUser(overrides?: Partial<User>): User {
@@ -103,4 +104,30 @@ export function createMockUsersUseCases(): MockUsersUseCases {
     updateUsers: { execute: jest.fn() },
     deleteUsers: { execute: jest.fn() },
   };
+}
+
+/**
+ * Mock du journal d'audit d'authentification.
+ *
+ * Utilise partout ou l'on veut inspecter une entree d'audit (IP, user
+ * agent, evenement) sans dependre de l'implementation reelle.
+ */
+export function createMockAuthAuditLogger(): jest.Mocked<AuthAuditLogger> {
+  return { log: jest.fn() } as unknown as jest.Mocked<AuthAuditLogger>;
+}
+
+/**
+ * Mock d'un use case reduit a son `execute`, resolu ou rejete.
+ *
+ * Evite de redeclarer `{ execute: jest.fn().mockResolvedValue(...) } as
+ * unknown as XUseCase` dans chaque cas de test.
+ */
+export function createMockUseCase<T>(
+  outcome: { resolves: unknown } | { rejects: unknown },
+): jest.Mocked<T> {
+  const execute =
+    'resolves' in outcome
+      ? jest.fn().mockResolvedValue(outcome.resolves)
+      : jest.fn().mockRejectedValue(outcome.rejects);
+  return { execute } as unknown as jest.Mocked<T>;
 }
