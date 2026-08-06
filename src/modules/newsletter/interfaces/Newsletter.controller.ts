@@ -121,6 +121,32 @@ export class NewsletterController {
   }
 
   /**
+   * Desabonnement en un clic (RFC 8058), declenche par le client mail.
+   *
+   * Gmail et consorts envoient un POST non authentifie, sans corps utile,
+   * sur l'URL de l'en-tete `List-Unsubscribe` quand
+   * `List-Unsubscribe-Post` est present. Le desabonnement doit aboutir
+   * sans page intermediaire ni confirmation : c'est la contrepartie de
+   * l'en-tete annonce par `NewsletterMailerService`.
+   */
+  @Public()
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('unsubscribe')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Desabonnement en un clic RFC 8058 (declenche par le client mail)',
+  })
+  @ApiOkResponse({ description: 'Desabonnement confirme' })
+  @ApiNotFoundResponse({ description: 'Token invalide ou expire' })
+  async unsubscribeOneClickEndpoint(
+    @Query('token') token: string,
+  ): Promise<{ status: string }> {
+    this.assertValidToken(token);
+    const result = await this.unsubscribe.execute(token);
+    return { status: result.status };
+  }
+
+  /**
    * Normalise la reponse pour les tokens mal formes : retourne 404 au
    * lieu de 400 pour eviter la distinction oracle entre "format
    * invalide" et "token inconnu".

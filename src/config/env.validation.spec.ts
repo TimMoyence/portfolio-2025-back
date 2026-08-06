@@ -46,6 +46,40 @@ describe('validateEnv', () => {
     expect(result.SMTP_PORT).toBe(587);
   });
 
+  describe('coherence SMTP', () => {
+    // Faux identifiants SMTP de test — valeurs factices, non sensibles.
+    const SMTP_CONFIGURED = {
+      SMTP_HOST: 'smtp.example.org',
+      SMTP_USER: 'mailer',
+      SMTP_PASS: 'test-smtp-password', // gitleaks:allow
+    };
+
+    it('devrait lancer une erreur si SMTP est configure sans SMTP_FROM', () => {
+      // Sans expediteur, nodemailer recoit `from: undefined` et echoue a
+      // l'envoi — en production, donc bien apres le demarrage.
+      const env = buildValidEnv(SMTP_CONFIGURED);
+
+      expect(() => validateEnv(env)).toThrow('SMTP_FROM');
+    });
+
+    it('devrait accepter un SMTP configure avec SMTP_FROM', () => {
+      const env = buildValidEnv({
+        ...SMTP_CONFIGURED,
+        SMTP_FROM: 'contact@asilidesign.fr',
+      });
+
+      expect(() => validateEnv(env)).not.toThrow();
+    });
+
+    it('devrait accepter l’absence de SMTP_FROM quand SMTP n’est pas configure', () => {
+      // Sans transporter, les mailers sont no-op : exiger un expediteur
+      // bloquerait inutilement les environnements de dev et de CI.
+      const env = buildValidEnv();
+
+      expect(() => validateEnv(env)).not.toThrow();
+    });
+  });
+
   it('devrait lancer une erreur si DB_HOST est manquant (aucun alias)', () => {
     const env = buildValidEnv({ DB_HOST: undefined });
 

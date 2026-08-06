@@ -95,6 +95,56 @@ describe('NewsletterMailerService', () => {
     });
   });
 
+  describe('en-tetes List-Unsubscribe (RFC 8058)', () => {
+    it('expose le desabonnement en un clic sur l’email de confirmation', async () => {
+      const subscriber = buildNewsletterSubscriber();
+
+      await mailer.sendConfirmation(subscriber);
+
+      const [call] = mockSendMail.mock.calls as [
+        [{ headers: Record<string, string> }],
+      ];
+      // Gmail exige les deux en-tetes conjointement pour activer le
+      // bouton natif de desabonnement chez les expediteurs en nombre.
+      expect(call[0].headers['List-Unsubscribe']).toContain(
+        subscriber.unsubscribeToken,
+      );
+      expect(call[0].headers['List-Unsubscribe']).toContain('mailto:');
+      expect(call[0].headers['List-Unsubscribe-Post']).toBe(
+        'List-Unsubscribe=One-Click',
+      );
+    });
+
+    it('expose le desabonnement en un clic sur l’email de bienvenue', async () => {
+      const subscriber = buildNewsletterSubscriber();
+
+      await mailer.sendWelcome(subscriber);
+
+      const [call] = mockSendMail.mock.calls as [
+        [{ headers: Record<string, string> }],
+      ];
+      expect(call[0].headers['List-Unsubscribe']).toContain(
+        subscriber.unsubscribeToken,
+      );
+      expect(call[0].headers['List-Unsubscribe-Post']).toBe(
+        'List-Unsubscribe=One-Click',
+      );
+    });
+
+    it('n’ajoute pas d’en-tete de desabonnement a l’accuse de desabonnement', async () => {
+      const subscriber = buildNewsletterSubscriber();
+
+      await mailer.sendUnsubscribeAck(subscriber);
+
+      // L'abonne est deja sorti de la liste : proposer un desabonnement
+      // sur cet accuse n'aurait aucun sens.
+      const [call] = mockSendMail.mock.calls as [
+        [{ headers?: Record<string, string> }],
+      ];
+      expect(call[0].headers?.['List-Unsubscribe']).toBeUndefined();
+    });
+  });
+
   describe('reply-to par defaut', () => {
     it('utilise un reply-to @asilidesign.fr (jamais gmail) quand SMTP_REPLY_TO est absent', async () => {
       const subscriber = buildNewsletterSubscriber();

@@ -53,6 +53,7 @@ export class NewsletterMailerService implements INewsletterMailer {
       from: this.from,
       to: subscriber.email,
       replyTo: this.replyTo,
+      headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
       subject: 'Confirmez votre inscription a la newsletter asilidesign.fr',
       text: `${greeting},
 
@@ -85,6 +86,7 @@ Tim — asilidesign.fr`,
       from: this.from,
       to: subscriber.email,
       replyTo: this.replyTo,
+      headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
       subject: 'Bienvenue — ce qui arrive dans votre boite mail',
       text: `${greeting},
 
@@ -121,6 +123,27 @@ Si c'etait une erreur, repondez simplement a cet email.
 Tim`,
       html: this.buildUnsubscribeAckHtml({ greeting }),
     });
+  }
+
+  /**
+   * En-tetes de desabonnement RFC 8058, exiges par Gmail des expediteurs
+   * en nombre depuis 2024. Leur absence degrade la delivrabilite.
+   *
+   * `List-Unsubscribe-Post` engage l'API a traiter un POST non
+   * authentifie sur l'URL fournie : l'endpoint
+   * `POST /newsletter/unsubscribe` existe pour cela. Annoncer l'en-tete
+   * sans cet endpoint ferait echouer le bouton natif du client mail.
+   *
+   * L'adresse mailto reprend le reply-to du mailer, garantissant une
+   * boite reellement relevee ; le sujet permet le tri automatique.
+   */
+  private buildListUnsubscribeHeaders(
+    unsubscribeUrl: string,
+  ): Record<string, string> {
+    return {
+      'List-Unsubscribe': `<mailto:${this.replyTo}?subject=unsubscribe>, <${unsubscribeUrl}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    };
   }
 
   private buildGreeting(firstName: string | null): string {

@@ -137,4 +137,24 @@ describe('NewsletterController', () => {
       );
     });
   });
+
+  describe('POST /newsletter/unsubscribe (one-click RFC 8058)', () => {
+    it('desabonne sur un POST sans corps, comme le fait le client mail', async () => {
+      // L'en-tete `List-Unsubscribe-Post` engage l'API a traiter un POST
+      // non authentifie declenche par Gmail. Sans cet endpoint, le bouton
+      // natif de desabonnement echouerait et degraderait la reputation
+      // de l'expediteur.
+      const result = await controller.unsubscribeOneClickEndpoint(VALID_TOKEN);
+
+      expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN);
+      expect(result.status).toBeDefined();
+    });
+
+    it('leve NotFoundException (404) pour un token malformed', async () => {
+      await expect(
+        controller.unsubscribeOneClickEndpoint('invalid-token'),
+      ).rejects.toThrow(NotFoundException);
+      expect(mocks.unsubscribeUC.execute).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -10,166 +10,196 @@ import { z } from 'zod';
  * Les alias multiples (DB_HOST / DATABASE_HOST / PGHOST, etc.) sont supportes
  * via `z.preprocess` afin de ne pas casser la compatibilite existante.
  */
-const envSchema = z.object({
-  // --- Node ---
-  NODE_ENV: z
-    .enum(['development', 'production', 'test'])
-    .default('development'),
+const envSchema = z
+  .object({
+    // --- Node ---
+    NODE_ENV: z
+      .enum(['development', 'production', 'test'])
+      .default('development'),
 
-  // --- API ---
-  PORT: z.coerce.number().int().positive().default(3000),
-  API_PREFIX: z.string().default('api/v1/portfolio25'),
-  SWAGGER_PATH: z.string().optional(),
-  CORS_ORIGIN: z.string().optional(),
+    // --- API ---
+    PORT: z.coerce.number().int().positive().default(3000),
+    API_PREFIX: z.string().default('api/v1/portfolio25'),
+    SWAGGER_PATH: z.string().optional(),
+    CORS_ORIGIN: z.string().optional(),
 
-  // --- Database (aliases resolus dans le preprocess) ---
-  DB_HOST: z.string().min(1, 'DB_HOST (ou DATABASE_HOST / PGHOST) est requis'),
-  DB_PORT: z.coerce.number().int().positive().default(5432),
-  DB_NAME: z
-    .string()
-    .min(1, 'DB_NAME (ou DATABASE_NAME / POSTGRES_DB) est requis'),
-  DB_USERNAME: z.string().optional(),
-  DB_USER: z.string().optional(),
-  DB_PASSWORD: z.string().optional(),
-  DB_PASS: z.string().optional(),
-  DB_SSL: z.string().optional(),
-  DB_SYNCHRONIZE: z.string().optional(),
-  DB_ADMIN_DATABASE: z.string().optional(),
-  DATABASE_URL: z.string().optional(),
-  DATABASE_HOST: z.string().optional(),
-  DATABASE_PORT: z.string().optional(),
-  DATABASE_NAME: z.string().optional(),
-  DATABASE_USER: z.string().optional(),
-  DATABASE_PASSWORD: z.string().optional(),
-  DATABASE_SSL: z.string().optional(),
-  DATABASE_ADMIN_NAME: z.string().optional(),
-  PGHOST: z.string().optional(),
-  PGPORT: z.string().optional(),
-  POSTGRES_DB: z.string().optional(),
-  POSTGRES_USER: z.string().optional(),
-  POSTGRES_PASSWORD: z.string().optional(),
-  TYPEORM_SYNCHRONIZE: z.string().optional(),
+    // --- Database (aliases resolus dans le preprocess) ---
+    DB_HOST: z
+      .string()
+      .min(1, 'DB_HOST (ou DATABASE_HOST / PGHOST) est requis'),
+    DB_PORT: z.coerce.number().int().positive().default(5432),
+    DB_NAME: z
+      .string()
+      .min(1, 'DB_NAME (ou DATABASE_NAME / POSTGRES_DB) est requis'),
+    DB_USERNAME: z.string().optional(),
+    DB_USER: z.string().optional(),
+    DB_PASSWORD: z.string().optional(),
+    DB_PASS: z.string().optional(),
+    DB_SSL: z.string().optional(),
+    DB_SYNCHRONIZE: z.string().optional(),
+    DB_ADMIN_DATABASE: z.string().optional(),
+    DATABASE_URL: z.string().optional(),
+    DATABASE_HOST: z.string().optional(),
+    DATABASE_PORT: z.string().optional(),
+    DATABASE_NAME: z.string().optional(),
+    DATABASE_USER: z.string().optional(),
+    DATABASE_PASSWORD: z.string().optional(),
+    DATABASE_SSL: z.string().optional(),
+    DATABASE_ADMIN_NAME: z.string().optional(),
+    PGHOST: z.string().optional(),
+    PGPORT: z.string().optional(),
+    POSTGRES_DB: z.string().optional(),
+    POSTGRES_USER: z.string().optional(),
+    POSTGRES_PASSWORD: z.string().optional(),
+    TYPEORM_SYNCHRONIZE: z.string().optional(),
 
-  // --- Security (critiques) ---
-  JWT_SECRET: z
-    .string()
-    .min(32, 'JWT_SECRET doit faire au moins 32 caracteres'),
-  JWT_EXPIRES_IN: z.string().default('900s'),
-  SECURE_KEY_FOR_PASSWORD_HASHING: z
-    .string()
-    .min(
-      32,
-      'SECURE_KEY_FOR_PASSWORD_HASHING doit faire au moins 32 caracteres',
-    ),
-  GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID est requis'),
-  PASSWORD_RESET_URL_BASE: z.string().optional(),
+    // --- Security (critiques) ---
+    JWT_SECRET: z
+      .string()
+      .min(32, 'JWT_SECRET doit faire au moins 32 caracteres'),
+    JWT_EXPIRES_IN: z.string().default('900s'),
+    SECURE_KEY_FOR_PASSWORD_HASHING: z
+      .string()
+      .min(
+        32,
+        'SECURE_KEY_FOR_PASSWORD_HASHING doit faire au moins 32 caracteres',
+      ),
+    GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID est requis'),
+    PASSWORD_RESET_URL_BASE: z.string().optional(),
 
-  // --- Redis (optionnel) ---
-  REDIS_HOST: z.string().default('127.0.0.1'),
-  REDIS_PORT: z.coerce.number().int().positive().default(6379),
-  REDIS_URL: z.string().optional(),
+    // --- Redis (optionnel) ---
+    REDIS_HOST: z.string().default('127.0.0.1'),
+    REDIS_PORT: z.coerce.number().int().positive().default(6379),
+    REDIS_URL: z.string().optional(),
 
-  // --- Queue / BullMQ (optionnel) ---
-  AUDIT_QUEUE_ENABLED: z.string().default('true'),
-  AUDIT_QUEUE_NAME: z.string().default('audit_requests'),
-  AUDIT_QUEUE_CONCURRENCY: z.coerce.number().int().positive().default(1),
-  AUDIT_QUEUE_ATTEMPTS: z.coerce.number().int().positive().default(3),
-  AUDIT_QUEUE_BACKOFF_MS: z.coerce.number().int().positive().default(2000),
-  AUDIT_JOB_TIMEOUT_MS: z.coerce.number().int().positive().default(180000),
+    // --- Queue / BullMQ (optionnel) ---
+    AUDIT_QUEUE_ENABLED: z.string().default('true'),
+    AUDIT_QUEUE_NAME: z.string().default('audit_requests'),
+    AUDIT_QUEUE_CONCURRENCY: z.coerce.number().int().positive().default(1),
+    AUDIT_QUEUE_ATTEMPTS: z.coerce.number().int().positive().default(3),
+    AUDIT_QUEUE_BACKOFF_MS: z.coerce.number().int().positive().default(2000),
+    AUDIT_JOB_TIMEOUT_MS: z.coerce.number().int().positive().default(180000),
 
-  // --- Sebastian badges queue (optionnel) ---
-  SEBASTIAN_BADGES_QUEUE_ENABLED: z.string().default('true'),
-  SEBASTIAN_BADGES_QUEUE_NAME: z
-    .string()
-    .default('sebastian_badges_evaluation'),
-  SEBASTIAN_BADGES_QUEUE_CONCURRENCY: z.coerce
-    .number()
-    .int()
-    .positive()
-    .default(1),
-  SEBASTIAN_BADGES_QUEUE_ATTEMPTS: z.coerce
-    .number()
-    .int()
-    .positive()
-    .default(3),
-  SEBASTIAN_BADGES_QUEUE_BACKOFF_MS: z.coerce
-    .number()
-    .int()
-    .nonnegative()
-    .default(500),
-  SEBASTIAN_BADGES_JOB_TIMEOUT_MS: z.coerce
-    .number()
-    .int()
-    .positive()
-    .default(30_000),
-  SEBASTIAN_BADGES_DEDUPE_WINDOW_MS: z.coerce
-    .number()
-    .int()
-    .nonnegative()
-    .default(5_000),
+    // --- Sebastian badges queue (optionnel) ---
+    SEBASTIAN_BADGES_QUEUE_ENABLED: z.string().default('true'),
+    SEBASTIAN_BADGES_QUEUE_NAME: z
+      .string()
+      .default('sebastian_badges_evaluation'),
+    SEBASTIAN_BADGES_QUEUE_CONCURRENCY: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(1),
+    SEBASTIAN_BADGES_QUEUE_ATTEMPTS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(3),
+    SEBASTIAN_BADGES_QUEUE_BACKOFF_MS: z.coerce
+      .number()
+      .int()
+      .nonnegative()
+      .default(500),
+    SEBASTIAN_BADGES_JOB_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(30_000),
+    SEBASTIAN_BADGES_DEDUPE_WINDOW_MS: z.coerce
+      .number()
+      .int()
+      .nonnegative()
+      .default(5_000),
 
-  // --- Audit fetch (optionnel) ---
-  AUDIT_FETCH_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
-  AUDIT_MAX_REDIRECTS: z.coerce.number().int().nonnegative().optional(),
-  AUDIT_HTML_MAX_BYTES: z.coerce.number().int().positive().optional(),
-  AUDIT_TEXT_MAX_BYTES: z.coerce.number().int().positive().optional(),
-  AUDIT_SITEMAP_SAMPLE_SIZE: z.coerce.number().int().positive().optional(),
-  AUDIT_SITEMAP_MAX_URLS: z.coerce.number().int().positive().optional(),
-  AUDIT_SITEMAP_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
-  AUDIT_URL_ANALYZE_CONCURRENCY: z.coerce.number().int().positive().optional(),
-  AUDIT_PAGE_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
-  AUDIT_PAGE_AI_CONCURRENCY: z.coerce.number().int().positive().optional(),
-  AUDIT_PAGE_AI_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
+    // --- Audit fetch (optionnel) ---
+    AUDIT_FETCH_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
+    AUDIT_MAX_REDIRECTS: z.coerce.number().int().nonnegative().optional(),
+    AUDIT_HTML_MAX_BYTES: z.coerce.number().int().positive().optional(),
+    AUDIT_TEXT_MAX_BYTES: z.coerce.number().int().positive().optional(),
+    AUDIT_SITEMAP_SAMPLE_SIZE: z.coerce.number().int().positive().optional(),
+    AUDIT_SITEMAP_MAX_URLS: z.coerce.number().int().positive().optional(),
+    AUDIT_SITEMAP_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
+    AUDIT_URL_ANALYZE_CONCURRENCY: z.coerce
+      .number()
+      .int()
+      .positive()
+      .optional(),
+    AUDIT_PAGE_ANALYZE_LIMIT: z.coerce.number().int().positive().optional(),
+    AUDIT_PAGE_AI_CONCURRENCY: z.coerce.number().int().positive().optional(),
+    AUDIT_PAGE_AI_TIMEOUT_MS: z.coerce.number().int().positive().optional(),
 
-  // --- LLM / OpenAI (optionnel) ---
-  OPENAI_API_KEY: z.string().optional(),
-  AUDIT_LLM_MODEL: z.string().default('gpt-4o-mini'),
-  AUDIT_LLM_PROFILE: z.string().optional(),
-  AUDIT_LLM_LANGUAGE: z.string().default('fr'),
+    // --- LLM / OpenAI (optionnel) ---
+    OPENAI_API_KEY: z.string().optional(),
+    AUDIT_LLM_MODEL: z.string().default('gpt-4o-mini'),
+    AUDIT_LLM_PROFILE: z.string().optional(),
+    AUDIT_LLM_LANGUAGE: z.string().default('fr'),
 
-  // --- SMTP (optionnel) ---
-  SMTP_HOST: z.string().optional(),
-  SMTP_PORT: z.coerce.number().int().positive().default(587),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASS: z.string().optional(),
-  SMTP_SECURE: z.string().default('false'),
-  SMTP_FROM: z.string().optional(),
-  SMTP_REPLY_TO: z.string().optional(),
-  CONTACT_NOTIFICATION_TO: z.string().optional(),
-  AUDIT_REPORT_TO: z.string().optional(),
+    // --- SMTP (optionnel) ---
+    SMTP_HOST: z.string().optional(),
+    SMTP_PORT: z.coerce.number().int().positive().default(587),
+    SMTP_USER: z.string().optional(),
+    SMTP_PASS: z.string().optional(),
+    SMTP_SECURE: z.string().default('false'),
+    SMTP_FROM: z.string().optional(),
+    SMTP_REPLY_TO: z.string().optional(),
+    CONTACT_NOTIFICATION_TO: z.string().optional(),
+    AUDIT_REPORT_TO: z.string().optional(),
 
-  // --- Frontend / liens externes ---
-  FRONTEND_URL: z.string().optional(),
+    // --- Frontend / liens externes ---
+    FRONTEND_URL: z.string().optional(),
 
-  // --- Puppeteer (optionnel, surcharge le binaire Chromium) ---
-  PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
-  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),
+    // --- Puppeteer (optionnel, surcharge le binaire Chromium) ---
+    PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),
 
-  // --- Weather (optionnel) ---
-  OPENWEATHERMAP_API_KEY: z.string().optional(),
+    // --- Weather (optionnel) ---
+    OPENWEATHERMAP_API_KEY: z.string().optional(),
 
-  // --- Telegram (optionnel) ---
-  TELEGRAM_BOT_TOKEN: z.string().optional(),
+    // --- Telegram (optionnel) ---
+    TELEGRAM_BOT_TOKEN: z.string().optional(),
 
-  // --- Metrics (optionnel) ---
-  METRICS_TOKEN: z.string().optional(),
+    // --- Metrics (optionnel) ---
+    METRICS_TOKEN: z.string().optional(),
 
-  // --- Security (optionnel) ---
-  SECURITY_SUSPICIOUS_SCORE_THRESHOLD: z.coerce
-    .number()
-    .int()
-    .positive()
-    .default(25),
-  SECURITY_REPORT_WINDOW_MS: z.coerce
-    .number()
-    .int()
-    .positive()
-    .default(24 * 60 * 60 * 1000),
-  SECURITY_TOP_EVENTS_LIMIT: z.coerce.number().int().positive().default(10),
+    // --- Security (optionnel) ---
+    SECURITY_SUSPICIOUS_SCORE_THRESHOLD: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(25),
+    SECURITY_REPORT_WINDOW_MS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(24 * 60 * 60 * 1000),
+    SECURITY_TOP_EVENTS_LIMIT: z.coerce.number().int().positive().default(10),
 
-  // --- Runtime contexts (optionnel) ---
-  ENABLE_LEGACY_CMS_CONTEXTS: z.string().default('false'),
-});
+    // --- Runtime contexts (optionnel) ---
+    ENABLE_LEGACY_CMS_CONTEXTS: z.string().default('false'),
+  })
+  .superRefine((env, ctx) => {
+    // Un transporter SMTP n'est cree que si HOST/USER/PASS sont renseignes
+    // (cf. `createOptionalSmtpTransporter`). Dans ce cas, les mailers
+    // enverront reellement — et sans expediteur, nodemailer recoit
+    // `from: undefined` et echoue a l'envoi, en production, bien apres le
+    // demarrage. On refuse donc de demarrer plutot que de laisser passer
+    // une configuration qui ne peut pas fonctionner.
+    //
+    // Hors de ce cas, les mailers sont no-op : exiger un expediteur
+    // bloquerait inutilement les environnements de dev et de CI.
+    const smtpConfigured = Boolean(
+      env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS,
+    );
+    if (smtpConfigured && !env.SMTP_FROM) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SMTP_FROM'],
+        message:
+          'requis des lors que SMTP_HOST, SMTP_USER et SMTP_PASS sont definis ' +
+          '(sinon les emails partent avec un expediteur vide)',
+      });
+    }
+  });
 
 /**
  * Pre-traite les variables d'environnement pour resoudre les alias multiples.
