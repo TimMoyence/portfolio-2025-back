@@ -184,7 +184,14 @@ Tim`,
     const prefix = (
       this.configService.get<string>('API_PREFIX') ?? 'api/v1/portfolio25'
     ).replace(/^\/+|\/+$/g, '');
-    const url = new URL(`/${prefix}${path}`, this.frontendUrl);
+    // Un prefixe vide produirait `//newsletter/...`, que `new URL()`
+    // interprete comme une URL protocol-relative : le premier segment
+    // deviendrait l'hote (`https://newsletter/...`). On normalise donc
+    // les slashes doublons plutot que de dependre de la forme du prefixe.
+    const url = new URL(
+      `/${prefix}${path}`.replace(/\/{2,}/g, '/'),
+      this.frontendUrl,
+    );
     for (const [key, value] of Object.entries(params)) {
       url.searchParams.set(key, value);
     }

@@ -204,6 +204,11 @@ const envSchema = z
     // echouer a l'envoi en production — exactement ce que la garde
     // ci-dessus cherche a eviter. Les deux formes RFC 5322 sont
     // acceptees, la production utilisant `Nom <adresse>`.
+    //
+    // Contrairement a la garde de presence, ce controle s'applique meme
+    // sans SMTP configure : une valeur renseignee mais invalide est une
+    // erreur de configuration dans tous les environnements. Ne pas
+    // renseigner la variable du tout reste libre.
     for (const key of ['SMTP_FROM', 'SMTP_REPLY_TO'] as const) {
       const value = env[key];
       if (value?.trim() && !isValidMailbox(value)) {
@@ -226,6 +231,14 @@ const envSchema = z
  * empecherait l'API de demarrer.
  */
 function isValidMailbox(value: string): boolean {
+  // Un saut de ligne permettrait d'injecter un en-tete supplementaire
+  // (`Bcc:`) apres l'adresse ; la regex ci-dessous s'arretant au premier
+  // `>`, le reste ne serait jamais examine.
+  if (/[\r\n]/.test(value)) return false;
+  // Une seule boite : `A <a@x.fr>, B <b@y.fr>` passerait sinon la
+  // validation alors que seule la premiere adresse serait retenue.
+  if ((value.match(/</g) ?? []).length > 1) return false;
+
   const angled = /<([^>]+)>/.exec(value);
   const address = (angled ? angled[1] : value).trim();
   return z.string().email().safeParse(address).success;

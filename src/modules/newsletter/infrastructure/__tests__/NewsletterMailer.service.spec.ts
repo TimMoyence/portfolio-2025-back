@@ -121,6 +121,50 @@ describe('NewsletterMailerService', () => {
       expect(call[0].text).toContain('/api/v1/portfolio25/newsletter/confirm');
     });
 
+    it.each([
+      ['sans slash', 'api/v1/portfolio25'],
+      ['avec slash de tete', '/api/v1/portfolio25'],
+      ['avec slash de queue', 'api/v1/portfolio25/'],
+      ['avec les deux slashes', '/api/v1/portfolio25/'],
+    ])(
+      'produit toujours le meme chemin quel que soit le prefixe %s',
+      async (_label, prefix) => {
+        // `.env` et `deploy/backend.env` utilisent des formes
+        // differentes : sans normalisation, un slash de tete ferait
+        // interpreter le premier segment comme un hote.
+        const configService = {
+          get: jest.fn((key: string) =>
+            key === 'API_PREFIX' ? prefix : undefined,
+          ),
+        } as unknown as ConfigService;
+        const customMailer = new NewsletterMailerService(configService);
+
+        await customMailer.sendWelcome(buildNewsletterSubscriber());
+
+        const [call] = mockSendMail.mock.calls as [[{ text: string }]];
+        expect(call[0].text).toContain(
+          'https://asilidesign.fr/api/v1/portfolio25/newsletter/unsubscribe',
+        );
+      },
+    );
+
+    it('ne detourne pas l’hote quand API_PREFIX est vide', async () => {
+      // `//newsletter/...` serait une URL protocol-relative : `new URL()`
+      // en ferait l'hote `https://newsletter/...`.
+      const configService = {
+        get: jest.fn((key: string) => (key === 'API_PREFIX' ? '' : undefined)),
+      } as unknown as ConfigService;
+      const customMailer = new NewsletterMailerService(configService);
+
+      await customMailer.sendWelcome(buildNewsletterSubscriber());
+
+      const [call] = mockSendMail.mock.calls as [[{ text: string }]];
+      expect(call[0].text).toContain(
+        'https://asilidesign.fr/newsletter/unsubscribe',
+      );
+      expect(call[0].text).not.toContain('https://newsletter');
+    });
+
     it('respecte un API_PREFIX personnalise', async () => {
       const configService = {
         get: jest.fn((key: string) =>

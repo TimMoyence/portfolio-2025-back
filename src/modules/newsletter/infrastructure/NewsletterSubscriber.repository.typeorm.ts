@@ -146,7 +146,10 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
         unsubscribedAt: subscriber.unsubscribedAt,
       },
     );
-    if (!result.affected) return null;
+    // Comparaison stricte a 0 : un driver qui ne renseignerait pas
+    // `affected` doit laisser passer les effets de bord plutot que de
+    // les sauter silencieusement alors que la ligne a bien ete ecrite.
+    if (result.affected === 0) return null;
 
     const reloaded = await this.repo.findOneOrFail({
       where: { id: subscriber.id },
