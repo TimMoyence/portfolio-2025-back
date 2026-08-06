@@ -74,6 +74,14 @@ async function runTracked(
 }
 
 describe('invokeWithLlmTracking', () => {
+  // Filet global : un `mockRestore()` place apres un `await` ne s'execute
+  // pas si l'appel rejette, et l'horloge figee fuit alors vers les tests
+  // suivants du fichier — cascade de faux echecs lors d'une vraie
+  // regression.
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('retourne le resultat de l’invocation telle quelle', async () => {
     const metrics = createMockMetrics();
 
@@ -84,8 +92,11 @@ describe('invokeWithLlmTracking', () => {
 
   it('compte l’appel et observe la latence en succes', async () => {
     const metrics = createMockMetrics();
-    // Horloge figee a 2500 ms d'ecart : `startedAt` puis la mesure de fin.
-    const now = jest
+    // Horloge figee a 2500 ms d'ecart : `startedAt` puis la mesure de
+    // fin. Le chemin succes appelle `Date.now()` quatre fois (init,
+    // handleLLMStart, handleLLMEnd, mesure finale) — la restauration est
+    // assuree par le `afterEach`, pas par un appel place apres l'`await`.
+    jest
       .spyOn(Date, 'now')
       .mockReturnValueOnce(1_000)
       .mockReturnValueOnce(1_000)
@@ -93,8 +104,6 @@ describe('invokeWithLlmTracking', () => {
       .mockReturnValueOnce(3_500);
 
     await runTracked(buildUsageMetadataOutput(), metrics);
-
-    now.mockRestore();
 
     expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith({
       model: 'gpt-test',
@@ -192,6 +201,37 @@ describe('invokeWithLlmTracking', () => {
         metrics as unknown as MetricsService,
       ),
     ).rejects.toThrow('LLM down');
+  });
+
+  it('compte l’appel et observe la latence en erreur', async () => {
+    // Le chemin d'erreur porte sa propre conversion en secondes. Sans
+    // assertion dediee, une regression d'unite y passait la CI alors
+    // meme que le chemin succes etait verrouille.
+    const metrics = createMockMetrics();
+    // Ce chemin n'appelle `Date.now()` que deux fois : init et mesure
+    // dans le `catch` (les callbacks LangChain ne sont pas declenches).
+    jest
+      .spyOn(Date, 'now')
+      .mockReturnValueOnce(1_000)
+      .mockReturnValueOnce(3_500);
+    const invoke = jest.fn().mockRejectedValue(new Error('LLM down'));
+
+    await expect(
+      invokeWithLlmTracking(
+        invoke,
+        ['message'],
+        CONTEXT,
+        metrics as unknown as MetricsService,
+      ),
+    ).rejects.toThrow('LLM down');
+
+    expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'error' }),
+    );
+    expect(metrics.llmLatencySeconds.observe).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'error' }),
+      2.5,
+    );
   });
 
   it('transmet le signal d’annulation a l’invocation', async () => {

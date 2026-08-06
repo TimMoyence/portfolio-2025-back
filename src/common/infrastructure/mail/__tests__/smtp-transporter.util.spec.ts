@@ -222,6 +222,25 @@ describe('createOptionalSmtpTransporter', () => {
       expect(logger.error).toHaveBeenCalled();
     });
 
+    it('accepte une cle RSA au format PKCS#1', () => {
+      // `openssl genrsa` et `opendkim-genkey` produisent du PKCS#1,
+      // quand le nominal ci-dessus genere du PKCS#8. Sans ce cas, un
+      // durcissement futur (controle de l'en-tete PEM, par exemple)
+      // casserait DKIM en production sans faire tomber un test.
+      const pkcs1 = generateKeyPairSync('rsa', {
+        modulusLength: 2048,
+        privateKeyEncoding: { type: 'pkcs1', format: 'pem' },
+        publicKeyEncoding: { type: 'pkcs1', format: 'pem' },
+      }).privateKey;
+      configureSmtp();
+      enableDkim({ SMTP_DKIM_PRIVATE_KEY: pkcs1 });
+
+      createOptionalSmtpTransporter(logger, 'Test');
+
+      expect(lastOptions().dkim?.privateKey).toBe(pkcs1);
+      expect(logger.error).not.toHaveBeenCalled();
+    });
+
     it('refuse une cle qui n’est pas RSA', () => {
       // La RFC 6376 ne definit que `rsa-sha256`. Une cle EC passerait la
       // validation PEM mais produirait une signature ECDSA qu'aucun

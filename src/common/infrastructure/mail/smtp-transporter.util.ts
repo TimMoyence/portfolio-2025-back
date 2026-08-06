@@ -142,6 +142,12 @@ function buildDkimOptions(
     // verificateur DKIM n'accepte, une cle Ed25519 ferait lever
     // `createSign` — dans les deux cas l'exception est ravalee par
     // nodemailer et le message part sans en-tete, en silence.
+    //
+    // `rsa-pss` est refuse volontairement : OpenSSL y force le padding
+    // PSS, alors que la verification DKIM attend du PKCS#1 v1.5. La cle
+    // signerait sans erreur mais la signature serait rejetee a
+    // l'arrivee. Les formats PKCS#1 et PKCS#8 sont acceptes tous deux :
+    // `openssl genrsa` produit le premier, `openssl genpkey` le second.
     if (key.asymmetricKeyType !== 'rsa') {
       logger.error(
         `${context}: DKIM signing disabled, SMTP_DKIM_PRIVATE_KEY must be an RSA key (got ${key.asymmetricKeyType ?? 'unknown'})`,
