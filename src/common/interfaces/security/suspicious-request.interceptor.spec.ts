@@ -91,7 +91,9 @@ describe('SuspiciousRequestInterceptor', () => {
         'accept-language': 'en-US,en;q=0.9',
         'x-forwarded-for': '135.125.11.41',
       },
-      ip: '172.18.0.1',
+      // Valeur qu'Express calcule sous `trust proxy` quand le
+      // reverse-proxy renseigne `X-Forwarded-For`.
+      ip: '135.125.11.41',
     };
     const res: FakeResponse = { statusCode: 201, writableEnded: true };
     const handler: CallHandler = { handle: () => of({}) };
@@ -106,7 +108,13 @@ describe('SuspiciousRequestInterceptor', () => {
     expect(top[0].lastReasons).toContain('ua:headless-chrome');
   });
 
-  it('prend la premiere IP de x-forwarded-for', async () => {
+  it('ignore une chaine x-forwarded-for forgee au profit de req.ip', async () => {
+    // Ce test verifiait auparavant que la PREMIERE entree de
+    // `X-Forwarded-For` etait retenue. Cette entree est integralement
+    // fournie par le client : un attaquant choisissait donc l'IP sous
+    // laquelle ses requetes etaient tracees, et pouvait attribuer son
+    // activite a un tiers. `trust proxy` etant actif, `req.ip` est la
+    // seule valeur validee — c'est elle qui doit faire foi.
     const req: FakeRequest = {
       method: 'GET',
       url: '/wp-login.php',
@@ -115,6 +123,7 @@ describe('SuspiciousRequestInterceptor', () => {
         'accept-language': '',
         'x-forwarded-for': '9.9.9.9, 8.8.8.8, 172.18.0.1',
       },
+      ip: '172.18.0.1',
     };
     const res: FakeResponse = { statusCode: 404, writableEnded: true };
     const handler: CallHandler = { handle: () => of({}) };
@@ -124,7 +133,8 @@ describe('SuspiciousRequestInterceptor', () => {
     );
 
     const top = await store.getTopIPs(10, 60_000);
-    expect(top[0].ip).toBe('9.9.9.9');
+    expect(top[0].ip).toBe('172.18.0.1');
+    expect(top[0].ip).not.toBe('9.9.9.9');
   });
 
   it('enregistre aussi quand le handler emet une erreur', async () => {
@@ -215,6 +225,59 @@ describe('SuspiciousRequestInterceptor', () => {
     );
 
     expect(await store.getTopIPs(10, 60_000)).toHaveLength(1);
+  });
+
+  it('attribue l’evenement a l’IP resolue par Express, pas au X-Forwarded-For brut', async () => {
+    // `trust proxy` etant actif (src/main.ts), Express a deja calcule
+    // `req.ip` en ne faisant confiance qu'au dernier bond. Reparser
+    // `X-Forwarded-For` a la main contournerait ce calcul et laisserait
+    // un attaquant choisir l'IP sous laquelle son activite est tracee.
+    const req: FakeRequest = {
+      method: 'POST',
+      url: '/api/v1/portfolio25/cookie-consents',
+      headers: {
+        'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
+        'accept-language': 'en-US,en;q=0.9',
+        'x-forwarded-for': '1.2.3.4, 203.0.113.7',
+      },
+      ip: '203.0.113.7',
+      socket: { remoteAddress: '::ffff:172.18.0.1' },
+    };
+    const res: FakeResponse = { statusCode: 201, writableEnded: true };
+    const handler: CallHandler = { handle: () => of({}) };
+
+    await firstValueFrom(
+      interceptor.intercept(buildContext(req, res), handler),
+    );
+
+    const top = await store.getTopIPs(10, 60_000);
+    expect(top).toHaveLength(1);
+    expect(top[0].ip).toBe('203.0.113.7');
+  });
+
+  it('retombe sur l’adresse du socket quand req.ip est absent', async () => {
+    const req: FakeRequest = {
+      method: 'POST',
+      url: '/api/v1/portfolio25/cookie-consents',
+      headers: {
+        'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
+        'accept-language': 'en-US,en;q=0.9',
+        'x-forwarded-for': '1.2.3.4',
+      },
+      ip: undefined,
+      socket: { remoteAddress: '198.51.100.9' },
+    };
+    const res: FakeResponse = { statusCode: 201, writableEnded: true };
+    const handler: CallHandler = { handle: () => of({}) };
+
+    await firstValueFrom(
+      interceptor.intercept(buildContext(req, res), handler),
+    );
+
+    const top = await store.getTopIPs(10, 60_000);
+    expect(top[0].ip).toBe('198.51.100.9');
   });
 
   it('ne leve jamais meme si le store casse', async () => {

@@ -47,8 +47,19 @@ export function setSmtpEnv(overrides: Record<string, string> = {}): () => void {
     process.env[key] = value;
   }
 
+  // Les variables DKIM ne sont jamais posees par defaut, mais elles
+  // ajoutent une cle `dkim` a l'objet passe a `createTransport` quand
+  // elles trainent dans l'environnement. Les specs mailer qui comparent
+  // cet objet en egalite stricte casseraient alors sans rapport avec
+  // leur sujet : on les neutralise ici, et on les restaure ensuite.
+  for (const key of DKIM_ENV_KEYS) {
+    if (key in overrides) continue;
+    original[key] = process.env[key];
+    delete process.env[key];
+  }
+
   return () => {
-    for (const [key] of Object.entries(vars)) {
+    for (const key of [...Object.keys(vars), ...DKIM_ENV_KEYS]) {
       if (original[key] === undefined) {
         delete process.env[key];
       } else {
@@ -57,3 +68,10 @@ export function setSmtpEnv(overrides: Record<string, string> = {}): () => void {
     }
   };
 }
+
+/** Variables de signature DKIM, neutralisees par `setSmtpEnv`. */
+const DKIM_ENV_KEYS = [
+  'SMTP_DKIM_DOMAIN',
+  'SMTP_DKIM_SELECTOR',
+  'SMTP_DKIM_PRIVATE_KEY',
+] as const;

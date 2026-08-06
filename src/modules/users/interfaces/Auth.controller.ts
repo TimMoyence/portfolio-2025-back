@@ -22,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
+import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
 import { AuthAuditLogger } from '../application/services/AuthAuditLogger';
 import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
@@ -75,9 +76,15 @@ export class AuthController {
     private readonly auditLogger: AuthAuditLogger,
   ) {}
 
-  /** Extrait l'adresse IP depuis la requete HTTP. */
+  /**
+   * Extrait l'adresse IP depuis la requete HTTP.
+   *
+   * Le fallback sur `X-Forwarded-For` a ete retire : cet en-tete est
+   * fourni par le client, et l'audit d'authentification ne doit pas
+   * tracer une IP que l'appelant a choisie.
+   */
   private extractIp(req: Request): string {
-    return req.ip ?? req.headers['x-forwarded-for']?.toString() ?? 'unknown';
+    return resolveClientIpOrUnknown(req);
   }
 
   /** Extrait le User-Agent depuis la requete HTTP. */

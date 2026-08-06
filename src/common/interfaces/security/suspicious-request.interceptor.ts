@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
+import { resolveClientIpOrUnknown } from './client-ip.util';
 import type { ISecurityEventsStore } from './ISecurityEventsStore';
 import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
 import type { SecurityConfig } from './security.config';
@@ -135,16 +136,21 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
     );
   }
 
-  /** Resout l'IP reelle derriere le reverse-proxy (X-Forwarded-For, X-Real-IP). */
+  /**
+   * Resout l'IP a laquelle l'evenement est attribue.
+   *
+   * On s'appuie sur `req.ip`, calcule par Express en fonction de
+   * `trust proxy` (src/main.ts), et jamais sur un parsing maison de
+   * `X-Forwarded-For` : ce dernier prendrait le premier element de la
+   * chaine, entierement fourni par le client. Un attaquant choisirait
+   * alors l'IP sous laquelle son activite est tracee, et pourrait faire
+   * porter ses evenements a un tiers.
+   *
+   * `X-Real-IP` est ecarte pour la meme raison : c'est un en-tete brut,
+   * non valide par la couche `trust proxy`.
+   */
   private resolveIp(req: Request): string {
-    const xff = this.headerString(req, 'x-forwarded-for');
-    if (xff.length > 0) {
-      const first = xff.split(',')[0]?.trim();
-      if (first) return first;
-    }
-    const xRealIp = this.headerString(req, 'x-real-ip');
-    if (xRealIp.length > 0) return xRealIp;
-    return req.ip ?? req.socket?.remoteAddress ?? 'unknown';
+    return resolveClientIpOrUnknown(req);
   }
 
   private headerString(req: Request, name: string): string {

@@ -21,6 +21,7 @@ import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
+import { resolveClientIp } from '../../../common/interfaces/security/client-ip.util';
 import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';
 import {
   AuditLocale,
@@ -55,17 +56,16 @@ export class AuditsController {
     @Body() dto: AuditRequestRequestDto,
     @Req() req: Request,
   ): Promise<AuditRequestResponseDto> {
-    const forwarded = req.headers['x-forwarded-for'];
-    const ip = Array.isArray(forwarded)
-      ? forwarded[0]
-      : forwarded?.split(',')[0]?.trim();
+    // Meme resolution que le scoring de securite et le rate-limiting :
+    // sans cela l'IP tracee ici serait celle que l'appelant declare.
+    const ip = resolveClientIp(req);
 
     const command: CreateAuditRequestCommand = {
       websiteName: dto.websiteName,
       contactMethod: dto.contactMethod,
       contactValue: dto.contactValue,
       locale: this.resolveLocale(dto.locale, req),
-      ip: ip ?? req.ip ?? null,
+      ip,
       userAgent: req.headers['user-agent'] ?? null,
       referer: req.headers['referer'] ?? null,
     };

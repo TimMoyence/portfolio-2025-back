@@ -76,6 +76,34 @@ describe('NewsletterSubscriberRepositoryTypeORM.markUnsubscribed', () => {
     expect(repo.findOneOrFail).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ['null', null],
+    ['undefined', undefined],
+  ])(
+    'laisse passer les effets de bord quand affected vaut %s',
+    async (_label, affected) => {
+      // `affected` est `number | null | undefined` : un driver qui ne le
+      // renseigne pas ne doit pas faire croire a une course perdue alors
+      // que la ligne a bien ete ecrite. Seul un 0 explicite coupe les
+      // effets de bord.
+      const subscriber = buildUnsubscribed();
+      repo.update.mockResolvedValue({
+        affected,
+        raw: [],
+        generatedMaps: [],
+      } as never);
+      repo.findOneOrFail.mockResolvedValue({
+        id: 'sub-id',
+        status: 'unsubscribed',
+      } as unknown as NewsletterSubscriberEntity);
+
+      const result = await sut.markUnsubscribed(subscriber);
+
+      expect(result).not.toBeNull();
+      expect(repo.findOneOrFail).toHaveBeenCalled();
+    },
+  );
+
   it('refuse un subscriber sans id', async () => {
     const subscriber = buildNewsletterSubscriber();
     subscriber.id = undefined;

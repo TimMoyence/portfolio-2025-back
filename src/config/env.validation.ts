@@ -142,6 +142,10 @@ const envSchema = z
     SMTP_SECURE: z.string().default('false'),
     SMTP_FROM: z.string().optional(),
     SMTP_REPLY_TO: z.string().optional(),
+    // Signature DKIM applicative (optionnelle) : les trois ou aucune.
+    SMTP_DKIM_DOMAIN: z.string().optional(),
+    SMTP_DKIM_SELECTOR: z.string().optional(),
+    SMTP_DKIM_PRIVATE_KEY: z.string().optional(),
     CONTACT_NOTIFICATION_TO: z.string().optional(),
     AUDIT_REPORT_TO: z.string().optional(),
 
