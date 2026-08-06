@@ -96,7 +96,11 @@ describe('invokeWithLlmTracking', () => {
     expect(metrics.llmLatencySeconds.observe).toHaveBeenCalledTimes(1);
     const [, latencySeconds] = metrics.llmLatencySeconds.observe.mock
       .calls[0] as [unknown, number];
+    // Borne haute indispensable : l'histogramme Prometheus est en
+    // SECONDES. Sans elle, une regression d'unite (facteur 1000, valeur
+    // en millisecondes) satisferait encore l'assertion.
     expect(latencySeconds).toBeGreaterThanOrEqual(0);
+    expect(latencySeconds).toBeLessThan(5);
   });
 
   it('extrait les tokens du format usage_metadata (LangChain 2024+)', async () => {

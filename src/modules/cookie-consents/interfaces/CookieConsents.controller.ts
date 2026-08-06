@@ -7,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import type { Request } from 'express';
+import { resolveClientIp } from '../../../common/interfaces/security/client-ip.util';
 import { CreateCookieConsentsUseCase } from '../application/CreateCookieConsents.useCase';
 import { CreateCookieConsentCommand } from '../application/dto/CreateCookieConsent.command';
 import { CookieConsentResponseDto } from './dto/cookie-consent.response.dto';
@@ -28,10 +29,10 @@ export class CookieConsentsController {
     @Body() dto: CookieConsentRequestDto,
     @Req() req: Request,
   ): Promise<CookieConsentResponseDto> {
-    const forwarded = req.headers['x-forwarded-for'];
-    const ip = Array.isArray(forwarded)
-      ? forwarded[0]
-      : forwarded?.split(',')[0]?.trim();
+    // Meme resolution que le scoring de securite et le rate-limiting :
+    // l'IP persistee au titre du RGPD doit designer le meme client que
+    // celle des autres referentiels, et ne pas etre choisie par l'appelant.
+    const ip = resolveClientIp(req);
 
     const command: CreateCookieConsentCommand = {
       policyVersion: dto.policyVersion,
@@ -40,7 +41,7 @@ export class CookieConsentsController {
       source: dto.source,
       action: dto.action,
       preferences: dto.preferences,
-      ip: ip ?? req.ip ?? null,
+      ip,
       userAgent: req.headers['user-agent'] ?? null,
       referer: req.headers['referer'] ?? null,
     };

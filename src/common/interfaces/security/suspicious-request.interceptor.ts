@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
+import { resolveClientIpOrUnknown } from './client-ip.util';
 import type { ISecurityEventsStore } from './ISecurityEventsStore';
 import { SECURITY_EVENTS_STORE } from './ISecurityEventsStore';
 import type { SecurityConfig } from './security.config';
@@ -149,7 +150,7 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
    * non valide par la couche `trust proxy`.
    */
   private resolveIp(req: Request): string {
-    return req.ip ?? req.socket?.remoteAddress ?? 'unknown';
+    return resolveClientIpOrUnknown(req);
   }
 
   private headerString(req: Request, name: string): string {

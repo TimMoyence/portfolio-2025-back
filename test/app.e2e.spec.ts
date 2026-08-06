@@ -337,13 +337,20 @@ describe('API coherence and connectivity (e2e transportless)', () => {
       message: 'Cookie consent recorded successfully.',
       httpCode: 201,
     });
+    // L'IP persistee au titre du RGPD est celle resolue par Express sous
+    // `trust proxy`, jamais la premiere entree de `X-Forwarded-For` :
+    // cette derniere est fournie par le client, qui choisirait alors
+    // l'identite sous laquelle son consentement est enregistre.
     expect(createCookieConsentsUseCase.execute).toHaveBeenCalledWith(
       expect.objectContaining({
-        ip: '203.0.113.10',
+        ip: '10.0.0.2',
         userAgent: 'e2e-test-agent',
         referer: 'https://example.com/en/pricing',
       }),
     );
+    const [command] = jest.mocked(createCookieConsentsUseCase.execute).mock
+      .calls[0] as [{ ip: string | null }];
+    expect(command.ip).not.toBe('203.0.113.10');
   });
 
   it('creates audit request and resolves locale from referer when locale is omitted', async () => {
