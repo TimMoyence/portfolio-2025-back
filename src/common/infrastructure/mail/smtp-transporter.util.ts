@@ -135,7 +135,19 @@ function buildDkimOptions(
   // `List-Unsubscribe` ne seraient pas couverts — sans rien pour le
   // signaler.
   try {
-    createPrivateKey(privateKey);
+    const key = createPrivateKey(privateKey);
+    // Le type compte autant que la validite : nodemailer signe via
+    // `crypto.createSign('rsa-sha256')`, et la RFC 6376 ne definit que
+    // `rsa-sha256`. Une cle EC produirait une signature qu'aucun
+    // verificateur DKIM n'accepte, une cle Ed25519 ferait lever
+    // `createSign` — dans les deux cas l'exception est ravalee par
+    // nodemailer et le message part sans en-tete, en silence.
+    if (key.asymmetricKeyType !== 'rsa') {
+      logger.error(
+        `${context}: DKIM signing disabled, SMTP_DKIM_PRIVATE_KEY must be an RSA key (got ${key.asymmetricKeyType ?? 'unknown'})`,
+      );
+      return {};
+    }
   } catch (error) {
     logger.error(
       `${context}: DKIM signing disabled, SMTP_DKIM_PRIVATE_KEY is not a usable private key`,
