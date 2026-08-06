@@ -46,9 +46,8 @@ function buildMockUseCases() {
     .spyOn(confirmUC, 'execute')
     .mockResolvedValue({ status: confirmed.status, alreadyConfirmed: false });
 
-  const unsubscribed = buildNewsletterSubscriber();
   jest.spyOn(unsubscribeUC, 'execute').mockResolvedValue({
-    status: unsubscribed.status,
+    status: 'unsubscribed',
     alreadyUnsubscribed: false,
   });
 
@@ -120,7 +119,9 @@ describe('NewsletterController', () => {
     it('retourne le statut pour un token UUID v4 valide', async () => {
       const result = await controller.unsubscribeEndpoint(VALID_TOKEN);
 
-      expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN);
+      expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN, {
+        sendAck: true,
+      });
       expect(result.status).toBeDefined();
     });
 
@@ -146,8 +147,31 @@ describe('NewsletterController', () => {
       // de l'expediteur.
       const result = await controller.unsubscribeOneClickEndpoint(VALID_TOKEN);
 
-      expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN);
-      expect(result.status).toBeDefined();
+      expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN, {
+        sendAck: false,
+      });
+      expect(result.status).toBe('unsubscribed');
+    });
+
+    it('n’envoie pas d’accuse de reception sur le chemin one-click', async () => {
+      // Repondre par un email a quelqu'un qui vient de cliquer
+      // "Se desabonner" est un motif classique de plainte spam — soit
+      // l'inverse de l'objectif de delivrabilite.
+      await controller.unsubscribeOneClickEndpoint(VALID_TOKEN);
+
+      const [, options] = jest.mocked(mocks.unsubscribeUC.execute).mock
+        .calls[0];
+      expect(options?.sendAck).toBe(false);
+    });
+
+    it('conserve l’accuse de reception sur le lien GET', async () => {
+      // Le lien du pied d'email reste un geste humain deliberé :
+      // l'accuse confirme a l'abonne que son retrait a bien abouti.
+      await controller.unsubscribeEndpoint(VALID_TOKEN);
+
+      expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN, {
+        sendAck: true,
+      });
     });
 
     it('leve NotFoundException (404) pour un token malformed', async () => {

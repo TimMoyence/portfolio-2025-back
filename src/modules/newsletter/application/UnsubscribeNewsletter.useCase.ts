@@ -15,6 +15,16 @@ export interface UnsubscribeNewsletterResult {
   readonly alreadyUnsubscribed: boolean;
 }
 
+export interface UnsubscribeNewsletterOptions {
+  /**
+   * Envoi de l'accuse de desabonnement. A desactiver sur le chemin
+   * one-click (RFC 8058) : repondre par un email a quelqu'un qui vient
+   * de cliquer « Se desabonner » dans son client mail est un motif
+   * classique de plainte pour spam.
+   */
+  readonly sendAck: boolean;
+}
+
 /**
  * Retrait d'abonnement via le token unsubscribe (lien pied d'email).
  * Idempotent et sans friction : le desabonnement doit etre instantane
@@ -35,6 +45,7 @@ export class UnsubscribeNewsletterUseCase {
 
   async execute(
     unsubscribeToken: string,
+    options: UnsubscribeNewsletterOptions = { sendAck: true },
   ): Promise<UnsubscribeNewsletterResult> {
     const subscriber = await this.repo.findByUnsubscribeToken(unsubscribeToken);
     if (!subscriber) {
@@ -46,18 +57,26 @@ export class UnsubscribeNewsletterUseCase {
     }
 
     subscriber.unsubscribe();
-    const updated = await this.repo.update(subscriber);
+    // Transition conditionnee au statut en base : sans cela, deux
+    // desabonnements concurrents franchissent tous deux la garde
+    // ci-dessus et declenchent chacun les effets de bord.
+    const updated = await this.repo.markUnsubscribed(subscriber);
+    if (!updated) {
+      return { status: 'unsubscribed', alreadyUnsubscribed: true };
+    }
 
     void this.scheduler
       .cancel(updated)
       .catch((err: unknown) =>
         this.logger.warn('Newsletter drip cancel failed', err),
       );
-    void this.mailer
-      .sendUnsubscribeAck(updated)
-      .catch((err: unknown) =>
-        this.logger.warn('Newsletter unsubscribe ack email failed', err),
-      );
+    if (options.sendAck) {
+      void this.mailer
+        .sendUnsubscribeAck(updated)
+        .catch((err: unknown) =>
+          this.logger.warn('Newsletter unsubscribe ack email failed', err),
+        );
+    }
 
     return { status: updated.status, alreadyUnsubscribed: false };
   }

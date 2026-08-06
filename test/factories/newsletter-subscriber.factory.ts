@@ -41,6 +41,9 @@ export function createMockNewsletterSubscriberRepo(): jest.Mocked<INewsletterSub
     update: jest
       .fn()
       .mockImplementation((s: NewsletterSubscriber) => Promise.resolve(s)),
+    markUnsubscribed: jest
+      .fn()
+      .mockImplementation((s: NewsletterSubscriber) => Promise.resolve(s)),
   };
 }
 

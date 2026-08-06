@@ -190,7 +190,7 @@ const envSchema = z
     const smtpConfigured = Boolean(
       env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS,
     );
-    if (smtpConfigured && !env.SMTP_FROM) {
+    if (smtpConfigured && !env.SMTP_FROM?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['SMTP_FROM'],
@@ -199,7 +199,37 @@ const envSchema = z
           '(sinon les emails partent avec un expediteur vide)',
       });
     }
+
+    // Une valeur presente mais malformee franchirait le demarrage pour
+    // echouer a l'envoi en production — exactement ce que la garde
+    // ci-dessus cherche a eviter. Les deux formes RFC 5322 sont
+    // acceptees, la production utilisant `Nom <adresse>`.
+    for (const key of ['SMTP_FROM', 'SMTP_REPLY_TO'] as const) {
+      const value = env[key];
+      if (value?.trim() && !isValidMailbox(value)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [key],
+          message:
+            'doit etre une adresse email valide, seule ou sous la forme ' +
+            '`Nom <adresse@domaine>`',
+        });
+      }
+    }
   });
+
+/**
+ * Valide une boite aux lettres RFC 5322 sous ses deux formes usuelles :
+ * l'adresse nue (`contact@exemple.fr`) et l'adresse avec nom d'affichage
+ * (`'Mon Nom' <contact@exemple.fr>`), cette derniere etant celle
+ * deployee en production. `z.string().email()` rejetterait la seconde et
+ * empecherait l'API de demarrer.
+ */
+function isValidMailbox(value: string): boolean {
+  const angled = /<([^>]+)>/.exec(value);
+  const address = (angled ? angled[1] : value).trim();
+  return z.string().email().safeParse(address).success;
+}
 
 /**
  * Pre-traite les variables d'environnement pour resoudre les alias multiples.

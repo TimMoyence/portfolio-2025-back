@@ -95,23 +95,87 @@ describe('NewsletterMailerService', () => {
     });
   });
 
-  describe('en-tetes List-Unsubscribe (RFC 8058)', () => {
-    it('expose le desabonnement en un clic sur l’email de confirmation', async () => {
+  describe('URL des liens newsletter (routes servies par l’API)', () => {
+    it('prefixe l’URL de desabonnement par le prefixe d’API', async () => {
+      const subscriber = buildNewsletterSubscriber();
+
+      await mailer.sendWelcome(subscriber);
+
+      // `/newsletter/unsubscribe` est une route de l'API, pas du front :
+      // sans le prefixe global, l'URL tombe sur le SSR Angular, qui
+      // repond 404 au POST et sert sa page "not found" au GET.
+      const [call] = mockSendMail.mock.calls as [
+        [{ text: string; headers: Record<string, string> }],
+      ];
+      const expectedPath = '/api/v1/portfolio25/newsletter/unsubscribe';
+      expect(call[0].text).toContain(expectedPath);
+      expect(call[0].headers['List-Unsubscribe']).toContain(expectedPath);
+    });
+
+    it('prefixe l’URL de confirmation par le prefixe d’API', async () => {
       const subscriber = buildNewsletterSubscriber();
 
       await mailer.sendConfirmation(subscriber);
 
+      const [call] = mockSendMail.mock.calls as [[{ text: string }]];
+      expect(call[0].text).toContain('/api/v1/portfolio25/newsletter/confirm');
+    });
+
+    it('respecte un API_PREFIX personnalise', async () => {
+      const configService = {
+        get: jest.fn((key: string) =>
+          key === 'API_PREFIX' ? 'custom/prefix' : undefined,
+        ),
+      } as unknown as ConfigService;
+      const customMailer = new NewsletterMailerService(configService);
+      const subscriber = buildNewsletterSubscriber();
+
+      await customMailer.sendWelcome(subscriber);
+
+      const [call] = mockSendMail.mock.calls as [[{ text: string }]];
+      expect(call[0].text).toContain('/custom/prefix/newsletter/unsubscribe');
+    });
+  });
+
+  describe('en-tetes List-Unsubscribe (RFC 8058)', () => {
+    it('n’expose PAS le bouton natif sur l’email de confirmation', async () => {
+      const subscriber = buildNewsletterSubscriber();
+
+      await mailer.sendConfirmation(subscriber);
+
+      // Un clic reflexe sur "Se desabonner" depuis le mail de
+      // confirmation sort un abonne encore `pending` : `confirm()` leve
+      // ensuite une DomainValidationError et la reinscription ne le
+      // repasse jamais en `pending` — l'adresse est verrouillee a vie.
+      // La confirmation est un mail transactionnel : la RFC 8058 vise
+      // les envois en nombre, pas ce message.
+      const [call] = mockSendMail.mock.calls as [
+        [{ headers?: Record<string, string> }],
+      ];
+      expect(call[0].headers?.['List-Unsubscribe']).toBeUndefined();
+      expect(call[0].headers?.['List-Unsubscribe-Post']).toBeUndefined();
+    });
+
+    it('utilise une adresse mailto nue, sans display name', async () => {
+      const configService = {
+        get: jest.fn((key: string) =>
+          key === 'SMTP_REPLY_TO'
+            ? "'Asili Design' <contact@asilidesign.fr>"
+            : undefined,
+        ),
+      } as unknown as ConfigService;
+      const customMailer = new NewsletterMailerService(configService);
+      const subscriber = buildNewsletterSubscriber();
+
+      await customMailer.sendWelcome(subscriber);
+
+      // Un display name dans le `mailto:` produirait un en-tete
+      // malforme : `<mailto:'Asili Design' <contact@...>?subject=...>`.
       const [call] = mockSendMail.mock.calls as [
         [{ headers: Record<string, string> }],
       ];
-      // Gmail exige les deux en-tetes conjointement pour activer le
-      // bouton natif de desabonnement chez les expediteurs en nombre.
       expect(call[0].headers['List-Unsubscribe']).toContain(
-        subscriber.unsubscribeToken,
-      );
-      expect(call[0].headers['List-Unsubscribe']).toContain('mailto:');
-      expect(call[0].headers['List-Unsubscribe-Post']).toBe(
-        'List-Unsubscribe=One-Click',
+        '<mailto:contact@asilidesign.fr?subject=unsubscribe>',
       );
     });
 

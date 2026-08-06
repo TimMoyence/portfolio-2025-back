@@ -27,16 +27,55 @@ describe('UnsubscribeNewsletterUseCase', () => {
     subscriber.id = 'sub-id';
     subscriber.confirm();
     repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
+    repo.markUnsubscribed.mockImplementationOnce((s) => Promise.resolve(s));
 
     const result = await useCase.execute(subscriber.unsubscribeToken);
     await flushPromises();
 
     expect(result.status).toBe('unsubscribed');
     expect(result.alreadyUnsubscribed).toBe(false);
-    expect(repo.update).toHaveBeenCalled();
+    // La transition passe desormais par `markUnsubscribed`, conditionnee
+    // au statut en base, et non plus par un `update` inconditionnel.
+    expect(repo.markUnsubscribed).toHaveBeenCalled();
     expect(scheduler.cancel).toHaveBeenCalledTimes(1);
     expect(mailer.sendUnsubscribeAck).toHaveBeenCalledTimes(1);
+  });
+
+  it('n’envoie pas d’accuse quand sendAck vaut false (one-click)', async () => {
+    const subscriber = buildNewsletterSubscriber();
+    subscriber.id = 'sub-id';
+    subscriber.confirm();
+    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
+    repo.markUnsubscribed.mockImplementationOnce((s) => Promise.resolve(s));
+
+    const result = await useCase.execute(subscriber.unsubscribeToken, {
+      sendAck: false,
+    });
+    await flushPromises();
+
+    expect(result.status).toBe('unsubscribed');
+    // Le desabonnement aboutit et la sequence drip est bien annulee :
+    // seul l'accuse est supprime.
+    expect(scheduler.cancel).toHaveBeenCalledTimes(1);
+    expect(mailer.sendUnsubscribeAck).not.toHaveBeenCalled();
+  });
+
+  it('ne declenche aucun effet de bord si une requete concurrente a gagne', async () => {
+    const subscriber = buildNewsletterSubscriber();
+    subscriber.id = 'sub-id';
+    subscriber.confirm();
+    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
+    // Aucune ligne affectee : la transition a deja ete operee par une
+    // requete concurrente, qui a declenche les effets de bord.
+    repo.markUnsubscribed.mockResolvedValueOnce(null);
+
+    const result = await useCase.execute(subscriber.unsubscribeToken);
+    await flushPromises();
+
+    expect(result.alreadyUnsubscribed).toBe(true);
+    expect(result.status).toBe('unsubscribed');
+    expect(scheduler.cancel).not.toHaveBeenCalled();
+    expect(mailer.sendUnsubscribeAck).not.toHaveBeenCalled();
   });
 
   it('est idempotent quand deja desabonne', async () => {

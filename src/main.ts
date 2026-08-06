@@ -29,6 +29,18 @@ async function bootstrap() {
     ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
     : [];
 
+  // L'API n'est jamais exposee directement : elle est servie derriere un
+  // reverse-proxy (deploy/compose.yaml, reseau `web` externe, aucun
+  // `ports:` publie). Sans cette ligne, `req.ip` vaut l'adresse du proxy
+  // pour tout le monde et les compteurs du ThrottlerGuard degenerent en
+  // un bucket unique partage par l'ensemble des clients.
+  //
+  // La valeur est numerique et volontairement pas `true` : elle ne fait
+  // confiance qu'au dernier bond, celui du proxy. Avec `true`, un client
+  // pourrait forger un `X-Forwarded-For` et se choisir une IP arbitraire
+  // pour echapper au rate-limiting.
+  app.set('trust proxy', 1);
+
   // CORS avec credentials: true pour le cookie HttpOnly refresh_token.
   // Le Bearer token reste dans le header Authorization pour les requetes API.
   // Le cookie n'est emis que sur le path /auth/refresh avec SameSite=Strict,
