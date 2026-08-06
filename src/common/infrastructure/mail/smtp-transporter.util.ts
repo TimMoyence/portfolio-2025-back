@@ -43,5 +43,69 @@ export function createOptionalSmtpTransporter(
     port,
     secure,
     auth: { user, pass },
+    ...buildDkimOptions(logger, context),
   }) as Transporter;
+}
+
+/**
+ * En-tetes couverts par la signature DKIM (tag `h=`).
+ *
+ * La RFC 8058 §4 impose que `List-Unsubscribe` et `List-Unsubscribe-Post`
+ * soient signes : sans cela, Gmail ignore le bouton natif de
+ * desabonnement, et l'en-tete que l'API prend la peine d'emettre reste
+ * sans effet. Les autres champs sont ceux que nodemailer signe par
+ * defaut, repris explicitement pour que la liste soit lisible ici.
+ */
+const DKIM_SIGNED_HEADERS = [
+  'From',
+  'Sender',
+  'Reply-To',
+  'Subject',
+  'Date',
+  'Message-ID',
+  'To',
+  'MIME-Version',
+  'Content-Type',
+  'List-Unsubscribe',
+  'List-Unsubscribe-Post',
+].join(':');
+
+/**
+ * Construit l'option `dkim` de nodemailer si les trois variables
+ * `SMTP_DKIM_DOMAIN`, `SMTP_DKIM_SELECTOR` et `SMTP_DKIM_PRIVATE_KEY`
+ * sont renseignees.
+ *
+ * Signer cote applicatif rend la conformite RFC 8058 verifiable depuis
+ * ce depot, au lieu de dependre d'un relais SMTP dont la configuration
+ * n'est pas versionnee ici. En l'absence de cle, on ne signe pas et la
+ * responsabilite reste au relais — comportement inchange.
+ *
+ * Une configuration partielle ne peut produire aucune signature valide :
+ * elle est ignoree et signalee, plutot que de faire echouer les envois.
+ */
+function buildDkimOptions(
+  logger: Logger,
+  context: string,
+): Record<string, unknown> {
+  const domainName = process.env.SMTP_DKIM_DOMAIN;
+  const keySelector = process.env.SMTP_DKIM_SELECTOR;
+  const privateKey = process.env.SMTP_DKIM_PRIVATE_KEY;
+
+  if (!domainName && !keySelector && !privateKey) return {};
+
+  if (!domainName || !keySelector || !privateKey) {
+    logger.warn(
+      `${context}: DKIM signing disabled, SMTP_DKIM_DOMAIN/SMTP_DKIM_SELECTOR/SMTP_DKIM_PRIVATE_KEY must all be set`,
+    );
+    return {};
+  }
+
+  return {
+    dkim: {
+      domainName,
+      keySelector,
+      privateKey,
+      headerFieldNames: DKIM_SIGNED_HEADERS,
+    },
+  };
 }
