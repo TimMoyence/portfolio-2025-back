@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { Not, QueryFailedError, Repository } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { isSubscriptionStatus } from '../domain/SubscriptionStatus';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
@@ -121,6 +121,36 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
         unsubscribedAt: subscriber.unsubscribedAt,
       },
     );
+    const reloaded = await this.repo.findOneOrFail({
+      where: { id: subscriber.id },
+    });
+    return this.toDomain(reloaded);
+  }
+
+  /**
+   * Transition atomique vers `unsubscribed` — voir
+   * `INewsletterSubscriberRepository.markUnsubscribed`. Le predicat sur
+   * le statut fait arbitrer la course par la base : une seule des
+   * requetes concurrentes affecte une ligne.
+   */
+  async markUnsubscribed(
+    subscriber: NewsletterSubscriber,
+  ): Promise<NewsletterSubscriber | null> {
+    if (!subscriber.id) {
+      throw new Error('Cannot update a subscriber without an id');
+    }
+    const result = await this.repo.update(
+      { id: subscriber.id, status: Not('unsubscribed') },
+      {
+        status: subscriber.status,
+        unsubscribedAt: subscriber.unsubscribedAt,
+      },
+    );
+    // Comparaison stricte a 0 : un driver qui ne renseignerait pas
+    // `affected` doit laisser passer les effets de bord plutot que de
+    // les sauter silencieusement alors que la ligne a bien ete ecrite.
+    if (result.affected === 0) return null;
+
     const reloaded = await this.repo.findOneOrFail({
       where: { id: subscriber.id },
     });

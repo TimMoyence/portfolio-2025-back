@@ -190,6 +190,33 @@ describe('SuspiciousRequestInterceptor', () => {
     expect(await store.getTopIPs(10, 60_000)).toHaveLength(0);
   });
 
+  it('ne bypasse pas le scoring sur un X-Forwarded-For loopback forge', async () => {
+    // Depuis l'activation de `trust proxy`, `req.ip` derive de
+    // `X-Forwarded-For`. Un client qui annonce `127.0.0.1` obtiendrait
+    // donc un `req.ip` loopback et court-circuiterait tout le scoring
+    // s'il servait de critere. Seule l'adresse du socket fait foi.
+    const req: FakeRequest = {
+      method: 'POST',
+      url: '/api/v1/portfolio25/cookie-consents',
+      headers: {
+        'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
+        'accept-language': 'en-US,en;q=0.9',
+        'x-forwarded-for': '127.0.0.1',
+      },
+      ip: '127.0.0.1',
+      socket: { remoteAddress: '135.125.11.41' },
+    };
+    const res: FakeResponse = { statusCode: 201, writableEnded: true };
+    const handler: CallHandler = { handle: () => of({}) };
+
+    await firstValueFrom(
+      interceptor.intercept(buildContext(req, res), handler),
+    );
+
+    expect(await store.getTopIPs(10, 60_000)).toHaveLength(1);
+  });
+
   it('ne leve jamais meme si le store casse', async () => {
     const broken: InMemorySecurityEventsStore = Object.assign(
       new InMemorySecurityEventsStore(),

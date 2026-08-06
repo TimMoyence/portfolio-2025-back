@@ -53,6 +53,12 @@ export class NewsletterMailerService implements INewsletterMailer {
       from: this.from,
       to: subscriber.email,
       replyTo: this.replyTo,
+      // Pas d'en-tete `List-Unsubscribe` ici, deliberement : ce message
+      // est transactionnel, pas un envoi en nombre. Le bouton natif du
+      // client mail sortirait un abonne encore `pending`, apres quoi
+      // `confirm()` echoue et la reinscription ne le repasse jamais en
+      // `pending` — l'adresse serait verrouillee. Le lien de retrait
+      // reste present dans le corps du message.
       subject: 'Confirmez votre inscription a la newsletter asilidesign.fr',
       text: `${greeting},
 
@@ -85,6 +91,7 @@ Tim — asilidesign.fr`,
       from: this.from,
       to: subscriber.email,
       replyTo: this.replyTo,
+      headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
       subject: 'Bienvenue — ce qui arrive dans votre boite mail',
       text: `${greeting},
 
@@ -123,14 +130,68 @@ Tim`,
     });
   }
 
+  /**
+   * En-tetes de desabonnement RFC 8058, exiges par Gmail des expediteurs
+   * en nombre depuis 2024. Leur absence degrade la delivrabilite.
+   *
+   * `List-Unsubscribe-Post` engage l'API a traiter un POST non
+   * authentifie sur l'URL fournie : l'endpoint
+   * `POST /newsletter/unsubscribe` existe pour cela. Annoncer l'en-tete
+   * sans cet endpoint ferait echouer le bouton natif du client mail.
+   *
+   * L'adresse mailto reprend le reply-to du mailer, garantissant une
+   * boite reellement relevee ; le sujet permet le tri automatique. Elle
+   * est reduite a l'adresse nue : un `SMTP_REPLY_TO` de la forme
+   * `Nom <adresse>` produirait un `mailto:` malforme.
+   *
+   * Ces en-tetes ne sont poses que sur les envois en nombre. La RFC 8058
+   * §4 impose en outre qu'ils soient couverts par la signature DKIM
+   * (tag `h=`) : la signature etant assuree par le relais SMTP et non
+   * par nodemailer ici, ce point reste a verifier cote relais.
+   */
+  private buildListUnsubscribeHeaders(
+    unsubscribeUrl: string,
+  ): Record<string, string> {
+    return {
+      'List-Unsubscribe': `<mailto:${this.bareReplyToAddress()}?subject=unsubscribe>, <${unsubscribeUrl}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    };
+  }
+
+  /** Extrait l'adresse d'un `Display Name <adresse>` eventuel. */
+  private bareReplyToAddress(): string {
+    const angled = /<([^>]+)>/.exec(this.replyTo);
+    return (angled ? angled[1] : this.replyTo).trim();
+  }
+
   private buildGreeting(firstName: string | null): string {
     return firstName && firstName.trim().length > 0
       ? `Bonjour ${this.escapeHtml(firstName)}`
       : 'Bonjour';
   }
 
+  /**
+   * Construit une URL publique vers une route de l'API.
+   *
+   * `/newsletter/confirm` et `/newsletter/unsubscribe` sont servies par
+   * l'API, derriere son prefixe global, et non par le front : omettre le
+   * prefixe fait tomber le lien sur le SSR Angular, qui n'expose qu'un
+   * catch-all GET — page « not found » sur le lien clique, et 404 sur le
+   * POST one-click. L'hote reste celui du front, API et front etant
+   * servis par le meme reverse-proxy.
+   */
   private buildUrl(path: string, params: Record<string, string>): string {
-    const url = new URL(path, this.frontendUrl);
+    const prefix = (
+      this.configService.get<string>('API_PREFIX') ?? 'api/v1/portfolio25'
+    ).replace(/^\/+|\/+$/g, '');
+    // Un prefixe vide produirait `//newsletter/...`, que `new URL()`
+    // interprete comme une URL protocol-relative : le premier segment
+    // deviendrait l'hote (`https://newsletter/...`). On normalise donc
+    // les slashes doublons plutot que de dependre de la forme du prefixe.
+    const url = new URL(
+      `/${prefix}${path}`.replace(/\/{2,}/g, '/'),
+      this.frontendUrl,
+    );
     for (const [key, value] of Object.entries(params)) {
       url.searchParams.set(key, value);
     }

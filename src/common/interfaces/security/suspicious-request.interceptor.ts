@@ -51,9 +51,13 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
     const req = httpCtx.getRequest<Request>();
 
     // Requetes loopback = trafic interne (Docker health checks, sondes).
-    // On utilise l'IP brute du socket (pas X-Forwarded-For) car les
-    // health checks Docker ne passent pas par le reverse-proxy.
-    const socketIp = req.ip ?? req.socket?.remoteAddress ?? '';
+    // On lit l'adresse brute du socket EN PREMIER, jamais `req.ip` :
+    // depuis l'activation de `trust proxy` (src/main.ts), `req.ip` est
+    // derive de `X-Forwarded-For`. Un client pourrait donc annoncer
+    // `X-Forwarded-For: 127.0.0.1` et court-circuiter tout le scoring de
+    // suspicion. Les health checks Docker ne passent de toute facon pas
+    // par le reverse-proxy : leur adresse de socket est deja loopback.
+    const socketIp = req.socket?.remoteAddress ?? req.ip ?? '';
     if (LOOPBACK_IPS.has(socketIp)) {
       return next.handle();
     }

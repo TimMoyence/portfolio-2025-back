@@ -40,4 +40,21 @@ export interface INewsletterSubscriberRepository {
    * explicite et eviter les mutations silencieuses.
    */
   update(subscriber: NewsletterSubscriber): Promise<NewsletterSubscriber>;
+
+  /**
+   * Transition atomique vers `unsubscribed`, conditionnee au statut en
+   * base plutot qu'a une lecture prealable.
+   *
+   * Deux desabonnements concurrents lisent tous deux un abonne encore
+   * actif, franchissent tous deux la garde applicative et declenchent
+   * tous deux les effets de bord — dont l'email d'accuse, envoye en
+   * double. Le rejeu automatique du one-click rend ce cas realiste.
+   *
+   * Retourne `null` lorsque aucune ligne n'a ete affectee, c'est-a-dire
+   * lorsqu'une requete concurrente a deja opere la transition : l'appelant
+   * sait alors qu'il ne doit declencher aucun effet de bord.
+   */
+  markUnsubscribed(
+    subscriber: NewsletterSubscriber,
+  ): Promise<NewsletterSubscriber | null>;
 }

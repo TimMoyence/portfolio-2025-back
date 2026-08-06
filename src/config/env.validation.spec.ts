@@ -46,6 +46,75 @@ describe('validateEnv', () => {
     expect(result.SMTP_PORT).toBe(587);
   });
 
+  describe('coherence SMTP', () => {
+    // Faux identifiants SMTP de test — valeurs factices, non sensibles.
+    const SMTP_CONFIGURED = {
+      SMTP_HOST: 'smtp.example.org',
+      SMTP_USER: 'mailer',
+      SMTP_PASS: 'test-smtp-password', // gitleaks:allow
+    };
+
+    it('devrait lancer une erreur si SMTP est configure sans SMTP_FROM', () => {
+      // Sans expediteur, nodemailer recoit `from: undefined` et echoue a
+      // l'envoi — en production, donc bien apres le demarrage.
+      const env = buildValidEnv(SMTP_CONFIGURED);
+
+      expect(() => validateEnv(env)).toThrow('SMTP_FROM');
+    });
+
+    it('devrait accepter un SMTP configure avec SMTP_FROM', () => {
+      const env = buildValidEnv({
+        ...SMTP_CONFIGURED,
+        SMTP_FROM: 'contact@asilidesign.fr',
+      });
+
+      expect(() => validateEnv(env)).not.toThrow();
+    });
+
+    it('devrait accepter l’absence de SMTP_FROM quand SMTP n’est pas configure', () => {
+      // Sans transporter, les mailers sont no-op : exiger un expediteur
+      // bloquerait inutilement les environnements de dev et de CI.
+      const env = buildValidEnv();
+
+      expect(() => validateEnv(env)).not.toThrow();
+    });
+
+    it('devrait accepter la forme « display name + adresse » de production', () => {
+      // Valeur reellement deployee. `z.string().email()` la rejetterait
+      // et empecherait l'API de demarrer : la validation doit accepter
+      // les deux formes RFC 5322.
+      const env = buildValidEnv({
+        ...SMTP_CONFIGURED,
+        SMTP_FROM: "'Asili Design' <no-reply@asilidesign.fr>",
+      });
+
+      expect(() => validateEnv(env)).not.toThrow();
+    });
+
+    it.each([
+      ['une valeur blanche', '   '],
+      ['une valeur sans arobase', 'poubelle'],
+      ['des chevrons sans adresse valide', 'Asili <pas-une-adresse>'],
+    ])('devrait rejeter %s dans SMTP_FROM', (_label, value) => {
+      // Sans controle de format, la garde ne rattrape que l'absence :
+      // une valeur malformee passe le demarrage et echoue a l'envoi en
+      // production — exactement ce que la garde pretend eliminer.
+      const env = buildValidEnv({ ...SMTP_CONFIGURED, SMTP_FROM: value });
+
+      expect(() => validateEnv(env)).toThrow('SMTP_FROM');
+    });
+
+    it('devrait rejeter un SMTP_REPLY_TO malforme', () => {
+      const env = buildValidEnv({
+        ...SMTP_CONFIGURED,
+        SMTP_FROM: 'contact@asilidesign.fr',
+        SMTP_REPLY_TO: 'pas-une-adresse',
+      });
+
+      expect(() => validateEnv(env)).toThrow('SMTP_REPLY_TO');
+    });
+  });
+
   it('devrait lancer une erreur si DB_HOST est manquant (aucun alias)', () => {
     const env = buildValidEnv({ DB_HOST: undefined });
 

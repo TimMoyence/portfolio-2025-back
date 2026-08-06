@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   NotFoundException,
   Post,
   Query,
@@ -21,7 +22,10 @@ import { Throttle } from '@nestjs/throttler';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { ConfirmSubscriptionUseCase } from '../application/ConfirmSubscription.useCase';
 import { SubscribeNewsletterUseCase } from '../application/SubscribeNewsletter.useCase';
-import { UnsubscribeNewsletterUseCase } from '../application/UnsubscribeNewsletter.useCase';
+import {
+  UnsubscribeNewsletterUseCase,
+  type UnsubscribeNewsletterOptions,
+} from '../application/UnsubscribeNewsletter.useCase';
 import { SubscribeNewsletterRequestDto } from './dto/subscribe-newsletter.request.dto';
 import { SubscribeNewsletterResponseDto } from './dto/subscribe-newsletter.response.dto';
 
@@ -38,10 +42,12 @@ const UUID_V4_REGEX =
 /**
  * Controleur HTTP du bounded context Newsletter.
  *
- * Trois endpoints publics :
+ * Quatre endpoints publics :
  *  - `POST /newsletter/subscribe` : inscription double opt-in,
  *  - `GET /newsletter/confirm?token=` : confirmation via magic link,
- *  - `GET /newsletter/unsubscribe?token=` : desabonnement instantane.
+ *  - `GET /newsletter/unsubscribe?token=` : desabonnement instantane,
+ *  - `POST /newsletter/unsubscribe?token=` : desabonnement en un clic
+ *    (RFC 8058), declenche par le client mail.
  *
  * La reponse `subscribe` est volontairement generique (RGPD) : on ne
  * revele jamais si l'email existe deja en base. Le throttle est
@@ -50,6 +56,8 @@ const UUID_V4_REGEX =
 @ApiTags('newsletter')
 @Controller('newsletter')
 export class NewsletterController {
+  private readonly logger = new Logger(NewsletterController.name);
+
   constructor(
     private readonly subscribe: SubscribeNewsletterUseCase,
     private readonly confirm: ConfirmSubscriptionUseCase,
@@ -115,8 +123,49 @@ export class NewsletterController {
   async unsubscribeEndpoint(
     @Query('token') token: string,
   ): Promise<{ status: string }> {
+    // Geste humain delibere : l'accuse confirme a l'abonne que son
+    // retrait a bien abouti.
+    return this.handleUnsubscribe(token, { sendAck: true });
+  }
+
+  /**
+   * Desabonnement en un clic (RFC 8058), declenche par le client mail.
+   *
+   * Gmail et consorts envoient un POST non authentifie, sans corps utile,
+   * sur l'URL de l'en-tete `List-Unsubscribe` quand
+   * `List-Unsubscribe-Post` est present. Le desabonnement doit aboutir
+   * sans page intermediaire ni confirmation : c'est la contrepartie de
+   * l'en-tete annonce par `NewsletterMailerService`.
+   */
+  @Public()
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('unsubscribe')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Desabonnement en un clic RFC 8058 (declenche par le client mail)',
+  })
+  @ApiOkResponse({ description: 'Desabonnement confirme' })
+  @ApiNotFoundResponse({ description: 'Token invalide ou expire' })
+  async unsubscribeOneClickEndpoint(
+    @Query('token') token: string,
+  ): Promise<{ status: string }> {
+    // Sur une PR dont l'objet est la delivrabilite, une trace dediee est
+    // le seul moyen de constater que le bouton natif fonctionne — ou
+    // qu'il n'est jamais appele.
+    this.logger.log('Newsletter one-click unsubscribe received');
+    return this.handleUnsubscribe(token, { sendAck: false });
+  }
+
+  /**
+   * Chemin commun aux deux canaux de desabonnement : seul l'envoi de
+   * l'accuse les distingue.
+   */
+  private async handleUnsubscribe(
+    token: string,
+    options: UnsubscribeNewsletterOptions,
+  ): Promise<{ status: string }> {
     this.assertValidToken(token);
-    const result = await this.unsubscribe.execute(token);
+    const result = await this.unsubscribe.execute(token, options);
     return { status: result.status };
   }
 
