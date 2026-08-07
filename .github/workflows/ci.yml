@@ -62,6 +62,16 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Tests des gardes d outillage
+        run: pnpm run test:guards
+
+      # Cliquet non-regressif sur les commentaires narratifs : le plafond vit
+      # dans `"guard-no-comments".maxOffenses` (package.json), a cote du
+      # `coverageThreshold` tenu par jest-ratchet. Le gate echoue si le compte
+      # depasse le plafond, et imprime la valeur a poser quand il passe dessous.
+      - name: Garde no-comment (cliquet)
+        run: pnpm run guard:comments
+
       - name: Run coverage gate
         run: pnpm run test:cov:ci
 

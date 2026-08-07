@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
@@ -67,6 +67,35 @@ export function rootDependencies(root) {
 
 /**
  * @param {string} root
+ * @returns {number}
+ */
+export function ratchetCeiling(root) {
+  const manifest = join(root, 'package.json');
+  if (!existsSync(manifest)) return 0;
+  const declared = JSON.parse(readFileSync(manifest, 'utf8'))[GATE]
+    ?.maxOffenses;
+  if (declared === undefined) return 0;
+  if (!Number.isInteger(declared) || declared < 0) {
+    throw new Error(
+      `${GATE}: "${GATE}".maxOffenses vaut ${JSON.stringify(declared)} dans ${manifest} — attendu un entier positif ou nul.`,
+    );
+  }
+  return declared;
+}
+
+/**
+ * @param {{ root: string, ceiling: number }} input
+ * @returns {void}
+ */
+function writeCeiling({ root, ceiling }) {
+  const manifest = join(root, 'package.json');
+  const parsed = JSON.parse(readFileSync(manifest, 'utf8'));
+  parsed[GATE] = { ...parsed[GATE], maxOffenses: ceiling };
+  writeFileSync(manifest, `${JSON.stringify(parsed, null, 2)}\n`);
+}
+
+/**
+ * @param {string} root
  * @returns {string[]}
  */
 function trackedFiles(root) {
@@ -87,7 +116,7 @@ export function collectFiles({ root }) {
 
 /**
  * @param {{ root?: string }} [input]
- * @returns {{ code: number, offenders: Offender[], inspected: number }}
+ * @returns {{ code: number, offenders: Offender[], inspected: number, ceiling: number }}
  */
 export function runGate({ root = '.' } = {}) {
   const files = collectFiles({ root });
@@ -110,36 +139,80 @@ export function runGate({ root = '.' } = {}) {
       dependencies,
     }),
   );
+  const ceiling = ratchetCeiling(root);
   return {
-    code: offenders.length > 0 ? 1 : 0,
+    code: offenders.length > ceiling ? 1 : 0,
     offenders,
     inspected: readable.length,
+    ceiling,
   };
 }
 
+export const TIGHTEN_COMMAND =
+  'node scripts/guard-no-comments.cli.mjs --root . --tighten';
+
 /**
- * @param {{ offenders: Offender[], inspected: number }} result
+ * @param {{ offenders: Offender[], inspected: number, ceiling?: number }} result
  * @returns {string}
  */
-export function formatGate({ offenders, inspected }) {
-  const attestation = `${GATE}: ${inspected} fichier(s) inspecte(s), ${offenders.length} violation(s).`;
-  if (offenders.length === 0)
-    return `${GATE}: OK — zero commentaire narratif sans fait verifiable.\n${attestation}`;
-  const lines = offenders.map(
-    (o) => `${o.file}:${o.line} — [${o.reason}] ${o.snippet}`,
-  );
-  return [...lines, attestation].join('\n');
+export function formatGate({ offenders, inspected, ceiling = 0 }) {
+  const count = offenders.length;
+  const attestation = `${GATE}: ${inspected} fichier(s) inspecte(s), ${count} violation(s), plafond ${ceiling}.`;
+  if (count > ceiling) {
+    const lines = offenders.map(
+      (o) => `${o.file}:${o.line} — [${o.reason}] ${o.snippet}`,
+    );
+    return [
+      ...lines,
+      attestation,
+      `${GATE}: REGRESSION — ${count} violation(s) pour un plafond de ${ceiling}. Le cliquet ne remonte jamais : retirez ${count - ceiling} commentaire(s) parmi ceux listes ci-dessus.`,
+    ].join('\n');
+  }
+  if (count < ceiling) {
+    return [
+      attestation,
+      `${GATE}: PLAFOND ABAISSABLE — ${count} violation(s) sous un plafond de ${ceiling} : abaissez-le a ${count}.`,
+      `${GATE}: posez ${count} dans "${GATE}".maxOffenses (package.json), ou lancez \`${TIGHTEN_COMMAND}\`.`,
+    ].join('\n');
+  }
+  return count === 0
+    ? `${GATE}: OK — zero commentaire narratif sans fait verifiable.\n${attestation}`
+    : `${GATE}: OK — plafond tenu, aucune regression.\n${attestation}`;
+}
+
+/**
+ * @param {{ root: string, offenders: Offender[], inspected: number, ceiling: number }} result
+ * @returns {string}
+ */
+export function tightenCeiling({ root, offenders, inspected, ceiling }) {
+  const count = offenders.length;
+  if (count > ceiling) return formatGate({ offenders, inspected, ceiling });
+  if (count === ceiling)
+    return `${GATE}: plafond deja au plus juste (${ceiling}) — rien a abaisser.`;
+  writeCeiling({ root, ceiling: count });
+  return `${GATE}: plafond abaisse de ${ceiling} a ${count} dans ${join(root, 'package.json')}.`;
+}
+
+/**
+ * @param {{ offenders: Offender[], ceiling: number }} result
+ * @returns {string | undefined}
+ */
+export function githubAnnotation({ offenders, ceiling }) {
+  const count = offenders.length;
+  if (count >= ceiling) return undefined;
+  return `::warning title=${GATE}::${count} violation(s) sous un plafond de ${ceiling} — abaissez "${GATE}".maxOffenses a ${count} dans package.json, ou lancez \`${TIGHTEN_COMMAND}\`.`;
 }
 
 /**
  * @param {string[]} argv
- * @returns {{ root: string | undefined, count: boolean }}
+ * @returns {{ root: string, count: boolean, tighten: boolean }}
  */
 export function parseArgs(argv) {
   const at = argv.indexOf('--root');
   return {
-    root: at >= 0 ? argv[at + 1] : undefined,
+    root: at >= 0 ? argv[at + 1] : '.',
     count: argv.includes('--count'),
+    tighten: argv.includes('--tighten'),
   };
 }
 
@@ -148,10 +221,19 @@ export function parseArgs(argv) {
  * @returns {number}
  */
 export function main(argv) {
-  const { root, count } = parseArgs(argv);
+  const { root, count, tighten } = parseArgs(argv);
   const result = runGate({ root });
-  console.log(
-    count ? `${GATE}: ${result.offenders.length}` : formatGate(result),
-  );
+  if (count) {
+    console.log(`${GATE}: ${result.offenders.length}`);
+    return result.code;
+  }
+  if (tighten) {
+    console.log(tightenCeiling({ root, ...result }));
+    return result.code;
+  }
+  console.log(formatGate(result));
+  const annotation = githubAnnotation(result);
+  if (annotation && process.env.GITHUB_ACTIONS === 'true')
+    console.log(annotation);
   return result.code;
 }
