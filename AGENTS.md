@@ -189,7 +189,7 @@ L'agent ne doit jamais declarer une tache "terminee" si une verification attendu
 
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **portfolio-2025-back** (5604 symbols, 16763 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **portfolio-2025-back** (5682 symbols, 16949 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -236,6 +236,7 @@ This project is indexed by GitNexus as **portfolio-2025-back** (5604 symbols, 16
 | Work in the Services area (59 symbols)        | `.claude/skills/generated/services/SKILL.md`                |
 | Work in the Dto area (48 symbols)             | `.claude/skills/generated/dto/SKILL.md`                     |
 | Work in the V1 area (27 symbols)              | `.claude/skills/generated/v1/SKILL.md`                      |
+| Work in the Scripts area (22 symbols)         | `.claude/skills/generated/scripts/SKILL.md`                 |
 | Work in the Badge-rules area (21 symbols)     | `.claude/skills/generated/badge-rules/SKILL.md`             |
 | Work in the Mail area (18 symbols)            | `.claude/skills/generated/mail/SKILL.md`                    |
 | Work in the Config area (11 symbols)          | `.claude/skills/generated/config/SKILL.md`                  |
@@ -243,10 +244,9 @@ This project is indexed by GitNexus as **portfolio-2025-back** (5604 symbols, 16
 | Work in the Metrics area (10 symbols)         | `.claude/skills/generated/metrics/SKILL.md`                 |
 | Work in the Filters area (9 symbols)          | `.claude/skills/generated/filters/SKILL.md`                 |
 | Work in the Test area (8 symbols)             | `.claude/skills/generated/test/SKILL.md`                    |
+| Work in the Cluster_6 area (7 symbols)        | `.claude/skills/generated/cluster-6/SKILL.md`               |
+| Work in the Cluster_7 area (6 symbols)        | `.claude/skills/generated/cluster-7/SKILL.md`               |
 | Work in the Llm area (6 symbols)              | `.claude/skills/generated/llm/SKILL.md`                     |
 | Work in the Security area (6 symbols)         | `.claude/skills/generated/security/SKILL.md`                |
-| Work in the Runtime area (5 symbols)          | `.claude/skills/generated/runtime/SKILL.md`                 |
-| Work in the Factories area (5 symbols)        | `.claude/skills/generated/factories/SKILL.md`               |
-| Work in the Errors area (4 symbols)           | `.claude/skills/generated/errors/SKILL.md`                  |
 
 <!-- gitnexus:end -->
