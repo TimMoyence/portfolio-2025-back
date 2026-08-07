@@ -80,10 +80,6 @@ describe('NewsletterController', () => {
         termsAcceptedAt: VALID_DTO.termsAcceptedAt,
       });
       expect(typeof result.message).toBe('string');
-      // E-SEC-2 / RGPD : le message ne doit JAMAIS reveler si l'email
-      // existe deja (oracle d'enumeration). Verifie la couverture des
-      // formulations a eviter et la presence d'une instruction de
-      // confirmation generique.
       expect(result.message).not.toMatch(
         /d[eé]j[aà].*inscrit|existant|d[eé]j[aà].*confirm[eé]|enregistr[eé]/i,
       );
