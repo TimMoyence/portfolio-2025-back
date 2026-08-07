@@ -14,6 +14,8 @@ import { SebastianBadge } from '../../domain/SebastianBadge';
 import { BADGE_CATALOG } from '../../domain/badge-catalog';
 import {
   BADGE_STRATEGIES,
+  fullHistoryBadgeKeys,
+  maxBadgeWindowDays,
   subtractDays,
 } from '../../domain/badge-rules/badge-strategies';
 
@@ -28,25 +30,20 @@ export class EvaluateBadgesUseCase {
     private readonly goalRepo: ISebastianGoalRepository,
   ) {}
 
-  private static readonly GLOBAL_HISTORY_BADGES = [
-    'first-log',
-    'espresso-machine',
-    'early-bird',
-    'night-owl',
-  ];
-
   async execute(userId: string): Promise<SebastianBadge[]> {
     const now = new Date();
 
     const existingBadges = await this.badgeRepo.findByUserId(userId);
     const unlockedKeys = new Set(existingBadges.map((b) => b.badgeKey));
-    const allGlobalsUnlocked =
-      EvaluateBadgesUseCase.GLOBAL_HISTORY_BADGES.every((key) =>
-        unlockedKeys.has(key),
-      );
+    const allFullHistoryUnlocked = fullHistoryBadgeKeys(BADGE_STRATEGIES).every(
+      (key) => unlockedKeys.has(key),
+    );
 
-    const entryFilters: SebastianEntryFilters = allGlobalsUnlocked
-      ? { userId, from: subtractDays(now, 30) }
+    const entryFilters: SebastianEntryFilters = allFullHistoryUnlocked
+      ? {
+          userId,
+          from: subtractDays(now, maxBadgeWindowDays(BADGE_STRATEGIES)),
+        }
       : { userId };
 
     const [entries, goals] = await Promise.all([

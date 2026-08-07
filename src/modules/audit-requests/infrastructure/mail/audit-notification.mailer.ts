@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { AuditRequest } from '../../domain/AuditRequest';
 import { buildMailLayout } from './mail-layout.util';
-import { escapeHtml } from './mail-rendering.util';
+import { escapeHtml, safeHtml } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
 
@@ -44,7 +44,7 @@ Contact        : ${contactMethod} — ${contactValue}
     contactMethod: string,
     contactValue: string,
   ): string {
-    const bodyHtml = `
+    const bodyHtml = safeHtml`
       <table style="width:100%;border-collapse:collapse;margin:0 0 20px;">
         <tr>
           <td style="padding:8px 0;font-weight:600;width:140px;color:#374151;">Site / activité</td>

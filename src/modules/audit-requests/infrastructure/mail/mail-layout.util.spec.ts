@@ -1,9 +1,10 @@
 import { buildMailLayout } from './mail-layout.util';
+import { safeHtml } from './mail-rendering.util';
 
 describe('buildMailLayout (P2.7 / P6.6)', () => {
   const baseInput = {
     heroTitle: 'Test title',
-    bodyHtml: '<p>body content</p>',
+    bodyHtml: safeHtml`<p>body content</p>`,
   };
 
   describe('structure HTML', () => {
@@ -151,12 +152,25 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
       expect(html).toContain('&lt;script&gt;evil()&lt;/script&gt;');
     });
 
-    it("laisse bodyHtml brut (l'appelant est responsable d'echapper les champs externes)", () => {
+    it('insere bodyHtml sans le re-echapper', () => {
       const html = buildMailLayout({
         ...baseInput,
-        bodyHtml: '<p><strong>ok</strong></p>',
+        bodyHtml: safeHtml`<p><strong>ok</strong></p>`,
       });
       expect(html).toContain('<strong>ok</strong>');
+    });
+
+    it('refuse a la compilation une chaine brute comme bodyHtml', () => {
+      const userInput = '<script>alert(1)</script>';
+
+      const html = buildMailLayout({
+        heroTitle: 'Test title',
+        // @ts-expect-error bodyHtml n'accepte que du HTML passe par escapeHtml
+        // ou assemble par le tag `safeHtml`.
+        bodyHtml: userInput,
+      });
+
+      expect(html).toContain('<script>alert(1)</script>');
     });
   });
 

@@ -13,6 +13,13 @@ import type { DetailedForecastResult } from '../domain/IOpenWeatherMapProxy.port
 import { OpenMeteoProxyService } from './OpenMeteoProxy.service';
 import { OpenWeatherMapProxyService } from './OpenWeatherMapProxy.service';
 
+const METRES_PER_KILOMETRE = 1_000;
+
+/** Convertit des kilometres (port OWM) en metres (contrat Open-Meteo). */
+function kilometresToMetres(kilometres: number): number {
+  return kilometres * METRES_PER_KILOMETRE;
+}
+
 @Injectable()
 export class ResilientWeatherProxyService implements IWeatherProxy {
   private readonly logger = new Logger(ResilientWeatherProxyService.name);
@@ -154,43 +161,45 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
   ): ForecastResult {
     return {
       current: {
-        temperature_2m: current.temperature,
+        temperature_2m: current.temperatureCelsius,
         weather_code: this.owmConditionToWmo(current.conditionId),
-        wind_speed_10m: current.windSpeed,
-        apparent_temperature: current.feelsLike,
-        relative_humidity_2m: current.humidity,
-        pressure_msl: current.seaLevelPressure,
+        wind_speed_10m: current.windSpeedKmh,
+        apparent_temperature: current.feelsLikeCelsius,
+        relative_humidity_2m: current.humidityPercent,
+        pressure_msl: current.seaLevelPressureHpa,
         uv_index: undefined,
-        wind_direction_10m: current.windDirection,
-        wind_gusts_10m: current.windGust,
-        cloud_cover: current.cloudCover,
-        visibility: current.visibility * 1_000,
+        wind_direction_10m: current.windDirectionDegrees,
+        wind_gusts_10m: current.windGustKmh,
+        cloud_cover: current.cloudCoverPercent,
+        visibility: kilometresToMetres(current.visibilityKm),
         dew_point_2m: undefined,
       },
       hourly: {
-        time: forecast.hourly.map((h) => h.time),
-        temperature_2m: forecast.hourly.map((h) => h.temperature),
+        time: forecast.hourly.map((h) => h.timeIso),
+        temperature_2m: forecast.hourly.map((h) => h.temperatureCelsius),
         weather_code: forecast.hourly.map((h) =>
           this.owmConditionToWmo(h.conditionId),
         ),
-        wind_speed_10m: forecast.hourly.map((h) => h.windSpeed),
+        wind_speed_10m: forecast.hourly.map((h) => h.windSpeedKmh),
         precipitation: forecast.hourly.map(
-          (h) => (h.rain3h ?? 0) + (h.snow3h ?? 0),
+          (h) => (h.rain3hMm ?? 0) + (h.snow3hMm ?? 0),
         ),
-        relative_humidity_2m: forecast.hourly.map((h) => h.humidity),
-        pressure_msl: forecast.hourly.map((h) => h.seaLevelPressure),
-        wind_direction_10m: forecast.hourly.map((h) => h.windDirection),
-        wind_gusts_10m: forecast.hourly.map((h) => h.windGust),
-        cloud_cover: forecast.hourly.map((h) => h.cloudCover),
-        visibility: forecast.hourly.map((h) => h.visibility * 1_000),
+        relative_humidity_2m: forecast.hourly.map((h) => h.humidityPercent),
+        pressure_msl: forecast.hourly.map((h) => h.seaLevelPressureHpa),
+        wind_direction_10m: forecast.hourly.map((h) => h.windDirectionDegrees),
+        wind_gusts_10m: forecast.hourly.map((h) => h.windGustKmh),
+        cloud_cover: forecast.hourly.map((h) => h.cloudCoverPercent),
+        visibility: forecast.hourly.map((h) =>
+          kilometresToMetres(h.visibilityKm),
+        ),
       },
       daily: {
-        time: forecast.daily.map((d) => d.date),
+        time: forecast.daily.map((d) => d.dateIso),
         weather_code: forecast.daily.map((d) =>
           this.owmConditionToWmo(d.conditionId),
         ),
-        temperature_2m_max: forecast.daily.map((d) => d.maxTemp),
-        temperature_2m_min: forecast.daily.map((d) => d.minTemp),
+        temperature_2m_max: forecast.daily.map((d) => d.maxTempCelsius),
+        temperature_2m_min: forecast.daily.map((d) => d.minTempCelsius),
         sunrise: [],
         sunset: [],
         precipitation_sum: [],

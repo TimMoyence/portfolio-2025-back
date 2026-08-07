@@ -7,8 +7,14 @@ export interface BadgeEvaluationContext {
   now: Date;
 }
 
+export const FULL_HISTORY = 'full-history';
+
+export type BadgeWindow = number | typeof FULL_HISTORY;
+
 export interface BadgeStrategy {
   readonly key: string;
+
+  readonly evaluationWindow: BadgeWindow;
 
   evaluate(context: BadgeEvaluationContext): boolean;
 }
@@ -70,6 +76,7 @@ export function consecutiveDaysUnderGoal(
 
 class FirstLogStrategy implements BadgeStrategy {
   readonly key = 'first-log';
+  readonly evaluationWindow = FULL_HISTORY;
   evaluate({ entries }: BadgeEvaluationContext): boolean {
     return entries.length >= 1;
   }
@@ -78,15 +85,15 @@ class FirstLogStrategy implements BadgeStrategy {
 class ZenMonkStrategy implements BadgeStrategy {
   constructor(
     readonly key: string,
-    private readonly days: number,
+    readonly evaluationWindow: number,
   ) {}
 
   evaluate({ entries, now }: BadgeEvaluationContext): boolean {
-    if (!hasEnoughHistory(entries, this.days, now)) return false;
+    if (!hasEnoughHistory(entries, this.evaluationWindow, now)) return false;
     const alcoholDates = entryDateStrings(
       entries.filter((e) => e.category === 'alcohol'),
     );
-    for (let i = 0; i < this.days; i++) {
+    for (let i = 0; i < this.evaluationWindow; i++) {
       if (alcoholDates.has(subtractDays(now, i))) return false;
     }
     return true;
@@ -95,6 +102,7 @@ class ZenMonkStrategy implements BadgeStrategy {
 
 class EspressoMachineStrategy implements BadgeStrategy {
   readonly key = 'espresso-machine';
+  readonly evaluationWindow = FULL_HISTORY;
   evaluate({ entries }: BadgeEvaluationContext): boolean {
     const coffeeEntries = entries.filter((e) => e.category === 'coffee');
     const dailyTotals = new Map<string, number>();
@@ -111,11 +119,14 @@ class EspressoMachineStrategy implements BadgeStrategy {
 
 class DryWeekStrategy implements BadgeStrategy {
   readonly key = 'dry-week';
+  readonly evaluationWindow = 7;
   evaluate({ entries, now }: BadgeEvaluationContext): boolean {
-    if (!hasEnoughHistory(entries, 7, now)) return false;
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 86_400_000);
+    if (!hasEnoughHistory(entries, this.evaluationWindow, now)) return false;
+    const windowStart = new Date(
+      now.getTime() - this.evaluationWindow * 86_400_000,
+    );
     return (
-      entries.filter((e) => e.category === 'alcohol' && e.date >= sevenDaysAgo)
+      entries.filter((e) => e.category === 'alcohol' && e.date >= windowStart)
         .length === 0
     );
   }
@@ -123,16 +134,23 @@ class DryWeekStrategy implements BadgeStrategy {
 
 class GoalCrusherStrategy implements BadgeStrategy {
   readonly key = 'goal-crusher';
+  readonly evaluationWindow = 30;
   evaluate({ entries, goals, now }: BadgeEvaluationContext): boolean {
     const activeGoals = goals.filter((g) => g.isActive && g.period === 'daily');
     if (activeGoals.length === 0) return false;
-    if (!hasEnoughHistory(entries, 30, now)) return false;
-    return consecutiveDaysUnderGoal(entries, activeGoals, 30, now);
+    if (!hasEnoughHistory(entries, this.evaluationWindow, now)) return false;
+    return consecutiveDaysUnderGoal(
+      entries,
+      activeGoals,
+      this.evaluationWindow,
+      now,
+    );
   }
 }
 
 class EarlyBirdStrategy implements BadgeStrategy {
   readonly key = 'early-bird';
+  readonly evaluationWindow = FULL_HISTORY;
   evaluate({ entries }: BadgeEvaluationContext): boolean {
     return entries.some((e) => {
       if (!e.createdAt) return false;
@@ -143,6 +161,7 @@ class EarlyBirdStrategy implements BadgeStrategy {
 
 class NightOwlStrategy implements BadgeStrategy {
   readonly key = 'night-owl';
+  readonly evaluationWindow = FULL_HISTORY;
   evaluate({ entries }: BadgeEvaluationContext): boolean {
     return entries.some((e) => {
       if (!e.createdAt) return false;
@@ -154,23 +173,36 @@ class NightOwlStrategy implements BadgeStrategy {
 
 class PerfectMonthStrategy implements BadgeStrategy {
   readonly key = 'perfect-month';
+  readonly evaluationWindow = 30;
   evaluate({ entries, goals, now }: BadgeEvaluationContext): boolean {
     const activeGoals = goals.filter((g) => g.isActive && g.period === 'daily');
     if (activeGoals.length === 0) return false;
-    if (!hasEnoughHistory(entries, 30, now)) return false;
-    return consecutiveDaysUnderGoal(entries, activeGoals, 30, now);
+    if (!hasEnoughHistory(entries, this.evaluationWindow, now)) return false;
+    return consecutiveDaysUnderGoal(
+      entries,
+      activeGoals,
+      this.evaluationWindow,
+      now,
+    );
   }
 }
 
+const COMEBACK_COMPARED_SPAN_DAYS = 7;
+
 class ComebackKidStrategy implements BadgeStrategy {
   readonly key = 'comeback-kid';
+  readonly evaluationWindow = COMEBACK_COMPARED_SPAN_DAYS * 2;
   evaluate({ entries, goals, now }: BadgeEvaluationContext): boolean {
     const activeGoals = goals.filter((g) => g.isActive && g.period === 'daily');
     if (activeGoals.length === 0) return false;
-    if (!hasEnoughHistory(entries, 14, now)) return false;
+    if (!hasEnoughHistory(entries, this.evaluationWindow, now)) return false;
 
-    const currentWeekStart = new Date(now.getTime() - 7 * 86_400_000);
-    const previousWeekStart = new Date(now.getTime() - 14 * 86_400_000);
+    const currentWeekStart = new Date(
+      now.getTime() - COMEBACK_COMPARED_SPAN_DAYS * 86_400_000,
+    );
+    const previousWeekStart = new Date(
+      now.getTime() - this.evaluationWindow * 86_400_000,
+    );
 
     for (const goal of activeGoals) {
       const currentWeek = entries.filter(
@@ -186,9 +218,11 @@ class ComebackKidStrategy implements BadgeStrategy {
           e.date < currentWeekStart,
       );
       const currentAvg =
-        currentWeek.reduce((sum, e) => sum + Number(e.quantity), 0) / 7;
+        currentWeek.reduce((sum, e) => sum + Number(e.quantity), 0) /
+        COMEBACK_COMPARED_SPAN_DAYS;
       const previousAvg =
-        previousWeek.reduce((sum, e) => sum + Number(e.quantity), 0) / 7;
+        previousWeek.reduce((sum, e) => sum + Number(e.quantity), 0) /
+        COMEBACK_COMPARED_SPAN_DAYS;
 
       if (
         currentAvg < goal.targetQuantity &&
@@ -216,3 +250,23 @@ export const BADGE_STRATEGIES: ReadonlyMap<string, BadgeStrategy> = new Map<
   ['perfect-month', new PerfectMonthStrategy()],
   ['comeback-kid', new ComebackKidStrategy()],
 ]);
+
+export function maxBadgeWindowDays(
+  strategies: ReadonlyMap<string, BadgeStrategy>,
+): number {
+  let max = 0;
+  for (const { evaluationWindow } of strategies.values()) {
+    if (evaluationWindow !== FULL_HISTORY && evaluationWindow > max) {
+      max = evaluationWindow;
+    }
+  }
+  return max;
+}
+
+export function fullHistoryBadgeKeys(
+  strategies: ReadonlyMap<string, BadgeStrategy>,
+): string[] {
+  return Array.from(strategies.values())
+    .filter((strategy) => strategy.evaluationWindow === FULL_HISTORY)
+    .map((strategy) => strategy.key);
+}

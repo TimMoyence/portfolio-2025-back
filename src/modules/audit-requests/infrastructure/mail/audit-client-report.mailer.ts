@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
-import { escapeHtml, slugify } from './mail-rendering.util';
+import { escapeHtml, safeHtml, slugify } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
 
@@ -49,41 +49,35 @@ export class AuditClientReportMailer {
   private buildClientReportHtml(input: ClientReportMailInput): string {
     const report = input.clientReport;
     const greeting = input.firstName
-      ? `Bonjour ${escapeHtml(input.firstName)},`
-      : 'Bonjour,';
+      ? safeHtml`Bonjour ${escapeHtml(input.firstName)},`
+      : safeHtml`Bonjour,`;
 
-    const topFindingsHtml = report.topFindings
-      .map(
-        (finding) => `
+    const topFindingsHtml = report.topFindings.map(
+      (finding) => safeHtml`
           <li style="margin-bottom:8px;">
             <strong>[${escapeHtml(finding.severity.toUpperCase())}] ${escapeHtml(finding.title)}</strong><br/>
             <span>${escapeHtml(finding.impact)}</span>
           </li>`,
-      )
-      .join('');
+    );
 
-    const pillarsHtml = report.pillarScorecard
-      .map(
-        (pillar) => `
+    const pillarsHtml = report.pillarScorecard.map(
+      (pillar) => safeHtml`
           <tr>
             <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillarLabel(pillar.pillar))}</td>
             <td style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">${pillar.score}/${pillar.target}</td>
             <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillar.status)}</td>
           </tr>`,
-      )
-      .join('');
+    );
 
-    const quickWinsHtml = report.quickWins
-      .map(
-        (qw) => `
+    const quickWinsHtml = report.quickWins.map(
+      (qw) => safeHtml`
           <li style="margin-bottom:8px;">
             <strong>${escapeHtml(qw.title)}</strong> — <em>${escapeHtml(qw.effort)}</em><br/>
             <span>${escapeHtml(qw.businessImpact)}</span>
           </li>`,
-      )
-      .join('');
+    );
 
-    const bodyHtml = `
+    const bodyHtml = safeHtml`
       <p style="margin-top:0;">${greeting}</p>
       <p>Voici la synthèse stratégique de votre audit.</p>
 
@@ -98,7 +92,7 @@ export class AuditClientReportMailer {
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Top findings</h2>
       <ul style="padding-left:20px;color:#374151;">
-        ${topFindingsHtml || '<li>Aucun point critique détecté.</li>'}
+        ${topFindingsHtml.length > 0 ? topFindingsHtml : safeHtml`<li>Aucun point critique détecté.</li>`}
       </ul>
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Scorecard 7 piliers</h2>
@@ -132,8 +126,8 @@ export class AuditClientReportMailer {
       <p class="text-muted" style="font-size:12px;color:#6b7280;margin-top:24px;">
         ${
           input.pdfBuffer
-            ? 'Le rapport complet est joint à cet email.'
-            : 'Le rapport détaillé vous sera envoyé dans un second temps.'
+            ? safeHtml`Le rapport complet est joint à cet email.`
+            : safeHtml`Le rapport détaillé vous sera envoyé dans un second temps.`
         }
       </p>
     `;

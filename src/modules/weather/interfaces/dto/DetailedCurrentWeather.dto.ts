@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { DetailedCurrentWeather } from '../../domain/IOpenWeatherMapProxy.port';
 
+/**
+ * Charge utile publiee par GET /weather/current-detailed.
+ *
+ * Les noms de champs sont un contrat public consomme par le frontend : ils
+ * restent stables meme quand le domaine renomme les siens. Le mapping ci-dessous
+ * est donc explicite et volontairement exhaustif — surtout pas un Object.assign,
+ * qui laisserait fuiter les noms internes sur le fil.
+ */
 export class DetailedCurrentWeatherDto {
   @ApiProperty({ description: 'Temperature (°C)' })
   temperature: number;
@@ -79,7 +87,30 @@ export class DetailedCurrentWeatherDto {
 
   static fromDomain(data: DetailedCurrentWeather): DetailedCurrentWeatherDto {
     const dto = new DetailedCurrentWeatherDto();
-    Object.assign(dto, data);
+    dto.temperature = data.temperatureCelsius;
+    dto.feelsLike = data.feelsLikeCelsius;
+    dto.minTemp = data.minTempCelsius;
+    dto.maxTemp = data.maxTempCelsius;
+    dto.humidity = data.humidityPercent;
+    dto.seaLevelPressure = data.seaLevelPressureHpa;
+    dto.groundLevelPressure = data.groundLevelPressureHpa;
+    dto.windSpeed = data.windSpeedKmh;
+    dto.windGust = data.windGustKmh;
+    dto.windDirection = data.windDirectionDegrees;
+    dto.cloudCover = data.cloudCoverPercent;
+    dto.visibility = data.visibilityKm;
+    dto.rain1h = data.rain1hMm;
+    dto.snow1h = data.snow1hMm;
+    dto.precipitationProbability = data.precipitationProbabilityPercent;
+    dto.conditionId = data.conditionId;
+    dto.conditionName = data.conditionName;
+    dto.conditionText = data.conditionText;
+    dto.conditionIcon = data.conditionIcon;
+    dto.sunrise = data.sunriseIso;
+    dto.sunset = data.sunsetIso;
+    dto.isDaytime = data.isDaytime;
+    dto.partOfDay = data.partOfDay;
+    dto.timezoneOffset = data.timezoneOffsetSeconds;
     return dto;
   }
 }

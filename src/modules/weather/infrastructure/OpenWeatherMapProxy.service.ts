@@ -19,7 +19,12 @@ const OWM_BASE = 'https://api.openweathermap.org';
 
 const MS_TO_KMH = 3.6;
 
-const M_TO_KM = 1_000;
+const METRES_PER_KILOMETRE = 1_000;
+
+/** Convertit les metres renvoyes par OWM en kilometres exposes par le port. */
+function metresToKilometres(metres: number): number {
+  return metres / METRES_PER_KILOMETRE;
+}
 
 /**
  * Proxy OpenWeatherMap pour les donnees meteo detaillees.
@@ -77,32 +82,32 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     const isDaytime = now >= data.sys.sunrise && now < data.sys.sunset;
 
     return {
-      temperature: data.main.temp,
-      feelsLike: data.main.feels_like,
-      minTemp: data.main.temp_min,
-      maxTemp: data.main.temp_max,
-      humidity: data.main.humidity,
-      seaLevelPressure: data.main.sea_level ?? data.main.pressure,
-      groundLevelPressure: data.main.grnd_level ?? data.main.pressure,
-      windSpeed: data.wind.speed * MS_TO_KMH,
-      windGust: (data.wind.gust ?? 0) * MS_TO_KMH,
-      windDirection: data.wind.deg,
-      cloudCover: data.clouds.all,
-      visibility: (data.visibility ?? 10_000) / M_TO_KM,
-      rain1h: data.rain?.['1h'] ?? 0,
-      snow1h: data.snow?.['1h'] ?? 0,
-      precipitationProbability: 0,
+      temperatureCelsius: data.main.temp,
+      feelsLikeCelsius: data.main.feels_like,
+      minTempCelsius: data.main.temp_min,
+      maxTempCelsius: data.main.temp_max,
+      humidityPercent: data.main.humidity,
+      seaLevelPressureHpa: data.main.sea_level ?? data.main.pressure,
+      groundLevelPressureHpa: data.main.grnd_level ?? data.main.pressure,
+      windSpeedKmh: data.wind.speed * MS_TO_KMH,
+      windGustKmh: (data.wind.gust ?? 0) * MS_TO_KMH,
+      windDirectionDegrees: data.wind.deg,
+      cloudCoverPercent: data.clouds.all,
+      visibilityKm: metresToKilometres(data.visibility ?? 10_000),
+      rain1hMm: data.rain?.['1h'] ?? 0,
+      snow1hMm: data.snow?.['1h'] ?? 0,
+      precipitationProbabilityPercent: 0,
       conditionId: weather?.id ?? 0,
       conditionName: weather?.main ?? '',
       conditionText: weather?.description ?? '',
       conditionIcon: weather
         ? `https://openweathermap.org/img/wn/${weather.icon}@2x.png`
         : '',
-      sunrise: new Date(data.sys.sunrise * 1_000).toISOString(),
-      sunset: new Date(data.sys.sunset * 1_000).toISOString(),
+      sunriseIso: new Date(data.sys.sunrise * 1_000).toISOString(),
+      sunsetIso: new Date(data.sys.sunset * 1_000).toISOString(),
       isDaytime,
       partOfDay: isDaytime ? 'd' : 'n',
-      timezoneOffset: data.timezone,
+      timezoneOffsetSeconds: data.timezone,
     };
   }
 
@@ -112,20 +117,20 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     const hourly: DetailedHourlyItem[] = data.list.map((item) => {
       const weather = item.weather?.[0];
       return {
-        time: new Date(item.dt * 1_000).toISOString(),
-        temperature: item.main.temp,
-        feelsLike: item.main.feels_like,
-        humidity: item.main.humidity,
-        seaLevelPressure: item.main.sea_level ?? item.main.pressure,
-        groundLevelPressure: item.main.grnd_level ?? item.main.pressure,
-        windSpeed: item.wind.speed * MS_TO_KMH,
-        windGust: (item.wind.gust ?? 0) * MS_TO_KMH,
-        windDirection: item.wind.deg,
-        cloudCover: item.clouds.all,
-        visibility: (item.visibility ?? 10_000) / M_TO_KM,
-        rain3h: item.rain?.['3h'] ?? 0,
-        snow3h: item.snow?.['3h'] ?? 0,
-        precipitationProbability: Math.round((item.pop ?? 0) * 100),
+        timeIso: new Date(item.dt * 1_000).toISOString(),
+        temperatureCelsius: item.main.temp,
+        feelsLikeCelsius: item.main.feels_like,
+        humidityPercent: item.main.humidity,
+        seaLevelPressureHpa: item.main.sea_level ?? item.main.pressure,
+        groundLevelPressureHpa: item.main.grnd_level ?? item.main.pressure,
+        windSpeedKmh: item.wind.speed * MS_TO_KMH,
+        windGustKmh: (item.wind.gust ?? 0) * MS_TO_KMH,
+        windDirectionDegrees: item.wind.deg,
+        cloudCoverPercent: item.clouds.all,
+        visibilityKm: metresToKilometres(item.visibility ?? 10_000),
+        rain3hMm: item.rain?.['3h'] ?? 0,
+        snow3hMm: item.snow?.['3h'] ?? 0,
+        precipitationProbabilityPercent: Math.round((item.pop ?? 0) * 100),
         conditionId: weather?.id ?? 0,
         conditionName: weather?.main ?? '',
         conditionText: weather?.description ?? '',
@@ -143,7 +148,7 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
       country: data.city.country,
       latitude: data.city.coord.lat,
       longitude: data.city.coord.lon,
-      timezoneOffset: data.city.timezone,
+      timezoneOffsetSeconds: data.city.timezone,
       hourly,
       daily,
     };
@@ -153,7 +158,7 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     const byDay = new Map<string, DetailedHourlyItem[]>();
 
     for (const item of hourly) {
-      const date = item.time.slice(0, 10);
+      const date = item.timeIso.slice(0, 10);
       const existing = byDay.get(date);
       if (existing) {
         existing.push(item);
@@ -164,16 +169,16 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
 
     const result: DetailedDailyItem[] = [];
     for (const [date, items] of byDay) {
-      const temps = items.map((i) => i.temperature);
+      const temps = items.map((i) => i.temperatureCelsius);
       const midItem =
-        items.find((i) => i.time.includes('T12:')) ??
-        items.find((i) => i.time.includes('T15:')) ??
+        items.find((i) => i.timeIso.includes('T12:')) ??
+        items.find((i) => i.timeIso.includes('T15:')) ??
         items[0];
 
       result.push({
-        date,
-        minTemp: Math.min(...temps),
-        maxTemp: Math.max(...temps),
+        dateIso: date,
+        minTempCelsius: Math.min(...temps),
+        maxTempCelsius: Math.max(...temps),
         conditionId: midItem.conditionId,
         conditionName: midItem.conditionName,
         conditionText: midItem.conditionText,

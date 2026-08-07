@@ -1,6 +1,7 @@
 import {
   buildDetailedCurrentWeather,
   buildDetailedForecastResult,
+  buildDetailedHourlyItem,
   buildForecastResult,
   buildAirQualityResult,
 } from '../../../../test/factories/weather.factory';
@@ -222,15 +223,15 @@ describe('ResilientWeatherProxyService', () => {
       openMeteo.getForecast.mockRejectedValue(new Error('down'));
       owm.getCurrentDetailed.mockResolvedValue(
         buildDetailedCurrentWeather({
-          temperature: 20.0,
-          feelsLike: 19.0,
-          humidity: 55,
-          windSpeed: 15.0,
-          windDirection: 270,
-          windGust: 25.0,
-          cloudCover: 60,
-          visibility: 8,
-          seaLevelPressure: 1015,
+          temperatureCelsius: 20.0,
+          feelsLikeCelsius: 19.0,
+          humidityPercent: 55,
+          windSpeedKmh: 15.0,
+          windDirectionDegrees: 270,
+          windGustKmh: 25.0,
+          cloudCoverPercent: 60,
+          visibilityKm: 8,
+          seaLevelPressureHpa: 1015,
           conditionId: 800,
         }),
       );
@@ -238,20 +239,20 @@ describe('ResilientWeatherProxyService', () => {
         buildDetailedForecastResult({
           hourly: [
             {
-              time: '2026-03-31T12:00:00.000Z',
-              temperature: 20.0,
-              feelsLike: 19.0,
-              humidity: 55,
-              seaLevelPressure: 1015,
-              groundLevelPressure: 1012,
-              windSpeed: 15.0,
-              windGust: 25.0,
-              windDirection: 270,
-              cloudCover: 60,
-              visibility: 8,
-              rain3h: 1.5,
-              snow3h: 0,
-              precipitationProbability: 40,
+              timeIso: '2026-03-31T12:00:00.000Z',
+              temperatureCelsius: 20.0,
+              feelsLikeCelsius: 19.0,
+              humidityPercent: 55,
+              seaLevelPressureHpa: 1015,
+              groundLevelPressureHpa: 1012,
+              windSpeedKmh: 15.0,
+              windGustKmh: 25.0,
+              windDirectionDegrees: 270,
+              cloudCoverPercent: 60,
+              visibilityKm: 8,
+              rain3hMm: 1.5,
+              snow3hMm: 0,
+              precipitationProbabilityPercent: 40,
               conditionId: 500,
               conditionName: 'Rain',
               conditionText: 'pluie legere',
@@ -261,9 +262,9 @@ describe('ResilientWeatherProxyService', () => {
           ],
           daily: [
             {
-              date: '2026-03-31',
-              minTemp: 15.0,
-              maxTemp: 22.0,
+              dateIso: '2026-03-31',
+              minTempCelsius: 15.0,
+              maxTempCelsius: 22.0,
               conditionId: 500,
               conditionName: 'Rain',
               conditionText: 'pluie legere',
@@ -289,6 +290,125 @@ describe('ResilientWeatherProxyService', () => {
       expect(result.daily.time).toEqual(['2026-03-31']);
       expect(result.daily.temperature_2m_max).toEqual([22.0]);
       expect(result.daily.temperature_2m_min).toEqual([15.0]);
+    });
+
+    it('convertit la visibilite des kilometres OWM vers les metres Open-Meteo', async () => {
+      openMeteo.getForecast.mockRejectedValue(new Error('down'));
+      owm.getCurrentDetailed.mockResolvedValue(
+        buildDetailedCurrentWeather({ visibilityKm: 8 }),
+      );
+      owm.getForecastDetailed.mockResolvedValue(
+        buildDetailedForecastResult({
+          hourly: [buildDetailedHourlyItem({ visibilityKm: 4.5 })],
+        }),
+      );
+
+      const result = await service.getForecast(48.85, 2.35);
+
+      expect(result.current.visibility).toBe(8_000);
+      expect(result.hourly.visibility).toEqual([4_500]);
+    });
+
+    it('laisse intactes les grandeurs deja exprimees dans les unites Open-Meteo', async () => {
+      openMeteo.getForecast.mockRejectedValue(new Error('down'));
+      owm.getCurrentDetailed.mockResolvedValue(
+        buildDetailedCurrentWeather({
+          windSpeedKmh: 15,
+          windGustKmh: 25,
+          seaLevelPressureHpa: 1015,
+          temperatureCelsius: 20,
+        }),
+      );
+      owm.getForecastDetailed.mockResolvedValue(buildDetailedForecastResult());
+
+      const result = await service.getForecast(48.85, 2.35);
+
+      expect(result.current.wind_speed_10m).toBe(15);
+      expect(result.current.wind_gusts_10m).toBe(25);
+      expect(result.current.pressure_msl).toBe(1015);
+      expect(result.current.temperature_2m).toBe(20);
+    });
+  });
+
+  /**
+   * Verrou de la chaine complete des unites de visibilite.
+   *
+   * OWM publie des metres, le port les expose en kilometres, et le contrat
+   * Open-Meteo attend de nouveau des metres. Les deux conversions doivent donc
+   * rester exactement inverses l'une de l'autre : les tests unitaires de chaque
+   * proxy verifient une moitie du trajet, celui-ci verifie qu'elles se composent.
+   */
+  describe('coherence des unites de visibilite de bout en bout', () => {
+    const VISIBILITY_METRES = 8_000;
+
+    function buildOwmSample(overrides: Record<string, unknown> = {}) {
+      return {
+        dt: 1743422400,
+        main: {
+          temp: 18.5,
+          feels_like: 17.2,
+          temp_min: 14.0,
+          temp_max: 22.0,
+          pressure: 1013,
+          humidity: 65,
+          sea_level: 1013,
+          grnd_level: 1010,
+        },
+        weather: [
+          { id: 800, main: 'Clear', description: 'ciel degage', icon: '01d' },
+        ],
+        wind: { speed: 3.5, deg: 180, gust: 5.5 },
+        clouds: { all: 40 },
+        visibility: VISIBILITY_METRES,
+        sys: { sunrise: 1743400800, sunset: 1743449400 },
+        timezone: 3600,
+        ...overrides,
+      };
+    }
+
+    it('restitue en metres les metres renvoyes par OpenWeatherMap', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockImplementation((input) => {
+          const url =
+            typeof input === 'string'
+              ? input
+              : input instanceof URL
+                ? input.href
+                : input.url;
+          const payload = url.includes('/data/2.5/forecast')
+            ? {
+                list: [buildOwmSample({ pop: 0.1 })],
+                city: {
+                  name: 'Paris',
+                  country: 'FR',
+                  coord: { lat: 48.85, lon: 2.35 },
+                  timezone: 3600,
+                },
+              }
+            : buildOwmSample();
+
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(payload),
+          } as Response);
+        });
+
+      try {
+        openMeteo.getForecast.mockRejectedValue(new Error('down'));
+        const realOwm = new OpenWeatherMapProxyService('test-api-key');
+        const chain = new ResilientWeatherProxyService(
+          openMeteo as unknown as OpenMeteoProxyService,
+          realOwm,
+        );
+
+        const result = await chain.getForecast(48.85, 2.35);
+
+        expect(result.current.visibility).toBe(VISIBILITY_METRES);
+        expect(result.hourly.visibility).toEqual([VISIBILITY_METRES]);
+      } finally {
+        fetchSpy.mockRestore();
+      }
     });
   });
 });

@@ -1,4 +1,8 @@
-export { escapeHtml } from '../../../../common/infrastructure/mail/html-escape.util';
+export {
+  escapeHtml,
+  safeHtml,
+} from '../../../../common/infrastructure/mail/html-escape.util';
+export type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
 export function slugify(input: string): string {
   return (

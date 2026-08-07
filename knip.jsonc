@@ -26,9 +26,9 @@
 
   // --- Faux positifs assumes ---------------------------------------------
   // Uniquement des dependances reellement utilisees mais invisibles a
-  // l analyse statique. Les dependances reellement mortes (pdfkit,
-  // @types/pdfkit, source-map-support, ts-loader, @eslint/eslintrc) ne sont
-  // volontairement PAS masquees ici : cf. docs/qualite-baseline-2026-08-07.md.
+  // l analyse statique. Les dependances mortes qu il avait signalees (pdfkit,
+  // @types/pdfkit, source-map-support, ts-loader, @eslint/eslintrc) ont ete
+  // desinstallees plutot que masquees ici.
   "ignoreDependencies": [
     // Reporter Jest passe en CLI : `test:cov` -> `--reporters=jest-ratchet`.
     "jest-ratchet",

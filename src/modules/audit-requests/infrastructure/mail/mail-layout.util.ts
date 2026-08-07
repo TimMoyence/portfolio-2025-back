@@ -1,9 +1,10 @@
-import { escapeHtml } from './mail-rendering.util';
+import { escapeHtml, safeHtml } from './mail-rendering.util';
+import type { EscapedHtml } from './mail-rendering.util';
 
 export interface MailLayoutInput {
   readonly heroTitle: string;
   readonly heroSubtitle?: string;
-  readonly bodyHtml: string;
+  readonly bodyHtml: EscapedHtml;
   readonly preheader?: string;
   /**
    * Si true, insere un bloc "desinscrire" sous le footer. Reserve aux
@@ -36,20 +37,20 @@ function resolveUnsubscribeUrl(explicit?: string): string {
  */
 export function buildMailLayout(input: MailLayoutInput): string {
   const preheader = input.preheader
-    ? `<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#fff;opacity:0;">${escapeHtml(input.preheader)}</div>`
-    : '';
+    ? safeHtml`<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#fff;opacity:0;">${escapeHtml(input.preheader)}</div>`
+    : safeHtml``;
 
   const subtitleHtml = input.heroSubtitle
-    ? `<p style="margin:8px 0 0 0;font-size:15px;color:#d1d5db;">${escapeHtml(input.heroSubtitle)}</p>`
-    : '';
+    ? safeHtml`<p style="margin:8px 0 0 0;font-size:15px;color:#d1d5db;">${escapeHtml(input.heroSubtitle)}</p>`
+    : safeHtml``;
 
   const unsubscribeHtml = input.showUnsubscribe
-    ? `<p style="margin:12px 0 0 0;font-size:11px;color:#9ca3af;text-align:center;">
+    ? safeHtml`<p style="margin:12px 0 0 0;font-size:11px;color:#9ca3af;text-align:center;">
         <a href="${escapeHtml(resolveUnsubscribeUrl(input.unsubscribeUrl))}" style="color:#9ca3af;text-decoration:underline;">Ne plus recevoir ce type d'email</a>
       </p>`
-    : '';
+    : safeHtml``;
 
-  return `<!DOCTYPE html>
+  return safeHtml`<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
