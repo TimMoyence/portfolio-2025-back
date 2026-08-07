@@ -132,14 +132,11 @@ describe('llm-execution.guardrails', () => {
         resolveFirst = r;
       });
 
-      // Lancer une premiere tache qui bloque le slot
       const task1 = limiter.run(() => firstBlocking);
 
-      // Lancer deux taches supplementaires qui doivent attendre
       const task2 = limiter.run(() => Promise.resolve(undefined));
       const task3 = limiter.run(() => Promise.resolve(undefined));
 
-      // Attendre un tick pour que les taches entrent en file
       await new Promise((r) => setTimeout(r, 5));
 
       expect(limiter.waiting).toBe(2);
@@ -161,7 +158,6 @@ describe('llm-execution.guardrails', () => {
 
       expect(limiter.currentInFlight).toBe(0);
 
-      // Le slot est de nouveau libre pour une tache suivante
       const result = await limiter.run(() => Promise.resolve('ok'));
       expect(result).toBe('ok');
     });
@@ -169,7 +165,6 @@ describe('llm-execution.guardrails', () => {
 
   describe('getSharedLlmInFlightLimiter', () => {
     beforeEach(() => {
-      // Nettoyer le store global entre les tests
       const storeKey = Symbol.for(
         'portfolio-2025.audit-requests.llm-inflight-limiters',
       );

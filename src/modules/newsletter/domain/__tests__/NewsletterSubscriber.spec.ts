@@ -15,7 +15,7 @@ describe('NewsletterSubscriber', () => {
     it('cree un abonne valide en statut pending avec tokens distincts', () => {
       const subscriber = NewsletterSubscriber.create(validProps);
 
-      expect(subscriber.email).toBe('marie@example.com'); // normalise
+      expect(subscriber.email).toBe('marie@example.com');
       expect(subscriber.status).toBe('pending');
       expect(subscriber.confirmToken).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
@@ -79,7 +79,7 @@ describe('NewsletterSubscriber', () => {
       subscriber.confirm(first);
       subscriber.confirm(second);
 
-      expect(subscriber.confirmedAt).toEqual(first); // premiere date preservee
+      expect(subscriber.confirmedAt).toEqual(first);
     });
 
     it('refuse de confirmer un abonne desabonne', () => {

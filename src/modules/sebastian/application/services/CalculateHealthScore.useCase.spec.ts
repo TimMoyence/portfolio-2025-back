@@ -6,10 +6,6 @@ import {
   createMockSebastianGoalRepo,
 } from '../../../../../test/factories/sebastian.factory';
 
-/**
- * Helper : genere une date ISO (YYYY-MM-DD) decalee de `daysOffset` jours
- * par rapport a aujourd'hui.
- */
 function daysAgo(daysOffset: number): Date {
   const d = new Date();
   d.setDate(d.getDate() - daysOffset);
@@ -28,9 +24,6 @@ describe('CalculateHealthScoreUseCase', () => {
     useCase = new CalculateHealthScoreUseCase(entryRepo, goalRepo);
   });
 
-  // -----------------------------------------------------------------------
-  // Pas d'objectifs
-  // -----------------------------------------------------------------------
   it('devrait retourner score 0 sans objectifs actifs', async () => {
     goalRepo.findByUserId.mockResolvedValue([]);
     entryRepo.findByFilters.mockResolvedValue([]);
@@ -44,9 +37,6 @@ describe('CalculateHealthScoreUseCase', () => {
     expect(result.message).toBe('Definis un objectif pour debloquer ton score');
   });
 
-  // -----------------------------------------------------------------------
-  // Phase 1 — Adherence aux objectifs
-  // -----------------------------------------------------------------------
   it('devrait retourner score 100 quand la consommation est sous l objectif', async () => {
     goalRepo.findByUserId.mockResolvedValue([
       buildSebastianGoal({
@@ -56,7 +46,6 @@ describe('CalculateHealthScoreUseCase', () => {
         isActive: true,
       }),
     ]);
-    // 1 cafe aujourd'hui (< 3)
     entryRepo.findByFilters.mockResolvedValue([
       buildSebastianEntry({
         category: 'coffee',
@@ -104,7 +93,6 @@ describe('CalculateHealthScoreUseCase', () => {
         isActive: true,
       }),
     ]);
-    // 4 cafes = double de l'objectif → (1 - (4-2)/2) * 100 = 0
     entryRepo.findByFilters.mockResolvedValue([
       buildSebastianEntry({
         category: 'coffee',
@@ -136,9 +124,6 @@ describe('CalculateHealthScoreUseCase', () => {
         isActive: true,
       }),
     ]);
-    // coffee: 2 (= objectif) → 100
-    // alcohol: 4 (double) → (1 - (4-2)/2)*100 = 0
-    // moyenne = 50
     entryRepo.findByFilters.mockResolvedValue([
       buildSebastianEntry({
         category: 'coffee',
@@ -158,9 +143,6 @@ describe('CalculateHealthScoreUseCase', () => {
     expect(result.score).toBe(50);
   });
 
-  // -----------------------------------------------------------------------
-  // Detection de phase
-  // -----------------------------------------------------------------------
   it('devrait detecter la phase 2 avec >= 7 jours distincts', async () => {
     goalRepo.findByUserId.mockResolvedValue([
       buildSebastianGoal({
@@ -171,7 +153,6 @@ describe('CalculateHealthScoreUseCase', () => {
       }),
     ]);
 
-    // 7 jours distincts d'entrees (sous objectif chaque jour)
     const entries = Array.from({ length: 7 }, (_, i) =>
       buildSebastianEntry({
         id: `entry-${i}`,
@@ -212,9 +193,6 @@ describe('CalculateHealthScoreUseCase', () => {
     expect(result.phase).toBe(3);
   });
 
-  // -----------------------------------------------------------------------
-  // Phase 2 — Bonus/malus de tendance
-  // -----------------------------------------------------------------------
   it('devrait appliquer un bonus positif si la tendance est decroissante', async () => {
     goalRepo.findByUserId.mockResolvedValue([
       buildSebastianGoal({
@@ -225,11 +203,7 @@ describe('CalculateHealthScoreUseCase', () => {
       }),
     ]);
 
-    // 10 jours distincts pour activer phase 2
-    // Jours 0-6 (semaine courante) : 1 cafe/jour = total 7
-    // Jours 7-9 + extras pour la semaine precedente : total beaucoup plus
     const entries = [
-      // Semaine courante (jours 0-6) : 1/jour
       ...Array.from({ length: 7 }, (_, i) =>
         buildSebastianEntry({
           id: `current-${i}`,
@@ -238,7 +212,6 @@ describe('CalculateHealthScoreUseCase', () => {
           date: daysAgo(i),
         }),
       ),
-      // Semaine precedente (jours 7-13) : 5/jour
       ...Array.from({ length: 7 }, (_, i) =>
         buildSebastianEntry({
           id: `previous-${i}`,
@@ -269,7 +242,6 @@ describe('CalculateHealthScoreUseCase', () => {
     ]);
 
     const entries = [
-      // Semaine courante (jours 0-6) : 5/jour
       ...Array.from({ length: 7 }, (_, i) =>
         buildSebastianEntry({
           id: `current-${i}`,
@@ -278,7 +250,6 @@ describe('CalculateHealthScoreUseCase', () => {
           date: daysAgo(i),
         }),
       ),
-      // Semaine precedente (jours 7-13) : 1/jour
       ...Array.from({ length: 7 }, (_, i) =>
         buildSebastianEntry({
           id: `previous-${i}`,
@@ -298,9 +269,6 @@ describe('CalculateHealthScoreUseCase', () => {
     expect(result.breakdown.trendBonus).toBeGreaterThanOrEqual(-15);
   });
 
-  // -----------------------------------------------------------------------
-  // Phase 3 — Bonus de streak
-  // -----------------------------------------------------------------------
   it('devrait appliquer le bonus de streak correctement', async () => {
     goalRepo.findByUserId.mockResolvedValue([
       buildSebastianGoal({
@@ -311,7 +279,6 @@ describe('CalculateHealthScoreUseCase', () => {
       }),
     ]);
 
-    // 30 jours distincts, tous sous l'objectif → streak = 30 mais cap a 10 par categorie
     const entries = Array.from({ length: 30 }, (_, i) =>
       buildSebastianEntry({
         id: `entry-${i}`,
@@ -348,7 +315,6 @@ describe('CalculateHealthScoreUseCase', () => {
       }),
     ]);
 
-    // 60 jours, les deux categories sous objectif → streaks enormes
     const entries = [
       ...Array.from({ length: 60 }, (_, i) =>
         buildSebastianEntry({
@@ -375,9 +341,6 @@ describe('CalculateHealthScoreUseCase', () => {
     expect(result.breakdown.streakBonus).toBe(20);
   });
 
-  // -----------------------------------------------------------------------
-  // Comptage des streaks
-  // -----------------------------------------------------------------------
   it('devrait compter les streaks consecutifs correctement', async () => {
     goalRepo.findByUserId.mockResolvedValue([
       buildSebastianGoal({
@@ -388,9 +351,6 @@ describe('CalculateHealthScoreUseCase', () => {
       }),
     ]);
 
-    // Jours 0, 1, 2 : sous objectif → streak = 3
-    // Jour 3 : au-dessus → casse la serie
-    // + jours 4-34 pour avoir 30+ jours distincts (phase 3)
     const entries = [
       buildSebastianEntry({
         id: 'e0',
@@ -416,7 +376,6 @@ describe('CalculateHealthScoreUseCase', () => {
         quantity: 5,
         date: daysAgo(3),
       }),
-      // Jours 4-34 : 1 cafe/jour pour remplir les 30 jours distincts
       ...Array.from({ length: 31 }, (_, i) =>
         buildSebastianEntry({
           id: `filler-${i}`,
@@ -433,9 +392,6 @@ describe('CalculateHealthScoreUseCase', () => {
     expect(result.streaks.coffee).toBe(3);
   });
 
-  // -----------------------------------------------------------------------
-  // Messages
-  // -----------------------------------------------------------------------
   it('devrait afficher "Excellent !" pour un score >= 90', async () => {
     goalRepo.findByUserId.mockResolvedValue([
       buildSebastianGoal({
@@ -476,9 +432,6 @@ describe('CalculateHealthScoreUseCase', () => {
         isActive: true,
       }),
     ]);
-    // coffee target=2 qty=2 → 100
-    // alcohol target=2 qty=3 → (1-(3-2)/2)*100 = 50
-    // moyenne = 75
     entryRepo.findByFilters.mockResolvedValue([
       buildSebastianEntry({
         category: 'coffee',
@@ -516,8 +469,6 @@ describe('CalculateHealthScoreUseCase', () => {
         isActive: true,
       }),
     ]);
-    // coffee: 2/2 → 100, alcohol: 4/2 → (1-(4-2)/2)*100 = 0
-    // moyenne = 50
     entryRepo.findByFilters.mockResolvedValue([
       buildSebastianEntry({
         category: 'coffee',
@@ -547,7 +498,6 @@ describe('CalculateHealthScoreUseCase', () => {
         isActive: true,
       }),
     ]);
-    // coffee: 10/1 → (1-(10-1)/1)*100 = -800 → cap 0
     entryRepo.findByFilters.mockResolvedValue([
       buildSebastianEntry({
         category: 'coffee',
@@ -562,9 +512,6 @@ describe('CalculateHealthScoreUseCase', () => {
     expect(result.message).toBe('Attention cette semaine');
   });
 
-  // -----------------------------------------------------------------------
-  // Objectifs inactifs ou non-daily ignores
-  // -----------------------------------------------------------------------
   it('devrait ignorer les objectifs inactifs', async () => {
     goalRepo.findByUserId.mockResolvedValue([
       buildSebastianGoal({

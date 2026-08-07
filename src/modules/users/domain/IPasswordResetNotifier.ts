@@ -6,7 +6,6 @@ export interface PasswordResetNotificationPayload {
   expiresInMinutes: number;
 }
 
-/** Port de notification pour les emails de reinitialisation de mot de passe. */
 export interface IPasswordResetNotifier {
   sendPasswordResetEmail(
     payload: PasswordResetNotificationPayload,

@@ -23,12 +23,10 @@ describe('EvaluateBadgesUseCase', () => {
     goalRepo = createMockSebastianGoalRepo();
     useCase = new EvaluateBadgesUseCase(badgeRepo, entryRepo, goalRepo);
 
-    // Par defaut : aucun badge existant, aucune entree, aucun objectif
     badgeRepo.findByUserId.mockResolvedValue([]);
     entryRepo.findByFilters.mockResolvedValue([]);
     goalRepo.findByUserId.mockResolvedValue([]);
 
-    // Le create retourne le badge tel quel
     badgeRepo.create.mockImplementation((badge) =>
       Promise.resolve({
         ...badge,
@@ -38,7 +36,6 @@ describe('EvaluateBadgesUseCase', () => {
   });
 
   it('devrait retourner un tableau vide quand aucun badge eligible', async () => {
-    // Avec 0 entrees, aucun badge n'est satisfait (pas d'historique)
     const alreadyUnlocked: SebastianBadge[] = [];
     badgeRepo.findByUserId.mockResolvedValue(alreadyUnlocked);
 
@@ -87,8 +84,6 @@ describe('EvaluateBadgesUseCase', () => {
 
   describe('zen-monk-7', () => {
     it('devrait debloquer apres 7 jours consecutifs sans alcool', async () => {
-      // Uniquement des entrees cafe, aucune entree alcool
-      // Premiere entree il y a 10 jours pour avoir assez d'historique
       const now = new Date();
       const coffeeEntries = Array.from({ length: 10 }, (_, i) =>
         buildSebastianEntry({
@@ -182,7 +177,6 @@ describe('EvaluateBadgesUseCase', () => {
 
   describe('dry-week', () => {
     it('devrait debloquer quand 0 alcool sur les 7 derniers jours (avec historique)', async () => {
-      // Premiere entree il y a 10 jours pour avoir assez d'historique
       const now = new Date();
       const entries = [
         buildSebastianEntry({
@@ -297,7 +291,6 @@ describe('EvaluateBadgesUseCase', () => {
       });
       goalRepo.findByUserId.mockResolvedValue([goal]);
 
-      // Semaine precedente : moyenne > 2 (total 21 / 7 = 3)
       const previousWeekEntries = Array.from({ length: 7 }, (_, i) =>
         buildSebastianEntry({
           id: `prev-${i}`,
@@ -308,7 +301,6 @@ describe('EvaluateBadgesUseCase', () => {
         }),
       );
 
-      // Semaine courante : moyenne < 2 (total 7 / 7 = 1)
       const currentWeekEntries = Array.from({ length: 7 }, (_, i) =>
         buildSebastianEntry({
           id: `curr-${i}`,
@@ -340,7 +332,6 @@ describe('EvaluateBadgesUseCase', () => {
       });
       goalRepo.findByUserId.mockResolvedValue([goal]);
 
-      // Les deux semaines avec moyenne < 5
       const entries = Array.from({ length: 14 }, (_, i) =>
         buildSebastianEntry({
           id: `entry-${i}`,
@@ -375,7 +366,6 @@ describe('EvaluateBadgesUseCase', () => {
 
       const result = await useCase.execute(userId);
 
-      // Devrait avoir first-log, early-bird, night-owl + dry-week/zen-monk-7 (entree du 15/03, >7j d'historique)
       const keys = result.map((b) => b.badgeKey);
       expect(keys).toContain('first-log');
       expect(keys).toContain('early-bird');

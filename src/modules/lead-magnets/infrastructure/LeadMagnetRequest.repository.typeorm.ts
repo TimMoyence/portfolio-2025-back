@@ -5,7 +5,6 @@ import type { ILeadMagnetRequestRepository } from '../domain/ILeadMagnetRequestR
 import { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 import { LeadMagnetRequestEntity } from './entities/LeadMagnetRequest.entity';
 
-/** Implementation TypeORM du repository de demandes de lead magnet. */
 @Injectable()
 export class LeadMagnetRequestRepositoryTypeORM implements ILeadMagnetRequestRepository {
   constructor(
@@ -48,7 +47,6 @@ export class LeadMagnetRequestRepositoryTypeORM implements ILeadMagnetRequestRep
     return this.toDomain(entity);
   }
 
-  /** Mappe une entite TypeORM vers le modele domaine. */
   private toDomain(entity: LeadMagnetRequestEntity): LeadMagnetRequest {
     const request = new LeadMagnetRequest();
     request.id = entity.id;

@@ -25,11 +25,6 @@ export interface UnsubscribeNewsletterOptions {
   readonly sendAck: boolean;
 }
 
-/**
- * Retrait d'abonnement via le token unsubscribe (lien pied d'email).
- * Idempotent et sans friction : le desabonnement doit etre instantane
- * pour se conformer au RGPD et a la loi CAN-SPAM.
- */
 @Injectable()
 export class UnsubscribeNewsletterUseCase {
   private readonly logger = new Logger(UnsubscribeNewsletterUseCase.name);
@@ -57,9 +52,6 @@ export class UnsubscribeNewsletterUseCase {
     }
 
     subscriber.unsubscribe();
-    // Transition conditionnee au statut en base : sans cela, deux
-    // desabonnements concurrents franchissent tous deux la garde
-    // ci-dessus et declenchent chacun les effets de bord.
     const updated = await this.repo.markUnsubscribed(subscriber);
     if (!updated) {
       return { status: 'unsubscribed', alreadyUnsubscribed: true };

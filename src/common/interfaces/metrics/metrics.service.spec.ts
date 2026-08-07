@@ -1,6 +1,5 @@
 import { MetricsService } from './metrics.service';
 
-// On mock collectDefaultMetrics pour eviter les effets de bord en test
 jest.mock('prom-client', () => {
   const actual =
     jest.requireActual<typeof import('prom-client')>('prom-client');
@@ -54,7 +53,6 @@ describe('MetricsService', () => {
 
   describe('getMetrics', () => {
     it('devrait retourner une chaine de metriques non vide', async () => {
-      // Les metriques custom sont enregistrees dans le registre
       service.httpRequestsTotal.inc({
         method: 'GET',
         route: '/test',

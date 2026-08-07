@@ -24,10 +24,6 @@ describe('PhoneNumber', () => {
   });
 
   describe('property-based', () => {
-    /**
-     * Generateur de numeros E.164 valides : +<indicatif 1-3 chiffres><abonne>
-     * La longueur totale des chiffres (sans le +) doit etre entre 6 et 15.
-     */
     const e164Arb = fc.stringMatching(/^\+[1-9]\d{5,14}$/);
 
     it('devrait accepter tout numero E.164 valide', () => {
@@ -35,7 +31,6 @@ describe('PhoneNumber', () => {
         fc.property(e164Arb, (phone) => {
           const result = PhoneNumber.parse(phone);
           expect(result).not.toBeNull();
-          // Le numero normalise doit commencer par +
           expect(result!.value.startsWith('+')).toBe(true);
         }),
       );

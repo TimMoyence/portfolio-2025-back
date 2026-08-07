@@ -1,12 +1,5 @@
 import type { AuditAutomationConfig } from '../../src/modules/audit-requests/infrastructure/automation/audit.config';
 
-/**
- * Construit une config d'automatisation d'audit avec des valeurs par defaut pour les tests.
- *
- * Les valeurs par defaut correspondent aux parametres les plus courants
- * utilises dans les specs automation. Utiliser `overrides` pour ajuster
- * les champs specifiques a un scenario de test.
- */
 export function buildAuditAutomationConfig(
   overrides?: Partial<AuditAutomationConfig>,
 ): AuditAutomationConfig {

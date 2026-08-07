@@ -1,13 +1,8 @@
 import { validateEnv } from './env.validation';
 
-// Faux secrets de test (>=32 car. pour la validation min(32)) — valeurs factices, non sensibles.
 const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow
 const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow
 
-/**
- * Variables d'environnement minimales valides pour les tests.
- * Contient toutes les variables critiques requises par le schema.
- */
 function buildValidEnv(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
@@ -47,7 +42,6 @@ describe('validateEnv', () => {
   });
 
   describe('coherence SMTP', () => {
-    // Faux identifiants SMTP de test — valeurs factices, non sensibles.
     const SMTP_CONFIGURED = {
       SMTP_HOST: 'smtp.example.org',
       SMTP_USER: 'mailer',
@@ -55,8 +49,6 @@ describe('validateEnv', () => {
     };
 
     it('devrait lancer une erreur si SMTP est configure sans SMTP_FROM', () => {
-      // Sans expediteur, nodemailer recoit `from: undefined` et echoue a
-      // l'envoi — en production, donc bien apres le demarrage.
       const env = buildValidEnv(SMTP_CONFIGURED);
 
       expect(() => validateEnv(env)).toThrow('SMTP_FROM');
@@ -72,8 +64,6 @@ describe('validateEnv', () => {
     });
 
     it('devrait accepter l’absence de SMTP_FROM quand SMTP n’est pas configure', () => {
-      // Sans transporter, les mailers sont no-op : exiger un expediteur
-      // bloquerait inutilement les environnements de dev et de CI.
       const env = buildValidEnv();
 
       expect(() => validateEnv(env)).not.toThrow();

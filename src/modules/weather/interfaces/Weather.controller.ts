@@ -47,7 +47,6 @@ import { HistoricalQueryDto } from './dto/HistoricalQuery.dto';
 import { UpdatePreferencesDto } from './dto/UpdatePreferences.dto';
 import { WeatherPreferencesDto } from './dto/WeatherPreferences.dto';
 
-/** Controleur exposant les endpoints meteo. */
 @ApiTags('weather')
 @Controller('weather')
 @UseGuards(RolesGuard)
@@ -66,7 +65,6 @@ export class WeatherController {
     private readonly getForecastDetailedWeatherUseCase: GetForecastDetailedWeatherUseCase,
   ) {}
 
-  /** Recherche de villes par nom (acces public). */
   @Public()
   @Get('geocoding')
   @ApiOperation({ summary: 'Rechercher des villes par nom (acces public)' })
@@ -80,7 +78,6 @@ export class WeatherController {
     });
   }
 
-  /** Previsions meteo (authentification JWT + role weather requis). */
   @Get('forecast')
   @Roles('weather')
   @ApiBearerAuth()
@@ -99,7 +96,6 @@ export class WeatherController {
     });
   }
 
-  /** Qualite de l'air (role weather requis). */
   @Get('air-quality')
   @Roles('weather')
   @ApiBearerAuth()
@@ -116,9 +112,6 @@ export class WeatherController {
     });
   }
 
-  // --- Previsions expert ---
-
-  /** Previsions d'ensemble multi-modeles (role weather requis). */
   @Get('ensemble')
   @Roles('weather')
   @ApiBearerAuth()
@@ -133,7 +126,6 @@ export class WeatherController {
     });
   }
 
-  /** Donnees meteo historiques (role weather requis). */
   @Get('historical')
   @Roles('weather')
   @ApiBearerAuth()
@@ -152,7 +144,6 @@ export class WeatherController {
     });
   }
 
-  /** Alertes meteo synthetiques pour des coordonnees donnees. */
   @Get('alerts')
   @Roles('weather')
   @ApiBearerAuth()
@@ -167,9 +158,6 @@ export class WeatherController {
     });
   }
 
-  // --- Preferences utilisateur ---
-
-  /** Recupere les preferences meteo de l'utilisateur connecte. */
   @Get('preferences')
   @Roles('weather')
   @ApiBearerAuth()
@@ -185,7 +173,6 @@ export class WeatherController {
     return WeatherPreferencesDto.fromDomain(prefs);
   }
 
-  /** Met a jour les preferences meteo de l'utilisateur connecte. */
   @Patch('preferences')
   @Roles('weather')
   @ApiBearerAuth()
@@ -218,7 +205,6 @@ export class WeatherController {
     return WeatherPreferencesDto.fromDomain(prefs);
   }
 
-  /** Enregistre l'utilisation du dashboard meteo pour l'utilisateur connecte. */
   @Post('preferences/record-usage')
   @Roles('weather')
   @ApiBearerAuth()
@@ -230,9 +216,6 @@ export class WeatherController {
     await this.recordUsageUseCase.execute({ userId: user.sub });
   }
 
-  // --- Donnees detaillees (OpenWeatherMap) ---
-
-  /** Donnees meteo detaillees courantes (role weather requis). */
   @Get('current-detailed')
   @Roles('weather')
   @ApiBearerAuth()
@@ -255,7 +238,6 @@ export class WeatherController {
     return DetailedCurrentWeatherDto.fromDomain(data);
   }
 
-  /** Previsions detaillees (role weather requis). */
   @Get('forecast-detailed')
   @Roles('weather')
   @ApiBearerAuth()

@@ -109,12 +109,10 @@ describeDb('WeatherPreferencesRepositoryTypeORM (db integration)', () => {
     const defaults = WeatherUserPreferences.create(TEST_USER_ID);
     const created = await repository.create(defaults);
 
-    // D'abord mettre une valeur
     await repository.update(created.id, {
       defaultCityIndex: 1,
     } as Partial<WeatherUserPreferences>);
 
-    // Puis remettre a null
     const updated = await repository.update(created.id, {
       defaultCityIndex: null,
     } as Partial<WeatherUserPreferences>);

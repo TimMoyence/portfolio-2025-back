@@ -17,10 +17,6 @@ describe('RolesGuard', () => {
     guard = new RolesGuard(reflector);
   });
 
-  /**
-   * Cree un ExecutionContext simule avec un user optionnel
-   * attache a la requete (comme le ferait JwtAuthGuard).
-   */
   function createMockContext(user?: JwtPayload | null): ExecutionContext {
     const request: Record<string, unknown> = {};
     if (user !== null && user !== undefined) {

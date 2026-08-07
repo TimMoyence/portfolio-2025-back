@@ -9,15 +9,6 @@ import { SECURITY_CONFIG } from '../security/security.tokens';
 import { MetricsAuthGuard } from './metrics-auth.guard';
 import { MetricsService } from './metrics.service';
 
-/**
- * Reponse JSON de l'endpoint /metrics/security.
- *
- * Exposee aux operateurs pour triage rapide : liste triee des IPs
- * suspectes sur la fenetre d'observation, avec contexte de la derniere
- * requete (raisons de scoring, path, user-agent). Les donnees ne sont
- * pas persistees en base : elles vivent dans un store dedouble en memoire
- * purge a la lecture.
- */
 export interface SecuritySummaryResponse {
   windowMs: number;
   generatedAt: string;
@@ -33,17 +24,6 @@ export interface SecuritySummaryResponse {
   }>;
 }
 
-/**
- * Controller de metriques.
- *
- * Expose :
- * - `GET /metrics` : metriques Prometheus (text/plain)
- * - `GET /metrics/security` : top-N des IPs suspectes detectees par
- *   l'intercepteur, au format JSON pour inspection humaine.
- *
- * Les deux endpoints sont proteges par le meme token statique
- * (`METRICS_TOKEN`) et sont exempts de rate-limiting (scraping).
- */
 @ApiTags('metrics')
 @Controller('metrics')
 @UseGuards(MetricsAuthGuard)
@@ -56,13 +36,6 @@ export class MetricsController {
     private readonly securityConfig: SecurityConfig,
   ) {}
 
-  /**
-   * Retourne toutes les metriques Prometheus (defaut + custom).
-   *
-   * Le content-type est dynamiquement defini par prom-client
-   * pour assurer la compatibilite avec le format attendu par Prometheus.
-   * Necessite un header `Authorization: Bearer <METRICS_TOKEN>`.
-   */
   @Get()
   @SkipThrottle()
   @ApiOperation({ summary: 'Recuperer les metriques Prometheus (scraping)' })
@@ -73,14 +46,6 @@ export class MetricsController {
     res.end(metrics);
   }
 
-  /**
-   * Retourne le top-N des IPs suspectes detectees sur la fenetre
-   * d'observation configuree (par defaut 24h).
-   *
-   * Sert au triage manuel : identifier rapidement qui scanne le site,
-   * depuis quelle IP, via quels signaux. Les decisions de blocage
-   * (fail2ban, iptables) sont prises hors de l'application.
-   */
   @Get('security')
   @SkipThrottle()
   @ApiOperation({

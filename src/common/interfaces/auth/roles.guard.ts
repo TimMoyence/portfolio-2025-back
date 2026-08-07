@@ -8,13 +8,6 @@ import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 import { ROLES_KEY } from './roles.decorator';
 
-/**
- * Guard qui verifie que l'utilisateur authentifie possede au moins
- * un des roles requis definis par le decorateur @Roles().
- *
- * Doit etre utilise apres JwtAuthGuard (le payload JWT doit deja
- * etre attache a la requete).
- */
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}

@@ -1,18 +1,3 @@
-/**
- * Golden test P5.1 — gèle le comportement du fallback déterministe de
- * LangchainClientReportService pour éviter toute régression qualité
- * pendant les refactors P5.2/P5.3.
- *
- * Stratégie :
- * - Force le fallback (openAiApiKey: undefined) pour rester déterministe.
- * - 4 scenarios représentatifs (portfolio / ecommerce / saas / unknown).
- * - toMatchInlineSnapshot() inline pour diff instantané dans les PRs.
- *
- * Si un snapshot change après refactor P5.2, il faut auditer visuellement
- * le diff — une variation > 5% sur executive summary ou quickWins indique
- * une régression qualité du fallback déterministe.
- */
-
 import { Logger } from '@nestjs/common';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type {
@@ -149,7 +134,6 @@ describe('LangchainClientReportService — fallback golden (P5.1)', () => {
       ...baseContext(),
       businessType: 'portfolio',
     });
-    // Les findings sont tries par severity desc : high, medium, low
     expect(result.topFindings.map((f) => f.severity)).toEqual([
       'high',
       'medium',
@@ -174,9 +158,7 @@ describe('LangchainClientReportService — fallback golden (P5.1)', () => {
 
   it('googleVsAiMatrix — scores moyennes des piliers correspondants', async () => {
     const result = await service.generate(baseContext());
-    // Google average : (seo 62 + performance 55 + technical 70) / 3 = 62.33 → 62
     expect(result.googleVsAiMatrix.googleVisibility.score).toBe(62);
-    // AI average : (aiVisibility 48 + citationWorthiness 52 + trust 68) / 3 = 56
     expect(result.googleVsAiMatrix.aiVisibility.score).toBe(56);
   });
 

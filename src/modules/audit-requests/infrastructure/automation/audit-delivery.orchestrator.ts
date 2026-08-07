@@ -20,11 +20,6 @@ import {
 } from './langchain-client-report.service';
 import type { PageAiRecap } from './page-ai-recap.service';
 
-/**
- * Parametres d'entree simplifies pour la phase de delivery, tels que
- * produits par le pipeline. L'orchestrateur se charge de recharger le
- * snapshot depuis le repository et de mapper les findings techniques.
- */
 export interface RunDeliveryInput {
   readonly auditId: string;
   readonly locale: AuditLocale;
@@ -37,19 +32,9 @@ export interface RunDeliveryInput {
   readonly pageRecaps: ReadonlyArray<PageAiRecap>;
   readonly expertReport: ExpertReportSynthesis | undefined;
   readonly deepFindings: DeepUrlAnalysisResult['findings'];
-  /**
-   * Stack technique detectee par {@link DeepUrlAnalysisService.inferTechFingerprint}
-   * (P1.1). Utilisee pour deduire un {@link BusinessType} et contextualiser
-   * le prompt client. `null` si le signal est insuffisant.
-   */
   readonly primaryStack?: string | null;
 }
 
-/**
- * Contexte necessaire a la phase de delivery d'un audit : synthese LLM,
- * recaps par page, et meta du client. Le pipeline transmet ces donnees
- * a l'orchestrateur apres la synthese Langchain.
- */
 export interface AuditDeliveryContext {
   readonly auditSnapshot: AuditSnapshot;
   readonly locale: AuditLocale;
@@ -62,18 +47,9 @@ export interface AuditDeliveryContext {
   readonly pageRecaps: ReadonlyArray<PageAiRecap>;
   readonly expertReport: ExpertReportSynthesis;
   readonly findings: ReadonlyArray<ClientReportFinding>;
-  /** Stack technique detectee (P1.1) — propagee au contexte LLM client. */
   readonly primaryStack?: string | null;
 }
 
-/**
- * Orchestrateur de la phase finale du pipeline Growth Audit : produit le
- * rapport client (LLM), agrege la couverture multi-moteur, genere le PDF
- * (best-effort) et declenche les envois email fire-and-forget.
- *
- * Extrait du {@link AuditPipelineService} pour respecter le budget de
- * taille du pipeline principal (guardrails).
- */
 @Injectable()
 export class AuditDeliveryOrchestrator {
   private readonly logger = new Logger(AuditDeliveryOrchestrator.name);
@@ -88,12 +64,6 @@ export class AuditDeliveryOrchestrator {
     private readonly clientReportService: LangchainClientReportService,
   ) {}
 
-  /**
-   * Point d'entree appele par le pipeline apres la synthese LLM. Recharge
-   * le snapshot, mappe les findings techniques en findings client et
-   * delegue a {@link deliver}. Ne leve jamais (toutes les erreurs sont
-   * loggees).
-   */
   async runForAudit(input: RunDeliveryInput): Promise<void> {
     if (!input.expertReport) {
       this.logger.warn(
@@ -159,12 +129,6 @@ export class AuditDeliveryOrchestrator {
     return 'traffic';
   }
 
-  /**
-   * Execute la phase delivery pour un audit deja marque COMPLETED.
-   *
-   * Idempotence : si `auditSnapshot.clientReport` est deja defini, la phase
-   * est un no-op complet (les mails ne sont pas renvoyes).
-   */
   async deliver(context: AuditDeliveryContext): Promise<void> {
     const audit = context.auditSnapshot;
     if (audit.clientReport) {
@@ -219,9 +183,6 @@ export class AuditDeliveryOrchestrator {
     context: AuditDeliveryContext,
     engineCoverage: EngineCoverage,
   ): Promise<ClientReportSynthesis> {
-    // P1.1 : detection du type d'activite depuis le techFingerprint produit
-    // par le pipeline amont. Injecte dans le prompt LLM pour des recos
-    // sectorielles plutot que generiques.
     const businessType = detectBusinessType(context.primaryStack ?? '');
 
     const clientContext: ClientReportContext = {
@@ -238,8 +199,6 @@ export class AuditDeliveryOrchestrator {
     try {
       return await this.clientReportService.generate(clientContext);
     } catch (error) {
-      // LangchainClientReportService a son propre fallback interne et ne
-      // devrait pas throw, mais on protege quand meme le pipeline.
       this.logger.warn(
         `Client report generation threw unexpectedly: ${String(error)}`,
       );
@@ -271,8 +230,6 @@ export class AuditDeliveryOrchestrator {
         );
     }
 
-    // PDF obligatoire pour le rapport expert : si absent, on utilise un
-    // buffer vide plutot que de bloquer l'envoi interne.
     const expertPdf = pdfBuffer ?? Buffer.from('');
     void this.notifier
       .sendExpertReport({
@@ -293,12 +250,6 @@ export class AuditDeliveryOrchestrator {
       );
   }
 
-  /**
-   * Agrege les `engineScores` des recaps page-par-page en une
-   * {@link EngineCoverage} site-wide. Strategie : moyenne des scores par
-   * moteur, strengths/blockers/opportunities aplatis deduplique, indexable
-   * agrege par OR logique.
-   */
   private aggregateEngineCoverage(
     recaps: ReadonlyArray<PageAiRecap>,
   ): EngineCoverage {
@@ -378,12 +329,6 @@ export class AuditDeliveryOrchestrator {
     };
   }
 
-  /**
-   * Deduit un prenom lisible depuis le local-part d'une adresse email
-   * (`tim.moyence@outlook.fr` → `Tim`). Retourne null quand le format
-   * n'est pas exploitable (numerique, trop court, ou valeur non-email).
-   * Utilise pour personnaliser la salutation du mail client (P0.6).
-   */
   private extractFirstName(contactValue: string): string | null {
     const trimmed = contactValue.trim();
     if (!trimmed.includes('@')) return null;

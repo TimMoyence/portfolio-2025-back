@@ -141,10 +141,6 @@ describe('NewsletterController', () => {
 
   describe('POST /newsletter/unsubscribe (one-click RFC 8058)', () => {
     it('desabonne sur un POST sans corps, comme le fait le client mail', async () => {
-      // L'en-tete `List-Unsubscribe-Post` engage l'API a traiter un POST
-      // non authentifie declenche par Gmail. Sans cet endpoint, le bouton
-      // natif de desabonnement echouerait et degraderait la reputation
-      // de l'expediteur.
       const result = await controller.unsubscribeOneClickEndpoint(VALID_TOKEN);
 
       expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN, {
@@ -154,9 +150,6 @@ describe('NewsletterController', () => {
     });
 
     it('n’envoie pas d’accuse de reception sur le chemin one-click', async () => {
-      // Repondre par un email a quelqu'un qui vient de cliquer
-      // "Se desabonner" est un motif classique de plainte spam — soit
-      // l'inverse de l'objectif de delivrabilite.
       await controller.unsubscribeOneClickEndpoint(VALID_TOKEN);
 
       const [, options] = jest.mocked(mocks.unsubscribeUC.execute).mock
@@ -165,8 +158,6 @@ describe('NewsletterController', () => {
     });
 
     it('conserve l’accuse de reception sur le lien GET', async () => {
-      // Le lien du pied d'email reste un geste humain deliberé :
-      // l'accuse confirme a l'abonne que son retrait a bien abouti.
       await controller.unsubscribeEndpoint(VALID_TOKEN);
 
       expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN, {

@@ -24,23 +24,8 @@ const TRUSTED_DOMAINS: ReadonlyArray<string> = [
 
 const FACT_PATTERN = /\d+%|\d{2,}/;
 
-/**
- * Service d'évaluation de la "citabilité" d'une page par un moteur IA.
- *
- * Analyse le HTML via Cheerio pour détecter les signaux qui rendent un
- * contenu attractif à la citation : présence d'un auteur, d'une date
- * structurée (`<time datetime>`), de sources externes vers des domaines
- * d'autorité, de chiffres factuels et une densité de contenu suffisante.
- *
- * Le score est borné entre 0 et 100.
- */
 @Injectable()
 export class CitationWorthinessService {
-  /**
-   * Analyse un document HTML et retourne un score de citabilité ainsi que
-   * les signaux détectés. L'URL de la page est utilisée pour distinguer
-   * les liens internes (domaine identique) des liens sortants.
-   */
   analyze(html: string, pageUrl: string): CitationWorthinessScore {
     const $ = load(html);
 

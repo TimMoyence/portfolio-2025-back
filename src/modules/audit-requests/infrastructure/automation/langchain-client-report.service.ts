@@ -75,11 +75,6 @@ const clientReportSchema = z.object({
 
 type ClientReportZodOutput = z.infer<typeof clientReportSchema>;
 
-/**
- * Finding utilisee pour alimenter le prompt du rapport client.
- * Les champs sont volontairement courts et metier : le rapport client
- * ne doit pas exposer de details techniques.
- */
 export interface ClientReportFinding {
   readonly title: string;
   readonly description: string;
@@ -87,11 +82,6 @@ export interface ClientReportFinding {
   readonly impact: 'traffic' | 'indexation' | 'conversion';
 }
 
-/**
- * Contexte passe au `LangchainClientReportService.generate`. Regroupe les
- * donnees dont le prompt client a besoin pour produire une synthese
- * strategique orientee decideur (sans details techniques).
- */
 export interface ClientReportContext {
   readonly locale: AuditLocale;
   readonly websiteName: string;
@@ -101,11 +91,6 @@ export interface ClientReportContext {
   readonly quickWins: ReadonlyArray<string>;
   readonly aggregateAiSignals: AiIndexabilitySignals | null;
   readonly engineCoverage: EngineCoverage | null;
-  /**
-   * Type d'activite detecte (P1.1). Permet au LLM d'adapter les
-   * recommandations au modele economique observe (ecommerce, saas,
-   * portfolio...). `'unknown'` ou absent = prompt generique.
-   */
   readonly businessType?: BusinessType;
 }
 
@@ -119,11 +104,6 @@ const PILLAR_ORDER: ReadonlyArray<string> = [
   'citationWorthiness',
 ];
 
-/**
- * Service d'agregation LLM produisant la synthese strategique (Tier Client)
- * du rapport d'audit. Le but est de donner envie au client final d'ouvrir
- * le PDF et de planifier un appel, sans exposer les details techniques.
- */
 @Injectable()
 export class LangchainClientReportService {
   private readonly logger = new Logger(LangchainClientReportService.name);
@@ -136,12 +116,6 @@ export class LangchainClientReportService {
     this.llmLimiter = getSharedLlmInFlightLimiter(this.config.llmInflightMax);
   }
 
-  /**
-   * Genere la synthese client (ClientReportSynthesis). Tente d'abord le
-   * LLM ; en cas d'echec ou d'absence de cle API, retourne un fallback
-   * deterministe construit depuis `pillarScores`, `findings` et
-   * `quickWins`. Ne leve jamais — les erreurs LLM sont loggees.
-   */
   async generate(context: ClientReportContext): Promise<ClientReportSynthesis> {
     const locale = resolveAuditLocale(
       context.locale,
@@ -320,10 +294,6 @@ export class LangchainClientReportService {
     };
   }
 
-  /**
-   * Garantit que le scorecard contient les 7 piliers attendus, en
-   * completant avec des valeurs deterministes si le LLM en a oublie.
-   */
   private ensureSevenPillars(
     llmPillars: Array<{
       pillar: string;
@@ -356,10 +326,6 @@ export class LangchainClientReportService {
     });
   }
 
-  /**
-   * Construit une synthese client deterministe depuis les pillarScores,
-   * findings et quickWins. Utilisee quand le LLM echoue.
-   */
   private buildFallback(
     context: ClientReportContext,
     locale: AuditLocale,
@@ -464,12 +430,6 @@ export class LangchainClientReportService {
     };
   }
 
-  /**
-   * Construit un executive summary contextualise depuis les vrais findings du
-   * site audit (P4.2). Remplace le template generique pour que si OpenAI est
-   * down, le client recoive toujours un rapport personnalise avec ses propres
-   * donnees (top finding, severity, score Google/IA).
-   */
   private buildFallbackExecutiveSummary(
     context: ClientReportContext,
     locale: AuditLocale,
@@ -529,11 +489,6 @@ export class LangchainClientReportService {
     );
   }
 
-  /**
-   * Phrase courte adaptee au businessType pour le fallback (P4.2). Ne
-   * remplace pas les directives injectees dans le prompt LLM (P1.1) mais
-   * assure une trace sectorielle dans le rendu deterministe.
-   */
   private resolveBusinessHint(
     businessType: BusinessType | undefined,
     locale: AuditLocale,

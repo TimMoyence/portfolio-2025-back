@@ -16,7 +16,6 @@ import { SECURITY_CONFIG } from './security.tokens';
 import { scoreRequest } from './suspicious-request-scorer';
 
 /**
- * IPs loopback (Docker health checks, sondes internes).
  * Ces requetes ne transitent jamais par le reverse-proxy et ne
  * representent aucun risque — on les exclut du scoring pour eviter
  * le bruit dans les logs et le store d'evenements.
@@ -24,10 +23,6 @@ import { scoreRequest } from './suspicious-request-scorer';
 const LOOPBACK_IPS = new Set(['127.0.0.1', '::ffff:127.0.0.1', '::1']);
 
 /**
- * Intercepteur global qui analyse chaque requete HTTP completee,
- * calcule un score de suspicion et persiste les evenements au-dessus
- * du seuil dans le store d'evenements.
- *
  * L'intercepteur ne bloque jamais les requetes : son unique role est
  * la detection et la tracabilite. Le blocage reel des IPs malicieuses
  * se fait en amont (reverse-proxy / fail2ban) a partir des logs
@@ -110,13 +105,10 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
             );
           });
 
-        // Log structure single-line — lisible par grep et redirigeable
-        // vers un channel Loki/Grafana via le label [SECURITY].
         this.logger.warn(
           `[SECURITY] suspicious ip=${ip} method=${req.method} path=${path} status=${res.statusCode} score=${score} reasons=${reasons.join(',')} ua="${this.truncate(userAgent, 200)}" rtMs=${responseTimeMs.toFixed(1)} aborted=${aborted}`,
         );
       } catch (err) {
-        // L'intercepteur ne doit JAMAIS casser la requete originale.
         this.logger.warn(
           `[SECURITY] evaluation a plante: ${String(err)}. Requete non marquee.`,
         );
@@ -136,19 +128,6 @@ export class SuspiciousRequestInterceptor implements NestInterceptor {
     );
   }
 
-  /**
-   * Resout l'IP a laquelle l'evenement est attribue.
-   *
-   * On s'appuie sur `req.ip`, calcule par Express en fonction de
-   * `trust proxy` (src/main.ts), et jamais sur un parsing maison de
-   * `X-Forwarded-For` : ce dernier prendrait le premier element de la
-   * chaine, entierement fourni par le client. Un attaquant choisirait
-   * alors l'IP sous laquelle son activite est tracee, et pourrait faire
-   * porter ses evenements a un tiers.
-   *
-   * `X-Real-IP` est ecarte pour la meme raison : c'est un en-tete brut,
-   * non valide par la couche `trust proxy`.
-   */
   private resolveIp(req: Request): string {
     return resolveClientIpOrUnknown(req);
   }

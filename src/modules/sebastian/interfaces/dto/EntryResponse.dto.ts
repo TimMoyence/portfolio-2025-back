@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type { SebastianEntry } from '../../domain/SebastianEntry';
 
-/** DTO de reponse pour une entree de consommation. */
 export class EntryResponseDto {
   @ApiProperty() id: string;
   @ApiProperty() userId: string;
@@ -16,7 +15,6 @@ export class EntryResponseDto {
   @ApiPropertyOptional() volumeCl: number | null;
   @ApiPropertyOptional() consumedAt: string | null;
 
-  /** Convertit une entite domaine en DTO de reponse. */
   static fromDomain(entry: SebastianEntry): EntryResponseDto {
     const dto = new EntryResponseDto();
     dto.id = entry.id!;

@@ -6,17 +6,6 @@ import {
 } from './toolkit-palette';
 import { escapeHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
-/**
- * Utilitaires purs partages par les sections du renderer HTML du toolkit
- * IA : escape HTML, normalisation de cles, lookup palette, resolution
- * plateforme, labels de niveau, en-tete et footer standards.
- *
- * Extraits du service god-object `ToolkitHtmlRendererService` pour :
- *   - permettre l'unit-test isole sans instancier Nest
- *   - etre reutilisables par chaque fonction de section
- */
-
-/** Normalise une cle (minuscules, sans accents, trim). */
 export function normalizeKey(raw: string): string {
   return raw
     .toLowerCase()
@@ -25,7 +14,6 @@ export function normalizeKey(raw: string): string {
     .trim();
 }
 
-/** Retourne la palette couleur d'une categorie, fallback accent par defaut. */
 export function paletteFor(category: string): {
   bg: string;
   text: string;
@@ -35,13 +23,11 @@ export function paletteFor(category: string): {
   return CATEGORY_COLORS[key] ?? FALLBACK_CATEGORY_PALETTE;
 }
 
-/** Retourne la couleur de bordure pour une plateforme de template. */
 export function platformColorFor(platform: string): string {
   const key = normalizeKey(platform);
   return PLATFORM_COLORS[key] ?? ACCENT;
 }
 
-/** Traduit la cle interne de niveau en label affichable francais. */
 export function levelLabel(level: string): string {
   switch (level) {
     case 'debutant':
@@ -55,14 +41,8 @@ export function levelLabel(level: string): string {
   }
 }
 
-/**
- * Re-export de l'util commun `escapeHtml` (echappement HTML anti-XSS) afin de
- * preserver les imports historiques `from './toolkit-html.utils'` sans
- * dupliquer la table d'echappement.
- */
 export { escapeHtml };
 
-/** Construit l'en-tete standard d'une section (gros numero + titre + sous-titre). */
 export function sectionHeader(
   num: string,
   title: string,

@@ -27,7 +27,6 @@ describe('StreamAuditEventsUseCase', () => {
 
     const resultPromise = firstValueFrom(useCase.execute('audit-1'));
 
-    // Laisser la micro-tache (emitSnapshot) se resoudre
     await jest.advanceTimersByTimeAsync(0);
 
     const event = await resultPromise;
@@ -71,7 +70,6 @@ describe('StreamAuditEventsUseCase', () => {
     expect((events[0].data as Record<string, unknown>)['summaryText']).toBe(
       'Rapport final',
     );
-    // Phase 7 — backward compat : clientReport present (null par defaut)
     expect(
       (events[0].data as Record<string, unknown>)['clientReport'],
     ).toBeNull();
@@ -109,7 +107,6 @@ describe('StreamAuditEventsUseCase', () => {
     expect(events[0].type).toBe('completed');
     const data = events[0].data as Record<string, unknown>;
     expect(data['clientReport']).toEqual(clientReport);
-    // Backward compat : les champs existants restent
     expect(data['summaryText']).toBe('Rapport final');
     expect(data['keyChecks']).toBeDefined();
     expect(data['quickWins']).toBeDefined();
@@ -147,11 +144,9 @@ describe('StreamAuditEventsUseCase', () => {
       collected.push(event);
     });
 
-    // Premier appel initial
     await jest.advanceTimersByTimeAsync(0);
     expect(collected).toHaveLength(1);
 
-    // Deuxieme appel via polling (meme fingerprint)
     await jest.advanceTimersByTimeAsync(2000);
     expect(collected).toHaveLength(1);
 
@@ -171,11 +166,9 @@ describe('StreamAuditEventsUseCase', () => {
       },
     });
 
-    // Premier snapshot
     await jest.advanceTimersByTimeAsync(0);
     expect(collected).toHaveLength(1);
 
-    // Avancer de 30 minutes
     await jest.advanceTimersByTimeAsync(30 * 60 * 1000);
 
     const timeoutEvent = collected.find((e) => e.type === 'timeout');
@@ -200,9 +193,7 @@ describe('StreamAuditEventsUseCase', () => {
       useCase.execute('audit-1').pipe(take(2), toArray()),
     );
 
-    // Premier appel initial
     await jest.advanceTimersByTimeAsync(0);
-    // Deuxieme appel via polling avec fingerprint different
     await jest.advanceTimersByTimeAsync(2000);
 
     const events = await eventsPromise;

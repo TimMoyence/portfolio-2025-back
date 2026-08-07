@@ -20,23 +20,12 @@ import {
   UNTRUSTED_DATA_DISCLAIMER_FR,
 } from '../shared/prompt-sanitize.util';
 
-/**
- * Builders purs qui assemblent les blocs system d'une section LLM en
- * respectant l'ordre : disclaimer untrusted → prompt principal → retry
- * constraint optionnel. Extraits du service orchestrateur pour :
- *   - deduquer la construction identique entre le chemin Anthropic
- *     (cache_control sur le dernier bloc) et le chemin OpenAI (roles
- *     `system` successifs)
- *   - permettre aux tests unitaires de snapshot les prompts sans
- *     instancier le service complet
- */
 function disclaimer(locale: AuditLocale): string {
   return locale === 'fr'
     ? UNTRUSTED_DATA_DISCLAIMER_FR
     : UNTRUSTED_DATA_DISCLAIMER_EN;
 }
 
-/** Blocs system de la section Executive Summary. */
 export function buildExecutiveSystemBlocks(
   locale: AuditLocale,
   retryMode: boolean,
@@ -48,7 +37,6 @@ export function buildExecutiveSystemBlocks(
   ];
 }
 
-/** Blocs system de la section Priority Backlog. */
 export function buildPrioritySystemBlocks(
   locale: AuditLocale,
   retryMode: boolean,
@@ -60,7 +48,6 @@ export function buildPrioritySystemBlocks(
   ];
 }
 
-/** Blocs system de la section Execution Plan. */
 export function buildExecutionSystemBlocks(
   locale: AuditLocale,
   retryMode: boolean,
@@ -72,7 +59,6 @@ export function buildExecutionSystemBlocks(
   ];
 }
 
-/** Blocs system de la section Client Communications. */
 export function buildClientCommsSystemBlocks(
   locale: AuditLocale,
   retryMode: boolean,
@@ -84,7 +70,6 @@ export function buildClientCommsSystemBlocks(
   ];
 }
 
-/** Blocs system pour le resume utilisateur (user summary). */
 export function buildUserSummarySystemBlocks(
   locale: AuditLocale,
   retryMode: boolean,
@@ -96,10 +81,6 @@ export function buildUserSummarySystemBlocks(
   ];
 }
 
-/**
- * Blocs system pour le rapport expert — trois contraintes cumulatives :
- * main + strict + (compact OU retry).
- */
 export function buildExpertReportSystemBlocks(
   locale: AuditLocale,
   compactMode: boolean,

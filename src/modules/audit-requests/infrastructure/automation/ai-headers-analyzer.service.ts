@@ -14,21 +14,8 @@ interface RobotsBlock {
   readonly disallowRoot: boolean;
 }
 
-/**
- * Service d'analyse des signaux d'accès des bots IA à partir du contenu
- * `robots.txt` et des en-têtes HTTP (`X-Robots-Tag`). Entièrement pur : ne
- * réalise aucun I/O et ne dépend d'aucune injection.
- *
- * Les bots suivis : `GPTBot`, `ChatGPT-User`, `PerplexityBot`, `ClaudeBot`,
- * `Google-Extended`. Les valeurs retournées sont `allowed`, `disallowed` ou
- * `unknown` selon la présence ou non d'une règle applicable.
- */
 @Injectable()
 export class AiHeadersAnalyzerService {
-  /**
-   * Analyse le contenu `robots.txt` et les en-têtes fournis pour déduire
-   * l'état d'accès de chaque bot IA et les marqueurs `noai`/`noimageai`.
-   */
   analyze(robotsTxt: string, headers: Record<string, string>): AiBotsAccess {
     const blocks = this.parseBlocks(robotsTxt);
     const robotsIsEmpty = robotsTxt.trim() === '';

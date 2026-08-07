@@ -18,7 +18,6 @@ export interface AuthResult {
   user: User;
 }
 
-/** Authentifie un utilisateur par email/mot de passe et retourne un JWT + refresh token. */
 @Injectable()
 export class AuthenticateUserUseCase {
   constructor(
@@ -49,7 +48,6 @@ export class AuthenticateUserUseCase {
       throw new InvalidCredentialsError('Invalid credentials');
     }
 
-    // Rehash transparent si le hash utilise un algorithme obsolete (PBKDF2 → Argon2id)
     if (this.passwordService.needsRehash(user.passwordHash)) {
       const newHash = await this.passwordService.hash(dto.password);
       await this.repo.update(user.id!, { passwordHash: newHash });

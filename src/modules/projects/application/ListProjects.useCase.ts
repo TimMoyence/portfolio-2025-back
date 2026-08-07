@@ -5,7 +5,6 @@ import type { ProjectListQuery } from '../domain/ProjectList.query';
 import type { Projects } from '../domain/Projects';
 import { PROJECTS_REPOSITORY } from '../domain/token';
 
-/** Recupere la liste paginee des projets selon les criteres de filtrage et tri. */
 @Injectable()
 export class ListProjectsUseCase {
   constructor(

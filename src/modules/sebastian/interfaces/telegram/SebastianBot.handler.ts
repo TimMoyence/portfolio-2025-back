@@ -19,7 +19,6 @@ interface PendingState {
   expiresAt: number;
 }
 
-/** Gere les commandes et messages du bot Telegram Sebastian. */
 @Injectable()
 export class SebastianBotHandler {
   private readonly logger = new Logger(SebastianBotHandler.name);
@@ -32,7 +31,6 @@ export class SebastianBotHandler {
     private readonly calculateBac: CalculateBacUseCase,
   ) {}
 
-  /** Enregistre tous les handlers sur le bot grammy. */
   register(bot: Bot): void {
     bot.command('start', (ctx) => this.handleStart(ctx));
     bot.command('pint', (ctx) => this.handleDrinkCommand(ctx));
@@ -77,7 +75,6 @@ export class SebastianBotHandler {
     const telegramUserId = ctx.from?.id;
     if (!telegramUserId) return;
 
-    // Verifie si deja lie
     const existing = await this.resolveTelegramUser.execute(telegramUserId);
     if (existing) {
       await ctx.reply(
@@ -130,7 +127,6 @@ export class SebastianBotHandler {
     const text = ctx.message?.text;
     if (!telegramUserId || !text) return;
 
-    // Verifie s'il y a un lien email en attente
     const pending = this.pendingLinks.get(telegramUserId);
     if (pending && pending.expiresAt > Date.now()) {
       this.pendingLinks.delete(telegramUserId);
@@ -139,14 +135,12 @@ export class SebastianBotHandler {
     }
     this.pendingLinks.delete(telegramUserId);
 
-    // Verifie si le compte est lie
     const resolved = await this.resolveTelegramUser.execute(telegramUserId);
     if (!resolved) {
       await ctx.reply('Compte non lie. Utilise /start pour te connecter.');
       return;
     }
 
-    // Tente le parsing NLP
     const result = parseDrinkMessage(text);
 
     if (result.drinks.length > 0 && result.confident) {
@@ -163,7 +157,6 @@ export class SebastianBotHandler {
       return;
     }
 
-    // Non confiant ou aucune boisson → affiche le clavier
     await ctx.reply("Je n'ai pas compris. Choisis ta boisson :", {
       reply_markup: buildDrinkTypeKeyboard(),
     });
@@ -405,7 +398,6 @@ export class SebastianBotHandler {
     }
   }
 
-  /** Formate un message de confirmation pour les boissons enregistrees. */
   formatConfirmation(drinks: ParsedDrink[]): string {
     const lines = drinks.map((d) => {
       const label = this.drinkLabel(d.source);

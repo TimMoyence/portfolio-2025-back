@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type { BadgeStatusResult } from '../../application/services/ListBadges.useCase';
 
-/** DTO de reponse pour le statut d'un badge. */
 export class BadgeStatusDto {
   @ApiProperty({ description: 'Cle unique du badge' })
   key: string;
@@ -26,7 +25,6 @@ export class BadgeStatusDto {
   })
   unlockedAt?: string;
 
-  /** Convertit un resultat de statut de badge en DTO de reponse. */
   static fromResult(result: BadgeStatusResult): BadgeStatusDto {
     const dto = new BadgeStatusDto();
     dto.key = result.key;

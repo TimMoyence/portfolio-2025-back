@@ -5,7 +5,6 @@ import type {
 } from '../domain/IOpenWeatherMapProxy.port';
 import { OPENWEATHERMAP_PROXY } from '../domain/token';
 
-/** Cas d'utilisation : recuperation des previsions detaillees via OpenWeatherMap. */
 @Injectable()
 export class GetForecastDetailedWeatherUseCase {
   constructor(
@@ -13,7 +12,6 @@ export class GetForecastDetailedWeatherUseCase {
     private readonly proxy: IOpenWeatherMapProxy,
   ) {}
 
-  /** Delegue la recuperation des previsions detaillees au proxy OWM. */
   async execute(
     latitude: number,
     longitude: number,

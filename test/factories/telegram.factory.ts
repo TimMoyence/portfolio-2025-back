@@ -1,10 +1,8 @@
 import type { TelegramLink } from '../../src/modules/sebastian/domain/TelegramLink';
 import type { ITelegramLinkRepository } from '../../src/modules/sebastian/domain/ITelegramLink.repository';
 
-// Re-export depuis user.factory pour eviter la duplication.
 export { buildUser, createMockUsersRepo } from './user.factory';
 
-/** Construit un objet TelegramLink domaine avec des valeurs par defaut. */
 export function buildTelegramLink(
   overrides?: Partial<TelegramLink>,
 ): TelegramLink {
@@ -17,7 +15,6 @@ export function buildTelegramLink(
   } as TelegramLink;
 }
 
-/** Cree un mock complet du repository liens Telegram. */
 export function createMockTelegramLinkRepo(): jest.Mocked<ITelegramLinkRepository> {
   return {
     create: jest.fn(),

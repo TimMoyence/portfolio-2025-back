@@ -6,7 +6,6 @@ import {
   buildSectionPayloads,
 } from './llm-payload.builder';
 
-/** Construit un input minimal valide pour les tests du payload builder. */
 function buildMinimalInput(
   overrides?: Partial<LangchainAuditInput>,
 ): LangchainAuditInput {

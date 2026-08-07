@@ -7,15 +7,6 @@ const VALID_STATUSES: readonly PublishableStatus[] = [
   'ARCHIVED',
 ];
 
-/**
- * Resout un statut de publication a partir d'une valeur brute.
- * Normalise la casse (trim + uppercase) et valide l'appartenance
- * aux valeurs autorisees.
- *
- * @param raw   Valeur brute (string attendue)
- * @param field Nom du champ pour le message d'erreur
- * @returns Le statut normalise, ou 'PUBLISHED' par defaut
- */
 export function resolvePublishableStatus(
   raw: unknown,
   field: string,
@@ -36,13 +27,6 @@ export function resolvePublishableStatus(
   return normalized as PublishableStatus;
 }
 
-/**
- * Resout un ordre de tri (entier positif) a partir d'une valeur brute.
- *
- * @param raw   Valeur brute (number entier attendu)
- * @param field Nom du champ pour le message d'erreur
- * @returns L'ordre valide, ou 0 par defaut
- */
 export function resolveOrder(raw: unknown, field: string): number {
   if (raw === undefined || raw === null) {
     return 0;

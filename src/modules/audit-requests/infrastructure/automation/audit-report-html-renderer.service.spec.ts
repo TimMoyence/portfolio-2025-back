@@ -6,11 +6,6 @@ import type {
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { AuditReportHtmlRendererService } from './audit-report-html-renderer.service';
 
-/**
- * Suite de tests pour {@link AuditReportHtmlRendererService}.
- * Verifie que le HTML produit contient toutes les sections requises,
- * echappe correctement les chaines LLM et gere les edge cases.
- */
 describe('AuditReportHtmlRendererService', () => {
   let service: AuditReportHtmlRendererService;
 
@@ -149,27 +144,22 @@ describe('AuditReportHtmlRendererService', () => {
     expect(html).toContain('<!DOCTYPE html>');
     expect(html).toContain('<html');
     expect(html).toContain('</html>');
-    // Cover page
     expect(html).toContain('Rapport Growth Audit');
     expect(html).toContain('Acme Corp');
     expect(html).toContain('Asili Design');
-    // Section client
     expect(html).toContain(
       'Votre site est indexable mais peu cite par les IA.',
     );
     expect(html).toContain('Planifier un appel');
     expect(html).toContain('Indexabilite');
-    // Section expert
     expect(html).toContain('Analyse expert');
     expect(html).toContain('Meta descriptions dupliquees');
     expect(html).toContain('Deployer llms.txt');
     expect(html).toContain('Client reactif');
-    // Fiches pages
     expect(html).toContain('https://acme.com/pricing');
     expect(html).toContain('Pricing page');
     expect(html).toContain('Pas de FAQ schema');
     expect(html).toContain('Ajouter FAQPage JSON-LD');
-    // Annexes
     expect(html).toContain('llms.txt');
   });
 

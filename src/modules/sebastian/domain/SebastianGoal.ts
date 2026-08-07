@@ -1,12 +1,9 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { VALID_CATEGORIES, type SebastianCategory } from './SebastianEntry';
 
-/** Periodes valides pour un objectif. */
 export const VALID_GOAL_PERIODS = ['daily', 'weekly', 'monthly'] as const;
-/** Type de periode pour un objectif. */
 export type GoalPeriod = (typeof VALID_GOAL_PERIODS)[number];
 
-/** Proprietes necessaires pour creer un objectif Sebastian. */
 export interface CreateSebastianGoalProps {
   userId: string;
   category: string;
@@ -14,7 +11,6 @@ export interface CreateSebastianGoalProps {
   period: string;
 }
 
-/** Proprietes pour reconstruire un objectif depuis la persistence. */
 export interface SebastianGoalPersistenceProps {
   id: string;
   userId: string;
@@ -25,7 +21,6 @@ export interface SebastianGoalPersistenceProps {
   createdAt: Date;
 }
 
-/** Entite domaine representant un objectif de consommation. */
 export class SebastianGoal {
   id?: string;
   userId: string;
@@ -35,7 +30,6 @@ export class SebastianGoal {
   isActive: boolean;
   createdAt?: Date;
 
-  /** Cree un nouvel objectif avec validation des invariants. */
   static create(props: CreateSebastianGoalProps): SebastianGoal {
     const userId = props.userId?.trim();
     if (!userId) {
@@ -74,7 +68,6 @@ export class SebastianGoal {
     return goal;
   }
 
-  /** Reconstruit un objectif depuis la persistence (pas de validation). */
   static fromPersistence(props: SebastianGoalPersistenceProps): SebastianGoal {
     const goal = new SebastianGoal();
     goal.id = props.id;

@@ -13,15 +13,13 @@ import type { DetailedForecastResult } from '../domain/IOpenWeatherMapProxy.port
 import { OpenMeteoProxyService } from './OpenMeteoProxy.service';
 import { OpenWeatherMapProxyService } from './OpenWeatherMapProxy.service';
 
-/**
- * Proxy resilient pour les appels meteo.
- *
- * Wraps les appels vers Open-Meteo avec un circuit breaker et
- * fournit un fallback vers OpenWeatherMap lorsque c'est possible.
- * Le fallback OWM n'est disponible que pour `getForecast` ;
- * les autres methodes (searchCity, getAirQuality, getEnsemble,
- * getHistorical) n'ont pas d'equivalent OWM et relancent l'erreur.
- */
+const METRES_PER_KILOMETRE = 1_000;
+
+/** Convertit des kilometres (port OWM) en metres (contrat Open-Meteo). */
+function kilometresToMetres(kilometres: number): number {
+  return kilometres * METRES_PER_KILOMETRE;
+}
+
 @Injectable()
 export class ResilientWeatherProxyService implements IWeatherProxy {
   private readonly logger = new Logger(ResilientWeatherProxyService.name);
@@ -33,7 +31,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     private readonly owm: OpenWeatherMapProxyService,
   ) {}
 
-  /** Recherche de villes — uniquement via Open-Meteo, pas de fallback OWM. */
   async searchCity(
     name: string,
     language?: string,
@@ -44,18 +41,12 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /**
-   * Recupere les previsions meteo.
-   * Fallback vers OWM : mappe DetailedForecastResult + DetailedCurrentWeather
-   * vers un ForecastResult approximatif.
-   */
   async getForecast(
     latitude: number,
     longitude: number,
     timezone?: string,
     forecastDays?: number,
   ): Promise<ForecastResult> {
-    // Tenter Open-Meteo si le circuit le permet
     if (this.openMeteoCb.canExecute()) {
       try {
         const result = await this.openMeteo.getForecast(
@@ -74,7 +65,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
       }
     }
 
-    // Fallback OWM
     if (this.owmCb.canExecute()) {
       try {
         const [current, forecast] = await Promise.all([
@@ -97,7 +87,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /** Qualite de l'air — uniquement via Open-Meteo, pas de fallback OWM. */
   async getAirQuality(
     latitude: number,
     longitude: number,
@@ -107,7 +96,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /** Previsions multi-modeles — uniquement via Open-Meteo, pas de fallback OWM. */
   async getEnsemble(
     latitude: number,
     longitude: number,
@@ -117,7 +105,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /** Donnees historiques — uniquement via Open-Meteo, pas de fallback OWM. */
   async getHistorical(
     latitude: number,
     longitude: number,
@@ -129,7 +116,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /** Alertes meteo synthetiques — uniquement via Open-Meteo, pas de fallback OWM. */
   async getAlerts(
     latitude: number,
     longitude: number,
@@ -139,10 +125,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /**
-   * Execute une operation via Open-Meteo avec gestion du circuit breaker.
-   * Aucun fallback disponible : relance l'erreur en cas d'echec.
-   */
   private async executeWithoutFallback<T>(
     operationName: string,
     operation: () => Promise<T>,
@@ -179,43 +161,45 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
   ): ForecastResult {
     return {
       current: {
-        temperature_2m: current.temperature,
+        temperature_2m: current.temperatureCelsius,
         weather_code: this.owmConditionToWmo(current.conditionId),
-        wind_speed_10m: current.windSpeed,
-        apparent_temperature: current.feelsLike,
-        relative_humidity_2m: current.humidity,
-        pressure_msl: current.seaLevelPressure,
+        wind_speed_10m: current.windSpeedKmh,
+        apparent_temperature: current.feelsLikeCelsius,
+        relative_humidity_2m: current.humidityPercent,
+        pressure_msl: current.seaLevelPressureHpa,
         uv_index: undefined,
-        wind_direction_10m: current.windDirection,
-        wind_gusts_10m: current.windGust,
-        cloud_cover: current.cloudCover,
-        visibility: current.visibility * 1_000,
+        wind_direction_10m: current.windDirectionDegrees,
+        wind_gusts_10m: current.windGustKmh,
+        cloud_cover: current.cloudCoverPercent,
+        visibility: kilometresToMetres(current.visibilityKm),
         dew_point_2m: undefined,
       },
       hourly: {
-        time: forecast.hourly.map((h) => h.time),
-        temperature_2m: forecast.hourly.map((h) => h.temperature),
+        time: forecast.hourly.map((h) => h.timeIso),
+        temperature_2m: forecast.hourly.map((h) => h.temperatureCelsius),
         weather_code: forecast.hourly.map((h) =>
           this.owmConditionToWmo(h.conditionId),
         ),
-        wind_speed_10m: forecast.hourly.map((h) => h.windSpeed),
+        wind_speed_10m: forecast.hourly.map((h) => h.windSpeedKmh),
         precipitation: forecast.hourly.map(
-          (h) => (h.rain3h ?? 0) + (h.snow3h ?? 0),
+          (h) => (h.rain3hMm ?? 0) + (h.snow3hMm ?? 0),
         ),
-        relative_humidity_2m: forecast.hourly.map((h) => h.humidity),
-        pressure_msl: forecast.hourly.map((h) => h.seaLevelPressure),
-        wind_direction_10m: forecast.hourly.map((h) => h.windDirection),
-        wind_gusts_10m: forecast.hourly.map((h) => h.windGust),
-        cloud_cover: forecast.hourly.map((h) => h.cloudCover),
-        visibility: forecast.hourly.map((h) => h.visibility * 1_000),
+        relative_humidity_2m: forecast.hourly.map((h) => h.humidityPercent),
+        pressure_msl: forecast.hourly.map((h) => h.seaLevelPressureHpa),
+        wind_direction_10m: forecast.hourly.map((h) => h.windDirectionDegrees),
+        wind_gusts_10m: forecast.hourly.map((h) => h.windGustKmh),
+        cloud_cover: forecast.hourly.map((h) => h.cloudCoverPercent),
+        visibility: forecast.hourly.map((h) =>
+          kilometresToMetres(h.visibilityKm),
+        ),
       },
       daily: {
-        time: forecast.daily.map((d) => d.date),
+        time: forecast.daily.map((d) => d.dateIso),
         weather_code: forecast.daily.map((d) =>
           this.owmConditionToWmo(d.conditionId),
         ),
-        temperature_2m_max: forecast.daily.map((d) => d.maxTemp),
-        temperature_2m_min: forecast.daily.map((d) => d.minTemp),
+        temperature_2m_max: forecast.daily.map((d) => d.maxTempCelsius),
+        temperature_2m_min: forecast.daily.map((d) => d.minTempCelsius),
         sunrise: [],
         sunset: [],
         precipitation_sum: [],

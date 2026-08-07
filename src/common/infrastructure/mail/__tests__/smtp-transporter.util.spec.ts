@@ -52,9 +52,6 @@ describe('createOptionalSmtpTransporter', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Factory partagee (`test/factories/mailer.factory.ts`) : elle pose
-    // les variables SMTP et les restaure, DKIM compris. Dupliquer cette
-    // mecanique ici contreviendrait a la regle DRY du projet.
     cleanup = setSmtpEnv();
     clearSmtpEnv();
     logger = { warn: jest.fn(), error: jest.fn() } as unknown as Logger;
@@ -65,8 +62,6 @@ describe('createOptionalSmtpTransporter', () => {
   });
 
   /**
-   * Repart d'un environnement vierge : chaque test pose ce qu'il teste.
-   *
    * Seules les cles que `setSmtpEnv` sait restaurer sont retirees. Vider
    * tout `SMTP_*` laisserait `SMTP_REPLY_TO` — validee par le schema
    * d'environnement — non restauree apres le fichier.
@@ -151,8 +146,6 @@ describe('createOptionalSmtpTransporter', () => {
 
       createOptionalSmtpTransporter(logger, 'Test');
 
-      // Sans cle, nodemailer ne doit pas recevoir d'option `dkim` :
-      // la signature reste a la charge du relais SMTP.
       expect(lastOptions().dkim).toBeUndefined();
     });
 
@@ -294,7 +287,6 @@ describe('createOptionalSmtpTransporter', () => {
     it('ignore une configuration DKIM partielle et le signale', () => {
       configureSmtp();
       process.env.SMTP_DKIM_DOMAIN = 'asilidesign.fr';
-      // selecteur et cle manquants
 
       createOptionalSmtpTransporter(logger, 'Test');
 

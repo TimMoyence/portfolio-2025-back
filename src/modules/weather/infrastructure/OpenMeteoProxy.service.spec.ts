@@ -95,7 +95,6 @@ describe('OpenMeteoProxyService', () => {
 
       const calledUrl = fetchSpy.mock.calls[0][0] as string;
 
-      // Parametres horaires enrichis
       expect(calledUrl).toContain('relative_humidity_2m');
       expect(calledUrl).toContain('dew_point_2m');
       expect(calledUrl).toContain('pressure_msl');
@@ -105,7 +104,6 @@ describe('OpenMeteoProxyService', () => {
       expect(calledUrl).toContain('cloud_cover');
       expect(calledUrl).toContain('visibility');
 
-      // Parametres journaliers enrichis
       expect(calledUrl).toContain('uv_index_max');
       expect(calledUrl).toContain('wind_speed_10m_max');
       expect(calledUrl).toContain('wind_gusts_10m_max');
@@ -120,7 +118,6 @@ describe('OpenMeteoProxyService', () => {
 
       const result = await service.getForecast(48.8566, 2.3522);
 
-      // Champs current enrichis
       expect(result.current.relative_humidity_2m).toBe(65);
       expect(result.current.pressure_msl).toBe(1013);
       expect(result.current.uv_index).toBe(5.2);
@@ -130,13 +127,11 @@ describe('OpenMeteoProxyService', () => {
       expect(result.current.visibility).toBe(10000);
       expect(result.current.dew_point_2m).toBe(11.3);
 
-      // Champs hourly enrichis
       expect(result.hourly.relative_humidity_2m).toEqual([70]);
       expect(result.hourly.dew_point_2m).toEqual([10.0]);
       expect(result.hourly.pressure_msl).toEqual([1012]);
       expect(result.hourly.uv_index).toEqual([3.0]);
 
-      // Champs daily enrichis
       expect(result.daily.uv_index_max).toEqual([6.0]);
       expect(result.daily.wind_speed_10m_max).toEqual([15.0]);
       expect(result.daily.wind_gusts_10m_max).toEqual([25.0]);

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+
+  // --- Points d entree ---------------------------------------------------
+  // `src/main.ts` n est pas liste : knip le deduit deja des scripts npm
+  // (`start`, `start:prod`), l ajouter declencherait un hint "redundant".
+  //
+  // Les trois premiers patterns couvrent le talon d Achille de knip sur
+  // NestJS/TypeORM : du code charge par glob ou par reflexion a l execution,
+  // qu aucun `import` statique ne reference.
+  "entry": [
+    // DataSource consomme par la CLI TypeORM (`migration:run`, `migration:generate`).
+    "src/database/data-source.ts",
+    // Migrations chargees par glob : `src/database/data-source.ts` -> `migrations: [__dirname + '/../migrations/*']`.
+    "src/migrations/*.ts",
+    // Entites chargees par glob : `src/app.module.ts` -> `entities: [join(__dirname, '**/*.entity.{js,ts}')]`.
+    "src/**/*.entity.ts",
+    // Suites Jest : unitaires (rootDir `src`) et e2e/http/db-integration (`test/`).
+    "src/**/*.spec.ts",
+    "test/**/*.spec.ts",
+    // Script de generation de doc d architecture, lance a la main.
+    "generate-architecture.mjs",
+  ],
+
+  "project": ["src/**/*.ts", "test/**/*.ts"],
+
+  // --- Faux positifs assumes ---------------------------------------------
+  // Uniquement des dependances reellement utilisees mais invisibles a
+  // l analyse statique. Les dependances mortes qu il avait signalees (pdfkit,
+  // @types/pdfkit, source-map-support, ts-loader, @eslint/eslintrc) ont ete
+  // desinstallees plutot que masquees ici.
+  "ignoreDependencies": [
+    // Reporter Jest passe en CLI : `test:cov` -> `--reporters=jest-ratchet`.
+    "jest-ratchet",
+    // Resolu par chaine a l execution : `src/app.module.ts` -> `transport.target: 'pino-pretty'`.
+    "pino-pretty",
+    // CLI de schematics (`nest generate`), pilotee par `nest-cli.json`.
+    "@nestjs/cli",
+    // `stryker.config.mjs` est toujours present ; seul le script `test:mutation`
+    // est desactive temporairement (renomme `//test:mutation` dans package.json).
+    "@stryker-mutator/core",
+    "@stryker-mutator/jest-runner",
+    "@stryker-mutator/typescript-checker",
+  ],
+}

@@ -2,7 +2,6 @@ import type { IContactsRepository } from '../../src/modules/contacts/domain/ICon
 import type { IContactNotifier } from '../../src/modules/contacts/domain/IContactNotifier';
 import { Contacts } from '../../src/modules/contacts/domain/Contacts';
 
-/** Construit un objet Contacts domaine avec des valeurs par defaut. */
 export function buildContact(overrides?: Partial<Contacts>): Contacts {
   const contact = new Contacts();
   contact.id = 'contact-1';
@@ -17,7 +16,6 @@ export function buildContact(overrides?: Partial<Contacts>): Contacts {
   return Object.assign(contact, overrides);
 }
 
-/** Cree un mock complet du repository contacts. */
 export function createMockContactsRepo(): jest.Mocked<IContactsRepository> {
   return {
     findAll: jest.fn(),
@@ -25,7 +23,6 @@ export function createMockContactsRepo(): jest.Mocked<IContactsRepository> {
   };
 }
 
-/** Cree un mock du notifier de contact. */
 export function createMockContactNotifier(): jest.Mocked<IContactNotifier> {
   return {
     sendContactNotification: jest.fn(),

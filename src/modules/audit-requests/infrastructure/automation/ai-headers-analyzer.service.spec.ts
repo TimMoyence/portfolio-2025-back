@@ -65,7 +65,6 @@ describe('AiHeadersAnalyzerService', () => {
   it('retourne allowed par défaut quand robots.txt non vide sans match', () => {
     const robots = 'User-agent: Bingbot\nDisallow: /private\n';
     const result = service.analyze(robots, {});
-    // Pas de bloc GPTBot, pas de wildcard → robots non vide → allowed
     expect(result.gptBot).toBe('allowed');
   });
 

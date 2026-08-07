@@ -4,7 +4,6 @@ import { AuditSummarySnapshot } from '../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
 
-/** Recupere le resume synthetique d'un audit par son identifiant. */
 @Injectable()
 export class GetAuditSummaryUseCase {
   constructor(

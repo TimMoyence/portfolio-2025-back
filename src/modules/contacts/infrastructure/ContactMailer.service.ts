@@ -92,7 +92,6 @@ ${message}
     });
   }
 
-  /** Echappe les caracteres HTML speciaux pour prevenir les injections XSS. */
   protected escapeHtml(input: string): string {
     return escapeHtml(input);
   }

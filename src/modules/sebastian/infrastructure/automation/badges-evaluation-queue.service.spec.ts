@@ -2,11 +2,6 @@ import { BadgesEvaluationQueueService } from './badges-evaluation-queue.service'
 import type { SebastianBadgesAutomationConfig } from './badges.config';
 import type { EvaluateBadgesUseCase } from '../../application/services/EvaluateBadges.useCase';
 
-/**
- * Ces tests ne couvrent que le chemin fallback in-process (sans Redis).
- * Le chemin BullMQ est implicitement valide par la meme architecture
- * dans AuditQueueService (cf. audit-queue.service.spec).
- */
 describe('BadgesEvaluationQueueService (fallback inline)', () => {
   let config: SebastianBadgesAutomationConfig;
   let evaluateBadges: jest.Mocked<Pick<EvaluateBadgesUseCase, 'execute'>>;
@@ -37,7 +32,6 @@ describe('BadgesEvaluationQueueService (fallback inline)', () => {
 
     expect(service.isQueueEnabled).toBe(false);
     await service.enqueue('user-1');
-    // Laisser le setImmediate executer.
     await new Promise((resolve) => setImmediate(resolve));
     await new Promise((resolve) => setImmediate(resolve));
 
@@ -45,7 +39,6 @@ describe('BadgesEvaluationQueueService (fallback inline)', () => {
   });
 
   it('bascule en mode inline quand REDIS_URL et REDIS_HOST sont absents', async () => {
-    // Config enabled mais pas de connexion Redis buildable.
     const service = new BadgesEvaluationQueueService(
       buildConfig({ queueEnabled: true }),
       evaluateBadges as unknown as EvaluateBadgesUseCase,

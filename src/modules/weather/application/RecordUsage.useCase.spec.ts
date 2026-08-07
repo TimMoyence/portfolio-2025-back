@@ -54,7 +54,6 @@ describe('RecordUsageUseCase', () => {
         lastUsedAt: expect.any(Date) as Date,
       }),
     );
-    // daysUsed ne doit pas apparaitre dans l'appel update
     const updateArgs = repo.update.mock.calls[0][1];
     expect(updateArgs.daysUsed).toBeUndefined();
   });

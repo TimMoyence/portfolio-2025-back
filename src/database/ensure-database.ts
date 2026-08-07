@@ -41,7 +41,6 @@ export async function ensureDatabaseExists({
           ssl,
         };
 
-  // Connect to admin database to manage other databases
   const adminConfig: ClientConfig = {
     ...baseConfig,
     database: adminDatabase,

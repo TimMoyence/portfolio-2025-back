@@ -13,7 +13,6 @@ import {
 import { CreateAuditRequestCommand } from './dto/CreateAuditRequest.command';
 import { AuditRequestMapper } from './mappers/AuditRequest.mapper';
 
-/** Orchestre la creation d'une demande d'audit, la mise en file d'attente et la notification. */
 @Injectable()
 export class CreateAuditRequestsUseCase {
   private readonly logger = new Logger(CreateAuditRequestsUseCase.name);

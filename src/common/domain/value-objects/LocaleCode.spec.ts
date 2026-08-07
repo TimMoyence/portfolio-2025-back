@@ -20,17 +20,11 @@ describe('LocaleCode', () => {
   });
 
   describe('property-based', () => {
-    /**
-     * Generateur de codes locales "fr" valides : "fr" ou "fr-<subtag>"
-     */
     const frVariantArb = fc.oneof(
       fc.constant('fr'),
       fc.stringMatching(/^[a-zA-Z]{1,8}$/).map((suffix) => `fr-${suffix}`),
     );
 
-    /**
-     * Generateur de codes locales "en" valides : "en" ou "en-<subtag>"
-     */
     const enVariantArb = fc.oneof(
       fc.constant('en'),
       fc.stringMatching(/^[a-zA-Z]{1,8}$/).map((suffix) => `en-${suffix}`),
@@ -71,7 +65,6 @@ describe('LocaleCode', () => {
     });
 
     it('devrait rejeter les codes de langues non supportees', () => {
-      // Genere des codes ISO-like qui ne commencent ni par "fr" ni par "en"
       const unsupportedArb = fc
         .stringMatching(/^[a-z]{2,5}$/)
         .filter((s) => !s.startsWith('fr') && !s.startsWith('en'));
@@ -110,7 +103,6 @@ describe('LocaleCode', () => {
           ),
           (input) => {
             const result = LocaleCode.resolve(input);
-            // resolve() ne retourne jamais null
             expect(result).not.toBeNull();
             expect(['fr', 'en']).toContain(result.value);
           },

@@ -16,7 +16,6 @@ export interface RequestPasswordResetResult {
   message: string;
 }
 
-/** Orchestre la generation d'un lien de reset et sa notification email. */
 @Injectable()
 export class RequestPasswordResetUseCase {
   private readonly logger = new Logger(RequestPasswordResetUseCase.name);

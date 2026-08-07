@@ -5,7 +5,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-/** Entite TypeORM pour la table sebastian_goals. */
 @Entity({ name: 'sebastian_goals' })
 export class SebastianGoalEntity {
   @PrimaryGeneratedColumn('uuid')

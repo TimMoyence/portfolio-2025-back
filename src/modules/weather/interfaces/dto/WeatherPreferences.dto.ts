@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { WeatherUserPreferences } from '../../domain/WeatherUserPreferences';
 
-/** DTO de reponse des preferences meteo utilisateur. */
 export class WeatherPreferencesDto {
   @ApiProperty({ description: 'Identifiant des preferences' })
   id: string;
@@ -51,7 +50,6 @@ export class WeatherPreferencesDto {
   @ApiProperty({ description: 'Date de derniere mise a jour' })
   updatedAt: Date;
 
-  /** Convertit un objet de domaine en DTO de reponse. */
   static fromDomain(prefs: WeatherUserPreferences): WeatherPreferencesDto {
     const dto = new WeatherPreferencesDto();
     dto.id = prefs.id;

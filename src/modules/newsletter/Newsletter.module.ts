@@ -14,12 +14,6 @@ import { NewsletterSubscriberRepositoryTypeORM } from './infrastructure/Newslett
 import { NoopEmailDripSchedulerService } from './infrastructure/NoopEmailDripScheduler.service';
 import { NewsletterController } from './interfaces/Newsletter.controller';
 
-/**
- * Module Newsletter — isole le bounded context du double opt-in et du
- * drip email. Le port `IEmailDripScheduler` est binde sur une impl
- * no-op tant que la queue BullMQ n'est pas livree (S1.5). Le swap
- * s'effectue sans toucher aux use-cases via le token d'injection.
- */
 @Module({
   imports: [TypeOrmModule.forFeature([NewsletterSubscriberEntity])],
   controllers: [NewsletterController],

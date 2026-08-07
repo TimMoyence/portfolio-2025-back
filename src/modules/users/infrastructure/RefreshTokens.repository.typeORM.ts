@@ -5,7 +5,6 @@ import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.reposito
 import type { RefreshToken } from '../domain/RefreshToken';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
 
-/** Implementation TypeORM du repository des jetons de rafraichissement. */
 @Injectable()
 export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository {
   constructor(

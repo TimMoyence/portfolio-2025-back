@@ -11,10 +11,6 @@ import {
 } from '../../../../test/factories/user.factory';
 import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
 
-/**
- * Mock du module google-auth-library.
- * On intercepte le constructeur OAuth2Client et sa methode verifyIdToken.
- */
 const mockVerifyIdToken = jest.fn();
 jest.mock('google-auth-library', () => ({
   OAuth2Client: jest.fn().mockImplementation(() => ({
@@ -22,7 +18,6 @@ jest.mock('google-auth-library', () => ({
   })),
 }));
 
-/** Payload Google simule pour les tests. */
 const GOOGLE_PAYLOAD = {
   sub: 'google-sub-123',
   email: 'john@gmail.com',

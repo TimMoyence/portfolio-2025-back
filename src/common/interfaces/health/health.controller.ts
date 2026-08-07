@@ -9,13 +9,6 @@ import {
 import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from '../auth/public.decorator';
 
-/**
- * Controller de health check.
- *
- * Verifie l'etat de la base de donnees PostgreSQL et la consommation
- * memoire du heap. Le endpoint est public et exempt de rate-limiting
- * pour permettre les sondes Docker/Kubernetes.
- */
 @ApiTags('health')
 @Controller('health')
 export class HealthController {
@@ -25,13 +18,6 @@ export class HealthController {
     private readonly memory: MemoryHealthIndicator,
   ) {}
 
-  /**
-   * Retourne l'etat de sante de l'API.
-   *
-   * Indicateurs verifies :
-   * - **database** : ping PostgreSQL via TypeORM
-   * - **memory_heap** : heap Node.js < 256 Mo
-   */
   @Get()
   @Public()
   @SkipThrottle()

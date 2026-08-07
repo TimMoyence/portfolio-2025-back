@@ -9,7 +9,6 @@ describe('JwtTokenService', () => {
   let configService: jest.Mocked<ConfigService>;
   let service: JwtTokenService;
 
-  /** Encode le secret en Uint8Array pour la creation de tokens de test avec jose. */
   const encodeSecret = (secret = JWT_SECRET): Uint8Array =>
     new TextEncoder().encode(secret);
 
@@ -73,7 +72,7 @@ describe('JwtTokenService', () => {
       })
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt(pastTime)
-        .setExpirationTime(pastTime + 3600) // expire il y a 1h
+        .setExpirationTime(pastTime + 3600)
         .setIssuer('portfolio-2025')
         .setAudience('portfolio-2025-api')
         .sign(secret);
@@ -89,7 +88,6 @@ describe('JwtTokenService', () => {
         email: 'a@b.com',
       });
       const parts = token.split('.');
-      // Alterer la signature
       const tamperedToken = `${parts[0]}.${parts[1]}.invalidsignature`;
 
       await expect(service.verify(tamperedToken)).rejects.toThrow(
@@ -185,7 +183,6 @@ describe('JwtTokenService', () => {
     });
 
     it('devrait verifier un token signe avec la cle precedente quand JWT_SECRET_PREVIOUS est configure', async () => {
-      // Signer un token avec l'ancien secret
       const oldSecret = encodeSecret(JWT_SECRET_PREVIOUS);
       const token = await new SignJWT({
         sub: 'user-1',
@@ -199,7 +196,6 @@ describe('JwtTokenService', () => {
         .setAudience('portfolio-2025-api')
         .sign(oldSecret);
 
-      // Configurer le service avec le nouveau secret + ancien secret
       configService.get.mockImplementation((key: string) => {
         if (key === 'JWT_SECRET') return JWT_SECRET;
         if (key === 'JWT_EXPIRES_IN') return '3600s';
@@ -226,10 +222,8 @@ describe('JwtTokenService', () => {
         .setAudience('portfolio-2025-api')
         .sign(unknownSecret);
 
-      // Sans JWT_SECRET_PREVIOUS configure
       await expect(service.verify(token)).rejects.toThrow('Invalid signature');
 
-      // Avec JWT_SECRET_PREVIOUS configure (mais aucun ne correspond)
       configService.get.mockImplementation((key: string) => {
         if (key === 'JWT_SECRET') return JWT_SECRET;
         if (key === 'JWT_EXPIRES_IN') return '3600s';

@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { UsersEntity } from '../../../users/infrastructure/entities/Users.entity';
 
-/** Entite TypeORM pour la table sebastian_badges. */
 @Entity({ name: 'sebastian_badges' })
 export class SebastianBadgeEntity {
   @PrimaryGeneratedColumn('uuid')

@@ -168,7 +168,6 @@ describe('JwtAuthGuard', () => {
     };
     jwtTokenService.verify.mockResolvedValue(payload);
     reflector.getAllAndOverride.mockReturnValue(false);
-    // Compte supprime detenant encore un JWT valide.
     usersRepo.findById.mockResolvedValue(null);
 
     const context = createMockContext({
@@ -192,7 +191,6 @@ describe('JwtAuthGuard', () => {
     };
     jwtTokenService.verify.mockResolvedValue(payload);
     reflector.getAllAndOverride.mockReturnValue(false);
-    // Pas besoin de mock usersRepo ici car le path est exempt
 
     const context = createMockContext(
       { authorization: 'Bearer valid-token' },

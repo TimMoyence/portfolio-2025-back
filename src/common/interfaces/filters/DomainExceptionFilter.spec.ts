@@ -13,14 +13,12 @@ import { ResourceConflictError } from '../../domain/errors/ResourceConflictError
 import { DomainValidationError } from '../../domain/errors/DomainValidationError';
 import { RateLimitExceededError } from '../../domain/errors/RateLimitExceededError';
 
-/** Sous-classe concrete de DomainError pour tester le fallback 500. */
 class UnknownDomainError extends DomainError {
   constructor() {
     super('Erreur domaine inconnue');
   }
 }
 
-/** Cree un mock ArgumentsHost pour les tests HTTP. */
 function createMockHost(url = '/test'): {
   host: ArgumentsHost;
   jsonFn: jest.Mock;

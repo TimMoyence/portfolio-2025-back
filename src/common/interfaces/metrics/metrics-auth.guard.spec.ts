@@ -87,7 +87,6 @@ describe('MetricsAuthGuard', () => {
   it('devrait refuser un token de meme longueur mais 1 octet different', () => {
     const configService = createMockConfigService(VALID_TOKEN);
     const guard = new MetricsAuthGuard(configService);
-    // Meme longueur que VALID_TOKEN, dernier caractere modifie.
     const almostToken = `${VALID_TOKEN.slice(0, -1)}X`;
     expect(almostToken).toHaveLength(VALID_TOKEN.length);
 

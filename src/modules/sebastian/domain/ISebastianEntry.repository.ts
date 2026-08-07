@@ -1,6 +1,5 @@
 import type { SebastianEntry } from './SebastianEntry';
 
-/** Filtres pour la recherche d'entrees de consommation. */
 export interface SebastianEntryFilters {
   userId: string;
   from?: string;
@@ -8,7 +7,6 @@ export interface SebastianEntryFilters {
   category?: string;
 }
 
-/** Port de persistance pour les entrees de consommation Sebastian. */
 export interface ISebastianEntryRepository {
   create(entry: SebastianEntry): Promise<SebastianEntry>;
   findByFilters(filters: SebastianEntryFilters): Promise<SebastianEntry[]>;

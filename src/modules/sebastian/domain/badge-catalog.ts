@@ -1,4 +1,3 @@
-/** Entree du catalogue de badges Sebastian. */
 export interface BadgeCatalogEntry {
   key: string;
   name: string;
@@ -6,7 +5,6 @@ export interface BadgeCatalogEntry {
   category: 'alcohol' | 'coffee' | 'global';
 }
 
-/** Catalogue complet des badges disponibles dans Sebastian. */
 export const BADGE_CATALOG: readonly BadgeCatalogEntry[] = [
   {
     key: 'first-log',
@@ -70,5 +68,4 @@ export const BADGE_CATALOG: readonly BadgeCatalogEntry[] = [
   },
 ] as const;
 
-/** Liste des cles de badges valides. */
 export const VALID_BADGE_KEYS = BADGE_CATALOG.map((b) => b.key);

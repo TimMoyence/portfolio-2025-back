@@ -7,14 +7,6 @@ import {
   buildUserSummarySystemBlocks,
 } from './section-prompts.builder';
 
-/**
- * Les builders de prompts ne dependent que de `AuditLocale` et `retryMode` —
- * tests purement structurels pour garantir :
- *  - le disclaimer untrusted est toujours le premier bloc
- *  - le retry constraint est ajoute uniquement en retryMode
- *  - le nombre et l'ordre des blocs sont stables
- */
-
 describe('section-prompts builders', () => {
   describe('executive', () => {
     it('retourne 2 blocs hors retry (disclaimer + main)', () => {

@@ -4,10 +4,6 @@ import type {
   ExpertReportSynthesis,
 } from './AuditReportTiers';
 
-/**
- * Port du générateur PDF pour les rapports Growth Audit.
- * L'implémentation utilise Puppeteer (voir ToolkitPdfGeneratorService pour le pattern).
- */
 export interface IAuditPdfGenerator {
   generate(
     audit: AuditSnapshot,

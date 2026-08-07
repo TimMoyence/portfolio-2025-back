@@ -44,7 +44,6 @@ describe('PasswordService', () => {
     });
 
     it('devrait verifier un hash PBKDF2 avec sel (format hex:hex — retrocompatibilite)', async () => {
-      // Simuler l'ancien format avec sel unique : sel_hex:hash_hex
       const salt = Buffer.from('a'.repeat(64), 'hex');
       const derivedKey = pbkdf2Sync(
         'SaltedPassword1!',
@@ -61,7 +60,6 @@ describe('PasswordService', () => {
     });
 
     it('devrait verifier un hash au format legacy sans sel (retrocompatibilite)', async () => {
-      // Simuler l'ancien format : hash sans sel (utilise le secret statique)
       const legacyHash = pbkdf2Sync(
         'LegacyPassword1!',
         SECRET,

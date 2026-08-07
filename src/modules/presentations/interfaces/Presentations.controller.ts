@@ -10,12 +10,6 @@ import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { GetPresentationInteractionsUseCase } from '../application/GetPresentationInteractions.useCase';
 import { PresentationInteractionsResponseDto } from './dto/presentation-interactions.response.dto';
 
-/**
- * Contrôleur des interactions de présentation.
- *
- * Endpoint public — les interactions sont du contenu éditorial,
- * pas des données sensibles.
- */
 @ApiTags('presentations')
 @Controller('presentations')
 export class PresentationsController {

@@ -1,12 +1,3 @@
-/**
- * Configuration de la queue BullMQ d'evaluation des badges Sebastian.
- *
- * La queue est optionnelle : si Redis est indisponible ou si la queue
- * est desactivee via env, la queue bascule en mode in-process avec
- * fire-and-forget (setImmediate). Les jobs sont deduplique par userId
- * pour eviter la race condition sur la contrainte unique
- * `(user_id, badge_key)`.
- */
 import {
   envBool,
   envInt,
@@ -20,7 +11,6 @@ export interface SebastianBadgesAutomationConfig {
   queueAttempts: number;
   queueBackoffMs: number;
   jobTimeoutMs: number;
-  /** TTL de deduplication : un meme userId ne peut etre enqueue qu'une fois dans cette fenetre. */
   dedupeWindowMs: number;
   redisUrl?: string;
   redisHost?: string;
@@ -29,7 +19,6 @@ export interface SebastianBadgesAutomationConfig {
   redisPassword?: string;
 }
 
-/** Charge la configuration depuis l'environnement avec des valeurs par defaut. */
 export function loadSebastianBadgesAutomationConfig(): SebastianBadgesAutomationConfig {
   return {
     queueEnabled: envBool('SEBASTIAN_BADGES_QUEUE_ENABLED', true),

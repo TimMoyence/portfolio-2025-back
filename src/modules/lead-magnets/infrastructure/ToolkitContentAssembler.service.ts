@@ -15,19 +15,8 @@ import {
   WORKFLOWS_DATA,
 } from './data/toolkit-content.data';
 
-/**
- * Assemble le contenu personnalise de la boite a outils
- * en fonction du profil d'interaction de l'utilisateur.
- */
 @Injectable()
 export class ToolkitContentAssemblerService implements IToolkitContentAssembler {
-  /**
-   * Assemble le contenu personnalise du guide IA.
-   *
-   * @param firstName - Prenom de l'utilisateur
-   * @param profile - Profil d'interaction (null si aucune interaction)
-   * @returns Contenu complet personnalise pour la generation PDF
-   */
   assemble(
     firstName: string,
     profile: InteractionProfile | null,
@@ -47,10 +36,6 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
     };
   }
 
-  /**
-   * Construit la cheatsheet en marquant les outils deja utilises.
-   * Tous les outils sont inclus, avec le flag `alreadyUsed`.
-   */
   private buildCheatsheet(
     profile: InteractionProfile | null,
   ): CheatsheetEntry[] {
@@ -68,13 +53,6 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
     }));
   }
 
-  /**
-   * Filtre les prompts selon le niveau IA de l'utilisateur.
-   * - debutant : uniquement les prompts debutant
-   * - intermediaire : debutant + intermediaire
-   * - avance : intermediaire + avance
-   * - null : tous les prompts
-   */
   private buildPrompts(profile: InteractionProfile | null): PromptEntry[] {
     const level = profile?.aiLevel ?? null;
     const allowedLevels = this.getAllowedLevels(level);
@@ -91,10 +69,6 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
     }));
   }
 
-  /**
-   * Trie les workflows par cout mensuel si le budget est 0.
-   * Sinon, retourne dans l'ordre par defaut.
-   */
   private buildWorkflows(profile: InteractionProfile | null): WorkflowEntry[] {
     const workflows: WorkflowEntry[] = WORKFLOWS_DATA.map((w) => ({
       title: w.title,
@@ -117,10 +91,6 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
     return workflows;
   }
 
-  /**
-   * Filtre les templates dont le budget minimum est inferieur ou egal au
-   * budget de l'utilisateur. Si le budget est null, retourne tous les templates.
-   */
   private buildTemplates(profile: InteractionProfile | null): TemplateEntry[] {
     const budgetTier = profile?.budgetTier ?? null;
 
@@ -134,7 +104,6 @@ export class ToolkitContentAssemblerService implements IToolkitContentAssembler 
     }));
   }
 
-  /** Determine les niveaux de prompts autorises selon le niveau IA. */
   private getAllowedLevels(
     level: 'debutant' | 'intermediaire' | 'avance' | null,
   ): Set<string> {

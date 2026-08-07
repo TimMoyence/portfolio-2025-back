@@ -39,20 +39,8 @@ const REQUIRED_FIELDS: Record<string, ReadonlyArray<string>> = {
 
 type JsonLdBlock = Record<string, unknown>;
 
-/**
- * Service d'évaluation de la qualité des données structurées JSON-LD d'une
- * page. Prend en entrée un tableau de blocs JSON-LD déjà extraits (par
- * `html-signals.util` ou équivalent) et produit un score plus les signaux
- * d'éligibilité aux Rich Results Google et d'amitié IA.
- *
- * Ne réalise aucun I/O, ne dépend d'aucun module Nest (pure).
- */
 @Injectable()
 export class StructuredDataQualityService {
-  /**
-   * Analyse un ensemble de blocs JSON-LD et retourne un rapport qualité
-   * complet (score, types détectés, validations).
-   */
   analyze(blocks: ReadonlyArray<unknown>): StructuredDataQualityResult {
     const validBlocks = blocks.filter(
       (b): b is JsonLdBlock => typeof b === 'object' && b !== null,
@@ -89,7 +77,6 @@ export class StructuredDataQualityService {
         }
       }
 
-      // Validation des champs obligatoires sur le type principal connu
       const primary = blockTypes.find((t) => REQUIRED_FIELDS[t]);
       if (primary) {
         const missing = REQUIRED_FIELDS[primary].filter(

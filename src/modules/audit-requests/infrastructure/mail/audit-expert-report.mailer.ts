@@ -1,16 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ExpertReportMailInput } from '../../domain/IAuditNotifier.port';
 import { buildMailLayout } from './mail-layout.util';
-import { escapeHtml, slugify } from './mail-rendering.util';
+import { escapeHtml, safeHtml, slugify } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
 
-/**
- * Mailer dedie a l'audience "Expert" (Tim) : envoie la synthese expert avec
- * le draft mail client, les constats transverses, le backlog priorise et le
- * PDF obligatoire. No-op silencieux si le transporter SMTP est absent ou si
- * aucune adresse destinataire n'est configuree.
- */
 @Injectable()
 export class AuditExpertReportMailer {
   private readonly logger = new Logger(AuditExpertReportMailer.name);
@@ -20,10 +14,6 @@ export class AuditExpertReportMailer {
     private readonly transporter: SmtpTransporter,
   ) {}
 
-  /**
-   * Envoie a Tim la synthese expert avec le draft de mail client, les
-   * constats transverses, le backlog priorise et le PDF obligatoire.
-   */
   async sendExpertReport(input: ExpertReportMailInput): Promise<void> {
     if (!this.transporter) return;
     const to =
@@ -55,39 +45,34 @@ export class AuditExpertReportMailer {
     const client = input.clientReport;
     const contactHtml =
       input.clientContact.method === 'PHONE'
-        ? `<p style="margin:0 0 12px;padding:12px;background:#fff4e5;border-left:4px solid #f59e0b;color:#7c2d12;"><strong>Contact TELEPHONE — appel requis :</strong> ${escapeHtml(input.clientContact.value)}</p>`
-        : `<p style="margin:0 0 12px;color:#374151;"><strong>Contact EMAIL :</strong> ${escapeHtml(input.clientContact.value)}</p>`;
+        ? safeHtml`<p style="margin:0 0 12px;padding:12px;background:#fff4e5;border-left:4px solid #f59e0b;color:#7c2d12;"><strong>Contact TELEPHONE — appel requis :</strong> ${escapeHtml(input.clientContact.value)}</p>`
+        : safeHtml`<p style="margin:0 0 12px;color:#374151;"><strong>Contact EMAIL :</strong> ${escapeHtml(input.clientContact.value)}</p>`;
 
-    const crossFindingsHtml = expert.crossPageFindings
-      .slice(0, 5)
-      .map(
-        (finding) => `
+    const crossFindingsHtml = expert.crossPageFindings.slice(0, 5).map(
+      (finding) => safeHtml`
           <li style="margin-bottom:10px;">
             <strong>[${escapeHtml(finding.severity.toUpperCase())}] ${escapeHtml(finding.title)}</strong><br/>
             <span><em>Root cause :</em> ${escapeHtml(finding.rootCause)}</span><br/>
             <span><em>Remediation :</em> ${escapeHtml(finding.remediation)}</span><br/>
             <span><em>Affected URLs :</em> ${escapeHtml(finding.affectedUrls.join(', ') || '—')}</span>
           </li>`,
-      )
-      .join('');
+    );
 
-    const backlogHtml = expert.priorityBacklog
-      .map(
-        (item) => `
+    const backlogHtml = expert.priorityBacklog.map(
+      (item) => safeHtml`
           <li style="margin-bottom:10px;">
             <strong>${escapeHtml(item.title)}</strong> — impact ${escapeHtml(item.impact)} / effort ${escapeHtml(item.effort)}<br/>
             <em>Acceptance :</em> ${escapeHtml(item.acceptanceCriteria.join(' | ') || '—')}
           </li>`,
-      )
-      .join('');
+    );
 
-    const clientMatrixHtml = `
+    const clientMatrixHtml = safeHtml`
       <ul style="padding-left:20px;color:#374151;">
         <li>Google : ${client.googleVsAiMatrix.googleVisibility.score}/100 — ${escapeHtml(client.googleVsAiMatrix.googleVisibility.summary)}</li>
         <li>IA : ${client.googleVsAiMatrix.aiVisibility.score}/100 — ${escapeHtml(client.googleVsAiMatrix.aiVisibility.summary)}</li>
       </ul>`;
 
-    const bodyHtml = `
+    const bodyHtml = safeHtml`
       <p style="margin:0 0 12px;"><strong>Audit ID :</strong> <code style="font-family:monospace;background:#f3f4f6;padding:2px 6px;border-radius:4px;">${escapeHtml(input.auditId)}</code></p>
       ${contactHtml}
 
@@ -108,12 +93,12 @@ export class AuditExpertReportMailer {
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Cross-page findings (top 5)</h2>
       <ul style="padding-left:20px;color:#374151;">
-        ${crossFindingsHtml || '<li>Aucun.</li>'}
+        ${crossFindingsHtml.length > 0 ? crossFindingsHtml : safeHtml`<li>Aucun.</li>`}
       </ul>
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Priority backlog</h2>
       <ul style="padding-left:20px;color:#374151;">
-        ${backlogHtml || '<li>Aucun.</li>'}
+        ${backlogHtml.length > 0 ? backlogHtml : safeHtml`<li>Aucun.</li>`}
       </ul>
 
       <p class="text-muted" style="font-size:12px;color:#6b7280;margin-top:24px;">

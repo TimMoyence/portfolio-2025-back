@@ -16,7 +16,6 @@ import type { ResolveTelegramUserUseCase } from '../../src/modules/sebastian/app
 import type { RegisterDrinksFromTelegramUseCase } from '../../src/modules/sebastian/application/services/RegisterDrinksFromTelegram.useCase';
 import type { CalculateBacUseCase } from '../../src/modules/sebastian/application/services/CalculateBac.useCase';
 
-/** Construit un objet SebastianEntry domaine avec des valeurs par defaut. */
 export function buildSebastianEntry(
   overrides?: Partial<SebastianEntry>,
 ): SebastianEntry {
@@ -37,7 +36,6 @@ export function buildSebastianEntry(
   } as SebastianEntry;
 }
 
-/** Construit un objet SebastianProfile domaine avec des valeurs par defaut. */
 export function buildSebastianProfile(
   overrides?: Partial<SebastianProfile>,
 ): SebastianProfile {
@@ -52,7 +50,6 @@ export function buildSebastianProfile(
   } as SebastianProfile;
 }
 
-/** Cree un mock complet du repository profils Sebastian. */
 export function createMockSebastianProfileRepo(): jest.Mocked<ISebastianProfileRepository> {
   return {
     findByUserId: jest.fn(),
@@ -60,7 +57,6 @@ export function createMockSebastianProfileRepo(): jest.Mocked<ISebastianProfileR
   };
 }
 
-/** Construit un objet SebastianGoal domaine avec des valeurs par defaut. */
 export function buildSebastianGoal(
   overrides?: Partial<SebastianGoal>,
 ): SebastianGoal {
@@ -76,7 +72,6 @@ export function buildSebastianGoal(
   } as SebastianGoal;
 }
 
-/** Cree un mock complet du repository entrees Sebastian. */
 export function createMockSebastianEntryRepo(): jest.Mocked<ISebastianEntryRepository> {
   return {
     create: jest.fn(),
@@ -86,7 +81,6 @@ export function createMockSebastianEntryRepo(): jest.Mocked<ISebastianEntryRepos
   };
 }
 
-/** Cree un mock complet du repository objectifs Sebastian. */
 export function createMockSebastianGoalRepo(): jest.Mocked<ISebastianGoalRepository> {
   return {
     create: jest.fn(),
@@ -97,7 +91,6 @@ export function createMockSebastianGoalRepo(): jest.Mocked<ISebastianGoalReposit
   };
 }
 
-/** Resultat de statistiques par defaut pour les tests. */
 export interface StatsResult {
   byCategory: Array<{
     category: string;
@@ -108,7 +101,6 @@ export interface StatsResult {
   period: string;
 }
 
-/** Construit un resultat de statistiques avec des valeurs par defaut. */
 export function buildStatsResult(
   overrides?: Partial<StatsResult>,
 ): StatsResult {
@@ -122,7 +114,6 @@ export function buildStatsResult(
   };
 }
 
-/** Construit un objet SebastianBadge domaine avec des valeurs par defaut. */
 export function buildSebastianBadge(
   overrides?: Partial<SebastianBadge>,
 ): SebastianBadge {
@@ -136,7 +127,6 @@ export function buildSebastianBadge(
   } as SebastianBadge;
 }
 
-/** Cree un mock complet du repository badges Sebastian. */
 export function createMockSebastianBadgeRepo(): jest.Mocked<ISebastianBadgeRepository> {
   return {
     create: jest.fn(),
@@ -145,14 +135,12 @@ export function createMockSebastianBadgeRepo(): jest.Mocked<ISebastianBadgeRepos
   };
 }
 
-/** Cree un mock du port de queue d'evaluation des badges. */
 export function createMockBadgesEvaluationQueue(): jest.Mocked<IBadgesEvaluationQueuePort> {
   return {
     enqueue: jest.fn().mockResolvedValue(undefined),
   };
 }
 
-/** Construit un resultat de tendances avec des valeurs par defaut. */
 export function buildTrendData(overrides?: Partial<TrendResult>): TrendResult {
   return {
     period: '7d',
@@ -171,7 +159,6 @@ export function buildTrendData(overrides?: Partial<TrendResult>): TrendResult {
   };
 }
 
-/** Construit un resultat de score de sante avec des valeurs par defaut. */
 export function buildHealthScore(
   overrides?: Partial<HealthScoreResult>,
 ): HealthScoreResult {
@@ -185,7 +172,6 @@ export function buildHealthScore(
   };
 }
 
-/** Construit un resultat de rapport de periode avec des valeurs par defaut. */
 export function buildPeriodReport(
   overrides?: Partial<PeriodReportResult>,
 ): PeriodReportResult {
@@ -220,7 +206,6 @@ export function buildPeriodReport(
   };
 }
 
-/** Construit un statut de badge avec des valeurs par defaut. */
 export function buildBadgeStatus(
   overrides?: Partial<BadgeStatusResult>,
 ): BadgeStatusResult {
@@ -235,7 +220,6 @@ export function buildBadgeStatus(
   };
 }
 
-/** Typage des mocks de use cases du bot Telegram Sebastian. */
 export interface MockSebastianBotUseCases {
   linkUser: jest.Mocked<Pick<LinkTelegramUserUseCase, 'execute'>>;
   resolveUser: jest.Mocked<Pick<ResolveTelegramUserUseCase, 'execute'>>;
@@ -245,7 +229,6 @@ export interface MockSebastianBotUseCases {
   calculateBac: jest.Mocked<Pick<CalculateBacUseCase, 'execute'>>;
 }
 
-/** Cree des mocks types pour tous les use cases du SebastianBotHandler. */
 export function createMockSebastianBotUseCases(): MockSebastianBotUseCases {
   return {
     linkUser: { execute: jest.fn() },

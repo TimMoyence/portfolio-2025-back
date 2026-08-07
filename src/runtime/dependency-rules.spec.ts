@@ -1,10 +1,6 @@
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { join } from 'path';
 
-/**
- * Collecte récursivement tous les fichiers d'un répertoire.
- * Utilisé pour scanner les couches DDD et vérifier les règles de dépendances.
- */
 function collectFiles(root: string): string[] {
   const output: string[] = [];
 
@@ -30,10 +26,6 @@ function collectFiles(root: string): string[] {
   return output;
 }
 
-/**
- * Extrait les chemins d'import d'un fichier TypeScript.
- * Retourne un tableau de chaînes correspondant aux valeurs `from '...'` ou `from "..."`.
- */
 function extractImports(filePath: string): string[] {
   const content = readFileSync(filePath, 'utf8');
   const importRegex = /import\s+.*?\s+from\s+['"]([^'"]+)['"]/g;
@@ -47,9 +39,6 @@ function extractImports(filePath: string): string[] {
   return imports;
 }
 
-/**
- * Filtre les fichiers TypeScript éligibles au scan (exclut .spec.ts et .module.ts).
- */
 function eligibleTsFiles(files: string[]): string[] {
   return files.filter(
     (f) =>
@@ -57,9 +46,6 @@ function eligibleTsFiles(files: string[]): string[] {
   );
 }
 
-/**
- * Collecte tous les fichiers TypeScript d'une couche DDD donnée dans tous les modules.
- */
 function collectLayerFiles(modulesRoot: string, layer: string): string[] {
   const modules = readdirSync(modulesRoot);
   const allFiles: string[] = [];
@@ -83,9 +69,6 @@ describe('Règles de dépendances inter-couches', () => {
   const domainFiles = collectLayerFiles(modulesRoot, 'domain');
   const applicationFiles = collectLayerFiles(modulesRoot, 'application');
 
-  // Le domaine transverse (`src/common/domain`) doit respecter les mêmes
-  // invariants de pureté que les domaines de module : aucune dépendance
-  // framework/infrastructure ne doit y fuiter.
   const commonDomainFiles = eligibleTsFiles(
     collectFiles(join(process.cwd(), 'src/common/domain')),
   );
@@ -145,7 +128,6 @@ describe('Règles de dépendances inter-couches', () => {
     ];
     const violations: string[] = [];
 
-    // Couvre les domaines de module ET le domaine transverse `common/domain`.
     const allDomainFiles = [...domainFiles, ...commonDomainFiles];
 
     for (const file of allDomainFiles) {
@@ -179,24 +161,10 @@ describe('Règles de dépendances inter-couches', () => {
     expect(violations).toEqual([]);
   });
 
-  /**
-   * Whitelist des modules auxquels un module metier peut accéder directement
-   * via `../../../users/...`. Users est whitelisté car il porte la notion
-   * transverse d'identité + rôles (ex : Budget et Sebastian scopent leurs
-   * données par `userId` et s'appuient sur le role-guard Users).
-   *
-   * Extension ultérieure : étendre la whitelist si un nouveau module
-   * transverse émerge (ex : Audit, Notifications), sinon rester strict
-   * pour éviter le couplage implicite entre modules métiers.
-   */
   const CROSS_MODULE_IMPORT_WHITELIST: ReadonlyArray<string> = [
     'modules/users/',
   ];
 
-  /**
-   * Resout les imports relatifs (`../../../users/...`) vers leur chemin
-   * `modules/X/...` canonique pour les comparer à la whitelist.
-   */
   function isCrossModuleImport(
     importSpecifier: string,
     filePath: string,
@@ -222,12 +190,6 @@ describe('Règles de dépendances inter-couches', () => {
     return `modules/${targetModule}/`;
   }
 
-  /**
-   * Exceptions ciblees : couplage explicite et documente entre modules
-   * metiers, accepte pour des features cross-module a invariants
-   * synchrones. Format : `${sourceFile}|${importTarget}`. Toute nouvelle
-   * exception doit etre justifiee par une feature documentee dans un plan.
-   */
   const CROSS_MODULE_EXCEPTIONS: ReadonlyArray<string> = [];
 
   it("les modules metiers ne doivent pas importer depuis d'autres modules metiers (hors whitelist Users)", () => {

@@ -10,10 +10,6 @@ const mockedAssertSafeHttpUrl =
     typeof ssrfGuard.assertSafeHttpUrl
   >;
 
-/**
- * Crée un ReadableStream à partir d'une chaîne de caractères.
- * Utilisé pour simuler le body d'une Response.
- */
 function streamFromString(text: string): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   const encoded = encoder.encode(text);
@@ -25,9 +21,6 @@ function streamFromString(text: string): ReadableStream<Uint8Array> {
   });
 }
 
-/**
- * Crée un ReadableStream qui émet les données en chunks de la taille spécifiée.
- */
 function streamFromChunks(chunks: Uint8Array[]): ReadableStream<Uint8Array> {
   return new ReadableStream<Uint8Array>({
     start(controller) {
@@ -39,9 +32,6 @@ function streamFromChunks(chunks: Uint8Array[]): ReadableStream<Uint8Array> {
   });
 }
 
-/**
- * Crée un objet Response simulé avec les propriétés nécessaires.
- */
 function buildResponse(
   status: number,
   headers: Record<string, string>,
@@ -131,8 +121,6 @@ describe('SafeFetchService', () => {
   });
 
   it('lance une erreur si trop de redirections', async () => {
-    // maxRedirects = 3, donc on autorise les hops 0, 1, 2, 3 (4 itérations)
-    // Si chaque itération est une redirection, on n'atteint jamais une réponse finale
     fetchSpy.mockImplementation(() =>
       Promise.resolve(
         buildResponse(301, { location: 'https://example.com/next' }),
@@ -186,7 +174,6 @@ describe('SafeFetchService', () => {
   });
 
   it('lance une erreur si le body dépasse maxBytes', async () => {
-    // maxBytes par défaut = config.textMaxBytes = 1024
     const largeBody = 'x'.repeat(2048);
     const encoder = new TextEncoder();
     const encoded = encoder.encode(largeBody);

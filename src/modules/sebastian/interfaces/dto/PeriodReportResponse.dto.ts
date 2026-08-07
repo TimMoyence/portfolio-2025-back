@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { PeriodReportResult } from '../../application/services/GetPeriodReport.useCase';
 
-/** DTO de reponse pour les totaux de consommation. */
 export class TotalsDto {
   @ApiProperty({ description: 'Total alcool' })
   alcohol: number;
@@ -10,7 +9,6 @@ export class TotalsDto {
   coffee: number;
 }
 
-/** DTO de reponse pour les moyennes quotidiennes. */
 export class DailyAvgDto {
   @ApiProperty({ description: 'Moyenne quotidienne alcool' })
   alcohol: number;
@@ -19,7 +17,6 @@ export class DailyAvgDto {
   coffee: number;
 }
 
-/** DTO de reponse pour le meilleur ou pire jour. */
 export class DayScoreDto {
   @ApiProperty({ description: 'Date du jour (YYYY-MM-DD)' })
   date: string;
@@ -28,7 +25,6 @@ export class DayScoreDto {
   score: number;
 }
 
-/** DTO de reponse pour la comparaison avec la periode precedente. */
 export class ComparisonDto {
   @ApiProperty({ description: 'Variation alcool en pourcentage' })
   alcoholDelta: number;
@@ -37,7 +33,6 @@ export class ComparisonDto {
   coffeeDelta: number;
 }
 
-/** DTO de reponse pour la distribution par jour de semaine. */
 export class DayDistributionDto {
   @ApiProperty({ description: 'Jour de semaine (0=dimanche, 6=samedi)' })
   dayOfWeek: number;
@@ -49,7 +44,6 @@ export class DayDistributionDto {
   coffee: number;
 }
 
-/** DTO de reponse pour un point de la carte thermique. */
 export class HeatmapPointDto {
   @ApiProperty({ description: 'Date (YYYY-MM-DD)' })
   date: string;
@@ -64,7 +58,6 @@ export class HeatmapPointDto {
   combined: number;
 }
 
-/** DTO de reponse pour le rapport de periode. */
 export class PeriodReportResponseDto {
   @ApiProperty({
     enum: ['week', 'month', 'quarter'],
@@ -114,7 +107,6 @@ export class PeriodReportResponseDto {
   })
   heatmap: HeatmapPointDto[];
 
-  /** Convertit un resultat de rapport en DTO de reponse. */
   static fromResult(result: PeriodReportResult): PeriodReportResponseDto {
     const dto = new PeriodReportResponseDto();
     dto.period = result.period;

@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-/** Entite TypeORM pour la table sebastian_profiles. */
 @Entity({ name: 'sebastian_profiles' })
 export class SebastianProfileEntity {
   @PrimaryGeneratedColumn('uuid')

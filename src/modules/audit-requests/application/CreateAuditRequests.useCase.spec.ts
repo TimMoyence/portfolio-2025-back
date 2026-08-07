@@ -55,10 +55,8 @@ describe('CreateAuditRequestsUseCase', () => {
   });
 
   it('devrait creer la demande, la mettre en file d attente et retourner la reponse', async () => {
-    // Act
     const result = await useCase.execute(validCommand);
 
-    // Assert
     expect(result).toEqual(expectedResponse);
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(queueService.enqueue).toHaveBeenCalledWith('audit-123');
@@ -66,13 +64,10 @@ describe('CreateAuditRequestsUseCase', () => {
   });
 
   it('devrait retourner la reponse meme si la notification echoue', async () => {
-    // Arrange
     notifier.sendAuditNotification.mockRejectedValue(new Error('SMTP error'));
 
-    // Act
     const result = await useCase.execute(validCommand);
 
-    // Assert
     expect(result).toEqual(expectedResponse);
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(queueService.enqueue).toHaveBeenCalledTimes(1);
@@ -80,17 +75,14 @@ describe('CreateAuditRequestsUseCase', () => {
   });
 
   it('devrait appeler queueService.enqueue avec le bon auditId', async () => {
-    // Arrange
     const customResponse = new AuditRequestResponse();
     customResponse.message = 'Demande creee';
     customResponse.auditId = 'audit-custom-456';
     customResponse.status = 'PENDING';
     repo.create.mockResolvedValue(customResponse);
 
-    // Act
     await useCase.execute(validCommand);
 
-    // Assert
     expect(queueService.enqueue).toHaveBeenCalledWith('audit-custom-456');
   });
 

@@ -32,7 +32,6 @@ import type { GetWeatherAlertsUseCase } from '../../src/modules/weather/applicat
 import type { GetCurrentDetailedWeatherUseCase } from '../../src/modules/weather/application/GetCurrentDetailedWeather.useCase';
 import type { GetForecastDetailedWeatherUseCase } from '../../src/modules/weather/application/GetForecastDetailedWeather.useCase';
 
-/** Construit un objet WeatherUserPreferences avec des valeurs par defaut. */
 export function buildWeatherPreferences(
   overrides?: Partial<{
     id: string;
@@ -75,7 +74,6 @@ export function buildWeatherPreferences(
   });
 }
 
-/** Cree un mock du repository de preferences meteo avec tous les jest.fn(). */
 export function createMockWeatherPreferencesRepo(): jest.Mocked<IWeatherPreferencesRepository> {
   return {
     findByUserId: jest.fn(),
@@ -84,58 +82,56 @@ export function createMockWeatherPreferencesRepo(): jest.Mocked<IWeatherPreferen
   };
 }
 
-/** Construit un objet DetailedCurrentWeather avec des valeurs par defaut. */
 export function buildDetailedCurrentWeather(
   overrides?: Partial<DetailedCurrentWeather>,
 ): DetailedCurrentWeather {
   return {
-    temperature: 18.5,
-    feelsLike: 17.2,
-    minTemp: 14.0,
-    maxTemp: 22.0,
-    humidity: 65,
-    seaLevelPressure: 1013,
-    groundLevelPressure: 1010,
-    windSpeed: 12.6,
-    windGust: 20.0,
-    windDirection: 180,
-    cloudCover: 40,
-    visibility: 10,
-    rain1h: 0,
-    snow1h: 0,
-    precipitationProbability: 0,
+    temperatureCelsius: 18.5,
+    feelsLikeCelsius: 17.2,
+    minTempCelsius: 14.0,
+    maxTempCelsius: 22.0,
+    humidityPercent: 65,
+    seaLevelPressureHpa: 1013,
+    groundLevelPressureHpa: 1010,
+    windSpeedKmh: 12.6,
+    windGustKmh: 20.0,
+    windDirectionDegrees: 180,
+    cloudCoverPercent: 40,
+    visibilityKm: 10,
+    rain1hMm: 0,
+    snow1hMm: 0,
+    precipitationProbabilityPercent: 0,
     conditionId: 800,
     conditionName: 'Clear',
     conditionText: 'ciel degage',
     conditionIcon: 'https://openweathermap.org/img/wn/01d@2x.png',
-    sunrise: '2026-03-31T06:00:00.000Z',
-    sunset: '2026-03-31T19:30:00.000Z',
+    sunriseIso: '2026-03-31T06:00:00.000Z',
+    sunsetIso: '2026-03-31T19:30:00.000Z',
     isDaytime: true,
     partOfDay: 'd',
-    timezoneOffset: 3600,
+    timezoneOffsetSeconds: 3600,
     ...overrides,
   };
 }
 
-/** Construit un element horaire detaille par defaut. */
 export function buildDetailedHourlyItem(
   overrides?: Partial<DetailedHourlyItem>,
 ): DetailedHourlyItem {
   return {
-    time: '2026-03-31T12:00:00.000Z',
-    temperature: 18.5,
-    feelsLike: 17.2,
-    humidity: 65,
-    seaLevelPressure: 1013,
-    groundLevelPressure: 1010,
-    windSpeed: 12.6,
-    windGust: 20.0,
-    windDirection: 180,
-    cloudCover: 40,
-    visibility: 10,
-    rain3h: 0,
-    snow3h: 0,
-    precipitationProbability: 0,
+    timeIso: '2026-03-31T12:00:00.000Z',
+    temperatureCelsius: 18.5,
+    feelsLikeCelsius: 17.2,
+    humidityPercent: 65,
+    seaLevelPressureHpa: 1013,
+    groundLevelPressureHpa: 1010,
+    windSpeedKmh: 12.6,
+    windGustKmh: 20.0,
+    windDirectionDegrees: 180,
+    cloudCoverPercent: 40,
+    visibilityKm: 10,
+    rain3hMm: 0,
+    snow3hMm: 0,
+    precipitationProbabilityPercent: 0,
     conditionId: 800,
     conditionName: 'Clear',
     conditionText: 'ciel degage',
@@ -145,14 +141,13 @@ export function buildDetailedHourlyItem(
   };
 }
 
-/** Construit un element journalier detaille par defaut. */
 export function buildDetailedDailyItem(
   overrides?: Partial<DetailedDailyItem>,
 ): DetailedDailyItem {
   return {
-    date: '2026-03-31',
-    minTemp: 14.0,
-    maxTemp: 22.0,
+    dateIso: '2026-03-31',
+    minTempCelsius: 14.0,
+    maxTempCelsius: 22.0,
     conditionId: 800,
     conditionName: 'Clear',
     conditionText: 'ciel degage',
@@ -161,7 +156,6 @@ export function buildDetailedDailyItem(
   };
 }
 
-/** Construit un resultat de previsions detaillees par defaut. */
 export function buildDetailedForecastResult(
   overrides?: Partial<DetailedForecastResult>,
 ): DetailedForecastResult {
@@ -170,14 +164,13 @@ export function buildDetailedForecastResult(
     country: 'FR',
     latitude: 48.8566,
     longitude: 2.3522,
-    timezoneOffset: 3600,
+    timezoneOffsetSeconds: 3600,
     hourly: [buildDetailedHourlyItem()],
     daily: [buildDetailedDailyItem()],
     ...overrides,
   };
 }
 
-/** Cree un mock du proxy OpenWeatherMap avec tous les jest.fn(). */
 export function createMockOpenWeatherMapProxy(): jest.Mocked<IOpenWeatherMapProxy> {
   return {
     getCurrentDetailed: jest.fn(),
@@ -185,7 +178,6 @@ export function createMockOpenWeatherMapProxy(): jest.Mocked<IOpenWeatherMapProx
   };
 }
 
-/** Construit un resultat de qualite de l'air avec des valeurs par defaut. */
 export function buildAirQualityResult(
   overrides?: Partial<AirQualityResult>,
 ): AirQualityResult {
@@ -210,7 +202,6 @@ export function buildAirQualityResult(
   };
 }
 
-/** Construit un resultat de previsions enrichi avec des valeurs par defaut. */
 export function buildForecastResult(
   overrides?: Partial<ForecastResult>,
 ): ForecastResult {
@@ -263,7 +254,6 @@ export function buildForecastResult(
   };
 }
 
-/** Construit un resultat d'ensemble multi-modeles avec des valeurs par defaut. */
 export function buildEnsembleResult(
   overrides?: Partial<EnsembleResult>,
 ): EnsembleResult {
@@ -301,7 +291,6 @@ export function buildEnsembleResult(
   };
 }
 
-/** Construit un resultat de donnees historiques avec des valeurs par defaut. */
 export function buildHistoricalResult(
   overrides?: Partial<HistoricalResult>,
 ): HistoricalResult {
@@ -317,7 +306,6 @@ export function buildHistoricalResult(
   };
 }
 
-/** Construit un resultat d'alertes meteo avec des valeurs par defaut. */
 export function buildWeatherAlertResult(
   overrides?: Partial<WeatherAlertResult>,
 ): WeatherAlertResult {
@@ -335,7 +323,6 @@ export function buildWeatherAlertResult(
   };
 }
 
-/** Cree un mock du proxy meteo Open-Meteo avec tous les jest.fn(). */
 export function createMockWeatherProxy(): jest.Mocked<IWeatherProxy> {
   return {
     searchCity: jest.fn(),
@@ -347,7 +334,6 @@ export function createMockWeatherProxy(): jest.Mocked<IWeatherProxy> {
   };
 }
 
-/** Typage des mocks de use cases du module Weather. */
 export interface MockWeatherUseCases {
   geocoding: jest.Mocked<Pick<GetGeocodingUseCase, 'execute'>>;
   forecast: jest.Mocked<Pick<GetForecastUseCase, 'execute'>>;
@@ -366,7 +352,6 @@ export interface MockWeatherUseCases {
   >;
 }
 
-/** Cree des mocks types pour tous les use cases du WeatherController. */
 export function createMockWeatherUseCases(): MockWeatherUseCases {
   return {
     geocoding: { execute: jest.fn() },

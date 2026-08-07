@@ -30,8 +30,6 @@ describe('Projects aggregate', () => {
     ).toThrow(DomainValidationError);
   });
 
-  // --- Type resolution ---
-
   it('devrait defaulter le type a SIDE quand non fourni', () => {
     const project = Projects.create({ slug: 'test-project' });
     expect(project.type).toBe('SIDE');
@@ -47,8 +45,6 @@ describe('Projects aggregate', () => {
       Projects.create({ slug: 'test-project', type: 'INVALID' as 'SIDE' }),
     ).toThrow(DomainValidationError);
   });
-
-  // --- optionalUrl branches ---
 
   it('devrait accepter undefined pour repoUrl et liveUrl', () => {
     const project = Projects.create({ slug: 'test-project' });
@@ -92,8 +88,6 @@ describe('Projects aggregate', () => {
       Projects.create({ slug: 'test-project', repoUrl: 'ftp://example.com' }),
     ).toThrow(DomainValidationError);
   });
-
-  // --- optionalStringArray branches ---
 
   it('devrait retourner un tableau vide pour gallery null/undefined', () => {
     const project = Projects.create({ slug: 'test-project' });
@@ -147,8 +141,6 @@ describe('Projects aggregate', () => {
     });
     expect(project.stack).toEqual(['angular', 'nestjs']);
   });
-
-  // --- Defaults ---
 
   it('devrait defaulter le status a PUBLISHED et order a 0', () => {
     const project = Projects.create({ slug: 'test-project' });

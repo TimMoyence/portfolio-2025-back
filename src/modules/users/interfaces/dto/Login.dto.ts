@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 import type { LoginCommand } from '../../application/dto/Login.command';
 
-/** DTO HTTP pour l'authentification (validation + Swagger). */
 export class LoginDto implements LoginCommand {
   @ApiProperty({ example: 'john@example.com' })
   @IsEmail()

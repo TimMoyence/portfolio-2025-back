@@ -1,7 +1,6 @@
 import type { IEmailVerificationTokensRepository } from '../../src/modules/users/domain/IEmailVerificationTokens.repository';
 import type { EmailVerificationToken } from '../../src/modules/users/domain/EmailVerificationToken';
 
-/** Construit un objet EmailVerificationToken domaine avec des valeurs par defaut. */
 export function buildEmailVerificationToken(
   overrides?: Partial<EmailVerificationToken>,
 ): EmailVerificationToken {
@@ -15,7 +14,6 @@ export function buildEmailVerificationToken(
   };
 }
 
-/** Cree un mock complet du repository des tokens de verification email. */
 export function createMockEmailVerificationTokensRepo(): jest.Mocked<IEmailVerificationTokensRepository> {
   return {
     create: jest.fn(),

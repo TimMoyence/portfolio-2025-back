@@ -1,6 +1,5 @@
 import { ContactMailerService } from './ContactMailer.service';
 
-/** Sous-classe de test exposant les methodes protected pour verification unitaire. */
 class TestableContactMailerService extends ContactMailerService {
   public testEscapeHtml(input: string): string {
     return this.escapeHtml(input);
@@ -11,7 +10,6 @@ describe('ContactMailerService', () => {
   let service: TestableContactMailerService;
 
   beforeEach(() => {
-    // Pas de config SMTP => transporter est undefined, c'est OK pour les tests unitaires
     service = new TestableContactMailerService();
   });
 

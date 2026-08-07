@@ -8,12 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import { Bot } from 'grammy';
 import { SebastianBotHandler } from '../interfaces/telegram/SebastianBot.handler';
 
-/**
- * Service de cycle de vie du bot Telegram Sebastian.
- *
- * Demarre le bot en long polling si le token est configure,
- * sinon ignore silencieusement (ne casse jamais l'API REST).
- */
 @Injectable()
 export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TelegramBotService.name);

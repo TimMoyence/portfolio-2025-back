@@ -1,6 +1,5 @@
 import type { SebastianGoal } from './SebastianGoal';
 
-/** Port de persistance pour les objectifs de consommation Sebastian. */
 export interface ISebastianGoalRepository {
   create(goal: SebastianGoal): Promise<SebastianGoal>;
   findByUserId(userId: string): Promise<SebastianGoal[]>;

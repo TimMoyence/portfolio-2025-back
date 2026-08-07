@@ -1,14 +1,8 @@
 import type { LangchainAuditInput } from './langchain-audit-report.service';
 import { sanitizePromptInput } from './shared/prompt-sanitize.util';
 
-/** Profil de payload LLM : summary, expert complet, ou expert compact. */
 export type LlmPayloadProfile = 'summary' | 'expert' | 'expert_compact';
 
-/**
- * Construit le payload envoye au LLM en fonction du profil demande.
- * Applique des limites de troncature (caps) differentes selon que
- * l'on genere le resume utilisateur ou le rapport expert.
- */
 export function buildPayload(
   input: LangchainAuditInput,
   profile: LlmPayloadProfile,
@@ -67,10 +61,6 @@ export function buildPayload(
   };
 }
 
-/**
- * Construit les 4 payloads de section pour le profil fan-out parallele.
- * Chaque section recoit un sous-ensemble pertinent des donnees d'entree.
- */
 export function buildSectionPayloads(input: LangchainAuditInput): {
   executiveSection: Record<string, unknown>;
   prioritySection: Record<string, unknown>;
@@ -190,7 +180,6 @@ export function buildSectionPayloads(input: LangchainAuditInput): {
   };
 }
 
-/** Tronque les findings de l'input avec des caps sur le nombre et les URLs affectees. */
 function compactFindings(
   input: LangchainAuditInput,
   maxFindings: number,
@@ -208,7 +197,6 @@ function compactFindings(
   }));
 }
 
-/** Tronque la liste d'URLs echantillonnees a maxUrls elements. */
 function compactSampledUrls(
   input: LangchainAuditInput,
   maxUrls: number,
@@ -235,7 +223,6 @@ function compactSampledUrls(
   }));
 }
 
-/** Tronque les recaps de page a maxRecaps elements en limitant issues/recommendations. */
 function compactPageRecapsBasic(
   input: LangchainAuditInput,
   maxRecaps: number,
@@ -253,7 +240,6 @@ function compactPageRecapsBasic(
   }));
 }
 
-/** Construit les buckets d'evidence (crawl, findings, pageRecaps, tech) pour le prompt. */
 function buildEvidenceBuckets(
   input: LangchainAuditInput,
   compactedFindings: Array<Record<string, unknown>>,
@@ -295,20 +281,12 @@ function buildEvidenceBuckets(
   };
 }
 
-/**
- * Tronque un texte a maxChars caracteres en nettoyant les espaces multiples.
- * Ajoute des points de suspension si le texte est trop long.
- */
 export function compactText(value: string, maxChars: number): string {
   const clean = value.replace(/\s+/g, ' ').trim();
   if (clean.length <= maxChars) return clean;
   return `${clean.slice(0, Math.max(0, maxChars - 3)).trimEnd()}...`;
 }
 
-/**
- * Calcule la taille en octets d'un payload JSON.
- * Retourne 0 en cas d'erreur de serialisation.
- */
 export function payloadBytes(payload: Record<string, unknown>): number {
   try {
     return Buffer.byteLength(JSON.stringify(payload), 'utf8');

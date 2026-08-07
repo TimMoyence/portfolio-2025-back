@@ -19,7 +19,6 @@ export interface CreateServiceProps {
   order?: number;
 }
 
-/** Entite domaine representant un service propose dans le portfolio. */
 export class Services {
   id?: string;
   slug: string;

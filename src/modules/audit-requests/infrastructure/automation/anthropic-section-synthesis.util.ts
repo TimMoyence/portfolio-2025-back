@@ -4,54 +4,27 @@ import { z, type ZodType } from 'zod';
 import type { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
 
 /**
- * Invocation d'une section LLM via Anthropic Messages API avec prompt
- * caching ephemeral (cache_control sur les blocs system stables) et
- * structured output via `tool_use` force (Claude doit appeler l'outil
- * dont le schema correspond a notre Zod cible).
- *
- * Benefices :
+ * Contraintes Anthropic Messages API :
  *   - cache_control ephemeral sur le system prompt : -70/-90% coup
  *     input tokens apres le premier appel de la serie (5 min TTL)
  *   - tool_use force → Claude renvoie obligatoirement un JSON conforme
  *     au schema JSON derive du Zod (zero parsing fragile de texte)
- *   - tracking Prometheus des tokens input/output/cache via MetricsService
- *     en parallele de l'OpenAI, meme etiquettes pour les dashboards
- *
- * Rejette si :
- *   - la reponse ne contient pas de tool_use block
- *   - le payload tool_use ne valide pas le schema Zod
  */
 
-/** Parametres d'invocation d'une section Anthropic. */
 export interface AnthropicStructuredSectionParams<T> {
-  /** Client SDK ouvert (factory a deja verifie isEnabled()). */
   client: Anthropic;
-  /** Nom du modele Anthropic (ex: claude-sonnet-4-6). */
   model: string;
-  /** Label section pour les metriques + logs (ex: 'executive'). */
   section: string;
-  /** Locale du rapport (fr/en). */
   locale: string;
-  /** Schema Zod cible ; convertit automatiquement en JSON Schema. */
   schema: ZodType<T>;
-  /**
-   * Blocs system. Le dernier bloc porte cache_control=ephemeral pour
-   * inclure tous les precedents dans le prefixe cacheable.
-   */
   systemBlocks: string[];
-  /** Payload utilisateur (contenu dynamique, jamais cache). */
   userContent: string;
-  /** Limite de tokens de sortie. Defaut : 4000. */
   maxTokens?: number;
-  /** Signal d'annulation. */
   signal?: AbortSignal;
-  /** Tracking Prometheus optionnel. */
   metrics?: MetricsService | null;
-  /** Logger Nest pour logs d'usage. */
   logger: Logger;
 }
 
-/** Compteurs d'usage remontes par Anthropic Messages API. */
 interface AnthropicUsageSnapshot {
   inputTokens: number;
   outputTokens: number;
@@ -159,10 +132,6 @@ function emitUsageMetrics(
   }
 }
 
-/**
- * Invoque Anthropic Messages API pour une section structuree.
- * Utilise `tool_use` force pour garantir un output conforme au schema.
- */
 export async function invokeAnthropicStructuredSection<T>(
   params: AnthropicStructuredSectionParams<T>,
 ): Promise<T> {

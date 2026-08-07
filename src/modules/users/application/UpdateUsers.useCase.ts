@@ -7,7 +7,6 @@ import type { UpdateUserCommand } from './dto/UpdateUser.command';
 import { UsersMapper } from './mappers/UsersMapper';
 import { PasswordService } from './services/PasswordService';
 
-/** Met a jour les informations d'un utilisateur existant. */
 @Injectable()
 export class UpdateUsersUseCase {
   constructor(

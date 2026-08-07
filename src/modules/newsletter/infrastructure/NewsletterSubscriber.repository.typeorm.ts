@@ -7,10 +7,8 @@ import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubsc
 import { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { NewsletterSubscriberEntity } from './entities/NewsletterSubscriber.entity';
 
-/** Code d'erreur Postgres pour la violation d'une contrainte unique. */
 const POSTGRES_UNIQUE_VIOLATION = '23505';
 
-/** Implementation TypeORM du port `INewsletterSubscriberRepository`. */
 @Injectable()
 export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscriberRepository {
   constructor(
@@ -49,13 +47,6 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
     }
   }
 
-  /**
-   * Detecte une violation de contrainte unique Postgres (`23505`). Gere
-   * a la fois les erreurs TypeORM natives (`QueryFailedError`) et les
-   * erreurs driver enveloppees. Utilise par `create` pour traduire les
-   * race conditions `findByEmailAndSource` → `create` en
-   * `ResourceConflictError` exploitable cote use-case.
-   */
   private isUniqueViolation(error: unknown): boolean {
     if (error instanceof QueryFailedError) {
       const driverCode = (error.driverError as { code?: string })?.code;
@@ -98,12 +89,6 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
     return entity ? this.toDomain(entity) : null;
   }
 
-  /**
-   * Persiste les mutations d'etat et de cycle de vie du subscriber.
-   * Scope volontairement restreint — voir `INewsletterSubscriberRepository.update`
-   * pour la liste exhaustive des champs mutables et la regle de non-mutation
-   * silencieuse des champs profil.
-   */
   async update(
     subscriber: NewsletterSubscriber,
   ): Promise<NewsletterSubscriber> {
@@ -127,12 +112,6 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
     return this.toDomain(reloaded);
   }
 
-  /**
-   * Transition atomique vers `unsubscribed` — voir
-   * `INewsletterSubscriberRepository.markUnsubscribed`. Le predicat sur
-   * le statut fait arbitrer la course par la base : une seule des
-   * requetes concurrentes affecte une ligne.
-   */
   async markUnsubscribed(
     subscriber: NewsletterSubscriber,
   ): Promise<NewsletterSubscriber | null> {
@@ -146,9 +125,6 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
         unsubscribedAt: subscriber.unsubscribedAt,
       },
     );
-    // Comparaison stricte a 0 : un driver qui ne renseignerait pas
-    // `affected` doit laisser passer les effets de bord plutot que de
-    // les sauter silencieusement alors que la ligne a bien ete ecrite.
     if (result.affected === 0) return null;
 
     const reloaded = await this.repo.findOneOrFail({

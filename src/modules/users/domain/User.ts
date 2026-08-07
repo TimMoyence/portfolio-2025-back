@@ -28,7 +28,6 @@ export interface UpdateUserProps {
   emailVerified?: boolean;
 }
 
-/** Entite domaine representant un utilisateur du portfolio. */
 export class User {
   id?: string;
   email: string;

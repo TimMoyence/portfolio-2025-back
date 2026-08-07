@@ -4,15 +4,6 @@ import { buildNewsletterSubscriber } from '../../../../../test/factories/newslet
 import type { NewsletterSubscriberEntity } from '../entities/NewsletterSubscriber.entity';
 import { NewsletterSubscriberRepositoryTypeORM } from '../NewsletterSubscriber.repository.typeorm';
 
-/**
- * Couverture de la transition atomique vers `unsubscribed`.
- *
- * Le predicat `status != 'unsubscribed'` est ce qui fait arbitrer la
- * course par la base : sans lui, deux desabonnements concurrents
- * affectent tous deux une ligne et declenchent chacun les effets de
- * bord, dont un accuse de reception en double. Ce comportement n'etant
- * observable qu'a travers la requete emise, on l'asserte ici.
- */
 describe('NewsletterSubscriberRepositoryTypeORM.markUnsubscribed', () => {
   let repo: jest.Mocked<Repository<NewsletterSubscriberEntity>>;
   let sut: NewsletterSubscriberRepositoryTypeORM;
@@ -66,8 +57,6 @@ describe('NewsletterSubscriberRepositoryTypeORM.markUnsubscribed', () => {
 
   it('retourne null quand aucune ligne n’a ete affectee', async () => {
     const subscriber = buildUnsubscribed();
-    // Une requete concurrente a deja opere la transition : l'appelant ne
-    // doit declencher aucun effet de bord.
     repo.update.mockResolvedValue({ affected: 0, raw: [], generatedMaps: [] });
 
     const result = await sut.markUnsubscribed(subscriber);
@@ -82,10 +71,6 @@ describe('NewsletterSubscriberRepositoryTypeORM.markUnsubscribed', () => {
   ])(
     'laisse passer les effets de bord quand affected vaut %s',
     async (_label, affected) => {
-      // `affected` est `number | null | undefined` : un driver qui ne le
-      // renseigne pas ne doit pas faire croire a une course perdue alors
-      // que la ligne a bien ete ecrite. Seul un 0 explicite coupe les
-      // effets de bord.
       const subscriber = buildUnsubscribed();
       repo.update.mockResolvedValue({
         affected,

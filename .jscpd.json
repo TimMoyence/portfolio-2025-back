@@ -1,0 +1,21 @@
+{
+  "path": ["src"],
+  "format": ["typescript"],
+  "minLines": 5,
+  "minTokens": 50,
+  "absolute": true,
+  "gitignore": true,
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "src/migrations/**",
+    "**/*.spec.ts",
+    "**/*.entity.ts",
+    "**/*.dto.ts",
+    "**/dto/**"
+  ],
+  "reporters": ["console", "html"],
+  "output": "reports/jscpd",
+  "threshold": 2
+}

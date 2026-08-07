@@ -9,10 +9,6 @@ interface SignedToken {
   expiresAt: number;
 }
 
-/**
- * Service de gestion des JWT (signature et verification).
- * Utilise la librairie `jose` pour les operations HMAC-SHA256 conformes RFC 7519.
- */
 @Injectable()
 export class JwtTokenService {
   private static readonly ISSUER = 'portfolio-2025';
@@ -22,12 +18,6 @@ export class JwtTokenService {
 
   private static readonly MIN_SECRET_LENGTH = 32;
 
-  /**
-   * Signe un payload et retourne un JWT avec ses metadonnees d'expiration.
-   *
-   * @param payload - Les donnees a inclure dans le token (sub, email, roles, etc.)
-   * @returns Le token signe avec sa duree de vie et son timestamp d'expiration
-   */
   async sign(payload: Record<string, unknown>): Promise<SignedToken> {
     const secret = this.getEncodedSecret();
 
@@ -76,15 +66,6 @@ export class JwtTokenService {
     }
   }
 
-  /**
-   * Verifie un JWT et retourne le payload decode.
-   * Supporte la rotation de cles : si la verification avec le secret courant echoue
-   * et qu'un `JWT_SECRET_PREVIOUS` est configure, retente avec l'ancien secret.
-   *
-   * @param token - Le JWT a verifier (format header.payload.signature)
-   * @returns Le payload decode du token
-   * @throws Error si le token est malformed, la signature invalide ou le token expire
-   */
   async verify(token: string): Promise<JwtPayload> {
     try {
       return await this.verifyWithSecret(token, this.getEncodedSecret());
@@ -99,13 +80,6 @@ export class JwtTokenService {
     }
   }
 
-  /**
-   * Verifie un JWT avec un secret donne et retourne le payload decode.
-   *
-   * @param token - Le JWT a verifier
-   * @param secret - Le secret encode en Uint8Array
-   * @returns Le payload decode du token
-   */
   private async verifyWithSecret(
     token: string,
     secret: Uint8Array,
@@ -166,13 +140,11 @@ export class JwtTokenService {
     return secret;
   }
 
-  /** Encode le secret en Uint8Array pour utilisation avec jose. */
   private getEncodedSecret(): Uint8Array {
     const secret = this.getValidatedSecret();
     return new TextEncoder().encode(secret);
   }
 
-  /** Retourne le secret JWT precedent pour la rotation de cles (optionnel). */
   private getPreviousSecret(): Uint8Array | null {
     const secret = this.configService.get<string>('JWT_SECRET_PREVIOUS');
     if (!secret || secret.length < JwtTokenService.MIN_SECRET_LENGTH)
@@ -180,7 +152,6 @@ export class JwtTokenService {
     return new TextEncoder().encode(secret);
   }
 
-  /** Retourne le kid (Key ID) pour le header JWT : 'v2' si rotation active, 'v1' sinon. */
   private getKid(): string {
     return this.configService.get<string>('JWT_SECRET_PREVIOUS') ? 'v2' : 'v1';
   }

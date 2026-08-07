@@ -12,7 +12,6 @@ import {
 } from '../../domain/token';
 import type { GetBacQuery } from '../dto/GetBac.query';
 
-/** Calcule le taux d'alcoolemie actuel d'un utilisateur. */
 @Injectable()
 export class CalculateBacUseCase {
   constructor(
@@ -22,7 +21,6 @@ export class CalculateBacUseCase {
     private readonly profileRepo: ISebastianProfileRepository,
   ) {}
 
-  /** Execute le calcul BAC a partir des consommations du jour. */
   async execute(query: GetBacQuery): Promise<BacResult> {
     const now = new Date();
     const today = now.toISOString().split('T')[0];

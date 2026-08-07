@@ -8,7 +8,6 @@ import {
   IsString,
 } from 'class-validator';
 
-/** DTO de requete pour creer une entree de consommation. */
 export class CreateEntryDto {
   @ApiProperty({ enum: ['alcohol', 'coffee'], example: 'coffee' })
   @IsIn(['alcohol', 'coffee'])

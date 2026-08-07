@@ -51,7 +51,6 @@ export interface TechFingerprint {
   unknowns: string[];
 }
 
-/** Donnees accumulees lors du parcours des URLs. */
 interface UrlMetricsAccumulator {
   titleMap: Map<string, string[]>;
   metaMap: Map<string, string[]>;
@@ -92,12 +91,6 @@ interface UrlMetricsAccumulator {
 
 @Injectable()
 export class DeepUrlAnalysisService {
-  /**
-   * Analyse en profondeur un lot d'URLs indexables et en derive les metriques
-   * SEO (doublons de titres/metas, contenu fin, maillage interne, canoniques,
-   * etc.) ainsi que les findings associes, tries par severite decroissante.
-   * Retourne un resultat vide normalise (metriques a zero) si aucune URL.
-   */
   analyze(
     urls: UrlIndexabilityResult[],
     locale: AuditLocale = 'fr',

@@ -31,7 +31,6 @@ describe('GetPeriodReportUseCase', () => {
     it('devrait retourner le bon nombre de jours pour une periode month', async () => {
       entryRepo.findByFilters.mockResolvedValue([]);
 
-      // Mars 2026 a 31 jours
       const result = await useCase.execute({
         userId: 'user-1',
         period: 'month',
@@ -107,9 +106,7 @@ describe('GetPeriodReportUseCase', () => {
         startDate: '2026-03-02',
       });
 
-      // 3 / 7 = 0.428... → 0.43
       expect(result.dailyAvg.alcohol).toBe(0.43);
-      // 10 / 7 = 1.428... → 1.43
       expect(result.dailyAvg.coffee).toBe(1.43);
     });
   });
@@ -149,8 +146,6 @@ describe('GetPeriodReportUseCase', () => {
         startDate: '2026-03-02',
       });
 
-      // Jours sans entrees ont un score de 0, donc le best = premier jour sans entrees
-      // 2026-03-03 est le premier jour sans entrees (score 0)
       expect(result.best.score).toBe(0);
       expect(result.best.date).toBe('2026-03-03');
     });
@@ -184,7 +179,6 @@ describe('GetPeriodReportUseCase', () => {
         startDate: '2026-03-02',
       });
 
-      // 2026-03-02 : alcohol=5 + coffee=3 = 8
       expect(result.worst.date).toBe('2026-03-02');
       expect(result.worst.score).toBe(8);
     });
@@ -227,9 +221,7 @@ describe('GetPeriodReportUseCase', () => {
         startDate: '2026-03-02',
       });
 
-      // (10 - 5) / 5 * 100 = 100.0
       expect(result.comparison.alcoholDelta).toBe(100.0);
-      // (20 - 10) / 10 * 100 = 100.0
       expect(result.comparison.coffeeDelta).toBe(100.0);
     });
 
@@ -269,9 +261,7 @@ describe('GetPeriodReportUseCase', () => {
         startDate: '2026-03-02',
       });
 
-      // (3 - 10) / 10 * 100 = -70.0
       expect(result.comparison.alcoholDelta).toBe(-70.0);
-      // (5 - 20) / 20 * 100 = -75.0
       expect(result.comparison.coffeeDelta).toBe(-75.0);
     });
 
@@ -306,8 +296,6 @@ describe('GetPeriodReportUseCase', () => {
 
   describe('distribution par jour de semaine', () => {
     it('devrait regrouper les entrees par jour de semaine correctement', async () => {
-      // 2026-03-02 est un lundi (dayOfWeek = 1)
-      // 2026-03-04 est un mercredi (dayOfWeek = 3)
       const entries = [
         buildSebastianEntry({
           category: 'alcohol',
@@ -348,7 +336,6 @@ describe('GetPeriodReportUseCase', () => {
       expect(wednesday!.alcohol).toBe(1);
       expect(wednesday!.coffee).toBe(0);
 
-      // Dimanche sans entrees
       const sunday = result.distribution.find((d) => d.dayOfWeek === 0);
       expect(sunday).toBeDefined();
       expect(sunday!.alcohol).toBe(0);

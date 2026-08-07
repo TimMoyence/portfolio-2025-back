@@ -6,7 +6,6 @@ import {
 } from '../../domain/SebastianProfile';
 import { SEBASTIAN_PROFILE_REPOSITORY } from '../../domain/token';
 
-/** Recupere le profil BAC d'un utilisateur ou retourne les valeurs par defaut. */
 @Injectable()
 export class GetProfileUseCase {
   constructor(
@@ -14,7 +13,6 @@ export class GetProfileUseCase {
     private readonly profileRepo: ISebastianProfileRepository,
   ) {}
 
-  /** Execute la recuperation du profil. */
   async execute(userId: string): Promise<SebastianProfile> {
     const profile = await this.profileRepo.findByUserId(userId);
     if (profile) return profile;

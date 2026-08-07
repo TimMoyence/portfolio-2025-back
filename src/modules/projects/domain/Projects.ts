@@ -22,7 +22,6 @@ export interface CreateProjectProps {
   order?: number;
 }
 
-/** Entite domaine representant un projet du portfolio. */
 export class Projects {
   id?: string;
   slug: string;

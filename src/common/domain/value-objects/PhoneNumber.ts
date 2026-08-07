@@ -1,4 +1,3 @@
-/** Value Object immutable representant un numero de telephone normalise. */
 export class PhoneNumber {
   private constructor(private readonly normalizedValue: string) {}
 
@@ -8,7 +7,6 @@ export class PhoneNumber {
     const trimmed = raw.trim();
     if (trimmed.length === 0) return null;
 
-    // Keep parsing rules intentionally permissive for user-facing forms.
     if (!/^[0-9+\s().-]+$/.test(trimmed)) return null;
 
     const compact = trimmed.replace(/[\s().-]/g, '');

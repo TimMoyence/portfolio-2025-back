@@ -9,19 +9,8 @@ import type { IAuditPdfGenerator } from '../../domain/IAuditPdfGenerator';
 import { AuditReportHtmlRendererService } from './audit-report-html-renderer.service';
 
 /**
- * Genere le PDF du rapport Growth Audit via Puppeteer (Chromium headless)
- * a partir d'un template HTML+CSS construit par
- * {@link AuditReportHtmlRendererService}.
- *
- * Reprend le pattern de {@link ToolkitPdfGeneratorService} (lead-magnets) :
- *  - Instance Chromium unique, lazy-init au premier appel
- *  - Fermeture propre au shutdown du module via {@link onModuleDestroy}
- *  - Options A4 + marges physiques uniformes, printBackground active
- *  - Args compatibles Docker (no-sandbox, disable-dev-shm-usage)
- *
- * La page Puppeteer est TOUJOURS fermee dans un bloc finally, meme en cas
- * d'erreur, pour eviter les fuites. En revanche, le browser reste en vie
- * apres une erreur de page pour ne pas penaliser les appels suivants.
+ * Args Chromium `no-sandbox` / `disable-dev-shm-usage` requis pour
+ * l'execution en conteneur Docker.
  */
 @Injectable()
 export class AuditPdfGeneratorService
@@ -32,7 +21,6 @@ export class AuditPdfGeneratorService
 
   constructor(private readonly htmlRenderer: AuditReportHtmlRendererService) {}
 
-  /** Genere le PDF du rapport pour un audit donne. */
   async generate(
     audit: AuditSnapshot,
     clientReport: ClientReportSynthesis,
@@ -63,7 +51,6 @@ export class AuditPdfGeneratorService
     }
   }
 
-  /** Lance Chromium une seule fois et retourne l'instance partagee. */
   private async getBrowser(): Promise<Browser> {
     if (!this.browserPromise) {
       this.browserPromise = puppeteer.launch({
@@ -79,7 +66,6 @@ export class AuditPdfGeneratorService
     return this.browserPromise;
   }
 
-  /** Ferme proprement Chromium lors du shutdown du module. */
   async onModuleDestroy(): Promise<void> {
     if (this.browserPromise) {
       try {

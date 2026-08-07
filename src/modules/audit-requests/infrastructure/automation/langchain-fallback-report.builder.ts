@@ -254,11 +254,6 @@ export function buildFallbackExpertReport(
   } as unknown as ExpertReport;
 }
 
-/**
- * Construit un tableau `perPageAnalysis` deterministe depuis les
- * `pageRecaps` de l'input. Chaque entree reutilise `engineScores` si
- * present, sinon tombe sur un score neutre 4 moteurs.
- */
 function buildFallbackPerPageAnalysis(
   input: LangchainAuditInput,
 ): Array<Record<string, unknown>> {
@@ -302,10 +297,6 @@ function buildFallbackPerPageAnalysis(
   }));
 }
 
-/**
- * Construit un `clientEmailDraft` deterministe depuis les findings
- * principaux et les quickWins. Utilise quand le LLM est indisponible.
- */
 function buildFallbackClientEmailDraft(input: LangchainAuditInput): {
   subject: string;
   body: string;
@@ -362,10 +353,6 @@ Tim / Asili Design`;
   return { subject, body };
 }
 
-/**
- * Construit des `internalNotes` deterministes a partir des pillars et
- * findings. Destinees a Tim avant l'appel client (pas d'exposition).
- */
 function buildFallbackInternalNotes(input: LangchainAuditInput): string {
   const lowestPillar = Object.entries(input.pillarScores)
     .filter(([, score]) => Number.isFinite(score))
@@ -460,12 +447,6 @@ export function ensurePriorityDepth(
   };
 }
 
-/**
- * Shape minimale requise par `withDeterministicCost` (sous-ensemble
- * de l'ExpertReport). Decouple cette fonction du type Zod complet
- * pour permettre aux ExpertReportShape (quality gate) comme aux
- * ExpertReport (zod) de l'appeler.
- */
 export interface DeterministicCostInput {
   invoiceScope: Array<{ estimatedHours: number }>;
   implementationBacklog: Array<{ estimatedHours: number }>;

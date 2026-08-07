@@ -1,4 +1,3 @@
-/** Commande pour ajouter une entree de consommation. */
 export interface AddEntryCommand {
   userId: string;
   category: string;
@@ -8,6 +7,5 @@ export interface AddEntryCommand {
   drinkType?: string;
   alcoholDegree?: number | null;
   volumeCl?: number | null;
-  /** Timestamp ISO 8601 optionnel de consommation. */
   consumedAt?: string;
 }

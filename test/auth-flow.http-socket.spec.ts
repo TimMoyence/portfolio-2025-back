@@ -24,12 +24,6 @@ import { AuthAuditLogger } from '../src/modules/users/application/services/AuthA
 import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
 import { buildUser, buildAuthResult } from './factories/user.factory';
 
-/**
- * Tests E2E du flow d'authentification SANS bypass de guard.
- * Utilise le vrai JwtTokenService pour signer/verifier les tokens,
- * et le vrai JwtAuthGuard pour proteger les routes.
- * Le refresh token circule via un cookie HttpOnly (pas dans le body).
- */
 describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   let app: INestApplication;
   let jwtTokenService: JwtTokenService;
@@ -37,7 +31,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   const JWT_SECRET = 'test-secret-for-e2e-auth-flow-32-chars!';
   const JWT_EXPIRES_IN = '900s';
 
-  /* Mocks des use cases */
   const authenticateUserUseCase = { execute: jest.fn() };
   const authenticateGoogleUserUseCase = { execute: jest.fn() };
   const createUsersUseCase = { execute: jest.fn() };
@@ -55,9 +48,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   const getHttpServer = (): Parameters<typeof request>[0] =>
     app.getHttpServer() as Parameters<typeof request>[0];
 
-  /**
-   * Extrait la valeur brute du cookie refresh_token depuis les headers Set-Cookie.
-   */
   function extractRefreshCookie(res: request.Response): string | undefined {
     const cookies = res.headers['set-cookie'] as unknown as
       | string[]
@@ -147,11 +137,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     await app.close();
   });
 
-  /* =================================================================
-   *  1. Login → retourne accessToken, expiresIn, user
-   *     Le refreshToken est positionne dans un cookie HttpOnly.
-   * ================================================================= */
-
   it('POST /api/auth/login retourne un token JWT valide et le profil', async () => {
     const user = buildUser({ roles: ['weather'] });
     const signed = await jwtTokenService.sign({
@@ -180,14 +165,9 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     expect(res.body.user).toHaveProperty('email', 'test@example.com');
     expect(res.body.user).toHaveProperty('roles');
 
-    /* Le refresh token est dans le cookie, pas dans le body */
     const refreshCookie = extractRefreshCookie(res);
     expect(refreshCookie).toBe('opaque-refresh-token');
   });
-
-  /* =================================================================
-   *  2. Appel protege AVEC JWT valide → 200
-   * ================================================================= */
 
   it('GET /api/auth/me avec Bearer valide retourne le profil utilisateur', async () => {
     const user = buildUser({ roles: ['weather'] });
@@ -210,19 +190,11 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     expect(res.body).toHaveProperty('roles');
   });
 
-  /* =================================================================
-   *  3. Appel protege SANS JWT → 401
-   * ================================================================= */
-
   it('GET /api/auth/me sans header Authorization retourne 401', async () => {
     const res = await request(getHttpServer()).get('/api/auth/me').expect(401);
 
     expect(res.body).toHaveProperty('message');
   });
-
-  /* =================================================================
-   *  4. Appel protege avec JWT invalide → 401
-   * ================================================================= */
 
   it('GET /api/auth/me avec un token bidon retourne 401', async () => {
     const res = await request(getHttpServer())
@@ -250,10 +222,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       .set('Authorization', `Bearer ${otherSigned.token}`)
       .expect(401);
   });
-
-  /* =================================================================
-   *  5. Refresh → nouveau couple de tokens (cookie-based)
-   * ================================================================= */
 
   it('POST /api/auth/refresh retourne un nouveau couple de tokens', async () => {
     const user = buildUser({ roles: ['weather'] });
@@ -289,10 +257,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     await request(getHttpServer()).post('/api/auth/refresh').expect(401);
   });
 
-  /* =================================================================
-   *  6. Logout → 200
-   * ================================================================= */
-
   it('POST /api/auth/logout revoque le token et retourne 200', async () => {
     revokeTokenUseCase.execute.mockResolvedValue(undefined);
 
@@ -316,14 +280,9 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     expect(revokeTokenUseCase.execute).not.toHaveBeenCalled();
   });
 
-  /* =================================================================
-   *  Flow complet : login → me → refresh → me → logout
-   * ================================================================= */
-
   it('flow complet : login, acces protege, refresh, re-acces, logout', async () => {
     const user = buildUser({ roles: ['weather'] });
 
-    /* 1. Login */
     const firstSigned = await jwtTokenService.sign({
       sub: user.id,
       email: user.email,
@@ -347,7 +306,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     const firstRefreshCookie = extractRefreshCookie(loginRes);
     expect(firstRefreshCookie).toBe('refresh-v1');
 
-    /* 2. Acces protege avec le premier token */
     getCurrentUserUseCase.execute.mockResolvedValue(user);
 
     await request(getHttpServer())
@@ -355,7 +313,6 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       .set('Authorization', `Bearer ${firstToken}`)
       .expect(200);
 
-    /* 3. Refresh via cookie */
     const secondSigned = await jwtTokenService.sign({
       sub: user.id,
       email: user.email,
@@ -379,13 +336,11 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     const secondRefreshCookie = extractRefreshCookie(refreshRes);
     expect(secondRefreshCookie).toBe('refresh-v2');
 
-    /* 4. Acces protege avec le nouveau token */
     await request(getHttpServer())
       .get('/api/auth/me')
       .set('Authorization', `Bearer ${secondToken}`)
       .expect(200);
 
-    /* 5. Logout via cookie */
     revokeTokenUseCase.execute.mockResolvedValue(undefined);
 
     await request(getHttpServer())

@@ -13,7 +13,6 @@ export interface CreateLeadMagnetRequestProps {
   profile?: InteractionProfile;
 }
 
-/** Entite domaine representant une demande de lead magnet (boite a outils). */
 export class LeadMagnetRequest {
   id?: string;
   firstName: string;

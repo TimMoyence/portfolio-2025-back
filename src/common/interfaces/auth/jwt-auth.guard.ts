@@ -14,25 +14,16 @@ import type { IUsersRepository } from '../../../modules/users/domain/IUsers.repo
 import { USERS_REPOSITORY } from '../../../modules/users/domain/token';
 import { IS_PUBLIC_KEY } from './public.decorator';
 
-/** Routes accessibles meme avec un email non verifie. */
 const EMAIL_VERIFICATION_EXEMPT_PATHS = [
   '/auth/verify-email',
   '/auth/resend-verification',
   '/auth/logout',
 ];
 
-/** Extension du type Request pour y attacher le payload JWT. */
 interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
 }
 
-/**
- * Guard global d'authentification JWT.
- * Verifie la presence et la validite du Bearer token dans le header Authorization.
- * Les routes decorees avec @Public() sont exclues de la verification.
- * Les utilisateurs non verifies (emailVerified=false) recoivent un 403
- * sauf sur les endpoints de verification et de logout.
- */
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
@@ -67,7 +58,6 @@ export class JwtAuthGuard implements CanActivate {
       const payload = await this.jwtTokenService.verify(token);
       request.user = payload;
 
-      // Verifier que l'email est valide sauf pour les routes exemptees
       if (!this.isEmailVerificationExempt(request)) {
         await this.ensureEmailVerified(payload.sub);
       }
@@ -80,7 +70,6 @@ export class JwtAuthGuard implements CanActivate {
   }
 
   /**
-   * Verifie que le compte existe encore et que son email est verifie.
    * Un JWT valide dont le compte a ete supprime doit etre rejete (401)
    * plutot que de laisser passer silencieusement.
    */
@@ -94,7 +83,6 @@ export class JwtAuthGuard implements CanActivate {
     }
   }
 
-  /** Determine si la route courante est exemptee de la verification email. */
   private isEmailVerificationExempt(request: AuthenticatedRequest): boolean {
     const path = request.path;
     return EMAIL_VERIFICATION_EXEMPT_PATHS.some((exempt) =>

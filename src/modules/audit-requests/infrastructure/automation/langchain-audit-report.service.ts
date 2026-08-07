@@ -59,11 +59,6 @@ import {
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
 
-/**
- * Re-exports des contrats publics du service. Les consommateurs
- * externes a `automation/` doivent importer via ce fichier afin de
- * conserver un unique point d'entree (verifie par le guardrail ESLint).
- */
 export type {
   LangchainAuditGenerateOptions,
   LangchainAuditInput,
@@ -100,11 +95,6 @@ export class LangchainAuditReportService {
     private readonly metricsService?: MetricsService,
   ) {}
 
-  /**
-   * Construit le contexte d'invocation LLM pour `invokeWithLlmTracking`.
-   * Chaque section du pipeline audit attribue sa propre label "section"
-   * aux metriques Prometheus (llm_tokens_total, llm_latency_seconds).
-   */
   private buildLlmContext(
     section: string,
     locale: AuditLocale,
@@ -112,11 +102,6 @@ export class LangchainAuditReportService {
     return { section, locale, model: this.config.llmModel };
   }
 
-  /**
-   * Enveloppe `chain.invoke` avec le tracking Prometheus : tokens consommes,
-   * latence, statut (success|error). Le handler callback LangChain est
-   * transparent pour le flux metier et n'altere pas le resultat parse.
-   */
   private invokeTracked<T>(
     chain: {
       invoke: (
@@ -143,13 +128,6 @@ export class LangchainAuditReportService {
     );
   }
 
-  /**
-   * Produit le rapport d'audit complet (synthese + rapport expert) via le LLM.
-   * Normalise d'abord la locale cible, puis tente le profil parallele avant de
-   * retomber sur le profil sequentiel. En l'absence de cle OpenAI ou en cas
-   * d'echec du profil parallele, bascule sur un fallback degrade sans jamais
-   * propager d'exception au pipeline appelant.
-   */
   async generate(
     input: LangchainAuditInput,
     options: LangchainAuditGenerateOptions = {},
@@ -1052,7 +1030,6 @@ export class LangchainAuditReportService {
     return buildFallbackExpertReport(input, reason);
   }
 
-  /** Delegue a llm-payload.builder (conserve pour compatibilite interne/test). */
   private buildSectionPayloads(input: LangchainAuditInput): {
     executiveSection: Record<string, unknown>;
     prioritySection: Record<string, unknown>;

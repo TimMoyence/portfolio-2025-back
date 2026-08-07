@@ -5,7 +5,6 @@ import { COURSES_REPOSITORY } from '../domain/token';
 import { CreateCourseCommand } from './dto/CreateCourse.command';
 import { CourseMapper } from './mappers/Course.mapper';
 
-/** Orchestre la creation d'une formation a partir d'une commande applicative. */
 @Injectable()
 export class CreateCoursesUseCase {
   constructor(

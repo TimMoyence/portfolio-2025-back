@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from '../../domain/User';
 
-/** DTO de reponse HTTP pour un utilisateur. */
 export class UserResponseDto {
   @ApiProperty({ example: '08bcd3fe-0d1d-4db6-9ee4-5a6a65c13c45' })
   id: string;

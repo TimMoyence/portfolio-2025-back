@@ -14,7 +14,7 @@ export class RedirectsEntity {
 
   @Index({ unique: true })
   @Column('text')
-  slug: string; // e.g., 'presq'
+  slug: string;
 
   @Column('text')
   targetUrl: string;

@@ -8,11 +8,6 @@ import {
 } from '@nestjs/common';
 
 /**
- * Filtre global d'exceptions qui formate toutes les erreurs au format RFC 7807 (Problem Details).
- *
- * - Les {@link HttpException} conservent leur status et message d'origine.
- * - Les erreurs inconnues retournent 500 avec un message generique en production.
- *
  * Note : les {@link DomainError} sont interceptees en amont par {@link DomainExceptionFilter}.
  *
  * @see https://www.rfc-editor.org/rfc/rfc7807
@@ -50,7 +45,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
             : String(exception);
     }
 
-    // Log complet pour les erreurs serveur
     if (status >= 500) {
       this.logger.error(
         exception instanceof Error ? exception.message : String(exception),
@@ -58,7 +52,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       );
     }
 
-    // RFC 7807 Problem Details
     response.status(status).json({
       type: `https://httpstatuses.com/${status}`,
       title: HttpStatus[status] ?? 'Error',

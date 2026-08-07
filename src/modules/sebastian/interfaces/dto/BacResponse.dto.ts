@@ -1,20 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type { BacResult } from '../../domain/BacCalculator';
 
-/** Point de la courbe BAC. */
 class BacDataPointDto {
   @ApiProperty() time: string;
   @ApiProperty() bac: number;
 }
 
-/** DTO de reponse pour le taux d'alcoolemie. */
 export class BacResponseDto {
   @ApiProperty() currentBac: number;
   @ApiProperty({ type: [BacDataPointDto] }) curve: BacDataPointDto[];
   @ApiPropertyOptional() estimatedSoberAt: string | null;
   @ApiProperty() legalLimit: number;
 
-  /** Convertit un resultat domaine en DTO de reponse. */
   static fromResult(result: BacResult): BacResponseDto {
     const dto = new BacResponseDto();
     dto.currentBac = result.currentBac;

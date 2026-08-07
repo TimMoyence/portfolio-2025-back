@@ -11,10 +11,6 @@ import { REFRESH_TOKEN_TTL_MS } from '../domain/auth.constants';
 import type { AuthResult } from './AuthenticateUser.useCase';
 import { JwtTokenService } from './services/JwtTokenService';
 
-/**
- * Rafraichit un couple access + refresh token avec rotation.
- * L'ancien refresh token est revoque et un nouveau couple est emis.
- */
 @Injectable()
 export class RefreshTokensUseCase {
   constructor(
@@ -34,7 +30,6 @@ export class RefreshTokensUseCase {
     }
 
     if (stored.revoked) {
-      // Detection de reutilisation : revoquer tous les tokens de l'utilisateur
       await this.refreshTokensRepo.revokeByUserId(stored.userId);
       throw new TokenReuseDetectedError('Refresh token reuse detected');
     }
@@ -43,7 +38,6 @@ export class RefreshTokensUseCase {
       throw new TokenExpiredError('Refresh token expired');
     }
 
-    // Revoquer l'ancien token (rotation)
     await this.refreshTokensRepo.revokeById(stored.id!);
 
     const user = await this.usersRepo.findById(stored.userId);
@@ -52,7 +46,6 @@ export class RefreshTokensUseCase {
       throw new InvalidCredentialsError('User not found or inactive');
     }
 
-    // Generer un nouveau couple access + refresh
     const { token, expiresIn } = await this.jwtTokenService.sign({
       sub: user.id,
       email: user.email,

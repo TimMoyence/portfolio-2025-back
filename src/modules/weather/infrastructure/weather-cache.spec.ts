@@ -40,8 +40,6 @@ describe('WeatherCache', () => {
     expect(result).toEqual({ temp: 25 });
   });
 
-  // --- setWithStrategy ---
-
   describe('setWithStrategy', () => {
     it('devrait stocker une valeur avec le TTL calcule par la strategie', () => {
       const spy = jest

@@ -4,7 +4,6 @@ import {
 } from '../../../../test/factories/weather.factory';
 import { OpenWeatherMapProxyService } from './OpenWeatherMapProxy.service';
 
-/** Reponse brute simulee de l'API OWM /data/2.5/weather. */
 const mockOWMCurrentResponse = {
   dt: 1743422400,
   main: {
@@ -29,7 +28,6 @@ const mockOWMCurrentResponse = {
   timezone: 3600,
 };
 
-/** Reponse brute simulee de l'API OWM /data/2.5/forecast. */
 const mockOWMForecastResponse = {
   list: [
     {
@@ -83,13 +81,11 @@ describe('OpenWeatherMapProxyService', () => {
 
       const result = await service.getCurrentDetailed(48.8566, 2.3522);
 
-      expect(result.temperature).toBe(18.5);
-      expect(result.humidity).toBe(65);
-      // Conversion m/s -> km/h : 3.5 * 3.6 = 12.6
-      expect(result.windSpeed).toBeCloseTo(12.6, 1);
-      expect(result.windGust).toBeCloseTo(19.8, 1);
-      // Conversion m -> km : 10000 / 1000 = 10
-      expect(result.visibility).toBe(10);
+      expect(result.temperatureCelsius).toBe(18.5);
+      expect(result.humidityPercent).toBe(65);
+      expect(result.windSpeedKmh).toBeCloseTo(12.6, 1);
+      expect(result.windGustKmh).toBeCloseTo(19.8, 1);
+      expect(result.visibilityKm).toBe(10);
       expect(result.conditionIcon).toContain('01d@2x.png');
       expect(result.partOfDay).toBe('d');
       expect(fetchSpy).toHaveBeenCalledWith(
@@ -107,7 +103,7 @@ describe('OpenWeatherMapProxyService', () => {
       await service.getCurrentDetailed(48.8566, 2.3522);
       const result = await service.getCurrentDetailed(48.8566, 2.3522);
 
-      expect(result.temperature).toBe(18.5);
+      expect(result.temperatureCelsius).toBe(18.5);
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -139,7 +135,7 @@ describe('OpenWeatherMapProxyService', () => {
       expect(result.country).toBe('FR');
       expect(result.hourly).toHaveLength(1);
       expect(result.daily).toHaveLength(1);
-      expect(result.hourly[0].precipitationProbability).toBe(10);
+      expect(result.hourly[0].precipitationProbabilityPercent).toBe(10);
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -193,11 +189,10 @@ describe('OpenWeatherMapProxyService', () => {
   });
 });
 
-// Ces references aux factories servent a verifier que les builders sont fonctionnels
 describe('Weather test factories', () => {
   it('devrait construire un DetailedCurrentWeather valide', () => {
-    const result = buildDetailedCurrentWeather({ temperature: 25.0 });
-    expect(result.temperature).toBe(25.0);
+    const result = buildDetailedCurrentWeather({ temperatureCelsius: 25.0 });
+    expect(result.temperatureCelsius).toBe(25.0);
     expect(result.conditionIcon).toContain('openweathermap');
   });
 

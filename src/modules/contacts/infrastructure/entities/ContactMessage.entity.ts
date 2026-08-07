@@ -20,7 +20,7 @@ export class ContactMessagesEntity {
 
   @Index()
   @Column('text')
-  email: string; // store lowercase in service
+  email: string;
 
   @Column('text')
   firstName: string;

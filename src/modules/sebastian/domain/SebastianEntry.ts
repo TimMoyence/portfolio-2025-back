@@ -1,16 +1,11 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 
-/** Categories de consommation valides. */
 export const VALID_CATEGORIES = ['alcohol', 'coffee'] as const;
-/** Type de categorie de consommation. */
 export type SebastianCategory = (typeof VALID_CATEGORIES)[number];
 
-/** Unites de mesure valides. */
 export const VALID_UNITS = ['standard_drink', 'cup'] as const;
-/** Type d'unite de mesure. */
 export type SebastianUnit = (typeof VALID_UNITS)[number];
 
-/** Types de boissons valides pour le suivi v2. */
 export const VALID_DRINK_TYPES = [
   'beer',
   'wine',
@@ -20,10 +15,8 @@ export const VALID_DRINK_TYPES = [
   'spiritueux',
   'cidre',
 ] as const;
-/** Type de boisson. */
 export type DrinkType = (typeof VALID_DRINK_TYPES)[number];
 
-/** Valeurs par defaut pour chaque type de boisson (degre, volume, categorie). */
 export const DRINK_TYPE_DEFAULTS: Record<
   DrinkType,
   {
@@ -41,13 +34,11 @@ export const DRINK_TYPE_DEFAULTS: Record<
   cidre: { category: 'alcohol', alcoholDegree: 5, volumeCl: 25 },
 };
 
-/** Correspondance entre categorie et unite attendue. */
 const CATEGORY_UNIT_MAP: Record<SebastianCategory, SebastianUnit> = {
   alcohol: 'standard_drink',
   coffee: 'cup',
 };
 
-/** Proprietes necessaires pour creer une entree Sebastian. */
 export interface CreateSebastianEntryProps {
   userId: string;
   category: string;
@@ -57,11 +48,9 @@ export interface CreateSebastianEntryProps {
   drinkType?: string;
   alcoholDegree?: number | null;
   volumeCl?: number | null;
-  /** Timestamp ISO 8601 optionnel de consommation. Si absent, utilise l'heure courante. */
   consumedAt?: string;
 }
 
-/** Proprietes pour reconstruire une entree depuis la persistence. */
 export interface SebastianEntryPersistenceProps {
   id: string;
   userId: string;
@@ -77,7 +66,6 @@ export interface SebastianEntryPersistenceProps {
   consumedAt: Date | null;
 }
 
-/** Entite domaine representant une entree de consommation (alcool ou cafe). */
 export class SebastianEntry {
   id?: string;
   userId: string;
@@ -92,12 +80,6 @@ export class SebastianEntry {
   volumeCl: number | null;
   consumedAt: Date | null;
 
-  /**
-   * Cree une nouvelle entree de consommation avec validation des invariants.
-   * L'unite est determinee automatiquement depuis la categorie.
-   * Si un drinkType est fourni, la categorie et les valeurs par defaut
-   * (degre d'alcool, volume) sont derives automatiquement.
-   */
   static create(props: CreateSebastianEntryProps): SebastianEntry {
     const userId = props.userId?.trim();
     if (!userId) {
@@ -181,7 +163,6 @@ export class SebastianEntry {
     return entry;
   }
 
-  /** Reconstruit une entree depuis la persistence (pas de validation). */
   static fromPersistence(
     props: SebastianEntryPersistenceProps,
   ): SebastianEntry {

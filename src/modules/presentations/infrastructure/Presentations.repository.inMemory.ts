@@ -6,13 +6,6 @@ import {
 } from '../domain/SlideInteraction';
 import { IA_SOLOPRENEURS_INTERACTIONS } from './data/ia-solopreneurs.interactions';
 
-/**
- * Implémentation in-memory du repository de présentations.
- *
- * Les interactions sont définies en code (données statiques par présentation).
- * Pas de base de données — les interactions sont du contenu éditorial, pas
- * du runtime. Si un jour on a besoin de CRUD admin, on migrera vers TypeORM.
- */
 @Injectable()
 export class PresentationsRepositoryInMemory implements IPresentationsRepository {
   private readonly store = new Map<string, Record<string, SlideInteractions>>();

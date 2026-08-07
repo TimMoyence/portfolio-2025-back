@@ -8,13 +8,6 @@ import { wrapUntrustedUserPayload } from '../shared/prompt-sanitize.util';
 import { buildExpertReportSystemBlocks } from './section-prompts.builder';
 import type { InvokeTrackedFn } from './cacheable-section.generators';
 
-/**
- * Generateur du rapport expert complet (admin-facing). Chemin OpenAI
- * direct car le prompt est tres long et inclut 3 contraintes combinees
- * (main + strict + compact OU retry) ; un caching Anthropic ephemeral
- * pourrait etre ajoute ulterieurement mais n'est pas critique pour le
- * ROI de T2.
- */
 export function generateExpertReport(
   deps: { invokeTracked: InvokeTrackedFn },
   args: {

@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { TrendResult } from '../../application/services/GetTrendData.useCase';
 
-/** DTO representant un point de donnee quotidien de tendance. */
 export class TrendDataPointDto {
   @ApiProperty({ description: 'Date au format YYYY-MM-DD' })
   date: string;
@@ -13,7 +12,6 @@ export class TrendDataPointDto {
   coffee: number;
 }
 
-/** DTO representant les objectifs quotidiens. */
 export class TrendObjectivesDto {
   @ApiProperty({ description: 'Objectif quotidien alcool' })
   alcohol: number;
@@ -22,7 +20,6 @@ export class TrendObjectivesDto {
   coffee: number;
 }
 
-/** DTO representant le resume des moyennes. */
 export class TrendSummaryDto {
   @ApiProperty({ description: 'Moyenne quotidienne alcool' })
   avgAlcohol: number;
@@ -31,7 +28,6 @@ export class TrendSummaryDto {
   avgCoffee: number;
 }
 
-/** DTO de reponse pour les donnees de tendance de consommation. */
 export class TrendResponseDto {
   @ApiProperty({ enum: ['7d', '30d'], description: 'Periode de tendance' })
   period: string;
@@ -54,7 +50,6 @@ export class TrendResponseDto {
   })
   summary: TrendSummaryDto;
 
-  /** Convertit un resultat de tendance en DTO de reponse. */
   static fromResult(result: TrendResult): TrendResponseDto {
     const dto = new TrendResponseDto();
     dto.period = result.period;

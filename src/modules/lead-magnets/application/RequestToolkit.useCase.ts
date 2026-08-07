@@ -14,7 +14,6 @@ import {
 import type { RequestToolkitCommand } from './dto/RequestToolkit.command';
 import { LeadMagnetRequestMapper } from './mappers/LeadMagnetRequest.mapper';
 
-/** Orchestre la generation et l'envoi du PDF boite a outils par email. */
 @Injectable()
 export class RequestToolkitUseCase {
   private readonly logger = new Logger(RequestToolkitUseCase.name);
@@ -30,7 +29,6 @@ export class RequestToolkitUseCase {
     private readonly assembler: IToolkitContentAssembler,
   ) {}
 
-  /** Execute la demande de lead magnet : validation, deduplication, persistance, envoi. */
   async execute(
     command: RequestToolkitCommand,
   ): Promise<MessageLeadMagnetResponse> {
@@ -47,7 +45,6 @@ export class RequestToolkitUseCase {
     const savedRequest = await this.repo.create(domainRequest);
     response.accessToken = savedRequest.accessToken;
 
-    // Fire-and-forget : generer le PDF et envoyer l'email sans bloquer la reponse
     void this.generateAndSend(savedRequest).catch((err: unknown) =>
       this.logger.warn('Lead magnet email failed', err),
     );

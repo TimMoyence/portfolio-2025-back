@@ -1,4 +1,3 @@
-/** Profil utilisateur collecte via les interactions de la presentation. */
 export interface InteractionProfile {
   aiLevel: 'debutant' | 'intermediaire' | 'avance' | null;
   toolsAlreadyUsed: string[];

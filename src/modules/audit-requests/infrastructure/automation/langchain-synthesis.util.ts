@@ -1,20 +1,3 @@
-/**
- * Helpers purs pour la synthese LangChain.
- *
- * Ce module regroupe les fonctions utilitaires deterministes utilisees
- * par `LangchainAuditReportService` pour :
- * - projeter un rapport admin brut vers le type domaine
- *   `ExpertReportSynthesis` (Tier Expert),
- * - normaliser les champs optionnels du LLM (email draft, per-page),
- * - construire les fallbacks locales-aware (email, notes),
- * - convertir priorite/effort issus du LLM vers le vocabulaire domaine,
- * - resoudre le profil LLM (canary bucket deterministe).
- *
- * Regles :
- * - Aucun acces a `this`, aucun logger, aucune dependance Nest/Zod.
- * - Types purs uniquement ; l'orchestrateur conserve les side effects.
- */
-
 import type { AuditAutomationConfig, AuditLlmProfile } from './audit.config';
 import type {
   ExpertReportSynthesis,
@@ -22,23 +5,12 @@ import type {
   PerPageDetailedAnalysis,
 } from './contracts/langchain-contracts';
 
-/**
- * Convertit une valeur brute (issue du LLM) en niveau d'impact domaine.
- * Valeurs reconnues : `'high'`, `'low'`. Tout le reste retombe sur
- * `'medium'` pour garantir un defaut deterministe.
- */
 export function toImpact(value: unknown): 'high' | 'medium' | 'low' {
   if (value === 'high') return 'high';
   if (value === 'low') return 'low';
   return 'medium';
 }
 
-/**
- * Convertit un nombre d'heures estime en niveau d'effort domaine.
- * - >= 8h => `high`
- * - <= 3h => `low`
- * - sinon, ou valeur invalide => `medium`
- */
 export function toEffort(value: unknown): 'high' | 'medium' | 'low' {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 'medium';
   if (value >= 8) return 'high';
@@ -46,10 +18,6 @@ export function toEffort(value: unknown): 'high' | 'medium' | 'low' {
   return 'medium';
 }
 
-/**
- * Normalise un draft d'email client brut. Retourne `null` si les
- * champs obligatoires sont manquants ou vides apres trim.
- */
 export function normalizeClientEmailDraft(
   raw: unknown,
 ): { subject: string; body: string } | null {
@@ -61,10 +29,6 @@ export function normalizeClientEmailDraft(
   return { subject: subject.trim(), body: body.trim() };
 }
 
-/**
- * Construit un draft d'email client fallback, localise fr/en,
- * utilise lorsque le LLM n'a pas produit de contenu exploitable.
- */
 export function buildFallbackEmailDraft(input: LangchainAuditInput): {
   subject: string;
   body: string;
@@ -80,23 +44,12 @@ export function buildFallbackEmailDraft(input: LangchainAuditInput): {
   return { subject, body };
 }
 
-/**
- * Construit les notes internes fallback (localisees fr/en) injectees
- * dans `ExpertReportSynthesis.internalNotes` quand le LLM ne fournit
- * pas de contenu.
- */
 export function buildFallbackNotes(input: LangchainAuditInput): string {
   return input.locale === 'en'
     ? `Internal notes for ${input.websiteName}: review the priorities and prepare the 30-minute pitch.`
     : `Notes internes pour ${input.websiteName} : revue des priorites et preparation du pitch 30 minutes.`;
 }
 
-/**
- * Projette le champ brut `perPageAnalysis` du rapport admin vers le
- * type domaine `PerPageDetailedAnalysis[]`. Filtre les entrees sans
- * url ou sans engineScores (les champs load-bearing), tronque les
- * arrays a 6 elements pour borner la taille.
- */
 export function projectPerPageAnalysis(
   raw: unknown,
 ): ReadonlyArray<PerPageDetailedAnalysis> {
@@ -129,13 +82,6 @@ export function projectPerPageAnalysis(
     .filter((entry): entry is PerPageDetailedAnalysis => entry !== null);
 }
 
-/**
- * Projette un rapport admin enrichi vers le type domaine
- * `ExpertReportSynthesis` (Tier Expert). Construit
- * `perPageAnalysis`, `crossPageFindings`, `priorityBacklog`,
- * `clientEmailDraft` et `internalNotes` en garantissant des defauts
- * deterministes si le LLM a omis certains champs.
- */
 export function buildExpertSynthesis(
   summaryText: string,
   adminReport: Record<string, unknown>,
@@ -191,10 +137,6 @@ export function buildExpertSynthesis(
   };
 }
 
-/**
- * Hash deterministe simple (variant DJB-like) d'une chaine vers
- * un bucket [0, 100[ pour le canary routing.
- */
 export function hashToPercent(value: string): number {
   let hash = 0;
   for (let i = 0; i < value.length; i += 1) {
@@ -204,13 +146,6 @@ export function hashToPercent(value: string): number {
   return Math.abs(hash) % 100;
 }
 
-/**
- * Resout le profil LLM effectif selon la config et l'auditId.
- * - Si la config n'est pas en mode parallele, retourne sequential.
- * - Sinon, applique le canary percent : 100 force parallele,
- *   0 force sequentiel, et entre les deux le bucket dependant de
- *   `auditId` decide (absence d'auditId => parallele par defaut).
- */
 export function resolveProfile(
   auditId: string | undefined,
   config: AuditAutomationConfig,

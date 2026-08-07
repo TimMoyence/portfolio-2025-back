@@ -3,7 +3,6 @@ import type { AuditAutomationConfig } from './audit.config';
 import type { AuditPipelineService } from './audit-pipeline.service';
 import type { AuditQueueService } from './audit-queue.service';
 
-/** Mock du module bullmq : le constructeur Worker renvoie un objet avec on/close. */
 const mockWorkerOn = jest.fn();
 const mockWorkerClose = jest.fn().mockResolvedValue(undefined);
 
@@ -127,7 +126,6 @@ describe('AuditWorkerService', () => {
     const service = createService();
     service.onModuleInit();
 
-    // Recuperer le handler du worker passe au constructeur
     const processorFn = Worker.mock.calls[0][1] as (job: {
       data: { auditId: string };
     }) => Promise<void>;

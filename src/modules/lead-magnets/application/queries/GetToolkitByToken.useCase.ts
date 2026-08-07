@@ -10,7 +10,6 @@ import {
 } from '../../domain/token';
 import type { GetToolkitByTokenQuery } from './GetToolkitByToken.query';
 
-/** Recupere le contenu personnalise d'un guide IA via son token d'acces unique. */
 @Injectable()
 export class GetToolkitByTokenUseCase {
   constructor(
@@ -20,7 +19,6 @@ export class GetToolkitByTokenUseCase {
     private readonly assembler: IToolkitContentAssembler,
   ) {}
 
-  /** Execute la requete et retourne le contenu personnalise du guide. */
   async execute(query: GetToolkitByTokenQuery): Promise<ToolkitContent> {
     const request = await this.repo.findByToken(query.accessToken);
     if (!request) {

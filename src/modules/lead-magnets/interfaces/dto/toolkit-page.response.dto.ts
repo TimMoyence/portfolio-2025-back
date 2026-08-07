@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type { ToolkitContent } from '../../domain/ToolkitContent';
 
-/** DTO de reponse pour la page personnalisee du guide IA. */
 export class ToolkitPageResponseDto {
   @ApiProperty()
   recap: {
@@ -58,7 +57,6 @@ export class ToolkitPageResponseDto {
   @ApiPropertyOptional()
   generatedPrompt: string | null;
 
-  /** Mappe le contenu domaine vers le DTO de reponse. */
   static fromContent(content: ToolkitContent): ToolkitPageResponseDto {
     const dto = new ToolkitPageResponseDto();
     dto.recap = content.recap;

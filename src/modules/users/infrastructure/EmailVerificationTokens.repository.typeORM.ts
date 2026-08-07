@@ -5,7 +5,6 @@ import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerific
 import type { EmailVerificationToken } from '../domain/EmailVerificationToken';
 import { EmailVerificationTokenEntity } from './entities/EmailVerificationToken.entity';
 
-/** Implementation TypeORM du repository des jetons de verification email. */
 @Injectable()
 export class EmailVerificationTokensRepositoryTypeORM implements IEmailVerificationTokensRepository {
   constructor(

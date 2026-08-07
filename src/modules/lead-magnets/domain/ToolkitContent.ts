@@ -1,4 +1,3 @@
-/** Entree de la cheatsheet : un outil IA avec ses metadonnees. */
 export interface CheatsheetEntry {
   tool: string;
   category: string;
@@ -9,22 +8,17 @@ export interface CheatsheetEntry {
   alreadyUsed: boolean;
 }
 
-/** Entree de prompt personnalise par niveau et categorie. */
 export interface PromptEntry {
   category: string;
   title: string;
   level: 'debutant' | 'intermediaire' | 'avance';
   prompt: string;
   tool: string;
-  /** Description courte de ce que le prompt produit (1 phrase). Optionnel pour retrocompat. */
   description?: string;
-  /** Exemple concret d utilisation (variables remplies). Optionnel pour retrocompat. */
   example?: string;
-  /** Conseil d iteration pour ameliorer la sortie. Optionnel pour retrocompat. */
   tip?: string;
 }
 
-/** Etape individuelle dans un workflow automatise. */
 export interface WorkflowStep {
   step: number;
   action: string;
@@ -32,7 +26,6 @@ export interface WorkflowStep {
   detail: string;
 }
 
-/** Workflow complet avec ses etapes et ses outils. */
 export interface WorkflowEntry {
   title: string;
   description: string;
@@ -42,7 +35,6 @@ export interface WorkflowEntry {
   tools: string[];
 }
 
-/** Template pret a l'emploi avec budget minimum requis. */
 export interface TemplateEntry {
   name: string;
   platform: string;
@@ -51,7 +43,6 @@ export interface TemplateEntry {
   minBudget: number;
 }
 
-/** Contenu complet du guide personnalise genere pour l'utilisateur. */
 export interface ToolkitContent {
   recap: {
     firstName: string;

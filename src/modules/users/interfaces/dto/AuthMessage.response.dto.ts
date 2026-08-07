@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-/** DTO de reponse HTTP pour les actions auth retournant un message. */
 export class AuthMessageResponseDto {
   @ApiProperty({
     example:

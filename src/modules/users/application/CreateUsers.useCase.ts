@@ -17,15 +17,8 @@ import type {
 import { UsersMapper } from './mappers/UsersMapper';
 import { PasswordService } from './services/PasswordService';
 
-/** Duree de validite du token de verification email : 24 heures. */
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 
-/**
- * Orchestre la creation d'un utilisateur avec hachage du mot de passe.
- * Apres creation, genere un token de verification email et envoie
- * un email de confirmation. Le compte est cree avec emailVerified=false
- * et les roles ne sont attribues qu'apres verification.
- */
 @Injectable()
 export class CreateUsersUseCase {
   private readonly logger = new Logger(CreateUsersUseCase.name);
@@ -52,7 +45,6 @@ export class CreateUsersUseCase {
     const updatedOrCreatedBy = dto.updatedOrCreatedBy ?? 'self-registration';
     const isSelfRegistration = updatedOrCreatedBy === 'self-registration';
 
-    // Inscription publique : pas de roles avant verification email
     const roles = isSelfRegistration ? [] : (dto.roles ?? []);
 
     const user = UsersMapper.fromCreateCommand(
@@ -61,7 +53,6 @@ export class CreateUsersUseCase {
     );
     const created = await this.repo.create(user);
 
-    // Envoyer un email de verification pour les inscriptions publiques
     if (isSelfRegistration && created.id) {
       await this.sendVerificationEmail(created);
     }
@@ -69,7 +60,6 @@ export class CreateUsersUseCase {
     return { user: created };
   }
 
-  /** Genere un token de verification et envoie l'email. */
   private async sendVerificationEmail(user: User): Promise<void> {
     const rawToken = randomBytes(32).toString('hex');
 

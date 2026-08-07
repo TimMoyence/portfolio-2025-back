@@ -5,7 +5,6 @@ import type { Courses } from '../domain/Courses';
 import type { ICoursesRepository } from '../domain/ICourses.repository';
 import { COURSES_REPOSITORY } from '../domain/token';
 
-/** Recupere la liste paginee des formations selon les criteres de tri. */
 @Injectable()
 export class ListCoursesUseCase {
   constructor(

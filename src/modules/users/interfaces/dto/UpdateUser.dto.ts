@@ -13,7 +13,6 @@ import {
 import type { UpdateUserCommand } from '../../application/dto/UpdateUser.command';
 import { VALID_ROLES } from '../../domain/roles';
 
-/** DTO HTTP pour la mise a jour d'un utilisateur (validation + Swagger). */
 export class UpdateUserDto implements UpdateUserCommand {
   @ApiPropertyOptional({ example: 'john@example.com' })
   @IsOptional()

@@ -72,7 +72,6 @@ describe('ConfirmSubscriptionUseCase', () => {
       useCase.execute(subscriber.confirmToken),
     ).resolves.toBeDefined();
     await flushPromises();
-    // Le use-case ne leve pas : l'erreur est swallow par .catch()
     expect(repo.update).toHaveBeenCalled();
   });
 

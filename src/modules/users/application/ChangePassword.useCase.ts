@@ -7,7 +7,6 @@ import { User } from '../domain/User';
 import type { ChangePasswordCommand } from './dto/ChangePassword.command';
 import { PasswordService } from './services/PasswordService';
 
-/** Verifie le mot de passe actuel et applique le nouveau mot de passe de l'utilisateur. */
 @Injectable()
 export class ChangePasswordUseCase {
   constructor(

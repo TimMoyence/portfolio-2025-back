@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsNumber, IsPositive } from 'class-validator';
 
-/** DTO de requete pour creer un objectif de consommation. */
 export class CreateGoalDto {
   @ApiProperty({ enum: ['alcohol', 'coffee'], example: 'coffee' })
   @IsIn(['alcohol', 'coffee'])

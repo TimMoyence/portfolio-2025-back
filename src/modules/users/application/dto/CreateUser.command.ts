@@ -1,4 +1,3 @@
-/** Commande pure pour la creation d'un utilisateur. */
 export interface CreateUserCommand {
   email: string;
   password: string;
@@ -10,7 +9,6 @@ export interface CreateUserCommand {
   updatedOrCreatedBy?: string | null;
 }
 
-/** Resultat de la creation d'un utilisateur. */
 export interface CreateUserResult {
   user: import('../../domain/User').User;
 }

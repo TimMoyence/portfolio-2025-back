@@ -5,7 +5,6 @@ import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTok
 import type { PasswordResetToken } from '../domain/PasswordResetToken';
 import { PasswordResetTokenEntity } from './entities/PasswordResetToken.entity';
 
-/** Implementation TypeORM du repository des jetons de reinitialisation. */
 @Injectable()
 export class PasswordResetTokensRepositoryTypeORM implements IPasswordResetTokensRepository {
   constructor(

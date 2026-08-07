@@ -4,7 +4,6 @@ import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import { User } from '../domain/User';
 
-/** Recupere l'utilisateur actuellement connecte par son identifiant. */
 @Injectable()
 export class GetCurrentUserUseCase {
   constructor(

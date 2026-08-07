@@ -5,12 +5,6 @@ import { SafeFetchService } from './safe-fetch.service';
 import { StructuredDataQualityService } from './structured-data-quality.service';
 import { UrlIndexabilityService } from './url-indexability.service';
 
-/**
- * Tests TDD pour l'enrichissement IA du service d'analyse d'URL.
- * Vérifie que chaque `UrlIndexabilityResult` est enrichi d'un objet
- * `aiSignals` contenant l'accès des bots IA, la citabilité et la
- * qualité des données structurées.
- */
 describe('UrlIndexabilityService (Phase 3 — aiSignals)', () => {
   const config = buildAuditAutomationConfig({ urlAnalyzeConcurrency: 2 });
 

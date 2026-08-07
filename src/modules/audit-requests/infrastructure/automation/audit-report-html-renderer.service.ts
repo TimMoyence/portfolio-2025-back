@@ -9,37 +9,11 @@ import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { pillarLabel } from './shared/pillar-labels.util';
 import { escapeHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
-/**
- * Construit le document HTML complet utilise par Puppeteer pour generer le
- * PDF du rapport Growth Audit a partir d'un {@link AuditSnapshot}, d'une
- * {@link ClientReportSynthesis} (tier client) et d'une
- * {@link ExpertReportSynthesis} (tier expert).
- *
- * Le document est organise en 5 blocs A4 :
- *  0. Couverture (gradient bordeaux/or + titre + nom site + date)
- *  1. Section Client (executive summary, matrice Google vs IA, scorecard,
- *     quick wins, CTA)
- *  2. Section Expert (executive summary, cross-page findings, backlog,
- *     internal notes)
- *  3. Fiches pages (1 fiche par {@link PerPageDetailedAnalysis})
- *  4. Annexes (llms.txt, AI bots, liens utiles)
- *
- * Toutes les chaines provenant du LLM sont passees par {@link escapeHtml}
- * pour eviter les injections HTML/XSS dans le rendu Puppeteer.
- */
 @Injectable()
 export class AuditReportHtmlRendererService {
-  /** Couleur d'accent principale Asili (or chaud). */
   private readonly accentGold = '#c9a227';
-  /** Couleur bordeaux secondaire Asili. */
   private readonly bordeaux = '#6b1f2a';
 
-  /**
-   * Construit le document HTML complet pour un rapport Growth Audit.
-   * @param audit Snapshot de l'audit (contient pillarScores, keyChecks, etc.)
-   * @param clientReport Synthese tier client (promesse de vente)
-   * @param expertReport Synthese tier expert (details techniques)
-   */
   render(
     audit: AuditSnapshot,
     clientReport: ClientReportSynthesis,
@@ -69,10 +43,6 @@ export class AuditReportHtmlRendererService {
 </html>`;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Cover                                                              */
-  /* ------------------------------------------------------------------ */
-
   private renderCover(audit: AuditSnapshot, date: string): string {
     return `<section class="page cover">
       <div class="cover-gradient">
@@ -95,10 +65,6 @@ export class AuditReportHtmlRendererService {
       </footer>
     </section>`;
   }
-
-  /* ------------------------------------------------------------------ */
-  /*  Section 1 — Client                                                 */
-  /* ------------------------------------------------------------------ */
 
   private renderClientSection(report: ClientReportSynthesis): string {
     const matrix = this.renderGoogleAiMatrix(report.googleVsAiMatrix);
@@ -202,10 +168,6 @@ export class AuditReportHtmlRendererService {
     </div>`;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Section 2 — Expert                                                 */
-  /* ------------------------------------------------------------------ */
-
   private renderExpertSection(report: ExpertReportSynthesis): string {
     return `<section class="page section section-expert">
       ${this.sectionHeader('02', 'Analyse expert', 'Constats transverses et backlog priorise')}
@@ -289,10 +251,6 @@ export class AuditReportHtmlRendererService {
     </div>`;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Section 3 — Fiches pages                                           */
-  /* ------------------------------------------------------------------ */
-
   private renderPerPageSection(
     pages: ReadonlyArray<PerPageDetailedAnalysis>,
   ): string {
@@ -360,10 +318,6 @@ export class AuditReportHtmlRendererService {
     return `<div class="engine-grid">${cards}</div>`;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Section 4 — Annexes                                                */
-  /* ------------------------------------------------------------------ */
-
   private renderAnnexes(audit: AuditSnapshot): string {
     const llmsTxt = this.renderLlmsTxtAnnex(audit.keyChecks);
     return `<section class="page section section-annex">
@@ -396,10 +350,6 @@ export class AuditReportHtmlRendererService {
       ${url ? `<p>URL : <a href="${this.escapeHtml(url)}">${this.escapeHtml(url)}</a></p>` : ''}
     </div>`;
   }
-
-  /* ------------------------------------------------------------------ */
-  /*  Helpers                                                            */
-  /* ------------------------------------------------------------------ */
 
   private sectionHeader(num: string, title: string, subtitle: string): string {
     return `<header class="section-header">
@@ -471,12 +421,10 @@ export class AuditReportHtmlRendererService {
     }
   }
 
-  /** Echappe les caracteres HTML pour eviter toute injection XSS. */
   private escapeHtml(value: string): string {
     return escapeHtml(value);
   }
 
-  /** Styles CSS embarques pour le rendu Puppeteer A4. */
   private css(): string {
     return `
       :root {

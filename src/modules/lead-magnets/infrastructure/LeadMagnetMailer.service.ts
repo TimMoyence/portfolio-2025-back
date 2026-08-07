@@ -5,13 +5,11 @@ import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util
 import type { ILeadMagnetNotifier } from '../domain/ILeadMagnetNotifier';
 import type { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 
-/** Envoie le PDF guide IA personnalise par email au participant. */
 @Injectable()
 export class LeadMagnetMailerService implements ILeadMagnetNotifier {
   private readonly logger = new Logger(LeadMagnetMailerService.name);
   private readonly transporter: Transporter | null;
   private readonly from = process.env.SMTP_FROM;
-  /** Email de reponse — defaut sur le domaine asilidesign.fr. */
   private readonly replyTo =
     process.env.SMTP_REPLY_TO ?? 'contact@asilidesign.fr';
   private readonly frontendUrl =
@@ -58,7 +56,6 @@ export class LeadMagnetMailerService implements ILeadMagnetNotifier {
     });
   }
 
-  /** Echappe les caracteres HTML speciaux pour prevenir les injections XSS. */
   private escapeHtml(input: string): string {
     return escapeHtml(input);
   }

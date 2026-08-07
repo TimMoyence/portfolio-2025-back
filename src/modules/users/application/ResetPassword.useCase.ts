@@ -14,7 +14,6 @@ export interface ResetPasswordResult {
   message: string;
 }
 
-/** Reinitialise le mot de passe a partir d'un token de reset valide. */
 @Injectable()
 export class ResetPasswordUseCase {
   private readonly invalidTokenMessage =

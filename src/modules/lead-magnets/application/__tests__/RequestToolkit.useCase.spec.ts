@@ -40,7 +40,6 @@ describe('RequestToolkitUseCase', () => {
   it('should persist the request and send the email', async () => {
     const result = await useCase.execute(validCommand);
 
-    // Give fire-and-forget time to resolve
     await new Promise((resolve) => setImmediate(resolve));
 
     expect(repo.create).toHaveBeenCalledTimes(1);

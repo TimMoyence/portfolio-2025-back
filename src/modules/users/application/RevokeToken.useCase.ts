@@ -4,10 +4,6 @@ import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.reposito
 import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY } from '../domain/token';
 
-/**
- * Revoque un refresh token (logout).
- * Pour une securite maximale, revoque tous les tokens de l'utilisateur.
- */
 @Injectable()
 export class RevokeTokenUseCase {
   constructor(

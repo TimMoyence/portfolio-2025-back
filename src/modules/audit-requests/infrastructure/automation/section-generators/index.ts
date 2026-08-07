@@ -1,9 +1,3 @@
-/**
- * Barrel du module `section-generators/` — expose les generateurs de
- * section utilises par `LangchainAuditReportService`. Conserve une
- * frontiere explicite entre l'orchestration (service) et la construction
- * des prompts/invocations LLM (generators).
- */
 export {
   CachingSectionRunner,
   type CachingSectionParams,

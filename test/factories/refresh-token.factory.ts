@@ -1,7 +1,6 @@
 import type { IRefreshTokensRepository } from '../../src/modules/users/domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../../src/modules/users/domain/RefreshToken';
 
-/** Construit un objet RefreshToken domaine avec des valeurs par defaut. */
 export function buildRefreshToken(
   overrides?: Partial<RefreshToken>,
 ): RefreshToken {
@@ -16,7 +15,6 @@ export function buildRefreshToken(
   };
 }
 
-/** Cree un mock complet du repository de refresh tokens. */
 export function createMockRefreshTokensRepo(): jest.Mocked<IRefreshTokensRepository> {
   return {
     create: jest.fn(),

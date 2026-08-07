@@ -8,11 +8,6 @@ import { AuditLocale } from '../../domain/audit-locale.util';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
 import { UrlIndexabilityResult } from './url-indexability.service';
 
-/**
- * Cle litterale d'un pilier d'audit. Union fermee — toute modification
- * necessite de mettre a jour `PILLAR_KEYS` et les consommateurs aval
- * (report quality gate, frontend model, entity mapper si besoin).
- */
 export type PillarKey =
   | 'seo'
   | 'performance'
@@ -22,22 +17,8 @@ export type PillarKey =
   | 'aiVisibility'
   | 'citationWorthiness';
 
-/**
- * Scores bornes 0-100 pour les 7 piliers de l'audit.
- *
- * Les 5 premiers sont historiques (phase 0). `aiVisibility` et
- * `citationWorthiness` sont introduits en phase 4 pour mesurer
- * la compatibilite du site avec les moteurs IA generative.
- *
- * Le type est strict (pas d'index signature) pour forcer l'exhaustivite
- * cote producteur. Les consommateurs "loose" (entite TypeORM, stream
- * events, langchain input) continuent d'utiliser `Record<string, number>`
- * comme boundary type — `PillarScores` reste assignable a `Record<string, number>`
- * par inference structurelle.
- */
 export type PillarScores = Record<PillarKey, number>;
 
-/** Liste ordonnee des 7 cles de piliers — source unique pour l'iteration typee. */
 export const PILLAR_KEYS: readonly PillarKey[] = [
   'seo',
   'performance',
@@ -48,18 +29,11 @@ export const PILLAR_KEYS: readonly PillarKey[] = [
   'citationWorthiness',
 ] as const;
 
-/**
- * Sous-ensemble de piliers qui pilotent la generation d'actions prioritaires
- * dans `ReportQualityGateService.pillarBasedActions`. `aiVisibility` et
- * `citationWorthiness` sont scores mais n'emettent pas d'actions — a activer
- * quand les recommandations business correspondantes seront validees.
- */
 export type ActionablePillarKey = Exclude<
   PillarKey,
   'aiVisibility' | 'citationWorthiness'
 >;
 
-/** Iteration ordonnee des piliers actionnables (5 entrees). */
 export const ACTIONABLE_PILLARS: readonly ActionablePillarKey[] = [
   'seo',
   'performance',
@@ -68,21 +42,12 @@ export const ACTIONABLE_PILLARS: readonly ActionablePillarKey[] = [
   'conversion',
 ] as const;
 
-/**
- * Entrée du scorer `aiVisibility` — combine un signal site-level
- * (llms.txt) et des signaux agrégés sur l'échantillon de pages.
- */
 export interface AiVisibilityInput {
   llmsTxt: LlmsTxtAnalysis | null;
   aiBotsAccess: ReadonlyArray<AiBotsAccess>;
   structuredDataQuality: ReadonlyArray<StructuredDataQualityResult>;
 }
 
-/**
- * Options site-level passées au scorer — typiquement le résultat
- * de `LlmsTxtAnalyzerService.analyze()` récupéré une fois au niveau
- * domaine par le pipeline.
- */
 export interface ScoringSiteSignals {
   llmsTxt?: LlmsTxtAnalysis | null;
 }
@@ -95,12 +60,6 @@ export interface AuditScoreResult {
 
 @Injectable()
 export class ScoringService {
-  /**
-   * Calcule les scores par pilier (SEO, etc.) a partir du snapshot homepage,
-   * du sitemap et de l'echantillon d'URLs analysees. Chaque signal manquant
-   * applique une penalite bornee et alimente la liste des quick wins.
-   * Retourne aussi les key checks bruts pour la synthese du rapport.
-   */
   compute(
     homepage: HomepageAuditSnapshot,
     sitemapUrls: string[],
@@ -240,7 +199,6 @@ export class ScoringService {
       quickWins.push(t.quickWins.cookies);
     }
 
-    // Piliers IA — agrégation des signaux issus des sampledUrls + site.
     const aiBotsAccess = sampledUrls
       .map((entry) => entry.aiSignals?.aiBotsAccess)
       .filter((signal): signal is AiBotsAccess => Boolean(signal));
@@ -323,17 +281,6 @@ export class ScoringService {
     };
   }
 
-  /**
-   * Calcule le score `aiVisibility` (0-100) d'un site en combinant :
-   * - base fixe (20)
-   * - présence du fichier `llms.txt` (+20)
-   * - `complianceScore` du `llms.txt` pondéré (max +15)
-   * - proportion des pages où `gptBot` et `googleExtended` sont autorisés (+25 max)
-   * - proportion des pages avec `structuredDataQuality.aiFriendly` (+20 max)
-   *
-   * Le résultat est borné 0-100. En absence totale de signaux, renvoie 20
-   * (base), ce qui reflète une visibilité IA minimale non évaluable.
-   */
   scoreAiVisibility(input: AiVisibilityInput): number {
     let score = 20;
     if (input.llmsTxt?.present) {
@@ -359,11 +306,6 @@ export class ScoringService {
     return this.clamp(score);
   }
 
-  /**
-   * Calcule le score `citationWorthiness` (0-100) comme moyenne arithmétique
-   * arrondie des scores par page fournis par `CitationWorthinessService`.
-   * Renvoie 0 si l'échantillon est vide (aucune page analysée).
-   */
   scoreCitationWorthiness(perPageScores: ReadonlyArray<number>): number {
     if (perPageScores.length === 0) return 0;
     const sum = perPageScores.reduce((acc, value) => acc + value, 0);

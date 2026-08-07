@@ -1,4 +1,3 @@
-// Recap service for per-page AI analysis in audit automation. Uses LLM to generate insights and falls back to heuristics on failure.
 import { ChatOpenAI } from '@langchain/openai';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
@@ -58,11 +57,6 @@ export interface PageAiRecap {
   topIssues: string[];
   recommendations: string[];
   source: 'llm' | 'fallback';
-  /**
-   * Couverture multi-moteurs (Google, Bing/ChatGPT, Perplexity, Gemini
-   * Overviews) pour la page. Produite par le LLM ou reconstruite de
-   * facon deterministe via les signaux AI en mode fallback.
-   */
   engineScores: EngineCoverage;
 }
 
@@ -152,9 +146,6 @@ export class PageAiRecapService {
     let llmFailures = 0;
     let breakerOpen = false;
 
-    // P1.4 : temperature 0 pour determinisme complet + cacheability des
-    // prompts systemes (les scores doivent etre reproductibles pour un
-    // meme input).
     const llm = this.config.openAiApiKey
       ? new ChatOpenAI({
           apiKey: this.config.openAiApiKey,
@@ -364,10 +355,6 @@ export class PageAiRecapService {
     };
   }
 
-  /**
-   * Normalise un objet engineScores produit par le LLM : borne les scores,
-   * tronque les listes, et garantit que l'identifiant engine est correct.
-   */
   private normalizeEngineCoverage(
     coverage: z.infer<typeof engineCoverageSchema>,
   ): EngineCoverage {
@@ -574,11 +561,6 @@ export class PageAiRecapService {
     };
   }
 
-  /**
-   * Construit un EngineCoverage deterministe a partir des signaux AI de la
-   * page (aiBotsAccess, citationWorthiness, structuredDataQuality) et des
-   * meta techniques. Utilise par le fallback et quand le LLM est indisponible.
-   */
   private buildFallbackEngineCoverage(
     locale: AuditLocale,
     page: UrlIndexabilityResult,

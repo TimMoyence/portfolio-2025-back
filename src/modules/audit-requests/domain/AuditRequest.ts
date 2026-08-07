@@ -18,7 +18,6 @@ export interface CreateAuditRequestProps {
   referer?: string | null;
 }
 
-/** Entite domaine representant une demande d'audit SEO. */
 export class AuditRequest {
   id?: string;
   websiteName: string;

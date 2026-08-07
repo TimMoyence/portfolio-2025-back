@@ -2,16 +2,10 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
-import { escapeHtml, slugify } from './mail-rendering.util';
+import { escapeHtml, safeHtml, slugify } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
 
-/**
- * Mailer dedie a l'audience "Client" : envoie au decideur final la synthese
- * strategique (`ClientReportSynthesis`) et attache le PDF si disponible.
- * No-op silencieux si le transporter SMTP est absent ou si l'email
- * destinataire est vide.
- */
 @Injectable()
 export class AuditClientReportMailer {
   private readonly logger = new Logger(AuditClientReportMailer.name);
@@ -21,10 +15,6 @@ export class AuditClientReportMailer {
     private readonly transporter: SmtpTransporter,
   ) {}
 
-  /**
-   * Envoie au client final la synthese strategique. Ne leve jamais : si le
-   * transporter est absent ou si l'email est vide, la methode est un no-op.
-   */
   async sendClientReport(input: ClientReportMailInput): Promise<void> {
     if (!this.transporter) return;
     if (!input.to || input.to.trim().length === 0) return;
@@ -59,41 +49,35 @@ export class AuditClientReportMailer {
   private buildClientReportHtml(input: ClientReportMailInput): string {
     const report = input.clientReport;
     const greeting = input.firstName
-      ? `Bonjour ${escapeHtml(input.firstName)},`
-      : 'Bonjour,';
+      ? safeHtml`Bonjour ${escapeHtml(input.firstName)},`
+      : safeHtml`Bonjour,`;
 
-    const topFindingsHtml = report.topFindings
-      .map(
-        (finding) => `
+    const topFindingsHtml = report.topFindings.map(
+      (finding) => safeHtml`
           <li style="margin-bottom:8px;">
             <strong>[${escapeHtml(finding.severity.toUpperCase())}] ${escapeHtml(finding.title)}</strong><br/>
             <span>${escapeHtml(finding.impact)}</span>
           </li>`,
-      )
-      .join('');
+    );
 
-    const pillarsHtml = report.pillarScorecard
-      .map(
-        (pillar) => `
+    const pillarsHtml = report.pillarScorecard.map(
+      (pillar) => safeHtml`
           <tr>
             <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillarLabel(pillar.pillar))}</td>
             <td style="padding:6px 8px; border:1px solid #e5e7eb; text-align:right;">${pillar.score}/${pillar.target}</td>
             <td style="padding:6px 8px; border:1px solid #e5e7eb;">${escapeHtml(pillar.status)}</td>
           </tr>`,
-      )
-      .join('');
+    );
 
-    const quickWinsHtml = report.quickWins
-      .map(
-        (qw) => `
+    const quickWinsHtml = report.quickWins.map(
+      (qw) => safeHtml`
           <li style="margin-bottom:8px;">
             <strong>${escapeHtml(qw.title)}</strong> — <em>${escapeHtml(qw.effort)}</em><br/>
             <span>${escapeHtml(qw.businessImpact)}</span>
           </li>`,
-      )
-      .join('');
+    );
 
-    const bodyHtml = `
+    const bodyHtml = safeHtml`
       <p style="margin-top:0;">${greeting}</p>
       <p>Voici la synthèse stratégique de votre audit.</p>
 
@@ -108,7 +92,7 @@ export class AuditClientReportMailer {
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Top findings</h2>
       <ul style="padding-left:20px;color:#374151;">
-        ${topFindingsHtml || '<li>Aucun point critique détecté.</li>'}
+        ${topFindingsHtml.length > 0 ? topFindingsHtml : safeHtml`<li>Aucun point critique détecté.</li>`}
       </ul>
 
       <h2 style="margin:24px 0 8px 0;font-size:16px;">Scorecard 7 piliers</h2>
@@ -142,8 +126,8 @@ export class AuditClientReportMailer {
       <p class="text-muted" style="font-size:12px;color:#6b7280;margin-top:24px;">
         ${
           input.pdfBuffer
-            ? 'Le rapport complet est joint à cet email.'
-            : 'Le rapport détaillé vous sera envoyé dans un second temps.'
+            ? safeHtml`Le rapport complet est joint à cet email.`
+            : safeHtml`Le rapport détaillé vous sera envoyé dans un second temps.`
         }
       </p>
     `;
@@ -158,12 +142,6 @@ export class AuditClientReportMailer {
     });
   }
 
-  /**
-   * Retourne l'URL cible du CTA client. Priorise `input.bookingUrl` si
-   * fourni par l'orchestrateur, sinon fallback sur `AUDIT_BOOKING_URL`
-   * env, puis sur la page `/contact` d'Asili Design. Jamais vide pour
-   * garantir que le CTA est toujours cliquable (P0.5).
-   */
   private resolveBookingUrl(input: ClientReportMailInput): string {
     const explicit = input.bookingUrl?.trim();
     if (explicit) return explicit;

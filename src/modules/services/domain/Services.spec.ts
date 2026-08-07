@@ -20,7 +20,6 @@ describe('Services aggregate', () => {
   });
 
   it('throws for invalid status', () => {
-    // Simule une valeur invalide provenant d'une source externe non typee
     const invalidStatus = 'UNKNOWN' as ServiceStatus;
     expect(() =>
       Services.create({

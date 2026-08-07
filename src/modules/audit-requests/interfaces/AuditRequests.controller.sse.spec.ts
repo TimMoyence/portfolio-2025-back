@@ -4,11 +4,6 @@ import type { GetAuditSummaryUseCase } from '../application/GetAuditSummary.useC
 import type { StreamAuditEventsUseCase } from '../application/StreamAuditEvents.useCase';
 import { AuditsController } from './Audits.controller';
 
-/**
- * Cree un jeu de mocks types pour les use cases injectes dans AuditsController.
- * Les use cases sont des classes concretes avec des dependances privees ; on ne
- * peut pas les instancier sans leur graphe complet. On mock uniquement execute().
- */
 function buildUseCaseMocks(): {
   createUseCase: jest.Mocked<Pick<CreateAuditRequestsUseCase, 'execute'>>;
   summaryUseCase: jest.Mocked<Pick<GetAuditSummaryUseCase, 'execute'>>;
