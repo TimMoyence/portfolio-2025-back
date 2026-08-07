@@ -15,11 +15,6 @@ export interface CreateNewsletterSubscriberProps {
 
 export const CONFIRM_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-/**
- * Cooldown minimum entre deux envois de confirmation pour un meme
- * subscriber `pending`. Empeche le mail-bombing d'une boite tiers via
- * re-souscriptions repetees (E-SEC-14).
- */
 export const CONFIRMATION_RESEND_COOLDOWN_MS = 10 * 60 * 1000;
 
 export class NewsletterSubscriber {

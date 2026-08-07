@@ -4,7 +4,11 @@ import {
   FALLBACK_CATEGORY_PALETTE,
   PLATFORM_COLORS,
 } from './toolkit-palette';
-import { escapeHtml } from '../../../../common/infrastructure/mail/html-escape.util';
+import {
+  escapeHtml,
+  safeHtml,
+} from '../../../../common/infrastructure/mail/html-escape.util';
+import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
 export function normalizeKey(raw: string): string {
   return raw
@@ -41,17 +45,18 @@ export function levelLabel(level: string): string {
   }
 }
 
-export { escapeHtml };
+export { escapeHtml, safeHtml };
+export type { EscapedHtml };
 
 export function sectionHeader(
   num: string,
   title: string,
   subtitle: string,
-): string {
-  return `<header class="section-header">
-      <span class="section-number">${num}</span>
+): EscapedHtml {
+  return safeHtml`<header class="section-header">
+      <span class="section-number">${escapeHtml(num)}</span>
       <div>
-        <h2 class="section-title">${title}</h2>
+        <h2 class="section-title">${escapeHtml(title)}</h2>
         <p class="section-subtitle">${escapeHtml(subtitle)}</p>
       </div>
     </header>`;
@@ -63,6 +68,6 @@ export function sectionHeader(
  * min-height: 297mm sur .page. Le footer est rendu via la marge
  * @page de Puppeteer si necessaire.
  */
-export function pageFooter(): string {
-  return '';
+export function pageFooter(): EscapedHtml {
+  return safeHtml``;
 }

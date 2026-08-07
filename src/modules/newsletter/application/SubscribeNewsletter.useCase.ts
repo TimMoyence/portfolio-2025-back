@@ -18,10 +18,10 @@ export interface SubscribeNewsletterResult {
 @Injectable()
 export class SubscribeNewsletterUseCase {
   /**
-   * Duree minimale de reponse pour normaliser la latence entre
-   * les branches "nouveau email" (SELECT + INSERT + 2×UUID) et "email
-   * connu" (SELECT seul). 300 ms > pire cas observe en production (80 ms
-   * INSERT + 30 ms 2×UUID), ce qui efface l'oracle timing (E-SEC-1).
+   * Plancher de latence commun aux deux branches de `executeInternal`.
+   * Sans lui, le temps de reponse trahit si l'adresse etait deja connue,
+   * puisque seule une adresse nouvelle declenche une insertion : c'est
+   * un oracle d'enumeration (CWE-208).
    */
   private static readonly MIN_RESPONSE_MS = 300;
 

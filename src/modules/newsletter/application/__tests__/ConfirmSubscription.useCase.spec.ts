@@ -86,7 +86,7 @@ describe('ConfirmSubscriptionUseCase', () => {
     );
   });
 
-  it('rejette un token expire (> 7j) comme un token inconnu (E-SEC-4)', async () => {
+  it('rejette un token expire (> 7j) comme un token inconnu', async () => {
     const subscriber = buildNewsletterSubscriber();
     subscriber.id = 'sub-id';
     subscriber.confirmTokenExpiresAt = new Date(

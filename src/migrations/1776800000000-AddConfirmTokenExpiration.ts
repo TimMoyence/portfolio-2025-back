@@ -1,21 +1,5 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-/**
- * Ajoute `confirm_token_expires_at` et `last_confirmation_sent_at` a
- * `newsletter_subscribers`.
- *
- * - `confirm_token_expires_at` (E-SEC-4) : TTL 7 jours sur le magic link
- *   de confirmation double opt-in. Un token fuite (boite mail compromise,
- *   link preview scanner, historique navigateur) n'est plus activable au
- *   dela de 7 jours.
- * - `last_confirmation_sent_at` (E-SEC-14) : timestamp du dernier envoi
- *   de confirmation. Sert de cooldown anti mail-bombing sur les
- *   subscribers `pending`.
- *
- * Backfill : pour les abonnes existants `pending`, expire a NOW() + 7j
- * (benefice du doute). Les subscribers deja `confirmed`/`unsubscribed`
- * gardent une expiration dans le passe (ils ne peuvent plus relire).
- */
 export class AddConfirmTokenExpiration1776800000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`

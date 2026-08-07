@@ -2,7 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
-import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import {
+  escapeHtml,
+  safeHtml,
+} from '../../../common/infrastructure/mail/html-escape.util';
+import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 
@@ -152,10 +156,10 @@ Tim`,
     return (angled ? angled[1] : this.replyTo).trim();
   }
 
-  private buildGreeting(firstName: string | null): string {
+  private buildGreeting(firstName: string | null): EscapedHtml {
     return firstName && firstName.trim().length > 0
-      ? `Bonjour ${this.escapeHtml(firstName)}`
-      : 'Bonjour';
+      ? safeHtml`Bonjour ${this.escapeHtml(firstName)}`
+      : safeHtml`Bonjour`;
   }
 
   /**
@@ -187,26 +191,28 @@ Tim`,
   }
 
   private buildConfirmationHtml(options: {
-    greeting: string;
+    greeting: EscapedHtml;
     confirmUrl: string;
     unsubscribeUrl: string;
     sourceFormationSlug: string;
-  }): string {
-    return `<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Confirmez votre inscription</h2><p>${options.greeting},</p><p>Merci de vous etre inscrit. Confirmez votre email en cliquant ci-dessous :</p><p style="margin: 20px 0;"><a href="${options.confirmUrl}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Confirmer mon email</a></p><p style="font-size: 13px; color: #555;">Vous recevrez des emails pratiques lies a la formation <strong>${this.escapeHtml(options.sourceFormationSlug)}</strong>. Zero teasing, chaque email livre sa valeur integralement.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${options.unsubscribeUrl}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
+  }): EscapedHtml {
+    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Confirmez votre inscription</h2><p>${options.greeting},</p><p>Merci de vous etre inscrit. Confirmez votre email en cliquant ci-dessous :</p><p style="margin: 20px 0;"><a href="${this.escapeHtml(options.confirmUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Confirmer mon email</a></p><p style="font-size: 13px; color: #555;">Vous recevrez des emails pratiques lies a la formation <strong>${this.escapeHtml(options.sourceFormationSlug)}</strong>. Zero teasing, chaque email livre sa valeur integralement.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${this.escapeHtml(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
   }
 
   private buildWelcomeHtml(options: {
-    greeting: string;
+    greeting: EscapedHtml;
     unsubscribeUrl: string;
-  }): string {
-    return `<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Bienvenue</h2><p>${options.greeting},</p><p>Votre inscription est confirmee. Voici ce qui arrive dans les 10 prochains jours :</p><ul><li><strong>J+2</strong> : un prompt complet a copier</li><li><strong>J+5</strong> : mon stack IA detaille, gratuit</li><li><strong>J+8</strong> : ce qui ne marche PAS (retour honnete)</li><li><strong>J+10</strong> : vous choisissez de continuer ou d'arreter</li></ul><p>Si vous recevez cet email mais pas les suivants sous 48h, repondez a ce message — je regarde.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${options.unsubscribeUrl}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
+  }): EscapedHtml {
+    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Bienvenue</h2><p>${options.greeting},</p><p>Votre inscription est confirmee. Voici ce qui arrive dans les 10 prochains jours :</p><ul><li><strong>J+2</strong> : un prompt complet a copier</li><li><strong>J+5</strong> : mon stack IA detaille, gratuit</li><li><strong>J+8</strong> : ce qui ne marche PAS (retour honnete)</li><li><strong>J+10</strong> : vous choisissez de continuer ou d'arreter</li></ul><p>Si vous recevez cet email mais pas les suivants sous 48h, repondez a ce message — je regarde.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${this.escapeHtml(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
   }
 
-  private buildUnsubscribeAckHtml(options: { greeting: string }): string {
-    return `<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Desabonnement confirme</h2><p>${options.greeting},</p><p>Votre desabonnement est effectif. Vous ne recevrez plus d'email de ma part.</p><p>Si c'etait une erreur, repondez simplement a cet email.</p></div></div>`;
+  private buildUnsubscribeAckHtml(options: {
+    greeting: EscapedHtml;
+  }): EscapedHtml {
+    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Desabonnement confirme</h2><p>${options.greeting},</p><p>Votre desabonnement est effectif. Vous ne recevrez plus d'email de ma part.</p><p>Si c'etait une erreur, repondez simplement a cet email.</p></div></div>`;
   }
 
-  private escapeHtml(input: string): string {
+  private escapeHtml(input: string): EscapedHtml {
     return escapeHtml(input);
   }
 }

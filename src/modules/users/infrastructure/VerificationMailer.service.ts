@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
-import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import {
+  escapeHtml,
+  safeHtml,
+} from '../../../common/infrastructure/mail/html-escape.util';
+import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type {
   IEmailVerificationNotifier,
   EmailVerificationNotificationPayload,
@@ -43,7 +47,7 @@ export class VerificationMailerService implements IEmailVerificationNotifier {
         '',
         "Si vous n'etes pas a l'origine de cette inscription, vous pouvez ignorer cet email.",
       ].join('\n'),
-      html: `
+      html: safeHtml`
         <div style="font-family:Arial,Helvetica,sans-serif; background:#f7f7f7; padding:24px;">
           <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
             <h2 style="margin-top:0; color:#111;">Verification de votre email</h2>
@@ -67,7 +71,7 @@ export class VerificationMailerService implements IEmailVerificationNotifier {
     });
   }
 
-  private escapeHtml(input: string): string {
+  private escapeHtml(input: string): EscapedHtml {
     return escapeHtml(input);
   }
 }

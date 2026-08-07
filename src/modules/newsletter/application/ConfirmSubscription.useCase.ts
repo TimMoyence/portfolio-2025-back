@@ -38,10 +38,8 @@ export class ConfirmSubscriptionUseCase {
       return { status: 'confirmed', alreadyConfirmed: true };
     }
 
-    // E-SEC-4 : un token valide mais expire (> 7j) n'est plus activable.
-    // Reponse identique a "token inconnu" pour ne pas reveler l'etat via
-    // 404 vs 410. Le subscriber pending peut redemander un nouveau lien
-    // par re-souscription.
+    // Meme erreur qu'un token inconnu : opposer 404 et 410 (RFC 9110)
+    // revelerait qu'un token a existe pour cette souscription.
     if (subscriber.isConfirmTokenExpired()) {
       throw new ResourceNotFoundError('Invalid or expired confirm token');
     }
