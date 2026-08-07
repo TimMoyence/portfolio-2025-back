@@ -23,13 +23,14 @@
     "typecheck": "pnpm exec tsc --noEmit -p tsconfig.json",
     "guard:comments": "node scripts/guard-no-comments.cli.mjs --root .",
     "guard:comments:count": "node scripts/guard-no-comments.cli.mjs --root . --count",
+    "guard:comments:tighten": "node scripts/guard-no-comments.cli.mjs --root . --tighten",
     "test:guards": "node --test \"scripts/**/*.test.mjs\"",
     "quality:cpd": "pnpm exec jscpd",
     "quality:cpd:tests": "pnpm exec jscpd --config .jscpd.tests.json",
     "quality:knip": "pnpm exec knip --no-progress",
     "quality:sonar": "pnpm exec eslint --config eslint.sonar-full.config.mjs \"{src,test}/**/*.ts\"",
-    "pre-push:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm exec jest --runInBand --watchman=false",
-    "ci:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm exec jest --runInBand --watchman=false && pnpm run build",
+    "pre-push:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test:guards && pnpm run guard:comments && pnpm exec jest --runInBand --watchman=false",
+    "ci:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test:guards && pnpm run guard:comments && pnpm exec jest --runInBand --watchman=false && pnpm run build",
     "migration:generate": "pnpm build && pnpm exec typeorm-ts-node-commonjs migration:generate src/migrations/$npm_config_name -d src/database/data-source.ts",
     "migration:run:dev": "pnpm build && pnpm exec typeorm-ts-node-commonjs migration:run -d dist/database/data-source.js",
     "migration:run": "node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js",
@@ -146,6 +147,9 @@
       "test-exclude>minimatch": "5.1.6",
       "yargs-parser@>=6.0.0 <13.1.2": ">=13.1.2"
     }
+  },
+  "guard-no-comments": {
+    "maxOffenses": 376
   },
   "jest": {
     "moduleFileExtensions": [

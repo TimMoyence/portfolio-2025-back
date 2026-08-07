@@ -1,21 +1,70 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 
 import {
   analyzeFile,
   collectFiles,
   formatGate,
+  GATE,
+  githubAnnotation,
   isInScope,
   parseArgs,
+  ratchetCeiling,
   runGate,
+  tightenCeiling,
 } from './guard-no-comments.mjs';
 
 /** @param {string[]} parts @returns {string} */
 const L = (...parts) => parts.join('\n');
+
+/**
+ * @param {{ files?: Record<string, string>, ratchet?: { maxOffenses: unknown } }} input
+ * @param {(root: string) => void} run
+ * @returns {void}
+ */
+const withRepo = ({ files = {}, ratchet }, run) => {
+  const root = mkdtempSync(join(tmpdir(), 'guard-no-comments-'));
+  try {
+    execFileSync('git', ['-C', root, 'init', '-q']);
+    const manifest = {
+      name: 'guard-fixture',
+      ...(ratchet && { [GATE]: ratchet }),
+    };
+    writeFileSync(
+      join(root, 'package.json'),
+      `${JSON.stringify(manifest, null, 2)}\n`,
+    );
+    for (const [rel, text] of Object.entries(files)) {
+      mkdirSync(join(root, dirname(rel)), { recursive: true });
+      writeFileSync(join(root, rel), text);
+    }
+    execFileSync('git', ['-C', root, 'add', '-A']);
+    run(root);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+};
+
+/** @param {string} root @returns {unknown} */
+const declaredCeiling = (root) =>
+  JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))[GATE];
+
+/** @param {number} n @returns {string} */
+const narrative = (n) =>
+  L(
+    ...Array.from({ length: n }, (_, i) => `// prose numero ${i}`),
+    'const a = 1;',
+  );
 
 /** @param {string} text @param {string} [file] @returns {ReturnType<typeof analyzeFile>} */
 const ts = (text, file = 'src/a.service.ts') => analyzeFile({ text, file });
@@ -28,9 +77,12 @@ void test('contrat : toutes les fonctions du gate sont exportees', () => {
     analyzeFile,
     collectFiles,
     formatGate,
+    githubAnnotation,
     isInScope,
     parseArgs,
+    ratchetCeiling,
     runGate,
+    tightenCeiling,
   ]) {
     assert.equal(typeof fn, 'function');
   }
@@ -404,50 +456,117 @@ void test('offense : file, line et snippet designent la ligne reelle', () => {
 });
 
 void test('PLANCHER ANTI-VACUITE : un perimetre vide leve une erreur citant le gate', () => {
-  const root = mkdtempSync(join(tmpdir(), 'guard-no-comments-'));
-  try {
-    execFileSync('git', ['-C', root, 'init', '-q']);
+  withRepo({}, (root) => {
     assert.throws(() => runGate({ root }), /guard-no-comments/);
-  } finally {
-    rmSync(root, { recursive: true, force: true });
-  }
+  });
 });
 
 void test('runGate : un arbre conforme atteste un nombre de fichiers non nul', () => {
-  const root = mkdtempSync(join(tmpdir(), 'guard-no-comments-'));
-  try {
-    execFileSync('git', ['-C', root, 'init', '-q']);
-    mkdirSync(join(root, 'src'));
-    writeFileSync(join(root, 'src', 'a.service.ts'), 'export const a = 1;\n');
-    execFileSync('git', ['-C', root, 'add', '-A']);
-    const result = runGate({ root });
-    assert.deepEqual(result.offenders, []);
-    assert.equal(result.code, 0);
-    assert.equal(result.inspected, 1);
-  } finally {
-    rmSync(root, { recursive: true, force: true });
-  }
+  withRepo(
+    { files: { 'src/a.service.ts': 'export const a = 1;\n' } },
+    (root) => {
+      const result = runGate({ root });
+      assert.deepEqual(result.offenders, []);
+      assert.equal(result.code, 0);
+      assert.equal(result.inspected, 1);
+    },
+  );
 });
 
 void test('runGate : un fichier fautif sort en code 1 avec un chemin relatif a la racine', () => {
-  const root = mkdtempSync(join(tmpdir(), 'guard-no-comments-'));
-  try {
-    execFileSync('git', ['-C', root, 'init', '-q']);
-    mkdirSync(join(root, 'src'));
-    writeFileSync(
-      join(root, 'src', 'a.service.ts'),
-      '// on recupere le user\nexport const a = 1;\n',
-    );
-    execFileSync('git', ['-C', root, 'add', '-A']);
+  const files = {
+    'src/a.service.ts': '// on recupere le user\nexport const a = 1;\n',
+  };
+  withRepo({ files }, (root) => {
     const result = runGate({ root });
     assert.equal(result.code, 1);
     assert.deepEqual(
       result.offenders.map((o) => [o.file, o.line]),
       [['src/a.service.ts', 1]],
     );
-  } finally {
-    rmSync(root, { recursive: true, force: true });
+  });
+});
+
+void test('CLIQUET : sans plafond declare, la garde exige toujours zero', () => {
+  withRepo({ files: { 'src/a.service.ts': narrative(1) } }, (root) => {
+    assert.equal(ratchetCeiling(root), 0);
+    assert.equal(runGate({ root }).code, 1);
+  });
+});
+
+void test('CLIQUET : un compte egal au plafond declare passe en code 0', () => {
+  const files = { 'src/a.service.ts': narrative(3) };
+  withRepo({ files, ratchet: { maxOffenses: 3 } }, (root) => {
+    const result = runGate({ root });
+    assert.equal(result.ceiling, 3);
+    assert.equal(result.offenders.length, 3);
+    assert.equal(result.code, 0);
+  });
+});
+
+void test('CLIQUET : une violation de plus que le plafond sort en code 1', () => {
+  const files = { 'src/a.service.ts': narrative(4) };
+  withRepo({ files, ratchet: { maxOffenses: 3 } }, (root) => {
+    const result = runGate({ root });
+    assert.equal(result.code, 1);
+    assert.match(
+      formatGate(result),
+      /REGRESSION — 4 violation\(s\) pour un plafond de 3/,
+    );
+    assert.match(formatGate(result), /retirez 1 commentaire\(s\)/);
+  });
+});
+
+void test('CLIQUET : un plafond non entier ou negatif est refuse plutot que subi', () => {
+  for (const maxOffenses of [-1, 1.5, '3', null]) {
+    withRepo({ ratchet: { maxOffenses } }, (root) => {
+      assert.throws(() => ratchetCeiling(root), /maxOffenses/);
+    });
   }
+});
+
+void test('CLIQUET : sous le plafond, le verdict nomme la valeur exacte a poser', () => {
+  const files = { 'src/a.service.ts': narrative(2) };
+  withRepo({ files, ratchet: { maxOffenses: 5 } }, (root) => {
+    const result = runGate({ root });
+    assert.equal(result.code, 0);
+    const verdict = formatGate(result);
+    assert.match(
+      verdict,
+      /PLAFOND ABAISSABLE — 2 violation\(s\) sous un plafond de 5 : abaissez-le a 2/,
+    );
+    assert.match(verdict, /--tighten/);
+  });
+});
+
+void test('CLIQUET : --tighten abaisse le plafond declare dans package.json', () => {
+  const files = { 'src/a.service.ts': narrative(2) };
+  withRepo({ files, ratchet: { maxOffenses: 5 } }, (root) => {
+    const verdict = tightenCeiling({ root, ...runGate({ root }) });
+    assert.match(verdict, /plafond abaisse de 5 a 2/);
+    assert.deepEqual(declaredCeiling(root), { maxOffenses: 2 });
+    assert.equal(runGate({ root }).ceiling, 2);
+  });
+});
+
+void test('ANTI-TROU : --tighten ne remonte jamais un plafond depasse', () => {
+  const files = { 'src/a.service.ts': narrative(4) };
+  withRepo({ files, ratchet: { maxOffenses: 3 } }, (root) => {
+    const verdict = tightenCeiling({ root, ...runGate({ root }) });
+    assert.match(verdict, /REGRESSION/);
+    assert.deepEqual(declaredCeiling(root), { maxOffenses: 3 });
+  });
+});
+
+void test('CLIQUET : --tighten sur un plafond deja au plus juste n ecrit rien', () => {
+  const files = { 'src/a.service.ts': narrative(3) };
+  withRepo({ files, ratchet: { maxOffenses: 3 } }, (root) => {
+    assert.match(
+      tightenCeiling({ root, ...runGate({ root }) }),
+      /deja au plus juste \(3\)/,
+    );
+    assert.deepEqual(declaredCeiling(root), { maxOffenses: 3 });
+  });
 });
 
 void test('formatGate : le verdict est chiffre et porte le nom du gate', () => {
@@ -472,10 +591,39 @@ void test('formatGate : le verdict est chiffre et porte le nom du gate', () => {
   assert.match(dirty, /42 fichier\(s\) inspecte\(s\), 1 violation\(s\)/);
 });
 
-void test('parseArgs : --root et --count sont lus depuis argv', () => {
+void test('CLIQUET : sous le plafond, une annotation GitHub porte la valeur a poser', () => {
+  const offenders = Array.from({ length: 2 }, () => ({
+    file: 'src/a.ts',
+    line: 1,
+    reason: 'r',
+    snippet: 's',
+  }));
+  const annotation = githubAnnotation({ offenders, ceiling: 5 });
+  assert.match(annotation, /^::warning title=guard-no-comments::/);
+  assert.match(annotation, /abaissez "guard-no-comments"\.maxOffenses a 2/);
+});
+
+void test('CLIQUET : au plafond ou au-dessus, aucune annotation n est emise', () => {
+  const one = [{ file: 'src/a.ts', line: 1, reason: 'r', snippet: 's' }];
+  assert.equal(githubAnnotation({ offenders: one, ceiling: 1 }), undefined);
+  assert.equal(githubAnnotation({ offenders: one, ceiling: 0 }), undefined);
+  assert.equal(githubAnnotation({ offenders: [], ceiling: 0 }), undefined);
+});
+
+void test('parseArgs : --root, --count et --tighten sont lus depuis argv', () => {
   assert.deepEqual(parseArgs(['--root', '/tmp/x']), {
     root: '/tmp/x',
     count: false,
+    tighten: false,
   });
-  assert.deepEqual(parseArgs(['--count']), { root: undefined, count: true });
+  assert.deepEqual(parseArgs(['--count']), {
+    root: '.',
+    count: true,
+    tighten: false,
+  });
+  assert.deepEqual(parseArgs(['--tighten']), {
+    root: '.',
+    count: false,
+    tighten: true,
+  });
 });

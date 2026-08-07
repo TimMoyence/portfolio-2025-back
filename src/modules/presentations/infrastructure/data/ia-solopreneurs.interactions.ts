@@ -28,16 +28,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
         options: ['< 1h/jour', '1-3h/jour', '3h+/jour', 'Aucune idée'],
       },
     ],
-    scroll: [
-      {
-        type: 'self-rating',
-        question:
-          'Quel pourcentage de votre travail pourrait être automatisé ?',
-        min: 1,
-        max: 5,
-        labels: { min: 'Presque rien', max: 'Presque tout' },
-      },
-    ],
   },
 
   'contexte-marche': {
@@ -59,22 +49,10 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
         options: ['NotebookLM', 'Perplexity', 'Fathom'],
       },
     ],
-    scroll: [
-      {
-        type: 'checklist',
-        question: 'Lesquels utilisez-vous déjà ?',
-        items: ['NotebookLM', 'Perplexity', 'Fathom', 'Aucun des trois'],
-      },
-    ],
   },
 
   'chat-produire': {
     scroll: [
-      {
-        type: 'checklist',
-        question: 'Lesquels utilisez-vous déjà ?',
-        items: ['ChatGPT', 'Claude', 'Gemini', 'Aucun des trois'],
-      },
       {
         type: 'reflection',
         question:
@@ -91,20 +69,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
         type: 'poll',
         question: 'Quel contenu créez-vous le plus ?',
         options: ['Images', 'Présentations', 'Audio/Vidéo', 'Texte'],
-      },
-    ],
-    scroll: [
-      {
-        type: 'checklist',
-        question: 'Lesquels connaissez-vous ?',
-        items: [
-          'Ideogram',
-          'Gamma',
-          'ElevenLabs',
-          'Midjourney',
-          'DALL-E',
-          'Aucun',
-        ],
       },
     ],
   },
@@ -157,19 +121,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
         ],
       },
     ],
-    scroll: [
-      {
-        type: 'checklist',
-        question: 'Lesquels utilisez-vous ?',
-        items: [
-          'Waalaxy',
-          'Notion AI',
-          'Brevo',
-          'Canva AI',
-          'Aucun des quatre',
-        ],
-      },
-    ],
   },
 
   'stack-budget': {
@@ -178,42 +129,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
         type: 'poll',
         question: 'Combien dépensez-vous actuellement en outils IA ?',
         options: ['0€', '< 30€/mois', '30-100€/mois', '100€+/mois'],
-      },
-    ],
-    scroll: [
-      {
-        type: 'self-rating',
-        question: "Où en êtes-vous dans votre adoption de l'IA ?",
-        min: 1,
-        max: 5,
-        labels: { min: 'Je débute', max: 'Stack complet en place' },
-      },
-    ],
-  },
-
-  'outils-detail': {
-    scroll: [
-      {
-        type: 'checklist',
-        question: 'Cochez les outils que vous connaissez déjà :',
-        items: [
-          'NotebookLM',
-          'Perplexity',
-          'Fathom',
-          'ChatGPT',
-          'Claude',
-          'Gemini',
-          'Ideogram',
-          'Gamma',
-          'ElevenLabs',
-          'Zapier',
-          'Make.com',
-          'n8n',
-          'Waalaxy',
-          'Notion AI',
-          'Brevo',
-          'Canva AI',
-        ],
       },
     ],
   },
@@ -225,31 +140,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
         question:
           'Lequel de ces 3 workflows mettriez-vous en place en premier ? Pourquoi ?',
         placeholder: 'ex: la prospection automatisée, parce que...',
-      },
-    ],
-  },
-
-  'transition-pratique': {
-    present: [
-      {
-        type: 'countdown',
-        label: "Pensez à votre secteur d'activité...",
-        durationSeconds: 10,
-      },
-    ],
-  },
-
-  'cas-pratique': {
-    scroll: [
-      {
-        type: 'prompt-builder',
-        context:
-          'Newsletter hebdo IA — 30 min de veille pour 1 article par semaine',
-        promptTemplate:
-          'Tu es expert {{sector}}. Voici les 3 actualités IA majeures de cette semaine : [colle ici les résultats Perplexity]. Rédige un résumé newsletter de 250 mots, ton direct, sans jargon, avec un takeaway actionnable par actualité.',
-        placeholder: 'Ex: SaaS B2B, e-commerce, conseil RH, freelance dev',
-        // ctaLabel laissé absent volontairement : le composant utilise
-        // le label i18n par défaut (`@@slidePromptBuilder.copy`).
       },
     ],
   },
@@ -266,16 +156,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
           'NotebookLM',
           'Autre',
         ],
-      },
-    ],
-    scroll: [
-      {
-        type: 'self-rating',
-        question:
-          "Après cette présentation, quel est votre niveau de confiance avec l'IA ?",
-        min: 1,
-        max: 5,
-        labels: { min: 'Pas confiant', max: 'Prêt à foncer' },
       },
     ],
   },
