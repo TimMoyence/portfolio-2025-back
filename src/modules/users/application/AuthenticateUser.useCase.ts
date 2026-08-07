@@ -33,9 +33,7 @@ export class AuthenticateUserUseCase {
     const user = await this.repo.findByEmail(dto.email);
 
     if (!user || !user.isActive || !user.passwordHash) {
-      // Dummy verify pour egaliser le timing et empecher l'enumeration
-      // d'utilisateurs via l'analyse de la duree de reponse du login.
-      await this.passwordService.performDummyVerify(dto.password);
+      await this.passwordService.equalizeVerifyTiming(dto.password);
       throw new InvalidCredentialsError('Invalid credentials');
     }
 

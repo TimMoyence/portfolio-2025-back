@@ -20,7 +20,7 @@ export class PasswordService {
     }
 
     // Pre-calcul eager du hash factice des l'instanciation pour eviter
-    // un "cold start" detectable au premier appel a performDummyVerify.
+    // un "cold start" detectable au premier appel a equalizeVerifyTiming.
     this.dummyHashPromise = argon2
       .hash('dummy-password-for-timing-safety', { type: argon2.argon2id })
       .catch(
@@ -29,12 +29,11 @@ export class PasswordService {
   }
 
   /**
-   * Execute un verify Argon2id contre un hash factice pre-calcule pour egaliser
-   * le temps de reponse quand un utilisateur n'existe pas, est inactif, ou n'a
-   * pas de hash (compte Google-only). Protege contre l'enumeration d'utilisateurs
+   * A appeler quand un utilisateur n'existe pas, est inactif, ou n'a pas de
+   * hash (compte Google-only) : protege contre l'enumeration d'utilisateurs
    * par analyse du timing de la route de login.
    */
-  async performDummyVerify(password: string): Promise<void> {
+  async equalizeVerifyTiming(password: string): Promise<void> {
     const dummy = await this.dummyHashPromise;
     await argon2.verify(dummy, password).catch(() => false);
   }
