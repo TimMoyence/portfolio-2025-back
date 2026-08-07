@@ -8,7 +8,6 @@ import {
   MaxLength,
 } from 'class-validator';
 
-/** DTO de validation du profil d'interaction collecte pendant la presentation. */
 export class InteractionProfileDto {
   @ApiPropertyOptional({
     example: 'debutant',

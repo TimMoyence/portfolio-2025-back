@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PresentationInteractions } from '../../domain/SlideInteraction';
 
-/** DTO de réponse pour les interactions d'une présentation. */
 export class PresentationInteractionsResponseDto {
   @ApiProperty({ example: 'ia-solopreneurs' })
   slug!: string;

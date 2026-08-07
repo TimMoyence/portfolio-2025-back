@@ -275,10 +275,6 @@ export class AuditPipelineService {
         finishedAt: new Date(),
       });
 
-      // Note: l'ancien envoi `sendAuditReportNotification` (dump JSON admin legacy)
-      // a ete retire en Loop #2 pour eviter un double email admin. Le chemin
-      // officiel passe desormais par `deliveryOrchestrator.runForAudit` qui orchestre
-      // la generation et l'envoi des rapports (notification, client, expert).
       await this.deliveryOrchestrator.runForAudit({
         auditId,
         locale,
@@ -356,10 +352,6 @@ export class AuditPipelineService {
     return pageSnapshots;
   }
 
-  /**
-   * Analyse le fichier `llms.txt` au niveau site. Ne lève jamais — un échec
-   * retourne un résultat "absent" typé pour ne pas casser le pipeline.
-   */
   private async runLlmsTxtAnalysis(
     origin: string | null,
   ): Promise<LlmsTxtAnalysis> {
@@ -392,11 +384,6 @@ export class AuditPipelineService {
     }
   }
 
-  /**
-   * Récupère `robots.txt` une seule fois au niveau site pour le passer au
-   * `AiHeadersAnalyzerService` via `UrlIndexabilityService.analyzeUrls`.
-   * En cas d'erreur réseau ou de 404, retourne une chaîne vide.
-   */
   private async fetchRobotsTxt(origin: string | null): Promise<string> {
     if (!origin) return '';
     const url = `${origin}/robots.txt`;

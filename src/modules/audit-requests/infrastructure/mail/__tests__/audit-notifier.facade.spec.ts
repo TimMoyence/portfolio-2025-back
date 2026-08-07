@@ -30,13 +30,10 @@ describe('AuditNotifierFacade', () => {
   });
 
   it('devrait deleguer sendAuditNotification au notificationMailer', async () => {
-    // Arrange
     const request = buildAuditRequest({ id: 'audit-x' });
 
-    // Act
     await facade.sendAuditNotification(request);
 
-    // Assert
     expect(notificationMailer.sendAuditNotification).toHaveBeenCalledTimes(1);
     expect(notificationMailer.sendAuditNotification).toHaveBeenCalledWith(
       request,
@@ -46,7 +43,6 @@ describe('AuditNotifierFacade', () => {
   });
 
   it('devrait deleguer sendClientReport au clientReportMailer', async () => {
-    // Arrange
     const input = {
       to: 'client@example.com',
       firstName: null,
@@ -65,10 +61,8 @@ describe('AuditNotifierFacade', () => {
       pdfBuffer: null,
     };
 
-    // Act
     await facade.sendClientReport(input);
 
-    // Assert
     expect(clientReportMailer.sendClientReport).toHaveBeenCalledTimes(1);
     expect(clientReportMailer.sendClientReport).toHaveBeenCalledWith(input);
     expect(notificationMailer.sendAuditNotification).not.toHaveBeenCalled();
@@ -76,7 +70,6 @@ describe('AuditNotifierFacade', () => {
   });
 
   it('devrait deleguer sendExpertReport a l expertReportMailer', async () => {
-    // Arrange
     const input = {
       websiteName: 'mon-site.fr',
       auditId: 'audit-42',
@@ -103,10 +96,8 @@ describe('AuditNotifierFacade', () => {
       pdfBuffer: Buffer.from('pdf'),
     };
 
-    // Act
     await facade.sendExpertReport(input);
 
-    // Assert
     expect(expertReportMailer.sendExpertReport).toHaveBeenCalledTimes(1);
     expect(expertReportMailer.sendExpertReport).toHaveBeenCalledWith(input);
     expect(notificationMailer.sendAuditNotification).not.toHaveBeenCalled();

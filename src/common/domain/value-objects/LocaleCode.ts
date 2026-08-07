@@ -1,6 +1,5 @@
 export type SupportedLocale = 'fr' | 'en';
 
-/** Value Object immutable representant un code de langue supporte (fr ou en). */
 export class LocaleCode {
   private constructor(private readonly normalizedValue: SupportedLocale) {}
 

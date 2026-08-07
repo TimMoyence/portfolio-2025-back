@@ -25,7 +25,6 @@ import { LeadMagnetResponseDto } from './dto/lead-magnet.response.dto';
 import { RequestToolkitRequestDto } from './dto/request-toolkit.request.dto';
 import { ToolkitPageResponseDto } from './dto/toolkit-page.response.dto';
 
-/** Controleur HTTP pour les lead magnets (boite a outils IA). */
 @ApiTags('lead-magnets')
 @Controller('lead-magnets')
 export class LeadMagnetsController {

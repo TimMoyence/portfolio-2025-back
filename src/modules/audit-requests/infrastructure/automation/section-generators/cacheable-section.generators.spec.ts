@@ -7,17 +7,6 @@ import {
 } from './cacheable-section.generators';
 import type { CachingSectionRunner } from './caching-section.runner';
 
-/**
- * Tests unitaires des 4 generateurs fan-out cacheables. Le `cachingRunner`
- * est stubbe — on ne teste pas la logique Anthropic/OpenAI ici (couverte
- * par `caching-section.runner.spec.ts`), mais on verifie que :
- *  - le bon nom de section est passe au runner
- *  - le bon schema Zod est utilise
- *  - les systemBlocks et payload sont transmis tels quels
- *  - le fallback OpenAI est bien cable (llm.withStructuredOutput appele
- *    avec le schema attendu, si on resout le fallback manuellement)
- */
-
 interface RunSpy {
   runner: CachingSectionRunner;
   runCalls: Array<Parameters<CachingSectionRunner['run']>[0]>;

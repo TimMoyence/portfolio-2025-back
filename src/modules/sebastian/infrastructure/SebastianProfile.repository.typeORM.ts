@@ -5,7 +5,6 @@ import { SebastianProfile } from '../domain/SebastianProfile';
 import type { ISebastianProfileRepository } from '../domain/ISebastianProfile.repository';
 import { SebastianProfileEntity } from './entities/SebastianProfile.entity';
 
-/** Implementation TypeORM du port de persistance des profils Sebastian. */
 @Injectable()
 export class SebastianProfileRepositoryTypeORM implements ISebastianProfileRepository {
   constructor(

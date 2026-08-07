@@ -31,7 +31,6 @@ export interface CreateCookieConsentProps {
   referer?: string | null;
 }
 
-/** Entite domaine representant un consentement cookies conforme RGPD. */
 export class CookieConsent {
   id?: string;
   policyVersion: string;
@@ -81,7 +80,6 @@ export class CookieConsent {
       throw new DomainValidationError('Invalid cookie consent preferences');
     }
 
-    // Essential cookies are mandatory for consent snapshots.
     if (preferences.essential !== true) {
       throw new DomainValidationError('Essential cookie flag must be true');
     }

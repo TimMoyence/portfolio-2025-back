@@ -11,10 +11,8 @@ import {
   USERS_REPOSITORY,
 } from '../domain/token';
 
-/** Duree de validite du token de verification email : 24 heures. */
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 
-/** Rate limit : maximum 3 renvois par heure (en ms). */
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX = 3;
 
@@ -22,10 +20,6 @@ export interface ResendVerificationResult {
   message: string;
 }
 
-/**
- * Renvoie un email de verification a un utilisateur non encore verifie.
- * Rate limited a 3 envois par heure pour eviter les abus.
- */
 @Injectable()
 export class ResendVerificationEmailUseCase {
   private readonly logger = new Logger(ResendVerificationEmailUseCase.name);
@@ -60,7 +54,6 @@ export class ResendVerificationEmailUseCase {
       return { message: this.genericMessage };
     }
 
-    // Rate limit check
     const recentCount =
       await this.emailVerificationTokensRepo.countRecentByUserId(
         user.id,
@@ -73,7 +66,6 @@ export class ResendVerificationEmailUseCase {
       );
     }
 
-    // Supprimer les anciens tokens et en creer un nouveau
     await this.emailVerificationTokensRepo.deleteByUserId(user.id);
 
     const rawToken = randomBytes(32).toString('hex');

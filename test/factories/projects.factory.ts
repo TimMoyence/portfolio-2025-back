@@ -1,7 +1,6 @@
 import { Projects } from '../../src/modules/projects/domain/Projects';
 import type { IProjectsRepository } from '../../src/modules/projects/domain/IProjects.repository';
 
-/** Construit un objet Projects domaine avec des valeurs par defaut. */
 export function buildProject(overrides?: Partial<Projects>): Projects {
   const project = new Projects();
   project.id = 'project-1';
@@ -17,7 +16,6 @@ export function buildProject(overrides?: Partial<Projects>): Projects {
   return Object.assign(project, overrides);
 }
 
-/** Cree un mock complet du repository projects. */
 export function createMockProjectsRepo(): jest.Mocked<IProjectsRepository> {
   return {
     findAll: jest.fn(),

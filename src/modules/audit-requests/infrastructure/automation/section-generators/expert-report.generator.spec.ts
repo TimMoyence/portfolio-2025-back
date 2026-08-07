@@ -51,7 +51,6 @@ describe('generateExpertReport', () => {
       unknown,
       Array<{ role: string }>,
     ];
-    // disclaimer + main + strict + compact = 4 system messages
     expect(messages.filter((m) => m.role === 'system').length).toBe(4);
   });
 
@@ -76,7 +75,6 @@ describe('generateExpertReport', () => {
       unknown,
       Array<{ role: string }>,
     ];
-    // disclaimer + main + strict + retry = 4 system messages
     expect(messages.filter((m) => m.role === 'system').length).toBe(4);
   });
 });

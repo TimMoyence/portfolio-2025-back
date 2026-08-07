@@ -5,18 +5,6 @@ import type { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 import type { ToolkitContent } from '../domain/ToolkitContent';
 import { ToolkitHtmlRendererService } from './ToolkitHtmlRenderer.service';
 
-/**
- * Genere le PDF "Guide IA personnalise" via Puppeteer (Chromium headless)
- * a partir d'un template HTML+CSS construit par {@link ToolkitHtmlRendererService}.
- *
- * Avantages par rapport a l'ancienne implementation PDFKit :
- * - Pagination CSS automatique (plus de pages blanches)
- * - Mise en page declarative (grille, flex, badges, code blocks)
- * - Resultat fidele a une page web rendue dans Chrome
- *
- * Le navigateur est lance paresseusement et reutilise pour toutes les requetes
- * du processus, puis ferme proprement lors du shutdown du module.
- */
 @Injectable()
 export class ToolkitPdfGeneratorService
   implements IToolkitPdfGenerator, OnModuleDestroy
@@ -26,7 +14,6 @@ export class ToolkitPdfGeneratorService
 
   constructor(private readonly htmlRenderer: ToolkitHtmlRendererService) {}
 
-  /** Genere le PDF du guide pour une demande donnee. */
   async generate(
     _request: LeadMagnetRequest,
     content: ToolkitContent,
@@ -56,7 +43,6 @@ export class ToolkitPdfGeneratorService
     }
   }
 
-  /** Lance Chromium une seule fois et retourne l'instance partagee. */
   private async getBrowser(): Promise<Browser> {
     if (!this.browserPromise) {
       this.browserPromise = puppeteer.launch({
@@ -72,7 +58,6 @@ export class ToolkitPdfGeneratorService
     return this.browserPromise;
   }
 
-  /** Ferme proprement Chromium lors du shutdown du module. */
   async onModuleDestroy(): Promise<void> {
     if (this.browserPromise) {
       try {

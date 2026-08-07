@@ -12,8 +12,6 @@ import type { GoogleAuthDto } from '../dto/GoogleAuth.dto';
 import type { LoginDto } from '../dto/Login.dto';
 
 /**
- * Verrouille l'IP tracee par l'audit d'authentification.
- *
  * `X-Forwarded-For` est fourni en entier par le client : en retenir une
  * entree ferait porter les tentatives de connexion — reussies comme
  * echouees — a une adresse choisie par l'appelant. Aucun test
@@ -37,8 +35,6 @@ describe('AuthController — IP tracee dans l’audit', () => {
   } as unknown as Response;
 
   /**
-   * Requete portant un `X-Forwarded-For` forge, comme en production.
-   *
    * `ip` est passe explicitement : une valeur par defaut serait
    * reappliquee lorsqu'on transmet `undefined`, et le cas « req.ip
    * absent » — le seul discriminant — ne serait jamais teste.
@@ -78,7 +74,6 @@ describe('AuthController — IP tracee dans l’audit', () => {
     );
   }
 
-  /** Derniere entree d'audit enregistree. */
   function lastEntry(auditLogger: AuthAuditLogger): {
     ip: string;
     event: string;
@@ -130,9 +125,6 @@ describe('AuthController — IP tracee dans l’audit', () => {
   });
 
   it('journalise l’IP resolue sur l’authentification Google', async () => {
-    // Second site d'appel de `extractIp` : une reintroduction du motif
-    // vulnerable directement dans `googleAuth` resterait invisible si
-    // seul `login` etait couvert.
     const auditLogger = createMockAuthAuditLogger();
     const controller = buildController({
       auditLogger,
@@ -152,9 +144,6 @@ describe('AuthController — IP tracee dans l’audit', () => {
   });
 
   it('retombe sur l’adresse du socket, jamais sur X-Forwarded-For', async () => {
-    // Cas discriminant : `req.ip` absent. L'ancien code repliait sur
-    // `X-Forwarded-For`, c'est-a-dire sur une valeur fournie par le
-    // client ; le repli correct est l'adresse du socket.
     const auditLogger = createMockAuthAuditLogger();
     const controller = buildController({
       auditLogger,

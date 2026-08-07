@@ -7,14 +7,12 @@ import {
 } from '../../domain/token';
 import type { GetTrendsQuery } from '../dto/GetTrends.query';
 
-/** Point de donnee quotidien pour les tendances. */
 export interface TrendDataPoint {
-  date: string; // YYYY-MM-DD
+  date: string;
   alcohol: number;
   coffee: number;
 }
 
-/** Resultat des donnees de tendance de consommation. */
 export interface TrendResult {
   period: '7d' | '30d';
   dataPoints: TrendDataPoint[];
@@ -22,25 +20,17 @@ export interface TrendResult {
   summary: { avgAlcohol: number; avgCoffee: number };
 }
 
-/** Nombre de jours par type de periode de tendance. */
 const TREND_PERIOD_DAYS: Record<string, number> = {
   '7d': 7,
   '30d': 30,
 };
 
-/** Diviseur pour convertir un objectif en quota quotidien selon la periode. */
 const GOAL_PERIOD_DIVISOR: Record<string, number> = {
   daily: 1,
   weekly: 7,
   monthly: 30,
 };
 
-/**
- * Calcule les donnees de tendance (points quotidiens) pour un utilisateur.
- *
- * Recupere les entrees et objectifs, construit les points de donnee jour par jour,
- * derive les objectifs quotidiens et calcule les moyennes sur la periode.
- */
 @Injectable()
 export class GetTrendDataUseCase {
   constructor(
@@ -50,7 +40,6 @@ export class GetTrendDataUseCase {
     private readonly goalRepo: ISebastianGoalRepository,
   ) {}
 
-  /** Execute le calcul des donnees de tendance. */
   async execute(query: GetTrendsQuery): Promise<TrendResult> {
     const days = TREND_PERIOD_DAYS[query.period];
     const now = new Date();
@@ -65,7 +54,6 @@ export class GetTrendDataUseCase {
       this.goalRepo.findByUserId(query.userId),
     ]);
 
-    // Agreger les entrees par jour et categorie
     const dailyMap = new Map<string, { alcohol: number; coffee: number }>();
     for (const entry of entries) {
       const dateKey =
@@ -83,7 +71,6 @@ export class GetTrendDataUseCase {
       }
     }
 
-    // Construire les dataPoints pour chaque jour de la periode
     const dataPoints: TrendDataPoint[] = [];
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(now.getTime() - i * 86_400_000)
@@ -97,7 +84,6 @@ export class GetTrendDataUseCase {
       });
     }
 
-    // Calculer les objectifs quotidiens depuis les goals actifs
     const activeGoals = goals.filter((g) => g.isActive);
     let alcoholObjective = 0;
     let coffeeObjective = 0;
@@ -112,7 +98,6 @@ export class GetTrendDataUseCase {
       }
     }
 
-    // Calculer les moyennes
     const totalAlcohol = dataPoints.reduce((sum, dp) => sum + dp.alcohol, 0);
     const totalCoffee = dataPoints.reduce((sum, dp) => sum + dp.coffee, 0);
     const avgAlcohol =

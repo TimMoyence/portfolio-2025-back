@@ -6,12 +6,6 @@ import { escapeHtml, slugify } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
 
-/**
- * Mailer dedie a l'audience "Client" : envoie au decideur final la synthese
- * strategique (`ClientReportSynthesis`) et attache le PDF si disponible.
- * No-op silencieux si le transporter SMTP est absent ou si l'email
- * destinataire est vide.
- */
 @Injectable()
 export class AuditClientReportMailer {
   private readonly logger = new Logger(AuditClientReportMailer.name);
@@ -21,10 +15,6 @@ export class AuditClientReportMailer {
     private readonly transporter: SmtpTransporter,
   ) {}
 
-  /**
-   * Envoie au client final la synthese strategique. Ne leve jamais : si le
-   * transporter est absent ou si l'email est vide, la methode est un no-op.
-   */
   async sendClientReport(input: ClientReportMailInput): Promise<void> {
     if (!this.transporter) return;
     if (!input.to || input.to.trim().length === 0) return;
@@ -158,12 +148,6 @@ export class AuditClientReportMailer {
     });
   }
 
-  /**
-   * Retourne l'URL cible du CTA client. Priorise `input.bookingUrl` si
-   * fourni par l'orchestrateur, sinon fallback sur `AUDIT_BOOKING_URL`
-   * env, puis sur la page `/contact` d'Asili Design. Jamais vide pour
-   * garantir que le CTA est toujours cliquable (P0.5).
-   */
   private resolveBookingUrl(input: ClientReportMailInput): string {
     const explicit = input.bookingUrl?.trim();
     if (explicit) return explicit;

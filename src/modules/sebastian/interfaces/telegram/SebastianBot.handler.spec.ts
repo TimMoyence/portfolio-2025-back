@@ -11,7 +11,6 @@ import { TelegramLink } from '../../domain/TelegramLink';
 
 type AnyFn = (...args: unknown[]) => unknown;
 
-/** Cree un contexte grammy minimal pour les tests. */
 function mockContext(overrides: Record<string, unknown> = {}): {
   from: { id: number };
   message: { text: string };
@@ -32,7 +31,6 @@ function mockContext(overrides: Record<string, unknown> = {}): {
   };
 }
 
-/** Cree un mock de bot grammy qui capture les handlers enregistres. */
 function createMockBot(): {
   command: jest.Mock;
   on: jest.Mock;

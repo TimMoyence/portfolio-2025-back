@@ -7,10 +7,6 @@ import type {
 } from '../../domain/AiIndexability';
 import type { StructuredDataQualityResult } from '../../domain/StructuredDataQuality';
 
-/**
- * Factory interne — homepage saine par défaut. Les specs peuvent overrider
- * les champs qui les intéressent sans dupliquer le payload.
- */
 const buildHomepage = (
   overrides: Partial<HomepageAuditSnapshot> = {},
 ): HomepageAuditSnapshot => ({
@@ -200,7 +196,6 @@ describe('ScoringService', () => {
     it('fills aiVisibility / citationWorthiness with 0 when no data', () => {
       const homepage = buildHomepage();
       const result = service.compute(homepage, [], []);
-      // Avec llmsTxt absent et aucune page, aiVisibility = base seulement.
       expect(result.pillarScores.aiVisibility).toBeGreaterThanOrEqual(0);
       expect(result.pillarScores.aiVisibility).toBeLessThanOrEqual(100);
       expect(result.pillarScores.citationWorthiness).toBe(0);
@@ -223,7 +218,6 @@ describe('ScoringService', () => {
         aiBotsAccess: [],
         structuredDataQuality: [],
       });
-      // 20 + 20 (présent) + 15 (100 * 0.15) = 55
       expect(score).toBe(55);
     });
 
@@ -233,7 +227,6 @@ describe('ScoringService', () => {
         aiBotsAccess: [buildBotsAccess(), buildBotsAccess()],
         structuredDataQuality: [],
       });
-      // 20 + 25 = 45
       expect(score).toBe(45);
     });
 
@@ -246,7 +239,6 @@ describe('ScoringService', () => {
         ],
         structuredDataQuality: [],
       });
-      // 20 + 25 * 0.5 = 32.5 → 33
       expect(score).toBe(33);
     });
 
@@ -270,7 +262,6 @@ describe('ScoringService', () => {
           buildStructuredDataQuality({ aiFriendly: true }),
         ],
       });
-      // 20 + 20 + 15 + 25 + 20 = 100
       expect(score).toBe(100);
     });
 
@@ -296,7 +287,6 @@ describe('ScoringService', () => {
     });
 
     it('arrondit correctement', () => {
-      // (70 + 71) / 2 = 70.5 → 71
       expect(service.scoreCitationWorthiness([70, 71])).toBe(71);
     });
 

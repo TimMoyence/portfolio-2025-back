@@ -3,7 +3,6 @@ import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import { User } from '../domain/User';
 
-/** Recupere un utilisateur unique par son identifiant. */
 @Injectable()
 export class ListOneUserUseCase {
   constructor(

@@ -39,20 +39,6 @@ import { SubscribeNewsletterResponseDto } from './dto/subscribe-newsletter.respo
 const UUID_V4_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-/**
- * Controleur HTTP du bounded context Newsletter.
- *
- * Quatre endpoints publics :
- *  - `POST /newsletter/subscribe` : inscription double opt-in,
- *  - `GET /newsletter/confirm?token=` : confirmation via magic link,
- *  - `GET /newsletter/unsubscribe?token=` : desabonnement instantane,
- *  - `POST /newsletter/unsubscribe?token=` : desabonnement en un clic
- *    (RFC 8058), declenche par le client mail.
- *
- * La reponse `subscribe` est volontairement generique (RGPD) : on ne
- * revele jamais si l'email existe deja en base. Le throttle est
- * calibre pour dissuader l'enumeration d'adresses.
- */
 @ApiTags('newsletter')
 @Controller('newsletter')
 export class NewsletterController {
@@ -87,8 +73,6 @@ export class NewsletterController {
       termsAcceptedAt: dto.termsAcceptedAt,
     });
 
-    // Reponse deliberement uniforme : on ne revele ni creation, ni
-    // statut existant pour empecher l'enumeration cote attaquant.
     const response = new SubscribeNewsletterResponseDto();
     response.message =
       'Si vous n\u2019etes pas encore inscrit, un email de confirmation vient d\u2019etre envoye.';
@@ -123,8 +107,6 @@ export class NewsletterController {
   async unsubscribeEndpoint(
     @Query('token') token: string,
   ): Promise<{ status: string }> {
-    // Geste humain delibere : l'accuse confirme a l'abonne que son
-    // retrait a bien abouti.
     return this.handleUnsubscribe(token, { sendAck: true });
   }
 
@@ -149,17 +131,10 @@ export class NewsletterController {
   async unsubscribeOneClickEndpoint(
     @Query('token') token: string,
   ): Promise<{ status: string }> {
-    // Sur une PR dont l'objet est la delivrabilite, une trace dediee est
-    // le seul moyen de constater que le bouton natif fonctionne — ou
-    // qu'il n'est jamais appele.
     this.logger.log('Newsletter one-click unsubscribe received');
     return this.handleUnsubscribe(token, { sendAck: false });
   }
 
-  /**
-   * Chemin commun aux deux canaux de desabonnement : seul l'envoi de
-   * l'accuse les distingue.
-   */
   private async handleUnsubscribe(
     token: string,
     options: UnsubscribeNewsletterOptions,
@@ -169,11 +144,6 @@ export class NewsletterController {
     return { status: result.status };
   }
 
-  /**
-   * Normalise la reponse pour les tokens mal formes : retourne 404 au
-   * lieu de 400 pour eviter la distinction oracle entre "format
-   * invalide" et "token inconnu".
-   */
   private assertValidToken(token: string | undefined): void {
     if (!token || !UUID_V4_REGEX.test(token)) {
       throw new NotFoundException('Invalid or expired token');

@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
 
-/** DTO HTTP pour definir un mot de passe sur un compte Google-only.
- *  userId est injecte par le controller depuis le JWT — jamais expose dans le body. */
+/** userId est injecte par le controller depuis le JWT — jamais expose dans le body. */
 export class SetPasswordDto {
   @ApiProperty({ example: 'NewPassword456!' })
   @IsString()

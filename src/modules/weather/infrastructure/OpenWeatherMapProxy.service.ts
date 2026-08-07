@@ -9,22 +9,16 @@ import type {
 import { OPENWEATHERMAP_API_KEY } from '../domain/token';
 import { WeatherCache } from './weather-cache';
 
-/** Delai d'attente maximal pour les appels OpenWeatherMap (ms). */
 const FETCH_TIMEOUT_MS = 8_000;
 
-/** TTL du cache pour les donnees courantes (10 minutes). */
 const CURRENT_TTL_MS = 10 * 60 * 1_000;
 
-/** TTL du cache pour les previsions (30 minutes). */
 const FORECAST_TTL_MS = 30 * 60 * 1_000;
 
-/** URL de base de l'API OpenWeatherMap. */
 const OWM_BASE = 'https://api.openweathermap.org';
 
-/** Facteur de conversion m/s vers km/h. */
 const MS_TO_KMH = 3.6;
 
-/** Facteur de conversion metres vers kilometres. */
 const M_TO_KM = 1_000;
 
 /**
@@ -41,7 +35,6 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     private readonly apiKey: string,
   ) {}
 
-  /** Recupere les donnees meteo detaillees courantes. */
   async getCurrentDetailed(
     latitude: number,
     longitude: number,
@@ -60,7 +53,6 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     return result;
   }
 
-  /** Recupere les previsions detaillees. */
   async getForecastDetailed(
     latitude: number,
     longitude: number,
@@ -79,7 +71,6 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     return result;
   }
 
-  /** Convertit la reponse current de l'API OWM en objet de domaine. */
   private mapCurrentResponse(data: OWMCurrentResponse): DetailedCurrentWeather {
     const weather = data.weather?.[0];
     const now = data.dt;
@@ -115,7 +106,6 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     };
   }
 
-  /** Convertit la reponse forecast de l'API OWM en objet de domaine. */
   private mapForecastResponse(
     data: OWMForecastResponse,
   ): DetailedForecastResult {
@@ -159,7 +149,6 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     };
   }
 
-  /** Agrege les donnees horaires en previsions journalieres. */
   private aggregateDaily(hourly: DetailedHourlyItem[]): DetailedDailyItem[] {
     const byDay = new Map<string, DetailedHourlyItem[]>();
 
@@ -176,7 +165,6 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     const result: DetailedDailyItem[] = [];
     for (const [date, items] of byDay) {
       const temps = items.map((i) => i.temperature);
-      // Choisir la condition dominante a midi (ou la premiere disponible)
       const midItem =
         items.find((i) => i.time.includes('T12:')) ??
         items.find((i) => i.time.includes('T15:')) ??
@@ -196,7 +184,6 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     return result;
   }
 
-  /** Effectue un appel HTTP GET avec timeout et gestion d'erreurs. */
   private async fetchJson<T>(url: string): Promise<T> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -225,8 +212,6 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     }
   }
 }
-
-// --- Types internes pour les reponses brutes de l'API OWM ---
 
 interface OWMWeatherCondition {
   id: number;

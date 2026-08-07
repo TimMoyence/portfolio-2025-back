@@ -82,16 +82,12 @@ describe('AuditExpertReportMailer', () => {
     expect(call.attachments[0].content).toBe(pdf);
     expect(call.text).toContain('audit-42');
     expect(call.text).toContain('Synthese expert detaillee');
-    // Inclut le draft mail client
     expect(call.text).toContain(
       'Subject : Resultats audit — actions prioritaires',
     );
     expect(call.text).toContain('Voici les 3 axes majeurs');
-    // Inclut les findings cross-page
     expect(call.text).toContain('Canonicals inconsistantes');
-    // Inclut le backlog
     expect(call.text).toContain('Corriger canonicals');
-    // Inclut les internal notes
     expect(call.text).toContain('refuse une refonte');
   });
 

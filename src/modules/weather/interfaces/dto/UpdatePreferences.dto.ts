@@ -14,7 +14,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-/** DTO des preferences d'unites de mesure. */
 export class UnitPreferencesDto {
   @ApiProperty({
     example: 'celsius',
@@ -50,7 +49,6 @@ export class UnitPreferencesDto {
   pressure?: 'hpa' | 'inhg';
 }
 
-/** DTO d'une ville favorite. */
 export class FavoriteCityDto {
   @ApiProperty({ example: 'Paris', description: 'Nom de la ville' })
   @IsString()
@@ -75,7 +73,6 @@ export class FavoriteCityDto {
   country: string;
 }
 
-/** DTO de mise a jour des preferences meteo. */
 export class UpdatePreferencesDto {
   @ApiProperty({
     example: 'curious',

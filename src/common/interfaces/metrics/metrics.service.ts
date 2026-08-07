@@ -6,14 +6,6 @@ import {
   collectDefaultMetrics,
 } from 'prom-client';
 
-/**
- * Service de metriques Prometheus.
- *
- * Gere le registre Prometheus, active la collecte des metriques par defaut
- * (CPU, memoire, event loop, GC) et expose des metriques HTTP custom :
- * - `http_requests_total` : compteur de requetes HTTP
- * - `http_request_duration_seconds` : histogramme de duree des requetes
- */
 @Injectable()
 export class MetricsService implements OnModuleInit {
   private readonly registry: Registry;
@@ -41,7 +33,6 @@ export class MetricsService implements OnModuleInit {
       registers: [this.registry],
     });
 
-    // Tokens LLM (audit Growth + futurs usages IA). Type = input|output|cached.
     this.llmTokensTotal = new Counter({
       name: 'llm_tokens_total',
       help: 'Nombre total de tokens LLM consommes',
@@ -65,22 +56,18 @@ export class MetricsService implements OnModuleInit {
     });
   }
 
-  /** Active la collecte des metriques par defaut au demarrage du module. */
   onModuleInit(): void {
     collectDefaultMetrics({ register: this.registry });
   }
 
-  /** Retourne le registre Prometheus. */
   getRegistry(): Registry {
     return this.registry;
   }
 
-  /** Retourne les metriques formatees pour Prometheus (text/plain). */
   async getMetrics(): Promise<string> {
     return this.registry.metrics();
   }
 
-  /** Retourne le content-type attendu par Prometheus. */
   getContentType(): string {
     return this.registry.contentType;
   }

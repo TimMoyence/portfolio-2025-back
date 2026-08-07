@@ -1,4 +1,3 @@
-// src/database/data-source.ts
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 // Charge .env seulement en dev/local. En prod, Compose fournit deja les vars.

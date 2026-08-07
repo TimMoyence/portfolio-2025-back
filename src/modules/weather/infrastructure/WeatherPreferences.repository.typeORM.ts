@@ -10,7 +10,6 @@ import type {
 import { WeatherUserPreferences } from '../domain/WeatherUserPreferences';
 import { WeatherUserPreferencesEntity } from './entities/WeatherUserPreferences.entity';
 
-/** Implementation TypeORM du repository de preferences meteo. */
 @Injectable()
 export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesRepository {
   constructor(
@@ -18,14 +17,12 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
     private readonly repo: Repository<WeatherUserPreferencesEntity>,
   ) {}
 
-  /** Recherche les preferences d'un utilisateur par son identifiant. */
   async findByUserId(userId: string): Promise<WeatherUserPreferences | null> {
     const entity = await this.repo.findOne({ where: { userId } });
     if (!entity) return null;
     return this.toDomain(entity);
   }
 
-  /** Cree de nouvelles preferences en base. */
   async create(prefs: WeatherUserPreferences): Promise<WeatherUserPreferences> {
     const entity = this.repo.create({
       userId: prefs.userId,
@@ -42,7 +39,6 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
     return this.toDomain(saved);
   }
 
-  /** Met a jour partiellement les preferences d'un utilisateur. */
   async update(
     id: string,
     data: Partial<WeatherUserPreferences>,
@@ -76,7 +72,6 @@ export class WeatherPreferencesRepositoryTypeORM implements IWeatherPreferencesR
     return this.toDomain(updated);
   }
 
-  /** Convertit une entite TypeORM en objet de domaine. */
   private toDomain(
     entity: WeatherUserPreferencesEntity,
   ): WeatherUserPreferences {

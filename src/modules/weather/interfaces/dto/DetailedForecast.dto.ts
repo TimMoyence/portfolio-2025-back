@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { DetailedForecastResult } from '../../domain/IOpenWeatherMapProxy.port';
 
-/** DTO de reponse des previsions detaillees. */
 export class DetailedForecastDto {
   @ApiProperty({ description: 'Nom de la ville' })
   cityName: string;
@@ -24,7 +23,6 @@ export class DetailedForecastDto {
   @ApiProperty({ description: 'Agregation journaliere' })
   daily: unknown[];
 
-  /** Convertit un objet de domaine en DTO de reponse. */
   static fromDomain(data: DetailedForecastResult): DetailedForecastDto {
     const dto = new DetailedForecastDto();
     Object.assign(dto, data);

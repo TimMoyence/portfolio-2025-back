@@ -17,28 +17,8 @@ import {
 } from './toolkit-html/toolkit-html.utils';
 import { ACCENT } from './toolkit-html/toolkit-palette';
 
-/**
- * Construit le document HTML complet utilise par Puppeteer pour generer le
- * PDF du guide IA personnalise. Toute la mise en page est faite en CSS
- * (grille, flex, variables, typographie systeme) — aucune coordonnee manuelle.
- *
- * Post-T4 : la charte graphique (palette, CSS, utils) a ete extraite dans
- * `toolkit-html/` pour que le service ne porte plus que l'assemblage des
- * 7 sections (couverture, stats, cheatsheet, prompts, workflows, templates,
- * prompt genere) — ~350L au lieu de 1160L.
- *
- * Le document est organise en sections paginees A4 :
- *  0. Couverture (gradient + titre serif + badges profil)
- *  1. Page "Pourquoi ce guide" avec stats solopreneurs 2026
- *  2. Cheatsheet (16 outils par categorie, chips couleur)
- *  3. Prompts (cartes enrichies avec description, example, tip)
- *  4. Workflows (etapes numerotees + chips outils)
- *  5. Templates (grille, bordure couleur plateforme)
- *  6. Prompt genere (optionnel, sur mesure)
- */
 @Injectable()
 export class ToolkitHtmlRendererService {
-  /** Construit le document HTML complet pour un contenu de toolkit. */
   render(content: ToolkitContent): string {
     const date = new Date().toLocaleDateString('fr-FR', {
       year: 'numeric',
@@ -75,11 +55,6 @@ export class ToolkitHtmlRendererService {
 </html>`;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Sections                                                           */
-  /* ------------------------------------------------------------------ */
-
-  /** Page de couverture: titre serif, gradient deco, badges profil. */
   private renderCover(content: ToolkitContent, date: string): string {
     const recap = content.recap;
     const firstName = escapeHtml(recap.firstName);
@@ -129,7 +104,6 @@ export class ToolkitHtmlRendererService {
     </section>`;
   }
 
-  /** Page "Pourquoi ce guide ?" avec stats solopreneurs. */
   private renderStatsPage(): string {
     return `<section class="page section stats-page">
       ${sectionHeader('00', 'Pourquoi ce guide ?', 'Les chiffres qui changent tout en 2026')}
@@ -167,7 +141,6 @@ export class ToolkitHtmlRendererService {
     </section>`;
   }
 
-  /** Page cheatsheet: outils groupes par categorie en cartes. */
   private renderCheatsheet(cheatsheet: CheatsheetEntry[]): string {
     if (!cheatsheet.length) return '';
 
@@ -199,7 +172,6 @@ export class ToolkitHtmlRendererService {
     </section>`;
   }
 
-  /** Carte individuelle pour un outil dans la cheatsheet. */
   private renderToolCard(tool: CheatsheetEntry, soloCard = false): string {
     const used = tool.alreadyUsed
       ? '<span class="chip chip-used">Déjà utilisé</span>'
@@ -223,7 +195,6 @@ export class ToolkitHtmlRendererService {
     </article>`;
   }
 
-  /** Page prompts avec cartes enrichies (description / code / example / tip). */
   private renderPrompts(prompts: PromptEntry[]): string {
     if (!prompts.length) return '';
 
@@ -263,7 +234,6 @@ export class ToolkitHtmlRendererService {
     </section>`;
   }
 
-  /** Page workflows automatises avec etapes numerotees. */
   private renderWorkflows(workflows: WorkflowEntry[]): string {
     if (!workflows.length) return '';
 
@@ -308,7 +278,6 @@ export class ToolkitHtmlRendererService {
     </section>`;
   }
 
-  /** Page templates avec cartes colorees selon la plateforme. */
   private renderTemplates(templates: TemplateEntry[]): string {
     if (!templates.length) return '';
 
@@ -340,7 +309,6 @@ export class ToolkitHtmlRendererService {
     </section>`;
   }
 
-  /** Page bonus avec le prompt genere par l'IA. */
   private renderGeneratedPrompt(generatedPrompt: string): string {
     return `<section class="page section">
       ${sectionHeader('05', '✨ Votre prompt', 'Sur mesure pour votre activité')}

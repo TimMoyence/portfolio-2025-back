@@ -5,7 +5,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-/** Entite TypeORM pour la table telegram_links. */
 @Entity({ name: 'telegram_links' })
 export class TelegramLinkEntity {
   @PrimaryGeneratedColumn('uuid')

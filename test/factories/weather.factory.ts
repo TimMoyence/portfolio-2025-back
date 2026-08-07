@@ -32,7 +32,6 @@ import type { GetWeatherAlertsUseCase } from '../../src/modules/weather/applicat
 import type { GetCurrentDetailedWeatherUseCase } from '../../src/modules/weather/application/GetCurrentDetailedWeather.useCase';
 import type { GetForecastDetailedWeatherUseCase } from '../../src/modules/weather/application/GetForecastDetailedWeather.useCase';
 
-/** Construit un objet WeatherUserPreferences avec des valeurs par defaut. */
 export function buildWeatherPreferences(
   overrides?: Partial<{
     id: string;
@@ -75,7 +74,6 @@ export function buildWeatherPreferences(
   });
 }
 
-/** Cree un mock du repository de preferences meteo avec tous les jest.fn(). */
 export function createMockWeatherPreferencesRepo(): jest.Mocked<IWeatherPreferencesRepository> {
   return {
     findByUserId: jest.fn(),
@@ -84,7 +82,6 @@ export function createMockWeatherPreferencesRepo(): jest.Mocked<IWeatherPreferen
   };
 }
 
-/** Construit un objet DetailedCurrentWeather avec des valeurs par defaut. */
 export function buildDetailedCurrentWeather(
   overrides?: Partial<DetailedCurrentWeather>,
 ): DetailedCurrentWeather {
@@ -117,7 +114,6 @@ export function buildDetailedCurrentWeather(
   };
 }
 
-/** Construit un element horaire detaille par defaut. */
 export function buildDetailedHourlyItem(
   overrides?: Partial<DetailedHourlyItem>,
 ): DetailedHourlyItem {
@@ -145,7 +141,6 @@ export function buildDetailedHourlyItem(
   };
 }
 
-/** Construit un element journalier detaille par defaut. */
 export function buildDetailedDailyItem(
   overrides?: Partial<DetailedDailyItem>,
 ): DetailedDailyItem {
@@ -161,7 +156,6 @@ export function buildDetailedDailyItem(
   };
 }
 
-/** Construit un resultat de previsions detaillees par defaut. */
 export function buildDetailedForecastResult(
   overrides?: Partial<DetailedForecastResult>,
 ): DetailedForecastResult {
@@ -177,7 +171,6 @@ export function buildDetailedForecastResult(
   };
 }
 
-/** Cree un mock du proxy OpenWeatherMap avec tous les jest.fn(). */
 export function createMockOpenWeatherMapProxy(): jest.Mocked<IOpenWeatherMapProxy> {
   return {
     getCurrentDetailed: jest.fn(),
@@ -185,7 +178,6 @@ export function createMockOpenWeatherMapProxy(): jest.Mocked<IOpenWeatherMapProx
   };
 }
 
-/** Construit un resultat de qualite de l'air avec des valeurs par defaut. */
 export function buildAirQualityResult(
   overrides?: Partial<AirQualityResult>,
 ): AirQualityResult {
@@ -210,7 +202,6 @@ export function buildAirQualityResult(
   };
 }
 
-/** Construit un resultat de previsions enrichi avec des valeurs par defaut. */
 export function buildForecastResult(
   overrides?: Partial<ForecastResult>,
 ): ForecastResult {
@@ -263,7 +254,6 @@ export function buildForecastResult(
   };
 }
 
-/** Construit un resultat d'ensemble multi-modeles avec des valeurs par defaut. */
 export function buildEnsembleResult(
   overrides?: Partial<EnsembleResult>,
 ): EnsembleResult {
@@ -301,7 +291,6 @@ export function buildEnsembleResult(
   };
 }
 
-/** Construit un resultat de donnees historiques avec des valeurs par defaut. */
 export function buildHistoricalResult(
   overrides?: Partial<HistoricalResult>,
 ): HistoricalResult {
@@ -317,7 +306,6 @@ export function buildHistoricalResult(
   };
 }
 
-/** Construit un resultat d'alertes meteo avec des valeurs par defaut. */
 export function buildWeatherAlertResult(
   overrides?: Partial<WeatherAlertResult>,
 ): WeatherAlertResult {
@@ -335,7 +323,6 @@ export function buildWeatherAlertResult(
   };
 }
 
-/** Cree un mock du proxy meteo Open-Meteo avec tous les jest.fn(). */
 export function createMockWeatherProxy(): jest.Mocked<IWeatherProxy> {
   return {
     searchCity: jest.fn(),
@@ -347,7 +334,6 @@ export function createMockWeatherProxy(): jest.Mocked<IWeatherProxy> {
   };
 }
 
-/** Typage des mocks de use cases du module Weather. */
 export interface MockWeatherUseCases {
   geocoding: jest.Mocked<Pick<GetGeocodingUseCase, 'execute'>>;
   forecast: jest.Mocked<Pick<GetForecastUseCase, 'execute'>>;
@@ -366,7 +352,6 @@ export interface MockWeatherUseCases {
   >;
 }
 
-/** Cree des mocks types pour tous les use cases du WeatherController. */
 export function createMockWeatherUseCases(): MockWeatherUseCases {
   return {
     geocoding: { execute: jest.fn() },

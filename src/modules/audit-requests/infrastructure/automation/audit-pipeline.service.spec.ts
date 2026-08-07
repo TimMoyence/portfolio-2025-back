@@ -23,11 +23,6 @@ jest.mock('./url-normalizer.util', () => ({
   normalizeAuditUrl: jest.fn(),
 }));
 
-/**
- * Fabrique les stubs minimaux pour chaque dependance concrete du pipeline.
- * Les `as unknown as jest.Mocked<T>` sont necessaires car les classes
- * possedent des membres prives non satisfiables par un objet litteral.
- */
 function buildStubDeps(
   repoOverrides?: Partial<jest.Mocked<IAuditRequestsRepository>>,
 ) {
@@ -656,17 +651,13 @@ describe('AuditPipelineService', () => {
       ),
     ).toBe(false);
 
-    // Phase 7 — delivery orchestrator invoked once
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(deliveryOrchestrator.runForAudit).toHaveBeenCalledTimes(1);
 
-    // Phase 3 — llms.txt analysis wired
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(llmsTxtAnalyzer.analyze).toHaveBeenCalledTimes(1);
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(llmsTxtAnalyzer.analyze).toHaveBeenCalledWith('https://example.com');
-
-    // Phase 3 — robots.txt passed to UrlIndexability
 
     const analyzeUrlsCall = urlIndexability.analyzeUrls.mock.calls[0];
     expect(analyzeUrlsCall[1]).toBeDefined();
@@ -674,7 +665,6 @@ describe('AuditPipelineService', () => {
       'User-agent',
     );
 
-    // Phase 3 — llmsTxt result persisted in keyChecks
     const stateWithLlmsTxt = updates.find((state) => {
       const keyChecks = state.keyChecks as Record<string, unknown> | undefined;
       return keyChecks?.llmsTxt !== undefined;

@@ -25,8 +25,6 @@ describe('Redirects aggregate', () => {
     ).toThrow(DomainValidationError);
   });
 
-  // --- requireUrl branches ---
-
   it('devrait refuser une targetUrl non-string', () => {
     expect(() =>
       Redirects.create({
@@ -63,8 +61,6 @@ describe('Redirects aggregate', () => {
     ).toThrow(DomainValidationError);
   });
 
-  // --- resolveEnabled branches ---
-
   it('devrait defaulter enabled a true', () => {
     const redirect = Redirects.create({
       slug: 'test',
@@ -91,8 +87,6 @@ describe('Redirects aggregate', () => {
       }),
     ).toThrow(DomainValidationError);
   });
-
-  // --- resolveClicks branches ---
 
   it('devrait defaulter clicks a 0', () => {
     const redirect = Redirects.create({

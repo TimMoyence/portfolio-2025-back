@@ -5,13 +5,6 @@ import { wrapUntrustedUserPayload } from '../shared/prompt-sanitize.util';
 import { buildUserSummarySystemBlocks } from './section-prompts.builder';
 import type { InvokeTrackedFn } from './cacheable-section.generators';
 
-/**
- * Generateur du resume utilisateur (userSummary). Chemin OpenAI direct
- * sans cache Anthropic : la sortie est simple (1 string) et le prompt
- * principal change peu entre audits — le gain de caching est marginal.
- *
- * Le service parent injecte `invokeTracked` pour les metriques Prometheus.
- */
 export async function generateUserSummary(
   deps: { invokeTracked: InvokeTrackedFn },
   args: {

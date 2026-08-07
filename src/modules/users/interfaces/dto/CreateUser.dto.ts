@@ -14,7 +14,6 @@ import {
 import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
 import { VALID_ROLES } from '../../domain/roles';
 
-/** DTO HTTP pour la creation d'un utilisateur (validation + Swagger). */
 export class CreateUserDto implements CreateUserCommand {
   @ApiProperty({ example: 'john@example.com' })
   @IsEmail()

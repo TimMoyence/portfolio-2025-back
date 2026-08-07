@@ -1,8 +1,3 @@
-/**
- * Score d'indexabilité pour un moteur donné (Google, Bing/ChatGPT,
- * Perplexity, Gemini Overviews). Exprime les forces, les blocages et
- * les opportunités d'amélioration.
- */
 export interface EngineScore {
   readonly engine:
     | 'google'
@@ -16,10 +11,6 @@ export interface EngineScore {
   readonly opportunities: ReadonlyArray<string>;
 }
 
-/**
- * Couverture agrégée par moteur pour l'ensemble du site audité.
- * Chaque champ représente un moteur distinct avec son propre score.
- */
 export interface EngineCoverage {
   readonly google: EngineScore;
   readonly bingChatGpt: EngineScore;

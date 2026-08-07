@@ -131,7 +131,6 @@ describe('AddEntryUseCase', () => {
       date: '2026-03-15',
     });
 
-    // Laisser la microtask fire-and-forget se resoudre.
     await new Promise((resolve) => setImmediate(resolve));
 
     expect(warnSpy).toHaveBeenCalledTimes(1);

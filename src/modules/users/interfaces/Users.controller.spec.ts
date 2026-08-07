@@ -26,8 +26,6 @@ describe('UsersController', () => {
     );
   });
 
-  // --- findAll ---
-
   it('devrait deleguer findAll au use case ListUsers', async () => {
     const users = [
       buildUser(),
@@ -70,8 +68,6 @@ describe('UsersController', () => {
     expect(result[0].hasPassword).toBe(false);
   });
 
-  // --- findOne ---
-
   it('devrait deleguer findOne au use case ListOneUser', async () => {
     const user = buildUser();
     useCases.listOneUser.execute.mockResolvedValue(user);
@@ -90,8 +86,6 @@ describe('UsersController', () => {
 
     expect(result).toBeNull();
   });
-
-  // --- create ---
 
   it('devrait deleguer create au use case CreateUsers', async () => {
     const user = buildUser();
@@ -112,8 +106,6 @@ describe('UsersController', () => {
     expect(result.id).toBe(user.id);
   });
 
-  // --- update ---
-
   it('devrait deleguer update au use case UpdateUsers avec id et dto', async () => {
     const user = buildUser({ firstName: 'Pierre' });
     useCases.updateUsers.execute.mockResolvedValue(user);
@@ -125,8 +117,6 @@ describe('UsersController', () => {
     expect(result.firstName).toBe('Pierre');
   });
 
-  // --- delete ---
-
   it('devrait deleguer delete au use case DeleteUsers', async () => {
     const user = buildUser({ isActive: false });
     useCases.deleteUsers.execute.mockResolvedValue(user);
@@ -136,8 +126,6 @@ describe('UsersController', () => {
     expect(useCases.deleteUsers.execute).toHaveBeenCalledWith('user-1');
     expect(result.isActive).toBe(false);
   });
-
-  // --- Propagation d'erreurs ---
 
   it('devrait propager UserNotFoundError du use case update', async () => {
     const error = new Error('User with id user-999 was not found');

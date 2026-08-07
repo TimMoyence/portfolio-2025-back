@@ -7,7 +7,6 @@ import type {
 } from 'class-validator';
 import { ValidatorConstraint } from 'class-validator';
 
-/** Plage maximale autorisee pour les requetes historiques (365 jours). */
 const MAX_HISTORICAL_RANGE_DAYS = 365;
 
 @ValidatorConstraint({ name: 'historicalDateRange', async: false })
@@ -34,7 +33,6 @@ class HistoricalDateRangeValidator implements ValidatorConstraintInterface {
   }
 }
 
-/** DTO de validation pour les requetes de donnees meteo historiques. */
 export class HistoricalQueryDto {
   @ApiProperty({ example: 48.8566, description: 'Latitude' })
   @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))

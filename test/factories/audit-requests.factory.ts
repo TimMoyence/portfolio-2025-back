@@ -5,7 +5,6 @@ import { AuditRequest } from '../../src/modules/audit-requests/domain/AuditReque
 import type { AuditSnapshot } from '../../src/modules/audit-requests/domain/AuditProcessing';
 import type { LangchainAuditInput } from '../../src/modules/audit-requests/infrastructure/automation/langchain-audit-report.service';
 
-/** Construit un objet AuditRequest domaine avec des valeurs par defaut. */
 export function buildAuditRequest(
   overrides?: Partial<AuditRequest>,
 ): AuditRequest {
@@ -22,7 +21,6 @@ export function buildAuditRequest(
   return Object.assign(request, overrides);
 }
 
-/** Construit un AuditSnapshot avec des valeurs par defaut. */
 export function buildAuditSnapshot(
   overrides?: Partial<AuditSnapshot>,
 ): AuditSnapshot {
@@ -54,7 +52,6 @@ export function buildAuditSnapshot(
   };
 }
 
-/** Cree un mock complet du repository de demandes d'audit. */
 export function createMockAuditRequestsRepo(): jest.Mocked<IAuditRequestsRepository> {
   return {
     create: jest.fn(),
@@ -64,7 +61,6 @@ export function createMockAuditRequestsRepo(): jest.Mocked<IAuditRequestsReposit
   };
 }
 
-/** Cree un mock du notifier d'audit. */
 export function createMockAuditNotifier(): jest.Mocked<IAuditNotifierPort> {
   return {
     sendAuditNotification: jest.fn().mockResolvedValue(undefined),
@@ -73,20 +69,12 @@ export function createMockAuditNotifier(): jest.Mocked<IAuditNotifierPort> {
   };
 }
 
-/** Cree un mock du port de file d'attente des audits. */
 export function createMockAuditQueue(): jest.Mocked<IAuditQueuePort> {
   return {
     enqueue: jest.fn(),
   };
 }
 
-/**
- * Construit un `LangchainAuditInput` avec des valeurs par defaut realistes.
- *
- * Utilise comme fixture partagee pour tous les tests touchant au pipeline
- * LangChain (service monolithique, sous-services apres split C4b, specs
- * d'integration). Override fin-grain possible via `overrides`.
- */
 export function buildLangchainAuditInput(
   overrides?: Partial<LangchainAuditInput>,
 ): LangchainAuditInput {

@@ -3,16 +3,9 @@ import type { IEmailDripScheduler } from '../../src/modules/newsletter/domain/IE
 import type { INewsletterMailer } from '../../src/modules/newsletter/domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../../src/modules/newsletter/domain/INewsletterSubscriberRepository';
 
-/**
- * Construit un abonne newsletter valide. Les overrides permettent de
- * personnaliser n'importe quel champ sans dupliquer la creation.
- */
 export function buildNewsletterSubscriber(
   overrides?: Partial<NewsletterSubscriber>,
 ): NewsletterSubscriber {
-  // Utilise `new Date()` pour que le token de confirmation soit toujours
-  // valide a l'instant du test (TTL 7j). Les tests qui veulent un token
-  // expire overrident `confirmTokenExpiresAt` explicitement.
   const subscriber = NewsletterSubscriber.create({
     email: 'marie@example.com',
     firstName: 'Marie',
@@ -25,11 +18,6 @@ export function buildNewsletterSubscriber(
   return subscriber;
 }
 
-/**
- * Mock du repository avec les 4 operations attendues. Retourne le
- * pattern jest.Mocked strict — Jest TypeScript garantit que chaque
- * methode est bien une `jest.fn()` exploitant les types d'arguments.
- */
 export function createMockNewsletterSubscriberRepo(): jest.Mocked<INewsletterSubscriberRepository> {
   const persisted = buildNewsletterSubscriber();
   persisted.id = 'subscriber-uuid';
@@ -47,7 +35,6 @@ export function createMockNewsletterSubscriberRepo(): jest.Mocked<INewsletterSub
   };
 }
 
-/** Mock du port `INewsletterMailer`. */
 export function createMockNewsletterMailer(): jest.Mocked<INewsletterMailer> {
   return {
     sendConfirmation: jest.fn().mockResolvedValue(undefined),
@@ -56,7 +43,6 @@ export function createMockNewsletterMailer(): jest.Mocked<INewsletterMailer> {
   };
 }
 
-/** Mock du port `IEmailDripScheduler`. */
 export function createMockEmailDripScheduler(): jest.Mocked<IEmailDripScheduler> {
   return {
     schedule: jest.fn().mockResolvedValue(undefined),

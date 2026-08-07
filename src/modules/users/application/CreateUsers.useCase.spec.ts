@@ -178,7 +178,6 @@ describe('CreateUsersUseCase', () => {
     expect(repo.create).toHaveBeenCalledWith(
       expect.objectContaining({ roles: ['sebastian', 'weather'] }),
     );
-    // Pas d'email de verification pour les comptes admin
     expect(
       emailVerificationNotifier.sendVerificationEmail,
     ).not.toHaveBeenCalled();

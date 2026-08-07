@@ -117,7 +117,6 @@ describe('WeatherAlertAnalyzer', () => {
 
   it("limite l'analyse aux 24 premieres heures", () => {
     const forecast = buildForecast();
-    // Ajouter des donnees au-dela de 24h
     forecast.hourly.time.push('2026-04-05T00:00');
     forecast.hourly.wind_gusts_10m!.push(100);
     forecast.hourly.temperature_2m.push(20);
@@ -126,7 +125,6 @@ describe('WeatherAlertAnalyzer', () => {
     forecast.hourly.precipitation.push(0);
 
     const result = analyzer.analyze(forecast);
-    // Le vent a 100 km/h en heure 25 ne doit pas generer d'alerte
     expect(result).toEqual([]);
   });
 });

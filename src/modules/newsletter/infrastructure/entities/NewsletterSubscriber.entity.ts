@@ -1,14 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import type { SubscriptionStatus } from '../../domain/SubscriptionStatus';
 
-/**
- * Entite TypeORM de `newsletter_subscribers`. Contraintes :
- *  - unicite metier (email, source_formation_slug) — un email peut
- *    s'abonner a plusieurs formations distinctes,
- *  - tokens confirm/unsubscribe indexes uniques pour la lecture par
- *    token (endpoints /confirm, /unsubscribe),
- *  - status indexe pour le planificateur drip (filtre `confirmed`).
- */
 @Entity({ name: 'newsletter_subscribers' })
 @Unique('uq_newsletter_email_source', ['email', 'sourceFormationSlug'])
 export class NewsletterSubscriberEntity {

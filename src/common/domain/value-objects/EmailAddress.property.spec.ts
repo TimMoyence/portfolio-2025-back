@@ -1,18 +1,12 @@
 import * as fc from 'fast-check';
 import { EmailAddress } from './EmailAddress';
 
-/**
- * Tests property-based pour le Value Object EmailAddress.
- * Utilise fast-check pour générer des entrées aléatoires et vérifier
- * les invariants du parsing d'emails.
- */
 describe('EmailAddress (property-based)', () => {
   it('devrait accepter tout email valide généré par fast-check', () => {
     fc.assert(
       fc.property(fc.emailAddress(), (email) => {
         const result = EmailAddress.parse(email);
         expect(result).not.toBeNull();
-        // Vérifier que l'email normalisé est en lowercase
         expect(result!.value).toBe(email.toLowerCase());
       }),
     );

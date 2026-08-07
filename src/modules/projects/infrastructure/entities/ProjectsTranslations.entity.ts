@@ -26,7 +26,7 @@ export class ProjectsTranslationsEntity {
   projectId: string;
 
   @Column({ type: 'text' })
-  locale: string; // 'fr' | 'en'
+  locale: string;
 
   @Index()
   @Column({ type: 'text' })

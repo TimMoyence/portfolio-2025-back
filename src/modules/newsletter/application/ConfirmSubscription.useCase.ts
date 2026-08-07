@@ -15,14 +15,6 @@ export interface ConfirmSubscriptionResult {
   readonly alreadyConfirmed: boolean;
 }
 
-/**
- * Use-case declenche lors du clic sur le magic link de l'email de
- * confirmation. Idempotent : rejouer le meme token apres confirmation
- * ne declenche ni nouvelle mutation ni nouvel email de bienvenue.
- *
- * Effet de bord cle : planifie la sequence drip apres confirmation
- * effective (jamais avant — on evite d'ecrire aux adresses douteuses).
- */
 @Injectable()
 export class ConfirmSubscriptionUseCase {
   private readonly logger = new Logger(ConfirmSubscriptionUseCase.name);
@@ -57,8 +49,6 @@ export class ConfirmSubscriptionUseCase {
     subscriber.confirm();
     const updated = await this.repo.update(subscriber);
 
-    // Fire-and-forget : la confirmation est valide meme si l'un des
-    // side-effects (welcome email, drip scheduling) echoue a chaud.
     void this.mailer
       .sendWelcome(updated)
       .catch((err: unknown) =>

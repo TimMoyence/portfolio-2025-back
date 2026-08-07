@@ -6,7 +6,6 @@ import type {
 import { AuditPdfGeneratorService } from './audit-pdf-generator.service';
 import { AuditReportHtmlRendererService } from './audit-report-html-renderer.service';
 
-// Mock Puppeteer : on ne veut jamais lancer Chromium dans les tests unitaires.
 type PdfOptions = {
   format?: string;
   printBackground?: boolean;
@@ -109,7 +108,6 @@ describe('AuditPdfGeneratorService', () => {
     ).rejects.toThrow('boom');
 
     expect(pageCloseMock).toHaveBeenCalledTimes(1);
-    // Le browser ne doit pas etre ferme en cas d'erreur sur une page
     expect(browserCloseMock).not.toHaveBeenCalled();
   });
 

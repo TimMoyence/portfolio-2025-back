@@ -61,7 +61,6 @@ const AUDIT_REQUESTS_USE_CASES = [
   StreamAuditEventsUseCase,
 ];
 
-// Crawl & analyse technique
 const AUDIT_CRAWL_SERVICES = [
   SafeFetchService,
   HomepageAnalyzerService,
@@ -70,7 +69,6 @@ const AUDIT_CRAWL_SERVICES = [
   DeepUrlAnalysisService,
 ];
 
-// Analyse IA / indexabilité multi-moteurs (Phase 2/3)
 const AUDIT_AI_ANALYSIS_SERVICES = [
   LlmsTxtAnalyzerService,
   AiHeadersAnalyzerService,
@@ -78,7 +76,6 @@ const AUDIT_AI_ANALYSIS_SERVICES = [
   StructuredDataQualityService,
 ];
 
-// Scoring, IA et synthese
 const AUDIT_SYNTHESIS_SERVICES = [
   ScoringService,
   PageAiRecapService,
@@ -87,8 +84,6 @@ const AUDIT_SYNTHESIS_SERVICES = [
   ReportQualityGateService,
 ];
 
-// Abstractions LLM partagees (C4a) — factory ChatOpenAI + factory Anthropic
-// (prompt caching ephemeral, -70% coup input tokens) + limiter d'execution.
 const AUDIT_LLM_ABSTRACTIONS = [
   {
     provide: CHAT_OPENAI_FACTORY,
@@ -105,7 +100,6 @@ const AUDIT_LLM_ABSTRACTIONS = [
   },
 ];
 
-// Orchestration et queue
 const AUDIT_ORCHESTRATION_SERVICES = [
   AuditDeliveryOrchestrator,
   AuditPipelineService,
@@ -113,7 +107,6 @@ const AUDIT_ORCHESTRATION_SERVICES = [
   AuditWorkerService,
 ];
 
-// Generation PDF (rapport Growth Audit)
 const AUDIT_PDF_SERVICES = [
   AuditReportHtmlRendererService,
   AuditPdfGeneratorService,

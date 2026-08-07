@@ -2,7 +2,6 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-/* ── Legacy modules ────────────────────────────────────────────────── */
 import { CreateCoursesUseCase } from '../src/modules/courses/application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../src/modules/courses/application/ListCourses.useCase';
 import { CoursesController } from '../src/modules/courses/interfaces/Courses.controller';
@@ -16,7 +15,6 @@ import { CreateServicesUseCase } from '../src/modules/services/application/Creat
 import { ListServicesUseCase } from '../src/modules/services/application/ListServices.useCase';
 import { ServicesController } from '../src/modules/services/interfaces/Services.controller';
 
-/* ── Weather module ────────────────────────────────────────────────── */
 import { WeatherController } from '../src/modules/weather/interfaces/Weather.controller';
 import { GetGeocodingUseCase } from '../src/modules/weather/application/GetGeocoding.useCase';
 import { GetForecastUseCase } from '../src/modules/weather/application/GetForecast.useCase';
@@ -31,7 +29,6 @@ import { GetCurrentDetailedWeatherUseCase } from '../src/modules/weather/applica
 import { GetForecastDetailedWeatherUseCase } from '../src/modules/weather/application/GetForecastDetailedWeather.useCase';
 import { OPENWEATHERMAP_PROXY } from '../src/modules/weather/domain/token';
 
-/* ── Users module ──────────────────────────────────────────────────── */
 import { UsersController } from '../src/modules/users/interfaces/Users.controller';
 import { ListUsersUseCase } from '../src/modules/users/application/ListUsers.useCase';
 import { ListOneUserUseCase } from '../src/modules/users/application/ListOneUser.useCase';
@@ -39,7 +36,6 @@ import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers
 import { UpdateUsersUseCase } from '../src/modules/users/application/UpdateUsers.useCase';
 import { DeleteUsersUseCase } from '../src/modules/users/application/DeleteUsers.useCase';
 
-/* ── Auth module ───────────────────────────────────────────────────── */
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
 import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/AuthenticateGoogleUser.useCase';
@@ -55,24 +51,19 @@ import { AuthAuditLogger } from '../src/modules/users/application/services/AuthA
 import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
 import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
 
-/* ── Contacts module ───────────────────────────────────────────────── */
 import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
 import { CreateContactsUseCase } from '../src/modules/contacts/application/CreateContacts.useCase';
 
-/* ── CookieConsents module ─────────────────────────────────────────── */
 import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { CreateCookieConsentsUseCase } from '../src/modules/cookie-consents/application/CreateCookieConsents.useCase';
 
-/* ── AuditRequests module ──────────────────────────────────────────── */
 import { AuditsController } from '../src/modules/audit-requests/interfaces/Audits.controller';
 import { CreateAuditRequestsUseCase } from '../src/modules/audit-requests/application/CreateAuditRequests.useCase';
 import { GetAuditSummaryUseCase } from '../src/modules/audit-requests/application/GetAuditSummary.useCase';
 import { StreamAuditEventsUseCase } from '../src/modules/audit-requests/application/StreamAuditEvents.useCase';
 
-/* ── Guard ─────────────────────────────────────────────────────────── */
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 
-/** Stub factory : { execute: jest.fn() } */
 const stub = () => ({ execute: jest.fn() });
 
 describe('OpenAPI legacy contract (phase 11)', () => {
@@ -156,10 +147,6 @@ describe('OpenAPI legacy contract (phase 11)', () => {
   });
 });
 
-/* ================================================================== */
-/*  Core modules — contrats OpenAPI                                    */
-/* ================================================================== */
-
 describe('OpenAPI core contract', () => {
   let app: INestApplication;
   let document: ReturnType<typeof SwaggerModule.createDocument>;
@@ -175,10 +162,8 @@ describe('OpenAPI core contract', () => {
         AuditsController,
       ],
       providers: [
-        /* ── Guards ─────────────────────────────────────── */
         RolesGuard,
 
-        /* ── Weather ────────────────────────────────────── */
         { provide: GetGeocodingUseCase, useValue: stub() },
         { provide: GetForecastUseCase, useValue: stub() },
         { provide: GetAirQualityUseCase, useValue: stub() },
@@ -192,14 +177,12 @@ describe('OpenAPI core contract', () => {
         { provide: GetForecastDetailedWeatherUseCase, useValue: stub() },
         { provide: OPENWEATHERMAP_PROXY, useValue: {} },
 
-        /* ── Users ──────────────────────────────────────── */
         { provide: ListUsersUseCase, useValue: stub() },
         { provide: ListOneUserUseCase, useValue: stub() },
         { provide: CreateUsersUseCase, useValue: stub() },
         { provide: UpdateUsersUseCase, useValue: stub() },
         { provide: DeleteUsersUseCase, useValue: stub() },
 
-        /* ── Auth ───────────────────────────────────────── */
         { provide: AuthenticateUserUseCase, useValue: stub() },
         { provide: AuthenticateGoogleUserUseCase, useValue: stub() },
         { provide: ChangePasswordUseCase, useValue: stub() },
@@ -214,13 +197,10 @@ describe('OpenAPI core contract', () => {
         { provide: ResendVerificationEmailUseCase, useValue: stub() },
         AuthAuditLogger,
 
-        /* ── Contacts ───────────────────────────────────── */
         { provide: CreateContactsUseCase, useValue: stub() },
 
-        /* ── CookieConsents ─────────────────────────────── */
         { provide: CreateCookieConsentsUseCase, useValue: stub() },
 
-        /* ── AuditRequests ──────────────────────────────── */
         { provide: CreateAuditRequestsUseCase, useValue: stub() },
         { provide: GetAuditSummaryUseCase, useValue: stub() },
         { provide: StreamAuditEventsUseCase, useValue: stub() },
@@ -245,7 +225,6 @@ describe('OpenAPI core contract', () => {
     await app.close();
   });
 
-  /** Retourne toutes les entrees OpenAPI dont le path contient le segment donne. */
   const pathsContaining = (segment: string) =>
     Object.fromEntries(
       Object.entries(document.paths).filter(([p]) => p.includes(`/${segment}`)),

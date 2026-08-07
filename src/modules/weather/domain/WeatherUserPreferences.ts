@@ -1,26 +1,19 @@
-/** Niveau d'experience de l'utilisateur avec le module meteo. */
 export type WeatherLevel = 'discovery' | 'curious' | 'expert';
 
-/** Unite de temperature. */
 export type TemperatureUnit = 'celsius' | 'fahrenheit';
 
-/** Unite de vitesse (vent). */
 export type SpeedUnit = 'kmh' | 'mph';
 
-/** Unite de pression atmospherique. */
 export type PressureUnit = 'hpa' | 'inhg';
 
-/** Granularite de la vue d'ensemble hebdomadaire. */
 export type OverviewGranularity = 'day' | '3h' | '1h';
 
-/** Preferences d'unites de mesure. */
 export interface UnitPreferences {
   temperature: TemperatureUnit;
   speed: SpeedUnit;
   pressure: PressureUnit;
 }
 
-/** Ville favorite enregistree par l'utilisateur. */
 export interface FavoriteCity {
   name: string;
   latitude: number;
@@ -28,14 +21,12 @@ export interface FavoriteCity {
   country: string;
 }
 
-/** Valeurs par defaut pour les preferences d'unites. */
 export const DEFAULT_UNITS: UnitPreferences = {
   temperature: 'celsius',
   speed: 'kmh',
   pressure: 'hpa',
 };
 
-/** Entite de domaine representant les preferences meteo d'un utilisateur. */
 export class WeatherUserPreferences {
   id: string;
   userId: string;
@@ -78,7 +69,6 @@ export class WeatherUserPreferences {
     this.updatedAt = props.updatedAt;
   }
 
-  /** Cree des preferences par defaut pour un nouvel utilisateur. */
   static create(userId: string): WeatherUserPreferences {
     const now = new Date();
     return new WeatherUserPreferences({
@@ -97,7 +87,6 @@ export class WeatherUserPreferences {
     });
   }
 
-  /** Reconstruit une instance a partir de donnees persistees. */
   static fromPersistence(props: {
     id: string;
     userId: string;

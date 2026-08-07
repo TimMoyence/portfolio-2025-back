@@ -37,7 +37,6 @@ describe('DetailedCurrentWeatherDto', () => {
 
     const dto = DetailedCurrentWeatherDto.fromDomain(domain);
 
-    // Verifie que chaque propriete du domaine est presente dans le DTO
     for (const key of Object.keys(domain)) {
       expect(dto).toHaveProperty(key, domain[key as keyof typeof domain]);
     }

@@ -1,6 +1,5 @@
 import { DomainValidationError } from '../errors/DomainValidationError';
 
-/** Valide et retourne un texte obligatoire dans les bornes min/max. */
 export function requireText(
   raw: unknown,
   field: string,
@@ -15,7 +14,6 @@ export function requireText(
   return value;
 }
 
-/** Valide et retourne un texte optionnel dans la borne max. */
 export function optionalText(
   raw: unknown,
   field: string,
@@ -30,7 +28,6 @@ export function optionalText(
   return value;
 }
 
-/** Retourne une metadonnee optionnelle (ip, userAgent, referer) trimmee, ou null. */
 export function optionalMetadata(raw: unknown): string | null {
   if (raw === null || raw === undefined) return null;
   if (typeof raw !== 'string') return null;

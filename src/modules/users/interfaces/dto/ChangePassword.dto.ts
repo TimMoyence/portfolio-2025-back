@@ -8,7 +8,6 @@ import {
 } from 'class-validator';
 import type { ChangePasswordCommand } from '../../application/dto/ChangePassword.command';
 
-/** DTO HTTP pour le changement de mot de passe (validation + Swagger). */
 export class ChangePasswordDto implements ChangePasswordCommand {
   @ApiPropertyOptional({
     example: 'user-uuid',

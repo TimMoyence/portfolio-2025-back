@@ -76,13 +76,6 @@ const SEBASTIAN_BADGES_AUTOMATION_PROVIDERS = [
   BadgesEvaluationWorkerService,
 ];
 
-/**
- * Module NestJS du domaine Sebastian.
- *
- * Enregistre les entites TypeORM, les repositories,
- * les use cases, le controleur REST et le bot Telegram
- * pour le suivi de consommation.
- */
 @Module({
   imports: [
     TypeOrmModule.forFeature([

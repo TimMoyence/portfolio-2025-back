@@ -2,7 +2,6 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import type { UpdateProfileCommand } from '../../application/dto/UpdateProfile.command';
 
-/** DTO HTTP pour la mise a jour du profil utilisateur (self-update, validation + Swagger). */
 export class UpdateProfileDto implements UpdateProfileCommand {
   @ApiPropertyOptional({ example: 'Jean', minLength: 2 })
   @IsOptional()

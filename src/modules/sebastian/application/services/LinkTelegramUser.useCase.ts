@@ -6,13 +6,11 @@ import { USERS_REPOSITORY } from '../../../users/domain/token';
 import { TelegramLink } from '../../domain/TelegramLink';
 import type { LinkTelegramCommand } from '../dto/LinkTelegram.command';
 
-/** Resultat du lien Telegram-utilisateur. */
 export interface LinkTelegramResult {
   link: TelegramLink;
   firstName: string;
 }
 
-/** Lie un compte Telegram a un utilisateur du portfolio via son email. */
 @Injectable()
 export class LinkTelegramUserUseCase {
   constructor(
@@ -22,7 +20,6 @@ export class LinkTelegramUserUseCase {
     private readonly usersRepo: IUsersRepository,
   ) {}
 
-  /** Execute le lien entre un compte Telegram et un utilisateur existant. */
   async execute(command: LinkTelegramCommand): Promise<LinkTelegramResult> {
     const user = await this.usersRepo.findByEmail(
       command.email.trim().toLowerCase(),

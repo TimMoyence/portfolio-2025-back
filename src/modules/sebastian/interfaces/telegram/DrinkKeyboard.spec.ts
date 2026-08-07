@@ -10,10 +10,10 @@ describe('DrinkKeyboard', () => {
       const kb = buildDrinkTypeKeyboard();
       expect(kb.inline_keyboard).toBeDefined();
       expect(kb.inline_keyboard).toHaveLength(4);
-      expect(kb.inline_keyboard[0]).toHaveLength(2); // Biere, Vin
-      expect(kb.inline_keyboard[1]).toHaveLength(2); // Champagne, Pinte
-      expect(kb.inline_keyboard[2]).toHaveLength(2); // Cocktail, Spiritueux
-      expect(kb.inline_keyboard[3]).toHaveLength(2); // Cidre, Cafe
+      expect(kb.inline_keyboard[0]).toHaveLength(2);
+      expect(kb.inline_keyboard[1]).toHaveLength(2);
+      expect(kb.inline_keyboard[2]).toHaveLength(2);
+      expect(kb.inline_keyboard[3]).toHaveLength(2);
     });
   });
 

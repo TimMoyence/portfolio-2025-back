@@ -4,7 +4,6 @@ import type { ISebastianGoalRepository } from '../../domain/ISebastianGoal.repos
 import { SEBASTIAN_GOAL_REPOSITORY } from '../../domain/token';
 import type { SetGoalCommand } from '../dto/SetGoal.command';
 
-/** Cree un objectif de consommation via le domaine et le persiste. */
 @Injectable()
 export class SetGoalUseCase {
   constructor(
@@ -12,7 +11,6 @@ export class SetGoalUseCase {
     private readonly goalRepo: ISebastianGoalRepository,
   ) {}
 
-  /** Execute la creation d'un objectif de consommation. */
   async execute(command: SetGoalCommand): Promise<SebastianGoal> {
     const goal = SebastianGoal.create({
       userId: command.userId,

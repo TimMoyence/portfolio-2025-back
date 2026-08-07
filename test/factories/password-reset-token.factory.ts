@@ -1,7 +1,6 @@
 import type { IPasswordResetTokensRepository } from '../../src/modules/users/domain/IPasswordResetTokens.repository';
 import type { PasswordResetToken } from '../../src/modules/users/domain/PasswordResetToken';
 
-/** Construit un jeton de reset avec des valeurs par defaut. */
 export function buildPasswordResetToken(
   overrides?: Partial<PasswordResetToken>,
 ): PasswordResetToken {
@@ -18,7 +17,6 @@ export function buildPasswordResetToken(
   };
 }
 
-/** Cree un mock complet du repository des jetons de reset. */
 export function createMockPasswordResetTokensRepo(): jest.Mocked<IPasswordResetTokensRepository> {
   return {
     create: jest.fn(),

@@ -1,6 +1,5 @@
 import { User } from './User';
 
-/** Port de persistance pour les utilisateurs. */
 export interface IUsersRepository {
   findAll(): Promise<User[]>;
   create(data: User): Promise<User>;

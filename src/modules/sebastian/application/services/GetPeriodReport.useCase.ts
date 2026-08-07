@@ -4,22 +4,19 @@ import { SEBASTIAN_ENTRY_REPOSITORY } from '../../domain/token';
 import type { GetPeriodReportQuery } from '../dto/GetPeriodReport.query';
 import type { SebastianEntry } from '../../domain/SebastianEntry';
 
-/** Distribution de consommation par jour de semaine. */
 export interface DayDistribution {
-  dayOfWeek: number; // 0=Sunday, 1=Monday, ..., 6=Saturday
+  dayOfWeek: number;
   alcohol: number;
   coffee: number;
 }
 
-/** Point de la carte thermique journaliere. */
 export interface HeatmapPoint {
-  date: string; // YYYY-MM-DD
+  date: string;
   alcohol: number;
   coffee: number;
   combined: number;
 }
 
-/** Resultat complet du rapport de periode. */
 export interface PeriodReportResult {
   period: 'week' | 'month' | 'quarter';
   startDate: string;
@@ -33,12 +30,6 @@ export interface PeriodReportResult {
   heatmap: HeatmapPoint[];
 }
 
-/**
- * Genere un rapport detaille pour une periode donnee (semaine, mois, trimestre).
- *
- * Calcule les totaux, moyennes, meilleur/pire jour, comparaison avec la
- * periode precedente, distribution par jour de semaine et carte thermique.
- */
 @Injectable()
 export class GetPeriodReportUseCase {
   constructor(
@@ -46,7 +37,6 @@ export class GetPeriodReportUseCase {
     private readonly entryRepo: ISebastianEntryRepository,
   ) {}
 
-  /** Execute la generation du rapport de periode. */
   async execute(query: GetPeriodReportQuery): Promise<PeriodReportResult> {
     const { startDate, endDate, previousStart, previousEnd, dayCount } =
       this.computeDateRanges(query.startDate, query.period);
@@ -85,9 +75,6 @@ export class GetPeriodReportUseCase {
     };
   }
 
-  /**
-   * Calcule les plages de dates pour la periode courante et la precedente.
-   */
   private computeDateRanges(
     startDateStr: string,
     period: 'week' | 'month' | 'quarter',
@@ -109,7 +96,6 @@ export class GetPeriodReportUseCase {
         Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 0),
       );
     } else {
-      // quarter : +3 mois
       end = new Date(
         Date.UTC(
           start.getUTCFullYear(),
@@ -121,7 +107,6 @@ export class GetPeriodReportUseCase {
 
     const dayCount = this.daysBetween(start, end) + 1;
 
-    // Periode precedente : meme duree, finissant la veille du startDate
     const prevEnd = new Date(start);
     prevEnd.setUTCDate(prevEnd.getUTCDate() - 1);
     const prevStart = new Date(prevEnd);
@@ -136,7 +121,6 @@ export class GetPeriodReportUseCase {
     };
   }
 
-  /** Calcule les totaux par categorie. */
   private computeTotals(entries: SebastianEntry[]): {
     alcohol: number;
     coffee: number;
@@ -156,7 +140,6 @@ export class GetPeriodReportUseCase {
     return { alcohol, coffee };
   }
 
-  /** Calcule les moyennes quotidiennes arrondies a 2 decimales. */
   private computeDailyAvg(
     totals: { alcohol: number; coffee: number },
     dayCount: number,
@@ -169,7 +152,6 @@ export class GetPeriodReportUseCase {
     };
   }
 
-  /** Construit la carte thermique jour par jour. */
   private buildHeatmap(
     startDateStr: string,
     dayCount: number,
@@ -209,7 +191,6 @@ export class GetPeriodReportUseCase {
     return heatmap;
   }
 
-  /** Identifie le meilleur (consommation min) et le pire (consommation max) jour. */
   private findBestWorst(
     heatmap: HeatmapPoint[],
     fallbackDate: string,
@@ -239,7 +220,6 @@ export class GetPeriodReportUseCase {
     return { best, worst };
   }
 
-  /** Calcule la variation en pourcentage vs la periode precedente (arrondi 1 decimale). */
   private computeComparison(
     currentTotals: { alcohol: number; coffee: number },
     previousEntries: SebastianEntry[],
@@ -266,7 +246,6 @@ export class GetPeriodReportUseCase {
     return { alcoholDelta, coffeeDelta };
   }
 
-  /** Construit la distribution par jour de semaine (0=dimanche ... 6=samedi). */
   private buildDistribution(entries: SebastianEntry[]): DayDistribution[] {
     const dist: DayDistribution[] = Array.from({ length: 7 }, (_, i) => ({
       dayOfWeek: i,
@@ -288,13 +267,11 @@ export class GetPeriodReportUseCase {
     return dist;
   }
 
-  /** Parse une date YYYY-MM-DD en UTC. */
   private parseDate(dateStr: string): Date {
     const [year, month, day] = dateStr.split('-').map(Number);
     return new Date(Date.UTC(year, month - 1, day));
   }
 
-  /** Formate une date en YYYY-MM-DD. */
   private formatDate(date: Date | string): string {
     if (typeof date === 'string') {
       return date.slice(0, 10);
@@ -302,7 +279,6 @@ export class GetPeriodReportUseCase {
     return date.toISOString().slice(0, 10);
   }
 
-  /** Calcule le nombre de jours entre deux dates. */
   private daysBetween(a: Date, b: Date): number {
     const msPerDay = 86_400_000;
     return Math.round((b.getTime() - a.getTime()) / msPerDay);

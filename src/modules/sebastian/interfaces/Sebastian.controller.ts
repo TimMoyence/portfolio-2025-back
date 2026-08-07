@@ -52,12 +52,6 @@ import { BacResponseDto } from './dto/BacResponse.dto';
 import { CreateProfileDto } from './dto/CreateProfile.dto';
 import { ProfileResponseDto } from './dto/ProfileResponse.dto';
 
-/**
- * Controleur REST du module Sebastian.
- *
- * Expose les endpoints pour la gestion des entrees de consommation,
- * des objectifs et des statistiques. Protege par le role 'sebastian'.
- */
 @ApiTags('sebastian')
 @ApiBearerAuth()
 @Controller('sebastian')

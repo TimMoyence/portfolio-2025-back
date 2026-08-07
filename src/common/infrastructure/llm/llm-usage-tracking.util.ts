@@ -1,17 +1,12 @@
 import type { Callbacks } from '@langchain/core/callbacks/manager';
 import type { MetricsService } from '../../interfaces/metrics/metrics.service';
 
-/**
- * Contexte d'invocation LLM pour attribuer les metriques
- * (section du pipeline audit, locale du rapport, modele utilise).
- */
 export interface LlmInvocationContext {
   section: string;
   locale: string;
   model: string;
 }
 
-/** Compteurs de tokens extraits de la reponse LangChain `usage_metadata`. */
 export interface LlmTokenUsage {
   inputTokens: number;
   outputTokens: number;
@@ -19,20 +14,6 @@ export interface LlmTokenUsage {
   cachedInputTokens?: number;
 }
 
-/**
- * Construit un callback LangChain qui capture `usage_metadata` a la fin
- * de chaque appel LLM et le fait suivre au consommateur via `onEnd`.
- *
- * Usage typique (interne a `invokeWithLlmTracking`) :
- * ```ts
- * const handler = buildUsageCallback((usage, latencyMs) => { ... });
- * chain.invoke(messages, { callbacks: [handler] });
- * ```
- *
- * Fonction non-typee (`unknown` handler) car `@langchain/core/callbacks`
- * expose une surface trop stricte pour un extension ad-hoc — on
- * contrainte via l'utilisateur de `invokeWithLlmTracking`.
- */
 function buildUsageCallback(
   onEnd: (usage: LlmTokenUsage | null, latencyMs: number) => void,
 ): {
@@ -58,11 +39,6 @@ function buildUsageCallback(
   };
 }
 
-/**
- * Extrait `usage_metadata` du payload LangChain. Supporte deux formats :
- *   - `llmOutput.tokenUsage` (OpenAI legacy)
- *   - `generations[0][0].message.usage_metadata` (AIMessage format 2024+)
- */
 function extractUsage(output: unknown): LlmTokenUsage | null {
   if (!output || typeof output !== 'object') return null;
 
@@ -110,21 +86,6 @@ function extractUsage(output: unknown): LlmTokenUsage | null {
   return null;
 }
 
-/**
- * Enveloppe une invocation LangChain `chain.invoke(messages, options)` en
- * capturant les metriques d'usage (tokens + latence + statut) via callback
- * LangChain. Pousse les metriques dans `MetricsService` (Prometheus) et
- * retourne le resultat parse tel quel.
- *
- * Couvre les 6 invocations du pipeline audit (4 sections fan-out +
- * generateUserSummary + generateExpertReport). Chaque call site passe
- * juste `{ section: 'executive' | ..., locale, model }`.
- */
-/**
- * Options passees a `chain.invoke`. `callbacks` est type comme
- * `Callbacks` de LangChain, `signal` comme `AbortSignal` standard.
- * Les autres champs `RunnableConfig` ne sont pas utilises ici.
- */
 export interface LlmInvocationOptions {
   signal?: AbortSignal;
   callbacks?: Callbacks;

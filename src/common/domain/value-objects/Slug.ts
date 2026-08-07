@@ -1,6 +1,5 @@
 import { DomainValidationError } from '../errors/DomainValidationError';
 
-/** Value Object representant un slug URL valide (2-120 caracteres, a-z0-9 et tirets). */
 export class Slug {
   private constructor(private readonly value: string) {}
 

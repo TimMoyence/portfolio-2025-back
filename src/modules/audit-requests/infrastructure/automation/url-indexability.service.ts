@@ -17,12 +17,6 @@ import {
 } from './shared/html-signals.util';
 
 export interface UrlIndexabilityResult {
-  /**
-   * Signaux IA agrégés pour l'URL (bots access, citabilité,
-   * qualité des données structurées). `null` quand la requête échoue.
-   * Optionnel pour la compatibilité ascendante — devient disponible
-   * dès qu'un caller passe `robotsTxt` à `analyzeUrls`.
-   */
   aiSignals?: AiIndexabilitySignals | null;
   url: string;
   finalUrl: string | null;
@@ -73,19 +67,9 @@ export interface AnalyzeUrlsOptions {
     done: number,
     total: number,
   ) => void | Promise<void>;
-  /**
-   * Contenu brut du fichier `robots.txt` récupéré une seule fois au niveau
-   * site par le pipeline. Passé au `AiHeadersAnalyzerService` pour chaque
-   * URL afin d'éviter un fetch par page.
-   */
   robotsTxt?: string;
 }
 
-/**
- * Service d'analyse technique d'une URL (statut, meta, liens internes,
- * signaux d'indexabilité) enrichi des signaux IA (accès des bots,
- * citabilité, qualité des données structurées).
- */
 @Injectable()
 export class UrlIndexabilityService {
   constructor(
@@ -97,11 +81,6 @@ export class UrlIndexabilityService {
     private readonly structuredDataQuality: StructuredDataQualityService,
   ) {}
 
-  /**
-   * Analyse en parallèle un ensemble d'URL. Retourne un tableau de
-   * résultats dans l'ordre d'entrée. Si `options.robotsTxt` est fourni,
-   * chaque résultat contient un objet `aiSignals` non null.
-   */
   async analyzeUrls(
     urls: string[],
     options: AnalyzeUrlsOptions = {},
@@ -318,11 +297,6 @@ export class UrlIndexabilityService {
     return normalized.slice(0, 420);
   }
 
-  /**
-   * Extrait et parse les blocs JSON-LD d'une page HTML. Les blocs invalides
-   * (JSON malformé) sont ignorés silencieusement — c'est le rôle du
-   * `StructuredDataQualityService` d'évaluer ceux qui sont valides.
-   */
   private extractJsonLdBlocks($: ReturnType<typeof load>): unknown[] {
     const blocks: unknown[] = [];
     $('script[type="application/ld+json"]')

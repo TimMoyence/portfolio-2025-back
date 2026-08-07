@@ -7,7 +7,6 @@ import type {
   PasswordResetNotificationPayload,
 } from '../domain/IPasswordResetNotifier';
 
-/** Service SMTP pour notifier les utilisateurs lors d'une reinitialisation de mot de passe. */
 @Injectable()
 export class PasswordResetMailerService implements IPasswordResetNotifier {
   private readonly logger = new Logger(PasswordResetMailerService.name);
@@ -68,7 +67,6 @@ export class PasswordResetMailerService implements IPasswordResetNotifier {
     });
   }
 
-  /** Echappe les caracteres HTML speciaux pour eviter les injections. */
   private escapeHtml(input: string): string {
     return escapeHtml(input);
   }

@@ -101,9 +101,6 @@ describe('NewsletterMailerService', () => {
 
       await mailer.sendWelcome(subscriber);
 
-      // `/newsletter/unsubscribe` est une route de l'API, pas du front :
-      // sans le prefixe global, l'URL tombe sur le SSR Angular, qui
-      // repond 404 au POST et sert sa page "not found" au GET.
       const [call] = mockSendMail.mock.calls as [
         [{ text: string; headers: Record<string, string> }],
       ];
@@ -149,8 +146,6 @@ describe('NewsletterMailerService', () => {
     );
 
     it('ne detourne pas l’hote quand API_PREFIX est vide', async () => {
-      // `//newsletter/...` serait une URL protocol-relative : `new URL()`
-      // en ferait l'hote `https://newsletter/...`.
       const configService = {
         get: jest.fn((key: string) => (key === 'API_PREFIX' ? '' : undefined)),
       } as unknown as ConfigService;
@@ -187,12 +182,6 @@ describe('NewsletterMailerService', () => {
 
       await mailer.sendConfirmation(subscriber);
 
-      // Un clic reflexe sur "Se desabonner" depuis le mail de
-      // confirmation sort un abonne encore `pending` : `confirm()` leve
-      // ensuite une DomainValidationError et la reinscription ne le
-      // repasse jamais en `pending` — l'adresse est verrouillee a vie.
-      // La confirmation est un mail transactionnel : la RFC 8058 vise
-      // les envois en nombre, pas ce message.
       const [call] = mockSendMail.mock.calls as [
         [{ headers?: Record<string, string> }],
       ];
@@ -213,8 +202,6 @@ describe('NewsletterMailerService', () => {
 
       await customMailer.sendWelcome(subscriber);
 
-      // Un display name dans le `mailto:` produirait un en-tete
-      // malforme : `<mailto:'Asili Design' <contact@...>?subject=...>`.
       const [call] = mockSendMail.mock.calls as [
         [{ headers: Record<string, string> }],
       ];
@@ -244,8 +231,6 @@ describe('NewsletterMailerService', () => {
 
       await mailer.sendUnsubscribeAck(subscriber);
 
-      // L'abonne est deja sorti de la liste : proposer un desabonnement
-      // sur cet accuse n'aurait aucun sens.
       const [call] = mockSendMail.mock.calls as [
         [{ headers?: Record<string, string> }],
       ];
@@ -294,7 +279,6 @@ describe('NewsletterMailerService', () => {
   describe('comportement sans transporter (SMTP non configure)', () => {
     it('ne leve pas d\u2019erreur si le transporter est null', async () => {
       const subscriber = buildNewsletterSubscriber();
-      // Forcer le transporter a null via cast interne pour simuler l'absence de SMTP.
       (mailer as unknown as Record<string, unknown>)['transporter'] = null;
 
       await expect(

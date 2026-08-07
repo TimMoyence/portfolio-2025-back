@@ -19,15 +19,6 @@ export interface BadgesRedisConnectionOptions {
   retryStrategy?: (times: number) => number | null;
 }
 
-/**
- * Queue BullMQ pour l'evaluation asynchrone des badges Sebastian.
- *
- * - Deduplique les jobs par userId sur une fenetre configurable, ce qui
- *   previent la race condition sur la contrainte unique
- *   `(user_id, badge_key)` quand plusieurs entrees sont creees en rafale.
- * - Fallback gracieux en mode in-process si Redis est indisponible ou si
- *   la queue est desactivee via env.
- */
 @Injectable()
 export class BadgesEvaluationQueueService
   implements OnModuleDestroy, IBadgesEvaluationQueuePort
@@ -84,14 +75,6 @@ export class BadgesEvaluationQueueService
     );
   }
 
-  /**
-   * Met en file un job d'evaluation pour l'utilisateur.
-   *
-   * Le jobId fixe a `badges:{userId}` plus `removeOnComplete` garantit qu'un
-   * meme userId ne peut avoir qu'un seul job en vol dans la fenetre de
-   * deduplication. Toute seconde demande sur le meme userId avant la fin
-   * du traitement est absorbee silencieusement par BullMQ.
-   */
   async enqueue(userId: string): Promise<void> {
     if (!this.queue || this.queueDisabledAtRuntime) {
       this.runInline(userId);

@@ -17,9 +17,6 @@ import { TokenReuseDetectedError } from '../../domain/errors/TokenReuseDetectedE
 import { UserNotFoundError } from '../../domain/errors/UserNotFoundError';
 
 /**
- * Filtre global qui intercepte les {@link DomainError} et les mappe
- * vers le code HTTP correspondant au format RFC 7807 (Problem Details).
- *
  * @see https://www.rfc-editor.org/rfc/rfc7807
  */
 @Catch(DomainError)
@@ -41,8 +38,6 @@ export class DomainExceptionFilter implements ExceptionFilter {
       instance: request.url,
     };
 
-    // Propage le code stable (RFC 7807 extension) quand l'erreur le fournit.
-    // Permet au frontend de brancher des UX differenciees sans parser le detail.
     const code = (exception as { code?: string }).code;
     if (typeof code === 'string') {
       body.code = code;
@@ -51,7 +46,6 @@ export class DomainExceptionFilter implements ExceptionFilter {
     response.status(status).json(body);
   }
 
-  /** Determine le code HTTP a partir du type d'erreur domaine. */
   private resolveHttpStatus(exception: DomainError): number {
     if (
       exception instanceof UserNotFoundError ||
@@ -87,7 +81,6 @@ export class DomainExceptionFilter implements ExceptionFilter {
       return HttpStatus.TOO_MANY_REQUESTS;
     }
 
-    // Fallback pour les DomainError non mappees
     return HttpStatus.INTERNAL_SERVER_ERROR;
   }
 }

@@ -13,7 +13,6 @@ import {
   type ActionablePillarKey,
 } from './scoring.service';
 
-/** Re-export pour les consommateurs externes. */
 export type { TierValidationResult };
 
 type PrioritySeverity = 'high' | 'medium' | 'low';
@@ -371,16 +370,6 @@ export class ReportQualityGateService {
     return priorities.slice(0, this.maxPriorities);
   }
 
-  /**
-   * Genere des actions prioritaires derivees des scores de piliers.
-   * Itere uniquement sur `ACTIONABLE_PILLARS` (5 piliers historiques),
-   * les piliers avances `aiVisibility` et `citationWorthiness` etant
-   * exclus tant que leurs recommandations business ne sont pas validees.
-   *
-   * Le `switch` sur `ActionablePillarKey` est exhaustif par construction :
-   * toute evolution de l'union levera une erreur de compilation grace au
-   * `satisfies never` dans la branche par defaut.
-   */
   private pillarBasedActions(
     pillarScores: Record<string, number>,
     locale: AuditLocale,
@@ -401,12 +390,6 @@ export class ReportQualityGateService {
     return actions;
   }
 
-  /**
-   * Construit une action prioritaire pour un pilier actionnable donne.
-   * Utilise un `switch` exhaustif sur `ActionablePillarKey` — toute nouvelle
-   * cle dans l'union provoquera une erreur de compilation jusqu'a ce
-   * qu'une branche soit ajoutee.
-   */
   private buildPillarAction(
     pillar: ActionablePillarKey,
     score: number,
@@ -514,8 +497,6 @@ export class ReportQualityGateService {
           estimatedHours: score < 65 ? 8 : 5,
         };
       default: {
-        // Exhaustive check : toute nouvelle cle dans ActionablePillarKey
-        // declenchera une erreur de compilation ici.
         const _exhaustive: never = pillar;
         throw new Error(`Unhandled actionable pillar: ${String(_exhaustive)}`);
       }
@@ -819,18 +800,10 @@ export class ReportQualityGateService {
     return 'medium';
   }
 
-  /**
-   * Valide une synthese client (Tier Client) — delegue aux regles purement
-   * structurelles dans `report-quality-gate/tier-validators.ts`.
-   */
   validateClientReport(report: ClientReportSynthesis): TierValidationResult {
     return runClientTierValidation(report);
   }
 
-  /**
-   * Valide un rapport expert (Tier Expert) — delegue aux regles purement
-   * structurelles dans `report-quality-gate/tier-validators.ts`.
-   */
   validateExpertReport(report: {
     perPageAnalysis?: ReadonlyArray<unknown>;
     clientEmailDraft?: { subject?: string; body?: string } | null;

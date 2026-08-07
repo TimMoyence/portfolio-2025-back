@@ -1,11 +1,5 @@
 import type { MetricsService } from '../../src/common/interfaces/metrics/metrics.service';
 
-/**
- * Cree un mock du MetricsService pour les tests unitaires.
- *
- * Expose des mocks pour les metriques HTTP custom (counter + histogram)
- * et les methodes du service.
- */
 export function createMockMetricsService(): jest.Mocked<MetricsService> {
   return {
     httpRequestsTotal: {

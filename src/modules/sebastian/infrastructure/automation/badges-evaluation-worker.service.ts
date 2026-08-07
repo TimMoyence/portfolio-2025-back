@@ -14,12 +14,6 @@ import {
 } from './badges-evaluation-queue.service';
 import { EvaluateBadgesUseCase } from '../../application/services/EvaluateBadges.useCase';
 
-/**
- * Worker BullMQ qui consomme la queue d'evaluation des badges et
- * delegue a EvaluateBadgesUseCase. Les echecs sont loggues mais
- * ne crashent pas l'application (retry BullMQ + fallback inline
- * pris en charge par le producer).
- */
 @Injectable()
 export class BadgesEvaluationWorkerService
   implements OnModuleInit, OnModuleDestroy

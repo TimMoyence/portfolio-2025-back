@@ -8,7 +8,6 @@ import { User } from '../domain/User';
 import type { SetPasswordCommand } from './dto/SetPassword.command';
 import { PasswordService } from './services/PasswordService';
 
-/** Definit un mot de passe pour un compte Google-only connecte. */
 @Injectable()
 export class SetPasswordUseCase {
   constructor(

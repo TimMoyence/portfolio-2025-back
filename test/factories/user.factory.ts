@@ -11,7 +11,6 @@ import type { UpdateUsersUseCase } from '../../src/modules/users/application/Upd
 import type { DeleteUsersUseCase } from '../../src/modules/users/application/DeleteUsers.useCase';
 import type { AuthAuditLogger } from '../../src/modules/users/application/services/AuthAuditLogger';
 
-/** Construit un objet User domaine avec des valeurs par defaut. */
 export function buildUser(overrides?: Partial<User>): User {
   const user = new User();
   user.id = 'user-1';
@@ -30,7 +29,6 @@ export function buildUser(overrides?: Partial<User>): User {
   return Object.assign(user, overrides);
 }
 
-/** Cree un mock complet du repository utilisateurs. */
 export function createMockUsersRepo(): jest.Mocked<IUsersRepository> {
   return {
     findAll: jest.fn(),
@@ -43,7 +41,6 @@ export function createMockUsersRepo(): jest.Mocked<IUsersRepository> {
   };
 }
 
-/** Cree un mock du service de mot de passe (hash/verify sont async). */
 export function createMockPasswordService(): jest.Mocked<PasswordService> {
   return {
     hash: jest.fn(),
@@ -53,7 +50,6 @@ export function createMockPasswordService(): jest.Mocked<PasswordService> {
   } as unknown as jest.Mocked<PasswordService>;
 }
 
-/** Cree un mock du service JWT. */
 export function createMockJwtService(): jest.Mocked<JwtTokenService> {
   return {
     sign: jest.fn(),
@@ -61,7 +57,6 @@ export function createMockJwtService(): jest.Mocked<JwtTokenService> {
   } as unknown as jest.Mocked<JwtTokenService>;
 }
 
-/** Construit un payload JWT valide avec des valeurs par defaut. */
 export function buildJwtPayload(overrides?: Partial<JwtPayload>): JwtPayload {
   return {
     sub: 'user-1',
@@ -75,7 +70,6 @@ export function buildJwtPayload(overrides?: Partial<JwtPayload>): JwtPayload {
   };
 }
 
-/** Construit un resultat d'authentification complet reutilisable. */
 export function buildAuthResult(overrides?: Partial<AuthResult>): AuthResult {
   return {
     accessToken: 'jwt-token',
@@ -86,7 +80,6 @@ export function buildAuthResult(overrides?: Partial<AuthResult>): AuthResult {
   };
 }
 
-/** Typage des mocks de use cases du module Users (CRUD admin). */
 export interface MockUsersUseCases {
   listUsers: jest.Mocked<Pick<ListUsersUseCase, 'execute'>>;
   listOneUser: jest.Mocked<Pick<ListOneUserUseCase, 'execute'>>;
@@ -95,7 +88,6 @@ export interface MockUsersUseCases {
   deleteUsers: jest.Mocked<Pick<DeleteUsersUseCase, 'execute'>>;
 }
 
-/** Cree des mocks types pour tous les use cases du UsersController. */
 export function createMockUsersUseCases(): MockUsersUseCases {
   return {
     listUsers: { execute: jest.fn() },
@@ -106,22 +98,10 @@ export function createMockUsersUseCases(): MockUsersUseCases {
   };
 }
 
-/**
- * Mock du journal d'audit d'authentification.
- *
- * Utilise partout ou l'on veut inspecter une entree d'audit (IP, user
- * agent, evenement) sans dependre de l'implementation reelle.
- */
 export function createMockAuthAuditLogger(): jest.Mocked<AuthAuditLogger> {
   return { log: jest.fn() } as unknown as jest.Mocked<AuthAuditLogger>;
 }
 
-/**
- * Mock d'un use case reduit a son `execute`, resolu ou rejete.
- *
- * Evite de redeclarer `{ execute: jest.fn().mockResolvedValue(...) } as
- * unknown as XUseCase` dans chaque cas de test.
- */
 export function createMockUseCase<T>(
   outcome: { resolves: unknown } | { rejects: unknown },
 ): jest.Mocked<T> {

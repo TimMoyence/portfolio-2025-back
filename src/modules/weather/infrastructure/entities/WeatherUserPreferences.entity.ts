@@ -6,7 +6,6 @@ import {
 } from 'typeorm';
 import type { FavoriteCity } from '../../domain/WeatherUserPreferences';
 
-/** Entite TypeORM representant les preferences meteo d'un utilisateur. */
 @Entity({ name: 'weather_user_preferences' })
 export class WeatherUserPreferencesEntity {
   @PrimaryGeneratedColumn('uuid')

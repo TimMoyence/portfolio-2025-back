@@ -6,17 +6,6 @@ import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 
-/**
- * Impl initiale : emails inline plain text + HTML minimal sans
- * teasing. Les templates Handlebars localises `{locale}/drip-*.hbs`
- * arrivent en sprint S1.5 — leur absence ne doit pas bloquer le flow
- * de double opt-in ni le respect de la regle "zero bullshit email".
- *
- * Chaque message livre integralement la valeur qu'il promet :
- *  - confirmation : lien de confirmation + lien de desabonnement,
- *  - welcome : lien direct vers la ressource promise + rappel valeur,
- *  - unsubscribeAck : confirmation du desabonnement, sans pitch.
- */
 @Injectable()
 export class NewsletterMailerService implements INewsletterMailer {
   private readonly logger = new Logger(NewsletterMailerService.name);
@@ -158,7 +147,6 @@ Tim`,
     };
   }
 
-  /** Extrait l'adresse d'un `Display Name <adresse>` eventuel. */
   private bareReplyToAddress(): string {
     const angled = /<([^>]+)>/.exec(this.replyTo);
     return (angled ? angled[1] : this.replyTo).trim();
@@ -218,7 +206,6 @@ Tim`,
     return `<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Desabonnement confirme</h2><p>${options.greeting},</p><p>Votre desabonnement est effectif. Vous ne recevrez plus d'email de ma part.</p><p>Si c'etait une erreur, repondez simplement a cet email.</p></div></div>`;
   }
 
-  /** Echappe les caracteres HTML speciaux pour prevenir les injections XSS. */
   private escapeHtml(input: string): string {
     return escapeHtml(input);
   }

@@ -7,7 +7,6 @@ import type {
   EmailVerificationNotificationPayload,
 } from '../domain/IEmailVerificationNotifier';
 
-/** Service SMTP pour envoyer les emails de verification d'adresse email. */
 @Injectable()
 export class VerificationMailerService implements IEmailVerificationNotifier {
   private readonly logger = new Logger(VerificationMailerService.name);
@@ -68,7 +67,6 @@ export class VerificationMailerService implements IEmailVerificationNotifier {
     });
   }
 
-  /** Echappe les caracteres HTML speciaux pour eviter les injections. */
   private escapeHtml(input: string): string {
     return escapeHtml(input);
   }

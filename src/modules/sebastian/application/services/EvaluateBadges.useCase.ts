@@ -17,14 +17,6 @@ import {
   subtractDays,
 } from '../../domain/badge-rules/badge-strategies';
 
-/**
- * Evalue et debloque les badges pour un utilisateur.
- *
- * Appele apres chaque ajout d'entree (AddEntry) et potentiellement par un cron.
- * L'evaluation de chaque regle est deleguee a une `BadgeStrategy` du domaine
- * (registry `BADGE_STRATEGIES`) ; le use case conserve uniquement
- * l'orchestration (fetch repository + iteration catalogue + persistance).
- */
 @Injectable()
 export class EvaluateBadgesUseCase {
   constructor(
@@ -36,7 +28,6 @@ export class EvaluateBadgesUseCase {
     private readonly goalRepo: ISebastianGoalRepository,
   ) {}
 
-  /** Badges qui necessitent l'historique complet (1-shot, jamais reset une fois debloques). */
   private static readonly GLOBAL_HISTORY_BADGES = [
     'first-log',
     'espresso-machine',
@@ -44,14 +35,9 @@ export class EvaluateBadgesUseCase {
     'night-owl',
   ];
 
-  /** Execute l'evaluation des badges et retourne les nouveaux badges debloques. */
   async execute(userId: string): Promise<SebastianBadge[]> {
     const now = new Date();
 
-    // Optimisation N+1 : on charge d'abord les badges existants pour savoir
-    // si tous les badges "historique complet" sont deja debloques. Si oui,
-    // on limite le fetch d'entrees aux 30 derniers jours (window max des
-    // badges restants : zen-monk-30, goal-crusher, perfect-month).
     const existingBadges = await this.badgeRepo.findByUserId(userId);
     const unlockedKeys = new Set(existingBadges.map((b) => b.badgeKey));
     const allGlobalsUnlocked =

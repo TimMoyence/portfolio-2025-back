@@ -208,9 +208,7 @@ describe('GetTrendDataUseCase', () => {
 
     const result = await useCase.execute({ userId: 'user-1', period: '7d' });
 
-    // total alcohol = 7, avg = 7/7 = 1
     expect(result.summary.avgAlcohol).toBe(1);
-    // total coffee = 3, avg = 3/7 = 0.43
     expect(result.summary.avgCoffee).toBe(0.43);
   });
 

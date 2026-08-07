@@ -1,14 +1,3 @@
-/**
- * Classification metier du site audite. Utilisee pour contextualiser les
- * prompts LLM (P1.1) afin que les recommandations soient pertinentes pour
- * le modele economique observe — e.g. bloc "panier / abandoned cart" sur
- * un e-commerce, "cas client / testimonials" sur un portfolio.
- *
- * Detecte heuristiquement depuis `techFingerprint.primaryStack` (produit
- * par {@link DeepUrlAnalysisService.inferTechFingerprint}). Volontairement
- * conservatrice : retourne `unknown` quand le signal est insuffisant
- * plutot que de deviner.
- */
 export type BusinessType =
   | 'ecommerce'
   | 'saas'
@@ -57,11 +46,6 @@ const SERVICE_HINTS = [
   'nuxt content',
 ] as const;
 
-/**
- * Deduit le type d'activite depuis un stack technique observe. Matching
- * insensible a la casse ; retourne le premier groupe qui matche. Ordre
- * de priorite : ecommerce > saas > agency > media > service > portfolio.
- */
 export function detectBusinessType(primaryStack: string): BusinessType {
   const normalized = primaryStack.trim().toLowerCase();
   if (!normalized || normalized.includes('not verifiable')) return 'unknown';
@@ -78,12 +62,6 @@ export function detectBusinessType(primaryStack: string): BusinessType {
   return 'unknown';
 }
 
-/**
- * Directive en langage naturel a injecter dans le prompt system pour
- * orienter le LLM selon le {@link BusinessType}. Permet aux findings et
- * quick wins de mentionner les leviers pertinents pour le modele
- * economique observe.
- */
 export function businessTypePromptHint(
   type: BusinessType,
   locale: 'fr' | 'en',

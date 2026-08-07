@@ -8,13 +8,6 @@ import type { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
 import { MetricsService } from './metrics.service';
 
-/**
- * Intercepteur HTTP qui mesure les metriques de chaque requete.
- *
- * Pour chaque requete entrante, enregistre :
- * - `http_requests_total` : incremente le compteur (method, route, status_code)
- * - `http_request_duration_seconds` : observe la duree (method, route, status_code)
- */
 @Injectable()
 export class HttpMetricsInterceptor implements NestInterceptor {
   constructor(private readonly metricsService: MetricsService) {}
@@ -34,7 +27,6 @@ export class HttpMetricsInterceptor implements NestInterceptor {
     );
   }
 
-  /** Enregistre les metriques HTTP (compteur + histogramme). */
   private record(req: Request, res: Response, start: bigint): void {
     const durationSeconds =
       Number(process.hrtime.bigint() - start) / 1_000_000_000;

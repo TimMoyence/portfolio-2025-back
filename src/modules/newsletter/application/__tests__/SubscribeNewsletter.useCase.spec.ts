@@ -92,13 +92,11 @@ describe('SubscribeNewsletterUseCase', () => {
       status: 'pending',
     });
     await flushPromises();
-    // L'echec fire-and-forget ne doit pas casser la reponse HTTP.
   });
 
   it('absorbe silencieusement une race condition `ResourceConflictError`', async () => {
     const raced = buildNewsletterSubscriber();
     raced.id = 'raced-id';
-    // Premier appel : rien (le check-then-create naif verrait `null`).
     repo.findByEmailAndSource
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(raced);
@@ -124,7 +122,6 @@ describe('SubscribeNewsletterUseCase', () => {
   it('applique le cooldown anti mail-bombing (10 min) sur un pending re-souscrit', async () => {
     const existing = buildNewsletterSubscriber();
     existing.id = 'existing-id';
-    // Dernier envoi il y a 2 minutes — en-deca du cooldown.
     existing.markConfirmationSent(new Date(Date.now() - 2 * 60 * 1000));
     repo.findByEmailAndSource.mockResolvedValueOnce(existing);
 

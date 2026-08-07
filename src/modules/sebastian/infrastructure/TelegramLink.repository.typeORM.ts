@@ -5,7 +5,6 @@ import { TelegramLink } from '../domain/TelegramLink';
 import type { ITelegramLinkRepository } from '../domain/ITelegramLink.repository';
 import { TelegramLinkEntity } from './entities/TelegramLink.entity';
 
-/** Implementation TypeORM du port de persistance des liens Telegram. */
 @Injectable()
 export class TelegramLinkRepositoryTypeORM implements ITelegramLinkRepository {
   constructor(

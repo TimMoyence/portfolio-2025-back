@@ -5,13 +5,6 @@ import { escapeHtml } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
 
-/**
- * Mailer dedie a l'audience "Admin" : envoie un email de notification lorsque
- * une nouvelle demande d'audit SEO est soumise depuis le formulaire public.
- * Lit `CONTACT_NOTIFICATION_TO` et `SMTP_FROM` directement depuis
- * l'environnement. Se comporte en no-op silencieux si le transporter SMTP
- * n'est pas configure ou si `CONTACT_NOTIFICATION_TO` est absent.
- */
 @Injectable()
 export class AuditNotificationMailer {
   private readonly logger = new Logger(AuditNotificationMailer.name);
@@ -21,11 +14,6 @@ export class AuditNotificationMailer {
     private readonly transporter: SmtpTransporter,
   ) {}
 
-  /**
-   * Envoie la notification admin pour une nouvelle demande d'audit. Ne leve
-   * jamais : si le transporter est absent ou si `CONTACT_NOTIFICATION_TO`
-   * n'est pas defini, la methode est un no-op.
-   */
   async sendAuditNotification(request: AuditRequest): Promise<void> {
     const to = process.env.CONTACT_NOTIFICATION_TO;
     if (!this.transporter || !to) return;

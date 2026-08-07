@@ -25,7 +25,6 @@ function createMockMetrics() {
   };
 }
 
-/** Payload LangChain moderne (`AIMessage.usage_metadata`). */
 function buildUsageMetadataOutput(overrides: Record<string, unknown> = {}) {
   return {
     generations: [
@@ -45,10 +44,6 @@ function buildUsageMetadataOutput(overrides: Record<string, unknown> = {}) {
   };
 }
 
-/**
- * Extrait le callback de tracking passe a `invoke` et rejoue le cycle de
- * vie LangChain (start -> end) avec le payload fourni.
- */
 async function runTracked(
   output: unknown,
   metrics: ReturnType<typeof createMockMetrics> | null,
@@ -74,10 +69,6 @@ async function runTracked(
 }
 
 describe('invokeWithLlmTracking', () => {
-  // Filet global : un `mockRestore()` place apres un `await` ne s'execute
-  // pas si l'appel rejette, et l'horloge figee fuit alors vers les tests
-  // suivants du fichier — cascade de faux echecs lors d'une vraie
-  // regression.
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -92,10 +83,6 @@ describe('invokeWithLlmTracking', () => {
 
   it('compte l’appel et observe la latence en succes', async () => {
     const metrics = createMockMetrics();
-    // Horloge figee a 2500 ms d'ecart : `startedAt` puis la mesure de
-    // fin. Le chemin succes appelle `Date.now()` quatre fois (init,
-    // handleLLMStart, handleLLMEnd, mesure finale) — la restauration est
-    // assuree par le `afterEach`, pas par un appel place apres l'`await`.
     jest
       .spyOn(Date, 'now')
       .mockReturnValueOnce(1_000)
@@ -178,7 +165,6 @@ describe('invokeWithLlmTracking', () => {
 
     await runTracked({ generations: [[{ message: {} }]] }, metrics);
 
-    // L'appel reste compte : seule la ventilation par tokens est absente.
     expect(metrics.llmCallsTotal.inc).toHaveBeenCalledTimes(1);
     expect(metrics.llmTokensTotal.inc).not.toHaveBeenCalled();
   });
@@ -208,8 +194,6 @@ describe('invokeWithLlmTracking', () => {
     // assertion dediee, une regression d'unite y passait la CI alors
     // meme que le chemin succes etait verrouille.
     const metrics = createMockMetrics();
-    // Ce chemin n'appelle `Date.now()` que deux fois : init et mesure
-    // dans le `catch` (les callbacks LangChain ne sont pas declenches).
     jest
       .spyOn(Date, 'now')
       .mockReturnValueOnce(1_000)

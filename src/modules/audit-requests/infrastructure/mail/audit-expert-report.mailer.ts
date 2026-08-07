@@ -5,12 +5,6 @@ import { escapeHtml, slugify } from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
 
-/**
- * Mailer dedie a l'audience "Expert" (Tim) : envoie la synthese expert avec
- * le draft mail client, les constats transverses, le backlog priorise et le
- * PDF obligatoire. No-op silencieux si le transporter SMTP est absent ou si
- * aucune adresse destinataire n'est configuree.
- */
 @Injectable()
 export class AuditExpertReportMailer {
   private readonly logger = new Logger(AuditExpertReportMailer.name);
@@ -20,10 +14,6 @@ export class AuditExpertReportMailer {
     private readonly transporter: SmtpTransporter,
   ) {}
 
-  /**
-   * Envoie a Tim la synthese expert avec le draft de mail client, les
-   * constats transverses, le backlog priorise et le PDF obligatoire.
-   */
   async sendExpertReport(input: ExpertReportMailInput): Promise<void> {
     if (!this.transporter) return;
     const to =

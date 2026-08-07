@@ -1,19 +1,6 @@
 import type { AuditLocale } from '../../../../domain/audit-locale.util';
 
-/**
- * Version des prompts d'audit LLM. Incrementer lors de toute modification
- * de texte (major.minor.patch). Loggee dans `llmMeta.promptVersion` de
- * chaque invocation pour permettre :
- *   - audit trail des outputs historiques (quel prompt a produit quel rapport)
- *   - A/B testing parallele (v1.0.0 vs v1.1.0 via feature flag)
- *   - golden tests (freeze output sur fixture + prompt fige)
- *   - rollback rapide si regression detectee apres deploy
- */
 export const PROMPT_VERSION = 'v1.0.0' as const;
-
-// ===========================================================================
-// Executive section (fan-out parallele)
-// ===========================================================================
 
 export const executiveSystemMain = (locale: AuditLocale): string =>
   locale === 'fr'
@@ -25,10 +12,6 @@ export const executiveRetryConstraint = (locale: AuditLocale): string =>
     ? 'Contrainte retry: aucun champ vide, aucune repetition, format dense et orienté business.'
     : 'Retry constraint: no empty fields, no repetition, dense business-first format.';
 
-// ===========================================================================
-// Priority section (fan-out parallele)
-// ===========================================================================
-
 export const prioritySystemMain = (locale: AuditLocale): string =>
   locale === 'fr'
     ? "Tu produis uniquement les priorites et ameliorations URL + seoFoundations. Reponds en francais uniquement. Donne 8-10 priorites uniques avec severite, whyItMatters, recommendedFix et effort, puis des ameliorations URL concretes. Chaque item doit citer implicitement une preuve des buckets (crawl/findings/pageRecaps). Si la preuve n'existe pas: Non verifiable."
@@ -38,10 +21,6 @@ export const priorityRetryConstraint = (locale: AuditLocale): string =>
   locale === 'fr'
     ? 'Contrainte retry: minimum 8 priorites valides, pas de genericite, pas de doublon.'
     : 'Retry constraint: minimum 8 valid priorities, no generic filler, no duplicates.';
-
-// ===========================================================================
-// Execution section (fan-out parallele)
-// ===========================================================================
 
 export const executionSystemMain = (locale: AuditLocale): string =>
   locale === 'fr'
@@ -53,10 +32,6 @@ export const executionRetryConstraint = (locale: AuditLocale): string =>
     ? 'Contrainte retry: prioriser impact business + SEO, limiter verbiage, conserver details techniques.'
     : 'Retry constraint: prioritize business + SEO impact, trim fluff, keep technical details.';
 
-// ===========================================================================
-// Client communications section (fan-out parallele)
-// ===========================================================================
-
 export const clientCommsSystemMain = (locale: AuditLocale): string =>
   locale === 'fr'
     ? "Tu produis uniquement clientMessageTemplate, clientLongEmail et clientEmailDraft. Francais uniquement. clientMessageTemplate doit etre un rapport engageant donnant envie de continuer et d'avoir plus d'informations. clientLongEmail doit rester professionnel, actionnable et coherent avec les priorites techniques sans inventer de donnees. Pour clientEmailDraft: email pret a envoyer, ton mix court et long, accrocheur sur les constats, teaser PDF, CTA vers un appel. Structure: subject 50-70 caracteres accrocheur, body compose de 4 paragraphes (P1 ouverture + constat #1 en 3 lignes, P2 constat #2 avec impact business chiffre si possible en 3 lignes, P3 teaser PDF en 2 lignes 'votre rapport complet attache contient...', P4 CTA planifier un appel de 30 min), signature 'Tim / Asili Design'."
@@ -67,10 +42,6 @@ export const clientCommsRetryConstraint = (locale: AuditLocale): string =>
     ? 'Contrainte retry: ton humain, aucune repetition, aucun jargon inutile.'
     : 'Retry constraint: human tone, no repetition, no unnecessary jargon.';
 
-// ===========================================================================
-// User summary (profil sequential)
-// ===========================================================================
-
 export const userSummarySystemMain = (locale: AuditLocale): string =>
   locale === 'fr'
     ? "Tu rediges un resume client utile pour un decideur non technique. Reponds uniquement en francais. Interdiction stricte: pas de markdown ni HTML (aucun *, **, #, -, bullet, backtick). Format impose en 4 sections en texte brut: Contexte:, Blocages:, Impacts business:, Priorites immediates:. N'invente aucune donnee. Si une information manque, ecris 'Non verifiable'. Il faut que le resumé soit engageant et donne envie d'avoir plus de details dans le rapport technique."
@@ -80,10 +51,6 @@ export const userSummaryRetryConstraint = (locale: AuditLocale): string =>
   locale === 'fr'
     ? 'Contrainte supplementaire: sections non vides, langage unique, liste numerotee 1) 2) 3) 4) dans Priorites immediates.'
     : 'Additional rule: non-empty sections, single language, numbered list 1) 2) 3) 4) inside Immediate priorities.';
-
-// ===========================================================================
-// Expert report (profil sequential complet)
-// ===========================================================================
 
 export const expertReportSystemMain = (locale: AuditLocale): string =>
   locale === 'fr'

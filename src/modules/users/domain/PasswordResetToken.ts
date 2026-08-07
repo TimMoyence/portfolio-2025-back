@@ -1,4 +1,3 @@
-/** Entite domaine representant un jeton de reinitialisation de mot de passe. */
 export interface PasswordResetToken {
   id?: string;
   userId: string;

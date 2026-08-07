@@ -1,17 +1,5 @@
 import { z } from 'zod';
 
-/**
- * Schemas Zod pour les outputs structures du pipeline LLM audit.
- *
- * Extrait de langchain-audit-report.service.ts (P4 refactor) pour :
- *   - reduire la taille du service (god object) et ameliorer la lisibilite
- *   - permettre la reutilisation des schemas dans les tests (golden + mocks)
- *   - faciliter l'evolution independante des types vs la logique orchestration
- *
- * Tous les schemas alimentent `llm.withStructuredOutput(...)` ; leur
- * modification impacte directement le format attendu de l'IA.
- */
-
 export const userSummarySchema = z.object({
   summaryText: z.string().min(1),
 });
@@ -182,7 +170,6 @@ export const clientCommsSectionSchema = z.object({
   clientEmailDraft: expertReportSchema.shape.clientEmailDraft,
 });
 
-// Types derives depuis les schemas (single source of truth).
 export type ExpertReport = z.infer<typeof expertReportSchema>;
 export type ExecutiveSection = z.infer<typeof executiveSectionSchema>;
 export type PrioritySection = z.infer<typeof prioritySectionSchema>;

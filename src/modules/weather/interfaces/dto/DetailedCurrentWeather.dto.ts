@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { DetailedCurrentWeather } from '../../domain/IOpenWeatherMapProxy.port';
 
-/** DTO de reponse des donnees meteo detaillees courantes. */
 export class DetailedCurrentWeatherDto {
   @ApiProperty({ description: 'Temperature (°C)' })
   temperature: number;
@@ -78,7 +77,6 @@ export class DetailedCurrentWeatherDto {
   @ApiProperty({ description: 'Decalage horaire (secondes)' })
   timezoneOffset: number;
 
-  /** Convertit un objet de domaine en DTO de reponse. */
   static fromDomain(data: DetailedCurrentWeather): DetailedCurrentWeatherDto {
     const dto = new DetailedCurrentWeatherDto();
     Object.assign(dto, data);

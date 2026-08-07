@@ -1,7 +1,6 @@
 import type { WeatherAlertResult } from './WeatherAlert';
 export type { WeatherAlertResult } from './WeatherAlert';
 
-/** Ville retournee par l'API de geocodage. */
 export interface GeocodingCity {
   id: number;
   name: string;
@@ -12,12 +11,10 @@ export interface GeocodingCity {
   admin1?: string;
 }
 
-/** Resultat du geocodage (recherche de ville). */
 export interface GeocodingResult {
   results: GeocodingCity[];
 }
 
-/** Donnees meteo courantes. */
 export interface CurrentWeather {
   temperature_2m: number;
   weather_code: number;
@@ -33,7 +30,6 @@ export interface CurrentWeather {
   dew_point_2m?: number;
 }
 
-/** Donnees meteo horaires. */
 export interface HourlyWeather {
   time: string[];
   temperature_2m: number[];
@@ -50,7 +46,6 @@ export interface HourlyWeather {
   visibility?: number[];
 }
 
-/** Donnees meteo journalieres. */
 export interface DailyWeather {
   time: string[];
   weather_code: number[];
@@ -65,14 +60,12 @@ export interface DailyWeather {
   wind_direction_10m_dominant?: number[];
 }
 
-/** Resultat complet des previsions meteo. */
 export interface ForecastResult {
   current: CurrentWeather;
   hourly: HourlyWeather;
   daily: DailyWeather;
 }
 
-/** Donnees courantes de qualite de l'air. */
 export interface AirQualityCurrent {
   european_aqi: number;
   pm2_5: number;
@@ -82,7 +75,6 @@ export interface AirQualityCurrent {
   sulphur_dioxide: number;
 }
 
-/** Donnees horaires de qualite de l'air. */
 export interface AirQualityHourly {
   time: string[];
   european_aqi: number[];
@@ -91,13 +83,11 @@ export interface AirQualityHourly {
   ozone: number[];
 }
 
-/** Resultat complet de la qualite de l'air. */
 export interface AirQualityResult {
   current: AirQualityCurrent;
   hourly: AirQualityHourly;
 }
 
-/** Donnees horaires d'un modele d'ensemble. */
 export interface EnsembleModelHourly {
   time: string[];
   temperature_2m: number[];
@@ -106,18 +96,15 @@ export interface EnsembleModelHourly {
   cape?: number[];
 }
 
-/** Modele individuel dans le resultat d'ensemble. */
 export interface EnsembleModel {
   model: string;
   hourly: EnsembleModelHourly;
 }
 
-/** Resultat des previsions multi-modeles (ensemble). */
 export interface EnsembleResult {
   models: EnsembleModel[];
 }
 
-/** Resultat des donnees meteo historiques. */
 export interface HistoricalResult {
   daily: {
     time: string[];
@@ -128,7 +115,6 @@ export interface HistoricalResult {
   };
 }
 
-/** Port pour le proxy d'API meteo externe. */
 export interface IWeatherProxy {
   searchCity(
     name: string,
@@ -143,10 +129,8 @@ export interface IWeatherProxy {
   ): Promise<ForecastResult>;
   getAirQuality(latitude: number, longitude: number): Promise<AirQualityResult>;
 
-  /** Recupere les previsions multi-modeles (ECMWF, GFS, ICON). */
   getEnsemble(latitude: number, longitude: number): Promise<EnsembleResult>;
 
-  /** Recupere les donnees meteo historiques pour une periode donnee. */
   getHistorical(
     latitude: number,
     longitude: number,
@@ -154,6 +138,5 @@ export interface IWeatherProxy {
     endDate: string,
   ): Promise<HistoricalResult>;
 
-  /** Recupere les alertes meteo synthetiques pour des coordonnees donnees. */
   getAlerts(latitude: number, longitude: number): Promise<WeatherAlertResult>;
 }

@@ -5,7 +5,6 @@ import type { IToolkitPdfGenerator } from '../../src/modules/lead-magnets/domain
 import type { IToolkitContentAssembler } from '../../src/modules/lead-magnets/domain/IToolkitContentAssembler';
 import type { ToolkitContent } from '../../src/modules/lead-magnets/domain/ToolkitContent';
 
-/** Construit une demande de lead magnet avec des valeurs par defaut. */
 export function buildLeadMagnetRequest(
   overrides?: Partial<LeadMagnetRequest>,
 ): LeadMagnetRequest {
@@ -24,7 +23,6 @@ export function buildLeadMagnetRequest(
   return request;
 }
 
-/** Contenu par defaut pour les mocks de l'assembleur. */
 function buildDefaultToolkitContent(): ToolkitContent {
   return {
     recap: {
@@ -41,7 +39,6 @@ function buildDefaultToolkitContent(): ToolkitContent {
   };
 }
 
-/** Mock du repository de demandes de lead magnet. */
 export function createMockLeadMagnetRequestRepo(): jest.Mocked<ILeadMagnetRequestRepository> {
   const defaultRequest = new LeadMagnetRequest();
   defaultRequest.id = 'test-uuid';
@@ -61,17 +58,14 @@ export function createMockLeadMagnetRequestRepo(): jest.Mocked<ILeadMagnetReques
   };
 }
 
-/** Mock du notifier de lead magnet. */
 export function createMockLeadMagnetNotifier(): jest.Mocked<ILeadMagnetNotifier> {
   return { sendToolkitEmail: jest.fn().mockResolvedValue(undefined) };
 }
 
-/** Mock du generateur PDF. */
 export function createMockToolkitPdfGenerator(): jest.Mocked<IToolkitPdfGenerator> {
   return { generate: jest.fn().mockResolvedValue(Buffer.from('fake-pdf')) };
 }
 
-/** Mock de l'assembleur de contenu personnalise. */
 export function createMockToolkitContentAssembler(): jest.Mocked<IToolkitContentAssembler> {
   return {
     assemble: jest.fn().mockReturnValue(buildDefaultToolkitContent()),

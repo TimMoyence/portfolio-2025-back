@@ -12,7 +12,6 @@ import {
 } from 'class-validator';
 import { SUPPORTED_FORMATION_SLUGS } from '../../domain/SupportedFormationSlugs';
 
-/** DTO d'entree de l'endpoint `POST /newsletter/subscribe`. */
 export class SubscribeNewsletterRequestDto {
   @ApiProperty({ example: 'marie@example.com' })
   @IsEmail()

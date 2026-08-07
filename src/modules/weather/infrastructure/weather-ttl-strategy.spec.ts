@@ -1,8 +1,6 @@
 import { computeWeatherTtl } from './weather-ttl-strategy';
 
 describe('computeWeatherTtl', () => {
-  // --- TTL de base par type (jour, pas de weather code) ---
-
   it('devrait retourner 1h pour le geocoding', () => {
     expect(computeWeatherTtl('geocoding', undefined, 14)).toBe(60 * 60 * 1_000);
   });
@@ -43,13 +41,9 @@ describe('computeWeatherTtl', () => {
     expect(computeWeatherTtl('alerts', undefined, 14)).toBe(5 * 60 * 1_000);
   });
 
-  // --- Fallback pour type inconnu ---
-
   it('devrait retourner 15min pour un type inconnu', () => {
     expect(computeWeatherTtl('inconnu', undefined, 14)).toBe(15 * 60 * 1_000);
   });
-
-  // --- Reduction pour conditions extremes ---
 
   it('devrait reduire le TTL de forecast par 3 pour un weather code extreme (95)', () => {
     const baseTtl = 15 * 60 * 1_000;
@@ -70,7 +64,6 @@ describe('computeWeatherTtl', () => {
   });
 
   it('devrait reduire le TTL de alerts par 3 avec minimum 2 minutes', () => {
-    // alerts base = 5min = 300_000, /3 = 100_000 (1min40s) < 2min = 120_000
     expect(computeWeatherTtl('alerts', 95, 14)).toBe(2 * 60 * 1_000);
   });
 
@@ -84,8 +77,6 @@ describe('computeWeatherTtl', () => {
     expect(computeWeatherTtl('forecast', 79, 14)).toBe(15 * 60 * 1_000);
   });
 
-  // --- Geocoding et historical non affectes par le weather code ---
-
   it('ne devrait PAS reduire le TTL de geocoding meme avec un weather code extreme', () => {
     expect(computeWeatherTtl('geocoding', 99, 14)).toBe(60 * 60 * 1_000);
   });
@@ -93,8 +84,6 @@ describe('computeWeatherTtl', () => {
   it('ne devrait PAS reduire le TTL de historical meme avec un weather code extreme', () => {
     expect(computeWeatherTtl('historical', 99, 14)).toBe(60 * 60 * 1_000);
   });
-
-  // --- Augmentation la nuit ---
 
   it('devrait doubler le TTL a 23h UTC (nuit)', () => {
     expect(computeWeatherTtl('forecast', undefined, 23)).toBe(
@@ -122,23 +111,15 @@ describe('computeWeatherTtl', () => {
     expect(computeWeatherTtl('forecast', undefined, 14)).toBe(15 * 60 * 1_000);
   });
 
-  // --- Combinaison nuit + conditions extremes ---
-
   it('devrait appliquer reduction extreme ET bonus nuit', () => {
     const baseTtl = 15 * 60 * 1_000;
-    // Reduction par 3 d'abord, puis doublement
     const expected = Math.round(baseTtl / 3) * 2;
     expect(computeWeatherTtl('forecast', 95, 23)).toBe(expected);
   });
 
-  // --- Min 2 minutes garanti meme avec nuit ---
-
   it('devrait respecter le min 2 minutes avant doublement nuit pour alerts extreme', () => {
-    // alerts base = 300_000, /3 = 100_000 -> min 120_000, *2 nuit = 240_000
     expect(computeWeatherTtl('alerts', 95, 23)).toBe(2 * 60 * 1_000 * 2);
   });
-
-  // --- Fallback quand nowHourUtc n'est pas fourni ---
 
   it('devrait utiliser Date.getUTCHours() si nowHourUtc non fourni', () => {
     jest.useFakeTimers();

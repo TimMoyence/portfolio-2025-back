@@ -4,7 +4,6 @@ import type { RegisterDrinksFromTelegramCommand } from '../dto/RegisterDrinksFro
 import { ResolveTelegramUserUseCase } from './ResolveTelegramUser.useCase';
 import { AddEntryUseCase } from './AddEntry.useCase';
 
-/** Enregistre des consommations depuis un message Telegram. */
 @Injectable()
 export class RegisterDrinksFromTelegramUseCase {
   constructor(
@@ -12,7 +11,6 @@ export class RegisterDrinksFromTelegramUseCase {
     private readonly addEntry: AddEntryUseCase,
   ) {}
 
-  /** Execute l'enregistrement de boissons parsees depuis Telegram. */
   async execute(
     command: RegisterDrinksFromTelegramCommand,
   ): Promise<SebastianEntry[]> {

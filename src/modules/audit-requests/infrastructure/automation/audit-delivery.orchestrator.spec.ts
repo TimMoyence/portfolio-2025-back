@@ -144,7 +144,6 @@ describe('AuditDeliveryOrchestrator', () => {
       expect(clientReportService.generate).toHaveBeenCalledTimes(1);
       expect(pdfGenerator.generate).toHaveBeenCalledTimes(1);
       const pdfArgs = pdfGenerator.generate.mock.calls[0];
-      // 2 rapports (client + expert) passes au PDF
       expect(pdfArgs[1]).toEqual(
         expect.objectContaining({ executiveSummary: 'Resume' }),
       );
@@ -163,7 +162,6 @@ describe('AuditDeliveryOrchestrator', () => {
         }),
       );
 
-      // Attendre la micro-tache pour que les mails fire-and-forget se resolvent
       await new Promise((resolve) => setImmediate(resolve));
 
       expect(notifier.sendClientReport).toHaveBeenCalledTimes(1);
@@ -171,7 +169,6 @@ describe('AuditDeliveryOrchestrator', () => {
       const clientCall = notifier.sendClientReport.mock.calls[0][0];
       expect(clientCall.to).toBe('client@example.com');
       expect(clientCall.pdfBuffer).toBeInstanceOf(Buffer);
-      // P0.6 : le prenom est deduit du local-part de l'email.
       expect(clientCall.firstName).toBe('Client');
     });
 
@@ -267,13 +264,10 @@ describe('AuditDeliveryOrchestrator', () => {
 
       await new Promise((resolve) => setImmediate(resolve));
 
-      // Le state est persiste meme sans PDF
       expect(repo.updateState).toHaveBeenCalledTimes(1);
-      // Client mail envoye avec pdfBuffer null
       expect(notifier.sendClientReport).toHaveBeenCalledTimes(1);
       const clientCall = notifier.sendClientReport.mock.calls[0][0];
       expect(clientCall.pdfBuffer).toBeNull();
-      // Expert mail envoye quand meme
       expect(notifier.sendExpertReport).toHaveBeenCalledTimes(1);
     });
 
@@ -310,7 +304,6 @@ describe('AuditDeliveryOrchestrator', () => {
         new Error('LLM crash unexpected'),
       );
 
-      // Ne doit pas throw — l'orchestrateur attrape l'erreur et log
       await expect(
         orchestrator.runForAudit({
           auditId: baseSnapshot.id,

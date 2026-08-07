@@ -1,15 +1,6 @@
 import { SlideInteractions } from '../../domain/SlideInteraction';
 
-/**
- * Interactions de la présentation « IA pour Solopreneurs ».
- *
- * Map slideId → SlideInteractions.
- * - `present` : interactions visibles en mode présentation (présentateur clique)
- * - `scroll` : interactions visibles en mode scroll (lecteur interagit seul)
- */
 export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
-  // ── BLOC 1 — ACCROCHER ──
-
   accroche: {
     present: [
       {
@@ -59,8 +50,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
       },
     ],
   },
-
-  // ── BLOC 2 — MONTRER ──
 
   'culture-apprendre': {
     present: [
@@ -240,8 +229,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
     ],
   },
 
-  // ── BLOC 3 — PRATIQUER ──
-
   'transition-pratique': {
     present: [
       {
@@ -292,8 +279,6 @@ export const IA_SOLOPRENEURS_INTERACTIONS: Record<string, SlideInteractions> = {
       },
     ],
   },
-
-  // ── BLOC 4 — ANCRER ──
 
   pieges: {
     scroll: [

@@ -53,7 +53,6 @@ export class UsersMapper {
     return this.fromUpdateCommand(dto, passwordHash);
   }
 
-  /** Cree un utilisateur domaine a partir des donnees Google OAuth. */
   static fromGoogleAuth(props: {
     email: string;
     firstName: string;

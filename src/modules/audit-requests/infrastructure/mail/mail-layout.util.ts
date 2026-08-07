@@ -1,21 +1,9 @@
 import { escapeHtml } from './mail-rendering.util';
 
-/**
- * Entree du layout email Asili Design (P2.7). Factorise les elements
- * communs a tous les mailers (notification, client report, expert report)
- * pour garantir coherence visuelle, branding et conformite RGPD.
- */
 export interface MailLayoutInput {
-  /** Titre affiche dans le hero noir (accent de la marque). */
   readonly heroTitle: string;
-  /** Sous-titre gris affiche sous le hero title (optionnel). */
   readonly heroSubtitle?: string;
-  /**
-   * HTML du corps principal, entre le hero et le footer. Doit etre deja
-   * echappe par l'appelant pour les champs d'origine externe/LLM.
-   */
   readonly bodyHtml: string;
-  /** Preheader visible dans l'inbox preview (mobile), 40-130 car. */
   readonly preheader?: string;
   /**
    * Si true, insere un bloc "desinscrire" sous le footer. Reserve aux
@@ -23,11 +11,6 @@ export interface MailLayoutInput {
    * pour les mails internes (notification Tim, rapport expert).
    */
   readonly showUnsubscribe?: boolean;
-  /**
-   * Lien unsubscribe personnalise. Si `showUnsubscribe=true` et cette
-   * URL n'est pas fournie, fallback sur
-   * `process.env.AUDIT_UNSUBSCRIBE_URL` puis `/fr/contact`.
-   */
   readonly unsubscribeUrl?: string;
 }
 
@@ -46,11 +29,6 @@ function resolveUnsubscribeUrl(explicit?: string): string {
 }
 
 /**
- * Construit un HTML email complet en 640px max-width avec DOCTYPE, meta
- * viewport, color-scheme (dark-mode compatible), logo en header, hero
- * branded et footer legal. Usage : les 3 mailers audit-requests
- * appellent cette fonction au lieu de rebuilder a la main leur HTML.
- *
  * Le design suit les bonnes pratiques email 2026 : tableaux evites au
  * profit de div+flex (Gmail/Outlook modernes supportent), pas de CSS
  * externe, styles inline avec quelques `@media (prefers-color-scheme)`

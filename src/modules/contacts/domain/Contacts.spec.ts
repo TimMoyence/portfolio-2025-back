@@ -41,8 +41,6 @@ describe('Contacts aggregate', () => {
     ).toThrow(DomainValidationError);
   });
 
-  // --- Phone validation ---
-
   it('devrait accepter un phone null', () => {
     const contact = Contacts.create({ ...VALID_CONTACT_PROPS, phone: null });
     expect(contact.phone).toBeNull();
@@ -59,8 +57,6 @@ describe('Contacts aggregate', () => {
     expect(contact.phone).toBeNull();
   });
 
-  // --- Terms validation ---
-
   it('devrait refuser un terms non boolean', () => {
     expect(() =>
       Contacts.create({
@@ -69,8 +65,6 @@ describe('Contacts aggregate', () => {
       }),
     ).toThrow(DomainValidationError);
   });
-
-  // --- TermsLocale validation ---
 
   it('devrait accepter termsLocale undefined', () => {
     const contact = Contacts.create({ ...VALID_CONTACT_PROPS });
@@ -85,8 +79,6 @@ describe('Contacts aggregate', () => {
       }),
     ).toThrow(DomainValidationError);
   });
-
-  // --- TermsAcceptedAt validation ---
 
   it('devrait accepter termsAcceptedAt valide', () => {
     const now = new Date();
@@ -114,8 +106,6 @@ describe('Contacts aggregate', () => {
       }),
     ).toThrow(DomainValidationError);
   });
-
-  // --- Optional metadata ---
 
   it('devrait gerer termsVersion et termsMethod', () => {
     const contact = Contacts.create({

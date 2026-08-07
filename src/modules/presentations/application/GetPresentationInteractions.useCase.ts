@@ -4,12 +4,6 @@ import type { IPresentationsRepository } from '../domain/IPresentations.reposito
 import type { PresentationInteractions } from '../domain/SlideInteraction';
 import { PRESENTATIONS_REPOSITORY } from '../domain/token';
 
-/**
- * Cas d'utilisation : récupérer les interactions d'une présentation.
- *
- * Retourne la map slideId → SlideInteractions pour une présentation
- * identifiée par son slug. Lève ResourceNotFoundError si le slug est inconnu.
- */
 @Injectable()
 export class GetPresentationInteractionsUseCase {
   constructor(

@@ -6,10 +6,8 @@ import type { WeatherLevel } from '../domain/WeatherUserPreferences';
 import { WeatherUserPreferences } from '../domain/WeatherUserPreferences';
 import type { UpdatePreferencesCommand } from './dto/UpdatePreferences.command';
 
-/** Niveaux de preferences autorises. */
 const VALID_LEVELS: WeatherLevel[] = ['discovery', 'curious', 'expert'];
 
-/** Cas d'utilisation : mise a jour des preferences meteo d'un utilisateur. */
 @Injectable()
 export class UpdateUserPreferencesUseCase {
   constructor(
@@ -17,10 +15,6 @@ export class UpdateUserPreferencesUseCase {
     private readonly repo: IWeatherPreferencesRepository,
   ) {}
 
-  /**
-   * Met a jour le niveau, les villes favorites et les tooltips vus.
-   * Valide que le niveau est l'un des trois autorises.
-   */
   async execute(
     command: UpdatePreferencesCommand,
   ): Promise<WeatherUserPreferences> {
@@ -30,7 +24,6 @@ export class UpdateUserPreferencesUseCase {
       );
     }
 
-    // Lazy init : si les preferences n'existent pas, les creer
     let prefs = await this.repo.findByUserId(command.userId);
     if (!prefs) {
       const defaults = WeatherUserPreferences.create(command.userId);
@@ -46,7 +39,6 @@ export class UpdateUserPreferencesUseCase {
     if (command.tooltipsSeen !== undefined)
       updateData.tooltipsSeen = command.tooltipsSeen;
     if (command.units !== undefined) {
-      // Fusion partielle : les champs non fournis conservent leur valeur actuelle
       updateData.units = { ...prefs.units, ...command.units };
     }
     if (command.overviewGranularity !== undefined)

@@ -13,15 +13,6 @@ import type { DetailedForecastResult } from '../domain/IOpenWeatherMapProxy.port
 import { OpenMeteoProxyService } from './OpenMeteoProxy.service';
 import { OpenWeatherMapProxyService } from './OpenWeatherMapProxy.service';
 
-/**
- * Proxy resilient pour les appels meteo.
- *
- * Wraps les appels vers Open-Meteo avec un circuit breaker et
- * fournit un fallback vers OpenWeatherMap lorsque c'est possible.
- * Le fallback OWM n'est disponible que pour `getForecast` ;
- * les autres methodes (searchCity, getAirQuality, getEnsemble,
- * getHistorical) n'ont pas d'equivalent OWM et relancent l'erreur.
- */
 @Injectable()
 export class ResilientWeatherProxyService implements IWeatherProxy {
   private readonly logger = new Logger(ResilientWeatherProxyService.name);
@@ -33,7 +24,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     private readonly owm: OpenWeatherMapProxyService,
   ) {}
 
-  /** Recherche de villes — uniquement via Open-Meteo, pas de fallback OWM. */
   async searchCity(
     name: string,
     language?: string,
@@ -44,18 +34,12 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /**
-   * Recupere les previsions meteo.
-   * Fallback vers OWM : mappe DetailedForecastResult + DetailedCurrentWeather
-   * vers un ForecastResult approximatif.
-   */
   async getForecast(
     latitude: number,
     longitude: number,
     timezone?: string,
     forecastDays?: number,
   ): Promise<ForecastResult> {
-    // Tenter Open-Meteo si le circuit le permet
     if (this.openMeteoCb.canExecute()) {
       try {
         const result = await this.openMeteo.getForecast(
@@ -74,7 +58,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
       }
     }
 
-    // Fallback OWM
     if (this.owmCb.canExecute()) {
       try {
         const [current, forecast] = await Promise.all([
@@ -97,7 +80,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /** Qualite de l'air — uniquement via Open-Meteo, pas de fallback OWM. */
   async getAirQuality(
     latitude: number,
     longitude: number,
@@ -107,7 +89,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /** Previsions multi-modeles — uniquement via Open-Meteo, pas de fallback OWM. */
   async getEnsemble(
     latitude: number,
     longitude: number,
@@ -117,7 +98,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /** Donnees historiques — uniquement via Open-Meteo, pas de fallback OWM. */
   async getHistorical(
     latitude: number,
     longitude: number,
@@ -129,7 +109,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /** Alertes meteo synthetiques — uniquement via Open-Meteo, pas de fallback OWM. */
   async getAlerts(
     latitude: number,
     longitude: number,
@@ -139,10 +118,6 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     );
   }
 
-  /**
-   * Execute une operation via Open-Meteo avec gestion du circuit breaker.
-   * Aucun fallback disponible : relance l'erreur en cas d'echec.
-   */
   private async executeWithoutFallback<T>(
     operationName: string,
     operation: () => Promise<T>,

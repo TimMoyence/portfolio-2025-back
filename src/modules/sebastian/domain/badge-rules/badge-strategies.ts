@@ -1,58 +1,32 @@
 import type { SebastianEntry } from '../SebastianEntry';
 import type { SebastianGoal } from '../SebastianGoal';
 
-/**
- * Contexte d'evaluation commun a toutes les strategies de badges.
- * Fourni par le use case applicatif (EvaluateBadges) a chaque appel.
- */
 export interface BadgeEvaluationContext {
   entries: SebastianEntry[];
   goals: SebastianGoal[];
   now: Date;
 }
 
-/**
- * Strategie DDD d'evaluation d'un badge. Chaque regle metier est une
- * implementation autonome — testable en isolation et extensible sans
- * modifier le use case applicatif (principe OCP).
- *
- * Appartient au domaine : aucune dependance framework/infrastructure.
- */
 export interface BadgeStrategy {
-  /** Clef unique du badge dans le catalogue (colle au BADGE_CATALOG). */
   readonly key: string;
 
-  /**
-   * Evalue si les conditions du badge sont remplies pour l'utilisateur
-   * dont le contexte est fourni. Implementation pure : aucune I/O, aucun
-   * appel repository, pas de mutation du contexte.
-   */
   evaluate(context: BadgeEvaluationContext): boolean;
 }
 
-/** Convertit une Date en chaine YYYY-MM-DD (locale UTC). */
 export function toDateString(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
-/** Retourne la chaine YYYY-MM-DD correspondant a N jours avant la date donnee. */
 export function subtractDays(date: Date, days: number): string {
   return new Date(date.getTime() - days * 86_400_000)
     .toISOString()
     .slice(0, 10);
 }
 
-/** Set des chaines YYYY-MM-DD correspondant aux entrees fournies. */
 export function entryDateStrings(entries: SebastianEntry[]): Set<string> {
   return new Set(entries.map((e) => toDateString(e.date)));
 }
 
-/**
- * Verifie que l'utilisateur dispose d'au moins `requiredDays` jours entre
- * sa premiere entree et maintenant. Evite de debloquer un badge "30 jours
- * zen" apres 3 jours sans alcool sur un compte qui n'a pas encore 30 jours
- * d'historique.
- */
 export function hasEnoughHistory(
   entries: SebastianEntry[],
   requiredDays: number,
@@ -71,11 +45,6 @@ export function hasEnoughHistory(
   return diffDays >= requiredDays;
 }
 
-/**
- * Verifie `days` jours consecutifs sous objectif quotidien pour toutes
- * les categories actives. Factorise la logique de `goal-crusher` et
- * `perfect-month` qui partagent la meme condition.
- */
 export function consecutiveDaysUnderGoal(
   entries: SebastianEntry[],
   activeGoals: SebastianGoal[],
@@ -99,11 +68,6 @@ export function consecutiveDaysUnderGoal(
   return true;
 }
 
-// ---------------------------------------------------------------------------
-// Strategies concretes
-// ---------------------------------------------------------------------------
-
-/** first-log : au moins 1 entree enregistree. */
 class FirstLogStrategy implements BadgeStrategy {
   readonly key = 'first-log';
   evaluate({ entries }: BadgeEvaluationContext): boolean {
@@ -111,11 +75,6 @@ class FirstLogStrategy implements BadgeStrategy {
   }
 }
 
-/**
- * zen-monk-N : N jours consecutifs en arriere depuis aujourd'hui avec
- * 0 alcool. Necessite au moins N jours d'historique pour prevenir
- * le deblocage premature.
- */
 class ZenMonkStrategy implements BadgeStrategy {
   constructor(
     readonly key: string,
@@ -134,7 +93,6 @@ class ZenMonkStrategy implements BadgeStrategy {
   }
 }
 
-/** espresso-machine : une journee avec >= 5 cafes (somme des quantites). */
 class EspressoMachineStrategy implements BadgeStrategy {
   readonly key = 'espresso-machine';
   evaluate({ entries }: BadgeEvaluationContext): boolean {
@@ -151,10 +109,6 @@ class EspressoMachineStrategy implements BadgeStrategy {
   }
 }
 
-/**
- * dry-week : 0 entrees alcool sur les 7 derniers jours. Necessite
- * 7 jours d'historique.
- */
 class DryWeekStrategy implements BadgeStrategy {
   readonly key = 'dry-week';
   evaluate({ entries, now }: BadgeEvaluationContext): boolean {
@@ -167,10 +121,6 @@ class DryWeekStrategy implements BadgeStrategy {
   }
 }
 
-/**
- * goal-crusher : 30 jours consecutifs sous objectif quotidien pour toutes
- * les categories avec objectif actif.
- */
 class GoalCrusherStrategy implements BadgeStrategy {
   readonly key = 'goal-crusher';
   evaluate({ entries, goals, now }: BadgeEvaluationContext): boolean {
@@ -181,7 +131,6 @@ class GoalCrusherStrategy implements BadgeStrategy {
   }
 }
 
-/** early-bird : une entree avec createdAt avant 7h. */
 class EarlyBirdStrategy implements BadgeStrategy {
   readonly key = 'early-bird';
   evaluate({ entries }: BadgeEvaluationContext): boolean {
@@ -192,7 +141,6 @@ class EarlyBirdStrategy implements BadgeStrategy {
   }
 }
 
-/** night-owl : une entree avec createdAt entre minuit et 5h. */
 class NightOwlStrategy implements BadgeStrategy {
   readonly key = 'night-owl';
   evaluate({ entries }: BadgeEvaluationContext): boolean {
@@ -204,10 +152,6 @@ class NightOwlStrategy implements BadgeStrategy {
   }
 }
 
-/**
- * perfect-month : identique a goal-crusher mais label different — garde
- * 2 strategies separees (meme condition, progression diff dans le futur).
- */
 class PerfectMonthStrategy implements BadgeStrategy {
   readonly key = 'perfect-month';
   evaluate({ entries, goals, now }: BadgeEvaluationContext): boolean {
@@ -218,10 +162,6 @@ class PerfectMonthStrategy implements BadgeStrategy {
   }
 }
 
-/**
- * comeback-kid : semaine courante sous objectif ET semaine precedente au-dessus,
- * pour au moins une categorie avec objectif actif.
- */
 class ComebackKidStrategy implements BadgeStrategy {
   readonly key = 'comeback-kid';
   evaluate({ entries, goals, now }: BadgeEvaluationContext): boolean {
@@ -261,16 +201,6 @@ class ComebackKidStrategy implements BadgeStrategy {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Registry
-// ---------------------------------------------------------------------------
-
-/**
- * Registry statique de toutes les strategies de badges disponibles.
- * Une seule source de verite : ajouter un nouveau badge = ajouter une
- * ligne dans ce registry + une classe au-dessus + une entree dans
- * BADGE_CATALOG.
- */
 export const BADGE_STRATEGIES: ReadonlyMap<string, BadgeStrategy> = new Map<
   string,
   BadgeStrategy

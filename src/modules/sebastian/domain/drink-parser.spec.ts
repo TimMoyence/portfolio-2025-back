@@ -106,10 +106,8 @@ describe('parseDrinkMessage', () => {
       expect(result.drinks[0].alcoholDegree).toBe(8);
       expect(result.drinks[0].consumedAt).toBeDefined();
       const date = new Date(result.drinks[0].consumedAt!);
-      // mardi = 2 (Tuesday)
       expect(date.getDay()).toBe(2);
       expect(date.getHours()).toBe(22);
-      // La date doit etre dans le passe ou aujourd'hui
       const now = new Date();
       now.setHours(23, 59, 59, 999);
       expect(date.getTime()).toBeLessThanOrEqual(now.getTime());

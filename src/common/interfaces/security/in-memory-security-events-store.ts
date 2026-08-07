@@ -14,15 +14,6 @@ interface StoredEntry {
   lastUserAgent: string;
 }
 
-/**
- * Store en memoire des evenements de securite, indexe par IP.
- *
- * Les entrees sortant de la fenetre d'observation sont purgees a la
- * lecture (lazy eviction), ce qui evite d'avoir un scheduler dedie
- * tout en garantissant une borne memoire raisonnable pour un usage
- * solo (1 instance API). Redis-backed est une extension naturelle
- * via un second adaptateur du meme port.
- */
 @Injectable()
 export class InMemorySecurityEventsStore implements ISecurityEventsStore {
   private readonly entries = new Map<string, StoredEntry>();
@@ -69,7 +60,6 @@ export class InMemorySecurityEventsStore implements ISecurityEventsStore {
     return Promise.resolve(summaries.slice(0, limit));
   }
 
-  /** Reinitialise le store. Reserve aux tests. */
   clear(): void {
     this.entries.clear();
   }

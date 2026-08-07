@@ -12,10 +12,6 @@ export interface VerifyEmailResult {
   message: string;
 }
 
-/**
- * Verifie l'adresse email d'un utilisateur via un token de verification.
- * Marque emailVerified=true, attribue les roles par defaut et supprime le token.
- */
 @Injectable()
 export class VerifyEmailUseCase {
   constructor(
@@ -44,18 +40,15 @@ export class VerifyEmailUseCase {
     }
 
     if (user.emailVerified) {
-      // Deja verifie — supprimer le token et retourner succes
       await this.emailVerificationTokensRepo.deleteByUserId(stored.userId);
       return { message: 'Adresse email deja verifiee.' };
     }
 
-    // Marquer comme verifie et attribuer les roles par defaut
     await this.usersRepo.update(user.id!, {
       emailVerified: true,
       roles: [...DEFAULT_SELF_REGISTRATION_ROLES],
     });
 
-    // Supprimer tous les tokens de verification de cet utilisateur
     await this.emailVerificationTokensRepo.deleteByUserId(stored.userId);
 
     return { message: 'Adresse email verifiee avec succes.' };

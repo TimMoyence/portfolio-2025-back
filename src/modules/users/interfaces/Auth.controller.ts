@@ -77,8 +77,6 @@ export class AuthController {
   ) {}
 
   /**
-   * Extrait l'adresse IP depuis la requete HTTP.
-   *
    * Le fallback sur `X-Forwarded-For` a ete retire : cet en-tete est
    * fourni par le client, et l'audit d'authentification ne doit pas
    * tracer une IP que l'appelant a choisie.
@@ -87,13 +85,11 @@ export class AuthController {
     return resolveClientIpOrUnknown(req);
   }
 
-  /** Extrait le User-Agent depuis la requete HTTP. */
   private extractUserAgent(req: Request): string {
     return req.headers['user-agent'] ?? 'unknown';
   }
 
   /**
-   * Positionne le cookie HttpOnly contenant le refresh token.
    * Le cookie est restreint au path /auth pour limiter l'envoi automatique.
    */
   private setRefreshCookie(res: Response, refreshToken: string): void {
@@ -107,7 +103,6 @@ export class AuthController {
     });
   }
 
-  /** Efface le cookie HttpOnly du refresh token (logout). */
   private clearRefreshCookie(res: Response): void {
     const isProd = process.env.NODE_ENV === 'production';
     res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {

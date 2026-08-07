@@ -29,12 +29,6 @@ import { NewsletterMailerService } from '../src/modules/newsletter/infrastructur
 const API_PREFIX = 'api/v1/portfolio25';
 const VALID_TOKEN = '550e8400-e29b-41d4-a716-446655440000';
 
-/**
- * Substitut du `JwtAuthGuard` global : meme contrat de lecture du
- * decorateur `@Public()`, sans dependre de la configuration JWT. Il
- * permet de prouver qu'une route est bien exposee sans authentification
- * plutot que de le deduire de la presence du decorateur.
- */
 @Injectable()
 class PublicOnlyGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
@@ -106,8 +100,6 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
   });
 
   it('accepte le POST tel que Gmail l’emet (form-urlencoded, sans authentification)', async () => {
-    // Corps et en-tetes reels du one-click : aucun `Authorization`,
-    // `Content-Type` form-urlencoded, corps `List-Unsubscribe=One-Click`.
     await request(getHttpServer())
       .post(`/${API_PREFIX}/newsletter/unsubscribe`)
       .query({ token: VALID_TOKEN })
@@ -149,8 +141,6 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
   });
 
   it('reste idempotent sur un rejeu du POST', async () => {
-    // Gmail peut rejouer la requete : le second appel doit repondre 200
-    // et non une erreur.
     await request(getHttpServer())
       .post(`/${API_PREFIX}/newsletter/unsubscribe`)
       .query({ token: VALID_TOKEN })
@@ -169,10 +159,6 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
 
   describe('contrat entre l’en-tete List-Unsubscribe et la route servie', () => {
     it('l’URL annoncee dans l’en-tete resout vers une route reellement montee', async () => {
-      // C'est le test qui manquait : les specs du mailer n'assertaient
-      // que la presence du token dans l'en-tete, jamais le fait que
-      // l'URL corresponde a une route de l'API. L'URL pointait donc sur
-      // le front, qui repond 404 au POST.
       const configService = {
         get: jest.fn((key: string) =>
           key === 'API_PREFIX' ? API_PREFIX : undefined,

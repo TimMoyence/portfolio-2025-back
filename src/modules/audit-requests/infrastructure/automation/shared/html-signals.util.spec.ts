@@ -116,7 +116,6 @@ describe('html-signals.util', () => {
     });
 
     it('devrait limiter a 12 resultats maximum', () => {
-      // 15 cookies separes par virgule sans espace
       const cookies = Array.from({ length: 15 }, (_, i) => `c${i}=v${i}`).join(
         ',',
       );

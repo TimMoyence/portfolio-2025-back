@@ -14,12 +14,6 @@ import { SharedLlmExecutor } from './llm-executor.port';
 import { ReportQualityGateService } from './report-quality-gate.service';
 import { CachingSectionRunner } from './section-generators';
 
-/**
- * Helper local : instancie le service avec les dependances par defaut
- * (factory ChatOpenAI + executor partage) pour garder les tests lisibles
- * apres l'ajout des ports LLM en C4a. Chaque test injecte son propre
- * config/qualityGate.
- */
 function createService(
   config: AuditAutomationConfig,
   qualityGate: ReportQualityGateService,
@@ -40,16 +34,6 @@ function createService(
   );
 }
 
-/**
- * @internal Interface de test exposant les methodes privees du service LangchainAuditReport.
- *
- * Justification : les methodes privees (generateUserSummary, generateExpertReport,
- * buildFallbackExpertReport, buildSectionPayloads, generateSectionOnce,
- * generateFanoutSectionsWithDeadline) orchestrent les appels LLM. Les tester
- * via l'interface publique generate() necessiterait une cle OpenAI reelle et
- * rendrait les tests non deterministes. Ce type permet un acces controle
- * pour le mock et le spy des couches internes uniquement en contexte de test.
- */
 interface LangchainServiceTestable {
   generate: LangchainAuditReportService['generate'];
   generateUserSummary: (...args: unknown[]) => Promise<string>;
@@ -116,7 +100,6 @@ describe('LangchainAuditReportService', () => {
 
   const input: LangchainAuditInput = buildLangchainAuditInput();
 
-  /** Cast de commodite pour acceder aux methodes privees en contexte de test. */
   function asTestable(
     service: LangchainAuditReportService,
   ): LangchainServiceTestable {
@@ -221,7 +204,6 @@ describe('LangchainAuditReportService', () => {
         reasons: [],
       }));
 
-    /** Mock partiel : seule la methode apply est utilisee dans ce chemin de test. */
     const qualityGate = {
       apply: applyMock,
     } as unknown as ReportQualityGateService;

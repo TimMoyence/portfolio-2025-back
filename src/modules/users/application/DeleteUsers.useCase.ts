@@ -4,7 +4,6 @@ import type { IUsersRepository } from '../domain/IUsers.repository';
 import { USERS_REPOSITORY } from '../domain/token';
 import { User } from '../domain/User';
 
-/** Desactive un utilisateur par son identifiant (suppression logique). */
 @Injectable()
 export class DeleteUsersUseCase {
   constructor(

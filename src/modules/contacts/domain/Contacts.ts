@@ -19,7 +19,6 @@ export interface CreateContactProps {
   termsMethod?: string;
 }
 
-/** Entite domaine representant une demande de contact. */
 export class Contacts {
   id?: string;
   email: string;

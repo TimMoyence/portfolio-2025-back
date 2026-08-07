@@ -3,7 +3,6 @@ import type { ISebastianEntryRepository } from '../../domain/ISebastianEntry.rep
 import { SEBASTIAN_ENTRY_REPOSITORY } from '../../domain/token';
 import type { GetStatsQuery } from '../dto/GetStats.query';
 
-/** Resultat de statistiques pour une categorie. */
 export interface CategoryStats {
   category: string;
   total: number;
@@ -11,26 +10,17 @@ export interface CategoryStats {
   trend: number;
 }
 
-/** Resultat global des statistiques de consommation. */
 export interface StatsResult {
   byCategory: CategoryStats[];
   period: string;
 }
 
-/** Nombre de jours par type de periode. */
 const PERIOD_DAYS: Record<string, number> = {
   week: 7,
   month: 30,
   year: 365,
 };
 
-/**
- * Calcule les statistiques de consommation pour un utilisateur.
- *
- * Recupere les entrees selon la periode, calcule la somme par categorie,
- * la moyenne quotidienne, et la tendance (comparaison periode courante
- * vs precedente en pourcentage).
- */
 @Injectable()
 export class GetStatsUseCase {
   constructor(
@@ -38,7 +28,6 @@ export class GetStatsUseCase {
     private readonly entryRepo: ISebastianEntryRepository,
   ) {}
 
-  /** Execute le calcul des statistiques de consommation. */
   async execute(query: GetStatsQuery): Promise<StatsResult> {
     const days = PERIOD_DAYS[query.period];
     const now = new Date();

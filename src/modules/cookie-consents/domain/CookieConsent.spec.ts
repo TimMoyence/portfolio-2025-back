@@ -46,8 +46,6 @@ describe('CookieConsent aggregate', () => {
     ).toThrow(DomainValidationError);
   });
 
-  // --- Source validation ---
-
   it('devrait accepter settings comme source', () => {
     const consent = CookieConsent.create({
       ...VALID_PROPS,
@@ -64,8 +62,6 @@ describe('CookieConsent aggregate', () => {
       }),
     ).toThrow(DomainValidationError);
   });
-
-  // --- Action validation ---
 
   it('devrait accepter toutes les actions valides', () => {
     const actions = [
@@ -88,8 +84,6 @@ describe('CookieConsent aggregate', () => {
       }),
     ).toThrow(DomainValidationError);
   });
-
-  // --- Preferences validation ---
 
   it('devrait refuser des preferences nulles', () => {
     expect(() =>
@@ -114,8 +108,6 @@ describe('CookieConsent aggregate', () => {
     ).toThrow(DomainValidationError);
   });
 
-  // --- Optional metadata ---
-
   it('devrait gerer les metadonnees null/undefined', () => {
     const consent = CookieConsent.create({
       ...VALID_PROPS,
@@ -127,8 +119,6 @@ describe('CookieConsent aggregate', () => {
     expect(consent.userAgent).toBeNull();
     expect(consent.referer).toBeNull();
   });
-
-  // --- Locale resolution ---
 
   it('devrait defaulter la locale a fr si invalide', () => {
     const consent = CookieConsent.create({

@@ -23,22 +23,6 @@ import {
   buildPrioritySystemBlocks,
 } from './section-prompts.builder';
 
-/**
- * Generateurs des 4 sections structurees fan-out du pipeline audit
- * (executive / priority / execution / client comms). Chaque fonction :
- *   1. Construit les blocs system via les builders purs
- *   2. Delegue au `CachingSectionRunner` pour le routage Anthropic/OpenAI
- *   3. Fournit un fallback OpenAI inline (ChatOpenAI.withStructuredOutput)
- *      utilise si Anthropic est desactive ou leve
- *
- * Extraits du service orchestrateur pour :
- *   - reduire la LOC du service god-object
- *   - isoler la construction des prompts + des callbacks OpenAI
- *   - permettre un test unitaire de chaque section independamment
- */
-
-/** Signature du callback de tracking fourni par le service parent. */
-
 export type InvokeTrackedFn = <T>(
   chain: {
     invoke: (
@@ -52,13 +36,11 @@ export type InvokeTrackedFn = <T>(
   signal?: AbortSignal,
 ) => Promise<T>;
 
-/** Dependances communes injectees par le service aux generateurs. */
 export interface CacheableSectionDeps {
   cachingRunner: CachingSectionRunner;
   invokeTracked: InvokeTrackedFn;
 }
 
-/** Parametres d'invocation d'une section cacheable. */
 export interface CacheableSectionArgs {
   llm: ChatOpenAI;
   payload: Record<string, unknown>;
@@ -77,7 +59,6 @@ function buildOpenAiMessages(
   ];
 }
 
-/** Executive Summary — resume strategique + reportExplanation + strengths. */
 export function generateExecutiveSection(
   deps: CacheableSectionDeps,
   args: CacheableSectionArgs,
@@ -104,7 +85,6 @@ export function generateExecutiveSection(
   });
 }
 
-/** Priority Backlog — 8-10 priorites classees + urlLevelImprovements + seoFoundations. */
 export function generatePrioritySection(
   deps: CacheableSectionDeps,
   args: CacheableSectionArgs,
@@ -131,7 +111,6 @@ export function generatePrioritySection(
   });
 }
 
-/** Execution Plan — techFingerprint + perPageAnalysis + implementationTodo + whatToFix*. */
 export function generateExecutionSection(
   deps: CacheableSectionDeps,
   args: CacheableSectionArgs,
@@ -158,7 +137,6 @@ export function generateExecutionSection(
   });
 }
 
-/** Client Communications — clientMessageTemplate + clientLongEmail + clientEmailDraft. */
 export function generateClientCommsSection(
   deps: CacheableSectionDeps,
   args: CacheableSectionArgs,

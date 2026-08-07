@@ -1,16 +1,7 @@
 import type { ForecastResult } from './IWeatherProxy.port';
 import type { AlertSeverity, WeatherAlert } from './WeatherAlert';
 
-/**
- * Service de domaine qui analyse les previsions meteo pour detecter
- * des conditions d'alerte (vent, pluie, temperature, orages).
- * Pur — aucune dependance infrastructure.
- */
 export class WeatherAlertAnalyzer {
-  /**
-   * Analyse les previsions horaires (24h) pour generer des alertes synthetiques.
-   * Deduplique par type+severite (garde la premiere occurrence temporelle).
-   */
   analyze(forecast: ForecastResult): WeatherAlert[] {
     const alerts: WeatherAlert[] = [];
     const { hourly } = forecast;
@@ -32,7 +23,6 @@ export class WeatherAlertAnalyzer {
     return this.deduplicate(alerts);
   }
 
-  /** Detecte les alertes de vent selon les seuils de rafales. */
   private checkWind(
     alerts: WeatherAlert[],
     windGusts: number,
@@ -68,7 +58,6 @@ export class WeatherAlertAnalyzer {
     }
   }
 
-  /** Detecte les alertes de precipitation selon les seuils horaires. */
   private checkPrecipitation(
     alerts: WeatherAlert[],
     precipitation: number,
@@ -104,7 +93,6 @@ export class WeatherAlertAnalyzer {
     }
   }
 
-  /** Detecte les alertes de temperature extremes. */
   private checkTemperature(
     alerts: WeatherAlert[],
     temp: number,
@@ -131,7 +119,6 @@ export class WeatherAlertAnalyzer {
     }
   }
 
-  /** Detecte les alertes d'orage et de neige forte via les codes WMO. */
   private checkStorm(
     alerts: WeatherAlert[],
     weatherCode: number,
@@ -158,7 +145,6 @@ export class WeatherAlertAnalyzer {
     }
   }
 
-  /** Ajoute une alerte avec une fin par defaut de +3h. */
   private add(
     alerts: WeatherAlert[],
     type: string,
@@ -179,7 +165,6 @@ export class WeatherAlertAnalyzer {
     });
   }
 
-  /** Deduplique les alertes par type et severite (garde la premiere occurrence). */
   private deduplicate(alerts: WeatherAlert[]): WeatherAlert[] {
     const seen = new Set<string>();
     return alerts.filter((a) => {

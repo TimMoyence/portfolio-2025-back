@@ -152,9 +152,6 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
     });
 
     it("laisse bodyHtml brut (l'appelant est responsable d'echapper les champs externes)", () => {
-      // Le contrat : le body est considere deja safe (l'appelant passe du HTML
-      // construit avec escapeHtml sur les donnees externes). Ce comportement
-      // est explicite dans la doc de MailLayoutInput.bodyHtml.
       const html = buildMailLayout({
         ...baseInput,
         bodyHtml: '<p><strong>ok</strong></p>',

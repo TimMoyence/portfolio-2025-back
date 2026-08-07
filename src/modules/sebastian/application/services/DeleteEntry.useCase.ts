@@ -5,7 +5,6 @@ import type { ISebastianEntryRepository } from '../../domain/ISebastianEntry.rep
 import { SEBASTIAN_ENTRY_REPOSITORY } from '../../domain/token';
 import type { DeleteEntryCommand } from '../dto/DeleteEntry.command';
 
-/** Supprime une entree de consommation apres verification des droits. */
 @Injectable()
 export class DeleteEntryUseCase {
   constructor(
@@ -13,7 +12,6 @@ export class DeleteEntryUseCase {
     private readonly entryRepo: ISebastianEntryRepository,
   ) {}
 
-  /** Execute la suppression d'une entree de consommation. */
   async execute(command: DeleteEntryCommand): Promise<void> {
     const entry = await this.entryRepo.findById(command.entryId);
     if (!entry) {

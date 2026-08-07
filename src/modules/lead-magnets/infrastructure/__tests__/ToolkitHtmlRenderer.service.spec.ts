@@ -87,7 +87,6 @@ describe('ToolkitHtmlRendererService', () => {
     it('inclut le secteur, le niveau et le budget dans la couverture', () => {
       const html = service.render(buildContent());
       expect(html).toContain('Coach sportif');
-      // Le niveau est affiché avec un label traduit (Intermédiaire / Avancé / Débutant)
       expect(html.toLowerCase()).toContain('interm');
       expect(html).toContain('60');
     });
@@ -104,7 +103,6 @@ describe('ToolkitHtmlRendererService', () => {
       const html = service.render(buildContent());
       expect(html).toContain('Message LinkedIn');
       expect(html).toContain('Prospection');
-      // Le niveau est affiché avec un label traduit (Débutant/Intermédiaire/Avancé)
       expect(html.toLowerCase()).toContain('but');
       expect(html).toContain('Ecris un message pour');
     });
@@ -129,15 +127,12 @@ describe('ToolkitHtmlRendererService', () => {
       expect(html).toContain('Produit un message court et humain.');
       expect(html).toContain('Exemple : cible=consultant');
       expect(html).toContain('Iterez en changeant uniquement');
-      // Les labels des blocs enrichis (labels litteraux dans le template)
       expect(html).toContain("Cas d'usage");
       expect(html).toContain("Astuce d'it");
     });
 
     it('omet les blocs description / example / tip quand ils sont absents', () => {
       const html = service.render(buildContent());
-      // Le fixture par defaut ne fournit ni description ni example ni tip
-      // donc les labels litteraux des blocs enrichis ne doivent pas apparaitre.
       expect(html).not.toContain("Cas d'usage");
       expect(html).not.toContain("Astuce d'it");
     });

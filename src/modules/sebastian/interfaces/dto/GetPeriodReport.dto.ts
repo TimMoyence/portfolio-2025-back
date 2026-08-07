@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsDateString } from 'class-validator';
 
-/** DTO de requete pour les rapports de periode. */
 export class GetPeriodReportDto {
   @ApiProperty({
     enum: ['week', 'month', 'quarter'],

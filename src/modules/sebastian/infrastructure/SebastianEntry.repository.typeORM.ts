@@ -8,7 +8,6 @@ import type {
 } from '../domain/ISebastianEntry.repository';
 import { SebastianEntryEntity } from './entities/SebastianEntry.entity';
 
-/** Implementation TypeORM du port de persistance des entrees Sebastian. */
 @Injectable()
 export class SebastianEntryRepositoryTypeORM implements ISebastianEntryRepository {
   constructor(

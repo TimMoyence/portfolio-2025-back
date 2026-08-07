@@ -44,7 +44,6 @@ describe('ListBadgesUseCase', () => {
     expect(firstLog!.unlocked).toBe(true);
     expect(firstLog!.unlockedAt).toBe(unlockedAt.toISOString());
 
-    // Les autres restent verrouilles
     const others = result.filter((b) => b.key !== 'first-log');
     for (const badge of others) {
       expect(badge.unlocked).toBe(false);

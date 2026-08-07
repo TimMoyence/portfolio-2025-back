@@ -1,10 +1,3 @@
-/**
- * Scoring pur (fonctionnel) des requetes HTTP pour detection des
- * clients suspects. Aucune dependance Nest ou express : le scorer
- * prend un contexte normalise et retourne score + raisons. Il est
- * entierement testable sans mocks HTTP.
- */
-
 export interface RequestScoringContext {
   method: string;
   path: string;
@@ -22,7 +15,6 @@ export interface RequestScore {
   reasons: string[];
 }
 
-/** Regex des User-Agents clairement automatises (sans intention humaine). */
 const AUTOMATION_UA_PATTERNS: readonly { pattern: RegExp; reason: string }[] = [
   { pattern: /HeadlessChrome/i, reason: 'ua:headless-chrome' },
   { pattern: /PhantomJS/i, reason: 'ua:phantomjs' },
@@ -43,7 +35,6 @@ const AUTOMATION_UA_PATTERNS: readonly { pattern: RegExp; reason: string }[] = [
   { pattern: /scanner/i, reason: 'ua:scanner' },
 ];
 
-/** Chemins sensibles surveilles en cas de status 4xx. */
 const SENSITIVE_WRITE_PATHS: readonly RegExp[] = [
   /^\/api\/v[0-9]+\/portfolio25\/auth\//,
   /^\/api\/v[0-9]+\/portfolio25\/users/,
@@ -51,7 +42,6 @@ const SENSITIVE_WRITE_PATHS: readonly RegExp[] = [
   /^\/api\/v[0-9]+\/portfolio25\/lead-magnets/,
 ];
 
-/** Patterns de chemins tres suspects (scan de vulnerabilites). */
 const SUSPICIOUS_PATH_PATTERNS: readonly { pattern: RegExp; reason: string }[] =
   [
     { pattern: /\.\./, reason: 'path:traversal' },
@@ -67,13 +57,6 @@ const SUSPICIOUS_PATH_PATTERNS: readonly { pattern: RegExp; reason: string }[] =
     { pattern: /\/\.well-known\/security/i, reason: 'path:well-known-probe' },
   ];
 
-/**
- * Calcule le score de suspicion d'une requete completee.
- *
- * Score cumulatif sur 0-100 (plafonne). Chaque signal detecte ajoute
- * des points et une raison identifiable pour les logs et le tableau de
- * bord. Le scoring est deterministe et sans effet de bord.
- */
 export function scoreRequest(ctx: RequestScoringContext): RequestScore {
   const reasons: string[] = [];
   let score = 0;
@@ -111,8 +94,6 @@ export function scoreRequest(ctx: RequestScoringContext): RequestScore {
   }
 
   if (ctx.responseTimeMs > 0 && ctx.responseTimeMs < 50 && !ctx.aborted) {
-    // Legit clients ne ferment quasi jamais la connexion en < 50ms
-    // sur une requete non-GET cacheable.
     if (ctx.method !== 'GET' && ctx.method !== 'HEAD') {
       score += 5;
       reasons.push('http:ultra-fast-write');
@@ -135,7 +116,6 @@ export function scoreRequest(ctx: RequestScoringContext): RequestScore {
     reasons.push('header:no-accept-language');
   }
 
-  // Plafonnage.
   if (score > 100) score = 100;
 
   return { score, reasons };

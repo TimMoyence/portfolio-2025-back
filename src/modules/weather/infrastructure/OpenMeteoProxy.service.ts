@@ -11,35 +11,27 @@ import type { WeatherAlertResult } from '../domain/WeatherAlert';
 import { WeatherAlertAnalyzer } from '../domain/WeatherAlertAnalyzer';
 import { WeatherCache } from './weather-cache';
 
-/** Delai d'attente maximal pour les appels Open-Meteo (ms). */
 const FETCH_TIMEOUT_MS = 8_000;
 
-/** URL de base de l'API de geocodage Open-Meteo. */
 const GEOCODING_BASE = 'https://geocoding-api.open-meteo.com/v1/search';
 
-/** URL de base de l'API de previsions Open-Meteo. */
 const FORECAST_BASE = 'https://api.open-meteo.com/v1/forecast';
 
-/** URL de base de l'API de qualite de l'air Open-Meteo. */
 const AIR_QUALITY_BASE =
   'https://air-quality-api.open-meteo.com/v1/air-quality';
 
-/** URL des modeles d'ensemble Open-Meteo. */
 const ECMWF_BASE = 'https://api.open-meteo.com/v1/ecmwf';
 const GFS_BASE = 'https://api.open-meteo.com/v1/gfs';
 const ICON_BASE = 'https://api.open-meteo.com/v1/dwd-icon';
 
-/** URL de base de l'API d'archives Open-Meteo. */
 const ARCHIVE_BASE = 'https://archive-api.open-meteo.com/v1/archive';
 
-/** Implementation du proxy meteo utilisant l'API Open-Meteo. */
 @Injectable()
 export class OpenMeteoProxyService implements IWeatherProxy {
   private readonly logger = new Logger(OpenMeteoProxyService.name);
   private readonly cache = new WeatherCache();
   private readonly alertAnalyzer = new WeatherAlertAnalyzer();
 
-  /** Recherche de villes par nom via le geocodage Open-Meteo. */
   async searchCity(
     name: string,
     language = 'fr',
@@ -56,7 +48,6 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     return result;
   }
 
-  /** Recupere les previsions meteo pour des coordonnees donnees. */
   async getForecast(
     latitude: number,
     longitude: number,
@@ -84,7 +75,6 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     return data;
   }
 
-  /** Recupere les donnees de qualite de l'air pour des coordonnees donnees. */
   async getAirQuality(
     latitude: number,
     longitude: number,
@@ -103,7 +93,6 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     return data;
   }
 
-  /** Recupere les previsions multi-modeles (ECMWF, GFS, ICON) en parallele. */
   async getEnsemble(
     latitude: number,
     longitude: number,
@@ -174,7 +163,6 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     return result;
   }
 
-  /** Recupere les donnees meteo historiques depuis l'API d'archives Open-Meteo. */
   async getHistorical(
     latitude: number,
     longitude: number,
@@ -196,7 +184,6 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     return data;
   }
 
-  /** Recupere les alertes meteo synthetiques basees sur les previsions 24h. */
   async getAlerts(
     latitude: number,
     longitude: number,
@@ -205,7 +192,6 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     const cached = this.cache.get<WeatherAlertResult>(cacheKey);
     if (cached) return cached;
 
-    // Utilise les previsions existantes (deja cachees) pour analyser les 24 prochaines heures
     const forecast = await this.getForecast(latitude, longitude, 'auto', 2);
     const alerts = this.alertAnalyzer.analyze(forecast);
     const result: WeatherAlertResult = { alerts };
@@ -213,7 +199,6 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     return result;
   }
 
-  /** Effectue un appel HTTP GET avec timeout et gestion d'erreurs. */
   private async fetchJson<T>(url: string): Promise<T> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);

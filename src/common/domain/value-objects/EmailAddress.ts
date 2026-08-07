@@ -1,4 +1,3 @@
-/** Value Object immutable representant une adresse email normalisee. */
 export class EmailAddress {
   private constructor(private readonly normalizedValue: string) {}
 

@@ -6,10 +6,6 @@ import {
   LangchainClientReportService,
 } from './langchain-client-report.service';
 
-/**
- * @internal Expose des hooks privees du service pour permettre le spy
- * des methodes internes dans les tests, sans cle OpenAI reelle.
- */
 interface ClientReportTestable {
   generate: LangchainClientReportService['generate'];
   buildFallback: (context: ClientReportContext, locale: 'fr' | 'en') => unknown;
@@ -120,9 +116,7 @@ describe('LangchainClientReportService', () => {
     const service = new LangchainClientReportService(config);
     const result = await service.generate(baseContext());
 
-    // Google average: seo 62, performance 55, technical 70 => 62
     expect(result.googleVsAiMatrix.googleVisibility.score).toBe(62);
-    // AI average: aiVisibility 48, citationWorthiness 52, trust 68 => 56
     expect(result.googleVsAiMatrix.aiVisibility.score).toBe(56);
   });
 

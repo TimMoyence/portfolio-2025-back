@@ -1,14 +1,5 @@
 import { ACCENT } from './toolkit-palette';
 
-/**
- * Styles CSS embarques dans le document PDF du toolkit IA (variables,
- * grille A4, typographie, cover, sections, prompts, workflows, templates).
- *
- * Extrait du god-object `ToolkitHtmlRendererService` pour que la concern
- * "presentation visuelle" reste independante de la concern "assemblage
- * HTML". Les variables CSS referent a la palette centralisee dans
- * `toolkit-palette.ts`.
- */
 export function buildToolkitCss(): string {
   return `
       /* Pas de @page : les marges sont gerees par Puppeteer en options.

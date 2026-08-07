@@ -11,7 +11,6 @@ export interface CreateCourseProps {
   coverImage?: string;
 }
 
-/** Entite domaine representant une formation dispensee. */
 export class Courses {
   id?: string;
   slug: string;

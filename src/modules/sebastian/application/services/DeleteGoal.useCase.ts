@@ -5,7 +5,6 @@ import type { ISebastianGoalRepository } from '../../domain/ISebastianGoal.repos
 import { SEBASTIAN_GOAL_REPOSITORY } from '../../domain/token';
 import type { DeleteGoalCommand } from '../dto/DeleteGoal.command';
 
-/** Supprime un objectif de consommation apres verification des droits. */
 @Injectable()
 export class DeleteGoalUseCase {
   constructor(
@@ -13,7 +12,6 @@ export class DeleteGoalUseCase {
     private readonly goalRepo: ISebastianGoalRepository,
   ) {}
 
-  /** Execute la suppression d'un objectif de consommation. */
   async execute(command: DeleteGoalCommand): Promise<void> {
     const goal = await this.goalRepo.findById(command.goalId);
     if (!goal) {

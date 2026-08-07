@@ -12,7 +12,6 @@ describe('BacCalculator', () => {
     widmarkR: 0.68,
   });
 
-  /** Helper pour creer une date relative a un jour de reference. */
   function dateAt(hours: number, minutes = 0): Date {
     const d = new Date('2026-04-06T00:00:00.000Z');
     d.setUTCHours(hours, minutes, 0, 0);
@@ -53,12 +52,6 @@ describe('BacCalculator', () => {
     });
 
     it('devrait calculer le BAC pour 1 biere (5%, 25cl) consommee il y a 1h', () => {
-      /*
-       * Calcul attendu :
-       * grammes = 25 × 5 × 0.0789 = 9.8625 g
-       * BAC pic = 9.8625 / (0.68 × 70) = 9.8625 / 47.6 ≈ 0.2072 g/L
-       * Apres 1h : 0.2072 - 0.15 × 1 = 0.0572 g/L
-       */
       const consumedAt = dateAt(14);
       const now = dateAt(15);
 
@@ -78,7 +71,6 @@ describe('BacCalculator', () => {
         now,
       );
 
-      /* Le BAC doit etre aux alentours de 0.057 g/L. */
       expect(result.currentBac).toBeGreaterThan(0.05);
       expect(result.currentBac).toBeLessThan(0.065);
       expect(result.curve.length).toBeGreaterThan(0);
@@ -86,13 +78,6 @@ describe('BacCalculator', () => {
     });
 
     it('devrait calculer un BAC plus eleve pour 2 pintes (5%, 50cl) consommees il y a 2h', () => {
-      /*
-       * Calcul attendu par pinte :
-       * grammes = 50 × 5 × 0.0789 = 19.725 g
-       * Total 2 pintes : 39.45 g
-       * BAC pic = 39.45 / (0.68 × 70) = 39.45 / 47.6 ≈ 0.8289 g/L
-       * Apres 2h : 0.8289 - 0.15 × 2 = 0.5289 g/L
-       */
       const consumedAt = dateAt(12);
       const now = dateAt(14);
 
@@ -125,7 +110,6 @@ describe('BacCalculator', () => {
         now,
       );
 
-      /* BAC attendu ~0.229 g/L (chaque pinte contribue 0.414, moins 0.3 metabolise = 0.114 × 2). */
       expect(result.currentBac).toBeGreaterThan(0.2);
       expect(result.currentBac).toBeLessThan(0.26);
     });
@@ -151,7 +135,6 @@ describe('BacCalculator', () => {
       );
 
       expect(result.estimatedSoberAt).not.toBeNull();
-      /* La sobriete devrait arriver apres le moment actuel. */
       expect(result.estimatedSoberAt!.getTime()).toBeGreaterThan(
         consumedAt.getTime(),
       );
@@ -177,7 +160,6 @@ describe('BacCalculator', () => {
         now,
       );
 
-      /* Meme BAC qu'une biere standard (5%, 25cl) apres 1h. */
       expect(result.currentBac).toBeGreaterThan(0.05);
       expect(result.currentBac).toBeLessThan(0.065);
     });
@@ -224,7 +206,6 @@ describe('BacCalculator', () => {
         now,
       );
 
-      /* Verifier que les points sont espaces de 15 min. */
       for (let i = 1; i < result.curve.length; i++) {
         const diff =
           result.curve[i].time.getTime() - result.curve[i - 1].time.getTime();

@@ -5,7 +5,6 @@ import { SebastianGoal } from '../domain/SebastianGoal';
 import type { ISebastianGoalRepository } from '../domain/ISebastianGoal.repository';
 import { SebastianGoalEntity } from './entities/SebastianGoal.entity';
 
-/** Implementation TypeORM du port de persistance des objectifs Sebastian. */
 @Injectable()
 export class SebastianGoalRepositoryTypeORM implements ISebastianGoalRepository {
   constructor(

@@ -3,13 +3,8 @@ import type { LlmsTxtAnalysis } from '../../domain/AiIndexability';
 import { SafeFetchService } from './safe-fetch.service';
 
 /**
- * Service d'analyse du fichier `llms.txt` conforme à la spec
- * https://llmstxt.org. Télécharge le fichier via {@link SafeFetchService}
- * (protection SSRF), parse ses sections H2 et évalue un score de conformité.
- *
- * Le service ne lève jamais d'exception sur un site absent ou mal formé : il
- * retourne un résultat "absent" typé afin que le pipeline d'audit puisse
- * continuer son exécution en toute sécurité.
+ * Le format `llms.txt` (sections H2, score de conformité) suit la spec
+ * https://llmstxt.org.
  */
 @Injectable()
 export class LlmsTxtAnalyzerService {
@@ -17,11 +12,6 @@ export class LlmsTxtAnalyzerService {
 
   constructor(private readonly safeFetch: SafeFetchService) {}
 
-  /**
-   * Analyse la présence et la qualité du fichier `llms.txt` pour une origine
-   * donnée (ex : `https://example.com`). Vérifie également la présence de la
-   * variante `llms-full.txt`.
-   */
   async analyze(origin: string): Promise<LlmsTxtAnalysis> {
     const cleanOrigin = origin.replace(/\/$/, '');
     const url = `${cleanOrigin}/llms.txt`;

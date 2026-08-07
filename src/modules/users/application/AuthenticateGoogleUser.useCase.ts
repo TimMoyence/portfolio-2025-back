@@ -35,7 +35,6 @@ interface GoogleAuthClient {
   }): Promise<GoogleTokenTicket>;
 }
 
-/** Authentifie un utilisateur via son Google ID token (popup GIS). */
 @Injectable()
 export class AuthenticateGoogleUserUseCase {
   private readonly logger = new Logger(AuthenticateGoogleUserUseCase.name);
@@ -49,7 +48,6 @@ export class AuthenticateGoogleUserUseCase {
     @Inject(GOOGLE_CLIENT_ID) private readonly googleClientId: string,
   ) {}
 
-  /** Authentifie via un Google ID token et retourne un AuthResult. */
   async execute(idToken: string): Promise<AuthResult> {
     const payload = await this.verifyGoogleToken(idToken);
     const googleId = payload.sub;
@@ -68,28 +66,21 @@ export class AuthenticateGoogleUserUseCase {
     return this.signResult(authenticatedUser);
   }
 
-  /**
-   * Resout l'utilisateur correspondant au token Google :
-   * 1. Lookup par googleId
-   * 2. Sinon lookup par email + lien du googleId (anti-takeover)
-   * 3. Sinon creation d'un nouveau compte
-   */
   private async resolveOrCreateUser(
     googleId: string,
     email: string,
     payload: GoogleTokenPayload,
   ): Promise<User> {
-    // 1. Chercher par googleId
     const byGoogleId = await this.repo.findByGoogleId(googleId);
     if (byGoogleId) {
       this.ensureActive(byGoogleId);
       return byGoogleId;
     }
 
-    // 2. Chercher par email → lier le googleId UNIQUEMENT si l'email a deja ete verifie
-    //    cote local (sinon un attaquant peut s'inscrire avec l'email d'une cible sans
-    //    verif puis se logger en Google avec ce meme email pour s'approprier le compte
-    //    = HIGH-6 account takeover).
+    // Lier le googleId UNIQUEMENT si l'email a deja ete verifie cote local
+    // (sinon un attaquant peut s'inscrire avec l'email d'une cible sans verif
+    // puis se logger en Google avec ce meme email pour s'approprier le compte
+    // = HIGH-6 account takeover).
     const byEmail = await this.repo.findByEmail(email);
     if (byEmail) {
       this.ensureActive(byEmail);
@@ -106,7 +97,6 @@ export class AuthenticateGoogleUserUseCase {
       return byEmail;
     }
 
-    // 3. Creer un nouveau compte (emailVerified=true car Google a deja verifie)
     const newUser = UsersMapper.fromGoogleAuth({
       email,
       firstName: payload.given_name ?? email.split('@')[0],
@@ -118,7 +108,6 @@ export class AuthenticateGoogleUserUseCase {
     return this.repo.create(newUser);
   }
 
-  /** Verifie le token Google ID et retourne le payload. */
   private async verifyGoogleToken(idToken: string) {
     try {
       const ticket = await this.getClient().verifyIdToken({
@@ -150,14 +139,12 @@ export class AuthenticateGoogleUserUseCase {
     return this.client;
   }
 
-  /** Verifie que le compte utilisateur est actif. */
   private ensureActive(user: { isActive: boolean }): void {
     if (!user.isActive) {
       throw new InvalidCredentialsError('Account deactivated');
     }
   }
 
-  /** Signe un JWT, cree un refresh token et retourne le resultat d'authentification. */
   private async signResult(user: User): Promise<AuthResult> {
     const { token, expiresIn } = await this.jwtTokenService.sign({
       sub: user.id,

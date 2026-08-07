@@ -4,16 +4,12 @@ import type { IAuditRequestsRepository } from '../domain/IAuditRequests.reposito
 import type { AuditSnapshot } from '../domain/AuditProcessing';
 import { AUDIT_REQUESTS_REPOSITORY } from '../domain/token';
 
-/** Duree maximale d'un stream SSE (30 minutes). */
 const SSE_GLOBAL_TIMEOUT_MS = 30 * 60 * 1000;
 
-/** Intervalle de polling de la base de donnees (2 secondes). */
 const POLL_INTERVAL_MS = 2_000;
 
-/** Intervalle d'envoi du heartbeat SSE (15 secondes). */
 const HEARTBEAT_INTERVAL_MS = 15_000;
 
-/** Emet un flux SSE temps reel de la progression d'un audit. */
 @Injectable()
 export class StreamAuditEventsUseCase {
   constructor(
@@ -94,19 +90,16 @@ export class StreamAuditEventsUseCase {
     });
   }
 
-  /** Verifie si un statut de traitement est terminal (COMPLETED ou FAILED). */
   private isTerminalStatus(status: string): boolean {
     return status === 'COMPLETED' || status === 'FAILED';
   }
 
-  /** Calcule un fingerprint pour detecter les changements d'etat de l'audit. */
   private computeFingerprint(audit: AuditSnapshot): string {
     const updatedAt = audit.updatedAt.toISOString();
     const progressDetails = this.extractProgressDetails(audit.keyChecks);
     return `${audit.processingStatus}:${audit.progress}:${audit.step}:${audit.error}:${updatedAt}:${JSON.stringify(progressDetails)}`;
   }
 
-  /** Construit l'evenement SSE correspondant a l'etat courant de l'audit. */
   private buildSnapshotEvent(audit: AuditSnapshot): MessageEvent {
     const updatedAt = audit.updatedAt.toISOString();
 
@@ -156,7 +149,6 @@ export class StreamAuditEventsUseCase {
     };
   }
 
-  /** Construit un evenement d'erreur quand l'audit n'est pas trouve. */
   private buildNotFoundEvent(auditId: string): MessageEvent {
     return {
       type: 'failed',
@@ -171,7 +163,6 @@ export class StreamAuditEventsUseCase {
     };
   }
 
-  /** Construit un evenement d'erreur generique. */
   private buildErrorEvent(auditId: string, error: string): MessageEvent {
     return {
       type: 'failed',
@@ -186,7 +177,6 @@ export class StreamAuditEventsUseCase {
     };
   }
 
-  /** Construit l'evenement de timeout du stream SSE. */
   private buildTimeoutEvent(auditId: string): MessageEvent {
     return {
       type: 'timeout',
@@ -199,7 +189,6 @@ export class StreamAuditEventsUseCase {
     };
   }
 
-  /** Extrait les details de progression depuis les keyChecks de l'audit. */
   private extractProgressDetails(
     keyChecks: Record<string, unknown>,
   ): Record<string, unknown> | undefined {

@@ -1,9 +1,5 @@
 import type { EngineCoverage } from './EngineCoverage';
 
-/**
- * Synthèse stratégique destinée au client (affichée en SSE + mail client).
- * Orientée décideur non technique, impact business, belle promesse de vente.
- */
 export interface ClientReportSynthesis {
   readonly executiveSummary: string;
   readonly topFindings: ReadonlyArray<{
@@ -39,10 +35,6 @@ export interface ClientReportSynthesis {
   };
 }
 
-/**
- * Analyse détaillée d'une page pour le rapport expert (destiné à Tim).
- * Regroupe scores par moteur, problèmes majeurs, recommandations et preuves.
- */
 export interface PerPageDetailedAnalysis {
   readonly url: string;
   readonly title: string;
@@ -52,11 +44,6 @@ export interface PerPageDetailedAnalysis {
   readonly evidence: ReadonlyArray<string>;
 }
 
-/**
- * Rapport expert complet destiné à Tim (mail + PDF).
- * Contient les analyses page par page, les constats transverses,
- * un backlog priorisé et un draft d'email client prêt à envoyer.
- */
 export interface ExpertReportSynthesis {
   readonly executiveSummary: string;
   readonly perPageAnalysis: ReadonlyArray<PerPageDetailedAnalysis>;

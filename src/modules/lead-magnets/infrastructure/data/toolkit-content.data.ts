@@ -1,16 +1,3 @@
-/**
- * Donnees statiques de la boite a outils IA pour solopreneurs.
- * Chaque section (cheatsheet, prompts, workflows, templates) est utilisee
- * par le ToolkitContentAssembler pour personnaliser le guide.
- *
- * Info outils a jour avril 2026. Toutes les chaines sont en francais
- * sans accents (convention du module lead-magnets).
- */
-
-/* ------------------------------------------------------------------ */
-/*  CHEATSHEET — 16 outils classes par categorie                       */
-/* ------------------------------------------------------------------ */
-
 export interface CheatsheetDataEntry {
   id: string;
   category: string;
@@ -21,7 +8,6 @@ export interface CheatsheetDataEntry {
 }
 
 export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
-  /* --- Recherche & Veille --- */
   {
     id: 'Perplexity',
     category: 'Recherche & Veille',
@@ -50,7 +36,6 @@ export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
       'Tu fais plus de 3 reunions par semaine → Fathom te rend 2h/semaine immediatement.',
   },
 
-  /* --- Creation de contenu --- */
   {
     id: 'ChatGPT',
     category: 'Creation de contenu',
@@ -124,7 +109,6 @@ export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
       'Tu veux decliner tes lives/podcasts en shorts TikTok/Reels → Opus Clip en 1 clic.',
   },
 
-  /* --- Automatisation --- */
   {
     id: 'Zapier',
     category: 'Automatisation',
@@ -153,7 +137,6 @@ export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
       'Tu es un peu technique et veux le controle total sans plafond de volume → n8n.',
   },
 
-  /* --- Prospection & Vente --- */
   {
     id: 'Waalaxy',
     category: 'Prospection & Vente',
@@ -173,7 +156,6 @@ export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
       'Tu veux un email marketing francais, conforme RGPD, avec CRM integre → Brevo.',
   },
 
-  /* --- Productivite --- */
   {
     id: 'Notion AI',
     category: 'Productivite',
@@ -185,18 +167,6 @@ export const CHEATSHEET_DATA: CheatsheetDataEntry[] = [
   },
 ];
 
-/* ------------------------------------------------------------------ */
-/*  PROMPTS — 15 prompts (5 categories x 3 niveaux)                    */
-/* ------------------------------------------------------------------ */
-
-/**
- * Structure enrichie d un prompt :
- * - title, category, level, tool : metadonnees
- * - description : ce que le prompt produit en 1 phrase
- * - prompt : le prompt lui-meme, structure en sections (CONTEXTE / INSTRUCTIONS / FORMAT / TON)
- * - example : un cas d usage concret avec variables remplies
- * - tip : conseil d iteration pour ameliorer la sortie
- */
 export interface PromptDataEntry {
   category: string;
   title: string;
@@ -209,9 +179,6 @@ export interface PromptDataEntry {
 }
 
 export const PROMPTS_DATA: PromptDataEntry[] = [
-  /* ============================================================== */
-  /*  Prospection                                                    */
-  /* ============================================================== */
   {
     category: 'Prospection',
     title: 'Message LinkedIn de premier contact',
@@ -297,9 +264,6 @@ Analytique, factuel, sans flatterie. Si le fit est mauvais, dis-le.`,
     tip: 'Lancez le prompt sur 10 profils d un coup en collant chaque profil entre des balises <profil_1></profil_1>. Claude peut traiter 200K tokens : profitez-en pour batcher vos qualifications.',
   },
 
-  /* ============================================================== */
-  /*  Contenu                                                        */
-  /* ============================================================== */
   {
     category: 'Contenu',
     title: 'Post LinkedIn opinion tranchee',
@@ -402,9 +366,6 @@ Strategique, orienté action. Chaque idee doit etre assez precise pour etre exec
     tip: "Demandez a Claude d ajouter une colonne 'fill-in-the-blank' pour 3 posts : ces formats a faible barriere ont le plus fort engagement en 2026. Exemple : 'Mon erreur la plus chere en tant que freelance ? ___'",
   },
 
-  /* ============================================================== */
-  /*  Automatisation                                                 */
-  /* ============================================================== */
   {
     category: 'Automatisation',
     title: 'Mon premier Zap guide pas-a-pas',
@@ -504,9 +465,6 @@ Technique, precis. Pas d approximations sur les noms de nodes ou d expressions.`
     tip: "Ajoutez un node 'Merge' avant l envoi email pour grouper les articles par theme (IA / No-code / Marketing). Claude fera un meilleur digest avec une instruction 'regroupe par theme'.",
   },
 
-  /* ============================================================== */
-  /*  Site web                                                       */
-  /* ============================================================== */
   {
     category: 'Site web',
     title: 'Page d accueil solopreneur qui convertit',
@@ -613,9 +571,6 @@ Analytique, honnete. Si le probleme est structurel (mauvaise offre, mauvaise cib
     tip: "Apres l audit, demandez a Claude 'propose 3 tests A/B prioritaires par ordre de ROI estime'. Vous aurez une feuille de route de tests pour les 3 mois a venir au lieu d un one-shot.",
   },
 
-  /* ============================================================== */
-  /*  Gestion client                                                 */
-  /* ============================================================== */
   {
     category: 'Gestion client',
     title: 'Email de relance bienveillant',
@@ -721,10 +676,6 @@ Humain, authentique, jamais "client value automation". Chaque email doit donner 
     tip: "Personnalisez l email J+14 (temoignage) en citant un detail specifique de la prestation recue ('ta remarque sur le menu mobile m a fait rire'). Taux de reponse passe de 20% a 60%.",
   },
 ];
-
-/* ------------------------------------------------------------------ */
-/*  WORKFLOWS — 3 workflows detailles                                  */
-/* ------------------------------------------------------------------ */
 
 export interface WorkflowStepData {
   step: number;
@@ -907,10 +858,6 @@ export const WORKFLOWS_DATA: WorkflowDataEntry[] = [
     ],
   },
 ];
-
-/* ------------------------------------------------------------------ */
-/*  TEMPLATES — 8 templates prets a l'emploi                           */
-/* ------------------------------------------------------------------ */
 
 export interface TemplateDataEntry {
   name: string;

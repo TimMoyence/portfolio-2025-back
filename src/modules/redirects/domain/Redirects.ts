@@ -8,7 +8,6 @@ export interface CreateRedirectProps {
   clicks?: number;
 }
 
-/** Entite domaine representant une redirection d'URL courte. */
 export class Redirects {
   id?: string;
   slug: string;

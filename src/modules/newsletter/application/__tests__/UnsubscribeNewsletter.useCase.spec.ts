@@ -34,8 +34,6 @@ describe('UnsubscribeNewsletterUseCase', () => {
 
     expect(result.status).toBe('unsubscribed');
     expect(result.alreadyUnsubscribed).toBe(false);
-    // La transition passe desormais par `markUnsubscribed`, conditionnee
-    // au statut en base, et non plus par un `update` inconditionnel.
     expect(repo.markUnsubscribed).toHaveBeenCalled();
     expect(scheduler.cancel).toHaveBeenCalledTimes(1);
     expect(mailer.sendUnsubscribeAck).toHaveBeenCalledTimes(1);
@@ -54,8 +52,6 @@ describe('UnsubscribeNewsletterUseCase', () => {
     await flushPromises();
 
     expect(result.status).toBe('unsubscribed');
-    // Le desabonnement aboutit et la sequence drip est bien annulee :
-    // seul l'accuse est supprime.
     expect(scheduler.cancel).toHaveBeenCalledTimes(1);
     expect(mailer.sendUnsubscribeAck).not.toHaveBeenCalled();
   });
@@ -65,8 +61,6 @@ describe('UnsubscribeNewsletterUseCase', () => {
     subscriber.id = 'sub-id';
     subscriber.confirm();
     repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-    // Aucune ligne affectee : la transition a deja ete operee par une
-    // requete concurrente, qui a declenche les effets de bord.
     repo.markUnsubscribed.mockResolvedValueOnce(null);
 
     const result = await useCase.execute(subscriber.unsubscribeToken);
