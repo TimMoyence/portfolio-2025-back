@@ -1,0 +1,18 @@
+{
+  "path": ["src", "test"],
+  "format": ["typescript"],
+  "minLines": 5,
+  "minTokens": 50,
+  "absolute": true,
+  "gitignore": true,
+  "pattern": "**/*.spec.ts",
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "src/migrations/**"
+  ],
+  "reporters": ["console", "html"],
+  "output": "reports/jscpd-tests",
+  "threshold": 100
+}

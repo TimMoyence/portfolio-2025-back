@@ -19,6 +19,9 @@ lerna-debug.log*
 /coverage
 /.nyc_output
 
+# Rapports d'outils qualite (jscpd) : artefacts regeneres a chaque run
+/reports
+
 # IDEs and editors
 /.idea
 .project
