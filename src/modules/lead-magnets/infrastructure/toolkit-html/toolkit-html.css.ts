@@ -1,12 +1,17 @@
 import { ACCENT } from './toolkit-palette';
+import {
+  escapeHtml,
+  safeHtml,
+} from '../../../../common/infrastructure/mail/html-escape.util';
+import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
-export function buildToolkitCss(): string {
-  return `
+export function buildToolkitCss(): EscapedHtml {
+  return safeHtml`
       /* Pas de @page : les marges sont gerees par Puppeteer en options.
          Cela garantit que les marges sont appliquees sur TOUTES les pages
          physiques, y compris celles creees par overflow naturel. */
       :root {
-        --accent: ${ACCENT};
+        --accent: ${escapeHtml(ACCENT)};
         --accent-soft: #e7f6f3;
         --accent-dark: #2d8576;
         --ink: #0c0902;

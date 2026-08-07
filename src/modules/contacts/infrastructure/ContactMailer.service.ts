@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
-import { escapeHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import {
+  escapeHtml,
+  safeHtml,
+} from '../../../common/infrastructure/mail/html-escape.util';
+import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import { Contacts } from '../domain/Contacts';
 import type { IContactNotifier } from '../domain/IContactNotifier';
 
@@ -44,7 +48,7 @@ Sujet      : ${subject}
 Message :
 ${message}
       `.trim(),
-      html: `
+      html: safeHtml`
         <div style="font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; padding:24px;">
           <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
             <h2 style="margin-top:0; color:#333;">📩 Nouveau message de contact</h2>
@@ -92,7 +96,7 @@ ${message}
     });
   }
 
-  protected escapeHtml(input: string): string {
+  protected escapeHtml(input: string): EscapedHtml {
     return escapeHtml(input);
   }
 }
