@@ -5,13 +5,7 @@ export interface PollInteraction {
   multiSelect?: boolean;
 }
 
-export interface CountdownInteraction {
-  type: 'countdown';
-  label: string;
-  durationSeconds: number;
-}
-
-export type PresentInteraction = PollInteraction | CountdownInteraction;
+export type PresentInteraction = PollInteraction;
 
 export interface ReflectionInteraction {
   type: 'reflection';
@@ -20,33 +14,7 @@ export interface ReflectionInteraction {
   rows?: number;
 }
 
-export interface ChecklistInteraction {
-  type: 'checklist';
-  question: string;
-  items: string[];
-}
-
-export interface SelfRatingInteraction {
-  type: 'self-rating';
-  question: string;
-  min: number;
-  max: number;
-  labels: { min: string; max: string };
-}
-
-export interface PromptBuilderInteraction {
-  type: 'prompt-builder';
-  context: string;
-  promptTemplate: string;
-  placeholder: string;
-  ctaLabel?: string;
-}
-
-export type ScrollInteraction =
-  | ReflectionInteraction
-  | ChecklistInteraction
-  | SelfRatingInteraction
-  | PromptBuilderInteraction;
+export type ScrollInteraction = ReflectionInteraction;
 
 export interface SlideInteractions {
   present?: PresentInteraction[];
