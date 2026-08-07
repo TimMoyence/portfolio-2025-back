@@ -79,13 +79,32 @@ L'agent respecte strictement cette stack. Il n'introduit pas de framework, ORM, 
 
 ## Regles de code
 
-- JSDoc obligatoire sur :
-  - classes exportees ;
-  - use cases ;
-  - services de domaine ;
-  - value objects, tokens, ports et fonctions exportees dont l'intention n'est pas triviale ;
-  - toute logique metier complexe, invariant metier, orchestration async ou choix technique non evident.
-- Les commentaires doivent expliquer le pourquoi, pas paraphraser le code.
+- **Le code se documente par lui-meme. Un commentaire est une exception qui se justifie.**
+
+  Un commentaire n'est verifie par rien : ni le compilateur, ni les tests, ni la
+  CI. Le code change, le commentaire reste, et il devient faux sans que rien ne
+  le signale. Un commentaire faux coute plus cher que pas de commentaire, parce
+  qu'on lui fait confiance.
+
+  **Critere unique — avant d'ecrire un commentaire, se demander : « quelqu'un
+  peut-il redecouvrir cette information en lisant le code ? »**
+  - **Oui** → ne pas l'ecrire. Renommer, extraire une methode au nom explicite,
+    ou introduire un value object qui porte l'intention. En DDD, un invariant
+    metier se materialise dans un type ou une garde, pas dans un commentaire.
+  - **Non** → l'ecrire, et citer le fait verifiable.
+
+  Ce qui ne passe donc PAS : paraphraser un nom (`/** Cree un utilisateur. */`
+  sur `createUser`), redire une signature, annoncer une section, ou raconter
+  l'historique — c'est le role de `git log`.
+
+  Ce qui passe : une contrainte **externe** au depot, qu'aucune lecture du code
+  ne revele. Le comportement non documente d'une dependance, une contrainte du
+  SGBD, un format impose par une API tierce, une limite d'un broker, un choix
+  pris contre l'evidence apparente. Ces commentaires nomment la source : ils sont
+  verifiables, et refutables le jour ou la contrainte disparait.
+
+- Pas de JSDoc de forme. Un bloc `/** */` qui reformule la signature est du
+  bruit ; s'il porte une contrainte externe, il est legitime.
 - Les exceptions sont gerees explicitement. Aucun `catch` silencieux, aucun retour `null` ambigu pour masquer une erreur.
 - Les erreurs de domaine, d'application et d'infrastructure doivent etre traduites proprement jusqu'a la couche HTTP.
 - Aucune logique metier dans les entities TypeORM, les DTO ou les controllers.
