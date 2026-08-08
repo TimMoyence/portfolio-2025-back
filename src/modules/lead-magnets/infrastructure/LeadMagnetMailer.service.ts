@@ -3,6 +3,7 @@ import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import {
   escapeHtml,
+  escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
@@ -40,7 +41,7 @@ export class LeadMagnetMailerService implements ILeadMagnetNotifier {
       ? `\n\nAccedez a votre guide personnalise en ligne :\n${toolkitUrl}`
       : '';
     const toolkitLinkHtml = toolkitUrl
-      ? safeHtml`<p style="margin: 20px 0;"><a href="${escapeHtml(toolkitUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir mon guide personnalise en ligne</a></p>`
+      ? safeHtml`<p style="margin: 20px 0;"><a href="${escapeUrl(toolkitUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir mon guide personnalise en ligne</a></p>`
       : safeHtml``;
 
     await this.transporter.sendMail({

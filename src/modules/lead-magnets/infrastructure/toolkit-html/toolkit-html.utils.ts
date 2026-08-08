@@ -6,6 +6,7 @@ import {
 } from './toolkit-palette';
 import {
   escapeHtml,
+  escapeUrl,
   safeHtml,
 } from '../../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
@@ -45,7 +46,7 @@ export function levelLabel(level: string): string {
   }
 }
 
-export { escapeHtml, safeHtml };
+export { escapeHtml, escapeUrl, safeHtml };
 export type { EscapedHtml };
 
 export function sectionHeader(

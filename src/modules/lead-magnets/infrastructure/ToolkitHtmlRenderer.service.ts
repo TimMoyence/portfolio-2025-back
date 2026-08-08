@@ -9,6 +9,7 @@ import type {
 import { buildToolkitCss } from './toolkit-html/toolkit-html.css';
 import {
   escapeHtml,
+  escapeUrl,
   levelLabel,
   pageFooter,
   paletteFor,
@@ -288,7 +289,7 @@ export class ToolkitHtmlRendererService {
           </header>
           <p class="template-description">${escapeHtml(tpl.description)}</p>
           <footer class="template-footer">
-            <a class="template-link" href="${escapeHtml(tpl.url)}">Ouvrir →</a>
+            <a class="template-link" href="${escapeUrl(tpl.url)}">Ouvrir →</a>
             ${budget}
           </footer>
         </article>`;

@@ -3,6 +3,7 @@ import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import {
   escapeHtml,
+  escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
@@ -57,7 +58,7 @@ export class VerificationMailerService implements IEmailVerificationNotifier {
               sur le bouton ci-dessous. Ce lien est valide <strong>${payload.expiresInMinutes} minutes</strong>.
             </p>
             <p style="margin:24px 0;">
-              <a href="${this.escapeHtml(payload.verificationUrl)}" style="display:inline-block; background:#0f172a; color:#fff; text-decoration:none; padding:12px 18px; border-radius:8px;">
+              <a href="${escapeUrl(payload.verificationUrl)}" style="display:inline-block; background:#0f172a; color:#fff; text-decoration:none; padding:12px 18px; border-radius:8px;">
                 Verifier mon email
               </a>
             </p>

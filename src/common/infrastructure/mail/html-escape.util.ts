@@ -23,6 +23,42 @@ export function escapeHtml(value: unknown): EscapedHtml {
     .replaceAll("'", '&#39;') as EscapedHtml;
 }
 
+const ALLOWED_URL_SCHEMES: ReadonlySet<string> = new Set([
+  'http:',
+  'https:',
+  'mailto:',
+]);
+
+const INERT_URL = '#' as EscapedHtml;
+
+function absoluteScheme(raw: string): string | null {
+  try {
+    return new URL(raw).protocol;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Le parseur de https://url.spec.whatwg.org/#concept-basic-url-parser retire
+ * les tabulations et sauts de ligne de l'entree et met le schema en
+ * minuscules : `new URL` ramene `JaVaScRiPt:`, `java<TAB>script:` et
+ * ` javascript:` au meme `protocol`, sans normalisation maison. Une entree
+ * sans schema valide fait lever le parseur : c'est une reference relative,
+ * qui heritera du schema du document.
+ *
+ * Le refus rend `#` et non la chaine vide : par RFC 3986 section 4.2, une
+ * reference vide designe le document courant, donc `href=""` reste un lien
+ * actif.
+ */
+export function escapeUrl(value: unknown): EscapedHtml {
+  const raw = String(value);
+  if (!raw.trim()) return INERT_URL;
+  const scheme = absoluteScheme(raw);
+  if (scheme === null) return escapeHtml(raw);
+  return ALLOWED_URL_SCHEMES.has(scheme) ? escapeHtml(raw) : INERT_URL;
+}
+
 /**
  * Assemble un gabarit HTML dont chaque interpolation est deja sure : le
  * compilateur rejette toute `string` qui n'est pas passee par `escapeHtml`
