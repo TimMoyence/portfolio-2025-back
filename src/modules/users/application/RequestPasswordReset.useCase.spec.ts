@@ -11,6 +11,8 @@ import {
 } from '../../../../test/factories/password-reset-token.factory';
 import { createMockPasswordResetNotifier } from '../../../../test/factories/mailer.factory';
 
+const LEGACY_HASH = 'legacy-hash';
+
 describe('RequestPasswordResetUseCase', () => {
   let usersRepository: ReturnType<typeof createMockUsersRepo>;
   let tokensRepository: ReturnType<typeof createMockPasswordResetTokensRepo>;
@@ -40,7 +42,7 @@ describe('RequestPasswordResetUseCase', () => {
       email: 'john@example.com',
       firstName: 'John',
       lastName: 'Doe',
-      passwordHash: 'legacy-hash',
+      passwordHash: LEGACY_HASH,
     });
     usersRepository.findByEmail.mockResolvedValue(user);
     tokensRepository.create.mockResolvedValue(buildPasswordResetToken());

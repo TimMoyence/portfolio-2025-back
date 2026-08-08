@@ -8,6 +8,10 @@ import type {
 } from '../domain/IOpenWeatherMapProxy.port';
 import { OPENWEATHERMAP_API_KEY } from '../domain/token';
 import { WeatherCache } from './weather-cache';
+import type { WeatherProviderHttp } from './weather-http';
+import { fetchProviderJson } from './weather-http';
+
+const PROVIDER = 'OpenWeatherMap';
 
 const FETCH_TIMEOUT_MS = 8_000;
 
@@ -21,9 +25,13 @@ const MS_TO_KMH = 3.6;
 
 const METRES_PER_KILOMETRE = 1_000;
 
-/** Convertit les metres renvoyes par OWM en kilometres exposes par le port. */
 function metresToKilometres(metres: number): number {
   return metres / METRES_PER_KILOMETRE;
+}
+
+function withoutApiKey(error: unknown): string {
+  if (!(error instanceof Error)) return 'Unknown error';
+  return error.message.replace(/appid=[^&\s]+/g, 'appid=***');
 }
 
 /**
@@ -33,6 +41,12 @@ function metresToKilometres(metres: number): number {
 @Injectable()
 export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
   private readonly logger = new Logger(OpenWeatherMapProxyService.name);
+  private readonly http: WeatherProviderHttp = {
+    provider: PROVIDER,
+    timeoutMs: FETCH_TIMEOUT_MS,
+    logger: this.logger,
+    formatError: withoutApiKey,
+  };
   private readonly cache = new WeatherCache();
 
   constructor(
@@ -189,32 +203,8 @@ export class OpenWeatherMapProxyService implements IOpenWeatherMapProxy {
     return result;
   }
 
-  private async fetchJson<T>(url: string): Promise<T> {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-
-    try {
-      const response = await fetch(url, { signal: controller.signal });
-      if (!response.ok) {
-        throw new Error(`OpenWeatherMap HTTP ${response.status}`);
-      }
-      return (await response.json()) as T;
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        this.logger.warn(
-          `Timeout apres ${FETCH_TIMEOUT_MS}ms pour OpenWeatherMap`,
-        );
-        throw new Error(`OpenWeatherMap timeout (${FETCH_TIMEOUT_MS}ms)`);
-      }
-      const safeMessage =
-        error instanceof Error
-          ? error.message.replace(/appid=[^&\s]+/g, 'appid=***')
-          : 'Unknown error';
-      this.logger.warn(`Erreur OpenWeatherMap: ${safeMessage}`);
-      throw error;
-    } finally {
-      clearTimeout(timeout);
-    }
+  private fetchJson<T>(url: string): Promise<T> {
+    return fetchProviderJson<T>(url, this.http);
   }
 }
 

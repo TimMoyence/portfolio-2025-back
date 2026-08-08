@@ -4,7 +4,9 @@ import {
   buildDetailedHourlyItem,
   buildForecastResult,
   buildAirQualityResult,
+  buildOwmCurrentPayload,
 } from '../../../../test/factories/weather.factory';
+import { okJsonResponse } from '../../../../test/helpers/fetch-spy';
 import type { IWeatherProxy } from '../domain/IWeatherProxy.port';
 import type { IOpenWeatherMapProxy } from '../domain/IOpenWeatherMapProxy.port';
 import { OpenMeteoProxyService } from './OpenMeteoProxy.service';
@@ -22,6 +24,12 @@ function createMockOpenMeteo(): jest.Mocked<
     getHistorical: jest.fn(),
     getAlerts: jest.fn(),
   };
+}
+
+function requestedUrl(input: Parameters<typeof fetch>[0]): string {
+  if (typeof input === 'string') return input;
+  if (input instanceof URL) return input.href;
+  return input.url;
 }
 
 function createMockOwm(): jest.Mocked<
@@ -77,7 +85,7 @@ describe('ResilientWeatherProxyService', () => {
       expect(owm.getCurrentDetailed).toHaveBeenCalledWith(48.85, 2.35);
       expect(owm.getForecastDetailed).toHaveBeenCalledWith(48.85, 2.35);
       expect(result.current.temperature_2m).toBe(18.5);
-      expect(result.current.apparent_temperature).toBe(17.2);
+      expect(result.current.apparent_temperature).toBeCloseTo(17.2, 5);
     });
 
     it('relance l erreur si OWM echoue aussi', async () => {
@@ -330,52 +338,21 @@ describe('ResilientWeatherProxyService', () => {
     });
   });
 
-  /**
-   * Verrou de la chaine complete des unites de visibilite.
-   *
-   * OWM publie des metres, le port les expose en kilometres, et le contrat
-   * Open-Meteo attend de nouveau des metres. Les deux conversions doivent donc
-   * rester exactement inverses l'une de l'autre : les tests unitaires de chaque
-   * proxy verifient une moitie du trajet, celui-ci verifie qu'elles se composent.
-   */
-  describe('coherence des unites de visibilite de bout en bout', () => {
+  describe('chaine complete OWM -> port -> contrat Open-Meteo', () => {
     const VISIBILITY_METRES = 8_000;
 
     function buildOwmSample(overrides: Record<string, unknown> = {}) {
-      return {
-        dt: 1743422400,
-        main: {
-          temp: 18.5,
-          feels_like: 17.2,
-          temp_min: 14.0,
-          temp_max: 22.0,
-          pressure: 1013,
-          humidity: 65,
-          sea_level: 1013,
-          grnd_level: 1010,
-        },
-        weather: [
-          { id: 800, main: 'Clear', description: 'ciel degage', icon: '01d' },
-        ],
-        wind: { speed: 3.5, deg: 180, gust: 5.5 },
-        clouds: { all: 40 },
+      return buildOwmCurrentPayload({
         visibility: VISIBILITY_METRES,
-        sys: { sunrise: 1743400800, sunset: 1743449400 },
-        timezone: 3600,
         ...overrides,
-      };
+      });
     }
 
     it('restitue en metres les metres renvoyes par OpenWeatherMap', async () => {
       const fetchSpy = jest
         .spyOn(globalThis, 'fetch')
         .mockImplementation((input) => {
-          const url =
-            typeof input === 'string'
-              ? input
-              : input instanceof URL
-                ? input.href
-                : input.url;
+          const url = requestedUrl(input);
           const payload = url.includes('/data/2.5/forecast')
             ? {
                 list: [buildOwmSample({ pop: 0.1 })],
@@ -388,10 +365,7 @@ describe('ResilientWeatherProxyService', () => {
               }
             : buildOwmSample();
 
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve(payload),
-          } as Response);
+          return Promise.resolve(okJsonResponse(payload) as Response);
         });
 
       try {

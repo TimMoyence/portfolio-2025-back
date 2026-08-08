@@ -1,16 +1,5 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-/**
- * Cree la table budget_goals qui persiste les objectifs declares par les
- * membres d'un groupe budget : epargne, plafond global, plafond par categorie.
- *
- * Contraintes :
- *  - kind dans (SAVINGS, SPENDING_LIMIT, CATEGORY_LIMIT)
- *  - target_amount >= 0
- *  - chk_goal_category : CATEGORY_LIMIT exige category_id NOT NULL
- *  - cascade ON DELETE depuis budget_groups, SET NULL sur budget_categories
- *  - index supplementaire (group_id, is_active) pour la lecture des objectifs actifs
- */
 export class CreateBudgetGoals1777200000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`

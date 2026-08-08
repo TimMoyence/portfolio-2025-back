@@ -1,28 +1,21 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
-import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
-import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/AuthenticateGoogleUser.useCase';
-import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
-import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
-import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
-import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
-import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
-import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
-import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
-import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
-import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
-import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
-import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
-import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
-import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
+import {
+  authControllerProviders,
+  createAuthUseCaseStubs,
+} from './factories/core-api.factory';
 import { buildUser, buildAuthResult } from './factories/user.factory';
+import { bootstrapTestApp, httpServerOf } from './helpers/nest-test-app';
+
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
+const LOGIN_PASSWORD = 'StrongPassword123!';
 
 describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   let app: INestApplication;
@@ -31,22 +24,15 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   const JWT_SECRET = 'test-secret-for-e2e-auth-flow-32-chars!';
   const JWT_EXPIRES_IN = '900s';
 
-  const authenticateUserUseCase = { execute: jest.fn() };
-  const authenticateGoogleUserUseCase = { execute: jest.fn() };
-  const createUsersUseCase = { execute: jest.fn() };
-  const changePasswordUseCase = { execute: jest.fn() };
-  const refreshTokensUseCase = { execute: jest.fn() };
-  const revokeTokenUseCase = { execute: jest.fn() };
-  const requestPasswordResetUseCase = { execute: jest.fn() };
-  const resetPasswordUseCase = { execute: jest.fn() };
-  const setPasswordUseCase = { execute: jest.fn() };
-  const updateProfileUseCase = { execute: jest.fn() };
-  const getCurrentUserUseCase = { execute: jest.fn() };
-  const verifyEmailUseCase = { execute: jest.fn() };
-  const resendVerificationEmailUseCase = { execute: jest.fn() };
+  const authStubs = createAuthUseCaseStubs();
+  const {
+    authenticateUserUseCase,
+    refreshTokensUseCase,
+    revokeTokenUseCase,
+    getCurrentUserUseCase,
+  } = authStubs;
 
-  const getHttpServer = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const getHttpServer = () => httpServerOf(app);
 
   function extractRefreshCookie(res: request.Response): string | undefined {
     const cookies = res.headers['set-cookie'] as unknown as
@@ -71,40 +57,11 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
-        {
-          provide: AuthenticateUserUseCase,
-          useValue: authenticateUserUseCase,
-        },
-        {
-          provide: AuthenticateGoogleUserUseCase,
-          useValue: authenticateGoogleUserUseCase,
-        },
-        { provide: CreateUsersUseCase, useValue: createUsersUseCase },
-        { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
-        { provide: RefreshTokensUseCase, useValue: refreshTokensUseCase },
-        { provide: RevokeTokenUseCase, useValue: revokeTokenUseCase },
-        {
-          provide: RequestPasswordResetUseCase,
-          useValue: requestPasswordResetUseCase,
-        },
-        { provide: ResetPasswordUseCase, useValue: resetPasswordUseCase },
-        { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
-        { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
-        { provide: GetCurrentUserUseCase, useValue: getCurrentUserUseCase },
-        { provide: VerifyEmailUseCase, useValue: verifyEmailUseCase },
-        {
-          provide: ResendVerificationEmailUseCase,
-          useValue: resendVerificationEmailUseCase,
-        },
-        AuthAuditLogger,
-        {
-          provide: USERS_REPOSITORY,
-          useValue: {
-            findById: jest
-              .fn()
-              .mockResolvedValue(buildUser({ emailVerified: true })),
-          },
-        },
+        ...authControllerProviders(authStubs, {
+          findById: jest
+            .fn()
+            .mockResolvedValue(buildUser({ emailVerified: true })),
+        }),
         { provide: JwtTokenService, useValue: realJwtTokenService },
         Reflector,
         {
@@ -116,17 +73,9 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
 
     jwtTokenService = realJwtTokenService;
 
-    app = moduleRef.createNestApplication();
-    app.use(cookieParser());
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-      }),
-    );
-    app.setGlobalPrefix('api');
-    await app.init();
+    app = await bootstrapTestApp(moduleRef, (nestApp) => {
+      nestApp.use(cookieParser());
+    });
   });
 
   beforeEach(() => {
@@ -156,7 +105,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
 
     const res = await request(getHttpServer())
       .post('/api/auth/login')
-      .send({ email: 'test@example.com', password: 'StrongPassword123!' })
+      .send({ email: 'test@example.com', password: LOGIN_PASSWORD })
       .expect(201);
 
     expect(res.body).toHaveProperty('accessToken');
@@ -217,10 +166,12 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       roles: [],
     });
 
-    await request(getHttpServer())
+    const res = await request(getHttpServer())
       .get('/api/auth/me')
       .set('Authorization', `Bearer ${otherSigned.token}`)
       .expect(401);
+
+    expect(res.body).toHaveProperty('message');
   });
 
   it('POST /api/auth/refresh retourne un nouveau couple de tokens', async () => {
@@ -299,7 +250,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
 
     const loginRes = await request(getHttpServer())
       .post('/api/auth/login')
-      .send({ email: 'test@example.com', password: 'StrongPassword123!' })
+      .send({ email: 'test@example.com', password: LOGIN_PASSWORD })
       .expect(201);
 
     const firstToken = loginRes.body.accessToken as string;

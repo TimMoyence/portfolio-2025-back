@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { silenceNestLogger } from '../../../../../test/helpers/silence-nest-logger';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import {
@@ -18,22 +18,7 @@ function asTestable(
 }
 
 describe('LangchainClientReportService', () => {
-  let logSpy: jest.SpyInstance;
-  let warnSpy: jest.SpyInstance;
-
-  beforeAll(() => {
-    logSpy = jest
-      .spyOn(Logger.prototype, 'log')
-      .mockImplementation(() => undefined);
-    warnSpy = jest
-      .spyOn(Logger.prototype, 'warn')
-      .mockImplementation(() => undefined);
-  });
-
-  afterAll(() => {
-    logSpy.mockRestore();
-    warnSpy.mockRestore();
-  });
+  silenceNestLogger();
 
   const config: AuditAutomationConfig = buildAuditAutomationConfig({
     openAiApiKey: undefined,

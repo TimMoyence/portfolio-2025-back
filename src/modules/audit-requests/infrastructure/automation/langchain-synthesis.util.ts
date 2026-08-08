@@ -137,7 +137,7 @@ export function buildExpertSynthesis(
   };
 }
 
-export function hashToPercent(value: string): number {
+function hashToPercent(value: string): number {
   let hash = 0;
   for (let i = 0; i < value.length; i += 1) {
     hash = (hash << 5) - hash + value.charCodeAt(i);

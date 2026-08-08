@@ -77,7 +77,7 @@ describe('AuditPdfGeneratorService', () => {
     const buffer = await service.generate(audit, clientReport, expertReport);
 
     expect(buffer).toBeInstanceOf(Buffer);
-    expect(buffer.length).toBe(4);
+    expect(buffer).toHaveLength(4);
     expect(renderMock).toHaveBeenCalledWith(audit, clientReport, expertReport);
     expect(pageSetContentMock).toHaveBeenCalledWith(
       '<html><body>FAKE HTML</body></html>',

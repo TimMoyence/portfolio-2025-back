@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, type OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { pbkdf2Sync, timingSafeEqual } from 'crypto';
 import * as argon2 from 'argon2';
 
+const TIMING_DECOY_INPUT = 'dummy-password-for-timing-safety';
+const TIMING_DECOY_HASH_FALLBACK =
+  '$argon2id$v=19$m=65536,t=3,p=4$UkVDT1ZFUllGQUxMQkFDSw$invalid';
+
 @Injectable()
-export class PasswordService {
+export class PasswordService implements OnModuleInit {
   private readonly secret: string;
   private readonly iterations = 120000;
   private readonly keyLength = 64;
   private readonly digest = 'sha512';
-  private readonly dummyHashPromise: Promise<string>;
+  private timingDecoyHash: Promise<string> | null = null;
 
   constructor(private readonly configService: ConfigService) {
     this.secret =
@@ -18,24 +22,22 @@ export class PasswordService {
     if (!this.secret) {
       throw new Error('SECURE_KEY_FOR_PASSWORD_HASHING is not defined');
     }
-
-    // Pre-calcul eager du hash factice des l'instanciation pour eviter
-    // un "cold start" detectable au premier appel a equalizeVerifyTiming.
-    this.dummyHashPromise = argon2
-      .hash('dummy-password-for-timing-safety', { type: argon2.argon2id })
-      .catch(
-        () => '$argon2id$v=19$m=65536,t=3,p=4$UkVDT1ZFUllGQUxMQkFDSw$invalid',
-      );
   }
 
-  /**
-   * A appeler quand un utilisateur n'existe pas, est inactif, ou n'a pas de
-   * hash (compte Google-only) : protege contre l'enumeration d'utilisateurs
-   * par analyse du timing de la route de login.
-   */
+  async onModuleInit(): Promise<void> {
+    await this.precomputeTimingDecoyHash();
+  }
+
   async equalizeVerifyTiming(password: string): Promise<void> {
-    const dummy = await this.dummyHashPromise;
-    await argon2.verify(dummy, password).catch(() => false);
+    const decoy = await this.precomputeTimingDecoyHash();
+    await argon2.verify(decoy, password).catch(() => false);
+  }
+
+  private precomputeTimingDecoyHash(): Promise<string> {
+    this.timingDecoyHash ??= argon2
+      .hash(TIMING_DECOY_INPUT, { type: argon2.argon2id })
+      .catch(() => TIMING_DECOY_HASH_FALLBACK);
+    return this.timingDecoyHash;
   }
 
   async hash(password: string): Promise<string> {

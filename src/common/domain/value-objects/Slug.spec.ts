@@ -1,4 +1,5 @@
 import * as fc from 'fast-check';
+import { nonStringArbitrary } from '../../../../test/helpers/fast-check-arbitraries';
 import { DomainValidationError } from '../errors/DomainValidationError';
 import { Slug } from './Slug';
 
@@ -111,19 +112,11 @@ describe('Slug', () => {
 
     it('devrait rejeter les valeurs non-string', () => {
       fc.assert(
-        fc.property(
-          fc.oneof(
-            fc.integer(),
-            fc.boolean(),
-            fc.constant(null),
-            fc.constant(undefined),
-          ),
-          (input) => {
-            expect(() => Slug.parse(input, 'test')).toThrow(
-              DomainValidationError,
-            );
-          },
-        ),
+        fc.property(nonStringArbitrary, (input) => {
+          expect(() => Slug.parse(input, 'test')).toThrow(
+            DomainValidationError,
+          );
+        }),
       );
     });
   });

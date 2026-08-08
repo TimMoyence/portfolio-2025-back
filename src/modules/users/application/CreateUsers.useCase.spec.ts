@@ -25,6 +25,10 @@ function createMockEmailVerificationNotifier(): jest.Mocked<IEmailVerificationNo
   };
 }
 
+const PLAIN_CREDENTIAL = 'SecurePassword123!';
+const ATTACKER_CREDENTIAL = 'Hack123!';
+const DERIVED_HASH = 'hashed-password';
+
 describe('CreateUsersUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let emailVerificationTokensRepo: jest.Mocked<IEmailVerificationTokensRepository>;
@@ -39,7 +43,7 @@ describe('CreateUsersUseCase', () => {
     emailVerificationNotifier = createMockEmailVerificationNotifier();
     passwordService = createMockPasswordService();
     configService = createMockConfigService();
-    passwordService.hash.mockResolvedValue('hashed-password');
+    passwordService.hash.mockResolvedValue(DERIVED_HASH);
     emailVerificationTokensRepo.create.mockResolvedValue({
       id: 'evt-1',
       userId: 'uuid',
@@ -59,7 +63,7 @@ describe('CreateUsersUseCase', () => {
   it('maps the DTO and persists the user', async () => {
     const dto: CreateUserCommand = {
       email: 'john@example.com',
-      password: 'SecurePassword123!',
+      password: PLAIN_CREDENTIAL,
       firstName: 'John',
       lastName: 'Doe',
     };
@@ -67,7 +71,7 @@ describe('CreateUsersUseCase', () => {
     const savedUser = buildUser({
       id: 'uuid',
       email: dto.email,
-      passwordHash: 'hashed-password',
+      passwordHash: DERIVED_HASH,
       firstName: dto.firstName,
       lastName: dto.lastName,
       updatedOrCreatedBy: 'self-registration',
@@ -79,7 +83,7 @@ describe('CreateUsersUseCase', () => {
     expect(repo.create).toHaveBeenCalledWith(
       expect.objectContaining({
         email: dto.email,
-        passwordHash: 'hashed-password',
+        passwordHash: DERIVED_HASH,
         firstName: dto.firstName,
         lastName: dto.lastName,
         phone: null,
@@ -96,7 +100,7 @@ describe('CreateUsersUseCase', () => {
   it('devrait envoyer un email de verification pour les inscriptions publiques', async () => {
     const dto: CreateUserCommand = {
       email: 'new@example.com',
-      password: 'SecurePassword123!',
+      password: PLAIN_CREDENTIAL,
       firstName: 'New',
       lastName: 'User',
     };
@@ -135,7 +139,7 @@ describe('CreateUsersUseCase', () => {
   it('devrait creer le compte sans roles pour les inscriptions publiques (roles attribues apres verification)', async () => {
     const dto: CreateUserCommand = {
       email: 'attacker@example.com',
-      password: 'Hack123!',
+      password: ATTACKER_CREDENTIAL,
       firstName: 'Evil',
       lastName: 'User',
       roles: ['admin', 'weather'],
@@ -160,7 +164,7 @@ describe('CreateUsersUseCase', () => {
   it('devrait conserver les roles quand cree par un admin', async () => {
     const dto: CreateUserCommand = {
       email: 'new@example.com',
-      password: 'Secure123!',
+      password: PLAIN_CREDENTIAL,
       firstName: 'New',
       lastName: 'User',
       roles: ['sebastian', 'weather'],

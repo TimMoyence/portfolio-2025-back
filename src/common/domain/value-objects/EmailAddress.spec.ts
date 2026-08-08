@@ -14,6 +14,19 @@ describe('EmailAddress', () => {
     expect(EmailAddress.parse(42)).toBeNull();
   });
 
+  it('accepts a multi-label domain', () => {
+    expect(EmailAddress.parse('john@mail.sub.example.co.uk')?.value).toBe(
+      'john@mail.sub.example.co.uk',
+    );
+  });
+
+  it.each(['john@example..com', 'john@.example.com', 'john@example.'])(
+    'returns null when the domain has an empty label (%s)',
+    (raw) => {
+      expect(EmailAddress.parse(raw)).toBeNull();
+    },
+  );
+
   it('returns null when email exceeds max length', () => {
     const tooLong = `${'a'.repeat(315)}@x.com`;
     expect(tooLong.length).toBeGreaterThan(320);

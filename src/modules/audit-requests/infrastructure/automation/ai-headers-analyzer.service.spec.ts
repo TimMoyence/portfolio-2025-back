@@ -3,8 +3,18 @@ import { AiHeadersAnalyzerService } from './ai-headers-analyzer.service';
 describe('AiHeadersAnalyzerService', () => {
   const service = new AiHeadersAnalyzerService();
 
-  it('détecte GPTBot disallowed dans robots.txt', () => {
-    const robots = 'User-agent: GPTBot\nDisallow: /\n';
+  it.each([
+    ['GPTBot', 'gptBot'],
+    ['Google-Extended', 'googleExtended'],
+    ['gptbot', 'gptBot'],
+  ] as const)('détecte %s disallowed dans robots.txt', (userAgent, key) => {
+    const robots = `User-agent: ${userAgent}\nDisallow: /\n`;
+    const result = service.analyze(robots, {});
+    expect(result[key]).toBe('disallowed');
+  });
+
+  it('tolere les espaces multiples apres les deux-points', () => {
+    const robots = 'User-agent:    GPTBot\nDisallow:    /\n';
     const result = service.analyze(robots, {});
     expect(result.gptBot).toBe('disallowed');
   });
@@ -24,12 +34,6 @@ describe('AiHeadersAnalyzerService', () => {
   it('détecte X-Robots-Tag: noimageai', () => {
     const result = service.analyze('', { 'x-robots-tag': 'noimageai' });
     expect(result.xRobotsNoImageAi).toBe(true);
-  });
-
-  it('détecte Google-Extended disallowed', () => {
-    const robots = 'User-agent: Google-Extended\nDisallow: /\n';
-    const result = service.analyze(robots, {});
-    expect(result.googleExtended).toBe('disallowed');
   });
 
   it('retourne unknown quand robots.txt vide et headers absents', () => {
@@ -66,12 +70,6 @@ describe('AiHeadersAnalyzerService', () => {
     const robots = 'User-agent: Bingbot\nDisallow: /private\n';
     const result = service.analyze(robots, {});
     expect(result.gptBot).toBe('allowed');
-  });
-
-  it('gère la détection case-insensitive des user-agents', () => {
-    const robots = 'User-agent: gptbot\nDisallow: /\n';
-    const result = service.analyze(robots, {});
-    expect(result.gptBot).toBe('disallowed');
   });
 
   it('parse correctement plusieurs blocs successifs', () => {

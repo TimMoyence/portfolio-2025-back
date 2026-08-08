@@ -1,5 +1,23 @@
 import { parseDrinkMessage } from './drink-parser';
 
+function firstDrinkOf(message: string) {
+  const result = parseDrinkMessage(message);
+  expect(result.confident).toBe(true);
+  return result.drinks[0];
+}
+
+function consumedAtOf(message: string): Date {
+  const drink = firstDrinkOf(message);
+  expect(drink.consumedAt).toBeDefined();
+  return new Date(drink.consumedAt!);
+}
+
+function daysAgoDate(daysOffset: number): Date {
+  const date = new Date();
+  date.setDate(date.getDate() - daysOffset);
+  return date;
+}
+
 describe('parseDrinkMessage', () => {
   describe('commandes slash — grammaire v2', () => {
     it('/pint → 1 pinte, degre 5 (default), pas de consumedAt', () => {
@@ -66,21 +84,14 @@ describe('parseDrinkMessage', () => {
     });
 
     it('/beer 22h00 → 1 biere, 22h00', () => {
-      const result = parseDrinkMessage('/beer 22h00');
-      expect(result.confident).toBe(true);
-      expect(result.drinks[0].consumedAt).toBeDefined();
-      const date = new Date(result.drinks[0].consumedAt!);
+      const date = consumedAtOf('/beer 22h00');
       expect(date.getHours()).toBe(22);
       expect(date.getMinutes()).toBe(0);
     });
 
     it('/pinte hier 22:08 → hier a 22h08', () => {
-      const result = parseDrinkMessage('/pinte hier 22:08');
-      expect(result.confident).toBe(true);
-      expect(result.drinks[0].consumedAt).toBeDefined();
-      const date = new Date(result.drinks[0].consumedAt!);
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      const date = consumedAtOf('/pinte hier 22:08');
+      const yesterday = daysAgoDate(1);
       expect(date.getDate()).toBe(yesterday.getDate());
       expect(date.getMonth()).toBe(yesterday.getMonth());
       expect(date.getHours()).toBe(22);
@@ -88,12 +99,8 @@ describe('parseDrinkMessage', () => {
     });
 
     it('/pinte hier soir → hier a 21h', () => {
-      const result = parseDrinkMessage('/pinte hier soir');
-      expect(result.confident).toBe(true);
-      expect(result.drinks[0].consumedAt).toBeDefined();
-      const date = new Date(result.drinks[0].consumedAt!);
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      const date = consumedAtOf('/pinte hier soir');
+      const yesterday = daysAgoDate(1);
       expect(date.getDate()).toBe(yesterday.getDate());
       expect(date.getMonth()).toBe(yesterday.getMonth());
       expect(date.getHours()).toBe(21);
@@ -114,12 +121,8 @@ describe('parseDrinkMessage', () => {
     });
 
     it('/beer yesterday 22:00 → hier a 22h', () => {
-      const result = parseDrinkMessage('/beer yesterday 22:00');
-      expect(result.confident).toBe(true);
-      expect(result.drinks[0].consumedAt).toBeDefined();
-      const date = new Date(result.drinks[0].consumedAt!);
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      const date = consumedAtOf('/beer yesterday 22:00');
+      const yesterday = daysAgoDate(1);
       expect(date.getDate()).toBe(yesterday.getDate());
       expect(date.getHours()).toBe(22);
       expect(date.getMinutes()).toBe(0);
@@ -222,20 +225,19 @@ describe('parseDrinkMessage', () => {
     });
 
     it("heure seule sans jour → consumedAt aujourd'hui a cette heure", () => {
-      const result = parseDrinkMessage('/beer 14h');
-      expect(result.drinks[0].consumedAt).toBeDefined();
-      const date = new Date(result.drinks[0].consumedAt!);
+      const drink = firstDrinkOf('/beer 14h');
+      expect(drink.consumedAt).toBeDefined();
+      const date = new Date(drink.consumedAt!);
       const today = new Date();
       expect(date.getDate()).toBe(today.getDate());
       expect(date.getHours()).toBe(14);
     });
 
     it('jour seul sans heure → consumedAt ce jour a minuit', () => {
-      const result = parseDrinkMessage('/beer hier');
-      expect(result.drinks[0].consumedAt).toBeDefined();
-      const date = new Date(result.drinks[0].consumedAt!);
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      const drink = firstDrinkOf('/beer hier');
+      expect(drink.consumedAt).toBeDefined();
+      const date = new Date(drink.consumedAt!);
+      const yesterday = daysAgoDate(1);
       expect(date.getDate()).toBe(yesterday.getDate());
       expect(date.getHours()).toBe(0);
       expect(date.getMinutes()).toBe(0);

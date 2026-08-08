@@ -1,7 +1,7 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { VALID_BADGE_KEYS } from './badge-catalog';
 
-export const VALID_BADGE_CATEGORIES = ['alcohol', 'coffee', 'global'] as const;
+const VALID_BADGE_CATEGORIES = ['alcohol', 'coffee', 'global'] as const;
 export type BadgeCategory = (typeof VALID_BADGE_CATEGORIES)[number];
 
 export interface CreateSebastianBadgeProps {

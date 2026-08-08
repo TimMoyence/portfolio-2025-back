@@ -15,19 +15,9 @@ import type { SecurityConfig } from './security.config';
 import { SECURITY_CONFIG } from './security.tokens';
 import { scoreRequest } from './suspicious-request-scorer';
 
-/**
- * Ces requetes ne transitent jamais par le reverse-proxy et ne
- * representent aucun risque — on les exclut du scoring pour eviter
- * le bruit dans les logs et le store d'evenements.
- */
-const LOOPBACK_IPS = new Set(['127.0.0.1', '::ffff:127.0.0.1', '::1']);
+const LOOPBACK_IPV4 = '127.0.0.1';
+const LOOPBACK_IPS = new Set([LOOPBACK_IPV4, `::ffff:${LOOPBACK_IPV4}`, '::1']);
 
-/**
- * L'intercepteur ne bloque jamais les requetes : son unique role est
- * la detection et la tracabilite. Le blocage reel des IPs malicieuses
- * se fait en amont (reverse-proxy / fail2ban) a partir des logs
- * structures produits ici.
- */
 @Injectable()
 export class SuspiciousRequestInterceptor implements NestInterceptor {
   private readonly logger = new Logger('SuspiciousRequest');

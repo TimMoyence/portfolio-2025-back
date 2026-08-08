@@ -7,7 +7,7 @@ import {
 } from '../../domain/token';
 import type { GetTrendsQuery } from '../dto/GetTrends.query';
 
-export interface TrendDataPoint {
+interface TrendDataPoint {
   date: string;
   alcohol: number;
   coffee: number;

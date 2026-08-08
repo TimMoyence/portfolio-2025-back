@@ -10,6 +10,8 @@ import {
   type MockUsersUseCases,
 } from '../../../../test/factories/user.factory';
 
+const PLAIN_CREDENTIAL = 'StrongPass123!';
+
 describe('UsersController', () => {
   let controller: UsersController;
   let useCases: MockUsersUseCases;
@@ -95,7 +97,7 @@ describe('UsersController', () => {
 
     const dto = {
       email: 'new@example.com',
-      password: 'StrongPass123!',
+      password: PLAIN_CREDENTIAL,
       firstName: 'Marie',
       lastName: 'Curie',
     };

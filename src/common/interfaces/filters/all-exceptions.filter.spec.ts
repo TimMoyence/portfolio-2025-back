@@ -40,9 +40,6 @@ describe('AllExceptionsFilter', () => {
     );
   });
 
-  // Note : les DomainError (dont DomainValidationError) sont interceptees
-  // en amont par DomainExceptionFilter ; elles n'atteignent plus ce filtre.
-
   it('devrait retourner 500 avec message generique pour une erreur inconnue en production', () => {
     const originalEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';

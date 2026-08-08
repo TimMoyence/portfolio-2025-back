@@ -1,9 +1,23 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { GetPeriodReportUseCase } from './GetPeriodReport.useCase';
+import type {
+  SebastianCategory,
+  SebastianEntry,
+} from '../../domain/SebastianEntry';
 import {
   buildSebastianEntry,
   createMockSebastianEntryRepo,
 } from '../../../../../test/factories/sebastian.factory';
+
+const WEEK_START = '2026-03-02';
+
+function entryOn(
+  category: SebastianCategory,
+  quantity: number,
+  isoDate: string,
+): SebastianEntry {
+  return buildSebastianEntry({ category, quantity, date: new Date(isoDate) });
+}
 
 describe('GetPeriodReportUseCase', () => {
   let useCase: GetPeriodReportUseCase;
@@ -14,15 +28,28 @@ describe('GetPeriodReportUseCase', () => {
     useCase = new GetPeriodReportUseCase(entryRepo);
   });
 
+  function givenEntries(
+    current: SebastianEntry[],
+    previous: SebastianEntry[] = [],
+  ): void {
+    entryRepo.findByFilters
+      .mockResolvedValueOnce(current)
+      .mockResolvedValueOnce(previous);
+  }
+
+  function weekReport() {
+    return useCase.execute({
+      userId: 'user-1',
+      period: 'week',
+      startDate: WEEK_START,
+    });
+  }
+
   describe('heatmap — nombre de jours', () => {
     it('devrait retourner 7 points heatmap pour une periode week', async () => {
       entryRepo.findByFilters.mockResolvedValue([]);
 
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.heatmap).toHaveLength(7);
       expect(result.period).toBe('week');
@@ -43,38 +70,14 @@ describe('GetPeriodReportUseCase', () => {
 
   describe('totals', () => {
     it('devrait calculer les totaux correctement', async () => {
-      const entries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 2,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 3,
-          date: new Date('2026-03-03'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 1,
-          date: new Date('2026-03-04'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 4,
-          date: new Date('2026-03-05'),
-        }),
-      ];
+      givenEntries([
+        entryOn('alcohol', 2, '2026-03-02'),
+        entryOn('alcohol', 3, '2026-03-03'),
+        entryOn('coffee', 1, '2026-03-04'),
+        entryOn('coffee', 4, '2026-03-05'),
+      ]);
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(entries)
-        .mockResolvedValueOnce([]);
-
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.totals.alcohol).toBe(5);
       expect(result.totals.coffee).toBe(5);
@@ -83,101 +86,41 @@ describe('GetPeriodReportUseCase', () => {
 
   describe('dailyAvg', () => {
     it('devrait calculer les moyennes quotidiennes arrondies a 2 decimales', async () => {
-      const entries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 3,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 10,
-          date: new Date('2026-03-03'),
-        }),
-      ];
+      givenEntries([
+        entryOn('alcohol', 3, '2026-03-02'),
+        entryOn('coffee', 10, '2026-03-03'),
+      ]);
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(entries)
-        .mockResolvedValueOnce([]);
+      const result = await weekReport();
 
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
-
-      expect(result.dailyAvg.alcohol).toBe(0.43);
-      expect(result.dailyAvg.coffee).toBe(1.43);
+      expect(result.dailyAvg.alcohol).toBeCloseTo(0.43, 2);
+      expect(result.dailyAvg.coffee).toBeCloseTo(1.43, 2);
     });
   });
 
   describe('best / worst day', () => {
     it('devrait identifier le jour avec la plus faible consommation combinee (best)', async () => {
-      const entries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 5,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 3,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 1,
-          date: new Date('2026-03-04'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 0.5,
-          date: new Date('2026-03-04'),
-        }),
-      ];
+      givenEntries([
+        entryOn('alcohol', 5, '2026-03-02'),
+        entryOn('coffee', 3, '2026-03-02'),
+        entryOn('alcohol', 1, '2026-03-04'),
+        entryOn('coffee', 0.5, '2026-03-04'),
+      ]);
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(entries)
-        .mockResolvedValueOnce([]);
-
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.best.score).toBe(0);
       expect(result.best.date).toBe('2026-03-03');
     });
 
     it('devrait identifier le jour avec la plus forte consommation combinee (worst)', async () => {
-      const entries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 5,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 3,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 1,
-          date: new Date('2026-03-04'),
-        }),
-      ];
+      givenEntries([
+        entryOn('alcohol', 5, '2026-03-02'),
+        entryOn('coffee', 3, '2026-03-02'),
+        entryOn('alcohol', 1, '2026-03-04'),
+      ]);
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(entries)
-        .mockResolvedValueOnce([]);
-
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.worst.date).toBe('2026-03-02');
       expect(result.worst.score).toBe(8);
@@ -186,108 +129,48 @@ describe('GetPeriodReportUseCase', () => {
 
   describe('comparison vs periode precedente', () => {
     it('devrait calculer un delta positif quand courant > precedent', async () => {
-      const currentEntries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 10,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 20,
-          date: new Date('2026-03-03'),
-        }),
-      ];
-      const previousEntries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 5,
-          date: new Date('2026-02-23'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 10,
-          date: new Date('2026-02-24'),
-        }),
-      ];
+      givenEntries(
+        [
+          entryOn('alcohol', 10, '2026-03-02'),
+          entryOn('coffee', 20, '2026-03-03'),
+        ],
+        [
+          entryOn('alcohol', 5, '2026-02-23'),
+          entryOn('coffee', 10, '2026-02-24'),
+        ],
+      );
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(currentEntries)
-        .mockResolvedValueOnce(previousEntries);
-
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.comparison.alcoholDelta).toBe(100.0);
       expect(result.comparison.coffeeDelta).toBe(100.0);
     });
 
     it('devrait calculer un delta negatif quand courant < precedent', async () => {
-      const currentEntries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 3,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 5,
-          date: new Date('2026-03-03'),
-        }),
-      ];
-      const previousEntries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 10,
-          date: new Date('2026-02-23'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 20,
-          date: new Date('2026-02-24'),
-        }),
-      ];
+      givenEntries(
+        [
+          entryOn('alcohol', 3, '2026-03-02'),
+          entryOn('coffee', 5, '2026-03-03'),
+        ],
+        [
+          entryOn('alcohol', 10, '2026-02-23'),
+          entryOn('coffee', 20, '2026-02-24'),
+        ],
+      );
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(currentEntries)
-        .mockResolvedValueOnce(previousEntries);
-
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.comparison.alcoholDelta).toBe(-70.0);
       expect(result.comparison.coffeeDelta).toBe(-75.0);
     });
 
     it('devrait retourner 0 quand la periode precedente est vide', async () => {
-      const currentEntries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 5,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 8,
-          date: new Date('2026-03-03'),
-        }),
-      ];
+      givenEntries([
+        entryOn('alcohol', 5, '2026-03-02'),
+        entryOn('coffee', 8, '2026-03-03'),
+      ]);
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(currentEntries)
-        .mockResolvedValueOnce([]);
-
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.comparison.alcoholDelta).toBe(0);
       expect(result.comparison.coffeeDelta).toBe(0);
@@ -296,33 +179,13 @@ describe('GetPeriodReportUseCase', () => {
 
   describe('distribution par jour de semaine', () => {
     it('devrait regrouper les entrees par jour de semaine correctement', async () => {
-      const entries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 2,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'coffee',
-          quantity: 3,
-          date: new Date('2026-03-02'),
-        }),
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 1,
-          date: new Date('2026-03-04'),
-        }),
-      ];
+      givenEntries([
+        entryOn('alcohol', 2, '2026-03-02'),
+        entryOn('coffee', 3, '2026-03-02'),
+        entryOn('alcohol', 1, '2026-03-04'),
+      ]);
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(entries)
-        .mockResolvedValueOnce([]);
-
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.distribution).toHaveLength(7);
 
@@ -345,23 +208,9 @@ describe('GetPeriodReportUseCase', () => {
 
   describe('heatmap — jours sans entrees', () => {
     it('devrait retourner des zeros pour les jours sans entrees', async () => {
-      const entries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          quantity: 3,
-          date: new Date('2026-03-02'),
-        }),
-      ];
+      givenEntries([entryOn('alcohol', 3, '2026-03-02')]);
 
-      entryRepo.findByFilters
-        .mockResolvedValueOnce(entries)
-        .mockResolvedValueOnce([]);
-
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       const emptyDay = result.heatmap.find((h) => h.date === '2026-03-03');
       expect(emptyDay).toBeDefined();
@@ -381,19 +230,15 @@ describe('GetPeriodReportUseCase', () => {
     it('devrait retourner des zeros et best/worst par defaut au startDate', async () => {
       entryRepo.findByFilters.mockResolvedValue([]);
 
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
       expect(result.totals.alcohol).toBe(0);
       expect(result.totals.coffee).toBe(0);
       expect(result.dailyAvg.alcohol).toBe(0);
       expect(result.dailyAvg.coffee).toBe(0);
-      expect(result.best.date).toBe('2026-03-02');
+      expect(result.best.date).toBe(WEEK_START);
       expect(result.best.score).toBe(0);
-      expect(result.worst.date).toBe('2026-03-02');
+      expect(result.worst.date).toBe(WEEK_START);
       expect(result.worst.score).toBe(0);
       expect(result.comparison.alcoholDelta).toBe(0);
       expect(result.comparison.coffeeDelta).toBe(0);
@@ -405,11 +250,7 @@ describe('GetPeriodReportUseCase', () => {
   it('devrait appeler findByFilters deux fois (courant + precedent)', async () => {
     entryRepo.findByFilters.mockResolvedValue([]);
 
-    await useCase.execute({
-      userId: 'user-1',
-      period: 'week',
-      startDate: '2026-03-02',
-    });
+    await weekReport();
 
     expect(entryRepo.findByFilters).toHaveBeenCalledTimes(2);
   });
@@ -418,13 +259,9 @@ describe('GetPeriodReportUseCase', () => {
     it('devrait calculer endDate correctement pour week', async () => {
       entryRepo.findByFilters.mockResolvedValue([]);
 
-      const result = await useCase.execute({
-        userId: 'user-1',
-        period: 'week',
-        startDate: '2026-03-02',
-      });
+      const result = await weekReport();
 
-      expect(result.startDate).toBe('2026-03-02');
+      expect(result.startDate).toBe(WEEK_START);
       expect(result.endDate).toBe('2026-03-08');
     });
 

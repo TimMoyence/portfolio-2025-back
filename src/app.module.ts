@@ -6,6 +6,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { randomUUID } from 'crypto';
+import type { IncomingMessage } from 'http';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -26,6 +27,175 @@ function logBootstrapStep(message: string): void {
   }
 }
 
+function isHealthProbe(req: IncomingMessage): boolean {
+  return req.url?.includes('/health') ?? false;
+}
+
+function firstEnv(...names: string[]): string | undefined {
+  return names
+    .map((name) => process.env[name])
+    .find((value) => value !== undefined);
+}
+
+function isEnvTrue(...names: string[]): boolean {
+  return names.some((name) => process.env[name] === 'true');
+}
+
+function envNumber(name: string, fallback: number): number {
+  return Number(process.env[name] ?? fallback);
+}
+
+interface SslOption {
+  rejectUnauthorized: boolean;
+}
+
+interface DbCredentials {
+  host?: string;
+  port?: string;
+  username?: string;
+  password?: string;
+}
+
+function resolveSslOption(): SslOption | undefined {
+  if (!isEnvTrue('DB_SSL', 'DATABASE_SSL')) return undefined;
+  return { rejectUnauthorized: process.env.NODE_ENV === 'production' };
+}
+
+function resolveDatabaseUrl(): string | undefined {
+  return process.env.DATABASE_URL?.trim() || undefined;
+}
+
+function resolveDatabaseName(
+  databaseUrl: string | undefined,
+): string | undefined {
+  const declared = firstEnv('DB_NAME', 'DATABASE_NAME', 'POSTGRES_DB');
+  if (declared !== undefined) return declared;
+  if (databaseUrl === undefined) return undefined;
+  return new URL(databaseUrl).pathname.replace(/^\//, '');
+}
+
+function resolveSynchronize(): boolean {
+  return (
+    process.env.NODE_ENV !== 'production' &&
+    isEnvTrue('TYPEORM_SYNCHRONIZE', 'DB_SYNCHRONIZE')
+  );
+}
+
+function resolvePoolExtra(): Record<string, number> {
+  // Pool PG dimensionne pour l'usage concurrent API + BullMQ workers
+  // (audit worker hammer la DB pendant pipeline 180s). Defaut node-postgres
+  // 10 saturait facilement. Configurable via DB_POOL_MAX.
+  return {
+    max: envNumber('DB_POOL_MAX', 30),
+    idleTimeoutMillis: envNumber('DB_POOL_IDLE_TIMEOUT_MS', 30_000),
+    connectionTimeoutMillis: envNumber('DB_POOL_CONNECT_TIMEOUT_MS', 5_000),
+  };
+}
+
+function resolveCredentials(): DbCredentials {
+  return {
+    host: firstEnv('DB_HOST', 'DATABASE_HOST', 'PGHOST'),
+    port: firstEnv('DB_PORT', 'DATABASE_PORT', 'PGPORT'),
+    username: firstEnv(
+      'DB_USERNAME',
+      'DB_USER',
+      'DATABASE_USER',
+      'POSTGRES_USER',
+    ),
+    password: firstEnv(
+      'DB_PASSWORD',
+      'DB_PASS',
+      'DATABASE_PASSWORD',
+      'POSTGRES_PASSWORD',
+    ),
+  };
+}
+
+interface DbLocation {
+  url?: string;
+  host?: string;
+  port?: number;
+  username?: string;
+  password?: string;
+}
+
+interface PostgresBaseOptions {
+  type: 'postgres';
+  entities: string[];
+  synchronize: boolean;
+  extra: Record<string, number>;
+  ssl?: SslOption;
+}
+
+function credentialOptions({
+  host,
+  port,
+  username,
+  password,
+}: DbCredentials): DbLocation {
+  return {
+    ...(host ? { host } : {}),
+    ...(port ? { port: Number(port) } : {}),
+    ...(username ? { username } : {}),
+    ...(password ? { password } : {}),
+  };
+}
+
+interface ConnectionInput {
+  base: PostgresBaseOptions;
+  databaseUrl: string | undefined;
+  database: string | undefined;
+  credentials: DbCredentials;
+}
+
+function buildConnectionOptions({
+  base,
+  databaseUrl,
+  database,
+  credentials,
+}: ConnectionInput): TypeOrmModuleOptions {
+  const location: DbLocation = databaseUrl
+    ? { url: databaseUrl }
+    : credentialOptions(credentials);
+
+  return { ...base, ...location, ...(database ? { database } : {}) };
+}
+
+async function ensureTargetDatabase({
+  databaseUrl,
+  database,
+  credentials,
+  ssl,
+}: Omit<ConnectionInput, 'base'> & {
+  ssl: SslOption | undefined;
+}): Promise<void> {
+  if (!database) return;
+
+  if (databaseUrl) {
+    const adminUrl = new URL(databaseUrl);
+    adminUrl.pathname = `/${firstEnv('DB_ADMIN_DATABASE', 'DATABASE_ADMIN_NAME') ?? 'postgres'}`;
+    await ensureDatabaseExists({
+      connectionString: adminUrl.toString(),
+      database,
+      ssl,
+    });
+    return;
+  }
+
+  const { host, port, username, password } = credentials;
+  if (!host || !username) return;
+
+  logBootstrapStep(`ensuring database ${database}`);
+  await ensureDatabaseExists({
+    host,
+    port: port ? Number(port) : undefined,
+    username,
+    password,
+    database,
+    ssl,
+  });
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
@@ -38,11 +208,7 @@ function logBootstrapStep(message: string): void {
                 options: { colorize: true, singleLine: true },
               }
             : undefined,
-        autoLogging: {
-          // Filtre le bruit des sondes Docker healthcheck qui frappent /health
-          // toutes les 10s — un log par requete pollue les logs prod sans valeur.
-          ignore: (req) => req.url?.includes('/health') ?? false,
-        },
+        autoLogging: { ignore: isHealthProbe },
         quietReqLogger: true,
         genReqId: (req) =>
           (req.headers['x-request-id'] as string) ?? randomUUID(),
@@ -62,120 +228,29 @@ function logBootstrapStep(message: string): void {
     TypeOrmModule.forRootAsync({
       useFactory: async (): Promise<TypeOrmModuleOptions> => {
         logBootstrapStep('typeorm factory start');
-        const sslEnabled =
-          process.env.DB_SSL === 'true' || process.env.DATABASE_SSL === 'true';
-        const sslOption = sslEnabled
-          ? { rejectUnauthorized: process.env.NODE_ENV === 'production' }
-          : undefined;
 
-        const databaseUrl =
-          process.env.DATABASE_URL && process.env.DATABASE_URL.trim().length > 0
-            ? process.env.DATABASE_URL.trim()
-            : undefined;
+        const ssl = resolveSslOption();
+        const databaseUrl = resolveDatabaseUrl();
+        const database = resolveDatabaseName(databaseUrl);
+        const credentials = resolveCredentials();
 
-        const databaseFromEnv =
-          process.env.DB_NAME ??
-          process.env.DATABASE_NAME ??
-          process.env.POSTGRES_DB ??
-          (databaseUrl
-            ? new URL(databaseUrl).pathname.replace(/^\//, '')
-            : undefined);
-
-        const synchronize =
-          process.env.NODE_ENV !== 'production' &&
-          (process.env.TYPEORM_SYNCHRONIZE === 'true' ||
-            process.env.DB_SYNCHRONIZE === 'true');
-
-        // Pool PG dimensionne pour l'usage concurrent API + BullMQ workers
-        // (audit worker hammer la DB pendant pipeline 180s). Defaut node-postgres
-        // 10 saturait facilement. Configurable via DB_POOL_MAX.
-        const poolMax = Number(process.env.DB_POOL_MAX ?? 30);
-        const poolIdleTimeoutMs = Number(
-          process.env.DB_POOL_IDLE_TIMEOUT_MS ?? 30_000,
-        );
-        const poolConnectTimeoutMs = Number(
-          process.env.DB_POOL_CONNECT_TIMEOUT_MS ?? 5_000,
-        );
-
-        const baseOptions: TypeOrmModuleOptions = {
+        const base: PostgresBaseOptions = {
           type: 'postgres',
           entities: [join(__dirname, '**/*.entity.{js,ts}')],
-          synchronize,
-          extra: {
-            max: poolMax,
-            idleTimeoutMillis: poolIdleTimeoutMs,
-            connectionTimeoutMillis: poolConnectTimeoutMs,
-          },
-          ...(sslOption ? { ssl: sslOption } : {}),
+          synchronize: resolveSynchronize(),
+          extra: resolvePoolExtra(),
+          ...(ssl ? { ssl } : {}),
         };
 
-        const host =
-          process.env.DB_HOST ??
-          process.env.DATABASE_HOST ??
-          process.env.PGHOST ??
-          undefined;
-        const port =
-          process.env.DB_PORT ??
-          process.env.DATABASE_PORT ??
-          process.env.PGPORT ??
-          undefined;
-        const username =
-          process.env.DB_USERNAME ??
-          process.env.DB_USER ??
-          process.env.DATABASE_USER ??
-          process.env.POSTGRES_USER ??
-          undefined;
-        const password =
-          process.env.DB_PASSWORD ??
-          process.env.DB_PASS ??
-          process.env.DATABASE_PASSWORD ??
-          process.env.POSTGRES_PASSWORD ??
-          undefined;
-
-        const connectionOptions: TypeOrmModuleOptions = databaseUrl
-          ? {
-              ...baseOptions,
-              url: databaseUrl,
-              ...(databaseFromEnv ? { database: databaseFromEnv } : {}),
-            }
-          : {
-              ...baseOptions,
-              ...(host ? { host } : {}),
-              ...(port ? { port: Number(port) } : {}),
-              ...(username ? { username } : {}),
-              ...(password ? { password } : {}),
-              ...(databaseFromEnv ? { database: databaseFromEnv } : {}),
-            };
-
-        if (databaseFromEnv) {
-          if (databaseUrl) {
-            const adminUrl = new URL(databaseUrl);
-            const adminDatabase =
-              process.env.DB_ADMIN_DATABASE ??
-              process.env.DATABASE_ADMIN_NAME ??
-              'postgres';
-            adminUrl.pathname = `/${adminDatabase}`;
-
-            await ensureDatabaseExists({
-              connectionString: adminUrl.toString(),
-              database: databaseFromEnv,
-              ssl: sslOption,
-            });
-          } else if (host && username) {
-            logBootstrapStep(`ensuring database ${databaseFromEnv}`);
-            await ensureDatabaseExists({
-              host,
-              port: port ? Number(port) : undefined,
-              username,
-              password,
-              database: databaseFromEnv,
-              ssl: sslOption,
-            });
-          }
-        }
+        await ensureTargetDatabase({ databaseUrl, database, credentials, ssl });
 
         logBootstrapStep('typeorm factory done');
-        return connectionOptions;
+        return buildConnectionOptions({
+          base,
+          databaseUrl,
+          database,
+          credentials,
+        });
       },
     }),
     ...runtimeContexts.runtimeModules,

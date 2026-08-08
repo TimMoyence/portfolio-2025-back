@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { randomBytes } from 'crypto';
 import type { IEmailVerificationNotifier } from '../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
@@ -15,9 +14,8 @@ import type {
   CreateUserResult,
 } from './dto/CreateUser.command';
 import { UsersMapper } from './mappers/UsersMapper';
+import { dispatchVerificationEmail } from './services/email-verification-dispatch';
 import { PasswordService } from './services/PasswordService';
-
-const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class CreateUsersUseCase {
@@ -61,37 +59,14 @@ export class CreateUsersUseCase {
   }
 
   private async sendVerificationEmail(user: User): Promise<void> {
-    const rawToken = randomBytes(32).toString('hex');
-
-    await this.emailVerificationTokensRepo.create({
+    await dispatchVerificationEmail({
+      user,
       userId: user.id!,
-      token: rawToken,
-      expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_TTL_MS),
+      verificationUrlBase: this.verificationUrlBase,
+      tokensRepo: this.emailVerificationTokensRepo,
+      notifier: this.emailVerificationNotifier,
+      logger: this.logger,
+      failureLogPrefix: 'Email verification send failed',
     });
-
-    try {
-      await this.emailVerificationNotifier.sendVerificationEmail({
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        verificationUrl: this.buildVerificationUrl(rawToken),
-        expiresInMinutes: 24 * 60,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Email verification send failed for ${user.email}: ${String(error)}`,
-      );
-    }
-  }
-
-  private buildVerificationUrl(rawToken: string): string {
-    try {
-      const url = new URL(this.verificationUrlBase);
-      url.searchParams.set('token', rawToken);
-      return url.toString();
-    } catch {
-      const separator = this.verificationUrlBase.includes('?') ? '&' : '?';
-      return `${this.verificationUrlBase}${separator}token=${encodeURIComponent(rawToken)}`;
-    }
   }
 }

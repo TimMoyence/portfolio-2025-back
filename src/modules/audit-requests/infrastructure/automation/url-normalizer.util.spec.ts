@@ -11,6 +11,7 @@ describe('normalizeAuditUrl', () => {
 
   beforeEach(() => {
     mockedLookup.mockReset();
+    // eslint-disable-next-line sonarjs/no-hardcoded-ip -- fixture : adresse publique renvoyee par le lookup DNS mocke
     mockedLookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
   });
 

@@ -12,8 +12,8 @@ export interface CookieConsentPreferences {
   marketing: boolean;
 }
 
-export type CookieConsentSource = 'banner' | 'settings';
-export type CookieConsentAction =
+type CookieConsentSource = 'banner' | 'settings';
+type CookieConsentAction =
   | 'accept_all'
   | 'essential_only'
   | 'save_preferences'

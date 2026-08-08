@@ -16,8 +16,6 @@ import { UnsubscribeNewsletterUseCase } from '../src/modules/newsletter/applicat
 import { NewsletterController } from '../src/modules/newsletter/interfaces/Newsletter.controller';
 import { buildNewsletterSubscriber } from './factories/newsletter-subscriber.factory';
 
-// Injecte un faux transporter : le test de contrat ci-dessous a besoin
-// d'un mailer qui « envoie » reellement pour inspecter ses en-tetes.
 const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
 
 jest.mock('../src/common/infrastructure/mail/smtp-transporter.util', () => ({
@@ -151,10 +149,13 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
       alreadyUnsubscribed: true,
     });
 
-    await request(getHttpServer())
+    const replay = await request(getHttpServer())
       .post(`/${API_PREFIX}/newsletter/unsubscribe`)
       .query({ token: VALID_TOKEN })
       .expect(200);
+
+    expect(replay.body).toEqual({ status: 'unsubscribed' });
+    expect(unsubscribeUseCase.execute).toHaveBeenCalledTimes(2);
   });
 
   describe('contrat entre l’en-tete List-Unsubscribe et la route servie', () => {

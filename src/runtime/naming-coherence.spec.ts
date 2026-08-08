@@ -1,24 +1,6 @@
-import { readdirSync, readFileSync, statSync } from 'fs';
+import { readFileSync } from 'fs';
+import { collectFiles } from '../../test/helpers/source-tree';
 import { join } from 'path';
-
-function collectFiles(root: string): string[] {
-  const output: string[] = [];
-  const entries = readdirSync(root);
-
-  for (const entry of entries) {
-    const absolute = join(root, entry);
-    const stats = statSync(absolute);
-
-    if (stats.isDirectory()) {
-      output.push(...collectFiles(absolute));
-      continue;
-    }
-
-    output.push(absolute);
-  }
-
-  return output;
-}
 
 describe('Cross-context naming coherence', () => {
   const modulesRoot = join(process.cwd(), 'src/modules');

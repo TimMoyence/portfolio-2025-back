@@ -3,14 +3,16 @@ import {
   SUPPORTED_FORMATION_SLUGS,
 } from '../SupportedFormationSlugs';
 
+const byLocale = (a: string, b: string): number => a.localeCompare(b);
+
 describe('SupportedFormationSlugs', () => {
   it('expose une liste non vide de slugs', () => {
     expect(SUPPORTED_FORMATION_SLUGS.length).toBeGreaterThan(0);
   });
 
   it('contient les slugs publies en S1 + S2', () => {
-    expect([...SUPPORTED_FORMATION_SLUGS].sort()).toEqual(
-      ['automatiser-avec-ia', 'ia-solopreneurs'].sort(),
+    expect([...SUPPORTED_FORMATION_SLUGS].sort(byLocale)).toEqual(
+      ['automatiser-avec-ia', 'ia-solopreneurs'].sort(byLocale),
     );
   });
 

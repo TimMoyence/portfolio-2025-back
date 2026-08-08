@@ -65,20 +65,38 @@ function buildMetrics() {
   };
 }
 
+function invokeSection(
+  client: Anthropic,
+  overrides: {
+    section?: string;
+    systemBlocks?: string[];
+    metrics?: ReturnType<typeof buildMetrics>;
+  } = {},
+): Promise<Section> {
+  const {
+    section: sectionName = 'executive',
+    systemBlocks = ['main'],
+    metrics,
+  } = overrides;
+  return invokeAnthropicStructuredSection<Section>({
+    client,
+    model: 'claude-sonnet-4-6',
+    section: sectionName,
+    locale: 'fr',
+    schema: section,
+    systemBlocks,
+    userContent: 'user',
+    logger: new Logger('test'),
+    ...(metrics ? { metrics: metrics as never } : {}),
+  });
+}
+
 describe('invokeAnthropicStructuredSection', () => {
   it('applies cache_control ephemeral on the last system block', async () => {
     const { client, calls } = buildClient();
-    const logger = new Logger('test');
 
-    await invokeAnthropicStructuredSection<Section>({
-      client,
-      model: 'claude-sonnet-4-6',
-      section: 'executive',
-      locale: 'fr',
-      schema: section,
+    await invokeSection(client, {
       systemBlocks: ['disclaimer', 'main', 'retry'],
-      userContent: 'user payload',
-      logger,
     });
 
     expect(calls).toHaveLength(1);
@@ -96,18 +114,8 @@ describe('invokeAnthropicStructuredSection', () => {
 
   it('forces tool_use with the section-named tool and strict schema', async () => {
     const { client, calls } = buildClient();
-    const logger = new Logger('test');
 
-    await invokeAnthropicStructuredSection<Section>({
-      client,
-      model: 'claude-sonnet-4-6',
-      section: 'priority',
-      locale: 'fr',
-      schema: section,
-      systemBlocks: ['main'],
-      userContent: 'user',
-      logger,
-    });
+    await invokeSection(client, { section: 'priority' });
 
     expect(calls[0].tool_choice).toEqual({
       type: 'tool',
@@ -123,18 +131,8 @@ describe('invokeAnthropicStructuredSection', () => {
 
   it('parses the tool_use input through the Zod schema', async () => {
     const { client } = buildClient();
-    const logger = new Logger('test');
 
-    const result = await invokeAnthropicStructuredSection<Section>({
-      client,
-      model: 'claude-sonnet-4-6',
-      section: 'executive',
-      locale: 'fr',
-      schema: section,
-      systemBlocks: ['main'],
-      userContent: 'user',
-      logger,
-    });
+    const result = await invokeSection(client);
 
     expect(result).toEqual({ summary: 'ok', priority: 1 });
   });
@@ -142,19 +140,8 @@ describe('invokeAnthropicStructuredSection', () => {
   it('records input/output/cache metrics on success', async () => {
     const { client } = buildClient();
     const metrics = buildMetrics();
-    const logger = new Logger('test');
 
-    await invokeAnthropicStructuredSection<Section>({
-      client,
-      model: 'claude-sonnet-4-6',
-      section: 'executive',
-      locale: 'fr',
-      schema: section,
-      systemBlocks: ['main'],
-      userContent: 'user',
-      logger,
-      metrics: metrics as never,
-    });
+    await invokeSection(client, { metrics });
 
     const tokenCalls = metrics.llmTokensTotal.inc.mock.calls;
     const types = tokenCalls.map((call) => (call[0] as { type: string }).type);
@@ -177,21 +164,10 @@ describe('invokeAnthropicStructuredSection', () => {
       ] as Anthropic.ContentBlock[],
     } as Partial<Anthropic.Message>);
     const metrics = buildMetrics();
-    const logger = new Logger('test');
 
-    await expect(
-      invokeAnthropicStructuredSection<Section>({
-        client,
-        model: 'claude-sonnet-4-6',
-        section: 'executive',
-        locale: 'fr',
-        schema: section,
-        systemBlocks: ['main'],
-        userContent: 'user',
-        logger,
-        metrics: metrics as never,
-      }),
-    ).rejects.toThrow(/missing tool_use/);
+    await expect(invokeSection(client, { metrics })).rejects.toThrow(
+      /missing tool_use/,
+    );
 
     expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'error' }),
@@ -210,21 +186,8 @@ describe('invokeAnthropicStructuredSection', () => {
       ] as Anthropic.ContentBlock[],
     } as Partial<Anthropic.Message>);
     const metrics = buildMetrics();
-    const logger = new Logger('test');
 
-    await expect(
-      invokeAnthropicStructuredSection<Section>({
-        client,
-        model: 'claude-sonnet-4-6',
-        section: 'executive',
-        locale: 'fr',
-        schema: section,
-        systemBlocks: ['main'],
-        userContent: 'user',
-        logger,
-        metrics: metrics as never,
-      }),
-    ).rejects.toThrow();
+    await expect(invokeSection(client, { metrics })).rejects.toThrow();
 
     expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'error' }),

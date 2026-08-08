@@ -1,15 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { randomBytes } from 'crypto';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
-import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
 import { User } from '../domain/User';
 import type { LoginCommand } from './dto/Login.command';
+import { issueAuthSession } from './services/issue-auth-session';
 import { JwtTokenService } from './services/JwtTokenService';
 import { PasswordService } from './services/PasswordService';
-import { REFRESH_TOKEN_TTL_MS } from '../domain/auth.constants';
 
 export interface AuthResult {
   accessToken: string;
@@ -51,27 +49,6 @@ export class AuthenticateUserUseCase {
       await this.repo.update(user.id!, { passwordHash: newHash });
     }
 
-    const { token, expiresIn } = await this.jwtTokenService.sign({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles ?? [],
-    });
-
-    const rawRefreshToken = randomBytes(32).toString('hex');
-    const tokenHash = TokenHash.fromRaw(rawRefreshToken).value;
-
-    await this.refreshTokensRepo.create({
-      userId: user.id!,
-      tokenHash,
-      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
-      revoked: false,
-    });
-
-    return {
-      accessToken: token,
-      expiresIn,
-      refreshToken: rawRefreshToken,
-      user,
-    };
+    return issueAuthSession(user, this.jwtTokenService, this.refreshTokensRepo);
   }
 }

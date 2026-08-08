@@ -1,4 +1,5 @@
 import * as fc from 'fast-check';
+import { nonStringArbitrary } from '../../../../test/helpers/fast-check-arbitraries';
 import { LocaleCode } from './LocaleCode';
 
 describe('LocaleCode', () => {
@@ -78,17 +79,9 @@ describe('LocaleCode', () => {
 
     it('devrait rejeter les valeurs non-string', () => {
       fc.assert(
-        fc.property(
-          fc.oneof(
-            fc.integer(),
-            fc.boolean(),
-            fc.constant(null),
-            fc.constant(undefined),
-          ),
-          (input) => {
-            expect(LocaleCode.parse(input)).toBeNull();
-          },
-        ),
+        fc.property(nonStringArbitrary, (input) => {
+          expect(LocaleCode.parse(input)).toBeNull();
+        }),
       );
     });
 

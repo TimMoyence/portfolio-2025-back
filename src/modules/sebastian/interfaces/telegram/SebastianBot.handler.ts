@@ -14,6 +14,15 @@ import {
 
 const AWAITING_EMAIL_TTL_MS = 5 * 60 * 1000;
 
+const BAC_LEGAL_LIMIT_G_PER_L = 0.5;
+const BAC_MODERATE_G_PER_L = 0.25;
+
+function bacStatusLabel(bac: number): string {
+  if (bac >= BAC_LEGAL_LIMIT_G_PER_L) return 'ATTENTION';
+  if (bac >= BAC_MODERATE_G_PER_L) return 'Modere';
+  return 'OK';
+}
+
 interface PendingState {
   state: 'awaiting_email';
   expiresAt: number;
@@ -110,12 +119,17 @@ export class SebastianBotHandler {
       return;
     }
 
+    await this.registerAndConfirm(ctx, telegramUserId, result.drinks);
+  }
+
+  private async registerAndConfirm(
+    ctx: Context,
+    telegramUserId: number,
+    drinks: ParsedDrink[],
+  ): Promise<void> {
     try {
-      await this.registerDrinks.execute({
-        telegramUserId,
-        drinks: result.drinks,
-      });
-      await ctx.reply(this.formatConfirmation(result.drinks));
+      await this.registerDrinks.execute({ telegramUserId, drinks });
+      await ctx.reply(this.formatConfirmation(drinks));
     } catch (error: unknown) {
       this.logger.error('Erreur enregistrement boisson', error);
       await ctx.reply("Erreur lors de l'enregistrement. Reessaie.");
@@ -144,16 +158,7 @@ export class SebastianBotHandler {
     const result = parseDrinkMessage(text);
 
     if (result.drinks.length > 0 && result.confident) {
-      try {
-        await this.registerDrinks.execute({
-          telegramUserId,
-          drinks: result.drinks,
-        });
-        await ctx.reply(this.formatConfirmation(result.drinks));
-      } catch (error: unknown) {
-        this.logger.error('Erreur enregistrement boisson', error);
-        await ctx.reply("Erreur lors de l'enregistrement. Reessaie.");
-      }
+      await this.registerAndConfirm(ctx, telegramUserId, result.drinks);
       return;
     }
 
@@ -255,12 +260,7 @@ export class SebastianBotHandler {
         userId: resolved.userId,
       });
       const bacText = result.currentBac.toFixed(2);
-      const status =
-        result.currentBac >= 0.5
-          ? 'ATTENTION'
-          : result.currentBac >= 0.25
-            ? 'Modere'
-            : 'OK';
+      const status = bacStatusLabel(result.currentBac);
       let msg = `[${status}] Taux actuel : ${bacText} g/L`;
       if (result.estimatedSoberAt) {
         const h = result.estimatedSoberAt
@@ -273,7 +273,7 @@ export class SebastianBotHandler {
           .padStart(2, '0');
         msg += `\nSobriete estimee : ${h}:${m}`;
       }
-      if (result.currentBac >= 0.5) {
+      if (result.currentBac >= BAC_LEGAL_LIMIT_G_PER_L) {
         msg += '\nAu-dessus de la limite legale (0.5 g/L)';
       }
       await ctx.reply(msg);

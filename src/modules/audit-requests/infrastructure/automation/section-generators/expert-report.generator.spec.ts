@@ -1,6 +1,9 @@
-import type { ChatOpenAI } from '@langchain/openai';
 import { generateExpertReport } from './expert-report.generator';
 import type { ExpertReport } from '../schemas/audit-report.schemas';
+import {
+  buildSectionGeneratorArgs,
+  systemMessagesOf,
+} from '../../../../../../test/factories/section-generator.factory';
 
 describe('generateExpertReport', () => {
   function buildStubReport(): ExpertReport {
@@ -10,71 +13,38 @@ describe('generateExpertReport', () => {
     } as unknown as ExpertReport;
   }
 
-  it('appelle invokeTracked avec la section expert_report', async () => {
-    const invokeTracked = jest.fn().mockResolvedValue(buildStubReport());
+  function stubInvokeTracked(): jest.Mock {
+    return jest.fn().mockResolvedValue(buildStubReport());
+  }
 
-    await generateExpertReport(
-      { invokeTracked },
-      {
-        llm: {
-          withStructuredOutput: jest
-            .fn()
-            .mockReturnValue({ invoke: jest.fn() }),
-        } as unknown as ChatOpenAI,
-        payload: {},
-        locale: 'fr',
-      },
-    );
+  it('appelle invokeTracked avec la section expert_report', async () => {
+    const invokeTracked = stubInvokeTracked();
+
+    await generateExpertReport({ invokeTracked }, buildSectionGeneratorArgs());
 
     const [, , section] = invokeTracked.mock.calls[0];
     expect(section).toBe('expert_report');
   });
 
   it('ajoute compact constraint en compactMode', async () => {
-    const invokeTracked = jest.fn().mockResolvedValue(buildStubReport());
+    const invokeTracked = stubInvokeTracked();
 
     await generateExpertReport(
       { invokeTracked },
-      {
-        llm: {
-          withStructuredOutput: jest
-            .fn()
-            .mockReturnValue({ invoke: jest.fn() }),
-        } as unknown as ChatOpenAI,
-        payload: {},
-        locale: 'fr',
-        compactMode: true,
-      },
+      buildSectionGeneratorArgs({ compactMode: true }),
     );
 
-    const [, messages] = invokeTracked.mock.calls[0] as [
-      unknown,
-      Array<{ role: string }>,
-    ];
-    expect(messages.filter((m) => m.role === 'system').length).toBe(4);
+    expect(systemMessagesOf(invokeTracked)).toHaveLength(4);
   });
 
   it('ajoute retry constraint en retryMode', async () => {
-    const invokeTracked = jest.fn().mockResolvedValue(buildStubReport());
+    const invokeTracked = stubInvokeTracked();
 
     await generateExpertReport(
       { invokeTracked },
-      {
-        llm: {
-          withStructuredOutput: jest
-            .fn()
-            .mockReturnValue({ invoke: jest.fn() }),
-        } as unknown as ChatOpenAI,
-        payload: {},
-        locale: 'fr',
-        retryMode: true,
-      },
+      buildSectionGeneratorArgs({ retryMode: true }),
     );
 
-    const [, messages] = invokeTracked.mock.calls[0] as [
-      unknown,
-      Array<{ role: string }>,
-    ];
-    expect(messages.filter((m) => m.role === 'system').length).toBe(4);
+    expect(systemMessagesOf(invokeTracked)).toHaveLength(4);
   });
 });

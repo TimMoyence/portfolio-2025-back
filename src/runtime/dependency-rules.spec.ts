@@ -1,42 +1,14 @@
 import { readdirSync, readFileSync, statSync } from 'fs';
+import { collectFiles } from '../../test/helpers/source-tree';
 import { join } from 'path';
 
-function collectFiles(root: string): string[] {
-  const output: string[] = [];
-
-  let entries: string[];
-  try {
-    entries = readdirSync(root);
-  } catch {
-    return output;
-  }
-
-  for (const entry of entries) {
-    const absolute = join(root, entry);
-    const stats = statSync(absolute);
-
-    if (stats.isDirectory()) {
-      output.push(...collectFiles(absolute));
-      continue;
-    }
-
-    output.push(absolute);
-  }
-
-  return output;
+function parseImports(content: string): string[] {
+  const importPattern = /\bimport\b[^'"\n]*\bfrom\s*['"]([^'"]+)['"]/g;
+  return [...content.matchAll(importPattern)].map((match) => match[1]);
 }
 
 function extractImports(filePath: string): string[] {
-  const content = readFileSync(filePath, 'utf8');
-  const importRegex = /import\s+.*?\s+from\s+['"]([^'"]+)['"]/g;
-  const imports: string[] = [];
-  let match: RegExpExecArray | null;
-
-  while ((match = importRegex.exec(content)) !== null) {
-    imports.push(match[1]);
-  }
-
-  return imports;
+  return parseImports(readFileSync(filePath, 'utf8'));
 }
 
 function eligibleTsFiles(files: string[]): string[] {
@@ -63,6 +35,60 @@ function collectLayerFiles(modulesRoot: string, layer: string): string[] {
   return eligibleTsFiles(allFiles);
 }
 
+function importViolations(
+  files: string[],
+  isForbidden: (importSpecifier: string) => boolean,
+): string[] {
+  const violations: string[] = [];
+
+  for (const file of files) {
+    const forbidden = extractImports(file).filter(isForbidden);
+    if (forbidden.length > 0) {
+      violations.push(`${file} importe : ${forbidden.join(', ')}`);
+    }
+  }
+
+  return violations;
+}
+
+describe('parseImports', () => {
+  const cases: ReadonlyArray<[string, string, string[]]> = [
+    ['import par defaut', `import Foo from './foo';`, ['./foo']],
+    ['import nomme', `import { Foo, Bar } from '../bar';`, ['../bar']],
+    ['import namespace', `import * as fs from 'fs';`, ['fs']],
+    ['import de type', `import type { Foo } from './foo';`, ['./foo']],
+    [
+      'guillemets doubles',
+      `import Foo from "@nestjs/common";`,
+      ['@nestjs/common'],
+    ],
+    [
+      'deux imports sur la meme ligne',
+      `import a from 'x'; import b from 'y';`,
+      ['x', 'y'],
+    ],
+    [
+      'imports sur des lignes successives',
+      `import a from 'x';\nimport b from 'y';`,
+      ['x', 'y'],
+    ],
+    ['import a effet de bord, non couvert', `import './polyfills';`, []],
+    ['import multiligne, non couvert', `import {\n  Foo,\n} from './foo';`, []],
+  ];
+
+  it.each(cases)('%s', (_label, source, expected) => {
+    expect(parseImports(source)).toEqual(expected);
+  });
+
+  it('reste lineaire sur une ligne `import` sans clause `from`', () => {
+    const hostile = `import ${'a '.repeat(20_000)}`;
+    const startedAt = Date.now();
+
+    expect(parseImports(hostile)).toEqual([]);
+    expect(Date.now() - startedAt).toBeLessThan(1000);
+  });
+});
+
 describe('Règles de dépendances inter-couches', () => {
   const modulesRoot = join(process.cwd(), 'src/modules');
 
@@ -74,33 +100,15 @@ describe('Règles de dépendances inter-couches', () => {
   );
 
   it('les fichiers domain/ ne doivent pas importer depuis infrastructure/', () => {
-    const violations: string[] = [];
-
-    for (const file of domainFiles) {
-      const imports = extractImports(file);
-      const forbidden = imports.filter((imp) =>
-        imp.includes('infrastructure/'),
-      );
-      if (forbidden.length > 0) {
-        violations.push(`${file} importe : ${forbidden.join(', ')}`);
-      }
-    }
-
-    expect(violations).toEqual([]);
+    expect(
+      importViolations(domainFiles, (imp) => imp.includes('infrastructure/')),
+    ).toEqual([]);
   });
 
   it('les fichiers domain/ ne doivent pas importer depuis interfaces/', () => {
-    const violations: string[] = [];
-
-    for (const file of domainFiles) {
-      const imports = extractImports(file);
-      const forbidden = imports.filter((imp) => imp.includes('interfaces/'));
-      if (forbidden.length > 0) {
-        violations.push(`${file} importe : ${forbidden.join(', ')}`);
-      }
-    }
-
-    expect(violations).toEqual([]);
+    expect(
+      importViolations(domainFiles, (imp) => imp.includes('interfaces/')),
+    ).toEqual([]);
   });
 
   it('les fichiers domain/ ne doivent pas importer de dépendances framework/infrastructure', () => {
@@ -126,39 +134,21 @@ describe('Règles de dépendances inter-couches', () => {
       'pg',
       'google-auth-library',
     ];
-    const violations: string[] = [];
-
-    const allDomainFiles = [...domainFiles, ...commonDomainFiles];
-
-    for (const file of allDomainFiles) {
-      const imports = extractImports(file);
-      const forbidden = imports.filter((imp) =>
+    expect(
+      importViolations([...domainFiles, ...commonDomainFiles], (imp) =>
         forbiddenPackages.some(
           (pkg) => imp === pkg || imp.startsWith(`${pkg}/`),
         ),
-      );
-      if (forbidden.length > 0) {
-        violations.push(`${file} importe : ${forbidden.join(', ')}`);
-      }
-    }
-
-    expect(violations).toEqual([]);
+      ),
+    ).toEqual([]);
   });
 
   it('les fichiers application/ ne doivent pas importer depuis infrastructure/', () => {
-    const violations: string[] = [];
-
-    for (const file of applicationFiles) {
-      const imports = extractImports(file);
-      const forbidden = imports.filter((imp) =>
+    expect(
+      importViolations(applicationFiles, (imp) =>
         imp.includes('infrastructure/'),
-      );
-      if (forbidden.length > 0) {
-        violations.push(`${file} importe : ${forbidden.join(', ')}`);
-      }
-    }
-
-    expect(violations).toEqual([]);
+      ),
+    ).toEqual([]);
   });
 
   const CROSS_MODULE_IMPORT_WHITELIST: ReadonlyArray<string> = [
@@ -190,8 +180,6 @@ describe('Règles de dépendances inter-couches', () => {
     return `modules/${targetModule}/`;
   }
 
-  const CROSS_MODULE_EXCEPTIONS: ReadonlyArray<string> = [];
-
   it("les modules metiers ne doivent pas importer depuis d'autres modules metiers (hors whitelist Users)", () => {
     const allModuleFiles = eligibleTsFiles(collectFiles(modulesRoot));
     const violations: string[] = [];
@@ -205,9 +193,6 @@ describe('Règles de dépendances inter-couches', () => {
           target.startsWith(prefix),
         );
         if (allowed) continue;
-        const relativeFile = file.slice(file.indexOf('modules/'));
-        const exceptionKey = `${relativeFile}|${target}`;
-        if (CROSS_MODULE_EXCEPTIONS.includes(exceptionKey)) continue;
         violations.push(`${file} importe : ${imp} (${target})`);
       }
     }

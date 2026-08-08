@@ -7,7 +7,7 @@ export class EmailAddress {
     const value = raw.trim().toLowerCase();
     if (value.length === 0 || value.length > 320) return null;
 
-    const basicEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const basicEmailPattern = /^[^\s@]+@[^\s.@]+(?:\.[^\s.@]+)+$/;
     if (!basicEmailPattern.test(value)) return null;
 
     return new EmailAddress(value);

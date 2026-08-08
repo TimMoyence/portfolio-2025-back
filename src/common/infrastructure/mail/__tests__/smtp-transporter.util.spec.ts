@@ -24,13 +24,6 @@ interface TransportOptions {
   };
 }
 
-/**
- * Cle RSA generee a la volee pour ce fichier de test : jamais commitee,
- * jamais reutilisee ailleurs, detruite a la fin du process. La signature
- * DKIM exige une cle reellement exploitable — une chaine factice serait
- * desormais rejetee par la validation, ce que ces tests verifient par
- * ailleurs.
- */
 const VALID_KEY = generateKeyPairSync('rsa', {
   modulusLength: 2048,
   privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
@@ -53,7 +46,7 @@ describe('createOptionalSmtpTransporter', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     cleanup = setSmtpEnv();
-    clearSmtpEnv();
+    clearEnvRestorableBySetSmtpEnv();
     logger = { warn: jest.fn(), error: jest.fn() } as unknown as Logger;
   });
 
@@ -61,12 +54,7 @@ describe('createOptionalSmtpTransporter', () => {
     cleanup();
   });
 
-  /**
-   * Seules les cles que `setSmtpEnv` sait restaurer sont retirees. Vider
-   * tout `SMTP_*` laisserait `SMTP_REPLY_TO` — validee par le schema
-   * d'environnement — non restauree apres le fichier.
-   */
-  function clearSmtpEnv(): void {
+  function clearEnvRestorableBySetSmtpEnv(): void {
     const restorable = [
       'SMTP_HOST',
       'SMTP_PORT',
@@ -85,7 +73,7 @@ describe('createOptionalSmtpTransporter', () => {
     process.env.SMTP_HOST = 'smtp.example.org';
     process.env.SMTP_PORT = '587';
     process.env.SMTP_USER = 'mailer';
-    process.env.SMTP_PASS = 'secret'; // gitleaks:allow
+    process.env.SMTP_PASS = 'secret'; // gitleaks:allow — scan de secrets, ci.yml
   }
 
   function lastOptions(): TransportOptions {
@@ -188,8 +176,6 @@ describe('createOptionalSmtpTransporter', () => {
 
       createOptionalSmtpTransporter(logger, 'Test');
 
-      // Restreindre la liste laisserait un relais ajouter un `Cc` ou
-      // alterer l'encodage du corps sans invalider la signature.
       const names = (lastOptions().dkim?.headerFieldNames ?? '').split(':');
       for (const field of [
         'Cc',
@@ -216,10 +202,9 @@ describe('createOptionalSmtpTransporter', () => {
     });
 
     it('accepte une cle RSA au format PKCS#1', () => {
-      // `openssl genrsa` et `opendkim-genkey` produisent du PKCS#1,
-      // quand le nominal ci-dessus genere du PKCS#8. Sans ce cas, un
-      // durcissement futur (controle de l'en-tete PEM, par exemple)
-      // casserait DKIM en production sans faire tomber un test.
+      // `openssl genrsa` et `opendkim-genkey` produisent du PKCS#1
+      // (RFC 8017), quand le cas nominal ci-dessus genere du PKCS#8
+      // (RFC 5208).
       const pkcs1 = generateKeyPairSync('rsa', {
         modulusLength: 2048,
         privateKeyEncoding: { type: 'pkcs1', format: 'pem' },
@@ -253,7 +238,7 @@ describe('createOptionalSmtpTransporter', () => {
     });
 
     it('retablit une cle PEM collee avec des \\n litteraux', () => {
-      // Un `env_file` Docker ne supporte pas les valeurs multilignes.
+      // Les `env_file` de compose.yaml ne portent pas de valeur multiligne.
       configureSmtp();
       enableDkim({
         SMTP_DKIM_PRIVATE_KEY: VALID_KEY.replace(/\n/g, '\\n'),
@@ -272,9 +257,9 @@ describe('createOptionalSmtpTransporter', () => {
       ],
       ['un domaine vide de sens', { SMTP_DKIM_DOMAIN: 'pas un domaine' }],
     ])('refuse %s', (_label, overrides) => {
-      // Ces valeurs sont concatenees telles quelles dans l'en-tete
-      // `DKIM-Signature` : un saut de ligne y injecterait un en-tete
-      // arbitraire dans tous les messages du transporter.
+      // Concatenees telles quelles dans l'en-tete `DKIM-Signature`
+      // (RFC 6376 section 3.5), ces valeurs y injecteraient un en-tete
+      // arbitraire des qu'elles portent un saut de ligne.
       configureSmtp();
       enableDkim(overrides);
 
@@ -290,10 +275,6 @@ describe('createOptionalSmtpTransporter', () => {
 
       createOptionalSmtpTransporter(logger, 'Test');
 
-      // Une signature partielle est impossible : mieux vaut ne pas
-      // signer et le dire que d'echouer silencieusement a l'envoi.
-      // Niveau `error` et non `warn` : une configuration DKIM a moitie
-      // posee est une erreur de deploiement, pas un mode degrade normal.
       expect(lastOptions().dkim).toBeUndefined();
       expect(logger.error).toHaveBeenCalled();
     });

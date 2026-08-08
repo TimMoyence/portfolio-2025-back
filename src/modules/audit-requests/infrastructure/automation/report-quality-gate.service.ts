@@ -7,6 +7,7 @@ import {
   validateExpertReport as runExpertTierValidation,
   type TierValidationResult,
 } from './report-quality-gate/tier-validators';
+import { priorityFromFinding } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
 import {
   ACTIONABLE_PILLARS,
@@ -16,6 +17,102 @@ import {
 export type { TierValidationResult };
 
 type PrioritySeverity = 'high' | 'medium' | 'low';
+
+const PILLAR_DEGRADED_SCORE = 65;
+
+interface PillarActionTemplate {
+  title: [string, string];
+  whyItMatters: [string, string];
+  recommendedFix: [string, string];
+  degradedHours: number;
+  standardHours: number;
+}
+
+const PILLAR_ACTION_TEMPLATES: Record<
+  ActionablePillarKey,
+  PillarActionTemplate
+> = {
+  seo: {
+    title: [
+      'Corriger la qualite SEO on-page sur les templates prioritaires',
+      'Fix on-page SEO quality on priority templates',
+    ],
+    whyItMatters: [
+      'Le deficit SEO degrade la visibilite organique et la couverture des intentions.',
+      'SEO gaps reduce organic visibility and intent coverage.',
+    ],
+    recommendedFix: [
+      'Standardiser title/meta/H1/canonical/lang sur les pages a fort potentiel.',
+      'Standardize title/meta/H1/canonical/lang on high-potential pages.',
+    ],
+    degradedHours: 8,
+    standardHours: 5,
+  },
+  performance: {
+    title: [
+      'Optimiser les pages lentes et le budget de rendu',
+      'Optimize slow pages and rendering budget',
+    ],
+    whyItMatters: [
+      'La lenteur penalise conversion, crawl budget et experience utilisateur.',
+      'Slowness hurts conversion, crawl budget, and user experience.',
+    ],
+    recommendedFix: [
+      'Prioriser cache, poids des assets, critical CSS et reduction JS.',
+      'Prioritize caching, asset weight reduction, critical CSS, and JS reduction.',
+    ],
+    degradedHours: 10,
+    standardHours: 6,
+  },
+  technical: {
+    title: [
+      "Stabiliser l'indexabilite et la conformite technique",
+      'Stabilize indexability and technical compliance',
+    ],
+    whyItMatters: [
+      'Les defauts techniques bloquent la decouverte et la consolidation SEO.',
+      'Technical defects block discovery and SEO consolidation.',
+    ],
+    recommendedFix: [
+      'Auditer robots, canonicals, statuts HTTP, sitemap et redirections.',
+      'Audit robots, canonicals, HTTP status, sitemap, and redirects.',
+    ],
+    degradedHours: 9,
+    standardHours: 6,
+  },
+  trust: {
+    title: [
+      'Renforcer les signaux de confiance et le marquage schema.org',
+      'Strengthen trust signals and schema.org coverage',
+    ],
+    whyItMatters: [
+      'Les signaux de confiance influencent CTR, conversion et perception de marque.',
+      'Trust signals influence CTR, conversion, and brand perception.',
+    ],
+    recommendedFix: [
+      'Ajouter schemas, preuves sociales, mentions legale et coherence marque.',
+      'Add schema, social proof, legal pages, and brand consistency signals.',
+    ],
+    degradedHours: 7,
+    standardHours: 4,
+  },
+  conversion: {
+    title: [
+      'Ameliorer le tunnel de conversion et les points de contact',
+      'Improve conversion funnel and contact touchpoints',
+    ],
+    whyItMatters: [
+      'Les frictions de conversion reduisent la valeur business des visites SEO.',
+      'Conversion friction reduces business value of SEO traffic.',
+    ],
+    recommendedFix: [
+      'Renforcer CTA, formulaires et navigation vers les pages commerciales.',
+      'Strengthen CTA, forms, and paths to commercial pages.',
+    ],
+    degradedHours: 8,
+    standardHours: 5,
+  },
+};
 
 export interface ExpertPriority {
   title: string;
@@ -42,7 +139,7 @@ export interface TechFingerprintShape {
   unknowns: string[];
 }
 
-export interface ClientEmailDraftShape {
+interface ClientEmailDraftShape {
   subject: string;
   body: string;
 }
@@ -296,78 +393,78 @@ export class ReportQualityGateService {
     const unique = new Set<string>();
     const priorities: ExpertPriority[] = [];
 
-    for (const entry of Array.isArray(basePriorities) ? basePriorities : []) {
-      const normalized = this.normalizePriority(entry);
-      if (!normalized) continue;
-      const key = normalized.title.toLowerCase();
-      if (unique.has(key)) continue;
-      unique.add(key);
-      priorities.push(normalized);
-    }
+    this.appendPriorities(
+      priorities,
+      unique,
+      (Array.isArray(basePriorities) ? basePriorities : []).map((entry) =>
+        this.normalizePriority(entry),
+      ),
+      null,
+    );
 
-    for (const finding of context.deepFindings) {
-      if (priorities.length >= this.maxPriorities) break;
-      const normalized = this.normalizePriority({
-        title: finding.title,
-        severity: finding.severity,
-        whyItMatters: localizedText(
-          locale,
-          `Impact ${finding.impact}: ${finding.description}`,
-          `${finding.impact} impact: ${finding.description}`,
-        ),
-        recommendedFix: finding.recommendation,
-        estimatedHours: finding.severity === 'high' ? 6 : 4,
-      });
-      if (!normalized) continue;
-      const key = normalized.title.toLowerCase();
-      if (unique.has(key)) continue;
-      unique.add(key);
-      priorities.push(normalized);
-    }
+    this.appendPriorities(
+      priorities,
+      unique,
+      context.deepFindings.map((finding) =>
+        this.normalizePriority(priorityFromFinding(finding, locale)),
+      ),
+      this.maxPriorities,
+    );
 
-    for (const quickWin of context.quickWins) {
-      if (priorities.length >= this.maxPriorities) break;
-      const normalized = this.normalizePriority({
-        title: quickWin,
-        severity: 'medium',
-        whyItMatters: localizedText(
-          locale,
-          'Action rapide pour renforcer la base SEO technique et la conversion.',
-          'Fast action to strengthen technical SEO baseline and conversion.',
-        ),
-        recommendedFix: quickWin,
-        estimatedHours: 3,
-      });
-      if (!normalized) continue;
-      const key = normalized.title.toLowerCase();
-      if (unique.has(key)) continue;
-      unique.add(key);
-      priorities.push(normalized);
-    }
+    this.appendPriorities(
+      priorities,
+      unique,
+      context.quickWins.map((quickWin) =>
+        this.normalizePriority({
+          title: quickWin,
+          severity: 'medium',
+          whyItMatters: localizedText(
+            locale,
+            'Action rapide pour renforcer la base SEO technique et la conversion.',
+            'Fast action to strengthen technical SEO baseline and conversion.',
+          ),
+          recommendedFix: quickWin,
+          estimatedHours: 3,
+        }),
+      ),
+      this.maxPriorities,
+    );
 
-    const pillarActions = this.pillarBasedActions(context.pillarScores, locale);
-    for (const action of pillarActions) {
-      if (priorities.length >= this.maxPriorities) break;
-      const key = action.title.toLowerCase();
-      if (unique.has(key)) continue;
-      unique.add(key);
-      priorities.push(action);
-    }
+    this.appendPriorities(
+      priorities,
+      unique,
+      this.pillarBasedActions(context.pillarScores, locale),
+      this.maxPriorities,
+    );
 
-    const genericActions = this.genericActions(locale, context.websiteName);
-    for (const action of genericActions) {
-      if (priorities.length >= this.maxPriorities) break;
-      const key = action.title.toLowerCase();
-      if (unique.has(key)) continue;
-      unique.add(key);
-      priorities.push(action);
-    }
+    this.appendPriorities(
+      priorities,
+      unique,
+      this.genericActions(locale, context.websiteName),
+      this.maxPriorities,
+    );
 
     if (priorities.length < this.minPriorities) {
       reasons.push('priority_enrichment_exhausted');
     }
 
     return priorities.slice(0, this.maxPriorities);
+  }
+
+  private appendPriorities(
+    target: ExpertPriority[],
+    seenTitles: Set<string>,
+    candidates: ReadonlyArray<ExpertPriority | null>,
+    cap: number | null,
+  ): void {
+    for (const candidate of candidates) {
+      if (cap !== null && target.length >= cap) break;
+      if (!candidate) continue;
+      const key = candidate.title.toLowerCase();
+      if (seenTitles.has(key)) continue;
+      seenTitles.add(key);
+      target.push(candidate);
+    }
   }
 
   private pillarBasedActions(
@@ -395,112 +492,18 @@ export class ReportQualityGateService {
     score: number,
     locale: AuditLocale,
   ): ExpertPriority {
-    switch (pillar) {
-      case 'seo':
-        return {
-          title: localizedText(
-            locale,
-            'Corriger la qualite SEO on-page sur les templates prioritaires',
-            'Fix on-page SEO quality on priority templates',
-          ),
-          severity: score < 65 ? 'high' : 'medium',
-          whyItMatters: localizedText(
-            locale,
-            'Le deficit SEO degrade la visibilite organique et la couverture des intentions.',
-            'SEO gaps reduce organic visibility and intent coverage.',
-          ),
-          recommendedFix: localizedText(
-            locale,
-            'Standardiser title/meta/H1/canonical/lang sur les pages a fort potentiel.',
-            'Standardize title/meta/H1/canonical/lang on high-potential pages.',
-          ),
-          estimatedHours: score < 65 ? 8 : 5,
-        };
-      case 'performance':
-        return {
-          title: localizedText(
-            locale,
-            'Optimiser les pages lentes et le budget de rendu',
-            'Optimize slow pages and rendering budget',
-          ),
-          severity: score < 65 ? 'high' : 'medium',
-          whyItMatters: localizedText(
-            locale,
-            'La lenteur penalise conversion, crawl budget et experience utilisateur.',
-            'Slowness hurts conversion, crawl budget, and user experience.',
-          ),
-          recommendedFix: localizedText(
-            locale,
-            'Prioriser cache, poids des assets, critical CSS et reduction JS.',
-            'Prioritize caching, asset weight reduction, critical CSS, and JS reduction.',
-          ),
-          estimatedHours: score < 65 ? 10 : 6,
-        };
-      case 'technical':
-        return {
-          title: localizedText(
-            locale,
-            "Stabiliser l'indexabilite et la conformite technique",
-            'Stabilize indexability and technical compliance',
-          ),
-          severity: score < 65 ? 'high' : 'medium',
-          whyItMatters: localizedText(
-            locale,
-            'Les defauts techniques bloquent la decouverte et la consolidation SEO.',
-            'Technical defects block discovery and SEO consolidation.',
-          ),
-          recommendedFix: localizedText(
-            locale,
-            'Auditer robots, canonicals, statuts HTTP, sitemap et redirections.',
-            'Audit robots, canonicals, HTTP status, sitemap, and redirects.',
-          ),
-          estimatedHours: score < 65 ? 9 : 6,
-        };
-      case 'trust':
-        return {
-          title: localizedText(
-            locale,
-            'Renforcer les signaux de confiance et le marquage schema.org',
-            'Strengthen trust signals and schema.org coverage',
-          ),
-          severity: score < 65 ? 'high' : 'medium',
-          whyItMatters: localizedText(
-            locale,
-            'Les signaux de confiance influencent CTR, conversion et perception de marque.',
-            'Trust signals influence CTR, conversion, and brand perception.',
-          ),
-          recommendedFix: localizedText(
-            locale,
-            'Ajouter schemas, preuves sociales, mentions legale et coherence marque.',
-            'Add schema, social proof, legal pages, and brand consistency signals.',
-          ),
-          estimatedHours: score < 65 ? 7 : 4,
-        };
-      case 'conversion':
-        return {
-          title: localizedText(
-            locale,
-            'Ameliorer le tunnel de conversion et les points de contact',
-            'Improve conversion funnel and contact touchpoints',
-          ),
-          severity: score < 65 ? 'high' : 'medium',
-          whyItMatters: localizedText(
-            locale,
-            'Les frictions de conversion reduisent la valeur business des visites SEO.',
-            'Conversion friction reduces business value of SEO traffic.',
-          ),
-          recommendedFix: localizedText(
-            locale,
-            'Renforcer CTA, formulaires et navigation vers les pages commerciales.',
-            'Strengthen CTA, forms, and paths to commercial pages.',
-          ),
-          estimatedHours: score < 65 ? 8 : 5,
-        };
-      default: {
-        const _exhaustive: never = pillar;
-        throw new Error(`Unhandled actionable pillar: ${String(_exhaustive)}`);
-      }
-    }
+    const template = PILLAR_ACTION_TEMPLATES[pillar];
+    const degraded = score < PILLAR_DEGRADED_SCORE;
+
+    return {
+      title: localizedText(locale, ...template.title),
+      severity: degraded ? 'high' : 'medium',
+      whyItMatters: localizedText(locale, ...template.whyItMatters),
+      recommendedFix: localizedText(locale, ...template.recommendedFix),
+      estimatedHours: degraded
+        ? template.degradedHours
+        : template.standardHours,
+    };
   }
 
   private genericActions(

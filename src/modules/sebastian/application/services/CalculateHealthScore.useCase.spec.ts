@@ -1,4 +1,9 @@
 import { CalculateHealthScoreUseCase } from './CalculateHealthScore.useCase';
+import type {
+  SebastianCategory,
+  SebastianEntry,
+} from '../../domain/SebastianEntry';
+import type { SebastianGoal } from '../../domain/SebastianGoal';
 import {
   buildSebastianEntry,
   buildSebastianGoal,
@@ -11,6 +16,46 @@ function daysAgo(daysOffset: number): Date {
   d.setDate(d.getDate() - daysOffset);
   d.setHours(0, 0, 0, 0);
   return d;
+}
+
+function dailyGoal(
+  category: SebastianCategory,
+  targetQuantity: number,
+  overrides: Partial<SebastianGoal> = {},
+): SebastianGoal {
+  return buildSebastianGoal({
+    category,
+    targetQuantity,
+    period: 'daily',
+    isActive: true,
+    ...overrides,
+  });
+}
+
+function entryOn(
+  category: SebastianCategory,
+  quantity: number,
+  daysOffset: number,
+  id?: string,
+): SebastianEntry {
+  return buildSebastianEntry({
+    ...(id ? { id } : {}),
+    category,
+    quantity,
+    date: daysAgo(daysOffset),
+  });
+}
+
+function dailySeries(
+  idPrefix: string,
+  category: SebastianCategory,
+  quantity: number,
+  length: number,
+  firstDaysOffset = 0,
+): SebastianEntry[] {
+  return Array.from({ length }, (_, i) =>
+    entryOn(category, quantity, firstDaysOffset + i, `${idPrefix}-${i}`),
+  );
 }
 
 describe('CalculateHealthScoreUseCase', () => {
@@ -38,21 +83,8 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait retourner score 100 quand la consommation est sous l objectif', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 3,
-        period: 'daily',
-        isActive: true,
-      }),
-    ]);
-    entryRepo.findByFilters.mockResolvedValue([
-      buildSebastianEntry({
-        category: 'coffee',
-        quantity: 1,
-        date: daysAgo(0),
-      }),
-    ]);
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 3)]);
+    entryRepo.findByFilters.mockResolvedValue([entryOn('coffee', 1, 0)]);
 
     const result = await useCase.execute('user-1');
 
@@ -62,21 +94,8 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait retourner score 100 quand la consommation est exactement a l objectif', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 3,
-        period: 'daily',
-        isActive: true,
-      }),
-    ]);
-    entryRepo.findByFilters.mockResolvedValue([
-      buildSebastianEntry({
-        category: 'coffee',
-        quantity: 3,
-        date: daysAgo(0),
-      }),
-    ]);
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 3)]);
+    entryRepo.findByFilters.mockResolvedValue([entryOn('coffee', 3, 0)]);
 
     const result = await useCase.execute('user-1');
 
@@ -85,21 +104,8 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait diminuer proportionnellement quand la consommation depasse l objectif', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      }),
-    ]);
-    entryRepo.findByFilters.mockResolvedValue([
-      buildSebastianEntry({
-        category: 'coffee',
-        quantity: 4,
-        date: daysAgo(0),
-      }),
-    ]);
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 2)]);
+    entryRepo.findByFilters.mockResolvedValue([entryOn('coffee', 4, 0)]);
 
     const result = await useCase.execute('user-1');
 
@@ -109,32 +115,12 @@ describe('CalculateHealthScoreUseCase', () => {
 
   it('devrait calculer la moyenne pour plusieurs categories', async () => {
     goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        id: 'goal-1',
-        category: 'coffee',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      }),
-      buildSebastianGoal({
-        id: 'goal-2',
-        category: 'alcohol',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      }),
+      dailyGoal('coffee', 2, { id: 'goal-1' }),
+      dailyGoal('alcohol', 2, { id: 'goal-2' }),
     ]);
     entryRepo.findByFilters.mockResolvedValue([
-      buildSebastianEntry({
-        category: 'coffee',
-        quantity: 2,
-        date: daysAgo(0),
-      }),
-      buildSebastianEntry({
-        category: 'alcohol',
-        quantity: 4,
-        date: daysAgo(0),
-      }),
+      entryOn('coffee', 2, 0),
+      entryOn('alcohol', 4, 0),
     ]);
 
     const result = await useCase.execute('user-1');
@@ -144,24 +130,10 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait detecter la phase 2 avec >= 7 jours distincts', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 3,
-        period: 'daily',
-        isActive: true,
-      }),
-    ]);
-
-    const entries = Array.from({ length: 7 }, (_, i) =>
-      buildSebastianEntry({
-        id: `entry-${i}`,
-        category: 'coffee',
-        quantity: 1,
-        date: daysAgo(i),
-      }),
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 3)]);
+    entryRepo.findByFilters.mockResolvedValue(
+      dailySeries('entry', 'coffee', 1, 7),
     );
-    entryRepo.findByFilters.mockResolvedValue(entries);
 
     const result = await useCase.execute('user-1');
 
@@ -169,24 +141,10 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait detecter la phase 3 avec >= 30 jours distincts', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 3,
-        period: 'daily',
-        isActive: true,
-      }),
-    ]);
-
-    const entries = Array.from({ length: 30 }, (_, i) =>
-      buildSebastianEntry({
-        id: `entry-${i}`,
-        category: 'coffee',
-        quantity: 1,
-        date: daysAgo(i),
-      }),
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 3)]);
+    entryRepo.findByFilters.mockResolvedValue(
+      dailySeries('entry', 'coffee', 1, 30),
     );
-    entryRepo.findByFilters.mockResolvedValue(entries);
 
     const result = await useCase.execute('user-1');
 
@@ -194,34 +152,11 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait appliquer un bonus positif si la tendance est decroissante', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 5,
-        period: 'daily',
-        isActive: true,
-      }),
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 5)]);
+    entryRepo.findByFilters.mockResolvedValue([
+      ...dailySeries('current', 'coffee', 1, 7),
+      ...dailySeries('previous', 'coffee', 5, 7, 7),
     ]);
-
-    const entries = [
-      ...Array.from({ length: 7 }, (_, i) =>
-        buildSebastianEntry({
-          id: `current-${i}`,
-          category: 'coffee',
-          quantity: 1,
-          date: daysAgo(i),
-        }),
-      ),
-      ...Array.from({ length: 7 }, (_, i) =>
-        buildSebastianEntry({
-          id: `previous-${i}`,
-          category: 'coffee',
-          quantity: 5,
-          date: daysAgo(7 + i),
-        }),
-      ),
-    ];
-    entryRepo.findByFilters.mockResolvedValue(entries);
 
     const result = await useCase.execute('user-1');
 
@@ -232,34 +167,11 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait appliquer un malus negatif si la tendance est croissante', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 5,
-        period: 'daily',
-        isActive: true,
-      }),
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 5)]);
+    entryRepo.findByFilters.mockResolvedValue([
+      ...dailySeries('current', 'coffee', 5, 7),
+      ...dailySeries('previous', 'coffee', 1, 7, 7),
     ]);
-
-    const entries = [
-      ...Array.from({ length: 7 }, (_, i) =>
-        buildSebastianEntry({
-          id: `current-${i}`,
-          category: 'coffee',
-          quantity: 5,
-          date: daysAgo(i),
-        }),
-      ),
-      ...Array.from({ length: 7 }, (_, i) =>
-        buildSebastianEntry({
-          id: `previous-${i}`,
-          category: 'coffee',
-          quantity: 1,
-          date: daysAgo(7 + i),
-        }),
-      ),
-    ];
-    entryRepo.findByFilters.mockResolvedValue(entries);
 
     const result = await useCase.execute('user-1');
 
@@ -270,24 +182,10 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait appliquer le bonus de streak correctement', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 3,
-        period: 'daily',
-        isActive: true,
-      }),
-    ]);
-
-    const entries = Array.from({ length: 30 }, (_, i) =>
-      buildSebastianEntry({
-        id: `entry-${i}`,
-        category: 'coffee',
-        quantity: 1,
-        date: daysAgo(i),
-      }),
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 3)]);
+    entryRepo.findByFilters.mockResolvedValue(
+      dailySeries('entry', 'coffee', 1, 30),
     );
-    entryRepo.findByFilters.mockResolvedValue(entries);
 
     const result = await useCase.execute('user-1');
 
@@ -299,41 +197,13 @@ describe('CalculateHealthScoreUseCase', () => {
 
   it('devrait plafonner le bonus de streak a 20', async () => {
     goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        id: 'goal-coffee',
-        category: 'coffee',
-        targetQuantity: 5,
-        period: 'daily',
-        isActive: true,
-      }),
-      buildSebastianGoal({
-        id: 'goal-alcohol',
-        category: 'alcohol',
-        targetQuantity: 5,
-        period: 'daily',
-        isActive: true,
-      }),
+      dailyGoal('coffee', 5, { id: 'goal-coffee' }),
+      dailyGoal('alcohol', 5, { id: 'goal-alcohol' }),
     ]);
-
-    const entries = [
-      ...Array.from({ length: 60 }, (_, i) =>
-        buildSebastianEntry({
-          id: `coffee-${i}`,
-          category: 'coffee',
-          quantity: 1,
-          date: daysAgo(i),
-        }),
-      ),
-      ...Array.from({ length: 60 }, (_, i) =>
-        buildSebastianEntry({
-          id: `alcohol-${i}`,
-          category: 'alcohol',
-          quantity: 1,
-          date: daysAgo(i),
-        }),
-      ),
-    ];
-    entryRepo.findByFilters.mockResolvedValue(entries);
+    entryRepo.findByFilters.mockResolvedValue([
+      ...dailySeries('coffee', 'coffee', 1, 60),
+      ...dailySeries('alcohol', 'alcohol', 1, 60),
+    ]);
 
     const result = await useCase.execute('user-1');
 
@@ -342,50 +212,14 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait compter les streaks consecutifs correctement', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      }),
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 2)]);
+    entryRepo.findByFilters.mockResolvedValue([
+      entryOn('coffee', 1, 0, 'e0'),
+      entryOn('coffee', 1, 1, 'e1'),
+      entryOn('coffee', 2, 2, 'e2'),
+      entryOn('coffee', 5, 3, 'e3'),
+      ...dailySeries('filler', 'coffee', 1, 31, 4),
     ]);
-
-    const entries = [
-      buildSebastianEntry({
-        id: 'e0',
-        category: 'coffee',
-        quantity: 1,
-        date: daysAgo(0),
-      }),
-      buildSebastianEntry({
-        id: 'e1',
-        category: 'coffee',
-        quantity: 1,
-        date: daysAgo(1),
-      }),
-      buildSebastianEntry({
-        id: 'e2',
-        category: 'coffee',
-        quantity: 2,
-        date: daysAgo(2),
-      }),
-      buildSebastianEntry({
-        id: 'e3',
-        category: 'coffee',
-        quantity: 5,
-        date: daysAgo(3),
-      }),
-      ...Array.from({ length: 31 }, (_, i) =>
-        buildSebastianEntry({
-          id: `filler-${i}`,
-          category: 'coffee',
-          quantity: 1,
-          date: daysAgo(4 + i),
-        }),
-      ),
-    ];
-    entryRepo.findByFilters.mockResolvedValue(entries);
 
     const result = await useCase.execute('user-1');
 
@@ -393,21 +227,8 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait afficher "Excellent !" pour un score >= 90', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 5,
-        period: 'daily',
-        isActive: true,
-      }),
-    ]);
-    entryRepo.findByFilters.mockResolvedValue([
-      buildSebastianEntry({
-        category: 'coffee',
-        quantity: 1,
-        date: daysAgo(0),
-      }),
-    ]);
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 5)]);
+    entryRepo.findByFilters.mockResolvedValue([entryOn('coffee', 1, 0)]);
 
     const result = await useCase.execute('user-1');
 
@@ -417,32 +238,12 @@ describe('CalculateHealthScoreUseCase', () => {
 
   it('devrait afficher "En bonne voie !" pour un score >= 70 et < 90', async () => {
     goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        id: 'goal-coffee',
-        category: 'coffee',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      }),
-      buildSebastianGoal({
-        id: 'goal-alcohol',
-        category: 'alcohol',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      }),
+      dailyGoal('coffee', 2, { id: 'goal-coffee' }),
+      dailyGoal('alcohol', 2, { id: 'goal-alcohol' }),
     ]);
     entryRepo.findByFilters.mockResolvedValue([
-      buildSebastianEntry({
-        category: 'coffee',
-        quantity: 2,
-        date: daysAgo(0),
-      }),
-      buildSebastianEntry({
-        category: 'alcohol',
-        quantity: 3,
-        date: daysAgo(0),
-      }),
+      entryOn('coffee', 2, 0),
+      entryOn('alcohol', 3, 0),
     ]);
 
     const result = await useCase.execute('user-1');
@@ -454,32 +255,12 @@ describe('CalculateHealthScoreUseCase', () => {
 
   it('devrait afficher "Peut mieux faire..." pour un score >= 50 et < 70', async () => {
     goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        id: 'goal-coffee',
-        category: 'coffee',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      }),
-      buildSebastianGoal({
-        id: 'goal-alcohol',
-        category: 'alcohol',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      }),
+      dailyGoal('coffee', 2, { id: 'goal-coffee' }),
+      dailyGoal('alcohol', 2, { id: 'goal-alcohol' }),
     ]);
     entryRepo.findByFilters.mockResolvedValue([
-      buildSebastianEntry({
-        category: 'coffee',
-        quantity: 2,
-        date: daysAgo(0),
-      }),
-      buildSebastianEntry({
-        category: 'alcohol',
-        quantity: 4,
-        date: daysAgo(0),
-      }),
+      entryOn('coffee', 2, 0),
+      entryOn('alcohol', 4, 0),
     ]);
 
     const result = await useCase.execute('user-1');
@@ -490,21 +271,8 @@ describe('CalculateHealthScoreUseCase', () => {
   });
 
   it('devrait afficher "Attention cette semaine" pour un score < 50', async () => {
-    goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 1,
-        period: 'daily',
-        isActive: true,
-      }),
-    ]);
-    entryRepo.findByFilters.mockResolvedValue([
-      buildSebastianEntry({
-        category: 'coffee',
-        quantity: 10,
-        date: daysAgo(0),
-      }),
-    ]);
+    goalRepo.findByUserId.mockResolvedValue([dailyGoal('coffee', 1)]);
+    entryRepo.findByFilters.mockResolvedValue([entryOn('coffee', 10, 0)]);
 
     const result = await useCase.execute('user-1');
 
@@ -514,12 +282,7 @@ describe('CalculateHealthScoreUseCase', () => {
 
   it('devrait ignorer les objectifs inactifs', async () => {
     goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 3,
-        period: 'daily',
-        isActive: false,
-      }),
+      dailyGoal('coffee', 3, { isActive: false }),
     ]);
     entryRepo.findByFilters.mockResolvedValue([]);
 
@@ -531,12 +294,7 @@ describe('CalculateHealthScoreUseCase', () => {
 
   it('devrait ignorer les objectifs non-daily pour le calcul', async () => {
     goalRepo.findByUserId.mockResolvedValue([
-      buildSebastianGoal({
-        category: 'coffee',
-        targetQuantity: 10,
-        period: 'weekly',
-        isActive: true,
-      }),
+      dailyGoal('coffee', 10, { period: 'weekly' }),
     ]);
     entryRepo.findByFilters.mockResolvedValue([]);
 

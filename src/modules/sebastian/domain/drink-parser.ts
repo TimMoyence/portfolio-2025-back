@@ -196,8 +196,8 @@ function resolveDay(token: string): Date | null {
     return d;
   }
 
+  if (!(lower in DAY_NAME_TO_INDEX)) return null;
   const targetIndex = DAY_NAME_TO_INDEX[lower];
-  if (targetIndex === undefined) return null;
 
   const now = new Date();
   const currentDay = now.getDay();
@@ -321,10 +321,109 @@ const SLASH_COMMAND_NAMES = Object.keys(SLASH_COMMANDS).join('|');
 const NUMBER_PATTERN = /(\d+)/;
 
 function parseNumber(token: string): number | null {
-  const digitMatch = token.match(NUMBER_PATTERN);
+  const digitMatch = NUMBER_PATTERN.exec(token);
   if (digitMatch) return parseInt(digitMatch[1], 10);
   const written = WRITTEN_NUMBERS[token.toLowerCase()];
   return written ?? null;
+}
+
+interface SlashCommandArgs {
+  displayCount: number;
+  degreeOverride?: number;
+  dayDate: Date | null;
+  time: { hours: number; minutes: number } | null;
+  soirAfterDay: boolean;
+}
+
+const EVENING_HOUR = 21;
+
+function parseSlashCommandArgs(tokens: string[]): SlashCommandArgs {
+  const args: SlashCommandArgs = {
+    displayCount: 1,
+    dayDate: null,
+    time: null,
+    soirAfterDay: false,
+  };
+
+  for (const token of tokens) {
+    const qtsMatch = /^qts:(\d+)$/i.exec(token);
+    if (qtsMatch) {
+      args.displayCount = parseInt(qtsMatch[1], 10);
+      continue;
+    }
+
+    const tokenLower = token.toLowerCase();
+    if (tokenLower === 'soir' && args.dayDate !== null) {
+      args.soirAfterDay = true;
+      continue;
+    }
+
+    const resolvedDay = resolveDay(tokenLower);
+    if (resolvedDay) {
+      args.dayDate = resolvedDay;
+      continue;
+    }
+
+    const parsedTime = parseTime(token);
+    if (parsedTime) {
+      args.time = parsedTime;
+      continue;
+    }
+
+    const degree = /^(\d+)$/.exec(token);
+    if (degree) {
+      args.degreeOverride = parseInt(degree[1], 10);
+    }
+  }
+
+  return args;
+}
+
+function resolveConsumedAt({
+  dayDate,
+  time,
+  soirAfterDay,
+}: SlashCommandArgs): string | undefined {
+  if (!dayDate && !time && !soirAfterDay) return undefined;
+
+  const baseDate = dayDate ?? new Date();
+  if (!dayDate) {
+    baseDate.setHours(0, 0, 0, 0);
+  }
+  if (time) {
+    baseDate.setHours(time.hours, time.minutes, 0, 0);
+  } else if (soirAfterDay) {
+    baseDate.setHours(EVENING_HOUR, 0, 0, 0);
+  }
+  return baseDate.toISOString();
+}
+
+function buildSlashDrink(
+  def: SlashCommandDef,
+  args: SlashCommandArgs,
+): ParsedDrink {
+  const defaults = SOURCE_TO_DEFAULTS[def.source] ?? {
+    alcoholDegree: null,
+    volumeCl: null,
+  };
+
+  const drink: ParsedDrink = {
+    category: def.category,
+    quantity: args.displayCount * def.multiplier,
+    unit: def.unit,
+    source: def.source,
+    displayCount: args.displayCount,
+    drinkType: SOURCE_TO_DRINK_TYPE[def.source],
+    alcoholDegree: args.degreeOverride ?? defaults.alcoholDegree,
+    volumeCl: defaults.volumeCl,
+  };
+
+  const consumedAt = resolveConsumedAt(args);
+  if (consumedAt !== undefined) {
+    drink.consumedAt = consumedAt;
+  }
+
+  return drink;
 }
 
 function parseSlashCommands(text: string): {
@@ -341,97 +440,22 @@ function parseSlashCommands(text: string): {
   const segments = text.split(splitPattern).filter((s) => s.trim());
 
   for (const segment of segments) {
+    const trimmedSegment = segment.trim();
     const cmdMatch = new RegExp(
       `^\\/(${SLASH_COMMAND_NAMES})(?:\\s|$)`,
       'i',
-    ).exec(segment.trim());
+    ).exec(trimmedSegment);
     if (!cmdMatch) continue;
 
-    const commandName = cmdMatch[1].toLowerCase();
-    const def = SLASH_COMMANDS[commandName];
+    const def = SLASH_COMMANDS[cmdMatch[1].toLowerCase()];
     if (!def) continue;
 
-    remaining = remaining.replace(segment.trim(), '');
+    remaining = remaining.replace(trimmedSegment, '');
 
-    const argsStr = segment.trim().substring(cmdMatch[0].length).trim();
+    const argsStr = trimmedSegment.substring(cmdMatch[0].length).trim();
     const tokens = argsStr ? argsStr.split(/\s+/) : [];
 
-    let displayCount = 1;
-    let degreeOverride: number | undefined;
-    let dayDate: Date | null = null;
-    let time: { hours: number; minutes: number } | null = null;
-    let soirAfterDay = false;
-
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      const tokenLower = token.toLowerCase();
-
-      const qtsMatch = /^qts:(\d+)$/i.exec(token);
-      if (qtsMatch) {
-        displayCount = parseInt(qtsMatch[1], 10);
-        continue;
-      }
-
-      if (tokenLower === 'soir' && dayDate !== null) {
-        soirAfterDay = true;
-        continue;
-      }
-
-      const resolvedDay = resolveDay(tokenLower);
-      if (resolvedDay) {
-        dayDate = resolvedDay;
-        continue;
-      }
-
-      const parsedTime = parseTime(token);
-      if (parsedTime) {
-        time = parsedTime;
-        continue;
-      }
-
-      const num = /^(\d+)$/.exec(token);
-      if (num) {
-        degreeOverride = parseInt(num[1], 10);
-        continue;
-      }
-    }
-
-    const defaults = SOURCE_TO_DEFAULTS[def.source] ?? {
-      alcoholDegree: null,
-      volumeCl: null,
-    };
-    const drinkType = SOURCE_TO_DRINK_TYPE[def.source];
-
-    let consumedAt: string | undefined;
-    if (dayDate || time || soirAfterDay) {
-      const baseDate = dayDate ?? new Date();
-      if (!dayDate) {
-        baseDate.setHours(0, 0, 0, 0);
-      }
-      if (soirAfterDay && !time) {
-        baseDate.setHours(21, 0, 0, 0);
-      } else if (time) {
-        baseDate.setHours(time.hours, time.minutes, 0, 0);
-      }
-      consumedAt = baseDate.toISOString();
-    }
-
-    const drink: ParsedDrink = {
-      category: def.category,
-      quantity: displayCount * def.multiplier,
-      unit: def.unit,
-      source: def.source,
-      displayCount,
-      drinkType,
-      alcoholDegree: degreeOverride ?? defaults.alcoholDegree,
-      volumeCl: defaults.volumeCl,
-    };
-
-    if (consumedAt !== undefined) {
-      drink.consumedAt = consumedAt;
-    }
-
-    drinks.push(drink);
+    drinks.push(buildSlashDrink(def, parseSlashCommandArgs(tokens)));
   }
 
   return { drinks, remaining: remaining.trim() };
@@ -447,10 +471,10 @@ function parseNaturalLanguage(text: string): {
   workingText = workingText.replace(/\b(et|and|,|;|\+)\b/gi, ' ');
 
   for (const def of DRINK_DEFINITIONS) {
-    const drinkMatch = workingText.match(def.pattern);
+    const drinkMatch = def.pattern.exec(workingText);
     if (!drinkMatch) continue;
 
-    const drinkIndex = drinkMatch.index!;
+    const drinkIndex = drinkMatch.index;
     const beforeDrink = workingText.substring(0, drinkIndex).trim();
     const tokens = beforeDrink.split(/\s+/);
     const lastToken = tokens[tokens.length - 1] || '';

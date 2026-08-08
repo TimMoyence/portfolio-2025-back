@@ -10,9 +10,11 @@ import type { IUsersRepository } from '../../../modules/users/domain/IUsers.repo
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { IS_PUBLIC_KEY } from './public.decorator';
 import {
+  buildJwtPayload,
   buildUser,
   createMockUsersRepo,
 } from '../../../../test/factories/user.factory';
+import { createHttpExecutionContext } from '../../../../test/factories/execution-context.factory';
 
 describe('JwtAuthGuard', () => {
   let guard: JwtAuthGuard;
@@ -39,37 +41,23 @@ describe('JwtAuthGuard', () => {
     headers: Record<string, string | undefined> = {},
     path = '/api/v1/portfolio25/test',
   ): ExecutionContext {
-    const request = {
-      headers,
-      path,
-    } as unknown as Record<string, unknown>;
+    return createHttpExecutionContext({ headers, path });
+  }
 
-    return {
-      switchToHttp: () => ({
-        getRequest: () => request,
-      }),
-      getHandler: () => jest.fn(),
-      getClass: () => jest.fn(),
-    } as unknown as ExecutionContext;
+  const BEARER_VALID = { authorization: 'Bearer valid-token' };
+
+  function givenVerifiedToken(sub: string, email: string) {
+    const payload = buildJwtPayload({ sub, email });
+    jwtTokenService.verify.mockResolvedValue(payload);
+    reflector.getAllAndOverride.mockReturnValue(false);
+    return payload;
   }
 
   it('devrait autoriser avec un Bearer token valide et email verifie', async () => {
-    const payload = {
-      sub: 'user-1',
-      email: 'a@b.com',
-      iat: 1000,
-      exp: 9999999999,
-      iss: 'portfolio-2025',
-      aud: 'portfolio-2025-api',
-      roles: [],
-    };
-    jwtTokenService.verify.mockResolvedValue(payload);
-    reflector.getAllAndOverride.mockReturnValue(false);
+    const payload = givenVerifiedToken('user-1', 'a@b.com');
     usersRepo.findById.mockResolvedValue(buildUser({ emailVerified: true }));
 
-    const context = createMockContext({
-      authorization: 'Bearer valid-token',
-    });
+    const context = createMockContext(BEARER_VALID);
 
     await expect(guard.canActivate(context)).resolves.toBe(true);
 
@@ -132,24 +120,12 @@ describe('JwtAuthGuard', () => {
   });
 
   it('devrait rejeter avec 403 quand emailVerified est false', async () => {
-    const payload = {
-      sub: 'user-unverified',
-      email: 'unverified@b.com',
-      iat: 1000,
-      exp: 9999999999,
-      iss: 'portfolio-2025',
-      aud: 'portfolio-2025-api',
-      roles: [],
-    };
-    jwtTokenService.verify.mockResolvedValue(payload);
-    reflector.getAllAndOverride.mockReturnValue(false);
+    givenVerifiedToken('user-unverified', 'unverified@b.com');
     usersRepo.findById.mockResolvedValue(
       buildUser({ id: 'user-unverified', emailVerified: false }),
     );
 
-    const context = createMockContext({
-      authorization: 'Bearer valid-token',
-    });
+    const context = createMockContext(BEARER_VALID);
 
     await expect(guard.canActivate(context)).rejects.toThrow(
       ForbiddenException,
@@ -157,22 +133,10 @@ describe('JwtAuthGuard', () => {
   });
 
   it('devrait rejeter (401) quand le compte du JWT n existe plus', async () => {
-    const payload = {
-      sub: 'user-deleted',
-      email: 'deleted@b.com',
-      iat: 1000,
-      exp: 9999999999,
-      iss: 'portfolio-2025',
-      aud: 'portfolio-2025-api',
-      roles: [],
-    };
-    jwtTokenService.verify.mockResolvedValue(payload);
-    reflector.getAllAndOverride.mockReturnValue(false);
+    givenVerifiedToken('user-deleted', 'deleted@b.com');
     usersRepo.findById.mockResolvedValue(null);
 
-    const context = createMockContext({
-      authorization: 'Bearer valid-token',
-    });
+    const context = createMockContext(BEARER_VALID);
 
     await expect(guard.canActivate(context)).rejects.toThrow(
       UnauthorizedException,
@@ -180,20 +144,10 @@ describe('JwtAuthGuard', () => {
   });
 
   it('devrait autoriser un email non verifie sur /auth/verify-email', async () => {
-    const payload = {
-      sub: 'user-unverified',
-      email: 'unverified@b.com',
-      iat: 1000,
-      exp: 9999999999,
-      iss: 'portfolio-2025',
-      aud: 'portfolio-2025-api',
-      roles: [],
-    };
-    jwtTokenService.verify.mockResolvedValue(payload);
-    reflector.getAllAndOverride.mockReturnValue(false);
+    givenVerifiedToken('user-unverified', 'unverified@b.com');
 
     const context = createMockContext(
-      { authorization: 'Bearer valid-token' },
+      BEARER_VALID,
       '/api/v1/portfolio25/auth/verify-email',
     );
 
@@ -201,20 +155,10 @@ describe('JwtAuthGuard', () => {
   });
 
   it('devrait autoriser un email non verifie sur /auth/logout', async () => {
-    const payload = {
-      sub: 'user-unverified',
-      email: 'unverified@b.com',
-      iat: 1000,
-      exp: 9999999999,
-      iss: 'portfolio-2025',
-      aud: 'portfolio-2025-api',
-      roles: [],
-    };
-    jwtTokenService.verify.mockResolvedValue(payload);
-    reflector.getAllAndOverride.mockReturnValue(false);
+    givenVerifiedToken('user-unverified', 'unverified@b.com');
 
     const context = createMockContext(
-      { authorization: 'Bearer valid-token' },
+      BEARER_VALID,
       '/api/v1/portfolio25/auth/logout',
     );
 

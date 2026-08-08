@@ -29,8 +29,8 @@ describe('DetailedForecastDto', () => {
 
     expect(dto.cityName).toBe('Lyon');
     expect(dto.country).toBe('FR');
-    expect(dto.latitude).toBe(45.76);
-    expect(dto.longitude).toBe(4.84);
+    expect(dto.latitude).toBeCloseTo(45.76, 5);
+    expect(dto.longitude).toBeCloseTo(4.84, 5);
     expect(dto.timezoneOffset).toBe(3600);
     expect(dto.hourly).toHaveLength(2);
     expect(dto.daily).toHaveLength(2);
@@ -69,7 +69,7 @@ describe('DetailedForecastDto', () => {
     expect(hourly.temperature).toBe(21);
     expect(hourly.feelsLike).toBe(20);
     expect(hourly.humidity).toBe(70);
-    expect(hourly.rain3h).toBe(1.2);
+    expect(hourly.rain3h).toBeCloseTo(1.2, 5);
     expect(hourly.snow3h).toBe(0);
     expect(hourly.precipitationProbability).toBe(55);
     expect(hourly.cloudCover).toBe(35);

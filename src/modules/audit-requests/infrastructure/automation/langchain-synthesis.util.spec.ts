@@ -144,7 +144,7 @@ describe('langchain-synthesis.util', () => {
         null,
         'string-entry',
         { url: '' },
-        { url: 'https://a.com' }, // missing engineScores -> filtered
+        { url: 'https://a.com' },
         {
           url: 'https://valid.com',
           title: 'Valid',

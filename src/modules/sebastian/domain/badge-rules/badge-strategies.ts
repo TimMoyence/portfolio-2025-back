@@ -1,7 +1,7 @@
 import type { SebastianEntry } from '../SebastianEntry';
 import type { SebastianGoal } from '../SebastianGoal';
 
-export interface BadgeEvaluationContext {
+interface BadgeEvaluationContext {
   entries: SebastianEntry[];
   goals: SebastianGoal[];
   now: Date;
@@ -19,7 +19,7 @@ export interface BadgeStrategy {
   evaluate(context: BadgeEvaluationContext): boolean;
 }
 
-export function toDateString(date: Date): string {
+function toDateString(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
@@ -29,11 +29,11 @@ export function subtractDays(date: Date, days: number): string {
     .slice(0, 10);
 }
 
-export function entryDateStrings(entries: SebastianEntry[]): Set<string> {
+function entryDateStrings(entries: SebastianEntry[]): Set<string> {
   return new Set(entries.map((e) => toDateString(e.date)));
 }
 
-export function hasEnoughHistory(
+function hasEnoughHistory(
   entries: SebastianEntry[],
   requiredDays: number,
   now: Date,
@@ -51,7 +51,7 @@ export function hasEnoughHistory(
   return diffDays >= requiredDays;
 }
 
-export function consecutiveDaysUnderGoal(
+function consecutiveDaysUnderGoal(
   entries: SebastianEntry[],
   activeGoals: SebastianGoal[],
   days: number,
@@ -132,9 +132,12 @@ class DryWeekStrategy implements BadgeStrategy {
   }
 }
 
-class GoalCrusherStrategy implements BadgeStrategy {
-  readonly key = 'goal-crusher';
-  readonly evaluationWindow = 30;
+class DailyGoalStreakStrategy implements BadgeStrategy {
+  constructor(
+    readonly key: string,
+    readonly evaluationWindow: number,
+  ) {}
+
   evaluate({ entries, goals, now }: BadgeEvaluationContext): boolean {
     const activeGoals = goals.filter((g) => g.isActive && g.period === 'daily');
     if (activeGoals.length === 0) return false;
@@ -168,22 +171,6 @@ class NightOwlStrategy implements BadgeStrategy {
       const hour = e.createdAt.getHours();
       return hour >= 0 && hour < 5;
     });
-  }
-}
-
-class PerfectMonthStrategy implements BadgeStrategy {
-  readonly key = 'perfect-month';
-  readonly evaluationWindow = 30;
-  evaluate({ entries, goals, now }: BadgeEvaluationContext): boolean {
-    const activeGoals = goals.filter((g) => g.isActive && g.period === 'daily');
-    if (activeGoals.length === 0) return false;
-    if (!hasEnoughHistory(entries, this.evaluationWindow, now)) return false;
-    return consecutiveDaysUnderGoal(
-      entries,
-      activeGoals,
-      this.evaluationWindow,
-      now,
-    );
   }
 }
 
@@ -244,10 +231,10 @@ export const BADGE_STRATEGIES: ReadonlyMap<string, BadgeStrategy> = new Map<
   ['zen-monk-30', new ZenMonkStrategy('zen-monk-30', 30)],
   ['espresso-machine', new EspressoMachineStrategy()],
   ['dry-week', new DryWeekStrategy()],
-  ['goal-crusher', new GoalCrusherStrategy()],
+  ['goal-crusher', new DailyGoalStreakStrategy('goal-crusher', 30)],
   ['early-bird', new EarlyBirdStrategy()],
   ['night-owl', new NightOwlStrategy()],
-  ['perfect-month', new PerfectMonthStrategy()],
+  ['perfect-month', new DailyGoalStreakStrategy('perfect-month', 30)],
   ['comeback-kid', new ComebackKidStrategy()],
 ]);
 

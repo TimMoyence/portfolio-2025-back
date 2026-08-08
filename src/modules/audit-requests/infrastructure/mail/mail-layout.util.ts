@@ -6,11 +6,6 @@ export interface MailLayoutInput {
   readonly heroSubtitle?: string;
   readonly bodyHtml: EscapedHtml;
   readonly preheader?: string;
-  /**
-   * Si true, insere un bloc "desinscrire" sous le footer. Reserve aux
-   * envois client (externes) pour conformite CAN-SPAM/RGPD. Omettre
-   * pour les mails internes (notification Tim, rapport expert).
-   */
   readonly showUnsubscribe?: boolean;
   readonly unsubscribeUrl?: string;
 }
@@ -29,12 +24,6 @@ function resolveUnsubscribeUrl(explicit?: string): string {
   return 'https://asilidesign.fr/fr/contact';
 }
 
-/**
- * Le design suit les bonnes pratiques email 2026 : tableaux evites au
- * profit de div+flex (Gmail/Outlook modernes supportent), pas de CSS
- * externe, styles inline avec quelques `@media (prefers-color-scheme)`
- * pour le dark mode.
- */
 export function buildMailLayout(input: MailLayoutInput): string {
   const preheader = input.preheader
     ? safeHtml`<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#fff;opacity:0;">${escapeHtml(input.preheader)}</div>`

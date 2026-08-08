@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { buildAuditRequest } from '../../../../../../test/factories/audit-requests.factory';
+import {
+  buildAuditRequest,
+  buildClientReportSynthesis,
+} from '../../../../../../test/factories/audit-requests.factory';
 import type { AuditClientReportMailer } from '../audit-client-report.mailer';
 import type { AuditExpertReportMailer } from '../audit-expert-report.mailer';
 import type { AuditNotificationMailer } from '../audit-notification.mailer';
@@ -48,15 +51,8 @@ describe('AuditNotifierFacade', () => {
       firstName: null,
       websiteName: 'mon-site.fr',
       clientReport: {
+        ...buildClientReportSynthesis(),
         executiveSummary: 's',
-        topFindings: [],
-        googleVsAiMatrix: {
-          googleVisibility: { score: 0, summary: '' },
-          aiVisibility: { score: 0, summary: '' },
-        },
-        pillarScorecard: [],
-        quickWins: [],
-        cta: { title: '', description: '', actionLabel: '' },
       },
       pdfBuffer: null,
     };
@@ -75,15 +71,8 @@ describe('AuditNotifierFacade', () => {
       auditId: 'audit-42',
       clientContact: { method: 'EMAIL' as const, value: 'client@example.com' },
       clientReport: {
+        ...buildClientReportSynthesis(),
         executiveSummary: 's',
-        topFindings: [],
-        googleVsAiMatrix: {
-          googleVisibility: { score: 0, summary: '' },
-          aiVisibility: { score: 0, summary: '' },
-        },
-        pillarScorecard: [],
-        quickWins: [],
-        cta: { title: '', description: '', actionLabel: '' },
       },
       expertReport: {
         executiveSummary: 'e',

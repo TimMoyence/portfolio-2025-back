@@ -19,12 +19,12 @@ describe('DetailedCurrentWeatherDto', () => {
 
     const dto = DetailedCurrentWeatherDto.fromDomain(domain);
 
-    expect(dto.temperature).toBe(22.3);
+    expect(dto.temperature).toBeCloseTo(22.3, 5);
     expect(dto.feelsLike).toBe(21.0);
     expect(dto.minTemp).toBe(18.0);
     expect(dto.maxTemp).toBe(25.0);
     expect(dto.humidity).toBe(55);
-    expect(dto.windSpeed).toBe(15.4);
+    expect(dto.windSpeed).toBeCloseTo(15.4, 5);
     expect(dto.conditionName).toBe('Clouds');
     expect(dto.conditionText).toBe('nuageux');
     expect(dto.isDaytime).toBe(true);

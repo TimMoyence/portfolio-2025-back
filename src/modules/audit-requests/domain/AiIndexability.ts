@@ -11,12 +11,14 @@ export interface LlmsTxtAnalysis {
   readonly issues: ReadonlyArray<string>;
 }
 
+export type AiBotAccessState = 'allowed' | 'disallowed' | 'unknown';
+
 export interface AiBotsAccess {
-  readonly gptBot: 'allowed' | 'disallowed' | 'unknown';
-  readonly chatGptUser: 'allowed' | 'disallowed' | 'unknown';
-  readonly perplexityBot: 'allowed' | 'disallowed' | 'unknown';
-  readonly claudeBot: 'allowed' | 'disallowed' | 'unknown';
-  readonly googleExtended: 'allowed' | 'disallowed' | 'unknown';
+  readonly gptBot: AiBotAccessState;
+  readonly chatGptUser: AiBotAccessState;
+  readonly perplexityBot: AiBotAccessState;
+  readonly claudeBot: AiBotAccessState;
+  readonly googleExtended: AiBotAccessState;
   readonly xRobotsNoAi: boolean;
   readonly xRobotsNoImageAi: boolean;
 }

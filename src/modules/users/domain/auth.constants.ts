@@ -3,5 +3,3 @@ export const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 export const REFRESH_TOKEN_COOKIE_NAME = 'refresh_token';
 
 export const REFRESH_TOKEN_COOKIE_PATH = '/api/v1/portfolio25/auth';
-
-export const REFRESH_TOKEN_COOKIE_MAX_AGE_MS = REFRESH_TOKEN_TTL_MS;

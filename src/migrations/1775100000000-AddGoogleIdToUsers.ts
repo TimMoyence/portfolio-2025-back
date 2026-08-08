@@ -13,7 +13,6 @@ export class AddGoogleIdToUsers1775100000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Supprimer les utilisateurs Google-only (sans mot de passe) avant de remettre la contrainte NOT NULL
     await queryRunner.query(
       `DELETE FROM "users" WHERE "password_hash" IS NULL`,
     );

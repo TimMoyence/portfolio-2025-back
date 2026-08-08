@@ -44,34 +44,22 @@ export class User {
   updatedOrCreatedBy: string | null;
 
   static create(props: CreateUserProps): User {
-    const email = EmailAddress.parse(props.email);
-    if (!email) {
-      throw new DomainValidationError('Invalid user email');
-    }
+    const email = this.requireEmail(props.email);
 
-    if (
-      !props.googleId &&
-      (typeof props.passwordHash !== 'string' || props.passwordHash.length < 1)
-    ) {
-      throw new DomainValidationError('Invalid user password hash');
+    if (!props.googleId) {
+      this.requirePasswordHash(props.passwordHash);
     }
 
     const firstName = this.requireName(props.firstName, 'first name');
     const lastName = this.requireName(props.lastName, 'last name');
-
-    const phoneInput =
-      typeof props.phone === 'string' ? props.phone.trim() : props.phone;
-    const phone = PhoneNumber.parse(phoneInput);
-    if (typeof phoneInput === 'string' && phoneInput.length > 0 && !phone) {
-      throw new DomainValidationError('Invalid user phone number');
-    }
+    const phone = this.parsePhone(props.phone);
 
     const user = new User();
-    user.email = email.value;
+    user.email = email;
     user.passwordHash = props.passwordHash ?? null;
     user.firstName = firstName;
     user.lastName = lastName;
-    user.phone = phone?.value ?? null;
+    user.phone = phone;
     user.isActive = props.isActive ?? true;
     user.roles = Array.isArray(props.roles) ? props.roles : [];
     user.googleId = props.googleId ?? null;
@@ -87,21 +75,11 @@ export class User {
     const partial: Partial<User> = {};
 
     if (props.email !== undefined) {
-      const email = EmailAddress.parse(props.email);
-      if (!email) {
-        throw new DomainValidationError('Invalid user email');
-      }
-      partial.email = email.value;
+      partial.email = this.requireEmail(props.email);
     }
 
     if (props.passwordHash !== undefined) {
-      if (
-        typeof props.passwordHash !== 'string' ||
-        props.passwordHash.length < 1
-      ) {
-        throw new DomainValidationError('Invalid user password hash');
-      }
-      partial.passwordHash = props.passwordHash;
+      partial.passwordHash = this.requirePasswordHash(props.passwordHash);
     }
 
     if (props.firstName !== undefined) {
@@ -113,27 +91,18 @@ export class User {
     }
 
     if (props.phone !== undefined) {
-      const phoneInput =
-        typeof props.phone === 'string' ? props.phone.trim() : props.phone;
-      const phone = PhoneNumber.parse(phoneInput);
-      if (typeof phoneInput === 'string' && phoneInput.length > 0 && !phone) {
-        throw new DomainValidationError('Invalid user phone number');
-      }
-      partial.phone = phone?.value ?? null;
+      partial.phone = this.parsePhone(props.phone);
     }
 
     if (props.isActive !== undefined) {
-      if (typeof props.isActive !== 'boolean') {
-        throw new DomainValidationError('Invalid user active flag');
-      }
-      partial.isActive = props.isActive;
+      partial.isActive = this.requireBoolean(
+        props.isActive,
+        'Invalid user active flag',
+      );
     }
 
     if (props.roles !== undefined) {
-      if (!Array.isArray(props.roles)) {
-        throw new DomainValidationError('Invalid user roles');
-      }
-      partial.roles = props.roles;
+      partial.roles = this.requireRoles(props.roles);
     }
 
     if (props.updatedOrCreatedBy !== undefined) {
@@ -141,15 +110,53 @@ export class User {
     }
 
     if (props.emailVerified !== undefined) {
-      if (typeof props.emailVerified !== 'boolean') {
-        throw new DomainValidationError('Invalid email verified flag');
-      }
-      partial.emailVerified = props.emailVerified;
+      partial.emailVerified = this.requireBoolean(
+        props.emailVerified,
+        'Invalid email verified flag',
+      );
     }
 
     partial.updatedAt = new Date();
 
     return partial;
+  }
+
+  private static requireEmail(raw: string): string {
+    const email = EmailAddress.parse(raw);
+    if (!email) {
+      throw new DomainValidationError('Invalid user email');
+    }
+    return email.value;
+  }
+
+  private static requirePasswordHash(raw: unknown): string {
+    if (typeof raw !== 'string' || raw.length < 1) {
+      throw new DomainValidationError('Invalid user password hash');
+    }
+    return raw;
+  }
+
+  private static parsePhone(raw: string | null | undefined): string | null {
+    const phoneInput = typeof raw === 'string' ? raw.trim() : raw;
+    const phone = PhoneNumber.parse(phoneInput);
+    if (typeof phoneInput === 'string' && phoneInput.length > 0 && !phone) {
+      throw new DomainValidationError('Invalid user phone number');
+    }
+    return phone?.value ?? null;
+  }
+
+  private static requireBoolean(raw: unknown, message: string): boolean {
+    if (typeof raw !== 'boolean') {
+      throw new DomainValidationError(message);
+    }
+    return raw;
+  }
+
+  private static requireRoles(raw: unknown): string[] {
+    if (!Array.isArray(raw)) {
+      throw new DomainValidationError('Invalid user roles');
+    }
+    return raw as string[];
   }
 
   private static requireName(raw: unknown, field: string): string {

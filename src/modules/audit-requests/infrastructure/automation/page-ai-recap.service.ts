@@ -13,23 +13,11 @@ import {
 } from './llm-execution.guardrails';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
+import {
+  engineCoverageSchema,
+  engineScoreSchema,
+} from './schemas/engine-coverage.schema';
 import { UrlIndexabilityResult } from './url-indexability.service';
-
-const engineScoreSchema = z.object({
-  engine: z.enum(['google', 'bing_chatgpt', 'perplexity', 'gemini_overviews']),
-  score: z.number().min(0).max(100),
-  indexable: z.boolean(),
-  strengths: z.array(z.string()).max(5),
-  blockers: z.array(z.string()).max(5),
-  opportunities: z.array(z.string()).max(5),
-});
-
-const engineCoverageSchema = z.object({
-  google: engineScoreSchema,
-  bingChatGpt: engineScoreSchema,
-  perplexity: engineScoreSchema,
-  geminiOverviews: engineScoreSchema,
-});
 
 const pageRecapSchema = z.object({
   summary: z.string().min(1),
@@ -83,6 +71,15 @@ export interface AnalyzePageRecapsInput {
   websiteName: string;
   normalizedUrl: string;
   pages: UrlIndexabilityResult[];
+}
+
+const UNVERIFIABLE_BLOCKER_RE = /not verifiable|non verifiable/i;
+const UNVERIFIABLE_ENGINE_SCORE = 50;
+
+function priorityFromScore(score: number): 'high' | 'medium' | 'low' {
+  if (score < 45) return 'high';
+  if (score < 65) return 'medium';
+  return 'low';
 }
 
 export interface AnalyzePageRecapsOptions {
@@ -167,6 +164,23 @@ export class PageAiRecapService {
       this.logger.warn(warning);
     };
 
+    const recapForPage = async (
+      page: UrlIndexabilityResult,
+    ): Promise<PageAiRecap> => {
+      if (breakerOpen) return this.buildFallbackRecap(input.locale, page);
+
+      const analyzed = await this.analyzeSinglePage(input.locale, page, llm);
+      if (analyzed.llmAttempted) {
+        llmAttempts += 1;
+        if (analyzed.llmFailed) llmFailures += 1;
+        maybeOpenBreaker();
+      }
+      if (analyzed.warning) {
+        warnings.push(analyzed.warning);
+      }
+      return analyzed.recap;
+    };
+
     const worker = async (): Promise<void> => {
       while (true) {
         const index = cursor;
@@ -174,25 +188,7 @@ export class PageAiRecapService {
         if (index >= total) return;
 
         const page = input.pages[index];
-        let recap: PageAiRecap;
-        if (breakerOpen) {
-          recap = this.buildFallbackRecap(input.locale, page);
-        } else {
-          const analyzed = await this.analyzeSinglePage(
-            input.locale,
-            page,
-            llm,
-          );
-          recap = analyzed.recap;
-          if (analyzed.llmAttempted) {
-            llmAttempts += 1;
-            if (analyzed.llmFailed) llmFailures += 1;
-            maybeOpenBreaker();
-          }
-          if (analyzed.warning) {
-            warnings.push(analyzed.warning);
-          }
-        }
+        const recap = await recapForPage(page);
 
         recaps[index] = recap;
         done += 1;
@@ -381,13 +377,12 @@ export class PageAiRecapService {
       .filter(Boolean)
       .slice(0, 5);
 
-    // P3.1 : post-process guarantee. Si le LLM a note "Not verifiable" dans
-    // les blockers, force le score a 50 exactement (meme si le modele a
-    // hallucine un score optimiste). Couvre les deux locales du prompt.
-    const hasUnverifiable = blockers.some((entry) =>
-      /not verifiable|non verifiable/i.test(entry),
+    const hasUnverifiableBlocker = blockers.some((entry) =>
+      UNVERIFIABLE_BLOCKER_RE.test(entry),
     );
-    const score = hasUnverifiable ? 50 : this.clampScore(value.score);
+    const score = hasUnverifiableBlocker
+      ? UNVERIFIABLE_ENGINE_SCORE
+      : this.clampScore(value.score);
 
     return {
       engine: expected,
@@ -538,7 +533,7 @@ export class PageAiRecapService {
     seoCopy = this.clampScore(seoCopy);
 
     const minScore = Math.min(wording, trust, cta, seoCopy);
-    const priority = minScore < 45 ? 'high' : minScore < 65 ? 'medium' : 'low';
+    const priority = priorityFromScore(minScore);
 
     return {
       url: page.url,
@@ -565,33 +560,40 @@ export class PageAiRecapService {
     locale: AuditLocale,
     page: UrlIndexabilityResult,
   ): EngineCoverage {
-    const signals = page.aiSignals ?? null;
-    const indexable = Boolean(page.indexable);
-    const hasStructured = Boolean(page.hasStructuredData);
-    const richResults =
-      signals?.structuredDataQuality.googleRichResultsEligible;
-    const aiFriendly = signals?.structuredDataQuality.aiFriendly ?? false;
-    const citation = signals?.citationWorthiness;
-    const bots = signals?.aiBotsAccess;
+    return {
+      google: this.buildGoogleFallbackScore(locale, page),
+      bingChatGpt: this.buildBingFallbackScore(locale, page),
+      perplexity: this.buildPerplexityFallbackScore(locale, page),
+      geminiOverviews: this.buildGeminiFallbackScore(locale, page),
+    };
+  }
 
-    const googleStrengths: string[] = [];
-    const googleBlockers: string[] = [];
-    const googleOpps: string[] = [];
-    let googleScore = 55;
+  private buildGoogleFallbackScore(
+    locale: AuditLocale,
+    page: UrlIndexabilityResult,
+  ): EngineScore {
+    const indexable = Boolean(page.indexable);
+    const richResults =
+      page.aiSignals?.structuredDataQuality.googleRichResultsEligible;
+    const strengths: string[] = [];
+    const blockers: string[] = [];
+    const opportunities: string[] = [];
+    let score = 55;
+
     if (indexable) {
-      googleScore += 10;
-      googleStrengths.push(
+      score += 10;
+      strengths.push(
         localizedText(locale, 'Page indexable', 'Page is indexable'),
       );
     } else {
-      googleScore -= 25;
-      googleBlockers.push(
+      score -= 25;
+      blockers.push(
         localizedText(locale, 'Page non indexable', 'Page is non-indexable'),
       );
     }
     if (richResults) {
-      googleScore += 15;
-      googleStrengths.push(
+      score += 15;
+      strengths.push(
         localizedText(
           locale,
           'Eligible aux Rich Results',
@@ -599,7 +601,7 @@ export class PageAiRecapService {
         ),
       );
     } else {
-      googleOpps.push(
+      opportunities.push(
         localizedText(
           locale,
           'Ajouter des schemas eligibles Rich Results',
@@ -608,8 +610,8 @@ export class PageAiRecapService {
       );
     }
     if ((page.responseTimeMs ?? 0) > 2500) {
-      googleScore -= 10;
-      googleBlockers.push(
+      score -= 10;
+      blockers.push(
         localizedText(
           locale,
           'Temps de reponse eleve (signal Core Web Vitals)',
@@ -618,13 +620,27 @@ export class PageAiRecapService {
       );
     }
 
-    const bingStrengths: string[] = [];
-    const bingBlockers: string[] = [];
-    const bingOpps: string[] = [];
-    let bingScore = 50;
-    if (hasStructured) {
-      bingScore += 10;
-      bingStrengths.push(
+    return this.toEngineScore('google', score, indexable, {
+      strengths,
+      blockers,
+      opportunities,
+    });
+  }
+
+  private buildBingFallbackScore(
+    locale: AuditLocale,
+    page: UrlIndexabilityResult,
+  ): EngineScore {
+    const indexable = Boolean(page.indexable);
+    const chatGptUser = page.aiSignals?.aiBotsAccess?.chatGptUser;
+    const strengths: string[] = [];
+    const blockers: string[] = [];
+    const opportunities: string[] = [];
+    let score = 50;
+
+    if (page.hasStructuredData) {
+      score += 10;
+      strengths.push(
         localizedText(
           locale,
           'Donnees structurees presentes',
@@ -632,7 +648,7 @@ export class PageAiRecapService {
         ),
       );
     } else {
-      bingOpps.push(
+      opportunities.push(
         localizedText(
           locale,
           'Ajouter des donnees structurees JSON-LD',
@@ -640,18 +656,18 @@ export class PageAiRecapService {
         ),
       );
     }
-    if (bots?.chatGptUser === 'allowed') {
-      bingScore += 15;
-      bingStrengths.push(
+    if (chatGptUser === 'allowed') {
+      score += 15;
+      strengths.push(
         localizedText(
           locale,
           'ChatGPT-User autorise par robots.txt',
           'ChatGPT-User allowed by robots.txt',
         ),
       );
-    } else if (bots?.chatGptUser === 'disallowed') {
-      bingScore -= 15;
-      bingBlockers.push(
+    } else if (chatGptUser === 'disallowed') {
+      score -= 15;
+      blockers.push(
         localizedText(
           locale,
           'ChatGPT-User bloque par robots.txt',
@@ -659,7 +675,7 @@ export class PageAiRecapService {
         ),
       );
     }
-    bingOpps.push(
+    opportunities.push(
       localizedText(
         locale,
         'Activer IndexNow pour Bing',
@@ -667,14 +683,31 @@ export class PageAiRecapService {
       ),
     );
 
-    const perplexityStrengths: string[] = [];
-    const perplexityBlockers: string[] = [];
-    const perplexityOpps: string[] = [];
-    let perplexityScore = 50;
+    return this.toEngineScore(
+      'bing_chatgpt',
+      score,
+      chatGptUser !== 'disallowed' && indexable,
+      { strengths, blockers, opportunities },
+    );
+  }
+
+  private buildPerplexityFallbackScore(
+    locale: AuditLocale,
+    page: UrlIndexabilityResult,
+  ): EngineScore {
+    const indexable = Boolean(page.indexable);
+    const signals = page.aiSignals ?? null;
+    const citation = signals?.citationWorthiness;
+    const perplexityBot = signals?.aiBotsAccess?.perplexityBot;
+    const strengths: string[] = [];
+    const blockers: string[] = [];
+    const opportunities: string[] = [];
+    let score = 50;
+
     if (citation) {
-      perplexityScore = Math.round((perplexityScore + citation.score) / 2);
+      score = Math.round((score + citation.score) / 2);
       if (citation.hasSources) {
-        perplexityStrengths.push(
+        strengths.push(
           localizedText(
             locale,
             'Sources citables presentes',
@@ -683,12 +716,12 @@ export class PageAiRecapService {
         );
       }
       if (citation.hasAuthor) {
-        perplexityStrengths.push(
+        strengths.push(
           localizedText(locale, 'Auteur identifie', 'Author identified'),
         );
       }
       if (!citation.hasFacts) {
-        perplexityOpps.push(
+        opportunities.push(
           localizedText(
             locale,
             'Ajouter des faits datables et chiffres',
@@ -697,9 +730,9 @@ export class PageAiRecapService {
         );
       }
     }
-    if (bots?.perplexityBot === 'disallowed') {
-      perplexityScore -= 15;
-      perplexityBlockers.push(
+    if (perplexityBot === 'disallowed') {
+      score -= 15;
+      blockers.push(
         localizedText(
           locale,
           'PerplexityBot bloque par robots.txt',
@@ -708,7 +741,7 @@ export class PageAiRecapService {
       );
     }
     if (!signals?.llmsTxt?.present) {
-      perplexityOpps.push(
+      opportunities.push(
         localizedText(
           locale,
           'Publier un fichier llms.txt',
@@ -717,13 +750,31 @@ export class PageAiRecapService {
       );
     }
 
-    const geminiStrengths: string[] = [];
-    const geminiBlockers: string[] = [];
-    const geminiOpps: string[] = [];
-    let geminiScore = 50;
+    return this.toEngineScore(
+      'perplexity',
+      score,
+      perplexityBot !== 'disallowed' && indexable,
+      { strengths, blockers, opportunities },
+    );
+  }
+
+  private buildGeminiFallbackScore(
+    locale: AuditLocale,
+    page: UrlIndexabilityResult,
+  ): EngineScore {
+    const indexable = Boolean(page.indexable);
+    const googleExtended = page.aiSignals?.aiBotsAccess?.googleExtended;
+    const aiFriendly =
+      page.aiSignals?.structuredDataQuality.aiFriendly ?? false;
+    const wordCount = page.wordCount ?? 0;
+    const strengths: string[] = [];
+    const blockers: string[] = [];
+    const opportunities: string[] = [];
+    let score = 50;
+
     if (aiFriendly) {
-      geminiScore += 15;
-      geminiStrengths.push(
+      score += 15;
+      strengths.push(
         localizedText(
           locale,
           'Schemas AI-friendly detectes',
@@ -731,7 +782,7 @@ export class PageAiRecapService {
         ),
       );
     } else {
-      geminiOpps.push(
+      opportunities.push(
         localizedText(
           locale,
           'Ajouter FAQPage / HowTo / Article',
@@ -739,14 +790,12 @@ export class PageAiRecapService {
         ),
       );
     }
-    if ((page.wordCount ?? 0) >= 400) {
-      geminiScore += 10;
-      geminiStrengths.push(
-        localizedText(locale, 'Contenu dense', 'Dense content'),
-      );
-    } else if ((page.wordCount ?? 0) < 150) {
-      geminiScore -= 10;
-      geminiBlockers.push(
+    if (wordCount >= 400) {
+      score += 10;
+      strengths.push(localizedText(locale, 'Contenu dense', 'Dense content'));
+    } else if (wordCount < 150) {
+      score -= 10;
+      blockers.push(
         localizedText(
           locale,
           'Contenu trop faible pour AI Overviews',
@@ -754,9 +803,9 @@ export class PageAiRecapService {
         ),
       );
     }
-    if (bots?.googleExtended === 'disallowed') {
-      geminiScore -= 10;
-      geminiBlockers.push(
+    if (googleExtended === 'disallowed') {
+      score -= 10;
+      blockers.push(
         localizedText(
           locale,
           'Google-Extended bloque',
@@ -765,39 +814,31 @@ export class PageAiRecapService {
       );
     }
 
+    return this.toEngineScore(
+      'gemini_overviews',
+      score,
+      googleExtended !== 'disallowed' && indexable,
+      { strengths, blockers, opportunities },
+    );
+  }
+
+  private toEngineScore(
+    engine: EngineScore['engine'],
+    score: number,
+    indexable: boolean,
+    lists: {
+      strengths: string[];
+      blockers: string[];
+      opportunities: string[];
+    },
+  ): EngineScore {
     return {
-      google: {
-        engine: 'google',
-        score: this.clampScore(googleScore),
-        indexable,
-        strengths: Array.from(new Set(googleStrengths)).slice(0, 5),
-        blockers: Array.from(new Set(googleBlockers)).slice(0, 5),
-        opportunities: Array.from(new Set(googleOpps)).slice(0, 5),
-      },
-      bingChatGpt: {
-        engine: 'bing_chatgpt',
-        score: this.clampScore(bingScore),
-        indexable: bots?.chatGptUser !== 'disallowed' && indexable,
-        strengths: Array.from(new Set(bingStrengths)).slice(0, 5),
-        blockers: Array.from(new Set(bingBlockers)).slice(0, 5),
-        opportunities: Array.from(new Set(bingOpps)).slice(0, 5),
-      },
-      perplexity: {
-        engine: 'perplexity',
-        score: this.clampScore(perplexityScore),
-        indexable: bots?.perplexityBot !== 'disallowed' && indexable,
-        strengths: Array.from(new Set(perplexityStrengths)).slice(0, 5),
-        blockers: Array.from(new Set(perplexityBlockers)).slice(0, 5),
-        opportunities: Array.from(new Set(perplexityOpps)).slice(0, 5),
-      },
-      geminiOverviews: {
-        engine: 'gemini_overviews',
-        score: this.clampScore(geminiScore),
-        indexable: bots?.googleExtended !== 'disallowed' && indexable,
-        strengths: Array.from(new Set(geminiStrengths)).slice(0, 5),
-        blockers: Array.from(new Set(geminiBlockers)).slice(0, 5),
-        opportunities: Array.from(new Set(geminiOpps)).slice(0, 5),
-      },
+      engine,
+      score: this.clampScore(score),
+      indexable,
+      strengths: Array.from(new Set(lists.strengths)).slice(0, 5),
+      blockers: Array.from(new Set(lists.blockers)).slice(0, 5),
+      opportunities: Array.from(new Set(lists.opportunities)).slice(0, 5),
     };
   }
 

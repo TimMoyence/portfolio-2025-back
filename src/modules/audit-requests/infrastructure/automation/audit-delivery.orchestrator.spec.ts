@@ -10,12 +10,17 @@ import type { IAuditPdfGenerator } from '../../domain/IAuditPdfGenerator';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import {
   buildAuditSnapshot,
+  buildClientReportSynthesis,
   createMockAuditNotifier,
   createMockAuditRequestsRepo,
 } from '../../../../../test/factories/audit-requests.factory';
-import { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
+import {
+  AuditDeliveryOrchestrator,
+  type RunDeliveryInput,
+} from './audit-delivery.orchestrator';
 import type { LangchainClientReportService } from './langchain-client-report.service';
 import type { PageAiRecap } from './page-ai-recap.service';
+import { flushPromises } from '../../../../../test/helpers/flush-promises';
 
 function buildEngineScore(
   engine: EngineScore['engine'],
@@ -57,15 +62,9 @@ function buildPageRecap(overrides: Partial<PageAiRecap> = {}): PageAiRecap {
 
 function buildClientReport(): ClientReportSynthesis {
   return {
+    ...buildClientReportSynthesis(),
     executiveSummary: 'Resume',
     topFindings: [{ title: 'Finding', impact: 'Impact', severity: 'high' }],
-    googleVsAiMatrix: {
-      googleVisibility: { score: 80, summary: 'OK' },
-      aiVisibility: { score: 40, summary: 'A ameliorer' },
-    },
-    pillarScorecard: [],
-    quickWins: [],
-    cta: { title: 'CTA', description: 'Desc', actionLabel: 'Action' },
   };
 }
 
@@ -112,21 +111,32 @@ describe('AuditDeliveryOrchestrator', () => {
     );
   });
 
+  function runForAudit(
+    overrides: Partial<RunDeliveryInput> = {},
+  ): Promise<void> {
+    return orchestrator.runForAudit({
+      auditId: baseSnapshot.id,
+      locale: 'fr',
+      websiteName: 'example.com',
+      contactMethod: 'EMAIL',
+      contactValue: 'client@example.com',
+      normalizedUrl: 'https://example.com/',
+      pillarScores: {},
+      quickWins: [],
+      pageRecaps: [buildPageRecap()],
+      expertReport: buildExpertReport(),
+      deepFindings: [],
+      ...overrides,
+    });
+  }
+
   describe('runForAudit', () => {
     it('declenche la chaine delivery complete (client EMAIL)', async () => {
       repo.findById.mockResolvedValue(baseSnapshot);
 
-      await orchestrator.runForAudit({
-        auditId: baseSnapshot.id,
-        locale: 'fr',
-        websiteName: 'example.com',
-        contactMethod: 'EMAIL',
-        contactValue: 'client@example.com',
-        normalizedUrl: 'https://example.com/',
+      await runForAudit({
         pillarScores: { seo: 70 },
         quickWins: ['win-1'],
-        pageRecaps: [buildPageRecap()],
-        expertReport: buildExpertReport(),
         deepFindings: [
           {
             code: 'x',
@@ -162,7 +172,7 @@ describe('AuditDeliveryOrchestrator', () => {
         }),
       );
 
-      await new Promise((resolve) => setImmediate(resolve));
+      await flushPromises();
 
       expect(notifier.sendClientReport).toHaveBeenCalledTimes(1);
       expect(notifier.sendExpertReport).toHaveBeenCalledTimes(1);
@@ -176,20 +186,8 @@ describe('AuditDeliveryOrchestrator', () => {
       it('deduit le prenom depuis tim.moyence@outlook.fr', async () => {
         repo.findById.mockResolvedValue(baseSnapshot);
 
-        await orchestrator.runForAudit({
-          auditId: baseSnapshot.id,
-          locale: 'fr',
-          websiteName: 'example.com',
-          contactMethod: 'EMAIL',
-          contactValue: 'tim.moyence@outlook.fr',
-          normalizedUrl: 'https://example.com/',
-          pillarScores: {},
-          quickWins: [],
-          pageRecaps: [buildPageRecap()],
-          expertReport: buildExpertReport(),
-          deepFindings: [],
-        });
-        await new Promise((resolve) => setImmediate(resolve));
+        await runForAudit({ contactValue: 'tim.moyence@outlook.fr' });
+        await flushPromises();
 
         const clientCall = notifier.sendClientReport.mock.calls[0][0];
         expect(clientCall.firstName).toBe('Tim');
@@ -198,20 +196,8 @@ describe('AuditDeliveryOrchestrator', () => {
       it('retourne null pour les emails non exploitables (prenoms numeriques)', async () => {
         repo.findById.mockResolvedValue(baseSnapshot);
 
-        await orchestrator.runForAudit({
-          auditId: baseSnapshot.id,
-          locale: 'fr',
-          websiteName: 'example.com',
-          contactMethod: 'EMAIL',
-          contactValue: '12345@example.com',
-          normalizedUrl: 'https://example.com/',
-          pillarScores: {},
-          quickWins: [],
-          pageRecaps: [buildPageRecap()],
-          expertReport: buildExpertReport(),
-          deepFindings: [],
-        });
-        await new Promise((resolve) => setImmediate(resolve));
+        await runForAudit({ contactValue: '12345@example.com' });
+        await flushPromises();
 
         const clientCall = notifier.sendClientReport.mock.calls[0][0];
         expect(clientCall.firstName).toBeNull();
@@ -221,21 +207,12 @@ describe('AuditDeliveryOrchestrator', () => {
     it('skip sendClientReport quand le contact est PHONE', async () => {
       repo.findById.mockResolvedValue(baseSnapshot);
 
-      await orchestrator.runForAudit({
-        auditId: baseSnapshot.id,
-        locale: 'fr',
-        websiteName: 'example.com',
+      await runForAudit({
         contactMethod: 'PHONE',
         contactValue: '+33612345678',
-        normalizedUrl: 'https://example.com/',
-        pillarScores: {},
-        quickWins: [],
-        pageRecaps: [buildPageRecap()],
-        expertReport: buildExpertReport(),
-        deepFindings: [],
       });
 
-      await new Promise((resolve) => setImmediate(resolve));
+      await flushPromises();
 
       expect(notifier.sendClientReport).not.toHaveBeenCalled();
       expect(notifier.sendExpertReport).toHaveBeenCalledTimes(1);
@@ -248,21 +225,9 @@ describe('AuditDeliveryOrchestrator', () => {
       repo.findById.mockResolvedValue(baseSnapshot);
       pdfGenerator.generate.mockRejectedValueOnce(new Error('PDF crash'));
 
-      await orchestrator.runForAudit({
-        auditId: baseSnapshot.id,
-        locale: 'fr',
-        websiteName: 'example.com',
-        contactMethod: 'EMAIL',
-        contactValue: 'client@example.com',
-        normalizedUrl: 'https://example.com/',
-        pillarScores: {},
-        quickWins: [],
-        pageRecaps: [buildPageRecap()],
-        expertReport: buildExpertReport(),
-        deepFindings: [],
-      });
+      await runForAudit();
 
-      await new Promise((resolve) => setImmediate(resolve));
+      await flushPromises();
 
       expect(repo.updateState).toHaveBeenCalledTimes(1);
       expect(notifier.sendClientReport).toHaveBeenCalledTimes(1);
@@ -277,19 +242,7 @@ describe('AuditDeliveryOrchestrator', () => {
       });
       repo.findById.mockResolvedValue(alreadyDelivered);
 
-      await orchestrator.runForAudit({
-        auditId: alreadyDelivered.id,
-        locale: 'fr',
-        websiteName: 'example.com',
-        contactMethod: 'EMAIL',
-        contactValue: 'client@example.com',
-        normalizedUrl: 'https://example.com/',
-        pillarScores: {},
-        quickWins: [],
-        pageRecaps: [buildPageRecap()],
-        expertReport: buildExpertReport(),
-        deepFindings: [],
-      });
+      await runForAudit({ auditId: alreadyDelivered.id });
 
       expect(clientReportService.generate).not.toHaveBeenCalled();
       expect(pdfGenerator.generate).not.toHaveBeenCalled();
@@ -304,21 +257,7 @@ describe('AuditDeliveryOrchestrator', () => {
         new Error('LLM crash unexpected'),
       );
 
-      await expect(
-        orchestrator.runForAudit({
-          auditId: baseSnapshot.id,
-          locale: 'fr',
-          websiteName: 'example.com',
-          contactMethod: 'EMAIL',
-          contactValue: 'client@example.com',
-          normalizedUrl: 'https://example.com/',
-          pillarScores: {},
-          quickWins: [],
-          pageRecaps: [buildPageRecap()],
-          expertReport: buildExpertReport(),
-          deepFindings: [],
-        }),
-      ).resolves.toBeUndefined();
+      await expect(runForAudit()).resolves.toBeUndefined();
 
       expect(pdfGenerator.generate).not.toHaveBeenCalled();
       expect(notifier.sendClientReport).not.toHaveBeenCalled();
@@ -327,19 +266,7 @@ describe('AuditDeliveryOrchestrator', () => {
     it('skip delivery si expertSynthesis est manquant', async () => {
       repo.findById.mockResolvedValue(baseSnapshot);
 
-      await orchestrator.runForAudit({
-        auditId: baseSnapshot.id,
-        locale: 'fr',
-        websiteName: 'example.com',
-        contactMethod: 'EMAIL',
-        contactValue: 'client@example.com',
-        normalizedUrl: 'https://example.com/',
-        pillarScores: {},
-        quickWins: [],
-        pageRecaps: [buildPageRecap()],
-        expertReport: undefined,
-        deepFindings: [],
-      });
+      await runForAudit({ expertReport: undefined });
 
       expect(repo.findById).not.toHaveBeenCalled();
       expect(clientReportService.generate).not.toHaveBeenCalled();
@@ -350,15 +277,7 @@ describe('AuditDeliveryOrchestrator', () => {
     it('calcule la moyenne des scores par moteur', async () => {
       repo.findById.mockResolvedValue(baseSnapshot);
 
-      await orchestrator.runForAudit({
-        auditId: baseSnapshot.id,
-        locale: 'fr',
-        websiteName: 'example.com',
-        contactMethod: 'EMAIL',
-        contactValue: 'client@example.com',
-        normalizedUrl: 'https://example.com/',
-        pillarScores: {},
-        quickWins: [],
+      await runForAudit({
         pageRecaps: [
           buildPageRecap({
             engineScores: {
@@ -377,8 +296,6 @@ describe('AuditDeliveryOrchestrator', () => {
             },
           }),
         ],
-        expertReport: buildExpertReport(),
-        deepFindings: [],
       });
 
       const state = repo.updateState.mock.calls[0][1];

@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { randomBytes } from 'crypto';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import { TokenExpiredError } from '../../../common/domain/errors/TokenExpiredError';
 import { TokenReuseDetectedError } from '../../../common/domain/errors/TokenReuseDetectedError';
@@ -7,8 +6,8 @@ import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.reposito
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
-import { REFRESH_TOKEN_TTL_MS } from '../domain/auth.constants';
 import type { AuthResult } from './AuthenticateUser.useCase';
+import { issueAuthSession } from './services/issue-auth-session';
 import { JwtTokenService } from './services/JwtTokenService';
 
 @Injectable()
@@ -46,27 +45,6 @@ export class RefreshTokensUseCase {
       throw new InvalidCredentialsError('User not found or inactive');
     }
 
-    const { token, expiresIn } = await this.jwtTokenService.sign({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles ?? [],
-    });
-
-    const newRawRefreshToken = randomBytes(32).toString('hex');
-    const newTokenHash = TokenHash.fromRaw(newRawRefreshToken).value;
-
-    await this.refreshTokensRepo.create({
-      userId: user.id!,
-      tokenHash: newTokenHash,
-      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
-      revoked: false,
-    });
-
-    return {
-      accessToken: token,
-      expiresIn,
-      refreshToken: newRawRefreshToken,
-      user,
-    };
+    return issueAuthSession(user, this.jwtTokenService, this.refreshTokensRepo);
   }
 }

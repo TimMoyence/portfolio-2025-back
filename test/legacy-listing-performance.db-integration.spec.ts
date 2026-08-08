@@ -1,5 +1,5 @@
 import { performance } from 'node:perf_hooks';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import type { DataSource } from 'typeorm';
 import { ProjectsRepositoryTypeORM } from '../src/modules/projects/infrastructure/Projects.repository.typeORM';
 import { ProjectsEntity } from '../src/modules/projects/infrastructure/entities/Projects.entity';
 import { ProjectsTranslationsEntity } from '../src/modules/projects/infrastructure/entities/ProjectsTranslations.entity';
@@ -12,9 +12,12 @@ import { ServicesEntity } from '../src/modules/services/infrastructure/entities/
 import { ServicesFaqEntity } from '../src/modules/services/infrastructure/entities/ServicesFaq.entity';
 import { ServicesFaqTranslationEntity } from '../src/modules/services/infrastructure/entities/ServicesFaqTranslation.entity';
 import { ServicesTranslationEntity } from '../src/modules/services/infrastructure/entities/ServicesTranslation.entity';
+import {
+  describeDb,
+  destroyDbIntegrationDataSource,
+  initDbIntegrationDataSource,
+} from './helpers/db-integration-datasource';
 
-const runDbIntegration = process.env.RUN_DB_INTEGRATION === 'true';
-const describeDb = runDbIntegration ? describe : describe.skip;
 jest.setTimeout(120_000);
 
 const PERF_DATASET_SIZE = parsePositiveInt(
@@ -34,12 +37,6 @@ const PERF_P99_BUDGET_MS = parsePositiveInt(
   200,
 );
 
-function parsePort(raw: string | undefined): number {
-  if (!raw) return 5432;
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? parsed : 5432;
-}
-
 function parsePositiveInt(raw: string | undefined, fallback: number): number {
   if (!raw) return fallback;
   const parsed = Number(raw);
@@ -47,42 +44,6 @@ function parsePositiveInt(raw: string | undefined, fallback: number): number {
     return fallback;
   }
   return Math.floor(parsed);
-}
-
-function buildOptions(): DataSourceOptions {
-  const sslEnabled =
-    process.env.DB_SSL === 'true' || process.env.DATABASE_SSL === 'true';
-
-  return {
-    type: 'postgres',
-    host: process.env.DB_HOST ?? process.env.DATABASE_HOST ?? '127.0.0.1',
-    port: parsePort(process.env.DB_PORT ?? process.env.DATABASE_PORT),
-    username:
-      process.env.DB_USERNAME ??
-      process.env.DB_USER ??
-      process.env.DATABASE_USER ??
-      'postgres',
-    password:
-      process.env.DB_PASSWORD ??
-      process.env.DB_PASS ??
-      process.env.DATABASE_PASSWORD ??
-      'postgres',
-    database:
-      process.env.DB_NAME ?? process.env.DATABASE_NAME ?? 'portfolio_2025_ci',
-    entities: [
-      ServicesEntity,
-      ServicesTranslationEntity,
-      ServicesFaqEntity,
-      ServicesFaqTranslationEntity,
-      ProjectsEntity,
-      ProjectsTranslationsEntity,
-      RedirectsEntity,
-    ],
-    synchronize: true,
-    dropSchema: true,
-    logging: false,
-    ...(sslEnabled ? { ssl: { rejectUnauthorized: false } } : {}),
-  };
 }
 
 function percentile(values: number[], p: number): number {
@@ -127,8 +88,15 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
   let redirectsRepository: RedirectsRepositoryTypeORM;
 
   beforeAll(async () => {
-    dataSource = new DataSource(buildOptions());
-    await dataSource.initialize();
+    dataSource = await initDbIntegrationDataSource([
+      ServicesEntity,
+      ServicesTranslationEntity,
+      ServicesFaqEntity,
+      ServicesFaqTranslationEntity,
+      ProjectsEntity,
+      ProjectsTranslationsEntity,
+      RedirectsEntity,
+    ]);
 
     servicesRepository = new ServicesRepositoryTypeORM(
       dataSource.getRepository(ServicesEntity),
@@ -194,9 +162,7 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
   });
 
   afterAll(async () => {
-    if (dataSource?.isInitialized) {
-      await dataSource.destroy();
-    }
+    await destroyDbIntegrationDataSource(dataSource);
   });
 
   it('keeps services list pagination/filter/sort within p95/p99 budget', async () => {

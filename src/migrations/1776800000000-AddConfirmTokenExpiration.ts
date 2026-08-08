@@ -11,11 +11,6 @@ export class AddConfirmTokenExpiration1776800000000 implements MigrationInterfac
       ADD COLUMN "last_confirmation_sent_at" timestamptz;
     `);
 
-    // Backfill semantique (audit-log friendly) :
-    //  - pending : NOW() + 7j (benefice du doute, le token reste consomable)
-    //  - autres  : terms_accepted_at + 7j (ce que le TTL aurait ete a
-    //    l'origine). On evite "expired at migration time" qui brouille
-    //    tout audit futur des tokens historiques.
     await queryRunner.query(`
       UPDATE "newsletter_subscribers"
       SET "confirm_token_expires_at" = CASE

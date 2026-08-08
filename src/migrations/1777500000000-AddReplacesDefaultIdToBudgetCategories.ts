@@ -1,24 +1,5 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-/**
- * Ajoute la colonne `replaces_default_id` (nullable) a la table
- * `budget_categories`. Cette colonne pointe vers la ligne par defaut
- * (group_id IS NULL) dont la categorie courante est un clone per-group
- * (pattern copy-on-write transparent pour le client).
- *
- * Utilisee par `UpdateBudgetCategoryUseCase` (auto-clone lors d'une mise
- * a jour ciblant une default) et par `findByGroupId` (filtre des defauts
- * deja overrides dans le groupe).
- *
- * Contraintes :
- *  - FK self-reference vers `budget_categories(id)` avec
- *    `ON DELETE SET NULL` : si la default disparait, le clone reste
- *    autonome au lieu d'etre supprime en cascade.
- *  - Index unique partiel `(group_id, replaces_default_id)` empeche
- *    deux clones de la meme default dans le meme groupe.
- *  - Index simple sur `replaces_default_id` pour accelerer le subquery
- *    NOT IN de `findByGroupId`.
- */
 export class AddReplacesDefaultIdToBudgetCategories1777500000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

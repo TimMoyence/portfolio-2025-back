@@ -11,7 +11,7 @@ import {
 } from '../../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
 
-export function normalizeKey(raw: string): string {
+function normalizeKey(raw: string): string {
   return raw
     .toLowerCase()
     .normalize('NFD')

@@ -15,7 +15,7 @@
     "start:dev": "node -r tsconfig-paths/register -r ts-node/register src/main.ts",
     "start:debug": "node --inspect -r tsconfig-paths/register -r ts-node/register src/main.ts",
     "start:prod": "node dist/main",
-    "lint": "node ./node_modules/eslint/bin/eslint.js \"{src,apps,libs,test}/**/*.ts\"",
+    "lint": "node ./node_modules/eslint/bin/eslint.js \"{src,apps,libs,test}/**/*.ts\" --max-warnings=0",
     "lint:fix": "pnpm run lint --fix",
     "test": "sh -c 'if [ \"$1\" = \"--\" ]; then shift; fi; node ./node_modules/jest/bin/jest.js \"$@\"' --",
     "test:cov": "node ./node_modules/jest/bin/jest.js --coverage --reporters=default --reporters=jest-ratchet",
@@ -28,9 +28,8 @@
     "quality:cpd": "pnpm exec jscpd",
     "quality:cpd:tests": "pnpm exec jscpd --config .jscpd.tests.json",
     "quality:knip": "pnpm exec knip --no-progress",
-    "quality:sonar": "pnpm exec eslint --config eslint.sonar-full.config.mjs \"{src,test}/**/*.ts\"",
-    "pre-push:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test:guards && pnpm run guard:comments && pnpm exec jest --runInBand --watchman=false",
-    "ci:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test:guards && pnpm run guard:comments && pnpm exec jest --runInBand --watchman=false && pnpm run build",
+    "pre-push:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run quality:cpd && pnpm run quality:cpd:tests && pnpm run quality:knip && pnpm run test:guards && pnpm run guard:comments && pnpm exec jest --runInBand --watchman=false",
+    "ci:check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run quality:cpd && pnpm run quality:cpd:tests && pnpm run quality:knip && pnpm run test:guards && pnpm run guard:comments && pnpm exec jest --runInBand --watchman=false && pnpm run build",
     "migration:generate": "pnpm build && pnpm exec typeorm-ts-node-commonjs migration:generate src/migrations/$npm_config_name -d src/database/data-source.ts",
     "migration:run:dev": "pnpm build && pnpm exec typeorm-ts-node-commonjs migration:run -d dist/database/data-source.js",
     "migration:run": "node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js",
@@ -149,7 +148,7 @@
     }
   },
   "guard-no-comments": {
-    "maxOffenses": 376
+    "maxOffenses": 0
   },
   "jest": {
     "moduleFileExtensions": [

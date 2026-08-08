@@ -17,7 +17,7 @@ export type PillarKey =
   | 'aiVisibility'
   | 'citationWorthiness';
 
-export type PillarScores = Record<PillarKey, number>;
+type PillarScores = Record<PillarKey, number>;
 
 export const PILLAR_KEYS: readonly PillarKey[] = [
   'seo',
@@ -58,6 +58,19 @@ export interface AuditScoreResult {
   keyChecks: Record<string, unknown>;
 }
 
+interface SampledCoverage {
+  missingTitle: number;
+  missingMeta: number;
+  badH1: number;
+  canonicalIssues: number;
+  missingLang: number;
+  indexabilityErrors: number;
+}
+
+interface ScoringCopy {
+  quickWins: Record<string, string>;
+}
+
 @Injectable()
 export class ScoringService {
   compute(
@@ -70,134 +83,21 @@ export class ScoringService {
     const t = this.copy(locale);
     const quickWins: string[] = [];
 
-    let seo = 100;
-    if (!homepage.title) {
-      seo -= 18;
-      quickWins.push(t.quickWins.homeTitle);
-    }
-    if (!homepage.metaDescription) {
-      seo -= 15;
-      quickWins.push(t.quickWins.homeMeta);
-    }
-    if (homepage.h1Count !== 1) {
-      seo -= 10;
-      quickWins.push(t.quickWins.homeH1);
-    }
-    if (homepage.canonicalUrls.length === 0) {
-      seo -= 10;
-      quickWins.push(t.quickWins.homeCanonical);
-    }
+    const coverage = this.computeSampledCoverage(sampledUrls);
+    const sampledCount = sampledUrls.length;
 
-    const sampledMissingTitle = sampledUrls.filter(
-      (entry) => !(entry.title ?? '').trim(),
-    ).length;
-    if (sampledUrls.length > 0 && sampledMissingTitle > 0) {
-      seo -= Math.min(
-        15,
-        Math.round((sampledMissingTitle / sampledUrls.length) * 20),
-      );
-      quickWins.push(t.quickWins.sampleTitleCoverage);
-    }
-
-    const sampledMissingMeta = sampledUrls.filter(
-      (entry) => !(entry.metaDescription ?? '').trim(),
-    ).length;
-    if (sampledUrls.length > 0 && sampledMissingMeta > 0) {
-      seo -= Math.min(
-        14,
-        Math.round((sampledMissingMeta / sampledUrls.length) * 18),
-      );
-      quickWins.push(t.quickWins.sampleMetaCoverage);
-    }
-
-    const sampledBadH1 = sampledUrls.filter(
-      (entry) => (entry.h1Count ?? 1) !== 1,
-    ).length;
-    if (sampledUrls.length > 0 && sampledBadH1 > 0) {
-      seo -= Math.min(10, Math.round((sampledBadH1 / sampledUrls.length) * 12));
-      quickWins.push(t.quickWins.sampleH1Structure);
-    }
-
-    const sampledCanonicalIssues = sampledUrls.filter(
-      (entry) => !entry.canonical || (entry.canonicalCount ?? 0) !== 1,
-    ).length;
-    if (sampledUrls.length > 0 && sampledCanonicalIssues > 0) {
-      seo -= Math.min(
-        10,
-        Math.round((sampledCanonicalIssues / sampledUrls.length) * 12),
-      );
-      quickWins.push(t.quickWins.sampleCanonicalConsistency);
-    }
-
-    const sampledMissingLang = sampledUrls.filter(
-      (entry) => !entry.htmlLang,
-    ).length;
-    if (sampledUrls.length > 0 && sampledMissingLang > 0) {
-      seo -= Math.min(
-        8,
-        Math.round((sampledMissingLang / sampledUrls.length) * 10),
-      );
-      quickWins.push(t.quickWins.sampleLangCoverage);
-    }
-
-    let performance = 100;
-    if (homepage.ttfbMs > 800) {
-      performance -= 18;
-      quickWins.push(t.quickWins.ttfb);
-    }
-    if (homepage.totalResponseMs > 2000) {
-      performance -= 12;
-      quickWins.push(t.quickWins.totalResponse);
-    }
-    if ((homepage.contentLength ?? 0) > 500_000) {
-      performance -= 10;
-      quickWins.push(t.quickWins.pageWeight);
-    }
-
-    let technical = 100;
-    if (!homepage.https) {
-      technical -= 25;
-      quickWins.push(t.quickWins.https);
-    }
-    if (homepage.statusCode >= 400) {
-      technical -= 30;
-      quickWins.push(t.quickWins.homeStatus);
-    }
-    if (sitemapUrls.length === 0) {
-      technical -= 15;
-      quickWins.push(t.quickWins.sitemap);
-    }
-
-    const indexabilityErrors = sampledUrls.filter(
-      (entry) => !entry.indexable || (entry.statusCode ?? 500) >= 400,
-    ).length;
-    if (sampledUrls.length > 0 && indexabilityErrors > 0) {
-      technical -= Math.min(
-        25,
-        Math.round((indexabilityErrors / sampledUrls.length) * 40),
-      );
-      quickWins.push(t.quickWins.indexability);
-    }
-
-    let trust = 100;
-    if (!homepage.hasStructuredData) {
-      trust -= 12;
-      quickWins.push(t.quickWins.structuredData);
-    }
-    if (homepage.openGraphTags.length === 0) {
-      trust -= 8;
-      quickWins.push(t.quickWins.openGraph);
-    }
-
-    let conversion = 100;
-    if (!homepage.hasForms) {
-      conversion -= 20;
-      quickWins.push(t.quickWins.forms);
-    }
-    if (!homepage.hasCookieBanner) {
-      conversion -= 5;
-      quickWins.push(t.quickWins.cookies);
-    }
+    const seo = this.scoreSeo(homepage, sampledCount, coverage, t, quickWins);
+    const performance = this.scorePerformance(homepage, t, quickWins);
+    const technical = this.scoreTechnical(
+      homepage,
+      sitemapUrls,
+      sampledCount,
+      coverage,
+      t,
+      quickWins,
+    );
+    const trust = this.scoreTrust(homepage, t, quickWins);
+    const conversion = this.scoreConversion(homepage, t, quickWins);
 
     const aiBotsAccess = sampledUrls
       .map((entry) => entry.aiSignals?.aiBotsAccess)
@@ -246,11 +146,11 @@ export class ScoringService {
           lang: homepage.htmlLang,
           sampledUrls: sampledUrls.length,
           sampledCoverage: {
-            missingTitle: sampledMissingTitle,
-            missingMetaDescription: sampledMissingMeta,
-            badH1Count: sampledBadH1,
-            canonicalIssues: sampledCanonicalIssues,
-            missingLang: sampledMissingLang,
+            missingTitle: coverage.missingTitle,
+            missingMetaDescription: coverage.missingMeta,
+            badH1Count: coverage.badH1,
+            canonicalIssues: coverage.canonicalIssues,
+            missingLang: coverage.missingLang,
           },
         },
         technology: {
@@ -275,7 +175,7 @@ export class ScoringService {
         sitemap: {
           sitemapCount: sitemapUrls.length,
           sampledUrlCount: sampledUrls.length,
-          indexabilityIssues: indexabilityErrors,
+          indexabilityIssues: coverage.indexabilityErrors,
         },
       },
     };
@@ -316,9 +216,188 @@ export class ScoringService {
     return Math.max(0, Math.min(100, Math.round(value)));
   }
 
-  private copy(locale: AuditLocale): {
-    quickWins: Record<string, string>;
-  } {
+  private computeSampledCoverage(
+    sampledUrls: UrlIndexabilityResult[],
+  ): SampledCoverage {
+    return {
+      missingTitle: sampledUrls.filter((entry) => !(entry.title ?? '').trim())
+        .length,
+      missingMeta: sampledUrls.filter(
+        (entry) => !(entry.metaDescription ?? '').trim(),
+      ).length,
+      badH1: sampledUrls.filter((entry) => (entry.h1Count ?? 1) !== 1).length,
+      canonicalIssues: sampledUrls.filter(
+        (entry) => !entry.canonical || (entry.canonicalCount ?? 0) !== 1,
+      ).length,
+      missingLang: sampledUrls.filter((entry) => !entry.htmlLang).length,
+      indexabilityErrors: sampledUrls.filter(
+        (entry) => !entry.indexable || (entry.statusCode ?? 500) >= 400,
+      ).length,
+    };
+  }
+
+  private scoreSeo(
+    homepage: HomepageAuditSnapshot,
+    sampledCount: number,
+    coverage: SampledCoverage,
+    t: ScoringCopy,
+    quickWins: string[],
+  ): number {
+    let seo = 100;
+    if (!homepage.title) {
+      seo -= 18;
+      quickWins.push(t.quickWins.homeTitle);
+    }
+    if (!homepage.metaDescription) {
+      seo -= 15;
+      quickWins.push(t.quickWins.homeMeta);
+    }
+    if (homepage.h1Count !== 1) {
+      seo -= 10;
+      quickWins.push(t.quickWins.homeH1);
+    }
+    if (homepage.canonicalUrls.length === 0) {
+      seo -= 10;
+      quickWins.push(t.quickWins.homeCanonical);
+    }
+
+    const coveragePenalties: ReadonlyArray<{
+      count: number;
+      weight: number;
+      cap: number;
+      quickWin: string;
+    }> = [
+      {
+        count: coverage.missingTitle,
+        weight: 20,
+        cap: 15,
+        quickWin: t.quickWins.sampleTitleCoverage,
+      },
+      {
+        count: coverage.missingMeta,
+        weight: 18,
+        cap: 14,
+        quickWin: t.quickWins.sampleMetaCoverage,
+      },
+      {
+        count: coverage.badH1,
+        weight: 12,
+        cap: 10,
+        quickWin: t.quickWins.sampleH1Structure,
+      },
+      {
+        count: coverage.canonicalIssues,
+        weight: 12,
+        cap: 10,
+        quickWin: t.quickWins.sampleCanonicalConsistency,
+      },
+      {
+        count: coverage.missingLang,
+        weight: 10,
+        cap: 8,
+        quickWin: t.quickWins.sampleLangCoverage,
+      },
+    ];
+
+    for (const penalty of coveragePenalties) {
+      if (sampledCount === 0 || penalty.count === 0) continue;
+      seo -= Math.min(
+        penalty.cap,
+        Math.round((penalty.count / sampledCount) * penalty.weight),
+      );
+      quickWins.push(penalty.quickWin);
+    }
+
+    return seo;
+  }
+
+  private scorePerformance(
+    homepage: HomepageAuditSnapshot,
+    t: ScoringCopy,
+    quickWins: string[],
+  ): number {
+    let performance = 100;
+    if (homepage.ttfbMs > 800) {
+      performance -= 18;
+      quickWins.push(t.quickWins.ttfb);
+    }
+    if (homepage.totalResponseMs > 2000) {
+      performance -= 12;
+      quickWins.push(t.quickWins.totalResponse);
+    }
+    if ((homepage.contentLength ?? 0) > 500_000) {
+      performance -= 10;
+      quickWins.push(t.quickWins.pageWeight);
+    }
+    return performance;
+  }
+
+  private scoreTechnical(
+    homepage: HomepageAuditSnapshot,
+    sitemapUrls: string[],
+    sampledCount: number,
+    coverage: SampledCoverage,
+    t: ScoringCopy,
+    quickWins: string[],
+  ): number {
+    let technical = 100;
+    if (!homepage.https) {
+      technical -= 25;
+      quickWins.push(t.quickWins.https);
+    }
+    if (homepage.statusCode >= 400) {
+      technical -= 30;
+      quickWins.push(t.quickWins.homeStatus);
+    }
+    if (sitemapUrls.length === 0) {
+      technical -= 15;
+      quickWins.push(t.quickWins.sitemap);
+    }
+    if (sampledCount > 0 && coverage.indexabilityErrors > 0) {
+      technical -= Math.min(
+        25,
+        Math.round((coverage.indexabilityErrors / sampledCount) * 40),
+      );
+      quickWins.push(t.quickWins.indexability);
+    }
+    return technical;
+  }
+
+  private scoreTrust(
+    homepage: HomepageAuditSnapshot,
+    t: ScoringCopy,
+    quickWins: string[],
+  ): number {
+    let trust = 100;
+    if (!homepage.hasStructuredData) {
+      trust -= 12;
+      quickWins.push(t.quickWins.structuredData);
+    }
+    if (homepage.openGraphTags.length === 0) {
+      trust -= 8;
+      quickWins.push(t.quickWins.openGraph);
+    }
+    return trust;
+  }
+
+  private scoreConversion(
+    homepage: HomepageAuditSnapshot,
+    t: ScoringCopy,
+    quickWins: string[],
+  ): number {
+    let conversion = 100;
+    if (!homepage.hasForms) {
+      conversion -= 20;
+      quickWins.push(t.quickWins.forms);
+    }
+    if (!homepage.hasCookieBanner) {
+      conversion -= 5;
+      quickWins.push(t.quickWins.cookies);
+    }
+    return conversion;
+  }
+
+  private copy(locale: AuditLocale): ScoringCopy {
     if (locale === 'en') {
       return {
         quickWins: {

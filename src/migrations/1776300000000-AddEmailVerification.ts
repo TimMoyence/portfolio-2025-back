@@ -2,18 +2,15 @@ import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddEmailVerification1776300000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Ajouter la colonne email_verified a la table users (defaut false)
     await queryRunner.query(`
       ALTER TABLE "users"
       ADD COLUMN "email_verified" boolean NOT NULL DEFAULT false;
     `);
 
-    // Marquer les utilisateurs existants comme verifies (migration douce)
     await queryRunner.query(`
       UPDATE "users" SET "email_verified" = true;
     `);
 
-    // Creer la table des tokens de verification email
     await queryRunner.query(`
       CREATE TABLE "email_verification_tokens" (
         "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),

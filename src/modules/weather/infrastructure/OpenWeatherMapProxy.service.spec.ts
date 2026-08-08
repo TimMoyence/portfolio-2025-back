@@ -1,63 +1,22 @@
 import {
   buildDetailedCurrentWeather,
   buildDetailedForecastResult,
+  buildOwmCurrentPayload,
+  buildOwmForecastPayload,
 } from '../../../../test/factories/weather.factory';
+import {
+  httpErrorResponse,
+  mockAbortableFetchOnce,
+  okJsonResponse,
+} from '../../../../test/helpers/fetch-spy';
 import { OpenWeatherMapProxyService } from './OpenWeatherMapProxy.service';
 
-const mockOWMCurrentResponse = {
-  dt: 1743422400,
-  main: {
-    temp: 18.5,
-    feels_like: 17.2,
-    temp_min: 14.0,
-    temp_max: 22.0,
-    pressure: 1013,
-    humidity: 65,
-    sea_level: 1013,
-    grnd_level: 1010,
-  },
-  weather: [
-    { id: 800, main: 'Clear', description: 'ciel degage', icon: '01d' },
-  ],
-  wind: { speed: 3.5, deg: 180, gust: 5.5 },
-  clouds: { all: 40 },
-  visibility: 10000,
+const mockOWMCurrentResponse = buildOwmCurrentPayload({
   rain: undefined,
   snow: undefined,
-  sys: { sunrise: 1743400800, sunset: 1743449400 },
-  timezone: 3600,
-};
+});
 
-const mockOWMForecastResponse = {
-  list: [
-    {
-      dt: 1743422400,
-      main: {
-        temp: 18.5,
-        feels_like: 17.2,
-        temp_min: 14.0,
-        temp_max: 22.0,
-        pressure: 1013,
-        humidity: 65,
-        sea_level: 1013,
-        grnd_level: 1010,
-      },
-      weather: [
-        { id: 800, main: 'Clear', description: 'ciel degage', icon: '01d' },
-      ],
-      wind: { speed: 3.5, deg: 180, gust: 5.5 },
-      clouds: { all: 40 },
-      visibility: 10000,
-      pop: 0.1,
-    },
-  ],
-  city: {
-    name: 'Paris',
-    country: 'FR',
-    coord: { lat: 48.8566, lon: 2.3522 },
-    timezone: 3600,
-  },
-};
+const mockOWMForecastResponse = buildOwmForecastPayload();
 
 describe('OpenWeatherMapProxyService', () => {
   let service: OpenWeatherMapProxyService;
@@ -74,10 +33,7 @@ describe('OpenWeatherMapProxyService', () => {
 
   describe('getCurrentDetailed', () => {
     it('devrait retourner les donnees meteo detaillees courantes', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockOWMCurrentResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockOWMCurrentResponse));
 
       const result = await service.getCurrentDetailed(48.8566, 2.3522);
 
@@ -95,10 +51,7 @@ describe('OpenWeatherMapProxyService', () => {
     });
 
     it('devrait utiliser le cache pour un second appel identique', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockOWMCurrentResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockOWMCurrentResponse));
 
       await service.getCurrentDetailed(48.8566, 2.3522);
       const result = await service.getCurrentDetailed(48.8566, 2.3522);
@@ -108,10 +61,7 @@ describe('OpenWeatherMapProxyService', () => {
     });
 
     it("devrait inclure la cle API dans l'URL", async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockOWMCurrentResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockOWMCurrentResponse));
 
       await service.getCurrentDetailed(48.8566, 2.3522);
 
@@ -124,10 +74,7 @@ describe('OpenWeatherMapProxyService', () => {
 
   describe('getForecastDetailed', () => {
     it('devrait retourner les previsions detaillees avec agregation journaliere', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockOWMForecastResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockOWMForecastResponse));
 
       const result = await service.getForecastDetailed(48.8566, 2.3522);
 
@@ -140,10 +87,7 @@ describe('OpenWeatherMapProxyService', () => {
     });
 
     it('devrait utiliser le cache pour un second appel identique', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockOWMForecastResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockOWMForecastResponse));
 
       await service.getForecastDetailed(48.8566, 2.3522);
       const result = await service.getForecastDetailed(48.8566, 2.3522);
@@ -155,16 +99,7 @@ describe('OpenWeatherMapProxyService', () => {
 
   describe('gestion des erreurs', () => {
     it('devrait lancer une erreur en cas de timeout', async () => {
-      fetchSpy.mockImplementationOnce(
-        (_url: string, options: { signal: AbortSignal }) => {
-          return new Promise((_resolve, reject) => {
-            options.signal.addEventListener('abort', () => {
-              const error = new DOMException('Aborted', 'AbortError');
-              reject(error);
-            });
-          });
-        },
-      );
+      mockAbortableFetchOnce(fetchSpy);
 
       jest.useFakeTimers();
 
@@ -177,10 +112,7 @@ describe('OpenWeatherMapProxyService', () => {
     });
 
     it('devrait lancer une erreur en cas de reponse HTTP non-OK', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: false,
-        status: 401,
-      });
+      fetchSpy.mockResolvedValueOnce(httpErrorResponse(401));
 
       await expect(service.getCurrentDetailed(48.8566, 2.3522)).rejects.toThrow(
         'OpenWeatherMap HTTP 401',

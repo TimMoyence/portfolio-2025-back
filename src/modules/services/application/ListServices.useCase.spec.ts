@@ -2,12 +2,12 @@
 import { ListServicesUseCase } from './ListServices.useCase';
 import type { IServicesRepository } from '../domain/IServices.repository';
 import type { ServiceListQuery } from '../domain/ServiceList.query';
-import type { PaginatedResult } from '../../../common/domain/pagination.types';
 import type { Services } from '../domain/Services';
 import {
   buildService,
   createMockServicesRepo,
 } from '../../../../test/factories/services-legacy.factory';
+import { buildPaginatedResult } from '../../../../test/factories/pagination.factory';
 
 describe('ListServicesUseCase', () => {
   let useCase: ListServicesUseCase;
@@ -30,13 +30,7 @@ describe('ListServicesUseCase', () => {
       buildService(),
       buildService({ id: 'service-2', slug: 'design-ui' }),
     ];
-    const expected: PaginatedResult<Services> = {
-      items: services,
-      page: 1,
-      limit: 10,
-      total: 2,
-      totalPages: 1,
-    };
+    const expected = buildPaginatedResult(services);
     repo.findAll.mockResolvedValue(expected);
 
     const result = await useCase.execute(defaultQuery);
@@ -46,13 +40,7 @@ describe('ListServicesUseCase', () => {
   });
 
   it('devrait retourner une liste vide si aucun service', async () => {
-    const expected: PaginatedResult<Services> = {
-      items: [],
-      page: 1,
-      limit: 10,
-      total: 0,
-      totalPages: 0,
-    };
+    const expected = buildPaginatedResult<Services>([]);
     repo.findAll.mockResolvedValue(expected);
 
     const result = await useCase.execute(defaultQuery);

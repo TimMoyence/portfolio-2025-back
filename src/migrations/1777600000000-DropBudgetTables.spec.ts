@@ -1,12 +1,13 @@
 import type { QueryRunner } from 'typeorm';
 import { DropBudgetTables1777600000000 } from './1777600000000-DropBudgetTables';
 
+const DROPPED_TABLE_RE = /DROP TABLE IF EXISTS "([a-z_]+)"/i;
+
 describe('DropBudgetTables1777600000000', () => {
   let queries: string[];
   let queryRunner: QueryRunner;
   let migration: DropBudgetTables1777600000000;
 
-  /** Ordre inverse des dependances FK attendu pour les DROP. */
   const expectedDropOrder = [
     'budget_member_contributions',
     'budget_goals',
@@ -36,7 +37,6 @@ describe('DropBudgetTables1777600000000', () => {
       for (const table of expectedDropOrder) {
         expect(queries.join('\n')).toContain(`"${table}"`);
       }
-      // Seules les 9 tables budget sont touchees.
       const dropStatements = queries.filter((sql) => /DROP TABLE/i.test(sql));
       expect(dropStatements).toHaveLength(expectedDropOrder.length);
     });
@@ -44,7 +44,7 @@ describe('DropBudgetTables1777600000000', () => {
     it('respecte l ordre inverse des dependances FK', async () => {
       await migration.up(queryRunner);
       const droppedTables = queries
-        .map((sql) => sql.match(/DROP TABLE IF EXISTS "([a-z_]+)"/i)?.[1])
+        .map((sql) => DROPPED_TABLE_RE.exec(sql)?.[1])
         .filter((name): name is string => Boolean(name));
       expect(droppedTables).toEqual(expectedDropOrder);
     });

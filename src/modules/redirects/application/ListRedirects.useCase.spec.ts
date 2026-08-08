@@ -2,12 +2,12 @@
 import { ListRedirectsUseCase } from './ListRedirects.useCase';
 import type { IRedirectsRepository } from '../domain/IRedirects.repository';
 import type { RedirectListQuery } from '../domain/RedirectList.query';
-import type { PaginatedResult } from '../../../common/domain/pagination.types';
 import type { Redirects } from '../domain/Redirects';
 import {
   buildRedirect,
   createMockRedirectsRepo,
 } from '../../../../test/factories/redirects.factory';
+import { buildPaginatedResult } from '../../../../test/factories/pagination.factory';
 
 describe('ListRedirectsUseCase', () => {
   let useCase: ListRedirectsUseCase;
@@ -30,13 +30,7 @@ describe('ListRedirectsUseCase', () => {
       buildRedirect(),
       buildRedirect({ id: 'redirect-2', slug: 'autre-lien' }),
     ];
-    const expected: PaginatedResult<Redirects> = {
-      items: redirects,
-      page: 1,
-      limit: 10,
-      total: 2,
-      totalPages: 1,
-    };
+    const expected = buildPaginatedResult(redirects);
     repo.findAll.mockResolvedValue(expected);
 
     const result = await useCase.execute(defaultQuery);
@@ -46,13 +40,7 @@ describe('ListRedirectsUseCase', () => {
   });
 
   it('devrait retourner une liste vide si aucune redirection', async () => {
-    const expected: PaginatedResult<Redirects> = {
-      items: [],
-      page: 1,
-      limit: 10,
-      total: 0,
-      totalPages: 0,
-    };
+    const expected = buildPaginatedResult<Redirects>([]);
     repo.findAll.mockResolvedValue(expected);
 
     const result = await useCase.execute(defaultQuery);

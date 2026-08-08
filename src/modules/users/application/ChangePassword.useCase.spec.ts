@@ -12,6 +12,9 @@ import {
   createMockPasswordService,
 } from '../../../../test/factories/user.factory';
 
+const CURRENT_CREDENTIAL = 'OldPassword123';
+const NEXT_CREDENTIAL = 'NewPassword456';
+
 describe('ChangePasswordUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
   let passwordService: jest.Mocked<PasswordService>;
@@ -41,8 +44,8 @@ describe('ChangePasswordUseCase', () => {
 
     const dto: ChangePasswordCommand = {
       userId: 'user-1',
-      currentPassword: 'OldPassword123',
-      newPassword: 'NewPassword456',
+      currentPassword: CURRENT_CREDENTIAL,
+      newPassword: NEXT_CREDENTIAL,
     };
 
     const result = await useCase.execute(dto);

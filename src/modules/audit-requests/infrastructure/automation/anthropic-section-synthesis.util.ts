@@ -39,19 +39,21 @@ const DEFAULT_MAX_TOKENS = 4000;
  * avec le format attendu par Anthropic pour un tool input. Supprime
  * la cle `$schema` qui n'est pas acceptee par Anthropic.
  */
-function zodToAnthropicInputSchema(schema: ZodType<unknown>): object {
+function zodToAnthropicInputSchema(
+  schema: ZodType<unknown>,
+): Anthropic.Tool['input_schema'] {
   const jsonSchema = z.toJSONSchema(schema, {
     target: 'draft-2020-12',
   }) as Record<string, unknown>;
   const cleaned = { ...jsonSchema };
   delete cleaned.$schema;
-  return cleaned;
+  return cleaned as Anthropic.Tool['input_schema'];
 }
 
 /**
- * Prefixe les blocs system avec cache_control=ephemeral sur le dernier
- * bloc. L'ordre est important : tools → system → messages ; poser le
- * marqueur sur le dernier bloc system cache tools+system ensemble.
+ * Le cache de @anthropic-ai/sdk porte sur le prefixe tools + system +
+ * messages pris dans cet ordre : le marqueur pose sur le dernier bloc
+ * system couvre donc aussi les tools.
  */
 function buildCachedSystemBlocks(systemBlocks: string[]): Array<{
   type: 'text';
@@ -67,12 +69,6 @@ function buildCachedSystemBlocks(systemBlocks: string[]): Array<{
   });
 }
 
-/**
- * Emet les metriques Prometheus (tokens input/output/cache) et un log
- * d'usage au niveau info. Le type cached est comptabilise sur les tokens
- * relus depuis le cache (cache hit), distinct de cache_creation qui
- * represente les tokens ecrits (cache miss, 1.25x cout).
- */
 function emitUsageMetrics(
   usage: AnthropicUsageSnapshot,
   params: Pick<
@@ -161,8 +157,7 @@ export async function invokeAnthropicStructuredSection<T>(
           {
             name: toolName,
             description: `Emit the ${section} section payload strictly matching the provided schema.`,
-            // Anthropic accepts any valid JSON Schema object for inputs.
-            input_schema: inputSchema as never,
+            input_schema: inputSchema,
           },
         ],
         tool_choice: { type: 'tool', name: toolName },

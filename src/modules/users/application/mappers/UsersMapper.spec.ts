@@ -3,10 +3,12 @@ import type { CreateUserCommand } from '../dto/CreateUser.command';
 import type { UpdateUserCommand } from '../dto/UpdateUser.command';
 import { UsersMapper } from './UsersMapper';
 
+const PLAIN_CREDENTIAL = 'StrongPassword123!';
+
 describe('UsersMapper', () => {
   const baseCreateCommand: CreateUserCommand = {
     email: 'john@example.com',
-    password: 'StrongPassword123!',
+    password: PLAIN_CREDENTIAL,
     firstName: 'John',
     lastName: 'Doe',
   };

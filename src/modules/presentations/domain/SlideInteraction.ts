@@ -1,20 +1,20 @@
-export interface PollInteraction {
+interface PollInteraction {
   type: 'poll';
   question: string;
   options: string[];
   multiSelect?: boolean;
 }
 
-export type PresentInteraction = PollInteraction;
+type PresentInteraction = PollInteraction;
 
-export interface ReflectionInteraction {
+interface ReflectionInteraction {
   type: 'reflection';
   question: string;
   placeholder: string;
   rows?: number;
 }
 
-export type ScrollInteraction = ReflectionInteraction;
+type ScrollInteraction = ReflectionInteraction;
 
 export interface SlideInteractions {
   present?: PresentInteraction[];

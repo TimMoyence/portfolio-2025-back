@@ -15,6 +15,7 @@ import { ResourceNotFoundError } from '../../domain/errors/ResourceNotFoundError
 import { TokenExpiredError } from '../../domain/errors/TokenExpiredError';
 import { TokenReuseDetectedError } from '../../domain/errors/TokenReuseDetectedError';
 import { UserNotFoundError } from '../../domain/errors/UserNotFoundError';
+import { httpProblemTarget } from './http-problem-target';
 
 /**
  * @see https://www.rfc-editor.org/rfc/rfc7807
@@ -22,11 +23,7 @@ import { UserNotFoundError } from '../../domain/errors/UserNotFoundError';
 @Catch(DomainError)
 export class DomainExceptionFilter implements ExceptionFilter {
   catch(exception: DomainError, host: ArgumentsHost): void {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<{
-      status(code: number): { json(body: unknown): void };
-    }>();
-    const request = ctx.getRequest<{ url: string }>();
+    const { response, instance } = httpProblemTarget(host);
 
     const status = this.resolveHttpStatus(exception);
 
@@ -35,7 +32,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
       title: HttpStatus[status] ?? 'Error',
       status,
       detail: exception.message,
-      instance: request.url,
+      instance,
     };
 
     const code = (exception as { code?: string }).code;

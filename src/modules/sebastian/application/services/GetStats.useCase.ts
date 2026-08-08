@@ -3,7 +3,7 @@ import type { ISebastianEntryRepository } from '../../domain/ISebastianEntry.rep
 import { SEBASTIAN_ENTRY_REPOSITORY } from '../../domain/token';
 import type { GetStatsQuery } from '../dto/GetStats.query';
 
-export interface CategoryStats {
+interface CategoryStats {
   category: string;
   total: number;
   average: number;

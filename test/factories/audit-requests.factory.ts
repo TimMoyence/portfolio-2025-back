@@ -1,3 +1,4 @@
+import type { ClientReportSynthesis } from '../../src/modules/audit-requests/domain/AuditReportTiers';
 import type { IAuditRequestsRepository } from '../../src/modules/audit-requests/domain/IAuditRequests.repository';
 import type { IAuditNotifierPort } from '../../src/modules/audit-requests/domain/IAuditNotifier.port';
 import type { IAuditQueuePort } from '../../src/modules/audit-requests/domain/IAuditQueue.port';
@@ -151,5 +152,19 @@ export function buildLangchainAuditInput(
       unknowns: [],
     },
     ...overrides,
+  };
+}
+
+export function buildClientReportSynthesis(): ClientReportSynthesis {
+  return {
+    executiveSummary: 'Synthese client',
+    topFindings: [],
+    googleVsAiMatrix: {
+      googleVisibility: { score: 80, summary: 'OK' },
+      aiVisibility: { score: 40, summary: 'A ameliorer' },
+    },
+    pillarScorecard: [],
+    quickWins: [],
+    cta: { title: 'CTA', description: 'Desc', actionLabel: 'Action' },
   };
 }

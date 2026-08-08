@@ -80,6 +80,31 @@ export function extractInternalLinks(
   return Array.from(links).slice(0, 30);
 }
 
+export function extractCanonicalUrls($: CheerioAPI): string[] {
+  return $('link[rel="canonical"]')
+    .toArray()
+    .map((node) => $(node).attr('href')?.trim())
+    .filter((href): href is string => Boolean(href));
+}
+
+export function hasJsonLdStructuredData($: CheerioAPI): boolean {
+  return $('script[type="application/ld+json"]').length > 0;
+}
+
+export function extractOpenGraphProperties($: CheerioAPI): string[] {
+  return $('meta[property^="og:"]')
+    .toArray()
+    .map((node) => $(node).attr('property')?.trim())
+    .filter((value): value is string => Boolean(value));
+}
+
+export function extractTwitterTagNames($: CheerioAPI): string[] {
+  return $('meta[name^="twitter:"]')
+    .toArray()
+    .map((node) => $(node).attr('name')?.trim())
+    .filter((value): value is string => Boolean(value));
+}
+
 export function pickHeaders(
   headers: Record<string, string>,
   keys: readonly string[],

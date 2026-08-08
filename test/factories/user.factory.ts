@@ -111,3 +111,11 @@ export function createMockUseCase<T>(
       : jest.fn().mockRejectedValue(outcome.rejects);
   return { execute } as unknown as jest.Mocked<T>;
 }
+
+export function buildSignedToken(overrides?: {
+  token?: string;
+  expiresIn?: number;
+  expiresAt?: number;
+}): { token: string; expiresIn: number; expiresAt: number } {
+  return { token: 'jwt-token', expiresIn: 900, expiresAt: 0, ...overrides };
+}

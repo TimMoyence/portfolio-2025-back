@@ -9,15 +9,45 @@ import type {
   IWeatherProxy,
   WeatherAlertResult,
 } from '../domain/IWeatherProxy.port';
-import type { DetailedForecastResult } from '../domain/IOpenWeatherMapProxy.port';
+import type {
+  DetailedCurrentWeather,
+  DetailedForecastResult,
+} from '../domain/IOpenWeatherMapProxy.port';
 import { OpenMeteoProxyService } from './OpenMeteoProxy.service';
 import { OpenWeatherMapProxyService } from './OpenWeatherMapProxy.service';
 
 const METRES_PER_KILOMETRE = 1_000;
 
-/** Convertit des kilometres (port OWM) en metres (contrat Open-Meteo). */
+const OWM_GROUP_THUNDERSTORM = 2;
+const OWM_GROUP_DRIZZLE = 3;
+const OWM_GROUP_RAIN = 5;
+const OWM_GROUP_SNOW = 6;
+const OWM_GROUP_ATMOSPHERE = 7;
+const OWM_GROUP_CLEAR_OR_CLOUDS = 8;
+const OWM_CONDITION_GROUP_SIZE = 100;
+const OWM_FREEZING_RAIN_ID = 511;
+const OWM_CLEAR_SKY_ID = 800;
+const OWM_SCATTERED_CLOUDS_MAX_ID = 802;
+
+const WMO_CLEAR_SKY = 0;
+const WMO_PARTLY_CLOUDY = 2;
+const WMO_OVERCAST = 3;
+const WMO_FOG = 45;
+const WMO_DRIZZLE = 51;
+const WMO_RAIN = 61;
+const WMO_FREEZING_RAIN = 66;
+const WMO_SNOW = 71;
+const WMO_THUNDERSTORM = 95;
+
 function kilometresToMetres(kilometres: number): number {
   return kilometres * METRES_PER_KILOMETRE;
+}
+
+function cloudCoverToWmo(conditionId: number): number {
+  if (conditionId === OWM_CLEAR_SKY_ID) return WMO_CLEAR_SKY;
+  return conditionId <= OWM_SCATTERED_CLOUDS_MAX_ID
+    ? WMO_PARTLY_CLOUDY
+    : WMO_OVERCAST;
 }
 
 @Injectable()
@@ -148,15 +178,8 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
     }
   }
 
-  /**
-   * Convertit les donnees detaillees OWM en ForecastResult approximatif.
-   *
-   * Le mapping est approximatif car les structures OWM et Open-Meteo
-   * different significativement (OWM utilise des conditionId, Open-Meteo
-   * des weather_code WMO ; OWM donne des previsions 3h, Open-Meteo horaires).
-   */
   private mapOwmToForecast(
-    current: import('../domain/IOpenWeatherMapProxy.port').DetailedCurrentWeather,
+    current: DetailedCurrentWeather,
     forecast: DetailedForecastResult,
   ): ForecastResult {
     return {
@@ -215,22 +238,24 @@ export class ResilientWeatherProxyService implements IWeatherProxy {
    * ce mapping couvre les cas principaux.
    */
   private owmConditionToWmo(conditionId: number): number {
-    const group = Math.floor(conditionId / 100);
+    const group = Math.floor(conditionId / OWM_CONDITION_GROUP_SIZE);
     switch (group) {
-      case 2:
-        return 95; // Orage
-      case 3:
-        return 51; // Bruine
-      case 5:
-        return conditionId === 511 ? 66 : 61; // Pluie / pluie verglacante
-      case 6:
-        return 71; // Neige
-      case 7:
-        return 45; // Brouillard / brume
-      case 8:
-        return conditionId === 800 ? 0 : conditionId <= 802 ? 2 : 3; // Clair / nuageux
+      case OWM_GROUP_THUNDERSTORM:
+        return WMO_THUNDERSTORM;
+      case OWM_GROUP_DRIZZLE:
+        return WMO_DRIZZLE;
+      case OWM_GROUP_RAIN:
+        return conditionId === OWM_FREEZING_RAIN_ID
+          ? WMO_FREEZING_RAIN
+          : WMO_RAIN;
+      case OWM_GROUP_SNOW:
+        return WMO_SNOW;
+      case OWM_GROUP_ATMOSPHERE:
+        return WMO_FOG;
+      case OWM_GROUP_CLEAR_OR_CLOUDS:
+        return cloudCoverToWmo(conditionId);
       default:
-        return 0;
+        return WMO_CLEAR_SKY;
     }
   }
 }

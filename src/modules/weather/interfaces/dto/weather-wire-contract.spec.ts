@@ -84,9 +84,12 @@ describe('Contrat HTTP des DTO meteo detailles', () => {
     'daily',
   ];
 
-  /** Reproduit la serialisation effectuee par Nest avant l'envoi HTTP. */
   function serialize(dto: unknown): Record<string, unknown> {
     return JSON.parse(JSON.stringify(dto)) as Record<string, unknown>;
+  }
+
+  function alphabetical(keys: string[]): string[] {
+    return [...keys].sort((a, b) => a.localeCompare(b));
   }
 
   describe('GET /weather/current-detailed', () => {
@@ -95,8 +98,8 @@ describe('Contrat HTTP des DTO meteo detailles', () => {
         DetailedCurrentWeatherDto.fromDomain(buildDetailedCurrentWeather()),
       );
 
-      expect(Object.keys(payload).sort()).toEqual(
-        [...CURRENT_WIRE_KEYS].sort(),
+      expect(alphabetical(Object.keys(payload))).toEqual(
+        alphabetical(CURRENT_WIRE_KEYS),
       );
     });
 
@@ -127,8 +130,8 @@ describe('Contrat HTTP des DTO meteo detailles', () => {
         DetailedForecastDto.fromDomain(buildDetailedForecastResult()),
       );
 
-      expect(Object.keys(payload).sort()).toEqual(
-        [...FORECAST_WIRE_KEYS].sort(),
+      expect(alphabetical(Object.keys(payload))).toEqual(
+        alphabetical(FORECAST_WIRE_KEYS),
       );
     });
 
@@ -142,7 +145,9 @@ describe('Contrat HTTP des DTO meteo detailles', () => {
       );
 
       const [hourly] = payload.hourly as Record<string, unknown>[];
-      expect(Object.keys(hourly).sort()).toEqual([...HOURLY_WIRE_KEYS].sort());
+      expect(alphabetical(Object.keys(hourly))).toEqual(
+        alphabetical(HOURLY_WIRE_KEYS),
+      );
       expect(hourly.visibility).toBe(8);
     });
 
@@ -156,7 +161,9 @@ describe('Contrat HTTP des DTO meteo detailles', () => {
       );
 
       const [daily] = payload.daily as Record<string, unknown>[];
-      expect(Object.keys(daily).sort()).toEqual([...DAILY_WIRE_KEYS].sort());
+      expect(alphabetical(Object.keys(daily))).toEqual(
+        alphabetical(DAILY_WIRE_KEYS),
+      );
     });
   });
 });

@@ -34,7 +34,7 @@ export class LlmsTxtAnalyzerService {
     if (sections.length === 0) {
       issues.push('Aucune section H2 détectée');
     }
-    if (!/^\s*>/m.test(body)) {
+    if (!/^[ \t]*>/m.test(body)) {
       issues.push('Pas de blockquote de description');
     }
     const complianceScore = this.score(
@@ -75,7 +75,7 @@ export class LlmsTxtAnalyzerService {
     const sections: { title: string; links: number }[] = [];
     let current: { title: string; links: number } | null = null;
     for (const line of lines) {
-      const h2 = /^##\s+(.+)$/.exec(line);
+      const h2 = /^##[ \t]+(\S.*)$/.exec(line);
       if (h2) {
         if (current) sections.push(current);
         current = { title: h2[1].trim(), links: 0 };

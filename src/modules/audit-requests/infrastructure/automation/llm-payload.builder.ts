@@ -3,34 +3,102 @@ import { sanitizePromptInput } from './shared/prompt-sanitize.util';
 
 export type LlmPayloadProfile = 'summary' | 'expert' | 'expert_compact';
 
+interface PayloadCaps {
+  quickWins: number;
+  findings: number;
+  affectedUrls: number;
+  sampledUrls: number;
+  pageRecaps: number;
+}
+
+const PROFILE_CAPS: Record<LlmPayloadProfile, PayloadCaps> = {
+  summary: {
+    quickWins: 6,
+    findings: 6,
+    affectedUrls: 4,
+    sampledUrls: 12,
+    pageRecaps: 12,
+  },
+  expert: {
+    quickWins: 10,
+    findings: 10,
+    affectedUrls: 5,
+    sampledUrls: 12,
+    pageRecaps: 12,
+  },
+  expert_compact: {
+    quickWins: 8,
+    findings: 6,
+    affectedUrls: 4,
+    sampledUrls: 8,
+    pageRecaps: 8,
+  },
+};
+
+type SampledUrlEntry = LangchainAuditInput['sampledUrls'][number];
+type PageRecapEntry = LangchainAuditInput['pageRecaps'][number];
+
+function mapSampledUrl(
+  entry: SampledUrlEntry,
+  title: string | null,
+  metaDescription: string | null,
+): Record<string, unknown> {
+  return {
+    url: entry.url,
+    statusCode: entry.statusCode,
+    indexable: entry.indexable,
+    canonical: entry.canonical,
+    title,
+    metaDescription,
+    h1Count: entry.h1Count ?? 0,
+    htmlLang: entry.htmlLang ?? null,
+    canonicalCount: entry.canonicalCount ?? 0,
+    responseTimeMs: entry.responseTimeMs ?? null,
+    server: entry.server ?? null,
+    xPoweredBy: entry.xPoweredBy ?? null,
+    setCookiePatterns: (entry.setCookiePatterns ?? []).slice(0, 8),
+    cacheHeaders: entry.cacheHeaders ?? {},
+    securityHeaders: entry.securityHeaders ?? {},
+    error: entry.error,
+  };
+}
+
+function mapPageRecap(
+  entry: PageRecapEntry,
+  topIssues: string[],
+  recommendations: string[],
+): Record<string, unknown> {
+  return {
+    url: entry.url,
+    priority: entry.priority,
+    wordingScore: entry.wordingScore,
+    trustScore: entry.trustScore,
+    ctaScore: entry.ctaScore,
+    seoCopyScore: entry.seoCopyScore,
+    topIssues,
+    recommendations,
+    source: entry.source,
+  };
+}
+
+function buildSampledUrlsSummary(
+  input: LangchainAuditInput,
+  usedInPrompt: number,
+): Record<string, number> {
+  return {
+    totalInputUrls: input.sampledUrls.length,
+    usedInPrompt,
+    nonIndexableCount: input.sampledUrls.filter((item) => !item.indexable)
+      .length,
+    errorCount: input.sampledUrls.filter((item) => Boolean(item.error)).length,
+  };
+}
+
 export function buildPayload(
   input: LangchainAuditInput,
   profile: LlmPayloadProfile,
 ): Record<string, unknown> {
-  const caps =
-    profile === 'summary'
-      ? {
-          quickWins: 6,
-          findings: 6,
-          affectedUrls: 4,
-          sampledUrls: 12,
-          pageRecaps: 12,
-        }
-      : profile === 'expert'
-        ? {
-            quickWins: 10,
-            findings: 10,
-            affectedUrls: 5,
-            sampledUrls: 12,
-            pageRecaps: 12,
-          }
-        : {
-            quickWins: 8,
-            findings: 6,
-            affectedUrls: 4,
-            sampledUrls: 8,
-            pageRecaps: 8,
-          };
+  const caps = PROFILE_CAPS[profile];
 
   const compactedFindings = compactFindings(
     input,
@@ -78,42 +146,26 @@ export function buildSectionPayloads(input: LangchainAuditInput): {
     affectedUrls: finding.affectedUrls.slice(0, 3),
   }));
 
-  const compactedRecaps = input.pageRecaps.slice(0, 10).map((entry) => ({
-    url: entry.url,
-    priority: entry.priority,
-    wordingScore: entry.wordingScore,
-    trustScore: entry.trustScore,
-    ctaScore: entry.ctaScore,
-    seoCopyScore: entry.seoCopyScore,
-    topIssues: entry.topIssues
-      .map((item) => compactText(item, 100))
-      .slice(0, 3),
-    recommendations: entry.recommendations
-      .map((item) => compactText(item, 120))
-      .slice(0, 3),
-    source: entry.source,
-  }));
+  const compactedRecaps = input.pageRecaps
+    .slice(0, 10)
+    .map((entry) =>
+      mapPageRecap(
+        entry,
+        entry.topIssues.map((item) => compactText(item, 100)).slice(0, 3),
+        entry.recommendations.map((item) => compactText(item, 120)).slice(0, 3),
+      ),
+    );
 
-  const compactedUrls = input.sampledUrls.slice(0, 10).map((entry) => ({
-    url: entry.url,
-    statusCode: entry.statusCode,
-    indexable: entry.indexable,
-    canonical: entry.canonical,
-    title: sanitizePromptInput(compactText(entry.title ?? '', 120)) || null,
-    metaDescription:
-      sanitizePromptInput(compactText(entry.metaDescription ?? '', 180)) ||
-      null,
-    h1Count: entry.h1Count ?? 0,
-    htmlLang: entry.htmlLang ?? null,
-    canonicalCount: entry.canonicalCount ?? 0,
-    responseTimeMs: entry.responseTimeMs ?? null,
-    server: entry.server ?? null,
-    xPoweredBy: entry.xPoweredBy ?? null,
-    setCookiePatterns: (entry.setCookiePatterns ?? []).slice(0, 8),
-    cacheHeaders: entry.cacheHeaders ?? {},
-    securityHeaders: entry.securityHeaders ?? {},
-    error: entry.error,
-  }));
+  const compactedUrls = input.sampledUrls
+    .slice(0, 10)
+    .map((entry) =>
+      mapSampledUrl(
+        entry,
+        sanitizePromptInput(compactText(entry.title ?? '', 120)) || null,
+        sanitizePromptInput(compactText(entry.metaDescription ?? '', 180)) ||
+          null,
+      ),
+    );
 
   const signalBuckets = {
     crawl: {
@@ -201,43 +253,32 @@ function compactSampledUrls(
   input: LangchainAuditInput,
   maxUrls: number,
 ): Array<Record<string, unknown>> {
-  return input.sampledUrls.slice(0, maxUrls).map((entry) => ({
-    url: entry.url,
-    statusCode: entry.statusCode,
-    indexable: entry.indexable,
-    canonical: entry.canonical,
-    title: entry.title ? sanitizePromptInput(entry.title) : null,
-    metaDescription: entry.metaDescription
-      ? sanitizePromptInput(entry.metaDescription)
-      : null,
-    h1Count: entry.h1Count ?? 0,
-    htmlLang: entry.htmlLang ?? null,
-    canonicalCount: entry.canonicalCount ?? 0,
-    responseTimeMs: entry.responseTimeMs ?? null,
-    server: entry.server ?? null,
-    xPoweredBy: entry.xPoweredBy ?? null,
-    setCookiePatterns: (entry.setCookiePatterns ?? []).slice(0, 8),
-    cacheHeaders: entry.cacheHeaders ?? {},
-    securityHeaders: entry.securityHeaders ?? {},
-    error: entry.error,
-  }));
+  return input.sampledUrls
+    .slice(0, maxUrls)
+    .map((entry) =>
+      mapSampledUrl(
+        entry,
+        entry.title ? sanitizePromptInput(entry.title) : null,
+        entry.metaDescription
+          ? sanitizePromptInput(entry.metaDescription)
+          : null,
+      ),
+    );
 }
 
 function compactPageRecapsBasic(
   input: LangchainAuditInput,
   maxRecaps: number,
 ): Array<Record<string, unknown>> {
-  return input.pageRecaps.slice(0, maxRecaps).map((entry) => ({
-    url: entry.url,
-    priority: entry.priority,
-    wordingScore: entry.wordingScore,
-    trustScore: entry.trustScore,
-    ctaScore: entry.ctaScore,
-    seoCopyScore: entry.seoCopyScore,
-    topIssues: entry.topIssues.slice(0, 3),
-    recommendations: entry.recommendations.slice(0, 3),
-    source: entry.source,
-  }));
+  return input.pageRecaps
+    .slice(0, maxRecaps)
+    .map((entry) =>
+      mapPageRecap(
+        entry,
+        entry.topIssues.slice(0, 3),
+        entry.recommendations.slice(0, 3),
+      ),
+    );
 }
 
 function buildEvidenceBuckets(
@@ -250,27 +291,19 @@ function buildEvidenceBuckets(
     evidenceBuckets: {
       crawl: {
         keyChecks: input.keyChecks,
-        sampledUrlsSummary: {
-          totalInputUrls: input.sampledUrls.length,
-          usedInPrompt: compactedSampledUrls.length,
-          nonIndexableCount: input.sampledUrls.filter((item) => !item.indexable)
-            .length,
-          errorCount: input.sampledUrls.filter((item) => Boolean(item.error))
-            .length,
-        },
+        sampledUrlsSummary: buildSampledUrlsSummary(
+          input,
+          compactedSampledUrls.length,
+        ),
       },
       findings: compactedFindings,
       pageRecaps: compactedPageRecaps,
       techFingerprint: input.techFingerprint,
     },
-    sampledUrlsSummary: {
-      totalInputUrls: input.sampledUrls.length,
-      usedInPrompt: compactedSampledUrls.length,
-      nonIndexableCount: input.sampledUrls.filter((item) => !item.indexable)
-        .length,
-      errorCount: input.sampledUrls.filter((item) => Boolean(item.error))
-        .length,
-    },
+    sampledUrlsSummary: buildSampledUrlsSummary(
+      input,
+      compactedSampledUrls.length,
+    ),
     pageRecapSummary: {
       totalInputPages: input.pageRecaps.length,
       usedInPrompt: compactedPageRecaps.length,

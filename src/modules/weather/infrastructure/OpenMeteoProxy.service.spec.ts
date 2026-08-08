@@ -8,6 +8,11 @@ import {
   buildForecastResult,
   buildHistoricalResult,
 } from '../../../../test/factories/weather.factory';
+import {
+  httpErrorResponse,
+  mockAbortableFetchOnce,
+  okJsonResponse,
+} from '../../../../test/helpers/fetch-spy';
 
 const mockGeocodingResponse: GeocodingResult = {
   results: [
@@ -40,10 +45,7 @@ describe('OpenMeteoProxyService', () => {
 
   describe('searchCity', () => {
     it('devrait retourner les resultats de geocodage', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockGeocodingResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockGeocodingResponse));
 
       const result = await service.searchCity('Paris');
 
@@ -57,10 +59,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait utiliser le cache pour un second appel identique', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockGeocodingResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockGeocodingResponse));
 
       await service.searchCity('Paris', 'fr', 5);
       const result = await service.searchCity('Paris', 'fr', 5);
@@ -72,10 +71,7 @@ describe('OpenMeteoProxyService', () => {
 
   describe('getForecast', () => {
     it('devrait retourner les previsions meteo', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockForecastResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockForecastResponse));
 
       const result = await service.getForecast(48.8566, 2.3522);
 
@@ -86,10 +82,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait inclure les parametres enrichis dans la requete', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockForecastResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockForecastResponse));
 
       await service.getForecast(48.8566, 2.3522);
 
@@ -111,21 +104,18 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait retourner les champs enrichis dans la reponse', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockForecastResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockForecastResponse));
 
       const result = await service.getForecast(48.8566, 2.3522);
 
       expect(result.current.relative_humidity_2m).toBe(65);
       expect(result.current.pressure_msl).toBe(1013);
-      expect(result.current.uv_index).toBe(5.2);
+      expect(result.current.uv_index).toBeCloseTo(5.2, 5);
       expect(result.current.wind_direction_10m).toBe(180);
       expect(result.current.wind_gusts_10m).toBe(20.0);
       expect(result.current.cloud_cover).toBe(40);
       expect(result.current.visibility).toBe(10000);
-      expect(result.current.dew_point_2m).toBe(11.3);
+      expect(result.current.dew_point_2m).toBeCloseTo(11.3, 5);
 
       expect(result.hourly.relative_humidity_2m).toEqual([70]);
       expect(result.hourly.dew_point_2m).toEqual([10.0]);
@@ -139,10 +129,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait utiliser le cache pour un second appel identique', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockForecastResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockForecastResponse));
 
       await service.getForecast(48.8566, 2.3522, 'auto');
       const result = await service.getForecast(48.8566, 2.3522, 'auto');
@@ -156,29 +143,23 @@ describe('OpenMeteoProxyService', () => {
     const mockAirQualityResponse = buildAirQualityResult();
 
     it("devrait retourner les donnees de qualite de l'air", async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockAirQualityResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockAirQualityResponse));
 
       const result = await service.getAirQuality(48.8566, 2.3522);
 
       expect(result.current.european_aqi).toBe(42);
       expect(result.current.pm2_5).toBe(8.5);
-      expect(result.current.pm10).toBe(15.2);
+      expect(result.current.pm10).toBeCloseTo(15.2, 5);
       expect(result.current.ozone).toBe(68.0);
-      expect(result.current.nitrogen_dioxide).toBe(12.3);
-      expect(result.current.sulphur_dioxide).toBe(3.1);
+      expect(result.current.nitrogen_dioxide).toBeCloseTo(12.3, 5);
+      expect(result.current.sulphur_dioxide).toBeCloseTo(3.1, 5);
       expect(result.hourly.time).toHaveLength(2);
       expect(result.hourly.european_aqi).toEqual([40, 44]);
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
 
     it("devrait appeler l'API air-quality avec les bons parametres", async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockAirQualityResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockAirQualityResponse));
 
       await service.getAirQuality(48.8566, 2.3522);
 
@@ -194,10 +175,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait utiliser le cache pour un second appel identique', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockAirQualityResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockAirQualityResponse));
 
       await service.getAirQuality(48.8566, 2.3522);
       const result = await service.getAirQuality(48.8566, 2.3522);
@@ -236,20 +214,15 @@ describe('OpenMeteoProxyService', () => {
       },
     };
 
-    it('devrait retourner les trois modeles en parallele', async () => {
+    function mockAllModelsOnce(): void {
       fetchSpy
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(ecmwfResponse),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(gfsResponse),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(iconResponse),
-        });
+        .mockResolvedValueOnce(okJsonResponse(ecmwfResponse))
+        .mockResolvedValueOnce(okJsonResponse(gfsResponse))
+        .mockResolvedValueOnce(okJsonResponse(iconResponse));
+    }
+
+    it('devrait retourner les trois modeles en parallele', async () => {
+      mockAllModelsOnce();
 
       const result = await service.getEnsemble(48.8566, 2.3522);
 
@@ -263,19 +236,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait appeler les bonnes URLs pour chaque modele', async () => {
-      fetchSpy
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(ecmwfResponse),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(gfsResponse),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(iconResponse),
-        });
+      mockAllModelsOnce();
 
       await service.getEnsemble(48.8566, 2.3522);
 
@@ -287,19 +248,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait inclure le CAPE dans le modele GFS', async () => {
-      fetchSpy
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(ecmwfResponse),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(gfsResponse),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(iconResponse),
-        });
+      mockAllModelsOnce();
 
       const result = await service.getEnsemble(48.8566, 2.3522);
 
@@ -312,15 +261,9 @@ describe('OpenMeteoProxyService', () => {
 
     it('devrait retourner les modeles reussis meme si un echoue', async () => {
       fetchSpy
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(ecmwfResponse),
-        })
+        .mockResolvedValueOnce(okJsonResponse(ecmwfResponse))
         .mockRejectedValueOnce(new Error('GFS timeout'))
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(iconResponse),
-        });
+        .mockResolvedValueOnce(okJsonResponse(iconResponse));
 
       const result = await service.getEnsemble(48.8566, 2.3522);
 
@@ -340,19 +283,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait utiliser le cache pour un second appel identique', async () => {
-      fetchSpy
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(ecmwfResponse),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(gfsResponse),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(iconResponse),
-        });
+      mockAllModelsOnce();
 
       await service.getEnsemble(48.8566, 2.3522);
       const result = await service.getEnsemble(48.8566, 2.3522);
@@ -366,10 +297,7 @@ describe('OpenMeteoProxyService', () => {
     const mockHistoricalResponse = buildHistoricalResult();
 
     it('devrait retourner les donnees historiques', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockHistoricalResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockHistoricalResponse));
 
       const result = await service.getHistorical(
         48.8566,
@@ -387,10 +315,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it("devrait appeler l'API d'archives avec les bons parametres", async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockHistoricalResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockHistoricalResponse));
 
       await service.getHistorical(48.8566, 2.3522, '2025-01-01', '2025-01-03');
 
@@ -406,10 +331,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait utiliser le cache pour un second appel identique', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockHistoricalResponse),
-      });
+      fetchSpy.mockResolvedValueOnce(okJsonResponse(mockHistoricalResponse));
 
       await service.getHistorical(48.8566, 2.3522, '2025-01-01', '2025-01-03');
       const result = await service.getHistorical(
@@ -426,16 +348,7 @@ describe('OpenMeteoProxyService', () => {
 
   describe('gestion des erreurs', () => {
     it('devrait lancer une erreur en cas de timeout', async () => {
-      fetchSpy.mockImplementationOnce(
-        (_url: string, options: { signal: AbortSignal }) => {
-          return new Promise((_resolve, reject) => {
-            options.signal.addEventListener('abort', () => {
-              const error = new DOMException('Aborted', 'AbortError');
-              reject(error);
-            });
-          });
-        },
-      );
+      mockAbortableFetchOnce(fetchSpy);
 
       jest.useFakeTimers();
 
@@ -448,10 +361,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait lancer une erreur en cas de reponse HTTP non-OK', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-      });
+      fetchSpy.mockResolvedValueOnce(httpErrorResponse(500));
 
       await expect(service.searchCity('Paris')).rejects.toThrow(
         'Open-Meteo HTTP 500',
@@ -459,10 +369,7 @@ describe('OpenMeteoProxyService', () => {
     });
 
     it('devrait lancer une erreur en cas de reponse HTTP non-OK pour air quality', async () => {
-      fetchSpy.mockResolvedValueOnce({
-        ok: false,
-        status: 503,
-      });
+      fetchSpy.mockResolvedValueOnce(httpErrorResponse(503));
 
       await expect(service.getAirQuality(48.8566, 2.3522)).rejects.toThrow(
         'Open-Meteo HTTP 503',

@@ -10,6 +10,10 @@ import type {
 import type { WeatherAlertResult } from '../domain/WeatherAlert';
 import { WeatherAlertAnalyzer } from '../domain/WeatherAlertAnalyzer';
 import { WeatherCache } from './weather-cache';
+import type { WeatherProviderHttp } from './weather-http';
+import { fetchProviderJson } from './weather-http';
+
+const PROVIDER = 'Open-Meteo';
 
 const FETCH_TIMEOUT_MS = 8_000;
 
@@ -29,6 +33,12 @@ const ARCHIVE_BASE = 'https://archive-api.open-meteo.com/v1/archive';
 @Injectable()
 export class OpenMeteoProxyService implements IWeatherProxy {
   private readonly logger = new Logger(OpenMeteoProxyService.name);
+  private readonly http: WeatherProviderHttp = {
+    provider: PROVIDER,
+    timeoutMs: FETCH_TIMEOUT_MS,
+    logger: this.logger,
+    timeoutTarget: (url) => new URL(url).pathname,
+  };
   private readonly cache = new WeatherCache();
   private readonly alertAnalyzer = new WeatherAlertAnalyzer();
 
@@ -199,26 +209,7 @@ export class OpenMeteoProxyService implements IWeatherProxy {
     return result;
   }
 
-  private async fetchJson<T>(url: string): Promise<T> {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-
-    try {
-      const response = await fetch(url, { signal: controller.signal });
-      if (!response.ok) {
-        throw new Error(`Open-Meteo HTTP ${response.status}`);
-      }
-      return (await response.json()) as T;
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        const safeUrl = new URL(url).pathname;
-        this.logger.warn(`Timeout apres ${FETCH_TIMEOUT_MS}ms pour ${safeUrl}`);
-        throw new Error(`Open-Meteo timeout (${FETCH_TIMEOUT_MS}ms)`);
-      }
-      this.logger.warn(`Erreur Open-Meteo: ${String(error)}`);
-      throw error;
-    } finally {
-      clearTimeout(timeout);
-    }
+  private fetchJson<T>(url: string): Promise<T> {
+    return fetchProviderJson<T>(url, this.http);
   }
 }

@@ -15,6 +15,13 @@ describe('RecordUsageUseCase', () => {
     useCase = new RecordUsageUseCase(repo);
   });
 
+  function givenExistingPreferences(
+    existing: ReturnType<typeof buildWeatherPreferences>,
+  ): void {
+    repo.findByUserId.mockResolvedValue(existing);
+    repo.update.mockResolvedValue(existing);
+  }
+
   it('devrait incrementer daysUsed quand lastUsedAt est un jour different', async () => {
     const yesterday = new Date('2026-03-30T10:00:00Z');
     const existing = buildWeatherPreferences({
@@ -22,8 +29,7 @@ describe('RecordUsageUseCase', () => {
       daysUsed: 5,
       lastUsedAt: yesterday,
     });
-    repo.findByUserId.mockResolvedValue(existing);
-    repo.update.mockResolvedValue(existing);
+    givenExistingPreferences(existing);
 
     await useCase.execute({ userId: 'user-1' });
 
@@ -43,8 +49,7 @@ describe('RecordUsageUseCase', () => {
       daysUsed: 5,
       lastUsedAt: today,
     });
-    repo.findByUserId.mockResolvedValue(existing);
-    repo.update.mockResolvedValue(existing);
+    givenExistingPreferences(existing);
 
     await useCase.execute({ userId: 'user-1' });
 
@@ -64,8 +69,7 @@ describe('RecordUsageUseCase', () => {
       daysUsed: 0,
       lastUsedAt: null,
     });
-    repo.findByUserId.mockResolvedValue(existing);
-    repo.update.mockResolvedValue(existing);
+    givenExistingPreferences(existing);
 
     await useCase.execute({ userId: 'user-1' });
 

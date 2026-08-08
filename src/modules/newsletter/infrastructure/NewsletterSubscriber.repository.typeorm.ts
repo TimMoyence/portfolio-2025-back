@@ -48,19 +48,18 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
   }
 
   private isUniqueViolation(error: unknown): boolean {
-    if (error instanceof QueryFailedError) {
-      const driverCode = (error.driverError as { code?: string })?.code;
-      if (driverCode === POSTGRES_UNIQUE_VIOLATION) return true;
-    }
-    if (
+    const driverCode =
+      error instanceof QueryFailedError
+        ? (error.driverError as { code?: string })?.code
+        : undefined;
+    if (driverCode === POSTGRES_UNIQUE_VIOLATION) return true;
+
+    return (
       error !== null &&
       typeof error === 'object' &&
       'code' in error &&
       (error as { code?: string }).code === POSTGRES_UNIQUE_VIOLATION
-    ) {
-      return true;
-    }
-    return false;
+    );
   }
 
   async findByEmailAndSource(

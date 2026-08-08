@@ -2,12 +2,12 @@
 import { ListProjectsUseCase } from './ListProjects.useCase';
 import type { IProjectsRepository } from '../domain/IProjects.repository';
 import type { ProjectListQuery } from '../domain/ProjectList.query';
-import type { PaginatedResult } from '../../../common/domain/pagination.types';
 import type { Projects } from '../domain/Projects';
 import {
   buildProject,
   createMockProjectsRepo,
 } from '../../../../test/factories/projects.factory';
+import { buildPaginatedResult } from '../../../../test/factories/pagination.factory';
 
 describe('ListProjectsUseCase', () => {
   let useCase: ListProjectsUseCase;
@@ -30,13 +30,7 @@ describe('ListProjectsUseCase', () => {
       buildProject(),
       buildProject({ id: 'project-2', slug: 'autre-projet' }),
     ];
-    const expected: PaginatedResult<Projects> = {
-      items: projects,
-      page: 1,
-      limit: 10,
-      total: 2,
-      totalPages: 1,
-    };
+    const expected = buildPaginatedResult(projects);
     repo.findAll.mockResolvedValue(expected);
 
     const result = await useCase.execute(defaultQuery);
@@ -46,13 +40,7 @@ describe('ListProjectsUseCase', () => {
   });
 
   it('devrait retourner une liste vide si aucun projet', async () => {
-    const expected: PaginatedResult<Projects> = {
-      items: [],
-      page: 1,
-      limit: 10,
-      total: 0,
-      totalPages: 0,
-    };
+    const expected = buildPaginatedResult<Projects>([]);
     repo.findAll.mockResolvedValue(expected);
 
     const result = await useCase.execute(defaultQuery);

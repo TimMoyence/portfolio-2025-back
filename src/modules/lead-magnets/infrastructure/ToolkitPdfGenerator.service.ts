@@ -26,9 +26,8 @@ export class ToolkitPdfGeneratorService
       const pdf = await page.pdf({
         format: 'A4',
         printBackground: true,
-        // Marges physiques uniformes appliquees a TOUTES les pages physiques.
-        // La cover utilise position: absolute pour deborder ces marges et
-        // remplir entierement la premiere page.
+        // La cover deborde ces marges par marges negatives, cf. la regle
+        // `.cover.page` de toolkit-html.css.ts.
         margin: {
           top: '28mm',
           bottom: '24mm',

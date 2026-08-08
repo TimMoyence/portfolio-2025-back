@@ -19,7 +19,6 @@ export class RevokeTokenUseCase {
       throw new InvalidCredentialsError('Invalid refresh token');
     }
 
-    // Revoquer tous les tokens de l'utilisateur pour une securite maximale
     await this.refreshTokensRepo.revokeByUserId(stored.userId);
   }
 }

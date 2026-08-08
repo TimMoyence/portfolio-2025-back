@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { EvaluateBadgesUseCase } from './EvaluateBadges.useCase';
 import { SebastianBadge } from '../../domain/SebastianBadge';
+import type { SebastianEntry } from '../../domain/SebastianEntry';
+import type { SebastianGoal } from '../../domain/SebastianGoal';
 import {
   buildSebastianEntry,
   buildSebastianGoal,
@@ -8,6 +10,44 @@ import {
   createMockSebastianGoalRepo,
   createMockSebastianBadgeRepo,
 } from '../../../../../test/factories/sebastian.factory';
+
+const DAY_MS = 86_400_000;
+
+function dailyEntries(
+  idPrefix: string,
+  length: number,
+  overrides: Partial<SebastianEntry>,
+  firstDayOffset = 0,
+): SebastianEntry[] {
+  const now = Date.now();
+  return Array.from({ length }, (_, i) =>
+    buildSebastianEntry({
+      ...overrides,
+      id: `${idPrefix}-${i}`,
+      date: new Date(now - (firstDayOffset + i) * DAY_MS),
+    }),
+  );
+}
+
+function sameDayCoffees(length: number): SebastianEntry[] {
+  return Array.from({ length }, (_, i) =>
+    buildSebastianEntry({
+      id: `entry-${i}`,
+      category: 'coffee',
+      quantity: 1,
+      date: new Date('2026-03-15'),
+    }),
+  );
+}
+
+function alcoholDailyGoal(targetQuantity: number): SebastianGoal {
+  return buildSebastianGoal({
+    category: 'alcohol',
+    targetQuantity,
+    period: 'daily',
+    isActive: true,
+  });
+}
 
 describe('EvaluateBadgesUseCase', () => {
   let useCase: EvaluateBadgesUseCase;
@@ -35,6 +75,12 @@ describe('EvaluateBadgesUseCase', () => {
     );
   });
 
+  async function unlockedKeysFor(entries: SebastianEntry[]): Promise<string[]> {
+    entryRepo.findByFilters.mockResolvedValue(entries);
+    const result = await useCase.execute(userId);
+    return result.map((badge) => badge.badgeKey);
+  }
+
   it('devrait retourner un tableau vide quand aucun badge eligible', async () => {
     const alreadyUnlocked: SebastianBadge[] = [];
     badgeRepo.findByUserId.mockResolvedValue(alreadyUnlocked);
@@ -53,324 +99,183 @@ describe('EvaluateBadgesUseCase', () => {
       unlockedAt: new Date(),
     });
     badgeRepo.findByUserId.mockResolvedValue([existingBadge]);
-    entryRepo.findByFilters.mockResolvedValue([buildSebastianEntry()]);
 
-    const result = await useCase.execute(userId);
+    const keys = await unlockedKeysFor([buildSebastianEntry()]);
 
-    const firstLogBadges = result.filter((b) => b.badgeKey === 'first-log');
-    expect(firstLogBadges).toHaveLength(0);
+    expect(keys.filter((key) => key === 'first-log')).toHaveLength(0);
   });
 
   describe('first-log', () => {
     it('devrait debloquer quand l utilisateur a au moins 1 entree', async () => {
-      entryRepo.findByFilters.mockResolvedValue([buildSebastianEntry()]);
+      const keys = await unlockedKeysFor([buildSebastianEntry()]);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'first-log');
-      expect(badge).toBeDefined();
+      expect(keys).toContain('first-log');
       expect(badgeRepo.create).toHaveBeenCalled();
     });
 
     it('ne devrait pas debloquer quand 0 entrees', async () => {
-      entryRepo.findByFilters.mockResolvedValue([]);
+      const keys = await unlockedKeysFor([]);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'first-log');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('first-log');
     });
   });
 
   describe('zen-monk-7', () => {
     it('devrait debloquer apres 7 jours consecutifs sans alcool', async () => {
-      const now = new Date();
-      const coffeeEntries = Array.from({ length: 10 }, (_, i) =>
-        buildSebastianEntry({
-          id: `entry-${i}`,
-          category: 'coffee',
-          date: new Date(now.getTime() - i * 86_400_000),
-        }),
+      const keys = await unlockedKeysFor(
+        dailyEntries('entry', 10, { category: 'coffee' }),
       );
-      entryRepo.findByFilters.mockResolvedValue(coffeeEntries);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'zen-monk-7');
-      expect(badge).toBeDefined();
+      expect(keys).toContain('zen-monk-7');
     });
 
     it('ne devrait pas debloquer si historique < 7 jours', async () => {
-      const now = new Date();
-      const coffeeEntries = Array.from({ length: 3 }, (_, i) =>
-        buildSebastianEntry({
-          id: `entry-${i}`,
-          category: 'coffee',
-          date: new Date(now.getTime() - i * 86_400_000),
-        }),
+      const keys = await unlockedKeysFor(
+        dailyEntries('entry', 3, { category: 'coffee' }),
       );
-      entryRepo.findByFilters.mockResolvedValue(coffeeEntries);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'zen-monk-7');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('zen-monk-7');
     });
 
     it('ne devrait pas debloquer si alcool dans les 7 derniers jours', async () => {
-      const now = new Date();
-      const entries = [
-        buildSebastianEntry({
-          id: 'entry-alcohol',
-          category: 'alcohol',
-          unit: 'standard_drink',
-          quantity: 1,
-          date: new Date(now.getTime() - 3 * 86_400_000),
-        }),
-      ];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor(
+        dailyEntries(
+          'entry-alcohol',
+          1,
+          { category: 'alcohol', unit: 'standard_drink', quantity: 1 },
+          3,
+        ),
+      );
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'zen-monk-7');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('zen-monk-7');
     });
   });
 
   describe('espresso-machine', () => {
     it('devrait debloquer quand 5 cafes ou plus en un jour', async () => {
-      const sameDay = new Date('2026-03-15');
-      const entries = Array.from({ length: 5 }, (_, i) =>
-        buildSebastianEntry({
-          id: `entry-${i}`,
-          category: 'coffee',
-          quantity: 1,
-          date: sameDay,
-        }),
-      );
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor(sameDayCoffees(5));
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'espresso-machine');
-      expect(badge).toBeDefined();
+      expect(keys).toContain('espresso-machine');
     });
 
     it('ne devrait pas debloquer avec 4 cafes en un jour', async () => {
-      const sameDay = new Date('2026-03-15');
-      const entries = Array.from({ length: 4 }, (_, i) =>
-        buildSebastianEntry({
-          id: `entry-${i}`,
-          category: 'coffee',
-          quantity: 1,
-          date: sameDay,
-        }),
-      );
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor(sameDayCoffees(4));
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'espresso-machine');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('espresso-machine');
     });
   });
 
   describe('dry-week', () => {
     it('devrait debloquer quand 0 alcool sur les 7 derniers jours (avec historique)', async () => {
-      const now = new Date();
-      const entries = [
-        buildSebastianEntry({
-          id: 'entry-old',
-          category: 'coffee',
-          date: new Date(now.getTime() - 10 * 86_400_000),
-        }),
-        buildSebastianEntry({
-          id: 'entry-recent',
-          category: 'coffee',
-          date: new Date(now.getTime() - 86_400_000),
-        }),
-      ];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor([
+        ...dailyEntries('entry-old', 1, { category: 'coffee' }, 10),
+        ...dailyEntries('entry-recent', 1, { category: 'coffee' }, 1),
+      ]);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'dry-week');
-      expect(badge).toBeDefined();
+      expect(keys).toContain('dry-week');
     });
 
     it('ne devrait pas debloquer si historique < 7 jours', async () => {
-      const now = new Date();
-      const entries = [
-        buildSebastianEntry({
-          category: 'coffee',
-          date: new Date(now.getTime() - 86_400_000),
-        }),
-      ];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor(
+        dailyEntries('entry', 1, { category: 'coffee' }, 1),
+      );
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'dry-week');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('dry-week');
     });
 
     it('ne devrait pas debloquer avec alcool dans les 7 derniers jours', async () => {
-      const now = new Date();
-      const entries = [
-        buildSebastianEntry({
-          category: 'alcohol',
-          unit: 'standard_drink',
-          date: new Date(now.getTime() - 2 * 86_400_000),
-        }),
-      ];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor(
+        dailyEntries(
+          'entry',
+          1,
+          { category: 'alcohol', unit: 'standard_drink' },
+          2,
+        ),
+      );
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'dry-week');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('dry-week');
     });
   });
 
   describe('early-bird', () => {
     it('devrait debloquer quand une entree a createdAt avant 7h', async () => {
-      const earlyMorning = new Date('2026-03-15T05:30:00');
-      const entries = [buildSebastianEntry({ createdAt: earlyMorning })];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor([
+        buildSebastianEntry({ createdAt: new Date('2026-03-15T05:30:00') }),
+      ]);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'early-bird');
-      expect(badge).toBeDefined();
+      expect(keys).toContain('early-bird');
     });
 
     it('ne devrait pas debloquer quand createdAt apres 7h', async () => {
-      const midMorning = new Date('2026-03-15T09:00:00');
-      const entries = [buildSebastianEntry({ createdAt: midMorning })];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor([
+        buildSebastianEntry({ createdAt: new Date('2026-03-15T09:00:00') }),
+      ]);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'early-bird');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('early-bird');
     });
   });
 
   describe('night-owl', () => {
     it('devrait debloquer quand une entree a createdAt entre minuit et 5h', async () => {
-      const lateNight = new Date('2026-03-15T02:30:00');
-      const entries = [buildSebastianEntry({ createdAt: lateNight })];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor([
+        buildSebastianEntry({ createdAt: new Date('2026-03-15T02:30:00') }),
+      ]);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'night-owl');
-      expect(badge).toBeDefined();
+      expect(keys).toContain('night-owl');
     });
 
     it('ne devrait pas debloquer quand createdAt a 5h ou plus', async () => {
-      const morning = new Date('2026-03-15T05:00:00');
-      const entries = [buildSebastianEntry({ createdAt: morning })];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      const keys = await unlockedKeysFor([
+        buildSebastianEntry({ createdAt: new Date('2026-03-15T05:00:00') }),
+      ]);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'night-owl');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('night-owl');
     });
   });
 
   describe('comeback-kid', () => {
+    const ALCOHOL_ENTRY = {
+      category: 'alcohol' as const,
+      unit: 'standard_drink' as const,
+    };
+
     it('devrait debloquer quand semaine courante sous objectif et precedente au-dessus', async () => {
-      const now = new Date();
-      const goal = buildSebastianGoal({
-        category: 'alcohol',
-        targetQuantity: 2,
-        period: 'daily',
-        isActive: true,
-      });
-      goalRepo.findByUserId.mockResolvedValue([goal]);
+      goalRepo.findByUserId.mockResolvedValue([alcoholDailyGoal(2)]);
 
-      const previousWeekEntries = Array.from({ length: 7 }, (_, i) =>
-        buildSebastianEntry({
-          id: `prev-${i}`,
-          category: 'alcohol',
-          unit: 'standard_drink',
-          quantity: 3,
-          date: new Date(now.getTime() - (8 + i) * 86_400_000),
-        }),
-      );
-
-      const currentWeekEntries = Array.from({ length: 7 }, (_, i) =>
-        buildSebastianEntry({
-          id: `curr-${i}`,
-          category: 'alcohol',
-          unit: 'standard_drink',
-          quantity: 1,
-          date: new Date(now.getTime() - (1 + i) * 86_400_000),
-        }),
-      );
-
-      entryRepo.findByFilters.mockResolvedValue([
-        ...previousWeekEntries,
-        ...currentWeekEntries,
+      const keys = await unlockedKeysFor([
+        ...dailyEntries('prev', 7, { ...ALCOHOL_ENTRY, quantity: 3 }, 8),
+        ...dailyEntries('curr', 7, { ...ALCOHOL_ENTRY, quantity: 1 }, 1),
       ]);
 
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'comeback-kid');
-      expect(badge).toBeDefined();
+      expect(keys).toContain('comeback-kid');
     });
 
     it('ne devrait pas debloquer quand les deux semaines sont sous objectif', async () => {
-      const now = new Date();
-      const goal = buildSebastianGoal({
-        category: 'alcohol',
-        targetQuantity: 5,
-        period: 'daily',
-        isActive: true,
-      });
-      goalRepo.findByUserId.mockResolvedValue([goal]);
+      goalRepo.findByUserId.mockResolvedValue([alcoholDailyGoal(5)]);
 
-      const entries = Array.from({ length: 14 }, (_, i) =>
-        buildSebastianEntry({
-          id: `entry-${i}`,
-          category: 'alcohol',
-          unit: 'standard_drink',
-          quantity: 1,
-          date: new Date(now.getTime() - (1 + i) * 86_400_000),
-        }),
+      const keys = await unlockedKeysFor(
+        dailyEntries('entry', 14, { ...ALCOHOL_ENTRY, quantity: 1 }, 1),
       );
 
-      entryRepo.findByFilters.mockResolvedValue(entries);
-
-      const result = await useCase.execute(userId);
-
-      const badge = result.find((b) => b.badgeKey === 'comeback-kid');
-      expect(badge).toBeUndefined();
+      expect(keys).not.toContain('comeback-kid');
     });
   });
 
   describe('deblocage multiple', () => {
     it('devrait debloquer plusieurs badges en un seul appel', async () => {
-      const earlyMorning = new Date('2026-03-15T03:00:00');
-      const entries = [
+      const keys = await unlockedKeysFor([
         buildSebastianEntry({
           id: 'entry-1',
           category: 'coffee',
           quantity: 1,
-          createdAt: earlyMorning,
+          createdAt: new Date('2026-03-15T03:00:00'),
         }),
-      ];
-      entryRepo.findByFilters.mockResolvedValue(entries);
+      ]);
 
-      const result = await useCase.execute(userId);
-
-      const keys = result.map((b) => b.badgeKey);
       expect(keys).toContain('first-log');
       expect(keys).toContain('early-bird');
       expect(keys).toContain('night-owl');
-      expect(result.length).toBeGreaterThanOrEqual(3);
+      expect(keys.length).toBeGreaterThanOrEqual(3);
     });
   });
 });

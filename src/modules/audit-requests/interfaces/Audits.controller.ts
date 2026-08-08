@@ -56,8 +56,6 @@ export class AuditsController {
     @Body() dto: AuditRequestRequestDto,
     @Req() req: Request,
   ): Promise<AuditRequestResponseDto> {
-    // Meme resolution que le scoring de securite et le rate-limiting :
-    // sans cela l'IP tracee ici serait celle que l'appelant declare.
     const ip = resolveClientIp(req);
 
     const command: CreateAuditRequestCommand = {

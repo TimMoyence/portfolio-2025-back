@@ -6,6 +6,13 @@ import {
   createMockWeatherProxy,
 } from '../../../../test/factories/weather.factory';
 
+const PARIS_JANUARY_QUERY = {
+  latitude: 48.8566,
+  longitude: 2.3522,
+  startDate: '2025-01-01',
+  endDate: '2025-01-03',
+};
+
 describe('GetHistoricalUseCase', () => {
   let useCase: GetHistoricalUseCase;
   let proxy: jest.Mocked<IWeatherProxy>;
@@ -19,12 +26,7 @@ describe('GetHistoricalUseCase', () => {
     const mockResult = buildHistoricalResult();
     proxy.getHistorical.mockResolvedValue(mockResult);
 
-    const result = await useCase.execute({
-      latitude: 48.8566,
-      longitude: 2.3522,
-      startDate: '2025-01-01',
-      endDate: '2025-01-03',
-    });
+    const result = await useCase.execute(PARIS_JANUARY_QUERY);
 
     expect(result).toEqual(mockResult);
     expect(proxy.getHistorical).toHaveBeenCalledWith(
@@ -40,12 +42,7 @@ describe('GetHistoricalUseCase', () => {
     const mockResult = buildHistoricalResult();
     proxy.getHistorical.mockResolvedValue(mockResult);
 
-    const result = await useCase.execute({
-      latitude: 48.8566,
-      longitude: 2.3522,
-      startDate: '2025-01-01',
-      endDate: '2025-01-03',
-    });
+    const result = await useCase.execute(PARIS_JANUARY_QUERY);
 
     expect(result.daily.time).toHaveLength(3);
     expect(result.daily.temperature_2m_mean).toEqual([5.2, 4.8, 6.1]);

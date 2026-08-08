@@ -1,5 +1,8 @@
-import type { ChatOpenAI } from '@langchain/openai';
 import { generateUserSummary } from './user-summary.generator';
+import {
+  buildSectionGeneratorArgs,
+  systemMessagesOf,
+} from '../../../../../../test/factories/section-generator.factory';
 
 describe('generateUserSummary', () => {
   it('retourne le summaryText extrait de la reponse LLM', async () => {
@@ -9,15 +12,7 @@ describe('generateUserSummary', () => {
 
     const result = await generateUserSummary(
       { invokeTracked },
-      {
-        llm: {
-          withStructuredOutput: jest
-            .fn()
-            .mockReturnValue({ invoke: jest.fn() }),
-        } as unknown as ChatOpenAI,
-        payload: { any: 'payload' },
-        locale: 'fr',
-      },
+      buildSectionGeneratorArgs({ payload: { any: 'payload' } }),
     );
 
     expect(result).toBe('Synthese test.');
@@ -32,23 +27,9 @@ describe('generateUserSummary', () => {
 
     await generateUserSummary(
       { invokeTracked },
-      {
-        llm: {
-          withStructuredOutput: jest
-            .fn()
-            .mockReturnValue({ invoke: jest.fn() }),
-        } as unknown as ChatOpenAI,
-        payload: {},
-        locale: 'fr',
-        retryMode: true,
-      },
+      buildSectionGeneratorArgs({ retryMode: true }),
     );
 
-    const [, messages] = invokeTracked.mock.calls[0] as [
-      unknown,
-      Array<{ role: string }>,
-    ];
-    const systemMessages = messages.filter((m) => m.role === 'system');
-    expect(systemMessages.length).toBe(3);
+    expect(systemMessagesOf(invokeTracked)).toHaveLength(3);
   });
 });

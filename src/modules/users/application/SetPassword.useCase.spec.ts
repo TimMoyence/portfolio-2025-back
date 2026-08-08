@@ -9,6 +9,9 @@ import {
   createMockUsersRepo,
 } from '../../../../test/factories/user.factory';
 
+const CHOSEN_CREDENTIAL = 'NewPassword123!';
+const EXISTING_HASH = 'existing-hash';
+
 describe('SetPasswordUseCase', () => {
   let usersRepository: ReturnType<typeof createMockUsersRepo>;
   let passwordService: ReturnType<typeof createMockPasswordService>;
@@ -30,11 +33,11 @@ describe('SetPasswordUseCase', () => {
 
     const result = await useCase.execute({
       userId: 'user-1',
-      newPassword: 'NewPassword123!',
+      newPassword: CHOSEN_CREDENTIAL,
       updatedOrCreatedBy: 'self-service',
     });
 
-    expect(passwordService.hash).toHaveBeenCalledWith('NewPassword123!');
+    expect(passwordService.hash).toHaveBeenCalledWith(CHOSEN_CREDENTIAL);
     expect(usersRepository.update).toHaveBeenCalledWith(
       'user-1',
       expect.objectContaining({
@@ -47,11 +50,11 @@ describe('SetPasswordUseCase', () => {
 
   it('rejette un compte avec mot de passe deja configure', async () => {
     usersRepository.findById.mockResolvedValue(
-      buildUser({ id: 'user-1', passwordHash: 'existing-hash' }),
+      buildUser({ id: 'user-1', passwordHash: EXISTING_HASH }),
     );
 
     await expect(
-      useCase.execute({ userId: 'user-1', newPassword: 'NewPassword123!' }),
+      useCase.execute({ userId: 'user-1', newPassword: CHOSEN_CREDENTIAL }),
     ).rejects.toBeInstanceOf(ResourceConflictError);
 
     expect(usersRepository.update).not.toHaveBeenCalled();
@@ -61,7 +64,7 @@ describe('SetPasswordUseCase', () => {
     usersRepository.findById.mockResolvedValue(null);
 
     await expect(
-      useCase.execute({ userId: 'missing', newPassword: 'NewPassword123!' }),
+      useCase.execute({ userId: 'missing', newPassword: CHOSEN_CREDENTIAL }),
     ).rejects.toBeInstanceOf(UserNotFoundError);
 
     usersRepository.findById.mockResolvedValue(
@@ -69,7 +72,7 @@ describe('SetPasswordUseCase', () => {
     );
 
     await expect(
-      useCase.execute({ userId: 'user-1', newPassword: 'NewPassword123!' }),
+      useCase.execute({ userId: 'user-1', newPassword: CHOSEN_CREDENTIAL }),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });
 });

@@ -2,8 +2,6 @@ import { ConfigService } from '@nestjs/config';
 import { buildNewsletterSubscriber } from '../../../../../test/factories/newsletter-subscriber.factory';
 import type { NewsletterSubscriber } from '../../domain/NewsletterSubscriber';
 
-// Mock createOptionalSmtpTransporter avant l'import du service pour injecter
-// un faux transporter et couvrir les branches "transporter present".
 const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
 
 jest.mock(

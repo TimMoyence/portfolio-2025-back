@@ -37,22 +37,15 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
   });
 
   describe('branding Asili Design', () => {
-    it('inclut le logo header pointant vers le domaine principal', () => {
-      const html = buildMailLayout(baseInput);
-      expect(html).toContain('href="https://asilidesign.fr"');
-      expect(html).toContain('alt="Asili Design — Tim Moyence"');
-    });
-
-    it("affiche l'adresse + contact dans le footer legal", () => {
-      const html = buildMailLayout(baseInput);
-      expect(html).toContain('Asili Design — Bordeaux, France');
-      expect(html).toContain('mailto:tim.moyence@outlook.fr');
-    });
-
-    it('linke vers la politique de confidentialite et les conditions', () => {
-      const html = buildMailLayout(baseInput);
-      expect(html).toContain('href="https://asilidesign.fr/fr/privacy"');
-      expect(html).toContain('href="https://asilidesign.fr/fr/terms"');
+    it.each([
+      'href="https://asilidesign.fr"',
+      'alt="Asili Design — Tim Moyence"',
+      'Asili Design — Bordeaux, France',
+      'mailto:tim.moyence@outlook.fr',
+      'href="https://asilidesign.fr/fr/privacy"',
+      'href="https://asilidesign.fr/fr/terms"',
+    ])('inclut %s', (fragment) => {
+      expect(buildMailLayout(baseInput)).toContain(fragment);
     });
   });
 
@@ -165,8 +158,7 @@ describe('buildMailLayout (P2.7 / P6.6)', () => {
 
       const html = buildMailLayout({
         heroTitle: 'Test title',
-        // @ts-expect-error bodyHtml n'accepte que du HTML passe par escapeHtml
-        // ou assemble par le tag `safeHtml`.
+        // @ts-expect-error bodyHtml n'accepte que le retour de escapeHtml ou safeHtml
         bodyHtml: userInput,
       });
 

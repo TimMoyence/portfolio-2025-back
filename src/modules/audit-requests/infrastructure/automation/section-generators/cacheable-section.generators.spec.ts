@@ -95,7 +95,7 @@ describe('cacheable section generators', () => {
       { cachingRunner: runner, invokeTracked },
       { ...baseArgs, retryMode: true },
     );
-    expect(runCalls[0].systemBlocks.length).toBe(3);
+    expect(runCalls[0].systemBlocks).toHaveLength(3);
   });
 
   it('invoque le fallback OpenAI via llm.withStructuredOutput quand appele', async () => {

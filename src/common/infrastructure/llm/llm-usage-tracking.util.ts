@@ -7,7 +7,7 @@ export interface LlmInvocationContext {
   model: string;
 }
 
-export interface LlmTokenUsage {
+interface LlmTokenUsage {
   inputTokens: number;
   outputTokens: number;
   totalTokens: number;

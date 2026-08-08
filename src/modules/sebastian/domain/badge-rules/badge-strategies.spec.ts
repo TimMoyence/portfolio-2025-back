@@ -7,6 +7,8 @@ import {
   type BadgeWindow,
 } from './badge-strategies';
 
+const byLocale = (a: string, b: string): number => a.localeCompare(b);
+
 describe('badge-strategies — fenetres declarees', () => {
   describe('evaluationWindow par strategie', () => {
     const expectedWindows: Array<[string, BadgeWindow]> = [
@@ -32,8 +34,8 @@ describe('badge-strategies — fenetres declarees', () => {
     );
 
     it('devrait couvrir toutes les strategies du registry', () => {
-      expect(expectedWindows.map(([key]) => key).sort()).toEqual(
-        Array.from(BADGE_STRATEGIES.keys()).sort(),
+      expect(expectedWindows.map(([key]) => key).sort(byLocale)).toEqual(
+        Array.from(BADGE_STRATEGIES.keys()).sort(byLocale),
       );
     });
   });
@@ -85,7 +87,7 @@ describe('badge-strategies — fenetres declarees', () => {
 
   describe('fullHistoryBadgeKeys', () => {
     it('devrait lister les badges evalues sur tout l historique', () => {
-      expect(fullHistoryBadgeKeys(BADGE_STRATEGIES).sort()).toEqual([
+      expect(fullHistoryBadgeKeys(BADGE_STRATEGIES).sort(byLocale)).toEqual([
         'early-bird',
         'espresso-machine',
         'first-log',
@@ -99,8 +101,8 @@ describe('badge-strategies — fenetres declarees', () => {
         .filter((s) => s.evaluationWindow !== FULL_HISTORY)
         .map((s) => s.key);
 
-      expect([...fullHistory, ...windowed].sort()).toEqual(
-        Array.from(BADGE_STRATEGIES.keys()).sort(),
+      expect([...fullHistory, ...windowed].sort(byLocale)).toEqual(
+        Array.from(BADGE_STRATEGIES.keys()).sort(byLocale),
       );
     });
 

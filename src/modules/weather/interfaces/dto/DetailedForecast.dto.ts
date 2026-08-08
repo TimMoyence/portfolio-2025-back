@@ -5,7 +5,7 @@ import type {
   DetailedHourlyItem,
 } from '../../domain/IOpenWeatherMapProxy.port';
 
-/** Item horaire publie par GET /weather/forecast-detailed. */
+/** Cles publiees verrouillees par weather-wire-contract.spec.ts. */
 export class DetailedHourlyItemDto {
   @ApiProperty({ description: 'Horodatage (ISO 8601)' })
   time: string;
@@ -89,7 +89,7 @@ export class DetailedHourlyItemDto {
   }
 }
 
-/** Agregation journaliere publiee par GET /weather/forecast-detailed. */
+/** Cles publiees verrouillees par weather-wire-contract.spec.ts. */
 export class DetailedDailyItemDto {
   @ApiProperty({ description: 'Date (YYYY-MM-DD)' })
   date: string;
@@ -125,13 +125,7 @@ export class DetailedDailyItemDto {
   }
 }
 
-/**
- * Charge utile publiee par GET /weather/forecast-detailed.
- *
- * Comme pour DetailedCurrentWeatherDto, le mapping est explicite : les noms
- * de champs publies sont un contrat que le renommage du domaine ne doit pas
- * atteindre.
- */
+/** Cles publiees verrouillees par weather-wire-contract.spec.ts. */
 export class DetailedForecastDto {
   @ApiProperty({ description: 'Nom de la ville' })
   cityName: string;

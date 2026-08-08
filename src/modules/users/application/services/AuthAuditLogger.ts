@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-export type AuthEvent =
+type AuthEvent =
   | 'LOGIN_SUCCESS'
   | 'LOGIN_FAILURE'
   | 'GOOGLE_AUTH_SUCCESS'

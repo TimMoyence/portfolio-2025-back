@@ -37,7 +37,7 @@ describe('GetStatsUseCase', () => {
     const coffeeStats = result.byCategory.find((s) => s.category === 'coffee');
     expect(coffeeStats).toBeDefined();
     expect(coffeeStats!.total).toBe(5);
-    expect(coffeeStats!.average).toBe(0.71);
+    expect(coffeeStats!.average).toBeCloseTo(0.71, 2);
     expect(coffeeStats!.trend).toBe(25);
 
     const alcoholStats = result.byCategory.find(

@@ -175,10 +175,15 @@ describe('SubscribeNewsletterUseCase', () => {
   });
 
   it('respecte le padding de reponse minimum (anti timing-attack)', async () => {
+    const MIN_RESPONSE_MS = 300;
+    const CLOCK_ROUNDING_TOLERANCE_MS = 5;
+
     const start = Date.now();
     await useCase.execute(validCommand);
     const elapsed = Date.now() - start;
-    // MIN_RESPONSE_MS = 300 ; tolerance -5 ms pour l'arrondi Date.now().
-    expect(elapsed).toBeGreaterThanOrEqual(295);
+
+    expect(elapsed).toBeGreaterThanOrEqual(
+      MIN_RESPONSE_MS - CLOCK_ROUNDING_TOLERANCE_MS,
+    );
   });
 });

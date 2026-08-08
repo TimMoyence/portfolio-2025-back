@@ -3,10 +3,9 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 export const VALID_CATEGORIES = ['alcohol', 'coffee'] as const;
 export type SebastianCategory = (typeof VALID_CATEGORIES)[number];
 
-export const VALID_UNITS = ['standard_drink', 'cup'] as const;
-export type SebastianUnit = (typeof VALID_UNITS)[number];
+export type SebastianUnit = 'standard_drink' | 'cup';
 
-export const VALID_DRINK_TYPES = [
+const VALID_DRINK_TYPES = [
   'beer',
   'wine',
   'champagne',
@@ -66,6 +65,63 @@ export interface SebastianEntryPersistenceProps {
   consumedAt: Date | null;
 }
 
+interface ResolvedServing {
+  category: SebastianCategory;
+  drinkType: DrinkType | null;
+  alcoholDegree: number | null;
+  volumeCl: number | null;
+}
+
+function resolveServing(props: CreateSebastianEntryProps): ResolvedServing {
+  if (props.drinkType) {
+    if (!VALID_DRINK_TYPES.includes(props.drinkType as DrinkType)) {
+      throw new DomainValidationError(
+        `Type de boisson invalide : ${props.drinkType}. Valeurs acceptees : ${VALID_DRINK_TYPES.join(', ')}`,
+      );
+    }
+    const drinkType = props.drinkType as DrinkType;
+    const defaults = DRINK_TYPE_DEFAULTS[drinkType];
+    return {
+      category: defaults.category,
+      drinkType,
+      alcoholDegree: props.alcoholDegree ?? defaults.alcoholDegree,
+      volumeCl: props.volumeCl ?? defaults.volumeCl,
+    };
+  }
+
+  if (!VALID_CATEGORIES.includes(props.category as SebastianCategory)) {
+    throw new DomainValidationError(
+      `Categorie invalide : ${props.category}. Valeurs acceptees : ${VALID_CATEGORIES.join(', ')}`,
+    );
+  }
+  return {
+    category: props.category as SebastianCategory,
+    drinkType: null,
+    alcoholDegree: props.alcoholDegree ?? null,
+    volumeCl: props.volumeCl ?? null,
+  };
+}
+
+function assertServingIsMeasurable(serving: ResolvedServing): void {
+  const { alcoholDegree, volumeCl } = serving;
+  if (alcoholDegree != null && (alcoholDegree <= 0 || alcoholDegree > 100)) {
+    throw new DomainValidationError(
+      "Le degre d'alcool doit etre compris entre 0 (exclu) et 100 (inclus)",
+    );
+  }
+  if (volumeCl != null && volumeCl <= 0) {
+    throw new DomainValidationError('Le volume doit etre strictement positif');
+  }
+}
+
+function parseDateOrThrow(value: string, invalidMessage: string): Date {
+  const parsed = new Date(value);
+  if (isNaN(parsed.getTime())) {
+    throw new DomainValidationError(invalidMessage);
+  }
+  return parsed;
+}
+
 export class SebastianEntry {
   id?: string;
   userId: string;
@@ -88,44 +144,8 @@ export class SebastianEntry {
       );
     }
 
-    let category: SebastianCategory;
-    let drinkType: DrinkType | null = null;
-    let alcoholDegree: number | null = null;
-    let volumeCl: number | null = null;
-
-    if (props.drinkType) {
-      if (!VALID_DRINK_TYPES.includes(props.drinkType as DrinkType)) {
-        throw new DomainValidationError(
-          `Type de boisson invalide : ${props.drinkType}. Valeurs acceptees : ${VALID_DRINK_TYPES.join(', ')}`,
-        );
-      }
-      drinkType = props.drinkType as DrinkType;
-      const defaults = DRINK_TYPE_DEFAULTS[drinkType];
-      category = defaults.category;
-      alcoholDegree = props.alcoholDegree ?? defaults.alcoholDegree;
-      volumeCl = props.volumeCl ?? defaults.volumeCl;
-    } else {
-      if (!VALID_CATEGORIES.includes(props.category as SebastianCategory)) {
-        throw new DomainValidationError(
-          `Categorie invalide : ${props.category}. Valeurs acceptees : ${VALID_CATEGORIES.join(', ')}`,
-        );
-      }
-      category = props.category as SebastianCategory;
-      alcoholDegree = props.alcoholDegree ?? null;
-      volumeCl = props.volumeCl ?? null;
-    }
-
-    if (alcoholDegree != null && (alcoholDegree <= 0 || alcoholDegree > 100)) {
-      throw new DomainValidationError(
-        "Le degre d'alcool doit etre compris entre 0 (exclu) et 100 (inclus)",
-      );
-    }
-
-    if (volumeCl != null && volumeCl <= 0) {
-      throw new DomainValidationError(
-        'Le volume doit etre strictement positif',
-      );
-    }
+    const serving = resolveServing(props);
+    assertServingIsMeasurable(serving);
 
     if (typeof props.quantity !== 'number' || props.quantity <= 0) {
       throw new DomainValidationError(
@@ -133,33 +153,22 @@ export class SebastianEntry {
       );
     }
 
-    const parsedDate = new Date(props.date);
-    if (isNaN(parsedDate.getTime())) {
-      throw new DomainValidationError('Date invalide');
-    }
-
-    const unit = CATEGORY_UNIT_MAP[category];
+    const parsedDate = parseDateOrThrow(props.date, 'Date invalide');
 
     const entry = new SebastianEntry();
     entry.userId = userId;
-    entry.category = category;
+    entry.category = serving.category;
     entry.quantity = props.quantity;
-    entry.unit = unit;
+    entry.unit = CATEGORY_UNIT_MAP[serving.category];
     entry.date = parsedDate;
     entry.notes = props.notes ?? null;
     entry.createdAt = new Date();
-    entry.drinkType = drinkType;
-    entry.alcoholDegree = alcoholDegree;
-    entry.volumeCl = volumeCl;
-    if (props.consumedAt) {
-      const parsedConsumedAt = new Date(props.consumedAt);
-      if (isNaN(parsedConsumedAt.getTime())) {
-        throw new DomainValidationError('consumedAt invalide');
-      }
-      entry.consumedAt = parsedConsumedAt;
-    } else {
-      entry.consumedAt = new Date();
-    }
+    entry.drinkType = serving.drinkType;
+    entry.alcoholDegree = serving.alcoholDegree;
+    entry.volumeCl = serving.volumeCl;
+    entry.consumedAt = props.consumedAt
+      ? parseDateOrThrow(props.consumedAt, 'consumedAt invalide')
+      : new Date();
     return entry;
   }
 

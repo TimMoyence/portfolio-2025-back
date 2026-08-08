@@ -6,22 +6,26 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { httpProblemTarget } from './http-problem-target';
 
 /**
  * Note : les {@link DomainError} sont interceptees en amont par {@link DomainExceptionFilter}.
  *
  * @see https://www.rfc-editor.org/rfc/rfc7807
  */
+function internalErrorDetail(exception: unknown): string {
+  if (process.env.NODE_ENV === 'production') {
+    return 'Une erreur interne est survenue.';
+  }
+  return exception instanceof Error ? exception.message : String(exception);
+}
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost): void {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<{
-      status(code: number): { json(body: unknown): void };
-    }>();
-    const request = ctx.getRequest<{ url: string }>();
+    const { response, instance } = httpProblemTarget(host);
 
     let status: number;
     let detail: string | string[];
@@ -37,12 +41,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
-      detail =
-        process.env.NODE_ENV === 'production'
-          ? 'Une erreur interne est survenue.'
-          : exception instanceof Error
-            ? exception.message
-            : String(exception);
+      detail = internalErrorDetail(exception);
     }
 
     if (status >= 500) {
@@ -57,7 +56,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       title: HttpStatus[status] ?? 'Error',
       status,
       detail,
-      instance: request.url,
+      instance,
     });
   }
 }

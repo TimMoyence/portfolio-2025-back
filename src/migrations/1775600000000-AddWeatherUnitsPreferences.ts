@@ -1,6 +1,5 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-/** Ajoute la colonne units (preferences d'unites) a la table weather_user_preferences. */
 export class AddWeatherUnitsPreferences1775600000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

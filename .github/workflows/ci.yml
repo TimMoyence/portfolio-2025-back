@@ -53,7 +53,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
+      # Le preset eslint-plugin-sonarjs est integralement en `error` depuis la
+      # resorption de la dette : plus aucune regle n est neutralisee. Le drapeau
+      # --max-warnings=0 fait aussi echouer une directive eslint-disable devenue
+      # inutile, qui signalerait une regle desactivee par erreur.
+      - name: Lint (ESLint + sonarjs)
         run: pnpm run lint
 
       - name: Format check
@@ -61,6 +65,15 @@ jobs:
 
       - name: Typecheck
         run: pnpm run typecheck
+
+      - name: Duplication (jscpd)
+        run: pnpm run quality:cpd
+
+      - name: Duplication des suites de tests (jscpd)
+        run: pnpm run quality:cpd:tests
+
+      - name: Code mort (knip)
+        run: pnpm run quality:knip
 
       - name: Tests des gardes d outillage
         run: pnpm run test:guards

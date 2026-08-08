@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { randomInt } from 'crypto';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
@@ -141,9 +142,7 @@ export class SubscribeNewsletterUseCase {
 
   private async padResponseTime(startMs: number): Promise<void> {
     const elapsed = Date.now() - startMs;
-    const jitter = Math.floor(
-      Math.random() * SubscribeNewsletterUseCase.MAX_JITTER_MS,
-    );
+    const jitter = randomInt(SubscribeNewsletterUseCase.MAX_JITTER_MS);
     const target = SubscribeNewsletterUseCase.MIN_RESPONSE_MS + jitter;
     if (elapsed < target) {
       await new Promise<void>((resolve) =>

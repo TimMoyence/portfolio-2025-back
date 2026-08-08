@@ -1,13 +1,8 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
- * Renomme les categories par defaut (group_id = NULL) pour retirer
- * les references personnelles ("Tim & Maria", "Luna", "Contribution").
- *
- * Contexte : la migration initiale SeedDefaultBudgetCategories1775400000003
- * inserait des categories partagees a tous les utilisateurs (group_id NULL)
- * avec des libelles non generiques. Tout nouveau compte budget voyait ces
- * libelles, fuitant des informations privees du proprietaire de l'instance.
+ * Corrige les libelles semes par 1775400000003-SeedDefaultBudgetCategories.ts
+ * sur les lignes partagees (group_id IS NULL), visibles de tous les comptes.
  */
 export class AnonymizeDefaultBudgetCategories1777000000000 implements MigrationInterface {
   private static readonly RENAMES: ReadonlyArray<readonly [string, string]> = [

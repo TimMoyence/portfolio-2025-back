@@ -7,7 +7,7 @@ export interface EnsureDatabaseOptions {
   username?: string;
   password?: string;
   database: string;
-  ssl?: ClientConfig['ssl'];
+  ssl?: NonNullable<ClientConfig['ssl']>;
   adminDatabase?: string;
 }
 
