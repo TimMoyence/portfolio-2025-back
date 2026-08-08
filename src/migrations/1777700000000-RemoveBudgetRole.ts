@@ -36,9 +36,6 @@ export class RemoveBudgetRole1777700000000 implements MigrationInterface {
     );
   }
 
-  /**
-   * No-op : retrait definitif assume, le module budget n'existe plus.
-   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Intentionnellement vide : reattribuer le role budget n'a plus de sens.

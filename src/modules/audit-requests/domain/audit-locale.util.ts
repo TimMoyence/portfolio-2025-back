@@ -23,7 +23,7 @@ export function localeFromUrlPath(path: unknown): AuditLocale | null {
     return null;
   }
 
-  const match = path.toLowerCase().match(/(?:^|\/)(fr|en)(?:\/|$)/);
+  const match = /(?:^|\/)(fr|en)(?:\/|$)/.exec(path.toLowerCase());
   if (!match) {
     return null;
   }

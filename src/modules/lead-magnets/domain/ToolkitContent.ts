@@ -19,7 +19,7 @@ export interface PromptEntry {
   tip?: string;
 }
 
-export interface WorkflowStep {
+interface WorkflowStep {
   step: number;
   action: string;
   tool: string;

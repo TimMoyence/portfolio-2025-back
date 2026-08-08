@@ -39,11 +39,6 @@ export function setSmtpEnv(overrides: Record<string, string> = {}): () => void {
     process.env[key] = value;
   }
 
-  // Les variables DKIM ne sont jamais posees par defaut, mais elles
-  // ajoutent une cle `dkim` a l'objet passe a `createTransport` quand
-  // elles trainent dans l'environnement. Les specs mailer qui comparent
-  // cet objet en egalite stricte casseraient alors sans rapport avec
-  // leur sujet : on les neutralise ici, et on les restaure ensuite.
   for (const key of DKIM_ENV_KEYS) {
     if (key in overrides) continue;
     original[key] = process.env[key];

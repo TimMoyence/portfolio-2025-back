@@ -37,6 +37,8 @@ const REQUIRED_FIELDS: Record<string, ReadonlyArray<string>> = {
   Course: ['name', 'description', 'provider'],
 };
 
+const STRUCTURED_DATA_PRESENCE_SCORE = 20;
+
 type JsonLdBlock = Record<string, unknown>;
 
 @Injectable()
@@ -128,7 +130,7 @@ export class StructuredDataQualityService {
     aiFriendly: boolean;
     invalidCount: number;
   }): number {
-    let score = 20; // présence de structured data
+    let score = STRUCTURED_DATA_PRESENCE_SCORE;
     if (params.googleRichResultsEligible) score += 40;
     if (params.aiFriendly) score += 25;
     if (params.total >= 2) score += 10;

@@ -1,11 +1,14 @@
 import type { EngineCoverage } from './EngineCoverage';
 
+type ReportSeverity = 'high' | 'medium' | 'low';
+type CrossPageSeverity = 'critical' | ReportSeverity;
+
 export interface ClientReportSynthesis {
   readonly executiveSummary: string;
   readonly topFindings: ReadonlyArray<{
     readonly title: string;
     readonly impact: string;
-    readonly severity: 'high' | 'medium' | 'low';
+    readonly severity: ReportSeverity;
   }>;
   readonly googleVsAiMatrix: {
     readonly googleVisibility: {
@@ -49,15 +52,15 @@ export interface ExpertReportSynthesis {
   readonly perPageAnalysis: ReadonlyArray<PerPageDetailedAnalysis>;
   readonly crossPageFindings: ReadonlyArray<{
     readonly title: string;
-    readonly severity: 'critical' | 'high' | 'medium' | 'low';
+    readonly severity: CrossPageSeverity;
     readonly affectedUrls: ReadonlyArray<string>;
     readonly rootCause: string;
     readonly remediation: string;
   }>;
   readonly priorityBacklog: ReadonlyArray<{
     readonly title: string;
-    readonly impact: 'high' | 'medium' | 'low';
-    readonly effort: 'high' | 'medium' | 'low';
+    readonly impact: ReportSeverity;
+    readonly effort: ReportSeverity;
     readonly acceptanceCriteria: ReadonlyArray<string>;
   }>;
   readonly clientEmailDraft: {

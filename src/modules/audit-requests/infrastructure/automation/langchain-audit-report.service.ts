@@ -36,6 +36,7 @@ import {
 } from './langchain-fallback-report.builder';
 import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
 import { PROMPT_VERSION } from './prompts/v1/audit-system-prompts';
+import type { InvokeTrackedFn } from './section-generators/cacheable-section.generators';
 import {
   CachingSectionRunner,
   generateClientCommsSection as runClientCommsGenerator,
@@ -64,7 +65,6 @@ export type {
   LangchainAuditInput,
   LangchainAuditOutput,
   LlmSynthesisProgressEvent,
-  SynthesisSectionName,
 } from './contracts/langchain-contracts';
 
 import type {
@@ -115,10 +115,6 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<T> {
     return invokeWithLlmTracking<T>(
-      // `invokeWithLlmTracking` type le payload comme `unknown` (surface
-      // generique), mais a l'execution c'est bien le `messages` transmis au
-      // LLM : on le re-affine vers `BaseLanguageModelInput` au seul point de
-      // jonction, sans alterer le runtime.
       (m: unknown, o: LlmInvocationOptions) =>
         chain.invoke(m as BaseLanguageModelInput, o),
       messages,
@@ -142,11 +138,7 @@ export class LangchainAuditReportService {
     };
 
     if (!this.config.openAiApiKey) {
-      return this.fallback(
-        normalizedInput,
-        'OPENAI_API_KEY is missing',
-        options,
-      );
+      return this.fallback(normalizedInput, 'OPENAI_API_KEY is missing');
     }
 
     const profile = resolveProfile(normalizedInput.auditId, this.config);
@@ -164,13 +156,31 @@ export class LangchainAuditReportService {
       }
     }
 
-    return this.generateSequentialProfile(normalizedInput, locale, options);
+    return this.generateSequentialProfile(normalizedInput, locale);
+  }
+
+  private buildAdminReport(
+    gate: ReportQualityGateResult,
+    locale: AuditLocale,
+    flags: { retried: boolean; fallback: boolean },
+  ): Record<string, unknown> {
+    const adminReport = withDeterministicCost(gate.report, locale, {
+      rateCurrency: this.config.rateCurrency,
+      rateHourlyMin: this.config.rateHourlyMin,
+      rateHourlyMax: this.config.rateHourlyMax,
+    });
+    adminReport.qualityGate = {
+      valid: gate.valid,
+      reasons: gate.reasons,
+      retried: flags.retried,
+      fallback: flags.fallback,
+    };
+    return adminReport;
   }
 
   private async generateSequentialProfile(
     normalizedInput: LangchainAuditInput,
     locale: AuditLocale,
-    options: LangchainAuditGenerateOptions,
   ): Promise<LangchainAuditOutput> {
     const summaryPayload = buildLlmPayload(normalizedInput, 'summary');
     const expertPayload = buildLlmPayload(normalizedInput, 'expert');
@@ -257,17 +267,10 @@ export class LangchainAuditReportService {
         }
       }
 
-      const adminReport = withDeterministicCost(gate.report, locale, {
-        rateCurrency: this.config.rateCurrency,
-        rateHourlyMin: this.config.rateHourlyMin,
-        rateHourlyMax: this.config.rateHourlyMax,
-      });
-      adminReport.qualityGate = {
-        valid: gate.valid,
-        reasons: gate.reasons,
+      const adminReport = this.buildAdminReport(gate, locale, {
         retried,
         fallback: candidate.usedExpertFallback,
-      };
+      });
 
       this.applyWarningsToReport(adminReport, candidate.warnings, locale);
 
@@ -299,7 +302,7 @@ export class LangchainAuditReportService {
       };
     } catch (error) {
       this.logger.warn(`LLM generation failed: ${String(error)}`);
-      return this.fallback(normalizedInput, String(error), options);
+      return this.fallback(normalizedInput, String(error));
     }
   }
 
@@ -354,17 +357,10 @@ export class LangchainAuditReportService {
       enrichedReport,
       normalizedInput,
     );
-    const adminReport = withDeterministicCost(gate.report, locale, {
-      rateCurrency: this.config.rateCurrency,
-      rateHourlyMin: this.config.rateHourlyMin,
-      rateHourlyMax: this.config.rateHourlyMax,
-    });
-    adminReport.qualityGate = {
-      valid: gate.valid,
-      reasons: gate.reasons,
+    const adminReport = this.buildAdminReport(gate, locale, {
       retried: sectionResult.retryCount > 0,
       fallback: sectionResult.usedFallback,
-    };
+    });
     adminReport.llmMeta = {
       profile: 'parallel_sections_v1',
       promptVersion: PROMPT_VERSION,
@@ -520,10 +516,7 @@ export class LangchainAuditReportService {
       const canRetry =
         retryCount < this.config.llmSectionRetryMax &&
         budget.hasTime(this.config.llmSectionRetryMinRemainingMs);
-      if (!canRetry) {
-        pending = failedRound;
-        break;
-      }
+      if (!canRetry) break;
       retryCount += 1;
       pending = failedRound;
     }
@@ -768,18 +761,9 @@ export class LangchainAuditReportService {
     }
   }
 
-  private readonly invokeTrackedBound = this.invokeTracked.bind(this) as <T>(
-    chain: {
-      invoke: (
-        messages: BaseLanguageModelInput,
-        options?: Partial<RunnableConfig>,
-      ) => Promise<T>;
-    },
-    messages: unknown,
-    section: string,
-    locale: AuditLocale,
-    signal?: AbortSignal,
-  ) => Promise<T>;
+  private readonly invokeTrackedBound = this.invokeTracked.bind(
+    this,
+  ) as InvokeTrackedFn;
 
   private generateExecutiveSection(
     llm: ChatOpenAI,
@@ -886,9 +870,7 @@ export class LangchainAuditReportService {
   private fallback(
     input: LangchainAuditInput,
     reason: string,
-    _options?: LangchainAuditGenerateOptions,
   ): LangchainAuditOutput {
-    void _options;
     const gate = this.runQualityGate(
       buildFallbackSummary(input),
       ensurePriorityDepth(
@@ -899,17 +881,10 @@ export class LangchainAuditReportService {
       input,
     );
 
-    const adminReport = withDeterministicCost(gate.report, input.locale, {
-      rateCurrency: this.config.rateCurrency,
-      rateHourlyMin: this.config.rateHourlyMin,
-      rateHourlyMax: this.config.rateHourlyMax,
-    });
-    adminReport.qualityGate = {
-      valid: gate.valid,
-      reasons: gate.reasons,
+    const adminReport = this.buildAdminReport(gate, input.locale, {
       retried: false,
       fallback: true,
-    };
+    });
 
     return {
       summaryText: gate.summaryText,

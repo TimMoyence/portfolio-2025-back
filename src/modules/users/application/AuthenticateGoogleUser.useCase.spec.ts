@@ -8,8 +8,12 @@ import {
   buildUser,
   createMockUsersRepo,
   createMockJwtService,
+  buildSignedToken,
 } from '../../../../test/factories/user.factory';
-import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
+import {
+  buildRefreshToken,
+  createMockRefreshTokensRepo,
+} from '../../../../test/factories/refresh-token.factory';
 
 const mockVerifyIdToken = jest.fn();
 jest.mock('google-auth-library', () => ({
@@ -36,18 +40,10 @@ describe('AuthenticateGoogleUserUseCase', () => {
     repo = createMockUsersRepo();
     refreshTokensRepo = createMockRefreshTokensRepo();
     jwtTokenService = createMockJwtService();
-    jwtTokenService.sign.mockResolvedValue({
-      token: 'jwt-token',
-      expiresIn: 900,
-      expiresAt: 0,
-    });
-    refreshTokensRepo.create.mockResolvedValue({
-      id: 'rt-1',
-      userId: 'user-1',
-      tokenHash: 'hashed',
-      expiresAt: new Date(),
-      revoked: false,
-    });
+    jwtTokenService.sign.mockResolvedValue(buildSignedToken());
+    refreshTokensRepo.create.mockResolvedValue(
+      buildRefreshToken({ tokenHash: 'hashed', expiresAt: new Date() }),
+    );
 
     mockVerifyIdToken.mockReset();
     mockVerifyIdToken.mockResolvedValue({

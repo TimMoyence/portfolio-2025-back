@@ -1,4 +1,12 @@
+import { randomInt } from 'node:crypto';
 import { parseSitemapXml, pickUrlSample } from './sitemap-parser.util';
+
+jest.mock('node:crypto', () => ({
+  ...jest.requireActual<typeof import('node:crypto')>('node:crypto'),
+  randomInt: jest.fn(),
+}));
+
+const mockedRandomInt = randomInt as unknown as jest.Mock;
 
 describe('parseSitemapXml', () => {
   it('parses urlset', () => {
@@ -64,14 +72,13 @@ describe('pickUrlSample', () => {
       'https://example.com/4',
     ];
 
-    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0);
+    mockedRandomInt.mockReturnValue(0);
     const picked = pickUrlSample(urls, 2, 3);
-    randomSpy.mockRestore();
 
-    expect(picked.sample.length).toBe(2);
+    expect(picked.sample).toHaveLength(2);
     expect(new Set(picked.sample).size).toBe(2);
     expect(picked.sample[0]).toBe('https://example.com/1');
-    expect(picked.deepAnalysis.length).toBe(3);
+    expect(picked.deepAnalysis).toHaveLength(3);
     expect(new Set(picked.deepAnalysis).size).toBe(3);
     expect(picked.deepAnalysis[0]).toBe('https://example.com/1');
   });

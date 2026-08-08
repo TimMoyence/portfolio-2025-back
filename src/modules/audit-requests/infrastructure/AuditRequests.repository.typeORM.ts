@@ -13,6 +13,27 @@ import type { IAuditRequestsRepository } from '../domain/IAuditRequests.reposito
 import { resolveAuditLocale } from '../domain/audit-locale.util';
 import { AuditRequestEntity } from './entities/AuditRequest.entity';
 
+const UPDATABLE_STATE_KEYS = [
+  'processingStatus',
+  'progress',
+  'step',
+  'error',
+  'normalizedUrl',
+  'finalUrl',
+  'redirectChain',
+  'keyChecks',
+  'quickWins',
+  'pillarScores',
+  'summaryText',
+  'fullReport',
+  'clientReport',
+  'expertReport',
+  'engineCoverage',
+  'done',
+  'startedAt',
+  'finishedAt',
+] as const satisfies ReadonlyArray<keyof UpdateAuditStateInput>;
+
 @Injectable()
 export class AuditRequestsRepositoryTypeORM implements IAuditRequestsRepository {
   constructor(
@@ -84,42 +105,19 @@ export class AuditRequestsRepositoryTypeORM implements IAuditRequestsRepository 
   }
 
   async updateState(id: string, state: UpdateAuditStateInput): Promise<void> {
-    const payload: Partial<AuditRequestEntity> = {
+    const payload: Record<string, unknown> = {
       updatedAt: new Date(),
     };
 
-    if (state.processingStatus !== undefined) {
-      payload.processingStatus = state.processingStatus;
+    for (const key of UPDATABLE_STATE_KEYS) {
+      const value = state[key];
+      if (value !== undefined) payload[key] = value;
     }
-    if (state.progress !== undefined) payload.progress = state.progress;
-    if (state.step !== undefined) payload.step = state.step;
-    if (state.error !== undefined) payload.error = state.error;
-    if (state.normalizedUrl !== undefined)
-      payload.normalizedUrl = state.normalizedUrl;
-    if (state.finalUrl !== undefined) payload.finalUrl = state.finalUrl;
-    if (state.redirectChain !== undefined)
-      payload.redirectChain = state.redirectChain;
-    if (state.keyChecks !== undefined) payload.keyChecks = state.keyChecks;
-    if (state.quickWins !== undefined) payload.quickWins = state.quickWins;
-    if (state.pillarScores !== undefined)
-      payload.pillarScores = state.pillarScores;
-    if (state.summaryText !== undefined)
-      payload.summaryText = state.summaryText;
-    if (state.fullReport !== undefined) payload.fullReport = state.fullReport;
-    if (state.clientReport !== undefined)
-      payload.clientReport = state.clientReport;
-    if (state.expertReport !== undefined)
-      payload.expertReport = state.expertReport;
-    if (state.engineCoverage !== undefined)
-      payload.engineCoverage = state.engineCoverage;
-    if (state.done !== undefined) payload.done = state.done;
-    if (state.startedAt !== undefined) payload.startedAt = state.startedAt;
-    if (state.finishedAt !== undefined) payload.finishedAt = state.finishedAt;
 
     await this.repo
       .createQueryBuilder()
       .update(AuditRequestEntity)
-      .set(payload as Record<string, unknown>)
+      .set(payload)
       .where('id = :id', { id })
       .execute();
   }

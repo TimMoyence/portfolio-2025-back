@@ -36,10 +36,10 @@ describe('PasswordService', () => {
 
   describe('verify', () => {
     it('devrait verifier un hash argon2id correctement', async () => {
-      const password = 'SecurePassword42!';
-      const hash = await service.hash(password);
+      const plainCredential = 'SecurePassword42!';
+      const hash = await service.hash(plainCredential);
 
-      expect(await service.verify(password, hash)).toBe(true);
+      expect(await service.verify(plainCredential, hash)).toBe(true);
       expect(await service.verify('WrongPassword!', hash)).toBe(false);
     });
 

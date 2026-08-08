@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-// Charge .env seulement en dev/local. En prod, Compose fournit deja les vars.
+// dotenv 17.4 n'est charge qu'hors production : en production les variables
+// sont injectees par le bloc `environment:` du service api de compose.yaml.
 const nodeEnv = (process.env.NODE_ENV ?? '').trim();
 if (nodeEnv !== 'production') {
   // eslint-disable-next-line @typescript-eslint/no-require-imports

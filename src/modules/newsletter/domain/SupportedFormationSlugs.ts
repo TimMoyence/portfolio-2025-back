@@ -1,9 +1,3 @@
-/**
- * Ce fichier reste cote back pour eviter une dependance cyclique avec
- * le front (la registry formations vit cote Angular). Chaque ajout de
- * formation frontend suppose une mise a jour manuelle de cette liste —
- * documente dans le runbook de livraison d'une nouvelle formation.
- */
 export const SUPPORTED_FORMATION_SLUGS = [
   'ia-solopreneurs',
   'automatiser-avec-ia',

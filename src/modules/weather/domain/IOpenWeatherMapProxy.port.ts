@@ -21,7 +21,7 @@ export interface DetailedCurrentWeather {
   sunriseIso: string;
   sunsetIso: string;
   isDaytime: boolean;
-  /** 'd' pour jour, 'n' pour nuit. */
+  /** Suffixe d'icone OpenWeatherMap : https://openweathermap.org/weather-conditions */
   partOfDay: 'd' | 'n';
   timezoneOffsetSeconds: number;
 }
@@ -45,7 +45,7 @@ export interface DetailedHourlyItem {
   conditionName: string;
   conditionText: string;
   conditionIcon: string;
-  /** 'd' pour jour, 'n' pour nuit. */
+  /** Suffixe d'icone OpenWeatherMap : https://openweathermap.org/weather-conditions */
   partOfDay: 'd' | 'n';
 }
 

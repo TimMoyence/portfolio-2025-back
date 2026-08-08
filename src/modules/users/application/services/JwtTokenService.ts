@@ -1,12 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SignJWT, jwtVerify, errors } from 'jose';
+import { SignJWT, jwtVerify, errors, type JWTPayload } from 'jose';
 import type { JwtPayload } from './JwtPayload';
 
 interface SignedToken {
   token: string;
   expiresIn: number;
   expiresAt: number;
+}
+
+const EXPIRES_IN_PATTERN = /^(\d+)([smhd])$/i;
+
+function toJwtPayload(payload: JWTPayload): JwtPayload {
+  const sub = payload.sub;
+  const email = payload.email as string | undefined;
+  if (!sub || typeof sub !== 'string') throw new Error('Invalid subject claim');
+  if (!email || typeof email !== 'string')
+    throw new Error('Invalid email claim');
+
+  return {
+    sub,
+    email,
+    iat: payload.iat!,
+    exp: payload.exp!,
+    iss: payload.iss!,
+    aud: payload.aud as string,
+    roles: Array.isArray(payload.roles) ? (payload.roles as string[]) : [],
+  };
+}
+
+function toVerificationError(error: unknown): Error {
+  if (error instanceof errors.JWTExpired) return new Error('Token expired');
+  if (error instanceof errors.JWTClaimValidationFailed) {
+    if (error.claim === 'iss') return new Error('Invalid issuer');
+    if (error.claim === 'aud') return new Error('Invalid audience');
+    return new Error(error.message);
+  }
+  if (error instanceof errors.JWSSignatureVerificationFailed)
+    return new Error('Invalid signature');
+  if (error instanceof errors.JWSInvalid) return new Error('Malformed token');
+  if (error instanceof Error && error.message.startsWith('Invalid'))
+    return error;
+  return new Error('Malformed token');
 }
 
 @Injectable()
@@ -42,7 +77,7 @@ export class JwtTokenService {
   }
 
   private parseExpiresIn(value: string): number {
-    const match = value.trim().match(/^(\d+)([smhd])$/i);
+    const match = EXPIRES_IN_PATTERN.exec(value.trim());
 
     if (!match) {
       const numeric = Number(value);
@@ -90,40 +125,9 @@ export class JwtTokenService {
         audience: JwtTokenService.AUDIENCE,
       });
 
-      const sub = payload.sub;
-      const email = payload.email as string | undefined;
-      if (!sub || typeof sub !== 'string')
-        throw new Error('Invalid subject claim');
-      if (!email || typeof email !== 'string')
-        throw new Error('Invalid email claim');
-
-      const roles = Array.isArray(payload.roles)
-        ? (payload.roles as string[])
-        : [];
-
-      return {
-        sub,
-        email,
-        iat: payload.iat!,
-        exp: payload.exp!,
-        iss: payload.iss!,
-        aud: payload.aud as string,
-        roles,
-      };
+      return toJwtPayload(payload);
     } catch (error) {
-      if (error instanceof errors.JWTExpired) throw new Error('Token expired');
-      if (error instanceof errors.JWTClaimValidationFailed) {
-        if (error.claim === 'iss') throw new Error('Invalid issuer');
-        if (error.claim === 'aud') throw new Error('Invalid audience');
-        throw new Error(error.message);
-      }
-      if (error instanceof errors.JWSSignatureVerificationFailed)
-        throw new Error('Invalid signature');
-      if (error instanceof errors.JWSInvalid)
-        throw new Error('Malformed token');
-      if (error instanceof Error && error.message.startsWith('Invalid'))
-        throw error;
-      throw new Error('Malformed token');
+      throw toVerificationError(error);
     }
   }
 

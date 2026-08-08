@@ -51,9 +51,6 @@ export class DropBudgetTables1777600000000 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS "budget_groups" CASCADE;`);
   }
 
-  /**
-   * No-op : retrait definitif assume, recreation hors scope.
-   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Intentionnellement vide : le module budget est retire definitivement.

@@ -5,7 +5,7 @@ import {
   CONTENT_DEPTH_NORMAL,
   CONTENT_DEPTH_THIN,
   CONTENT_DEPTH_VERY_THIN,
-  INTERNAL_LINKS_WEAK_MAX,
+  INTERNAL_LINKS_STRONG_MIN,
   META_LENGTH_MAX,
   META_LENGTH_MIN,
   SEVERITY_RATIO_HIGH,
@@ -15,6 +15,10 @@ import {
   TITLE_LENGTH_MIN,
 } from './audit-thresholds.config';
 import { HomepageAuditSnapshot } from './homepage-analyzer.service';
+import {
+  inferTechFingerprint,
+  type TechFingerprint,
+} from './tech-fingerprint.util';
 import { localizedText } from './shared/locale-text.util';
 import { severityRank } from './shared/severity.util';
 import { UrlIndexabilityResult } from './url-indexability.service';
@@ -36,19 +40,6 @@ export interface DeepUrlFinding {
 export interface DeepUrlAnalysisResult {
   findings: DeepUrlFinding[];
   metrics: Record<string, unknown>;
-}
-
-interface StackCandidate {
-  score: number;
-  evidence: string[];
-}
-
-export interface TechFingerprint {
-  primaryStack: string;
-  confidence: number;
-  evidence: string[];
-  alternatives: string[];
-  unknowns: string[];
 }
 
 interface UrlMetricsAccumulator {
@@ -87,6 +78,53 @@ interface UrlMetricsAccumulator {
   duplicateTitles: Array<{ value: string; urls: string[] }>;
   duplicateMetas: Array<{ value: string; urls: string[] }>;
   templateDuplicatePatterns: Array<{ template: string; urls: string[] }>;
+}
+
+type UrlMetricsCollector = Omit<
+  UrlMetricsAccumulator,
+  'duplicateTitles' | 'duplicateMetas' | 'templateDuplicatePatterns'
+>;
+
+const SLOW_RESPONSE_MS = 2200;
+const THIN_CONTENT_WORDS = 180;
+const WEAK_INTERNAL_LINKS = 2;
+
+function createMetricsCollector(): UrlMetricsCollector {
+  return {
+    titleMap: new Map<string, string[]>(),
+    metaMap: new Map<string, string[]>(),
+    missingTitle: 0,
+    missingMeta: 0,
+    badTitleLength: 0,
+    badMetaLength: 0,
+    badH1Count: 0,
+    missingLang: 0,
+    languageMismatch: 0,
+    canonicalIssues: 0,
+    canonicalSelfReferenceMismatch: 0,
+    noindexConflicts: 0,
+    urlPatternIssues: 0,
+    errorUrls: [],
+    slowUrls: [],
+    canonicalIssueUrls: [],
+    canonicalMismatchUrls: [],
+    noindexUrls: [],
+    thinContentUrls: [],
+    weakInternalLinkingUrls: [],
+    missingStructuredDataUrls: [],
+    missingOpenGraphUrls: [],
+    languageMismatchUrls: [],
+    urlPatternIssueUrls: [],
+    contentDepthBuckets: { veryThin: 0, thin: 0, normal: 0, rich: 0 },
+    internalLinkDistribution: { none: 0, weak: 0, strong: 0 },
+    templatePatternCount: new Map<string, string[]>(),
+  };
+}
+
+function stripTrailingSlashes(pathname: string): string {
+  let end = pathname.length;
+  while (end > 0 && pathname[end - 1] === '/') end -= 1;
+  return pathname.slice(0, end);
 }
 
 @Injectable()
@@ -148,157 +186,18 @@ export class DeepUrlAnalysisService {
     urls: UrlIndexabilityResult[],
     locale: AuditLocale,
   ): UrlMetricsAccumulator {
-    const titleMap = new Map<string, string[]>();
-    const metaMap = new Map<string, string[]>();
-
-    let missingTitle = 0;
-    let missingMeta = 0;
-    let badTitleLength = 0;
-    let badMetaLength = 0;
-    let badH1Count = 0;
-    let missingLang = 0;
-    let languageMismatch = 0;
-    let canonicalIssues = 0;
-    let canonicalSelfReferenceMismatch = 0;
-    let noindexConflicts = 0;
-    let urlPatternIssues = 0;
-
-    const errorUrls: string[] = [];
-    const slowUrls: string[] = [];
-    const canonicalIssueUrls: string[] = [];
-    const canonicalMismatchUrls: string[] = [];
-    const noindexUrls: string[] = [];
-    const thinContentUrls: string[] = [];
-    const weakInternalLinkingUrls: string[] = [];
-    const missingStructuredDataUrls: string[] = [];
-    const missingOpenGraphUrls: string[] = [];
-    const languageMismatchUrls: string[] = [];
-    const urlPatternIssueUrls: string[] = [];
-    const contentDepthBuckets = {
-      veryThin: 0,
-      thin: 0,
-      normal: 0,
-      rich: 0,
-    };
-    const internalLinkDistribution = {
-      none: 0,
-      weak: 0,
-      strong: 0,
-    };
-    const templatePatternCount = new Map<string, string[]>();
+    const acc = createMetricsCollector();
 
     for (const entry of urls) {
-      const pageUrl = entry.url;
-      const title = (entry.title ?? '').trim();
-      const meta = (entry.metaDescription ?? '').trim();
-
-      if (!title) {
-        missingTitle += 1;
-      } else {
-        titleMap.set(title, [...(titleMap.get(title) ?? []), pageUrl]);
-        if (
-          title.length < TITLE_LENGTH_MIN ||
-          title.length > TITLE_LENGTH_MAX
-        ) {
-          badTitleLength += 1;
-        }
-      }
-
-      if (!meta) {
-        missingMeta += 1;
-      } else {
-        metaMap.set(meta, [...(metaMap.get(meta) ?? []), pageUrl]);
-        if (meta.length < META_LENGTH_MIN || meta.length > META_LENGTH_MAX) {
-          badMetaLength += 1;
-        }
-      }
-
-      if ((entry.h1Count ?? 1) !== 1) {
-        badH1Count += 1;
-      }
-
-      if (!entry.htmlLang) {
-        missingLang += 1;
-      } else {
-        const normalizedLang = entry.htmlLang.toLowerCase();
-        if (
-          (locale === 'fr' && normalizedLang.startsWith('en')) ||
-          (locale === 'en' && normalizedLang.startsWith('fr'))
-        ) {
-          languageMismatch += 1;
-          languageMismatchUrls.push(pageUrl);
-        }
-      }
-
-      if (!entry.canonical || (entry.canonicalCount ?? 0) !== 1) {
-        canonicalIssues += 1;
-        canonicalIssueUrls.push(pageUrl);
-      } else if (!this.isSelfReferencingCanonical(entry)) {
-        canonicalSelfReferenceMismatch += 1;
-        canonicalMismatchUrls.push(pageUrl);
-      }
-
-      if (!entry.indexable && (entry.statusCode ?? 500) < 400) {
-        noindexConflicts += 1;
-        noindexUrls.push(pageUrl);
-      }
-
-      if ((entry.statusCode ?? 500) >= 400 || entry.error) {
-        errorUrls.push(pageUrl);
-      }
-
-      if ((entry.responseTimeMs ?? 0) > 2200) {
-        slowUrls.push(pageUrl);
-      }
-
-      if (
-        typeof entry.wordCount === 'number' &&
-        entry.wordCount > 0 &&
-        entry.wordCount < 180
-      ) {
-        thinContentUrls.push(pageUrl);
-      }
-      const contentDepth = this.classifyContentDepth(entry.wordCount ?? 0);
-      contentDepthBuckets[contentDepth] += 1;
-
-      if (
-        typeof entry.internalLinkCount === 'number' &&
-        entry.internalLinkCount > 0 &&
-        entry.internalLinkCount < 2
-      ) {
-        weakInternalLinkingUrls.push(pageUrl);
-      }
-      const internalLinkLevel = this.classifyInternalLinks(
-        entry.internalLinkCount ?? 0,
-      );
-      internalLinkDistribution[internalLinkLevel] += 1;
-
-      if (entry.hasStructuredData === false) {
-        missingStructuredDataUrls.push(pageUrl);
-      }
-
-      if (
-        typeof entry.openGraphTagCount === 'number' &&
-        entry.openGraphTagCount === 0
-      ) {
-        missingOpenGraphUrls.push(pageUrl);
-      }
-
-      if (this.hasUrlPatternIssue(pageUrl)) {
-        urlPatternIssues += 1;
-        urlPatternIssueUrls.push(pageUrl);
-      }
-
-      const templatePattern = this.extractTemplatePattern(pageUrl);
-      templatePatternCount.set(templatePattern, [
-        ...(templatePatternCount.get(templatePattern) ?? []),
-        pageUrl,
-      ]);
+      this.collectTitleMetrics(acc, entry);
+      this.collectMetaMetrics(acc, entry);
+      this.collectLanguageMetrics(acc, entry, locale);
+      this.collectIndexabilityMetrics(acc, entry);
+      this.collectContentMetrics(acc, entry);
+      this.collectUrlShapeMetrics(acc, entry);
     }
 
-    const duplicateTitles = this.duplicates(titleMap);
-    const duplicateMetas = this.duplicates(metaMap);
-    const templateDuplicatePatterns = [...templatePatternCount.entries()]
+    const templateDuplicatePatterns = [...acc.templatePatternCount.entries()]
       .filter(
         ([, templateUrls]) => templateUrls.length >= TEMPLATE_DUPLICATE_MIN,
       )
@@ -308,37 +207,150 @@ export class DeepUrlAnalysisService {
       }));
 
     return {
-      titleMap,
-      metaMap,
-      missingTitle,
-      missingMeta,
-      badTitleLength,
-      badMetaLength,
-      badH1Count,
-      missingLang,
-      languageMismatch,
-      canonicalIssues,
-      canonicalSelfReferenceMismatch,
-      noindexConflicts,
-      urlPatternIssues,
-      errorUrls,
-      slowUrls,
-      canonicalIssueUrls,
-      canonicalMismatchUrls,
-      noindexUrls,
-      thinContentUrls,
-      weakInternalLinkingUrls,
-      missingStructuredDataUrls,
-      missingOpenGraphUrls,
-      languageMismatchUrls,
-      urlPatternIssueUrls,
-      contentDepthBuckets,
-      internalLinkDistribution,
-      templatePatternCount,
-      duplicateTitles,
-      duplicateMetas,
+      ...acc,
+      duplicateTitles: this.duplicates(acc.titleMap),
+      duplicateMetas: this.duplicates(acc.metaMap),
       templateDuplicatePatterns,
     };
+  }
+
+  private collectTitleMetrics(
+    acc: UrlMetricsCollector,
+    entry: UrlIndexabilityResult,
+  ): void {
+    const title = (entry.title ?? '').trim();
+    if (!title) {
+      acc.missingTitle += 1;
+      return;
+    }
+
+    acc.titleMap.set(title, [...(acc.titleMap.get(title) ?? []), entry.url]);
+    if (title.length < TITLE_LENGTH_MIN || title.length > TITLE_LENGTH_MAX) {
+      acc.badTitleLength += 1;
+    }
+  }
+
+  private collectMetaMetrics(
+    acc: UrlMetricsCollector,
+    entry: UrlIndexabilityResult,
+  ): void {
+    const meta = (entry.metaDescription ?? '').trim();
+    if (!meta) {
+      acc.missingMeta += 1;
+      return;
+    }
+
+    acc.metaMap.set(meta, [...(acc.metaMap.get(meta) ?? []), entry.url]);
+    if (meta.length < META_LENGTH_MIN || meta.length > META_LENGTH_MAX) {
+      acc.badMetaLength += 1;
+    }
+  }
+
+  private collectLanguageMetrics(
+    acc: UrlMetricsCollector,
+    entry: UrlIndexabilityResult,
+    locale: AuditLocale,
+  ): void {
+    if (!entry.htmlLang) {
+      acc.missingLang += 1;
+      return;
+    }
+
+    const normalizedLang = entry.htmlLang.toLowerCase();
+    const mismatched =
+      (locale === 'fr' && normalizedLang.startsWith('en')) ||
+      (locale === 'en' && normalizedLang.startsWith('fr'));
+    if (mismatched) {
+      acc.languageMismatch += 1;
+      acc.languageMismatchUrls.push(entry.url);
+    }
+  }
+
+  private collectIndexabilityMetrics(
+    acc: UrlMetricsCollector,
+    entry: UrlIndexabilityResult,
+  ): void {
+    const pageUrl = entry.url;
+    const statusCode = entry.statusCode ?? 500;
+
+    if ((entry.h1Count ?? 1) !== 1) {
+      acc.badH1Count += 1;
+    }
+
+    if (!entry.canonical || (entry.canonicalCount ?? 0) !== 1) {
+      acc.canonicalIssues += 1;
+      acc.canonicalIssueUrls.push(pageUrl);
+    } else if (!this.isSelfReferencingCanonical(entry)) {
+      acc.canonicalSelfReferenceMismatch += 1;
+      acc.canonicalMismatchUrls.push(pageUrl);
+    }
+
+    if (!entry.indexable && statusCode < 400) {
+      acc.noindexConflicts += 1;
+      acc.noindexUrls.push(pageUrl);
+    }
+
+    if (statusCode >= 400 || entry.error) {
+      acc.errorUrls.push(pageUrl);
+    }
+
+    if ((entry.responseTimeMs ?? 0) > SLOW_RESPONSE_MS) {
+      acc.slowUrls.push(pageUrl);
+    }
+  }
+
+  private collectContentMetrics(
+    acc: UrlMetricsCollector,
+    entry: UrlIndexabilityResult,
+  ): void {
+    const pageUrl = entry.url;
+
+    if (
+      typeof entry.wordCount === 'number' &&
+      entry.wordCount > 0 &&
+      entry.wordCount < THIN_CONTENT_WORDS
+    ) {
+      acc.thinContentUrls.push(pageUrl);
+    }
+    acc.contentDepthBuckets[this.classifyContentDepth(entry.wordCount ?? 0)] +=
+      1;
+
+    if (
+      typeof entry.internalLinkCount === 'number' &&
+      entry.internalLinkCount > 0 &&
+      entry.internalLinkCount < WEAK_INTERNAL_LINKS
+    ) {
+      acc.weakInternalLinkingUrls.push(pageUrl);
+    }
+    acc.internalLinkDistribution[
+      this.classifyInternalLinks(entry.internalLinkCount ?? 0)
+    ] += 1;
+
+    if (entry.hasStructuredData === false) {
+      acc.missingStructuredDataUrls.push(pageUrl);
+    }
+
+    if (entry.openGraphTagCount === 0) {
+      acc.missingOpenGraphUrls.push(pageUrl);
+    }
+  }
+
+  private collectUrlShapeMetrics(
+    acc: UrlMetricsCollector,
+    entry: UrlIndexabilityResult,
+  ): void {
+    const pageUrl = entry.url;
+
+    if (this.hasUrlPatternIssue(pageUrl)) {
+      acc.urlPatternIssues += 1;
+      acc.urlPatternIssueUrls.push(pageUrl);
+    }
+
+    const templatePattern = this.extractTemplatePattern(pageUrl);
+    acc.templatePatternCount.set(templatePattern, [
+      ...(acc.templatePatternCount.get(templatePattern) ?? []),
+      pageUrl,
+    ]);
   }
 
   private emitFindings(
@@ -873,193 +885,7 @@ export class DeepUrlAnalysisService {
     urls: UrlIndexabilityResult[],
     locale: AuditLocale = 'fr',
   ): TechFingerprint {
-    const snapshots: Array<{
-      url: string;
-      detectedCmsHints?: string[];
-      server?: string | null;
-      xPoweredBy?: string | null;
-      setCookiePatterns?: string[];
-    }> = [
-      {
-        url: homepage.finalUrl,
-        detectedCmsHints: homepage.detectedCmsHints,
-        server: homepage.server,
-        xPoweredBy: homepage.xPoweredBy,
-        setCookiePatterns: homepage.setCookiePatterns,
-      },
-      ...urls,
-    ];
-    const candidates = new Map<string, StackCandidate>();
-    const unknowns = new Set<string>();
-
-    const addCandidate = (
-      name: string,
-      score: number,
-      evidence: string,
-    ): void => {
-      const normalized = name.trim();
-      if (!normalized || score <= 0) return;
-      const current = candidates.get(normalized) ?? { score: 0, evidence: [] };
-      current.score += score;
-      if (evidence && !current.evidence.includes(evidence)) {
-        current.evidence.push(evidence);
-      }
-      candidates.set(normalized, current);
-    };
-
-    for (const snapshot of snapshots) {
-      const url = snapshot.url;
-      const cmsHints = snapshot.detectedCmsHints ?? [];
-      for (const hint of cmsHints) {
-        addCandidate(hint, 3, `${hint} hint detected on ${url}`);
-      }
-
-      const server = (snapshot.server ?? '').toLowerCase();
-      if (!server) {
-        unknowns.add(
-          locale === 'en'
-            ? 'Server header not disclosed on most pages'
-            : 'Header Server non expose sur la majorite des pages',
-        );
-      }
-      if (server.includes('cloudflare')) {
-        addCandidate(
-          'Cloudflare edge stack',
-          1,
-          `Server header includes ${server}`,
-        );
-      }
-      if (server.includes('nginx')) {
-        addCandidate('Nginx web stack', 1, `Server header includes ${server}`);
-      }
-      if (server.includes('apache')) {
-        addCandidate('Apache web stack', 1, `Server header includes ${server}`);
-      }
-      if (server.includes('iis')) {
-        addCandidate(
-          'Microsoft IIS / ASP.NET',
-          3,
-          `Server header includes ${server}`,
-        );
-      }
-      if (server.includes('vercel')) {
-        addCandidate(
-          'Next.js on Vercel',
-          2,
-          `Server header includes ${server}`,
-        );
-      }
-
-      const xPoweredBy = (snapshot.xPoweredBy ?? '').toLowerCase();
-      if (!xPoweredBy) {
-        unknowns.add(
-          locale === 'en'
-            ? 'x-powered-by header is hidden'
-            : 'Header x-powered-by masque',
-        );
-      }
-      if (xPoweredBy.includes('next.js')) {
-        addCandidate('Next.js', 4, `x-powered-by includes ${xPoweredBy}`);
-      }
-      if (
-        xPoweredBy.includes('node') ||
-        xPoweredBy.includes('express') ||
-        xPoweredBy.includes('nestjs')
-      ) {
-        addCandidate(
-          'Node.js runtime',
-          3,
-          `x-powered-by includes ${xPoweredBy}`,
-        );
-      }
-      if (xPoweredBy.includes('php')) {
-        addCandidate('PHP runtime', 3, `x-powered-by includes ${xPoweredBy}`);
-      }
-      if (xPoweredBy.includes('asp.net')) {
-        addCandidate(
-          'ASP.NET runtime',
-          3,
-          `x-powered-by includes ${xPoweredBy}`,
-        );
-      }
-
-      const cookies = (snapshot.setCookiePatterns ?? []).map((entry) =>
-        entry.toLowerCase(),
-      );
-      if (cookies.length === 0) {
-        unknowns.add(
-          locale === 'en'
-            ? 'No deterministic Set-Cookie framework signature'
-            : 'Aucune signature framework deterministe dans Set-Cookie',
-        );
-      }
-      if (cookies.some((cookie) => cookie.startsWith('wordpress_'))) {
-        addCandidate(
-          'WordPress',
-          5,
-          `Cookie signatures detected: ${cookies.join(', ')}`,
-        );
-      }
-      if (cookies.some((cookie) => cookie.includes('woocommerce'))) {
-        addCandidate(
-          'WordPress + WooCommerce',
-          5,
-          `Cookie signatures detected: ${cookies.join(', ')}`,
-        );
-      }
-      if (cookies.some((cookie) => cookie.includes('_shopify'))) {
-        addCandidate(
-          'Shopify',
-          5,
-          `Cookie signatures detected: ${cookies.join(', ')}`,
-        );
-      }
-      if (cookies.some((cookie) => cookie === 'phpsessid')) {
-        addCandidate(
-          'PHP runtime',
-          3,
-          `Cookie signatures detected: ${cookies.join(', ')}`,
-        );
-      }
-      if (cookies.some((cookie) => cookie.startsWith('__next'))) {
-        addCandidate(
-          'Next.js',
-          2,
-          `Cookie signatures detected: ${cookies.join(', ')}`,
-        );
-      }
-      if (cookies.some((cookie) => cookie.includes('wix'))) {
-        addCandidate(
-          'Wix',
-          4,
-          `Cookie signatures detected: ${cookies.join(', ')}`,
-        );
-      }
-    }
-
-    const ranked = [...candidates.entries()].sort(
-      (a, b) => b[1].score - a[1].score,
-    );
-    const best = ranked[0];
-
-    if (!best || best[1].score < 3) {
-      return {
-        primaryStack: locale === 'en' ? 'Not verifiable' : 'Non verifiable',
-        confidence: 0.2,
-        evidence: [],
-        alternatives: [],
-        unknowns: Array.from(unknowns).slice(0, 5),
-      };
-    }
-
-    const confidence = Math.max(0.3, Math.min(0.95, best[1].score / 10));
-    return {
-      primaryStack: best[0],
-      confidence: Math.round(confidence * 100) / 100,
-      evidence: best[1].evidence.slice(0, 8),
-      alternatives: ranked.slice(1, 4).map(([name]) => name),
-      unknowns: Array.from(unknowns).slice(0, 5),
-    };
+    return inferTechFingerprint(homepage, urls, locale);
   }
 
   private pushIfNeeded(
@@ -1116,8 +942,8 @@ export class DeepUrlAnalysisService {
       const final = new URL(entry.finalUrl);
       canonical.hash = '';
       final.hash = '';
-      const canonicalPath = canonical.pathname.replace(/\/+$/, '') || '/';
-      const finalPath = final.pathname.replace(/\/+$/, '') || '/';
+      const canonicalPath = stripTrailingSlashes(canonical.pathname) || '/';
+      const finalPath = stripTrailingSlashes(final.pathname) || '/';
       return (
         canonical.origin === final.origin &&
         canonicalPath === finalPath &&
@@ -1155,7 +981,7 @@ export class DeepUrlAnalysisService {
     internalLinkCount: number,
   ): 'none' | 'weak' | 'strong' {
     if (internalLinkCount <= 0) return 'none';
-    if (internalLinkCount < INTERNAL_LINKS_WEAK_MAX) return 'weak';
+    if (internalLinkCount < INTERNAL_LINKS_STRONG_MIN) return 'weak';
     return 'strong';
   }
 

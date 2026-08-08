@@ -79,6 +79,6 @@ describe('optionalMetadata', () => {
   });
 
   it('devrait retourner le texte trimme', () => {
-    expect(optionalMetadata('  192.168.1.1  ')).toBe('192.168.1.1');
+    expect(optionalMetadata('  203.0.113.7  ')).toBe('203.0.113.7');
   });
 });

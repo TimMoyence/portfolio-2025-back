@@ -19,7 +19,7 @@ describe('AuthAuditLogger', () => {
       event: 'LOGIN_SUCCESS',
       email: 'user@example.com',
       userId: 'uuid-123',
-      ip: '192.168.1.1',
+      ip: '198.51.100.42',
       userAgent: 'Mozilla/5.0',
       timestamp: new Date('2026-04-06T12:00:00Z'),
       details: 'Connexion réussie',
@@ -34,7 +34,7 @@ describe('AuthAuditLogger', () => {
     expect(parsed.event).toBe('LOGIN_SUCCESS');
     expect(parsed.email).toBe('user@example.com');
     expect(parsed.userId).toBe('uuid-123');
-    expect(parsed.ip).toBe('192.168.1.1');
+    expect(parsed.ip).toBe('198.51.100.42');
     expect(parsed.userAgent).toBe('Mozilla/5.0');
     expect(parsed.timestamp).toBe('2026-04-06T12:00:00.000Z');
     expect(parsed.details).toBe('Connexion réussie');

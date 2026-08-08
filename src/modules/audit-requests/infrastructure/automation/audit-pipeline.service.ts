@@ -14,9 +14,9 @@ import { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
 import {
   DeepUrlAnalysisResult,
   DeepUrlAnalysisService,
-  TechFingerprint,
 } from './deep-url-analysis.service';
 import { HomepageAnalyzerService } from './homepage-analyzer.service';
+import type { TechFingerprint } from './tech-fingerprint.util';
 import {
   LangchainAuditReportService,
   LangchainAuditOutput,

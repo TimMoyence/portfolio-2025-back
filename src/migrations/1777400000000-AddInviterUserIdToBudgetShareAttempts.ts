@@ -1,16 +1,5 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-/**
- * Ajoute la colonne `inviter_user_id` (nullable) a la table
- * `budget_share_attempts` et l'index compose
- * `idx_budget_share_attempts_inviter_quota` pour le rate limiting
- * par inviteur (nombre d'invitations envoyees sur une fenetre
- * glissante via `countByInviterSince`).
- *
- * Nullable car les anciennes lignes (avant invitations magic-link)
- * n'ont pas d'inviteur identifie ; les nouvelles tentatives en
- * fournissent toujours un.
- */
 export class AddInviterUserIdToBudgetShareAttempts1777400000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

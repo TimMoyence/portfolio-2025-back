@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { createTransport } from 'nodemailer';
 import type { PasswordResetNotificationPayload } from '../domain/IPasswordResetNotifier';
 import { PasswordResetMailerService } from './PasswordResetMailer.service';
@@ -47,12 +48,13 @@ describe('PasswordResetMailerService', () => {
   });
 
   describe('constructor', () => {
-    it('devrait creer un transporter quand la config SMTP est complete', () => {
+    it('devrait creer un transporter quand la config SMTP est complete', async () => {
       mockTransporter = createMockTransporter();
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv();
 
       const service = new TestablePasswordResetMailer();
+      await service.sendPasswordResetEmail(buildPayload());
 
       expect(mockedCreateTransport).toHaveBeenCalledWith({
         host: DEFAULT_SMTP_ENV.SMTP_HOST,
@@ -63,34 +65,41 @@ describe('PasswordResetMailerService', () => {
           pass: DEFAULT_SMTP_ENV.SMTP_PASS,
         },
       });
-      expect(service).toBeDefined();
+      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
     });
 
-    it('devrait activer secure quand le port est 465', () => {
+    it('devrait activer secure quand le port est 465, et envoyer par ce transporter', async () => {
       mockTransporter = createMockTransporter();
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv({ SMTP_PORT: '465' });
 
-      new TestablePasswordResetMailer();
+      const service = new TestablePasswordResetMailer();
+      await service.sendPasswordResetEmail(buildPayload());
 
       expect(mockedCreateTransport).toHaveBeenCalledWith(
-        expect.objectContaining({ secure: true }),
+        expect.objectContaining({ port: 465, secure: true }),
       );
+      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
     });
 
-    it('devrait activer secure quand SMTP_SECURE vaut true', () => {
+    it('devrait activer secure sur SMTP_SECURE=true meme hors du port 465', async () => {
       mockTransporter = createMockTransporter();
       mockedCreateTransport.mockReturnValue(mockTransporter as never);
       cleanupEnv = setSmtpEnv({ SMTP_SECURE: 'true' });
 
-      new TestablePasswordResetMailer();
+      const service = new TestablePasswordResetMailer();
+      await service.sendPasswordResetEmail(buildPayload());
 
       expect(mockedCreateTransport).toHaveBeenCalledWith(
-        expect.objectContaining({ secure: true }),
+        expect.objectContaining({
+          port: Number(DEFAULT_SMTP_ENV.SMTP_PORT),
+          secure: true,
+        }),
       );
+      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
     });
 
-    it('devrait logger un warn et ne pas creer de transporter sans config SMTP', () => {
+    it('devrait logger un warn et ne pas creer de transporter sans config SMTP', async () => {
       cleanupEnv = setSmtpEnv({
         SMTP_HOST: '',
         SMTP_PORT: '',
@@ -102,21 +111,15 @@ describe('PasswordResetMailerService', () => {
       delete process.env.SMTP_USER;
       delete process.env.SMTP_PASS;
 
-      const warnSpy = jest
-        .spyOn(
-          (
-            PasswordResetMailerService as unknown as {
-              prototype: { logger: { warn: (...args: unknown[]) => void } };
-            }
-          ).prototype.logger ?? console,
-          'warn',
-        )
-        .mockImplementation();
+      const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
 
       const service = new TestablePasswordResetMailer();
+      await service.sendPasswordResetEmail(buildPayload());
 
       expect(mockedCreateTransport).not.toHaveBeenCalled();
-      expect(service).toBeDefined();
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Password reset mailer disabled'),
+      );
       warnSpy.mockRestore();
     });
   });

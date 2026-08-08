@@ -1,4 +1,4 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
+import type { DataSource } from 'typeorm';
 import { Courses } from '../src/modules/courses/domain/Courses';
 import { CoursesRepositoryTypeORM } from '../src/modules/courses/infrastructure/Courses.repository.typeORM';
 import { CourseResourceEntity } from '../src/modules/courses/infrastructure/entities/CourseResources.entity';
@@ -17,37 +17,21 @@ import { ServicesEntity } from '../src/modules/services/infrastructure/entities/
 import { ServicesFaqEntity } from '../src/modules/services/infrastructure/entities/ServicesFaq.entity';
 import { ServicesFaqTranslationEntity } from '../src/modules/services/infrastructure/entities/ServicesFaqTranslation.entity';
 import { ServicesTranslationEntity } from '../src/modules/services/infrastructure/entities/ServicesTranslation.entity';
+import {
+  describeDb,
+  destroyDbIntegrationDataSource,
+  initDbIntegrationDataSource,
+} from './helpers/db-integration-datasource';
 
-const runDbIntegration = process.env.RUN_DB_INTEGRATION === 'true';
-const describeDb = runDbIntegration ? describe : describe.skip;
+describeDb('Legacy repositories (db integration)', () => {
+  let dataSource: DataSource;
+  let servicesRepository: ServicesRepositoryTypeORM;
+  let projectsRepository: ProjectsRepositoryTypeORM;
+  let coursesRepository: CoursesRepositoryTypeORM;
+  let redirectsRepository: RedirectsRepositoryTypeORM;
 
-function parsePort(raw: string | undefined): number {
-  if (!raw) return 5432;
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? parsed : 5432;
-}
-
-function buildOptions(): DataSourceOptions {
-  const sslEnabled =
-    process.env.DB_SSL === 'true' || process.env.DATABASE_SSL === 'true';
-
-  return {
-    type: 'postgres',
-    host: process.env.DB_HOST ?? process.env.DATABASE_HOST ?? '127.0.0.1',
-    port: parsePort(process.env.DB_PORT ?? process.env.DATABASE_PORT),
-    username:
-      process.env.DB_USERNAME ??
-      process.env.DB_USER ??
-      process.env.DATABASE_USER ??
-      'postgres',
-    password:
-      process.env.DB_PASSWORD ??
-      process.env.DB_PASS ??
-      process.env.DATABASE_PASSWORD ??
-      'postgres',
-    database:
-      process.env.DB_NAME ?? process.env.DATABASE_NAME ?? 'portfolio_2025_ci',
-    entities: [
+  beforeAll(async () => {
+    dataSource = await initDbIntegrationDataSource([
       ServicesEntity,
       ServicesTranslationEntity,
       ServicesFaqEntity,
@@ -58,24 +42,7 @@ function buildOptions(): DataSourceOptions {
       CoursesTranslationEntity,
       CourseResourceEntity,
       RedirectsEntity,
-    ],
-    synchronize: true,
-    dropSchema: true,
-    logging: false,
-    ...(sslEnabled ? { ssl: { rejectUnauthorized: false } } : {}),
-  };
-}
-
-describeDb('Legacy repositories (db integration)', () => {
-  let dataSource: DataSource;
-  let servicesRepository: ServicesRepositoryTypeORM;
-  let projectsRepository: ProjectsRepositoryTypeORM;
-  let coursesRepository: CoursesRepositoryTypeORM;
-  let redirectsRepository: RedirectsRepositoryTypeORM;
-
-  beforeAll(async () => {
-    dataSource = new DataSource(buildOptions());
-    await dataSource.initialize();
+    ]);
 
     servicesRepository = new ServicesRepositoryTypeORM(
       dataSource.getRepository(ServicesEntity),
@@ -92,9 +59,7 @@ describeDb('Legacy repositories (db integration)', () => {
   });
 
   afterAll(async () => {
-    if (dataSource?.isInitialized) {
-      await dataSource.destroy();
-    }
+    await destroyDbIntegrationDataSource(dataSource);
   });
 
   it('persists and reads services entities', async () => {

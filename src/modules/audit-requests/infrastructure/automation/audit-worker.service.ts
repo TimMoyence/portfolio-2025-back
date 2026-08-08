@@ -9,6 +9,7 @@ import { Worker } from 'bullmq';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
 import { AuditPipelineService } from './audit-pipeline.service';
+import { runAuditPipelineWithTimeout } from './audit-pipeline-timeout.util';
 import { AuditQueueJob, AuditQueueService } from './audit-queue.service';
 
 @Injectable()
@@ -66,23 +67,11 @@ export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private async runWithTimeout(auditId: string): Promise<void> {
-    const timeout = this.config.jobTimeoutMs;
-    let timeoutId: NodeJS.Timeout | undefined;
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutId = setTimeout(() => {
-        reject(
-          new Error(
-            `Audit pipeline timeout after ${timeout}ms (auditId=${auditId})`,
-          ),
-        );
-      }, timeout);
-    });
-
-    try {
-      await Promise.race([this.pipeline.run(auditId), timeoutPromise]);
-    } finally {
-      if (timeoutId) clearTimeout(timeoutId);
-    }
+  private runWithTimeout(auditId: string): Promise<void> {
+    return runAuditPipelineWithTimeout(
+      this.pipeline,
+      auditId,
+      this.config.jobTimeoutMs,
+    );
   }
 }

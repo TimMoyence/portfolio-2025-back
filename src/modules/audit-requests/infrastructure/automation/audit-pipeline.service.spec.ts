@@ -643,7 +643,7 @@ describe('AuditPipelineService', () => {
           ] as Record<string, unknown>
         )['qualityGate'],
       ).toEqual({ fallback: true });
-      expect(completedState.finishedAt instanceof Date).toBe(true);
+      expect(completedState.finishedAt).toBeInstanceOf(Date);
     }
     expect(
       updates.some(
@@ -703,7 +703,7 @@ describe('AuditPipelineService', () => {
       expect(lastCall[1].step).toBe('Audit en echec');
       expect(lastCall[1].done).toBe(false);
       expect(lastCall[1].error).toBe('Normalization failed');
-      expect(lastCall[1].finishedAt instanceof Date).toBe(true);
+      expect(lastCall[1].finishedAt).toBeInstanceOf(Date);
     }
   });
 

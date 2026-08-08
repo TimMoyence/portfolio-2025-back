@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { randomBytes } from 'crypto';
 import { InvalidInputError } from '../../../common/domain/errors/InvalidInputError';
 import type { IEmailVerificationNotifier } from '../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
@@ -10,8 +9,7 @@ import {
   EMAIL_VERIFICATION_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
 } from '../domain/token';
-
-const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
+import { dispatchVerificationEmail } from './services/email-verification-dispatch';
 
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX = 3;
@@ -45,7 +43,6 @@ export class ResendVerificationEmailUseCase {
   async execute(email: string): Promise<ResendVerificationResult> {
     const user = await this.usersRepo.findByEmail(email);
 
-    // Reponse generique pour ne pas reveler l'existence d'un compte
     if (!user || !user.id || !user.isActive) {
       return { message: this.genericMessage };
     }
@@ -68,39 +65,16 @@ export class ResendVerificationEmailUseCase {
 
     await this.emailVerificationTokensRepo.deleteByUserId(user.id);
 
-    const rawToken = randomBytes(32).toString('hex');
-
-    await this.emailVerificationTokensRepo.create({
+    await dispatchVerificationEmail({
+      user,
       userId: user.id,
-      token: rawToken,
-      expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_TTL_MS),
+      verificationUrlBase: this.verificationUrlBase,
+      tokensRepo: this.emailVerificationTokensRepo,
+      notifier: this.emailVerificationNotifier,
+      logger: this.logger,
+      failureLogPrefix: 'Resend verification email failed',
     });
 
-    try {
-      await this.emailVerificationNotifier.sendVerificationEmail({
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        verificationUrl: this.buildVerificationUrl(rawToken),
-        expiresInMinutes: 24 * 60,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Resend verification email failed for ${user.email}: ${String(error)}`,
-      );
-    }
-
     return { message: this.genericMessage };
-  }
-
-  private buildVerificationUrl(rawToken: string): string {
-    try {
-      const url = new URL(this.verificationUrlBase);
-      url.searchParams.set('token', rawToken);
-      return url.toString();
-    } catch {
-      const separator = this.verificationUrlBase.includes('?') ? '&' : '?';
-      return `${this.verificationUrlBase}${separator}token=${encodeURIComponent(rawToken)}`;
-    }
   }
 }

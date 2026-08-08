@@ -18,6 +18,18 @@ describe('BacCalculator', () => {
     return d;
   }
 
+  function beerEntry(consumedAt: Date): SebastianEntry {
+    return buildSebastianEntry({
+      category: 'alcohol',
+      drinkType: 'beer',
+      quantity: 1,
+      alcoholDegree: 5,
+      volumeCl: 25,
+      consumedAt,
+      date: new Date('2026-04-06'),
+    });
+  }
+
   describe('calculateBacCurve()', () => {
     it('devrait retourner BAC 0 sans entrees alcool', () => {
       const entries: SebastianEntry[] = [];
@@ -55,15 +67,7 @@ describe('BacCalculator', () => {
       const consumedAt = dateAt(14);
       const now = dateAt(15);
 
-      const entry = buildSebastianEntry({
-        category: 'alcohol',
-        drinkType: 'beer',
-        quantity: 1,
-        alcoholDegree: 5,
-        volumeCl: 25,
-        consumedAt,
-        date: new Date('2026-04-06'),
-      });
+      const entry = beerEntry(consumedAt);
 
       const result = BacCalculator.calculateBacCurve(
         [entry],
@@ -118,15 +122,7 @@ describe('BacCalculator', () => {
       const consumedAt = dateAt(12);
       const now = dateAt(12, 30);
 
-      const entry = buildSebastianEntry({
-        category: 'alcohol',
-        drinkType: 'beer',
-        quantity: 1,
-        alcoholDegree: 5,
-        volumeCl: 25,
-        consumedAt,
-        date: new Date('2026-04-06'),
-      });
+      const entry = beerEntry(consumedAt);
 
       const result = BacCalculator.calculateBacCurve(
         [entry],
@@ -190,15 +186,7 @@ describe('BacCalculator', () => {
       const consumedAt = dateAt(12);
       const now = dateAt(13);
 
-      const entry = buildSebastianEntry({
-        category: 'alcohol',
-        drinkType: 'beer',
-        quantity: 1,
-        alcoholDegree: 5,
-        volumeCl: 25,
-        consumedAt,
-        date: new Date('2026-04-06'),
-      });
+      const entry = beerEntry(consumedAt);
 
       const result = BacCalculator.calculateBacCurve(
         [entry],

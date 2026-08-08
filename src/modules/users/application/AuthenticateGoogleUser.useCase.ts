@@ -1,18 +1,16 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { randomBytes } from 'crypto';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
-import { TokenHash } from '../domain/TokenHash';
 import { User } from '../domain/User';
 import {
   GOOGLE_CLIENT_ID,
   REFRESH_TOKENS_REPOSITORY,
   USERS_REPOSITORY,
 } from '../domain/token';
-import { REFRESH_TOKEN_TTL_MS } from '../domain/auth.constants';
 import { DEFAULT_SELF_REGISTRATION_ROLES } from '../domain/roles';
 import type { AuthResult } from './AuthenticateUser.useCase';
+import { issueAuthSession } from './services/issue-auth-session';
 import { JwtTokenService } from './services/JwtTokenService';
 import { UsersMapper } from './mappers/UsersMapper';
 
@@ -146,27 +144,6 @@ export class AuthenticateGoogleUserUseCase {
   }
 
   private async signResult(user: User): Promise<AuthResult> {
-    const { token, expiresIn } = await this.jwtTokenService.sign({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles ?? [],
-    });
-
-    const rawRefreshToken = randomBytes(32).toString('hex');
-    const tokenHash = TokenHash.fromRaw(rawRefreshToken).value;
-
-    await this.refreshTokensRepo.create({
-      userId: user.id!,
-      tokenHash,
-      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
-      revoked: false,
-    });
-
-    return {
-      accessToken: token,
-      expiresIn,
-      refreshToken: rawRefreshToken,
-      user,
-    };
+    return issueAuthSession(user, this.jwtTokenService, this.refreshTokensRepo);
   }
 }

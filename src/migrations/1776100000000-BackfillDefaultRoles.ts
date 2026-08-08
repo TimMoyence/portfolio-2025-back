@@ -1,9 +1,5 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-/**
- * Ajoute les roles par defaut (budget,weather,sebastian) aux utilisateurs
- * inscrits par email (self-registration) qui ont un champ roles vide.
- */
 export class BackfillDefaultRoles1776100000000 implements MigrationInterface {
   name = 'BackfillDefaultRoles1776100000000';
 

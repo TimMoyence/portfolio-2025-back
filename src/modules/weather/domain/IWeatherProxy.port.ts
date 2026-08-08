@@ -1,7 +1,7 @@
 import type { WeatherAlertResult } from './WeatherAlert';
 export type { WeatherAlertResult } from './WeatherAlert';
 
-export interface GeocodingCity {
+interface GeocodingCity {
   id: number;
   name: string;
   latitude: number;
@@ -15,7 +15,7 @@ export interface GeocodingResult {
   results: GeocodingCity[];
 }
 
-export interface CurrentWeather {
+interface CurrentWeather {
   temperature_2m: number;
   weather_code: number;
   wind_speed_10m: number;
@@ -30,7 +30,7 @@ export interface CurrentWeather {
   dew_point_2m?: number;
 }
 
-export interface HourlyWeather {
+interface HourlyWeather {
   time: string[];
   temperature_2m: number[];
   weather_code: number[];
@@ -46,7 +46,7 @@ export interface HourlyWeather {
   visibility?: number[];
 }
 
-export interface DailyWeather {
+interface DailyWeather {
   time: string[];
   weather_code: number[];
   temperature_2m_max: number[];
@@ -66,7 +66,7 @@ export interface ForecastResult {
   daily: DailyWeather;
 }
 
-export interface AirQualityCurrent {
+interface AirQualityCurrent {
   european_aqi: number;
   pm2_5: number;
   pm10: number;
@@ -75,7 +75,7 @@ export interface AirQualityCurrent {
   sulphur_dioxide: number;
 }
 
-export interface AirQualityHourly {
+interface AirQualityHourly {
   time: string[];
   european_aqi: number[];
   pm2_5: number[];
@@ -88,7 +88,7 @@ export interface AirQualityResult {
   hourly: AirQualityHourly;
 }
 
-export interface EnsembleModelHourly {
+interface EnsembleModelHourly {
   time: string[];
   temperature_2m: number[];
   precipitation: number[];
@@ -96,7 +96,7 @@ export interface EnsembleModelHourly {
   cape?: number[];
 }
 
-export interface EnsembleModel {
+interface EnsembleModel {
   model: string;
   hourly: EnsembleModelHourly;
 }

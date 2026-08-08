@@ -1,10 +1,10 @@
 export type WeatherLevel = 'discovery' | 'curious' | 'expert';
 
-export type TemperatureUnit = 'celsius' | 'fahrenheit';
+type TemperatureUnit = 'celsius' | 'fahrenheit';
 
-export type SpeedUnit = 'kmh' | 'mph';
+type SpeedUnit = 'kmh' | 'mph';
 
-export type PressureUnit = 'hpa' | 'inhg';
+type PressureUnit = 'hpa' | 'inhg';
 
 export type OverviewGranularity = 'day' | '3h' | '1h';
 
@@ -41,20 +41,7 @@ export class WeatherUserPreferences {
   createdAt: Date;
   updatedAt: Date;
 
-  private constructor(props: {
-    id: string;
-    userId: string;
-    level: WeatherLevel;
-    favoriteCities: FavoriteCity[];
-    defaultCityIndex: number | null;
-    daysUsed: number;
-    lastUsedAt: Date | null;
-    tooltipsSeen: string[];
-    units: UnitPreferences;
-    overviewGranularity: OverviewGranularity;
-    createdAt: Date;
-    updatedAt: Date;
-  }) {
+  private constructor(props: WeatherUserPreferences) {
     this.id = props.id;
     this.userId = props.userId;
     this.level = props.level;
@@ -87,20 +74,9 @@ export class WeatherUserPreferences {
     });
   }
 
-  static fromPersistence(props: {
-    id: string;
-    userId: string;
-    level: WeatherLevel;
-    favoriteCities: FavoriteCity[];
-    defaultCityIndex: number | null;
-    daysUsed: number;
-    lastUsedAt: Date | null;
-    tooltipsSeen: string[];
-    units: UnitPreferences;
-    overviewGranularity: OverviewGranularity;
-    createdAt: Date;
-    updatedAt: Date;
-  }): WeatherUserPreferences {
+  static fromPersistence(
+    props: WeatherUserPreferences,
+  ): WeatherUserPreferences {
     return new WeatherUserPreferences(props);
   }
 }

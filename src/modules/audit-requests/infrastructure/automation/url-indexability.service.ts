@@ -11,8 +11,12 @@ import {
   CACHE_HEADER_KEYS,
   SECURITY_HEADER_KEYS,
   detectCmsHints,
+  extractCanonicalUrls,
   extractInternalLinks,
+  extractOpenGraphProperties,
   extractSetCookiePatterns,
+  extractTwitterTagNames,
+  hasJsonLdStructuredData,
   pickHeaders,
 } from './shared/html-signals.util';
 
@@ -125,10 +129,7 @@ export class UrlIndexabilityService {
       const html = response.body ?? '';
       const $ = load(html);
       const robotsMeta = $('meta[name="robots"]').attr('content') ?? null;
-      const canonicalUrls = $('link[rel="canonical"]')
-        .toArray()
-        .map((node) => $(node).attr('href')?.trim())
-        .filter((href): href is string => Boolean(href));
+      const canonicalUrls = extractCanonicalUrls($);
       const canonical = canonicalUrls[0] ?? null;
       const canonicalCount = $('link[rel="canonical"]').length;
       const title = $('title').first().text().trim() || null;
@@ -141,17 +142,10 @@ export class UrlIndexabilityService {
         .filter(Boolean)
         .slice(0, 3);
       const htmlLang = $('html').attr('lang')?.trim() ?? null;
-      const hasStructuredData =
-        $('script[type="application/ld+json"]').length > 0;
-      const openGraphTags = $('meta[property^="og:"]')
-        .toArray()
-        .map((node) => $(node).attr('property')?.trim())
-        .filter((value): value is string => Boolean(value));
+      const hasStructuredData = hasJsonLdStructuredData($);
+      const openGraphTags = extractOpenGraphProperties($);
       const openGraphTagCount = $('meta[property^="og:"]').length;
-      const twitterTags = $('meta[name^="twitter:"]')
-        .toArray()
-        .map((node) => $(node).attr('name')?.trim())
-        .filter((value): value is string => Boolean(value));
+      const twitterTags = extractTwitterTagNames($);
       const wordCount = this.computeWordCount($('body').text());
       const internalLinks = extractInternalLinks($, response.finalUrl);
       const internalLinkCount = internalLinks.length;

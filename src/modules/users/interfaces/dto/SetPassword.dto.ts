@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
 
-/** userId est injecte par le controller depuis le JWT — jamais expose dans le body. */
 export class SetPasswordDto {
   @ApiProperty({ example: 'NewPassword456!' })
   @IsString()

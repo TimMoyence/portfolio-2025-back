@@ -13,6 +13,7 @@ import {
   BadgesEvaluationQueueService,
 } from './badges-evaluation-queue.service';
 import { EvaluateBadgesUseCase } from '../../application/services/EvaluateBadges.useCase';
+import { evaluateBadgesWithTimeout } from './badges-evaluation-timeout';
 
 @Injectable()
 export class BadgesEvaluationWorkerService
@@ -38,7 +39,7 @@ export class BadgesEvaluationWorkerService
     this.worker = new Worker<BadgesEvaluationJob>(
       this.queueService.queueName,
       async (job) => {
-        await this.runWithTimeout(job.data.userId);
+        await this.evaluateWithTimeout(job.data.userId);
       },
       {
         connection: this.queueService.connection,
@@ -77,23 +78,11 @@ export class BadgesEvaluationWorkerService
     }
   }
 
-  private async runWithTimeout(userId: string): Promise<void> {
-    const timeout = this.config.jobTimeoutMs;
-    let timeoutId: NodeJS.Timeout | undefined;
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutId = setTimeout(() => {
-        reject(
-          new Error(
-            `Badges evaluation timeout after ${timeout}ms (userId=${userId})`,
-          ),
-        );
-      }, timeout);
-    });
-
-    try {
-      await Promise.race([this.evaluateBadges.execute(userId), timeoutPromise]);
-    } finally {
-      if (timeoutId) clearTimeout(timeoutId);
-    }
+  private async evaluateWithTimeout(userId: string): Promise<void> {
+    await evaluateBadgesWithTimeout(
+      this.evaluateBadges,
+      userId,
+      this.config.jobTimeoutMs,
+    );
   }
 }

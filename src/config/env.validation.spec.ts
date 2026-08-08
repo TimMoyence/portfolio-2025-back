@@ -1,7 +1,7 @@
 import { validateEnv } from './env.validation';
 
-const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow
-const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow
+const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
+const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 
 function buildValidEnv(
   overrides: Record<string, unknown> = {},
@@ -45,7 +45,7 @@ describe('validateEnv', () => {
     const SMTP_CONFIGURED = {
       SMTP_HOST: 'smtp.example.org',
       SMTP_USER: 'mailer',
-      SMTP_PASS: 'test-smtp-password', // gitleaks:allow
+      SMTP_PASS: 'test-smtp-password', // gitleaks:allow (ci.yml)
     };
 
     it('devrait lancer une erreur si SMTP est configure sans SMTP_FROM', () => {
@@ -70,9 +70,9 @@ describe('validateEnv', () => {
     });
 
     it('devrait accepter la forme « display name + adresse » de production', () => {
-      // Valeur reellement deployee. `z.string().email()` la rejetterait
-      // et empecherait l'API de demarrer : la validation doit accepter
-      // les deux formes RFC 5322.
+      // Valeur reellement deployee. `z.email()` la rejetterait et
+      // empecherait l'API de demarrer : la validation doit accepter les
+      // deux formes RFC 5322.
       const env = buildValidEnv({
         ...SMTP_CONFIGURED,
         SMTP_FROM: "'Asili Design' <no-reply@asilidesign.fr>",
@@ -86,9 +86,6 @@ describe('validateEnv', () => {
       ['une valeur sans arobase', 'poubelle'],
       ['des chevrons sans adresse valide', 'Asili <pas-une-adresse>'],
     ])('devrait rejeter %s dans SMTP_FROM', (_label, value) => {
-      // Sans controle de format, la garde ne rattrape que l'absence :
-      // une valeur malformee passe le demarrage et echoue a l'envoi en
-      // production — exactement ce que la garde pretend eliminer.
       const env = buildValidEnv({ ...SMTP_CONFIGURED, SMTP_FROM: value });
 
       expect(() => validateEnv(env)).toThrow('SMTP_FROM');

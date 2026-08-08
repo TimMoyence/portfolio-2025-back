@@ -4,6 +4,7 @@ import { RolesGuard } from './roles.guard';
 import { ROLES_KEY } from './roles.decorator';
 import type { JwtPayload } from '../../../modules/users/application/services/JwtPayload';
 import { buildJwtPayload } from '../../../../test/factories/user.factory';
+import { createHttpExecutionContext } from '../../../../test/factories/execution-context.factory';
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;
@@ -18,18 +19,7 @@ describe('RolesGuard', () => {
   });
 
   function createMockContext(user?: JwtPayload | null): ExecutionContext {
-    const request: Record<string, unknown> = {};
-    if (user !== null && user !== undefined) {
-      request['user'] = user;
-    }
-
-    return {
-      switchToHttp: () => ({
-        getRequest: () => request,
-      }),
-      getHandler: () => jest.fn(),
-      getClass: () => jest.fn(),
-    } as unknown as ExecutionContext;
+    return createHttpExecutionContext(user ? { user } : {});
   }
 
   it('devrait autoriser si aucun role n est requis (@Roles non defini)', () => {

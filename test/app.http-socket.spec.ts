@@ -2,152 +2,98 @@ import {
   BadRequestException,
   INestApplication,
   UnauthorizedException,
-  ValidationPipe,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { of } from 'rxjs';
 import request from 'supertest';
-import { AuditsController } from '../src/modules/audit-requests/interfaces/Audits.controller';
-import { CreateAuditRequestsUseCase } from '../src/modules/audit-requests/application/CreateAuditRequests.useCase';
-import { GetAuditSummaryUseCase } from '../src/modules/audit-requests/application/GetAuditSummary.useCase';
-import { StreamAuditEventsUseCase } from '../src/modules/audit-requests/application/StreamAuditEvents.useCase';
-import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
-import { CreateContactsUseCase } from '../src/modules/contacts/application/CreateContacts.useCase';
-import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
-import { CreateCookieConsentsUseCase } from '../src/modules/cookie-consents/application/CreateCookieConsents.useCase';
-import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/AuthenticateGoogleUser.useCase';
-import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
-import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
-import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
-import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
-import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
-import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
-import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
-import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
-import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
-import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
-import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
-import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
-import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
-import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
+import { bootstrapTestApp, httpServerOf } from './helpers/nest-test-app';
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
-import { CreateCoursesUseCase } from '../src/modules/courses/application/CreateCourses.useCase';
-import { ListCoursesUseCase } from '../src/modules/courses/application/ListCourses.useCase';
-import { CoursesController } from '../src/modules/courses/interfaces/Courses.controller';
-import { CreateProjectsUseCase } from '../src/modules/projects/application/CreateProjects.useCase';
-import { ListProjectsUseCase } from '../src/modules/projects/application/ListProjects.useCase';
-import { ProjectsController } from '../src/modules/projects/interfaces/Projects.controller';
-import { CreateRedirectsUseCase } from '../src/modules/redirects/application/CreateRedirects.useCase';
-import { ListRedirectsUseCase } from '../src/modules/redirects/application/ListRedirects.useCase';
-import { RedirectsController } from '../src/modules/redirects/interfaces/Redirects.controller';
-import { CreateServicesUseCase } from '../src/modules/services/application/CreateServices.useCase';
-import { ListServicesUseCase } from '../src/modules/services/application/ListServices.useCase';
-import { ServicesController } from '../src/modules/services/interfaces/Services.controller';
-import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
+import {
+  AUDIT_CREATED_RESPONSE,
+  AUDIT_REQUEST_PAYLOAD,
+  AUDIT_SUMMARY_RESULT,
+  authControllerProviders,
+  CONTACT_CREATED_RESPONSE,
+  CONTACT_PAYLOAD,
+  CORE_CONTROLLERS,
+  coreControllerProviders,
+  createAuthUseCaseStubs,
+  createCoreUseCaseStubs,
+  PASSWORD_RESET_REQUESTED_RESULT,
+  primeCoreUseCaseStubs,
+  primePasswordUseCaseStubs,
+} from './factories/core-api.factory';
+import {
+  createLegacyUseCaseStubs,
+  LEGACY_CONTROLLERS,
+  LEGACY_COURSE,
+  LEGACY_COURSES_DEFAULT_QUERY,
+  LEGACY_COURSE_PAYLOAD,
+  LEGACY_PROJECT,
+  LEGACY_PROJECTS_DEFAULT_QUERY,
+  LEGACY_PROJECTS_FILTERED_QUERY,
+  LEGACY_PROJECT_PAYLOAD,
+  LEGACY_REDIRECT,
+  LEGACY_REDIRECTS_DEFAULT_QUERY,
+  LEGACY_REDIRECTS_FILTERED_QUERY,
+  LEGACY_REDIRECT_PAYLOAD,
+  LEGACY_SERVICE,
+  LEGACY_SERVICES_DEFAULT_QUERY,
+  LEGACY_SERVICES_FILTERED_QUERY,
+  LEGACY_SERVICE_PAYLOAD,
+  legacyControllerProviders,
+  legacyListBody,
+  primeLegacyUseCaseStubs,
+} from './factories/legacy-contract.factory';
+
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
+const WRONG_PASSWORD = 'WrongPassword1!';
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
+const NEW_PASSWORD = 'NewPassword123!';
 
 describe('API coherence and connectivity (e2e http socket)', () => {
   let app: INestApplication;
 
-  const createContactsUseCase = { execute: jest.fn() };
-  const createCookieConsentsUseCase = { execute: jest.fn() };
-  const createAuditRequestsUseCase = { execute: jest.fn() };
-  const getAuditSummaryUseCase = { execute: jest.fn() };
-  const streamAuditEventsUseCase = { execute: jest.fn() };
-  const authenticateUserUseCase = { execute: jest.fn() };
-  const authenticateGoogleUserUseCase = { execute: jest.fn() };
-  const createUsersUseCase = { execute: jest.fn() };
-  const changePasswordUseCase = { execute: jest.fn() };
-  const refreshTokensUseCase = { execute: jest.fn() };
-  const revokeTokenUseCase = { execute: jest.fn() };
-  const requestPasswordResetUseCase = { execute: jest.fn() };
-  const resetPasswordUseCase = { execute: jest.fn() };
-  const setPasswordUseCase = { execute: jest.fn() };
-  const updateProfileUseCase = { execute: jest.fn() };
-  const createServicesUseCase = { execute: jest.fn() };
-  const listServicesUseCase = { execute: jest.fn() };
-  const createProjectsUseCase = { execute: jest.fn() };
-  const listProjectsUseCase = { execute: jest.fn() };
-  const createCoursesUseCase = { execute: jest.fn() };
-  const listCoursesUseCase = { execute: jest.fn() };
-  const createRedirectsUseCase = { execute: jest.fn() };
-  const listRedirectsUseCase = { execute: jest.fn() };
-  const getHttpServer = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const coreStubs = createCoreUseCaseStubs();
+  const authStubs = createAuthUseCaseStubs();
+  const legacyStubs = createLegacyUseCaseStubs();
+
+  const { authenticateUserUseCase, resetPasswordUseCase } = authStubs;
+  const {
+    listServicesUseCase,
+    createServicesUseCase,
+    listProjectsUseCase,
+    listCoursesUseCase,
+    listRedirectsUseCase,
+  } = legacyStubs;
+
+  const getHttpServer = () => httpServerOf(app);
+
+  function validationMessages(response: request.Response): string[] {
+    const detail = (response.body.message ?? response.body.detail) as
+      | string
+      | string[];
+    return Array.isArray(detail) ? detail : [String(detail)];
+  }
+
+  function expectValidationMessage(
+    response: request.Response,
+    fragment: string,
+  ): void {
+    expect(
+      validationMessages(response).some((message) =>
+        message.includes(fragment),
+      ),
+    ).toBe(true);
+  }
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      controllers: [
-        ContactsController,
-        CookieConsentsController,
-        AuditsController,
-        AuthController,
-        ServicesController,
-        ProjectsController,
-        CoursesController,
-        RedirectsController,
-      ],
+      controllers: [...CORE_CONTROLLERS, ...LEGACY_CONTROLLERS],
       providers: [
-        { provide: CreateContactsUseCase, useValue: createContactsUseCase },
-        {
-          provide: CreateCookieConsentsUseCase,
-          useValue: createCookieConsentsUseCase,
-        },
-        {
-          provide: CreateAuditRequestsUseCase,
-          useValue: createAuditRequestsUseCase,
-        },
-        { provide: GetAuditSummaryUseCase, useValue: getAuditSummaryUseCase },
-        {
-          provide: StreamAuditEventsUseCase,
-          useValue: streamAuditEventsUseCase,
-        },
-        {
-          provide: AuthenticateUserUseCase,
-          useValue: authenticateUserUseCase,
-        },
-        {
-          provide: AuthenticateGoogleUserUseCase,
-          useValue: authenticateGoogleUserUseCase,
-        },
-        { provide: CreateUsersUseCase, useValue: createUsersUseCase },
-        { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
-        { provide: RefreshTokensUseCase, useValue: refreshTokensUseCase },
-        { provide: RevokeTokenUseCase, useValue: revokeTokenUseCase },
-        {
-          provide: RequestPasswordResetUseCase,
-          useValue: requestPasswordResetUseCase,
-        },
-        { provide: ResetPasswordUseCase, useValue: resetPasswordUseCase },
-        { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
-        { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
-        { provide: GetCurrentUserUseCase, useValue: { execute: jest.fn() } },
-        { provide: VerifyEmailUseCase, useValue: { execute: jest.fn() } },
-        {
-          provide: ResendVerificationEmailUseCase,
-          useValue: { execute: jest.fn() },
-        },
-        AuthAuditLogger,
-        {
-          provide: USERS_REPOSITORY,
-          useValue: {
-            findById: jest.fn(),
-            findByEmail: jest.fn(),
-            findAll: jest.fn(),
-            create: jest.fn(),
-            findByGoogleId: jest.fn(),
-            update: jest.fn(),
-            deactivate: jest.fn(),
-          },
-        },
-        { provide: ListServicesUseCase, useValue: listServicesUseCase },
-        { provide: CreateServicesUseCase, useValue: createServicesUseCase },
-        { provide: ListProjectsUseCase, useValue: listProjectsUseCase },
-        { provide: CreateProjectsUseCase, useValue: createProjectsUseCase },
-        { provide: ListCoursesUseCase, useValue: listCoursesUseCase },
-        { provide: CreateCoursesUseCase, useValue: createCoursesUseCase },
-        { provide: ListRedirectsUseCase, useValue: listRedirectsUseCase },
-        { provide: CreateRedirectsUseCase, useValue: createRedirectsUseCase },
+        ...coreControllerProviders(coreStubs),
+        ...authControllerProviders(authStubs),
+        ...legacyControllerProviders(legacyStubs),
       ],
     })
       .overrideGuard(RolesGuard)
@@ -156,191 +102,15 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .useValue({ canActivate: () => true })
       .compile();
 
-    app = moduleRef.createNestApplication();
-
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-      }),
-    );
-
-    app.setGlobalPrefix('api');
-    await app.init();
+    app = await bootstrapTestApp(moduleRef);
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    createContactsUseCase.execute.mockResolvedValue({
-      message: 'Contact request created successfully.',
-    });
-
-    createCookieConsentsUseCase.execute.mockResolvedValue({
-      message: 'Cookie consent recorded successfully.',
-    });
-
-    createAuditRequestsUseCase.execute.mockResolvedValue({
-      message: 'Audit request created successfully.',
-      auditId: 'audit-1',
-      status: 'PENDING',
-    });
-
-    getAuditSummaryUseCase.execute.mockResolvedValue({
-      auditId: 'audit-1',
-      ready: true,
-      status: 'COMPLETED',
-      progress: 100,
-      summaryText: 'Great foundation with clear quick wins.',
-      keyChecks: { securityHeaders: true },
-      quickWins: ['Improve title tags'],
-      pillarScores: { seo: 80 },
-    });
-
-    streamAuditEventsUseCase.execute.mockReturnValue(
-      of({
-        type: 'progress',
-        data: {
-          auditId: 'audit-1',
-          status: 'RUNNING',
-          progress: 30,
-          step: 'crawl',
-          done: false,
-          updatedAt: new Date().toISOString(),
-        },
-      }),
-    );
-
-    listServicesUseCase.execute.mockResolvedValue({
-      items: [
-        {
-          id: 'service-1',
-          slug: 'technical-seo',
-          name: 'Technical SEO',
-          icon: '/icons/seo.svg',
-          status: 'PUBLISHED',
-          order: 2,
-        },
-      ],
-      page: 1,
-      limit: 20,
-      total: 1,
-      totalPages: 1,
-    });
-
-    createServicesUseCase.execute.mockResolvedValue({
-      id: 'service-1',
-      slug: 'technical-seo',
-      name: 'Technical SEO',
-      icon: '/icons/seo.svg',
-      status: 'PUBLISHED',
-      order: 2,
-    });
-
-    listProjectsUseCase.execute.mockResolvedValue({
-      items: [
-        {
-          id: 'project-1',
-          slug: 'portfolio-site',
-          type: 'SIDE',
-          repoUrl: 'https://github.com/acme/portfolio',
-          liveUrl: 'https://example.com',
-          coverImage: '/images/portfolio.webp',
-          gallery: ['/images/portfolio-1.webp'],
-          stack: ['nestjs', 'postgres'],
-          status: 'PUBLISHED',
-          order: 1,
-        },
-      ],
-      page: 1,
-      limit: 20,
-      total: 1,
-      totalPages: 1,
-    });
-
-    createProjectsUseCase.execute.mockResolvedValue({
-      id: 'project-1',
-      slug: 'portfolio-site',
-      type: 'SIDE',
-      repoUrl: 'https://github.com/acme/portfolio',
-      liveUrl: 'https://example.com',
-      coverImage: '/images/portfolio.webp',
-      gallery: ['/images/portfolio-1.webp'],
-      stack: ['nestjs', 'postgres'],
-      status: 'PUBLISHED',
-      order: 1,
-    });
-
-    listCoursesUseCase.execute.mockResolvedValue({
-      items: [
-        {
-          id: 'course-1',
-          slug: 'ai-course',
-          title: 'AI Course',
-          summary: 'A premium course for practical AI delivery.',
-          coverImage: '/images/ai-course.webp',
-        },
-      ],
-      page: 1,
-      limit: 20,
-      total: 1,
-      totalPages: 1,
-    });
-
-    createCoursesUseCase.execute.mockResolvedValue({
-      id: 'course-1',
-      slug: 'ai-course',
-      title: 'AI Course',
-      summary: 'A premium course for practical AI delivery.',
-      coverImage: '/images/ai-course.webp',
-    });
-
-    listRedirectsUseCase.execute.mockResolvedValue({
-      items: [
-        {
-          id: 'redirect-1',
-          slug: 'promo-offer',
-          targetUrl: 'https://example.com/promo',
-          enabled: true,
-          clicks: 0,
-        },
-      ],
-      page: 1,
-      limit: 20,
-      total: 1,
-      totalPages: 1,
-    });
-
-    createRedirectsUseCase.execute.mockResolvedValue({
-      id: 'redirect-1',
-      slug: 'promo-offer',
-      targetUrl: 'https://example.com/promo',
-      enabled: true,
-      clicks: 0,
-    });
-
-    requestPasswordResetUseCase.execute.mockResolvedValue({
-      message:
-        'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
-    });
-    resetPasswordUseCase.execute.mockResolvedValue({
-      message: 'Mot de passe reinitialise avec succes.',
-    });
-    setPasswordUseCase.execute.mockResolvedValue({
-      id: 'user-1',
-      email: 'john@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-      phone: null,
-      isActive: true,
-      roles: ['weather'],
-      passwordHash: 'new-hash',
-      createdAt: new Date('2026-01-01T00:00:00.000Z'),
-      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-      updatedOrCreatedBy: 'self-service',
-      googleId: 'google-id',
-    });
+    primeCoreUseCaseStubs(coreStubs);
+    primePasswordUseCaseStubs(authStubs);
+    primeLegacyUseCaseStubs(legacyStubs);
   });
 
   afterAll(async () => {
@@ -350,64 +120,29 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   it('POST /api/contacts validates payload and returns contract response', async () => {
     const response = await request(getHttpServer())
       .post('/api/contacts')
-      .send({
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@example.com',
-        message: 'Hello, I need help with a premium implementation.',
-        subject: 'Need support',
-        role: 'CTO',
-        terms: true,
-      })
+      .send(CONTACT_PAYLOAD)
       .expect(201);
 
-    expect(response.body).toEqual({
-      message: 'Contact request created successfully.',
-      httpCode: 201,
-    });
+    expect(response.body).toEqual(CONTACT_CREATED_RESPONSE);
   });
 
   it('POST /api/contacts forbids non-whitelisted fields', async () => {
     const response = await request(getHttpServer())
       .post('/api/contacts')
-      .send({
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@example.com',
-        message: 'Hello, I need help with a premium implementation.',
-        subject: 'Need support',
-        role: 'CTO',
-        terms: true,
-        injected: 'forbidden',
-      })
+      .send({ ...CONTACT_PAYLOAD, injected: 'forbidden' })
       .expect(400);
 
-    const detail = (response.body.message ?? response.body.detail) as
-      | string
-      | string[];
-    const messages = Array.isArray(detail) ? detail : [String(detail)];
-    expect(
-      messages.some((m) => m.includes('property injected should not exist')),
-    ).toBe(true);
+    expectValidationMessage(response, 'property injected should not exist');
   });
 
   it('POST /api/audits resolves locale from referer when not provided', async () => {
     const response = await request(getHttpServer())
       .post('/api/audits')
       .set('referer', 'https://example.com/en/contact')
-      .send({
-        websiteName: 'Example Studio',
-        contactMethod: 'EMAIL',
-        contactValue: 'hello@example.com',
-      })
+      .send(AUDIT_REQUEST_PAYLOAD)
       .expect(201);
 
-    expect(response.body).toEqual({
-      message: 'Audit request created successfully.',
-      httpCode: 201,
-      auditId: 'audit-1',
-      status: 'PENDING',
-    });
+    expect(response.body).toEqual(AUDIT_CREATED_RESPONSE);
   });
 
   it('GET /api/audits/:id/summary returns summary snapshot', async () => {
@@ -415,16 +150,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/audits/00000000-0000-4000-a000-000000000001/summary')
       .expect(200);
 
-    expect(response.body).toEqual({
-      auditId: 'audit-1',
-      ready: true,
-      status: 'COMPLETED',
-      progress: 100,
-      summaryText: 'Great foundation with clear quick wins.',
-      keyChecks: { securityHeaders: true },
-      quickWins: ['Improve title tags'],
-      pillarScores: { seo: 80 },
-    });
+    expect(response.body).toEqual(AUDIT_SUMMARY_RESULT);
   });
 
   it('GET /api/audits/:id/stream exposes SSE event stream', async () => {
@@ -442,13 +168,15 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       new UnauthorizedException('Invalid credentials'),
     );
 
-    await request(getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/auth/login')
       .send({
         email: 'john@example.com',
-        password: 'WrongPassword1!',
+        password: WRONG_PASSWORD,
       })
       .expect(401);
+
+    expect(response.status).toBe(401);
   });
 
   it('POST /api/auth/forgot-password returns generic success message', async () => {
@@ -457,10 +185,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .send({ email: 'john@example.com' })
       .expect(200);
 
-    expect(response.body).toEqual({
-      message:
-        'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
-    });
+    expect(response.body).toEqual(PASSWORD_RESET_REQUESTED_RESULT);
   });
 
   it('POST /api/auth/reset-password returns 400 when token is invalid', async () => {
@@ -468,14 +193,16 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       new BadRequestException('Invalid token'),
     );
 
-    await request(getHttpServer())
+    const response = await request(getHttpServer())
       .post('/api/auth/reset-password')
       .send({
         token:
           '4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c',
-        newPassword: 'NewPassword123!',
+        newPassword: NEW_PASSWORD,
       })
       .expect(400);
+
+    expect(response.status).toBe(400);
   });
 
   it('GET /api/services exposes paginated contract', async () => {
@@ -483,26 +210,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/services?page=1&limit=20&sortBy=order&order=ASC')
       .expect(200);
 
-    expect(response.body).toEqual({
-      items: [
-        {
-          id: 'service-1',
-          slug: 'technical-seo',
-          name: 'Technical SEO',
-          icon: '/icons/seo.svg',
-          status: 'PUBLISHED',
-          order: 2,
-        },
-      ],
-      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
-    });
-    expect(listServicesUseCase.execute).toHaveBeenCalledWith({
-      page: 1,
-      limit: 20,
-      sortBy: 'order',
-      status: undefined,
-      order: 'ASC',
-    });
+    expect(response.body).toEqual(legacyListBody(LEGACY_SERVICE));
+    expect(listServicesUseCase.execute).toHaveBeenCalledWith(
+      LEGACY_SERVICES_DEFAULT_QUERY,
+    );
   });
 
   it('GET /api/projects exposes paginated contract', async () => {
@@ -510,31 +221,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/projects?page=1&limit=20&sortBy=order&order=ASC')
       .expect(200);
 
-    expect(response.body).toEqual({
-      items: [
-        {
-          id: 'project-1',
-          slug: 'portfolio-site',
-          type: 'SIDE',
-          repoUrl: 'https://github.com/acme/portfolio',
-          liveUrl: 'https://example.com',
-          coverImage: '/images/portfolio.webp',
-          gallery: ['/images/portfolio-1.webp'],
-          stack: ['nestjs', 'postgres'],
-          status: 'PUBLISHED',
-          order: 1,
-        },
-      ],
-      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
-    });
-    expect(listProjectsUseCase.execute).toHaveBeenCalledWith({
-      page: 1,
-      limit: 20,
-      sortBy: 'order',
-      type: undefined,
-      status: undefined,
-      order: 'ASC',
-    });
+    expect(response.body).toEqual(legacyListBody(LEGACY_PROJECT));
+    expect(listProjectsUseCase.execute).toHaveBeenCalledWith(
+      LEGACY_PROJECTS_DEFAULT_QUERY,
+    );
   });
 
   it('GET /api/courses exposes paginated contract', async () => {
@@ -542,24 +232,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/courses?page=1&limit=20&sortBy=createdAt&order=DESC')
       .expect(200);
 
-    expect(response.body).toEqual({
-      items: [
-        {
-          id: 'course-1',
-          slug: 'ai-course',
-          title: 'AI Course',
-          summary: 'A premium course for practical AI delivery.',
-          coverImage: '/images/ai-course.webp',
-        },
-      ],
-      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
-    });
-    expect(listCoursesUseCase.execute).toHaveBeenCalledWith({
-      page: 1,
-      limit: 20,
-      sortBy: 'createdAt',
-      order: 'DESC',
-    });
+    expect(response.body).toEqual(legacyListBody(LEGACY_COURSE));
+    expect(listCoursesUseCase.execute).toHaveBeenCalledWith(
+      LEGACY_COURSES_DEFAULT_QUERY,
+    );
   });
 
   it('GET /api/redirects exposes paginated contract', async () => {
@@ -567,25 +243,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/redirects?page=1&limit=20&sortBy=createdAt&order=DESC')
       .expect(200);
 
-    expect(response.body).toEqual({
-      items: [
-        {
-          id: 'redirect-1',
-          slug: 'promo-offer',
-          targetUrl: 'https://example.com/promo',
-          enabled: true,
-          clicks: 0,
-        },
-      ],
-      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
-    });
-    expect(listRedirectsUseCase.execute).toHaveBeenCalledWith({
-      page: 1,
-      limit: 20,
-      sortBy: 'createdAt',
-      enabled: undefined,
-      order: 'DESC',
-    });
+    expect(response.body).toEqual(legacyListBody(LEGACY_REDIRECT));
+    expect(listRedirectsUseCase.execute).toHaveBeenCalledWith(
+      LEGACY_REDIRECTS_DEFAULT_QUERY,
+    );
   });
 
   it('GET legacy endpoints forward optional list filters', async () => {
@@ -594,139 +255,66 @@ describe('API coherence and connectivity (e2e http socket)', () => {
         '/api/services?page=2&limit=5&sortBy=createdAt&order=DESC&status=DRAFT',
       )
       .expect(200);
-    expect(listServicesUseCase.execute).toHaveBeenCalledWith({
-      page: 2,
-      limit: 5,
-      sortBy: 'createdAt',
-      status: 'DRAFT',
-      order: 'DESC',
-    });
+    expect(listServicesUseCase.execute).toHaveBeenCalledWith(
+      LEGACY_SERVICES_FILTERED_QUERY,
+    );
 
     await request(getHttpServer())
       .get(
         '/api/projects?page=3&limit=10&sortBy=type&order=ASC&type=SIDE&status=PUBLISHED',
       )
       .expect(200);
-    expect(listProjectsUseCase.execute).toHaveBeenCalledWith({
-      page: 3,
-      limit: 10,
-      sortBy: 'type',
-      type: 'SIDE',
-      status: 'PUBLISHED',
-      order: 'ASC',
-    });
+    expect(listProjectsUseCase.execute).toHaveBeenCalledWith(
+      LEGACY_PROJECTS_FILTERED_QUERY,
+    );
 
     await request(getHttpServer())
       .get(
         '/api/redirects?page=1&limit=50&sortBy=clicks&order=DESC&enabled=false',
       )
       .expect(200);
-    expect(listRedirectsUseCase.execute).toHaveBeenCalledWith({
-      page: 1,
-      limit: 50,
-      sortBy: 'clicks',
-      enabled: false,
-      order: 'DESC',
-    });
+    expect(listRedirectsUseCase.execute).toHaveBeenCalledWith(
+      LEGACY_REDIRECTS_FILTERED_QUERY,
+    );
   });
 
   it('POST /api/services forwards payload to legacy services use case', async () => {
     const response = await request(getHttpServer())
       .post('/api/services')
-      .send({
-        slug: 'technical-seo',
-        name: 'Technical SEO',
-        icon: '/icons/seo.svg',
-        status: 'PUBLISHED',
-        order: 2,
-      })
+      .send(LEGACY_SERVICE_PAYLOAD)
       .expect(201);
 
-    expect(createServicesUseCase.execute).toHaveBeenCalledWith({
-      slug: 'technical-seo',
-      name: 'Technical SEO',
-      icon: '/icons/seo.svg',
-      status: 'PUBLISHED',
-      order: 2,
-    });
-    expect(response.body).toEqual({
-      id: 'service-1',
-      slug: 'technical-seo',
-      name: 'Technical SEO',
-      icon: '/icons/seo.svg',
-      status: 'PUBLISHED',
-      order: 2,
-    });
+    expect(createServicesUseCase.execute).toHaveBeenCalledWith(
+      LEGACY_SERVICE_PAYLOAD,
+    );
+    expect(response.body).toEqual(LEGACY_SERVICE);
   });
 
   it('POST /api/projects forwards payload to legacy projects use case', async () => {
     const response = await request(getHttpServer())
       .post('/api/projects')
-      .send({
-        slug: 'portfolio-site',
-        type: 'SIDE',
-        repoUrl: 'https://github.com/acme/portfolio',
-        liveUrl: 'https://example.com',
-        coverImage: '/images/portfolio.webp',
-        gallery: ['/images/portfolio-1.webp'],
-        stack: ['nestjs', 'postgres'],
-        status: 'PUBLISHED',
-        order: 1,
-      })
+      .send(LEGACY_PROJECT_PAYLOAD)
       .expect(201);
 
-    expect(response.body).toEqual({
-      id: 'project-1',
-      slug: 'portfolio-site',
-      type: 'SIDE',
-      repoUrl: 'https://github.com/acme/portfolio',
-      liveUrl: 'https://example.com',
-      coverImage: '/images/portfolio.webp',
-      gallery: ['/images/portfolio-1.webp'],
-      stack: ['nestjs', 'postgres'],
-      status: 'PUBLISHED',
-      order: 1,
-    });
+    expect(response.body).toEqual(LEGACY_PROJECT);
   });
 
   it('POST /api/courses forwards payload to legacy courses use case', async () => {
     const response = await request(getHttpServer())
       .post('/api/courses')
-      .send({
-        slug: 'ai-course',
-        title: 'AI Course',
-        summary: 'A premium course for practical AI delivery.',
-        coverImage: '/images/ai-course.webp',
-      })
+      .send(LEGACY_COURSE_PAYLOAD)
       .expect(201);
 
-    expect(response.body).toEqual({
-      id: 'course-1',
-      slug: 'ai-course',
-      title: 'AI Course',
-      summary: 'A premium course for practical AI delivery.',
-      coverImage: '/images/ai-course.webp',
-    });
+    expect(response.body).toEqual(LEGACY_COURSE);
   });
 
   it('POST /api/redirects forwards payload to legacy redirects use case', async () => {
     const response = await request(getHttpServer())
       .post('/api/redirects')
-      .send({
-        slug: 'promo-offer',
-        targetUrl: 'https://example.com/promo',
-        enabled: true,
-        clicks: 0,
-      })
+      .send(LEGACY_REDIRECT_PAYLOAD)
       .expect(201);
 
-    expect(response.body).toEqual({
-      id: 'redirect-1',
-      slug: 'promo-offer',
-      targetUrl: 'https://example.com/promo',
-      enabled: true,
-      clicks: 0,
-    });
+    expect(response.body).toEqual(LEGACY_REDIRECT);
   });
 
   it('POST /api/services rejects non-whitelisted fields', async () => {
@@ -739,13 +327,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       })
       .expect(400);
 
-    const detail = (response.body.message ?? response.body.detail) as
-      | string
-      | string[];
-    const messages = Array.isArray(detail) ? detail : [String(detail)];
-    expect(
-      messages.some((m) => m.includes('property injected should not exist')),
-    ).toBe(true);
+    expectValidationMessage(response, 'property injected should not exist');
   });
 
   it('GET /api/services rejects invalid sort query', async () => {
@@ -753,15 +335,10 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/services?sortBy=invalid')
       .expect(400);
 
-    const detail = (response.body.message ?? response.body.detail) as
-      | string
-      | string[];
-    const messages = Array.isArray(detail) ? detail : [String(detail)];
-    expect(
-      messages.some((message) =>
-        message.includes('sortBy must be one of the following values'),
-      ),
-    ).toBe(true);
+    expectValidationMessage(
+      response,
+      'sortBy must be one of the following values',
+    );
   });
 
   it('GET /api/redirects rejects invalid enabled query filter', async () => {
@@ -769,12 +346,6 @@ describe('API coherence and connectivity (e2e http socket)', () => {
       .get('/api/redirects?enabled=not-a-boolean')
       .expect(400);
 
-    const detail = (response.body.message ?? response.body.detail) as
-      | string
-      | string[];
-    const messages = Array.isArray(detail) ? detail : [String(detail)];
-    expect(
-      messages.some((m) => m.includes('enabled must be a boolean value')),
-    ).toBe(true);
+    expectValidationMessage(response, 'enabled must be a boolean value');
   });
 });

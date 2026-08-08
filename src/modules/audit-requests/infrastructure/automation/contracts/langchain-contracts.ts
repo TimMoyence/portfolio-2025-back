@@ -4,18 +4,14 @@ import type {
 } from '../../../domain/AuditReportTiers';
 import type { AuditLocale } from '../../../domain/audit-locale.util';
 
-export type SynthesisSectionName =
+type SynthesisSectionName =
   | 'summary'
   | 'executiveSection'
   | 'prioritySection'
   | 'executionSection'
   | 'clientCommsSection';
 
-export type SynthesisSectionStatus =
-  | 'started'
-  | 'completed'
-  | 'failed'
-  | 'fallback';
+type SynthesisSectionStatus = 'started' | 'completed' | 'failed' | 'fallback';
 
 export interface LlmSynthesisProgressEvent {
   section: SynthesisSectionName;

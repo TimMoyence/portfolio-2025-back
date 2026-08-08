@@ -42,7 +42,7 @@ describe('CreateBudgetMemberContributions1777100000000', () => {
     it('contraint month entre 1 et 12 et year entre 2000 et 2100', async () => {
       await migration.up(queryRunner);
       const allSql = queries.join('\n');
-      expect(allSql).toMatch(/CHECK[\s\S]*month[\s\S]*1[\s\S]*12/i);
+      expect(allSql).toMatch(/CHECK \("month" BETWEEN 1 AND 12\)/i);
       expect(allSql).toMatch(/CHECK[\s\S]*year[\s\S]*2000[\s\S]*2100/i);
       expect(allSql).toMatch(/CHECK[\s\S]*monthly_salary[\s\S]*>=\s*0/i);
     });

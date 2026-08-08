@@ -677,7 +677,7 @@ Humain, authentique, jamais "client value automation". Chaque email doit donner 
   },
 ];
 
-export interface WorkflowStepData {
+interface WorkflowStepData {
   step: number;
   action: string;
   tool: string;

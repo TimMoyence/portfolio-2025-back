@@ -11,6 +11,9 @@ import {
   createMockPasswordResetTokensRepo,
 } from '../../../../test/factories/password-reset-token.factory';
 
+const CHOSEN_CREDENTIAL = 'NewPassword123!';
+const ANY_VALID_CREDENTIAL = 'StrongPass1!';
+
 describe('ResetPasswordUseCase', () => {
   let usersRepository: ReturnType<typeof createMockUsersRepo>;
   let tokensRepository: ReturnType<typeof createMockPasswordResetTokensRepo>;
@@ -41,10 +44,10 @@ describe('ResetPasswordUseCase', () => {
 
     const result = await useCase.execute({
       token: 'raw-token',
-      newPassword: 'NewPassword123!',
+      newPassword: CHOSEN_CREDENTIAL,
     });
 
-    expect(passwordService.hash).toHaveBeenCalledWith('NewPassword123!');
+    expect(passwordService.hash).toHaveBeenCalledWith(CHOSEN_CREDENTIAL);
     expect(usersRepository.update).toHaveBeenCalledWith(
       'user-1',
       expect.objectContaining({
@@ -60,7 +63,10 @@ describe('ResetPasswordUseCase', () => {
     tokensRepository.findActiveByTokenHash.mockResolvedValue(null);
 
     await expect(
-      useCase.execute({ token: 'invalid-token', newPassword: 'StrongPass1!' }),
+      useCase.execute({
+        token: 'invalid-token',
+        newPassword: ANY_VALID_CREDENTIAL,
+      }),
     ).rejects.toBeInstanceOf(InvalidInputError);
 
     expect(usersRepository.update).not.toHaveBeenCalled();
@@ -76,7 +82,10 @@ describe('ResetPasswordUseCase', () => {
     usersRepository.findById.mockResolvedValue(null);
 
     await expect(
-      useCase.execute({ token: 'valid-token', newPassword: 'StrongPass1!' }),
+      useCase.execute({
+        token: 'valid-token',
+        newPassword: ANY_VALID_CREDENTIAL,
+      }),
     ).rejects.toBeInstanceOf(InvalidInputError);
 
     usersRepository.findById.mockResolvedValue(
@@ -84,7 +93,10 @@ describe('ResetPasswordUseCase', () => {
     );
 
     await expect(
-      useCase.execute({ token: 'valid-token', newPassword: 'StrongPass1!' }),
+      useCase.execute({
+        token: 'valid-token',
+        newPassword: ANY_VALID_CREDENTIAL,
+      }),
     ).rejects.toBeInstanceOf(InvalidInputError);
   });
 });

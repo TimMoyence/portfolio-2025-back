@@ -20,6 +20,19 @@ import {
 import { localizedText } from './shared/locale-text.util';
 
 const severitySchema = z.enum(['high', 'medium', 'low']);
+
+const SEVERITY_LABELS_FR: Record<z.infer<typeof severitySchema>, string> = {
+  high: 'priorite haute',
+  medium: 'priorite moyenne',
+  low: 'priorite basse',
+};
+
+const SEVERITY_LABELS_EN: Record<z.infer<typeof severitySchema>, string> = {
+  high: 'high priority',
+  medium: 'medium priority',
+  low: 'low priority',
+};
+
 const pillarStatusSchema = z.enum(['critical', 'warning', 'ok']);
 const effortSchema = z.enum(['low', 'medium', 'high']);
 
@@ -376,16 +389,7 @@ export class LangchainClientReportService {
       };
     });
 
-    const googleScore = this.averageScore([
-      context.pillarScores.seo,
-      context.pillarScores.performance,
-      context.pillarScores.technical,
-    ]);
-    const aiScore = this.averageScore([
-      context.pillarScores.aiVisibility,
-      context.pillarScores.citationWorthiness,
-      context.pillarScores.trust,
-    ]);
+    const { googleScore, aiScore } = this.buildVisibilityScores(context);
 
     return {
       executiveSummary: this.buildFallbackExecutiveSummary(
@@ -430,6 +434,24 @@ export class LangchainClientReportService {
     };
   }
 
+  private buildVisibilityScores(context: ClientReportContext): {
+    googleScore: number;
+    aiScore: number;
+  } {
+    return {
+      googleScore: this.averageScore([
+        context.pillarScores.seo,
+        context.pillarScores.performance,
+        context.pillarScores.technical,
+      ]),
+      aiScore: this.averageScore([
+        context.pillarScores.aiVisibility,
+        context.pillarScores.citationWorthiness,
+        context.pillarScores.trust,
+      ]),
+    };
+  }
+
   private buildFallbackExecutiveSummary(
     context: ClientReportContext,
     locale: AuditLocale,
@@ -437,16 +459,7 @@ export class LangchainClientReportService {
   ): string {
     const topFinding = sortedFindings[0];
     const totalFindings = sortedFindings.length;
-    const googleScore = this.averageScore([
-      context.pillarScores.seo,
-      context.pillarScores.performance,
-      context.pillarScores.technical,
-    ]);
-    const aiScore = this.averageScore([
-      context.pillarScores.aiVisibility,
-      context.pillarScores.citationWorthiness,
-      context.pillarScores.trust,
-    ]);
+    const { googleScore, aiScore } = this.buildVisibilityScores(context);
 
     const businessHint = this.resolveBusinessHint(context.businessType, locale);
 
@@ -460,32 +473,37 @@ export class LangchainClientReportService {
 
     const severityLabel = localizedText(
       locale,
-      topFinding.severity === 'high'
-        ? 'priorite haute'
-        : topFinding.severity === 'medium'
-          ? 'priorite moyenne'
-          : 'priorite basse',
-      topFinding.severity === 'high'
-        ? 'high priority'
-        : topFinding.severity === 'medium'
-          ? 'medium priority'
-          : 'low priority',
+      SEVERITY_LABELS_FR[topFinding.severity],
+      SEVERITY_LABELS_EN[topFinding.severity],
     );
 
-    const remainingCount = totalFindings - 1;
-    const remainingSentence =
-      remainingCount > 0
-        ? localizedText(
-            locale,
-            ` ${remainingCount} autre${remainingCount > 1 ? 's' : ''} levier${remainingCount > 1 ? 's' : ''} ${remainingCount > 1 ? 'sont identifies' : 'est identifie'} dans le rapport.`,
-            ` ${remainingCount} other lever${remainingCount > 1 ? 's' : ''} ${remainingCount > 1 ? 'are' : 'is'} documented in the report.`,
-          )
-        : '';
+    const remainingSentence = this.buildRemainingFindingsSentence(
+      totalFindings - 1,
+      locale,
+    );
 
     return localizedText(
       locale,
       `Audit finalise pour ${context.websiteName}. Point prioritaire (${severityLabel}) : ${topFinding.title}.${remainingSentence} Visibilite Google ${googleScore}/100, IA ${aiScore}/100. ${businessHint} Un appel de 30 minutes permet de prioriser le plan.`,
       `Audit completed for ${context.websiteName}. Priority finding (${severityLabel}): ${topFinding.title}.${remainingSentence} Google visibility ${googleScore}/100, AI ${aiScore}/100. ${businessHint} A 30-minute call will help prioritize the plan.`,
+    );
+  }
+
+  private buildRemainingFindingsSentence(
+    remainingCount: number,
+    locale: AuditLocale,
+  ): string {
+    if (remainingCount <= 0) return '';
+
+    const frPlural = remainingCount > 1 ? 's' : '';
+    const frVerb = remainingCount > 1 ? 'sont identifies' : 'est identifie';
+    const enPlural = remainingCount > 1 ? 's' : '';
+    const enVerb = remainingCount > 1 ? 'are' : 'is';
+
+    return localizedText(
+      locale,
+      ` ${remainingCount} autre${frPlural} levier${frPlural} ${frVerb} dans le rapport.`,
+      ` ${remainingCount} other lever${enPlural} ${enVerb} documented in the report.`,
     );
   }
 

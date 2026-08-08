@@ -101,11 +101,6 @@ describe('invokeWithLlmTracking', () => {
     expect(metrics.llmLatencySeconds.observe).toHaveBeenCalledTimes(1);
     const [, latencySeconds] = metrics.llmLatencySeconds.observe.mock
       .calls[0] as [unknown, number];
-    // Valeur EXACTE, horloge figee : l'histogramme Prometheus est en
-    // secondes. Une simple borne ne suffisait pas — un appel de test
-    // durant moins de 5 ms satisfait `< 5` que la valeur soit en
-    // secondes ou en millisecondes, laissant passer une regression
-    // d'unite d'un facteur 1000.
     expect(latencySeconds).toBe(2.5);
   });
 
@@ -189,10 +184,7 @@ describe('invokeWithLlmTracking', () => {
     ).rejects.toThrow('LLM down');
   });
 
-  it('compte l’appel et observe la latence en erreur', async () => {
-    // Le chemin d'erreur porte sa propre conversion en secondes. Sans
-    // assertion dediee, une regression d'unite y passait la CI alors
-    // meme que le chemin succes etait verrouille.
+  it('compte l’appel et observe la latence en secondes en erreur', async () => {
     const metrics = createMockMetrics();
     jest
       .spyOn(Date, 'now')

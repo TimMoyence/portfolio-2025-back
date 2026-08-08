@@ -1,13 +1,5 @@
 declare const escapedHtmlBrand: unique symbol;
 
-/**
- * Fragment HTML sur pour l'interpolation : soit il ne contient aucune
- * donnee externe, soit celle-ci est passee par `escapeHtml`.
- *
- * La marque n'existe qu'a la compilation — au runtime c'est une `string`.
- * Seuls `escapeHtml` et le tag `safeHtml` la produisent : le symbole de
- * marquage n'est pas exporte, donc le type est infalsifiable au-dehors.
- */
 export type EscapedHtml = string & {
   readonly [escapedHtmlBrand]: 'EscapedHtml';
 };

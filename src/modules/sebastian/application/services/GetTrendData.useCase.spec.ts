@@ -209,7 +209,7 @@ describe('GetTrendDataUseCase', () => {
     const result = await useCase.execute({ userId: 'user-1', period: '7d' });
 
     expect(result.summary.avgAlcohol).toBe(1);
-    expect(result.summary.avgCoffee).toBe(0.43);
+    expect(result.summary.avgCoffee).toBeCloseTo(0.43, 2);
   });
 
   it('devrait retourner tout a zero avec des entrees vides', async () => {

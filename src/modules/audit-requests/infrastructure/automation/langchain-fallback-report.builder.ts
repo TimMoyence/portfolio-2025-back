@@ -1,4 +1,5 @@
 import { AuditLocale } from '../../domain/audit-locale.util';
+import { priorityFromFinding } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
 import { severityRank } from './shared/severity.util';
 import type {
@@ -10,6 +11,12 @@ export interface DeterministicCostConfig {
   rateCurrency: string;
   rateHourlyMin: number;
   rateHourlyMax: number;
+}
+
+function priorityRankSeverity(index: number): 'high' | 'medium' | 'low' {
+  if (index < 2) return 'high';
+  if (index < 5) return 'medium';
+  return 'low';
 }
 
 export function buildFallbackSummary(input: LangchainAuditInput): string {
@@ -79,7 +86,7 @@ export function buildFallbackExpertReport(
   };
 
   const implementationTodo = topQuickWins.map((quickWin, index) => ({
-    phase: input.locale === 'en' ? `Phase ${index + 1}` : `Phase ${index + 1}`,
+    phase: `Phase ${index + 1}`,
     objective: quickWin,
     deliverable: localizedText(
       input.locale,
@@ -197,7 +204,7 @@ export function buildFallbackExpertReport(
     techFingerprint: fallbackTechFingerprint,
     priorities: topQuickWins.map((quickWin, index) => ({
       title: quickWin,
-      severity: index < 2 ? 'high' : index < 5 ? 'medium' : 'low',
+      severity: priorityRankSeverity(index),
       whyItMatters: localizedText(
         input.locale,
         'Ce point influence directement l indexabilite, la visibilite SEO ou la conversion.',
@@ -357,12 +364,15 @@ function buildFallbackInternalNotes(input: LangchainAuditInput): string {
   const lowestPillar = Object.entries(input.pillarScores)
     .filter(([, score]) => Number.isFinite(score))
     .sort((a, b) => a[1] - b[1])[0];
+  const lowestPillarLabel = lowestPillar
+    ? `${lowestPillar[0]} (${lowestPillar[1]})`
+    : '';
   const topFinding = input.deepFindings[0];
 
   if (input.locale === 'en') {
     return [
       `Internal notes for the call with ${input.websiteName}:`,
-      `- Weakest pillar: ${lowestPillar ? `${lowestPillar[0]} (${lowestPillar[1]})` : 'unknown'}.`,
+      `- Weakest pillar: ${lowestPillarLabel || 'unknown'}.`,
       topFinding
         ? `- Highlight ${topFinding.title} (${topFinding.severity}).`
         : '- No critical finding identified; push the PDF value.',
@@ -373,7 +383,7 @@ function buildFallbackInternalNotes(input: LangchainAuditInput): string {
 
   return [
     `Notes internes pour l'appel avec ${input.websiteName} :`,
-    `- Pilier le plus faible : ${lowestPillar ? `${lowestPillar[0]} (${lowestPillar[1]})` : 'inconnu'}.`,
+    `- Pilier le plus faible : ${lowestPillarLabel || 'inconnu'}.`,
     topFinding
       ? `- Mettre en avant ${topFinding.title} (${topFinding.severity}).`
       : '- Aucun constat critique ; vendre la valeur du PDF.',
@@ -408,17 +418,7 @@ export function ensurePriorityDepth(
     const key = finding.title.trim().toLowerCase();
     if (!key || unique.has(key)) continue;
 
-    priorities.push({
-      title: finding.title,
-      severity: finding.severity,
-      whyItMatters: localizedText(
-        locale,
-        `Impact ${finding.impact}: ${finding.description}`,
-        `${finding.impact} impact: ${finding.description}`,
-      ),
-      recommendedFix: finding.recommendation,
-      estimatedHours: finding.severity === 'high' ? 6 : 4,
-    });
+    priorities.push(priorityFromFinding(finding, locale));
     unique.add(key);
   }
 

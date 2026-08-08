@@ -1,4 +1,5 @@
 import * as fc from 'fast-check';
+import { nonStringArbitrary } from '../../../../test/helpers/fast-check-arbitraries';
 import { PhoneNumber } from './PhoneNumber';
 
 describe('PhoneNumber', () => {
@@ -58,17 +59,9 @@ describe('PhoneNumber', () => {
 
     it('devrait rejeter les valeurs non-string', () => {
       fc.assert(
-        fc.property(
-          fc.oneof(
-            fc.integer(),
-            fc.boolean(),
-            fc.constant(null),
-            fc.constant(undefined),
-          ),
-          (input) => {
-            expect(PhoneNumber.parse(input)).toBeNull();
-          },
-        ),
+        fc.property(nonStringArbitrary, (input) => {
+          expect(PhoneNumber.parse(input)).toBeNull();
+        }),
       );
     });
 

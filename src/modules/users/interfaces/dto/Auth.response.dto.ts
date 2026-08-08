@@ -2,10 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import type { AuthResult } from '../../application/AuthenticateUser.useCase';
 import { UserResponseDto } from './User.response.dto';
 
-/**
- * Le refresh token n'est plus inclus dans le body — il est emis
- * dans un cookie HttpOnly securise.
- */
 export class AuthResponseDto {
   @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
   accessToken: string;

@@ -1,14 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { DetailedCurrentWeather } from '../../domain/IOpenWeatherMapProxy.port';
 
-/**
- * Charge utile publiee par GET /weather/current-detailed.
- *
- * Les noms de champs sont un contrat public consomme par le frontend : ils
- * restent stables meme quand le domaine renomme les siens. Le mapping ci-dessous
- * est donc explicite et volontairement exhaustif — surtout pas un Object.assign,
- * qui laisserait fuiter les noms internes sur le fil.
- */
+/** Cles publiees verrouillees par weather-wire-contract.spec.ts. */
 export class DetailedCurrentWeatherDto {
   @ApiProperty({ description: 'Temperature (°C)' })
   temperature: number;

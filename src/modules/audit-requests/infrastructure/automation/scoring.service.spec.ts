@@ -127,7 +127,7 @@ describe('ScoringService', () => {
         [],
       );
       expect(result.pillarScores.seo).toBeGreaterThanOrEqual(90);
-      expect(result.quickWins.length).toBe(0);
+      expect(result.quickWins).toHaveLength(0);
     });
 
     it('adds quick wins and lowers score for major gaps', () => {
@@ -180,17 +180,17 @@ describe('ScoringService', () => {
     it('returns all 7 pillar keys even with empty inputs', () => {
       const homepage = buildHomepage();
       const result = service.compute(homepage, [], []);
-      expect(Object.keys(result.pillarScores).sort()).toEqual(
-        [
-          'aiVisibility',
-          'citationWorthiness',
-          'conversion',
-          'performance',
-          'seo',
-          'technical',
-          'trust',
-        ].sort(),
-      );
+      expect(
+        Object.keys(result.pillarScores).sort((a, b) => a.localeCompare(b)),
+      ).toEqual([
+        'aiVisibility',
+        'citationWorthiness',
+        'conversion',
+        'performance',
+        'seo',
+        'technical',
+        'trust',
+      ]);
     });
 
     it('fills aiVisibility / citationWorthiness with 0 when no data', () => {

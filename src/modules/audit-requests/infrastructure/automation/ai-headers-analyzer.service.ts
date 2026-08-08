@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import type { AiBotsAccess } from '../../domain/AiIndexability';
+import type {
+  AiBotAccessState,
+  AiBotsAccess,
+} from '../../domain/AiIndexability';
 
 const AI_BOTS = {
   gptBot: 'GPTBot',
@@ -19,7 +22,7 @@ export class AiHeadersAnalyzerService {
   analyze(robotsTxt: string, headers: Record<string, string>): AiBotsAccess {
     const blocks = this.parseBlocks(robotsTxt);
     const robotsIsEmpty = robotsTxt.trim() === '';
-    const decide = (uaName: string): 'allowed' | 'disallowed' | 'unknown' => {
+    const decide = (uaName: string): AiBotAccessState => {
       const exact = blocks.find(
         (b) => b.ua.toLowerCase() === uaName.toLowerCase(),
       );
@@ -47,13 +50,13 @@ export class AiHeadersAnalyzerService {
     for (const rawLine of robots.split(/\r?\n/)) {
       const line = rawLine.trim();
       if (!line || line.startsWith('#')) continue;
-      const ua = /^User-agent:\s*(.+)$/i.exec(line);
+      const ua = /^User-agent:\s*(\S.*)$/i.exec(line);
       if (ua) {
         if (current) blocks.push(current);
         current = { ua: ua[1].trim(), disallowRoot: false };
         continue;
       }
-      const dis = /^Disallow:\s*(.+)$/i.exec(line);
+      const dis = /^Disallow:\s*(\S.*)$/i.exec(line);
       if (dis && current && dis[1].trim() === '/') {
         current.disallowRoot = true;
       }

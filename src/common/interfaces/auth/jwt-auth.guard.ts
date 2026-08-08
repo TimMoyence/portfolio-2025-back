@@ -59,7 +59,7 @@ export class JwtAuthGuard implements CanActivate {
       request.user = payload;
 
       if (!this.isEmailVerificationExempt(request)) {
-        await this.ensureEmailVerified(payload.sub);
+        await this.ensureAccountExistsAndEmailVerified(payload.sub);
       }
 
       return true;
@@ -69,11 +69,9 @@ export class JwtAuthGuard implements CanActivate {
     }
   }
 
-  /**
-   * Un JWT valide dont le compte a ete supprime doit etre rejete (401)
-   * plutot que de laisser passer silencieusement.
-   */
-  private async ensureEmailVerified(userId: string): Promise<void> {
+  private async ensureAccountExistsAndEmailVerified(
+    userId: string,
+  ): Promise<void> {
     const user = await this.usersRepo.findById(userId);
     if (!user) {
       throw new UnauthorizedException('Utilisateur introuvable');

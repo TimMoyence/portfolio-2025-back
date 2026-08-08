@@ -152,6 +152,7 @@ void test('EXCEPTION 1 : directives fonctionnelles -> 0 offense', () => {
     '/// <reference types="node" />',
     '/** @deprecated utiliser `next()` a la place */',
     '// istanbul ignore next',
+    '// gitleaks:allow',
   ];
   for (const directive of directives) {
     assert.deepEqual(

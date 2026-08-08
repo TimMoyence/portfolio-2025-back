@@ -6,6 +6,19 @@ import {
 import { AuditClientReportMailer } from '../audit-client-report.mailer';
 import type { SmtpTransporter } from '../smtp-transporter.provider';
 
+interface SentMail {
+  to: string;
+  subject: string;
+  text: string;
+  html: string;
+  replyTo: string;
+  attachments: Array<{
+    filename: string;
+    content: Buffer;
+    contentType: string;
+  }>;
+}
+
 describe('AuditClientReportMailer', () => {
   let cleanupEnv: () => void;
   let mockTransporter: ReturnType<typeof createMockTransporter>;
@@ -82,12 +95,19 @@ describe('AuditClientReportMailer', () => {
     },
   });
 
-  it('devrait envoyer le rapport client sans pdf', async () => {
+  function buildMailer(): AuditClientReportMailer {
     mockTransporter = createMockTransporter();
     cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-    const mailer = new AuditClientReportMailer(
+    return new AuditClientReportMailer(
       mockTransporter as unknown as SmtpTransporter,
     );
+  }
+
+  const sentMail = (): SentMail =>
+    (mockTransporter.sendMail as jest.Mock).mock.calls[0][0] as SentMail;
+
+  it('devrait envoyer le rapport client sans pdf', async () => {
+    const mailer = buildMailer();
 
     await mailer.sendClientReport({
       to: 'client@example.com',
@@ -98,7 +118,7 @@ describe('AuditClientReportMailer', () => {
     });
 
     expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
-    const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+    const call = sentMail();
     expect(call.to).toBe('client@example.com');
     expect(call.subject).toBe('Votre audit Growth — mon-site.fr');
     expect(call.attachments).toBeUndefined();
@@ -111,11 +131,7 @@ describe('AuditClientReportMailer', () => {
 
   describe('P0.5 — CTA email cliquable', () => {
     it('rend le CTA comme un <a href> pointant vers bookingUrl quand fourni', async () => {
-      mockTransporter = createMockTransporter();
-      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-      const mailer = new AuditClientReportMailer(
-        mockTransporter as unknown as SmtpTransporter,
-      );
+      const mailer = buildMailer();
 
       await mailer.sendClientReport({
         to: 'client@example.com',
@@ -126,7 +142,7 @@ describe('AuditClientReportMailer', () => {
         bookingUrl: 'https://cal.com/asili/audit-call',
       });
 
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      const call = sentMail();
       expect(call.html).toContain('href="https://cal.com/asili/audit-call"');
       expect(call.html).toContain('target="_blank"');
       expect(call.html).toContain('rel="noopener noreferrer"');
@@ -152,7 +168,7 @@ describe('AuditClientReportMailer', () => {
           pdfBuffer: null,
         });
 
-        const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+        const call = sentMail();
         expect(call.html).toContain('href="https://asilidesign.fr/fr/contact"');
       } finally {
         if (originalBookingUrl !== undefined) {
@@ -163,11 +179,7 @@ describe('AuditClientReportMailer', () => {
   });
 
   it('devrait attacher le PDF quand pdfBuffer est fourni', async () => {
-    mockTransporter = createMockTransporter();
-    cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-    const mailer = new AuditClientReportMailer(
-      mockTransporter as unknown as SmtpTransporter,
-    );
+    const mailer = buildMailer();
     const pdf = Buffer.from('%PDF-1.4 fake');
 
     await mailer.sendClientReport({
@@ -178,7 +190,7 @@ describe('AuditClientReportMailer', () => {
       pdfBuffer: pdf,
     });
 
-    const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+    const call = sentMail();
     expect(call.attachments).toHaveLength(1);
     expect(call.attachments[0].filename).toContain('mon-site-fr');
     expect(call.attachments[0].content).toBe(pdf);
@@ -186,11 +198,7 @@ describe('AuditClientReportMailer', () => {
   });
 
   it('devrait escape les champs LLM contenant du HTML', async () => {
-    mockTransporter = createMockTransporter();
-    cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-    const mailer = new AuditClientReportMailer(
-      mockTransporter as unknown as SmtpTransporter,
-    );
+    const mailer = buildMailer();
     const report = buildClientReport();
     const dangerousReport = {
       ...report,
@@ -205,7 +213,7 @@ describe('AuditClientReportMailer', () => {
       pdfBuffer: null,
     });
 
-    const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+    const call = sentMail();
     expect(call.html).not.toContain('<script>alert(1)</script>');
     expect(call.html).toContain('&lt;script&gt;');
   });
@@ -226,11 +234,7 @@ describe('AuditClientReportMailer', () => {
   });
 
   it('devrait ne rien faire si le destinataire est vide', async () => {
-    mockTransporter = createMockTransporter();
-    cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-    const mailer = new AuditClientReportMailer(
-      mockTransporter as unknown as SmtpTransporter,
-    );
+    const mailer = buildMailer();
 
     await mailer.sendClientReport({
       to: '',

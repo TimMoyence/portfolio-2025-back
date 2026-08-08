@@ -168,7 +168,7 @@ const envSchema = z
     );
     if (smtpConfigured && !env.SMTP_FROM?.trim()) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['SMTP_FROM'],
         message:
           'requis des lors que SMTP_HOST, SMTP_USER et SMTP_PASS sont definis ' +
@@ -189,7 +189,7 @@ const envSchema = z
       const value = env[key];
       if (value?.trim() && !isValidMailbox(value)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: [key],
           message:
             'doit etre une adresse email valide, seule ou sous la forme ' +
@@ -199,25 +199,35 @@ const envSchema = z
     }
   });
 
+function allowsHeaderInjection(value: string): boolean {
+  return /[\r\n]/.test(value);
+}
+
+function declaresSeveralMailboxes(value: string): boolean {
+  return value.includes('<', value.indexOf('<') + 1);
+}
+
+function angledAddress(value: string): string | undefined {
+  const open = value.indexOf('<');
+  if (open < 0) return undefined;
+  const close = value.indexOf('>', open + 1);
+  if (close < 0) return undefined;
+  return value.slice(open + 1, close);
+}
+
 /**
  * Valide une boite aux lettres RFC 5322 sous ses deux formes usuelles :
  * l'adresse nue (`contact@exemple.fr`) et l'adresse avec nom d'affichage
  * (`'Mon Nom' <contact@exemple.fr>`), cette derniere etant celle
- * deployee en production. `z.string().email()` rejetterait la seconde et
+ * deployee en production. `z.email()` rejetterait la seconde et
  * empecherait l'API de demarrer.
  */
 function isValidMailbox(value: string): boolean {
-  // Un saut de ligne permettrait d'injecter un en-tete supplementaire
-  // (`Bcc:`) apres l'adresse ; la regex ci-dessous s'arretant au premier
-  // `>`, le reste ne serait jamais examine.
-  if (/[\r\n]/.test(value)) return false;
-  // Une seule boite : `A <a@x.fr>, B <b@y.fr>` passerait sinon la
-  // validation alors que seule la premiere adresse serait retenue.
-  if ((value.match(/</g) ?? []).length > 1) return false;
+  if (allowsHeaderInjection(value)) return false;
+  if (declaresSeveralMailboxes(value)) return false;
 
-  const angled = /<([^>]+)>/.exec(value);
-  const address = (angled ? angled[1] : value).trim();
-  return z.string().email().safeParse(address).success;
+  const address = (angledAddress(value) ?? value).trim();
+  return z.email().safeParse(address).success;
 }
 
 function resolveAliases(env: Record<string, unknown>): Record<string, unknown> {

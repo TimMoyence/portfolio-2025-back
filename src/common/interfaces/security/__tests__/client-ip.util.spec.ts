@@ -1,6 +1,9 @@
 import type { Request } from 'express';
 import { resolveClientIp, resolveClientIpOrUnknown } from '../client-ip.util';
 
+const EXPRESS_IP = '192.0.2.10';
+const FORGED_IP = '198.51.100.99';
+
 function buildRequest(overrides: {
   ip?: string;
   remoteAddress?: string;
@@ -15,31 +18,28 @@ function buildRequest(overrides: {
 
 describe('resolveClientIp', () => {
   it('retourne l’IP calculee par Express', () => {
-    const req = buildRequest({ ip: '88.88.88.88' });
+    const req = buildRequest({ ip: EXPRESS_IP });
 
-    expect(resolveClientIp(req)).toBe('88.88.88.88');
+    expect(resolveClientIp(req)).toBe(EXPRESS_IP);
   });
 
   it('ignore un X-Forwarded-For forge', () => {
-    // L'en-tete est fourni en entier par le client : en retenir la
-    // premiere entree laisserait l'appelant choisir l'IP sous laquelle
-    // il est trace, et attribuer son activite a un tiers.
     const req = buildRequest({
-      ip: '88.88.88.88',
-      headers: { 'x-forwarded-for': '9.9.9.9, 8.8.8.8' },
+      ip: EXPRESS_IP,
+      headers: { 'x-forwarded-for': `${FORGED_IP}, 198.51.100.8` },
     });
 
-    expect(resolveClientIp(req)).toBe('88.88.88.88');
-    expect(resolveClientIp(req)).not.toBe('9.9.9.9');
+    expect(resolveClientIp(req)).toBe(EXPRESS_IP);
+    expect(resolveClientIp(req)).not.toBe(FORGED_IP);
   });
 
   it('ignore un X-Real-IP forge', () => {
     const req = buildRequest({
-      ip: '88.88.88.88',
-      headers: { 'x-real-ip': '9.9.9.9' },
+      ip: EXPRESS_IP,
+      headers: { 'x-real-ip': FORGED_IP },
     });
 
-    expect(resolveClientIp(req)).toBe('88.88.88.88');
+    expect(resolveClientIp(req)).toBe(EXPRESS_IP);
   });
 
   it('retombe sur l’adresse du socket quand req.ip est absent', () => {
@@ -49,11 +49,10 @@ describe('resolveClientIp', () => {
   });
 
   it('normalise la forme IPv4-mappee-IPv6', () => {
-    // Sans normalisation, `::ffff:1.2.3.4` et `1.2.3.4` comptent comme
-    // deux clients distincts dans les agregats.
-    const req = buildRequest({ ip: '::ffff:172.18.0.1' });
+    const mapped = '203.0.113.18';
+    const req = buildRequest({ ip: `::ffff:${mapped}` });
 
-    expect(resolveClientIp(req)).toBe('172.18.0.1');
+    expect(resolveClientIp(req)).toBe(mapped);
   });
 
   it('laisse une adresse IPv6 native intacte', () => {
@@ -68,8 +67,8 @@ describe('resolveClientIp', () => {
 
   it('retourne unknown dans la variante non-nullable', () => {
     expect(resolveClientIpOrUnknown(buildRequest({}))).toBe('unknown');
-    expect(resolveClientIpOrUnknown(buildRequest({ ip: '1.2.3.4' }))).toBe(
-      '1.2.3.4',
+    expect(resolveClientIpOrUnknown(buildRequest({ ip: EXPRESS_IP }))).toBe(
+      EXPRESS_IP,
     );
   });
 });

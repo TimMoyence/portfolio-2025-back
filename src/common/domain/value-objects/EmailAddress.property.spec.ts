@@ -1,4 +1,5 @@
 import * as fc from 'fast-check';
+import { nonStringArbitrary } from '../../../../test/helpers/fast-check-arbitraries';
 import { EmailAddress } from './EmailAddress';
 
 describe('EmailAddress (property-based)', () => {
@@ -49,18 +50,10 @@ describe('EmailAddress (property-based)', () => {
 
   it('devrait retourner null pour les non-string', () => {
     fc.assert(
-      fc.property(
-        fc.oneof(
-          fc.integer(),
-          fc.boolean(),
-          fc.constant(null),
-          fc.constant(undefined),
-        ),
-        (input) => {
-          const result = EmailAddress.parse(input);
-          expect(result).toBeNull();
-        },
-      ),
+      fc.property(nonStringArbitrary, (input) => {
+        const result = EmailAddress.parse(input);
+        expect(result).toBeNull();
+      }),
     );
   });
 });

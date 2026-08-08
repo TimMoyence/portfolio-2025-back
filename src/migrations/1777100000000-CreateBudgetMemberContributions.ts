@@ -1,16 +1,5 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-/**
- * Cree la table budget_member_contributions qui persiste la contribution
- * mensuelle (salaire) declaree par chaque membre d'un groupe budget.
- *
- * Contraintes :
- *  - unicite (group_id, user_id, month, year) pour eviter les doublons
- *  - month entre 1 et 12, year entre 2000 et 2100
- *  - monthly_salary >= 0
- *  - cascade ON DELETE depuis budget_groups et users
- *  - index supplementaire (group_id, year, month) pour la lecture mensuelle
- */
 export class CreateBudgetMemberContributions1777100000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`

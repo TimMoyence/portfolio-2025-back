@@ -1,7 +1,5 @@
 import { buildLeadMagnetRequest } from '../../../../../test/factories/lead-magnet-request.factory';
 
-// Mock createOptionalSmtpTransporter avant l'import du service pour injecter
-// un faux transporter et couvrir la branche "transporter present".
 const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
 
 jest.mock(

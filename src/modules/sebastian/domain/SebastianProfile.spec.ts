@@ -14,7 +14,7 @@ describe('SebastianProfile', () => {
 
       expect(profile.userId).toBe('user-1');
       expect(profile.weightKg).toBe(70);
-      expect(profile.widmarkR).toBe(0.68);
+      expect(profile.widmarkR).toBeCloseTo(0.68, 10);
       expect(profile.createdAt).toBeInstanceOf(Date);
       expect(profile.updatedAt).toBeInstanceOf(Date);
     });
@@ -64,7 +64,7 @@ describe('SebastianProfile', () => {
       expect(profile.id).toBe('profile-1');
       expect(profile.userId).toBe('user-1');
       expect(profile.weightKg).toBe(80);
-      expect(profile.widmarkR).toBe(0.55);
+      expect(profile.widmarkR).toBeCloseTo(0.55, 10);
       expect(profile.createdAt).toEqual(new Date('2026-01-01'));
       expect(profile.updatedAt).toEqual(new Date('2026-03-01'));
     });

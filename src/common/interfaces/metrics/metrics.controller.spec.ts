@@ -70,7 +70,7 @@ describe('MetricsController', () => {
     it('expose les IPs deja enregistrees par le store', async () => {
       const now = Date.now();
       await securityStore.recordEvent({
-        ip: '135.125.11.41',
+        ip: '203.0.113.41',
         userAgent: 'HeadlessChrome/145',
         method: 'POST',
         path: '/cookie-consents',
@@ -80,7 +80,7 @@ describe('MetricsController', () => {
         occurredAtMs: now,
       });
       await securityStore.recordEvent({
-        ip: '135.125.11.41',
+        ip: '203.0.113.41',
         userAgent: 'HeadlessChrome/145',
         method: 'POST',
         path: '/cookie-consents',
@@ -94,7 +94,7 @@ describe('MetricsController', () => {
 
       expect(result.topSuspiciousIps).toHaveLength(1);
       const row = result.topSuspiciousIps[0];
-      expect(row.ip).toBe('135.125.11.41');
+      expect(row.ip).toBe('203.0.113.41');
       expect(row.count).toBe(2);
       expect(row.lastReasons).toContain('ua:headless-chrome');
       expect(row.lastPath).toBe('/cookie-consents');

@@ -5,6 +5,23 @@ import { InMemorySecurityEventsStore } from './in-memory-security-events-store';
 import type { SecurityConfig } from './security.config';
 import { SuspiciousRequestInterceptor } from './suspicious-request.interceptor';
 
+const LOOPBACK_IPV4 = '127.0.0.1';
+
+const HEADLESS_CHROME_HEADERS = {
+  'user-agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
+  'accept-language': 'en-US,en;q=0.9',
+};
+
+const COOKIE_CONSENT_POST = {
+  method: 'POST',
+  url: '/api/v1/portfolio25/cookie-consents',
+};
+
+function mappedIpv6(ipv4: string): string {
+  return `::ffff:${ipv4}`;
+}
+
 interface FakeRequest {
   method: string;
   url: string;
@@ -53,12 +70,26 @@ describe('SuspiciousRequestInterceptor', () => {
     interceptor = new SuspiciousRequestInterceptor(buildConfig(), store);
   });
 
+  function intercept(
+    req: FakeRequest,
+    statusCode: number,
+    handler: CallHandler = { handle: () => of({}) },
+    target: SuspiciousRequestInterceptor = interceptor,
+  ): Promise<unknown> {
+    const res: FakeResponse = { statusCode, writableEnded: true };
+    return firstValueFrom(target.intercept(buildContext(req, res), handler));
+  }
+
+  function topIPs() {
+    return store.getTopIPs(10, 60_000);
+  }
+
   it('ignore les contextes non-HTTP', async () => {
     const handler: CallHandler = { handle: () => of('rpc-result') };
     const ctx = buildContext({} as FakeRequest, {} as FakeResponse, 'rpc');
     const result = await firstValueFrom(interceptor.intercept(ctx, handler));
     expect(result).toBe('rpc-result');
-    expect(await store.getTopIPs(10, 60_000)).toHaveLength(0);
+    expect(await topIPs()).toHaveLength(0);
   });
 
   it('ne persiste rien pour une requete Safari legitime', async () => {
@@ -69,72 +100,53 @@ describe('SuspiciousRequestInterceptor', () => {
         'user-agent': 'Mozilla/5.0 (Macintosh) Safari/605.1.15',
         'accept-language': 'fr-FR,fr;q=0.9',
       },
-      ip: '10.0.0.1',
+      ip: '203.0.113.10',
     };
-    const res: FakeResponse = { statusCode: 200, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({ ok: true }) };
 
-    await firstValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    );
+    await intercept(req, 200, { handle: () => of({ ok: true }) });
 
-    expect(await store.getTopIPs(10, 60_000)).toHaveLength(0);
+    expect(await topIPs()).toHaveLength(0);
   });
 
   it('persiste une requete HeadlessChrome suspecte', async () => {
     const req: FakeRequest = {
-      method: 'POST',
-      url: '/api/v1/portfolio25/cookie-consents',
+      ...COOKIE_CONSENT_POST,
       headers: {
-        'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
-        'accept-language': 'en-US,en;q=0.9',
-        'x-forwarded-for': '135.125.11.41',
+        ...HEADLESS_CHROME_HEADERS,
+        'x-forwarded-for': '203.0.113.41',
       },
       // Valeur qu'Express calcule sous `trust proxy` quand le
       // reverse-proxy renseigne `X-Forwarded-For`.
-      ip: '135.125.11.41',
+      ip: '203.0.113.41',
     };
-    const res: FakeResponse = { statusCode: 201, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({}) };
 
-    await firstValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    );
+    await intercept(req, 201);
 
-    const top = await store.getTopIPs(10, 60_000);
+    const top = await topIPs();
     expect(top).toHaveLength(1);
-    expect(top[0].ip).toBe('135.125.11.41');
+    expect(top[0].ip).toBe('203.0.113.41');
     expect(top[0].lastReasons).toContain('ua:headless-chrome');
   });
 
   it('ignore une chaine x-forwarded-for forgee au profit de req.ip', async () => {
-    // Ce test verifiait auparavant que la PREMIERE entree de
-    // `X-Forwarded-For` etait retenue. Cette entree est integralement
-    // fournie par le client : un attaquant choisissait donc l'IP sous
-    // laquelle ses requetes etaient tracees, et pouvait attribuer son
-    // activite a un tiers. `trust proxy` etant actif, `req.ip` est la
-    // seule valeur validee — c'est elle qui doit faire foi.
+    // `X-Forwarded-For` est fourni en entier par le client : seul le
+    // `req.ip` calcule par Express sous `trust proxy` est valide.
     const req: FakeRequest = {
       method: 'GET',
       url: '/wp-login.php',
       headers: {
         'user-agent': 'curl/7.88',
         'accept-language': '',
-        'x-forwarded-for': '9.9.9.9, 8.8.8.8, 172.18.0.1',
+        'x-forwarded-for': '198.51.100.99, 198.51.100.8, 203.0.113.18',
       },
-      ip: '172.18.0.1',
+      ip: '203.0.113.18',
     };
-    const res: FakeResponse = { statusCode: 404, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({}) };
 
-    await firstValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    );
+    await intercept(req, 404);
 
-    const top = await store.getTopIPs(10, 60_000);
-    expect(top[0].ip).toBe('172.18.0.1');
-    expect(top[0].ip).not.toBe('9.9.9.9');
+    const top = await topIPs();
+    expect(top[0].ip).toBe('203.0.113.18');
+    expect(top[0].ip).not.toBe('198.51.100.99');
   });
 
   it('enregistre aussi quand le handler emet une erreur', async () => {
@@ -145,7 +157,7 @@ describe('SuspiciousRequestInterceptor', () => {
         'user-agent': 'python-requests/2.32',
         'accept-language': '',
       },
-      ip: '7.7.7.7',
+      ip: '198.51.100.7',
     };
     const res: FakeResponse = { statusCode: 401, writableEnded: true };
     const handler: CallHandler = {
@@ -156,13 +168,13 @@ describe('SuspiciousRequestInterceptor', () => {
       interceptor.intercept(buildContext(req, res), handler),
     ).catch(() => undefined);
 
-    const top = await store.getTopIPs(10, 60_000);
+    const top = await topIPs();
     expect(top).toHaveLength(1);
-    expect(top[0].ip).toBe('7.7.7.7');
+    expect(top[0].ip).toBe('198.51.100.7');
     expect(top[0].lastReasons).toContain('ua:python-requests');
   });
 
-  it.each(['127.0.0.1', '::ffff:127.0.0.1', '::1'])(
+  it.each([LOOPBACK_IPV4, mappedIpv6(LOOPBACK_IPV4), '::1'])(
     'bypass le scoring pour les IPs loopback via req.ip (%s)',
     async (loopbackIp) => {
       const req: FakeRequest = {
@@ -171,14 +183,10 @@ describe('SuspiciousRequestInterceptor', () => {
         headers: { 'user-agent': undefined, 'accept-language': undefined },
         ip: loopbackIp,
       };
-      const res: FakeResponse = { statusCode: 200, writableEnded: true };
-      const handler: CallHandler = { handle: () => of({ ok: true }) };
 
-      await firstValueFrom(
-        interceptor.intercept(buildContext(req, res), handler),
-      );
+      await intercept(req, 200, { handle: () => of({ ok: true }) });
 
-      expect(await store.getTopIPs(10, 60_000)).toHaveLength(0);
+      expect(await topIPs()).toHaveLength(0);
     },
   );
 
@@ -188,43 +196,30 @@ describe('SuspiciousRequestInterceptor', () => {
       url: '/api/v1/portfolio25/health',
       headers: { 'user-agent': undefined, 'accept-language': undefined },
       ip: undefined,
-      socket: { remoteAddress: '127.0.0.1' },
+      socket: { remoteAddress: LOOPBACK_IPV4 },
     };
-    const res: FakeResponse = { statusCode: 200, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({ ok: true }) };
 
-    await firstValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    );
+    await intercept(req, 200, { handle: () => of({ ok: true }) });
 
-    expect(await store.getTopIPs(10, 60_000)).toHaveLength(0);
+    expect(await topIPs()).toHaveLength(0);
   });
 
   it('ne bypasse pas le scoring sur un X-Forwarded-For loopback forge', async () => {
-    // Depuis l'activation de `trust proxy`, `req.ip` derive de
-    // `X-Forwarded-For`. Un client qui annonce `127.0.0.1` obtiendrait
-    // donc un `req.ip` loopback et court-circuiterait tout le scoring
-    // s'il servait de critere. Seule l'adresse du socket fait foi.
+    // Sous `trust proxy`, le `req.ip` calcule par Express derive de
+    // `X-Forwarded-For` : seule l'adresse du socket fait foi ici.
     const req: FakeRequest = {
-      method: 'POST',
-      url: '/api/v1/portfolio25/cookie-consents',
+      ...COOKIE_CONSENT_POST,
       headers: {
-        'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
-        'accept-language': 'en-US,en;q=0.9',
-        'x-forwarded-for': '127.0.0.1',
+        ...HEADLESS_CHROME_HEADERS,
+        'x-forwarded-for': LOOPBACK_IPV4,
       },
-      ip: '127.0.0.1',
-      socket: { remoteAddress: '135.125.11.41' },
+      ip: LOOPBACK_IPV4,
+      socket: { remoteAddress: '203.0.113.41' },
     };
-    const res: FakeResponse = { statusCode: 201, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({}) };
 
-    await firstValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    );
+    await intercept(req, 201);
 
-    expect(await store.getTopIPs(10, 60_000)).toHaveLength(1);
+    expect(await topIPs()).toHaveLength(1);
   });
 
   it('attribue l’evenement a l’IP resolue par Express, pas au X-Forwarded-For brut', async () => {
@@ -233,77 +228,54 @@ describe('SuspiciousRequestInterceptor', () => {
     // `X-Forwarded-For` a la main contournerait ce calcul et laisserait
     // un attaquant choisir l'IP sous laquelle son activite est tracee.
     const req: FakeRequest = {
-      method: 'POST',
-      url: '/api/v1/portfolio25/cookie-consents',
+      ...COOKIE_CONSENT_POST,
       headers: {
-        'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
-        'accept-language': 'en-US,en;q=0.9',
-        'x-forwarded-for': '1.2.3.4, 203.0.113.7',
+        ...HEADLESS_CHROME_HEADERS,
+        'x-forwarded-for': '192.0.2.4, 203.0.113.7',
       },
       ip: '203.0.113.7',
-      socket: { remoteAddress: '::ffff:172.18.0.1' },
+      socket: { remoteAddress: mappedIpv6('192.0.2.18') },
     };
-    const res: FakeResponse = { statusCode: 201, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({}) };
 
-    await firstValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    );
+    await intercept(req, 201);
 
-    const top = await store.getTopIPs(10, 60_000);
+    const top = await topIPs();
     expect(top).toHaveLength(1);
     expect(top[0].ip).toBe('203.0.113.7');
   });
 
   it('retombe sur l’adresse du socket quand req.ip est absent', async () => {
     const req: FakeRequest = {
-      method: 'POST',
-      url: '/api/v1/portfolio25/cookie-consents',
+      ...COOKIE_CONSENT_POST,
       headers: {
-        'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
-        'accept-language': 'en-US,en;q=0.9',
-        'x-forwarded-for': '1.2.3.4',
+        ...HEADLESS_CHROME_HEADERS,
+        'x-forwarded-for': '192.0.2.4',
       },
       ip: undefined,
       socket: { remoteAddress: '198.51.100.9' },
     };
-    const res: FakeResponse = { statusCode: 201, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({}) };
 
-    await firstValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    );
+    await intercept(req, 201);
 
-    const top = await store.getTopIPs(10, 60_000);
+    const top = await topIPs();
     expect(top[0].ip).toBe('198.51.100.9');
   });
 
   it('normalise l’IP IPv4-mappee-IPv6 avant de l’enregistrer', async () => {
-    // Sans normalisation a ce niveau, `::ffff:203.0.113.7` et
-    // `203.0.113.7` comptent comme deux clients distincts dans les
-    // agregats, et la forme mappee n'est pas exploitable par les outils
-    // de bannissement en amont.
+    // Forme IPv4-mappee-IPv6 de la RFC 4291 section 2.5.5.2 : sans
+    // normalisation, elle compte comme un client distinct dans les
+    // agregats.
+    const clientIp = '203.0.113.7';
     const req: FakeRequest = {
-      method: 'POST',
-      url: '/api/v1/portfolio25/cookie-consents',
-      headers: {
-        'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/145 Safari/537.36',
-        'accept-language': 'en-US,en;q=0.9',
-      },
-      ip: '::ffff:203.0.113.7',
+      ...COOKIE_CONSENT_POST,
+      headers: { ...HEADLESS_CHROME_HEADERS },
+      ip: mappedIpv6(clientIp),
     };
-    const res: FakeResponse = { statusCode: 201, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({}) };
 
-    await firstValueFrom(
-      interceptor.intercept(buildContext(req, res), handler),
-    );
+    await intercept(req, 201);
 
-    const top = await store.getTopIPs(10, 60_000);
-    expect(top[0].ip).toBe('203.0.113.7');
+    const top = await topIPs();
+    expect(top[0].ip).toBe(clientIp);
   });
 
   it('ne leve jamais meme si le store casse', async () => {
@@ -326,15 +298,11 @@ describe('SuspiciousRequestInterceptor', () => {
         'user-agent': 'curl/7',
         'accept-language': '',
       },
-      ip: '1.1.1.1',
+      ip: '203.0.113.11',
     };
-    const res: FakeResponse = { statusCode: 404, writableEnded: true };
-    const handler: CallHandler = { handle: () => of({}) };
 
     await expect(
-      firstValueFrom(
-        brokenInterceptor.intercept(buildContext(req, res), handler),
-      ),
+      intercept(req, 404, undefined, brokenInterceptor),
     ).resolves.toEqual({});
   });
 });

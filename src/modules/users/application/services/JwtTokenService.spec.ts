@@ -43,6 +43,18 @@ describe('JwtTokenService', () => {
     });
   });
 
+  const signRawToken = (
+    secret: Uint8Array,
+    options: { issuer?: string; audience?: string; expiresIn?: string } = {},
+  ): Promise<string> =>
+    new SignJWT({ sub: 'user-1', email: 'a@b.com', roles: [] })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime(options.expiresIn ?? '1h')
+      .setIssuer(options.issuer ?? 'portfolio-2025')
+      .setAudience(options.audience ?? 'portfolio-2025-api')
+      .sign(secret);
+
   describe('verify', () => {
     it('devrait retourner le payload pour un token valide', async () => {
       const { token } = await service.sign({
@@ -108,17 +120,7 @@ describe('JwtTokenService', () => {
     it('devrait lever une erreur pour un issuer invalide', async () => {
       const secret = encodeSecret();
 
-      const token = await new SignJWT({
-        sub: 'user-1',
-        email: 'a@b.com',
-        roles: [],
-      })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setIssuedAt()
-        .setExpirationTime('1h')
-        .setIssuer('wrong-issuer')
-        .setAudience('portfolio-2025-api')
-        .sign(secret);
+      const token = await signRawToken(secret, { issuer: 'wrong-issuer' });
 
       await expect(service.verify(token)).rejects.toThrow('Invalid issuer');
     });
@@ -126,17 +128,7 @@ describe('JwtTokenService', () => {
     it('devrait lever une erreur pour une audience invalide', async () => {
       const secret = encodeSecret();
 
-      const token = await new SignJWT({
-        sub: 'user-1',
-        email: 'a@b.com',
-        roles: [],
-      })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setIssuedAt()
-        .setExpirationTime('1h')
-        .setIssuer('portfolio-2025')
-        .setAudience('wrong-audience')
-        .sign(secret);
+      const token = await signRawToken(secret, { audience: 'wrong-audience' });
 
       await expect(service.verify(token)).rejects.toThrow('Invalid audience');
     });

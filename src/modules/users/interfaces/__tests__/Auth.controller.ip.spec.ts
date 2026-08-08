@@ -11,17 +11,11 @@ import { AuthController } from '../Auth.controller';
 import type { GoogleAuthDto } from '../dto/GoogleAuth.dto';
 import type { LoginDto } from '../dto/Login.dto';
 
-/**
- * `X-Forwarded-For` est fourni en entier par le client : en retenir une
- * entree ferait porter les tentatives de connexion — reussies comme
- * echouees — a une adresse choisie par l'appelant. Aucun test
- * n'exercait `extractIp`, si bien qu'un retour au motif vulnerable
- * passait la CI sans etre vu.
- */
 describe('AuthController — IP tracee dans l’audit', () => {
-  const FORGED = '203.0.113.10';
-  const RESOLVED = '10.0.0.2';
-  const SOCKET = '172.18.0.5';
+  // Adresses de documentation RFC 5737, jamais routables.
+  const FORGED_BY_CLIENT = '203.0.113.10';
+  const RESOLVED_BY_EXPRESS = '198.51.100.10';
+  const SOCKET_REMOTE_ADDRESS = '192.0.2.7';
 
   const loginDto = {
     email: 'marie@example.com',
@@ -34,17 +28,12 @@ describe('AuthController — IP tracee dans l’audit', () => {
     clearCookie: jest.fn(),
   } as unknown as Response;
 
-  /**
-   * `ip` est passe explicitement : une valeur par defaut serait
-   * reappliquee lorsqu'on transmet `undefined`, et le cas « req.ip
-   * absent » — le seul discriminant — ne serait jamais teste.
-   */
   function buildRequest(ip: string | undefined): Request {
     return {
       ip,
-      socket: { remoteAddress: SOCKET },
+      socket: { remoteAddress: SOCKET_REMOTE_ADDRESS },
       headers: {
-        'x-forwarded-for': `${FORGED}, 10.0.0.1`,
+        'x-forwarded-for': `${FORGED_BY_CLIENT}, 203.0.113.11`,
         'user-agent': 'jest-agent',
       },
     } as unknown as Request;
@@ -94,12 +83,12 @@ describe('AuthController — IP tracee dans l’audit', () => {
     });
 
     await expect(
-      controller.login(loginDto, buildRequest(RESOLVED), res),
+      controller.login(loginDto, buildRequest(RESOLVED_BY_EXPRESS), res),
     ).rejects.toThrow();
 
     expect(lastEntry(auditLogger)).toMatchObject({
       event: 'LOGIN_FAILURE',
-      ip: RESOLVED,
+      ip: RESOLVED_BY_EXPRESS,
     });
   });
 
@@ -116,11 +105,11 @@ describe('AuthController — IP tracee dans l’audit', () => {
       }),
     });
 
-    await controller.login(loginDto, buildRequest(RESOLVED), res);
+    await controller.login(loginDto, buildRequest(RESOLVED_BY_EXPRESS), res);
 
     expect(lastEntry(auditLogger)).toMatchObject({
       event: 'LOGIN_SUCCESS',
-      ip: RESOLVED,
+      ip: RESOLVED_BY_EXPRESS,
     });
   });
 
@@ -134,12 +123,12 @@ describe('AuthController — IP tracee dans l’audit', () => {
     });
 
     await expect(
-      controller.googleAuth(googleDto, buildRequest(RESOLVED), res),
+      controller.googleAuth(googleDto, buildRequest(RESOLVED_BY_EXPRESS), res),
     ).rejects.toThrow();
 
     expect(lastEntry(auditLogger)).toMatchObject({
       event: 'GOOGLE_AUTH_FAILURE',
-      ip: RESOLVED,
+      ip: RESOLVED_BY_EXPRESS,
     });
   });
 
@@ -156,6 +145,6 @@ describe('AuthController — IP tracee dans l’audit', () => {
       controller.login(loginDto, buildRequest(undefined), res),
     ).rejects.toThrow();
 
-    expect(lastEntry(auditLogger).ip).toBe(SOCKET);
+    expect(lastEntry(auditLogger).ip).toBe(SOCKET_REMOTE_ADDRESS);
   });
 });

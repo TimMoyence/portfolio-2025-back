@@ -38,7 +38,7 @@ import { GetCurrentUserUseCase } from '../application/GetCurrentUser.useCase';
 import { VerifyEmailUseCase } from '../application/VerifyEmail.useCase';
 import { ResendVerificationEmailUseCase } from '../application/ResendVerificationEmail.useCase';
 import {
-  REFRESH_TOKEN_COOKIE_MAX_AGE_MS,
+  REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_PATH,
 } from '../domain/auth.constants';
@@ -76,11 +76,6 @@ export class AuthController {
     private readonly auditLogger: AuthAuditLogger,
   ) {}
 
-  /**
-   * Le fallback sur `X-Forwarded-For` a ete retire : cet en-tete est
-   * fourni par le client, et l'audit d'authentification ne doit pas
-   * tracer une IP que l'appelant a choisie.
-   */
   private extractIp(req: Request): string {
     return resolveClientIpOrUnknown(req);
   }
@@ -89,9 +84,6 @@ export class AuthController {
     return req.headers['user-agent'] ?? 'unknown';
   }
 
-  /**
-   * Le cookie est restreint au path /auth pour limiter l'envoi automatique.
-   */
   private setRefreshCookie(res: Response, refreshToken: string): void {
     const isProd = process.env.NODE_ENV === 'production';
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
@@ -99,7 +91,7 @@ export class AuthController {
       secure: isProd,
       sameSite: 'strict',
       path: REFRESH_TOKEN_COOKIE_PATH,
-      maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE_MS,
+      maxAge: REFRESH_TOKEN_TTL_MS,
     });
   }
 

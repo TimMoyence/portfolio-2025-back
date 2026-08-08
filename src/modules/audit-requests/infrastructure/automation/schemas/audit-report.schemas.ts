@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { engineCoverageSchema } from './engine-coverage.schema';
 
 export const userSummarySchema = z.object({
   summaryText: z.string().min(1),
 });
 
-export const diagnosticChaptersSchema = z.object({
+const diagnosticChaptersSchema = z.object({
   conversionAndClarity: z.string(),
   speedAndPerformance: z.string(),
   seoFoundations: z.string(),
@@ -13,7 +14,7 @@ export const diagnosticChaptersSchema = z.object({
   scorecardAndBusinessOpportunities: z.string(),
 });
 
-export const techFingerprintSchema = z.object({
+const techFingerprintSchema = z.object({
   primaryStack: z.string(),
   confidence: z.number().min(0).max(1),
   evidence: z.array(z.string()),
@@ -21,32 +22,16 @@ export const techFingerprintSchema = z.object({
   unknowns: z.array(z.string()),
 });
 
-export const engineScoreInputSchema = z.object({
-  engine: z.enum(['google', 'bing_chatgpt', 'perplexity', 'gemini_overviews']),
-  score: z.number().min(0).max(100),
-  indexable: z.boolean(),
-  strengths: z.array(z.string()).max(5),
-  blockers: z.array(z.string()).max(5),
-  opportunities: z.array(z.string()).max(5),
-});
-
-export const engineCoverageInputSchema = z.object({
-  google: engineScoreInputSchema,
-  bingChatGpt: engineScoreInputSchema,
-  perplexity: engineScoreInputSchema,
-  geminiOverviews: engineScoreInputSchema,
-});
-
-export const perPageDetailedAnalysisSchema = z.object({
+const perPageDetailedAnalysisSchema = z.object({
   url: z.string().min(1),
   title: z.string(),
-  engineScores: engineCoverageInputSchema,
+  engineScores: engineCoverageSchema,
   topIssues: z.array(z.string()).max(6),
   recommendations: z.array(z.string()).max(6),
   evidence: z.array(z.string()).max(6),
 });
 
-export const clientEmailDraftSchema = z.object({
+const clientEmailDraftSchema = z.object({
   subject: z.string().min(1).max(100),
   body: z.string().min(1),
 });

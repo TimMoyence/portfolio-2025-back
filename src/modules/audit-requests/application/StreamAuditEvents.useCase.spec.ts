@@ -2,8 +2,10 @@ import type { MessageEvent } from '@nestjs/common';
 import { firstValueFrom, take, toArray } from 'rxjs';
 import type { IAuditRequestsRepository } from '../domain/IAuditRequests.repository';
 import { StreamAuditEventsUseCase } from './StreamAuditEvents.useCase';
+import type { AuditSnapshot } from '../domain/AuditProcessing';
 import {
   buildAuditSnapshot,
+  buildClientReportSynthesis,
   createMockAuditRequestsRepo,
 } from '../../../../test/factories/audit-requests.factory';
 
@@ -20,6 +22,14 @@ describe('StreamAuditEventsUseCase', () => {
   afterEach(() => {
     jest.useRealTimers();
   });
+
+  function collectEvents(audit: AuditSnapshot | null): Promise<MessageEvent[]> {
+    repo.findById.mockResolvedValue(audit);
+    const eventsPromise = firstValueFrom(
+      useCase.execute('audit-1').pipe(toArray()),
+    );
+    return jest.advanceTimersByTimeAsync(0).then(() => eventsPromise);
+  }
 
   it('devrait emettre un snapshot initial', async () => {
     const audit = buildAuditSnapshot();
@@ -56,15 +66,7 @@ describe('StreamAuditEventsUseCase', () => {
       done: true,
       summaryText: 'Rapport final',
     });
-    repo.findById.mockResolvedValue(audit);
-
-    const eventsPromise = firstValueFrom(
-      useCase.execute('audit-1').pipe(toArray()),
-    );
-
-    await jest.advanceTimersByTimeAsync(0);
-
-    const events = await eventsPromise;
+    const events = await collectEvents(audit);
     expect(events).toHaveLength(1);
     expect(events[0].type).toBe('completed');
     expect((events[0].data as Record<string, unknown>)['summaryText']).toBe(
@@ -76,17 +78,7 @@ describe('StreamAuditEventsUseCase', () => {
   });
 
   it('devrait inclure le clientReport dans l event completed quand il est persiste', async () => {
-    const clientReport = {
-      executiveSummary: 'Synthese client',
-      topFindings: [],
-      googleVsAiMatrix: {
-        googleVisibility: { score: 80, summary: 'OK' },
-        aiVisibility: { score: 40, summary: 'A ameliorer' },
-      },
-      pillarScorecard: [],
-      quickWins: [],
-      cta: { title: 'CTA', description: 'Desc', actionLabel: 'Action' },
-    };
+    const clientReport = buildClientReportSynthesis();
     const audit = buildAuditSnapshot({
       processingStatus: 'COMPLETED',
       progress: 100,
@@ -94,15 +86,7 @@ describe('StreamAuditEventsUseCase', () => {
       summaryText: 'Rapport final',
       clientReport: clientReport as never,
     });
-    repo.findById.mockResolvedValue(audit);
-
-    const eventsPromise = firstValueFrom(
-      useCase.execute('audit-1').pipe(toArray()),
-    );
-
-    await jest.advanceTimersByTimeAsync(0);
-
-    const events = await eventsPromise;
+    const events = await collectEvents(audit);
     expect(events).toHaveLength(1);
     expect(events[0].type).toBe('completed');
     const data = events[0].data as Record<string, unknown>;
@@ -119,15 +103,7 @@ describe('StreamAuditEventsUseCase', () => {
       progress: 100,
       error: 'Timeout',
     });
-    repo.findById.mockResolvedValue(audit);
-
-    const eventsPromise = firstValueFrom(
-      useCase.execute('audit-1').pipe(toArray()),
-    );
-
-    await jest.advanceTimersByTimeAsync(0);
-
-    const events = await eventsPromise;
+    const events = await collectEvents(audit);
     expect(events).toHaveLength(1);
     expect(events[0].type).toBe('failed');
     expect((events[0].data as Record<string, unknown>)['error']).toBe(

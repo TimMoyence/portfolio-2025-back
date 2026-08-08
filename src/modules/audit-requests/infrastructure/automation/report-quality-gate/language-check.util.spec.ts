@@ -1,33 +1,39 @@
 import { hasLanguageMismatch } from './language-check.util';
 
 describe('hasLanguageMismatch', () => {
-  it('ne detecte aucun mismatch sur un texte en francais correct pour locale fr', () => {
-    const text = 'Pour votre audit, optimisation et conversion prioritaires';
-    expect(hasLanguageMismatch(text, 'fr')).toBe(false);
-  });
-
-  it('ne detecte aucun mismatch sur un texte en anglais correct pour locale en', () => {
-    const text =
-      'The audit prioritizes optimization and conversion for your impact';
-    expect(hasLanguageMismatch(text, 'en')).toBe(false);
-  });
-
-  it('detecte un mismatch quand le texte est en anglais et locale fr', () => {
-    const text =
-      'The audit and the optimization with your priority for the conversion and implementation impact';
-    expect(hasLanguageMismatch(text, 'fr')).toBe(true);
-  });
-
-  it('detecte un mismatch quand le texte est en francais et locale en', () => {
-    const text =
-      'Le audit la optimisation les des pour avec votre conversion impact priorite';
-    expect(hasLanguageMismatch(text, 'en')).toBe(true);
-  });
-
-  it('detecte un melange fort FR/EN meme en locale fr', () => {
-    const text =
-      'Le audit the optimization pour with votre conversion your impact priorite';
-    expect(hasLanguageMismatch(text, 'fr')).toBe(true);
+  it.each([
+    [
+      'texte francais correct pour locale fr',
+      'Pour votre audit, optimisation et conversion prioritaires',
+      'fr',
+      false,
+    ],
+    [
+      'texte anglais correct pour locale en',
+      'The audit prioritizes optimization and conversion for your impact',
+      'en',
+      false,
+    ],
+    [
+      'texte anglais pour locale fr',
+      'The audit and the optimization with your priority for the conversion and implementation impact',
+      'fr',
+      true,
+    ],
+    [
+      'texte francais pour locale en',
+      'Le audit la optimisation les des pour avec votre conversion impact priorite',
+      'en',
+      true,
+    ],
+    [
+      'melange fort FR/EN pour locale fr',
+      'Le audit the optimization pour with votre conversion your impact priorite',
+      'fr',
+      true,
+    ],
+  ] as const)('%s -> %s', (_label, text, locale, expected) => {
+    expect(hasLanguageMismatch(text, locale)).toBe(expected);
   });
 
   it('tolere une phrase courte mono-marker (pas assez fort pour trigger)', () => {

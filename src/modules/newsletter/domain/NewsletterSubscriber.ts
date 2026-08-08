@@ -13,9 +13,9 @@ export interface CreateNewsletterSubscriberProps {
   firstName?: string;
 }
 
-export const CONFIRM_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const CONFIRM_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-export const CONFIRMATION_RESEND_COOLDOWN_MS = 10 * 60 * 1000;
+const CONFIRMATION_RESEND_COOLDOWN_MS = 10 * 60 * 1000;
 
 export class NewsletterSubscriber {
   id?: string;

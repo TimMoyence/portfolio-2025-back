@@ -16,6 +16,14 @@ type Greeting = {
   readonly html: EscapedHtml;
 };
 
+function trimSlashes(value: string): string {
+  let start = 0;
+  let end = value.length;
+  while (start < end && value[start] === '/') start += 1;
+  while (end > start && value[end - 1] === '/') end -= 1;
+  return value.slice(start, end);
+}
+
 @Injectable()
 export class NewsletterMailerService implements INewsletterMailer {
   private readonly logger = new Logger(NewsletterMailerService.name);
@@ -40,10 +48,10 @@ export class NewsletterMailerService implements INewsletterMailer {
 
   async sendConfirmation(subscriber: NewsletterSubscriber): Promise<void> {
     if (!this.transporter) return;
-    const confirmUrl = this.buildUrl('/newsletter/confirm', {
+    const confirmUrl = this.buildApiUrl('/newsletter/confirm', {
       token: subscriber.confirmToken,
     });
-    const unsubscribeUrl = this.buildUrl('/newsletter/unsubscribe', {
+    const unsubscribeUrl = this.buildApiUrl('/newsletter/unsubscribe', {
       token: subscriber.unsubscribeToken,
     });
     const greeting = this.buildGreeting(subscriber.firstName);
@@ -52,12 +60,9 @@ export class NewsletterMailerService implements INewsletterMailer {
       from: this.from,
       to: subscriber.email,
       replyTo: this.replyTo,
-      // Pas d'en-tete `List-Unsubscribe` ici, deliberement : ce message
-      // est transactionnel, pas un envoi en nombre. Le bouton natif du
-      // client mail sortirait un abonne encore `pending`, apres quoi
-      // `confirm()` echoue et la reinscription ne le repasse jamais en
-      // `pending` — l'adresse serait verrouillee. Le lien de retrait
-      // reste present dans le corps du message.
+      // `List-Unsubscribe` (RFC 8058) ne couvre que les envois de liste :
+      // un retrait en un clic depuis ce message transactionnel laisserait
+      // l'abonne bloque en `pending`.
       subject: 'Confirmez votre inscription a la newsletter asilidesign.fr',
       text: `${greeting.text},
 
@@ -81,7 +86,7 @@ Tim — asilidesign.fr`,
 
   async sendWelcome(subscriber: NewsletterSubscriber): Promise<void> {
     if (!this.transporter) return;
-    const unsubscribeUrl = this.buildUrl('/newsletter/unsubscribe', {
+    const unsubscribeUrl = this.buildApiUrl('/newsletter/unsubscribe', {
       token: subscriber.unsubscribeToken,
     });
     const greeting = this.buildGreeting(subscriber.firstName);
@@ -158,8 +163,10 @@ Tim`,
   }
 
   private bareReplyToAddress(): string {
-    const angled = /<([^>]+)>/.exec(this.replyTo);
-    return (angled ? angled[1] : this.replyTo).trim();
+    const open = this.replyTo.indexOf('<');
+    const close = this.replyTo.indexOf('>', open + 1);
+    if (open < 0 || close < 0) return this.replyTo.trim();
+    return this.replyTo.slice(open + 1, close).trim();
   }
 
   private buildGreeting(firstName: string | null): Greeting {
@@ -172,26 +179,16 @@ Tim`,
     };
   }
 
-  /**
-   * Construit une URL publique vers une route de l'API.
-   *
-   * `/newsletter/confirm` et `/newsletter/unsubscribe` sont servies par
-   * l'API, derriere son prefixe global, et non par le front : omettre le
-   * prefixe fait tomber le lien sur le SSR Angular, qui n'expose qu'un
-   * catch-all GET — page « not found » sur le lien clique, et 404 sur le
-   * POST one-click. L'hote reste celui du front, API et front etant
-   * servis par le meme reverse-proxy.
-   */
-  private buildUrl(path: string, params: Record<string, string>): string {
-    const prefix = (
-      this.configService.get<string>('API_PREFIX') ?? 'api/v1/portfolio25'
-    ).replace(/^\/+|\/+$/g, '');
+  private buildApiUrl(apiPath: string, params: Record<string, string>): string {
+    const apiPrefix = trimSlashes(
+      this.configService.get<string>('API_PREFIX') ?? 'api/v1/portfolio25',
+    );
     // Un prefixe vide produirait `//newsletter/...`, que `new URL()`
     // interprete comme une URL protocol-relative : le premier segment
     // deviendrait l'hote (`https://newsletter/...`). On normalise donc
     // les slashes doublons plutot que de dependre de la forme du prefixe.
     const url = new URL(
-      `/${prefix}${path}`.replace(/\/{2,}/g, '/'),
+      `/${apiPrefix}${apiPath}`.replace(/\/{2,}/g, '/'),
       this.frontendUrl,
     );
     for (const [key, value] of Object.entries(params)) {

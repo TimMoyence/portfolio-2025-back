@@ -8,7 +8,6 @@ describe('escapeHtml', () => {
   });
 
   it('echappe `&` en premier (pas de double echappement des entites)', () => {
-    // Si `&` n'etait pas echappe en premier, `<` deviendrait `&amp;lt;`.
     expect(escapeHtml('<')).toBe('&lt;');
     expect(escapeHtml('&lt;')).toBe('&amp;lt;');
   });
@@ -24,7 +23,7 @@ describe('escapeHtml', () => {
 describe('escapeUrl — schemas admis', () => {
   it.each([
     'https://asilidesign.fr/growth-audit?a=1#x',
-    'http://asilidesign.fr/',
+    'http://example.com/',
     'mailto:tim.moyence@outlook.fr',
   ])('laisse passer %s intacte', (url) => {
     expect(escapeUrl(url)).toBe(url);
@@ -157,9 +156,9 @@ describe('safeHtml sans interpolation — le HTML statique legitime', () => {
   });
 
   it('produit un fragment interpolable par un autre safeHtml', () => {
-    expect(safeHtml`<ul>${safeHtml`<li>x</li>`}</ul>`).toBe(
-      '<ul><li>x</li></ul>',
-    );
+    const item = safeHtml`<li>x</li>`;
+
+    expect(safeHtml`<ul>${item}</ul>`).toBe('<ul><li>x</li></ul>');
   });
 });
 
@@ -167,8 +166,7 @@ describe('etancheite du type : ce que le compilateur doit refuser', () => {
   it('refuse un tableau de chaines brutes', () => {
     const items = ['<script>alert(1)</script>'];
 
-    // @ts-expect-error un `string[]` n'est pas un `readonly EscapedHtml[]` —
-    // verrouille le motif `.map()` employe par les mailers avant migration.
+    // @ts-expect-error un `string[]` n'est pas un `readonly EscapedHtml[]`
     const rendered: string = safeHtml`<ul>${items}</ul>`;
 
     expect(rendered).toContain('<script>');

@@ -1,44 +1,12 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
+import type { DataSource } from 'typeorm';
 import { WeatherPreferencesRepositoryTypeORM } from '../src/modules/weather/infrastructure/WeatherPreferences.repository.typeORM';
 import { WeatherUserPreferencesEntity } from '../src/modules/weather/infrastructure/entities/WeatherUserPreferences.entity';
 import { WeatherUserPreferences } from '../src/modules/weather/domain/WeatherUserPreferences';
-
-const runDbIntegration = process.env.RUN_DB_INTEGRATION === 'true';
-const describeDb = runDbIntegration ? describe : describe.skip;
-
-function parsePort(raw: string | undefined): number {
-  if (!raw) return 5432;
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? parsed : 5432;
-}
-
-function buildOptions(): DataSourceOptions {
-  const sslEnabled =
-    process.env.DB_SSL === 'true' || process.env.DATABASE_SSL === 'true';
-
-  return {
-    type: 'postgres',
-    host: process.env.DB_HOST ?? process.env.DATABASE_HOST ?? '127.0.0.1',
-    port: parsePort(process.env.DB_PORT ?? process.env.DATABASE_PORT),
-    username:
-      process.env.DB_USERNAME ??
-      process.env.DB_USER ??
-      process.env.DATABASE_USER ??
-      'postgres',
-    password:
-      process.env.DB_PASSWORD ??
-      process.env.DB_PASS ??
-      process.env.DATABASE_PASSWORD ??
-      'postgres',
-    database:
-      process.env.DB_NAME ?? process.env.DATABASE_NAME ?? 'portfolio_2025_ci',
-    entities: [WeatherUserPreferencesEntity],
-    synchronize: true,
-    dropSchema: true,
-    logging: false,
-    ...(sslEnabled ? { ssl: { rejectUnauthorized: false } } : {}),
-  };
-}
+import {
+  describeDb,
+  destroyDbIntegrationDataSource,
+  initDbIntegrationDataSource,
+} from './helpers/db-integration-datasource';
 
 describeDb('WeatherPreferencesRepositoryTypeORM (db integration)', () => {
   let dataSource: DataSource;
@@ -47,8 +15,9 @@ describeDb('WeatherPreferencesRepositoryTypeORM (db integration)', () => {
   const TEST_USER_ID = '00000000-0000-4000-a000-000000000001';
 
   beforeAll(async () => {
-    dataSource = new DataSource(buildOptions());
-    await dataSource.initialize();
+    dataSource = await initDbIntegrationDataSource([
+      WeatherUserPreferencesEntity,
+    ]);
 
     repository = new WeatherPreferencesRepositoryTypeORM(
       dataSource.getRepository(WeatherUserPreferencesEntity),
@@ -60,9 +29,7 @@ describeDb('WeatherPreferencesRepositoryTypeORM (db integration)', () => {
   });
 
   afterAll(async () => {
-    if (dataSource?.isInitialized) {
-      await dataSource.destroy();
-    }
+    await destroyDbIntegrationDataSource(dataSource);
   });
 
   it('cree des preferences avec defaultCityIndex null par defaut', async () => {

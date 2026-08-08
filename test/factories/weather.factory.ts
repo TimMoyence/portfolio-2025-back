@@ -367,3 +367,45 @@ export function createMockWeatherUseCases(): MockWeatherUseCases {
     forecastDetailed: { execute: jest.fn() },
   };
 }
+
+export function buildOwmCurrentPayload(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    dt: 1743422400,
+    main: {
+      temp: 18.5,
+      feels_like: 17.2,
+      temp_min: 14.0,
+      temp_max: 22.0,
+      pressure: 1013,
+      humidity: 65,
+      sea_level: 1013,
+      grnd_level: 1010,
+    },
+    weather: [
+      { id: 800, main: 'Clear', description: 'ciel degage', icon: '01d' },
+    ],
+    wind: { speed: 3.5, deg: 180, gust: 5.5 },
+    clouds: { all: 40 },
+    visibility: 10000,
+    sys: { sunrise: 1743400800, sunset: 1743449400 },
+    timezone: 3600,
+    ...overrides,
+  };
+}
+
+export function buildOwmForecastPayload(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    list: [buildOwmCurrentPayload({ pop: 0.1 })],
+    city: {
+      name: 'Paris',
+      country: 'FR',
+      coord: { lat: 48.8566, lon: 2.3522 },
+      timezone: 3600,
+    },
+    ...overrides,
+  };
+}

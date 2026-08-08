@@ -22,7 +22,7 @@ const TRUSTED_DOMAINS: ReadonlyArray<string> = [
   'gouv.fr',
 ];
 
-const FACT_PATTERN = /\d+%|\d{2,}/;
+const FACT_PATTERN = /\d[%\d]/;
 
 @Injectable()
 export class CitationWorthinessService {

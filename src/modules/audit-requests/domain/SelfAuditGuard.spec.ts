@@ -17,6 +17,7 @@ describe('SelfAuditGuard', () => {
     });
 
     it('bloque le domaine avec scheme http et trailing slash', () => {
+      // eslint-disable-next-line sonarjs/no-clear-text-protocols -- le test verifie justement que le scheme http est reconnu
       expect(() => guard.ensureNotSelf('http://asilidesign.fr/')).toThrow(
         SelfAuditForbiddenError,
       );

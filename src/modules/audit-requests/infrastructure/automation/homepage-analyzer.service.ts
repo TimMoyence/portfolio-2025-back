@@ -5,8 +5,12 @@ import {
   CACHE_HEADER_KEYS,
   SECURITY_HEADER_KEYS,
   detectCmsHints,
+  extractCanonicalUrls,
   extractInternalLinks,
+  extractOpenGraphProperties,
   extractSetCookiePatterns,
+  extractTwitterTagNames,
+  hasJsonLdStructuredData,
   pickHeaders,
 } from './shared/html-signals.util';
 
@@ -51,22 +55,12 @@ export class HomepageAnalyzerService {
     const metaDescription =
       $('meta[name="description"]').attr('content')?.trim() || null;
     const robotsMeta = $('meta[name="robots"]').attr('content')?.trim() || null;
-    const canonicalUrls = $('link[rel="canonical"]')
-      .toArray()
-      .map((node) => $(node).attr('href')?.trim())
-      .filter((href): href is string => Boolean(href));
+    const canonicalUrls = extractCanonicalUrls($);
     const h1Count = $('h1').length;
     const htmlLang = $('html').attr('lang')?.trim() || null;
-    const hasStructuredData =
-      $('script[type="application/ld+json"]').length > 0;
-    const openGraphTags = $('meta[property^="og:"]')
-      .toArray()
-      .map((node) => $(node).attr('property')?.trim())
-      .filter((value): value is string => Boolean(value));
-    const twitterTags = $('meta[name^="twitter:"]')
-      .toArray()
-      .map((node) => $(node).attr('name')?.trim())
-      .filter((value): value is string => Boolean(value));
+    const hasStructuredData = hasJsonLdStructuredData($);
+    const openGraphTags = extractOpenGraphProperties($);
+    const twitterTags = extractTwitterTagNames($);
 
     const lowerHtml = html.toLowerCase();
     const detectedCmsHints = detectCmsHints(lowerHtml);

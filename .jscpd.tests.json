@@ -14,5 +14,5 @@
   ],
   "reporters": ["console", "html"],
   "output": "reports/jscpd-tests",
-  "threshold": 100
+  "threshold": 1.2
 }

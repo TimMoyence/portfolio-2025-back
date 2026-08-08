@@ -18,8 +18,6 @@
     // Suites Jest : unitaires (rootDir `src`) et e2e/http/db-integration (`test/`).
     "src/**/*.spec.ts",
     "test/**/*.spec.ts",
-    // Script de generation de doc d architecture, lance a la main.
-    "generate-architecture.mjs",
   ],
 
   "project": ["src/**/*.ts", "test/**/*.ts"],
@@ -36,10 +34,5 @@
     "pino-pretty",
     // CLI de schematics (`nest generate`), pilotee par `nest-cli.json`.
     "@nestjs/cli",
-    // `stryker.config.mjs` est toujours present ; seul le script `test:mutation`
-    // est desactive temporairement (renomme `//test:mutation` dans package.json).
-    "@stryker-mutator/core",
-    "@stryker-mutator/jest-runner",
-    "@stryker-mutator/typescript-checker",
   ],
 }

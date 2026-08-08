@@ -4,6 +4,7 @@ import type { IBadgesEvaluationQueuePort } from '../../domain/IBadgesEvaluationQ
 import { SEBASTIAN_BADGES_AUTOMATION_CONFIG } from '../../domain/token';
 import type { SebastianBadgesAutomationConfig } from './badges.config';
 import { EvaluateBadgesUseCase } from '../../application/services/EvaluateBadges.useCase';
+import { evaluateBadgesWithTimeout } from './badges-evaluation-timeout';
 
 export interface BadgesEvaluationJob {
   userId: string;
@@ -105,34 +106,22 @@ export class BadgesEvaluationQueueService
     }
   }
 
+  private async evaluateWithTimeout(userId: string): Promise<void> {
+    await evaluateBadgesWithTimeout(
+      this.evaluateBadges,
+      userId,
+      this.config.jobTimeoutMs,
+    );
+  }
+
   private runInline(userId: string): void {
     setImmediate(() => {
-      void this.runWithTimeout(userId).catch((error) => {
+      void this.evaluateWithTimeout(userId).catch((error) => {
         this.logger.warn(
           `Inline badges evaluation failed for ${userId}: ${String(error)}`,
         );
       });
     });
-  }
-
-  private async runWithTimeout(userId: string): Promise<void> {
-    const timeout = this.config.jobTimeoutMs;
-    let timeoutId: NodeJS.Timeout | undefined;
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutId = setTimeout(() => {
-        reject(
-          new Error(
-            `Badges evaluation timeout after ${timeout}ms (userId=${userId})`,
-          ),
-        );
-      }, timeout);
-    });
-
-    try {
-      await Promise.race([this.evaluateBadges.execute(userId), timeoutPromise]);
-    } finally {
-      if (timeoutId) clearTimeout(timeoutId);
-    }
   }
 
   private buildConnection(): BadgesRedisConnectionOptions | undefined {

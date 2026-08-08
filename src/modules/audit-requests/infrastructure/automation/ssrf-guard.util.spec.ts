@@ -12,53 +12,36 @@ jest.mock('dns/promises', () => ({
 
 const mockedLookup = lookup as unknown as jest.Mock;
 
+/* eslint-disable sonarjs/no-hardcoded-ip -- fixtures : les plages IP privees et publiques sont l'objet meme du guard SSRF */
+const BLOCKED_ADDRESSES: ReadonlyArray<[string, string]> = [
+  ['127.0.0.1', 'loopback'],
+  ['10.0.0.1', 'prive'],
+  ['192.168.1.1', 'prive'],
+  ['172.16.0.1', 'prive'],
+  ['169.254.1.1', 'link-local'],
+  ['224.0.0.1', 'multicast'],
+  ['0.0.0.0', 'adresse nulle'],
+  ['::1', 'IPv6 loopback'],
+  ['fe80::1', 'IPv6 link-local'],
+  ['not-an-ip', 'IP invalide'],
+];
+
+const PUBLIC_ADDRESSES: ReadonlyArray<[string, string]> = [
+  ['8.8.8.8', 'resolveur public'],
+  ['1.1.1.1', 'resolveur public'],
+];
+
+const PRIVATE_LOOKUP_ADDRESS = '10.0.0.1';
+const PUBLIC_LOOKUP_ADDRESS = '93.184.216.34';
+/* eslint-enable sonarjs/no-hardcoded-ip */
+
 describe('isBlockedIpAddress', () => {
-  it('devrait bloquer 127.0.0.1 (loopback)', () => {
-    expect(isBlockedIpAddress('127.0.0.1')).toBe(true);
+  it.each(BLOCKED_ADDRESSES)('devrait bloquer %s (%s)', (ip) => {
+    expect(isBlockedIpAddress(ip)).toBe(true);
   });
 
-  it('devrait bloquer 10.0.0.1 (prive)', () => {
-    expect(isBlockedIpAddress('10.0.0.1')).toBe(true);
-  });
-
-  it('devrait bloquer 192.168.1.1 (prive)', () => {
-    expect(isBlockedIpAddress('192.168.1.1')).toBe(true);
-  });
-
-  it('devrait bloquer 172.16.0.1 (prive)', () => {
-    expect(isBlockedIpAddress('172.16.0.1')).toBe(true);
-  });
-
-  it('devrait bloquer 169.254.1.1 (link-local)', () => {
-    expect(isBlockedIpAddress('169.254.1.1')).toBe(true);
-  });
-
-  it('devrait bloquer 224.0.0.1 (multicast)', () => {
-    expect(isBlockedIpAddress('224.0.0.1')).toBe(true);
-  });
-
-  it('devrait bloquer 0.0.0.0', () => {
-    expect(isBlockedIpAddress('0.0.0.0')).toBe(true);
-  });
-
-  it('devrait bloquer ::1 (IPv6 loopback)', () => {
-    expect(isBlockedIpAddress('::1')).toBe(true);
-  });
-
-  it('devrait bloquer fe80::1 (IPv6 link-local)', () => {
-    expect(isBlockedIpAddress('fe80::1')).toBe(true);
-  });
-
-  it('devrait autoriser 8.8.8.8 (public)', () => {
-    expect(isBlockedIpAddress('8.8.8.8')).toBe(false);
-  });
-
-  it('devrait autoriser 1.1.1.1 (public)', () => {
-    expect(isBlockedIpAddress('1.1.1.1')).toBe(false);
-  });
-
-  it('devrait bloquer une IP invalide', () => {
-    expect(isBlockedIpAddress('not-an-ip')).toBe(true);
+  it.each(PUBLIC_ADDRESSES)('devrait autoriser %s (%s)', (ip) => {
+    expect(isBlockedIpAddress(ip)).toBe(false);
   });
 });
 
@@ -94,7 +77,9 @@ describe('assertPublicHostname', () => {
   });
 
   it('devrait rejeter un hostname dont le DNS resout vers une IP privee', async () => {
-    mockedLookup.mockResolvedValue([{ address: '10.0.0.1', family: 4 }]);
+    mockedLookup.mockResolvedValue([
+      { address: PRIVATE_LOOKUP_ADDRESS, family: 4 },
+    ]);
 
     await expect(assertPublicHostname('evil.example.com')).rejects.toThrow(
       BadRequestException,
@@ -102,7 +87,9 @@ describe('assertPublicHostname', () => {
   });
 
   it('devrait accepter un hostname resolvant vers une IP publique', async () => {
-    mockedLookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+    mockedLookup.mockResolvedValue([
+      { address: PUBLIC_LOOKUP_ADDRESS, family: 4 },
+    ]);
 
     await expect(assertPublicHostname('example.com')).resolves.toBeUndefined();
   });
@@ -111,7 +98,9 @@ describe('assertPublicHostname', () => {
 describe('assertSafeHttpUrl', () => {
   beforeEach(() => {
     mockedLookup.mockReset();
-    mockedLookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+    mockedLookup.mockResolvedValue([
+      { address: PUBLIC_LOOKUP_ADDRESS, family: 4 },
+    ]);
   });
 
   it('devrait rejeter les URLs ftp://', async () => {

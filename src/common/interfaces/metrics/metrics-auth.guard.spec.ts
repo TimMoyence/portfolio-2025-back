@@ -2,17 +2,12 @@ import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MetricsAuthGuard } from './metrics-auth.guard';
 import type { ExecutionContext } from '@nestjs/common';
+import { createHttpExecutionContext } from '../../../../test/factories/execution-context.factory';
 
-function createMockContext(authHeader?: string): jest.Mocked<ExecutionContext> {
-  const request = {
+function createMockContext(authHeader?: string): ExecutionContext {
+  return createHttpExecutionContext({
     headers: authHeader ? { authorization: authHeader } : {},
-  };
-
-  return {
-    switchToHttp: jest.fn().mockReturnValue({
-      getRequest: jest.fn().mockReturnValue(request),
-    }),
-  } as unknown as jest.Mocked<ExecutionContext>;
+  });
 }
 
 function createMockConfigService(
@@ -35,7 +30,7 @@ describe('MetricsAuthGuard', () => {
   });
 
   it('devrait refuser l acces si METRICS_TOKEN n est pas configure', () => {
-    const configService = createMockConfigService(undefined);
+    const configService = createMockConfigService();
     const guard = new MetricsAuthGuard(configService);
     const context = createMockContext('Bearer some-token');
 
@@ -48,7 +43,7 @@ describe('MetricsAuthGuard', () => {
   it('devrait refuser l acces sans header Authorization', () => {
     const configService = createMockConfigService(VALID_TOKEN);
     const guard = new MetricsAuthGuard(configService);
-    const context = createMockContext(undefined);
+    const context = createMockContext();
 
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
     expect(() => guard.canActivate(context)).toThrow(

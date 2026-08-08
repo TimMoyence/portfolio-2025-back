@@ -8,10 +8,20 @@ import type {
 import type { IAuditPdfGenerator } from '../../domain/IAuditPdfGenerator';
 import { AuditReportHtmlRendererService } from './audit-report-html-renderer.service';
 
-/**
- * Args Chromium `no-sandbox` / `disable-dev-shm-usage` requis pour
- * l'execution en conteneur Docker.
- */
+const PAGE_MARGINS = {
+  top: '28mm',
+  bottom: '24mm',
+  left: '22mm',
+  right: '22mm',
+} as const;
+
+// puppeteer : Chromium ne demarre pas dans un conteneur Docker sans ces args.
+const CONTAINER_SAFE_CHROMIUM_ARGS = [
+  '--no-sandbox',
+  '--disable-setuid-sandbox',
+  '--disable-dev-shm-usage',
+];
+
 @Injectable()
 export class AuditPdfGeneratorService
   implements IAuditPdfGenerator, OnModuleDestroy
@@ -34,15 +44,7 @@ export class AuditPdfGeneratorService
       const pdf = await page.pdf({
         format: 'A4',
         printBackground: true,
-        // Marges physiques uniformes appliquees a TOUTES les pages physiques.
-        // La cover utilise des marges negatives pour deborder et remplir
-        // entierement la premiere page.
-        margin: {
-          top: '28mm',
-          bottom: '24mm',
-          left: '22mm',
-          right: '22mm',
-        },
+        margin: PAGE_MARGINS,
         preferCSSPageSize: false,
       });
       return Buffer.from(pdf);
@@ -56,11 +58,7 @@ export class AuditPdfGeneratorService
       this.browserPromise = puppeteer.launch({
         headless: true,
         executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-        ],
+        args: CONTAINER_SAFE_CHROMIUM_ARGS,
       });
     }
     return this.browserPromise;

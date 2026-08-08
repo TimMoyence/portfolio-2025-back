@@ -27,7 +27,6 @@ describe('RemoveBudgetRole1777700000000', () => {
     it('retire le token budget via array_remove sur la CSV simple-array', async () => {
       await migration.up(queryRunner);
       const allSql = queries.join('\n');
-      // simple-array = CSV text -> string_to_array / array_remove / array_to_string
       expect(allSql).toMatch(/string_to_array[\s\S]*"roles"[\s\S]*','/i);
       expect(allSql).toMatch(/array_remove[\s\S]*'budget'/i);
       expect(allSql).toMatch(/array_to_string/i);

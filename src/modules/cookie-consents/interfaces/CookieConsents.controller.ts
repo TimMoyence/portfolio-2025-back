@@ -29,9 +29,6 @@ export class CookieConsentsController {
     @Body() dto: CookieConsentRequestDto,
     @Req() req: Request,
   ): Promise<CookieConsentResponseDto> {
-    // Meme resolution que le scoring de securite et le rate-limiting :
-    // l'IP persistee au titre du RGPD doit designer le meme client que
-    // celle des autres referentiels, et ne pas etre choisie par l'appelant.
     const ip = resolveClientIp(req);
 
     const command: CreateCookieConsentCommand = {

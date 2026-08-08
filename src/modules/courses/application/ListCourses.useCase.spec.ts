@@ -2,12 +2,12 @@
 import { ListCoursesUseCase } from './ListCourses.useCase';
 import type { ICoursesRepository } from '../domain/ICourses.repository';
 import type { CourseListQuery } from '../domain/CourseList.query';
-import type { PaginatedResult } from '../../../common/domain/pagination.types';
 import type { Courses } from '../domain/Courses';
 import {
   buildCourse,
   createMockCoursesRepo,
 } from '../../../../test/factories/courses.factory';
+import { buildPaginatedResult } from '../../../../test/factories/pagination.factory';
 
 describe('ListCoursesUseCase', () => {
   let useCase: ListCoursesUseCase;
@@ -30,13 +30,7 @@ describe('ListCoursesUseCase', () => {
       buildCourse(),
       buildCourse({ id: 'course-2', slug: 'formation-react' }),
     ];
-    const expected: PaginatedResult<Courses> = {
-      items: courses,
-      page: 1,
-      limit: 10,
-      total: 2,
-      totalPages: 1,
-    };
+    const expected = buildPaginatedResult(courses);
     repo.findAll.mockResolvedValue(expected);
 
     const result = await useCase.execute(defaultQuery);
@@ -46,13 +40,7 @@ describe('ListCoursesUseCase', () => {
   });
 
   it('devrait retourner une liste vide si aucune formation', async () => {
-    const expected: PaginatedResult<Courses> = {
-      items: [],
-      page: 1,
-      limit: 10,
-      total: 0,
-      totalPages: 0,
-    };
+    const expected = buildPaginatedResult<Courses>([]);
     repo.findAll.mockResolvedValue(expected);
 
     const result = await useCase.execute(defaultQuery);

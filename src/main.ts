@@ -41,10 +41,6 @@ async function bootstrap() {
   // pour echapper au rate-limiting.
   app.set('trust proxy', 1);
 
-  // CORS avec credentials: true pour le cookie HttpOnly refresh_token.
-  // Le Bearer token reste dans le header Authorization pour les requetes API.
-  // Le cookie n'est emis que sur le path /auth/refresh avec SameSite=Strict,
-  // ce qui limite l'exposition CSRF aux requetes same-site uniquement.
   app.enableCors({
     origin: corsOrigins,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],

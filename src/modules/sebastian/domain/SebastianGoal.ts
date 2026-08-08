@@ -1,7 +1,7 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { VALID_CATEGORIES, type SebastianCategory } from './SebastianEntry';
 
-export const VALID_GOAL_PERIODS = ['daily', 'weekly', 'monthly'] as const;
+const VALID_GOAL_PERIODS = ['daily', 'weekly', 'monthly'] as const;
 export type GoalPeriod = (typeof VALID_GOAL_PERIODS)[number];
 
 export interface CreateSebastianGoalProps {

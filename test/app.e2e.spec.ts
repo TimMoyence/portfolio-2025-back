@@ -1,68 +1,59 @@
-import {
-  BadRequestException,
-  UnauthorizedException,
-  ValidationPipe,
-} from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import type { Request } from 'express';
-import { firstValueFrom, of, toArray } from 'rxjs';
-import { CreateAuditRequestsUseCase } from '../src/modules/audit-requests/application/CreateAuditRequests.useCase';
-import { GetAuditSummaryUseCase } from '../src/modules/audit-requests/application/GetAuditSummary.useCase';
-import { StreamAuditEventsUseCase } from '../src/modules/audit-requests/application/StreamAuditEvents.useCase';
+import type { Request, Response } from 'express';
+import { firstValueFrom, toArray } from 'rxjs';
 import { AuditsController } from '../src/modules/audit-requests/interfaces/Audits.controller';
 import { AuditRequestRequestDto } from '../src/modules/audit-requests/interfaces/dto/audit-request.request.dto';
-import { CreateContactsUseCase } from '../src/modules/contacts/application/CreateContacts.useCase';
 import { ContactsController } from '../src/modules/contacts/interfaces/Contacts.controller';
 import { ContactRequestDto } from '../src/modules/contacts/interfaces/dto/contact.request.dto';
-import { CreateCookieConsentsUseCase } from '../src/modules/cookie-consents/application/CreateCookieConsents.useCase';
 import { CookieConsentsController } from '../src/modules/cookie-consents/interfaces/CookieConsents.controller';
 import { CookieConsentRequestDto } from '../src/modules/cookie-consents/interfaces/dto/cookie-consent.request.dto';
-import { AuthenticateGoogleUserUseCase } from '../src/modules/users/application/AuthenticateGoogleUser.useCase';
-import { AuthenticateUserUseCase } from '../src/modules/users/application/AuthenticateUser.useCase';
-import { ChangePasswordUseCase } from '../src/modules/users/application/ChangePassword.useCase';
-import { CreateUsersUseCase } from '../src/modules/users/application/CreateUsers.useCase';
-import { RefreshTokensUseCase } from '../src/modules/users/application/RefreshTokens.useCase';
-import { RequestPasswordResetUseCase } from '../src/modules/users/application/RequestPasswordReset.useCase';
-import { ResetPasswordUseCase } from '../src/modules/users/application/ResetPassword.useCase';
-import { RevokeTokenUseCase } from '../src/modules/users/application/RevokeToken.useCase';
-import { SetPasswordUseCase } from '../src/modules/users/application/SetPassword.useCase';
-import { UpdateProfileUseCase } from '../src/modules/users/application/UpdateProfile.useCase';
-import { GetCurrentUserUseCase } from '../src/modules/users/application/GetCurrentUser.useCase';
-import { VerifyEmailUseCase } from '../src/modules/users/application/VerifyEmail.useCase';
-import { ResendVerificationEmailUseCase } from '../src/modules/users/application/ResendVerificationEmail.useCase';
 import { ForgotPasswordDto } from '../src/modules/users/interfaces/dto/ForgotPassword.dto';
 import { LoginDto } from '../src/modules/users/interfaces/dto/Login.dto';
 import { ResetPasswordDto } from '../src/modules/users/interfaces/dto/ResetPassword.dto';
 import { SetPasswordDto } from '../src/modules/users/interfaces/dto/SetPassword.dto';
-import { AuthAuditLogger } from '../src/modules/users/application/services/AuthAuditLogger';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
-import { USERS_REPOSITORY } from '../src/modules/users/domain/token';
-import type { Response } from 'express';
+import {
+  AUDIT_REQUEST_PAYLOAD,
+  AUDIT_CREATED_RESPONSE,
+  AUDIT_SUMMARY_RESULT,
+  authControllerProviders,
+  CONTACT_CREATED_RESPONSE,
+  CONTACT_PAYLOAD,
+  COOKIE_CONSENT_RECORDED_RESPONSE,
+  CORE_CONTROLLERS,
+  coreControllerProviders,
+  createAuthUseCaseStubs,
+  createCoreUseCaseStubs,
+  PASSWORD_RESET_REQUESTED_RESULT,
+  primeCoreUseCaseStubs,
+  primePasswordUseCaseStubs,
+} from './factories/core-api.factory';
+import { buildAuthResult, buildUser } from './factories/user.factory';
+import { validateBody } from './helpers/validation-pipe';
+
+// eslint-disable-next-line sonarjs/no-hardcoded-ip -- fixture de test : plage privee RFC 1918, pas une adresse reelle
+const RESOLVED_CLIENT_IP = '10.0.0.2';
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
+const WRONG_PASSWORD = 'WrongPassword1!';
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
+const NEW_PASSWORD = 'NewPassword123!';
 
 describe('API coherence and connectivity (e2e transportless)', () => {
-  const validationPipe = new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  });
+  const coreStubs = createCoreUseCaseStubs();
+  const authStubs = createAuthUseCaseStubs();
 
-  const createContactsUseCase = { execute: jest.fn() };
-  const createCookieConsentsUseCase = { execute: jest.fn() };
-  const createAuditRequestsUseCase = { execute: jest.fn() };
-  const getAuditSummaryUseCase = { execute: jest.fn() };
-  const streamAuditEventsUseCase = { execute: jest.fn() };
-  const authenticateUserUseCase = { execute: jest.fn() };
-  const authenticateGoogleUserUseCase = { execute: jest.fn() };
-  const createUsersUseCase = { execute: jest.fn() };
-  const changePasswordUseCase = { execute: jest.fn() };
-  const refreshTokensUseCase = { execute: jest.fn() };
-  const revokeTokenUseCase = { execute: jest.fn() };
-  const requestPasswordResetUseCase = { execute: jest.fn() };
-  const resetPasswordUseCase = { execute: jest.fn() };
-  const setPasswordUseCase = { execute: jest.fn() };
-  const updateProfileUseCase = { execute: jest.fn() };
-  const verifyEmailUseCase = { execute: jest.fn() };
-  const resendVerificationEmailUseCase = { execute: jest.fn() };
+  const {
+    createContactsUseCase,
+    createCookieConsentsUseCase,
+    createAuditRequestsUseCase,
+  } = coreStubs;
+  const {
+    authenticateUserUseCase,
+    requestPasswordResetUseCase,
+    resetPasswordUseCase,
+    setPasswordUseCase,
+  } = authStubs;
 
   let contactsController: ContactsController;
   let cookieConsentsController: CookieConsentsController;
@@ -71,71 +62,10 @@ describe('API coherence and connectivity (e2e transportless)', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      controllers: [
-        ContactsController,
-        CookieConsentsController,
-        AuditsController,
-        AuthController,
-      ],
+      controllers: CORE_CONTROLLERS,
       providers: [
-        { provide: CreateContactsUseCase, useValue: createContactsUseCase },
-        {
-          provide: CreateCookieConsentsUseCase,
-          useValue: createCookieConsentsUseCase,
-        },
-        {
-          provide: CreateAuditRequestsUseCase,
-          useValue: createAuditRequestsUseCase,
-        },
-        { provide: GetAuditSummaryUseCase, useValue: getAuditSummaryUseCase },
-        {
-          provide: StreamAuditEventsUseCase,
-          useValue: streamAuditEventsUseCase,
-        },
-        {
-          provide: AuthenticateUserUseCase,
-          useValue: authenticateUserUseCase,
-        },
-        {
-          provide: AuthenticateGoogleUserUseCase,
-          useValue: authenticateGoogleUserUseCase,
-        },
-        { provide: CreateUsersUseCase, useValue: createUsersUseCase },
-        { provide: ChangePasswordUseCase, useValue: changePasswordUseCase },
-        { provide: RefreshTokensUseCase, useValue: refreshTokensUseCase },
-        { provide: RevokeTokenUseCase, useValue: revokeTokenUseCase },
-        {
-          provide: RequestPasswordResetUseCase,
-          useValue: requestPasswordResetUseCase,
-        },
-        {
-          provide: ResetPasswordUseCase,
-          useValue: resetPasswordUseCase,
-        },
-        { provide: SetPasswordUseCase, useValue: setPasswordUseCase },
-        { provide: UpdateProfileUseCase, useValue: updateProfileUseCase },
-        {
-          provide: GetCurrentUserUseCase,
-          useValue: { execute: jest.fn() },
-        },
-        { provide: VerifyEmailUseCase, useValue: verifyEmailUseCase },
-        {
-          provide: ResendVerificationEmailUseCase,
-          useValue: resendVerificationEmailUseCase,
-        },
-        AuthAuditLogger,
-        {
-          provide: USERS_REPOSITORY,
-          useValue: {
-            findById: jest.fn(),
-            findByEmail: jest.fn(),
-            findAll: jest.fn(),
-            create: jest.fn(),
-            findByGoogleId: jest.fn(),
-            update: jest.fn(),
-            deactivate: jest.fn(),
-          },
-        },
+        ...coreControllerProviders(coreStubs),
+        ...authControllerProviders(authStubs),
       ],
     }).compile();
 
@@ -148,95 +78,20 @@ describe('API coherence and connectivity (e2e transportless)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    createContactsUseCase.execute.mockResolvedValue({
-      message: 'Contact request created successfully.',
-    });
+    primeCoreUseCaseStubs(coreStubs);
+    primePasswordUseCaseStubs(authStubs);
 
-    createCookieConsentsUseCase.execute.mockResolvedValue({
-      message: 'Cookie consent recorded successfully.',
-    });
-
-    createAuditRequestsUseCase.execute.mockResolvedValue({
-      message: 'Audit request created successfully.',
-      auditId: 'audit-1',
-      status: 'PENDING',
-    });
-
-    getAuditSummaryUseCase.execute.mockResolvedValue({
-      auditId: 'audit-1',
-      ready: true,
-      status: 'COMPLETED',
-      progress: 100,
-      summaryText: 'Great foundation with clear quick wins.',
-      keyChecks: { securityHeaders: true },
-      quickWins: ['Improve title tags'],
-      pillarScores: { seo: 80 },
-    });
-
-    streamAuditEventsUseCase.execute.mockReturnValue(
-      of({
-        type: 'progress',
-        data: {
-          auditId: 'audit-1',
-          status: 'RUNNING',
-          progress: 30,
-          step: 'crawl',
-          done: false,
-          updatedAt: new Date().toISOString(),
-        },
+    authenticateUserUseCase.execute.mockResolvedValue(
+      buildAuthResult({
+        user: buildUser({
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          updatedOrCreatedBy: 'system',
+        }),
       }),
     );
-
-    authenticateUserUseCase.execute.mockResolvedValue({
-      accessToken: 'jwt-token',
-      expiresIn: 900,
-      refreshToken: 'raw-refresh-token',
-      user: {
-        id: 'user-1',
-        email: 'john@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        phone: null,
-        isActive: true,
-        createdAt: new Date('2026-01-01T00:00:00.000Z'),
-        updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-        updatedOrCreatedBy: 'system',
-      },
-    });
-
-    requestPasswordResetUseCase.execute.mockResolvedValue({
-      message:
-        'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
-    });
-    resetPasswordUseCase.execute.mockResolvedValue({
-      message: 'Mot de passe reinitialise avec succes.',
-    });
-    setPasswordUseCase.execute.mockResolvedValue({
-      id: 'user-1',
-      email: 'john@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-      phone: null,
-      isActive: true,
-      roles: ['weather'],
-      passwordHash: 'new-hash',
-      createdAt: new Date('2026-01-01T00:00:00.000Z'),
-      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-      updatedOrCreatedBy: 'self-service',
-      googleId: 'google-id',
-    });
   });
-
-  async function validateBody<T>(
-    payload: unknown,
-    metatype: new () => T,
-  ): Promise<T> {
-    return (await validationPipe.transform(payload, {
-      type: 'body',
-      metatype,
-      data: '',
-    })) as T;
-  }
 
   function makeRequestMock(
     headers: Record<string, string | undefined>,
@@ -262,42 +117,24 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     return res as Response;
   }
 
+  function firstCommand<T>(useCaseStub: { execute: jest.Mock }): T {
+    const [command] = useCaseStub.execute.mock.calls[0] as [T];
+    return command;
+  }
+
   it('creates a contact from a validated payload and returns HTTP contract shape', async () => {
-    const dto = await validateBody(
-      {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@example.com',
-        message: 'Hello, I need help with a premium implementation.',
-        subject: 'Need support',
-        role: 'CTO',
-        terms: true,
-      },
-      ContactRequestDto,
-    );
+    const dto = await validateBody(CONTACT_PAYLOAD, ContactRequestDto);
 
     const response = await contactsController.create(dto);
 
-    expect(response).toEqual({
-      message: 'Contact request created successfully.',
-      httpCode: 201,
-    });
+    expect(response).toEqual(CONTACT_CREATED_RESPONSE);
     expect(createContactsUseCase.execute).toHaveBeenCalledTimes(1);
   });
 
   it('rejects non-whitelisted fields with global validation policy', async () => {
     await expect(
       validateBody(
-        {
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          message: 'Hello, I need help with a premium implementation.',
-          subject: 'Need support',
-          role: 'CTO',
-          terms: true,
-          injected: 'forbidden',
-        },
+        { ...CONTACT_PAYLOAD, injected: 'forbidden' },
         ContactRequestDto,
       ),
     ).rejects.toBeInstanceOf(BadRequestException);
@@ -328,50 +165,39 @@ describe('API coherence and connectivity (e2e transportless)', () => {
         'user-agent': 'e2e-test-agent',
         referer: 'https://example.com/en/pricing',
       },
-      '10.0.0.2',
+      RESOLVED_CLIENT_IP,
     );
 
     const response = await cookieConsentsController.create(dto, req);
 
-    expect(response).toEqual({
-      message: 'Cookie consent recorded successfully.',
-      httpCode: 201,
-    });
+    expect(response).toEqual(COOKIE_CONSENT_RECORDED_RESPONSE);
     // L'IP persistee au titre du RGPD est celle resolue par Express sous
     // `trust proxy`, jamais la premiere entree de `X-Forwarded-For` :
     // cette derniere est fournie par le client, qui choisirait alors
     // l'identite sous laquelle son consentement est enregistre.
     expect(createCookieConsentsUseCase.execute).toHaveBeenCalledWith(
       expect.objectContaining({
-        ip: '10.0.0.2',
+        ip: RESOLVED_CLIENT_IP,
         userAgent: 'e2e-test-agent',
         referer: 'https://example.com/en/pricing',
       }),
     );
-    const [command] = jest.mocked(createCookieConsentsUseCase.execute).mock
-      .calls[0] as [{ ip: string | null }];
+    const command = firstCommand<{ ip: string | null }>(
+      createCookieConsentsUseCase,
+    );
     expect(command.ip).not.toBe('203.0.113.10');
   });
 
   it('creates audit request and resolves locale from referer when locale is omitted', async () => {
     const dto = await validateBody(
-      {
-        websiteName: 'Example Studio',
-        contactMethod: 'EMAIL',
-        contactValue: 'hello@example.com',
-      },
+      AUDIT_REQUEST_PAYLOAD,
       AuditRequestRequestDto,
     );
     const req = makeRequestMock({ referer: 'https://example.com/en/contact' });
 
     const response = await auditsController.create(dto, req);
 
-    expect(response).toEqual({
-      message: 'Audit request created successfully.',
-      httpCode: 201,
-      auditId: 'audit-1',
-      status: 'PENDING',
-    });
+    expect(response).toEqual(AUDIT_CREATED_RESPONSE);
     expect(createAuditRequestsUseCase.execute).toHaveBeenCalledWith(
       expect.objectContaining({
         locale: 'en',
@@ -381,43 +207,27 @@ describe('API coherence and connectivity (e2e transportless)', () => {
 
   it('records the resolved client ip on an audit request, never the forged header', async () => {
     const dto = await validateBody(
-      {
-        websiteName: 'Example Studio',
-        contactMethod: 'EMAIL',
-        contactValue: 'hello@example.com',
-        locale: 'fr',
-      },
+      { ...AUDIT_REQUEST_PAYLOAD, locale: 'fr' },
       AuditRequestRequestDto,
     );
     const req = makeRequestMock(
       { 'x-forwarded-for': '203.0.113.10, 10.0.0.1' },
-      '10.0.0.2',
+      RESOLVED_CLIENT_IP,
     );
 
     await auditsController.create(dto, req);
 
-    // Endpoint public : sans ce filet, un retour au parsing de
-    // `X-Forwarded-For` laisserait l'appelant choisir l'IP persistee,
-    // et la CI ne le verrait pas.
-    const [command] = jest.mocked(createAuditRequestsUseCase.execute).mock
-      .calls[0] as [{ ip: string | null }];
-    expect(command.ip).toBe('10.0.0.2');
+    const command = firstCommand<{ ip: string | null }>(
+      createAuditRequestsUseCase,
+    );
+    expect(command.ip).toBe(RESOLVED_CLIENT_IP);
     expect(command.ip).not.toBe('203.0.113.10');
   });
 
   it('returns summary snapshot for a given audit id', async () => {
     const response = await auditsController.summary('audit-1');
 
-    expect(response).toEqual({
-      auditId: 'audit-1',
-      ready: true,
-      status: 'COMPLETED',
-      progress: 100,
-      summaryText: 'Great foundation with clear quick wins.',
-      keyChecks: { securityHeaders: true },
-      quickWins: ['Improve title tags'],
-      pillarScores: { seo: 80 },
-    });
+    expect(response).toEqual(AUDIT_SUMMARY_RESULT);
   });
 
   it('streams audit events in SSE message format', async () => {
@@ -440,7 +250,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
       new UnauthorizedException('Invalid credentials'),
     );
     const dto = await validateBody(
-      { email: 'john@example.com', password: 'WrongPassword1!' },
+      { email: 'john@example.com', password: WRONG_PASSWORD },
       LoginDto,
     );
 
@@ -459,10 +269,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
 
     const response = await authController.forgotPassword(dto);
 
-    expect(response).toEqual({
-      message:
-        'Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.',
-    });
+    expect(response).toEqual(PASSWORD_RESET_REQUESTED_RESULT);
     expect(requestPasswordResetUseCase.execute).toHaveBeenCalledWith(dto);
   });
 
@@ -474,7 +281,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
       {
         token:
           '4f7ab9f3f7b3d0eaa77a4b5b0dcaea31695f15de22f22e53f35b98b0aaf3112c',
-        newPassword: 'NewPassword123!',
+        newPassword: NEW_PASSWORD,
       },
       ResetPasswordDto,
     );
@@ -486,7 +293,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
 
   it('injects user id from JWT payload when setting password', async () => {
     const dto = await validateBody(
-      { newPassword: 'NewPassword123!' },
+      { newPassword: NEW_PASSWORD },
       SetPasswordDto,
     );
     const req = {
@@ -498,7 +305,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
     expect(setPasswordUseCase.execute).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: 'user-1',
-        newPassword: 'NewPassword123!',
+        newPassword: NEW_PASSWORD,
       }),
     );
     expect(response.id).toBe('user-1');

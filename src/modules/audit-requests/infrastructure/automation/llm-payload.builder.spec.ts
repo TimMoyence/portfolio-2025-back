@@ -105,7 +105,7 @@ describe('payloadBytes', () => {
   });
 
   it('retourne un nombre positif pour un objet vide', () => {
-    expect(payloadBytes({})).toBe(2); // '{}'
+    expect(payloadBytes({})).toBe(Buffer.byteLength('{}', 'utf8'));
   });
 });
 
@@ -128,29 +128,20 @@ describe('buildPayload', () => {
     expect(result).toHaveProperty('evidenceBuckets');
   });
 
-  it('applique les caps summary sur les quickWins', () => {
-    const manyQuickWins = Array.from({ length: 20 }, (_, i) => `QW-${i}`);
-    const input = buildMinimalInput({ quickWins: manyQuickWins });
-    const result = buildPayload(input, 'summary');
+  it.each([
+    ['summary', 6],
+    ['expert', 10],
+    ['expert_compact', 8],
+  ] as const)(
+    'applique les caps %s sur les quickWins',
+    (profile, expectedLength) => {
+      const manyQuickWins = Array.from({ length: 20 }, (_, i) => `QW-${i}`);
+      const input = buildMinimalInput({ quickWins: manyQuickWins });
+      const result = buildPayload(input, profile);
 
-    expect(result.quickWins).toHaveLength(6);
-  });
-
-  it('applique les caps expert sur les quickWins', () => {
-    const manyQuickWins = Array.from({ length: 20 }, (_, i) => `QW-${i}`);
-    const input = buildMinimalInput({ quickWins: manyQuickWins });
-    const result = buildPayload(input, 'expert');
-
-    expect(result.quickWins).toHaveLength(10);
-  });
-
-  it('applique les caps expert_compact sur les quickWins', () => {
-    const manyQuickWins = Array.from({ length: 20 }, (_, i) => `QW-${i}`);
-    const input = buildMinimalInput({ quickWins: manyQuickWins });
-    const result = buildPayload(input, 'expert_compact');
-
-    expect(result.quickWins).toHaveLength(8);
-  });
+      expect(result.quickWins).toHaveLength(expectedLength);
+    },
+  );
 
   it('sanitise le nom du site web', () => {
     const input = buildMinimalInput({

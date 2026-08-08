@@ -11,8 +11,17 @@ import {
   createMockUsersRepo,
   createMockPasswordService,
   createMockJwtService,
+  buildSignedToken,
 } from '../../../../test/factories/user.factory';
-import { createMockRefreshTokensRepo } from '../../../../test/factories/refresh-token.factory';
+import {
+  buildRefreshToken,
+  createMockRefreshTokensRepo,
+} from '../../../../test/factories/refresh-token.factory';
+
+const WRONG_CREDENTIAL = 'bad-password';
+const LEGACY_PBKDF2_HASH = 'legacy-pbkdf2-hash';
+const REHASHED_ARGON2 = '$argon2id$new-hash';
+const CURRENT_ARGON2 = '$argon2id$already-good';
 
 describe('AuthenticateUserUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
@@ -27,18 +36,10 @@ describe('AuthenticateUserUseCase', () => {
     passwordService = createMockPasswordService();
     passwordService.verify.mockResolvedValue(true);
     jwtTokenService = createMockJwtService();
-    jwtTokenService.sign.mockResolvedValue({
-      token: 'jwt-token',
-      expiresIn: 900,
-      expiresAt: 0,
-    });
-    refreshTokensRepo.create.mockResolvedValue({
-      id: 'rt-1',
-      userId: 'user-1',
-      tokenHash: 'hashed',
-      expiresAt: new Date(),
-      revoked: false,
-    });
+    jwtTokenService.sign.mockResolvedValue(buildSignedToken());
+    refreshTokensRepo.create.mockResolvedValue(
+      buildRefreshToken({ tokenHash: 'hashed', expiresAt: new Date() }),
+    );
 
     useCase = new AuthenticateUserUseCase(
       repo,
@@ -137,11 +138,11 @@ describe('AuthenticateUserUseCase', () => {
     await expect(
       useCase.execute({
         email: 'johnny@example.com',
-        password: 'bad-password',
+        password: WRONG_CREDENTIAL,
       }),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
     expect(passwordService.verify).toHaveBeenCalledWith(
-      'bad-password',
+      WRONG_CREDENTIAL,
       user.passwordHash,
     );
     expect(jwtTokenService.sign).not.toHaveBeenCalled();
@@ -151,11 +152,11 @@ describe('AuthenticateUserUseCase', () => {
     it('re-hache le mot de passe si needsRehash retourne true', async () => {
       const user = buildUser({
         email: 'legacy@example.com',
-        passwordHash: 'legacy-pbkdf2-hash',
+        passwordHash: LEGACY_PBKDF2_HASH,
       });
       repo.findByEmail.mockResolvedValue(user);
       passwordService.needsRehash.mockReturnValue(true);
-      passwordService.hash.mockResolvedValue('$argon2id$new-hash');
+      passwordService.hash.mockResolvedValue(REHASHED_ARGON2);
       repo.update.mockResolvedValue(user);
 
       await useCase.execute({
@@ -168,14 +169,14 @@ describe('AuthenticateUserUseCase', () => {
       );
       expect(passwordService.hash).toHaveBeenCalledWith('password');
       expect(repo.update).toHaveBeenCalledWith('user-1', {
-        passwordHash: '$argon2id$new-hash',
+        passwordHash: REHASHED_ARGON2,
       });
     });
 
     it('ne re-hache pas si needsRehash retourne false', async () => {
       const user = buildUser({
         email: 'modern@example.com',
-        passwordHash: '$argon2id$already-good',
+        passwordHash: CURRENT_ARGON2,
       });
       repo.findByEmail.mockResolvedValue(user);
       passwordService.needsRehash.mockReturnValue(false);

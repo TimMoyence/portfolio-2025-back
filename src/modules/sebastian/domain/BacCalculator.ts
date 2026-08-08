@@ -1,7 +1,7 @@
 import { DRINK_TYPE_DEFAULTS, type SebastianEntry } from './SebastianEntry';
 import type { SebastianProfile } from './SebastianProfile';
 
-export interface BacDataPoint {
+interface BacDataPoint {
   time: Date;
   bac: number;
 }
@@ -12,18 +12,17 @@ export interface BacResult {
   estimatedSoberAt: Date | null;
 }
 
-/** Taux de metabolisation de l'alcool en g/L par heure. */
-const METABOLISM_RATE = 0.15;
+const METABOLISM_RATE_G_PER_L_PER_HOUR = 0.15;
 
 const CURVE_INTERVAL_MINUTES = 15;
 
-/**
- * Calcule les grammes d'alcool pur a partir du volume (cL) et du degre.
- * Formule : volumeCl × 10 (conversion en mL) × (degre / 100) × 0.789 (densite ethanol).
- * Simplifie en : volumeCl × alcoholDegree × 0.0789
- */
+const ML_PER_CL = 10;
+const ETHANOL_DENSITY_G_PER_ML = 0.789;
+const PERCENT = 100;
+
 function computeAlcoholGrams(volumeCl: number, alcoholDegree: number): number {
-  return volumeCl * alcoholDegree * 0.0789;
+  const pureEthanolMl = volumeCl * ML_PER_CL * (alcoholDegree / PERCENT);
+  return pureEthanolMl * ETHANOL_DENSITY_G_PER_ML;
 }
 
 function getEntryAlcoholParams(
@@ -53,13 +52,9 @@ function computeDrinkContribution(
   hoursElapsed: number,
 ): number {
   const peak = grams / (widmarkR * weightKg);
-  return Math.max(0, peak - METABOLISM_RATE * hoursElapsed);
+  return Math.max(0, peak - METABOLISM_RATE_G_PER_L_PER_HOUR * hoursElapsed);
 }
 
-/**
- * Service de domaine pur pour le calcul du taux d'alcoolemie (BAC)
- * selon la formule de Widmark.
- */
 export class BacCalculator {
   static calculateBacCurve(
     entries: SebastianEntry[],
