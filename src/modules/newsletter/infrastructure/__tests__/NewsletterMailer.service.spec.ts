@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { buildNewsletterSubscriber } from '../../../../../test/factories/newsletter-subscriber.factory';
+import type { NewsletterSubscriber } from '../../domain/NewsletterSubscriber';
 
 // Mock createOptionalSmtpTransporter avant l'import du service pour injecter
 // un faux transporter et couvrir les branches "transporter present".
@@ -19,6 +20,26 @@ function buildMockConfigService(): ConfigService {
     get: jest.fn().mockReturnValue(undefined),
   } as unknown as ConfigService;
 }
+
+const HOSTILE_FIRST_NAME = "Anne & <Marie> d'Arc";
+const HOSTILE_FIRST_NAME_ESCAPED = 'Anne &amp; &lt;Marie&gt; d&#39;Arc';
+
+type SendMail = (
+  mailer: NewsletterMailerService,
+  subscriber: NewsletterSubscriber,
+) => Promise<void>;
+
+const SEND_METHODS: ReadonlyArray<[string, SendMail]> = [
+  [
+    'sendConfirmation',
+    (mailer, subscriber) => mailer.sendConfirmation(subscriber),
+  ],
+  ['sendWelcome', (mailer, subscriber) => mailer.sendWelcome(subscriber)],
+  [
+    'sendUnsubscribeAck',
+    (mailer, subscriber) => mailer.sendUnsubscribeAck(subscriber),
+  ],
+];
 
 describe('NewsletterMailerService', () => {
   let mailer: NewsletterMailerService;
@@ -275,6 +296,46 @@ describe('NewsletterMailerService', () => {
       expect(call[0].subject).toContain('Desabonnement');
     });
   });
+
+  describe.each(SEND_METHODS)(
+    '%s — le greeting est brut en text/plain, echappe en HTML',
+    (_label, send) => {
+      it('livre le prenom intact dans le corps texte', async () => {
+        const subscriber = buildNewsletterSubscriber({
+          firstName: HOSTILE_FIRST_NAME,
+        });
+
+        await send(mailer, subscriber);
+
+        const [call] = mockSendMail.mock.calls as [[{ text: string }]];
+        expect(call[0].text).toContain(`Bonjour ${HOSTILE_FIRST_NAME}`);
+      });
+
+      it('ne laisse aucune entite HTML dans le corps texte', async () => {
+        const subscriber = buildNewsletterSubscriber({
+          firstName: HOSTILE_FIRST_NAME,
+        });
+
+        await send(mailer, subscriber);
+
+        const [call] = mockSendMail.mock.calls as [[{ text: string }]];
+        expect(call[0].text).not.toMatch(/&(amp|lt|gt|quot|#39);/);
+      });
+
+      it('echappe le prenom dans le corps HTML', async () => {
+        const subscriber = buildNewsletterSubscriber({
+          firstName: HOSTILE_FIRST_NAME,
+        });
+
+        await send(mailer, subscriber);
+
+        const [call] = mockSendMail.mock.calls as [[{ html: string }]];
+        expect(call[0].html).toContain(`Bonjour ${HOSTILE_FIRST_NAME_ESCAPED}`);
+        expect(call[0].html).not.toContain(HOSTILE_FIRST_NAME);
+        expect(call[0].html).not.toContain('<Marie>');
+      });
+    },
+  );
 
   describe('comportement sans transporter (SMTP non configure)', () => {
     it('ne leve pas d\u2019erreur si le transporter est null', async () => {

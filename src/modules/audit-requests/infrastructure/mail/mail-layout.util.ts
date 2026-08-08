@@ -1,4 +1,4 @@
-import { escapeHtml, safeHtml } from './mail-rendering.util';
+import { escapeHtml, escapeUrl, safeHtml } from './mail-rendering.util';
 import type { EscapedHtml } from './mail-rendering.util';
 
 export interface MailLayoutInput {
@@ -46,7 +46,7 @@ export function buildMailLayout(input: MailLayoutInput): string {
 
   const unsubscribeHtml = input.showUnsubscribe
     ? safeHtml`<p style="margin:12px 0 0 0;font-size:11px;color:#9ca3af;text-align:center;">
-        <a href="${escapeHtml(resolveUnsubscribeUrl(input.unsubscribeUrl))}" style="color:#9ca3af;text-decoration:underline;">Ne plus recevoir ce type d'email</a>
+        <a href="${escapeUrl(resolveUnsubscribeUrl(input.unsubscribeUrl))}" style="color:#9ca3af;text-decoration:underline;">Ne plus recevoir ce type d'email</a>
       </p>`
     : safeHtml``;
 
@@ -81,7 +81,7 @@ ${preheader}
     <!-- Header logo -->
     <div style="padding:12px 24px 20px 24px;text-align:center;">
       <a href="https://asilidesign.fr" style="text-decoration:none;">
-        <img src="${escapeHtml(LOGO_URL)}" alt="${escapeHtml(LOGO_ALT)}" width="56" height="56" style="display:inline-block;width:56px;height:56px;border:0;" />
+        <img src="${escapeUrl(LOGO_URL)}" alt="${escapeHtml(LOGO_ALT)}" width="56" height="56" style="display:inline-block;width:56px;height:56px;border:0;" />
       </a>
     </div>
 

@@ -9,6 +9,7 @@ import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { pillarLabel } from './shared/pillar-labels.util';
 import {
   escapeHtml,
+  escapeUrl,
   safeHtml,
 } from '../../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../../common/infrastructure/mail/html-escape.util';
@@ -286,7 +287,7 @@ export class AuditReportHtmlRendererService {
     return safeHtml`<article class="page-card">
       <header class="page-card-header">
         <h4 class="page-card-title">${this.escapeHtml(page.title)}</h4>
-        <a class="page-card-url" href="${safeUrl}">${safeUrl}</a>
+        <a class="page-card-url" href="${escapeUrl(page.url)}">${safeUrl}</a>
       </header>
       ${engines}
       ${issues}
@@ -340,7 +341,7 @@ export class AuditReportHtmlRendererService {
     return safeHtml`<div class="annex-block">
       <h3 class="subsection-title">llms.txt</h3>
       <p>Statut : ${present ? safeHtml`Present` : safeHtml`Absent`}</p>
-      ${url ? safeHtml`<p>URL : <a href="${this.escapeHtml(url)}">${this.escapeHtml(url)}</a></p>` : safeHtml``}
+      ${url ? safeHtml`<p>URL : <a href="${escapeUrl(url)}">${this.escapeHtml(url)}</a></p>` : safeHtml``}
     </div>`;
   }
 

@@ -2,7 +2,12 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ClientReportMailInput } from '../../domain/IAuditNotifier.port';
 import { pillarLabel } from '../automation/shared/pillar-labels.util';
 import { buildMailLayout } from './mail-layout.util';
-import { escapeHtml, safeHtml, slugify } from './mail-rendering.util';
+import {
+  escapeHtml,
+  escapeUrl,
+  safeHtml,
+  slugify,
+} from './mail-rendering.util';
 import { SMTP_TRANSPORTER } from './smtp-transporter.provider';
 import type { SmtpTransporter } from './smtp-transporter.provider';
 
@@ -116,7 +121,7 @@ export class AuditClientReportMailer {
         <strong style="font-size:16px;">${escapeHtml(report.cta.title)}</strong>
         <p style="margin:6px 0 14px 0;color:#d1d5db;">${escapeHtml(report.cta.description)}</p>
         <a
-          href="${escapeHtml(this.resolveBookingUrl(input))}"
+          href="${escapeUrl(this.resolveBookingUrl(input))}"
           target="_blank"
           rel="noopener noreferrer"
           style="display:inline-block;padding:12px 22px;background:#ffffff;color:#111;border-radius:8px;text-decoration:none;font-weight:600;"

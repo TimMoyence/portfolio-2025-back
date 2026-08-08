@@ -1,4 +1,4 @@
-import { escapeHtml, safeHtml } from './html-escape.util';
+import { escapeHtml, escapeUrl, safeHtml } from './html-escape.util';
 
 describe('escapeHtml', () => {
   it('echappe tous les caracteres HTML sensibles', () => {
@@ -18,6 +18,99 @@ describe('escapeHtml', () => {
     expect(escapeHtml(null)).toBe('null');
     expect(escapeHtml(undefined)).toBe('undefined');
     expect(escapeHtml(42)).toBe('42');
+  });
+});
+
+describe('escapeUrl — schemas admis', () => {
+  it.each([
+    'https://asilidesign.fr/growth-audit?a=1#x',
+    'http://asilidesign.fr/',
+    'mailto:tim.moyence@outlook.fr',
+  ])('laisse passer %s intacte', (url) => {
+    expect(escapeUrl(url)).toBe(url);
+  });
+
+  it("n'ajoute pas la barre finale que `new URL` insererait", () => {
+    expect(escapeUrl('https://asilidesign.fr')).toBe('https://asilidesign.fr');
+  });
+
+  it.each([
+    '/formations/ia-solopreneurs/toolkit',
+    '../x',
+    '#ancre',
+    'page.html',
+  ])('laisse passer la reference relative %s', (url) => {
+    expect(escapeUrl(url)).toBe(url);
+  });
+
+  it("echappe les metacaracteres d'une URL admise (pas de sortie d'attribut)", () => {
+    expect(escapeUrl('https://asilidesign.fr/?a="onmouseover="alert(1)')).toBe(
+      'https://asilidesign.fr/?a=&quot;onmouseover=&quot;alert(1)',
+    );
+  });
+});
+
+describe('escapeUrl — schemas refusees et contournements', () => {
+  it.each([
+    ['minuscule', 'javascript:alert(1)'],
+    ['casse mixte', 'JaVaScRiPt:alert(1)'],
+    ['majuscules', 'JAVASCRIPT:alert(1)'],
+    ['tabulation dans le schema', 'java\tscript:alert(1)'],
+    ['saut de ligne dans le schema', 'java\nscript:alert(1)'],
+    ['retour chariot dans le schema', 'java\rscript:alert(1)'],
+    ['espace en tete', ' javascript:alert(1)'],
+    ['tabulation verticale en tete', '\u000Bjavascript:alert(1)'],
+    ['nul en tete', '\u0000javascript:alert(1)'],
+    ['data', 'data:text/html,<script>alert(1)</script>'],
+    [
+      'data base64',
+      'data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==',
+    ],
+    ['vbscript', 'vbscript:msgbox(1)'],
+    ['file', 'file:///etc/passwd'],
+  ])('neutralise %s', (_label, url) => {
+    expect(escapeUrl(url)).toBe('#');
+  });
+
+  it.each(['', '   ', '\t\n'])('neutralise la valeur vide %j', (url) => {
+    expect(escapeUrl(url)).toBe('#');
+  });
+
+  it("neutralise le schema encode en entite HTML par l'echappement du `&`", () => {
+    const rendered = safeHtml`<a href="${escapeUrl('&#106;avascript:alert(1)')}">x</a>`;
+
+    expect(rendered).toBe('<a href="&amp;#106;avascript:alert(1)">x</a>');
+    expect(rendered).not.toContain('&#106;a');
+  });
+
+  it('neutralise le schema encode en entite hexadecimale', () => {
+    expect(escapeUrl('&#x6a;avascript:alert(1)')).toBe(
+      '&amp;#x6a;avascript:alert(1)',
+    );
+  });
+});
+
+describe('escapeUrl — etancheite du type', () => {
+  it('produit un fragment interpolable dans safeHtml', () => {
+    expect(
+      safeHtml`<a href="${escapeUrl('https://asilidesign.fr/x')}">x</a>`,
+    ).toBe('<a href="https://asilidesign.fr/x">x</a>');
+  });
+
+  it('refuse une URL brute non passee par escapeUrl', () => {
+    const url = 'javascript:alert(1)';
+
+    // @ts-expect-error une string brute n'est pas un fragment sur
+    const rendered: string = safeHtml`<a href="${url}">x</a>`;
+
+    expect(rendered).toContain('javascript:');
+  });
+
+  it('ne throw pas et coerce via String(), comme escapeHtml', () => {
+    expect(() => escapeUrl(null)).not.toThrow();
+    expect(escapeUrl(null)).toBe('null');
+    expect(escapeUrl(undefined)).toBe('undefined');
+    expect(escapeUrl(42)).toBe('42');
   });
 });
 

@@ -4,11 +4,17 @@ import type { Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import {
   escapeHtml,
+  escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
+
+type Greeting = {
+  readonly text: string;
+  readonly html: EscapedHtml;
+};
 
 @Injectable()
 export class NewsletterMailerService implements INewsletterMailer {
@@ -53,7 +59,7 @@ export class NewsletterMailerService implements INewsletterMailer {
       // `pending` — l'adresse serait verrouillee. Le lien de retrait
       // reste present dans le corps du message.
       subject: 'Confirmez votre inscription a la newsletter asilidesign.fr',
-      text: `${greeting},
+      text: `${greeting.text},
 
 Merci de vous etre inscrit. Cliquez sur ce lien pour confirmer votre email :
 ${confirmUrl}
@@ -65,7 +71,7 @@ ${unsubscribeUrl}
 
 Tim — asilidesign.fr`,
       html: this.buildConfirmationHtml({
-        greeting,
+        greeting: greeting.html,
         confirmUrl,
         unsubscribeUrl,
         sourceFormationSlug: subscriber.sourceFormationSlug,
@@ -86,7 +92,7 @@ Tim — asilidesign.fr`,
       replyTo: this.replyTo,
       headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
       subject: 'Bienvenue — ce qui arrive dans votre boite mail',
-      text: `${greeting},
+      text: `${greeting.text},
 
 Votre inscription est confirmee. Voici ce qui va arriver dans les 10 prochains jours :
 - J0 : votre ressource principale (lien direct)
@@ -100,7 +106,7 @@ Les sequences drip detaillees sont en cours de deploiement (S1.5). Si vous recev
 Desabonnement instantane : ${unsubscribeUrl}
 
 Tim`,
-      html: this.buildWelcomeHtml({ greeting, unsubscribeUrl }),
+      html: this.buildWelcomeHtml({ greeting: greeting.html, unsubscribeUrl }),
     });
   }
 
@@ -112,14 +118,14 @@ Tim`,
       to: subscriber.email,
       replyTo: this.replyTo,
       subject: 'Desabonnement confirme',
-      text: `${greeting},
+      text: `${greeting.text},
 
 Votre desabonnement est effectif. Vous ne recevrez plus d'email de newsletter de ma part.
 
 Si c'etait une erreur, repondez simplement a cet email.
 
 Tim`,
-      html: this.buildUnsubscribeAckHtml({ greeting }),
+      html: this.buildUnsubscribeAckHtml({ greeting: greeting.html }),
     });
   }
 
@@ -156,10 +162,14 @@ Tim`,
     return (angled ? angled[1] : this.replyTo).trim();
   }
 
-  private buildGreeting(firstName: string | null): EscapedHtml {
-    return firstName && firstName.trim().length > 0
-      ? safeHtml`Bonjour ${this.escapeHtml(firstName)}`
-      : safeHtml`Bonjour`;
+  private buildGreeting(firstName: string | null): Greeting {
+    if (!firstName || firstName.trim().length === 0) {
+      return { text: 'Bonjour', html: safeHtml`Bonjour` };
+    }
+    return {
+      text: `Bonjour ${firstName}`,
+      html: safeHtml`Bonjour ${this.escapeHtml(firstName)}`,
+    };
   }
 
   /**
@@ -196,14 +206,14 @@ Tim`,
     unsubscribeUrl: string;
     sourceFormationSlug: string;
   }): EscapedHtml {
-    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Confirmez votre inscription</h2><p>${options.greeting},</p><p>Merci de vous etre inscrit. Confirmez votre email en cliquant ci-dessous :</p><p style="margin: 20px 0;"><a href="${this.escapeHtml(options.confirmUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Confirmer mon email</a></p><p style="font-size: 13px; color: #555;">Vous recevrez des emails pratiques lies a la formation <strong>${this.escapeHtml(options.sourceFormationSlug)}</strong>. Zero teasing, chaque email livre sa valeur integralement.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${this.escapeHtml(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
+    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Confirmez votre inscription</h2><p>${options.greeting},</p><p>Merci de vous etre inscrit. Confirmez votre email en cliquant ci-dessous :</p><p style="margin: 20px 0;"><a href="${escapeUrl(options.confirmUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Confirmer mon email</a></p><p style="font-size: 13px; color: #555;">Vous recevrez des emails pratiques lies a la formation <strong>${this.escapeHtml(options.sourceFormationSlug)}</strong>. Zero teasing, chaque email livre sa valeur integralement.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${escapeUrl(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
   }
 
   private buildWelcomeHtml(options: {
     greeting: EscapedHtml;
     unsubscribeUrl: string;
   }): EscapedHtml {
-    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Bienvenue</h2><p>${options.greeting},</p><p>Votre inscription est confirmee. Voici ce qui arrive dans les 10 prochains jours :</p><ul><li><strong>J+2</strong> : un prompt complet a copier</li><li><strong>J+5</strong> : mon stack IA detaille, gratuit</li><li><strong>J+8</strong> : ce qui ne marche PAS (retour honnete)</li><li><strong>J+10</strong> : vous choisissez de continuer ou d'arreter</li></ul><p>Si vous recevez cet email mais pas les suivants sous 48h, repondez a ce message — je regarde.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${this.escapeHtml(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
+    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Bienvenue</h2><p>${options.greeting},</p><p>Votre inscription est confirmee. Voici ce qui arrive dans les 10 prochains jours :</p><ul><li><strong>J+2</strong> : un prompt complet a copier</li><li><strong>J+5</strong> : mon stack IA detaille, gratuit</li><li><strong>J+8</strong> : ce qui ne marche PAS (retour honnete)</li><li><strong>J+10</strong> : vous choisissez de continuer ou d'arreter</li></ul><p>Si vous recevez cet email mais pas les suivants sous 48h, repondez a ce message — je regarde.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${escapeUrl(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
   }
 
   private buildUnsubscribeAckHtml(options: {
