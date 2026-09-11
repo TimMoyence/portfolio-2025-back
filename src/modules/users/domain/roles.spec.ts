@@ -16,4 +16,12 @@ describe('roles', () => {
   it('les roles par defaut ne doivent pas inclure admin', () => {
     expect(DEFAULT_SELF_REGISTRATION_ROLES).not.toContain('admin');
   });
+
+  it('declare le role teacher', () => {
+    expect(VALID_ROLES).toContain('teacher');
+  });
+
+  it('n attribue pas teacher a l inscription libre', () => {
+    expect(DEFAULT_SELF_REGISTRATION_ROLES).not.toContain('teacher');
+  });
 });

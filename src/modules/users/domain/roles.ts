@@ -1,4 +1,9 @@
-export const VALID_ROLES = ['weather', 'sebastian', 'admin'] as const;
+export const VALID_ROLES = [
+  'weather',
+  'sebastian',
+  'admin',
+  'teacher',
+] as const;
 
 export type UserRole = (typeof VALID_ROLES)[number];
 
