@@ -1,3 +1,4 @@
+import type { Piege } from '../../src/modules/formations/domain/AnswerGrading';
 import type { Bareme } from '../../src/modules/formations/domain/Bareme';
 import type {
   AnswerRecord,
@@ -45,6 +46,25 @@ export function buildBareme(overrides: Partial<Bareme> = {}): Bareme {
     ],
     ...overrides,
   };
+}
+
+export function buildVoteBareme(pieges: readonly Piege[] = []): Bareme {
+  return buildBareme({
+    questions: [
+      {
+        id: 'Q-CAP-03',
+        type: 'vote',
+        concept: 'capitalisation',
+        noteCompte: true,
+      },
+    ],
+    tirages: [
+      {
+        seed: 1001,
+        solutions: { 'Q-CAP-03': { valeur: 'b', pieges } },
+      },
+    ],
+  });
 }
 
 export function buildSessionRecord(
