@@ -12,6 +12,7 @@ import { LeadMagnetsModule } from '../modules/lead-magnets/LeadMagnets.module';
 import { NewsletterModule } from '../modules/newsletter/Newsletter.module';
 import { PresentationsModule } from '../modules/presentations/Presentations.module';
 import { WeatherModule } from '../modules/weather/Weather.module';
+import { ArticlesModule } from '../modules/articles/Articles.module';
 
 export interface RuntimeContextsSelection {
   readonly coreModules: Array<Type<unknown>>;
@@ -37,6 +38,7 @@ export function resolveRuntimeContexts(
     LeadMagnetsModule,
     NewsletterModule,
     PresentationsModule,
+    ArticlesModule,
   ];
 
   const legacyModules: Array<Type<unknown>> = [

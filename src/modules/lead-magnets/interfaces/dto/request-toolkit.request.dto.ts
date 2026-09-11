@@ -4,15 +4,33 @@ import {
   IsDate,
   IsEmail,
   IsIn,
+  IsInt,
   IsOptional,
   IsString,
   MaxLength,
+  Min,
   MinLength,
   ValidateNested,
 } from 'class-validator';
 import { InteractionProfileDto } from './interaction-profile.dto';
 
 export class RequestToolkitRequestDto {
+  @ApiPropertyOptional({
+    description: 'Champ piège anti-robot, doit rester vide',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  website?: string;
+
+  @ApiPropertyOptional({
+    description: "Timestamp ms d'ouverture du formulaire",
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  formStartedAt?: number;
+
   @ApiProperty({ example: 'Marie' })
   @IsString()
   @MinLength(1)

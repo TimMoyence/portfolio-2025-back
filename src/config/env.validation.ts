@@ -129,6 +129,9 @@ const envSchema = z
     AUDIT_REPORT_TO: z.string().optional(),
 
     FRONTEND_URL: z.string().optional(),
+    MORNING_BRIEF_HMAC_KEYS: z.string().optional(),
+    MORNING_BRIEF_HMAC_KEY_ID: z.string().optional(),
+    MORNING_BRIEF_HMAC_SECRET: z.string().optional(),
 
     PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),
@@ -173,6 +176,34 @@ const envSchema = z
         message:
           'requis des lors que SMTP_HOST, SMTP_USER et SMTP_PASS sont definis ' +
           '(sinon les emails partent avec un expediteur vide)',
+      });
+    }
+
+    const hmacRingConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEYS?.trim());
+    const hmacKeyIdConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEY_ID?.trim());
+    const hmacSecretConfigured = Boolean(env.MORNING_BRIEF_HMAC_SECRET?.trim());
+    const hmacPairConfigured = hmacKeyIdConfigured && hmacSecretConfigured;
+    const hmacPartialPair = hmacKeyIdConfigured !== hmacSecretConfigured;
+    if (
+      env.NODE_ENV === 'production' &&
+      !hmacRingConfigured &&
+      !hmacPairConfigured
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['MORNING_BRIEF_HMAC_KEYS'],
+        message:
+          'MORNING_BRIEF_HMAC_KEYS ou le couple MORNING_BRIEF_HMAC_KEY_ID / ' +
+          'MORNING_BRIEF_HMAC_SECRET est requis en production',
+      });
+    }
+    if (!hmacRingConfigured && hmacPartialPair) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['MORNING_BRIEF_HMAC_SECRET'],
+        message:
+          'MORNING_BRIEF_HMAC_KEY_ID et MORNING_BRIEF_HMAC_SECRET doivent être ' +
+          'renseignés ensemble',
       });
     }
 

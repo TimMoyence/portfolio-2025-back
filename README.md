@@ -40,6 +40,14 @@ Une fois l'API demarree :
   - `POST /audits`
   - `GET /audits/:id/stream`
   - `GET /audits/:id/summary`
+- le flux éditorial Morning-Brief repose sur :
+  - `POST /articles/ingest` (HMAC + `Idempotency-Key`, machine-à-machine)
+  - `GET /articles` et `GET /articles/:slug` (articles publiés uniquement)
+  - `GET /articles/feed.xml` (RSS)
+
+En production, `MORNING_BRIEF_HMAC_KEYS` ou le couple
+`MORNING_BRIEF_HMAC_KEY_ID` / `MORNING_BRIEF_HMAC_SECRET` est obligatoire ; les
+secrets doivent venir du gestionnaire de secrets du déploiement.
 
 ## Commandes utiles
 

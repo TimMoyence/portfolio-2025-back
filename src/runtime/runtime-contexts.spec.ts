@@ -11,6 +11,7 @@ import { LeadMagnetsModule } from '../modules/lead-magnets/LeadMagnets.module';
 import { NewsletterModule } from '../modules/newsletter/Newsletter.module';
 import { PresentationsModule } from '../modules/presentations/Presentations.module';
 import { WeatherModule } from '../modules/weather/Weather.module';
+import { ArticlesModule } from '../modules/articles/Articles.module';
 import { resolveRuntimeContexts } from './runtime-contexts';
 
 describe('resolveRuntimeContexts', () => {
@@ -28,6 +29,7 @@ describe('resolveRuntimeContexts', () => {
       LeadMagnetsModule,
       NewsletterModule,
       PresentationsModule,
+      ArticlesModule,
     ]);
     expect(selection.runtimeModules).toEqual(selection.coreModules);
   });
@@ -54,6 +56,7 @@ describe('resolveRuntimeContexts', () => {
       LeadMagnetsModule,
       NewsletterModule,
       PresentationsModule,
+      ArticlesModule,
       ServicesModule,
       ProjectsModule,
       CoursesModule,

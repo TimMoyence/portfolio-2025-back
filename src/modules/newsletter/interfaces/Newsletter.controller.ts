@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Logger,
   NotFoundException,
+  Optional,
   Post,
   Query,
 } from '@nestjs/common';
@@ -28,6 +29,7 @@ import {
 } from '../application/UnsubscribeNewsletter.useCase';
 import { SubscribeNewsletterRequestDto } from './dto/subscribe-newsletter.request.dto';
 import { SubscribeNewsletterResponseDto } from './dto/subscribe-newsletter.response.dto';
+import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
 
 /**
  * Regex UUID v4 stricte (RFC 4122). Position 14 = `4` (version bit),
@@ -48,6 +50,8 @@ export class NewsletterController {
     private readonly subscribe: SubscribeNewsletterUseCase,
     private readonly confirm: ConfirmSubscriptionUseCase,
     private readonly unsubscribe: UnsubscribeNewsletterUseCase,
+    @Optional()
+    private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
   @Public()
@@ -64,6 +68,10 @@ export class NewsletterController {
   async subscribeEndpoint(
     @Body() dto: SubscribeNewsletterRequestDto,
   ): Promise<SubscribeNewsletterResponseDto> {
+    this.formProtection.assertHuman({
+      honeypot: dto.website,
+      formStartedAt: dto.formStartedAt,
+    });
     await this.subscribe.execute({
       email: dto.email,
       firstName: dto.firstName,

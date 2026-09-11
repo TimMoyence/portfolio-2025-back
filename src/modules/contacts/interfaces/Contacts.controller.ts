@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Optional, Post } from '@nestjs/common';
 import { CreateContactsUseCase } from '../application/CreateContacts.useCase';
 import {
   ApiBadRequestResponse,
@@ -11,11 +11,16 @@ import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { CreateContactCommand } from '../application/dto/CreateContact.command';
 import { ContactResponseDto } from './dto/contact.response.dto';
 import { ContactRequestDto } from './dto/contact.request.dto';
+import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
 
 @ApiTags('contacts')
 @Controller('contacts')
 export class ContactsController {
-  constructor(private readonly createUseCase: CreateContactsUseCase) {}
+  constructor(
+    private readonly createUseCase: CreateContactsUseCase,
+    @Optional()
+    private readonly formProtection = new PublicFormProtectionService(),
+  ) {}
 
   @Public()
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
@@ -24,6 +29,10 @@ export class ContactsController {
   @ApiCreatedResponse({ type: ContactResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })
   async create(@Body() dto: ContactRequestDto): Promise<ContactResponseDto> {
+    this.formProtection.assertHuman({
+      honeypot: dto.website,
+      formStartedAt: dto.formStartedAt,
+    });
     const command: CreateContactCommand = {
       email: dto.email,
       firstName: dto.firstName,

@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
+  Optional,
   Post,
 } from '@nestjs/common';
 import {
@@ -24,6 +25,7 @@ import type { InteractionProfile } from '../domain/InteractionProfile';
 import { LeadMagnetResponseDto } from './dto/lead-magnet.response.dto';
 import { RequestToolkitRequestDto } from './dto/request-toolkit.request.dto';
 import { ToolkitPageResponseDto } from './dto/toolkit-page.response.dto';
+import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
 
 @ApiTags('lead-magnets')
 @Controller('lead-magnets')
@@ -31,6 +33,8 @@ export class LeadMagnetsController {
   constructor(
     private readonly requestToolkit: RequestToolkitUseCase,
     private readonly getToolkitByToken: GetToolkitByTokenUseCase,
+    @Optional()
+    private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
   @Public()
@@ -45,6 +49,10 @@ export class LeadMagnetsController {
   async create(
     @Body() dto: RequestToolkitRequestDto,
   ): Promise<LeadMagnetResponseDto> {
+    this.formProtection.assertHuman({
+      honeypot: dto.website,
+      formStartedAt: dto.formStartedAt,
+    });
     const profile: InteractionProfile | undefined = dto.profile
       ? {
           aiLevel: dto.profile.aiLevel ?? null,

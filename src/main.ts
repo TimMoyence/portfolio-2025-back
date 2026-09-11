@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -19,6 +19,7 @@ async function bootstrap() {
   logBootstrapStep('starting bootstrap');
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
+    rawBody: true,
   });
   logBootstrapStep('nest application created');
   app.useLogger(app.get(Logger));
@@ -91,7 +92,12 @@ async function bootstrap() {
     }),
   );
 
-  app.setGlobalPrefix(process.env.API_PREFIX ?? 'api');
+  app.setGlobalPrefix(process.env.API_PREFIX ?? 'api', {
+    exclude: [
+      { path: 'api/articles', method: RequestMethod.ALL },
+      { path: 'api/articles/(.*)', method: RequestMethod.ALL },
+    ],
+  });
 
   if (!isProd) {
     const swaggerConfig = new DocumentBuilder()

@@ -41,6 +41,21 @@ describe('validateEnv', () => {
     expect(result.SMTP_PORT).toBe(587);
   });
 
+  it('devrait exiger une configuration HMAC complete en production', () => {
+    const env = buildValidEnv({ NODE_ENV: 'production' });
+
+    expect(() => validateEnv(env)).toThrow('MORNING_BRIEF_HMAC');
+  });
+
+  it('devrait accepter un trousseau HMAC en production', () => {
+    const env = buildValidEnv({
+      NODE_ENV: 'production',
+      MORNING_BRIEF_HMAC_KEYS: 'morning-brief:key-from-secret-manager',
+    });
+
+    expect(() => validateEnv(env)).not.toThrow();
+  });
+
   describe('coherence SMTP', () => {
     const SMTP_CONFIGURED = {
       SMTP_HOST: 'smtp.example.org',
