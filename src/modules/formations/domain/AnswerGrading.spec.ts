@@ -86,4 +86,12 @@ describe('gradeAnswer', () => {
     });
     expect(result).toEqual({ correcte: false, misconception: null });
   });
+
+  it('ne detecte pas de misconception meme si un piege textuel correspond a je ne sais pas', () => {
+    const result = gradeAnswer('__je_ne_sais_pas__', {
+      valeur: 1338.23,
+      pieges: [{ valeur: '__je_ne_sais_pas__', misconception: 'renonce' }],
+    });
+    expect(result).toEqual({ correcte: false, misconception: null });
+  });
 });

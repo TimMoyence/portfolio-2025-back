@@ -4,8 +4,8 @@ import type {
   GradingResult,
   Solution,
   Tolerance,
-} from './GradingTypes';
-import { NE_SAIT_PAS, matchesSolution } from './GradingTypes';
+} from './GradingCore';
+import { NE_SAIT_PAS, matchesSolution } from './GradingCore';
 
 export type {
   AnswerValue,
@@ -14,7 +14,7 @@ export type {
   Solution,
   Tolerance,
   ToleranceType,
-} from './GradingTypes';
+} from './GradingCore';
 export { matchesSolution };
 
 export function gradeAnswer(

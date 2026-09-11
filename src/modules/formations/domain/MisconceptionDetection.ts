@@ -1,5 +1,5 @@
-import type { AnswerValue, Piege, Tolerance } from './GradingTypes';
-import { matchesSolution } from './GradingTypes';
+import type { AnswerValue, Piege, Tolerance } from './GradingCore';
+import { matchesSolution } from './GradingCore';
 
 export function detectMisconception(
   valeur: AnswerValue,
