@@ -67,13 +67,13 @@ export class FormationMailerService implements IFormationMailer {
       html: safeHtml`
         <div style="font-family:Arial,Helvetica,sans-serif; padding:24px;">
           <h2>Bonjour ${escapeHtml(participant.prenom)},</h2>
-          <p>Voici le detail de vos reponses pour la session ${escapeHtml(rapport.code)}.</p>
+          <p>Voici le détail de vos réponses pour la session ${escapeHtml(rapport.code)}.</p>
           <p>
             Note obtenue : <strong>${escapeHtml(participant.note.toFixed(1))}/20</strong>
-            (completion ${Math.round(participant.completion * 100)}%).
+            (complétion ${Math.round(participant.completion * 100)}%).
           </p>
           <p>
-            <a href="${escapeUrl(lienRevision)}">Reprendre mon entrainement</a>
+            <a href="${escapeUrl(lienRevision)}">Reprendre mon entraînement</a>
           </p>
         </div>
       `,
@@ -82,8 +82,8 @@ export class FormationMailerService implements IFormationMailer {
 
   private syntheseTexte(rapport: RapportSession): string {
     const lignes = [
-      `Synthese de la session ${rapport.code} (${rapport.courseSlug})`,
-      `${rapport.participants.length} etudiant(s) ont participe.`,
+      `Synthèse de la session ${rapport.code} (${rapport.courseSlug})`,
+      `${rapport.participants.length} étudiant(s) ont participé.`,
       '',
     ];
     if (rapport.conceptsFragiles.length > 0) {
@@ -94,14 +94,14 @@ export class FormationMailerService implements IFormationMailer {
     }
     for (const participant of rapport.participants) {
       lignes.push(
-        `${participant.prenom} ${participant.nom} : completion ` +
+        `${participant.prenom} ${participant.nom} : complétion ` +
           `${Math.round(participant.completion * 100)}%, note ` +
           `${participant.note.toFixed(1)}/20` +
           `${participant.sousSeuil ? ' (sous le seuil)' : ''}.`,
       );
     }
     lignes.push('');
-    lignes.push('Le detail complet est joint en fichier CSV.');
+    lignes.push('Le détail complet est joint en fichier CSV.');
     return lignes.join('\n');
   }
 
@@ -120,12 +120,12 @@ export class FormationMailerService implements IFormationMailer {
     return safeHtml`
       <div style="font-family:Arial,Helvetica,sans-serif; padding:24px;">
         <h2>Session ${escapeHtml(rapport.code)} — ${escapeHtml(rapport.courseSlug)}</h2>
-        <p>${rapport.participants.length} etudiant(s) ont participe.</p>
+        <p>${rapport.participants.length} étudiant(s) ont participé.</p>
         <p>Concepts fragiles : ${fragilesTexte}</p>
         <table style="border-collapse:collapse;">
           ${lignesParticipants}
         </table>
-        <p>Le detail complet est joint en fichier CSV.</p>
+        <p>Le détail complet est joint en fichier CSV.</p>
       </div>
     `;
   }
@@ -137,23 +137,23 @@ export class FormationMailerService implements IFormationMailer {
     return [
       `Bonjour ${participant.prenom},`,
       '',
-      'Voici le detail de vos reponses pour cette session.',
+      'Voici le détail de vos réponses pour cette session.',
       `Note obtenue : ${participant.note.toFixed(1)}/20.`,
-      `Reprendre mon entrainement : ${lienRevision}`,
+      `Reprendre mon entraînement : ${lienRevision}`,
     ].join('\n');
   }
 
   private toCsv(rapport: RapportSession): string {
     const entetes = [
-      'prenom',
+      'prénom',
       'nom',
       'email',
       'question',
       'concept',
-      'reponse',
+      'réponse',
       'correcte',
       'misconception',
-      'duree_ms',
+      'durée_ms',
     ];
     const lignes = rapport.participants.flatMap((participant) =>
       participant.reponses.map((reponse) =>

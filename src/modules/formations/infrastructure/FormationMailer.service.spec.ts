@@ -146,7 +146,7 @@ describe('FormationMailerService', () => {
       expect(csv.charCodeAt(0)).toBe(0xfeff);
       const lignes = csv.slice(1).split('\r\n');
       expect(lignes[0]).toBe(
-        'prenom;nom;email;question;concept;reponse;correcte;misconception;duree_ms',
+        'prénom;nom;email;question;concept;réponse;correcte;misconception;durée_ms',
       );
       expect(lignes[1]).toContain(';');
       expect(lignes[1]).not.toContain(',');
@@ -187,6 +187,18 @@ describe('FormationMailerService', () => {
 
       expect(csv).toContain('"\'+1+1"');
       expect(csv).toContain('"\'@SUM(A1)"');
+    });
+
+    it('neutralise une reponse commencant par un signe moins qui n est pas un nombre valide', async () => {
+      const rapport = buildRapportAvecReponses([
+        buildReponse({ questionId: 'Q-1', valeur: '-=1+1', correcte: false }),
+        buildReponse({ questionId: 'Q-2', valeur: '--cmd', correcte: false }),
+      ]);
+
+      const csv = await envoyerEtObtenirCsv(rapport);
+
+      expect(csv).toContain('"\'-=1+1"');
+      expect(csv).toContain('"\'--cmd"');
     });
 
     it('echappe une apostrophe dans le nom de famille d un etudiant', async () => {

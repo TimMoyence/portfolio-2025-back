@@ -49,7 +49,7 @@ export class CloseSessionUseCase {
   async execute(
     sessionId: string,
     teacherId: string,
-    destinataireFormateur: string = teacherId,
+    destinataireFormateur?: string,
   ): Promise<void> {
     const session = assertSessionOwnedBy(
       await this.sessions.findById(sessionId),
@@ -80,8 +80,28 @@ export class CloseSessionUseCase {
       incidents: incidentsListe,
     });
 
-    this.envoyerSynthese(destinataireFormateur, rapport);
+    this.envoyerSynthese(
+      this.resolveDestinataireFormateur(destinataireFormateur),
+      rapport,
+    );
     this.envoyerCopies(sessionId, participantsListe, rapport);
+  }
+
+  /**
+   * Ruling 54 : ordre de resolution du destinataire de la synthese
+   * formateur — l'argument explicite en priorite, sinon
+   * FORMATION_TEACHER_NOTIFICATION_TO, jamais teacherId. teacherId est
+   * traite partout ailleurs dans le module comme un identifiant opaque
+   * (cf. ControlSession.useCase.ts), pas comme une adresse email.
+   */
+  private resolveDestinataireFormateur(
+    destinataireFormateur: string | undefined,
+  ): string {
+    return (
+      destinataireFormateur ??
+      process.env.FORMATION_TEACHER_NOTIFICATION_TO ??
+      ''
+    );
   }
 
   private envoyerSynthese(destinataire: string, rapport: RapportSession): void {

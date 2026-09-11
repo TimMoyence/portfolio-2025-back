@@ -16,10 +16,13 @@ import {
 } from '../../domain/errors/FormationErrors';
 import { CloseSessionUseCase } from '../CloseSession.useCase';
 
-const TEACHER_ID = 'prof@example.com';
-const AUTRE_TEACHER_ID = 'autre-prof@example.com';
+const TEACHER_ID = 'teacher-uuid';
+const AUTRE_TEACHER_ID = 'autre-teacher-uuid';
 const REVIEW_SECRET_VALIDE = 'a'.repeat(32);
+const TEACHER_NOTIFICATION_EMAIL = 'notifications-formateur@example.com';
 const ORIGINAL_REVIEW_TOKEN_SECRET = process.env.FORMATION_REVIEW_TOKEN_SECRET;
+const ORIGINAL_TEACHER_NOTIFICATION_TO =
+  process.env.FORMATION_TEACHER_NOTIFICATION_TO;
 
 describe('CloseSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -32,6 +35,7 @@ describe('CloseSessionUseCase', () => {
 
   beforeEach(() => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = REVIEW_SECRET_VALIDE;
+    process.env.FORMATION_TEACHER_NOTIFICATION_TO = TEACHER_NOTIFICATION_EMAIL;
     sessions = createMockSessionsRepo();
     sessions.findById.mockResolvedValue(
       buildSessionRecord({ teacherId: TEACHER_ID }),
@@ -59,6 +63,15 @@ describe('CloseSessionUseCase', () => {
     }
   });
 
+  afterEach(() => {
+    if (ORIGINAL_TEACHER_NOTIFICATION_TO === undefined) {
+      delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
+    } else {
+      process.env.FORMATION_TEACHER_NOTIFICATION_TO =
+        ORIGINAL_TEACHER_NOTIFICATION_TO;
+    }
+  });
+
   it('marque la session terminee', async () => {
     await sut.execute('session-uuid', TEACHER_ID);
     expect(sessions.update).toHaveBeenCalledWith(
@@ -67,11 +80,15 @@ describe('CloseSessionUseCase', () => {
     );
   });
 
-  it('envoie la synthese au formateur par defaut', async () => {
+  it('envoie la synthese a FORMATION_TEACHER_NOTIFICATION_TO par defaut, jamais a teacherId', async () => {
     await sut.execute('session-uuid', TEACHER_ID);
     expect(mailer.sendSyntheseFormateur).toHaveBeenCalledWith(
-      TEACHER_ID,
+      TEACHER_NOTIFICATION_EMAIL,
       expect.objectContaining({ code: '4271' }),
+    );
+    expect(mailer.sendSyntheseFormateur).not.toHaveBeenCalledWith(
+      TEACHER_ID,
+      expect.anything(),
     );
   });
 
@@ -139,6 +156,9 @@ describe('CloseSessionUseCase', () => {
     await expect(sut.execute('session-uuid', AUTRE_TEACHER_ID)).rejects.toThrow(
       SessionNotOwnedError,
     );
+    expect(participants.listBySession).not.toHaveBeenCalled();
+    expect(answers.listBySession).not.toHaveBeenCalled();
+    expect(incidents.listBySession).not.toHaveBeenCalled();
     expect(sessions.update).not.toHaveBeenCalled();
     expect(cache.drop).not.toHaveBeenCalled();
     expect(mailer.sendSyntheseFormateur).not.toHaveBeenCalled();

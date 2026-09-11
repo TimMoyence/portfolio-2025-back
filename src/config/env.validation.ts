@@ -53,7 +53,9 @@ const envSchema = z
     GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID est requis'),
     PASSWORD_RESET_URL_BASE: z.string().optional(),
 
-    FORMATION_TEACHER_NOTIFICATION_TO: z.string().optional(),
+    FORMATION_TEACHER_NOTIFICATION_TO: z
+      .string()
+      .min(1, 'FORMATION_TEACHER_NOTIFICATION_TO est requis'),
     FORMATION_REVIEW_BASE_URL: z.string().optional(),
     FORMATION_REVIEW_TOKEN_SECRET: z
       .string()
@@ -236,6 +238,20 @@ const envSchema = z
             '`Nom <adresse@domaine>`',
         });
       }
+    }
+
+    // FORMATION_TEACHER_NOTIFICATION_TO est obligatoire (contrairement a
+    // SMTP_FROM/SMTP_REPLY_TO ci-dessus) : sans elle, CloseSession.useCase.ts
+    // n'a aucun destinataire de repli pour la synthese formateur.
+    if (
+      env.FORMATION_TEACHER_NOTIFICATION_TO?.trim() &&
+      !isValidMailbox(env.FORMATION_TEACHER_NOTIFICATION_TO)
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['FORMATION_TEACHER_NOTIFICATION_TO'],
+        message: 'doit etre une adresse email valide',
+      });
     }
   });
 

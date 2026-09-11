@@ -4,6 +4,8 @@ const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitlea
 const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 const TEST_FORMATION_REVIEW_TOKEN_SECRET =
   'test-formation-review-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)
+const TEST_FORMATION_TEACHER_NOTIFICATION_TO =
+  'formateur-notifications@example.com';
 
 function buildValidEnv(
   overrides: Record<string, unknown> = {},
@@ -16,6 +18,7 @@ function buildValidEnv(
     SECURE_KEY_FOR_PASSWORD_HASHING: TEST_HASHING_KEY,
     GOOGLE_CLIENT_ID: 'test-google-client-id.apps.googleusercontent.com',
     FORMATION_REVIEW_TOKEN_SECRET: TEST_FORMATION_REVIEW_TOKEN_SECRET,
+    FORMATION_TEACHER_NOTIFICATION_TO: TEST_FORMATION_TEACHER_NOTIFICATION_TO,
     ...overrides,
   };
 }
@@ -165,6 +168,20 @@ describe('validateEnv', () => {
 
     expect(() => validateEnv(env)).toThrow('FORMATION_REVIEW_TOKEN_SECRET');
     expect(() => validateEnv(env)).toThrow('32');
+  });
+
+  it('devrait lancer une erreur si FORMATION_TEACHER_NOTIFICATION_TO est manquant', () => {
+    const env = buildValidEnv({ FORMATION_TEACHER_NOTIFICATION_TO: undefined });
+
+    expect(() => validateEnv(env)).toThrow('FORMATION_TEACHER_NOTIFICATION_TO');
+  });
+
+  it('devrait rejeter un FORMATION_TEACHER_NOTIFICATION_TO qui n est pas une adresse email', () => {
+    const env = buildValidEnv({
+      FORMATION_TEACHER_NOTIFICATION_TO: 'pas-une-adresse',
+    });
+
+    expect(() => validateEnv(env)).toThrow('FORMATION_TEACHER_NOTIFICATION_TO');
   });
 
   it('devrait lancer une erreur si GOOGLE_CLIENT_ID est manquant', () => {
