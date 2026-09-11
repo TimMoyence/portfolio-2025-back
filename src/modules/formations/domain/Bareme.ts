@@ -1,4 +1,5 @@
-import type { Solution, Tolerance } from './AnswerGrading';
+import type { AnswerValue, Solution, Tolerance } from './AnswerGrading';
+import { NE_SAIT_PAS } from './GradingCore';
 
 export type QuestionType = 'numeric' | 'vote' | 'asn' | 'order';
 
@@ -37,6 +38,19 @@ export function solutionFor(
 ): Solution | null {
   const tirage = bareme.tirages.find((entree) => entree.seed === seed);
   return tirage?.solutions[questionId] ?? null;
+}
+
+export function estValeurConnue(
+  solution: Solution,
+  valeur: AnswerValue,
+): boolean {
+  if (valeur === NE_SAIT_PAS) {
+    return true;
+  }
+  return (
+    valeur === solution.valeur ||
+    solution.pieges.some((piege) => piege.valeur === valeur)
+  );
 }
 
 export function pickFreeSeed(

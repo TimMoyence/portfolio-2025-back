@@ -1,14 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import type { AnswerValue, Solution } from '../domain/AnswerGrading';
 import { gradeAnswer } from '../domain/AnswerGrading';
-import { findQuestion, solutionFor } from '../domain/Bareme';
+import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import {
   AnswerAlreadySubmittedError,
+  ParticipantNotFoundError,
   SessionClosedError,
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
-import { NE_SAIT_PAS } from '../domain/GradingCore';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
@@ -58,7 +57,7 @@ export class SubmitAnswerUseCase {
 
     const participant = await this.participants.findById(command.participantId);
     if (!participant) {
-      throw new SessionNotFoundError(command.participantId);
+      throw new ParticipantNotFoundError(command.participantId);
     }
 
     const question = findQuestion(session.bareme, command.questionId);
@@ -81,7 +80,7 @@ export class SubmitAnswerUseCase {
 
     if (
       question.type === 'vote' &&
-      !this.estValeurConnue(command.valeur, solution)
+      !estValeurConnue(solution, command.valeur)
     ) {
       throw new DomainValidationError(
         `Valeur hors des options connues pour ${command.questionId}`,
@@ -109,16 +108,6 @@ export class SubmitAnswerUseCase {
     );
 
     return verdict;
-  }
-
-  private estValeurConnue(valeur: AnswerValue, solution: Solution): boolean {
-    if (valeur === NE_SAIT_PAS) {
-      return true;
-    }
-    return (
-      valeur === solution.valeur ||
-      solution.pieges.some((piege) => piege.valeur === valeur)
-    );
   }
 
   private async updateMastery(

@@ -1,5 +1,12 @@
-import { findQuestion, pickFreeSeed, solutionFor } from './Bareme';
+import {
+  estValeurConnue,
+  findQuestion,
+  pickFreeSeed,
+  solutionFor,
+} from './Bareme';
 import type { Bareme } from './Bareme';
+import { NE_SAIT_PAS } from './GradingCore';
+import type { Solution } from './AnswerGrading';
 
 const bareme: Bareme = {
   version: 1,
@@ -43,6 +50,36 @@ describe('solutionFor', () => {
 
   it('retourne null pour un seed absent', () => {
     expect(solutionFor(bareme, 9999, 'Q-CAP-03')).toBeNull();
+  });
+});
+
+describe('estValeurConnue', () => {
+  const solution: Solution = {
+    valeur: 'b',
+    pieges: [{ valeur: 'a', misconception: 'interet-simple' }],
+  };
+
+  it('accepte la valeur de la solution', () => {
+    expect(estValeurConnue(solution, 'b')).toBe(true);
+  });
+
+  it('accepte la valeur d un piege', () => {
+    expect(estValeurConnue(solution, 'a')).toBe(true);
+  });
+
+  it('accepte je ne sais pas', () => {
+    expect(estValeurConnue(solution, NE_SAIT_PAS)).toBe(true);
+  });
+
+  it('refuse une valeur hors solution et hors pieges', () => {
+    expect(estValeurConnue(solution, '<img src=x onerror=alert(1)>')).toBe(
+      false,
+    );
+  });
+
+  it('refuse toute valeur quand le tirage n a aucun piege', () => {
+    const sansPiege: Solution = { valeur: 'b', pieges: [] };
+    expect(estValeurConnue(sansPiege, 'a')).toBe(false);
   });
 });
 

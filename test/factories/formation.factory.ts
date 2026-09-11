@@ -5,7 +5,10 @@ import type {
   CreateAnswerInput,
   IAnswersRepository,
 } from '../../src/modules/formations/domain/IAnswers.repository';
-import type { IIncidentsRepository } from '../../src/modules/formations/domain/IIncidents.repository';
+import type {
+  IIncidentsRepository,
+  IncidentInput,
+} from '../../src/modules/formations/domain/IIncidents.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type {
@@ -119,6 +122,19 @@ export function buildAnswerRecord(
     misconception: null,
     dureeMs: 42000,
     soumisLe: new Date('2026-09-11T08:10:00.000Z'),
+    ...overrides,
+  };
+}
+
+export function buildIncidentInput(
+  overrides: Partial<IncidentInput> = {},
+): IncidentInput {
+  return {
+    sessionId: 'session-uuid',
+    participantId: 'participant-uuid',
+    type: 'tab_hidden',
+    contexte: null,
+    horodatage: new Date('2026-09-11T08:12:00.000Z'),
     ...overrides,
   };
 }

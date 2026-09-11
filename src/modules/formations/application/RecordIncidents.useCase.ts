@@ -4,10 +4,11 @@ import type {
   IIncidentsRepository,
   IncidentInput,
 } from '../domain/IIncidents.repository';
-import { INCIDENT_TYPES } from '../domain/IncidentType';
+import {
+  envoiDansLaLimite,
+  filtrerIncidentsConnus,
+} from '../domain/IncidentType';
 import { INCIDENTS_REPOSITORY } from '../domain/token';
-
-const MAX_INCIDENTS_PAR_ENVOI = 200;
 
 @Injectable()
 export class RecordIncidentsUseCase {
@@ -17,12 +18,10 @@ export class RecordIncidentsUseCase {
   ) {}
 
   async execute(inputs: readonly IncidentInput[]): Promise<void> {
-    if (inputs.length > MAX_INCIDENTS_PAR_ENVOI) {
+    if (!envoiDansLaLimite(inputs.length)) {
       throw new DomainValidationError('Trop d incidents dans un seul envoi');
     }
-    const valides = inputs.filter((incident) =>
-      INCIDENT_TYPES.includes(incident.type as (typeof INCIDENT_TYPES)[number]),
-    );
+    const valides = filtrerIncidentsConnus(inputs);
     if (valides.length === 0) {
       return;
     }

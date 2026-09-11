@@ -12,6 +12,7 @@ import {
 import { NE_SAIT_PAS } from '../../domain/GradingCore';
 import {
   AnswerAlreadySubmittedError,
+  ParticipantNotFoundError,
   SessionClosedError,
 } from '../../domain/errors/FormationErrors';
 import { SubmitAnswerUseCase } from '../SubmitAnswer.useCase';
@@ -83,6 +84,13 @@ describe('SubmitAnswerUseCase', () => {
       buildSessionRecord({ etat: 'terminee' }),
     );
     await expect(sut.execute(commande)).rejects.toThrow(SessionClosedError);
+  });
+
+  it('refuse une soumission d un participant introuvable', async () => {
+    participants.findById.mockResolvedValue(null);
+    await expect(sut.execute(commande)).rejects.toThrow(
+      ParticipantNotFoundError,
+    );
   });
 
   it('fait monter la boite de Leitner apres une reussite', async () => {

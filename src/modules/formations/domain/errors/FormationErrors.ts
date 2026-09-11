@@ -15,6 +15,12 @@ export class SessionNotFoundError extends ResourceNotFoundError {
   }
 }
 
+export class ParticipantNotFoundError extends ResourceNotFoundError {
+  constructor(id: string) {
+    super(`Participant introuvable: ${id}`);
+  }
+}
+
 export class SessionNotOwnedError extends InsufficientPermissionsError {
   constructor(sessionId: string) {
     super(`La session ${sessionId} appartient a un autre formateur`);
