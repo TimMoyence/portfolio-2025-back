@@ -24,6 +24,7 @@ export class StreamSessionUseCase {
     return new Observable<MessageEvent>((subscriber) => {
       let derniereEmpreinte = '';
       let actif = true;
+      let occupe = false;
 
       const arreter = (): void => {
         actif = false;
@@ -33,25 +34,31 @@ export class StreamSessionUseCase {
       };
 
       const tick = async (): Promise<void> => {
-        if (!actif) {
+        if (!actif || occupe) {
           return;
         }
-        const etat = await this.resolveState(sessionId);
-        if (!etat) {
-          subscriber.next({ type: 'fin', data: { raison: 'introuvable' } });
-          subscriber.complete();
-          arreter();
-          return;
-        }
-        const empreinte = this.cache.fingerprint(etat);
-        if (empreinte !== derniereEmpreinte) {
-          derniereEmpreinte = empreinte;
-          subscriber.next({ type: 'etat', data: etat });
-        }
-        if (etat.etat === 'terminee') {
-          subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
-          subscriber.complete();
-          arreter();
+        occupe = true;
+        try {
+          const etat = await this.resolveState(sessionId);
+          if (!etat) {
+            subscriber.next({ type: 'fin', data: { raison: 'introuvable' } });
+            subscriber.complete();
+            arreter();
+            return;
+          }
+          const empreinte = this.cache.fingerprint(etat);
+          if (empreinte !== derniereEmpreinte) {
+            derniereEmpreinte = empreinte;
+            subscriber.next({ type: 'etat', data: etat });
+          }
+          if (etat.etat === 'terminee') {
+            subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
+            subscriber.complete();
+            this.cache.drop(sessionId);
+            arreter();
+          }
+        } finally {
+          occupe = false;
         }
       };
 
