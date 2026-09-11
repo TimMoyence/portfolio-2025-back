@@ -2,6 +2,8 @@ import { validateEnv } from './env.validation';
 
 const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
+const TEST_FORMATION_REVIEW_TOKEN_SECRET =
+  'test-formation-review-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)
 
 function buildValidEnv(
   overrides: Record<string, unknown> = {},
@@ -13,6 +15,7 @@ function buildValidEnv(
     JWT_SECRET: TEST_JWT_SECRET,
     SECURE_KEY_FOR_PASSWORD_HASHING: TEST_HASHING_KEY,
     GOOGLE_CLIENT_ID: 'test-google-client-id.apps.googleusercontent.com',
+    FORMATION_REVIEW_TOKEN_SECRET: TEST_FORMATION_REVIEW_TOKEN_SECRET,
     ...overrides,
   };
 }
@@ -148,6 +151,19 @@ describe('validateEnv', () => {
     });
 
     expect(() => validateEnv(env)).toThrow('SECURE_KEY_FOR_PASSWORD_HASHING');
+    expect(() => validateEnv(env)).toThrow('32');
+  });
+
+  it('devrait lancer une erreur si FORMATION_REVIEW_TOKEN_SECRET est manquant', () => {
+    const env = buildValidEnv({ FORMATION_REVIEW_TOKEN_SECRET: undefined });
+
+    expect(() => validateEnv(env)).toThrow('FORMATION_REVIEW_TOKEN_SECRET');
+  });
+
+  it('devrait rejeter un FORMATION_REVIEW_TOKEN_SECRET de moins de 32 caracteres', () => {
+    const env = buildValidEnv({ FORMATION_REVIEW_TOKEN_SECRET: 'trop-court' });
+
+    expect(() => validateEnv(env)).toThrow('FORMATION_REVIEW_TOKEN_SECRET');
     expect(() => validateEnv(env)).toThrow('32');
   });
 

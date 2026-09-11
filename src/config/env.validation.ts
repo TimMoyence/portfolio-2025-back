@@ -53,6 +53,15 @@ const envSchema = z
     GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID est requis'),
     PASSWORD_RESET_URL_BASE: z.string().optional(),
 
+    FORMATION_TEACHER_NOTIFICATION_TO: z.string().optional(),
+    FORMATION_REVIEW_BASE_URL: z.string().optional(),
+    FORMATION_REVIEW_TOKEN_SECRET: z
+      .string()
+      .min(
+        32,
+        'FORMATION_REVIEW_TOKEN_SECRET doit faire au moins 32 caracteres',
+      ),
+
     REDIS_HOST: z.string().default('127.0.0.1'),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().optional(),
