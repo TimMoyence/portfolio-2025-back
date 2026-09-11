@@ -4,6 +4,10 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import { ControlSessionUseCase } from '../ControlSession.useCase';
+import {
+  InvalidStateTransitionError,
+  SessionNotOwnedError,
+} from '../../domain/errors/FormationErrors';
 
 const TEACHER_ID = 'teacher-uuid';
 const AUTRE_TEACHER_ID = 'autre-teacher-uuid';
@@ -42,7 +46,7 @@ describe('ControlSessionUseCase', () => {
   it('refuse de changer l ecran sans etre le formateur de la session', async () => {
     await expect(
       sut.setScreen('session-uuid', AUTRE_TEACHER_ID, 2),
-    ).rejects.toThrow();
+    ).rejects.toThrow(SessionNotOwnedError);
     expect(sessions.update).not.toHaveBeenCalled();
   });
 
@@ -77,7 +81,7 @@ describe('ControlSessionUseCase', () => {
   it('refuse de changer le rythme sans etre le formateur de la session', async () => {
     await expect(
       sut.setPacing('session-uuid', AUTRE_TEACHER_ID, 'pilote', null),
-    ).rejects.toThrow();
+    ).rejects.toThrow(SessionNotOwnedError);
     expect(sessions.update).not.toHaveBeenCalled();
   });
 
@@ -95,7 +99,16 @@ describe('ControlSessionUseCase', () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'attente' }),
     );
-    await expect(sut.start('session-uuid', AUTRE_TEACHER_ID)).rejects.toThrow();
+    await expect(sut.start('session-uuid', AUTRE_TEACHER_ID)).rejects.toThrow(
+      SessionNotOwnedError,
+    );
+    expect(sessions.update).not.toHaveBeenCalled();
+  });
+
+  it('refuse de redemarrer une session deja en cours', async () => {
+    await expect(sut.start('session-uuid', TEACHER_ID)).rejects.toThrow(
+      InvalidStateTransitionError,
+    );
     expect(sessions.update).not.toHaveBeenCalled();
   });
 });

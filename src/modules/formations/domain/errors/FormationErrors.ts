@@ -10,8 +10,8 @@ export class InvalidSessionCodeError extends DomainValidationError {
 }
 
 export class SessionNotFoundError extends ResourceNotFoundError {
-  constructor(code: string) {
-    super(`Aucune session ouverte pour le code ${code}`);
+  constructor(id: string) {
+    super(`Session introuvable: ${id}`);
   }
 }
 

@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
   buildBareme,
   buildSessionRecord,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import { OpenSessionUseCase } from '../OpenSession.useCase';
+
+const MAX_TENTATIVES_CODE = 20;
 
 describe('OpenSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -60,5 +63,17 @@ describe('OpenSessionUseCase', () => {
         bareme,
       }),
     ).rejects.toThrow();
+  });
+
+  it('refuse d ouvrir une session quand le code reste toujours pris', async () => {
+    sessions.isCodeTaken.mockResolvedValue(true);
+    await expect(
+      sut.execute({
+        courseSlug: 'b1-09-interets-composes',
+        teacherId: 'teacher-uuid',
+        bareme: buildBareme(),
+      }),
+    ).rejects.toThrow(DomainValidationError);
+    expect(sessions.isCodeTaken).toHaveBeenCalledTimes(MAX_TENTATIVES_CODE);
   });
 });
