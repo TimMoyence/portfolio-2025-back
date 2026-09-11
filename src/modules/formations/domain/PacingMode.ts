@@ -9,13 +9,15 @@ export interface FreeRange {
 
 export function isFreeRangeValid(
   range: FreeRange,
-  totalEcrans: number,
+  totalEcrans?: number,
 ): boolean {
+  const borneHauteValide =
+    totalEcrans === undefined || range.dernier < totalEcrans;
   return (
     Number.isInteger(range.premier) &&
     Number.isInteger(range.dernier) &&
     range.premier >= 0 &&
     range.dernier >= range.premier &&
-    range.dernier < totalEcrans
+    borneHauteValide
   );
 }

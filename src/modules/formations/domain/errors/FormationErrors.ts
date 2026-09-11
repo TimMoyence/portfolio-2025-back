@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
+import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 
@@ -11,6 +12,12 @@ export class InvalidSessionCodeError extends DomainValidationError {
 export class SessionNotFoundError extends ResourceNotFoundError {
   constructor(code: string) {
     super(`Aucune session ouverte pour le code ${code}`);
+  }
+}
+
+export class SessionNotOwnedError extends InsufficientPermissionsError {
+  constructor(sessionId: string) {
+    super(`La session ${sessionId} appartient a un autre formateur`);
   }
 }
 
