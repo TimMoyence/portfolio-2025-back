@@ -8,17 +8,17 @@ import type {
   IAnswersRepository,
   QuestionTally,
 } from '../domain/IAnswers.repository';
-import { BaseFormationRepository } from './BaseFormationRepository';
+import { PostgresErrorClassifier } from './PostgresErrorClassifier';
 import { FormationAnswerEntity } from './entities/FormationAnswer.entity';
 
-interface TallyRow {
+export interface TallyRow {
   questionId: string;
   total: string;
   correctes: string;
   misconception: string | null;
 }
 
-function regrouperParQuestion(
+export function regrouperParQuestion(
   lignes: readonly TallyRow[],
 ): readonly QuestionTally[] {
   const parQuestion = new Map<string, QuestionTally>();
@@ -46,7 +46,7 @@ function regrouperParQuestion(
 
 @Injectable()
 export class AnswersRepositoryTypeORM
-  extends BaseFormationRepository
+  extends PostgresErrorClassifier
   implements IAnswersRepository
 {
   constructor(

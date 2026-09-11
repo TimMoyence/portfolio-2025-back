@@ -37,3 +37,9 @@ export class AnswerAlreadySubmittedError extends ResourceConflictError {
     super(`Reponse deja soumise pour la question ${questionId}`);
   }
 }
+
+export class SeedAlreadyAssignedError extends ResourceConflictError {
+  constructor(seed: number) {
+    super(`Le tirage ${seed} est deja attribue dans cette session`);
+  }
+}

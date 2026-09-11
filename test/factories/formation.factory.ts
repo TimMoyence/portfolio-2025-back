@@ -163,3 +163,15 @@ export function createMockFormationMailer(): jest.Mocked<IFormationMailer> {
     sendCopieEtudiant: jest.fn().mockResolvedValue(undefined),
   };
 }
+
+export function mockTypeOrmCreate(): jest.Mock {
+  return jest.fn().mockImplementation((data: unknown) => data);
+}
+
+export function mockTypeOrmSave(extra: Record<string, unknown>): jest.Mock {
+  return jest
+    .fn()
+    .mockImplementation((entity: object) =>
+      Promise.resolve({ ...entity, ...extra }),
+    );
+}

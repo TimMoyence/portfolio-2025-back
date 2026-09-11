@@ -2,17 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { SeedAlreadyAssignedError } from '../domain/errors/FormationErrors';
 import type {
   CreateParticipantInput,
   IParticipantsRepository,
   ParticipantRecord,
 } from '../domain/IParticipants.repository';
-import { BaseFormationRepository } from './BaseFormationRepository';
+import { PostgresErrorClassifier } from './PostgresErrorClassifier';
 import { FormationParticipantEntity } from './entities/FormationParticipant.entity';
+
+const SESSION_KEY_CONSTRAINT = 'UQ_formation_participants_session_key';
+const SESSION_SEED_CONSTRAINT = 'UQ_formation_participants_session_seed';
 
 @Injectable()
 export class ParticipantsRepositoryTypeORM
-  extends BaseFormationRepository
+  extends PostgresErrorClassifier
   implements IParticipantsRepository
 {
   constructor(
@@ -35,13 +39,31 @@ export class ParticipantsRepositoryTypeORM
       const saved = await this.repo.save(entity);
       return this.toDomain(saved);
     } catch (error) {
-      if (this.isUniqueViolation(error)) {
-        throw new ResourceConflictError(
-          'Ce participant a deja rejoint cette session',
-        );
+      if (!this.isUniqueViolation(error)) {
+        throw error;
       }
-      throw error;
+      throw this.conflictErrorFor(
+        input.seed,
+        this.uniqueViolationConstraint(error),
+      );
     }
+  }
+
+  private conflictErrorFor(
+    seed: number,
+    constraint: string | undefined,
+  ): ResourceConflictError {
+    if (constraint === SESSION_SEED_CONSTRAINT) {
+      return new SeedAlreadyAssignedError(seed);
+    }
+    if (constraint === SESSION_KEY_CONSTRAINT) {
+      return new ResourceConflictError(
+        'Ce participant a deja rejoint cette session',
+      );
+    }
+    return new ResourceConflictError(
+      'Conflit lors de la creation du participant',
+    );
   }
 
   async findBySessionAndStudentKey(
