@@ -9,6 +9,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Req,
   Sse,
 } from '@nestjs/common';
 import {
@@ -17,24 +18,41 @@ import {
   ApiNoContentResponse,
   ApiOperation,
   ApiTags,
+  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import type { Request } from 'express';
 import { Observable } from 'rxjs';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
 import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
+import {
+  InvalidSessionCodeError,
+  SessionNotFoundError,
+} from '../domain/errors/FormationErrors';
+import { CodeScanProtectionService } from './CodeScanProtection.service';
 import { JoinSessionRequestDto } from './dto/join-session.request.dto';
 import { JoinSessionResponseDto } from './dto/join-session.response.dto';
 import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
-import { ParticipantTokenService } from './ParticipantToken.service';
-
-const EN_TETE_JETON = 'x-participant-token';
+import {
+  FENETRE_THROTTLE_MS,
+  LIMITE_INCIDENTS_PAR_PARTICIPANT,
+  LIMITE_JOIN_PAR_CODE,
+  LIMITE_REPONSES_PAR_PARTICIPANT,
+  suivreParCodeDeSession,
+  suivreParParticipant,
+} from './formations-throttling';
+import {
+  EN_TETE_JETON,
+  ParticipantTokenService,
+} from './ParticipantToken.service';
 
 /**
  * Poste etudiant : aucune de ces reponses ne porte le corrige.
@@ -54,30 +72,48 @@ export class FormationsStudentController {
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly tokens: ParticipantTokenService,
+    private readonly codeScan: CodeScanProtectionService,
     @Optional()
     private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Throttle({
+    default: {
+      limit: LIMITE_JOIN_PAR_CODE,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParCodeDeSession,
+    },
+  })
   @Post('sessions/:code/join')
   @ApiOperation({ summary: 'Rejoint une session avec le code dicte en classe' })
   @ApiCreatedResponse({ type: JoinSessionResponseDto })
   @ApiBadRequestResponse({ description: 'Code de session invalide' })
+  @ApiTooManyRequestsResponse({ description: 'Balayage de codes detecte' })
   async join(
     @Param('code') code: string,
     @Body() dto: JoinSessionRequestDto,
+    @Req() request: Request,
   ): Promise<JoinSessionResponseDto> {
+    const adresse = resolveClientIpOrUnknown(request);
+    this.codeScan.assertPasDeBalayage(adresse);
     this.formProtection.assertHuman({
       honeypot: dto.website,
       formStartedAt: dto.formStartedAt,
     });
-    const result = await this.joinSession.execute({
-      code,
-      studentKey: dto.studentKey,
-      prenom: dto.prenom,
-      nom: dto.nom,
-      email: dto.email,
-    });
+    const result = await this.joinSession
+      .execute({
+        code,
+        studentKey: dto.studentKey,
+        prenom: dto.prenom,
+        nom: dto.nom,
+        email: dto.email,
+      })
+      .catch((error: unknown) => {
+        if (estCodeSansSeance(error)) {
+          this.codeScan.enregistrerEchec(adresse);
+        }
+        throw error;
+      });
     return {
       participantId: result.participantId,
       sessionId: result.sessionId,
@@ -88,7 +124,13 @@ export class FormationsStudentController {
     };
   }
 
-  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @Throttle({
+    default: {
+      limit: LIMITE_REPONSES_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
   @Post('sessions/:id/answers')
   @ApiOperation({ summary: 'Soumet une reponse, corrigee cote serveur' })
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
@@ -109,7 +151,13 @@ export class FormationsStudentController {
     return { correcte: verdict.correcte, misconception: verdict.misconception };
   }
 
-  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Throttle({
+    default: {
+      limit: LIMITE_INCIDENTS_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
   @Post('sessions/:id/incidents')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remonte le journal d incidents du poste etudiant' })
@@ -138,4 +186,11 @@ export class FormationsStudentController {
   stream(@Param('id', ParseUUIDPipe) id: string): Observable<MessageEvent> {
     return this.streamSession.execute(id);
   }
+}
+
+function estCodeSansSeance(error: unknown): boolean {
+  return (
+    error instanceof SessionNotFoundError ||
+    error instanceof InvalidSessionCodeError
+  );
 }

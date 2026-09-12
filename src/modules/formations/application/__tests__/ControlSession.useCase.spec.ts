@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
   buildSessionRecord,
   createMockSessionsRepo,
@@ -25,14 +26,14 @@ describe('ControlSessionUseCase', () => {
   });
 
   it('change l ecran courant', async () => {
-    await sut.setScreen('session-uuid', TEACHER_ID, 4);
+    await sut.apply('session-uuid', TEACHER_ID, { ecran: 4 });
     expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
       ecranCourant: 4,
     });
   });
 
   it('publie l etat dans le cache apres avoir change l ecran', async () => {
-    await sut.setScreen('session-uuid', TEACHER_ID, 4);
+    await sut.apply('session-uuid', TEACHER_ID, { ecran: 4 });
     expect(cache.publish).toHaveBeenCalledWith(
       'session-uuid',
       expect.objectContaining({ ecranCourant: 4 }),
@@ -48,7 +49,7 @@ describe('ControlSessionUseCase', () => {
       participants: 9,
       majLe: new Date('2026-09-11T08:00:00.000Z'),
     });
-    await sut.setScreen('session-uuid', TEACHER_ID, 4);
+    await sut.apply('session-uuid', TEACHER_ID, { ecran: 4 });
     expect(cache.publish).toHaveBeenCalledWith(
       'session-uuid',
       expect.objectContaining({ participants: 9 }),
@@ -57,7 +58,7 @@ describe('ControlSessionUseCase', () => {
 
   it('refuse un ecran negatif', async () => {
     await expect(
-      sut.setScreen('session-uuid', TEACHER_ID, -1),
+      sut.apply('session-uuid', TEACHER_ID, { ecran: -1 }),
     ).rejects.toThrow();
   });
 
@@ -66,22 +67,22 @@ describe('ControlSessionUseCase', () => {
       buildSessionRecord({ etat: 'terminee' }),
     );
     await expect(
-      sut.setScreen('session-uuid', TEACHER_ID, 2),
+      sut.apply('session-uuid', TEACHER_ID, { ecran: 2 }),
     ).rejects.toThrow();
   });
 
   it('refuse de changer l ecran sans etre le formateur de la session', async () => {
     await expect(
-      sut.setScreen('session-uuid', AUTRE_TEACHER_ID, 2),
+      sut.apply('session-uuid', AUTRE_TEACHER_ID, { ecran: 2 }),
     ).rejects.toThrow(SessionNotOwnedError);
     expect(sessions.update).not.toHaveBeenCalled();
     expect(cache.publish).not.toHaveBeenCalled();
   });
 
   it('bascule en rythme libre avec un intervalle', async () => {
-    await sut.setPacing('session-uuid', TEACHER_ID, 'libre', {
-      premier: 3,
-      dernier: 7,
+    await sut.apply('session-uuid', TEACHER_ID, {
+      mode: 'libre',
+      intervalle: { premier: 3, dernier: 7 },
     });
     expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
       modeRythme: 'libre',
@@ -90,9 +91,9 @@ describe('ControlSessionUseCase', () => {
   });
 
   it('publie l etat dans le cache apres avoir change le rythme', async () => {
-    await sut.setPacing('session-uuid', TEACHER_ID, 'libre', {
-      premier: 3,
-      dernier: 7,
+    await sut.apply('session-uuid', TEACHER_ID, {
+      mode: 'libre',
+      intervalle: { premier: 3, dernier: 7 },
     });
     expect(cache.publish).toHaveBeenCalledWith(
       'session-uuid',
@@ -104,7 +105,7 @@ describe('ControlSessionUseCase', () => {
   });
 
   it('efface l intervalle en repassant en rythme pilote', async () => {
-    await sut.setPacing('session-uuid', TEACHER_ID, 'pilote', null);
+    await sut.apply('session-uuid', TEACHER_ID, { mode: 'pilote' });
     expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
       modeRythme: 'pilote',
       intervalleLibre: null,
@@ -113,17 +114,49 @@ describe('ControlSessionUseCase', () => {
 
   it('refuse un intervalle libre inverse', async () => {
     await expect(
-      sut.setPacing('session-uuid', TEACHER_ID, 'libre', {
-        premier: 7,
-        dernier: 3,
+      sut.apply('session-uuid', TEACHER_ID, {
+        mode: 'libre',
+        intervalle: { premier: 7, dernier: 3 },
       }),
     ).rejects.toThrow();
   });
 
   it('refuse de changer le rythme sans etre le formateur de la session', async () => {
     await expect(
-      sut.setPacing('session-uuid', AUTRE_TEACHER_ID, 'pilote', null),
+      sut.apply('session-uuid', AUTRE_TEACHER_ID, { mode: 'pilote' }),
     ).rejects.toThrow(SessionNotOwnedError);
+    expect(sessions.update).not.toHaveBeenCalled();
+    expect(cache.publish).not.toHaveBeenCalled();
+  });
+
+  it('change l ecran et le rythme en une seule ecriture et une seule publication', async () => {
+    await sut.apply('session-uuid', TEACHER_ID, {
+      ecran: 4,
+      mode: 'libre',
+      intervalle: { premier: 3, dernier: 7 },
+    });
+    expect(sessions.update).toHaveBeenCalledTimes(1);
+    expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
+      ecranCourant: 4,
+      modeRythme: 'libre',
+      intervalleLibre: { premier: 3, dernier: 7 },
+    });
+    expect(cache.publish).toHaveBeenCalledTimes(1);
+  });
+
+  it('ne bascule pas les ecrans de la classe quand le rythme demande est invalide', async () => {
+    await expect(
+      sut.apply('session-uuid', TEACHER_ID, { ecran: 4, mode: 'libre' }),
+    ).rejects.toThrow(DomainValidationError);
+    expect(sessions.findById).not.toHaveBeenCalled();
+    expect(sessions.update).not.toHaveBeenCalled();
+    expect(cache.publish).not.toHaveBeenCalled();
+  });
+
+  it('ne change pas le rythme quand l ecran demande est invalide', async () => {
+    await expect(
+      sut.apply('session-uuid', TEACHER_ID, { ecran: -1, mode: 'pilote' }),
+    ).rejects.toThrow(DomainValidationError);
     expect(sessions.update).not.toHaveBeenCalled();
     expect(cache.publish).not.toHaveBeenCalled();
   });

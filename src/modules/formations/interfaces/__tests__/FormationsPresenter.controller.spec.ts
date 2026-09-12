@@ -31,8 +31,7 @@ describe('FormationsPresenterController', () => {
   const openSession = { execute: jest.fn() };
   const controlSession = {
     start: jest.fn(),
-    setScreen: jest.fn(),
-    setPacing: jest.fn(),
+    apply: jest.fn(),
   };
   const closeSession = { execute: jest.fn() };
   const results = { execute: jest.fn() };
@@ -79,48 +78,48 @@ describe('FormationsPresenterController', () => {
   it('change l ecran courant', async () => {
     await controle({ ecran: 4 });
 
-    expect(controlSession.setScreen).toHaveBeenCalledWith(
-      SESSION_ID,
-      TEACHER_ID,
-      4,
-    );
-    expect(controlSession.setPacing).not.toHaveBeenCalled();
+    expect(controlSession.apply).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID, {
+      ecran: 4,
+      mode: undefined,
+      intervalle: null,
+    });
   });
 
   it('passe en rythme libre avec son intervalle', async () => {
     await controle({ mode: 'libre', intervalle: { premier: 3, dernier: 9 } });
 
-    expect(controlSession.setPacing).toHaveBeenCalledWith(
-      SESSION_ID,
-      TEACHER_ID,
-      'libre',
-      { premier: 3, dernier: 9 },
-    );
+    expect(controlSession.apply).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID, {
+      ecran: undefined,
+      mode: 'libre',
+      intervalle: { premier: 3, dernier: 9 },
+    });
   });
 
   it('repasse en rythme pilote sans intervalle', async () => {
     await controle({ mode: 'pilote' });
 
-    expect(controlSession.setPacing).toHaveBeenCalledWith(
-      SESSION_ID,
-      TEACHER_ID,
-      'pilote',
-      null,
-    );
+    expect(controlSession.apply).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID, {
+      ecran: undefined,
+      mode: 'pilote',
+      intervalle: null,
+    });
   });
 
-  it('applique l ecran puis le rythme quand les deux sont demandes', async () => {
+  it('confie l ecran et le rythme a un seul appel quand les deux sont demandes', async () => {
     await controle({ ecran: 2, mode: 'pilote' });
 
-    expect(controlSession.setScreen).toHaveBeenCalledTimes(1);
-    expect(controlSession.setPacing).toHaveBeenCalledTimes(1);
+    expect(controlSession.apply).toHaveBeenCalledTimes(1);
+    expect(controlSession.apply).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID, {
+      ecran: 2,
+      mode: 'pilote',
+      intervalle: null,
+    });
   });
 
   it('refuse une demande de pilotage vide sans toucher a la session', async () => {
     await expect(controle({})).rejects.toBeInstanceOf(BadRequestException);
 
-    expect(controlSession.setScreen).not.toHaveBeenCalled();
-    expect(controlSession.setPacing).not.toHaveBeenCalled();
+    expect(controlSession.apply).not.toHaveBeenCalled();
   });
 
   it('cloture sans deriver de destinataire de l identite du formateur', async () => {

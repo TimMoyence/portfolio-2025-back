@@ -5,6 +5,13 @@ const SECRET_LONGUEUR_MIN = 32;
 const SEPARATEUR = '.';
 const CONTEXTE = 'participant';
 
+export const EN_TETE_JETON = 'x-participant-token';
+
+export function participantIdDuJeton(jeton: string): string | null {
+  const separateur = jeton.lastIndexOf(SEPARATEUR);
+  return separateur > 0 ? jeton.slice(0, separateur) : null;
+}
+
 /**
  * Jeton de participant : HMAC-SHA256 sur `participant:<sessionId>:<participantId>`.
  *
@@ -25,14 +32,13 @@ export class ParticipantTokenService {
   }
 
   verify(sessionId: string, jeton: string | undefined): string {
-    const separateur = jeton?.lastIndexOf(SEPARATEUR) ?? -1;
-    if (!jeton || separateur <= 0) {
+    const participantId = jeton ? participantIdDuJeton(jeton) : null;
+    if (!jeton || participantId === null) {
       throw new UnauthorizedException(
         'Jeton de participant absent ou illisible',
       );
     }
-    const participantId = jeton.slice(0, separateur);
-    const presentee = jeton.slice(separateur + 1);
+    const presentee = jeton.slice(participantId.length + 1);
     if (!this.correspond(presentee, this.empreinte(sessionId, participantId))) {
       throw new UnauthorizedException('Jeton de participant invalide');
     }

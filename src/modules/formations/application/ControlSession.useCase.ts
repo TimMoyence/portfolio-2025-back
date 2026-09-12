@@ -4,6 +4,7 @@ import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type {
   ISessionsRepository,
   SessionRecord,
+  UpdateSessionInput,
 } from '../domain/ISessions.repository';
 import {
   InvalidStateTransitionError,
@@ -16,6 +17,12 @@ import type { FreeRange, PacingMode } from '../domain/PacingMode';
 import { canTransition } from '../domain/SessionState';
 import { SESSION_STATE_CACHE, SESSIONS_REPOSITORY } from '../domain/token';
 
+export interface ControlSessionChanges {
+  ecran?: number;
+  mode?: PacingMode;
+  intervalle?: FreeRange | null;
+}
+
 @Injectable()
 export class ControlSessionUseCase {
   constructor(
@@ -25,39 +32,55 @@ export class ControlSessionUseCase {
     private readonly cache: ISessionStateCache,
   ) {}
 
-  async setScreen(
+  /**
+   * Le pilotage est atomique de bout en bout : la requete entiere est
+   * validee avant la moindre lecture, puis appliquee en une seule ecriture
+   * et une seule publication.
+   *
+   * Un ecran applique avant qu'un rythme invalide ne soit refuse laisserait
+   * les trente postes de la classe sur une diapositive que le formateur ne
+   * croit pas avoir envoyee, avec un 400 pour seule trace — la validation
+   * doit donc preceder l'effet, pas l'accompagner
+   * (FormationsPresenter.controller.ts).
+   */
+  async apply(
     sessionId: string,
     teacherId: string,
-    ecran: number,
+    changements: ControlSessionChanges,
   ): Promise<void> {
-    if (!Number.isInteger(ecran) || ecran < 0) {
-      throw new DomainValidationError(`Numero d ecran invalide: ${ecran}`);
-    }
+    const misAJour = this.validerEtProjeter(changements);
     await this.assertPilotable(sessionId, teacherId);
-    const session = await this.sessions.update(sessionId, {
-      ecranCourant: ecran,
-    });
+    const session = await this.sessions.update(sessionId, misAJour);
     this.publier(sessionId, session);
   }
 
-  async setPacing(
-    sessionId: string,
-    teacherId: string,
-    mode: PacingMode,
-    intervalle: FreeRange | null,
-  ): Promise<void> {
-    if (
-      mode === 'libre' &&
-      (intervalle === null || !isFreeRangeValid(intervalle))
-    ) {
+  private validerEtProjeter(
+    changements: ControlSessionChanges,
+  ): UpdateSessionInput {
+    const misAJour: UpdateSessionInput = {};
+    if (changements.ecran !== undefined) {
+      if (!Number.isInteger(changements.ecran) || changements.ecran < 0) {
+        throw new DomainValidationError(
+          `Numero d ecran invalide: ${changements.ecran}`,
+        );
+      }
+      misAJour.ecranCourant = changements.ecran;
+    }
+    if (changements.mode !== undefined) {
+      misAJour.modeRythme = changements.mode;
+      misAJour.intervalleLibre =
+        changements.mode === 'libre'
+          ? this.intervalleValide(changements.intervalle ?? null)
+          : null;
+    }
+    return misAJour;
+  }
+
+  private intervalleValide(intervalle: FreeRange | null): FreeRange {
+    if (intervalle === null || !isFreeRangeValid(intervalle)) {
       throw new DomainValidationError('Intervalle de rythme libre invalide');
     }
-    await this.assertPilotable(sessionId, teacherId);
-    const session = await this.sessions.update(sessionId, {
-      modeRythme: mode,
-      intervalleLibre: mode === 'libre' ? intervalle : null,
-    });
-    this.publier(sessionId, session);
+    return intervalle;
   }
 
   async start(sessionId: string, teacherId: string): Promise<void> {

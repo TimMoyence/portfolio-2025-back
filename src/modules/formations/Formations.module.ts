@@ -31,6 +31,7 @@ import { SessionsRepositoryTypeORM } from './infrastructure/Sessions.repository.
 import { SessionStateCacheService } from './infrastructure/SessionStateCache.service';
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
+import { CodeScanProtectionService } from './interfaces/CodeScanProtection.service';
 import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
 
 @Module({
@@ -54,6 +55,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     ParticipantTokenService,
+    CodeScanProtectionService,
     {
       provide: SESSIONS_REPOSITORY,
       useClass: SessionsRepositoryTypeORM,

@@ -14,6 +14,7 @@ import {
   AnswerAlreadySubmittedError,
   ParticipantNotFoundError,
   SessionClosedError,
+  SessionNotStartedError,
 } from '../../domain/errors/FormationErrors';
 import { SubmitAnswerUseCase } from '../SubmitAnswer.useCase';
 
@@ -84,6 +85,22 @@ describe('SubmitAnswerUseCase', () => {
       buildSessionRecord({ etat: 'terminee' }),
     );
     await expect(sut.execute(commande)).rejects.toThrow(SessionClosedError);
+  });
+
+  it('refuse une soumission sur une session que le formateur n a pas demarree', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ etat: 'attente' }),
+    );
+    await expect(sut.execute(commande)).rejects.toThrow(SessionNotStartedError);
+    expect(answers.create).not.toHaveBeenCalled();
+    expect(mastery.upsert).not.toHaveBeenCalled();
+  });
+
+  it('dit a l etudiant que la seance n a pas commence plutot que de refuser sans raison', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ etat: 'attente' }),
+    );
+    await expect(sut.execute(commande)).rejects.toThrow(/pas encore commencé/);
   });
 
   it('refuse une soumission d un participant introuvable', async () => {

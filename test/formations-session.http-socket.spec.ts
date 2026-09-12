@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { randomUUID } from 'node:crypto';
 import request from 'supertest';
@@ -45,6 +46,7 @@ import {
   SESSIONS_REPOSITORY,
 } from '../src/modules/formations/domain/token';
 import { SessionStateCacheService } from '../src/modules/formations/infrastructure/SessionStateCache.service';
+import { CodeScanProtectionService } from '../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsPresenterController } from '../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../src/modules/formations/interfaces/FormationsStudent.controller';
 import { ParticipantTokenService } from '../src/modules/formations/interfaces/ParticipantToken.service';
@@ -64,9 +66,10 @@ const FORMATEUR_B = 'b2222222-2222-4222-8222-222222222222';
 
 /**
  * Valeurs temoin du corrige. Aucune ne doit apparaitre dans une reponse
- * servie au poste etudiant : le point decimal et les lettres hors [0-9a-f]
- * les rendent impossibles a produire par hasard dans un identifiant ou une
- * empreinte hexadecimale, donc toute occurrence est une vraie fuite.
+ * servie par FormationsStudent.controller.ts : le point decimal et les
+ * lettres hors [0-9a-f] les rendent impossibles a produire par hasard dans
+ * un identifiant ou une empreinte hexadecimale, donc toute occurrence est
+ * une vraie fuite.
  */
 const TEMOIN = {
   solution: 424242.42,
@@ -114,6 +117,27 @@ const CORRIGE_EN_CLAIR = [
   TEMOIN.misconception,
   TEMOIN.concept,
 ];
+
+const TAILLE_CLASSE = 30;
+
+/**
+ * Un bareme dimensionne pour une classe entiere : `pickFreeSeed`
+ * (Bareme.ts) attribue un tirage distinct par etudiant, il en faut donc au
+ * moins autant que de postes dans la salle.
+ */
+const BAREME_CLASSE: Bareme = {
+  ...BAREME,
+  tirages: Array.from({ length: TAILLE_CLASSE + 10 }, (_, index) => ({
+    seed: 2000 + index,
+    solutions: {
+      [TEMOIN.question]: { valeur: TEMOIN.solution, pieges: [] },
+    },
+  })),
+};
+
+function cleEtudiant(index: number): string {
+  return `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`;
+}
 
 function inscription(studentKey: string) {
   return {
@@ -247,9 +271,59 @@ class IdentiteDeTestGuard implements CanActivate {
   }
 }
 
+interface HarnaisFormations {
+  app: INestApplication;
+  mailer: ReturnType<typeof createMockFormationMailer>;
+}
+
+/**
+ * Le `ThrottlerGuard` est monte comme en production (app.module.ts) : sans
+ * lui, les decorateurs `@Throttle` du controleur etudiant restent inertes et
+ * une limite qui ferme la porte a une classe entiere traverse la revue sans
+ * qu'aucun test ne bronche.
+ */
+async function creerHarnais(): Promise<HarnaisFormations> {
+  process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
+  process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
+  const mailer = createMockFormationMailer();
+
+  const moduleRef = await Test.createTestingModule({
+    imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 30 }])],
+    controllers: [FormationsPresenterController, FormationsStudentController],
+    providers: [
+      OpenSessionUseCase,
+      ControlSessionUseCase,
+      CloseSessionUseCase,
+      GetSessionResultsUseCase,
+      JoinSessionUseCase,
+      SubmitAnswerUseCase,
+      RecordIncidentsUseCase,
+      StreamSessionUseCase,
+      ParticipantTokenService,
+      CodeScanProtectionService,
+      { provide: SESSIONS_REPOSITORY, useValue: creerSessionsRepo() },
+      { provide: PARTICIPANTS_REPOSITORY, useValue: creerParticipantsRepo() },
+      { provide: ANSWERS_REPOSITORY, useValue: creerAnswersRepo() },
+      { provide: MASTERY_REPOSITORY, useValue: createMockMasteryRepo() },
+      { provide: INCIDENTS_REPOSITORY, useValue: createMockIncidentsRepo() },
+      { provide: FORMATION_MAILER, useValue: mailer },
+      { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
+      { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
+      { provide: APP_GUARD, useClass: ThrottlerGuard },
+    ],
+  }).compile();
+
+  const app = moduleRef.createNestApplication();
+  app.setGlobalPrefix(API_PREFIX);
+  app.useGlobalFilters(new DomainExceptionFilter());
+  app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
+  await app.init();
+  return { app, mailer };
+}
+
 describe('Session de formation (e2e http socket)', () => {
   let app: INestApplication;
-  const mailer = createMockFormationMailer();
+  let mailer: HarnaisFormations['mailer'];
 
   const serveur = (): Parameters<typeof request>[0] =>
     app.getHttpServer() as Parameters<typeof request>[0];
@@ -268,43 +342,19 @@ describe('Session de formation (e2e http socket)', () => {
     return reponse.body as { sessionId: string; code: string };
   };
 
+  const demarrerSession = (sessionId: string, formateur: string) =>
+    request(serveur())
+      .post(route(`/sessions/${sessionId}/start`))
+      .set('x-test-identite', `${formateur}:teacher`)
+      .expect(204);
+
   const rejoindre = (code: string, studentKey: string) =>
     request(serveur())
       .post(route(`/sessions/${code}/join`))
       .send(inscription(studentKey));
 
   beforeAll(async () => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
-
-    const moduleRef = await Test.createTestingModule({
-      controllers: [FormationsPresenterController, FormationsStudentController],
-      providers: [
-        OpenSessionUseCase,
-        ControlSessionUseCase,
-        CloseSessionUseCase,
-        GetSessionResultsUseCase,
-        JoinSessionUseCase,
-        SubmitAnswerUseCase,
-        RecordIncidentsUseCase,
-        StreamSessionUseCase,
-        ParticipantTokenService,
-        { provide: SESSIONS_REPOSITORY, useValue: creerSessionsRepo() },
-        { provide: PARTICIPANTS_REPOSITORY, useValue: creerParticipantsRepo() },
-        { provide: ANSWERS_REPOSITORY, useValue: creerAnswersRepo() },
-        { provide: MASTERY_REPOSITORY, useValue: createMockMasteryRepo() },
-        { provide: INCIDENTS_REPOSITORY, useValue: createMockIncidentsRepo() },
-        { provide: FORMATION_MAILER, useValue: mailer },
-        { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
-        { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
-      ],
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-    app.setGlobalPrefix(API_PREFIX);
-    app.useGlobalFilters(new DomainExceptionFilter());
-    app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
-    await app.init();
+    ({ app, mailer } = await creerHarnais());
   });
 
   afterAll(async () => {
@@ -374,6 +424,29 @@ describe('Session de formation (e2e http socket)', () => {
         '11111111-1111-4111-8111-111111111114',
       ).expect(201);
       jeton = (inscrit.body as { jeton: string }).jeton;
+      await demarrerSession(sessionId, FORMATEUR_A);
+    });
+
+    it('refuse une reponse avant que le formateur ait demarre la seance', async () => {
+      const session = await ouvrirSession(FORMATEUR_A);
+      const inscrit = await rejoindre(
+        session.code,
+        '11111111-1111-4111-8111-111111111118',
+      ).expect(201);
+
+      const reponse = await request(serveur())
+        .post(route(`/sessions/${session.sessionId}/answers`))
+        .set('x-participant-token', (inscrit.body as { jeton: string }).jeton)
+        .send({
+          questionId: TEMOIN.question,
+          valeur: TEMOIN.solution,
+          dureeMs: 1000,
+        });
+
+      expect(reponse.status).toBe(409);
+      expect((reponse.body as { detail: string }).detail).toContain(
+        'pas encore commencé',
+      );
     });
 
     it('refuse une reponse sans jeton de participant', async () => {
@@ -490,6 +563,24 @@ describe('Session de formation (e2e http socket)', () => {
 
       expect(reponse.status).toBe(400);
     });
+
+    it('ne bascule ni l ecran ni le rythme quand le rythme libre arrive sans intervalle', async () => {
+      const reponse = await request(serveur())
+        .patch(route(`/sessions/${sessionId}/control`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+        .send({ ecran: 7, mode: 'libre' });
+
+      expect(reponse.status).toBe(400);
+
+      const constat = await rejoindre(
+        code,
+        '11111111-1111-4111-8111-111111111116',
+      ).expect(201);
+      expect(constat.body).toMatchObject({
+        ecranCourant: 4,
+        modeRythme: 'pilote',
+      });
+    });
   });
 
   describe('cloture et flux temps reel', () => {
@@ -532,5 +623,87 @@ describe('Session de formation (e2e http socket)', () => {
         expect(reponse.text).not.toContain(temoin);
       });
     });
+  });
+});
+
+describe('Une salle informatique derriere une seule adresse publique', () => {
+  let app: INestApplication;
+  let codeDeLaSeance = '';
+  const codesOuverts: string[] = [];
+
+  const serveur = (): Parameters<typeof request>[0] =>
+    app.getHttpServer() as Parameters<typeof request>[0];
+
+  const route = (chemin: string): string =>
+    `/${API_PREFIX}/formations${chemin}`;
+
+  const ouvrirSeanceDeClasse = async (): Promise<string> => {
+    const reponse = await request(serveur())
+      .post(route('/sessions'))
+      .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+      .send({
+        courseSlug: 'maths-bts-suites-numeriques',
+        bareme: BAREME_CLASSE,
+      })
+      .expect(201);
+    const { code } = reponse.body as { code: string };
+    codesOuverts.push(code);
+    return code;
+  };
+
+  const rejoindre = (code: string, index: number) =>
+    request(serveur())
+      .post(route(`/sessions/${code}/join`))
+      .send(inscription(cleEtudiant(index)));
+
+  beforeAll(async () => {
+    ({ app } = await creerHarnais());
+    codeDeLaSeance = await ouvrirSeanceDeClasse();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('laisse les trente postes de la salle rejoindre la meme seance', async () => {
+    const statuts: number[] = [];
+    let restant = '';
+
+    for (let poste = 0; poste < TAILLE_CLASSE; poste += 1) {
+      const reponse = await rejoindre(codeDeLaSeance, poste);
+      statuts.push(reponse.status);
+      restant = String(reponse.headers['x-ratelimit-remaining']);
+    }
+
+    expect(statuts).toEqual(Array.from({ length: TAILLE_CLASSE }, () => 201));
+    expect(restant).toBe(String(120 - TAILLE_CLASSE));
+  });
+
+  it('ouvre un compteur par seance et non par adresse', async () => {
+    const autreCode = await ouvrirSeanceDeClasse();
+
+    const reponse = await rejoindre(autreCode, 500).expect(201);
+
+    expect(reponse.headers['x-ratelimit-remaining']).toBe('119');
+  });
+
+  it('arrete le balayage des codes inconnus venu de cette meme adresse', async () => {
+    const inconnus = Array.from({ length: 40 }, (_, index) =>
+      String(5000 + index),
+    )
+      .filter((code) => !codesOuverts.includes(code))
+      .slice(0, 30);
+    const statuts: number[] = [];
+
+    for (const [rang, code] of inconnus.entries()) {
+      const reponse = await rejoindre(code, 1000 + rang);
+      statuts.push(reponse.status);
+    }
+
+    expect(statuts[0]).toBe(404);
+    expect(statuts.filter((statut) => statut === 404).length).toBeLessThan(
+      statuts.length,
+    );
+    expect(statuts[statuts.length - 1]).toBe(429);
   });
 });

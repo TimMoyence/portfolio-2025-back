@@ -33,6 +33,14 @@ export class SessionClosedError extends ResourceConflictError {
   }
 }
 
+export class SessionNotStartedError extends ResourceConflictError {
+  constructor() {
+    super(
+      "La séance n'a pas encore commencé : attendez que le formateur la démarre pour envoyer vos réponses.",
+    );
+  }
+}
+
 export class InvalidStateTransitionError extends ResourceConflictError {
   constructor(from: string, to: string) {
     super(`Transition interdite de ${from} vers ${to}`);

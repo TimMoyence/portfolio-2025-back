@@ -7,6 +7,7 @@ import {
   ParticipantNotFoundError,
   SessionClosedError,
   SessionNotFoundError,
+  SessionNotStartedError,
 } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
@@ -45,6 +46,9 @@ export class SubmitAnswerUseCase {
     }
     if (session.etat === 'terminee') {
       throw new SessionClosedError();
+    }
+    if (session.etat !== 'en_cours') {
+      throw new SessionNotStartedError();
     }
 
     const deja = await this.answers.existsFor(

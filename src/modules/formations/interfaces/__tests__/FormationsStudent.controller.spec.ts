@@ -1,12 +1,21 @@
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import type { Request } from 'express';
 import { of } from 'rxjs';
 import { PublicFormProtectionService } from '../../../../common/interfaces/security/public-form-protection.service';
+import {
+  InvalidSessionCodeError,
+  SeedPoolExhaustedError,
+  SessionNotFoundError,
+} from '../../domain/errors/FormationErrors';
 import { FormationsStudentController } from '../FormationsStudent.controller';
 import type { JoinSessionRequestDto } from '../dto/join-session.request.dto';
 
 const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
 const PARTICIPANT_ID = '8f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
 const JETON = `${PARTICIPANT_ID}.empreinte`;
+const IP_SALLE = 'sortie-nat-salle-b204';
+
+const requeteEtudiant = { ip: IP_SALLE, socket: {} } as unknown as Request;
 
 const inscription: JoinSessionRequestDto = {
   studentKey: '11111111-1111-4111-8111-111111111111',
@@ -21,6 +30,10 @@ describe('FormationsStudentController', () => {
   const recordIncidents = { execute: jest.fn() };
   const streamSession = { execute: jest.fn() };
   const tokens = { sign: jest.fn(), verify: jest.fn() };
+  const codeScan = {
+    assertPasDeBalayage: jest.fn(),
+    enregistrerEchec: jest.fn(),
+  };
 
   const controller = new FormationsStudentController(
     joinSession as never,
@@ -28,8 +41,12 @@ describe('FormationsStudentController', () => {
     recordIncidents as never,
     streamSession as never,
     tokens as never,
+    codeScan as never,
     new PublicFormProtectionService(),
   );
+
+  const rejoindre = (dto: JoinSessionRequestDto = inscription) =>
+    controller.join('4271', dto, requeteEtudiant);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -45,7 +62,7 @@ describe('FormationsStudentController', () => {
   });
 
   it('inscrit l etudiant et lui rend un jeton lie a sa session', async () => {
-    const reponse = await controller.join('4271', inscription);
+    const reponse = await rejoindre();
 
     expect(joinSession.execute).toHaveBeenCalledWith({
       code: '4271',
@@ -61,8 +78,49 @@ describe('FormationsStudentController', () => {
 
   it('arrete le robot qui remplit le champ piege avant tout appel metier', async () => {
     await expect(
-      controller.join('4271', { ...inscription, website: 'https://spam' }),
+      rejoindre({ ...inscription, website: 'https://spam' }),
     ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(joinSession.execute).not.toHaveBeenCalled();
+  });
+
+  it('ne compte aucun echec quand une classe entiere entre avec le bon code', async () => {
+    await rejoindre();
+
+    expect(codeScan.assertPasDeBalayage).toHaveBeenCalledWith(IP_SALLE);
+    expect(codeScan.enregistrerEchec).not.toHaveBeenCalled();
+  });
+
+  it('compte l echec sur un code inconnu, pour garder le balayage borne par adresse', async () => {
+    joinSession.execute.mockRejectedValue(new SessionNotFoundError('4271'));
+
+    await expect(rejoindre()).rejects.toBeInstanceOf(SessionNotFoundError);
+
+    expect(codeScan.enregistrerEchec).toHaveBeenCalledWith(IP_SALLE);
+  });
+
+  it('compte l echec sur un code hors format', async () => {
+    joinSession.execute.mockRejectedValue(new InvalidSessionCodeError('42a1'));
+
+    await expect(rejoindre()).rejects.toBeInstanceOf(InvalidSessionCodeError);
+
+    expect(codeScan.enregistrerEchec).toHaveBeenCalledWith(IP_SALLE);
+  });
+
+  it('ne compte pas un echec qui ne revele rien sur l existence du code', async () => {
+    joinSession.execute.mockRejectedValue(new SeedPoolExhaustedError());
+
+    await expect(rejoindre()).rejects.toBeInstanceOf(SeedPoolExhaustedError);
+
+    expect(codeScan.enregistrerEchec).not.toHaveBeenCalled();
+  });
+
+  it('refuse l inscription avant tout appel metier quand le balayage est detecte', async () => {
+    codeScan.assertPasDeBalayage.mockImplementation(() => {
+      throw new BadRequestException();
+    });
+
+    await expect(rejoindre()).rejects.toBeInstanceOf(BadRequestException);
 
     expect(joinSession.execute).not.toHaveBeenCalled();
   });

@@ -101,18 +101,11 @@ export class FormationsPresenterController {
         'Indiquez un écran ou un mode de rythme à appliquer.',
       );
     }
-    const teacherId = request.user!.sub;
-    if (dto.ecran !== undefined) {
-      await this.controlSession.setScreen(id, teacherId, dto.ecran);
-    }
-    if (dto.mode !== undefined) {
-      await this.controlSession.setPacing(
-        id,
-        teacherId,
-        dto.mode,
-        dto.intervalle ?? null,
-      );
-    }
+    await this.controlSession.apply(id, request.user!.sub, {
+      ecran: dto.ecran,
+      mode: dto.mode,
+      intervalle: dto.intervalle ?? null,
+    });
   }
 
   @Post('sessions/:id/close')
