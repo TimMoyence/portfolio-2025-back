@@ -3,9 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity({ name: 'formation_participants' })
+@Unique('UQ_formation_participants_session_key', ['sessionId', 'studentKey'])
+@Unique('UQ_formation_participants_session_seed', ['sessionId', 'seed'])
 export class FormationParticipantEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

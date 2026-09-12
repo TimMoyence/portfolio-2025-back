@@ -3,10 +3,15 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import type { AnswerValue } from '../../domain/AnswerGrading';
 
 @Entity({ name: 'formation_answers' })
+@Unique('UQ_formation_answers_participant_question', [
+  'participantId',
+  'questionId',
+])
 export class FormationAnswerEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
