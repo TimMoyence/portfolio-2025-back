@@ -27,14 +27,24 @@ export interface RapportSession {
   conceptsFragiles: readonly string[];
 }
 
+/**
+ * La copie d un etudiant ne porte que sa propre copie. Le rapport complet
+ * — nom, adresse et note de chaque camarade — reste a la synthese du
+ * formateur : le jour ou le corps du message gagnera un classement, la
+ * donnee des autres ne sera pas deja dans la main de celui qui redige
+ * (CloseSession.useCase.ts).
+ */
+export interface CopieEtudiant {
+  courseSlug: string;
+  code: string;
+  participant: RapportParticipant;
+  lienRevision: string;
+}
+
 export interface IFormationMailer {
   sendSyntheseFormateur(
     destinataire: string,
     rapport: RapportSession,
   ): Promise<void>;
-  sendCopieEtudiant(
-    participant: RapportParticipant,
-    rapport: RapportSession,
-    lienRevision: string,
-  ): Promise<void>;
+  sendCopieEtudiant(copie: CopieEtudiant): Promise<void>;
 }

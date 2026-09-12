@@ -4,6 +4,7 @@ import {
   setSmtpEnv,
 } from '../../../../test/factories/mailer.factory';
 import type {
+  CopieEtudiant,
   RapportParticipant,
   RapportQuestion,
   RapportSession,
@@ -42,6 +43,16 @@ function buildRapport(overrides: Partial<RapportSession> = {}): RapportSession {
     fermeeLe: new Date('2026-09-11T11:30:00.000Z'),
     participants: [buildParticipant()],
     conceptsFragiles: [],
+    ...overrides,
+  };
+}
+
+function buildCopie(overrides: Partial<CopieEtudiant> = {}): CopieEtudiant {
+  return {
+    courseSlug: 'b1-09-interets-composes',
+    code: '4271',
+    participant: buildParticipant(),
+    lienRevision: 'https://asilidesign.fr/cours/revision?token=abc123',
     ...overrides,
   };
 }
@@ -91,9 +102,9 @@ describe('FormationMailerService', () => {
     const service = new FormationMailerService();
     await service.sendSyntheseFormateur('prof@example.com', buildRapport());
     await service.sendCopieEtudiant(
-      buildParticipant(),
-      buildRapport(),
-      'https://asilidesign.fr/cours/revision?token=abc',
+      buildCopie({
+        lienRevision: 'https://asilidesign.fr/cours/revision?token=abc',
+      }),
     );
 
     expect(mockedCreateTransport).not.toHaveBeenCalled();
@@ -235,28 +246,25 @@ describe('FormationMailerService', () => {
 
     it('envoie la copie au participant avec un lien de revision', async () => {
       const service = new FormationMailerService();
-      const participant = buildParticipant();
-      const rapport = buildRapport();
-      const lien = 'https://asilidesign.fr/cours/revision?token=abc123';
+      const copie = buildCopie();
 
-      await service.sendCopieEtudiant(participant, rapport, lien);
+      await service.sendCopieEtudiant(copie);
 
       expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
       const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.to).toBe(participant.email);
-      expect(call.text).toContain(lien);
-      expect(call.html).toContain(lien);
+      expect(call.to).toBe(copie.participant.email);
+      expect(call.text).toContain(copie.lienRevision);
+      expect(call.html).toContain(copie.lienRevision);
+      expect(call.subject).toContain(copie.courseSlug);
     });
 
     it('echappe le prenom de l etudiant dans la copie', async () => {
       const service = new FormationMailerService();
-      const participant = buildParticipant({ prenom: 'Bri<script>an' });
-      const rapport = buildRapport();
 
       await service.sendCopieEtudiant(
-        participant,
-        rapport,
-        'https://asilidesign.fr/cours/revision?token=abc',
+        buildCopie({
+          participant: buildParticipant({ prenom: 'Bri<script>an' }),
+        }),
       );
 
       const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
@@ -266,13 +274,9 @@ describe('FormationMailerService', () => {
 
     it('neutralise un lien de revision hors http/https', async () => {
       const service = new FormationMailerService();
-      const participant = buildParticipant();
-      const rapport = buildRapport();
 
       await service.sendCopieEtudiant(
-        participant,
-        rapport,
-        'javascript:alert(1)',
+        buildCopie({ lienRevision: 'javascript:alert(1)' }),
       );
 
       const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];

@@ -114,9 +114,43 @@ describe('CloseSessionUseCase', () => {
       buildParticipantRecord({ id: 'p1', email: 'a@example.com' }),
     ]);
     await sut.execute('session-uuid', TEACHER_ID);
-    const [, , lien] = mailer.sendCopieEtudiant.mock.calls[0];
-    expect(lien).toContain('p1');
-    expect(lien).toContain('session-uuid');
+    const [copie] = mailer.sendCopieEtudiant.mock.calls[0];
+    expect(copie.lienRevision).toContain('p1');
+    expect(copie.lienRevision).toContain('session-uuid');
+  });
+
+  it('ne confie a la copie d un etudiant que ce que sa copie exige', async () => {
+    participants.listBySession.mockResolvedValue([
+      buildParticipantRecord({ id: 'p1', email: 'a@example.com' }),
+    ]);
+    await sut.execute('session-uuid', TEACHER_ID);
+    const [copie] = mailer.sendCopieEtudiant.mock.calls[0];
+    expect(Object.keys(copie).sort((a, b) => a.localeCompare(b))).toEqual([
+      'code',
+      'courseSlug',
+      'lienRevision',
+      'participant',
+    ]);
+  });
+
+  it('ne laisse pas la cohorte entrer dans la copie d un seul etudiant', async () => {
+    participants.listBySession.mockResolvedValue([
+      buildParticipantRecord({
+        id: 'p1',
+        prenom: 'Theo',
+        email: 'theo@example.com',
+      }),
+      buildParticipantRecord({
+        id: 'p2',
+        prenom: 'Lea',
+        email: 'lea@example.com',
+      }),
+    ]);
+    await sut.execute('session-uuid', TEACHER_ID);
+    const [copieDeTheo] = mailer.sendCopieEtudiant.mock.calls[0];
+    expect(JSON.stringify(copieDeTheo)).not.toContain('lea@example.com');
+    expect(JSON.stringify(copieDeTheo)).not.toContain('Lea');
+    expect(copieDeTheo.participant.email).toBe('theo@example.com');
   });
 
   it('calcule la completion sur les seules questions notees', async () => {

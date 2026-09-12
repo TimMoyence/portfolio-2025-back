@@ -4,11 +4,19 @@ import {
   buildSessionRecord,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import {
+  SessionNotOwnedError,
+  SessionStreamLimitError,
+} from '../../domain/errors/FormationErrors';
 import { SessionStateCacheService } from '../../infrastructure/SessionStateCache.service';
-import { StreamSessionUseCase } from '../StreamSession.useCase';
+import {
+  MAX_ABONNEMENTS_PAR_SESSION,
+  StreamSessionUseCase,
+} from '../StreamSession.useCase';
 
 const CINQ_HEURES_MS = 5 * 60 * 60 * 1000;
 const HEARTBEAT_MS_TEST = 15000;
+const TEACHER_ID = 'teacher-uuid';
 
 describe('StreamSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -95,6 +103,62 @@ describe('StreamSessionUseCase', () => {
     await jest.advanceTimersByTimeAsync(10);
     const recus = await messages;
     expect(recus[recus.length - 1].type).toBe('fin');
+  });
+
+  it('borne le nombre d abonnements simultanes sur une meme session', async () => {
+    const ouverts = Array.from({ length: MAX_ABONNEMENTS_PAR_SESSION }, () =>
+      sut.execute('session-uuid').subscribe(),
+    );
+    await jest.advanceTimersByTimeAsync(10);
+
+    expect(() => sut.execute('session-uuid')).toThrow(SessionStreamLimitError);
+
+    ouverts.forEach((abonnement) => abonnement.unsubscribe());
+  });
+
+  it('ne compte pas deux sessions distinctes dans le meme plafond', async () => {
+    const ouverts = Array.from({ length: MAX_ABONNEMENTS_PAR_SESSION }, () =>
+      sut.execute('session-uuid').subscribe(),
+    );
+    await jest.advanceTimersByTimeAsync(10);
+
+    expect(() => sut.execute('autre-session')).not.toThrow();
+
+    ouverts.forEach((abonnement) => abonnement.unsubscribe());
+  });
+
+  it('rend sa place au plafond quand un client se desabonne', async () => {
+    const ouverts = Array.from({ length: MAX_ABONNEMENTS_PAR_SESSION }, () =>
+      sut.execute('session-uuid').subscribe(),
+    );
+    await jest.advanceTimersByTimeAsync(10);
+    ouverts[0].unsubscribe();
+
+    expect(() => sut.execute('session-uuid')).not.toThrow();
+
+    ouverts.slice(1).forEach((abonnement) => abonnement.unsubscribe());
+  });
+
+  it('ouvre le flux au formateur proprietaire de la session', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ teacherId: TEACHER_ID }),
+    );
+
+    const flux = await sut.executeForTeacher('session-uuid', TEACHER_ID);
+    const premier = firstValueFrom(flux);
+    await jest.advanceTimersByTimeAsync(10);
+
+    expect((await premier).type).toBe('etat');
+  });
+
+  it('refuse le flux a un formateur qui n est pas celui de la session', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ teacherId: TEACHER_ID }),
+    );
+
+    await expect(
+      sut.executeForTeacher('session-uuid', 'autre-teacher-uuid'),
+    ).rejects.toThrow(SessionNotOwnedError);
   });
 
   it('ne coupe pas le flux avant cinq heures mais le termine ensuite avec la raison expiree', async () => {

@@ -5,11 +5,13 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  MessageEvent,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
   Req,
+  Sse,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -22,12 +24,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
+import { Observable } from 'rxjs';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
+import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import type { RapportSession } from '../domain/IFormationMailer.port';
 import { ControlSessionRequestDto } from './dto/control-session.request.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
@@ -53,6 +57,7 @@ export class FormationsPresenterController {
     private readonly controlSession: ControlSessionUseCase,
     private readonly closeSession: CloseSessionUseCase,
     private readonly results: GetSessionResultsUseCase,
+    private readonly streamSession: StreamSessionUseCase,
   ) {}
 
   @Post('sessions')
@@ -121,6 +126,19 @@ export class FormationsPresenterController {
     @Req() request: Request,
   ): Promise<void> {
     await this.closeSession.execute(id, request.user!.sub);
+  }
+
+  @Sse('sessions/:id/presenter-stream')
+  @ApiOperation({
+    summary: 'Flux temps reel reserve au formateur de la session',
+  })
+  @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
+  @ApiNotFoundResponse({ description: 'Session introuvable' })
+  async presenterStream(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ): Promise<Observable<MessageEvent>> {
+    return this.streamSession.executeForTeacher(id, request.user!.sub);
   }
 
   @Get('sessions/:id/results')

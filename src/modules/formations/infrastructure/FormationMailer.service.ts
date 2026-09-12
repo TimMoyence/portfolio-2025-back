@@ -8,6 +8,7 @@ import {
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import type {
+  CopieEtudiant,
   IFormationMailer,
   RapportParticipant,
   RapportSession,
@@ -51,23 +52,20 @@ export class FormationMailerService implements IFormationMailer {
     });
   }
 
-  async sendCopieEtudiant(
-    participant: RapportParticipant,
-    rapport: RapportSession,
-    lienRevision: string,
-  ): Promise<void> {
+  async sendCopieEtudiant(copie: CopieEtudiant): Promise<void> {
     if (!this.transporter) {
       return;
     }
+    const { participant, lienRevision } = copie;
     await this.transporter.sendMail({
       from: this.from,
       to: participant.email,
-      subject: `Votre copie — ${rapport.courseSlug}`,
+      subject: `Votre copie — ${copie.courseSlug}`,
       text: this.copieTexte(participant, lienRevision),
       html: safeHtml`
         <div style="font-family:Arial,Helvetica,sans-serif; padding:24px;">
           <h2>Bonjour ${escapeHtml(participant.prenom)},</h2>
-          <p>Voici le détail de vos réponses pour la session ${escapeHtml(rapport.code)}.</p>
+          <p>Voici le détail de vos réponses pour la session ${escapeHtml(copie.code)}.</p>
           <p>
             Note obtenue : <strong>${escapeHtml(participant.note.toFixed(1))}/20</strong>
             (complétion ${Math.round(participant.completion * 100)}%).

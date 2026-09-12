@@ -212,7 +212,19 @@ describe('FormationsStudentController', () => {
     const flux = of({ data: { etat: 'en_cours' } });
     streamSession.execute.mockReturnValue(flux);
 
-    expect(controller.stream(SESSION_ID)).toBe(flux);
+    expect(controller.stream(SESSION_ID, JETON)).toBe(flux);
+    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
     expect(streamSession.execute).toHaveBeenCalledWith(SESSION_ID);
+  });
+
+  it('n ouvre aucun flux a qui ne presente pas de jeton de participant', () => {
+    tokens.verify.mockImplementation(() => {
+      throw new UnauthorizedException();
+    });
+
+    expect(() => controller.stream(SESSION_ID, undefined)).toThrow(
+      UnauthorizedException,
+    );
+    expect(streamSession.execute).not.toHaveBeenCalled();
   });
 });

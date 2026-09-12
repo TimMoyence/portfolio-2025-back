@@ -136,7 +136,12 @@ export class CloseSessionUseCase {
       }
       const lien = this.lienRevisionPour(sessionId, participant, secret);
       this.mailer
-        .sendCopieEtudiant(rapportParticipant, rapport, lien)
+        .sendCopieEtudiant({
+          courseSlug: rapport.courseSlug,
+          code: rapport.code,
+          participant: rapportParticipant,
+          lienRevision: lien,
+        })
         .catch((error: unknown) => {
           this.logger.warn(
             `Envoi de la copie echoue pour ${participant.email}: ${describe(error)}`,

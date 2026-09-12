@@ -585,14 +585,16 @@ describe('Session de formation (e2e http socket)', () => {
 
   describe('cloture et flux temps reel', () => {
     let sessionId: string;
+    let jeton: string;
 
     beforeAll(async () => {
       const session = await ouvrirSession(FORMATEUR_A);
       sessionId = session.sessionId;
-      await rejoindre(
+      const inscrit = await rejoindre(
         session.code,
         '11111111-1111-4111-8111-111111111117',
       ).expect(201);
+      jeton = (inscrit.body as { jeton: string }).jeton;
       mailer.sendSyntheseFormateur.mockClear();
     });
 
@@ -615,12 +617,42 @@ describe('Session de formation (e2e http socket)', () => {
     it('sert le flux SSE de la session close sans laisser filtrer le bareme', async () => {
       const reponse = await request(serveur())
         .get(route(`/sessions/${sessionId}/stream`))
+        .set('x-participant-token', jeton)
         .expect(200);
 
       expect(reponse.headers['content-type']).toContain('text/event-stream');
       expect(reponse.text).toContain('event: fin');
       CORRIGE_EN_CLAIR.forEach((temoin) => {
         expect(reponse.text).not.toContain(temoin);
+      });
+    });
+
+    it('n ouvre pas le flux a qui connait le sessionId sans etre inscrit', async () => {
+      const sansJeton = await request(serveur()).get(
+        route(`/sessions/${sessionId}/stream`),
+      );
+      const jetonDAilleurs = await request(serveur())
+        .get(route(`/sessions/${sessionId}/stream`))
+        .set('x-participant-token', `${randomUUID()}.empreinte-forgee`);
+
+      expect([sansJeton.status, jetonDAilleurs.status]).toEqual([401, 401]);
+    });
+
+    it('sert le flux presentateur au formateur proprietaire et a lui seul', async () => {
+      const proprietaire = await request(serveur())
+        .get(route(`/sessions/${sessionId}/presenter-stream`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`);
+      const intrus = await request(serveur())
+        .get(route(`/sessions/${sessionId}/presenter-stream`))
+        .set('x-test-identite', `${FORMATEUR_B}:teacher`);
+
+      expect(proprietaire.status).toBe(200);
+      expect(proprietaire.headers['content-type']).toContain(
+        'text/event-stream',
+      );
+      expect(intrus.status).toBe(403);
+      CORRIGE_EN_CLAIR.forEach((temoin) => {
+        expect(proprietaire.text).not.toContain(temoin);
       });
     });
   });

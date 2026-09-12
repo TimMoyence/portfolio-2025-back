@@ -21,7 +21,7 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Observable } from 'rxjs';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
@@ -43,6 +43,7 @@ import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
 import {
   FENETRE_THROTTLE_MS,
+  LIMITE_FLUX_PAR_PARTICIPANT,
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
   LIMITE_REPONSES_PAR_PARTICIPANT,
@@ -180,10 +181,22 @@ export class FormationsStudentController {
     );
   }
 
-  @SkipThrottle()
+  @Throttle({
+    default: {
+      limit: LIMITE_FLUX_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
   @Sse('sessions/:id/stream')
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
-  stream(@Param('id', ParseUUIDPipe) id: string): Observable<MessageEvent> {
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @ApiTooManyRequestsResponse({ description: 'Trop d abonnes sur la session' })
+  stream(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+  ): Observable<MessageEvent> {
+    this.tokens.verify(id, jeton);
     return this.streamSession.execute(id);
   }
 }

@@ -1,5 +1,6 @@
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import { InsufficientPermissionsError } from '../../../../common/domain/errors/InsufficientPermissionsError';
+import { RateLimitExceededError } from '../../../../common/domain/errors/RateLimitExceededError';
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 
@@ -56,6 +57,14 @@ export class SeedPoolExhaustedError extends ResourceConflictError {
 export class AnswerAlreadySubmittedError extends ResourceConflictError {
   constructor(questionId: string) {
     super(`Reponse deja soumise pour la question ${questionId}`);
+  }
+}
+
+export class SessionStreamLimitError extends RateLimitExceededError {
+  constructor() {
+    super(
+      'Trop de connexions simultanées au suivi de cette séance. Fermez un onglet et réessayez.',
+    );
   }
 }
 

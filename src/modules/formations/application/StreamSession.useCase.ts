@@ -1,18 +1,23 @@
 import { Inject, Injectable, MessageEvent } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
 import type {
   ISessionStateCache,
   LiveSessionState,
 } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
+import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import { SESSION_STATE_CACHE, SESSIONS_REPOSITORY } from '../domain/token';
 
 const INTERVALLE_MS = 500;
 const HEARTBEAT_MS = 15000;
 const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
+export const MAX_ABONNEMENTS_PAR_SESSION = 100;
 
 @Injectable()
 export class StreamSessionUseCase {
+  private readonly abonnements = new Map<string, number>();
+
   constructor(
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
@@ -20,8 +25,29 @@ export class StreamSessionUseCase {
     private readonly cache: ISessionStateCache,
   ) {}
 
+  /**
+   * Chaque abonnement tient trois minuteurs et une socket pendant cinq
+   * heures dans le processus partage par tout le site : sans plafond, une
+   * boucle d EventSource sur un `sessionId` — rendu en clair a chaque
+   * inscription (join-session.response.dto.ts) — suffit a le saturer.
+   * Cent places couvrent trois fois une classe, rechargements compris.
+   */
+  async executeForTeacher(
+    sessionId: string,
+    teacherId: string,
+  ): Promise<Observable<MessageEvent>> {
+    assertSessionOwnedBy(
+      await this.sessions.findById(sessionId),
+      sessionId,
+      teacherId,
+    );
+    return this.execute(sessionId);
+  }
+
   execute(sessionId: string): Observable<MessageEvent> {
+    this.assertPlaceDisponible(sessionId);
     return new Observable<MessageEvent>((subscriber) => {
+      this.entrer(sessionId);
       let derniereEmpreinte = '';
       let actif = true;
       let occupe = false;
@@ -82,9 +108,29 @@ export class StreamSessionUseCase {
       void tick();
 
       return () => {
+        this.sortir(sessionId);
         arreter();
       };
     });
+  }
+
+  private assertPlaceDisponible(sessionId: string): void {
+    if ((this.abonnements.get(sessionId) ?? 0) >= MAX_ABONNEMENTS_PAR_SESSION) {
+      throw new SessionStreamLimitError();
+    }
+  }
+
+  private entrer(sessionId: string): void {
+    this.abonnements.set(sessionId, (this.abonnements.get(sessionId) ?? 0) + 1);
+  }
+
+  private sortir(sessionId: string): void {
+    const restants = (this.abonnements.get(sessionId) ?? 1) - 1;
+    if (restants <= 0) {
+      this.abonnements.delete(sessionId);
+      return;
+    }
+    this.abonnements.set(sessionId, restants);
   }
 
   private async resolveState(

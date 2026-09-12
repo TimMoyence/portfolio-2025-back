@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import type { Request } from 'express';
+import { of } from 'rxjs';
 import type { RapportSession } from '../../domain/IFormationMailer.port';
 import { FormationsPresenterController } from '../FormationsPresenter.controller';
 import type { ControlSessionRequestDto } from '../dto/control-session.request.dto';
@@ -35,12 +36,14 @@ describe('FormationsPresenterController', () => {
   };
   const closeSession = { execute: jest.fn() };
   const results = { execute: jest.fn() };
+  const streamSession = { executeForTeacher: jest.fn() };
 
   const controller = new FormationsPresenterController(
     openSession as never,
     controlSession as never,
     closeSession as never,
     results as never,
+    streamSession as never,
   );
 
   const controle = (dto: ControlSessionRequestDto): Promise<void> =>
@@ -127,6 +130,19 @@ describe('FormationsPresenterController', () => {
 
     expect(closeSession.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
     expect(closeSession.execute.mock.calls[0]).toHaveLength(2);
+  });
+
+  it('ouvre le flux presentateur au nom de l appelant, jamais sans lui', async () => {
+    const flux = of({ data: { etat: 'en_cours' } });
+    streamSession.executeForTeacher.mockResolvedValue(flux);
+
+    await expect(
+      controller.presenterStream(SESSION_ID, requeteFormateur),
+    ).resolves.toBe(flux);
+    expect(streamSession.executeForTeacher).toHaveBeenCalledWith(
+      SESSION_ID,
+      TEACHER_ID,
+    );
   });
 
   it('rend le rapport de session au formateur proprietaire', async () => {
