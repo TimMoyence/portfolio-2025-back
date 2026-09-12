@@ -13,7 +13,6 @@ export type {
   Piege,
   Solution,
   Tolerance,
-  ToleranceType,
 } from './GradingCore';
 export { matchesSolution };
 

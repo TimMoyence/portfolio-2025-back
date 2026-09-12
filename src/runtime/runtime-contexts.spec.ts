@@ -12,6 +12,7 @@ import { NewsletterModule } from '../modules/newsletter/Newsletter.module';
 import { PresentationsModule } from '../modules/presentations/Presentations.module';
 import { WeatherModule } from '../modules/weather/Weather.module';
 import { ArticlesModule } from '../modules/articles/Articles.module';
+import { FormationsModule } from '../modules/formations/Formations.module';
 import { resolveRuntimeContexts } from './runtime-contexts';
 
 describe('resolveRuntimeContexts', () => {
@@ -30,6 +31,7 @@ describe('resolveRuntimeContexts', () => {
       NewsletterModule,
       PresentationsModule,
       ArticlesModule,
+      FormationsModule,
     ]);
     expect(selection.runtimeModules).toEqual(selection.coreModules);
   });
@@ -57,6 +59,7 @@ describe('resolveRuntimeContexts', () => {
       NewsletterModule,
       PresentationsModule,
       ArticlesModule,
+      FormationsModule,
       ServicesModule,
       ProjectsModule,
       CoursesModule,

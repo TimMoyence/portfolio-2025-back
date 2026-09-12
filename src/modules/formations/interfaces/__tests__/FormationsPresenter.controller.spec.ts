@@ -1,0 +1,145 @@
+import { BadRequestException } from '@nestjs/common';
+import type { Request } from 'express';
+import type { RapportSession } from '../../domain/IFormationMailer.port';
+import { FormationsPresenterController } from '../FormationsPresenter.controller';
+import type { ControlSessionRequestDto } from '../dto/control-session.request.dto';
+import type { OpenSessionRequestDto } from '../dto/open-session.request.dto';
+
+const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
+const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
+
+const requeteFormateur = {
+  user: { sub: TEACHER_ID },
+} as unknown as Request;
+
+const baremeDto = {
+  version: 1,
+  questions: [
+    {
+      id: 'Q-CAP-03',
+      type: 'numeric',
+      concept: 'interet-compose',
+      noteCompte: true,
+    },
+  ],
+  tirages: [
+    { seed: 7, solutions: { 'Q-CAP-03': { valeur: 1338, pieges: [] } } },
+  ],
+} as unknown as OpenSessionRequestDto['bareme'];
+
+describe('FormationsPresenterController', () => {
+  const openSession = { execute: jest.fn() };
+  const controlSession = {
+    start: jest.fn(),
+    setScreen: jest.fn(),
+    setPacing: jest.fn(),
+  };
+  const closeSession = { execute: jest.fn() };
+  const results = { execute: jest.fn() };
+
+  const controller = new FormationsPresenterController(
+    openSession as never,
+    controlSession as never,
+    closeSession as never,
+    results as never,
+  );
+
+  const controle = (dto: ControlSessionRequestDto): Promise<void> =>
+    controller.control(SESSION_ID, dto, requeteFormateur);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('ouvre une session au nom du formateur authentifie', async () => {
+    openSession.execute.mockResolvedValue({
+      sessionId: SESSION_ID,
+      code: '4271',
+    });
+
+    const reponse = await controller.open(
+      { courseSlug: 'maths-bts-suites', bareme: baremeDto },
+      requeteFormateur,
+    );
+
+    expect(openSession.execute).toHaveBeenCalledWith({
+      courseSlug: 'maths-bts-suites',
+      teacherId: TEACHER_ID,
+      bareme: baremeDto,
+    });
+    expect(reponse).toEqual({ sessionId: SESSION_ID, code: '4271' });
+  });
+
+  it('demarre la session en transmettant l identifiant de l appelant', async () => {
+    await controller.start(SESSION_ID, requeteFormateur);
+
+    expect(controlSession.start).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+  });
+
+  it('change l ecran courant', async () => {
+    await controle({ ecran: 4 });
+
+    expect(controlSession.setScreen).toHaveBeenCalledWith(
+      SESSION_ID,
+      TEACHER_ID,
+      4,
+    );
+    expect(controlSession.setPacing).not.toHaveBeenCalled();
+  });
+
+  it('passe en rythme libre avec son intervalle', async () => {
+    await controle({ mode: 'libre', intervalle: { premier: 3, dernier: 9 } });
+
+    expect(controlSession.setPacing).toHaveBeenCalledWith(
+      SESSION_ID,
+      TEACHER_ID,
+      'libre',
+      { premier: 3, dernier: 9 },
+    );
+  });
+
+  it('repasse en rythme pilote sans intervalle', async () => {
+    await controle({ mode: 'pilote' });
+
+    expect(controlSession.setPacing).toHaveBeenCalledWith(
+      SESSION_ID,
+      TEACHER_ID,
+      'pilote',
+      null,
+    );
+  });
+
+  it('applique l ecran puis le rythme quand les deux sont demandes', async () => {
+    await controle({ ecran: 2, mode: 'pilote' });
+
+    expect(controlSession.setScreen).toHaveBeenCalledTimes(1);
+    expect(controlSession.setPacing).toHaveBeenCalledTimes(1);
+  });
+
+  it('refuse une demande de pilotage vide sans toucher a la session', async () => {
+    await expect(controle({})).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(controlSession.setScreen).not.toHaveBeenCalled();
+    expect(controlSession.setPacing).not.toHaveBeenCalled();
+  });
+
+  it('cloture sans deriver de destinataire de l identite du formateur', async () => {
+    await controller.close(SESSION_ID, requeteFormateur);
+
+    expect(closeSession.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+    expect(closeSession.execute.mock.calls[0]).toHaveLength(2);
+  });
+
+  it('rend le rapport de session au formateur proprietaire', async () => {
+    const rapport = {
+      code: '4271',
+      participants: [],
+    } as unknown as RapportSession;
+    results.execute.mockResolvedValue(rapport);
+
+    await expect(
+      controller.getResults(SESSION_ID, requeteFormateur),
+    ).resolves.toBe(rapport);
+    expect(results.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+  });
+});

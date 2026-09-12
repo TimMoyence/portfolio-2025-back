@@ -1,6 +1,4 @@
-export const BOITES = [1, 2, 3] as const;
-
-export type Boite = (typeof BOITES)[number];
+export type Boite = 1 | 2 | 3;
 
 export const SEANCES_AVANT_REVISION: Readonly<Record<Boite, number>> = {
   1: 1,
