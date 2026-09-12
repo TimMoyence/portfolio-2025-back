@@ -12,6 +12,14 @@ import { ParticipantsRepositoryTypeORM } from '../../src/modules/formations/infr
 import { SessionsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Sessions.repository.typeorm';
 import { buildDbIntegrationOptions } from './db-integration-datasource';
 
+export const FORMATION_ENTITIES = [
+  FormationSessionEntity,
+  FormationParticipantEntity,
+  FormationAnswerEntity,
+  FormationIncidentEntity,
+  FormationMasteryEntity,
+];
+
 export const FORMATION_TABLES = [
   'formation_sessions',
   'formation_participants',
@@ -34,13 +42,7 @@ export interface ContexteFormations {
 
 function buildFormationsOptions(): DataSourceOptions {
   return {
-    ...buildDbIntegrationOptions([
-      FormationSessionEntity,
-      FormationParticipantEntity,
-      FormationAnswerEntity,
-      FormationIncidentEntity,
-      FormationMasteryEntity,
-    ]),
+    ...buildDbIntegrationOptions(FORMATION_ENTITIES),
     synchronize: false,
     dropSchema: true,
     migrations: [CreateFormations1778900000000],

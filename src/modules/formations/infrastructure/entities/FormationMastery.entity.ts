@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 import type { Boite } from '../../domain/LeitnerBox';
 
 @Entity({ name: 'formation_mastery' })
+@Index('idx_formation_mastery_derniere_vue', ['derniereVue'])
 export class FormationMasteryEntity {
   @PrimaryColumn({ name: 'student_key', type: 'uuid' })
   studentKey: string;
