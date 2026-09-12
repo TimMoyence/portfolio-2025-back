@@ -1,6 +1,6 @@
 import {
   EN_TETE_JETON,
-  participantIdDuJeton,
+  participantIdVerifie,
 } from './ParticipantToken.service';
 
 export const FENETRE_THROTTLE_MS = 60_000;
@@ -19,6 +19,10 @@ export const LIMITE_FLUX_PAR_PARTICIPANT = 30;
  * l'inscription ou aucun jeton n'existe encore. L'adresse reste le repli
  * quand aucune de ces cles n'est presentee, et le balayage de codes
  * inconnus reste borne par adresse dans CodeScanProtection.service.ts.
+ *
+ * La signature du jeton est verifiee avant d'en tirer une cle : un jeton
+ * seulement bien forme laisserait l'appelant choisir son propre seau, donc
+ * s'en fabriquer un neuf a chaque requete.
  */
 export function suivreParCodeDeSession(req: Record<string, unknown>): string {
   const params = req.params as Record<string, unknown> | undefined;
@@ -31,13 +35,26 @@ export function suivreParCodeDeSession(req: Record<string, unknown>): string {
 export function suivreParParticipant(req: Record<string, unknown>): string {
   const entetes = req.headers as Record<string, unknown> | undefined;
   const jeton = entetes?.[EN_TETE_JETON];
-  if (typeof jeton !== 'string') {
+  const params = req.params as Record<string, unknown> | undefined;
+  const sessionId = params?.id;
+  if (typeof jeton !== 'string' || typeof sessionId !== 'string') {
     return parAdresse(req);
   }
-  const participantId = participantIdDuJeton(jeton);
+  const participantId = participantIdVerifieSansLever(sessionId, jeton);
   return participantId === null
     ? parAdresse(req)
     : `participant:${participantId}`;
+}
+
+function participantIdVerifieSansLever(
+  sessionId: string,
+  jeton: string,
+): string | null {
+  try {
+    return participantIdVerifie(sessionId, jeton);
+  } catch {
+    return null;
+  }
 }
 
 function parAdresse(req: Record<string, unknown>): string {

@@ -7,9 +7,45 @@ const CONTEXTE = 'participant';
 
 export const EN_TETE_JETON = 'x-participant-token';
 
-export function participantIdDuJeton(jeton: string): string | null {
+function participantIdDuJeton(jeton: string): string | null {
   const separateur = jeton.lastIndexOf(SEPARATEUR);
   return separateur > 0 ? jeton.slice(0, separateur) : null;
+}
+
+export function participantIdVerifie(
+  sessionId: string,
+  jeton: string | undefined,
+): string | null {
+  const participantId = jeton ? participantIdDuJeton(jeton) : null;
+  if (!jeton || participantId === null) {
+    return null;
+  }
+  const presentee = jeton.slice(participantId.length + 1);
+  return correspond(presentee, empreinte(sessionId, participantId))
+    ? participantId
+    : null;
+}
+
+function correspond(presentee: string, attendue: string): boolean {
+  const a = Buffer.from(presentee, 'utf8');
+  const b = Buffer.from(attendue, 'utf8');
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+function empreinte(sessionId: string, participantId: string): string {
+  return createHmac('sha256', secret())
+    .update(`${CONTEXTE}:${sessionId}:${participantId}`)
+    .digest('hex');
+}
+
+function secret(): string {
+  const valeur = process.env.FORMATION_REVIEW_TOKEN_SECRET;
+  if (!valeur || valeur.length < SECRET_LONGUEUR_MIN) {
+    throw new Error(
+      `FORMATION_REVIEW_TOKEN_SECRET doit etre configure avec au moins ${SECRET_LONGUEUR_MIN} caracteres`,
+    );
+  }
+  return valeur;
 }
 
 /**
@@ -28,42 +64,20 @@ export function participantIdDuJeton(jeton: string): string | null {
 @Injectable()
 export class ParticipantTokenService {
   sign(sessionId: string, participantId: string): string {
-    return `${participantId}${SEPARATEUR}${this.empreinte(sessionId, participantId)}`;
+    return `${participantId}${SEPARATEUR}${empreinte(sessionId, participantId)}`;
   }
 
   verify(sessionId: string, jeton: string | undefined): string {
-    const participantId = jeton ? participantIdDuJeton(jeton) : null;
-    if (!jeton || participantId === null) {
+    const lisible = jeton ? participantIdDuJeton(jeton) : null;
+    if (lisible === null) {
       throw new UnauthorizedException(
         'Jeton de participant absent ou illisible',
       );
     }
-    const presentee = jeton.slice(participantId.length + 1);
-    if (!this.correspond(presentee, this.empreinte(sessionId, participantId))) {
+    const participantId = participantIdVerifie(sessionId, jeton);
+    if (participantId === null) {
       throw new UnauthorizedException('Jeton de participant invalide');
     }
     return participantId;
-  }
-
-  private correspond(presentee: string, attendue: string): boolean {
-    const a = Buffer.from(presentee, 'utf8');
-    const b = Buffer.from(attendue, 'utf8');
-    return a.length === b.length && timingSafeEqual(a, b);
-  }
-
-  private empreinte(sessionId: string, participantId: string): string {
-    return createHmac('sha256', this.secret())
-      .update(`${CONTEXTE}:${sessionId}:${participantId}`)
-      .digest('hex');
-  }
-
-  private secret(): string {
-    const secret = process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    if (!secret || secret.length < SECRET_LONGUEUR_MIN) {
-      throw new Error(
-        `FORMATION_REVIEW_TOKEN_SECRET doit etre configure avec au moins ${SECRET_LONGUEUR_MIN} caracteres`,
-      );
-    }
-    return secret;
   }
 }
