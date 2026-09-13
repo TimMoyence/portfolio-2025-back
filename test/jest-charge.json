@@ -2,8 +2,7 @@
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
   "testEnvironment": "node",
-  "testRegex": ".db-integration.spec.ts$",
-  "testPathIgnorePatterns": ["formations-charge.db-integration.spec.ts$"],
+  "testRegex": "formations-charge.db-integration.spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   }
