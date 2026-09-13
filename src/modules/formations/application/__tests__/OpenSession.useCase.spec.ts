@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
+import { SessionCodeAlreadyActiveError } from '../../domain/errors/FormationErrors';
 import {
   buildBareme,
   buildSessionRecord,
@@ -63,6 +64,45 @@ describe('OpenSessionUseCase', () => {
         bareme,
       }),
     ).rejects.toThrow();
+  });
+
+  it('retire un autre code quand la creation entre en conflit', async () => {
+    sessions.create
+      .mockRejectedValueOnce(new SessionCodeAlreadyActiveError('4271'))
+      .mockResolvedValue(buildSessionRecord({ code: '5382' }));
+    const result = await sut.execute({
+      courseSlug: 'b1-09-interets-composes',
+      teacherId: 'teacher-uuid',
+      bareme: buildBareme(),
+    });
+    expect(result.code).toBe('5382');
+    expect(sessions.create).toHaveBeenCalledTimes(2);
+  });
+
+  it('laisse remonter une erreur de creation qui n est pas un conflit de code', async () => {
+    sessions.create.mockRejectedValue(new Error('panne du depot'));
+    await expect(
+      sut.execute({
+        courseSlug: 'b1-09-interets-composes',
+        teacherId: 'teacher-uuid',
+        bareme: buildBareme(),
+      }),
+    ).rejects.toThrow('panne du depot');
+    expect(sessions.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('abandonne apres vingt conflits de code consecutifs', async () => {
+    sessions.create.mockRejectedValue(
+      new SessionCodeAlreadyActiveError('4271'),
+    );
+    await expect(
+      sut.execute({
+        courseSlug: 'b1-09-interets-composes',
+        teacherId: 'teacher-uuid',
+        bareme: buildBareme(),
+      }),
+    ).rejects.toThrow(DomainValidationError);
+    expect(sessions.create).toHaveBeenCalledTimes(MAX_TENTATIVES_CODE);
   });
 
   it('refuse d ouvrir une session quand le code reste toujours pris', async () => {

@@ -1,4 +1,4 @@
-import { Inject, Injectable, MessageEvent } from '@nestjs/common';
+import { Inject, Injectable, MessageEvent, Optional } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
 import type {
@@ -33,6 +33,7 @@ export class StreamSessionUseCase {
     private readonly sessions: ISessionsRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
+    @Optional()
     private readonly cadences: CadencesFlux = CADENCES_PRODUCTION,
   ) {}
 

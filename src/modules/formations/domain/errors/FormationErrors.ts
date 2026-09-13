@@ -73,3 +73,9 @@ export class SeedAlreadyAssignedError extends ResourceConflictError {
     super(`Le tirage ${seed} est deja attribue dans cette session`);
   }
 }
+
+export class SessionCodeAlreadyActiveError extends ResourceConflictError {
+  constructor(code: string) {
+    super(`Le code ${code} porte deja une seance active`);
+  }
+}

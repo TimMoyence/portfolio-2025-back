@@ -3,6 +3,7 @@ import { ResourceConflictError } from '../src/common/domain/errors/ResourceConfl
 import {
   AnswerAlreadySubmittedError,
   SeedAlreadyAssignedError,
+  SessionCodeAlreadyActiveError,
 } from '../src/modules/formations/domain/errors/FormationErrors';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { buildBareme } from './factories/formation.factory';
@@ -107,7 +108,12 @@ describeDb('Formations repositories (db integration)', () => {
   it('refuse deux seances actives portant le meme code', async () => {
     await ouvrirSeance('4271');
 
-    await expect(ouvrirSeance('4271')).rejects.toBeInstanceOf(QueryFailedError);
+    await expect(ouvrirSeance('4271')).rejects.toBeInstanceOf(
+      SessionCodeAlreadyActiveError,
+    );
+    await expect(ouvrirSeance('4271')).rejects.not.toBeInstanceOf(
+      QueryFailedError,
+    );
   });
 
   it('libere le code une fois la seance terminee', async () => {

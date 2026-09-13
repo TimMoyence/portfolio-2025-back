@@ -1,20 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
+import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
 import type {
   CreateSessionInput,
   ISessionsRepository,
   SessionRecord,
   UpdateSessionInput,
 } from '../domain/ISessions.repository';
+import { PostgresErrorClassifier } from './PostgresErrorClassifier';
 import { FormationSessionEntity } from './entities/FormationSession.entity';
 
+const CODE_ACTIF_CONSTRAINT = 'uq_formation_sessions_code_active';
+
 @Injectable()
-export class SessionsRepositoryTypeORM implements ISessionsRepository {
+export class SessionsRepositoryTypeORM
+  extends PostgresErrorClassifier
+  implements ISessionsRepository
+{
   constructor(
     @InjectRepository(FormationSessionEntity)
     private readonly repo: Repository<FormationSessionEntity>,
-  ) {}
+  ) {
+    super();
+  }
 
   async create(input: CreateSessionInput): Promise<SessionRecord> {
     const entity = this.repo.create({
@@ -29,7 +38,14 @@ export class SessionsRepositoryTypeORM implements ISessionsRepository {
       fermeeLe: null,
       majLe: new Date(),
     });
-    return this.toDomain(await this.repo.save(entity));
+    try {
+      return this.toDomain(await this.repo.save(entity));
+    } catch (error) {
+      if (this.uniqueViolationConstraint(error) === CODE_ACTIF_CONSTRAINT) {
+        throw new SessionCodeAlreadyActiveError(input.code);
+      }
+      throw error;
+    }
   }
 
   async findById(id: string): Promise<SessionRecord | null> {
