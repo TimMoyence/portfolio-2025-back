@@ -30,7 +30,8 @@ const SECRET = 'secret-de-test-formations-assez-long-1234';
 const EN_TETE_JETON = 'x-participant-token';
 const CODE_DOUBLON = '4271';
 const CODE_DE_REPLI = '5382';
-const MESSAGE_CLOTURE = 'La session est terminee';
+const MESSAGE_CLOTURE =
+  'La séance est terminée : les réponses ne sont plus acceptées, les résultats restent consultables.';
 const ECRAN_PROPRIETAIRE_PREMIER = 4;
 const ECRAN_PROPRIETAIRE_SECOND = 6;
 const ECRAN_INTRUS_PREMIER = 9;

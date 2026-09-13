@@ -95,7 +95,7 @@ describe('AnswersRepositoryTypeORM', () => {
       AnswerAlreadySubmittedError,
     );
     await expect(sut.create(input)).rejects.toThrow(
-      'Reponse deja soumise pour la question Q-CAP-03',
+      'Votre réponse à la question Q-CAP-03 est déjà enregistrée : passez à la suivante.',
     );
   });
 

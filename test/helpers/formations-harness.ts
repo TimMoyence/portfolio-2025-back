@@ -7,10 +7,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
-import { Test } from '@nestjs/testing';
+import { Test as ModuleDeTest } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
+import type { AddressInfo } from 'node:net';
+import request from 'supertest';
+import type { Test } from 'supertest';
 import { IS_PUBLIC_KEY } from '../../src/common/interfaces/auth/public.decorator';
+import { AllExceptionsFilter } from '../../src/common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from '../../src/common/interfaces/filters/DomainExceptionFilter';
 import { CloseSessionUseCase } from '../../src/modules/formations/application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../../src/modules/formations/application/ControlSession.useCase';
@@ -39,7 +43,15 @@ import { SessionStateCacheService } from '../../src/modules/formations/infrastru
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsPresenterController } from '../../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../../src/modules/formations/interfaces/FormationsStudent.controller';
-import { ParticipantTokenService } from '../../src/modules/formations/interfaces/ParticipantToken.service';
+import {
+  EN_TETE_JETON,
+  ParticipantTokenService,
+} from '../../src/modules/formations/interfaces/ParticipantToken.service';
+import { createMockFormationMailer } from '../factories/formation.factory';
+import {
+  ouvrirContexteFormations,
+  type ContexteFormations,
+} from './formations-db';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
 export const PREFIXE_API = 'api/v1/portfolio25';
@@ -83,7 +95,7 @@ export interface DepotsFormations {
 export async function monterApplicationFormations(
   depots: DepotsFormations,
 ): Promise<INestApplication> {
-  const moduleRef = await Test.createTestingModule({
+  const moduleRef = await ModuleDeTest.createTestingModule({
     imports: [
       ThrottlerModule.forRoot([
         { ttl: FENETRE_THROTTLE_MS, limit: LIMITE_THROTTLE_PAR_DEFAUT },
@@ -115,8 +127,71 @@ export async function monterApplicationFormations(
 
   const app = moduleRef.createNestApplication();
   app.setGlobalPrefix(PREFIXE_API);
-  app.useGlobalFilters(new DomainExceptionFilter());
+  app.useGlobalFilters(new AllExceptionsFilter(), new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
   await app.init();
   return app;
+}
+
+export interface BancFormations {
+  contexte: ContexteFormations;
+  app: INestApplication;
+  mailer: jest.Mocked<IFormationMailer>;
+  port: number;
+  fermer(): Promise<void>;
+}
+
+export async function monterBancFormations(): Promise<BancFormations> {
+  const contexte = await ouvrirContexteFormations();
+  const mailer = createMockFormationMailer();
+  const app = await monterApplicationFormations({
+    sessions: contexte.sessions,
+    participants: contexte.participants,
+    answers: contexte.answers,
+    incidents: contexte.incidents,
+    mastery: contexte.mastery,
+    mailer,
+  });
+  await app.listen(0);
+  return {
+    contexte,
+    app,
+    mailer,
+    port: (app.getHttpServer().address() as AddressInfo).port,
+    async fermer(): Promise<void> {
+      await app.close();
+      await contexte.fermer();
+    },
+  };
+}
+
+export function clientFormations(
+  app: INestApplication,
+  formateurId: string,
+): ClientFormations {
+  const serveur = (): Parameters<typeof request>[0] =>
+    app.getHttpServer() as Parameters<typeof request>[0];
+  const chemin = (suffixe: string): string =>
+    `/${PREFIXE_API}/formations${suffixe}`;
+  const formateur = (
+    methode: 'post' | 'patch' | 'get',
+    suffixe: string,
+  ): Test =>
+    request(serveur())
+      [methode](chemin(suffixe))
+      .set(EN_TETE_IDENTITE, `${formateurId}:teacher`);
+  return {
+    chemin,
+    formateur,
+    participant: (suffixe, jeton) =>
+      request(serveur()).post(chemin(suffixe)).set(EN_TETE_JETON, jeton),
+    anonyme: (suffixe) => request(serveur()).post(chemin(suffixe)),
+  };
+}
+
+export interface ClientFormations {
+  chemin(suffixe: string): string;
+  formateur(methode: 'post' | 'patch' | 'get', suffixe: string): Test;
+  participant(suffixe: string, jeton: string): Test;
+  anonyme(suffixe: string): Test;
 }

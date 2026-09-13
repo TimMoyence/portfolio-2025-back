@@ -30,7 +30,9 @@ export class SessionNotOwnedError extends InsufficientPermissionsError {
 
 export class SessionClosedError extends ResourceConflictError {
   constructor() {
-    super('La session est terminee');
+    super(
+      'La séance est terminée : les réponses ne sont plus acceptées, les résultats restent consultables.',
+    );
   }
 }
 
@@ -56,7 +58,9 @@ export class SeedPoolExhaustedError extends ResourceConflictError {
 
 export class AnswerAlreadySubmittedError extends ResourceConflictError {
   constructor(questionId: string) {
-    super(`Reponse deja soumise pour la question ${questionId}`);
+    super(
+      `Votre réponse à la question ${questionId} est déjà enregistrée : passez à la suivante.`,
+    );
   }
 }
 
