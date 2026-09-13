@@ -11,10 +11,20 @@ import type {
   CopieEtudiant,
   IFormationMailer,
   RapportParticipant,
+  RapportQuestion,
   RapportSession,
 } from '../domain/IFormationMailer.port';
 
 const BOM_UTF8 = '﻿';
+
+function verdictDe(reponse: RapportQuestion): string {
+  if (reponse.correcte) {
+    return "c'est juste";
+  }
+  return reponse.misconception === null
+    ? "c'est faux"
+    : `c'est faux — confusion « ${reponse.misconception} »`;
+}
 
 @Injectable()
 export class FormationMailerService implements IFormationMailer {
@@ -70,12 +80,25 @@ export class FormationMailerService implements IFormationMailer {
             Note obtenue : <strong>${escapeHtml(participant.note.toFixed(1))}/20</strong>
             (complétion ${Math.round(participant.completion * 100)}%).
           </p>
+          <ul>${this.copieReponsesHtml(participant.reponses)}</ul>
           <p>
             <a href="${escapeUrl(lienRevision)}">Reprendre mon entraînement</a>
           </p>
         </div>
       `,
     });
+  }
+
+  private copieReponsesHtml(
+    reponses: readonly RapportQuestion[],
+  ): readonly EscapedHtml[] {
+    return reponses.map(
+      (reponse) => safeHtml`<li>
+          <strong>${escapeHtml(reponse.questionId)}</strong>
+          — ${escapeHtml(reponse.concept)} : vous avez répondu
+          « ${escapeHtml(reponse.valeur)} », ${escapeHtml(verdictDe(reponse))}.
+        </li>`,
+    );
   }
 
   private syntheseTexte(rapport: RapportSession): string {
@@ -137,6 +160,12 @@ export class FormationMailerService implements IFormationMailer {
       '',
       'Voici le détail de vos réponses pour cette session.',
       `Note obtenue : ${participant.note.toFixed(1)}/20.`,
+      '',
+      ...participant.reponses.map(
+        (reponse) =>
+          `${reponse.questionId} — ${reponse.concept} : vous avez répondu « ${reponse.valeur} », ${verdictDe(reponse)}.`,
+      ),
+      '',
       `Reprendre mon entraînement : ${lienRevision}`,
     ].join('\n');
   }
