@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CloseSessionUseCase } from './application/CloseSession.useCase';
 import { ControlSessionUseCase } from './application/ControlSession.useCase';
+import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
@@ -54,6 +55,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     SubmitAnswerUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
+    DueQuestionsUseCase,
     ParticipantTokenService,
     CodeScanProtectionService,
     {

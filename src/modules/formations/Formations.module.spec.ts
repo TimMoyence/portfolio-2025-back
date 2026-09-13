@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CloseSessionUseCase } from './application/CloseSession.useCase';
 import { ControlSessionUseCase } from './application/ControlSession.useCase';
+import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
@@ -32,6 +33,7 @@ const SERVICES = [
   SubmitAnswerUseCase,
   RecordIncidentsUseCase,
   StreamSessionUseCase,
+  DueQuestionsUseCase,
 ];
 
 describe('FormationsModule', () => {

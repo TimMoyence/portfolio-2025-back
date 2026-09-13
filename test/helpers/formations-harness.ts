@@ -18,6 +18,7 @@ import { AllExceptionsFilter } from '../../src/common/interfaces/filters/all-exc
 import { DomainExceptionFilter } from '../../src/common/interfaces/filters/DomainExceptionFilter';
 import { CloseSessionUseCase } from '../../src/modules/formations/application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../../src/modules/formations/application/ControlSession.useCase';
+import { DueQuestionsUseCase } from '../../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../../src/modules/formations/application/JoinSession.useCase';
 import { OpenSessionUseCase } from '../../src/modules/formations/application/OpenSession.useCase';
@@ -111,6 +112,7 @@ export async function monterApplicationFormations(
       SubmitAnswerUseCase,
       RecordIncidentsUseCase,
       StreamSessionUseCase,
+      DueQuestionsUseCase,
       ParticipantTokenService,
       CodeScanProtectionService,
       { provide: SESSIONS_REPOSITORY, useValue: depots.sessions },

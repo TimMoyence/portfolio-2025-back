@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   HttpStatus,
@@ -16,6 +17,7 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiTooManyRequestsResponse,
@@ -27,6 +29,8 @@ import { Observable } from 'rxjs';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
 import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
+import type { DueQuestion } from '../application/DueQuestions.useCase';
+import { DueQuestionsUseCase } from '../application/DueQuestions.useCase';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
@@ -47,6 +51,7 @@ import {
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
   LIMITE_REPONSES_PAR_PARTICIPANT,
+  LIMITE_REVISION_PAR_PARTICIPANT,
   suivreParCodeDeSession,
   suivreParParticipant,
 } from './formations-throttling';
@@ -72,6 +77,7 @@ export class FormationsStudentController {
     private readonly submitAnswer: SubmitAnswerUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
+    private readonly dueQuestions: DueQuestionsUseCase,
     private readonly tokens: ParticipantTokenService,
     private readonly codeScan: CodeScanProtectionService,
     @Optional()
@@ -179,6 +185,31 @@ export class FormationsStudentController {
         horodatage: incident.horodatage,
       })),
     );
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_REVISION_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Get('sessions/:id/due-questions')
+  @ApiOperation({
+    summary: 'Liste les questions a revoir, de la premiere boite a la derniere',
+  })
+  @ApiOkResponse({
+    description: 'Questions dues, sans aucune valeur de bareme',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async questionsDues(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+  ): Promise<{ questions: readonly DueQuestion[] }> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return {
+      questions: await this.dueQuestions.execute({ sessionId, participantId }),
+    };
   }
 
   @Throttle({

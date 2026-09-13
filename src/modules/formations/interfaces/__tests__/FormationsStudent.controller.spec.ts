@@ -29,6 +29,7 @@ describe('FormationsStudentController', () => {
   const submitAnswer = { execute: jest.fn() };
   const recordIncidents = { execute: jest.fn() };
   const streamSession = { execute: jest.fn() };
+  const dueQuestions = { execute: jest.fn() };
   const tokens = { sign: jest.fn(), verify: jest.fn() };
   const codeScan = {
     assertPasDeBalayage: jest.fn(),
@@ -40,6 +41,7 @@ describe('FormationsStudentController', () => {
     submitAnswer as never,
     recordIncidents as never,
     streamSession as never,
+    dueQuestions as never,
     tokens as never,
     codeScan as never,
     new PublicFormProtectionService(),
@@ -226,5 +228,33 @@ describe('FormationsStudentController', () => {
       UnauthorizedException,
     );
     expect(streamSession.execute).not.toHaveBeenCalled();
+  });
+
+  it('demande les questions a revoir pour le porteur du jeton, jamais pour un autre', async () => {
+    const dues = [
+      { questionId: 'Q-CAP-03', concept: 'capitalisation', boite: 1 },
+    ];
+    dueQuestions.execute.mockResolvedValue(dues);
+
+    const reponse = await controller.questionsDues(SESSION_ID, JETON);
+
+    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
+    expect(dueQuestions.execute).toHaveBeenCalledWith({
+      sessionId: SESSION_ID,
+      participantId: PARTICIPANT_ID,
+    });
+    expect(reponse).toEqual({ questions: dues });
+  });
+
+  it('ne rend aucune question a revoir quand le jeton est refuse', async () => {
+    tokens.verify.mockImplementation(() => {
+      throw new UnauthorizedException();
+    });
+
+    await expect(
+      controller.questionsDues(SESSION_ID, 'jeton-force'),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(dueQuestions.execute).not.toHaveBeenCalled();
   });
 });
