@@ -1,3 +1,4 @@
+import { creerCatalogue } from '../../src/modules/formations/domain/cours/catalogue/Catalogue';
 import type {
   Cours,
   Ecran,
@@ -6,6 +7,7 @@ import {
   questionNumerique,
   questionVote,
 } from '../../src/modules/formations/domain/cours/Cours';
+import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 
 export const QUESTION_NUMERIQUE_TEST = questionNumerique({
   id: 'Q-TEST-NUM',
@@ -222,4 +224,8 @@ export function buildCoursDeClasse(nombreQuestions: number): Cours {
       },
     ],
   });
+}
+
+export function creerCatalogueDeTest(...cours: Cours[]): ICatalogueCours {
+  return creerCatalogue(cours.length > 0 ? cours : [buildCoursDeTest()]);
 }
