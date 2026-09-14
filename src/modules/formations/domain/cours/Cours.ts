@@ -2,6 +2,7 @@ import type { Tolerance } from '../GradingCore';
 import type { Tirage } from './Aleatoire';
 import type { ConceptId } from './banque/concepts';
 import type { ConfusionId } from './banque/confusions';
+import type { RegleStructure } from './StructureCours';
 
 export type AuMoinsUn<T> = readonly [T, ...T[]];
 
@@ -251,7 +252,7 @@ export interface EcranQuestionnaire extends EcranCommun {
 export type Ecran = EcranExposition | EcranQuestion | EcranQuestionnaire;
 
 export interface Derogation {
-  readonly regle: string;
+  readonly regle: RegleStructure;
   readonly ecran?: string;
   readonly raison: string;
 }
