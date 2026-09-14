@@ -12,6 +12,7 @@ import {
   Post,
   Req,
   Sse,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -40,6 +41,7 @@ import {
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
 import { CodeScanProtectionService } from './CodeScanProtection.service';
+import { ParticipantTokenGuard } from './ParticipantToken.guard';
 import { JoinSessionRequestDto } from './dto/join-session.request.dto';
 import { JoinSessionResponseDto } from './dto/join-session.response.dto';
 import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
@@ -219,15 +221,12 @@ export class FormationsStudentController {
       getTracker: suivreParParticipant,
     },
   })
+  @UseGuards(ParticipantTokenGuard)
   @Sse('sessions/:id/stream')
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   @ApiTooManyRequestsResponse({ description: 'Trop d abonnes sur la session' })
-  stream(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
-  ): Observable<MessageEvent> {
-    this.tokens.verify(id, jeton);
+  stream(@Param('id', ParseUUIDPipe) id: string): Observable<MessageEvent> {
     return this.streamSession.execute(id);
   }
 }

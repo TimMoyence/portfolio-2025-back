@@ -1,4 +1,5 @@
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { GUARDS_METADATA } from '@nestjs/common/constants';
 import type { Request } from 'express';
 import { of } from 'rxjs';
 import { PublicFormProtectionService } from '../../../../common/interfaces/security/public-form-protection.service';
@@ -8,6 +9,7 @@ import {
   SessionNotFoundError,
 } from '../../domain/errors/FormationErrors';
 import { FormationsStudentController } from '../FormationsStudent.controller';
+import { ParticipantTokenGuard } from '../ParticipantToken.guard';
 import type { JoinSessionRequestDto } from '../dto/join-session.request.dto';
 
 const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
@@ -214,20 +216,21 @@ describe('FormationsStudentController', () => {
     const flux = of({ data: { etat: 'en_cours' } });
     streamSession.execute.mockReturnValue(flux);
 
-    expect(controller.stream(SESSION_ID, JETON)).toBe(flux);
-    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
+    expect(controller.stream(SESSION_ID)).toBe(flux);
     expect(streamSession.execute).toHaveBeenCalledWith(SESSION_ID);
   });
 
-  it('n ouvre aucun flux a qui ne presente pas de jeton de participant', () => {
-    tokens.verify.mockImplementation(() => {
-      throw new UnauthorizedException();
-    });
-
-    expect(() => controller.stream(SESSION_ID, undefined)).toThrow(
-      UnauthorizedException,
+  it('confie le controle du jeton a une garde, seule a pouvoir refuser avant l ouverture du flux', () => {
+    const descripteur = Object.getOwnPropertyDescriptor(
+      FormationsStudentController.prototype,
+      'stream',
     );
-    expect(streamSession.execute).not.toHaveBeenCalled();
+    const gardes = Reflect.getMetadata(
+      GUARDS_METADATA,
+      descripteur?.value as object,
+    ) as unknown[];
+
+    expect(gardes).toContain(ParticipantTokenGuard);
   });
 
   it('demande les questions a revoir pour le porteur du jeton, jamais pour un autre', async () => {
