@@ -15,7 +15,12 @@ function buildSession(overrides: Partial<SessionRecord> = {}): SessionRecord {
     modeRythme: 'pilote',
     ecranCourant: 0,
     intervalleLibre: null,
-    bareme: { version: 1, questions: [], tirages: [] },
+    bareme: {
+      version: 1,
+      graineReference: 9_999_999,
+      questions: [],
+      tirages: [],
+    },
     ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
     fermeeLe: null,
     majLe: new Date('2026-09-11T08:00:00.000Z'),

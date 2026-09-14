@@ -10,6 +10,7 @@ import type { Solution } from './AnswerGrading';
 
 const bareme: Bareme = {
   version: 1,
+  graineReference: 9_999_999,
   questions: [
     {
       id: 'Q-CAP-03',

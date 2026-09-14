@@ -20,6 +20,7 @@ export interface BaremeTirage {
 
 export interface Bareme {
   version: 1;
+  graineReference: number;
   questions: readonly BaremeQuestion[];
   tirages: readonly BaremeTirage[];
 }

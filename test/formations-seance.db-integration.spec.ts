@@ -271,6 +271,7 @@ function emailDe(index: number): string {
 function construireBareme(): Bareme {
   return {
     version: 1,
+    graineReference: 9_999_999,
     questions: Array.from({ length: NB_QUESTIONS }, (_, question) => ({
       id: identifiantQuestion(question),
       type: 'numeric' as const,

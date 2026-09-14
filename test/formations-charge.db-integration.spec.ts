@@ -192,7 +192,7 @@ function construireBareme(): Bareme {
       ),
     }),
   );
-  return { version: 1, questions, tirages };
+  return { version: 1, graineReference: 9_999_999, questions, tirages };
 }
 
 function brancherAbonnement(

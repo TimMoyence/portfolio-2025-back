@@ -82,6 +82,7 @@ const TEMOIN = {
 
 const BAREME: Bareme = {
   version: 1,
+  graineReference: 9_999_999,
   questions: [
     {
       id: TEMOIN.question,

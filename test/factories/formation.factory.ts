@@ -24,6 +24,7 @@ import type {
 export function buildBareme(overrides: Partial<Bareme> = {}): Bareme {
   return {
     version: 1,
+    graineReference: 9_999_999,
     questions: [
       {
         id: 'Q-CAP-03',

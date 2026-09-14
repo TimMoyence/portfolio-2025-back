@@ -84,6 +84,11 @@ export class BaremeDto implements Bareme {
   @IsIn([1])
   version: 1;
 
+  @ApiProperty({ example: 9_999_999 })
+  @IsInt()
+  @Min(0)
+  graineReference: number;
+
   @ApiProperty({ type: [BaremeQuestionDto] })
   @IsArray()
   @ArrayMinSize(1)

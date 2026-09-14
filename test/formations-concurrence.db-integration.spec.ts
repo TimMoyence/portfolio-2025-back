@@ -86,7 +86,7 @@ function construireBareme(): Bareme {
     });
     tirages.push({ seed: PREMIERE_GRAINE + rang, solutions });
   }
-  return { version: 1, questions, tirages };
+  return { version: 1, graineReference: 9_999_999, questions, tirages };
 }
 
 function statutsEnEchec(

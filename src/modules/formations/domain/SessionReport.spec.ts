@@ -29,6 +29,7 @@ describe('buildRapportSession', () => {
     const session = buildSessionRecord({
       bareme: {
         version: 1,
+        graineReference: 9_999_999,
         questions: [
           {
             id: 'Q-1',
