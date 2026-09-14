@@ -96,6 +96,11 @@ interface BilletPublic {
 
 type Donnees = Readonly<Record<string, unknown>>;
 
+interface QuestionProjetee {
+  readonly brique: 'fp-numeric' | 'fp-vote';
+  readonly donnees: Donnees;
+}
+
 interface Contexte {
   readonly graine: number;
   readonly rng: Rng;
@@ -143,12 +148,9 @@ function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
     case 'questionnaire':
       return tirerQuestionnaire(ecran, contexte);
     case 'fp-numeric':
-      return sousPropriete(
-        ecran.brique,
-        tirerNumerique(ecran.question, metadonnees(ecran), contexte),
-      );
     case 'fp-vote':
-      return sousPropriete(ecran.brique, tirerVote(ecran.question, contexte));
+      return projeterQuestion(ecran.question, metadonnees(ecran), contexte)
+        .donnees;
     case 'fp-recall':
       return sousPropriete(ecran.brique, {
         ...tirerVote(ecran.question, contexte),
@@ -190,19 +192,28 @@ function tirerQuestionnaire(
   return {
     regime: ecran.regime,
     questions: melanger(ecran.questions, contexte.rng).map((question) =>
-      question.type === 'numeric'
-        ? {
-            brique: 'fp-numeric',
-            donnees: sousPropriete(
-              'fp-numeric',
-              tirerNumerique(question, communes, contexte),
-            ),
-          }
-        : {
-            brique: 'fp-vote',
-            donnees: sousPropriete('fp-vote', tirerVote(question, contexte)),
-          },
+      projeterQuestion(question, communes, contexte),
     ),
+  };
+}
+
+function projeterQuestion(
+  question: Question,
+  communes: Metadonnees,
+  contexte: Contexte,
+): QuestionProjetee {
+  if (question.type === 'numeric') {
+    return {
+      brique: 'fp-numeric',
+      donnees: sousPropriete(
+        'fp-numeric',
+        tirerNumerique(question, communes, contexte),
+      ),
+    };
+  }
+  return {
+    brique: 'fp-vote',
+    donnees: sousPropriete('fp-vote', tirerVote(question, contexte)),
   };
 }
 

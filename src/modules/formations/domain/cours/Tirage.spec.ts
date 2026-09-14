@@ -1,8 +1,71 @@
 import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
+import type { Tolerance } from '../GradingCore';
 import { questionNumerique, questionVote } from './Cours';
-import type { Cours } from './Cours';
+import type { AuMoinsUn, Cours, Ecran, Question } from './Cours';
 import { PROPRIETE_PAR_BRIQUE, tirer, TirageAmbiguError } from './Tirage';
 import type { CorrigeTire } from './Tirage';
+
+const CAS_NUMERIQUES_AMBIGUS: readonly {
+  readonly cas: string;
+  readonly solution: number;
+  readonly pieges: AuMoinsUn<number>;
+  readonly tolerance: Tolerance;
+}[] = [
+  {
+    cas: 'un piege se confond avec la solution',
+    solution: 100,
+    pieges: [100.5],
+    tolerance: { type: 'relative', valeur: 0.01 },
+  },
+  {
+    cas: 'un piege ne se confond avec la solution que dans le sens inverse',
+    solution: 101.52,
+    pieges: [100],
+    tolerance: { type: 'relative', valeur: 0.015 },
+  },
+  {
+    cas: 'deux pieges se confondent entre eux',
+    solution: 1,
+    pieges: [5, 5],
+    tolerance: { type: 'absolue', valeur: 0 },
+  },
+];
+
+function questionNumeriqueFigee(
+  solution: number,
+  pieges: AuMoinsUn<number>,
+  tolerance: Tolerance,
+): Question {
+  const [premier, ...suite] = pieges.map((valeur) => ({
+    confusion: 'base-arrivee' as const,
+    valeur: () => valeur,
+  }));
+  return questionNumerique({
+    id: 'Q-FIGEE',
+    concept: 'proportion',
+    noteCompte: false,
+    donnees: () => ({}),
+    enonce: () => 'e',
+    unite: null,
+    solution: () => solution,
+    tolerance,
+    pieges: [premier, ...suite],
+  });
+}
+
+function coursAUneQuestion(question: Question): Cours {
+  const commun = {
+    id: 'E',
+    dureeMinutes: 1,
+    concepts: ['proportion'] as const,
+    notes: '',
+  };
+  const ecran: Ecran =
+    question.type === 'numeric'
+      ? { ...commun, brique: 'fp-numeric', question }
+      : { ...commun, brique: 'fp-vote', question };
+  return buildCoursDeTest({ ecrans: [ecran] });
+}
 
 const CLES_INTERDITES = [
   'solutions',
@@ -176,32 +239,25 @@ describe('tirer', () => {
     );
   });
 
-  it('rejette une graine dont un piege se confond avec la solution', () => {
-    const ambigue = questionNumerique({
-      id: 'Q-AMBIGUE',
-      concept: 'proportion',
-      noteCompte: false,
-      donnees: () => ({}),
-      enonce: () => 'e',
-      unite: null,
-      solution: () => 100,
-      tolerance: { type: 'relative', valeur: 0.01 },
-      pieges: [{ confusion: 'base-arrivee', valeur: () => 100.5 }],
-    });
-    const cours2: Cours = buildCoursDeTest({
-      ecrans: [
-        {
-          id: 'E',
-          brique: 'fp-numeric',
-          dureeMinutes: 1,
-          concepts: ['proportion'],
-          notes: '',
-          question: ambigue,
-        },
-      ],
-    });
-    expect(() => tirer(cours2, 1)).toThrow(TirageAmbiguError);
+  it('place la bonne option de vote a une position qui varie selon la graine', () => {
+    const positions = new Set(
+      Array.from(
+        { length: 30 },
+        (_, graine) => tirer(cours, graine).solutions['Q-TEST-RAPPEL'].valeur,
+      ),
+    );
+    expect(positions).toEqual(new Set(['o1', 'o2', 'o3']));
   });
+
+  it.each(CAS_NUMERIQUES_AMBIGUS)(
+    'rejette une graine dont $cas',
+    ({ solution, pieges, tolerance }) => {
+      const question = questionNumeriqueFigee(solution, pieges, tolerance);
+      expect(() => tirer(coursAUneQuestion(question), 1)).toThrow(
+        TirageAmbiguError,
+      );
+    },
+  );
 
   it('rejette une graine qui produit deux options identiques ou une valeur non finie', () => {
     const doublon = questionVote({
@@ -213,32 +269,14 @@ describe('tirer', () => {
       bonne: () => 'même',
       pieges: [{ confusion: 'base-arrivee', libelle: () => ' même ' }],
     });
-    const infinie = questionNumerique({
-      id: 'Q-INF',
-      concept: 'proportion',
-      noteCompte: false,
-      donnees: () => ({}),
-      enonce: () => 'e',
-      unite: null,
-      solution: () => Number.POSITIVE_INFINITY,
-      tolerance: { type: 'absolue', valeur: 0 },
-      pieges: [{ confusion: 'base-arrivee', valeur: () => 1 }],
+    const infinie = questionNumeriqueFigee(Number.POSITIVE_INFINITY, [1], {
+      type: 'absolue',
+      valeur: 0,
     });
     for (const question of [doublon, infinie]) {
-      const brique = question.type === 'vote' ? 'fp-vote' : 'fp-numeric';
-      const cours3 = buildCoursDeTest({
-        ecrans: [
-          {
-            id: 'E',
-            brique,
-            dureeMinutes: 1,
-            concepts: ['proportion'],
-            notes: '',
-            question,
-          } as never,
-        ],
-      });
-      expect(() => tirer(cours3, 1)).toThrow(TirageAmbiguError);
+      expect(() => tirer(coursAUneQuestion(question), 1)).toThrow(
+        TirageAmbiguError,
+      );
     }
   });
 });
