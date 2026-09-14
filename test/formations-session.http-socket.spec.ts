@@ -20,12 +20,17 @@ import { ControlSessionUseCase } from '../src/modules/formations/application/Con
 import { DueQuestionsUseCase } from '../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../src/modules/formations/application/JoinSession.useCase';
+import { LireSujetUseCase } from '../src/modules/formations/application/LireSujet.useCase';
 import { OpenSessionUseCase } from '../src/modules/formations/application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from '../src/modules/formations/application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../src/modules/formations/application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../src/modules/formations/application/SubmitAnswer.useCase';
-import type { Ecran } from '../src/modules/formations/domain/cours/Cours';
+import type {
+  Cours,
+  Ecran,
+} from '../src/modules/formations/domain/cours/Cours';
 import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
+import type { ICatalogueCours } from '../src/modules/formations/domain/cours/ICatalogueCours.port';
 import type {
   AnswerRecord,
   IAnswersRepository,
@@ -87,29 +92,28 @@ const TEMOIN = {
   question: 'Q-SENTINELLE-01',
 } as const;
 
-const QUESTION_SENTINELLE = questionNumerique({
-  id: TEMOIN.question,
-  concept: TEMOIN.concept,
-  noteCompte: true,
-  donnees: () => ({}),
-  enonce: () => 'Quelle est la valeur sentinelle ?',
-  unite: null,
-  solution: () => TEMOIN.solution,
-  tolerance: { type: 'relative', valeur: 0.005 },
-  pieges: [{ confusion: TEMOIN.misconception, valeur: () => TEMOIN.piege }],
-});
-
-const [PREMIER_ECRAN_SENTINELLE, ...ECRANS_SUIVANTS_SENTINELLE] =
-  buildCoursDeTest().ecrans.map(
+function construireCoursSentinelle(solution: number): Cours {
+  const question = questionNumerique({
+    id: TEMOIN.question,
+    concept: TEMOIN.concept,
+    noteCompte: true,
+    donnees: () => ({}),
+    enonce: () => 'Quelle est la valeur sentinelle ?',
+    unite: null,
+    solution: () => solution,
+    tolerance: { type: 'relative', valeur: 0.005 },
+    pieges: [{ confusion: TEMOIN.misconception, valeur: () => TEMOIN.piege }],
+  });
+  const [premier, ...suite] = buildCoursDeTest().ecrans.map(
     (ecran): Ecran =>
       ecran.id === 'E-NUM' && ecran.brique === 'fp-numeric'
-        ? { ...ecran, question: QUESTION_SENTINELLE }
+        ? { ...ecran, question }
         : ecran,
   );
+  return buildCoursDeTest({ ecrans: [premier, ...suite] });
+}
 
-const COURS_SENTINELLE = buildCoursDeTest({
-  ecrans: [PREMIER_ECRAN_SENTINELLE, ...ECRANS_SUIVANTS_SENTINELLE],
-});
+const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);
 
 const QUESTIONS_DU_COURS_DE_CLASSE = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(QUESTIONS_DU_COURS_DE_CLASSE);
@@ -133,6 +137,21 @@ function inscription(studentKey: string) {
     prenom: 'Theo',
     nom: 'Martin',
     email: 'theo.martin@example.com',
+  };
+}
+
+interface CatalogueMutable {
+  readonly catalogue: ICatalogueCours;
+  remplacer(nouveau: ICatalogueCours): void;
+}
+
+function creerCatalogueMutable(initial: ICatalogueCours): CatalogueMutable {
+  let courant = initial;
+  return {
+    catalogue: { trouver: (slug) => courant.trouver(slug) },
+    remplacer(nouveau) {
+      courant = nouveau;
+    },
   };
 }
 
@@ -270,11 +289,15 @@ interface HarnaisFormations {
  * une limite qui ferme la porte a une classe entiere traverse la revue sans
  * qu'aucun test ne bronche.
  */
-async function creerHarnais(): Promise<HarnaisFormations> {
+async function creerHarnais(
+  catalogueHttp: ICatalogueCours = creerCatalogueDeTest(
+    COURS_SENTINELLE,
+    COURS_DE_CLASSE,
+  ),
+): Promise<HarnaisFormations> {
   process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
   process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
   const mailer = createMockFormationMailer();
-  const catalogueHttp = creerCatalogueDeTest(COURS_SENTINELLE, COURS_DE_CLASSE);
 
   const moduleRef = await Test.createTestingModule({
     imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 30 }])],
@@ -289,6 +312,7 @@ async function creerHarnais(): Promise<HarnaisFormations> {
       RecordIncidentsUseCase,
       StreamSessionUseCase,
       DueQuestionsUseCase,
+      LireSujetUseCase,
       ParticipantTokenService,
       CodeScanProtectionService,
       { provide: SESSIONS_REPOSITORY, useValue: creerSessionsRepo() },
@@ -759,5 +783,130 @@ describe('Une salle informatique derriere une seule adresse publique', () => {
       statuts.length,
     );
     expect(statuts[statuts.length - 1]).toBe(429);
+  });
+});
+
+describe('sujet du participant (lecture par jeton)', () => {
+  let app: INestApplication;
+  let remplacerCatalogue: (nouveau: ICatalogueCours) => void;
+
+  const serveur = (): Parameters<typeof request>[0] =>
+    app.getHttpServer() as Parameters<typeof request>[0];
+
+  const route = (chemin: string): string =>
+    `/${API_PREFIX}/formations${chemin}`;
+
+  const ouvrirSession = async (): Promise<{
+    sessionId: string;
+    code: string;
+  }> => {
+    const reponse = await request(serveur())
+      .post(route('/sessions'))
+      .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+      .send({ courseSlug: COURS_SENTINELLE.slug })
+      .expect(201);
+    return reponse.body as { sessionId: string; code: string };
+  };
+
+  const rejoindreEtObtenirJeton = async (
+    code: string,
+    studentKey: string,
+  ): Promise<string> => {
+    const reponse = await request(serveur())
+      .post(route(`/sessions/${code}/join`))
+      .send(inscription(studentKey))
+      .expect(201);
+    return (reponse.body as { jeton: string }).jeton;
+  };
+
+  beforeAll(async () => {
+    const mutable = creerCatalogueMutable(
+      creerCatalogueDeTest(COURS_SENTINELLE, COURS_DE_CLASSE),
+    );
+    remplacerCatalogue = mutable.remplacer;
+    ({ app } = await creerHarnais(mutable.catalogue));
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('refuse de lire le sujet sans jeton de participant', async () => {
+    const { sessionId } = await ouvrirSession();
+
+    const reponse = await request(serveur()).get(
+      route(`/sessions/${sessionId}/sujet`),
+    );
+
+    expect(reponse.status).toBe(401);
+  });
+
+  it('sert le sujet du tirage du participant sans jamais livrer le corrige', async () => {
+    const { sessionId, code } = await ouvrirSession();
+    const jeton = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333331',
+    );
+
+    const reponse = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jeton)
+      .expect(200);
+
+    expect((reponse.body as { id: string }).id).toBe(COURS_SENTINELLE.slug);
+    [
+      String(TEMOIN.solution),
+      String(TEMOIN.piege),
+      TEMOIN.misconception,
+    ].forEach((temoin) => {
+      expect(reponse.text).not.toContain(temoin);
+    });
+  });
+
+  it('sert a chaque participant le sujet de son propre tirage', async () => {
+    const { sessionId, code } = await ouvrirSession();
+    const jetonA = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333332',
+    );
+    const jetonB = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333333',
+    );
+
+    const sujetA = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jetonA)
+      .expect(200);
+    const sujetB = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jetonB)
+      .expect(200);
+
+    expect(sujetA.text).not.toEqual(sujetB.text);
+  });
+
+  it('refuse de servir un sujet quand le cours a change depuis l ouverture de la seance', async () => {
+    const { sessionId, code } = await ouvrirSession();
+    const jeton = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333334',
+    );
+
+    remplacerCatalogue(
+      creerCatalogueDeTest(
+        construireCoursSentinelle(TEMOIN.solution + 1),
+        COURS_DE_CLASSE,
+      ),
+    );
+
+    const reponse = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jeton);
+
+    expect(reponse.status).toBe(409);
+    expect((reponse.body as { detail: string }).detail).toContain(
+      'nouvelle séance',
+    );
   });
 });

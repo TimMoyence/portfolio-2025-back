@@ -89,3 +89,11 @@ export class SessionCodeAlreadyActiveError extends ResourceConflictError {
     super(`Le code ${code} porte deja une seance active`);
   }
 }
+
+export class CoursModifieError extends ResourceConflictError {
+  constructor() {
+    super(
+      'Le cours a changé depuis l’ouverture de la séance : le formateur doit ouvrir une nouvelle séance.',
+    );
+  }
+}

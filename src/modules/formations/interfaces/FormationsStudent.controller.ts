@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
@@ -33,9 +34,11 @@ import { PublicFormProtectionService } from '../../../common/interfaces/security
 import type { DueQuestion } from '../application/DueQuestions.useCase';
 import { DueQuestionsUseCase } from '../application/DueQuestions.useCase';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
+import { LireSujetUseCase } from '../application/LireSujet.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
+import type { CoursPublic } from '../domain/cours/CoursPublic';
 import {
   InvalidSessionCodeError,
   SessionNotFoundError,
@@ -54,6 +57,7 @@ import {
   LIMITE_JOIN_PAR_CODE,
   LIMITE_REPONSES_PAR_PARTICIPANT,
   LIMITE_REVISION_PAR_PARTICIPANT,
+  LIMITE_SUJET_PAR_PARTICIPANT,
   suivreParCodeDeSession,
   suivreParParticipant,
 } from './formations-throttling';
@@ -80,6 +84,7 @@ export class FormationsStudentController {
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
+    private readonly lireSujet: LireSujetUseCase,
     private readonly tokens: ParticipantTokenService,
     private readonly codeScan: CodeScanProtectionService,
     @Optional()
@@ -212,6 +217,33 @@ export class FormationsStudentController {
     return {
       questions: await this.dueQuestions.execute({ sessionId, participantId }),
     };
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_SUJET_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @UseGuards(ParticipantTokenGuard)
+  @Get('sessions/:id/sujet')
+  @ApiOperation({
+    summary: 'Sert au participant le sujet de son propre tirage',
+  })
+  @ApiOkResponse({
+    description: 'Deroule du tirage du participant, sans corrige',
+  })
+  @ApiConflictResponse({
+    description: 'Le cours a change depuis l ouverture de la seance',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async sujet(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+  ): Promise<CoursPublic> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.lireSujet.execute({ sessionId, participantId });
   }
 
   @Throttle({

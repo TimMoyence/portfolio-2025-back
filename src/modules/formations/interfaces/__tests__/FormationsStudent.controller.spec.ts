@@ -32,6 +32,7 @@ describe('FormationsStudentController', () => {
   const recordIncidents = { execute: jest.fn() };
   const streamSession = { execute: jest.fn() };
   const dueQuestions = { execute: jest.fn() };
+  const lireSujet = { execute: jest.fn() };
   const tokens = { sign: jest.fn(), verify: jest.fn() };
   const codeScan = {
     assertPasDeBalayage: jest.fn(),
@@ -44,6 +45,7 @@ describe('FormationsStudentController', () => {
     recordIncidents as never,
     streamSession as never,
     dueQuestions as never,
+    lireSujet as never,
     tokens as never,
     codeScan as never,
     new PublicFormProtectionService(),
@@ -259,5 +261,44 @@ describe('FormationsStudentController', () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
 
     expect(dueQuestions.execute).not.toHaveBeenCalled();
+  });
+
+  it('sert le sujet du tirage au porteur du jeton, jamais a un autre', async () => {
+    const sujet = { id: 'cours-de-test', ecrans: [] };
+    lireSujet.execute.mockResolvedValue(sujet);
+
+    const reponse = await controller.sujet(SESSION_ID, JETON);
+
+    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
+    expect(lireSujet.execute).toHaveBeenCalledWith({
+      sessionId: SESSION_ID,
+      participantId: PARTICIPANT_ID,
+    });
+    expect(reponse).toBe(sujet);
+  });
+
+  it('ne sert aucun sujet quand le jeton est refuse', async () => {
+    tokens.verify.mockImplementation(() => {
+      throw new UnauthorizedException();
+    });
+
+    await expect(
+      controller.sujet(SESSION_ID, 'jeton-force'),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(lireSujet.execute).not.toHaveBeenCalled();
+  });
+
+  it('confie le controle du jeton a une garde avant de servir le sujet', () => {
+    const descripteur = Object.getOwnPropertyDescriptor(
+      FormationsStudentController.prototype,
+      'sujet',
+    );
+    const gardes = Reflect.getMetadata(
+      GUARDS_METADATA,
+      descripteur?.value as object,
+    ) as unknown[];
+
+    expect(gardes).toContain(ParticipantTokenGuard);
   });
 });
