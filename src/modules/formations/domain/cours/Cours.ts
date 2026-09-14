@@ -6,17 +6,15 @@ import type { RegleStructure } from './StructureCours';
 
 export type AuMoinsUn<T> = readonly [T, ...T[]];
 
-export const BRIQUES_EXPOSITION = [
-  'fp-quote',
-  'fp-story',
-  'fp-pro',
-  'fp-worked',
-  'fp-concept4',
-  'fp-plot',
-] as const;
-export type BriqueExposition = (typeof BRIQUES_EXPOSITION)[number];
+export type BriqueExposition =
+  | 'fp-quote'
+  | 'fp-story'
+  | 'fp-pro'
+  | 'fp-worked'
+  | 'fp-concept4'
+  | 'fp-plot';
 
-export const BRIQUES_QUESTION = [
+const BRIQUES_QUESTION = [
   'fp-numeric',
   'fp-vote',
   'fp-recall',
@@ -27,12 +25,12 @@ export type BriqueQuestion = (typeof BRIQUES_QUESTION)[number];
 export type Modalite = 'solo' | 'binome' | 'groupe' | 'classe';
 export type RegimeVerrou = 'ouvert' | 'focus' | 'examen';
 
-export interface PiegeNumerique<D> {
+interface PiegeNumerique<D> {
   readonly confusion: ConfusionId;
   readonly valeur: (donnees: D) => number;
 }
 
-export interface PiegeVote<D> {
+interface PiegeVote<D> {
   readonly confusion: ConfusionId;
   readonly libelle: (donnees: D) => string;
 }
@@ -57,7 +55,7 @@ export interface DefinitionVote<D> extends DefinitionCommune<D> {
   readonly pieges: AuMoinsUn<PiegeVote<D>>;
 }
 
-export interface QuestionNumeriqueTiree {
+interface QuestionNumeriqueTiree {
   readonly type: 'numeric';
   readonly enonce: string;
   readonly unite: string | null;
@@ -154,7 +152,7 @@ export function questionVote<D>(definition: DefinitionVote<D>): QuestionVote {
   };
 }
 
-export interface ParametreCurseur {
+interface ParametreCurseur {
   readonly cle: string;
   readonly libelle: string;
   readonly min: number;
@@ -163,7 +161,7 @@ export interface ParametreCurseur {
   readonly defaut: number;
 }
 
-export interface ProprietesParBrique {
+interface ProprietesParBrique {
   readonly 'fp-quote': {
     readonly texte: string;
     readonly auteur: string | null;
@@ -219,7 +217,7 @@ interface EcranCommun {
   readonly modalite?: Modalite;
 }
 
-export type EcranExposition = {
+type EcranExposition = {
   [B in BriqueExposition]: EcranCommun & {
     readonly brique: B;
     readonly proprietes: ProprietesParBrique[B];
