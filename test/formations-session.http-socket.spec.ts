@@ -24,7 +24,8 @@ import { OpenSessionUseCase } from '../src/modules/formations/application/OpenSe
 import { RecordIncidentsUseCase } from '../src/modules/formations/application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../src/modules/formations/application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../src/modules/formations/application/SubmitAnswer.useCase';
-import type { Bareme } from '../src/modules/formations/domain/Bareme';
+import type { Ecran } from '../src/modules/formations/domain/cours/Cours';
+import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
 import type {
   AnswerRecord,
   IAnswersRepository,
@@ -39,6 +40,7 @@ import type {
 } from '../src/modules/formations/domain/ISessions.repository';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
@@ -51,6 +53,11 @@ import { CodeScanProtectionService } from '../src/modules/formations/interfaces/
 import { FormationsPresenterController } from '../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../src/modules/formations/interfaces/FormationsStudent.controller';
 import { ParticipantTokenService } from '../src/modules/formations/interfaces/ParticipantToken.service';
+import {
+  buildCoursDeClasse,
+  buildCoursDeTest,
+  creerCatalogueDeTest,
+} from './factories/cours.factory';
 import {
   createMockFormationMailer,
   createMockIncidentsRepo,
@@ -75,43 +82,37 @@ const FORMATEUR_B = 'b2222222-2222-4222-8222-222222222222';
 const TEMOIN = {
   solution: 424242.42,
   piege: 919191.19,
-  misconception: 'sentinelle-misconception',
-  concept: 'sentinelle-concept',
+  misconception: 'ecart-absolu-au-lieu-du-taux',
+  concept: 'taux-evolution',
   question: 'Q-SENTINELLE-01',
-};
+} as const;
 
-const BAREME: Bareme = {
-  version: 1,
-  graineReference: 9_999_999,
-  questions: [
-    {
-      id: TEMOIN.question,
-      type: 'numeric',
-      concept: TEMOIN.concept,
-      tolerance: { type: 'relative', valeur: 0.005 },
-      noteCompte: true,
-    },
-  ],
-  tirages: [
-    {
-      seed: 1001,
-      solutions: {
-        [TEMOIN.question]: {
-          valeur: TEMOIN.solution,
-          pieges: [
-            { valeur: TEMOIN.piege, misconception: TEMOIN.misconception },
-          ],
-        },
-      },
-    },
-    {
-      seed: 1002,
-      solutions: {
-        [TEMOIN.question]: { valeur: TEMOIN.solution, pieges: [] },
-      },
-    },
-  ],
-};
+const QUESTION_SENTINELLE = questionNumerique({
+  id: TEMOIN.question,
+  concept: TEMOIN.concept,
+  noteCompte: true,
+  donnees: () => ({}),
+  enonce: () => 'Quelle est la valeur sentinelle ?',
+  unite: null,
+  solution: () => TEMOIN.solution,
+  tolerance: { type: 'relative', valeur: 0.005 },
+  pieges: [{ confusion: TEMOIN.misconception, valeur: () => TEMOIN.piege }],
+});
+
+const [PREMIER_ECRAN_SENTINELLE, ...ECRANS_SUIVANTS_SENTINELLE] =
+  buildCoursDeTest().ecrans.map(
+    (ecran): Ecran =>
+      ecran.id === 'E-NUM' && ecran.brique === 'fp-numeric'
+        ? { ...ecran, question: QUESTION_SENTINELLE }
+        : ecran,
+  );
+
+const COURS_SENTINELLE = buildCoursDeTest({
+  ecrans: [PREMIER_ECRAN_SENTINELLE, ...ECRANS_SUIVANTS_SENTINELLE],
+});
+
+const QUESTIONS_DU_COURS_DE_CLASSE = 12;
+const COURS_DE_CLASSE = buildCoursDeClasse(QUESTIONS_DU_COURS_DE_CLASSE);
 
 const CORRIGE_EN_CLAIR = [
   String(TEMOIN.solution),
@@ -121,21 +122,6 @@ const CORRIGE_EN_CLAIR = [
 ];
 
 const TAILLE_CLASSE = 30;
-
-/**
- * Un bareme dimensionne pour une classe entiere : `pickFreeSeed`
- * (Bareme.ts) attribue un tirage distinct par etudiant, il en faut donc au
- * moins autant que de postes dans la salle.
- */
-const BAREME_CLASSE: Bareme = {
-  ...BAREME,
-  tirages: Array.from({ length: TAILLE_CLASSE + 10 }, (_, index) => ({
-    seed: 2000 + index,
-    solutions: {
-      [TEMOIN.question]: { valeur: TEMOIN.solution, pieges: [] },
-    },
-  })),
-};
 
 function cleEtudiant(index: number): string {
   return `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`;
@@ -288,6 +274,7 @@ async function creerHarnais(): Promise<HarnaisFormations> {
   process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
   process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
   const mailer = createMockFormationMailer();
+  const catalogueHttp = creerCatalogueDeTest(COURS_SENTINELLE, COURS_DE_CLASSE);
 
   const moduleRef = await Test.createTestingModule({
     imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 30 }])],
@@ -310,6 +297,7 @@ async function creerHarnais(): Promise<HarnaisFormations> {
       { provide: MASTERY_REPOSITORY, useValue: createMockMasteryRepo() },
       { provide: INCIDENTS_REPOSITORY, useValue: createMockIncidentsRepo() },
       { provide: FORMATION_MAILER, useValue: mailer },
+      { provide: CATALOGUE_COURS, useValue: catalogueHttp },
       { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
       { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
       { provide: APP_GUARD, useClass: ThrottlerGuard },
@@ -334,14 +322,18 @@ describe('Session de formation (e2e http socket)', () => {
   const route = (chemin: string): string =>
     `/${API_PREFIX}/formations${chemin}`;
 
+  const demanderOuverture = (formateur: string, corps: object) =>
+    request(serveur())
+      .post(route('/sessions'))
+      .set('x-test-identite', `${formateur}:teacher`)
+      .send(corps);
+
   const ouvrirSession = async (
     formateur: string,
   ): Promise<{ sessionId: string; code: string }> => {
-    const reponse = await request(serveur())
-      .post(route('/sessions'))
-      .set('x-test-identite', `${formateur}:teacher`)
-      .send({ courseSlug: 'maths-bts-suites-numeriques', bareme: BAREME })
-      .expect(201);
+    const reponse = await demanderOuverture(formateur, {
+      courseSlug: COURS_SENTINELLE.slug,
+    }).expect(201);
     return reponse.body as { sessionId: string; code: string };
   };
 
@@ -362,6 +354,36 @@ describe('Session de formation (e2e http socket)', () => {
 
   afterAll(async () => {
     await app.close();
+  });
+
+  describe('ouverture d une seance par le slug du cours', () => {
+    it('refuse un cours absent du catalogue', async () => {
+      const reponse = await demanderOuverture(FORMATEUR_A, {
+        courseSlug: 'inconnu',
+      });
+
+      expect(reponse.status).toBe(404);
+      expect((reponse.body as { detail: string }).detail).toBe(
+        'Cours introuvable: inconnu',
+      );
+    });
+
+    it('refuse un bareme envoye par le client, meme pour un cours connu', async () => {
+      const reponse = await demanderOuverture(FORMATEUR_A, {
+        courseSlug: COURS_SENTINELLE.slug,
+        bareme: {
+          version: 1,
+          graineReference: 7,
+          questions: [],
+          tirages: [{ seed: 7, solutions: {} }],
+        },
+      });
+
+      expect(reponse.status).toBe(400);
+      expect((reponse.body as { message: string[] }).message).toContain(
+        'property bareme should not exist',
+      );
+    });
   });
 
   describe('inscription de l etudiant', () => {
@@ -405,7 +427,7 @@ describe('Session de formation (e2e http socket)', () => {
       ]);
       expect(reponse.body).toMatchObject({
         sessionId,
-        seed: 1001,
+        seed: expect.any(Number),
         ecranCourant: 0,
         modeRythme: 'pilote',
       });
@@ -676,10 +698,7 @@ describe('Une salle informatique derriere une seule adresse publique', () => {
     const reponse = await request(serveur())
       .post(route('/sessions'))
       .set('x-test-identite', `${FORMATEUR_A}:teacher`)
-      .send({
-        courseSlug: 'maths-bts-suites-numeriques',
-        bareme: BAREME_CLASSE,
-      })
+      .send({ courseSlug: COURS_DE_CLASSE.slug })
       .expect(201);
     const { code } = reponse.body as { code: string };
     codesOuverts.push(code);

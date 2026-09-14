@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
@@ -61,8 +62,9 @@ export class FormationsPresenterController {
   ) {}
 
   @Post('sessions')
-  @ApiOperation({ summary: 'Ouvre une session de cours et depose le bareme' })
-  @ApiOkResponse({ type: OpenSessionResponseDto })
+  @ApiOperation({ summary: 'Ouvre une session de cours et tire les sujets' })
+  @ApiCreatedResponse({ type: OpenSessionResponseDto })
+  @ApiNotFoundResponse({ description: 'Cours introuvable' })
   async open(
     @Body() dto: OpenSessionRequestDto,
     @Req() request: Request,
@@ -70,7 +72,6 @@ export class FormationsPresenterController {
     const result = await this.openSession.execute({
       courseSlug: dto.courseSlug,
       teacherId: request.user!.sub,
-      bareme: dto.bareme,
     });
     return { sessionId: result.sessionId, code: result.code };
   }

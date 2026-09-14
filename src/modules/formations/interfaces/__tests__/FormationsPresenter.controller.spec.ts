@@ -4,7 +4,6 @@ import { of } from 'rxjs';
 import type { RapportSession } from '../../domain/IFormationMailer.port';
 import { FormationsPresenterController } from '../FormationsPresenter.controller';
 import type { ControlSessionRequestDto } from '../dto/control-session.request.dto';
-import type { OpenSessionRequestDto } from '../dto/open-session.request.dto';
 
 const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
 const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
@@ -12,21 +11,6 @@ const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
 const requeteFormateur = {
   user: { sub: TEACHER_ID },
 } as unknown as Request;
-
-const baremeDto = {
-  version: 1,
-  questions: [
-    {
-      id: 'Q-CAP-03',
-      type: 'numeric',
-      concept: 'interet-compose',
-      noteCompte: true,
-    },
-  ],
-  tirages: [
-    { seed: 7, solutions: { 'Q-CAP-03': { valeur: 1338, pieges: [] } } },
-  ],
-} as unknown as OpenSessionRequestDto['bareme'];
 
 describe('FormationsPresenterController', () => {
   const openSession = { execute: jest.fn() };
@@ -53,22 +37,22 @@ describe('FormationsPresenterController', () => {
     jest.clearAllMocks();
   });
 
-  it('ouvre une session au nom du formateur authentifie', async () => {
+  it('ouvre une session par le seul slug du cours au nom du formateur authentifie', async () => {
     openSession.execute.mockResolvedValue({
       sessionId: SESSION_ID,
       code: '4271',
     });
 
     const reponse = await controller.open(
-      { courseSlug: 'maths-bts-suites', bareme: baremeDto },
+      { courseSlug: 'cours-de-test' },
       requeteFormateur,
     );
 
     expect(openSession.execute).toHaveBeenCalledWith({
-      courseSlug: 'maths-bts-suites',
+      courseSlug: 'cours-de-test',
       teacherId: TEACHER_ID,
-      bareme: baremeDto,
     });
+    expect(openSession.execute.mock.calls[0][0]).not.toHaveProperty('bareme');
     expect(reponse).toEqual({ sessionId: SESSION_ID, code: '4271' });
   });
 

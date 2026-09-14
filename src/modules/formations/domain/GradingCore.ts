@@ -1,8 +1,6 @@
 export const NE_SAIT_PAS = '__je_ne_sais_pas__';
 
-export const TOLERANCE_TYPES = ['relative', 'absolue', 'decimales'] as const;
-
-export type ToleranceType = (typeof TOLERANCE_TYPES)[number];
+type ToleranceType = 'relative' | 'absolue' | 'decimales';
 
 export interface Tolerance {
   type: ToleranceType;

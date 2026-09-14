@@ -1,9 +1,7 @@
 import type { AnswerValue, Solution, Tolerance } from './AnswerGrading';
 import { NE_SAIT_PAS } from './GradingCore';
 
-export const QUESTION_TYPES = ['numeric', 'vote', 'asn', 'order'] as const;
-
-export type QuestionType = (typeof QUESTION_TYPES)[number];
+type QuestionType = 'numeric' | 'vote' | 'asn' | 'order';
 
 export interface BaremeQuestion {
   id: string;

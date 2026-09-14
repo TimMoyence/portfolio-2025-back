@@ -9,8 +9,10 @@ import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
+import { CATALOGUE_COURS_STATIQUE } from './domain/cours/catalogue';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
@@ -85,6 +87,10 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: SESSION_STATE_CACHE,
       useClass: SessionStateCacheService,
+    },
+    {
+      provide: CATALOGUE_COURS,
+      useValue: CATALOGUE_COURS_STATIQUE,
     },
   ],
 })

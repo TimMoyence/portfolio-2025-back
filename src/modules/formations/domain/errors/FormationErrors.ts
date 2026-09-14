@@ -16,6 +16,12 @@ export class SessionNotFoundError extends ResourceNotFoundError {
   }
 }
 
+export class CoursInconnuError extends ResourceNotFoundError {
+  constructor(slug: string) {
+    super(`Cours introuvable: ${slug}`);
+  }
+}
+
 export class ParticipantNotFoundError extends ResourceNotFoundError {
   constructor(id: string) {
     super(`Participant introuvable: ${id}`);

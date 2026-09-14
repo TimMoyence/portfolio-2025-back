@@ -31,8 +31,11 @@ import type { IIncidentsRepository } from '../../src/modules/formations/domain/I
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type { IParticipantsRepository } from '../../src/modules/formations/domain/IParticipants.repository';
 import type { ISessionsRepository } from '../../src/modules/formations/domain/ISessions.repository';
+import { CATALOGUE_COURS_STATIQUE } from '../../src/modules/formations/domain/cours/catalogue';
+import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
@@ -95,6 +98,7 @@ export interface DepotsFormations {
 
 export async function monterApplicationFormations(
   depots: DepotsFormations,
+  catalogue: ICatalogueCours = CATALOGUE_COURS_STATIQUE,
 ): Promise<INestApplication> {
   const moduleRef = await ModuleDeTest.createTestingModule({
     imports: [
@@ -121,6 +125,7 @@ export async function monterApplicationFormations(
       { provide: INCIDENTS_REPOSITORY, useValue: depots.incidents },
       { provide: MASTERY_REPOSITORY, useValue: depots.mastery },
       { provide: FORMATION_MAILER, useValue: depots.mailer },
+      { provide: CATALOGUE_COURS, useValue: catalogue },
       { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
       { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
       { provide: APP_GUARD, useClass: ThrottlerGuard },
