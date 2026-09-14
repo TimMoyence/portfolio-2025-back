@@ -12,4 +12,6 @@ paths = [
 ]
 regexes = [
   '''test-(jwt-secret|hashing-key)-at-least-32-characters-long''',
+  '''secret-de-test-[a-z0-9-]{16,}''',
+  '''idempotency-[0-9]+''',
 ]
