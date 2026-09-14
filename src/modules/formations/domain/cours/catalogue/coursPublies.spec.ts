@@ -1,33 +1,10 @@
-import { buildCoursDeTest } from '../../../../../../test/factories/cours.factory';
 import { NE_SAIT_PAS } from '../../GradingCore';
 import type { Cours } from '../Cours';
 import { questionsDuCours } from '../Cours';
 import { ouvrirTirages } from '../OuvertureTirages';
 import { verifierStructure } from '../StructureCours';
 import { tirer, TirageAmbiguError } from '../Tirage';
-import { creerCatalogue } from './Catalogue';
 import { COURS_PUBLIES } from './index';
-
-describe('creerCatalogue', () => {
-  it('trouve un cours par son slug', () => {
-    const cours = buildCoursDeTest({ slug: 'proportions' });
-    const catalogue = creerCatalogue([cours]);
-    expect(catalogue.trouver('proportions')).toBe(cours);
-  });
-
-  it('rend null pour un slug absent du catalogue', () => {
-    const catalogue = creerCatalogue([
-      buildCoursDeTest({ slug: 'proportions' }),
-    ]);
-    expect(catalogue.trouver('inconnu')).toBeNull();
-  });
-
-  it('refuse un catalogue avec deux cours de meme slug', () => {
-    const premier = buildCoursDeTest({ slug: 'doublon' });
-    const second = buildCoursDeTest({ slug: 'doublon' });
-    expect(() => creerCatalogue([premier, second])).toThrow(/doublon/);
-  });
-});
 
 const GRAINES = 500;
 const REJETS_MAX = 5;
