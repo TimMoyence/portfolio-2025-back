@@ -50,6 +50,7 @@ import { JoinSessionResponseDto } from './dto/join-session.response.dto';
 import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
+import { SujetResponseDto } from './dto/sujet.response.dto';
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,
@@ -237,7 +238,8 @@ export class FormationsStudentController {
     summary: 'Sert au participant le sujet de son propre tirage',
   })
   @ApiOkResponse({
-    description: 'Deroule du tirage du participant, sans corrige',
+    type: SujetResponseDto,
+    description: 'Sujet du tirage du participant, sans corrige',
   })
   @ApiConflictResponse({
     description: 'Le cours a change depuis l ouverture de la seance',

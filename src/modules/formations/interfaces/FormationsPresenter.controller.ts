@@ -37,8 +37,10 @@ import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import { ControlSessionRequestDto } from './dto/control-session.request.dto';
+import { DerouleResponseDto } from './dto/deroule.response.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
+import { SessionResultsResponseDto } from './dto/session-results.response.dto';
 
 /**
  * Pilotage d une session de cours par son formateur.
@@ -147,7 +149,10 @@ export class FormationsPresenterController {
 
   @Get('sessions/:id/results')
   @ApiOperation({ summary: 'Rapport de session : notes, copies et incidents' })
-  @ApiOkResponse({ description: 'Rapport de la session' })
+  @ApiOkResponse({
+    type: SessionResultsResponseDto,
+    description: 'Rapport de la session et resultats agreges par question',
+  })
   @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
   @ApiNotFoundResponse({ description: 'Session introuvable' })
   async getResults(
@@ -161,7 +166,11 @@ export class FormationsPresenterController {
   @ApiOperation({
     summary: 'Deroule annote de la seance, reserve au formateur proprietaire',
   })
-  @ApiOkResponse({ description: 'Deroule annote de la seance' })
+  @ApiOkResponse({
+    type: DerouleResponseDto,
+    description:
+      'Deroule annote du tirage de reference : notes, seuils et corriges',
+  })
   @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
   @ApiNotFoundResponse({ description: 'Session ou cours introuvable' })
   async getDeroule(

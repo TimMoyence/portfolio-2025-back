@@ -8,6 +8,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
@@ -74,6 +75,7 @@ import {
   createMockMasteryRepo,
 } from './factories/formation.factory';
 import { abonnerAuFlux } from './helpers/formations-harness';
+import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
 import {
   ecouterEnBoucleLocale,
   fermerApplication,
@@ -426,6 +428,49 @@ describe('Session de formation (e2e http socket)', () => {
         troisieme: troisieme.statut,
         formateur: formateur.statut,
       }).toEqual({ siens: [200, 200], troisieme: 429, formateur: 200 });
+    });
+  });
+
+  describe('contrat OpenAPI des lectures de la seance', () => {
+    it('documente exactement la forme rendue du sujet, du deroule et des resultats', async () => {
+      const { sessionId, code } = await ouvrirSession(FORMATEUR_A);
+      const inscrit = await rejoindre(
+        code,
+        '11111111-1111-4111-8111-111111111121',
+      ).expect(201);
+      const { jeton } = inscrit.body as { jeton: string };
+      await demarrerSession(sessionId, FORMATEUR_A);
+      await request(serveur())
+        .post(route(`/sessions/${sessionId}/answers`))
+        .set(EN_TETE_JETON, jeton)
+        .send({
+          questionId: TEMOIN.question,
+          valeur: TEMOIN.piege,
+          dureeMs: 1000,
+        })
+        .expect(201);
+      const lireEnFormateur = (suffixe: string) =>
+        request(serveur())
+          .get(route(`/sessions/${sessionId}/${suffixe}`))
+          .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+          .expect(200);
+
+      const sujet = await request(serveur())
+        .get(route(`/sessions/${sessionId}/sujet`))
+        .set(EN_TETE_JETON, jeton)
+        .expect(200);
+      const deroule = await lireEnFormateur('deroule');
+      const resultats = await lireEnFormateur('results');
+      const document = SwaggerModule.createDocument(
+        app,
+        new DocumentBuilder().setTitle('formations').build(),
+      );
+
+      expect([
+        ...ecartsAuSchemaDeReponse(document, '/{id}/sujet', sujet.body),
+        ...ecartsAuSchemaDeReponse(document, '/{id}/deroule', deroule.body),
+        ...ecartsAuSchemaDeReponse(document, '/{id}/results', resultats.body),
+      ]).toEqual([]);
     });
   });
 
