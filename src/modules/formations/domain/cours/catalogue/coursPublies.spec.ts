@@ -1,6 +1,7 @@
+import { buildCoursDeTest } from '../../../../../../test/factories/cours.factory';
 import { clesDuCorrigeDans } from '../../../../../../test/helpers/cles-du-corrige';
 import { NE_SAIT_PAS } from '../../GradingCore';
-import type { Cours } from '../Cours';
+import type { Cours, Ecran } from '../Cours';
 import { questionsDuCours } from '../Cours';
 import { ouvrirTirages } from '../OuvertureTirages';
 import { verifierStructure } from '../StructureCours';
@@ -19,6 +20,52 @@ function identifiantsDeFormule(formule: string): string[] {
 
 function identifiantsDeGabarit(gabarit: string): string[] {
   return [...gabarit.matchAll(/\{([^{}]+)\}/g)].map((trouve) => trouve[1]);
+}
+
+interface NomRefuse {
+  readonly ecran: string;
+  readonly nom: string;
+}
+
+const NOM_EN_REFERENCE_DE_CELLULE = /\b[A-Za-z]+\d+\b/g;
+const VARIABLE_D_ABSCISSE = 'x';
+
+function nomsEnReferenceDeCellule(textes: readonly string[]): string[] {
+  return [
+    ...new Set(
+      textes.flatMap((texte) =>
+        [...texte.matchAll(NOM_EN_REFERENCE_DE_CELLULE)].map(
+          (trouve) => trouve[0],
+        ),
+      ),
+    ),
+  ];
+}
+
+function nomsRefusesDe(ecran: Ecran): string[] {
+  if (ecran.brique === 'fp-concept4') {
+    return nomsEnReferenceDeCellule([
+      ...ecran.proprietes.parametres.map((parametre) => parametre.cle),
+      ecran.proprietes.calcul,
+    ]);
+  }
+  if (ecran.brique === 'fp-plot') {
+    const cles = ecran.proprietes.parametres.map((parametre) => parametre.cle);
+    return [
+      ...nomsEnReferenceDeCellule([
+        ...cles,
+        ...ecran.proprietes.series.map((serie) => serie.calcul),
+      ]),
+      ...cles.filter((cle) => cle === VARIABLE_D_ABSCISSE),
+    ];
+  }
+  return [];
+}
+
+function nomsDeFormuleRefuses(cours: Cours): NomRefuse[] {
+  return cours.ecrans.flatMap((ecran) =>
+    nomsRefusesDe(ecran).map((nom) => ({ ecran: ecran.id, nom })),
+  );
 }
 
 function sujetTire(cours: Cours, graine: number): unknown {
@@ -130,8 +177,65 @@ describe.each(COURS_PUBLIES.map((cours) => [cours.slug, cours] as const))(
       }
     });
 
+    it('ne nomme aucune variable de formule en reference de cellule, ni un parametre de graphique x', () => {
+      expect(nomsDeFormuleRefuses(cours)).toEqual([]);
+    });
+
     it('ouvre soixante tirages', () => {
       expect(ouvrirTirages(cours).tirages).toHaveLength(60);
     });
   },
 );
+
+describe('garde des noms de formule lus par le front', () => {
+  const curseur = (cle: string) => ({
+    cle,
+    libelle: cle,
+    min: 0,
+    max: 10,
+    pas: 1,
+    defaut: 1,
+  });
+
+  it('signale une variable en reference de cellule et un parametre de graphique x', () => {
+    const fautif = buildCoursDeTest({
+      ecrans: [
+        {
+          id: 'E-CONCEPT-CELLULE',
+          brique: 'fp-concept4',
+          dureeMinutes: 5,
+          concepts: ['proportion'],
+          notes: '',
+          proprietes: {
+            parametres: [curseur('ca1'), curseur('taux')],
+            formuleLatexSimplifie: 'ca \\times taux',
+            calcul: 'ca1*taux+B2',
+            phrase: '{ca1} donne {resultat}.',
+          },
+        },
+        {
+          id: 'E-PLOT-X',
+          brique: 'fp-plot',
+          dureeMinutes: 5,
+          concepts: ['proportion'],
+          notes: '',
+          proprietes: {
+            abscisse: { libelle: 'x', min: 0, max: 10 },
+            ordonnee: 'y',
+            parametres: [curseur('x')],
+            series: [
+              { id: 's', libelle: 's', trait: 'plein', calcul: 'x*coef2' },
+            ],
+          },
+        },
+      ],
+    });
+
+    expect(nomsDeFormuleRefuses(fautif)).toEqual([
+      { ecran: 'E-CONCEPT-CELLULE', nom: 'ca1' },
+      { ecran: 'E-CONCEPT-CELLULE', nom: 'B2' },
+      { ecran: 'E-PLOT-X', nom: 'coef2' },
+      { ecran: 'E-PLOT-X', nom: 'x' },
+    ]);
+  });
+});
