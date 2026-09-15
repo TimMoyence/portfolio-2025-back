@@ -296,7 +296,7 @@ function deuxProgressions(premier: string, second: string): string {
 }
 
 const CLIENTS = [
-  'Boulangerie Lemoine',
+  'Fleuriste Lambert',
   'Garage Perrin',
   'Librairie Fabre',
   'Menuiserie Roux',
@@ -1203,8 +1203,7 @@ export const B1_01_PROPORTIONS: Cours = {
       dureeMinutes: 4,
       concepts: ['evolutions-successives'],
       seuil: SEUIL_PAR_DEFAUT,
-      notes:
-        '[4 min · minutes 0 à 4 · mode piloté] Dans toutes les notes, « minutes a à b » compte le temps de cours, pauses exclues. Avant l’heure : affichez le code de séance dès l’entrée en salle ; à la première connexion, chacun saisit prénom, nom et e-mail, laissez-les rejoindre en s’installant. 0’–1’ : présentez-vous en une phrase et posez à voix haute deux règles : la classe ne voit jamais vos réponses ; « je ne sais pas » est une réponse légitime (sur un vote, choisissez-la ; sur une question de calcul, qui n’a pas ce bouton, laissez la réponse vide plutôt que de tenter au hasard). 1’–3’ : lancez le rappel ; 8 secondes de réflexion sans les options, puis vote individuel sans calculatrice. 3’–4’ : ne corrigez pas, c’est un diagnostic. Lisez seulement la répartition à voix haute (« un tiers d’entre vous pense que le chiffre d’affaires revient à son niveau de départ ») et annoncez que la séance va trancher. Pièges attendus : le montant de départ (hausse et baisse crues symétriques) ; un montant à peine inférieur au départ (baisse globale lue cent fois trop petite). Notez le taux de bonnes réponses : on le compare au billet de sortie.',
+      notes: `[4 min · minutes 0 à 4 · mode piloté] Dans toutes les notes, « minutes a à b » compte le temps de cours, pauses exclues. Avant l’heure : affichez le code de séance dès l’entrée en salle ; à la première connexion, chacun saisit prénom, nom et e-mail, laissez-les rejoindre en s’installant. 0’–2’ : présentez-vous en une phrase et posez à voix haute trois règles valables pour toute la séance. Un : la classe ne voit jamais vos réponses. Deux : « je ne sais pas » est une réponse légitime ; sur les questions à choix du vote et des questionnaires, un bouton « Je ne sais pas » existe, choisissez-le ; sur les rappels et les questions de calcul, ce bouton n’existe pas : ne répondez pas et attendez la suite plutôt que de tenter au hasard ; sur le billet de sortie, un choix est obligatoire : prenez l’option qui vous semble la plus probable et écrivez votre doute dans la zone de texte. Trois : ${CONSIGNE_CALCULATRICE}, car du début à la fin de la séance, chaque changement de fenêtre ou d’onglet est journalisé ; rien n’est bloqué ni sanctionné automatiquement. 2’–3’ : lancez le rappel ; 8 secondes de réflexion sans les options, puis vote individuel sans calculatrice. 3’–4’ : ne corrigez pas, c’est un diagnostic. Lisez seulement la répartition à voix haute (« un tiers d’entre vous pense que le chiffre d’affaires revient à son niveau de départ ») et annoncez que la séance va trancher. Pièges attendus : le montant de départ (hausse et baisse crues symétriques) ; un montant à peine inférieur au départ (baisse globale lue cent fois trop petite). Notez le taux de bonnes réponses : on le compare au billet de sortie.`,
       question: QUESTION_OUVERTURE_RAPPEL,
     },
     {
@@ -1218,7 +1217,7 @@ export const B1_01_PROPORTIONS: Cours = {
       proprietes: {
         metier: 'Collaborateur comptable en cabinet d’expertise comptable',
         situation:
-          'Le chef de mission vous transmet le dossier d’une boulangerie cliente : son chiffre d’affaires est passé de 412 000 € en N-1 à 453 200 € en N. La gérante vient cet après-midi et demande « de combien elle a progressé ».',
+          'Le chef de mission vous transmet le dossier d’une fromagerie cliente : son chiffre d’affaires est passé de 412 000 € en N-1 à 453 200 € en N. La gérante vient cet après-midi et demande « de combien elle a progressé ».',
         geste:
           'Vous calculez l’écart, 41 200 €, puis le taux d’évolution rapporté au chiffre d’affaires de départ : 41 200 ÷ 412 000 = 0,10, soit une hausse de 10 %. Vous notez aussi le coefficient multiplicateur 1,10, qui servira au prévisionnel de N+1.',
         consequence:
@@ -1236,7 +1235,7 @@ export const B1_01_PROPORTIONS: Cours = {
         'evolutions-successives',
       ],
       regime: 'examen',
-      notes: `[8 min · minutes 7 à 15 · mode piloté, régime examen] 0’–1’ : annoncez le cadre avant de lancer. Quatre questions, note de participation et non de justesse, chiffres différents pour chacun. Consigne : ${CONSIGNE_CALCULATRICE} ; en régime examen, toute sortie du plein écran est journalisée et apparaît dans votre rapport. 1’–7’ : travail individuel en silence. Observez le tableau de bord sans rien corriger : plus d’un tiers d’erreurs sur le taux (division par l’arrivée, écart en euros) → vous ralentirez sur l’exemple résolu du mouvement 2 ; coefficient d’une baisse rendu en 0,15 au lieu de 0,85 → vous insisterez sur le concept à quatre faces ; taux successifs additionnés → le mouvement 3 sera décisif. 7’–8’ : clôturez et annoncez que chaque question du sas reviendra dans la séance.`,
+      notes: `[8 min · minutes 7 à 15 · mode piloté, sas noté] 0’–1’ : annoncez le cadre avant de lancer. Quatre questions, note de participation et non de justesse, chiffres différents pour chacun. Rappel : ${CONSIGNE_CALCULATRICE} ; comme pendant toute la séance, chaque changement de fenêtre ou d’onglet est journalisé, sans rien bloquer. 1’–7’ : travail individuel en silence. Observez le tableau de bord sans rien corriger : plus d’un tiers d’erreurs sur le taux (division par l’arrivée, écart en euros) → vous ralentirez sur l’exemple résolu du mouvement 2 ; coefficient d’une baisse rendu en 0,15 au lieu de 0,85 → vous insisterez sur le concept à quatre faces ; taux successifs additionnés → le mouvement 3 sera décisif. 7’–8’ : clôturez et annoncez que chaque question du sas reviendra dans la séance.`,
       questions: [
         QUESTION_SAS_POURCENTAGE,
         QUESTION_SAS_TAUX,
@@ -1268,7 +1267,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['proportion', 'pourcentage'],
       modalite: 'classe',
       notes:
-        '[4 min · minutes 17 à 21 · mode piloté] Déroulez les quatre étapes une par une. À chaque invite, laissez 20 secondes, faites comparer en binôme, puis prenez la réponse d’un volontaire. Étape 3 : écrivez au tableau 0,275 = 27,5 % et barrez « 27,5 » écrit seul. Étape 4 : posez « 212 000 € ou 154 000 € ? », laissez 30 secondes de discussion en binôme, puis faites voter la classe avant de dévoiler : c’est le raisonnement additif à débusquer. Cet écran est la remédiation du raisonnement additif : revenez-y si l’ancrage du mouvement 1 ou la question de proportion du mouvement 3 passe sous 70 %.',
+        '[4 min · minutes 17 à 21 · mode piloté] Déroulez les quatre étapes une par une. À chaque invite, laissez 20 secondes, faites comparer en binôme, puis prenez la réponse d’un volontaire. Étape 3 : écrivez au tableau 0,275 = 27,5 % et barrez « 27,5 » écrit seul. Étape 4 : posez « 212 000 € ou 154 000 € ? », laissez 30 secondes de discussion en binôme, puis demandez à deux binômes volontaires d’annoncer leur réponse et leur raison avant de dévoiler : c’est le raisonnement additif à débusquer. Cet écran est la remédiation du raisonnement additif : revenez-y si l’ancrage du mouvement 1 ou la question de proportion du mouvement 3 passe sous 70 %.',
       proprietes: {
         enonce:
           'La boulangerie Lemoine réalise un chiffre d’affaires annuel de 480 000 €, dont 132 000 € en service traiteur. Quelle part du chiffre d’affaires le traiteur représente-t-il ?',
@@ -1312,7 +1311,7 @@ export const B1_01_PROPORTIONS: Cours = {
       dureeMinutes: 4,
       concepts: ['proportion'],
       seuil: SEUIL_PAR_DEFAUT,
-      notes: `[4 min · minutes 21 à 25 · mode piloté, seuil 70 %] À leur tour, seuls : 2 min de calcul. Consigne : ${CONSIGNE_CALCULATRICE}. Surveillez le tableau de bord. Erreur attendue : 0,275 au lieu de 27,5 (facteur 100). Sous 70 % de réussite, affichez une réponse erronée anonyme et refaites l’étape 3 de l’exemple précédent. 1 min de correction : partie ÷ tout × 100.`,
+      notes: `[4 min · minutes 21 à 25 · mode piloté, seuil 70 %] À leur tour, seuls : 2 min de calcul. Rappel : ${CONSIGNE_CALCULATRICE}. Surveillez le tableau de bord. Erreur attendue : 0,275 au lieu de 27,5 (facteur 100). Sous 70 % de réussite, affichez une réponse erronée anonyme et refaites l’étape 3 de l’exemple précédent. 1 min de correction : partie ÷ tout × 100.`,
       question: QUESTION_M1_PART,
     },
     {
@@ -1322,7 +1321,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['pourcentage'],
       modalite: 'classe',
       notes:
-        '[5 min · minutes 25 à 30 · mode piloté] Chemin inverse : on connaît le pourcentage, on cherche la quantité. Réglez 2 400 € et 35 % : faites prédire le résultat avant de le montrer (840 €). Puis 100 % (le montant entier), 50 % (la moitié), 1 % (un centième). Question à poser : « 70 % de 2 400 €, c’est 2 400 multiplié par combien ? » Attendez 0,7. Relance : « et si on oublie de diviser par 100 ? » Cet écran est la remédiation du facteur 100 : revenez-y dès qu’un résultat est cent fois trop grand ou trop petit.',
+        '[5 min · minutes 25 à 30 · mode piloté] Chemin inverse : on connaît le pourcentage, on cherche la quantité. L’écran s’ouvre sur 10 % de 2 400 € (240 €). Avant de déplacer le curseur, faites prédire 35 % de 2 400 €, puis vérifiez (840 €). Même jeu, prédiction d’abord : 100 % (le montant entier), 50 % (la moitié), 1 % (un centième). Question à poser : « 70 % de 2 400 €, c’est 2 400 multiplié par combien ? » Attendez 0,7. Relance : « et si on oublie de diviser par 100 ? » Cet écran est la remédiation du facteur 100 : revenez-y dès qu’un résultat est cent fois trop grand ou trop petit.',
       proprietes: {
         parametres: [
           {
@@ -1339,7 +1338,7 @@ export const B1_01_PROPORTIONS: Cours = {
             min: 0,
             max: 100,
             pas: 0.5,
-            defaut: 35,
+            defaut: 10,
           },
         ],
         formuleLatexSimplifie: 'montant × taux ÷ 100',
@@ -1460,7 +1459,7 @@ export const B1_01_PROPORTIONS: Cours = {
       dureeMinutes: 5,
       concepts: ['taux-evolution'],
       seuil: SEUIL_PAR_DEFAUT,
-      notes: `[5 min · minutes 66 à 71 · mode piloté, seuil 70 %] 0’–2’ : calcul individuel. Consigne : ${CONSIGNE_CALCULATRICE}. Rappelez : taux négatif pour une baisse, arrondi à 0,1 %. 2’–3’ : lisez le résultat. Au-dessus de 70 % : correction éclair, puis le coefficient. Sinon, suivez l’erreur dominante : division par l’arrivée → étape 4 de l’exemple résolu ; écart en euros → étape 2 ; résultat en 0,… → rappel du × 100 ; résultat autour de 100 → c’est le coefficient × 100, annoncez l’écran suivant. 3’–5’ : binômes pour expliquer l’erreur, puis correction collective.`,
+      notes: `[5 min · minutes 66 à 71 · mode piloté, seuil 70 %] 0’–2’ : calcul individuel. Rappel : ${CONSIGNE_CALCULATRICE}. Rappelez : taux négatif pour une baisse, arrondi à 0,1 %. 2’–3’ : lisez le résultat. Au-dessus de 70 % : correction éclair, puis le coefficient. Sinon, suivez l’erreur dominante : division par l’arrivée → étape 4 de l’exemple résolu ; écart en euros → étape 2 ; résultat en 0,… → rappel du × 100 ; résultat autour de 100 → c’est le coefficient × 100, annoncez l’écran suivant. 3’–5’ : binômes pour expliquer l’erreur, puis correction collective.`,
       question: QUESTION_M2_PIVOT,
     },
     {
@@ -1566,7 +1565,7 @@ export const B1_01_PROPORTIONS: Cours = {
       dureeMinutes: 5,
       concepts: ['evolutions-successives'],
       seuil: SEUIL_PAR_DEFAUT,
-      notes: `[5 min · minutes 110 à 115 · mode piloté, seuil 70 %] 0’–1’ : vote individuel. Consigne : ${CONSIGNE_CALCULATRICE}. Au-dessus de 70 % : faites dicter par un volontaire la démarche en trois gestes (coefficients, produit, retour au taux) et avancez. Entre 30 % et 70 % : 2 min de binômes, puis revote. Sous 30 %, ou si « taux additionnés » domine encore après le revote : allez à l’écran de remédiation « évolutions successives » de la clôture, puis revenez. Piège secondaire : le coefficient global lu comme un taux (plus de 100 %).`,
+      notes: `[5 min · minutes 110 à 115 · mode piloté, seuil 70 %] 0’–1’ : vote individuel. Rappel : ${CONSIGNE_CALCULATRICE}. Au-dessus de 70 % : faites dicter par un volontaire la démarche en trois gestes (coefficients, produit, retour au taux) et avancez. Entre 30 % et 70 % : 2 min de binômes, puis revote. Sous 30 %, ou si « taux additionnés » domine encore après le revote : allez à l’écran de remédiation « évolutions successives » de la clôture, puis revenez. Piège secondaire : le coefficient global lu comme un taux (plus de 100 %).`,
       question: QUESTION_M3_PIVOT_SUCCESSIVES,
     },
     {
@@ -1575,7 +1574,7 @@ export const B1_01_PROPORTIONS: Cours = {
       dureeMinutes: 5,
       concepts: ['evolution-reciproque'],
       seuil: SEUIL_PAR_DEFAUT,
-      notes: `[5 min · minutes 115 à 120 · mode piloté, seuil 70 %] 0’–2’ : calcul individuel. Consigne : ${CONSIGNE_CALCULATRICE}. Rappelez l’histoire du Nasdaq : après −78 %, +78 % ne suffit pas. 2’–4’ : correction ; on cherche le coefficient qui annule la hausse, 1 ÷ coefficient, puis on revient au taux. Sous 70 % : allez à l’écran de remédiation « évolution réciproque » de la clôture, faites manipuler le curseur 2 min, puis revenez. Erreurs attendues : le même taux en sens inverse ; un résultat entre 60 et 100 (1 ÷ coefficient × 100 lu comme un taux) ; un résultat en −0,… (oubli du × 100).`,
+      notes: `[5 min · minutes 115 à 120 · mode piloté, seuil 70 %] 0’–2’ : calcul individuel. Rappel : ${CONSIGNE_CALCULATRICE}. Rappelez l’histoire du Nasdaq : après −78 %, +78 % ne suffit pas. 2’–4’ : correction ; on cherche le coefficient qui annule la hausse, 1 ÷ coefficient, puis on revient au taux. Sous 70 % : allez à l’écran de remédiation « évolution réciproque » de la clôture, faites manipuler le curseur 2 min, puis revenez. Erreurs attendues : le même taux en sens inverse ; un résultat entre 60 et 100 (1 ÷ coefficient × 100 lu comme un taux) ; un résultat en −0,… (oubli du × 100).`,
       question: QUESTION_M3_PIVOT_RECIPROQUE,
     },
     {
@@ -1634,7 +1633,7 @@ export const B1_01_PROPORTIONS: Cours = {
         'evolution-reciproque',
       ],
       regime: 'focus',
-      notes: `[26 min · minutes 154 à 180 · mode piloté, régime focus] 0’–1’ : annoncez le régime focus avant de lancer : plein écran, copier-coller bloqué, toute sortie de la fenêtre journalisée. Consigne : ${CONSIGNE_CALCULATRICE}. 1’–20’ : six dossiers, travail individuel. Consigne de méthode : pour chaque dossier, poser les deux coefficients annuels avant tout calcul. Surveillez au tableau de bord trois confusions : taux moyen pris comme la moyenne des taux (taux additionnés), coefficient global rendu comme un taux, taux réciproque pris égal au taux annuel. 20’–26’ : correction orale sur le dossier de référence, écrit au tableau, chaque étape proposée par un volontaire. Boulangerie Lemoine : chiffre d’affaires de 330 000 € en N-2, 405 900 € en N-1, 438 372 € en N. Coefficients annuels : 405 900 ÷ 330 000 = 1,23 et 438 372 ÷ 405 900 = 1,08. Taux entre N-1 et N : +8 %. Coefficient global : 1,23 × 1,08 = 1,3284 (1,328 au millième). Taux global : +32,84 % (32,8 %), et non 23 + 8 = 31 %. Taux moyen annuel : 1,3284 ^ (1/2) ≈ 1,1526, soit +15,26 % (15,3 %), et non (23 + 8) ÷ 2 = 15,5 %. Taux qui ramènerait N au niveau de N-1 : 1 ÷ 1,08 − 1 ≈ −7,41 % (−7,4 %), et non −8 %.`,
+      notes: `[26 min · minutes 154 à 180 · mode piloté] 0’–1’ : annoncez le cadre avant de lancer : travail individuel ; comme pendant toute la séance, chaque changement de fenêtre ou d’onglet est journalisé, sans rien bloquer. Rappel : ${CONSIGNE_CALCULATRICE}. 1’–20’ : six dossiers, travail individuel. Consigne de méthode : pour chaque dossier, poser les deux coefficients annuels avant tout calcul. Surveillez au tableau de bord trois confusions : taux moyen pris comme la moyenne des taux (taux additionnés), coefficient global rendu comme un taux, taux réciproque pris égal au taux annuel. 20’–26’ : correction orale sur le dossier de référence, écrit au tableau, chaque étape proposée par un volontaire. Cave Vasseur, dossier absent du questionnaire : chiffre d’affaires de 330 000 € en N-2, 405 900 € en N-1, 438 372 € en N. Coefficients annuels : 405 900 ÷ 330 000 = 1,23 et 438 372 ÷ 405 900 = 1,08. Taux entre N-1 et N : +8 %. Coefficient global : 1,23 × 1,08 = 1,3284 (1,328 au millième). Taux global : +32,84 % (32,8 %), et non 23 + 8 = 31 %. Taux moyen annuel : 1,3284 ^ (1/2) ≈ 1,1526, soit +15,26 % (15,3 %), et non (23 + 8) ÷ 2 = 15,5 %. Taux qui ramènerait N au niveau de N-1 : 1 ÷ 1,08 − 1 ≈ −7,41 % (−7,4 %), et non −8 %.`,
       questions: [
         QUESTION_M4_TAUX_ANNUEL,
         QUESTION_M4_COEFFICIENT_GLOBAL,
@@ -1696,7 +1695,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['evolution-reciproque'],
       modalite: 'classe',
       notes:
-        '[3 min · minutes 183 à 186 · mode piloté] Écran de remédiation du taux réciproque, appelé depuis le pivot du mouvement 3 si besoin. Placez le curseur sur +25 % (retour −20 %), −20 % (retour +25 %), −50 % (retour +100 %), −60 % (retour +150 %), en faisant prédire chaque résultat par la classe. Question : « pourquoi faut-il plus de 100 % de hausse pour effacer une baisse de 60 % ? » Faites le lien avec le Nasdaq. Si le temps manque, gardez seulement le cas −50 % / +100 %.',
+        '[3 min · minutes 183 à 186 · mode piloté] Écran de remédiation du taux réciproque, appelé depuis le pivot du mouvement 3 si besoin. L’écran s’ouvre sur 0 % (retour 0 %). Avant chaque déplacement du curseur, faites prédire le résultat, puis vérifiez : +25 % (retour −20 %), −20 % (retour +25 %), −50 % (retour +100 %), −60 % (retour +150 %). Question : « pourquoi faut-il plus de 100 % de hausse pour effacer une baisse de 60 % ? » Faites le lien avec le Nasdaq. Si le temps manque, gardez seulement le cas −50 % / +100 %.',
       proprietes: {
         parametres: [
           {
@@ -1705,7 +1704,7 @@ export const B1_01_PROPORTIONS: Cours = {
             min: -60,
             max: 150,
             pas: 1,
-            defaut: 25,
+            defaut: 0,
           },
         ],
         formuleLatexSimplifie: '(1 ÷ (1 + taux ÷ 100) − 1) × 100',
