@@ -604,5 +604,25 @@ describe('StreamSessionUseCase', () => {
       ]);
       ecoute.abonnement.unsubscribe();
     });
+
+    it('clot le flux formateur d une seance terminee quand la lecture des resultats reste en echec, sur un seul avertissement', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ etat: 'terminee' }),
+      );
+      answers.listBySession.mockRejectedValue(PANNE);
+
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10 * INTERVALLE_MS_TEST);
+
+      expect(ecoute.evenements.map((evenement) => evenement.type)).toEqual([
+        'etat',
+        'fin',
+      ]);
+      expectPanneJournalisee();
+      expect(cache.read('session-uuid')).toBeNull();
+      ecoute.abonnement.unsubscribe();
+    });
   });
 });

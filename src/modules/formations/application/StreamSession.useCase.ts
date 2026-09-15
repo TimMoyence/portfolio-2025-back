@@ -153,6 +153,27 @@ export class StreamSessionUseCase {
         derniereActivite = activite;
       };
 
+      const pousserResultatsDefinitifs = async (): Promise<void> => {
+        if (!baremeDuFormateur) {
+          return;
+        }
+        try {
+          await pousserResultatsSiActivite(baremeDuFormateur);
+        } catch (error) {
+          this.logger.warn(
+            `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDe(error)}`,
+          );
+        }
+      };
+
+      const clore = async (): Promise<void> => {
+        await pousserResultatsDefinitifs();
+        subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
+        subscriber.complete();
+        this.cache.drop(sessionId);
+        arreter();
+      };
+
       const tick = async (): Promise<void> => {
         if (!actif || occupe) {
           return;
@@ -171,18 +192,16 @@ export class StreamSessionUseCase {
             derniereEmpreinte = empreinte;
             subscriber.next({ type: 'etat', data: etat });
           }
+          if (etat.etat === 'terminee') {
+            await clore();
+            return;
+          }
           if (baremeDuFormateur) {
             await pousserResultatsSiActivite(baremeDuFormateur);
           }
-          if (etat.etat === 'terminee') {
-            subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
-            subscriber.complete();
-            this.cache.drop(sessionId);
-            arreter();
-          }
         } catch (error) {
           this.logger.warn(
-            `Passage du flux de la session ${sessionId} en echec, nouvel essai au passage suivant: ${error instanceof Error ? error.message : String(error)}`,
+            `Passage du flux de la session ${sessionId} en echec, nouvel essai au passage suivant: ${messageDe(error)}`,
           );
         } finally {
           occupe = false;
@@ -248,6 +267,10 @@ export class StreamSessionUseCase {
     this.cache.publish(sessionId, etat);
     return etat;
   }
+}
+
+function messageDe(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function assertPlacesDisponibles(places: readonly Place[]): void {
