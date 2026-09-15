@@ -111,6 +111,23 @@ describe('SubmitAnswerUseCase', () => {
     ).rejects.toThrow(DomainValidationError);
   });
 
+  it('refuse sans rendre la graine un participant dont le tirage manque au bareme', async () => {
+    const graineAbsente = 7_654_321;
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({ seed: graineAbsente }),
+    );
+
+    const refus = await sut
+      .execute(commande)
+      .catch((erreur: unknown) => erreur);
+
+    expect(refus).toBeInstanceOf(DomainValidationError);
+    expect((refus as DomainValidationError).message).not.toContain(
+      String(graineAbsente),
+    );
+    expect(answers.create).not.toHaveBeenCalled();
+  });
+
   it('refuse une soumission sur une session terminee', async () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'terminee' }),

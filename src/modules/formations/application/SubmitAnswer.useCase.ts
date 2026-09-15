@@ -83,7 +83,7 @@ export class SubmitAnswerUseCase {
     );
     if (!solution) {
       throw new DomainValidationError(
-        `Aucune solution pour le tirage ${participant.seed}`,
+        `Aucune solution du tirage de ce participant pour ${command.questionId}`,
       );
     }
 
