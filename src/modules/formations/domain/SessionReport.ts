@@ -121,7 +121,11 @@ function reponseLisible(
     return LIBELLE_NE_SAIT_PAS;
   }
   const valeur = String(reponse.valeur);
-  return libelles[reponse.questionId]?.[valeur] ?? valeur;
+  if (!Object.hasOwn(libelles, reponse.questionId)) {
+    return valeur;
+  }
+  const options = libelles[reponse.questionId];
+  return Object.hasOwn(options, valeur) ? options[valeur] : valeur;
 }
 
 function libellesDuTirage(

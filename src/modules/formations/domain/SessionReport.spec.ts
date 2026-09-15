@@ -272,6 +272,24 @@ describe('buildRapportSession', () => {
       );
     });
 
+    it('ne lit jamais une propriete heritee comme libelle d option', () => {
+      const [lue] = rapportDe({
+        session: buildSessionRecord({ courseSlug: cours.slug, bareme }),
+        cours,
+        participants: [participant],
+        answers: [
+          buildAnswerRecord({
+            participantId: 'p1',
+            questionId: 'constructor',
+            valeur: 'name',
+            seed: graine,
+          }),
+        ],
+      }).participants[0].reponses;
+
+      expect(lue.reponse).toBe('name');
+    });
+
     it('garde l identifiant de l option quand le cours n est plus au catalogue', () => {
       expect(reponsesLues({ cours: null })).toEqual(
         expect.arrayContaining([
