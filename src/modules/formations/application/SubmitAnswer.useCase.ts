@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
+import { libelleDeConfusion } from '../domain/cours/banque/confusions';
 import {
   AnswerAlreadySubmittedError,
   ParticipantNotFoundError,
@@ -111,7 +112,12 @@ export class SubmitAnswerUseCase {
       verdict.correcte,
     );
 
-    return verdict;
+    return {
+      ...verdict,
+      libelleConfusion: verdict.misconception
+        ? (libelleDeConfusion(verdict.misconception) ?? verdict.misconception)
+        : null,
+    };
   }
 
   private async updateMastery(

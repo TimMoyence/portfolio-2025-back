@@ -135,6 +135,7 @@ describe('FormationsStudentController', () => {
     submitAnswer.execute.mockResolvedValue({
       correcte: false,
       misconception: 'interet-simple',
+      libelleConfusion: 'Confondre interet simple et interet compose',
       solution: 1338,
     });
 
@@ -155,6 +156,7 @@ describe('FormationsStudentController', () => {
     expect(reponse).toEqual({
       correcte: false,
       misconception: 'interet-simple',
+      libelleConfusion: 'Confondre interet simple et interet compose',
     });
   });
 

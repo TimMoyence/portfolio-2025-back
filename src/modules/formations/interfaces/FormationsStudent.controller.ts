@@ -162,7 +162,11 @@ export class FormationsStudentController {
       valeur: dto.valeur,
       dureeMs: dto.dureeMs,
     });
-    return { correcte: verdict.correcte, misconception: verdict.misconception };
+    return {
+      correcte: verdict.correcte,
+      misconception: verdict.misconception,
+      libelleConfusion: verdict.libelleConfusion,
+    };
   }
 
   @Throttle({

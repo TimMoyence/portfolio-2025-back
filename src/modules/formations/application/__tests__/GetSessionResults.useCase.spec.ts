@@ -9,6 +9,11 @@ import {
   SessionNotFoundError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
+import type {
+  ConfusionComptee,
+  ResultatQuestion,
+  ResultatsSeance,
+} from '../../domain/ResultatsSeance';
 import { GetSessionResultsUseCase } from '../GetSessionResults.useCase';
 
 const TEACHER_ID = 'teacher-uuid';
@@ -60,5 +65,24 @@ describe('GetSessionResultsUseCase', () => {
   it('reprend le bareme de la session pour calculer la completion', async () => {
     const rapport = await sut.execute('session-uuid', TEACHER_ID);
     expect(rapport.participants[0].completion).toBe(1);
+  });
+
+  it('agrege les resultats par question du bareme dans le rapport', async () => {
+    const rapport = await sut.execute('session-uuid', TEACHER_ID);
+    const confusionsAttendues: readonly ConfusionComptee[] = [];
+    const questionsAttendues: readonly ResultatQuestion[] = [
+      {
+        questionId: 'Q-CAP-03',
+        total: 1,
+        correctes: 1,
+        neSaitPas: 0,
+        confusions: confusionsAttendues,
+      },
+    ];
+    const resultatsAttendus: ResultatsSeance = {
+      participants: 1,
+      questions: questionsAttendues,
+    };
+    expect(rapport.resultats).toEqual(resultatsAttendus);
   });
 });

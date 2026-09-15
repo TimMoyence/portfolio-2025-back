@@ -30,6 +30,7 @@ import type {
   Cours,
   Ecran,
 } from '../src/modules/formations/domain/cours/Cours';
+import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
 import type { ICatalogueCours } from '../src/modules/formations/domain/cours/ICatalogueCours.port';
 import type {
@@ -533,6 +534,7 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.body).toEqual({
         correcte: false,
         misconception: TEMOIN.misconception,
+        libelleConfusion: libelleDeConfusion(TEMOIN.misconception),
       });
       expect(reponse.text).not.toContain(String(TEMOIN.solution));
       expect(reponse.text).not.toContain(TEMOIN.concept);

@@ -4,6 +4,8 @@ import type { RapportSession } from '../domain/IFormationMailer.port';
 import type { IIncidentsRepository } from '../domain/IIncidents.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
+import { agregerResultats } from '../domain/ResultatsSeance';
+import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import { buildRapportSession } from '../domain/SessionReport';
 import {
@@ -12,6 +14,10 @@ import {
   PARTICIPANTS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+
+export type ResultatsDeSeance = RapportSession & {
+  readonly resultats: ResultatsSeance;
+};
 
 @Injectable()
 export class GetSessionResultsUseCase {
@@ -26,7 +32,10 @@ export class GetSessionResultsUseCase {
     private readonly incidents: IIncidentsRepository,
   ) {}
 
-  async execute(sessionId: string, teacherId: string): Promise<RapportSession> {
+  async execute(
+    sessionId: string,
+    teacherId: string,
+  ): Promise<ResultatsDeSeance> {
     const session = assertSessionOwnedBy(
       await this.sessions.findById(sessionId),
       sessionId,
@@ -39,11 +48,18 @@ export class GetSessionResultsUseCase {
       this.incidents.listBySession(sessionId),
     ]);
 
-    return buildRapportSession({
-      session,
-      participants: participantsListe,
-      answers: reponses,
-      incidents: incidentsListe,
-    });
+    return {
+      ...buildRapportSession({
+        session,
+        participants: participantsListe,
+        answers: reponses,
+        incidents: incidentsListe,
+      }),
+      resultats: agregerResultats({
+        bareme: session.bareme,
+        answers: reponses,
+        participants: participantsListe,
+      }),
+    };
   }
 }

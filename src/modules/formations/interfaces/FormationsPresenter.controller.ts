@@ -31,11 +31,11 @@ import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
+import type { ResultatsDeSeance } from '../application/GetSessionResults.useCase';
 import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
-import type { RapportSession } from '../domain/IFormationMailer.port';
 import { ControlSessionRequestDto } from './dto/control-session.request.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
@@ -153,7 +153,7 @@ export class FormationsPresenterController {
   async getResults(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
-  ): Promise<RapportSession> {
+  ): Promise<ResultatsDeSeance> {
     return this.results.execute(id, request.user!.sub);
   }
 
