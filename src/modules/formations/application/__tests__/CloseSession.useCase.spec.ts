@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import {
+  buildCoursDeTest,
+  creerCatalogueDeTest,
+  tireurSequentiel,
+} from '../../../../../test/factories/cours.factory';
+import {
   buildAnswerRecord,
   buildParticipantRecord,
   buildSessionRecord,
@@ -10,12 +15,15 @@ import {
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
+import { tirer } from '../../domain/cours/Tirage';
 import {
   SessionClosedError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
 import { CloseSessionUseCase } from '../CloseSession.useCase';
 
+const COURS = buildCoursDeTest();
 const TEACHER_ID = 'teacher-uuid';
 const AUTRE_TEACHER_ID = 'autre-teacher-uuid';
 const REVIEW_SECRET_VALIDE = 'a'.repeat(32);
@@ -52,6 +60,7 @@ describe('CloseSessionUseCase', () => {
       incidents,
       mailer,
       cache,
+      creerCatalogueDeTest(COURS),
     );
   });
 
@@ -220,5 +229,41 @@ describe('CloseSessionUseCase', () => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = 'trop-court';
     await sut.execute('session-uuid', TEACHER_ID);
     expect(mailer.sendCopieEtudiant).not.toHaveBeenCalled();
+  });
+
+  it('envoie a l etudiant l option choisie lue dans le tirage du cours de la seance', async () => {
+    const bareme = ouvrirTirages(COURS, tireurSequentiel());
+    const graine = bareme.tirages[0].seed;
+    const bonne = String(
+      tirer(COURS, graine).solutions['Q-TEST-RAPPEL'].valeur,
+    );
+    const seance = { courseSlug: COURS.slug, bareme };
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ ...seance, teacherId: TEACHER_ID }),
+    );
+    sessions.update.mockResolvedValue(
+      buildSessionRecord({ ...seance, etat: 'terminee' }),
+    );
+    participants.listBySession.mockResolvedValue([
+      buildParticipantRecord({ id: 'p1', seed: graine }),
+    ]);
+    answers.listBySession.mockResolvedValue([
+      buildAnswerRecord({
+        participantId: 'p1',
+        questionId: 'Q-TEST-RAPPEL',
+        valeur: bonne,
+        seed: graine,
+      }),
+    ]);
+
+    await sut.execute('session-uuid', TEACHER_ID);
+
+    const [copie] = mailer.sendCopieEtudiant.mock.calls[0];
+    expect(copie.participant.reponses).toEqual([
+      expect.objectContaining({
+        questionId: 'Q-TEST-RAPPEL',
+        reponse: 'plus bas qu’au départ',
+      }),
+    ]);
   });
 });

@@ -226,6 +226,11 @@ export function buildCoursDeClasse(nombreQuestions: number): Cours {
   });
 }
 
+export function tireurSequentiel(depart = 0): (borne: number) => number {
+  let courant = depart;
+  return () => courant++;
+}
+
 export function creerCatalogueDeTest(...cours: Cours[]): ICatalogueCours {
   return creerCatalogue(cours.length > 0 ? cours : [buildCoursDeTest()]);
 }

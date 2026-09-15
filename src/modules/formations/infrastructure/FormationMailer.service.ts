@@ -21,9 +21,9 @@ function verdictDe(reponse: RapportQuestion): string {
   if (reponse.correcte) {
     return "c'est juste";
   }
-  return reponse.misconception === null
+  return reponse.libelleConfusion === null
     ? "c'est faux"
-    : `c'est faux — confusion « ${reponse.misconception} »`;
+    : `c'est faux — confusion « ${reponse.libelleConfusion} »`;
 }
 
 @Injectable()
@@ -96,7 +96,7 @@ export class FormationMailerService implements IFormationMailer {
       (reponse) => safeHtml`<li>
           <strong>${escapeHtml(reponse.questionId)}</strong>
           — ${escapeHtml(reponse.concept)} : vous avez répondu
-          « ${escapeHtml(reponse.valeur)} », ${escapeHtml(verdictDe(reponse))}.
+          « ${escapeHtml(reponse.reponse)} », ${escapeHtml(verdictDe(reponse))}.
         </li>`,
     );
   }
@@ -163,7 +163,7 @@ export class FormationMailerService implements IFormationMailer {
       '',
       ...participant.reponses.map(
         (reponse) =>
-          `${reponse.questionId} — ${reponse.concept} : vous avez répondu « ${reponse.valeur} », ${verdictDe(reponse)}.`,
+          `${reponse.questionId} — ${reponse.concept} : vous avez répondu « ${reponse.reponse} », ${verdictDe(reponse)}.`,
       ),
       '',
       `Reprendre mon entraînement : ${lienRevision}`,
@@ -179,7 +179,7 @@ export class FormationMailerService implements IFormationMailer {
       'concept',
       'réponse',
       'correcte',
-      'misconception',
+      'confusion',
       'durée_ms',
     ];
     const lignes = rapport.participants.flatMap((participant) =>
@@ -190,9 +190,9 @@ export class FormationMailerService implements IFormationMailer {
           participant.email,
           reponse.questionId,
           reponse.concept,
-          reponse.valeur,
+          reponse.reponse,
           reponse.correcte ? 'oui' : 'non',
-          reponse.misconception ?? '',
+          reponse.libelleConfusion ?? '',
           String(reponse.dureeMs),
         ]
           .map(

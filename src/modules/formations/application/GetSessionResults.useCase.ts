@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { RapportSession } from '../domain/IFormationMailer.port';
 import type { IIncidentsRepository } from '../domain/IIncidents.repository';
@@ -10,6 +11,7 @@ import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import { buildRapportSession } from '../domain/SessionReport';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   INCIDENTS_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SESSIONS_REPOSITORY,
@@ -30,6 +32,8 @@ export class GetSessionResultsUseCase {
     private readonly answers: IAnswersRepository,
     @Inject(INCIDENTS_REPOSITORY)
     private readonly incidents: IIncidentsRepository,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async execute(
@@ -51,6 +55,7 @@ export class GetSessionResultsUseCase {
     return {
       ...buildRapportSession({
         session,
+        cours: this.catalogue.trouver(session.courseSlug),
         participants: participantsListe,
         answers: reponses,
         incidents: incidentsListe,

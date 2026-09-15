@@ -184,6 +184,22 @@ describe('tirer', () => {
     );
   });
 
+  it('associe a chaque option de vote du tirage le libelle affiche a l etudiant', () => {
+    const tirage = tirer(cours, 3);
+    const { options } = (
+      ecranDe(tirage, 'E-OUV').donnees as {
+        question: { options: { id: string; libelle: string }[] };
+      }
+    ).question;
+
+    expect(tirage.libellesOptions['Q-TEST-RAPPEL']).toEqual(
+      Object.fromEntries(options.map((option) => [option.id, option.libelle])),
+    );
+    expect(
+      Object.keys(tirage.libellesOptions).sort((a, b) => a.localeCompare(b)),
+    ).toEqual(['Q-TEST-EXIT', 'Q-TEST-RAPPEL', 'Q-TEST-VOTE']);
+  });
+
   it('projette le billet de sortie avec son invite', () => {
     const donnees = ecranDe(tirer(cours, 1), 'E-EXIT').donnees as {
       billet: { id: string; invite: string; options: unknown[] };

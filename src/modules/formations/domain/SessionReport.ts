@@ -1,6 +1,11 @@
 import type { BaremeQuestion } from './Bareme';
-import { questionsNotees } from './Bareme';
+import { questionsNotees, solutionsIdentiques } from './Bareme';
+import { libelleDeConfusion } from './cours/banque/confusions';
+import type { Cours } from './cours/Cours';
+import { TirageAmbiguError, tirer } from './cours/Tirage';
+import type { LibellesDesOptions } from './cours/Tirage';
 import { computeCohortScore } from './CompletionScore';
+import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
 import type {
   RapportParticipant,
@@ -12,9 +17,11 @@ import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
 
 const SEUIL_CONCEPT_FRAGILE = 0.7;
+const LIBELLE_NE_SAIT_PAS = 'Je ne sais pas';
 
 export interface SessionReportInput {
   session: SessionRecord;
+  cours: Cours | null;
   participants: readonly ParticipantRecord[];
   answers: readonly AnswerRecord[];
   incidents: readonly IncidentRecord[];
@@ -40,7 +47,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
         completion: score?.completion ?? 0,
         note: score?.note ?? 0,
         sousSeuil: score?.sousSeuil ?? true,
-        reponses: reponsesDe(participant.id, input.answers),
+        reponses: reponsesDe(participant, input),
         incidents: input.incidents.filter(
           (incident) => incident.participantId === participant.id,
         ).length,
@@ -77,19 +84,60 @@ function completionDe(
 }
 
 function reponsesDe(
-  participantId: string,
-  reponses: readonly AnswerRecord[],
+  participant: ParticipantRecord,
+  input: SessionReportInput,
 ): readonly RapportQuestion[] {
-  return reponses
-    .filter((reponse) => reponse.participantId === participantId)
+  const libelles = libellesDuTirage(input, participant.seed);
+  return input.answers
+    .filter((reponse) => reponse.participantId === participant.id)
     .map((reponse) => ({
       questionId: reponse.questionId,
       concept: reponse.concept,
       valeur: String(reponse.valeur),
+      reponse: reponseLisible(reponse, libelles),
       correcte: reponse.correcte,
       misconception: reponse.misconception,
+      libelleConfusion:
+        reponse.misconception === null
+          ? null
+          : (libelleDeConfusion(reponse.misconception) ??
+            reponse.misconception),
       dureeMs: reponse.dureeMs,
     }));
+}
+
+function reponseLisible(
+  reponse: AnswerRecord,
+  libelles: LibellesDesOptions,
+): string {
+  if (reponse.valeur === NE_SAIT_PAS) {
+    return LIBELLE_NE_SAIT_PAS;
+  }
+  const valeur = String(reponse.valeur);
+  return libelles[reponse.questionId]?.[valeur] ?? valeur;
+}
+
+function libellesDuTirage(
+  input: SessionReportInput,
+  graine: number,
+): LibellesDesOptions {
+  if (input.cours === null) {
+    return {};
+  }
+  const stockees = input.session.bareme.tirages.find(
+    (tirage) => tirage.seed === graine,
+  )?.solutions;
+  try {
+    const tirage = tirer(input.cours, graine);
+    return solutionsIdentiques(tirage.solutions, stockees)
+      ? tirage.libellesOptions
+      : {};
+  } catch (erreur) {
+    if (erreur instanceof TirageAmbiguError) {
+      return {};
+    }
+    throw erreur;
+  }
 }
 
 function conceptsFragilesDe(

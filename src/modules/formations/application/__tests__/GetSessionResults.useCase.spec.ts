@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { creerCatalogueDeTest } from '../../../../../test/factories/cours.factory';
 import {
+  buildAnswerRecord,
   createMockAnswersRepo,
   createMockIncidentsRepo,
   createMockParticipantsRepo,
@@ -36,7 +38,20 @@ describe('GetSessionResultsUseCase', () => {
       participants,
       answers,
       incidents,
+      creerCatalogueDeTest(),
     );
+  });
+
+  it('rend la valeur envoyee telle quelle quand le cours de la seance est absent du catalogue', async () => {
+    answers.listBySession.mockResolvedValue([
+      buildAnswerRecord({ valeur: 'o2', correcte: false }),
+    ]);
+
+    const rapport = await sut.execute('session-uuid', TEACHER_ID);
+
+    expect(rapport.participants[0].reponses).toEqual([
+      expect.objectContaining({ valeur: 'o2', reponse: 'o2' }),
+    ]);
   });
 
   it('retourne la synthese de la session pour son formateur', async () => {

@@ -1,4 +1,7 @@
-import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
+import {
+  buildCoursDeTest,
+  tireurSequentiel,
+} from '../../../../../test/factories/cours.factory';
 import { questionNumerique } from './Cours';
 import {
   BORNE_GRAINE,
@@ -7,11 +10,6 @@ import {
   TiragesInsuffisantsError,
 } from './OuvertureTirages';
 import { tirer } from './Tirage';
-
-function tireurSequentiel(depart = 0): (borne: number) => number {
-  let courant = depart;
-  return () => courant++;
-}
 
 describe('ouvrirTirages', () => {
   const cours = buildCoursDeTest();

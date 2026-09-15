@@ -39,10 +39,15 @@ export interface CorrigeTire {
   readonly confusions: readonly ConfusionId[];
 }
 
+export type LibellesDesOptions = Readonly<
+  Record<string, Readonly<Record<string, string>>>
+>;
+
 export interface TirageDuCours {
   readonly sujet: CoursPublic;
   readonly solutions: Readonly<Record<string, Solution>>;
   readonly corriges: Readonly<Record<string, CorrigeTire>>;
+  readonly libellesOptions: LibellesDesOptions;
 }
 
 export const PROPRIETE_PAR_BRIQUE: Readonly<
@@ -107,6 +112,7 @@ interface Contexte {
   readonly tirage: Tirage;
   readonly solutions: [string, Solution][];
   readonly corriges: [string, CorrigeTire][];
+  readonly libellesOptions: [string, Readonly<Record<string, string>>][];
 }
 
 export function tirer(cours: Cours, graine: number): TirageDuCours {
@@ -117,6 +123,7 @@ export function tirer(cours: Cours, graine: number): TirageDuCours {
     tirage: creerTirage(rng),
     solutions: [],
     corriges: [],
+    libellesOptions: [],
   };
   const ecrans = cours.ecrans.map((ecran) => projeterEcran(ecran, contexte));
   return {
@@ -130,6 +137,7 @@ export function tirer(cours: Cours, graine: number): TirageDuCours {
     },
     solutions: Object.fromEntries(contexte.solutions),
     corriges: Object.fromEntries(contexte.corriges),
+    libellesOptions: Object.fromEntries(contexte.libellesOptions),
   };
 }
 
@@ -276,6 +284,10 @@ function tirerVote(question: QuestionVote, contexte: Contexte): VotePublic {
   const { options, solution } = optionsMelangees(tiree, contexte.rng);
   contexte.solutions.push([question.id, solution]);
   contexte.corriges.push([question.id, corrige(tiree.bonne, tiree.pieges)]);
+  contexte.libellesOptions.push([
+    question.id,
+    Object.fromEntries(options.map((option) => [option.id, option.libelle])),
+  ]);
   return { id: question.id, enonce: tiree.enonce, options };
 }
 
