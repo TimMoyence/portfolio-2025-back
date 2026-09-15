@@ -1,4 +1,5 @@
 import {
+  buildCoursAuTirageEnErreur,
   buildCoursDeTest,
   tireurSequentiel,
 } from '../../../../test/factories/cours.factory';
@@ -30,6 +31,7 @@ function rapportDe(overrides: Partial<SessionReportInput> = {}) {
     participants: [],
     answers: [],
     incidents: [],
+    avertir: () => undefined,
     ...overrides,
   });
 }
@@ -300,6 +302,47 @@ describe('buildRapportSession', () => {
           },
         ]),
       );
+    });
+
+    it('garde le rapport et l identifiant de l option, sur un seul avertissement sans graine ni donnee personnelle, quand le tirage du cours echoue', () => {
+      const avertir = jest.fn();
+      const graineTemoin = 1_357_913;
+      const temoin = buildParticipantRecord({
+        id: 'participant-temoin-uuid',
+        seed: graineTemoin,
+        prenom: 'Ines',
+        nom: 'Lefebvre',
+        email: 'ines.lefebvre@example.com',
+      });
+
+      const rapport = rapportDe({
+        session: buildSessionRecord({ courseSlug: cours.slug, bareme }),
+        cours: buildCoursAuTirageEnErreur(),
+        participants: [participant, temoin],
+        answers: [
+          buildAnswerRecord({
+            participantId: temoin.id,
+            questionId: 'Q-TEST-VOTE',
+            valeur: optionPiegee,
+            seed: graineTemoin,
+            correcte: false,
+            misconception: CONFUSION,
+          }),
+        ],
+        avertir,
+      });
+
+      expect(rapport.participants[1].reponses[0].reponse).toBe(optionPiegee);
+      expect(avertir).toHaveBeenCalledTimes(1);
+      const [message] = avertir.mock.calls[0] as [string];
+      expect(message).toContain('RangeError');
+      [
+        String(graineTemoin),
+        temoin.id,
+        temoin.prenom,
+        temoin.nom,
+        temoin.email,
+      ].forEach((donnee) => expect(message).not.toContain(donnee));
     });
 
     it('garde l identifiant de l option quand le cours a change depuis l ouverture', () => {

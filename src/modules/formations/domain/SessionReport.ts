@@ -2,7 +2,7 @@ import type { BaremeQuestion } from './Bareme';
 import { questionsNotees, solutionsIdentiques } from './Bareme';
 import { libelleDeConfusion } from './cours/banque/confusions';
 import type { Cours } from './cours/Cours';
-import { TirageAmbiguError, tirer } from './cours/Tirage';
+import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
 import { computeCohortScore } from './CompletionScore';
 import { NE_SAIT_PAS } from './GradingCore';
@@ -25,6 +25,7 @@ export interface SessionReportInput {
   participants: readonly ParticipantRecord[];
   answers: readonly AnswerRecord[];
   incidents: readonly IncidentRecord[];
+  avertir(message: string): void;
 }
 
 export function buildRapportSession(input: SessionReportInput): RapportSession {
@@ -37,6 +38,15 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
   const rangs = new Map(
     input.session.bareme.questions.map((question, rang) => [question.id, rang]),
   );
+  const tiragesEnEchec: string[] = [];
+  const libellesDe = (graine: number): LibellesDesOptions => {
+    try {
+      return libellesDuTirage(input, graine);
+    } catch (erreur) {
+      tiragesEnEchec.push(nomDErreur(erreur));
+      return {};
+    }
+  };
 
   const participants: readonly RapportParticipant[] = input.participants.map(
     (participant) => {
@@ -50,13 +60,19 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
         completion: score?.completion ?? 0,
         note: score?.note ?? 0,
         sousSeuil: score?.sousSeuil ?? true,
-        reponses: reponsesDe(participant, input, rangs),
+        reponses: reponsesDe(
+          participant.id,
+          input.answers,
+          rangs,
+          libellesDe(participant.seed),
+        ),
         incidents: input.incidents.filter(
           (incident) => incident.participantId === participant.id,
         ).length,
       };
     },
   );
+  signalerTiragesEnEchec(input, tiragesEnEchec);
 
   return {
     courseSlug: input.session.courseSlug,
@@ -87,15 +103,15 @@ function completionDe(
 }
 
 function reponsesDe(
-  participant: ParticipantRecord,
-  input: SessionReportInput,
+  participantId: string,
+  reponses: readonly AnswerRecord[],
   rangs: ReadonlyMap<string, number>,
+  libelles: LibellesDesOptions,
 ): readonly RapportQuestion[] {
-  const libelles = libellesDuTirage(input, participant.seed);
   const rangDe = (reponse: AnswerRecord): number =>
     rangs.get(reponse.questionId) ?? rangs.size;
-  return input.answers
-    .filter((reponse) => reponse.participantId === participant.id)
+  return reponses
+    .filter((reponse) => reponse.participantId === participantId)
     .sort((premiere, seconde) => rangDe(premiere) - rangDe(seconde))
     .map((reponse) => ({
       questionId: reponse.questionId,
@@ -138,17 +154,26 @@ function libellesDuTirage(
   const stockees = input.session.bareme.tirages.find(
     (tirage) => tirage.seed === graine,
   )?.solutions;
-  try {
-    const tirage = tirer(input.cours, graine);
-    return solutionsIdentiques(tirage.solutions, stockees)
-      ? tirage.libellesOptions
-      : {};
-  } catch (erreur) {
-    if (erreur instanceof TirageAmbiguError) {
-      return {};
-    }
-    throw erreur;
+  const tirage = tirer(input.cours, graine);
+  return solutionsIdentiques(tirage.solutions, stockees)
+    ? tirage.libellesOptions
+    : {};
+}
+
+function signalerTiragesEnEchec(
+  input: SessionReportInput,
+  erreurs: readonly string[],
+): void {
+  if (erreurs.length === 0) {
+    return;
   }
+  input.avertir(
+    `Libelles des options indisponibles pour ${erreurs.length} participant(s) de la seance ${input.session.id} (cours ${input.session.courseSlug}, ${[...new Set(erreurs)].join(', ')}) : leurs reponses gardent l identifiant de l option`,
+  );
+}
+
+function nomDErreur(erreur: unknown): string {
+  return erreur instanceof Error ? erreur.name : typeof erreur;
 }
 
 function conceptsFragilesDe(

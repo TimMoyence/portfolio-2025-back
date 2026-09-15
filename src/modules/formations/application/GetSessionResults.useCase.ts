@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { RapportSession } from '../domain/IFormationMailer.port';
@@ -23,6 +23,8 @@ export type ResultatsDeSeance = RapportSession & {
 
 @Injectable()
 export class GetSessionResultsUseCase {
+  private readonly logger = new Logger(GetSessionResultsUseCase.name);
+
   constructor(
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
@@ -59,6 +61,7 @@ export class GetSessionResultsUseCase {
         participants: participantsListe,
         answers: reponses,
         incidents: incidentsListe,
+        avertir: (message) => this.logger.warn(message),
       }),
       resultats: agregerResultats({
         questionIds: session.bareme.questions.map((question) => question.id),

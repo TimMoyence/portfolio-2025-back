@@ -83,6 +83,7 @@ export class CloseSessionUseCase {
       participants: participantsListe,
       answers: reponses,
       incidents: incidentsListe,
+      avertir: (message) => this.logger.warn(message),
     });
 
     this.envoyerSynthese(

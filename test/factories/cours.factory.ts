@@ -253,6 +253,32 @@ export function buildCoursSansTirageValide(): Cours {
   });
 }
 
+export function buildCoursAuTirageEnErreur(): Cours {
+  const bornesInversees = questionNumerique({
+    id: QUESTION_NUMERIQUE_TEST.id,
+    concept: 'taux-evolution',
+    noteCompte: true,
+    donnees: (tirage) => ({ depart: tirage.entier(900, 100) }),
+    enonce: ({ depart }) => `Que vaut ${depart} ?`,
+    unite: null,
+    solution: ({ depart }) => depart,
+    tolerance: { type: 'absolue', valeur: 0.01 },
+    pieges: [
+      {
+        confusion: 'ecart-absolu-au-lieu-du-taux',
+        valeur: ({ depart }) => depart / 100,
+      },
+    ],
+  });
+  const [premier, ...suite] = buildCoursDeTest().ecrans.map(
+    (ecran): Ecran =>
+      ecran.brique === 'fp-numeric'
+        ? { ...ecran, question: bornesInversees }
+        : ecran,
+  );
+  return buildCoursDeTest({ ecrans: [premier, ...suite] });
+}
+
 export function tireurSequentiel(depart = 0): (borne: number) => number {
   let courant = depart;
   return () => courant++;
