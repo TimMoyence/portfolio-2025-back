@@ -5,7 +5,11 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { bootstrapTestApp, httpServerOf } from './helpers/nest-test-app';
+import {
+  bootstrapTestApp,
+  fermerApplication,
+  httpServerOf,
+} from './helpers/nest-test-app';
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
 import {
@@ -114,7 +118,7 @@ describe('API coherence and connectivity (e2e http socket)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
   });
 
   it('POST /api/contacts validates payload and returns contract response', async () => {

@@ -70,6 +70,10 @@ import {
   createMockIncidentsRepo,
   createMockMasteryRepo,
 } from './factories/formation.factory';
+import {
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
 
 const API_PREFIX = 'api/v1/portfolio25';
@@ -335,7 +339,7 @@ async function creerHarnais(
   app.setGlobalPrefix(API_PREFIX);
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
-  await app.init();
+  await ecouterEnBoucleLocale(app);
   return { app, mailer };
 }
 
@@ -380,7 +384,7 @@ describe('Session de formation (e2e http socket)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
   });
 
   describe('ouverture d une seance par le slug du cours', () => {
@@ -807,7 +811,7 @@ describe('Une salle informatique derriere une seule adresse publique', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
   });
 
   it('laisse les trente postes de la salle rejoindre la meme seance', async () => {
@@ -895,7 +899,7 @@ describe('sujet du participant (lecture par jeton)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
   });
 
   it('refuse de lire le sujet sans jeton de participant', async () => {

@@ -22,11 +22,14 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
-  ecouterEnBoucleLocale,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
 } from './helpers/formations-harness';
+import {
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 
 jest.mock('nodemailer', () => ({ createTransport: jest.fn() }));
 
@@ -374,7 +377,7 @@ describeDb(
     });
 
     afterAll(async () => {
-      await app.close();
+      await fermerApplication(app);
       await contexte.fermer();
       restaurerSmtp();
       delete process.env.FORMATION_REVIEW_TOKEN_SECRET;

@@ -18,11 +18,14 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
-  ecouterEnBoucleLocale,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
 } from './helpers/formations-harness';
+import {
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const TAILLE_CLASSE = 30;
@@ -198,7 +201,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
     await contexte.fermer();
     delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
   });

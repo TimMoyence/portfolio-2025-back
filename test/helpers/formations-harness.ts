@@ -11,7 +11,6 @@ import { Test as ModuleDeTest } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { request as requeteNode, type IncomingMessage } from 'node:http';
-import type { AddressInfo } from 'node:net';
 import request from 'supertest';
 import type { Test } from 'supertest';
 import { IS_PUBLIC_KEY } from '../../src/common/interfaces/auth/public.decorator';
@@ -59,11 +58,15 @@ import {
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './formations-db';
+import {
+  ADRESSE_BOUCLE_LOCALE,
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
 export const PREFIXE_API = 'api/v1/portfolio25';
 export const EN_TETE_IDENTITE = 'x-test-identite';
-export const ADRESSE_BOUCLE_LOCALE = '127.0.0.1';
 
 const FENETRE_THROTTLE_MS = 60_000;
 const LIMITE_THROTTLE_PAR_DEFAUT = 30;
@@ -144,13 +147,6 @@ export async function monterApplicationFormations(
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
   await app.init();
   return app;
-}
-
-export async function ecouterEnBoucleLocale(
-  app: INestApplication,
-): Promise<number> {
-  await app.listen(0, ADRESSE_BOUCLE_LOCALE);
-  return (app.getHttpServer().address() as AddressInfo).port;
 }
 
 export interface EvenementFlux {
@@ -260,7 +256,7 @@ export async function monterBancFormations(
     mailer,
     port,
     async fermer(): Promise<void> {
-      await app.close();
+      await fermerApplication(app);
       await contexte.fermer();
     },
   };

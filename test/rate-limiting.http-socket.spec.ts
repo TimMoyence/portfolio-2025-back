@@ -3,6 +3,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { Throttle, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import {
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 
 @Controller('test-throttle')
 class ThrottleTestController {
@@ -37,11 +41,11 @@ describe('Rate-limiting (ThrottlerGuard) — integration HTTP', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    await app.init();
+    await ecouterEnBoucleLocale(app);
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
   });
 
   it('devrait accepter les requetes en dessous de la limite globale', async () => {

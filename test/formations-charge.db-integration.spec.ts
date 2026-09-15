@@ -18,13 +18,16 @@ import {
 } from './helpers/formations-db';
 import {
   abonnerAuFlux,
-  ecouterEnBoucleLocale,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   patienter,
   PREFIXE_API,
   type FluxEcoute,
 } from './helpers/formations-harness';
+import {
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const TAILLE_CLASSE = 30;
@@ -252,7 +255,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
     await contexte.fermer();
     delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
     delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;

@@ -363,52 +363,49 @@ describeDb('Repetition a blanc de B1-01 (db integration)', () => {
         { [EN_TETE_IDENTITE]: `${FORMATEUR}:teacher` },
       );
 
-      try {
-        const envoyees = await jouerLesEcrans(sessionId, etudiants);
-        const dernierEcran = COURS.ecrans.length - 1;
-        await piloter(sessionId, COURS.ecrans.length).expect(REQUETE_INVALIDE);
-        const seance = await banc.contexte.sessions.findById(sessionId);
-        expect(seance?.ecranCourant).toBe(dernierEcran);
+      const envoyees = await jouerLesEcrans(sessionId, etudiants);
+      const dernierEcran = COURS.ecrans.length - 1;
+      await piloter(sessionId, COURS.ecrans.length).expect(REQUETE_INVALIDE);
+      const seance = await banc.contexte.sessions.findById(sessionId);
+      expect(seance?.ecranCourant).toBe(dernierEcran);
 
-        const attendus = questionsDuCours(COURS).map((question) =>
-          resultatAttendu(question.id, envoyees),
-        );
-        const totauxAttendus = totauxParQuestion({
-          participants: TAILLE_CLASSE,
-          questions: attendus,
-        });
-        const pousses = await derniersResultatsDuFlux(flux, totauxAttendus);
-        expect(flux.statut).toBe(OK);
-        expect(resultatsPousses(flux).length).toBeGreaterThan(0);
-        expect({
-          participants: pousses?.participants,
-          totaux: totauxParQuestion(pousses),
-          reponses: totauxParQuestion(pousses).reduce(
-            (somme, { total }) => somme + total,
-            0,
-          ),
-        }).toEqual({
-          participants: TAILLE_CLASSE,
-          totaux: totauxAttendus,
-          reponses: envoyees.length,
-        });
+      const attendus = questionsDuCours(COURS).map((question) =>
+        resultatAttendu(question.id, envoyees),
+      );
+      const totauxAttendus = totauxParQuestion({
+        participants: TAILLE_CLASSE,
+        questions: attendus,
+      });
+      const pousses = await derniersResultatsDuFlux(flux, totauxAttendus);
+      expect(flux.statut).toBe(OK);
+      expect(resultatsPousses(flux).length).toBeGreaterThan(0);
+      expect({
+        participants: pousses?.participants,
+        totaux: totauxParQuestion(pousses),
+        reponses: totauxParQuestion(pousses).reduce(
+          (somme, { total }) => somme + total,
+          0,
+        ),
+      }).toEqual({
+        participants: TAILLE_CLASSE,
+        totaux: totauxAttendus,
+        reponses: envoyees.length,
+      });
 
-        const lecture = await client
-          .formateur('get', `/sessions/${sessionId}/results`)
-          .expect(OK);
-        const { resultats } = lecture.body as ResultatsDeSeance;
-        expect(resultats.participants).toBe(TAILLE_CLASSE);
-        expect(resultats.questions.map(resultatObserve)).toEqual(attendus);
-        expect(
-          resultats.questions.filter(({ total }) => total !== TAILLE_CLASSE),
-        ).toEqual([]);
+      const lecture = await client
+        .formateur('get', `/sessions/${sessionId}/results`)
+        .expect(OK);
+      const { resultats } = lecture.body as ResultatsDeSeance;
+      expect(resultats.participants).toBe(TAILLE_CLASSE);
+      expect(resultats.questions.map(resultatObserve)).toEqual(attendus);
+      expect(
+        resultats.questions.filter(({ total }) => total !== TAILLE_CLASSE),
+      ).toEqual([]);
 
-        await client
-          .formateur('post', `/sessions/${sessionId}/close`)
-          .expect(SANS_CONTENU);
-      } finally {
-        flux.fermer();
-      }
+      await client
+        .formateur('post', `/sessions/${sessionId}/close`)
+        .expect(SANS_CONTENU);
+      flux.fermer();
     },
     DELAI_TEST_MS,
   );
