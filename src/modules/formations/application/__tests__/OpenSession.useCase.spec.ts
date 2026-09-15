@@ -51,6 +51,23 @@ describe('OpenSessionUseCase', () => {
     );
   });
 
+  it('couvre toutes les questions du cours dans chacun des soixante tirages', async () => {
+    await sut.execute(COMMANDE);
+
+    const [depot] = sessions.create.mock.calls[0];
+    const attendues = questionsDuCours(COURS)
+      .map((question) => question.id)
+      .sort((a, b) => a.localeCompare(b));
+    const incomplets = depot.bareme.tirages.filter(
+      (tirage) =>
+        Object.keys(tirage.solutions)
+          .sort((a, b) => a.localeCompare(b))
+          .join() !== attendues.join(),
+    );
+    expect(depot.bareme.tirages).toHaveLength(NOMBRE_TIRAGES_DISTRIBUES);
+    expect(incomplets).toEqual([]);
+  });
+
   it('ouvre une session et retourne son code', async () => {
     sessions.create.mockResolvedValue(buildSessionRecord({ code: '4271' }));
     const result = await sut.execute(COMMANDE);

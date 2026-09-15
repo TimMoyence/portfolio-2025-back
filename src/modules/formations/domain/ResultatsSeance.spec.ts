@@ -53,4 +53,47 @@ describe('agregerResultats', () => {
       },
     ]);
   });
+
+  it('departage deux confusions de meme frequence par leur identifiant', () => {
+    const fausse = (misconception: string) =>
+      buildAnswerRecord({ questionId: 'Q-1', correcte: false, misconception });
+
+    const [question] = agregerResultats({
+      questionIds: ['Q-1'],
+      participants: 5,
+      answers: [
+        fausse('taux-successifs-additionnes'),
+        fausse('base-arrivee'),
+        fausse('taux-successifs-additionnes'),
+        fausse('base-arrivee'),
+        fausse('raisonnement-additif'),
+      ],
+    }).questions;
+
+    expect(
+      question.confusions.map(({ id, nombre }) => ({ id, nombre })),
+    ).toEqual([
+      { id: 'base-arrivee', nombre: 2 },
+      { id: 'taux-successifs-additionnes', nombre: 2 },
+      { id: 'raisonnement-additif', nombre: 1 },
+    ]);
+  });
+
+  it('libelle une confusion absente de la banque par son identifiant', () => {
+    const [question] = agregerResultats({
+      questionIds: ['Q-1'],
+      participants: 1,
+      answers: [
+        buildAnswerRecord({
+          questionId: 'Q-1',
+          correcte: false,
+          misconception: 'interet-simple',
+        }),
+      ],
+    }).questions;
+
+    expect(question.confusions).toEqual([
+      { id: 'interet-simple', libelle: 'interet-simple', nombre: 1 },
+    ]);
+  });
 });

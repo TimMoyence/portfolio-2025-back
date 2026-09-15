@@ -96,6 +96,22 @@ describe('JoinSessionUseCase', () => {
     expect(participants.create).toHaveBeenCalledTimes(2);
   });
 
+  it('ne signale qu une seule activite quand l inscription reprend sur une autre graine', async () => {
+    participants.listSeedsBySession
+      .mockResolvedValueOnce([])
+      .mockResolvedValue([1001]);
+    participants.create
+      .mockRejectedValueOnce(new SeedAlreadyAssignedError(1001))
+      .mockResolvedValue(buildParticipantRecord({ seed: 1002 }));
+
+    await sut.execute(commande);
+
+    expect(cache.signalerActivite).toHaveBeenCalledTimes(1);
+    expect(participants.create.mock.invocationCallOrder[1]).toBeLessThan(
+      cache.signalerActivite.mock.invocationCallOrder[0],
+    );
+  });
+
   it('laisse remonter une erreur d inscription qui n est pas un conflit de graine', async () => {
     participants.create.mockRejectedValue(new Error('panne du depot'));
     await expect(sut.execute(commande)).rejects.toThrow('panne du depot');
