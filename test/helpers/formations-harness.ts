@@ -152,17 +152,22 @@ export interface BancFormations {
   fermer(): Promise<void>;
 }
 
-export async function monterBancFormations(): Promise<BancFormations> {
+export async function monterBancFormations(
+  catalogue: ICatalogueCours = CATALOGUE_COURS_STATIQUE,
+): Promise<BancFormations> {
   const contexte = await ouvrirContexteFormations();
   const mailer = createMockFormationMailer();
-  const app = await monterApplicationFormations({
-    sessions: contexte.sessions,
-    participants: contexte.participants,
-    answers: contexte.answers,
-    incidents: contexte.incidents,
-    mastery: contexte.mastery,
-    mailer,
-  });
+  const app = await monterApplicationFormations(
+    {
+      sessions: contexte.sessions,
+      participants: contexte.participants,
+      answers: contexte.answers,
+      incidents: contexte.incidents,
+      mastery: contexte.mastery,
+      mailer,
+    },
+    catalogue,
+  );
   await app.listen(0);
   return {
     contexte,

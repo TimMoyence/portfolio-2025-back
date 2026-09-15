@@ -13,12 +13,12 @@ import {
 import { Logger } from '@nestjs/common';
 import type { Response, Test } from 'supertest';
 import { MESSAGE_DEPENDANCE_INJOIGNABLE } from '../src/common/interfaces/filters/dependency-outage';
-import type {
-  Bareme,
-  BaremeQuestion,
-  BaremeTirage,
-} from '../src/modules/formations/domain/Bareme';
+import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import type { RapportSession } from '../src/modules/formations/domain/IFormationMailer.port';
+import {
+  buildCoursDeClasse,
+  creerCatalogueDeTest,
+} from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import type { ContexteFormations } from './helpers/formations-db';
 import {
@@ -29,14 +29,12 @@ import {
 } from './helpers/formations-harness';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
-const NB_QUESTIONS = 3;
-const NB_TIRAGES = 4;
-const COURS = 'b1-09-interets-composes';
+const NB_QUESTIONS_DU_COURS = 12;
+const COURS_DE_CLASSE = buildCoursDeClasse(NB_QUESTIONS_DU_COURS);
 const FORMATEUR = 'd4444444-4444-4444-8444-444444444444';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'resilience-formateur@example.test';
 const EN_TETE_JETON = 'x-participant-token';
-const PREMIERE_GRAINE = 7000;
 const PANNE_SMTP = 'smtp injoignable';
 const NUIT_ENTIERE = '14 hours';
 const ECRAN_APRES_COUPURE = 8;
@@ -207,38 +205,13 @@ function premierEtat(flux: FluxEcoute): Promise<EvenementFlux> {
 }
 
 function identifiantQuestion(question: number): string {
-  return `Q-RES-${String(question).padStart(2, '0')}`;
+  return questionsDuCours(COURS_DE_CLASSE)[question].id;
 }
 
 const MESSAGE_DOUBLON = `Votre réponse à la question ${identifiantQuestion(0)} est déjà enregistrée : passez à la suivante.`;
 
 function cleEtudiant(index: number): string {
   return `66666666-6666-4666-8666-${String(index).padStart(12, '0')}`;
-}
-
-function construireBareme(): Bareme {
-  const questions: BaremeQuestion[] = Array.from(
-    { length: NB_QUESTIONS },
-    (_, question) => ({
-      id: identifiantQuestion(question),
-      type: 'numeric' as const,
-      concept: 'capitalisation',
-      noteCompte: true,
-    }),
-  );
-  const tirages: BaremeTirage[] = Array.from(
-    { length: NB_TIRAGES },
-    (_, rang) => ({
-      seed: PREMIERE_GRAINE + rang,
-      solutions: Object.fromEntries(
-        questions.map((question, index) => [
-          question.id,
-          { valeur: 900000 + rang * 100 + index, pieges: [] },
-        ]),
-      ),
-    }),
-  );
-  return { version: 1, graineReference: 9_999_999, questions, tirages };
 }
 
 function detailDe(reponse: Response): unknown {
@@ -295,7 +268,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
     etudiant: Inscrit;
   }> => {
     const ouverture = await commander('/sessions')
-      .send({ courseSlug: COURS, bareme: construireBareme() })
+      .send({ courseSlug: COURS_DE_CLASSE.slug })
       .expect(CREE);
     const seance = ouverture.body as Seance;
     const etudiant = await inscrire(seance.code, 0);
@@ -312,7 +285,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
     const portBase = Number(process.env.DB_PORT ?? 5432);
     relais = await ouvrirRelais(process.env.DB_HOST ?? '127.0.0.1', portBase);
     process.env.DB_PORT = String(relais.port);
-    banc = await monterBancFormations();
+    banc = await monterBancFormations(creerCatalogueDeTest(COURS_DE_CLASSE));
     process.env.DB_PORT = String(portBase);
     contexte = banc.contexte;
     client = clientFormations(banc.app, FORMATEUR);

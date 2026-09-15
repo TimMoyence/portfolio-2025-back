@@ -1,11 +1,13 @@
 import { QueryFailedError } from 'typeorm';
 import { ResourceConflictError } from '../src/common/domain/errors/ResourceConflictError';
+import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import {
   AnswerAlreadySubmittedError,
   SeedAlreadyAssignedError,
   SessionCodeAlreadyActiveError,
 } from '../src/modules/formations/domain/errors/FormationErrors';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
+import { buildCoursDeClasse } from './factories/cours.factory';
 import { buildBareme } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -103,6 +105,21 @@ describeDb('Formations repositories (db integration)', () => {
     expect(tables.map((table) => table.tablename)).toEqual(
       expect.arrayContaining([...FORMATION_TABLES]),
     );
+  });
+
+  it('relit a l identique le bareme tire a l ouverture, graine de reference comprise', async () => {
+    const cours = buildCoursDeClasse(12);
+    const bareme = ouvrirTirages(cours);
+    const seance = await contexte.sessions.create({
+      courseSlug: cours.slug,
+      teacherId: FORMATEUR,
+      code: '4271',
+      bareme,
+    });
+
+    const relue = await contexte.sessions.findById(seance.id);
+
+    expect(relue?.bareme).toEqual(bareme);
   });
 
   it('refuse deux seances actives portant le meme code', async () => {

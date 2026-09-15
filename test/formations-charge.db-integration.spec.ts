@@ -8,15 +8,14 @@ import { performance } from 'node:perf_hooks';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
-import type {
-  Bareme,
-  BaremeQuestion,
-  BaremeTirage,
-} from '../src/modules/formations/domain/Bareme';
-import type {
-  IFormationMailer,
-  RapportSession,
-} from '../src/modules/formations/domain/IFormationMailer.port';
+import type { ResultatsDeSeance } from '../src/modules/formations/application/GetSessionResults.useCase';
+import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
+import { tirer } from '../src/modules/formations/domain/cours/Tirage';
+import type { IFormationMailer } from '../src/modules/formations/domain/IFormationMailer.port';
+import {
+  buildCoursDeClasse,
+  creerCatalogueDeTest,
+} from './factories/cours.factory';
 import { createMockFormationMailer } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -32,13 +31,14 @@ import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const TAILLE_CLASSE = 30;
 const NB_QUESTIONS = 12;
-const COURS = 'b1-09-interets-composes';
+const COURS_DE_CLASSE = buildCoursDeClasse(NB_QUESTIONS);
+const QUESTIONS_NOTEES = questionsDuCours(COURS_DE_CLASSE).filter(
+  (question) => question.noteCompte,
+);
 const FORMATEUR = 'c3333333-3333-4333-8333-333333333333';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'charge-formateur@example.test';
 const EN_TETE_JETON = 'x-participant-token';
-const PREMIERE_GRAINE = 9000;
-const CONCEPTS = ['capitalisation', 'actualisation', 'annuites'] as const;
 const OK = 200;
 const CREE = 201;
 const SANS_CONTENU = 204;
@@ -137,20 +137,8 @@ function memoireStabilisee(): number {
   return process.memoryUsage().heapUsed;
 }
 
-function identifiantQuestion(question: number): string {
-  return `Q-CHARGE-${String(question).padStart(2, '0')}`;
-}
-
-function conceptDe(question: number): string {
-  return CONCEPTS[question % CONCEPTS.length];
-}
-
 function cleEtudiant(index: number): string {
   return `55555555-5555-4555-8555-${String(index).padStart(12, '0')}`;
-}
-
-function valeurJuste(tirage: number, question: number): number {
-  return 800000 + tirage * 100 + question;
 }
 
 function identiteDe(index: number): Record<string, string> {
@@ -164,35 +152,10 @@ function identiteDe(index: number): Record<string, string> {
 
 function corpsReponse(question: number): Record<string, unknown> {
   return {
-    questionId: identifiantQuestion(question),
+    questionId: QUESTIONS_NOTEES[question].id,
     valeur: 1,
     dureeMs: DUREE_REPONSE_MS,
   };
-}
-
-function construireBareme(): Bareme {
-  const questions: BaremeQuestion[] = Array.from(
-    { length: NB_QUESTIONS },
-    (_, question) => ({
-      id: identifiantQuestion(question),
-      type: 'numeric' as const,
-      concept: conceptDe(question),
-      noteCompte: true,
-    }),
-  );
-  const tirages: BaremeTirage[] = Array.from(
-    { length: TAILLE_CLASSE },
-    (_, rang) => ({
-      seed: PREMIERE_GRAINE + rang,
-      solutions: Object.fromEntries(
-        questions.map((question, index) => [
-          question.id,
-          { valeur: valeurJuste(rang, index), pieges: [] },
-        ]),
-      ),
-    }),
-  );
-  return { version: 1, graineReference: 9_999_999, questions, tirages };
 }
 
 function brancherAbonnement(
@@ -270,10 +233,11 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       .post(route(chemin))
       .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`);
 
+  const ouvrirSeance = (): Test =>
+    commander('/sessions').send({ courseSlug: COURS_DE_CLASSE.slug });
+
   const preparerClasse = async (): Promise<Classe> => {
-    const ouverture = await commander('/sessions')
-      .send({ courseSlug: COURS, bareme: construireBareme() })
-      .expect(CREE);
+    const ouverture = await ouvrirSeance().expect(CREE);
     const { sessionId, code } = ouverture.body as {
       sessionId: string;
       code: string;
@@ -289,18 +253,19 @@ describeDb('Formations sous charge de classe (db integration)', () => {
 
   const semerReponses = async (classe: Classe): Promise<void> => {
     for (const inscrit of classe.inscrits) {
+      const { solutions } = tirer(COURS_DE_CLASSE, inscrit.seed);
       await Promise.all(
-        Array.from({ length: NB_QUESTIONS }, (_, question) =>
+        QUESTIONS_NOTEES.map((question, rang) =>
           contexte.answers.create({
             sessionId: classe.sessionId,
             participantId: inscrit.participantId,
-            questionId: identifiantQuestion(question),
-            concept: conceptDe(question),
-            valeur: valeurJuste(inscrit.seed - PREMIERE_GRAINE, question),
+            questionId: question.id,
+            concept: question.concept,
+            valeur: solutions[question.id].valeur,
             seed: inscrit.seed,
             correcte: true,
             misconception: null,
-            dureeMs: DUREE_REPONSE_MS + question,
+            dureeMs: DUREE_REPONSE_MS + rang,
           }),
         ),
       );
@@ -318,14 +283,17 @@ describeDb('Formations sous charge de classe (db integration)', () => {
     process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
     contexte = await ouvrirContexteFormations();
     mailer = createMockFormationMailer();
-    app = await monterApplicationFormations({
-      sessions: contexte.sessions,
-      participants: contexte.participants,
-      answers: contexte.answers,
-      incidents: contexte.incidents,
-      mastery: contexte.mastery,
-      mailer,
-    });
+    app = await monterApplicationFormations(
+      {
+        sessions: contexte.sessions,
+        participants: contexte.participants,
+        answers: contexte.answers,
+        incidents: contexte.incidents,
+        mastery: contexte.mastery,
+        mailer,
+      },
+      creerCatalogueDeTest(COURS_DE_CLASSE),
+    );
     await app.listen(0);
     port = (app.getHttpServer().address() as AddressInfo).port;
   });
@@ -346,9 +314,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
   it(
     'rattache trente etudiants simultanes dans le temps d une dictee de code',
     async () => {
-      const ouverture = await commander('/sessions')
-        .send({ courseSlug: COURS, bareme: construireBareme() })
-        .expect(CREE);
+      const ouverture = await ouvrirSeance().expect(CREE);
       const { code } = ouverture.body as { code: string };
 
       const [inscriptions, duree] = await chronometrer(() =>
@@ -429,9 +395,11 @@ describeDb('Formations sous charge de classe (db integration)', () => {
           .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`),
       );
 
+      const corps = lecture.body as ResultatsDeSeance;
       expect(lecture.status).toBe(OK);
-      expect((lecture.body as RapportSession).participants).toHaveLength(
-        TAILLE_CLASSE,
+      expect(corps.participants).toHaveLength(TAILLE_CLASSE);
+      expect(corps.resultats.questions).toHaveLength(
+        questionsDuCours(COURS_DE_CLASSE).length,
       );
       exigerDuree('lecture des resultats', duree, BUDGET_LECTURE_MS);
     },
