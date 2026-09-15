@@ -10,6 +10,7 @@ API NestJS 11 du projet Portfolio 2025. Le backend suit une architecture en couc
 - [Garde-fous IA et prompt injection](./docs/ai-security-guardrails.md)
 - [Gouvernance base de donnees](./docs/database-governance.md)
 - [Matrice de coherence DDD](./docs/ddd-coherence-matrix.md)
+- [Module formations](./docs/formations.md)
 - [ADR](./docs/adr/README.md)
 
 ## Architecture
@@ -44,6 +45,11 @@ Une fois l'API demarree :
   - `POST /articles/ingest` (HMAC + `Idempotency-Key`, machine-à-machine)
   - `GET /articles` et `GET /articles/:slug` (articles publiés uniquement)
   - `GET /articles/feed.xml` (RSS)
+- les seances de formation reposent sur un cours servi par le serveur ([details](./docs/formations.md)) :
+  - `POST /formations/sessions` avec `{ courseSlug }`, le serveur tirant le bareme
+  - `GET /formations/sessions/:id/sujet` (sujet du tirage de l'etudiant, sans corrige)
+  - `GET /formations/sessions/:id/deroule` (deroule annote, formateur proprietaire)
+  - `GET /formations/sessions/:id/presenter-stream` (SSE, dont l'evenement `resultats`)
 
 En production, `MORNING_BRIEF_HMAC_KEYS` ou le couple
 `MORNING_BRIEF_HMAC_KEY_ID` / `MORNING_BRIEF_HMAC_SECRET` est obligatoire ; les
