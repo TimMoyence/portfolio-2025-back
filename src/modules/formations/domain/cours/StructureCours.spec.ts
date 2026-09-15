@@ -135,6 +135,22 @@ describe('verifierStructure', () => {
     expect(regles(positive)).not.toContain('duree-ecran');
   });
 
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, -1])(
+    'refuse une duree %s pour un ecran comme pour le cours, sans la compter',
+    (duree) => {
+      const ecranFautif: Cours = {
+        ...base,
+        dureeMinutes: 5 + 5,
+        ecrans: [ouverture, citation('E-DUREE-FAUTIVE', duree), cloture],
+      };
+      const coursFautif: Cours = { ...base, dureeMinutes: duree };
+
+      expect(regles(ecranFautif)).toContain('duree-ecran');
+      expect(regles(ecranFautif)).not.toContain('duree-cours');
+      expect(regles(coursFautif)).toContain('duree-cours');
+    },
+  );
+
   it('signale une reference circulaire entre deux ecrans qui se renvoient l un a l autre', () => {
     const travailleA: Ecran = {
       id: 'E-TRAVAIL-A',

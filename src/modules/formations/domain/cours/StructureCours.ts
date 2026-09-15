@@ -36,10 +36,12 @@ function nomEcran(ecran: Ecran, rang: number): string {
   return ecran.id !== '' ? ecran.id : `#${rang}`;
 }
 
+function estDureePositive(minutes: number): boolean {
+  return Number.isFinite(minutes) && minutes > 0;
+}
+
 function minutesDe(ecran: Ecran): number {
-  return Number.isFinite(ecran.dureeMinutes) && ecran.dureeMinutes > 0
-    ? ecran.dureeMinutes
-    : 0;
+  return estDureePositive(ecran.dureeMinutes) ? ecran.dureeMinutes : 0;
 }
 
 function enFrancais(part: number): string {
@@ -169,7 +171,7 @@ function controlerOuvertureCloture(cours: Cours): readonly Manquement[] {
 
 function controlerDureeEcran(cours: Cours): readonly Manquement[] {
   return cours.ecrans.flatMap((ecran, rang) => {
-    if (Number.isFinite(ecran.dureeMinutes) && ecran.dureeMinutes > 0) {
+    if (estDureePositive(ecran.dureeMinutes)) {
       return [];
     }
     const identifiant = nomEcran(ecran, rang);
@@ -184,7 +186,7 @@ function controlerDureeEcran(cours: Cours): readonly Manquement[] {
 
 function controlerDureeCours(cours: Cours): readonly Manquement[] {
   const annoncee = cours.dureeMinutes;
-  if (!Number.isFinite(annoncee) || annoncee <= 0) {
+  if (!estDureePositive(annoncee)) {
     return [
       {
         ecran: null,
