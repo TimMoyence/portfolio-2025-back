@@ -60,6 +60,25 @@ function notesDe(ecran: Ecran): string {
   return ecran.notes;
 }
 
+function textesDe(valeur: unknown): string[] {
+  if (typeof valeur === 'string') {
+    return [valeur];
+  }
+  if (Array.isArray(valeur)) {
+    return valeur.flatMap((element: unknown) => textesDe(element));
+  }
+  if (typeof valeur === 'object' && valeur !== null) {
+    return Object.values(valeur).flatMap((element: unknown) =>
+      textesDe(element),
+    );
+  }
+  return [];
+}
+
+function espaceSecableFautive(texte: string): boolean {
+  return / [%€?!;:»]|« /.test(texte);
+}
+
 describe('B1_01_PROPORTIONS', () => {
   it('se publie sous son slug pour une seance de 195 minutes', () => {
     const minutes = cours.ecrans.reduce(
@@ -174,6 +193,17 @@ describe('B1_01_PROPORTIONS', () => {
         }
       }
     }
+  });
+
+  it('place une espace insecable avant % € ? ! ; : » et apres « dans tout le texte affiche', () => {
+    const statiques = cours.ecrans.flatMap((ecran) => textesDe(ecran));
+    const tires = questions.flatMap((question) =>
+      Array.from({ length: 50 }, (_, graine) => textesTires(question, graine)),
+    );
+    const fautifs = [...statiques, ...tires.flat()].filter(
+      espaceSecableFautive,
+    );
+    expect(fautifs).toEqual([]);
   });
 
   it('accepte la solution arrondie comme demande, dans les deux sens d une valeur mediane', () => {

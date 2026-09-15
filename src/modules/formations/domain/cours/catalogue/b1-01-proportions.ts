@@ -1,15 +1,27 @@
 import type { Tolerance } from '../../GradingCore';
 import type { Tirage } from '../Aleatoire';
-import type { AuMoinsUn, Cours } from '../Cours';
+import type {
+  AuMoinsUn,
+  Cours,
+  DefinitionNumerique,
+  DefinitionVote,
+  Ecran,
+  QuestionNumerique,
+  QuestionVote,
+} from '../Cours';
 import { questionNumerique, questionVote } from '../Cours';
+import { SEUIL_PAR_DEFAUT } from '../DeroulePresentateur';
 
 const TOLERANCE_EUROS: Tolerance = { type: 'decimales', valeur: 2 };
 const TOLERANCE_POURCENTAGE: Tolerance = { type: 'absolue', valeur: 0.05 };
 const TOLERANCE_COEFFICIENT: Tolerance = { type: 'absolue', valeur: 0.001 };
-const SEUIL_PIVOT = 0.7;
 const TAUX_ARRONDI = 'en % (arrondi à 0,1 %)';
 const TAUX_ARRONDI_SIGNE = 'en % (arrondi à 0,1 %, négatif en cas de baisse)';
 const COEFFICIENT_ARRONDI = '(arrondi au millième)';
+const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x202f);
+const ESPACE_INSECABLE = String.fromCodePoint(0xa0);
+const CONSIGNE_CALCULATRICE =
+  'calculatrice de poche, ou téléphone posé à côté si l’on répond sur ordinateur ; ne changez pas de fenêtre';
 
 type Sens = 1 | -1;
 
@@ -43,6 +55,12 @@ interface MemeProportion {
   readonly autre: number;
 }
 
+interface DeuxClients {
+  readonly gain: number;
+  readonly premier: number;
+  readonly second: number;
+}
+
 interface Dossier {
   readonly client: string;
   readonly ca2: number;
@@ -53,6 +71,64 @@ interface Dossier {
 interface Gabarit<D> {
   readonly id: string;
   readonly enonce: (donnees: D) => string;
+}
+
+function typographier(texte: string): string {
+  return texte
+    .replaceAll(/ ([%€])/g, `${ESPACE_FINE_INSECABLE}$1`)
+    .replaceAll(/ ([?!;:»])/g, `${ESPACE_INSECABLE}$1`)
+    .replaceAll('« ', `«${ESPACE_INSECABLE}`);
+}
+
+function estDonneeSimple(
+  valeur: unknown,
+): valeur is Readonly<Record<string, unknown>> {
+  return (
+    typeof valeur === 'object' &&
+    valeur !== null &&
+    Object.getPrototypeOf(valeur) === Object.prototype
+  );
+}
+
+function avecEspacesInsecables<T>(valeur: T): T {
+  if (typeof valeur === 'string') {
+    return typographier(valeur) as T;
+  }
+  if (Array.isArray(valeur)) {
+    return valeur.map((element: unknown) =>
+      avecEspacesInsecables(element),
+    ) as T;
+  }
+  if (estDonneeSimple(valeur)) {
+    return Object.fromEntries(
+      Object.entries(valeur).map(([cle, element]) => [
+        cle,
+        avecEspacesInsecables(element),
+      ]),
+    ) as T;
+  }
+  return valeur;
+}
+
+function numerique<D>(definition: DefinitionNumerique<D>): QuestionNumerique {
+  return questionNumerique({
+    ...definition,
+    enonce: (donnees) => typographier(definition.enonce(donnees)),
+  });
+}
+
+function vote<D>(definition: DefinitionVote<D>): QuestionVote {
+  const [premier, ...autres] = definition.pieges;
+  const habiller = (piege: (typeof definition.pieges)[number]) => ({
+    confusion: piege.confusion,
+    libelle: (donnees: D) => typographier(piege.libelle(donnees)),
+  });
+  return questionVote({
+    ...definition,
+    enonce: (donnees) => typographier(definition.enonce(donnees)),
+    bonne: (donnees) => typographier(definition.bonne(donnees)),
+    pieges: [habiller(premier), ...autres.map(habiller)],
+  });
 }
 
 function nombre(valeur: number, decimales: number): string {
@@ -109,18 +185,22 @@ function tirerTauxEntier(tirage: Tirage): Variation {
   return { taux: sens * tirage.entier(3, 45) };
 }
 
-function tirerEvolution(tirage: Tirage, sens: Sens): Evolution {
+function tirerEvolution(
+  tirage: Tirage,
+  sens: Sens,
+  tauxMinimal: number,
+): Evolution {
   const depart = tirage.entier(12, 90) * 5000;
-  const taux = sens * tirage.decimal(4, 30, 0.5);
+  const taux = sens * tirage.decimal(tauxMinimal, 30, 0.5);
   return { depart, arrivee: appliquer(depart, taux) };
 }
 
 function tirerHausse(tirage: Tirage): Evolution {
-  return tirerEvolution(tirage, 1);
+  return tirerEvolution(tirage, 1, 4);
 }
 
-function tirerEvolutionSignee(tirage: Tirage): Evolution {
-  return tirerEvolution(tirage, tirerSens(tirage));
+function tirerEvolutionSignee(tirage: Tirage, tauxMinimal = 4): Evolution {
+  return tirerEvolution(tirage, tirerSens(tirage), tauxMinimal);
 }
 
 function tauxEntre({ depart, arrivee }: Evolution): number {
@@ -169,7 +249,7 @@ function tauxReciproque(taux: number): number {
 }
 
 function tirerHausseBaisse(tirage: Tirage): MontantEtTaux {
-  const montant = tirage.entier(16, 80) * 250;
+  const montant = tirage.entier(8, 40) * 500;
   return { montant, taux: tirage.choix([20, 30, 40] as const) };
 }
 
@@ -177,8 +257,11 @@ function apresHausseBaisse({ montant, taux }: MontantEtTaux): number {
   return montant * (1 + taux / 100) * (1 - taux / 100);
 }
 
-function baisseLueCommeCoefficient({ montant, taux }: MontantEtTaux): number {
-  return montant * (1 + taux / 100) * (taux / 100);
+function baisseGlobaleCentFoisTropPetite({
+  montant,
+  taux,
+}: MontantEtTaux): number {
+  return montant * (1 - (taux * taux) / 1_000_000);
 }
 
 function tirerPartDuMontant(tirage: Tirage): MontantEtTaux {
@@ -196,6 +279,20 @@ function tirerMemeProportion(tirage: Tirage): MemeProportion {
   const avant = tirage.entier(4, 20) * 10;
   const apres = appliquer(avant, tirage.entier(1, 8) * 5);
   return { avant, apres, autre: avant + tirage.entier(3, 30) * 10 };
+}
+
+function tirerDeuxClients(tirage: Tirage): DeuxClients {
+  const gain = tirage.entier(2, 8) * 5000;
+  const premier = tirage.entier(4, 10) * 10000;
+  return {
+    gain,
+    premier,
+    second: premier * tirage.choix([3, 4, 5] as const),
+  };
+}
+
+function deuxProgressions(premier: string, second: string): string {
+  return `Le premier : ${premier} ; le second : ${second}`;
 }
 
 const CLIENTS = [
@@ -258,7 +355,7 @@ function questionTaux(
     readonly donnees: (tirage: Tirage) => Evolution;
   },
 ) {
-  return questionNumerique({
+  return numerique({
     ...definition,
     concept: 'taux-evolution',
     unite: '%',
@@ -285,7 +382,7 @@ function questionTauxGlobal(
     readonly donnees: (tirage: Tirage) => Successives;
   },
 ) {
-  return questionNumerique({
+  return numerique({
     ...definition,
     concept: 'evolutions-successives',
     unite: '%',
@@ -306,7 +403,7 @@ function questionReciproque(
     readonly donnees: (tirage: Tirage) => Variation;
   },
 ) {
-  return questionNumerique({
+  return numerique({
     ...definition,
     concept: 'evolution-reciproque',
     noteCompte: false,
@@ -335,8 +432,12 @@ function tauxPrisPourValeur({ montant, taux }: MontantEtTaux): number {
   return montant * taux;
 }
 
+function complementDuMontant({ montant, taux }: MontantEtTaux): number {
+  return montant * (1 - taux / 100);
+}
+
 function questionPartDuMontant(definition: Gabarit<MontantEtTaux>) {
-  return questionNumerique({
+  return numerique({
     ...definition,
     concept: 'pourcentage',
     noteCompte: false,
@@ -348,14 +449,14 @@ function questionPartDuMontant(definition: Gabarit<MontantEtTaux>) {
       { confusion: 'taux-valeur-facteur-cent', valeur: tauxPrisPourValeur },
       {
         confusion: 'coefficient-confondu-avec-taux',
-        valeur: ({ montant, taux }) => montant * (1 + taux / 100),
+        valeur: complementDuMontant,
       },
     ],
   });
 }
 
 function questionPart(definition: Gabarit<Part>) {
-  return questionNumerique({
+  return numerique({
     ...definition,
     concept: 'proportion',
     noteCompte: false,
@@ -373,7 +474,7 @@ function questionPart(definition: Gabarit<Part>) {
 }
 
 function questionMemeProportion(definition: Gabarit<MemeProportion>) {
-  return questionNumerique({
+  return numerique({
     ...definition,
     concept: 'proportion',
     noteCompte: false,
@@ -394,7 +495,7 @@ function questionMemeProportion(definition: Gabarit<MemeProportion>) {
   });
 }
 
-const QUESTION_OUVERTURE_RAPPEL = questionVote({
+const QUESTION_OUVERTURE_RAPPEL = vote({
   id: 'B1-01-OUV-RAPPEL-HAUSSE-BAISSE',
   concept: 'evolutions-successives',
   noteCompte: false,
@@ -408,13 +509,13 @@ const QUESTION_OUVERTURE_RAPPEL = questionVote({
       libelle: ({ montant }) => euros(montant),
     },
     {
-      confusion: 'coefficient-confondu-avec-taux',
-      libelle: (donnees) => euros(baisseLueCommeCoefficient(donnees)),
+      confusion: 'taux-valeur-facteur-cent',
+      libelle: (donnees) => euros(baisseGlobaleCentFoisTropPetite(donnees)),
     },
   ],
 });
 
-const QUESTION_SAS_POURCENTAGE = questionNumerique({
+const QUESTION_SAS_POURCENTAGE = numerique({
   id: 'B1-01-SAS-POURCENTAGE',
   concept: 'pourcentage',
   noteCompte: true,
@@ -431,7 +532,7 @@ const QUESTION_SAS_POURCENTAGE = questionNumerique({
     { confusion: 'taux-valeur-facteur-cent', valeur: tauxPrisPourValeur },
     {
       confusion: 'coefficient-confondu-avec-taux',
-      valeur: ({ montant, taux }) => montant * (1 - taux / 100),
+      valeur: complementDuMontant,
     },
   ],
 });
@@ -444,7 +545,7 @@ const QUESTION_SAS_TAUX = questionTaux({
     `Le chiffre d’affaires annuel d’un client passe de ${euros(depart)} en N-1 à ${euros(arrivee)} en N. Quel est le taux d’évolution, ${TAUX_ARRONDI} ?`,
 });
 
-const QUESTION_SAS_COEFFICIENT = questionNumerique({
+const QUESTION_SAS_COEFFICIENT = numerique({
   id: 'B1-01-SAS-COEFFICIENT',
   concept: 'coefficient-multiplicateur',
   noteCompte: true,
@@ -480,7 +581,7 @@ const QUESTION_M1_PART = questionPart({
     `Le chiffre d’affaires annuel d’un client s’élève à ${euros(total)}, dont ${euros(partie)} réalisés en vente à emporter. Quelle part du chiffre d’affaires la vente à emporter représente-t-elle, ${TAUX_ARRONDI} ?`,
 });
 
-const QUESTION_M1_PIVOT = questionVote({
+const QUESTION_M1_PIVOT = vote({
   id: 'B1-01-M1-PIVOT-TAUX-VALEUR',
   concept: 'pourcentage',
   noteCompte: false,
@@ -510,7 +611,7 @@ const QUESTION_M1_POURCENTAGE = questionPartDuMontant({
     `Les charges de personnel d’un client représentent ${pourcentage(taux)} de son chiffre d’affaires, qui s’élève à ${euros(montant)}. Quel est le montant des charges de personnel, en euros ?`,
 });
 
-const QUESTION_M1_TOTAL = questionNumerique({
+const QUESTION_M1_TOTAL = numerique({
   id: 'B1-01-M1-PRATIQUE-TOTAL',
   concept: 'pourcentage',
   noteCompte: false,
@@ -538,32 +639,39 @@ const QUESTION_M1_PROPORTION = questionMemeProportion({
     `Chez un fournisseur, le prix d’achat d’un article passe de ${euros(avant)} à ${euros(apres)}. Un second article, acheté ${euros(autre)}, augmente dans la même proportion. Quel est son nouveau prix d’achat, en euros ?`,
 });
 
-const QUESTION_M1_DEUX_CLIENTS = questionVote({
+const QUESTION_M1_DEUX_CLIENTS = vote({
   id: 'B1-01-M1-PRATIQUE-DEUX-CLIENTS',
   concept: 'proportion',
   noteCompte: false,
-  donnees: (tirage) => {
-    const gain = tirage.entier(2, 8) * 5000;
-    const premier = tirage.entier(4, 10) * 10000;
-    return {
-      gain,
-      premier,
-      second: premier * tirage.choix([3, 4, 5] as const),
-    };
-  },
+  donnees: tirerDeuxClients,
   enonce: ({ gain, premier, second }) =>
-    `Cette année, deux clients du cabinet gagnent chacun ${euros(gain)} de chiffre d’affaires : le premier partait de ${euros(premier)}, le second de ${euros(second)}. Lequel progresse le plus, en pourcentage ?`,
-  bonne: ({ gain, premier }) =>
-    `Le premier : ${evolution((gain / premier) * 100)}`,
+    `Cette année, deux clients du cabinet gagnent chacun ${euros(gain)} de chiffre d’affaires : le premier partait de ${euros(premier)}, le second de ${euros(second)}. De quel pourcentage chacun progresse-t-il ?`,
+  bonne: ({ gain, premier, second }) =>
+    deuxProgressions(
+      evolution((gain / premier) * 100),
+      evolution((gain / second) * 100),
+    ),
   pieges: [
     {
       confusion: 'base-arrivee',
-      libelle: ({ gain, premier }) =>
-        `Le premier : ${evolution((gain / (premier + gain)) * 100)}`,
+      libelle: ({ gain, premier, second }) =>
+        deuxProgressions(
+          evolution((gain / (premier + gain)) * 100),
+          evolution((gain / (second + gain)) * 100),
+        ),
     },
     {
       confusion: 'ecart-absolu-au-lieu-du-taux',
-      libelle: ({ gain }) => `Aucun : ils gagnent tous deux ${euros(gain)}`,
+      libelle: ({ gain }) =>
+        deuxProgressions(`+${euros(gain)}`, `+${euros(gain)}`),
+    },
+    {
+      confusion: 'coefficient-confondu-avec-taux',
+      libelle: ({ gain, premier, second }) =>
+        deuxProgressions(
+          pourcentage(100 + (gain / premier) * 100),
+          pourcentage(100 + (gain / second) * 100),
+        ),
     },
   ],
 });
@@ -574,7 +682,7 @@ const QUESTION_M1_PART_CHARGES = questionPart({
     `Les charges d’exploitation d’un client s’élèvent à ${euros(total)}, dont ${euros(partie)} d’achats de matières premières. Quelle part des charges les achats de matières premières représentent-ils, ${TAUX_ARRONDI} ?`,
 });
 
-const QUESTION_M1_ANCRAGE = questionVote({
+const QUESTION_M1_ANCRAGE = vote({
   id: 'B1-01-M1-ANCRAGE-PART-CONSERVEE',
   concept: 'proportion',
   noteCompte: false,
@@ -606,7 +714,7 @@ const QUESTION_M2_PIVOT = questionTaux({
     `Le chiffre d’affaires d’un client passe de ${euros(depart)} en N-1 à ${euros(arrivee)} en N. Quel est le taux d’évolution, ${TAUX_ARRONDI_SIGNE} ?`,
 });
 
-const QUESTION_M2_VALEUR_ARRIVEE = questionNumerique({
+const QUESTION_M2_VALEUR_ARRIVEE = numerique({
   id: 'B1-01-M2-PRATIQUE-VALEUR-ARRIVEE',
   concept: 'coefficient-multiplicateur',
   noteCompte: false,
@@ -631,7 +739,7 @@ const QUESTION_M2_VALEUR_ARRIVEE = questionNumerique({
   ],
 });
 
-const QUESTION_M2_TAUX_DU_COEFFICIENT = questionNumerique({
+const QUESTION_M2_TAUX_DU_COEFFICIENT = numerique({
   id: 'B1-01-M2-PRATIQUE-TAUX-DU-COEFFICIENT',
   concept: 'coefficient-multiplicateur',
   noteCompte: false,
@@ -653,7 +761,7 @@ const QUESTION_M2_TAUX_DU_COEFFICIENT = questionNumerique({
   ],
 });
 
-const QUESTION_M2_VALEUR_DEPART = questionNumerique({
+const QUESTION_M2_VALEUR_DEPART = numerique({
   id: 'B1-01-M2-PRATIQUE-VALEUR-DEPART',
   concept: 'coefficient-multiplicateur',
   noteCompte: false,
@@ -674,11 +782,11 @@ const QUESTION_M2_VALEUR_DEPART = questionNumerique({
   ],
 });
 
-const QUESTION_M2_COEFFICIENT_ENTRE = questionNumerique({
+const QUESTION_M2_COEFFICIENT_ENTRE = numerique({
   id: 'B1-01-M2-PRATIQUE-COEFFICIENT-ENTRE',
   concept: 'coefficient-multiplicateur',
   noteCompte: false,
-  donnees: tirerEvolutionSignee,
+  donnees: (tirage) => tirerEvolutionSignee(tirage, 8),
   enonce: ({ depart, arrivee }) =>
     `Le chiffre d’affaires d’un client passe de ${euros(depart)} à ${euros(arrivee)}. Par quel coefficient multiplicateur a-t-il été multiplié ${COEFFICIENT_ARRONDI} ?`,
   unite: null,
@@ -687,7 +795,7 @@ const QUESTION_M2_COEFFICIENT_ENTRE = questionNumerique({
   pieges: [
     {
       confusion: 'coefficient-confondu-avec-taux',
-      valeur: (donnees) => tauxEntre(donnees) / 100,
+      valeur: (donnees) => Math.abs(tauxEntre(donnees)) / 100,
     },
     {
       confusion: 'taux-valeur-facteur-cent',
@@ -695,12 +803,12 @@ const QUESTION_M2_COEFFICIENT_ENTRE = questionNumerique({
     },
     {
       confusion: 'base-arrivee',
-      valeur: ({ depart, arrivee }) => depart / arrivee,
+      valeur: (donnees) => 1 + tauxSurArrivee(donnees) / 100,
     },
   ],
 });
 
-const QUESTION_M2_LECTURE_COEFFICIENT = questionVote({
+const QUESTION_M2_LECTURE_COEFFICIENT = vote({
   id: 'B1-01-M2-PRATIQUE-LECTURE-COEFFICIENT',
   concept: 'coefficient-multiplicateur',
   noteCompte: false,
@@ -723,7 +831,7 @@ const QUESTION_M2_LECTURE_COEFFICIENT = questionVote({
   ],
 });
 
-const QUESTION_M2_TAUX_DU_GAIN = questionNumerique({
+const QUESTION_M2_TAUX_DU_GAIN = numerique({
   id: 'B1-01-M2-PRATIQUE-TAUX-DU-GAIN',
   concept: 'taux-evolution',
   noteCompte: false,
@@ -739,7 +847,7 @@ const QUESTION_M2_TAUX_DU_GAIN = questionNumerique({
   ],
 });
 
-const QUESTION_M2_ANCRAGE = questionVote({
+const QUESTION_M2_ANCRAGE = vote({
   id: 'B1-01-M2-ANCRAGE-FORMULE-TAUX',
   concept: 'taux-evolution',
   noteCompte: false,
@@ -767,7 +875,7 @@ const QUESTION_M2_ANCRAGE = questionVote({
   ],
 });
 
-const QUESTION_M3_PIVOT_SUCCESSIVES = questionVote({
+const QUESTION_M3_PIVOT_SUCCESSIVES = vote({
   id: 'B1-01-M3-PIVOT-SUCCESSIVES',
   concept: 'evolutions-successives',
   noteCompte: false,
@@ -800,7 +908,7 @@ const QUESTION_M3_PROPORTION = questionMemeProportion({
     `L’abonnement mensuel d’un logiciel de gestion passe de ${euros(avant)} à ${euros(apres)}. Un second abonnement, facturé ${euros(autre)} par mois, est revalorisé dans la même proportion. Quel est son nouveau tarif mensuel, en euros ?`,
 });
 
-const QUESTION_M3_HAUSSE_BAISSE = questionNumerique({
+const QUESTION_M3_HAUSSE_BAISSE = numerique({
   id: 'B1-01-M3-MELANGE-HAUSSE-BAISSE',
   concept: 'evolutions-successives',
   noteCompte: false,
@@ -816,8 +924,8 @@ const QUESTION_M3_HAUSSE_BAISSE = questionNumerique({
       valeur: ({ montant }) => montant,
     },
     {
-      confusion: 'coefficient-confondu-avec-taux',
-      valeur: baisseLueCommeCoefficient,
+      confusion: 'taux-valeur-facteur-cent',
+      valeur: baisseGlobaleCentFoisTropPetite,
     },
   ],
 });
@@ -837,7 +945,7 @@ const QUESTION_M3_RECIPROQUE = questionReciproque({
     `Le chiffre d’affaires d’un client a baissé de ${pourcentage(-taux)} en N. De quel pourcentage doit-il augmenter en N+1 pour retrouver son niveau de N-1, ${TAUX_ARRONDI} ?`,
 });
 
-const QUESTION_M3_TVA = questionVote({
+const QUESTION_M3_TVA = vote({
   id: 'B1-01-M3-MELANGE-TVA',
   concept: 'evolution-reciproque',
   noteCompte: false,
@@ -871,7 +979,7 @@ const QUESTION_M3_POURCENTAGE = questionPartDuMontant({
     `Le coût d’achat des marchandises vendues d’un client représente ${pourcentage(taux)} de son chiffre d’affaires, qui s’élève à ${euros(montant)}. Quel est ce coût d’achat, en euros ?`,
 });
 
-const QUESTION_M3_VOTE_HAUSSE_BAISSE = questionVote({
+const QUESTION_M3_VOTE_HAUSSE_BAISSE = vote({
   id: 'B1-01-M3-MELANGE-VOTE-HAUSSE-BAISSE',
   concept: 'evolutions-successives',
   noteCompte: false,
@@ -894,7 +1002,7 @@ const QUESTION_M3_VOTE_HAUSSE_BAISSE = questionVote({
   ],
 });
 
-const QUESTION_M3_COEFFICIENT_GLOBAL = questionNumerique({
+const QUESTION_M3_COEFFICIENT_GLOBAL = numerique({
   id: 'B1-01-M3-MELANGE-COEFFICIENT-GLOBAL',
   concept: 'evolutions-successives',
   noteCompte: false,
@@ -911,12 +1019,12 @@ const QUESTION_M3_COEFFICIENT_GLOBAL = questionNumerique({
     },
     {
       confusion: 'coefficient-confondu-avec-taux',
-      valeur: (donnees) => coefficientGlobal(donnees) - 1,
+      valeur: (donnees) => Math.abs(coefficientGlobal(donnees) - 1),
     },
   ],
 });
 
-const QUESTION_M4_TAUX_ANNUEL = questionNumerique({
+const QUESTION_M4_TAUX_ANNUEL = numerique({
   id: 'B1-01-M4-DOSSIER-TAUX-ANNUEL',
   concept: 'taux-evolution',
   noteCompte: false,
@@ -938,7 +1046,7 @@ const QUESTION_M4_TAUX_ANNUEL = questionNumerique({
   ],
 });
 
-const QUESTION_M4_COEFFICIENT_GLOBAL = questionNumerique({
+const QUESTION_M4_COEFFICIENT_GLOBAL = numerique({
   id: 'B1-01-M4-DOSSIER-COEFFICIENT-GLOBAL',
   concept: 'evolutions-successives',
   noteCompte: false,
@@ -955,12 +1063,12 @@ const QUESTION_M4_COEFFICIENT_GLOBAL = questionNumerique({
     },
     {
       confusion: 'coefficient-confondu-avec-taux',
-      valeur: (dossier) => coefficientEntre(deuxAnnees(dossier)) - 1,
+      valeur: (dossier) => Math.abs(coefficientEntre(deuxAnnees(dossier)) - 1),
     },
   ],
 });
 
-const QUESTION_M4_TAUX_GLOBAL = questionNumerique({
+const QUESTION_M4_TAUX_GLOBAL = numerique({
   id: 'B1-01-M4-DOSSIER-TAUX-GLOBAL',
   concept: 'evolutions-successives',
   noteCompte: false,
@@ -986,7 +1094,7 @@ const QUESTION_M4_TAUX_GLOBAL = questionNumerique({
   ],
 });
 
-const QUESTION_M4_TAUX_MOYEN = questionNumerique({
+const QUESTION_M4_TAUX_MOYEN = numerique({
   id: 'B1-01-M4-DOSSIER-TAUX-MOYEN',
   concept: 'taux-moyen',
   noteCompte: false,
@@ -1010,7 +1118,7 @@ const QUESTION_M4_TAUX_MOYEN = questionNumerique({
   ],
 });
 
-const QUESTION_M4_RECIPROQUE = questionNumerique({
+const QUESTION_M4_RECIPROQUE = numerique({
   id: 'B1-01-M4-DOSSIER-RECIPROQUE',
   concept: 'evolution-reciproque',
   noteCompte: false,
@@ -1032,7 +1140,7 @@ const QUESTION_M4_RECIPROQUE = questionNumerique({
   ],
 });
 
-const QUESTION_M4_AFFIRMATION = questionVote({
+const QUESTION_M4_AFFIRMATION = vote({
   id: 'B1-01-M4-DOSSIER-AFFIRMATION',
   concept: 'evolutions-successives',
   noteCompte: false,
@@ -1054,7 +1162,7 @@ const QUESTION_M4_AFFIRMATION = questionVote({
   ],
 });
 
-const QUESTION_EXIT = questionVote({
+const QUESTION_EXIT = vote({
   id: 'B1-01-EXIT-SUCCESSIVES',
   concept: 'evolutions-successives',
   noteCompte: true,
@@ -1088,15 +1196,15 @@ export const B1_01_PROPORTIONS: Cours = {
     'evolution-reciproque',
     'taux-moyen',
   ],
-  ecrans: [
+  ecrans: avecEspacesInsecables<AuMoinsUn<Ecran>>([
     {
       id: 'E-OUV-RAPPEL',
       brique: 'fp-recall',
       dureeMinutes: 4,
       concepts: ['evolutions-successives'],
-      seuil: SEUIL_PIVOT,
+      seuil: SEUIL_PAR_DEFAUT,
       notes:
-        '[4 min · minutes 0 à 4 · mode piloté] 0’–1’ : présentez-vous en une phrase, affichez le code de séance et laissez rejoindre. 1’–3’ : lancez le rappel ; 8 secondes de réflexion sans les options, puis vote individuel sans calculatrice. 3’–4’ : ne corrigez pas, c’est un diagnostic. Lisez seulement la répartition à voix haute (« un tiers d’entre vous pense que le chiffre d’affaires revient à son niveau de départ ») et annoncez que la séance va trancher. Piège attendu : le montant de départ (hausse et baisse crues symétriques). Notez le taux de bonnes réponses : on le compare au billet de sortie.',
+        '[4 min · minutes 0 à 4 · mode piloté] Dans toutes les notes, « minutes a à b » compte le temps de cours, pauses exclues. Avant l’heure : affichez le code de séance dès l’entrée en salle ; à la première connexion, chacun saisit prénom, nom et e-mail, laissez-les rejoindre en s’installant. 0’–1’ : présentez-vous en une phrase et posez à voix haute deux règles : la classe ne voit jamais vos réponses ; « je ne sais pas » est une réponse légitime (sur un vote, choisissez-la ; sur une question de calcul, qui n’a pas ce bouton, laissez la réponse vide plutôt que de tenter au hasard). 1’–3’ : lancez le rappel ; 8 secondes de réflexion sans les options, puis vote individuel sans calculatrice. 3’–4’ : ne corrigez pas, c’est un diagnostic. Lisez seulement la répartition à voix haute (« un tiers d’entre vous pense que le chiffre d’affaires revient à son niveau de départ ») et annoncez que la séance va trancher. Pièges attendus : le montant de départ (hausse et baisse crues symétriques) ; un montant à peine inférieur au départ (baisse globale lue cent fois trop petite). Notez le taux de bonnes réponses : on le compare au billet de sortie.',
       question: QUESTION_OUVERTURE_RAPPEL,
     },
     {
@@ -1106,7 +1214,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['taux-evolution', 'coefficient-multiplicateur'],
       modalite: 'classe',
       notes:
-        '[3 min · minutes 4 à 7 · mode piloté] Lisez la situation, puis demandez : « la gérante veut savoir de combien elle a progressé : vous lui répondez en euros ou en pourcentage ? » Prenez deux réponses orales. Faites calculer 41 200 ÷ 412 000 à la calculatrice (0,10). Insistez sur la conséquence : diviser par 453 200 donne 9,1 %, un point d’écart dans une note remise à une cliente. Annoncez le plan : proportions, taux et coefficients, évolutions enchaînées, puis vos propres dossiers clients.',
+        '[3 min · minutes 4 à 7 · mode piloté] Lisez la situation, puis demandez : « la gérante veut savoir de combien elle a progressé : vous lui répondez en euros ou en pourcentage ? » Prenez deux réponses de volontaires. Faites calculer 41 200 ÷ 412 000 à la calculatrice de poche (0,10). Insistez sur la conséquence : diviser par 453 200 donne 9,1 %, soit 0,9 point d’écart dans une note remise à une cliente. Annoncez le plan : proportions, taux et coefficients, évolutions enchaînées, puis vos propres dossiers clients.',
       proprietes: {
         metier: 'Collaborateur comptable en cabinet d’expertise comptable',
         situation:
@@ -1114,7 +1222,7 @@ export const B1_01_PROPORTIONS: Cours = {
         geste:
           'Vous calculez l’écart, 41 200 €, puis le taux d’évolution rapporté au chiffre d’affaires de départ : 41 200 ÷ 412 000 = 0,10, soit une hausse de 10 %. Vous notez aussi le coefficient multiplicateur 1,10, qui servira au prévisionnel de N+1.',
         consequence:
-          'Diviser par le chiffre d’affaires d’arrivée donnerait 9,1 % : un point d’écart dans la note remise à la cliente et un prévisionnel faussé. Aujourd’hui, on vérifie qu’aucun de ces réflexes ne vous trahit.',
+          'Diviser par le chiffre d’affaires d’arrivée donnerait 9,1 % : 0,9 point d’écart dans la note remise à la cliente et un prévisionnel faussé. Aujourd’hui, on vérifie qu’aucun de ces réflexes ne vous trahit.',
       },
     },
     {
@@ -1128,8 +1236,7 @@ export const B1_01_PROPORTIONS: Cours = {
         'evolutions-successives',
       ],
       regime: 'examen',
-      notes:
-        '[8 min · minutes 7 à 15 · mode piloté, régime examen] 0’–1’ : annoncez le cadre avant de lancer : quatre questions, calculatrice autorisée, note de participation et non de justesse, chiffres différents pour chacun, sorties d’écran journalisées. 1’–7’ : travail individuel en silence. Observez le tableau de bord sans rien corriger : plus d’un tiers d’erreurs sur le taux (division par l’arrivée, écart en euros) → vous ralentirez sur l’exemple résolu du mouvement 2 ; coefficient d’une baisse rendu en 0,15 au lieu de 0,85 → vous insisterez sur le concept à quatre faces ; taux successifs additionnés → le mouvement 3 sera décisif. 7’–8’ : clôturez et annoncez que chaque question du sas reviendra dans la séance.',
+      notes: `[8 min · minutes 7 à 15 · mode piloté, régime examen] 0’–1’ : annoncez le cadre avant de lancer. Quatre questions, note de participation et non de justesse, chiffres différents pour chacun. Consigne : ${CONSIGNE_CALCULATRICE} ; en régime examen, toute sortie du plein écran est journalisée et apparaît dans votre rapport. 1’–7’ : travail individuel en silence. Observez le tableau de bord sans rien corriger : plus d’un tiers d’erreurs sur le taux (division par l’arrivée, écart en euros) → vous ralentirez sur l’exemple résolu du mouvement 2 ; coefficient d’une baisse rendu en 0,15 au lieu de 0,85 → vous insisterez sur le concept à quatre faces ; taux successifs additionnés → le mouvement 3 sera décisif. 7’–8’ : clôturez et annoncez que chaque question du sas reviendra dans la séance.`,
       questions: [
         QUESTION_SAS_POURCENTAGE,
         QUESTION_SAS_TAUX,
@@ -1161,7 +1268,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['proportion', 'pourcentage'],
       modalite: 'classe',
       notes:
-        '[4 min · minutes 17 à 21 · mode piloté] Déroulez les quatre étapes une par une. À chaque invite, laissez 20 secondes et interrogez un étudiant nommément. Étape 3 : écrivez au tableau 0,275 = 27,5 % et barrez « 27,5 » écrit seul. Étape 4 : faites choisir à main levée « 212 000 € ou 154 000 € ? » avant de dévoiler : c’est le raisonnement additif à débusquer. Cet écran est la remédiation du raisonnement additif : revenez-y si l’ancrage du mouvement 1 ou la question de proportion du mouvement 3 passe sous 70 %.',
+        '[4 min · minutes 17 à 21 · mode piloté] Déroulez les quatre étapes une par une. À chaque invite, laissez 20 secondes, faites comparer en binôme, puis prenez la réponse d’un volontaire. Étape 3 : écrivez au tableau 0,275 = 27,5 % et barrez « 27,5 » écrit seul. Étape 4 : posez « 212 000 € ou 154 000 € ? », laissez 30 secondes de discussion en binôme, puis faites voter la classe avant de dévoiler : c’est le raisonnement additif à débusquer. Cet écran est la remédiation du raisonnement additif : revenez-y si l’ancrage du mouvement 1 ou la question de proportion du mouvement 3 passe sous 70 %.',
       proprietes: {
         enonce:
           'La boulangerie Lemoine réalise un chiffre d’affaires annuel de 480 000 €, dont 132 000 € en service traiteur. Quelle part du chiffre d’affaires le traiteur représente-t-il ?',
@@ -1204,9 +1311,8 @@ export const B1_01_PROPORTIONS: Cours = {
       brique: 'fp-numeric',
       dureeMinutes: 4,
       concepts: ['proportion'],
-      seuil: SEUIL_PIVOT,
-      notes:
-        '[4 min · minutes 21 à 25 · mode piloté, seuil 70 %] À leur tour, seuls, calculatrice autorisée : 2 min de calcul. Surveillez le tableau de bord. Erreur attendue : 0,275 au lieu de 27,5 (facteur 100). Sous 70 % de réussite, affichez une réponse erronée anonyme et refaites l’étape 3 de l’exemple précédent. 1 min de correction : partie ÷ tout × 100.',
+      seuil: SEUIL_PAR_DEFAUT,
+      notes: `[4 min · minutes 21 à 25 · mode piloté, seuil 70 %] À leur tour, seuls : 2 min de calcul. Consigne : ${CONSIGNE_CALCULATRICE}. Surveillez le tableau de bord. Erreur attendue : 0,275 au lieu de 27,5 (facteur 100). Sous 70 % de réussite, affichez une réponse erronée anonyme et refaites l’étape 3 de l’exemple précédent. 1 min de correction : partie ÷ tout × 100.`,
       question: QUESTION_M1_PART,
     },
     {
@@ -1247,9 +1353,9 @@ export const B1_01_PROPORTIONS: Cours = {
       brique: 'fp-vote',
       dureeMinutes: 5,
       concepts: ['pourcentage'],
-      seuil: SEUIL_PIVOT,
+      seuil: SEUIL_PAR_DEFAUT,
       notes:
-        '[5 min · minutes 30 à 35 · mode piloté, seuil 70 %] 0’–1’ : vote individuel, sans discussion. Au-dessus de 70 % : validez en 30 secondes et passez à la pratique. Entre 30 % et 70 % : 2 min de discussion en binôme (« convainquez votre voisin »), puis revote. Sous 30 % : réexpliquez directement avec l’écran « pourcentage d’une quantité ». Erreurs attendues : =B2*70 (taux pris pour la valeur, résultat cent fois trop grand) et =B2*1,7 (coefficient d’une hausse pris pour une part).',
+        '[5 min · minutes 30 à 35 · mode piloté, seuil 70 %] 0’–1’ : vote individuel, sans discussion. Au-dessus de 70 % : validez en 30 secondes et passez à la pratique. Entre 30 % et 70 % : 2 min de discussion en binôme (« convainquez votre voisin »), puis revote. Sous 30 % : réexpliquez directement avec l’écran « pourcentage d’une quantité ». Erreurs attendues, pour une marge de 70 % : =B2*70 (taux pris pour la valeur, résultat cent fois trop grand) et =B2*1,7 (coefficient d’une hausse pris pour une part).',
       question: QUESTION_M1_PIVOT,
     },
     {
@@ -1259,7 +1365,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['proportion', 'pourcentage'],
       regime: 'ouvert',
       notes:
-        '[21 min · minutes 35 à 56 · mode libre sur cet écran] Passez en mode libre : cinq questions, chiffres et ordre propres à chacun, correction immédiate. Consigne : écrire le calcul posé avant de saisir le résultat. 0’–15’ : travail individuel ; repérez au tableau de bord la confusion dominante. 15’–19’ : correction collective de la question la plus ratée, expliquée par un étudiant qui l’a réussie. 19’–21’ : repassez en mode piloté. Pièges attendus : oubli de la division par 100 ; multiplication au lieu de division pour retrouver un total ; même écart en euros ajouté au lieu de conserver la proportion ; gains comparés en euros au lieu de pourcentages. Pour les plus rapides : « inventez une question piège pour votre voisin ».',
+        '[21 min · minutes 35 à 56 · mode libre sur cet écran] Passez en mode libre : cinq questions, chiffres et ordre propres à chacun, correction immédiate. Consigne : écrire le calcul posé avant de saisir le résultat. 0’–15’ : travail individuel ; repérez au tableau de bord la confusion dominante. 15’–19’ : correction collective de la question la plus ratée, expliquée par un volontaire qui l’a réussie. 19’–21’ : repassez en mode piloté. Pièges attendus : oubli de la division par 100 ; multiplication au lieu de division pour retrouver un total ; même écart en euros ajouté au lieu de conserver la proportion ; progressions données en euros au lieu de pourcentages. Pour les plus rapides : « inventez une question piège pour votre voisin ».',
       questions: [
         QUESTION_M1_POURCENTAGE,
         QUESTION_M1_TOTAL,
@@ -1273,7 +1379,7 @@ export const B1_01_PROPORTIONS: Cours = {
       brique: 'fp-recall',
       dureeMinutes: 4,
       concepts: ['proportion'],
-      seuil: SEUIL_PIVOT,
+      seuil: SEUIL_PAR_DEFAUT,
       notes:
         '[4 min · minutes 56 à 60 · mode piloté] Rappel sans notes : 8 secondes de réflexion, puis vote. Sous 70 % : reprenez l’étape 4 de l’exemple « part d’un total » (1 min). Faites formuler la synthèse par la classe : « une part se calcule partie ÷ tout ; elle se conserve en multipliant, jamais en ajoutant le même écart ». Fin du mouvement 1 : pause de 10 minutes. Reprise à l’heure dite, sur l’accroche du mouvement 2.',
       question: QUESTION_M1_ANCRAGE,
@@ -1285,11 +1391,11 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['taux-evolution', 'evolution-reciproque'],
       modalite: 'classe',
       notes:
-        '[2 min · minutes 60 à 62 · mode piloté] Racontez sans lire. Après le premier paragraphe, demandez : « l’indice a perdu 78 % : de combien doit-il remonter pour revenir ? » Laissez répondre « 78 % » sans corriger, puis affichez la suite. Phrase-clé à écrire au tableau : un taux se calcule toujours sur la valeur de départ.',
+        '[2 min · minutes 60 à 62 · mode piloté] L’écran affiche toute l’histoire d’un coup : posez la question avant de passer à l’écran. « Un indice boursier perd 78 % : de combien doit-il remonter pour revenir à son niveau ? » Laissez répondre « 78 % » sans corriger, puis passez à l’écran et racontez sans lire. Phrase-clé à écrire au tableau : un taux se calcule toujours sur la valeur de départ.',
       proprietes: {
         titre: 'Le Nasdaq, ou pourquoi −78 % ne se rattrape pas avec +78 %',
         paragraphes: [
-          'Le 10 mars 2000, le Nasdaq Composite, indice boursier américain des valeurs technologiques, clôture à environ 5 050 points. Le 9 octobre 2002, après l’éclatement de la bulle internet, il clôture à environ 1 114 points : une chute de près de 78 %.',
+          'Le 10 mars 2000, le Nasdaq Composite, indice boursier américain à forte dominante technologique, clôture à environ 5 050 points. Le 9 octobre 2002, après l’éclatement de la bulle internet, il clôture à environ 1 114 points : une chute de près de 78 %.',
           'Une remontée de 78 % n’aurait ramené l’indice qu’à environ 1 980 points. Pour retrouver 5 050 points, il fallait multiplier 1 114 par plus de 4,5, soit une hausse de plus de 350 %. L’indice n’a retrouvé son niveau de mars 2000 qu’en avril 2015.',
           'Les mêmes 3 900 points environ valent −78 % à la descente et +350 % à la remontée : un taux d’évolution dépend de la valeur de départ à laquelle on rapporte l’écart.',
         ],
@@ -1302,7 +1408,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['taux-evolution'],
       modalite: 'classe',
       notes:
-        '[4 min · minutes 62 à 66 · mode piloté] Exemple résolu, une étape à la fois. Étape 1 : faites dire à voix haute quelle année est le départ. Étape 2 : 30 000 € est un écart, pas un taux. Étape 3 : écrivez la formule au tableau, (arrivée − départ) ÷ départ. Étape 4 : montrez le contre-calcul 30 000 ÷ 270 000 = 11,1 %, faux. Étape 5 : vérifiez par le coefficient, 240 000 × 1,125. Cet écran est la remédiation de la division par l’arrivée et de l’écart en euros : revenez-y depuis le pivot ou la pratique si le seuil n’est pas atteint.',
+        '[4 min · minutes 62 à 66 · mode piloté] Exemple résolu, une étape à la fois. Étape 1 : faites dire par un volontaire quelle année est le départ. Étape 2 : 30 000 € est un écart, pas un taux. Étape 3 : écrivez la formule au tableau, (arrivée − départ) ÷ départ. Étape 4 : montrez le contre-calcul 30 000 ÷ 270 000 = 11,1 %, faux. Étape 5 : vérifiez par le coefficient, 240 000 × 1,125. Cet écran est la remédiation de la division par l’arrivée et de l’écart en euros : revenez-y depuis le pivot ou la pratique si le seuil n’est pas atteint.',
       proprietes: {
         enonce:
           'Le chiffre d’affaires d’un client du cabinet passe de 240 000 € en N-1 à 270 000 € en N. Quel est son taux d’évolution ?',
@@ -1353,9 +1459,8 @@ export const B1_01_PROPORTIONS: Cours = {
       brique: 'fp-numeric',
       dureeMinutes: 5,
       concepts: ['taux-evolution'],
-      seuil: SEUIL_PIVOT,
-      notes:
-        '[5 min · minutes 66 à 71 · mode piloté, seuil 70 %] 0’–2’ : calcul individuel, calculatrice autorisée. Rappelez : taux négatif pour une baisse, arrondi à 0,1 %. 2’–3’ : lisez le résultat. Au-dessus de 70 % : correction éclair, puis le coefficient. Sinon, suivez l’erreur dominante : division par l’arrivée → étape 4 de l’exemple résolu ; écart en euros → étape 2 ; résultat en 0,… → rappel du × 100 ; résultat autour de 100 → c’est le coefficient × 100, annoncez l’écran suivant. 3’–5’ : binômes pour expliquer l’erreur, puis correction collective.',
+      seuil: SEUIL_PAR_DEFAUT,
+      notes: `[5 min · minutes 66 à 71 · mode piloté, seuil 70 %] 0’–2’ : calcul individuel. Consigne : ${CONSIGNE_CALCULATRICE}. Rappelez : taux négatif pour une baisse, arrondi à 0,1 %. 2’–3’ : lisez le résultat. Au-dessus de 70 % : correction éclair, puis le coefficient. Sinon, suivez l’erreur dominante : division par l’arrivée → étape 4 de l’exemple résolu ; écart en euros → étape 2 ; résultat en 0,… → rappel du × 100 ; résultat autour de 100 → c’est le coefficient × 100, annoncez l’écran suivant. 3’–5’ : binômes pour expliquer l’erreur, puis correction collective.`,
       question: QUESTION_M2_PIVOT,
     },
     {
@@ -1405,9 +1510,9 @@ export const B1_01_PROPORTIONS: Cours = {
       brique: 'fp-recall',
       dureeMinutes: 4,
       concepts: ['taux-evolution'],
-      seuil: SEUIL_PIVOT,
+      seuil: SEUIL_PAR_DEFAUT,
       notes:
-        '[4 min · minutes 101 à 105 · mode piloté] Rappel : 8 secondes sans options, puis vote. Faites justifier la bonne option en une phrase : « on divise l’écart par la valeur de départ, puis on multiplie par 100 ». Sous 70 % : 2 min sur l’étape 3 de l’exemple résolu du taux. Fin du mouvement 2 : pause de 10 minutes.',
+        '[4 min · minutes 101 à 105 · mode piloté] Rappel : 8 secondes sans options, puis vote. Faites justifier la bonne option en une phrase par un volontaire : « on divise l’écart par la valeur de départ, puis on multiplie par 100 ». Sous 70 % : 2 min sur l’étape 3 de l’exemple résolu du taux. Fin du mouvement 2 : pause de 10 minutes.',
       question: QUESTION_M2_ANCRAGE,
     },
     {
@@ -1417,7 +1522,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['evolutions-successives'],
       modalite: 'classe',
       notes:
-        '[5 min · minutes 105 à 110 · mode piloté] Réglez 200 000 € et +10 % par an. Avant d’afficher les courbes, demandez : « après dix hausses de 10 %, le chiffre d’affaires a-t-il doublé, plus que doublé ou moins ? » Montrez l’écart au bout de 10 ans : environ 518 750 € avec les coefficients multipliés, 400 000 € avec les taux additionnés. Passez à −10 % : la droite des taux additionnés tombe à 0 € au bout de 10 ans, la courbe ne s’annule jamais. Message : on multiplie les coefficients, on n’additionne pas les taux. Annoncez que le mouvement 3 mélange tout : l’enjeu est de reconnaître quelle formule appliquer.',
+        '[5 min · minutes 105 à 110 · mode piloté] Le graphique montre les deux courbes d’emblée : posez la question avant de passer à l’écran. « Après dix hausses successives de 10 %, le chiffre d’affaires a-t-il doublé, plus que doublé ou moins ? » Passez ensuite à l’écran, réglez 200 000 € et +10 % par an, et montrez l’écart au bout de 10 ans : environ 518 750 € avec les coefficients multipliés, 400 000 € avec les taux additionnés. Passez à −10 % : la droite des taux additionnés tombe à 0 € au bout de 10 ans, la courbe ne s’annule jamais. Message : on multiplie les coefficients, on n’additionne pas les taux. Annoncez que le mouvement 3 mélange tout : l’enjeu est de reconnaître quelle formule appliquer.',
       proprietes: {
         abscisse: { libelle: 'Nombre d’années', min: 0, max: 10 },
         ordonnee: 'Chiffre d’affaires (€)',
@@ -1433,7 +1538,7 @@ export const B1_01_PROPORTIONS: Cours = {
           {
             cle: 'taux',
             libelle: 'Taux d’évolution annuel (%)',
-            min: -20,
+            min: -10,
             max: 30,
             pas: 1,
             defaut: 10,
@@ -1460,9 +1565,8 @@ export const B1_01_PROPORTIONS: Cours = {
       brique: 'fp-vote',
       dureeMinutes: 5,
       concepts: ['evolutions-successives'],
-      seuil: SEUIL_PIVOT,
-      notes:
-        '[5 min · minutes 110 à 115 · mode piloté, seuil 70 %] 0’–1’ : vote individuel, calculatrice autorisée. Au-dessus de 70 % : faites dicter la démarche en trois gestes (coefficients, produit, retour au taux) et avancez. Entre 30 % et 70 % : 2 min de binômes, puis revote. Sous 30 %, ou si « taux additionnés » domine encore après le revote : allez à l’écran de remédiation « évolutions successives » de la clôture, puis revenez. Piège secondaire : le coefficient global lu comme un taux (plus de 100 %).',
+      seuil: SEUIL_PAR_DEFAUT,
+      notes: `[5 min · minutes 110 à 115 · mode piloté, seuil 70 %] 0’–1’ : vote individuel. Consigne : ${CONSIGNE_CALCULATRICE}. Au-dessus de 70 % : faites dicter par un volontaire la démarche en trois gestes (coefficients, produit, retour au taux) et avancez. Entre 30 % et 70 % : 2 min de binômes, puis revote. Sous 30 %, ou si « taux additionnés » domine encore après le revote : allez à l’écran de remédiation « évolutions successives » de la clôture, puis revenez. Piège secondaire : le coefficient global lu comme un taux (plus de 100 %).`,
       question: QUESTION_M3_PIVOT_SUCCESSIVES,
     },
     {
@@ -1470,9 +1574,8 @@ export const B1_01_PROPORTIONS: Cours = {
       brique: 'fp-numeric',
       dureeMinutes: 5,
       concepts: ['evolution-reciproque'],
-      seuil: SEUIL_PIVOT,
-      notes:
-        '[5 min · minutes 115 à 120 · mode piloté, seuil 70 %] 0’–2’ : calcul individuel. Rappelez l’histoire du Nasdaq : après −78 %, +78 % ne suffit pas. 2’–4’ : correction ; on cherche le coefficient qui annule la hausse, 1 ÷ coefficient, puis on revient au taux. Sous 70 % : allez à l’écran de remédiation « évolution réciproque » de la clôture, faites manipuler le curseur 2 min, puis revenez. Erreurs attendues : le même taux en sens inverse ; un résultat entre 60 et 100 (1 ÷ coefficient × 100 lu comme un taux) ; un résultat en −0,… (oubli du × 100).',
+      seuil: SEUIL_PAR_DEFAUT,
+      notes: `[5 min · minutes 115 à 120 · mode piloté, seuil 70 %] 0’–2’ : calcul individuel. Consigne : ${CONSIGNE_CALCULATRICE}. Rappelez l’histoire du Nasdaq : après −78 %, +78 % ne suffit pas. 2’–4’ : correction ; on cherche le coefficient qui annule la hausse, 1 ÷ coefficient, puis on revient au taux. Sous 70 % : allez à l’écran de remédiation « évolution réciproque » de la clôture, faites manipuler le curseur 2 min, puis revenez. Erreurs attendues : le même taux en sens inverse ; un résultat entre 60 et 100 (1 ÷ coefficient × 100 lu comme un taux) ; un résultat en −0,… (oubli du × 100).`,
       question: QUESTION_M3_PIVOT_RECIPROQUE,
     },
     {
@@ -1509,7 +1612,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['evolutions-successives', 'taux-moyen'],
       modalite: 'classe',
       notes:
-        '[4 min · minutes 150 à 154 · mode piloté] Mettez la classe en situation de collaborateur. Écrivez au tableau : coefficient global = CA N ÷ CA N-2 ; taux moyen annuel sur deux ans = (coefficient global ^ (1/2) − 1) × 100. Faites vérifier à la calculatrice : +6 % puis +6 % donne 1,06 × 1,06 = 1,1236, et 1,1236 ^ (1/2) = 1,06. Montrez la touche racine ou la puissance 0,5. Prévenez : chaque question du questionnaire est un dossier client différent, les chiffres changent d’une question à l’autre, c’est voulu.',
+        '[4 min · minutes 150 à 154 · mode piloté] Mettez la classe en situation de collaborateur. Écrivez au tableau : coefficient global = CA N ÷ CA N-2 ; taux moyen annuel sur deux ans = (coefficient global ^ (1/2) − 1) × 100. Faites vérifier à la calculatrice de poche : +6 % puis +6 % donne 1,06 × 1,06 = 1,1236, et 1,1236 ^ (1/2) = 1,06. Montrez la touche racine ou la puissance 0,5. Prévenez : chaque question du questionnaire est un dossier client différent, les chiffres changent d’une question à l’autre, c’est voulu ; la correction se fera sur un dossier de référence commun, écrit au tableau.',
       proprietes: {
         metier: 'Collaborateur comptable, revue annuelle des dossiers',
         situation:
@@ -1531,8 +1634,7 @@ export const B1_01_PROPORTIONS: Cours = {
         'evolution-reciproque',
       ],
       regime: 'focus',
-      notes:
-        '[26 min · minutes 154 à 180 · mode piloté, régime focus] 0’–1’ : annoncez le régime focus avant de lancer (plein écran, copier-coller bloqué, sorties journalisées). 1’–20’ : six dossiers, travail individuel, calculatrice autorisée. Consigne : pour chaque dossier, poser les deux coefficients annuels avant tout calcul. Surveillez au tableau de bord trois confusions : taux moyen pris comme la moyenne des taux (taux additionnés), coefficient global rendu comme un taux, taux réciproque pris égal au taux annuel. 20’–26’ : correction orale d’un dossier complet, chaque étape dictée par un étudiant différent.',
+      notes: `[26 min · minutes 154 à 180 · mode piloté, régime focus] 0’–1’ : annoncez le régime focus avant de lancer : plein écran, copier-coller bloqué, toute sortie de la fenêtre journalisée. Consigne : ${CONSIGNE_CALCULATRICE}. 1’–20’ : six dossiers, travail individuel. Consigne de méthode : pour chaque dossier, poser les deux coefficients annuels avant tout calcul. Surveillez au tableau de bord trois confusions : taux moyen pris comme la moyenne des taux (taux additionnés), coefficient global rendu comme un taux, taux réciproque pris égal au taux annuel. 20’–26’ : correction orale sur le dossier de référence, écrit au tableau, chaque étape proposée par un volontaire. Boulangerie Lemoine : chiffre d’affaires de 330 000 € en N-2, 405 900 € en N-1, 438 372 € en N. Coefficients annuels : 405 900 ÷ 330 000 = 1,23 et 438 372 ÷ 405 900 = 1,08. Taux entre N-1 et N : +8 %. Coefficient global : 1,23 × 1,08 = 1,3284 (1,328 au millième). Taux global : +32,84 % (32,8 %), et non 23 + 8 = 31 %. Taux moyen annuel : 1,3284 ^ (1/2) ≈ 1,1526, soit +15,26 % (15,3 %), et non (23 + 8) ÷ 2 = 15,5 %. Taux qui ramènerait N au niveau de N-1 : 1 ÷ 1,08 − 1 ≈ −7,41 % (−7,4 %), et non −8 %.`,
       questions: [
         QUESTION_M4_TAUX_ANNUEL,
         QUESTION_M4_COEFFICIENT_GLOBAL,
@@ -1549,7 +1651,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['evolutions-successives', 'taux-moyen'],
       modalite: 'classe',
       notes:
-        '[3 min · minutes 180 à 183 · mode piloté] Écran de remédiation des taux additionnés et de la hausse suivie d’une baisse de même taux, appelé depuis le pivot du mouvement 3 si besoin. En clôture, déroulez-le en entier seulement si le tableau de bord du mouvement 4 montre encore ces confusions ; sinon, faites-le résumer en 30 secondes par un étudiant. Invite clé : « pourquoi la baisse de 20 % retire-t-elle plus d’euros que la hausse de 20 % n’en a ajouté ? »',
+        '[3 min · minutes 180 à 183 · mode piloté] Écran de remédiation des taux additionnés et de la hausse suivie d’une baisse de même taux, appelé depuis le pivot du mouvement 3 si besoin. En clôture, déroulez-le en entier seulement si le tableau de bord du mouvement 4 montre encore ces confusions ; sinon, faites-le résumer en 30 secondes par un volontaire. Invite clé : « pourquoi la baisse de 20 % retire-t-elle plus d’euros que la hausse de 20 % n’en a ajouté ? »',
       proprietes: {
         enonce:
           'Le chiffre d’affaires d’un client augmente de 20 % en N-1, puis baisse de 20 % en N. A-t-il retrouvé son niveau de N-2 ?',
@@ -1594,7 +1696,7 @@ export const B1_01_PROPORTIONS: Cours = {
       concepts: ['evolution-reciproque'],
       modalite: 'classe',
       notes:
-        '[3 min · minutes 183 à 186 · mode piloté] Écran de remédiation du taux réciproque, appelé depuis le pivot du mouvement 3 si besoin. Faites placer le curseur sur +25 % (retour −20 %), −20 % (retour +25 %), −50 % (retour +100 %), −60 % (retour +150 %). Question : « pourquoi faut-il plus de 100 % de hausse pour effacer une baisse de 60 % ? » Faites le lien avec le Nasdaq. Si le temps manque, gardez seulement le cas −50 % / +100 %.',
+        '[3 min · minutes 183 à 186 · mode piloté] Écran de remédiation du taux réciproque, appelé depuis le pivot du mouvement 3 si besoin. Placez le curseur sur +25 % (retour −20 %), −20 % (retour +25 %), −50 % (retour +100 %), −60 % (retour +150 %), en faisant prédire chaque résultat par la classe. Question : « pourquoi faut-il plus de 100 % de hausse pour effacer une baisse de 60 % ? » Faites le lien avec le Nasdaq. Si le temps manque, gardez seulement le cas −50 % / +100 %.',
       proprietes: {
         parametres: [
           {
@@ -1618,12 +1720,12 @@ export const B1_01_PROPORTIONS: Cours = {
       dureeMinutes: 9,
       concepts: ['evolutions-successives'],
       notes:
-        '[9 min · minutes 186 à 195 · mode piloté] 0’–2’ : synthèse orale, trois phrases dictées par la classe et écrites au tableau (un taux se calcule sur la valeur de départ ; une évolution de t % correspond au coefficient 1 + t ÷ 100 ; les coefficients se multiplient, les taux ne s’additionnent pas). 2’–5’ : billet de sortie en silence, noté sur la participation. 5’–7’ : question « qu’est-ce qui reste flou ? » ; le serveur ne recueille pas encore la réponse libre, faites-la écrire sur papier ou prenez trois réponses à l’oral. 7’–9’ : comparez le résultat du billet au rappel d’ouverture et à la question d’évolutions successives du sas, puis annoncez que la prochaine séance ouvrira sur les points restés flous.',
+        '[9 min · minutes 186 à 195 · mode piloté] 0’–2’ : synthèse orale, trois phrases proposées par des volontaires et écrites au tableau (un taux se calcule sur la valeur de départ ; une évolution de t % correspond au coefficient 1 + t ÷ 100 ; les coefficients se multiplient, les taux ne s’additionnent pas). 2’–5’ : billet de sortie en silence, noté sur la participation. 5’–7’ : question « qu’est-ce qui reste flou ? » ; le serveur ne recueille pas encore la réponse libre, faites-la écrire sur papier ou prenez trois réponses de volontaires à l’oral. 7’–9’ : comparez le résultat du billet au rappel d’ouverture et à la question d’évolutions successives du sas, puis annoncez que la prochaine séance ouvrira sur les points restés flous.',
       question: QUESTION_EXIT,
       invite:
-        'Qu’est-ce qui reste flou pour toi sur les pourcentages, les taux ou les coefficients multiplicateurs ?',
+        'Qu’est-ce qui reste flou pour vous sur les pourcentages, les taux ou les coefficients multiplicateurs ?',
     },
-  ],
+  ]),
   remediations: {
     'raisonnement-additif': 'E-M1-PART',
     'taux-valeur-facteur-cent': 'E-M1-POURCENTAGE',
