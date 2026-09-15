@@ -91,6 +91,10 @@ export class ParticipantsRepositoryTypeORM
     return entities.map((entity) => this.toDomain(entity));
   }
 
+  countBySession(sessionId: string): Promise<number> {
+    return this.repo.count({ where: { sessionId } });
+  }
+
   async listSeedsBySession(sessionId: string): Promise<readonly number[]> {
     const entities = await this.repo.find({
       where: { sessionId },

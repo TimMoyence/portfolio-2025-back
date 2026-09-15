@@ -61,9 +61,9 @@ export class GetSessionResultsUseCase {
         incidents: incidentsListe,
       }),
       resultats: agregerResultats({
-        bareme: session.bareme,
+        questionIds: session.bareme.questions.map((question) => question.id),
         answers: reponses,
-        participants: participantsListe,
+        participants: participantsListe.length,
       }),
     };
   }

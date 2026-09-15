@@ -230,6 +230,8 @@ function creerParticipantsRepo(): IParticipantsRepository {
       ),
     findById: (id) => Promise.resolve(participants.get(id) ?? null),
     listBySession: (sessionId) => Promise.resolve(deLaSession(sessionId)),
+    countBySession: (sessionId) =>
+      Promise.resolve(deLaSession(sessionId).length),
     listSeedsBySession: (sessionId) =>
       Promise.resolve(
         deLaSession(sessionId).map((participant) => participant.seed),

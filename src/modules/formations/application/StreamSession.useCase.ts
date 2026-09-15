@@ -6,7 +6,6 @@ import {
   Optional,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import type { Bareme } from '../domain/Bareme';
 import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
@@ -100,7 +99,7 @@ export class StreamSessionUseCase {
           plafond: MAX_FLUX_FORMATEUR_PAR_SESSION,
         },
       ],
-      session.bareme,
+      session.bareme.questions.map((question) => question.id),
     );
   }
 
@@ -122,7 +121,7 @@ export class StreamSessionUseCase {
   private ouvrirFlux(
     sessionId: string,
     places: readonly Place[],
-    baremeDuFormateur?: Bareme,
+    questionsDuFormateur?: readonly string[],
   ): Observable<MessageEvent> {
     assertPlacesDisponibles(places);
     return new Observable<MessageEvent>((subscriber) => {
@@ -140,7 +139,7 @@ export class StreamSessionUseCase {
       };
 
       const pousserResultatsSiActivite = async (
-        bareme: Bareme,
+        questionIds: readonly string[],
       ): Promise<void> => {
         const activite = this.cache.activite(sessionId);
         if (activite === derniereActivite) {
@@ -148,17 +147,17 @@ export class StreamSessionUseCase {
         }
         subscriber.next({
           type: 'resultats',
-          data: await this.lireResultats(sessionId, bareme),
+          data: await this.lireResultats(sessionId, questionIds),
         });
         derniereActivite = activite;
       };
 
       const pousserResultatsDefinitifs = async (): Promise<void> => {
-        if (!baremeDuFormateur) {
+        if (!questionsDuFormateur) {
           return;
         }
         try {
-          await pousserResultatsSiActivite(baremeDuFormateur);
+          await pousserResultatsSiActivite(questionsDuFormateur);
         } catch (error) {
           this.logger.warn(
             `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDe(error)}`,
@@ -196,8 +195,8 @@ export class StreamSessionUseCase {
             await clore();
             return;
           }
-          if (baremeDuFormateur) {
-            await pousserResultatsSiActivite(baremeDuFormateur);
+          if (questionsDuFormateur) {
+            await pousserResultatsSiActivite(questionsDuFormateur);
           }
         } catch (error) {
           this.logger.warn(
@@ -236,13 +235,13 @@ export class StreamSessionUseCase {
 
   private async lireResultats(
     sessionId: string,
-    bareme: Bareme,
+    questionIds: readonly string[],
   ): Promise<ResultatsSeance> {
     const [answers, participants] = await Promise.all([
       this.answers.listBySession(sessionId),
-      this.participants.listBySession(sessionId),
+      this.participants.countBySession(sessionId),
     ]);
-    return agregerResultats({ bareme, answers, participants });
+    return agregerResultats({ questionIds, answers, participants });
   }
 
   private async resolveState(

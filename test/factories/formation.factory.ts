@@ -163,6 +163,7 @@ export function createMockParticipantsRepo(): jest.Mocked<IParticipantsRepositor
     findBySessionAndStudentKey: jest.fn().mockResolvedValue(null),
     findById: jest.fn().mockResolvedValue(participant),
     listBySession: jest.fn().mockResolvedValue([participant]),
+    countBySession: jest.fn().mockResolvedValue(1),
     listSeedsBySession: jest.fn().mockResolvedValue([]),
     touch: jest.fn().mockResolvedValue(undefined),
   };

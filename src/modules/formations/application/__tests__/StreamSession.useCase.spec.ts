@@ -6,7 +6,6 @@ import type { Observable, Subscription } from 'rxjs';
 import {
   buildAnswerRecord,
   buildBareme,
-  buildParticipantRecord,
   buildSessionRecord,
   createMockAnswersRepo,
   createMockParticipantsRepo,
@@ -400,7 +399,8 @@ describe('StreamSessionUseCase', () => {
         },
       ]);
       expect(answers.listBySession).toHaveBeenCalledWith('session-uuid');
-      expect(participants.listBySession).toHaveBeenCalledWith('session-uuid');
+      expect(participants.countBySession).toHaveBeenCalledWith('session-uuid');
+      expect(participants.listBySession).not.toHaveBeenCalled();
       ecoute.abonnement.unsubscribe();
     });
 
@@ -455,10 +455,7 @@ describe('StreamSessionUseCase', () => {
         buildAnswerRecord(),
         REPONSE_FAUSSE,
       ]);
-      participants.listBySession.mockResolvedValue([
-        buildParticipantRecord(),
-        buildParticipantRecord({ id: 'participant-2-uuid', seed: 1002 }),
-      ]);
+      participants.countBySession.mockResolvedValue(2);
       const redemarre = new StreamSessionUseCase(
         sessions,
         new SessionStateCacheService(),

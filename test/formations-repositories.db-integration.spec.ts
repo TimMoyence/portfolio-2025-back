@@ -173,6 +173,20 @@ describeDb('Formations repositories (db integration)', () => {
     );
   });
 
+  it('compte les participants d une seance sans compter ceux d une autre', async () => {
+    const seance = await ouvrirSeance('4271');
+    const autre = await ouvrirSeance('5382');
+    await inscrireGrainesARebours(seance.id);
+    await inscrire(autre.id, CLE_ETUDIANT, 1001);
+
+    await expect(contexte.participants.countBySession(seance.id)).resolves.toBe(
+      GRAINES_A_REBOURS.length,
+    );
+    await expect(contexte.participants.countBySession(autre.id)).resolves.toBe(
+      1,
+    );
+  });
+
   it('liste les reponses dans leur ordre d ecriture et non dans l ordre des questions', async () => {
     const seance = await ouvrirSeance('4271');
     const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);

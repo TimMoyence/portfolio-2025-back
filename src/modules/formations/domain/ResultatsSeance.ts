@@ -1,8 +1,6 @@
-import type { Bareme } from './Bareme';
 import { libelleDeConfusion } from './cours/banque/confusions';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
-import type { ParticipantRecord } from './IParticipants.repository';
 
 export interface ConfusionComptee {
   readonly id: string;
@@ -24,18 +22,18 @@ export interface ResultatsSeance {
 }
 
 export interface AgregerResultatsInput {
-  readonly bareme: Bareme;
+  readonly questionIds: readonly string[];
   readonly answers: readonly AnswerRecord[];
-  readonly participants: readonly ParticipantRecord[];
+  readonly participants: number;
 }
 
 export function agregerResultats(
   entree: AgregerResultatsInput,
 ): ResultatsSeance {
   return {
-    participants: entree.participants.length,
-    questions: entree.bareme.questions.map((question) =>
-      agregerQuestion(question.id, entree.answers),
+    participants: entree.participants,
+    questions: entree.questionIds.map((questionId) =>
+      agregerQuestion(questionId, entree.answers),
     ),
   };
 }

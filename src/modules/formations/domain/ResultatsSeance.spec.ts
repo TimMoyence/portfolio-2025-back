@@ -1,32 +1,12 @@
-import {
-  buildAnswerRecord,
-  buildBareme,
-  buildParticipantRecord,
-} from '../../../../test/factories/formation.factory';
+import { buildAnswerRecord } from '../../../../test/factories/formation.factory';
 import { NE_SAIT_PAS } from './GradingCore';
 import { agregerResultats } from './ResultatsSeance';
 
 describe('agregerResultats', () => {
-  const bareme = buildBareme({
-    questions: [
-      {
-        id: 'Q-1',
-        type: 'numeric',
-        concept: 'taux-evolution',
-        noteCompte: true,
-      },
-      { id: 'Q-2', type: 'vote', concept: 'proportion', noteCompte: false },
-    ],
-  });
-
   it('compte par sens et non par valeur saisie', () => {
     const resultats = agregerResultats({
-      bareme,
-      participants: [
-        buildParticipantRecord({ id: 'p1' }),
-        buildParticipantRecord({ id: 'p2' }),
-        buildParticipantRecord({ id: 'p3' }),
-      ],
+      questionIds: ['Q-1', 'Q-2'],
+      participants: 3,
       answers: [
         buildAnswerRecord({ questionId: 'Q-1', correcte: true, valeur: 12 }),
         buildAnswerRecord({
