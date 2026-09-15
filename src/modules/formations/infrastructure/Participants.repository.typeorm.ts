@@ -84,7 +84,10 @@ export class ParticipantsRepositoryTypeORM
   async listBySession(
     sessionId: string,
   ): Promise<readonly ParticipantRecord[]> {
-    const entities = await this.repo.find({ where: { sessionId } });
+    const entities = await this.repo.find({
+      where: { sessionId },
+      order: { rejointLe: 'ASC', id: 'ASC' },
+    });
     return entities.map((entity) => this.toDomain(entity));
   }
 

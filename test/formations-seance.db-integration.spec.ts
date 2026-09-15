@@ -92,18 +92,13 @@ function conceptDe(question: number): string {
 function valeursTirees(seed: number): ValeursTirees[] {
   const { solutions } = tirer(COURS_DE_CLASSE, seed);
   return QUESTIONS_NOTEES.map(({ id }) => {
-    const solution = solutions[id];
-    const [piege] = solution.pieges;
-    if (
-      typeof solution.valeur !== 'number' ||
-      typeof piege.valeur !== 'number'
-    ) {
+    const solution: Solution | undefined = solutions[id];
+    const juste = solution?.valeur;
+    const piege = solution?.pieges.at(0)?.valeur;
+    if (typeof juste !== 'number' || typeof piege !== 'number') {
       throw new Error(`Tirage ${seed} sans valeur numerique pour ${id}`);
     }
-    return {
-      juste: solution.valeur + ECART_DANS_LA_TOLERANCE,
-      piege: piege.valeur,
-    };
+    return { juste: juste + ECART_DANS_LA_TOLERANCE, piege };
   });
 }
 
@@ -206,27 +201,23 @@ function verifierRapport(
 ): void {
   expect(rapport.participants).toHaveLength(TAILLE_CLASSE);
   expect(rapport.conceptsFragiles).toEqual([]);
-  const lignesParEmail = new Map(
-    rapport.participants.map((ligne) => [ligne.email, ligne]),
-  );
-  expect(lignesParEmail.size).toBe(TAILLE_CLASSE);
-  etudiants.forEach((etudiant) => {
-    const ligne = lignesParEmail.get(etudiant.email);
+  etudiants.forEach((etudiant, rang) => {
+    const ligne = rapport.participants[rang];
     expect({
-      nom: ligne?.nom,
-      email: ligne?.email,
-      completion: ligne?.completion,
-      note: ligne?.note,
-      sousSeuil: ligne?.sousSeuil,
-      reponses: ligne?.reponses.length,
-      incidents: ligne?.incidents,
+      nom: ligne.nom,
+      email: ligne.email,
+      completion: ligne.completion,
+      note: ligne.note,
+      sousSeuil: ligne.sousSeuil,
+      reponses: ligne.reponses.map((reponse) => reponse.questionId),
+      incidents: ligne.incidents,
     }).toEqual({
       nom: etudiant.nom,
       email: etudiant.email,
       completion: 1,
       note: NOTE_ATTENDUE,
       sousSeuil: false,
-      reponses: NB_QUESTIONS,
+      reponses: QUESTIONS_NOTEES.map(({ id }) => id),
       incidents: etudiant.index % PERIODE_PIEGE_ETUDIANT === 0 ? 1 : 0,
     });
   });
@@ -240,10 +231,17 @@ function verifierSynthese(
   expect(synthese).toHaveLength(1);
   const corps = `${synthese[0].text ?? ''}${synthese[0].html ?? ''}`;
   const csv = synthese[0].attachments?.[0].content ?? '';
-  expect(csv.split('\r\n')).toHaveLength(TAILLE_CLASSE * NB_QUESTIONS + 1);
+  const emailEtQuestionParLigne = csv
+    .split('\r\n')
+    .slice(1)
+    .map((ligne) => ligne.split(';').slice(2, 4).join(';'));
+  expect(emailEtQuestionParLigne).toEqual(
+    etudiants.flatMap((etudiant) =>
+      QUESTIONS_NOTEES.map(({ id }) => `"${etudiant.email}";"${id}"`),
+    ),
+  );
   for (const etudiant of etudiants) {
     expect(corps).toContain(etudiant.nom);
-    expect(csv).toContain(etudiant.email);
   }
 }
 
