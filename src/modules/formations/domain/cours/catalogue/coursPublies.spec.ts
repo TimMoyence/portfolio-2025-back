@@ -1,3 +1,4 @@
+import { clesDuCorrigeDans } from '../../../../../../test/helpers/cles-du-corrige';
 import { NE_SAIT_PAS } from '../../GradingCore';
 import type { Cours } from '../Cours';
 import { questionsDuCours } from '../Cours';
@@ -18,6 +19,17 @@ function identifiantsDeFormule(formule: string): string[] {
 
 function identifiantsDeGabarit(gabarit: string): string[] {
   return [...gabarit.matchAll(/\{([^{}]+)\}/g)].map((trouve) => trouve[1]);
+}
+
+function sujetTire(cours: Cours, graine: number): unknown {
+  try {
+    return tirer(cours, graine).sujet;
+  } catch (erreur) {
+    if (erreur instanceof TirageAmbiguError) {
+      return null;
+    }
+    throw erreur;
+  }
 }
 
 describe.each(COURS_PUBLIES.map((cours) => [cours.slug, cours] as const))(
@@ -50,6 +62,18 @@ describe.each(COURS_PUBLIES.map((cours) => [cours.slug, cours] as const))(
         }
       }
       expect(rejets).toBeLessThanOrEqual(REJETS_MAX);
+    });
+
+    it('ne livre aucune cle du corrige dans le sujet, a aucune profondeur, sur cinq cents graines', () => {
+      const fuites: { graine: number; cles: string[] }[] = [];
+      for (let graine = 0; graine < GRAINES; graine += 1) {
+        const sujet = sujetTire(cours, graine);
+        const cles = clesDuCorrigeDans(sujet);
+        if (cles.length > 0) {
+          fuites.push({ graine, cles });
+        }
+      }
+      expect(fuites).toEqual([]);
     });
 
     it('declare des identifiants uniques', () => {

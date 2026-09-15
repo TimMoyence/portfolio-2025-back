@@ -25,6 +25,7 @@ import type {
   ResultatsSeance,
 } from '../src/modules/formations/domain/ResultatsSeance';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
+import { clesDuCorrigeDans } from './helpers/cles-du-corrige';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   abonnerAuFlux,
@@ -45,15 +46,6 @@ const FORMATEUR = 'b7777777-7777-4777-8777-777777777777';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'repetition-formateur@example.test';
 const DUREE_REPONSE_MS = 45_000;
-const CLES_DU_CORRIGE = [
-  'solutions',
-  'pieges',
-  'confusion',
-  'notes',
-  'corriges',
-  'seuil',
-  'remediations',
-];
 const OK = 200;
 const CREE = 201;
 const SANS_CONTENU = 204;
@@ -89,19 +81,6 @@ function coursPublie(slug: string): Cours {
 }
 
 const COURS = coursPublie(SLUG);
-
-function clesDe(valeur: unknown): string[] {
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => clesDe(element));
-  }
-  if (typeof valeur === 'object' && valeur !== null) {
-    return Object.entries(valeur).flatMap(([cle, element]) => [
-      cle,
-      ...clesDe(element),
-    ]);
-  }
-  return [];
-}
 
 function dansLaTolerance(valeur: number, tolerance: Tolerance): number {
   switch (tolerance.type) {
@@ -266,9 +245,7 @@ describeDb('Repetition a blanc de B1-01 (db integration)', () => {
     expect({
       etudiant: etudiant.index,
       statut: reponse.status,
-      clesDuCorrige: clesDe(reponse.body).filter((cle) =>
-        CLES_DU_CORRIGE.includes(cle),
-      ),
+      clesDuCorrige: clesDuCorrigeDans(reponse.body),
     }).toEqual({ etudiant: etudiant.index, statut: OK, clesDuCorrige: [] });
     expect(reponse.body).toEqual(etudiant.tirage.sujet);
   };

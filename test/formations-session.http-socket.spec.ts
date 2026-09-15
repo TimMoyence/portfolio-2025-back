@@ -953,6 +953,22 @@ describe('sujet du participant (lecture par jeton)', () => {
     expect(reponse.status).toBe(401);
   });
 
+  it('refuse le sujet d une seance au jeton emis pour une autre seance', async () => {
+    const seanceA = await ouvrirSession();
+    const seanceB = await ouvrirSession();
+    const jetonDeA = await rejoindreEtObtenirJeton(
+      seanceA.code,
+      '33333333-3333-4333-8333-333333333335',
+    );
+
+    const reponse = await request(serveur())
+      .get(route(`/sessions/${seanceB.sessionId}/sujet`))
+      .set('x-participant-token', jetonDeA);
+
+    expect(reponse.status).toBe(401);
+    expect(reponse.text).not.toContain(COURS_SENTINELLE.titre);
+  });
+
   it('sert le sujet du tirage du participant sans jamais livrer le corrige', async () => {
     const { sessionId, code } = await ouvrirSession();
     const jeton = await rejoindreEtObtenirJeton(

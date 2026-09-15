@@ -1,4 +1,5 @@
 import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
+import { clesDuCorrigeDans } from '../../../../../test/helpers/cles-du-corrige';
 import type { Tolerance } from '../GradingCore';
 import { questionNumerique, questionVote } from './Cours';
 import type { AuMoinsUn, Cours, Ecran, Question } from './Cours';
@@ -67,31 +68,6 @@ function coursAUneQuestion(question: Question): Cours {
   return buildCoursDeTest({ ecrans: [ecran] });
 }
 
-const CLES_INTERDITES = [
-  'solutions',
-  'solution',
-  'pieges',
-  'confusion',
-  'confusions',
-  'misconception',
-  'notes',
-  'seuil',
-  'remediations',
-  'bonne',
-  'corriges',
-];
-
-function cles(valeur: unknown): string[] {
-  if (Array.isArray(valeur)) return valeur.flatMap(cles);
-  if (valeur !== null && typeof valeur === 'object') {
-    return Object.entries(valeur).flatMap(([cle, contenu]) => [
-      cle,
-      ...cles(contenu),
-    ]);
-  }
-  return [];
-}
-
 function ecranDe(tirage: ReturnType<typeof tirer>, id: string) {
   const ecran = tirage.sujet.ecrans.find((candidat) => candidat.id === id);
   if (!ecran) throw new Error(`ecran ${id} absent`);
@@ -138,10 +114,7 @@ describe('tirer', () => {
 
   it('ne livre ni corrige, ni piege, ni confusion, ni note dans le sujet', () => {
     for (let graine = 0; graine < 10; graine += 1) {
-      const presentes = cles(tirer(cours, graine).sujet);
-      expect(presentes.filter((cle) => CLES_INTERDITES.includes(cle))).toEqual(
-        [],
-      );
+      expect(clesDuCorrigeDans(tirer(cours, graine).sujet)).toEqual([]);
     }
   });
 
