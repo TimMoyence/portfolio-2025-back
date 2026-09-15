@@ -1,5 +1,6 @@
 import { ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { AllExceptionsFilter } from './all-exceptions.filter';
+import { MESSAGE_DEPENDANCE_INJOIGNABLE } from './dependency-outage';
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter;
@@ -76,6 +77,29 @@ describe('AllExceptionsFilter', () => {
     );
 
     process.env.NODE_ENV = originalEnv;
+  });
+
+  it('devrait rendre 503 et une consigne quand la base est injoignable', () => {
+    const loggerSpy = jest
+      .spyOn(filter['logger'], 'error')
+      .mockImplementation();
+
+    filter.catch(
+      Object.assign(new Error('connect ECONNREFUSED 127.0.0.1:5432'), {
+        code: 'ECONNREFUSED',
+      }),
+      host,
+    );
+
+    expect(statusFn).toHaveBeenCalledWith(HttpStatus.SERVICE_UNAVAILABLE);
+    expect(jsonFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: HttpStatus.SERVICE_UNAVAILABLE,
+        detail: MESSAGE_DEPENDANCE_INJOIGNABLE,
+      }),
+    );
+    expect(loggerSpy).toHaveBeenCalled();
+    loggerSpy.mockRestore();
   });
 
   it('devrait formater la reponse en RFC 7807 (type, title, status, detail, instance)', () => {

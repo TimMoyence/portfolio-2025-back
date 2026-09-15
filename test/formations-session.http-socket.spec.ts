@@ -17,6 +17,7 @@ import { IS_PUBLIC_KEY } from '../src/common/interfaces/auth/public.decorator';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
 import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../src/modules/formations/application/ControlSession.useCase';
+import { DueQuestionsUseCase } from '../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../src/modules/formations/application/JoinSession.useCase';
 import { OpenSessionUseCase } from '../src/modules/formations/application/OpenSession.useCase';
@@ -299,6 +300,7 @@ async function creerHarnais(): Promise<HarnaisFormations> {
       SubmitAnswerUseCase,
       RecordIncidentsUseCase,
       StreamSessionUseCase,
+      DueQuestionsUseCase,
       ParticipantTokenService,
       CodeScanProtectionService,
       { provide: SESSIONS_REPOSITORY, useValue: creerSessionsRepo() },

@@ -43,6 +43,8 @@
     "db:integration:down": "docker compose -p portfolio2025-dbint -f ./test/db-integration.compose.yaml down -v --remove-orphans",
     "test:integration:db:run": "RUN_DB_INTEGRATION=true DB_HOST=127.0.0.1 DB_PORT=55432 DB_USERNAME=postgres DB_PASSWORD=postgres DB_NAME=portfolio_2025_ci npm run test:integration:db -- --runInBand",
     "test:integration:db:local": "bash ./test/run-db-integration-local.sh",
+    "test:charge": "node --expose-gc ./node_modules/jest/bin/jest.js --config ./test/jest-charge.json --watchman=false --runInBand",
+    "test:charge:run": "RUN_DB_INTEGRATION=true DB_HOST=127.0.0.1 DB_PORT=55432 DB_USERNAME=postgres DB_PASSWORD=postgres DB_NAME=portfolio_2025_ci npm run test:charge",
     "//test:mutation": "DESACTIVE TEMPORAIREMENT — restaurer la cle en 'test:mutation' pour reactiver : stryker run"
   },
   "lint-staged": {
@@ -174,10 +176,10 @@
     ],
     "coverageThreshold": {
       "global": {
-        "statements": 81.74,
-        "branches": 70.7,
-        "functions": 71.18,
-        "lines": 82.17
+        "statements": 81.97,
+        "branches": 71,
+        "functions": 71.67,
+        "lines": 82.38
       }
     },
     "coverageDirectory": "../coverage",

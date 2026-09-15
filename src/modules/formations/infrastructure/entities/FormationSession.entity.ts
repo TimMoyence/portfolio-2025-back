@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import type { Bareme } from '../../domain/Bareme';
@@ -9,6 +10,11 @@ import type { FreeRange, PacingMode } from '../../domain/PacingMode';
 import type { SessionState } from '../../domain/SessionState';
 
 @Entity({ name: 'formation_sessions' })
+@Index('uq_formation_sessions_code_active', ['code'], {
+  unique: true,
+  where: `"etat" <> 'terminee'`,
+})
+@Index('idx_formation_sessions_teacher', ['teacherId'])
 export class FormationSessionEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

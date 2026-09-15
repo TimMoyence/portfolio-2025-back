@@ -6,6 +6,10 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import {
+  estDependanceInjoignable,
+  MESSAGE_DEPENDANCE_INJOIGNABLE,
+} from './dependency-outage';
 import { httpProblemTarget } from './http-problem-target';
 
 /**
@@ -39,6 +43,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const body = res as Record<string, unknown>;
         detail = (body.message as string | string[]) ?? exception.message;
       }
+    } else if (estDependanceInjoignable(exception)) {
+      status = HttpStatus.SERVICE_UNAVAILABLE;
+      detail = MESSAGE_DEPENDANCE_INJOIGNABLE;
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       detail = internalErrorDetail(exception);

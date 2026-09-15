@@ -6,6 +6,7 @@ import {
   mockTypeOrmCreate,
   mockTypeOrmSave,
 } from '../../../../test/factories/formation.factory';
+import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
 import type { FormationSessionEntity } from './entities/FormationSession.entity';
 import { SessionsRepositoryTypeORM } from './Sessions.repository.typeorm';
 
@@ -84,15 +85,46 @@ describe('SessionsRepositoryTypeORM', () => {
     sut = new SessionsRepositoryTypeORM(repo);
   });
 
-  it('cree une session en attente', async () => {
-    const session = await sut.create({
+  const creerSession = () =>
+    sut.create({
       courseSlug: 'b1-09-interets-composes',
       teacherId: 'teacher-uuid',
       code: CODE,
       bareme: buildBareme(),
     });
+
+  it('cree une session en attente', async () => {
+    const session = await creerSession();
     expect(session.etat).toBe('attente');
     expect(session.code).toBe(CODE);
+  });
+
+  it('traduit la violation de uq_formation_sessions_code_active en conflit de code', async () => {
+    repo.save.mockRejectedValue({
+      code: '23505',
+      constraint: 'uq_formation_sessions_code_active',
+    });
+    await expect(creerSession()).rejects.toBeInstanceOf(
+      SessionCodeAlreadyActiveError,
+    );
+    await expect(creerSession()).rejects.toThrow(
+      `Le code ${CODE} porte deja une seance active`,
+    );
+  });
+
+  it('laisse passer une violation unique portee par une autre contrainte', async () => {
+    repo.save.mockRejectedValue({
+      code: '23505',
+      constraint: 'uq_autre_contrainte_inconnue',
+    });
+    await expect(creerSession()).rejects.not.toBeInstanceOf(
+      SessionCodeAlreadyActiveError,
+    );
+  });
+
+  it('laisse passer une erreur qui ne vient pas d une violation de contrainte unique', async () => {
+    repo.save.mockRejectedValue(new Error('connexion perdue'));
+    await expect(creerSession()).rejects.toThrow('connexion perdue');
   });
 
   it('retourne la session encore ouverte quand le code a deja servi', async () => {

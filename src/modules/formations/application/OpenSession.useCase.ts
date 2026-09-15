@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import type { Bareme } from '../domain/Bareme';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
+import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
+import type {
+  ISessionsRepository,
+  SessionRecord,
+} from '../domain/ISessions.repository';
 import { SessionCode } from '../domain/SessionCode';
 import { SESSIONS_REPOSITORY } from '../domain/token';
 import type {
@@ -20,13 +24,7 @@ export class OpenSessionUseCase {
 
   async execute(command: OpenSessionCommand): Promise<OpenSessionResult> {
     this.assertBaremeComplet(command.bareme);
-    const code = await this.allocateCode();
-    const session = await this.sessions.create({
-      courseSlug: command.courseSlug,
-      teacherId: command.teacherId,
-      code,
-      bareme: command.bareme,
-    });
+    const session = await this.createSurUnCodeLibre(command);
     return { sessionId: session.id, code: session.code };
   }
 
@@ -45,12 +43,26 @@ export class OpenSessionUseCase {
     }
   }
 
-  private async allocateCode(): Promise<string> {
+  private async createSurUnCodeLibre(
+    command: OpenSessionCommand,
+  ): Promise<SessionRecord> {
     for (let tentative = 0; tentative < MAX_TENTATIVES_CODE; tentative += 1) {
       const candidat = SessionCode.generate();
       const pris = await this.sessions.isCodeTaken(candidat);
-      if (!pris) {
-        return candidat;
+      if (pris) {
+        continue;
+      }
+      try {
+        return await this.sessions.create({
+          courseSlug: command.courseSlug,
+          teacherId: command.teacherId,
+          code: candidat,
+          bareme: command.bareme,
+        });
+      } catch (error) {
+        if (!(error instanceof SessionCodeAlreadyActiveError)) {
+          throw error;
+        }
       }
     }
     throw new DomainValidationError(

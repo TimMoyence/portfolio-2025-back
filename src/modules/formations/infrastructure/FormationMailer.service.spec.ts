@@ -47,6 +47,10 @@ function buildRapport(overrides: Partial<RapportSession> = {}): RapportSession {
   };
 }
 
+function lignePortant(texte: string, marqueur: string): string {
+  return texte.split('\n').find((ligne) => ligne.includes(marqueur)) ?? '';
+}
+
 function buildCopie(overrides: Partial<CopieEtudiant> = {}): CopieEtudiant {
   return {
     courseSlug: 'b1-09-interets-composes',
@@ -256,6 +260,83 @@ describe('FormationMailerService', () => {
       expect(call.text).toContain(copie.lienRevision);
       expect(call.html).toContain(copie.lienRevision);
       expect(call.subject).toContain(copie.courseSlug);
+    });
+
+    it('detaille chaque reponse avec son verdict, comme le promet le message', async () => {
+      const service = new FormationMailerService();
+      const copie = buildCopie({
+        participant: buildParticipant({
+          reponses: [
+            buildReponse({
+              questionId: 'Q-CAP-03',
+              concept: 'capitalisation',
+              valeur: '1 400',
+              correcte: false,
+              misconception: 'interet-simple',
+            }),
+            buildReponse({
+              questionId: 'Q-CAP-07',
+              concept: 'actualisation',
+              valeur: '1 480,24',
+              correcte: true,
+            }),
+          ],
+        }),
+      });
+
+      await service.sendCopieEtudiant(copie);
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      for (const rendu of [call.text, call.html]) {
+        expect(rendu).toContain('Q-CAP-03');
+        expect(rendu).toContain('1 400');
+        expect(rendu).toContain('interet-simple');
+        expect(rendu).toContain('Q-CAP-07');
+        expect(rendu).toContain('1 480,24');
+      }
+    });
+
+    it('distingue une reponse juste d une reponse fausse autrement que par leur ordre', async () => {
+      const service = new FormationMailerService();
+
+      await service.sendCopieEtudiant(
+        buildCopie({
+          participant: buildParticipant({
+            reponses: [
+              buildReponse({ questionId: 'Q-JUSTE', correcte: true }),
+              buildReponse({ questionId: 'Q-FAUSSE', correcte: false }),
+            ],
+          }),
+        }),
+      );
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0] as {
+        text: string;
+      };
+      const ligneJuste = lignePortant(call.text, 'Q-JUSTE');
+      const ligneFausse = lignePortant(call.text, 'Q-FAUSSE');
+      expect(ligneJuste).not.toBe(ligneFausse);
+      expect(ligneJuste.replace('Q-JUSTE', '')).not.toBe(
+        ligneFausse.replace('Q-FAUSSE', ''),
+      );
+    });
+
+    it('echappe une reponse d etudiant qui porte du balisage', async () => {
+      const service = new FormationMailerService();
+
+      await service.sendCopieEtudiant(
+        buildCopie({
+          participant: buildParticipant({
+            reponses: [
+              buildReponse({ valeur: '<img src=x onerror=alert(1)>' }),
+            ],
+          }),
+        }),
+      );
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      expect(call.html).not.toContain('<img src=x');
+      expect(call.html).toContain('&lt;img');
     });
 
     it('echappe le prenom de l etudiant dans la copie', async () => {

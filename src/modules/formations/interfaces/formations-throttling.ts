@@ -8,6 +8,7 @@ export const LIMITE_JOIN_PAR_CODE = 120;
 export const LIMITE_REPONSES_PAR_PARTICIPANT = 60;
 export const LIMITE_INCIDENTS_PAR_PARTICIPANT = 30;
 export const LIMITE_FLUX_PAR_PARTICIPANT = 30;
+export const LIMITE_REVISION_PAR_PARTICIPANT = 30;
 
 /**
  * Les trente postes d'une salle informatique sortent par une seule adresse

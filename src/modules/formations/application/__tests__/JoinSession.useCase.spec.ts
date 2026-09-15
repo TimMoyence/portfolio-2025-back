@@ -6,11 +6,14 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
+  SeedAlreadyAssignedError,
   SeedPoolExhaustedError,
   SessionClosedError,
   SessionNotFoundError,
 } from '../../domain/errors/FormationErrors';
 import { JoinSessionUseCase } from '../JoinSession.useCase';
+
+const MAX_TENTATIVES_GRAINE = 60;
 
 describe('JoinSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -52,6 +55,32 @@ describe('JoinSessionUseCase', () => {
     const result = await sut.execute(commande);
     expect(participants.create).not.toHaveBeenCalled();
     expect(result.seed).toBe(1001);
+  });
+
+  it('reprend sur la graine suivante quand celle qu il visait vient d etre prise', async () => {
+    participants.listSeedsBySession
+      .mockResolvedValueOnce([])
+      .mockResolvedValue([1001]);
+    participants.create
+      .mockRejectedValueOnce(new SeedAlreadyAssignedError(1001))
+      .mockResolvedValue(buildParticipantRecord({ seed: 1002 }));
+
+    const result = await sut.execute(commande);
+
+    expect(result.seed).toBe(1002);
+    expect(participants.create).toHaveBeenCalledTimes(2);
+  });
+
+  it('laisse remonter une erreur d inscription qui n est pas un conflit de graine', async () => {
+    participants.create.mockRejectedValue(new Error('panne du depot'));
+    await expect(sut.execute(commande)).rejects.toThrow('panne du depot');
+    expect(participants.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('abandonne quand chaque tentative se heurte a une graine deja prise', async () => {
+    participants.create.mockRejectedValue(new SeedAlreadyAssignedError(1001));
+    await expect(sut.execute(commande)).rejects.toThrow(SeedPoolExhaustedError);
+    expect(participants.create).toHaveBeenCalledTimes(MAX_TENTATIVES_GRAINE);
   });
 
   it('refuse un code inconnu', async () => {

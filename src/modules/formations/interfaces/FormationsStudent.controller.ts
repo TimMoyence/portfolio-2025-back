@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   HttpStatus,
@@ -11,11 +12,13 @@ import {
   Post,
   Req,
   Sse,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiTooManyRequestsResponse,
@@ -27,6 +30,8 @@ import { Observable } from 'rxjs';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
 import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
+import type { DueQuestion } from '../application/DueQuestions.useCase';
+import { DueQuestionsUseCase } from '../application/DueQuestions.useCase';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
@@ -36,6 +41,7 @@ import {
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
 import { CodeScanProtectionService } from './CodeScanProtection.service';
+import { ParticipantTokenGuard } from './ParticipantToken.guard';
 import { JoinSessionRequestDto } from './dto/join-session.request.dto';
 import { JoinSessionResponseDto } from './dto/join-session.response.dto';
 import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
@@ -47,6 +53,7 @@ import {
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
   LIMITE_REPONSES_PAR_PARTICIPANT,
+  LIMITE_REVISION_PAR_PARTICIPANT,
   suivreParCodeDeSession,
   suivreParParticipant,
 } from './formations-throttling';
@@ -72,6 +79,7 @@ export class FormationsStudentController {
     private readonly submitAnswer: SubmitAnswerUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
+    private readonly dueQuestions: DueQuestionsUseCase,
     private readonly tokens: ParticipantTokenService,
     private readonly codeScan: CodeScanProtectionService,
     @Optional()
@@ -183,20 +191,42 @@ export class FormationsStudentController {
 
   @Throttle({
     default: {
+      limit: LIMITE_REVISION_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Get('sessions/:id/due-questions')
+  @ApiOperation({
+    summary: 'Liste les questions a revoir, de la premiere boite a la derniere',
+  })
+  @ApiOkResponse({
+    description: 'Questions dues, sans aucune valeur de bareme',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async questionsDues(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+  ): Promise<{ questions: readonly DueQuestion[] }> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return {
+      questions: await this.dueQuestions.execute({ sessionId, participantId }),
+    };
+  }
+
+  @Throttle({
+    default: {
       limit: LIMITE_FLUX_PAR_PARTICIPANT,
       ttl: FENETRE_THROTTLE_MS,
       getTracker: suivreParParticipant,
     },
   })
+  @UseGuards(ParticipantTokenGuard)
   @Sse('sessions/:id/stream')
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   @ApiTooManyRequestsResponse({ description: 'Trop d abonnes sur la session' })
-  stream(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
-  ): Observable<MessageEvent> {
-    this.tokens.verify(id, jeton);
+  stream(@Param('id', ParseUUIDPipe) id: string): Observable<MessageEvent> {
     return this.streamSession.execute(id);
   }
 }

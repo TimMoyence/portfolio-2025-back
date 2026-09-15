@@ -10,6 +10,7 @@ import {
 } from '../../domain/errors/FormationErrors';
 import { SessionStateCacheService } from '../../infrastructure/SessionStateCache.service';
 import {
+  CADENCES_PRODUCTION,
   MAX_ABONNEMENTS_PAR_SESSION,
   StreamSessionUseCase,
 } from '../StreamSession.useCase';
@@ -161,17 +162,22 @@ describe('StreamSessionUseCase', () => {
     ).rejects.toThrow(SessionNotOwnedError);
   });
 
-  it('ne coupe pas le flux avant cinq heures mais le termine ensuite avec la raison expiree', async () => {
+  it('tient le flux jusqu a sa duree maximale puis le termine avec la raison expiree', async () => {
+    const dureeMaxMs = 60_000;
+    const brefs = new StreamSessionUseCase(sessions, cache, {
+      battementMs: HEARTBEAT_MS_TEST,
+      dureeMaxMs,
+    });
     const collected: MessageEvent[] = [];
     let termine = false;
-    const subscription = sut.execute('session-uuid').subscribe({
+    const subscription = brefs.execute('session-uuid').subscribe({
       next: (event) => collected.push(event),
       complete: () => {
         termine = true;
       },
     });
 
-    await jest.advanceTimersByTimeAsync(CINQ_HEURES_MS - 1000);
+    await jest.advanceTimersByTimeAsync(dureeMaxMs - 1000);
     expect(termine).toBe(false);
 
     await jest.advanceTimersByTimeAsync(2000);
@@ -181,5 +187,10 @@ describe('StreamSessionUseCase', () => {
     expect((dernier.data as Record<string, unknown>)['raison']).toBe('expiree');
 
     subscription.unsubscribe();
+  });
+
+  it('tient cinq heures en production, avec un battement toutes les quinze secondes', () => {
+    expect(CADENCES_PRODUCTION.dureeMaxMs).toBe(CINQ_HEURES_MS);
+    expect(CADENCES_PRODUCTION.battementMs).toBe(15_000);
   });
 });

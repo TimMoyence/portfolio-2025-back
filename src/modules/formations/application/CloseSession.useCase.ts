@@ -60,18 +60,18 @@ export class CloseSessionUseCase {
       throw new SessionClosedError();
     }
 
-    const [participantsListe, reponses, incidentsListe] = await Promise.all([
-      this.participants.listBySession(sessionId),
-      this.answers.listBySession(sessionId),
-      this.incidents.listBySession(sessionId),
-    ]);
-
     const misAJour = await this.sessions.update(sessionId, {
       etat: 'terminee',
       fermeeLe: new Date(),
     });
 
     this.cache.drop(sessionId);
+
+    const [participantsListe, reponses, incidentsListe] = await Promise.all([
+      this.participants.listBySession(sessionId),
+      this.answers.listBySession(sessionId),
+      this.incidents.listBySession(sessionId),
+    ]);
 
     const rapport = buildRapportSession({
       session: misAJour,

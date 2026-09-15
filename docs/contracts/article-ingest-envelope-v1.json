@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://asilidesign.fr/contracts/article-ingest-envelope-v1.schema.json",
+  "title": "Morning Brief article ingest envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "delivery_id",
+    "producer",
+    "sent_at",
+    "article"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "delivery_id": {
+      "type": "string",
+      "pattern": "^mb-[0-9]{4}-[0-9]{2}-[0-9]{2}-(fr|en)$"
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "device"],
+      "properties": {
+        "name": { "const": "morning-brief" },
+        "version": { "type": "string", "minLength": 1 },
+        "device": { "type": "string", "minLength": 1 }
+      }
+    },
+    "sent_at": { "$ref": "#/$defs/dateTime" },
+    "article": { "$ref": "#/$defs/article" }
+  },
+  "$defs": {
+    "dateTime": { "type": "string", "format": "date-time" },
+    "httpUrl": { "type": "string", "pattern": "^https?://[^\\s]+$" },
+    "nullableDateTime": {
+      "anyOf": [{ "$ref": "#/$defs/dateTime" }, { "type": "null" }]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "url", "published_at", "retrieved_at"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "url": { "$ref": "#/$defs/httpUrl" },
+        "published_at": { "$ref": "#/$defs/nullableDateTime" },
+        "retrieved_at": { "$ref": "#/$defs/nullableDateTime" }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity", "text", "source", "url"],
+      "properties": {
+        "entity": { "type": "string", "maxLength": 160 },
+        "text": { "type": "string", "minLength": 20, "maxLength": 4000 },
+        "source": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "url": { "$ref": "#/$defs/httpUrl" },
+        "published_at": { "$ref": "#/$defs/dateTime" },
+        "retrieved_at": { "$ref": "#/$defs/dateTime" }
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "title", "intro", "body", "items"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,79}$" },
+        "kind": { "enum": ["essential", "deep_dive", "rubric", "radar"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "intro": { "type": "string", "maxLength": 4000 },
+        "body": { "type": "string", "maxLength": 20000 },
+        "items": {
+          "type": "array",
+          "maxItems": 30,
+          "items": { "$ref": "#/$defs/item" }
+        }
+      }
+    },
+    "article": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "article_id",
+        "slug",
+        "locale",
+        "status",
+        "title",
+        "excerpt",
+        "content_markdown",
+        "reading_time_minutes",
+        "tags",
+        "published_at",
+        "updated_at",
+        "sections",
+        "sources",
+        "provenance",
+        "seo"
+      ],
+      "properties": {
+        "article_id": {
+          "type": "string",
+          "pattern": "^morning-brief-[0-9]{4}-[0-9]{2}-[0-9]{2}-(fr|en)$"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^morning-brief-[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "locale": { "enum": ["fr", "en"] },
+        "status": { "const": "published" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "excerpt": { "type": "string", "minLength": 1, "maxLength": 280 },
+        "content_markdown": { "type": "string", "minLength": 100 },
+        "reading_time_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 12,
+          "items": { "type": "string", "minLength": 1, "maxLength": 40 }
+        },
+        "published_at": { "$ref": "#/$defs/dateTime" },
+        "updated_at": { "$ref": "#/$defs/dateTime" },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/section" }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/source" }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "run_id",
+            "edition_date",
+            "item_count",
+            "source_count",
+            "content_sha256"
+          ],
+          "properties": {
+            "run_id": { "type": "string", "minLength": 1 },
+            "edition_date": { "type": "string", "format": "date" },
+            "item_count": { "type": "integer", "minimum": 1 },
+            "source_count": { "type": "integer", "minimum": 1 },
+            "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "seo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "canonical_path",
+            "keywords",
+            "image_url",
+            "image_alt"
+          ],
+          "properties": {
+            "description": { "type": "string", "maxLength": 160 },
+            "canonical_path": {
+              "type": "string",
+              "pattern": "^/articles/[a-z0-9-]+$"
+            },
+            "keywords": { "type": "array", "items": { "type": "string" } },
+            "image_url": {
+              "anyOf": [{ "$ref": "#/$defs/httpUrl" }, { "type": "null" }]
+            },
+            "image_alt": { "anyOf": [{ "type": "string" }, { "type": "null" }] }
+          }
+        }
+      }
+    }
+  }
+}

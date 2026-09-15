@@ -8,7 +8,7 @@ const schema = JSON.parse(
   readFileSync(
     resolve(
       __dirname,
-      '../../../../../docs/contracts/article-ingest-envelope-v1.json',
+      '../../../../docs/contracts/article-ingest-envelope-v1.json',
     ),
     'utf8',
   ),

@@ -2,11 +2,22 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import type { AnswerValue } from '../../domain/AnswerGrading';
+import { FormationParticipantEntity } from './FormationParticipant.entity';
+import { FormationSessionEntity } from './FormationSession.entity';
 
 @Entity({ name: 'formation_answers' })
+@Unique('UQ_formation_answers_participant_question', [
+  'participantId',
+  'questionId',
+])
+@Index('idx_formation_answers_session_question', ['sessionId', 'questionId'])
 export class FormationAnswerEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -14,8 +25,22 @@ export class FormationAnswerEntity {
   @Column({ name: 'session_id', type: 'uuid' })
   sessionId: string;
 
+  @ManyToOne(() => FormationSessionEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({
+    name: 'session_id',
+    foreignKeyConstraintName: 'FK_formation_answers_session',
+  })
+  session: FormationSessionEntity;
+
   @Column({ name: 'participant_id', type: 'uuid' })
   participantId: string;
+
+  @ManyToOne(() => FormationParticipantEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({
+    name: 'participant_id',
+    foreignKeyConstraintName: 'FK_formation_answers_participant',
+  })
+  participant: FormationParticipantEntity;
 
   @Column({ name: 'question_id', type: 'varchar', length: 60 })
   questionId: string;

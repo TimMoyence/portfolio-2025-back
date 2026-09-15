@@ -1,4 +1,4 @@
-import { Inject, Injectable, MessageEvent } from '@nestjs/common';
+import { Inject, Injectable, MessageEvent, Optional } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
 import type {
@@ -14,6 +14,16 @@ const HEARTBEAT_MS = 15000;
 const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
 export const MAX_ABONNEMENTS_PAR_SESSION = 100;
 
+export interface CadencesFlux {
+  battementMs: number;
+  dureeMaxMs: number;
+}
+
+export const CADENCES_PRODUCTION: CadencesFlux = {
+  battementMs: HEARTBEAT_MS,
+  dureeMaxMs: DUREE_MAX_MS,
+};
+
 @Injectable()
 export class StreamSessionUseCase {
   private readonly abonnements = new Map<string, number>();
@@ -23,6 +33,8 @@ export class StreamSessionUseCase {
     private readonly sessions: ISessionsRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
+    @Optional()
+    private readonly cadences: CadencesFlux = CADENCES_PRODUCTION,
   ) {}
 
   /**
@@ -97,13 +109,13 @@ export class StreamSessionUseCase {
           type: 'heartbeat',
           data: { ts: new Date().toISOString() },
         });
-      }, HEARTBEAT_MS);
+      }, this.cadences.battementMs);
 
       const limite = setTimeout(() => {
         subscriber.next({ type: 'fin', data: { raison: 'expiree' } });
         subscriber.complete();
         arreter();
-      }, DUREE_MAX_MS);
+      }, this.cadences.dureeMaxMs);
 
       void tick();
 
