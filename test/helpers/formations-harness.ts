@@ -21,6 +21,7 @@ import { ControlSessionUseCase } from '../../src/modules/formations/application/
 import { DueQuestionsUseCase } from '../../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../../src/modules/formations/application/JoinSession.useCase';
+import { LireDerouleUseCase } from '../../src/modules/formations/application/LireDeroule.useCase';
 import { LireSujetUseCase } from '../../src/modules/formations/application/LireSujet.useCase';
 import { OpenSessionUseCase } from '../../src/modules/formations/application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from '../../src/modules/formations/application/RecordIncidents.useCase';
@@ -119,6 +120,7 @@ export async function monterApplicationFormations(
       StreamSessionUseCase,
       DueQuestionsUseCase,
       LireSujetUseCase,
+      LireDerouleUseCase,
       ParticipantTokenService,
       CodeScanProtectionService,
       { provide: SESSIONS_REPOSITORY, useValue: depots.sessions },

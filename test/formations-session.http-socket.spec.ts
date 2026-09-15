@@ -20,6 +20,7 @@ import { ControlSessionUseCase } from '../src/modules/formations/application/Con
 import { DueQuestionsUseCase } from '../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../src/modules/formations/application/JoinSession.useCase';
+import { LireDerouleUseCase } from '../src/modules/formations/application/LireDeroule.useCase';
 import { LireSujetUseCase } from '../src/modules/formations/application/LireSujet.useCase';
 import { OpenSessionUseCase } from '../src/modules/formations/application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from '../src/modules/formations/application/RecordIncidents.useCase';
@@ -313,6 +314,7 @@ async function creerHarnais(
       StreamSessionUseCase,
       DueQuestionsUseCase,
       LireSujetUseCase,
+      LireDerouleUseCase,
       ParticipantTokenService,
       CodeScanProtectionService,
       { provide: SESSIONS_REPOSITORY, useValue: creerSessionsRepo() },
@@ -629,6 +631,40 @@ describe('Session de formation (e2e http socket)', () => {
         ecranCourant: 4,
         modeRythme: 'pilote',
       });
+    });
+  });
+
+  describe('deroule du presentateur', () => {
+    let sessionId: string;
+
+    beforeAll(async () => {
+      const session = await ouvrirSession(FORMATEUR_A);
+      sessionId = session.sessionId;
+    });
+
+    it('sert le deroule annote au formateur proprietaire', async () => {
+      const reponse = await request(serveur())
+        .get(route(`/sessions/${sessionId}/deroule`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`);
+
+      expect(reponse.status).toBe(200);
+      expect((reponse.body as { id: string }).id).toBe(COURS_SENTINELLE.slug);
+    });
+
+    it('refuse le deroule a un autre formateur', async () => {
+      const reponse = await request(serveur())
+        .get(route(`/sessions/${sessionId}/deroule`))
+        .set('x-test-identite', `${FORMATEUR_B}:teacher`);
+
+      expect(reponse.status).toBe(403);
+    });
+
+    it('refuse le deroule a un role autre que formateur', async () => {
+      const reponse = await request(serveur())
+        .get(route(`/sessions/${sessionId}/deroule`))
+        .set('x-test-identite', `${FORMATEUR_A}:student`);
+
+      expect(reponse.status).toBe(403);
     });
   });
 

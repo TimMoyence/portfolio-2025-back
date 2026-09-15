@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import type { Request } from 'express';
 import { of } from 'rxjs';
+import type { DerouleCours } from '../../domain/cours/DeroulePresentateur';
 import type { RapportSession } from '../../domain/IFormationMailer.port';
 import { FormationsPresenterController } from '../FormationsPresenter.controller';
 import type { ControlSessionRequestDto } from '../dto/control-session.request.dto';
@@ -21,6 +22,7 @@ describe('FormationsPresenterController', () => {
   const closeSession = { execute: jest.fn() };
   const results = { execute: jest.fn() };
   const streamSession = { executeForTeacher: jest.fn() };
+  const lireDeroule = { execute: jest.fn() };
 
   const controller = new FormationsPresenterController(
     openSession as never,
@@ -28,6 +30,7 @@ describe('FormationsPresenterController', () => {
     closeSession as never,
     results as never,
     streamSession as never,
+    lireDeroule as never,
   );
 
   const controle = (dto: ControlSessionRequestDto): Promise<void> =>
@@ -140,5 +143,15 @@ describe('FormationsPresenterController', () => {
       controller.getResults(SESSION_ID, requeteFormateur),
     ).resolves.toBe(rapport);
     expect(results.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+  });
+
+  it('rend le deroule annote au formateur proprietaire', async () => {
+    const deroule = { id: 'cours-de-test' } as unknown as DerouleCours;
+    lireDeroule.execute.mockResolvedValue(deroule);
+
+    await expect(
+      controller.getDeroule(SESSION_ID, requeteFormateur),
+    ).resolves.toBe(deroule);
+    expect(lireDeroule.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
   });
 });

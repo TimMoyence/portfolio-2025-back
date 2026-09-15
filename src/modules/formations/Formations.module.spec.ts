@@ -5,6 +5,7 @@ import { ControlSessionUseCase } from './application/ControlSession.useCase';
 import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
+import { LireDerouleUseCase } from './application/LireDeroule.useCase';
 import { LireSujetUseCase } from './application/LireSujet.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
@@ -38,6 +39,7 @@ const SERVICES = [
   StreamSessionUseCase,
   DueQuestionsUseCase,
   LireSujetUseCase,
+  LireDerouleUseCase,
 ];
 
 describe('FormationsModule', () => {

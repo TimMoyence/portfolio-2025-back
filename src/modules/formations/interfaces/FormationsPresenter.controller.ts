@@ -31,8 +31,10 @@ import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
+import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
+import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import type { RapportSession } from '../domain/IFormationMailer.port';
 import { ControlSessionRequestDto } from './dto/control-session.request.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
@@ -59,6 +61,7 @@ export class FormationsPresenterController {
     private readonly closeSession: CloseSessionUseCase,
     private readonly results: GetSessionResultsUseCase,
     private readonly streamSession: StreamSessionUseCase,
+    private readonly lireDeroule: LireDerouleUseCase,
   ) {}
 
   @Post('sessions')
@@ -152,5 +155,19 @@ export class FormationsPresenterController {
     @Req() request: Request,
   ): Promise<RapportSession> {
     return this.results.execute(id, request.user!.sub);
+  }
+
+  @Get('sessions/:id/deroule')
+  @ApiOperation({
+    summary: 'Deroule annote de la seance, reserve au formateur proprietaire',
+  })
+  @ApiOkResponse({ description: 'Deroule annote de la seance' })
+  @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
+  @ApiNotFoundResponse({ description: 'Session ou cours introuvable' })
+  async getDeroule(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ): Promise<DerouleCours> {
+    return this.lireDeroule.execute(id, request.user!.sub);
   }
 }
