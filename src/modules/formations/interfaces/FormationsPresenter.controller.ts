@@ -26,7 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
@@ -148,7 +148,11 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<Observable<MessageEvent>> {
-    return this.streamSession.executeForTeacher(id, request.user!.sub);
+    const flux = await this.streamSession.executeForTeacher(
+      id,
+      request.user!.sub,
+    );
+    return request.destroyed ? EMPTY : flux;
   }
 
   @Get('sessions/:id/results')

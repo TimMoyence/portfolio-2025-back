@@ -13,6 +13,7 @@ import { Test } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { randomUUID } from 'node:crypto';
+import { request as requeteNode } from 'node:http';
 import request from 'supertest';
 import { IS_PUBLIC_KEY } from '../src/common/interfaces/auth/public.decorator';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
@@ -75,9 +76,14 @@ import {
   createMockIncidentsRepo,
   createMockMasteryRepo,
 } from './factories/formation.factory';
-import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
+import {
+  abonnerAuFlux,
+  attendreQue,
+  patienter,
+} from './helpers/formations-harness';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
 import {
+  ADRESSE_BOUCLE_LOCALE,
   ecouterEnBoucleLocale,
   fermerApplication,
 } from './helpers/nest-test-app';
@@ -141,6 +147,7 @@ const CORRIGE_EN_CLAIR = [
 
 const TAILLE_CLASSE = 30;
 const DELAI_FERMETURE_FLUX_MS = 2000;
+const DELAI_TRAITEMENT_ABANDON_MS = 100;
 
 function cleEtudiant(index: number): string {
   return `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`;
@@ -435,6 +442,52 @@ describe('Session de formation (e2e http socket)', () => {
       }).toEqual({
         statuts: [200, 200, 200, 200],
         fermes: [true, false, false],
+      });
+    });
+
+    it('ne prend aucune place pour un flux formateur abandonne pendant la lecture de la seance', async () => {
+      const { sessionId } = await ouvrirSession(FORMATEUR_A);
+      const sessions = app.get<ISessionsRepository>(SESSIONS_REPOSITORY);
+      const cache = app.get<SessionStateCacheService>(SESSION_STATE_CACHE);
+      const lireSession = sessions.findById;
+      let lectureCommencee = false;
+      let reprendreLaLecture = (): void => undefined;
+      const lecture = jest
+        .spyOn(sessions, 'findById')
+        .mockImplementation(async (id) => {
+          if (id === sessionId && !lectureCommencee) {
+            lectureCommencee = true;
+            await new Promise<void>((resoudre) => {
+              reprendreLaLecture = resoudre;
+            });
+          }
+          return lireSession(id);
+        });
+      const passages = jest.spyOn(cache, 'read');
+
+      const requete = requeteNode({
+        host: ADRESSE_BOUCLE_LOCALE,
+        port,
+        path: route(`/sessions/${sessionId}/presenter-stream`),
+        headers: { 'x-test-identite': `${FORMATEUR_A}:teacher` },
+      });
+      requete.on('error', () => undefined);
+      requete.end();
+      await attendreQue(() => lectureCommencee, DELAI_FERMETURE_FLUX_MS);
+      requete.destroy();
+      await patienter(DELAI_TRAITEMENT_ABANDON_MS);
+      reprendreLaLecture();
+      await patienter(DELAI_TRAITEMENT_ABANDON_MS);
+
+      const passagesDuFlux = passages.mock.calls.filter(
+        ([id]) => id === sessionId,
+      ).length;
+      lecture.mockRestore();
+      passages.mockRestore();
+
+      expect({ lectureCommencee, passagesDuFlux }).toEqual({
+        lectureCommencee: true,
+        passagesDuFlux: 0,
       });
     });
   });
