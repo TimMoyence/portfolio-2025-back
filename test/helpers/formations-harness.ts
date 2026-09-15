@@ -62,6 +62,7 @@ import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
 export const PREFIXE_API = 'api/v1/portfolio25';
 export const EN_TETE_IDENTITE = 'x-test-identite';
+export const ADRESSE_BOUCLE_LOCALE = '127.0.0.1';
 
 const FENETRE_THROTTLE_MS = 60_000;
 const LIMITE_THROTTLE_PAR_DEFAUT = 30;
@@ -144,6 +145,13 @@ export async function monterApplicationFormations(
   return app;
 }
 
+export async function ecouterEnBoucleLocale(
+  app: INestApplication,
+): Promise<number> {
+  await app.listen(0, ADRESSE_BOUCLE_LOCALE);
+  return (app.getHttpServer().address() as AddressInfo).port;
+}
+
 export interface BancFormations {
   contexte: ContexteFormations;
   app: INestApplication;
@@ -168,12 +176,12 @@ export async function monterBancFormations(
     },
     catalogue,
   );
-  await app.listen(0);
+  const port = await ecouterEnBoucleLocale(app);
   return {
     contexte,
     app,
     mailer,
-    port: (app.getHttpServer().address() as AddressInfo).port,
+    port,
     async fermer(): Promise<void> {
       await app.close();
       await contexte.fermer();

@@ -22,6 +22,7 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
+  ecouterEnBoucleLocale,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
@@ -369,6 +370,7 @@ describeDb(
         },
         creerCatalogueDeTest(COURS_DE_CLASSE),
       );
+      await ecouterEnBoucleLocale(app);
     });
 
     afterAll(async () => {

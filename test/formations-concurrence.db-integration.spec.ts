@@ -18,6 +18,7 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
+  ecouterEnBoucleLocale,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
@@ -193,7 +194,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
       },
       creerCatalogueDeTest(COURS_DE_CLASSE),
     );
-    await app.listen(0);
+    await ecouterEnBoucleLocale(app);
   });
 
   afterAll(async () => {

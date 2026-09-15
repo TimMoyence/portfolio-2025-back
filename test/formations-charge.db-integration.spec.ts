@@ -3,7 +3,6 @@ import {
   type ClientRequest,
   type IncomingMessage,
 } from 'node:http';
-import type { AddressInfo } from 'node:net';
 import { performance } from 'node:perf_hooks';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -23,6 +22,8 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
+  ADRESSE_BOUCLE_LOCALE,
+  ecouterEnBoucleLocale,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
@@ -182,7 +183,7 @@ function abonnerAuFlux(
   return new Promise((resoudre, rejeter) => {
     const requete = requeteNode(
       {
-        host: '127.0.0.1',
+        host: ADRESSE_BOUCLE_LOCALE,
         port,
         path: chemin,
         headers: { [EN_TETE_JETON]: jeton },
@@ -294,8 +295,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       },
       creerCatalogueDeTest(COURS_DE_CLASSE),
     );
-    await app.listen(0);
-    port = (app.getHttpServer().address() as AddressInfo).port;
+    port = await ecouterEnBoucleLocale(app);
   });
 
   afterAll(async () => {

@@ -22,6 +22,7 @@ import {
 import { describeDb } from './helpers/db-integration-datasource';
 import type { ContexteFormations } from './helpers/formations-db';
 import {
+  ADRESSE_BOUCLE_LOCALE,
   clientFormations,
   monterBancFormations,
   type BancFormations,
@@ -163,7 +164,7 @@ function abonner(
   return new Promise((resoudre, rejeter) => {
     const requete: ClientRequest = requeteNode(
       {
-        host: '127.0.0.1',
+        host: ADRESSE_BOUCLE_LOCALE,
         port,
         path: chemin,
         headers: { [EN_TETE_JETON]: jeton },

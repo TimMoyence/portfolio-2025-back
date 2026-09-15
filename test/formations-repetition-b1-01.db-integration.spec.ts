@@ -28,6 +28,7 @@ import type {
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  ADRESSE_BOUCLE_LOCALE,
   clientFormations,
   EN_TETE_IDENTITE,
   monterBancFormations,
@@ -243,7 +244,7 @@ function ecouterLePresentateur(
   return new Promise((resoudre, rejeter) => {
     const requete = requeteNode(
       {
-        host: '127.0.0.1',
+        host: ADRESSE_BOUCLE_LOCALE,
         port,
         path: chemin,
         headers: { [EN_TETE_IDENTITE]: `${FORMATEUR}:teacher` },
