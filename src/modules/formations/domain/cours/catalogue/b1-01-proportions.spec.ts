@@ -161,6 +161,19 @@ describe('B1_01_PROPORTIONS', () => {
     }
   });
 
+  it('fait demarrer la seance apres l appel des inscrits et avant le rappel, qui refuse toute reponse avant', () => {
+    const notes = notesDe(cours.ecrans[0]);
+    const comptage = notes.search(/«\sParticipants\s»/);
+    const demarrage = notes.search(/«\sDémarrer la séance\s»/);
+
+    expect(comptage).toBeGreaterThan(-1);
+    expect(demarrage).toBeGreaterThan(comptage);
+    expect(notes.indexOf('lancez le rappel')).toBeGreaterThan(demarrage);
+    expect(notes.slice(comptage, demarrage)).toContain(
+      'ouvrez-en une nouvelle',
+    );
+  });
+
   it('annonce les trois pauses de dix minutes dans les notes', () => {
     const annonces = cours.ecrans.filter((ecran) =>
       /pause de 10 minutes/i.test(notesDe(ecran)),
