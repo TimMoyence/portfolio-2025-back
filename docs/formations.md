@@ -31,19 +31,20 @@ Role `teacher` requis ; chaque route portant un `:id` verifie en plus que l'appe
 
 Routes publiques. Hors inscription, chaque appel presente le jeton rendu a l'inscription dans l'en-tete `x-participant-token`.
 
-| Methode | Route                        | Contrat                                                                                                                                            |
-| ------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST`  | `sessions/:code/join`        | Corps `{ studentKey, prenom, nom, email }` ; `201 { participantId, sessionId, ecranCourant, modeRythme, jeton }`, sans la graine du tirage.        |
-| `GET`   | `sessions/:id/sujet`         | Sujet du tirage du participant, sans corrige : `{ id, titre, niveau, duree, concepts, ecrans[] }` ; `409` si le cours a change depuis l'ouverture. |
-| `POST`  | `sessions/:id/answers`       | Corps `{ questionId, valeur, dureeMs }` ; `201 { correcte, misconception, libelleConfusion }`.                                                     |
-| `POST`  | `sessions/:id/incidents`     | Journal d'incidents du poste ; `204`.                                                                                                              |
-| `GET`   | `sessions/:id/due-questions` | Questions a revoir selon les boites de Leitner.                                                                                                    |
-| `GET`   | `sessions/:id/stream`        | Flux SSE de l'etudiant : `etat`, `heartbeat`, `fin`.                                                                                               |
+| Methode | Route                        | Contrat                                                                                                                                             |
+| ------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST`  | `sessions/:code/join`        | Corps `{ studentKey, prenom, nom, email }` ; `201 { participantId, sessionId, ecranCourant, modeRythme, jeton }`, sans la graine du tirage.         |
+| `GET`   | `sessions/:id/sujet`         | Sujet du tirage du participant, sans corrige : `{ id, titre, niveau, duree, concepts, ecrans[] }` ; `409` si le cours a change depuis l'ouverture.  |
+| `POST`  | `sessions/:id/answers`       | Corps `{ questionId, valeur, dureeMs }` ; `201 { correcte, misconception, libelleConfusion }` ; `409` avec un `code`, voir « Refus d'une reponse ». |
+| `POST`  | `sessions/:id/incidents`     | Journal d'incidents du poste ; `204`.                                                                                                               |
+| `GET`   | `sessions/:id/due-questions` | Questions a revoir selon les boites de Leitner.                                                                                                     |
+| `GET`   | `sessions/:id/stream`        | Flux SSE de l'etudiant : `etat`, `heartbeat`, `fin`.                                                                                                |
 
 ## Contrats a connaitre
 
 - **Sujet** : `GET sessions/:id/sujet` recalcule le tirage du participant depuis le cours du catalogue et le compare au bareme stocke. S'ils divergent (cours modifie apres l'ouverture), la route rend `409` : le formateur doit ouvrir une nouvelle seance.
 - **Graine** : la graine attribuee a un participant ne quitte jamais le serveur. Le moteur de tirage et les cours sont publics : avec la graine, `tirer(cours, graine)` rendrait le corrige de l'etudiant.
+- **Refus d'une reponse** : `POST sessions/:id/answers` distingue ses conflits par le champ `code` du corps RFC 7807, a lire a la place du texte `detail`. `SEANCE_NON_DEMARREE` : le formateur n'a pas encore demarre la seance. `REPONSE_DEJA_ENREGISTREE` : ce participant a deja repondu a cette question, la premiere reponse fait foi. Une seance terminee rend aussi `409`, sans `code`.
 - **Verdict** : `misconception` est l'identifiant de la confusion detectee, `libelleConfusion` son libelle lisible (banque `domain/cours/banque/confusions.ts`) ; les deux valent `null` quand aucune confusion n'est reconnue, reponse juste comprise. Le verdict ne porte jamais la reponse attendue.
 - **Resultats** : `results.resultats` vaut `{ participants, questions[] }`, chaque question donnant `questionId`, `total`, `correctes`, `neSaitPas` et `confusions[] { id, libelle, nombre }` triees par frequence. Dans le rapport, la synthese et son CSV, les etudiants suivent leur ordre d'arrivee et leurs reponses l'ordre des questions du cours (rang dans `bareme.questions`, identique pour toute la classe, ce qui aligne les lignes du CSV) ; a rang egal, l'ordre d'ecriture du depot (horodatage, puis identifiant) departage.
 - **Reponses d'un etudiant** (`results.participants[].reponses[]`, copie envoyee a l'etudiant, CSV de la synthese) : `valeur` garde la valeur envoyee ; `reponse` la rend lisible, le libelle de l'option pour un vote (recalcule par `tirer(cours, graine)` sur le tirage de l'etudiant), « Je ne sais pas » en toutes lettres, la valeur telle quelle sinon. Si le cours n'est plus au catalogue ou a change depuis l'ouverture, `reponse` garde l'identifiant de l'option. `libelleConfusion` porte le libelle de la confusion ; la colonne `confusion` du CSV l'affiche.

@@ -600,9 +600,35 @@ describe('Session de formation (e2e http socket)', () => {
         });
 
       expect(reponse.status).toBe(409);
+      expect(reponse.body).toMatchObject({ code: 'SEANCE_NON_DEMARREE' });
       expect((reponse.body as { detail: string }).detail).toContain(
         'pas encore commencé',
       );
+    });
+
+    it('distingue par son code la seconde reponse a une meme question', async () => {
+      const session = await ouvrirSession(FORMATEUR_A);
+      const inscrit = await rejoindre(
+        session.code,
+        '11111111-1111-4111-8111-111111111122',
+      ).expect(201);
+      const { jeton: jetonDuSecond } = inscrit.body as { jeton: string };
+      await demarrerSession(session.sessionId, FORMATEUR_A);
+      const envoyer = () =>
+        request(serveur())
+          .post(route(`/sessions/${session.sessionId}/answers`))
+          .set(EN_TETE_JETON, jetonDuSecond)
+          .send({
+            questionId: TEMOIN.question,
+            valeur: TEMOIN.solution,
+            dureeMs: 1000,
+          });
+      await envoyer().expect(201);
+
+      const seconde = await envoyer();
+
+      expect(seconde.status).toBe(409);
+      expect(seconde.body).toMatchObject({ code: 'REPONSE_DEJA_ENREGISTREE' });
     });
 
     it('refuse une reponse sans jeton de participant', async () => {

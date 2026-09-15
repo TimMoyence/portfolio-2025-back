@@ -43,6 +43,8 @@ export class SessionClosedError extends ResourceConflictError {
 }
 
 export class SessionNotStartedError extends ResourceConflictError {
+  readonly code = 'SEANCE_NON_DEMARREE';
+
   constructor() {
     super(
       "La séance n'a pas encore commencé : attendez que le formateur la démarre pour envoyer vos réponses.",
@@ -63,6 +65,8 @@ export class SeedPoolExhaustedError extends ResourceConflictError {
 }
 
 export class AnswerAlreadySubmittedError extends ResourceConflictError {
+  readonly code = 'REPONSE_DEJA_ENREGISTREE';
+
   constructor(questionId: string) {
     super(
       `Votre réponse à la question ${questionId} est déjà enregistrée : passez à la suivante.`,
