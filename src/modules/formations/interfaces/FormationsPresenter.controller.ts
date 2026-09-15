@@ -24,6 +24,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { EMPTY, Observable } from 'rxjs';
@@ -144,6 +145,10 @@ export class FormationsPresenterController {
   })
   @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
   @ApiNotFoundResponse({ description: 'Session introuvable' })
+  @ApiTooManyRequestsResponse({
+    description:
+      'Trop d ouvertures par minute (throttler global) ; au-dela de quatre flux, le plus ancien du formateur est ferme',
+  })
   async presenterStream(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
