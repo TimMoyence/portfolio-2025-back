@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
@@ -70,6 +71,9 @@ export class FormationsPresenterController {
   @ApiOperation({ summary: 'Ouvre une session de cours et tire les sujets' })
   @ApiCreatedResponse({ type: OpenSessionResponseDto })
   @ApiNotFoundResponse({ description: 'Cours introuvable' })
+  @ApiConflictResponse({
+    description: 'Le cours ne produit pas assez de tirages non ambigus',
+  })
   async open(
     @Body() dto: OpenSessionRequestDto,
     @Req() request: Request,

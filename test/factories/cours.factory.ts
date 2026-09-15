@@ -226,6 +226,33 @@ export function buildCoursDeClasse(nombreQuestions: number): Cours {
   });
 }
 
+export function buildCoursSansTirageValide(): Cours {
+  const toujoursAmbigue = questionNumerique({
+    id: 'Q-TOUJOURS-AMBIGUE',
+    concept: 'proportion',
+    noteCompte: false,
+    donnees: () => ({}),
+    enonce: () => 'Question dont le piege vaut la solution',
+    unite: null,
+    solution: () => 1,
+    tolerance: { type: 'absolue', valeur: 0 },
+    pieges: [{ confusion: 'base-arrivee', valeur: () => 1 }],
+  });
+  return buildCoursDeTest({
+    slug: 'cours-sans-tirage',
+    ecrans: [
+      {
+        id: 'E-AMBIGU',
+        brique: 'fp-numeric',
+        dureeMinutes: 1,
+        concepts: ['proportion'],
+        notes: '',
+        question: toujoursAmbigue,
+      },
+    ],
+  });
+}
+
 export function tireurSequentiel(depart = 0): (borne: number) => number {
   let courant = depart;
   return () => courant++;

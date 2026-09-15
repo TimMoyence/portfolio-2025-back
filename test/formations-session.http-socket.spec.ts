@@ -67,6 +67,7 @@ import {
 import {
   buildCoursDeClasse,
   buildCoursDeTest,
+  buildCoursSansTirageValide,
   creerCatalogueDeTest,
 } from './factories/cours.factory';
 import {
@@ -129,6 +130,7 @@ const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);
 
 const QUESTIONS_DU_COURS_DE_CLASSE = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(QUESTIONS_DU_COURS_DE_CLASSE);
+const COURS_SANS_TIRAGE = buildCoursSansTirageValide();
 
 const CORRIGE_EN_CLAIR = [
   String(TEMOIN.solution),
@@ -308,6 +310,7 @@ async function creerHarnais(
   catalogueHttp: ICatalogueCours = creerCatalogueDeTest(
     COURS_SENTINELLE,
     COURS_DE_CLASSE,
+    COURS_SANS_TIRAGE,
   ),
 ): Promise<HarnaisFormations> {
   process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
@@ -483,6 +486,17 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.status).toBe(404);
       expect((reponse.body as { detail: string }).detail).toBe(
         'Cours introuvable: inconnu',
+      );
+    });
+
+    it('rend un conflit explicite, et non une erreur serveur, pour un cours qui ne produit pas assez de tirages', async () => {
+      const reponse = await demanderOuverture(FORMATEUR_A, {
+        courseSlug: COURS_SANS_TIRAGE.slug,
+      });
+
+      expect(reponse.status).toBe(409);
+      expect((reponse.body as { detail: string }).detail).toContain(
+        'ne produit pas 61 tirages non ambigus',
       );
     });
 

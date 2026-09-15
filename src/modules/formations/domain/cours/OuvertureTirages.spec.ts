@@ -1,5 +1,7 @@
+import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import {
   buildCoursDeTest,
+  buildCoursSansTirageValide,
   tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
 import { questionNumerique } from './Cours';
@@ -113,32 +115,14 @@ describe('ouvrirTirages', () => {
     }
   });
 
-  it('abandonne quand les graines restent ambigues', () => {
-    const toujours = questionNumerique({
-      id: 'Q-TOUJOURS',
-      concept: 'proportion',
-      noteCompte: false,
-      donnees: () => ({}),
-      enonce: () => 'e',
-      unite: null,
-      solution: () => 1,
-      tolerance: { type: 'absolue', valeur: 0 },
-      pieges: [{ confusion: 'base-arrivee', valeur: () => 1 }],
-    });
-    const cours3 = buildCoursDeTest({
-      ecrans: [
-        {
-          id: 'E',
-          brique: 'fp-numeric',
-          dureeMinutes: 1,
-          concepts: ['proportion'],
-          notes: '',
-          question: toujours,
-        },
-      ],
-    });
-    expect(() => ouvrirTirages(cours3, tireurSequentiel())).toThrow(
-      TiragesInsuffisantsError,
+  it('abandonne quand les graines restent ambigues, par une erreur de domaine en conflit', () => {
+    const ouverture = () =>
+      ouvrirTirages(buildCoursSansTirageValide(), tireurSequentiel());
+
+    expect(ouverture).toThrow(TiragesInsuffisantsError);
+    expect(ouverture).toThrow(ResourceConflictError);
+    expect(ouverture).toThrow(
+      `Le cours cours-sans-tirage ne produit pas ${NOMBRE_TIRAGES_DISTRIBUES + 1} tirages non ambigus : il ne peut pas être ouvert tant qu'il n'est pas corrigé.`,
     );
   });
 });

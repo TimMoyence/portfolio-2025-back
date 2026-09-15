@@ -17,15 +17,15 @@ Prefixe : `API_PREFIX` puis `/formations`. Swagger (`/docs`) porte le detail des
 
 Role `teacher` requis ; chaque route portant un `:id` verifie en plus que l'appelant est le formateur proprietaire de la seance (`403` sinon).
 
-| Methode | Route                           | Contrat                                                                                                                       |
-| ------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `POST`  | `sessions`                      | Corps `{ courseSlug }` ; `201 { sessionId, code }` ; `404` si le cours est absent du catalogue.                               |
-| `POST`  | `sessions/:id/start`            | `204` ; libere les reponses.                                                                                                  |
-| `PATCH` | `sessions/:id/control`          | Corps `{ ecran?, mode?, intervalle? }` ; `204`. Voir la borne d'ecran ci-dessous.                                             |
-| `POST`  | `sessions/:id/close`            | `204` ; envoie la synthese au formateur et une copie a chaque etudiant.                                                       |
-| `GET`   | `sessions/:id/results`          | Rapport (`courseSlug`, `code`, `ouverteLe`, `fermeeLe`, `participants`, `conceptsFragiles`) et agregat `resultats`.           |
-| `GET`   | `sessions/:id/deroule`          | Deroule annote du tirage de reference : ecrans avec `notes`, `seuil` et `corriges`, puis `remediations`. Contient le corrige. |
-| `GET`   | `sessions/:id/presenter-stream` | Flux SSE du formateur : `etat`, `resultats`, `heartbeat`, `fin`.                                                              |
+| Methode | Route                           | Contrat                                                                                                                                            |
+| ------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST`  | `sessions`                      | Corps `{ courseSlug }` ; `201 { sessionId, code }` ; `404` si le cours est absent du catalogue ; `409` s'il ne produit pas 61 tirages non ambigus. |
+| `POST`  | `sessions/:id/start`            | `204` ; libere les reponses.                                                                                                                       |
+| `PATCH` | `sessions/:id/control`          | Corps `{ ecran?, mode?, intervalle? }` ; `204`. Voir la borne d'ecran ci-dessous.                                                                  |
+| `POST`  | `sessions/:id/close`            | `204` ; envoie la synthese au formateur et une copie a chaque etudiant.                                                                            |
+| `GET`   | `sessions/:id/results`          | Rapport (`courseSlug`, `code`, `ouverteLe`, `fermeeLe`, `participants`, `conceptsFragiles`) et agregat `resultats`.                                |
+| `GET`   | `sessions/:id/deroule`          | Deroule annote du tirage de reference : ecrans avec `notes`, `seuil` et `corriges`, puis `remediations`. Contient le corrige.                      |
+| `GET`   | `sessions/:id/presenter-stream` | Flux SSE du formateur : `etat`, `resultats`, `heartbeat`, `fin`.                                                                                   |
 
 ### Etudiant
 

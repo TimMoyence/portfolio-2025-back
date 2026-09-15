@@ -1,4 +1,5 @@
 import { randomInt } from 'node:crypto';
+import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import type { Bareme, BaremeQuestion, BaremeTirage } from '../Bareme';
 import type { Cours } from './Cours';
 import { questionsDuCours } from './Cours';
@@ -11,12 +12,11 @@ const TENTATIVES_PAR_GRAINE = 10;
 
 export type TireurDeGraine = (borne: number) => number;
 
-export class TiragesInsuffisantsError extends Error {
+export class TiragesInsuffisantsError extends ResourceConflictError {
   constructor(cours: Cours) {
     super(
-      `Impossible de tirer ${GRAINES_A_RETENIR} graines non ambigues pour le cours ${cours.slug}`,
+      `Le cours ${cours.slug} ne produit pas ${GRAINES_A_RETENIR} tirages non ambigus : il ne peut pas être ouvert tant qu'il n'est pas corrigé.`,
     );
-    this.name = 'TiragesInsuffisantsError';
   }
 }
 
