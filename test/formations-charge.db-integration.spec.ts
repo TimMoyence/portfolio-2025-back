@@ -1,8 +1,3 @@
-import {
-  request as requeteNode,
-  type ClientRequest,
-  type IncomingMessage,
-} from 'node:http';
 import { performance } from 'node:perf_hooks';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -22,11 +17,13 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
-  ADRESSE_BOUCLE_LOCALE,
+  abonnerAuFlux,
   ecouterEnBoucleLocale,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
+  patienter,
   PREFIXE_API,
+  type FluxEcoute,
 } from './helpers/formations-harness';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
@@ -67,12 +64,6 @@ interface Inscrit {
 interface Classe {
   sessionId: string;
   inscrits: Inscrit[];
-}
-
-interface Abonnement {
-  statut: number;
-  ferme: boolean;
-  fermer(): void;
 }
 
 const mesures: string[] = [];
@@ -127,10 +118,6 @@ async function chronometrer<T>(action: () => Promise<T>): Promise<[T, number]> {
   return [valeur, performance.now() - depart];
 }
 
-function patienter(delaiMs: number): Promise<void> {
-  return new Promise((resoudre) => setTimeout(resoudre, delaiMs));
-}
-
 function memoireStabilisee(): number {
   const collecter = (globalThis as { gc?: () => void }).gc;
   collecter?.();
@@ -157,42 +144,6 @@ function corpsReponse(question: number): Record<string, unknown> {
     valeur: 1,
     dureeMs: DUREE_REPONSE_MS,
   };
-}
-
-function brancherAbonnement(
-  requete: ClientRequest,
-  reponse: IncomingMessage,
-): Abonnement {
-  const abonnement: Abonnement = {
-    statut: reponse.statusCode ?? 0,
-    ferme: false,
-    fermer: () => requete.destroy(),
-  };
-  reponse.on('data', () => undefined);
-  reponse.on('close', () => {
-    abonnement.ferme = true;
-  });
-  return abonnement;
-}
-
-function abonnerAuFlux(
-  port: number,
-  chemin: string,
-  jeton: string,
-): Promise<Abonnement> {
-  return new Promise((resoudre, rejeter) => {
-    const requete = requeteNode(
-      {
-        host: ADRESSE_BOUCLE_LOCALE,
-        port,
-        path: chemin,
-        headers: { [EN_TETE_JETON]: jeton },
-      },
-      (reponse) => resoudre(brancherAbonnement(requete, reponse)),
-    );
-    requete.on('error', rejeter);
-    requete.end();
-  });
 }
 
 function statutsEnEchec(
@@ -276,8 +227,10 @@ describeDb('Formations sous charge de classe (db integration)', () => {
     ).resolves.toHaveLength(TAILLE_CLASSE * NB_QUESTIONS);
   };
 
-  const ouvrirFlux = (sessionId: string, jeton: string): Promise<Abonnement> =>
-    abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), jeton);
+  const ouvrirFlux = (sessionId: string, jeton: string): Promise<FluxEcoute> =>
+    abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
+      [EN_TETE_JETON]: jeton,
+    });
 
   beforeAll(async () => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;

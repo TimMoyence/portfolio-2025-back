@@ -1,9 +1,4 @@
 import {
-  request as requeteNode,
-  type ClientRequest,
-  type IncomingMessage,
-} from 'node:http';
-import {
   connect,
   createServer,
   type AddressInfo,
@@ -22,11 +17,14 @@ import {
 import { describeDb } from './helpers/db-integration-datasource';
 import type { ContexteFormations } from './helpers/formations-db';
 import {
-  ADRESSE_BOUCLE_LOCALE,
+  abonnerAuFlux,
   clientFormations,
   monterBancFormations,
+  patienter,
   type BancFormations,
   type ClientFormations,
+  type EvenementFlux,
+  type FluxEcoute,
 } from './helpers/formations-harness';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
@@ -65,16 +63,6 @@ interface Relais {
   couper(): Promise<void>;
   retablir(): Promise<void>;
   fermer(): Promise<void>;
-}
-
-interface EvenementFlux {
-  type: string;
-  donnees: Record<string, unknown>;
-}
-
-interface FluxEcoute {
-  evenements: EvenementFlux[];
-  fermer(): void;
 }
 
 function ecouter(serveur: Server, port: number): Promise<number> {
@@ -128,63 +116,6 @@ async function ouvrirRelais(hote: string, cible: number): Promise<Relais> {
       await fermeture;
     },
   };
-}
-
-function analyserTrame(trame: string): EvenementFlux | null {
-  const lignes = trame.split('\n');
-  const type = lignes.find((ligne) => ligne.startsWith('event: '))?.slice(7);
-  const donnees = lignes.find((ligne) => ligne.startsWith('data: '))?.slice(6);
-  if (type === undefined || donnees === undefined) {
-    return null;
-  }
-  return { type, donnees: JSON.parse(donnees) as Record<string, unknown> };
-}
-
-function collecter(reponse: IncomingMessage, flux: FluxEcoute): void {
-  let tampon = '';
-  reponse.setEncoding('utf8');
-  reponse.on('data', (morceau: string) => {
-    tampon += morceau;
-    const trames = tampon.split('\n\n');
-    tampon = trames.pop() ?? '';
-    for (const trame of trames) {
-      const evenement = analyserTrame(trame);
-      if (evenement) {
-        flux.evenements.push(evenement);
-      }
-    }
-  });
-}
-
-function abonner(
-  port: number,
-  chemin: string,
-  jeton: string,
-): Promise<FluxEcoute> {
-  return new Promise((resoudre, rejeter) => {
-    const requete: ClientRequest = requeteNode(
-      {
-        host: ADRESSE_BOUCLE_LOCALE,
-        port,
-        path: chemin,
-        headers: { [EN_TETE_JETON]: jeton },
-      },
-      (reponse) => {
-        const flux: FluxEcoute = {
-          evenements: [],
-          fermer: () => requete.destroy(),
-        };
-        collecter(reponse, flux);
-        resoudre(flux);
-      },
-    );
-    requete.on('error', rejeter);
-    requete.end();
-  });
-}
-
-function patienter(delaiMs: number): Promise<void> {
-  return new Promise((resoudre) => setTimeout(resoudre, delaiMs));
 }
 
 async function attendre<T>(sonde: () => T | undefined): Promise<T> {
@@ -413,13 +344,17 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
       const { seance, etudiant } = await demarrerSeance();
       const chemin = client.chemin(`/sessions/${seance.sessionId}/stream`);
 
-      const avant = await abonner(banc.port, chemin, etudiant.jeton);
+      const avant = await abonnerAuFlux(banc.port, chemin, {
+        [EN_TETE_JETON]: etudiant.jeton,
+      });
       const premier = await premierEtat(avant);
       avant.fermer();
 
       await piloter(seance.sessionId, ECRAN_APRES_COUPURE).expect(SANS_CONTENU);
 
-      const apres = await abonner(banc.port, chemin, etudiant.jeton);
+      const apres = await abonnerAuFlux(banc.port, chemin, {
+        [EN_TETE_JETON]: etudiant.jeton,
+      });
       const repris = await premierEtat(apres);
       apres.fermer();
 

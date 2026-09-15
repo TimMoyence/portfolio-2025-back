@@ -10,6 +10,7 @@ import { APP_GUARD, Reflector } from '@nestjs/core';
 import { Test as ModuleDeTest } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
+import { request as requeteNode, type IncomingMessage } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import request from 'supertest';
 import type { Test } from 'supertest';
@@ -150,6 +151,82 @@ export async function ecouterEnBoucleLocale(
 ): Promise<number> {
   await app.listen(0, ADRESSE_BOUCLE_LOCALE);
   return (app.getHttpServer().address() as AddressInfo).port;
+}
+
+export interface EvenementFlux {
+  type: string;
+  donnees: Record<string, unknown>;
+}
+
+export interface FluxEcoute {
+  statut: number;
+  evenements: EvenementFlux[];
+  ferme: boolean;
+  fermer(): void;
+}
+
+const SEPARATEUR_DE_TRAMES = '\n\n';
+const PREFIXE_EVENEMENT = 'event: ';
+const PREFIXE_DONNEES = 'data: ';
+
+function evenementsDeLaTrame(trame: string): EvenementFlux[] {
+  const lignes = trame.split('\n');
+  const type = lignes
+    .find((ligne) => ligne.startsWith(PREFIXE_EVENEMENT))
+    ?.slice(PREFIXE_EVENEMENT.length);
+  const donnees = lignes
+    .filter((ligne) => ligne.startsWith(PREFIXE_DONNEES))
+    .map((ligne) => ligne.slice(PREFIXE_DONNEES.length));
+  if (type === undefined || donnees.length === 0) {
+    return [];
+  }
+  return [
+    {
+      type,
+      donnees: JSON.parse(donnees.join('\n')) as Record<string, unknown>,
+    },
+  ];
+}
+
+function suivreLeFlux(reponse: IncomingMessage, flux: FluxEcoute): void {
+  let reste = '';
+  reponse.setEncoding('utf8');
+  reponse.on('data', (morceau: string) => {
+    const trames = `${reste}${morceau}`.split(SEPARATEUR_DE_TRAMES);
+    reste = trames.pop() ?? '';
+    flux.evenements.push(...trames.flatMap(evenementsDeLaTrame));
+  });
+  reponse.on('close', () => {
+    flux.ferme = true;
+  });
+}
+
+export function abonnerAuFlux(
+  port: number,
+  chemin: string,
+  entetes: Readonly<Record<string, string>>,
+): Promise<FluxEcoute> {
+  return new Promise((resoudre, rejeter) => {
+    const requete = requeteNode(
+      { host: ADRESSE_BOUCLE_LOCALE, port, path: chemin, headers: entetes },
+      (reponse) => {
+        const flux: FluxEcoute = {
+          statut: reponse.statusCode ?? 0,
+          evenements: [],
+          ferme: false,
+          fermer: () => requete.destroy(),
+        };
+        suivreLeFlux(reponse, flux);
+        resoudre(flux);
+      },
+    );
+    requete.on('error', rejeter);
+    requete.end();
+  });
+}
+
+export function patienter(delaiMs: number): Promise<void> {
+  return new Promise((resoudre) => setTimeout(resoudre, delaiMs));
 }
 
 export interface BancFormations {

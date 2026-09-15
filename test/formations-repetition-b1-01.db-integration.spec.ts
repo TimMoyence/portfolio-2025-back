@@ -1,4 +1,3 @@
-import { request as requeteNode, type IncomingMessage } from 'node:http';
 import request from 'supertest';
 import type { ResultatsDeSeance } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
@@ -28,12 +27,14 @@ import type {
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
-  ADRESSE_BOUCLE_LOCALE,
+  abonnerAuFlux,
   clientFormations,
   EN_TETE_IDENTITE,
   monterBancFormations,
+  patienter,
   type BancFormations,
   type ClientFormations,
+  type FluxEcoute,
 } from './helpers/formations-harness';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
@@ -78,12 +79,6 @@ interface ReponseEnvoyee {
   questionId: string;
   valeur: AnswerValue;
   confusion: string | null;
-}
-
-interface FluxPresentateur {
-  statut: number;
-  resultats: ResultatsSeance[];
-  fermer(): void;
 }
 
 function coursPublie(slug: string): Cours {
@@ -212,75 +207,26 @@ function totauxParQuestion(
   }));
 }
 
-function resultatsDeLaTrame(trame: string): ResultatsSeance[] {
-  const lignes = trame.split('\n');
-  if (!lignes.includes('event: resultats')) {
-    return [];
-  }
-  const donnees = lignes
-    .filter((ligne) => ligne.startsWith('data: '))
-    .map((ligne) => ligne.slice('data: '.length))
-    .join('\n');
-  return [JSON.parse(donnees) as ResultatsSeance];
-}
-
-function suivreLesResultats(
-  reponse: IncomingMessage,
-  resultats: ResultatsSeance[],
-): void {
-  let reste = '';
-  reponse.setEncoding('utf8');
-  reponse.on('data', (morceau: string) => {
-    const trames = `${reste}${morceau}`.split('\n\n');
-    reste = trames.pop() ?? '';
-    resultats.push(...trames.flatMap(resultatsDeLaTrame));
-  });
-}
-
-function ecouterLePresentateur(
-  port: number,
-  chemin: string,
-): Promise<FluxPresentateur> {
-  return new Promise((resoudre, rejeter) => {
-    const requete = requeteNode(
-      {
-        host: ADRESSE_BOUCLE_LOCALE,
-        port,
-        path: chemin,
-        headers: { [EN_TETE_IDENTITE]: `${FORMATEUR}:teacher` },
-      },
-      (reponse) => {
-        const flux: FluxPresentateur = {
-          statut: reponse.statusCode ?? 0,
-          resultats: [],
-          fermer: () => requete.destroy(),
-        };
-        suivreLesResultats(reponse, flux.resultats);
-        resoudre(flux);
-      },
-    );
-    requete.on('error', rejeter);
-    requete.end();
-  });
-}
-
-function patienter(delaiMs: number): Promise<void> {
-  return new Promise((resoudre) => setTimeout(resoudre, delaiMs));
+function resultatsPousses(flux: FluxEcoute): ResultatsSeance[] {
+  return flux.evenements
+    .filter((evenement) => evenement.type === 'resultats')
+    .map((evenement) => evenement.donnees as unknown as ResultatsSeance);
 }
 
 async function derniersResultatsDuFlux(
-  flux: FluxPresentateur,
+  flux: FluxEcoute,
   attendus: readonly { questionId: string; total: number }[],
 ): Promise<ResultatsSeance | undefined> {
   const limite = Date.now() + ATTENTE_FLUX_MS;
   const empreinte = JSON.stringify(attendus);
   while (
-    JSON.stringify(totauxParQuestion(flux.resultats.at(-1))) !== empreinte &&
+    JSON.stringify(totauxParQuestion(resultatsPousses(flux).at(-1))) !==
+      empreinte &&
     Date.now() < limite
   ) {
     await patienter(PAS_SONDAGE_MS);
   }
-  return flux.resultats.at(-1);
+  return resultatsPousses(flux).at(-1);
 }
 
 function cleEtudiant(index: number): string {
@@ -411,9 +357,10 @@ describeDb('Repetition a blanc de B1-01 (db integration)', () => {
       await client
         .formateur('post', `/sessions/${sessionId}/start`)
         .expect(SANS_CONTENU);
-      const flux = await ecouterLePresentateur(
+      const flux = await abonnerAuFlux(
         banc.port,
         client.chemin(`/sessions/${sessionId}/presenter-stream`),
+        { [EN_TETE_IDENTITE]: `${FORMATEUR}:teacher` },
       );
 
       try {
@@ -432,7 +379,7 @@ describeDb('Repetition a blanc de B1-01 (db integration)', () => {
         });
         const pousses = await derniersResultatsDuFlux(flux, totauxAttendus);
         expect(flux.statut).toBe(OK);
-        expect(flux.resultats.length).toBeGreaterThan(0);
+        expect(resultatsPousses(flux).length).toBeGreaterThan(0);
         expect({
           participants: pousses?.participants,
           totaux: totauxParQuestion(pousses),
