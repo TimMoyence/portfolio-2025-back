@@ -41,9 +41,12 @@ export class ControlSessionUseCase {
   ) {}
 
   /**
-   * Le pilotage est atomique de bout en bout : la requete entiere est
-   * validee avant la moindre lecture, puis appliquee en une seule ecriture
-   * et une seule publication.
+   * Le pilotage valide en deux temps : la syntaxe des changements (numero
+   * d'ecran, mode connu) est verifiee avant la moindre lecture ; les bornes
+   * qui dependent du cours de la session (ecran dans le cours, intervalle de
+   * rythme libre) ne peuvent l'etre qu'apres la lecture de la session dans
+   * assertPilotable, mais restent verifiees avant l'unique ecriture et
+   * l'unique publication.
    *
    * Un ecran applique avant qu'un rythme invalide ne soit refuse laisserait
    * les trente postes de la classe sur une diapositive que le formateur ne
