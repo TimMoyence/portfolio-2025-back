@@ -90,7 +90,9 @@ export class ControlSessionUseCase {
       misAJour.intervalleLibre &&
       !isFreeRangeValid(misAJour.intervalleLibre, totalEcrans)
     ) {
-      throw new DomainValidationError('Intervalle de rythme libre invalide');
+      throw new DomainValidationError(
+        `Intervalle de rythme libre hors du cours : ${totalEcrans} écrans`,
+      );
     }
   }
 
@@ -118,7 +120,9 @@ export class ControlSessionUseCase {
 
   private intervalleValide(intervalle: FreeRange | null): FreeRange {
     if (intervalle === null || !isFreeRangeValid(intervalle)) {
-      throw new DomainValidationError('Intervalle de rythme libre invalide');
+      throw new DomainValidationError(
+        'Intervalle de rythme libre invalide : premier et dernier écrans entiers, positifs, le premier avant le dernier',
+      );
     }
     return intervalle;
   }

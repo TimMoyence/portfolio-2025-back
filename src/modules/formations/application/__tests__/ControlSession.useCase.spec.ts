@@ -153,13 +153,17 @@ describe('ControlSessionUseCase', () => {
     });
   });
 
-  it('refuse un intervalle libre inverse', async () => {
+  it('refuse un intervalle libre inverse en nommant la forme attendue', async () => {
     await expect(
       sut.apply('session-uuid', TEACHER_ID, {
         mode: 'libre',
         intervalle: { premier: 7, dernier: 3 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(
+      new DomainValidationError(
+        'Intervalle de rythme libre invalide : premier et dernier écrans entiers, positifs, le premier avant le dernier',
+      ),
+    );
   });
 
   it('accepte un intervalle libre dans les bornes du cours', async () => {
@@ -179,7 +183,11 @@ describe('ControlSessionUseCase', () => {
         mode: 'libre',
         intervalle: { premier: 2, dernier: 7 },
       }),
-    ).rejects.toThrow(DomainValidationError);
+    ).rejects.toThrow(
+      new DomainValidationError(
+        `Intervalle de rythme libre hors du cours : ${NOMBRE_ECRANS} écrans`,
+      ),
+    );
     expect(sessions.update).not.toHaveBeenCalled();
     expect(cache.publish).not.toHaveBeenCalled();
   });
