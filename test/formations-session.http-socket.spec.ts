@@ -553,7 +553,7 @@ describe('Session de formation (e2e http socket)', () => {
       const reponse = await request(serveur())
         .patch(route(`/sessions/${sessionId}/control`))
         .set('x-test-identite', `${FORMATEUR_B}:student`)
-        .send({ ecran: 9 });
+        .send({ ecran: 1 });
 
       expect(reponse.status).toBe(403);
     });
@@ -564,7 +564,7 @@ describe('Session de formation (e2e http socket)', () => {
       const pilotage = await request(serveur())
         .patch(route(`/sessions/${sessionId}/control`))
         .set('x-test-identite', entete)
-        .send({ ecran: 9 });
+        .send({ ecran: 1 });
       const demarrage = await request(serveur())
         .post(route(`/sessions/${sessionId}/start`))
         .set('x-test-identite', entete);
@@ -604,6 +604,21 @@ describe('Session de formation (e2e http socket)', () => {
         '11111111-1111-4111-8111-111111111116',
       ).expect(201);
       expect(reponse.body).toMatchObject({ ecranCourant: 4 });
+    });
+
+    it('refuse un ecran hors du cours pour le formateur proprietaire', async () => {
+      const reponse = await request(serveur())
+        .patch(route(`/sessions/${sessionId}/control`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+        .send({ ecran: 99 });
+
+      expect(reponse.status).toBe(400);
+
+      const constat = await rejoindre(
+        code,
+        '11111111-1111-4111-8111-111111111119',
+      ).expect(201);
+      expect(constat.body).toMatchObject({ ecranCourant: 4 });
     });
 
     it('refuse un pilotage vide', async () => {

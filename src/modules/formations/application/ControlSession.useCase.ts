@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type {
   ISessionsRepository,
@@ -7,6 +8,7 @@ import type {
   UpdateSessionInput,
 } from '../domain/ISessions.repository';
 import {
+  CoursInconnuError,
   InvalidStateTransitionError,
   SessionClosedError,
   SessionNotFoundError,
@@ -15,7 +17,11 @@ import {
 import { isFreeRangeValid } from '../domain/PacingMode';
 import type { FreeRange, PacingMode } from '../domain/PacingMode';
 import { canTransition } from '../domain/SessionState';
-import { SESSION_STATE_CACHE, SESSIONS_REPOSITORY } from '../domain/token';
+import {
+  CATALOGUE_COURS,
+  SESSION_STATE_CACHE,
+  SESSIONS_REPOSITORY,
+} from '../domain/token';
 
 export interface ControlSessionChanges {
   ecran?: number;
@@ -30,6 +36,8 @@ export class ControlSessionUseCase {
     private readonly sessions: ISessionsRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
   ) {}
 
   /**
@@ -49,9 +57,38 @@ export class ControlSessionUseCase {
     changements: ControlSessionChanges,
   ): Promise<void> {
     const misAJour = this.validerEtProjeter(changements);
-    await this.assertPilotable(sessionId, teacherId);
-    const session = await this.sessions.update(sessionId, misAJour);
-    this.publier(sessionId, session);
+    const session = await this.assertPilotable(sessionId, teacherId);
+    this.assertDansLesBornesDuCours(session.courseSlug, misAJour);
+    const sessionMiseAJour = await this.sessions.update(sessionId, misAJour);
+    this.publier(sessionId, sessionMiseAJour);
+  }
+
+  private assertDansLesBornesDuCours(
+    courseSlug: string,
+    misAJour: UpdateSessionInput,
+  ): void {
+    if (misAJour.ecranCourant === undefined && !misAJour.intervalleLibre) {
+      return;
+    }
+    const cours = this.catalogue.trouver(courseSlug);
+    if (!cours) {
+      throw new CoursInconnuError(courseSlug);
+    }
+    const totalEcrans = cours.ecrans.length;
+    if (
+      misAJour.ecranCourant !== undefined &&
+      misAJour.ecranCourant >= totalEcrans
+    ) {
+      throw new DomainValidationError(
+        `Écran ${misAJour.ecranCourant} hors du cours : ${totalEcrans} écrans`,
+      );
+    }
+    if (
+      misAJour.intervalleLibre &&
+      !isFreeRangeValid(misAJour.intervalleLibre, totalEcrans)
+    ) {
+      throw new DomainValidationError('Intervalle de rythme libre invalide');
+    }
   }
 
   private validerEtProjeter(
