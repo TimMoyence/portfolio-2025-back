@@ -280,30 +280,21 @@ describe('FormationsStudentController', () => {
     expect(dueQuestions.execute).not.toHaveBeenCalled();
   });
 
-  it('sert le sujet du tirage au porteur du jeton, jamais a un autre', async () => {
+  it('sert le sujet du tirage au participant verifie par la garde, sans reverifier son jeton', async () => {
     const sujet = { id: 'cours-de-test', ecrans: [] };
     lireSujet.execute.mockResolvedValue(sujet);
 
-    const reponse = await controller.sujet(SESSION_ID, JETON);
+    const reponse = await controller.sujet(
+      SESSION_ID,
+      requeteVerifiee(PARTICIPANT_ID),
+    );
 
-    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
+    expect(tokens.verify).not.toHaveBeenCalled();
     expect(lireSujet.execute).toHaveBeenCalledWith({
       sessionId: SESSION_ID,
       participantId: PARTICIPANT_ID,
     });
     expect(reponse).toBe(sujet);
-  });
-
-  it('ne sert aucun sujet quand le jeton est refuse', async () => {
-    tokens.verify.mockImplementation(() => {
-      throw new UnauthorizedException();
-    });
-
-    await expect(
-      controller.sujet(SESSION_ID, 'jeton-force'),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
-
-    expect(lireSujet.execute).not.toHaveBeenCalled();
   });
 
   it('confie le controle du jeton a une garde avant de servir le sujet', () => {

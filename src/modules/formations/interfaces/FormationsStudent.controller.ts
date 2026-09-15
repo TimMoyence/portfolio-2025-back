@@ -245,10 +245,12 @@ export class FormationsStudentController {
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async sujet(
     @Param('id', ParseUUIDPipe) sessionId: string,
-    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Req() request: Request,
   ): Promise<CoursPublic> {
-    const participantId = this.tokens.verify(sessionId, jeton);
-    return this.lireSujet.execute({ sessionId, participantId });
+    return this.lireSujet.execute({
+      sessionId,
+      participantId: request.participantId!,
+    });
   }
 
   @Throttle({
