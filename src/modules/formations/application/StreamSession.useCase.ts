@@ -30,6 +30,8 @@ const HEARTBEAT_MS = 15000;
 const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
 const AUCUNE_ACTIVITE_VUE = -1;
 export const MAX_ABONNEMENTS_PAR_SESSION = 100;
+export const MAX_FLUX_FORMATEUR_PAR_SESSION = 4;
+export const MAX_FLUX_PAR_PARTICIPANT = 2;
 
 export interface CadencesFlux {
   battementMs: number;
@@ -41,10 +43,31 @@ export const CADENCES_PRODUCTION: CadencesFlux = {
   dureeMaxMs: DUREE_MAX_MS,
 };
 
+interface Place {
+  readonly occupees: Map<string, number>;
+  readonly cle: string;
+  readonly plafond: number;
+}
+
+/**
+ * Chaque abonnement tient trois minuteurs et une socket pendant cinq heures
+ * dans le processus partage par tout le site : sans plafond, une boucle
+ * d EventSource sur un `sessionId` — rendu en clair a chaque inscription
+ * (join-session.response.dto.ts) — suffit a le saturer.
+ *
+ * Trois budgets, comptes a part : cent flux etudiants par seance (trois fois
+ * une classe, rechargements compris), deux flux simultanes par participant,
+ * et quatre places reservees au formateur proprietaire (pupitre, scene et
+ * leurs reconnexions), que les flux etudiants ne peuvent pas occuper. Le
+ * throttler de FormationsStudent.controller.ts borne les ouvertures par
+ * minute, pas les flux tenus ouverts.
+ */
 @Injectable()
 export class StreamSessionUseCase {
   private readonly logger = new Logger(StreamSessionUseCase.name);
-  private readonly abonnements = new Map<string, number>();
+  private readonly fluxEtudiants = new Map<string, number>();
+  private readonly fluxFormateur = new Map<string, number>();
+  private readonly fluxParParticipant = new Map<string, number>();
 
   constructor(
     @Inject(SESSIONS_REPOSITORY)
@@ -59,13 +82,6 @@ export class StreamSessionUseCase {
     private readonly cadences: CadencesFlux = CADENCES_PRODUCTION,
   ) {}
 
-  /**
-   * Chaque abonnement tient trois minuteurs et une socket pendant cinq
-   * heures dans le processus partage par tout le site : sans plafond, une
-   * boucle d EventSource sur un `sessionId` — rendu en clair a chaque
-   * inscription (join-session.response.dto.ts) — suffit a le saturer.
-   * Cent places couvrent trois fois une classe, rechargements compris.
-   */
   async executeForTeacher(
     sessionId: string,
     teacherId: string,
@@ -75,20 +91,42 @@ export class StreamSessionUseCase {
       sessionId,
       teacherId,
     );
-    return this.ouvrirFlux(sessionId, session.bareme);
+    return this.ouvrirFlux(
+      sessionId,
+      [
+        {
+          occupees: this.fluxFormateur,
+          cle: sessionId,
+          plafond: MAX_FLUX_FORMATEUR_PAR_SESSION,
+        },
+      ],
+      session.bareme,
+    );
   }
 
-  execute(sessionId: string): Observable<MessageEvent> {
-    return this.ouvrirFlux(sessionId);
+  execute(sessionId: string, participantId: string): Observable<MessageEvent> {
+    return this.ouvrirFlux(sessionId, [
+      {
+        occupees: this.fluxEtudiants,
+        cle: sessionId,
+        plafond: MAX_ABONNEMENTS_PAR_SESSION,
+      },
+      {
+        occupees: this.fluxParParticipant,
+        cle: participantId,
+        plafond: MAX_FLUX_PAR_PARTICIPANT,
+      },
+    ]);
   }
 
   private ouvrirFlux(
     sessionId: string,
+    places: readonly Place[],
     baremeDuFormateur?: Bareme,
   ): Observable<MessageEvent> {
-    this.assertPlaceDisponible(sessionId);
+    assertPlacesDisponibles(places);
     return new Observable<MessageEvent>((subscriber) => {
-      this.entrer(sessionId);
+      places.forEach(entrer);
       let derniereEmpreinte = '';
       let derniereActivite = AUCUNE_ACTIVITE_VUE;
       let actif = true;
@@ -171,29 +209,10 @@ export class StreamSessionUseCase {
       void tick();
 
       return () => {
-        this.sortir(sessionId);
+        places.forEach(sortir);
         arreter();
       };
     });
-  }
-
-  private assertPlaceDisponible(sessionId: string): void {
-    if ((this.abonnements.get(sessionId) ?? 0) >= MAX_ABONNEMENTS_PAR_SESSION) {
-      throw new SessionStreamLimitError();
-    }
-  }
-
-  private entrer(sessionId: string): void {
-    this.abonnements.set(sessionId, (this.abonnements.get(sessionId) ?? 0) + 1);
-  }
-
-  private sortir(sessionId: string): void {
-    const restants = (this.abonnements.get(sessionId) ?? 1) - 1;
-    if (restants <= 0) {
-      this.abonnements.delete(sessionId);
-      return;
-    }
-    this.abonnements.set(sessionId, restants);
   }
 
   private async lireResultats(
@@ -229,4 +248,27 @@ export class StreamSessionUseCase {
     this.cache.publish(sessionId, etat);
     return etat;
   }
+}
+
+function assertPlacesDisponibles(places: readonly Place[]): void {
+  if (
+    places.some(
+      (place) => (place.occupees.get(place.cle) ?? 0) >= place.plafond,
+    )
+  ) {
+    throw new SessionStreamLimitError();
+  }
+}
+
+function entrer(place: Place): void {
+  place.occupees.set(place.cle, (place.occupees.get(place.cle) ?? 0) + 1);
+}
+
+function sortir(place: Place): void {
+  const restantes = (place.occupees.get(place.cle) ?? 1) - 1;
+  if (restantes <= 0) {
+    place.occupees.delete(place.cle);
+    return;
+  }
+  place.occupees.set(place.cle, restantes);
 }

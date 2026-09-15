@@ -10,17 +10,33 @@ const AUTRE_SESSION_ID = '22222222-2222-4222-8222-222222222222';
 const PARTICIPANT_ID = '33333333-3333-4333-8333-333333333333';
 const SECRET_TEST = 'secret-de-test-assez-long-pour-hmac-sha256-0123456789';
 
+interface RequeteDeTest {
+  params: { id: string | undefined };
+  headers: Record<string, string | readonly string[]>;
+  participantId?: string;
+}
+
+function requeteDe(
+  sessionId: string | undefined,
+  jeton: string | readonly string[] | undefined,
+): RequeteDeTest {
+  return {
+    params: { id: sessionId },
+    headers: jeton === undefined ? {} : { [EN_TETE_JETON]: jeton },
+  };
+}
+
+function contexteDe(requete: RequeteDeTest): ExecutionContext {
+  return {
+    switchToHttp: () => ({ getRequest: () => requete }),
+  } as unknown as ExecutionContext;
+}
+
 function contexte(
   sessionId: string | undefined,
   jeton: string | readonly string[] | undefined,
 ): ExecutionContext {
-  const requete = {
-    params: { id: sessionId },
-    headers: jeton === undefined ? {} : { [EN_TETE_JETON]: jeton },
-  };
-  return {
-    switchToHttp: () => ({ getRequest: () => requete }),
-  } as unknown as ExecutionContext;
+  return contexteDe(requeteDe(sessionId, jeton));
 }
 
 describe('ParticipantTokenGuard', () => {
@@ -40,6 +56,26 @@ describe('ParticipantTokenGuard', () => {
     const jeton = tokens.sign(SESSION_ID, PARTICIPANT_ID);
 
     expect(garde.canActivate(contexte(SESSION_ID, jeton))).toBe(true);
+  });
+
+  it('rattache a la requete le participant dont il a verifie le jeton', () => {
+    const requete = requeteDe(
+      SESSION_ID,
+      tokens.sign(SESSION_ID, PARTICIPANT_ID),
+    );
+
+    garde.canActivate(contexteDe(requete));
+
+    expect(requete.participantId).toBe(PARTICIPANT_ID);
+  });
+
+  it('ne rattache aucun participant quand le jeton est refuse', () => {
+    const requete = requeteDe(SESSION_ID, `${PARTICIPANT_ID}.abcdef`);
+
+    expect(() => garde.canActivate(contexteDe(requete))).toThrow(
+      UnauthorizedException,
+    );
+    expect(requete.participantId).toBeUndefined();
   });
 
   it('retient le premier jeton quand l en-tete arrive en double', () => {

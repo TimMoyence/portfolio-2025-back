@@ -22,6 +22,8 @@ import { SessionStateCacheService } from '../../infrastructure/SessionStateCache
 import {
   CADENCES_PRODUCTION,
   MAX_ABONNEMENTS_PAR_SESSION,
+  MAX_FLUX_FORMATEUR_PAR_SESSION,
+  MAX_FLUX_PAR_PARTICIPANT,
   StreamSessionUseCase,
 } from '../StreamSession.useCase';
 
@@ -29,6 +31,11 @@ const CINQ_HEURES_MS = 5 * 60 * 60 * 1000;
 const HEARTBEAT_MS_TEST = 15000;
 const INTERVALLE_MS_TEST = 500;
 const TEACHER_ID = 'teacher-uuid';
+const PARTICIPANT_ID = 'participant-uuid';
+
+function participantDeRang(rang: number): string {
+  return `etudiant-${rang}`;
+}
 
 const REPONSE_FAUSSE = buildAnswerRecord({
   id: 'answer-fausse-uuid',
@@ -77,7 +84,7 @@ describe('StreamSessionUseCase', () => {
   });
 
   it('emet l etat initial des la souscription', async () => {
-    const premier = firstValueFrom(sut.execute('session-uuid'));
+    const premier = firstValueFrom(sut.execute('session-uuid', PARTICIPANT_ID));
     await jest.advanceTimersByTimeAsync(10);
     const message = await premier;
     expect(message.type).toBe('etat');
@@ -85,7 +92,7 @@ describe('StreamSessionUseCase', () => {
 
   it('n emet pas deux fois le meme etat', async () => {
     const messages = firstValueFrom(
-      sut.execute('session-uuid').pipe(take(2), toArray()),
+      sut.execute('session-uuid', PARTICIPANT_ID).pipe(take(2), toArray()),
     );
     await jest.advanceTimersByTimeAsync(HEARTBEAT_MS_TEST);
     const recus = await messages;
@@ -94,7 +101,7 @@ describe('StreamSessionUseCase', () => {
 
   it('emet un nouvel etat quand l ecran change', async () => {
     const messages = firstValueFrom(
-      sut.execute('session-uuid').pipe(take(2), toArray()),
+      sut.execute('session-uuid', PARTICIPANT_ID).pipe(take(2), toArray()),
     );
     await jest.advanceTimersByTimeAsync(100);
     sessions.findById.mockResolvedValue(
@@ -112,7 +119,7 @@ describe('StreamSessionUseCase', () => {
       buildSessionRecord({ etat: 'terminee' }),
     );
     const messages = firstValueFrom(
-      sut.execute('session-uuid').pipe(toArray()),
+      sut.execute('session-uuid', PARTICIPANT_ID).pipe(toArray()),
     );
     await jest.advanceTimersByTimeAsync(1000);
     const recus = await messages;
@@ -123,14 +130,18 @@ describe('StreamSessionUseCase', () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'terminee' }),
     );
-    const subscription = sut.execute('session-uuid').subscribe();
+    const subscription = sut
+      .execute('session-uuid', PARTICIPANT_ID)
+      .subscribe();
     await jest.advanceTimersByTimeAsync(10);
     expect(cache.read('session-uuid')).toBeNull();
     subscription.unsubscribe();
   });
 
   it('ne vide pas le cache quand un client se desabonne d une session active', async () => {
-    const subscription = sut.execute('session-uuid').subscribe();
+    const subscription = sut
+      .execute('session-uuid', PARTICIPANT_ID)
+      .subscribe();
     await jest.advanceTimersByTimeAsync(10);
     expect(cache.read('session-uuid')).not.toBeNull();
     subscription.unsubscribe();
@@ -140,45 +151,168 @@ describe('StreamSessionUseCase', () => {
   it('termine le flux quand la session est introuvable', async () => {
     sessions.findById.mockResolvedValue(null);
     const messages = firstValueFrom(
-      sut.execute('session-uuid').pipe(toArray()),
+      sut.execute('session-uuid', PARTICIPANT_ID).pipe(toArray()),
     );
     await jest.advanceTimersByTimeAsync(10);
     const recus = await messages;
     expect(recus[recus.length - 1].type).toBe('fin');
   });
 
-  it('borne le nombre d abonnements simultanes sur une meme session', async () => {
-    const ouverts = Array.from({ length: MAX_ABONNEMENTS_PAR_SESSION }, () =>
-      sut.execute('session-uuid').subscribe(),
-    );
-    await jest.advanceTimersByTimeAsync(10);
+  describe('budgets de flux simultanes', () => {
+    const ouvrirFluxEtudiants = async (
+      nombre: number,
+      sessionId = 'session-uuid',
+    ): Promise<Subscription[]> => {
+      const ouverts = Array.from({ length: nombre }, (_, rang) =>
+        sut.execute(sessionId, participantDeRang(rang)).subscribe(),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+      return ouverts;
+    };
 
-    expect(() => sut.execute('session-uuid')).toThrow(SessionStreamLimitError);
+    const fermer = (ouverts: readonly Subscription[]): void => {
+      ouverts.forEach((abonnement) => abonnement.unsubscribe());
+    };
 
-    ouverts.forEach((abonnement) => abonnement.unsubscribe());
-  });
+    it('borne le nombre de flux etudiants simultanes sur une meme session', async () => {
+      const ouverts = await ouvrirFluxEtudiants(MAX_ABONNEMENTS_PAR_SESSION);
 
-  it('ne compte pas deux sessions distinctes dans le meme plafond', async () => {
-    const ouverts = Array.from({ length: MAX_ABONNEMENTS_PAR_SESSION }, () =>
-      sut.execute('session-uuid').subscribe(),
-    );
-    await jest.advanceTimersByTimeAsync(10);
+      expect(() =>
+        sut.execute(
+          'session-uuid',
+          participantDeRang(MAX_ABONNEMENTS_PAR_SESSION),
+        ),
+      ).toThrow(SessionStreamLimitError);
 
-    expect(() => sut.execute('autre-session')).not.toThrow();
+      fermer(ouverts);
+    });
 
-    ouverts.forEach((abonnement) => abonnement.unsubscribe());
-  });
+    it('ne compte pas deux sessions distinctes dans le meme plafond', async () => {
+      const ouverts = await ouvrirFluxEtudiants(MAX_ABONNEMENTS_PAR_SESSION);
 
-  it('rend sa place au plafond quand un client se desabonne', async () => {
-    const ouverts = Array.from({ length: MAX_ABONNEMENTS_PAR_SESSION }, () =>
-      sut.execute('session-uuid').subscribe(),
-    );
-    await jest.advanceTimersByTimeAsync(10);
-    ouverts[0].unsubscribe();
+      expect(() =>
+        sut.execute(
+          'autre-session',
+          participantDeRang(MAX_ABONNEMENTS_PAR_SESSION),
+        ),
+      ).not.toThrow();
 
-    expect(() => sut.execute('session-uuid')).not.toThrow();
+      fermer(ouverts);
+    });
 
-    ouverts.slice(1).forEach((abonnement) => abonnement.unsubscribe());
+    it('rend sa place au plafond quand un client se desabonne', async () => {
+      const ouverts = await ouvrirFluxEtudiants(MAX_ABONNEMENTS_PAR_SESSION);
+      ouverts[0].unsubscribe();
+
+      expect(() =>
+        sut.execute(
+          'session-uuid',
+          participantDeRang(MAX_ABONNEMENTS_PAR_SESSION),
+        ),
+      ).not.toThrow();
+
+      fermer(ouverts.slice(1));
+    });
+
+    it('ouvre le flux du formateur quand cent flux etudiants tiennent deja la session', async () => {
+      const ouverts = await ouvrirFluxEtudiants(MAX_ABONNEMENTS_PAR_SESSION);
+
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(ecoute.evenements.map((evenement) => evenement.type)).toContain(
+        'etat',
+      );
+      ecoute.abonnement.unsubscribe();
+      fermer(ouverts);
+    });
+
+    it('reserve au formateur des places que ses flux ne prennent pas aux etudiants', async () => {
+      const formateur = await Promise.all(
+        Array.from({ length: MAX_FLUX_FORMATEUR_PAR_SESSION }, async () =>
+          (await sut.executeForTeacher('session-uuid', TEACHER_ID)).subscribe(),
+        ),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      await expect(
+        sut.executeForTeacher('session-uuid', TEACHER_ID),
+      ).rejects.toThrow(SessionStreamLimitError);
+      const etudiants = await ouvrirFluxEtudiants(MAX_ABONNEMENTS_PAR_SESSION);
+      expect(etudiants).toHaveLength(MAX_ABONNEMENTS_PAR_SESSION);
+
+      fermer(formateur);
+      fermer(etudiants);
+    });
+
+    it('rend sa place au formateur quand l un de ses flux se ferme', async () => {
+      const formateur = await Promise.all(
+        Array.from({ length: MAX_FLUX_FORMATEUR_PAR_SESSION }, async () =>
+          (await sut.executeForTeacher('session-uuid', TEACHER_ID)).subscribe(),
+        ),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+      formateur[0].unsubscribe();
+
+      await expect(
+        sut.executeForTeacher('session-uuid', TEACHER_ID),
+      ).resolves.toBeDefined();
+
+      fermer(formateur.slice(1));
+    });
+
+    it('refuse a un participant un flux au-dela de ses flux simultanes', async () => {
+      const siens = Array.from({ length: MAX_FLUX_PAR_PARTICIPANT }, () =>
+        sut.execute('session-uuid', PARTICIPANT_ID).subscribe(),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(() => sut.execute('session-uuid', PARTICIPANT_ID)).toThrow(
+        SessionStreamLimitError,
+      );
+      expect(() =>
+        sut.execute('session-uuid', participantDeRang(0)),
+      ).not.toThrow();
+
+      fermer(siens);
+    });
+
+    it('rend sa place au participant quand l un de ses flux se ferme', async () => {
+      const siens = Array.from({ length: MAX_FLUX_PAR_PARTICIPANT }, () =>
+        sut.execute('session-uuid', PARTICIPANT_ID).subscribe(),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+      siens[0].unsubscribe();
+
+      expect(() => sut.execute('session-uuid', PARTICIPANT_ID)).not.toThrow();
+
+      fermer(siens.slice(1));
+    });
+
+    it('ne compte pas au plafond de seance le flux refuse a un participant', async () => {
+      const siens = Array.from({ length: MAX_FLUX_PAR_PARTICIPANT }, () =>
+        sut.execute('session-uuid', PARTICIPANT_ID).subscribe(),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+      expect(() => sut.execute('session-uuid', PARTICIPANT_ID)).toThrow(
+        SessionStreamLimitError,
+      );
+
+      const autres = await ouvrirFluxEtudiants(
+        MAX_ABONNEMENTS_PAR_SESSION - MAX_FLUX_PAR_PARTICIPANT,
+      );
+      expect(() =>
+        sut.execute(
+          'session-uuid',
+          participantDeRang(MAX_ABONNEMENTS_PAR_SESSION),
+        ),
+      ).toThrow(SessionStreamLimitError);
+
+      fermer(siens);
+      fermer(autres);
+    });
   });
 
   it('ouvre le flux au formateur proprietaire de la session', async () => {
@@ -214,12 +348,14 @@ describe('StreamSessionUseCase', () => {
     );
     const collected: MessageEvent[] = [];
     let termine = false;
-    const subscription = brefs.execute('session-uuid').subscribe({
-      next: (event) => collected.push(event),
-      complete: () => {
-        termine = true;
-      },
-    });
+    const subscription = brefs
+      .execute('session-uuid', PARTICIPANT_ID)
+      .subscribe({
+        next: (event) => collected.push(event),
+        complete: () => {
+          termine = true;
+        },
+      });
 
     await jest.advanceTimersByTimeAsync(dureeMaxMs - 1000);
     expect(termine).toBe(false);
@@ -301,7 +437,7 @@ describe('StreamSessionUseCase', () => {
     });
 
     it('n emet jamais les resultats sur le flux etudiant, meme apres une activite', async () => {
-      const ecoute = ecouter(sut.execute('session-uuid'));
+      const ecoute = ecouter(sut.execute('session-uuid', PARTICIPANT_ID));
       await jest.advanceTimersByTimeAsync(10);
 
       cache.signalerActivite('session-uuid');
@@ -443,7 +579,7 @@ describe('StreamSessionUseCase', () => {
     it('garde le flux etudiant ouvert et emet l etat au passage suivant', async () => {
       sessions.findById.mockRejectedValueOnce(PANNE);
 
-      const ecoute = ecouter(sut.execute('session-uuid'));
+      const ecoute = ecouter(sut.execute('session-uuid', PARTICIPANT_ID));
       await passerDeuxPassages();
 
       expectPanneJournalisee();

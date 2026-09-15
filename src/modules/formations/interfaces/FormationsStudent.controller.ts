@@ -261,9 +261,15 @@ export class FormationsStudentController {
   @Sse('sessions/:id/stream')
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
-  @ApiTooManyRequestsResponse({ description: 'Trop d abonnes sur la session' })
-  stream(@Param('id', ParseUUIDPipe) id: string): Observable<MessageEvent> {
-    return this.streamSession.execute(id);
+  @ApiTooManyRequestsResponse({
+    description:
+      'Trop de flux ouverts sur la session ou par ce participant (deux au plus)',
+  })
+  stream(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ): Observable<MessageEvent> {
+    return this.streamSession.execute(id, request.participantId!);
   }
 }
 

@@ -59,7 +59,10 @@ import { SessionStateCacheService } from '../src/modules/formations/infrastructu
 import { CodeScanProtectionService } from '../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsPresenterController } from '../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../src/modules/formations/interfaces/FormationsStudent.controller';
-import { ParticipantTokenService } from '../src/modules/formations/interfaces/ParticipantToken.service';
+import {
+  EN_TETE_JETON,
+  ParticipantTokenService,
+} from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildCoursDeClasse,
   buildCoursDeTest,
@@ -70,6 +73,7 @@ import {
   createMockIncidentsRepo,
   createMockMasteryRepo,
 } from './factories/formation.factory';
+import { abonnerAuFlux } from './helpers/formations-harness';
 import {
   ecouterEnBoucleLocale,
   fermerApplication,
@@ -287,6 +291,7 @@ class IdentiteDeTestGuard implements CanActivate {
 interface HarnaisFormations {
   app: INestApplication;
   mailer: ReturnType<typeof createMockFormationMailer>;
+  port: number;
 }
 
 /**
@@ -339,13 +344,14 @@ async function creerHarnais(
   app.setGlobalPrefix(API_PREFIX);
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
-  await ecouterEnBoucleLocale(app);
-  return { app, mailer };
+  const port = await ecouterEnBoucleLocale(app);
+  return { app, mailer, port };
 }
 
 describe('Session de formation (e2e http socket)', () => {
   let app: INestApplication;
   let mailer: HarnaisFormations['mailer'];
+  let port: number;
 
   const serveur = (): Parameters<typeof request>[0] =>
     app.getHttpServer() as Parameters<typeof request>[0];
@@ -380,11 +386,45 @@ describe('Session de formation (e2e http socket)', () => {
       .send(inscription(studentKey));
 
   beforeAll(async () => {
-    ({ app, mailer } = await creerHarnais());
+    ({ app, mailer, port } = await creerHarnais());
   });
 
   afterAll(async () => {
     await fermerApplication(app);
+  });
+
+  describe('flux simultanes d une seance ouverte', () => {
+    const ouvrirFluxEtudiant = (sessionId: string, jeton: string) =>
+      abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
+        [EN_TETE_JETON]: jeton,
+      });
+
+    it('refuse un troisieme flux au meme participant et garde au formateur sa place', async () => {
+      const { sessionId, code } = await ouvrirSession(FORMATEUR_A);
+      const inscrit = await rejoindre(
+        code,
+        '11111111-1111-4111-8111-111111111120',
+      ).expect(201);
+      const { jeton } = inscrit.body as { jeton: string };
+
+      const siens = [
+        await ouvrirFluxEtudiant(sessionId, jeton),
+        await ouvrirFluxEtudiant(sessionId, jeton),
+      ];
+      const troisieme = await ouvrirFluxEtudiant(sessionId, jeton);
+      const formateur = await abonnerAuFlux(
+        port,
+        route(`/sessions/${sessionId}/presenter-stream`),
+        { 'x-test-identite': `${FORMATEUR_A}:teacher` },
+      );
+      [...siens, troisieme, formateur].forEach((flux) => flux.fermer());
+
+      expect({
+        siens: siens.map((flux) => flux.statut),
+        troisieme: troisieme.statut,
+        formateur: formateur.statut,
+      }).toEqual({ siens: [200, 200], troisieme: 429, formateur: 200 });
+    });
   });
 
   describe('ouverture d une seance par le slug du cours', () => {

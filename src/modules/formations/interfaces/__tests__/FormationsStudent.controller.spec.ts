@@ -19,6 +19,10 @@ const IP_SALLE = 'sortie-nat-salle-b204';
 
 const requeteEtudiant = { ip: IP_SALLE, socket: {} } as unknown as Request;
 
+function requeteVerifiee(participantId: string): Request {
+  return { ...requeteEtudiant, participantId } as Request;
+}
+
 const inscription: JoinSessionRequestDto = {
   studentKey: '11111111-1111-4111-8111-111111111111',
   prenom: 'Theo',
@@ -216,12 +220,18 @@ describe('FormationsStudentController', () => {
     expect(recordIncidents.execute).not.toHaveBeenCalled();
   });
 
-  it('branche le flux temps reel sur la session demandee', () => {
+  it('branche le flux temps reel sur la session demandee, au nom du participant verifie par la garde', () => {
     const flux = of({ data: { etat: 'en_cours' } });
     streamSession.execute.mockReturnValue(flux);
 
-    expect(controller.stream(SESSION_ID)).toBe(flux);
-    expect(streamSession.execute).toHaveBeenCalledWith(SESSION_ID);
+    expect(controller.stream(SESSION_ID, requeteVerifiee(PARTICIPANT_ID))).toBe(
+      flux,
+    );
+    expect(streamSession.execute).toHaveBeenCalledWith(
+      SESSION_ID,
+      PARTICIPANT_ID,
+    );
+    expect(tokens.verify).not.toHaveBeenCalled();
   });
 
   it('confie le controle du jeton a une garde, seule a pouvoir refuser avant l ouverture du flux', () => {
