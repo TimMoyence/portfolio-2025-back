@@ -4,6 +4,7 @@ import {
 } from '../../../../test/factories/cours.factory';
 import {
   buildAnswerRecord,
+  buildBareme,
   buildIncidentInput,
   buildParticipantRecord,
   buildSessionRecord,
@@ -149,6 +150,37 @@ describe('buildRapportSession', () => {
     expect(p1.completion).toBe(1);
     expect(p2.completion).toBe(0);
     expect(p2.sousSeuil).toBe(true);
+  });
+
+  it('range les reponses d un etudiant dans l ordre des questions du bareme, quel que soit leur ordre d ecriture', () => {
+    const session = buildSessionRecord({
+      bareme: buildBareme({
+        questions: ['Q-1', 'Q-2', 'Q-3'].map((id) => ({
+          id,
+          type: 'numeric' as const,
+          concept: 'capitalisation',
+          noteCompte: true,
+        })),
+      }),
+    });
+    const ecrite = (id: string, questionId: string) =>
+      buildAnswerRecord({ id, participantId: 'p1', questionId });
+
+    const rapport = rapportDe({
+      session,
+      participants: [buildParticipantRecord({ id: 'p1' })],
+      answers: [
+        ecrite('a1', 'Q-HORS-B'),
+        ecrite('a2', 'Q-3'),
+        ecrite('a3', 'Q-1'),
+        ecrite('a4', 'Q-HORS-A'),
+        ecrite('a5', 'Q-2'),
+      ],
+    });
+
+    expect(
+      rapport.participants[0].reponses.map((reponse) => reponse.questionId),
+    ).toEqual(['Q-1', 'Q-2', 'Q-3', 'Q-HORS-B', 'Q-HORS-A']);
   });
 
   describe('lecture des reponses d un etudiant', () => {

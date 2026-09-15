@@ -34,6 +34,9 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
     completion: completionDe(participant.id, input.answers, notees),
   }));
   const scores = computeCohortScore(completions);
+  const rangs = new Map(
+    input.session.bareme.questions.map((question, rang) => [question.id, rang]),
+  );
 
   const participants: readonly RapportParticipant[] = input.participants.map(
     (participant) => {
@@ -47,7 +50,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
         completion: score?.completion ?? 0,
         note: score?.note ?? 0,
         sousSeuil: score?.sousSeuil ?? true,
-        reponses: reponsesDe(participant, input),
+        reponses: reponsesDe(participant, input, rangs),
         incidents: input.incidents.filter(
           (incident) => incident.participantId === participant.id,
         ).length,
@@ -86,10 +89,14 @@ function completionDe(
 function reponsesDe(
   participant: ParticipantRecord,
   input: SessionReportInput,
+  rangs: ReadonlyMap<string, number>,
 ): readonly RapportQuestion[] {
   const libelles = libellesDuTirage(input, participant.seed);
+  const rangDe = (reponse: AnswerRecord): number =>
+    rangs.get(reponse.questionId) ?? rangs.size;
   return input.answers
     .filter((reponse) => reponse.participantId === participant.id)
+    .sort((premiere, seconde) => rangDe(premiere) - rangDe(seconde))
     .map((reponse) => ({
       questionId: reponse.questionId,
       concept: reponse.concept,
