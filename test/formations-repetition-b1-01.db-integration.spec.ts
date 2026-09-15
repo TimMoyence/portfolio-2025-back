@@ -1,16 +1,12 @@
 import request from 'supertest';
 import type { ResultatsDeSeance } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
-import { CATALOGUE_COURS_STATIQUE } from '../src/modules/formations/domain/cours/catalogue';
 import {
   estInteractif,
   questionsDe,
   questionsDuCours,
 } from '../src/modules/formations/domain/cours/Cours';
-import type {
-  Cours,
-  Question,
-} from '../src/modules/formations/domain/cours/Cours';
+import type { Question } from '../src/modules/formations/domain/cours/Cours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { TirageDuCours } from '../src/modules/formations/domain/cours/Tirage';
 import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';
@@ -30,6 +26,7 @@ import { describeDb } from './helpers/db-integration-datasource';
 import {
   abonnerAuFlux,
   clientFormations,
+  coursPublie,
   EN_TETE_IDENTITE,
   monterBancFormations,
   patienter,
@@ -70,14 +67,6 @@ interface ReponseEnvoyee {
   questionId: string;
   valeur: AnswerValue;
   confusion: string | null;
-}
-
-function coursPublie(slug: string): Cours {
-  const cours = CATALOGUE_COURS_STATIQUE.trouver(slug);
-  if (cours === null) {
-    throw new Error(`Le cours ${slug} est absent du catalogue publie`);
-  }
-  return cours;
 }
 
 const COURS = coursPublie(SLUG);

@@ -3,13 +3,12 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
 import type { ResultatsDeSeance } from '../src/modules/formations/application/GetSessionResults.useCase';
+import { CATALOGUE_COURS_STATIQUE } from '../src/modules/formations/domain/cours/catalogue';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
+import type { AnswerValue } from '../src/modules/formations/domain/GradingCore';
 import type { IFormationMailer } from '../src/modules/formations/domain/IFormationMailer.port';
-import {
-  buildCoursDeClasse,
-  creerCatalogueDeTest,
-} from './factories/cours.factory';
+import type { ResultatsSeance } from '../src/modules/formations/domain/ResultatsSeance';
 import { createMockFormationMailer } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -18,6 +17,7 @@ import {
 } from './helpers/formations-db';
 import {
   abonnerAuFlux,
+  coursPublie,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   patienter,
@@ -31,11 +31,9 @@ import {
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const TAILLE_CLASSE = 30;
-const NB_QUESTIONS = 12;
-const COURS_DE_CLASSE = buildCoursDeClasse(NB_QUESTIONS);
-const QUESTIONS_NOTEES = questionsDuCours(COURS_DE_CLASSE).filter(
-  (question) => question.noteCompte,
-);
+const COURS = coursPublie('b1-01-proportions');
+const QUESTIONS = questionsDuCours(COURS);
+const [PREMIERE_QUESTION] = QUESTIONS;
 const FORMATEUR = 'c3333333-3333-4333-8333-333333333333';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'charge-formateur@example.test';
@@ -56,6 +54,8 @@ const DELAI_TEST_LONG_MS = 300_000;
 const POUR_CENT = 100;
 const MS_PAR_SECONDE = 1000;
 const DUREE_REPONSE_MS = 12_000;
+const ATTENTE_RESULTATS_MS = 15_000;
+const PAS_SONDAGE_MS = 50;
 
 interface Inscrit {
   participantId: string;
@@ -140,12 +140,27 @@ function identiteDe(index: number): Record<string, string> {
   };
 }
 
-function corpsReponse(question: number): Record<string, unknown> {
-  return {
-    questionId: QUESTIONS_NOTEES[question].id,
-    valeur: 1,
-    dureeMs: DUREE_REPONSE_MS,
-  };
+function totalPousse(flux: FluxEcoute, questionId: string): number {
+  const derniers = flux.evenements
+    .filter((evenement) => evenement.type === 'resultats')
+    .map((evenement) => evenement.donnees as unknown as ResultatsSeance)
+    .at(-1);
+  return (
+    derniers?.questions.find((question) => question.questionId === questionId)
+      ?.total ?? 0
+  );
+}
+
+async function attendreTotalPousse(
+  flux: FluxEcoute,
+  questionId: string,
+  attendu: number,
+): Promise<number> {
+  const limite = Date.now() + ATTENTE_RESULTATS_MS;
+  while (totalPousse(flux, questionId) !== attendu && Date.now() < limite) {
+    await patienter(PAS_SONDAGE_MS);
+  }
+  return totalPousse(flux, questionId);
 }
 
 function statutsEnEchec(
@@ -176,11 +191,19 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       .post(route(`/sessions/${code}/join`))
       .send(identiteDe(index));
 
-  const repondre = (sessionId: string, jeton: string, question: number): Test =>
+  const repondreJuste = (
+    sessionId: string,
+    inscrit: Inscrit,
+    valeur: AnswerValue,
+  ): Test =>
     request(serveur())
       .post(route(`/sessions/${sessionId}/answers`))
-      .set(EN_TETE_JETON, jeton)
-      .send(corpsReponse(question));
+      .set(EN_TETE_JETON, inscrit.jeton)
+      .send({
+        questionId: PREMIERE_QUESTION.id,
+        valeur,
+        dureeMs: DUREE_REPONSE_MS,
+      });
 
   const commander = (chemin: string): Test =>
     request(serveur())
@@ -188,7 +211,10 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`);
 
   const ouvrirSeance = (): Test =>
-    commander('/sessions').send({ courseSlug: COURS_DE_CLASSE.slug });
+    commander('/sessions').send({ courseSlug: COURS.slug });
+
+  const solutionsDe = async (inscrit: Inscrit) =>
+    tirer(COURS, await contexte.graineDe(inscrit.participantId)).solutions;
 
   const preparerClasse = async (): Promise<Classe> => {
     const ouverture = await ouvrirSeance().expect(CREE);
@@ -208,9 +234,9 @@ describeDb('Formations sous charge de classe (db integration)', () => {
   const semerReponses = async (classe: Classe): Promise<void> => {
     for (const inscrit of classe.inscrits) {
       const seed = await contexte.graineDe(inscrit.participantId);
-      const { solutions } = tirer(COURS_DE_CLASSE, seed);
+      const { solutions } = tirer(COURS, seed);
       await Promise.all(
-        QUESTIONS_NOTEES.map((question, rang) =>
+        QUESTIONS.map((question, rang) =>
           contexte.answers.create({
             sessionId: classe.sessionId,
             participantId: inscrit.participantId,
@@ -227,7 +253,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
     }
     await expect(
       contexte.answers.listBySession(classe.sessionId),
-    ).resolves.toHaveLength(TAILLE_CLASSE * NB_QUESTIONS);
+    ).resolves.toHaveLength(TAILLE_CLASSE * QUESTIONS.length);
   };
 
   const ouvrirFlux = (sessionId: string, jeton: string): Promise<FluxEcoute> =>
@@ -249,7 +275,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
         mastery: contexte.mastery,
         mailer,
       },
-      creerCatalogueDeTest(COURS_DE_CLASSE),
+      CATALOGUE_COURS_STATIQUE,
     );
     port = await ecouterEnBoucleLocale(app);
   });
@@ -299,29 +325,55 @@ describeDb('Formations sous charge de classe (db integration)', () => {
   );
 
   it(
-    'encaisse trente reponses simultanees au meme enonce',
+    'encaisse trente reponses simultanees au meme enonce, flux du formateur ouvert',
     async () => {
       const classe = await preparerClasse();
+      const valeurs = await Promise.all(
+        classe.inscrits.map(
+          async (inscrit) =>
+            (await solutionsDe(inscrit))[PREMIERE_QUESTION.id].valeur,
+        ),
+      );
+      const presentateur = await abonnerAuFlux(
+        port,
+        route(`/sessions/${classe.sessionId}/presenter-stream`),
+        { [EN_TETE_IDENTITE]: `${FORMATEUR}:teacher` },
+      );
+      await attendreTotalPousse(presentateur, PREMIERE_QUESTION.id, 0);
 
       const [envois, duree] = await chronometrer(() =>
         Promise.all(
-          classe.inscrits.map((inscrit) =>
-            repondre(classe.sessionId, inscrit.jeton, 0),
+          classe.inscrits.map((inscrit, rang) =>
+            repondreJuste(classe.sessionId, inscrit, valeurs[rang]),
           ),
         ),
       );
+      const pousses = await attendreTotalPousse(
+        presentateur,
+        PREMIERE_QUESTION.id,
+        TAILLE_CLASSE,
+      );
+      presentateur.fermer();
 
       expect(statutsEnEchec(envois, CREE)).toEqual([]);
       await expect(
         contexte.answers.listBySession(classe.sessionId),
       ).resolves.toHaveLength(TAILLE_CLASSE);
-      exigerDuree('trente reponses au meme enonce', duree, BUDGET_REPONSES_MS);
+      expect({
+        statut: presentateur.statut,
+        totalPousse: pousses,
+      }).toEqual({ statut: OK, totalPousse: TAILLE_CLASSE });
+      exigerDuree(
+        'trente reponses au meme enonce, flux formateur ouvert',
+        duree,
+        BUDGET_REPONSES_MS,
+      );
     },
     DELAI_TEST_COURT_MS,
   );
 
   it(
-    'cloture une seance de trente etudiants et trois cent soixante reponses',
+    'cloture une seance de trente etudiants ayant repondu a toutes les questions du cours',
     async () => {
       const classe = await preparerClasse();
       await semerReponses(classe);
@@ -334,7 +386,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       expect(mailer.sendSyntheseFormateur.mock.calls).toHaveLength(1);
       expect(mailer.sendCopieEtudiant.mock.calls).toHaveLength(TAILLE_CLASSE);
       exigerDuree(
-        'cloture de trois cent soixante reponses',
+        `cloture de ${TAILLE_CLASSE * QUESTIONS.length} reponses`,
         duree,
         BUDGET_CLOTURE_MS,
       );
@@ -357,9 +409,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       const corps = lecture.body as ResultatsDeSeance;
       expect(lecture.status).toBe(OK);
       expect(corps.participants).toHaveLength(TAILLE_CLASSE);
-      expect(corps.resultats.questions).toHaveLength(
-        questionsDuCours(COURS_DE_CLASSE).length,
-      );
+      expect(corps.resultats.questions).toHaveLength(QUESTIONS.length);
       exigerDuree('lecture des resultats', duree, BUDGET_LECTURE_MS);
     },
     DELAI_TEST_LONG_MS,

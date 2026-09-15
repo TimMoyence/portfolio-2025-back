@@ -34,6 +34,7 @@ import type { IMasteryRepository } from '../../src/modules/formations/domain/IMa
 import type { IParticipantsRepository } from '../../src/modules/formations/domain/IParticipants.repository';
 import type { ISessionsRepository } from '../../src/modules/formations/domain/ISessions.repository';
 import { CATALOGUE_COURS_STATIQUE } from '../../src/modules/formations/domain/cours/catalogue';
+import type { Cours } from '../../src/modules/formations/domain/cours/Cours';
 import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
   ANSWERS_REPOSITORY,
@@ -67,6 +68,14 @@ import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
 export const PREFIXE_API = 'api/v1/portfolio25';
 export const EN_TETE_IDENTITE = 'x-test-identite';
+
+export function coursPublie(slug: string): Cours {
+  const cours = CATALOGUE_COURS_STATIQUE.trouver(slug);
+  if (cours === null) {
+    throw new Error(`Le cours ${slug} est absent du catalogue publie`);
+  }
+  return cours;
+}
 
 const FENETRE_THROTTLE_MS = 60_000;
 const LIMITE_THROTTLE_PAR_DEFAUT = 30;
