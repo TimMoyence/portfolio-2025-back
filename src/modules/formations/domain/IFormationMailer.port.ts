@@ -2,8 +2,10 @@ export interface RapportQuestion {
   questionId: string;
   concept: string;
   valeur: string;
+  reponse: string;
   correcte: boolean;
   misconception: string | null;
+  libelleConfusion: string | null;
   dureeMs: number;
 }
 

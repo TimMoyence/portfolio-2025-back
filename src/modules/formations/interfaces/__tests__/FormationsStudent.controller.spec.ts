@@ -19,6 +19,10 @@ const IP_SALLE = 'sortie-nat-salle-b204';
 
 const requeteEtudiant = { ip: IP_SALLE, socket: {} } as unknown as Request;
 
+function requeteVerifiee(participantId: string): Request {
+  return { ...requeteEtudiant, participantId } as Request;
+}
+
 const inscription: JoinSessionRequestDto = {
   studentKey: '11111111-1111-4111-8111-111111111111',
   prenom: 'Theo',
@@ -32,6 +36,7 @@ describe('FormationsStudentController', () => {
   const recordIncidents = { execute: jest.fn() };
   const streamSession = { execute: jest.fn() };
   const dueQuestions = { execute: jest.fn() };
+  const lireSujet = { execute: jest.fn() };
   const tokens = { sign: jest.fn(), verify: jest.fn() };
   const codeScan = {
     assertPasDeBalayage: jest.fn(),
@@ -44,6 +49,7 @@ describe('FormationsStudentController', () => {
     recordIncidents as never,
     streamSession as never,
     dueQuestions as never,
+    lireSujet as never,
     tokens as never,
     codeScan as never,
     new PublicFormProtectionService(),
@@ -65,7 +71,7 @@ describe('FormationsStudentController', () => {
     tokens.verify.mockReturnValue(PARTICIPANT_ID);
   });
 
-  it('inscrit l etudiant et lui rend un jeton lie a sa session', async () => {
+  it('inscrit l etudiant et lui rend un jeton lie a sa session, sans la graine de son tirage', async () => {
     const reponse = await rejoindre();
 
     expect(joinSession.execute).toHaveBeenCalledWith({
@@ -76,8 +82,13 @@ describe('FormationsStudentController', () => {
       email: 'theo@example.com',
     });
     expect(tokens.sign).toHaveBeenCalledWith(SESSION_ID, PARTICIPANT_ID);
-    expect(reponse.jeton).toBe(JETON);
-    expect(reponse.seed).toBe(7);
+    expect(reponse).toEqual({
+      participantId: PARTICIPANT_ID,
+      sessionId: SESSION_ID,
+      ecranCourant: 0,
+      modeRythme: 'pilote',
+      jeton: JETON,
+    });
   });
 
   it('arrete le robot qui remplit le champ piege avant tout appel metier', async () => {
@@ -133,6 +144,7 @@ describe('FormationsStudentController', () => {
     submitAnswer.execute.mockResolvedValue({
       correcte: false,
       misconception: 'interet-simple',
+      libelleConfusion: 'Confondre interet simple et interet compose',
       solution: 1338,
     });
 
@@ -153,6 +165,7 @@ describe('FormationsStudentController', () => {
     expect(reponse).toEqual({
       correcte: false,
       misconception: 'interet-simple',
+      libelleConfusion: 'Confondre interet simple et interet compose',
     });
   });
 
@@ -212,12 +225,18 @@ describe('FormationsStudentController', () => {
     expect(recordIncidents.execute).not.toHaveBeenCalled();
   });
 
-  it('branche le flux temps reel sur la session demandee', () => {
+  it('branche le flux temps reel sur la session demandee, au nom du participant verifie par la garde', () => {
     const flux = of({ data: { etat: 'en_cours' } });
     streamSession.execute.mockReturnValue(flux);
 
-    expect(controller.stream(SESSION_ID)).toBe(flux);
-    expect(streamSession.execute).toHaveBeenCalledWith(SESSION_ID);
+    expect(controller.stream(SESSION_ID, requeteVerifiee(PARTICIPANT_ID))).toBe(
+      flux,
+    );
+    expect(streamSession.execute).toHaveBeenCalledWith(
+      SESSION_ID,
+      PARTICIPANT_ID,
+    );
+    expect(tokens.verify).not.toHaveBeenCalled();
   });
 
   it('confie le controle du jeton a une garde, seule a pouvoir refuser avant l ouverture du flux', () => {
@@ -259,5 +278,35 @@ describe('FormationsStudentController', () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
 
     expect(dueQuestions.execute).not.toHaveBeenCalled();
+  });
+
+  it('sert le sujet du tirage au participant verifie par la garde, sans reverifier son jeton', async () => {
+    const sujet = { id: 'cours-de-test', ecrans: [] };
+    lireSujet.execute.mockResolvedValue(sujet);
+
+    const reponse = await controller.sujet(
+      SESSION_ID,
+      requeteVerifiee(PARTICIPANT_ID),
+    );
+
+    expect(tokens.verify).not.toHaveBeenCalled();
+    expect(lireSujet.execute).toHaveBeenCalledWith({
+      sessionId: SESSION_ID,
+      participantId: PARTICIPANT_ID,
+    });
+    expect(reponse).toBe(sujet);
+  });
+
+  it('confie le controle du jeton a une garde avant de servir le sujet', () => {
+    const descripteur = Object.getOwnPropertyDescriptor(
+      FormationsStudentController.prototype,
+      'sujet',
+    );
+    const gardes = Reflect.getMetadata(
+      GUARDS_METADATA,
+      descripteur?.value as object,
+    ) as unknown[];
+
+    expect(gardes).toContain(ParticipantTokenGuard);
   });
 });

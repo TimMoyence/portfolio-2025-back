@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type {
   ISessionsRepository,
@@ -7,6 +8,7 @@ import type {
   UpdateSessionInput,
 } from '../domain/ISessions.repository';
 import {
+  CoursInconnuError,
   InvalidStateTransitionError,
   SessionClosedError,
   SessionNotFoundError,
@@ -15,7 +17,11 @@ import {
 import { isFreeRangeValid } from '../domain/PacingMode';
 import type { FreeRange, PacingMode } from '../domain/PacingMode';
 import { canTransition } from '../domain/SessionState';
-import { SESSION_STATE_CACHE, SESSIONS_REPOSITORY } from '../domain/token';
+import {
+  CATALOGUE_COURS,
+  SESSION_STATE_CACHE,
+  SESSIONS_REPOSITORY,
+} from '../domain/token';
 
 export interface ControlSessionChanges {
   ecran?: number;
@@ -30,12 +36,17 @@ export class ControlSessionUseCase {
     private readonly sessions: ISessionsRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
   ) {}
 
   /**
-   * Le pilotage est atomique de bout en bout : la requete entiere est
-   * validee avant la moindre lecture, puis appliquee en une seule ecriture
-   * et une seule publication.
+   * Le pilotage valide en deux temps : la syntaxe des changements (numero
+   * d'ecran, mode connu) est verifiee avant la moindre lecture ; les bornes
+   * qui dependent du cours de la session (ecran dans le cours, intervalle de
+   * rythme libre) ne peuvent l'etre qu'apres la lecture de la session dans
+   * assertPilotable, mais restent verifiees avant l'unique ecriture et
+   * l'unique publication.
    *
    * Un ecran applique avant qu'un rythme invalide ne soit refuse laisserait
    * les trente postes de la classe sur une diapositive que le formateur ne
@@ -49,9 +60,40 @@ export class ControlSessionUseCase {
     changements: ControlSessionChanges,
   ): Promise<void> {
     const misAJour = this.validerEtProjeter(changements);
-    await this.assertPilotable(sessionId, teacherId);
-    const session = await this.sessions.update(sessionId, misAJour);
-    this.publier(sessionId, session);
+    const session = await this.assertPilotable(sessionId, teacherId);
+    this.assertDansLesBornesDuCours(session.courseSlug, misAJour);
+    const sessionMiseAJour = await this.sessions.update(sessionId, misAJour);
+    this.publier(sessionId, sessionMiseAJour);
+  }
+
+  private assertDansLesBornesDuCours(
+    courseSlug: string,
+    misAJour: UpdateSessionInput,
+  ): void {
+    if (misAJour.ecranCourant === undefined && !misAJour.intervalleLibre) {
+      return;
+    }
+    const cours = this.catalogue.trouver(courseSlug);
+    if (!cours) {
+      throw new CoursInconnuError(courseSlug);
+    }
+    const totalEcrans = cours.ecrans.length;
+    if (
+      misAJour.ecranCourant !== undefined &&
+      misAJour.ecranCourant >= totalEcrans
+    ) {
+      throw new DomainValidationError(
+        `Écran ${misAJour.ecranCourant} hors du cours : ${totalEcrans} écrans`,
+      );
+    }
+    if (
+      misAJour.intervalleLibre &&
+      !isFreeRangeValid(misAJour.intervalleLibre, totalEcrans)
+    ) {
+      throw new DomainValidationError(
+        `Intervalle de rythme libre hors du cours : ${totalEcrans} écrans`,
+      );
+    }
   }
 
   private validerEtProjeter(
@@ -78,7 +120,9 @@ export class ControlSessionUseCase {
 
   private intervalleValide(intervalle: FreeRange | null): FreeRange {
     if (intervalle === null || !isFreeRangeValid(intervalle)) {
-      throw new DomainValidationError('Intervalle de rythme libre invalide');
+      throw new DomainValidationError(
+        'Intervalle de rythme libre invalide : premier et dernier écrans entiers, positifs, le premier avant le dernier',
+      );
     }
     return intervalle;
   }

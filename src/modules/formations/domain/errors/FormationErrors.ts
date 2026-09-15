@@ -16,6 +16,12 @@ export class SessionNotFoundError extends ResourceNotFoundError {
   }
 }
 
+export class CoursInconnuError extends ResourceNotFoundError {
+  constructor(slug: string) {
+    super(`Cours introuvable: ${slug}`);
+  }
+}
+
 export class ParticipantNotFoundError extends ResourceNotFoundError {
   constructor(id: string) {
     super(`Participant introuvable: ${id}`);
@@ -29,6 +35,8 @@ export class SessionNotOwnedError extends InsufficientPermissionsError {
 }
 
 export class SessionClosedError extends ResourceConflictError {
+  readonly code = 'SEANCE_TERMINEE';
+
   constructor() {
     super(
       'La séance est terminée : les réponses ne sont plus acceptées, les résultats restent consultables.',
@@ -37,6 +45,8 @@ export class SessionClosedError extends ResourceConflictError {
 }
 
 export class SessionNotStartedError extends ResourceConflictError {
+  readonly code = 'SEANCE_NON_DEMARREE';
+
   constructor() {
     super(
       "La séance n'a pas encore commencé : attendez que le formateur la démarre pour envoyer vos réponses.",
@@ -57,6 +67,8 @@ export class SeedPoolExhaustedError extends ResourceConflictError {
 }
 
 export class AnswerAlreadySubmittedError extends ResourceConflictError {
+  readonly code = 'REPONSE_DEJA_ENREGISTREE';
+
   constructor(questionId: string) {
     super(
       `Votre réponse à la question ${questionId} est déjà enregistrée : passez à la suivante.`,
@@ -81,5 +93,13 @@ export class SeedAlreadyAssignedError extends ResourceConflictError {
 export class SessionCodeAlreadyActiveError extends ResourceConflictError {
   constructor(code: string) {
     super(`Le code ${code} porte deja une seance active`);
+  }
+}
+
+export class CoursModifieError extends ResourceConflictError {
+  constructor() {
+    super(
+      'Le cours a changé depuis l’ouverture de la séance : le formateur doit ouvrir une nouvelle séance.',
+    );
   }
 }

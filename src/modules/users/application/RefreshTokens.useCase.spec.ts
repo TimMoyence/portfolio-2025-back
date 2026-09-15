@@ -43,7 +43,7 @@ describe('RefreshTokensUseCase', () => {
     const stored = buildRefreshToken();
     const user = buildUser();
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
-    refreshTokensRepo.revokeById.mockResolvedValue(undefined);
+    refreshTokensRepo.rotateById.mockResolvedValue(undefined);
     refreshTokensRepo.create.mockResolvedValue(
       buildRefreshToken({ id: 'rt-2' }),
     );
@@ -52,7 +52,10 @@ describe('RefreshTokensUseCase', () => {
     const result = await useCase.execute('raw-refresh-token');
 
     expect(refreshTokensRepo.findByTokenHash).toHaveBeenCalled();
-    expect(refreshTokensRepo.revokeById).toHaveBeenCalledWith('rt-1');
+    expect(refreshTokensRepo.rotateById).toHaveBeenCalledWith(
+      'rt-1',
+      expect.any(Date),
+    );
     expect(refreshTokensRepo.create).toHaveBeenCalled();
     expect(result.accessToken).toBe('new-jwt-token');
     expect(result.refreshToken).toBeDefined();
@@ -90,10 +93,46 @@ describe('RefreshTokensUseCase', () => {
     );
   });
 
+  it('accepte une nouvelle tentative pendant le delai de grace apres une reponse perdue', async () => {
+    const stored = buildRefreshToken({
+      revoked: true,
+      rotationGraceUntil: new Date(Date.now() + 30_000),
+    });
+    const user = buildUser();
+    refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
+    refreshTokensRepo.create.mockResolvedValue(
+      buildRefreshToken({ id: 'rt-2' }),
+    );
+    usersRepo.findById.mockResolvedValue(user);
+
+    const result = await useCase.execute('retry-after-lost-response');
+
+    expect(result.user).toBe(user);
+    expect(refreshTokensRepo.revokeByUserId).not.toHaveBeenCalled();
+    expect(refreshTokensRepo.rotateById).not.toHaveBeenCalled();
+    expect(refreshTokensRepo.create).toHaveBeenCalled();
+  });
+
+  it('revoque la session quand le delai de grace est depasse', async () => {
+    const stored = buildRefreshToken({
+      revoked: true,
+      rotationGraceUntil: new Date(Date.now() - 1),
+    });
+    refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
+
+    await expect(useCase.execute('late-replay')).rejects.toBeInstanceOf(
+      TokenReuseDetectedError,
+    );
+
+    expect(refreshTokensRepo.revokeByUserId).toHaveBeenCalledWith(
+      stored.userId,
+    );
+  });
+
   it("lance InvalidCredentialsError quand l'utilisateur est introuvable ou inactif", async () => {
     const stored = buildRefreshToken();
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
-    refreshTokensRepo.revokeById.mockResolvedValue(undefined);
+    refreshTokensRepo.rotateById.mockResolvedValue(undefined);
     usersRepo.findById.mockResolvedValue(null);
 
     await expect(useCase.execute('valid-token')).rejects.toBeInstanceOf(

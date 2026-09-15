@@ -1,18 +1,26 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
+  buildCoursDeTest,
+  creerCatalogueDeTest,
+} from '../../../../../test/factories/cours.factory';
+import {
   buildSessionRecord,
   createMockSessionsRepo,
   createMockSessionStateCache,
 } from '../../../../../test/factories/formation.factory';
 import { ControlSessionUseCase } from '../ControlSession.useCase';
 import {
+  CoursInconnuError,
   InvalidStateTransitionError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
 
 const TEACHER_ID = 'teacher-uuid';
 const AUTRE_TEACHER_ID = 'autre-teacher-uuid';
+const COURS_SLUG = buildSessionRecord().courseSlug;
+const COURS = buildCoursDeTest({ slug: COURS_SLUG });
+const NOMBRE_ECRANS = COURS.ecrans.length;
 
 describe('ControlSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -22,7 +30,11 @@ describe('ControlSessionUseCase', () => {
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     cache = createMockSessionStateCache();
-    sut = new ControlSessionUseCase(sessions, cache);
+    sut = new ControlSessionUseCase(
+      sessions,
+      cache,
+      creerCatalogueDeTest(COURS),
+    );
   });
 
   it('change l ecran courant', async () => {
@@ -62,6 +74,35 @@ describe('ControlSessionUseCase', () => {
     ).rejects.toThrow();
   });
 
+  it('accepte l ecran de la derniere position du cours', async () => {
+    const dernierEcran = NOMBRE_ECRANS - 1;
+    await sut.apply('session-uuid', TEACHER_ID, { ecran: dernierEcran });
+    expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
+      ecranCourant: dernierEcran,
+    });
+  });
+
+  it('refuse un ecran hors du cours sans ecrire ni publier', async () => {
+    await expect(
+      sut.apply('session-uuid', TEACHER_ID, { ecran: NOMBRE_ECRANS }),
+    ).rejects.toThrow(
+      `Écran ${NOMBRE_ECRANS} hors du cours : ${NOMBRE_ECRANS} écrans`,
+    );
+    expect(sessions.update).not.toHaveBeenCalled();
+    expect(cache.publish).not.toHaveBeenCalled();
+  });
+
+  it('refuse de piloter un ecran quand le cours est absent du catalogue', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ courseSlug: 'un-cours-absent-du-catalogue' }),
+    );
+    await expect(
+      sut.apply('session-uuid', TEACHER_ID, { ecran: 2 }),
+    ).rejects.toBeInstanceOf(CoursInconnuError);
+    expect(sessions.update).not.toHaveBeenCalled();
+    expect(cache.publish).not.toHaveBeenCalled();
+  });
+
   it('refuse de piloter une session terminee', async () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'terminee' }),
@@ -82,24 +123,24 @@ describe('ControlSessionUseCase', () => {
   it('bascule en rythme libre avec un intervalle', async () => {
     await sut.apply('session-uuid', TEACHER_ID, {
       mode: 'libre',
-      intervalle: { premier: 3, dernier: 7 },
+      intervalle: { premier: 3, dernier: 6 },
     });
     expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
       modeRythme: 'libre',
-      intervalleLibre: { premier: 3, dernier: 7 },
+      intervalleLibre: { premier: 3, dernier: 6 },
     });
   });
 
   it('publie l etat dans le cache apres avoir change le rythme', async () => {
     await sut.apply('session-uuid', TEACHER_ID, {
       mode: 'libre',
-      intervalle: { premier: 3, dernier: 7 },
+      intervalle: { premier: 3, dernier: 6 },
     });
     expect(cache.publish).toHaveBeenCalledWith(
       'session-uuid',
       expect.objectContaining({
         modeRythme: 'libre',
-        intervalleLibre: { premier: 3, dernier: 7 },
+        intervalleLibre: { premier: 3, dernier: 6 },
       }),
     );
   });
@@ -112,13 +153,57 @@ describe('ControlSessionUseCase', () => {
     });
   });
 
-  it('refuse un intervalle libre inverse', async () => {
+  it('refuse un intervalle libre inverse en nommant la forme attendue', async () => {
     await expect(
       sut.apply('session-uuid', TEACHER_ID, {
         mode: 'libre',
         intervalle: { premier: 7, dernier: 3 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(
+      new DomainValidationError(
+        'Intervalle de rythme libre invalide : premier et dernier écrans entiers, positifs, le premier avant le dernier',
+      ),
+    );
+  });
+
+  it('accepte un intervalle libre dans les bornes du cours', async () => {
+    await sut.apply('session-uuid', TEACHER_ID, {
+      mode: 'libre',
+      intervalle: { premier: 2, dernier: 6 },
+    });
+    expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
+      modeRythme: 'libre',
+      intervalleLibre: { premier: 2, dernier: 6 },
+    });
+  });
+
+  it('refuse un intervalle libre dont la borne haute deborde le cours', async () => {
+    await expect(
+      sut.apply('session-uuid', TEACHER_ID, {
+        mode: 'libre',
+        intervalle: { premier: 2, dernier: 7 },
+      }),
+    ).rejects.toThrow(
+      new DomainValidationError(
+        `Intervalle de rythme libre hors du cours : ${NOMBRE_ECRANS} écrans`,
+      ),
+    );
+    expect(sessions.update).not.toHaveBeenCalled();
+    expect(cache.publish).not.toHaveBeenCalled();
+  });
+
+  it('refuse de piloter un intervalle libre quand le cours est absent du catalogue', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ courseSlug: 'un-cours-absent-du-catalogue' }),
+    );
+    await expect(
+      sut.apply('session-uuid', TEACHER_ID, {
+        mode: 'libre',
+        intervalle: { premier: 2, dernier: 6 },
+      }),
+    ).rejects.toBeInstanceOf(CoursInconnuError);
+    expect(sessions.update).not.toHaveBeenCalled();
+    expect(cache.publish).not.toHaveBeenCalled();
   });
 
   it('refuse de changer le rythme sans etre le formateur de la session', async () => {
@@ -133,13 +218,13 @@ describe('ControlSessionUseCase', () => {
     await sut.apply('session-uuid', TEACHER_ID, {
       ecran: 4,
       mode: 'libre',
-      intervalle: { premier: 3, dernier: 7 },
+      intervalle: { premier: 3, dernier: 6 },
     });
     expect(sessions.update).toHaveBeenCalledTimes(1);
     expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
       ecranCourant: 4,
       modeRythme: 'libre',
-      intervalleLibre: { premier: 3, dernier: 7 },
+      intervalleLibre: { premier: 3, dernier: 6 },
     });
     expect(cache.publish).toHaveBeenCalledTimes(1);
   });

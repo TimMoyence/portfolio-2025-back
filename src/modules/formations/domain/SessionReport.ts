@@ -1,6 +1,11 @@
 import type { BaremeQuestion } from './Bareme';
-import { questionsNotees } from './Bareme';
+import { questionsNotees, solutionsIdentiques } from './Bareme';
+import { libelleDeConfusion } from './cours/banque/confusions';
+import type { Cours } from './cours/Cours';
+import { tirer } from './cours/Tirage';
+import type { LibellesDesOptions } from './cours/Tirage';
 import { computeCohortScore } from './CompletionScore';
+import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
 import type {
   RapportParticipant,
@@ -12,12 +17,15 @@ import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
 
 const SEUIL_CONCEPT_FRAGILE = 0.7;
+const LIBELLE_NE_SAIT_PAS = 'Je ne sais pas';
 
 export interface SessionReportInput {
   session: SessionRecord;
+  cours: Cours | null;
   participants: readonly ParticipantRecord[];
   answers: readonly AnswerRecord[];
   incidents: readonly IncidentRecord[];
+  avertir(message: string): void;
 }
 
 export function buildRapportSession(input: SessionReportInput): RapportSession {
@@ -27,6 +35,18 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
     completion: completionDe(participant.id, input.answers, notees),
   }));
   const scores = computeCohortScore(completions);
+  const rangs = new Map(
+    input.session.bareme.questions.map((question, rang) => [question.id, rang]),
+  );
+  const tiragesEnEchec: string[] = [];
+  const libellesDe = (graine: number): LibellesDesOptions => {
+    try {
+      return libellesDuTirage(input, graine);
+    } catch (erreur) {
+      tiragesEnEchec.push(nomDErreur(erreur));
+      return {};
+    }
+  };
 
   const participants: readonly RapportParticipant[] = input.participants.map(
     (participant) => {
@@ -40,13 +60,19 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
         completion: score?.completion ?? 0,
         note: score?.note ?? 0,
         sousSeuil: score?.sousSeuil ?? true,
-        reponses: reponsesDe(participant.id, input.answers),
+        reponses: reponsesDe(
+          participant.id,
+          input.answers,
+          rangs,
+          libellesDe(participant.seed),
+        ),
         incidents: input.incidents.filter(
           (incident) => incident.participantId === participant.id,
         ).length,
       };
     },
   );
+  signalerTiragesEnEchec(input, tiragesEnEchec);
 
   return {
     courseSlug: input.session.courseSlug,
@@ -79,17 +105,75 @@ function completionDe(
 function reponsesDe(
   participantId: string,
   reponses: readonly AnswerRecord[],
+  rangs: ReadonlyMap<string, number>,
+  libelles: LibellesDesOptions,
 ): readonly RapportQuestion[] {
+  const rangDe = (reponse: AnswerRecord): number =>
+    rangs.get(reponse.questionId) ?? rangs.size;
   return reponses
     .filter((reponse) => reponse.participantId === participantId)
+    .sort((premiere, seconde) => rangDe(premiere) - rangDe(seconde))
     .map((reponse) => ({
       questionId: reponse.questionId,
       concept: reponse.concept,
       valeur: String(reponse.valeur),
+      reponse: reponseLisible(reponse, libelles),
       correcte: reponse.correcte,
       misconception: reponse.misconception,
+      libelleConfusion:
+        reponse.misconception === null
+          ? null
+          : (libelleDeConfusion(reponse.misconception) ??
+            reponse.misconception),
       dureeMs: reponse.dureeMs,
     }));
+}
+
+function reponseLisible(
+  reponse: AnswerRecord,
+  libelles: LibellesDesOptions,
+): string {
+  if (reponse.valeur === NE_SAIT_PAS) {
+    return LIBELLE_NE_SAIT_PAS;
+  }
+  const valeur = String(reponse.valeur);
+  if (!Object.hasOwn(libelles, reponse.questionId)) {
+    return valeur;
+  }
+  const options = libelles[reponse.questionId];
+  return Object.hasOwn(options, valeur) ? options[valeur] : valeur;
+}
+
+function libellesDuTirage(
+  input: SessionReportInput,
+  graine: number,
+): LibellesDesOptions {
+  if (input.cours === null) {
+    return {};
+  }
+  const stockees = input.session.bareme.tirages.find(
+    (tirage) => tirage.seed === graine,
+  )?.solutions;
+  const tirage = tirer(input.cours, graine);
+  return solutionsIdentiques(tirage.solutions, stockees)
+    ? tirage.libellesOptions
+    : {};
+}
+
+function signalerTiragesEnEchec(
+  input: SessionReportInput,
+  erreurs: readonly string[],
+): void {
+  if (erreurs.length === 0) {
+    return;
+  }
+  input.avertir(
+    `Libelles des options indisponibles pour ${erreurs.length} participant(s) de la seance ${input.session.id} (cours ${input.session.courseSlug}, ${[...new Set(erreurs)].join(', ')}) : leurs reponses gardent l identifiant de l option`,
+  );
+}
+
+function nomDErreur(erreur: unknown): string {
+  return erreur instanceof Error ? erreur.name : typeof erreur;
 }
 
 function conceptsFragilesDe(

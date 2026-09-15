@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
@@ -33,9 +34,11 @@ import { PublicFormProtectionService } from '../../../common/interfaces/security
 import type { DueQuestion } from '../application/DueQuestions.useCase';
 import { DueQuestionsUseCase } from '../application/DueQuestions.useCase';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
+import { LireSujetUseCase } from '../application/LireSujet.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
+import type { CoursPublic } from '../domain/cours/CoursPublic';
 import {
   InvalidSessionCodeError,
   SessionNotFoundError,
@@ -47,6 +50,7 @@ import { JoinSessionResponseDto } from './dto/join-session.response.dto';
 import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
+import { SujetResponseDto } from './dto/sujet.response.dto';
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,
@@ -54,6 +58,7 @@ import {
   LIMITE_JOIN_PAR_CODE,
   LIMITE_REPONSES_PAR_PARTICIPANT,
   LIMITE_REVISION_PAR_PARTICIPANT,
+  LIMITE_SUJET_PAR_PARTICIPANT,
   suivreParCodeDeSession,
   suivreParParticipant,
 } from './formations-throttling';
@@ -65,10 +70,12 @@ import {
 /**
  * Poste etudiant : aucune de ces reponses ne porte le corrige.
  *
- * L inscription rend le `seed` et rien d autre du bareme ; c est le
- * fichier de cours cote client qui reconstruit les enonces a partir de ce
- * tirage. La correction reste au serveur (SubmitAnswer.useCase.ts) et ne
- * redescend que sous forme de verdict et d etiquette de confusion.
+ * L inscription ne rend ni le bareme ni la graine du tirage attribue : le
+ * moteur de tirage et le cours sont publics (domain/cours), la graine
+ * suffirait a recalculer le corrige de l etudiant. Le sujet est calcule par
+ * le serveur et servi par `GET sessions/:id/sujet`. La correction reste au
+ * serveur (SubmitAnswer.useCase.ts) et ne redescend que sous forme de
+ * verdict et d etiquette de confusion.
  */
 @ApiTags('formations')
 @Public()
@@ -80,6 +87,7 @@ export class FormationsStudentController {
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
+    private readonly lireSujet: LireSujetUseCase,
     private readonly tokens: ParticipantTokenService,
     private readonly codeScan: CodeScanProtectionService,
     @Optional()
@@ -126,7 +134,6 @@ export class FormationsStudentController {
     return {
       participantId: result.participantId,
       sessionId: result.sessionId,
-      seed: result.seed,
       ecranCourant: result.ecranCourant,
       modeRythme: result.modeRythme,
       jeton: this.tokens.sign(result.sessionId, result.participantId),
@@ -143,6 +150,10 @@ export class FormationsStudentController {
   @Post('sessions/:id/answers')
   @ApiOperation({ summary: 'Soumet une reponse, corrigee cote serveur' })
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
+  @ApiConflictResponse({
+    description:
+      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou REPONSE_DEJA_ENREGISTREE',
+  })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async answer(
     @Param('id', ParseUUIDPipe) sessionId: string,
@@ -157,7 +168,11 @@ export class FormationsStudentController {
       valeur: dto.valeur,
       dureeMs: dto.dureeMs,
     });
-    return { correcte: verdict.correcte, misconception: verdict.misconception };
+    return {
+      correcte: verdict.correcte,
+      misconception: verdict.misconception,
+      libelleConfusion: verdict.libelleConfusion,
+    };
   }
 
   @Throttle({
@@ -216,6 +231,36 @@ export class FormationsStudentController {
 
   @Throttle({
     default: {
+      limit: LIMITE_SUJET_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @UseGuards(ParticipantTokenGuard)
+  @Get('sessions/:id/sujet')
+  @ApiOperation({
+    summary: 'Sert au participant le sujet de son propre tirage',
+  })
+  @ApiOkResponse({
+    type: SujetResponseDto,
+    description: 'Sujet du tirage du participant, sans corrige',
+  })
+  @ApiConflictResponse({
+    description: 'Le cours a change depuis l ouverture de la seance',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async sujet(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Req() request: Request,
+  ): Promise<CoursPublic> {
+    return this.lireSujet.execute({
+      sessionId,
+      participantId: request.participantId!,
+    });
+  }
+
+  @Throttle({
+    default: {
       limit: LIMITE_FLUX_PAR_PARTICIPANT,
       ttl: FENETRE_THROTTLE_MS,
       getTracker: suivreParParticipant,
@@ -225,9 +270,15 @@ export class FormationsStudentController {
   @Sse('sessions/:id/stream')
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
-  @ApiTooManyRequestsResponse({ description: 'Trop d abonnes sur la session' })
-  stream(@Param('id', ParseUUIDPipe) id: string): Observable<MessageEvent> {
-    return this.streamSession.execute(id);
+  @ApiTooManyRequestsResponse({
+    description:
+      'Seance pleine (cent flux etudiants) ou trop d ouvertures par minute ; au-dela de deux flux, le plus ancien du participant est ferme',
+  })
+  stream(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ): Observable<MessageEvent> {
+    return this.streamSession.execute(id, request.participantId!);
   }
 }
 

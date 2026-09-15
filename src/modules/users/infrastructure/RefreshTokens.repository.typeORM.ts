@@ -18,6 +18,7 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
       tokenHash: token.tokenHash,
       expiresAt: token.expiresAt,
       revoked: token.revoked,
+      rotationGraceUntil: token.rotationGraceUntil ?? null,
     });
 
     const saved = await this.repo.save(entity);
@@ -33,11 +34,21 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
   }
 
   async revokeByUserId(userId: string): Promise<void> {
-    await this.repo.update({ userId, revoked: false }, { revoked: true });
+    await this.repo.update(
+      { userId },
+      { revoked: true, rotationGraceUntil: null },
+    );
   }
 
   async revokeById(id: string): Promise<void> {
-    await this.repo.update({ id }, { revoked: true });
+    await this.repo.update({ id }, { revoked: true, rotationGraceUntil: null });
+  }
+
+  async rotateById(id: string, graceUntil: Date): Promise<void> {
+    await this.repo.update(
+      { id, revoked: false },
+      { revoked: true, rotationGraceUntil: graceUntil },
+    );
   }
 
   async purgeExpired(): Promise<number> {
@@ -56,6 +67,7 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
       tokenHash: entity.tokenHash,
       expiresAt: entity.expiresAt,
       revoked: entity.revoked,
+      rotationGraceUntil: entity.rotationGraceUntil,
       createdAt: entity.createdAt,
     };
   }

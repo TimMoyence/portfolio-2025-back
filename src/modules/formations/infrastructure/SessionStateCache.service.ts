@@ -7,6 +7,7 @@ import type {
 @Injectable()
 export class SessionStateCacheService implements ISessionStateCache {
   private readonly etats = new Map<string, LiveSessionState>();
+  private readonly activites = new Map<string, number>();
 
   publish(sessionId: string, state: LiveSessionState): void {
     this.etats.set(sessionId, state);
@@ -18,6 +19,15 @@ export class SessionStateCacheService implements ISessionStateCache {
 
   drop(sessionId: string): void {
     this.etats.delete(sessionId);
+    this.activites.delete(sessionId);
+  }
+
+  signalerActivite(sessionId: string): void {
+    this.activites.set(sessionId, this.activite(sessionId) + 1);
+  }
+
+  activite(sessionId: string): number {
+    return this.activites.get(sessionId) ?? 0;
   }
 
   fingerprint(state: LiveSessionState): string {

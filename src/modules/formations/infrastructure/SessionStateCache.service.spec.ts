@@ -37,6 +37,27 @@ describe('SessionStateCacheService', () => {
     expect(sut.read('session-uuid')).toBeNull();
   });
 
+  it('ne compte aucune activite sur une session inconnue', () => {
+    expect(sut.activite('session-uuid')).toBe(0);
+  });
+
+  it('incremente l activite a chaque signalement', () => {
+    sut.signalerActivite('session-uuid');
+    sut.signalerActivite('session-uuid');
+    expect(sut.activite('session-uuid')).toBe(2);
+  });
+
+  it('compte l activite de chaque session separement', () => {
+    sut.signalerActivite('session-uuid');
+    expect(sut.activite('autre-session')).toBe(0);
+  });
+
+  it('remet l activite a zero quand la session est retiree', () => {
+    sut.signalerActivite('session-uuid');
+    sut.drop('session-uuid');
+    expect(sut.activite('session-uuid')).toBe(0);
+  });
+
   it('produit une empreinte stable pour un etat identique', () => {
     expect(sut.fingerprint(etat)).toBe(sut.fingerprint({ ...etat }));
   });

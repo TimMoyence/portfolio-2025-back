@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { creerCatalogueDeTest } from '../../../../../test/factories/cours.factory';
 import {
+  buildAnswerRecord,
   createMockAnswersRepo,
   createMockIncidentsRepo,
   createMockParticipantsRepo,
@@ -9,6 +11,11 @@ import {
   SessionNotFoundError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
+import type {
+  ConfusionComptee,
+  ResultatQuestion,
+  ResultatsSeance,
+} from '../../domain/ResultatsSeance';
 import { GetSessionResultsUseCase } from '../GetSessionResults.useCase';
 
 const TEACHER_ID = 'teacher-uuid';
@@ -31,7 +38,20 @@ describe('GetSessionResultsUseCase', () => {
       participants,
       answers,
       incidents,
+      creerCatalogueDeTest(),
     );
+  });
+
+  it('rend la valeur envoyee telle quelle quand le cours de la seance est absent du catalogue', async () => {
+    answers.listBySession.mockResolvedValue([
+      buildAnswerRecord({ valeur: 'o2', correcte: false }),
+    ]);
+
+    const rapport = await sut.execute('session-uuid', TEACHER_ID);
+
+    expect(rapport.participants[0].reponses).toEqual([
+      expect.objectContaining({ valeur: 'o2', reponse: 'o2' }),
+    ]);
   });
 
   it('retourne la synthese de la session pour son formateur', async () => {
@@ -60,5 +80,24 @@ describe('GetSessionResultsUseCase', () => {
   it('reprend le bareme de la session pour calculer la completion', async () => {
     const rapport = await sut.execute('session-uuid', TEACHER_ID);
     expect(rapport.participants[0].completion).toBe(1);
+  });
+
+  it('agrege les resultats par question du bareme dans le rapport', async () => {
+    const rapport = await sut.execute('session-uuid', TEACHER_ID);
+    const confusionsAttendues: readonly ConfusionComptee[] = [];
+    const questionsAttendues: readonly ResultatQuestion[] = [
+      {
+        questionId: 'Q-CAP-03',
+        total: 1,
+        correctes: 1,
+        neSaitPas: 0,
+        confusions: confusionsAttendues,
+      },
+    ];
+    const resultatsAttendus: ResultatsSeance = {
+      participants: 1,
+      questions: questionsAttendues,
+    };
+    expect(rapport.resultats).toEqual(resultatsAttendus);
   });
 });

@@ -31,6 +31,7 @@ describe('ParticipantsRepositoryTypeORM', () => {
         dernierPing: new Date('2026-09-11T08:05:00.000Z'),
       }),
       update: jest.fn().mockResolvedValue({ affected: 1 }),
+      count: jest.fn().mockResolvedValue(3),
     } as unknown as jest.Mocked<Repository<FormationParticipantEntity>>;
     sut = new ParticipantsRepositoryTypeORM(repo);
   });
@@ -78,6 +79,13 @@ describe('ParticipantsRepositoryTypeORM', () => {
   it('laisse passer une erreur qui ne vient pas d une violation de contrainte unique', async () => {
     repo.save.mockRejectedValue(new Error('connexion perdue'));
     await expect(sut.create(input)).rejects.toThrow('connexion perdue');
+  });
+
+  it('compte les participants d une seance sans les charger', async () => {
+    await expect(sut.countBySession('session-uuid')).resolves.toBe(3);
+    expect(repo.count).toHaveBeenCalledWith({
+      where: { sessionId: 'session-uuid' },
+    });
   });
 
   it('met a jour le dernier ping', async () => {

@@ -1,13 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import type { Bareme } from '../domain/Bareme';
-import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { ouvrirTirages } from '../domain/cours/OuvertureTirages';
+import {
+  CoursInconnuError,
+  SessionCodeAlreadyActiveError,
+} from '../domain/errors/FormationErrors';
 import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
 import { SessionCode } from '../domain/SessionCode';
-import { SESSIONS_REPOSITORY } from '../domain/token';
+import { CATALOGUE_COURS, SESSIONS_REPOSITORY } from '../domain/token';
 import type {
   OpenSessionCommand,
   OpenSessionResult,
@@ -20,31 +25,25 @@ export class OpenSessionUseCase {
   constructor(
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async execute(command: OpenSessionCommand): Promise<OpenSessionResult> {
-    this.assertBaremeComplet(command.bareme);
-    const session = await this.createSurUnCodeLibre(command);
-    return { sessionId: session.id, code: session.code };
-  }
-
-  private assertBaremeComplet(bareme: Bareme): void {
-    if (bareme.tirages.length === 0) {
-      throw new DomainValidationError('Le bareme ne contient aucun tirage');
+    const cours = this.catalogue.trouver(command.courseSlug);
+    if (!cours) {
+      throw new CoursInconnuError(command.courseSlug);
     }
-    const identifiants = bareme.questions.map((question) => question.id);
-    const incomplet = bareme.tirages.find((tirage) =>
-      identifiants.some((id) => !(id in tirage.solutions)),
+    const session = await this.createSurUnCodeLibre(
+      command,
+      ouvrirTirages(cours),
     );
-    if (incomplet) {
-      throw new DomainValidationError(
-        `Le tirage ${incomplet.seed} ne couvre pas toutes les questions`,
-      );
-    }
+    return { sessionId: session.id, code: session.code };
   }
 
   private async createSurUnCodeLibre(
     command: OpenSessionCommand,
+    bareme: Bareme,
   ): Promise<SessionRecord> {
     for (let tentative = 0; tentative < MAX_TENTATIVES_CODE; tentative += 1) {
       const candidat = SessionCode.generate();
@@ -57,7 +56,7 @@ export class OpenSessionUseCase {
           courseSlug: command.courseSlug,
           teacherId: command.teacherId,
           code: candidat,
-          bareme: command.bareme,
+          bareme,
         });
       } catch (error) {
         if (!(error instanceof SessionCodeAlreadyActiveError)) {

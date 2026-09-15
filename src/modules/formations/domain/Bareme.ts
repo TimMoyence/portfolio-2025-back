@@ -1,9 +1,7 @@
 import type { AnswerValue, Solution, Tolerance } from './AnswerGrading';
 import { NE_SAIT_PAS } from './GradingCore';
 
-export const QUESTION_TYPES = ['numeric', 'vote', 'asn', 'order'] as const;
-
-export type QuestionType = (typeof QUESTION_TYPES)[number];
+type QuestionType = 'numeric' | 'vote' | 'asn' | 'order';
 
 export interface BaremeQuestion {
   id: string;
@@ -20,6 +18,7 @@ export interface BaremeTirage {
 
 export interface Bareme {
   version: 1;
+  graineReference: number;
   questions: readonly BaremeQuestion[];
   tirages: readonly BaremeTirage[];
 }
@@ -67,4 +66,36 @@ export function pickFreeSeed(
 
 export function questionsNotees(bareme: Bareme): readonly BaremeQuestion[] {
   return bareme.questions.filter((question) => question.noteCompte);
+}
+
+export function solutionsIdentiques(
+  attendues: Readonly<Record<string, Solution>>,
+  stockees: Readonly<Record<string, Solution>> | undefined,
+): boolean {
+  if (!stockees) {
+    return false;
+  }
+  const clesAttendues = Object.keys(attendues).sort(compareAlphabetique);
+  const clesStockees = Object.keys(stockees).sort(compareAlphabetique);
+  return (
+    clesAttendues.length === clesStockees.length &&
+    clesAttendues.every((cle, index) => cle === clesStockees[index]) &&
+    clesAttendues.every((cle) => solutionEgale(attendues[cle], stockees[cle]))
+  );
+}
+
+function compareAlphabetique(a: string, b: string): number {
+  return a.localeCompare(b);
+}
+
+function solutionEgale(attendue: Solution, stockee: Solution): boolean {
+  return (
+    attendue.valeur === stockee.valeur &&
+    attendue.pieges.length === stockee.pieges.length &&
+    attendue.pieges.every(
+      (piege, index) =>
+        piege.valeur === stockee.pieges[index].valeur &&
+        piege.misconception === stockee.pieges[index].misconception,
+    )
+  );
 }

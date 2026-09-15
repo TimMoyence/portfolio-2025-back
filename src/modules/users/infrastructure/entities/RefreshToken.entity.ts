@@ -22,6 +22,9 @@ export class RefreshTokenEntity {
   @Column({ name: 'revoked', type: 'boolean', default: false })
   revoked: boolean;
 
+  @Column({ name: 'rotation_grace_until', type: 'timestamp', nullable: true })
+  rotationGraceUntil: Date | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

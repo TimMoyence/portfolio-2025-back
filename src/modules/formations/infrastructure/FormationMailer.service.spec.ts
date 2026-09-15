@@ -15,6 +15,8 @@ jest.mock('nodemailer', () => ({
   createTransport: jest.fn(),
 }));
 
+const LIBELLE_CONFUSION = 'Croire que la hausse et la baisse s annulent.';
+
 const mockedCreateTransport = createTransport as jest.MockedFunction<
   typeof createTransport
 >;
@@ -68,8 +70,10 @@ function buildReponse(
     questionId: 'Q-1',
     concept: 'capitalisation',
     valeur: '10',
+    reponse: '10',
     correcte: true,
     misconception: null,
+    libelleConfusion: null,
     dureeMs: 1000,
     ...overrides,
   };
@@ -152,6 +156,7 @@ describe('FormationMailerService', () => {
         buildReponse({
           questionId: 'Q-CAP-03',
           valeur: '1338.23',
+          reponse: '1338.23',
           dureeMs: 42000,
         }),
       ]);
@@ -161,10 +166,33 @@ describe('FormationMailerService', () => {
       expect(csv.charCodeAt(0)).toBe(0xfeff);
       const lignes = csv.slice(1).split('\r\n');
       expect(lignes[0]).toBe(
-        'prénom;nom;email;question;concept;réponse;correcte;misconception;durée_ms',
+        'prénom;nom;email;question;concept;réponse;correcte;confusion;durée_ms',
       );
       expect(lignes[1]).toContain(';');
       expect(lignes[1]).not.toContain(',');
+    });
+
+    it('ecrit dans le csv le libelle de l option choisie et celui de la confusion, jamais leurs identifiants', async () => {
+      const rapport = buildRapportAvecReponses([
+        buildReponse({
+          questionId: 'Q-VOTE',
+          valeur: 'o3',
+          reponse: 'revenu au prix de départ',
+          correcte: false,
+          misconception: 'hausse-baisse-symetriques',
+          libelleConfusion: LIBELLE_CONFUSION,
+        }),
+      ]);
+
+      const csv = await envoyerEtObtenirCsv(rapport);
+      const cellules = csv.slice(1).split('\r\n')[1].split(';');
+
+      expect({ reponse: cellules[5], confusion: cellules[7] }).toEqual({
+        reponse: '"revenu au prix de départ"',
+        confusion: `"${LIBELLE_CONFUSION}"`,
+      });
+      expect(csv).not.toContain('"o3"');
+      expect(csv).not.toContain('hausse-baisse-symetriques');
     });
 
     it('neutralise un nom d etudiant commencant par un signe egal', async () => {
@@ -179,7 +207,7 @@ describe('FormationMailerService', () => {
 
     it('laisse un montant negatif intact et sommable dans le csv', async () => {
       const rapport = buildRapportAvecReponses([
-        buildReponse({ valeur: '-1500' }),
+        buildReponse({ valeur: '-1500', reponse: '-1500' }),
       ]);
 
       const csv = await envoyerEtObtenirCsv(rapport);
@@ -190,10 +218,10 @@ describe('FormationMailerService', () => {
 
     it('neutralise une reponse commencant par un signe plus ou une arobase', async () => {
       const rapport = buildRapportAvecReponses([
-        buildReponse({ questionId: 'Q-1', valeur: '+1+1', correcte: false }),
+        buildReponse({ questionId: 'Q-1', reponse: '+1+1', correcte: false }),
         buildReponse({
           questionId: 'Q-2',
-          valeur: '@SUM(A1)',
+          reponse: '@SUM(A1)',
           correcte: false,
         }),
       ]);
@@ -206,8 +234,8 @@ describe('FormationMailerService', () => {
 
     it('neutralise une reponse commencant par un signe moins qui n est pas un nombre valide', async () => {
       const rapport = buildRapportAvecReponses([
-        buildReponse({ questionId: 'Q-1', valeur: '-=1+1', correcte: false }),
-        buildReponse({ questionId: 'Q-2', valeur: '--cmd', correcte: false }),
+        buildReponse({ questionId: 'Q-1', reponse: '-=1+1', correcte: false }),
+        buildReponse({ questionId: 'Q-2', reponse: '--cmd', correcte: false }),
       ]);
 
       const csv = await envoyerEtObtenirCsv(rapport);
@@ -270,14 +298,15 @@ describe('FormationMailerService', () => {
             buildReponse({
               questionId: 'Q-CAP-03',
               concept: 'capitalisation',
-              valeur: '1 400',
+              reponse: '1 400',
               correcte: false,
               misconception: 'interet-simple',
+              libelleConfusion: 'Confondre interet simple et interet compose',
             }),
             buildReponse({
               questionId: 'Q-CAP-07',
               concept: 'actualisation',
-              valeur: '1 480,24',
+              reponse: '1 480,24',
               correcte: true,
             }),
           ],
@@ -290,9 +319,41 @@ describe('FormationMailerService', () => {
       for (const rendu of [call.text, call.html]) {
         expect(rendu).toContain('Q-CAP-03');
         expect(rendu).toContain('1 400');
-        expect(rendu).toContain('interet-simple');
+        expect(rendu).toContain('Confondre interet simple et interet compose');
         expect(rendu).toContain('Q-CAP-07');
         expect(rendu).toContain('1 480,24');
+      }
+    });
+
+    it('montre a l etudiant l option qu il a choisie et sa confusion par leurs libelles, jamais par leurs identifiants', async () => {
+      const service = new FormationMailerService();
+
+      await service.sendCopieEtudiant(
+        buildCopie({
+          participant: buildParticipant({
+            reponses: [
+              buildReponse({
+                questionId: 'Q-VOTE',
+                valeur: 'o3',
+                reponse: 'revenu au prix de départ',
+                correcte: false,
+                misconception: 'hausse-baisse-symetriques',
+                libelleConfusion: LIBELLE_CONFUSION,
+              }),
+            ],
+          }),
+        }),
+      );
+
+      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0] as {
+        text: string;
+        html: string;
+      };
+      for (const rendu of [call.text, call.html]) {
+        expect(rendu).toContain('revenu au prix de départ');
+        expect(rendu).toContain(LIBELLE_CONFUSION);
+        expect(rendu).not.toContain('« o3 »');
+        expect(rendu).not.toContain('hausse-baisse-symetriques');
       }
     });
 
@@ -328,7 +389,7 @@ describe('FormationMailerService', () => {
         buildCopie({
           participant: buildParticipant({
             reponses: [
-              buildReponse({ valeur: '<img src=x onerror=alert(1)>' }),
+              buildReponse({ reponse: '<img src=x onerror=alert(1)>' }),
             ],
           }),
         }),

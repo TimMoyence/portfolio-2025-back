@@ -5,18 +5,23 @@ import { ControlSessionUseCase } from './application/ControlSession.useCase';
 import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
+import { LireDerouleUseCase } from './application/LireDeroule.useCase';
+import { LireSujetUseCase } from './application/LireSujet.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
+import { CATALOGUE_COURS_STATIQUE } from './domain/cours/catalogue';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
+  STREAM_CAPACITY,
 } from './domain/token';
 import { AnswersRepositoryTypeORM } from './infrastructure/Answers.repository.typeorm';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
@@ -30,6 +35,7 @@ import { MasteryRepositoryTypeORM } from './infrastructure/Mastery.repository.ty
 import { ParticipantsRepositoryTypeORM } from './infrastructure/Participants.repository.typeorm';
 import { SessionsRepositoryTypeORM } from './infrastructure/Sessions.repository.typeorm';
 import { SessionStateCacheService } from './infrastructure/SessionStateCache.service';
+import { StreamCapacityService } from './infrastructure/StreamCapacity.service';
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
 import { CodeScanProtectionService } from './interfaces/CodeScanProtection.service';
@@ -55,7 +61,13 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     SubmitAnswerUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
+    {
+      provide: STREAM_CAPACITY,
+      useClass: StreamCapacityService,
+    },
     DueQuestionsUseCase,
+    LireSujetUseCase,
+    LireDerouleUseCase,
     ParticipantTokenService,
     CodeScanProtectionService,
     {
@@ -85,6 +97,10 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: SESSION_STATE_CACHE,
       useClass: SessionStateCacheService,
+    },
+    {
+      provide: CATALOGUE_COURS,
+      useValue: CATALOGUE_COURS_STATIQUE,
     },
   ],
 })

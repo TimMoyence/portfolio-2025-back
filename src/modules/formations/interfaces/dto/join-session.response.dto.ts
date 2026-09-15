@@ -8,13 +8,6 @@ export class JoinSessionResponseDto {
   @ApiProperty({ example: '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90' })
   sessionId: string;
 
-  @ApiProperty({
-    description:
-      'Numero de tirage attribue, seule cle de reconstruction des enonces cote client',
-    example: 7,
-  })
-  seed: number;
-
   @ApiProperty({ example: 0 })
   ecranCourant: number;
 

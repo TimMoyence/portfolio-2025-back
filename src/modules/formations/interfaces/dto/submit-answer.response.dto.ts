@@ -11,4 +11,11 @@ export class SubmitAnswerResponseDto {
     nullable: true,
   })
   misconception: string | null;
+
+  @ApiProperty({
+    description: 'Libelle humain de la confusion detectee',
+    example: 'Confondre le taux et la valeur en pourcentage',
+    nullable: true,
+  })
+  libelleConfusion: string | null;
 }

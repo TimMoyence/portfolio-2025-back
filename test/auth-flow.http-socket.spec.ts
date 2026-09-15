@@ -12,7 +12,11 @@ import {
   createAuthUseCaseStubs,
 } from './factories/core-api.factory';
 import { buildUser, buildAuthResult } from './factories/user.factory';
-import { bootstrapTestApp, httpServerOf } from './helpers/nest-test-app';
+import {
+  bootstrapTestApp,
+  fermerApplication,
+  httpServerOf,
+} from './helpers/nest-test-app';
 
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- fixture de test, pas un secret reel
 const LOGIN_PASSWORD = 'StrongPassword123!';
@@ -83,7 +87,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
   });
 
   it('POST /api/auth/login retourne un token JWT valide et le profil', async () => {

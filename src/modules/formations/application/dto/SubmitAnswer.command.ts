@@ -11,4 +11,5 @@ export interface SubmitAnswerCommand {
 export interface SubmitAnswerResult {
   correcte: boolean;
   misconception: string | null;
+  libelleConfusion: string | null;
 }

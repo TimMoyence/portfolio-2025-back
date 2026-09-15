@@ -5,10 +5,14 @@ import { ControlSessionUseCase } from './application/ControlSession.useCase';
 import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
+import { LireDerouleUseCase } from './application/LireDeroule.useCase';
+import { LireSujetUseCase } from './application/LireSujet.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
+import { CATALOGUE_COURS_STATIQUE } from './domain/cours/catalogue';
+import { CATALOGUE_COURS } from './domain/token';
 import { FormationsModule } from './Formations.module';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
@@ -34,6 +38,8 @@ const SERVICES = [
   RecordIncidentsUseCase,
   StreamSessionUseCase,
   DueQuestionsUseCase,
+  LireSujetUseCase,
+  LireDerouleUseCase,
 ];
 
 describe('FormationsModule', () => {
@@ -49,6 +55,11 @@ describe('FormationsModule', () => {
 
   it('se construit avec toutes ses dependances resolvables', async () => {
     await expect(monter()).resolves.toBeDefined();
+  });
+
+  it('ouvre les seances sur le catalogue des cours publies', async () => {
+    const module = await monter();
+    expect(module.get(CATALOGUE_COURS)).toBe(CATALOGUE_COURS_STATIQUE);
   });
 
   for (const service of SERVICES) {

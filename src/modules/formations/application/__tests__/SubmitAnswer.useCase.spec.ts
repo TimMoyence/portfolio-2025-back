@@ -7,8 +7,10 @@ import {
   createMockAnswersRepo,
   createMockMasteryRepo,
   createMockParticipantsRepo,
+  createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
 import { NE_SAIT_PAS } from '../../domain/GradingCore';
 import {
   AnswerAlreadySubmittedError,
@@ -23,6 +25,7 @@ describe('SubmitAnswerUseCase', () => {
   let participants: ReturnType<typeof createMockParticipantsRepo>;
   let answers: ReturnType<typeof createMockAnswersRepo>;
   let mastery: ReturnType<typeof createMockMasteryRepo>;
+  let cache: ReturnType<typeof createMockSessionStateCache>;
   let sut: SubmitAnswerUseCase;
 
   const commande = {
@@ -38,19 +41,47 @@ describe('SubmitAnswerUseCase', () => {
     participants = createMockParticipantsRepo();
     answers = createMockAnswersRepo();
     mastery = createMockMasteryRepo();
-    sut = new SubmitAnswerUseCase(sessions, participants, answers, mastery);
+    cache = createMockSessionStateCache();
+    sut = new SubmitAnswerUseCase(
+      sessions,
+      participants,
+      answers,
+      mastery,
+      cache,
+    );
+  });
+
+  it('signale une activite sur la session une fois la reponse enregistree', async () => {
+    await sut.execute(commande);
+    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
+    expect(answers.create.mock.invocationCallOrder[0]).toBeLessThan(
+      cache.signalerActivite.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('ne signale aucune activite quand la reponse est refusee', async () => {
+    answers.existsFor.mockResolvedValue(true);
+    await expect(sut.execute(commande)).rejects.toThrow(
+      AnswerAlreadySubmittedError,
+    );
+    expect(cache.signalerActivite).not.toHaveBeenCalled();
   });
 
   it('accepte une reponse juste', async () => {
     const result = await sut.execute(commande);
-    expect(result).toEqual({ correcte: true, misconception: null });
+    expect(result).toEqual({
+      correcte: true,
+      misconception: null,
+      libelleConfusion: null,
+    });
   });
 
-  it('identifie la misconception d une reponse fausse', async () => {
+  it('identifie la misconception d une reponse fausse et son libelle', async () => {
     const result = await sut.execute({ ...commande, valeur: 1300 });
     expect(result).toEqual({
       correcte: false,
       misconception: 'interet-simple',
+      libelleConfusion: 'interet-simple',
     });
   });
 
@@ -78,6 +109,23 @@ describe('SubmitAnswerUseCase', () => {
     await expect(
       sut.execute({ ...commande, questionId: 'Q-INCONNU' }),
     ).rejects.toThrow(DomainValidationError);
+  });
+
+  it('refuse sans rendre la graine un participant dont le tirage manque au bareme', async () => {
+    const graineAbsente = 7_654_321;
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({ seed: graineAbsente }),
+    );
+
+    const refus = await sut
+      .execute(commande)
+      .catch((erreur: unknown) => erreur);
+
+    expect(refus).toBeInstanceOf(DomainValidationError);
+    expect((refus as DomainValidationError).message).not.toContain(
+      String(graineAbsente),
+    );
+    expect(answers.create).not.toHaveBeenCalled();
   });
 
   it('refuse une soumission sur une session terminee', async () => {
@@ -165,5 +213,17 @@ describe('SubmitAnswerUseCase', () => {
     );
     const result = await sut.execute({ ...commande, valeur: NE_SAIT_PAS });
     expect(result.correcte).toBe(false);
+  });
+
+  it('traduit une misconception connue de la banque par son libelle humain', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        bareme: buildVoteBareme([
+          { valeur: 'a', misconception: 'base-arrivee' },
+        ]),
+      }),
+    );
+    const result = await sut.execute({ ...commande, valeur: 'a' });
+    expect(result.libelleConfusion).toBe(libelleDeConfusion('base-arrivee'));
   });
 });

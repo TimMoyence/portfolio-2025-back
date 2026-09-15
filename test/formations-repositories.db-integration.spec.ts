@@ -1,11 +1,14 @@
 import { QueryFailedError } from 'typeorm';
 import { ResourceConflictError } from '../src/common/domain/errors/ResourceConflictError';
+import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import {
   AnswerAlreadySubmittedError,
   SeedAlreadyAssignedError,
   SessionCodeAlreadyActiveError,
 } from '../src/modules/formations/domain/errors/FormationErrors';
+import type { ParticipantRecord } from '../src/modules/formations/domain/IParticipants.repository';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
+import { buildCoursDeClasse } from './factories/cours.factory';
 import { buildBareme } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -18,6 +21,25 @@ import {
 const CLE_ETUDIANT = '11111111-1111-4111-8111-111111111111';
 const AUTRE_CLE_ETUDIANT = '22222222-2222-4222-8222-222222222222';
 const FORMATEUR = '33333333-3333-4333-8333-333333333333';
+const GRAINES_A_REBOURS = [3006, 3005, 3004, 3003, 3002, 3001];
+const QUESTIONS_A_REBOURS = [
+  'Q-CAP-09',
+  'Q-CAP-07',
+  'Q-CAP-05',
+  'Q-CAP-03',
+  'Q-CAP-01',
+];
+const HORODATAGE_COMMUN = '2026-09-21T08:00:00.000Z';
+
+function cleDeRang(rang: number): string {
+  return `77777777-7777-4777-8777-${String(rang).padStart(12, '0')}`;
+}
+
+function identifiantsTries(lignes: readonly { id: string }[]): string[] {
+  return lignes
+    .map((ligne) => ligne.id)
+    .sort((gauche, droite) => (gauche < droite ? -1 : 1));
+}
 
 interface TypeColonne {
   data_type: string;
@@ -79,6 +101,25 @@ describeDb('Formations repositories (db integration)', () => {
       dureeMs: 42000,
     });
 
+  const inscrireGrainesARebours = async (
+    sessionId: string,
+  ): Promise<ParticipantRecord[]> => {
+    const inscrits: ParticipantRecord[] = [];
+    for (const [rang, seed] of GRAINES_A_REBOURS.entries()) {
+      inscrits.push(await inscrire(sessionId, cleDeRang(rang), seed));
+    }
+    return inscrits;
+  };
+
+  const repondreQuestionsARebours = async (
+    sessionId: string,
+    participantId: string,
+  ): Promise<void> => {
+    for (const questionId of QUESTIONS_A_REBOURS) {
+      await repondre(sessionId, participantId, questionId, true);
+    }
+  };
+
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
   });
@@ -102,6 +143,83 @@ describeDb('Formations repositories (db integration)', () => {
     expect(tables).toHaveLength(FORMATION_TABLES.length);
     expect(tables.map((table) => table.tablename)).toEqual(
       expect.arrayContaining([...FORMATION_TABLES]),
+    );
+  });
+
+  it('relit a l identique le bareme tire a l ouverture, graine de reference comprise', async () => {
+    const cours = buildCoursDeClasse(12);
+    const bareme = ouvrirTirages(cours);
+    const seance = await contexte.sessions.create({
+      courseSlug: cours.slug,
+      teacherId: FORMATEUR,
+      code: '4271',
+      bareme,
+    });
+
+    const relue = await contexte.sessions.findById(seance.id);
+
+    expect(relue?.bareme).toEqual(bareme);
+  });
+
+  it('liste les participants dans leur ordre d arrivee et non dans l ordre de leur graine', async () => {
+    const seance = await ouvrirSeance('4271');
+    const arrivees = await inscrireGrainesARebours(seance.id);
+    await contexte.participants.touch(arrivees[0].id);
+
+    const liste = await contexte.participants.listBySession(seance.id);
+
+    expect(liste.map((participant) => participant.id)).toEqual(
+      arrivees.map((participant) => participant.id),
+    );
+  });
+
+  it('compte les participants d une seance sans compter ceux d une autre', async () => {
+    const seance = await ouvrirSeance('4271');
+    const autre = await ouvrirSeance('5382');
+    await inscrireGrainesARebours(seance.id);
+    await inscrire(autre.id, CLE_ETUDIANT, 1001);
+
+    await expect(contexte.participants.countBySession(seance.id)).resolves.toBe(
+      GRAINES_A_REBOURS.length,
+    );
+    await expect(contexte.participants.countBySession(autre.id)).resolves.toBe(
+      1,
+    );
+  });
+
+  it('liste les reponses dans leur ordre d ecriture et non dans l ordre des questions', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    await repondreQuestionsARebours(seance.id, participant.id);
+
+    const liste = await contexte.answers.listBySession(seance.id);
+
+    expect(liste.map((reponse) => reponse.questionId)).toEqual(
+      QUESTIONS_A_REBOURS,
+    );
+  });
+
+  it('departage par identifiant les inscriptions et les reponses de meme horodatage', async () => {
+    const seance = await ouvrirSeance('4271');
+    const [premier] = await inscrireGrainesARebours(seance.id);
+    await repondreQuestionsARebours(seance.id, premier.id);
+    await contexte.dataSource.query(
+      `UPDATE "formation_participants" SET "rejoint_le" = $2 WHERE "session_id" = $1`,
+      [seance.id, HORODATAGE_COMMUN],
+    );
+    await contexte.dataSource.query(
+      `UPDATE "formation_answers" SET "soumis_le" = $2 WHERE "session_id" = $1`,
+      [seance.id, HORODATAGE_COMMUN],
+    );
+
+    const participants = await contexte.participants.listBySession(seance.id);
+    const reponses = await contexte.answers.listBySession(seance.id);
+
+    expect(participants.map((participant) => participant.id)).toEqual(
+      identifiantsTries(participants),
+    );
+    expect(reponses.map((reponse) => reponse.id)).toEqual(
+      identifiantsTries(reponses),
     );
   });
 

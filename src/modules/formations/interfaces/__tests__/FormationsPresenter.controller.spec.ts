@@ -1,32 +1,18 @@
 import { BadRequestException } from '@nestjs/common';
 import type { Request } from 'express';
 import { of } from 'rxjs';
+import type { DerouleCours } from '../../domain/cours/DeroulePresentateur';
 import type { RapportSession } from '../../domain/IFormationMailer.port';
 import { FormationsPresenterController } from '../FormationsPresenter.controller';
 import type { ControlSessionRequestDto } from '../dto/control-session.request.dto';
-import type { OpenSessionRequestDto } from '../dto/open-session.request.dto';
 
 const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
 const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
 
 const requeteFormateur = {
   user: { sub: TEACHER_ID },
+  once: jest.fn(),
 } as unknown as Request;
-
-const baremeDto = {
-  version: 1,
-  questions: [
-    {
-      id: 'Q-CAP-03',
-      type: 'numeric',
-      concept: 'interet-compose',
-      noteCompte: true,
-    },
-  ],
-  tirages: [
-    { seed: 7, solutions: { 'Q-CAP-03': { valeur: 1338, pieges: [] } } },
-  ],
-} as unknown as OpenSessionRequestDto['bareme'];
 
 describe('FormationsPresenterController', () => {
   const openSession = { execute: jest.fn() };
@@ -37,6 +23,7 @@ describe('FormationsPresenterController', () => {
   const closeSession = { execute: jest.fn() };
   const results = { execute: jest.fn() };
   const streamSession = { executeForTeacher: jest.fn() };
+  const lireDeroule = { execute: jest.fn() };
 
   const controller = new FormationsPresenterController(
     openSession as never,
@@ -44,6 +31,7 @@ describe('FormationsPresenterController', () => {
     closeSession as never,
     results as never,
     streamSession as never,
+    lireDeroule as never,
   );
 
   const controle = (dto: ControlSessionRequestDto): Promise<void> =>
@@ -53,22 +41,22 @@ describe('FormationsPresenterController', () => {
     jest.clearAllMocks();
   });
 
-  it('ouvre une session au nom du formateur authentifie', async () => {
+  it('ouvre une session par le seul slug du cours au nom du formateur authentifie', async () => {
     openSession.execute.mockResolvedValue({
       sessionId: SESSION_ID,
       code: '4271',
     });
 
     const reponse = await controller.open(
-      { courseSlug: 'maths-bts-suites', bareme: baremeDto },
+      { courseSlug: 'cours-de-test' },
       requeteFormateur,
     );
 
     expect(openSession.execute).toHaveBeenCalledWith({
-      courseSlug: 'maths-bts-suites',
+      courseSlug: 'cours-de-test',
       teacherId: TEACHER_ID,
-      bareme: baremeDto,
     });
+    expect(openSession.execute.mock.calls[0][0]).not.toHaveProperty('bareme');
     expect(reponse).toEqual({ sessionId: SESSION_ID, code: '4271' });
   });
 
@@ -156,5 +144,15 @@ describe('FormationsPresenterController', () => {
       controller.getResults(SESSION_ID, requeteFormateur),
     ).resolves.toBe(rapport);
     expect(results.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+  });
+
+  it('rend le deroule annote au formateur proprietaire', async () => {
+    const deroule = { id: 'cours-de-test' } as unknown as DerouleCours;
+    lireDeroule.execute.mockResolvedValue(deroule);
+
+    await expect(
+      controller.getDeroule(SESSION_ID, requeteFormateur),
+    ).resolves.toBe(deroule);
+    expect(lireDeroule.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
   });
 });

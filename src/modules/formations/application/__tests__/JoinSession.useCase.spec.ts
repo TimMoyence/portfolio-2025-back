@@ -3,6 +3,7 @@ import {
   buildParticipantRecord,
   buildSessionRecord,
   createMockParticipantsRepo,
+  createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
@@ -18,6 +19,7 @@ const MAX_TENTATIVES_GRAINE = 60;
 describe('JoinSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let participants: ReturnType<typeof createMockParticipantsRepo>;
+  let cache: ReturnType<typeof createMockSessionStateCache>;
   let sut: JoinSessionUseCase;
 
   const commande = {
@@ -31,7 +33,30 @@ describe('JoinSessionUseCase', () => {
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     participants = createMockParticipantsRepo();
-    sut = new JoinSessionUseCase(sessions, participants);
+    cache = createMockSessionStateCache();
+    sut = new JoinSessionUseCase(sessions, participants, cache);
+  });
+
+  it('signale une activite sur la session une fois le nouveau participant inscrit', async () => {
+    await sut.execute(commande);
+    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
+    expect(participants.create.mock.invocationCallOrder[0]).toBeLessThan(
+      cache.signalerActivite.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('ne signale aucune activite au retour d un participant deja inscrit', async () => {
+    participants.findBySessionAndStudentKey.mockResolvedValue(
+      buildParticipantRecord(),
+    );
+    await sut.execute(commande);
+    expect(cache.signalerActivite).not.toHaveBeenCalled();
+  });
+
+  it('ne signale aucune activite quand l inscription echoue', async () => {
+    participants.create.mockRejectedValue(new Error('panne du depot'));
+    await expect(sut.execute(commande)).rejects.toThrow('panne du depot');
+    expect(cache.signalerActivite).not.toHaveBeenCalled();
   });
 
   it('inscrit un nouveau participant avec un seed libre', async () => {
@@ -69,6 +94,22 @@ describe('JoinSessionUseCase', () => {
 
     expect(result.seed).toBe(1002);
     expect(participants.create).toHaveBeenCalledTimes(2);
+  });
+
+  it('ne signale qu une seule activite quand l inscription reprend sur une autre graine', async () => {
+    participants.listSeedsBySession
+      .mockResolvedValueOnce([])
+      .mockResolvedValue([1001]);
+    participants.create
+      .mockRejectedValueOnce(new SeedAlreadyAssignedError(1001))
+      .mockResolvedValue(buildParticipantRecord({ seed: 1002 }));
+
+    await sut.execute(commande);
+
+    expect(cache.signalerActivite).toHaveBeenCalledTimes(1);
+    expect(participants.create.mock.invocationCallOrder[1]).toBeLessThan(
+      cache.signalerActivite.mock.invocationCallOrder[0],
+    );
   });
 
   it('laisse remonter une erreur d inscription qui n est pas un conflit de graine', async () => {

@@ -24,6 +24,7 @@ import type {
 export function buildBareme(overrides: Partial<Bareme> = {}): Bareme {
   return {
     version: 1,
+    graineReference: 9_999_999,
     questions: [
       {
         id: 'Q-CAP-03',
@@ -162,6 +163,7 @@ export function createMockParticipantsRepo(): jest.Mocked<IParticipantsRepositor
     findBySessionAndStudentKey: jest.fn().mockResolvedValue(null),
     findById: jest.fn().mockResolvedValue(participant),
     listBySession: jest.fn().mockResolvedValue([participant]),
+    countBySession: jest.fn().mockResolvedValue(1),
     listSeedsBySession: jest.fn().mockResolvedValue([]),
     touch: jest.fn().mockResolvedValue(undefined),
   };
@@ -200,6 +202,8 @@ export function createMockSessionStateCache(): jest.Mocked<ISessionStateCache> {
     read: jest.fn().mockReturnValue(null),
     drop: jest.fn(),
     fingerprint: jest.fn().mockReturnValue(''),
+    signalerActivite: jest.fn(),
+    activite: jest.fn().mockReturnValue(0),
   };
 }
 

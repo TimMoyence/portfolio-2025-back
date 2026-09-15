@@ -87,7 +87,10 @@ export class AnswersRepositoryTypeORM
   }
 
   async listBySession(sessionId: string): Promise<readonly AnswerRecord[]> {
-    const entities = await this.repo.find({ where: { sessionId } });
+    const entities = await this.repo.find({
+      where: { sessionId },
+      order: { soumisLe: 'ASC', id: 'ASC' },
+    });
     return entities.map((entity) => this.toDomain(entity));
   }
 

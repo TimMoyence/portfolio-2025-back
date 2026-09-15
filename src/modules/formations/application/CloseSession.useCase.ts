@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { createHmac } from 'node:crypto';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import { SessionClosedError } from '../domain/errors/FormationErrors';
 import type {
@@ -17,6 +18,7 @@ import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import { buildRapportSession } from '../domain/SessionReport';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
@@ -44,6 +46,8 @@ export class CloseSessionUseCase {
     private readonly mailer: IFormationMailer,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async execute(
@@ -75,9 +79,11 @@ export class CloseSessionUseCase {
 
     const rapport = buildRapportSession({
       session: misAJour,
+      cours: this.catalogue.trouver(misAJour.courseSlug),
       participants: participantsListe,
       answers: reponses,
       incidents: incidentsListe,
+      avertir: (message) => this.logger.warn(message),
     });
 
     this.envoyerSynthese(

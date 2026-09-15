@@ -35,6 +35,7 @@ export interface ContexteFormations {
   answers: AnswersRepositoryTypeORM;
   incidents: IncidentsRepositoryTypeORM;
   mastery: MasteryRepositoryTypeORM;
+  graineDe(participantId: string): Promise<number>;
   nettoyer(): Promise<void>;
   rejouerMigration(): Promise<void>;
   fermer(): Promise<void>;
@@ -53,15 +54,16 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
   const dataSource = new DataSource(buildFormationsOptions());
   await dataSource.initialize();
   await dataSource.runMigrations({ transaction: 'all' });
+  const participants = new ParticipantsRepositoryTypeORM(
+    dataSource.getRepository(FormationParticipantEntity),
+  );
 
   return {
     dataSource,
     sessions: new SessionsRepositoryTypeORM(
       dataSource.getRepository(FormationSessionEntity),
     ),
-    participants: new ParticipantsRepositoryTypeORM(
-      dataSource.getRepository(FormationParticipantEntity),
-    ),
+    participants,
     answers: new AnswersRepositoryTypeORM(
       dataSource.getRepository(FormationAnswerEntity),
     ),
@@ -71,6 +73,13 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
     mastery: new MasteryRepositoryTypeORM(
       dataSource.getRepository(FormationMasteryEntity),
     ),
+    async graineDe(participantId: string): Promise<number> {
+      const participant = await participants.findById(participantId);
+      if (participant === null) {
+        throw new Error(`Participant absent de la base: ${participantId}`);
+      }
+      return participant.seed;
+    },
     async nettoyer(): Promise<void> {
       const cibles = FORMATION_TABLES.map((table) => `"${table}"`).join(', ');
       await dataSource.query(

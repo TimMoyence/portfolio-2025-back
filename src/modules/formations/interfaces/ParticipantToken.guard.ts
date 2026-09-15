@@ -17,7 +17,10 @@ export class ParticipantTokenGuard implements CanActivate {
     const requete = context.switchToHttp().getRequest<Request>();
     const brut = requete.headers[EN_TETE_JETON];
     const jeton = Array.isArray(brut) ? brut[0] : brut;
-    this.tokens.verify(String(requete.params['id'] ?? ''), jeton);
+    requete.participantId = this.tokens.verify(
+      String(requete.params['id'] ?? ''),
+      jeton,
+    );
     return true;
   }
 }

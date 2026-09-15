@@ -15,4 +15,6 @@ export interface ISessionStateCache {
   read(sessionId: string): LiveSessionState | null;
   drop(sessionId: string): void;
   fingerprint(state: LiveSessionState): string;
+  signalerActivite(sessionId: string): void;
+  activite(sessionId: string): number;
 }

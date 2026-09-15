@@ -10,7 +10,7 @@ import { APP_GUARD, Reflector } from '@nestjs/core';
 import { Test as ModuleDeTest } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
-import type { AddressInfo } from 'node:net';
+import { request as requeteNode, type IncomingMessage } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
 import { IS_PUBLIC_KEY } from '../../src/common/interfaces/auth/public.decorator';
@@ -21,6 +21,8 @@ import { ControlSessionUseCase } from '../../src/modules/formations/application/
 import { DueQuestionsUseCase } from '../../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../../src/modules/formations/application/JoinSession.useCase';
+import { LireDerouleUseCase } from '../../src/modules/formations/application/LireDeroule.useCase';
+import { LireSujetUseCase } from '../../src/modules/formations/application/LireSujet.useCase';
 import { OpenSessionUseCase } from '../../src/modules/formations/application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from '../../src/modules/formations/application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../../src/modules/formations/application/StreamSession.useCase';
@@ -31,8 +33,12 @@ import type { IIncidentsRepository } from '../../src/modules/formations/domain/I
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type { IParticipantsRepository } from '../../src/modules/formations/domain/IParticipants.repository';
 import type { ISessionsRepository } from '../../src/modules/formations/domain/ISessions.repository';
+import { CATALOGUE_COURS_STATIQUE } from '../../src/modules/formations/domain/cours/catalogue';
+import type { Cours } from '../../src/modules/formations/domain/cours/Cours';
+import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
@@ -53,10 +59,23 @@ import {
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './formations-db';
+import {
+  ADRESSE_BOUCLE_LOCALE,
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
 export const PREFIXE_API = 'api/v1/portfolio25';
 export const EN_TETE_IDENTITE = 'x-test-identite';
+
+export function coursPublie(slug: string): Cours {
+  const cours = CATALOGUE_COURS_STATIQUE.trouver(slug);
+  if (cours === null) {
+    throw new Error(`Le cours ${slug} est absent du catalogue publie`);
+  }
+  return cours;
+}
 
 const FENETRE_THROTTLE_MS = 60_000;
 const LIMITE_THROTTLE_PAR_DEFAUT = 30;
@@ -95,6 +114,7 @@ export interface DepotsFormations {
 
 export async function monterApplicationFormations(
   depots: DepotsFormations,
+  catalogue: ICatalogueCours = CATALOGUE_COURS_STATIQUE,
 ): Promise<INestApplication> {
   const moduleRef = await ModuleDeTest.createTestingModule({
     imports: [
@@ -113,6 +133,8 @@ export async function monterApplicationFormations(
       RecordIncidentsUseCase,
       StreamSessionUseCase,
       DueQuestionsUseCase,
+      LireSujetUseCase,
+      LireDerouleUseCase,
       ParticipantTokenService,
       CodeScanProtectionService,
       { provide: SESSIONS_REPOSITORY, useValue: depots.sessions },
@@ -121,6 +143,7 @@ export async function monterApplicationFormations(
       { provide: INCIDENTS_REPOSITORY, useValue: depots.incidents },
       { provide: MASTERY_REPOSITORY, useValue: depots.mastery },
       { provide: FORMATION_MAILER, useValue: depots.mailer },
+      { provide: CATALOGUE_COURS, useValue: catalogue },
       { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
       { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
       { provide: APP_GUARD, useClass: ThrottlerGuard },
@@ -135,6 +158,94 @@ export async function monterApplicationFormations(
   return app;
 }
 
+export interface EvenementFlux {
+  type: string;
+  donnees: Record<string, unknown>;
+}
+
+export interface FluxEcoute {
+  statut: number;
+  evenements: EvenementFlux[];
+  ferme: boolean;
+  fermer(): void;
+}
+
+const SEPARATEUR_DE_TRAMES = '\n\n';
+const PREFIXE_EVENEMENT = 'event: ';
+const PREFIXE_DONNEES = 'data: ';
+
+function evenementsDeLaTrame(trame: string): EvenementFlux[] {
+  const lignes = trame.split('\n');
+  const type = lignes
+    .find((ligne) => ligne.startsWith(PREFIXE_EVENEMENT))
+    ?.slice(PREFIXE_EVENEMENT.length);
+  const donnees = lignes
+    .filter((ligne) => ligne.startsWith(PREFIXE_DONNEES))
+    .map((ligne) => ligne.slice(PREFIXE_DONNEES.length));
+  if (type === undefined || donnees.length === 0) {
+    return [];
+  }
+  return [
+    {
+      type,
+      donnees: JSON.parse(donnees.join('\n')) as Record<string, unknown>,
+    },
+  ];
+}
+
+function suivreLeFlux(reponse: IncomingMessage, flux: FluxEcoute): void {
+  let reste = '';
+  reponse.setEncoding('utf8');
+  reponse.on('data', (morceau: string) => {
+    const trames = `${reste}${morceau}`.split(SEPARATEUR_DE_TRAMES);
+    reste = trames.pop() ?? '';
+    flux.evenements.push(...trames.flatMap(evenementsDeLaTrame));
+  });
+  reponse.on('close', () => {
+    flux.ferme = true;
+  });
+}
+
+export function abonnerAuFlux(
+  port: number,
+  chemin: string,
+  entetes: Readonly<Record<string, string>>,
+): Promise<FluxEcoute> {
+  return new Promise((resoudre, rejeter) => {
+    const requete = requeteNode(
+      { host: ADRESSE_BOUCLE_LOCALE, port, path: chemin, headers: entetes },
+      (reponse) => {
+        const flux: FluxEcoute = {
+          statut: reponse.statusCode ?? 0,
+          evenements: [],
+          ferme: false,
+          fermer: () => requete.destroy(),
+        };
+        suivreLeFlux(reponse, flux);
+        resoudre(flux);
+      },
+    );
+    requete.on('error', rejeter);
+    requete.end();
+  });
+}
+
+export function patienter(delaiMs: number): Promise<void> {
+  return new Promise((resoudre) => setTimeout(resoudre, delaiMs));
+}
+
+const PAS_ATTENTE_MS = 10;
+
+export async function attendreQue(
+  condition: () => boolean,
+  delaiMaxMs: number,
+): Promise<void> {
+  const limite = Date.now() + delaiMaxMs;
+  while (!condition() && Date.now() < limite) {
+    await patienter(PAS_ATTENTE_MS);
+  }
+}
+
 export interface BancFormations {
   contexte: ContexteFormations;
   app: INestApplication;
@@ -143,25 +254,30 @@ export interface BancFormations {
   fermer(): Promise<void>;
 }
 
-export async function monterBancFormations(): Promise<BancFormations> {
+export async function monterBancFormations(
+  catalogue: ICatalogueCours = CATALOGUE_COURS_STATIQUE,
+): Promise<BancFormations> {
   const contexte = await ouvrirContexteFormations();
   const mailer = createMockFormationMailer();
-  const app = await monterApplicationFormations({
-    sessions: contexte.sessions,
-    participants: contexte.participants,
-    answers: contexte.answers,
-    incidents: contexte.incidents,
-    mastery: contexte.mastery,
-    mailer,
-  });
-  await app.listen(0);
+  const app = await monterApplicationFormations(
+    {
+      sessions: contexte.sessions,
+      participants: contexte.participants,
+      answers: contexte.answers,
+      incidents: contexte.incidents,
+      mastery: contexte.mastery,
+      mailer,
+    },
+    catalogue,
+  );
+  const port = await ecouterEnBoucleLocale(app);
   return {
     contexte,
     app,
     mailer,
-    port: (app.getHttpServer().address() as AddressInfo).port,
+    port,
     async fermer(): Promise<void> {
-      await app.close();
+      await fermerApplication(app);
       await contexte.fermer();
     },
   };

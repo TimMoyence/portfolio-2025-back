@@ -1,14 +1,17 @@
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
-import type {
-  Bareme,
-  BaremeQuestion,
-  BaremeTirage,
-} from '../src/modules/formations/domain/Bareme';
+import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import type { RapportSession } from '../src/modules/formations/domain/IFormationMailer.port';
 import { SessionCode } from '../src/modules/formations/domain/SessionCode';
-import { createMockFormationMailer } from './factories/formation.factory';
+import {
+  buildCoursDeClasse,
+  creerCatalogueDeTest,
+} from './factories/cours.factory';
+import {
+  buildBareme,
+  createMockFormationMailer,
+} from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   ouvrirContexteFormations,
@@ -17,13 +20,20 @@ import {
 import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
+  patienter,
   PREFIXE_API,
 } from './helpers/formations-harness';
+import {
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const TAILLE_CLASSE = 30;
 const NB_QUESTIONS = 2;
-const COURS = 'b1-09-interets-composes';
+const NB_QUESTIONS_DU_COURS = 12;
+const COURS_DE_CLASSE = buildCoursDeClasse(NB_QUESTIONS_DU_COURS);
+const COURS = COURS_DE_CLASSE.slug;
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const AUTRE_FORMATEUR = 'b2222222-2222-4222-8222-222222222222';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
@@ -36,7 +46,6 @@ const ECRAN_PROPRIETAIRE_PREMIER = 4;
 const ECRAN_PROPRIETAIRE_SECOND = 6;
 const ECRAN_INTRUS_PREMIER = 9;
 const ECRAN_INTRUS_SECOND = 11;
-const PREMIERE_GRAINE = 6000;
 const MAX_SONDAGES = 200;
 const PAS_SONDAGE_MS = 25;
 const CREE = 201;
@@ -47,7 +56,6 @@ const CONFLIT = 409;
 interface ReponseInscription {
   participantId: string;
   sessionId: string;
-  seed: number;
   jeton: string;
 }
 
@@ -57,36 +65,11 @@ interface ReponseOuverture {
 }
 
 function identifiantQuestion(question: number): string {
-  return `Q-CONC-${String(question).padStart(2, '0')}`;
+  return questionsDuCours(COURS_DE_CLASSE)[question].id;
 }
 
 function cleEtudiant(index: number): string {
   return `44444444-4444-4444-8444-${String(index).padStart(12, '0')}`;
-}
-
-function valeurJuste(tirage: number, question: number): number {
-  return 700000 + tirage * 100 + question;
-}
-
-function construireBareme(): Bareme {
-  const questions: BaremeQuestion[] = [];
-  for (let question = 0; question < NB_QUESTIONS; question += 1) {
-    questions.push({
-      id: identifiantQuestion(question),
-      type: 'numeric',
-      concept: 'capitalisation',
-      noteCompte: true,
-    });
-  }
-  const tirages: BaremeTirage[] = [];
-  for (let rang = 0; rang < TAILLE_CLASSE; rang += 1) {
-    const solutions: Record<string, { valeur: number; pieges: [] }> = {};
-    questions.forEach((question, index) => {
-      solutions[question.id] = { valeur: valeurJuste(rang, index), pieges: [] };
-    });
-    tirages.push({ seed: PREMIERE_GRAINE + rang, solutions });
-  }
-  return { version: 1, questions, tirages };
 }
 
 function statutsEnEchec(
@@ -122,7 +105,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     request(serveur())
       .post(route('/sessions'))
       .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`)
-      .send({ courseSlug: COURS, bareme: construireBareme() });
+      .send({ courseSlug: COURS });
 
   const inscrire = (code: string, index: number): Test =>
     request(serveur())
@@ -195,7 +178,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
       if (total > 0) {
         return total;
       }
-      await new Promise((resoudre) => setTimeout(resoudre, PAS_SONDAGE_MS));
+      await patienter(PAS_SONDAGE_MS);
     }
     return 0;
   };
@@ -203,19 +186,22 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
   beforeAll(async () => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
     contexte = await ouvrirContexteFormations();
-    app = await monterApplicationFormations({
-      sessions: contexte.sessions,
-      participants: contexte.participants,
-      answers: contexte.answers,
-      incidents: contexte.incidents,
-      mastery: contexte.mastery,
-      mailer: createMockFormationMailer(),
-    });
-    await app.listen(0);
+    app = await monterApplicationFormations(
+      {
+        sessions: contexte.sessions,
+        participants: contexte.participants,
+        answers: contexte.answers,
+        incidents: contexte.incidents,
+        mastery: contexte.mastery,
+        mailer: createMockFormationMailer(),
+      },
+      creerCatalogueDeTest(COURS_DE_CLASSE),
+    );
+    await ecouterEnBoucleLocale(app);
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
     await contexte.fermer();
     delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
   });
@@ -234,8 +220,10 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     );
 
     expect(statutsEnEchec(inscriptions, CREE)).toEqual([]);
-    const graines = inscriptions.map(
-      (reponse) => (reponse.body as ReponseInscription).seed,
+    const graines = await Promise.all(
+      inscriptions.map((reponse) =>
+        contexte.graineDe((reponse.body as ReponseInscription).participantId),
+      ),
     );
     expect(new Set(graines).size).toBe(TAILLE_CLASSE);
 
@@ -276,12 +264,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     await concurrente.startTransaction();
     await concurrente.query(
       `INSERT INTO "formation_sessions" ("course_slug", "teacher_id", "code", "bareme") VALUES ($1, $2, $3, $4)`,
-      [
-        COURS,
-        AUTRE_FORMATEUR,
-        CODE_DOUBLON,
-        JSON.stringify(construireBareme()),
-      ],
+      [COURS, AUTRE_FORMATEUR, CODE_DOUBLON, JSON.stringify(buildBareme())],
     );
 
     const ouverture = ouvrir().then((reponse) => reponse);

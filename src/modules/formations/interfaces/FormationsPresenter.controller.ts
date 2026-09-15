@@ -16,26 +16,33 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiConflictResponse,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
+import type { ResultatsDeSeance } from '../application/GetSessionResults.useCase';
+import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
-import type { RapportSession } from '../domain/IFormationMailer.port';
+import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import { ControlSessionRequestDto } from './dto/control-session.request.dto';
+import { DerouleResponseDto } from './dto/deroule.response.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
+import { SessionResultsResponseDto } from './dto/session-results.response.dto';
 
 /**
  * Pilotage d une session de cours par son formateur.
@@ -58,11 +65,16 @@ export class FormationsPresenterController {
     private readonly closeSession: CloseSessionUseCase,
     private readonly results: GetSessionResultsUseCase,
     private readonly streamSession: StreamSessionUseCase,
+    private readonly lireDeroule: LireDerouleUseCase,
   ) {}
 
   @Post('sessions')
-  @ApiOperation({ summary: 'Ouvre une session de cours et depose le bareme' })
-  @ApiOkResponse({ type: OpenSessionResponseDto })
+  @ApiOperation({ summary: 'Ouvre une session de cours et tire les sujets' })
+  @ApiCreatedResponse({ type: OpenSessionResponseDto })
+  @ApiNotFoundResponse({ description: 'Cours introuvable' })
+  @ApiConflictResponse({
+    description: 'Le cours ne produit pas assez de tirages non ambigus',
+  })
   async open(
     @Body() dto: OpenSessionRequestDto,
     @Req() request: Request,
@@ -70,7 +82,6 @@ export class FormationsPresenterController {
     const result = await this.openSession.execute({
       courseSlug: dto.courseSlug,
       teacherId: request.user!.sub,
-      bareme: dto.bareme,
     });
     return { sessionId: result.sessionId, code: result.code };
   }
@@ -134,22 +145,55 @@ export class FormationsPresenterController {
   })
   @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
   @ApiNotFoundResponse({ description: 'Session introuvable' })
+  @ApiTooManyRequestsResponse({
+    description:
+      'Trop d ouvertures par minute (throttler global) ; au-dela de quatre flux, le plus ancien du formateur est ferme',
+  })
   async presenterStream(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<Observable<MessageEvent>> {
-    return this.streamSession.executeForTeacher(id, request.user!.sub);
+    let clientDeconnecte = false;
+    request.once('close', () => {
+      clientDeconnecte = true;
+    });
+    const flux = await this.streamSession.executeForTeacher(
+      id,
+      request.user!.sub,
+    );
+    return clientDeconnecte || request.destroyed ? EMPTY : flux;
   }
 
   @Get('sessions/:id/results')
   @ApiOperation({ summary: 'Rapport de session : notes, copies et incidents' })
-  @ApiOkResponse({ description: 'Rapport de la session' })
+  @ApiOkResponse({
+    type: SessionResultsResponseDto,
+    description: 'Rapport de la session et resultats agreges par question',
+  })
   @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
   @ApiNotFoundResponse({ description: 'Session introuvable' })
   async getResults(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
-  ): Promise<RapportSession> {
+  ): Promise<ResultatsDeSeance> {
     return this.results.execute(id, request.user!.sub);
+  }
+
+  @Get('sessions/:id/deroule')
+  @ApiOperation({
+    summary: 'Deroule annote de la seance, reserve au formateur proprietaire',
+  })
+  @ApiOkResponse({
+    type: DerouleResponseDto,
+    description:
+      'Deroule annote du tirage de reference : notes, seuils et corriges',
+  })
+  @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
+  @ApiNotFoundResponse({ description: 'Session ou cours introuvable' })
+  async getDeroule(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ): Promise<DerouleCours> {
+    return this.lireDeroule.execute(id, request.user!.sub);
   }
 }

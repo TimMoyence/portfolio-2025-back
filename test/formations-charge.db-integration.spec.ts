@@ -1,22 +1,14 @@
-import {
-  request as requeteNode,
-  type ClientRequest,
-  type IncomingMessage,
-} from 'node:http';
-import type { AddressInfo } from 'node:net';
 import { performance } from 'node:perf_hooks';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
-import type {
-  Bareme,
-  BaremeQuestion,
-  BaremeTirage,
-} from '../src/modules/formations/domain/Bareme';
-import type {
-  IFormationMailer,
-  RapportSession,
-} from '../src/modules/formations/domain/IFormationMailer.port';
+import type { ResultatsDeSeance } from '../src/modules/formations/application/GetSessionResults.useCase';
+import { CATALOGUE_COURS_STATIQUE } from '../src/modules/formations/domain/cours/catalogue';
+import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
+import { tirer } from '../src/modules/formations/domain/cours/Tirage';
+import type { AnswerValue } from '../src/modules/formations/domain/GradingCore';
+import type { IFormationMailer } from '../src/modules/formations/domain/IFormationMailer.port';
+import type { ResultatsSeance } from '../src/modules/formations/domain/ResultatsSeance';
 import { createMockFormationMailer } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -24,21 +16,28 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
+  abonnerAuFlux,
+  coursPublie,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
+  patienter,
   PREFIXE_API,
+  type FluxEcoute,
 } from './helpers/formations-harness';
+import {
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const TAILLE_CLASSE = 30;
-const NB_QUESTIONS = 12;
-const COURS = 'b1-09-interets-composes';
+const COURS = coursPublie('b2-01-traitement-information-chiffree');
+const QUESTIONS = questionsDuCours(COURS);
+const [PREMIERE_QUESTION] = QUESTIONS;
 const FORMATEUR = 'c3333333-3333-4333-8333-333333333333';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'charge-formateur@example.test';
 const EN_TETE_JETON = 'x-participant-token';
-const PREMIERE_GRAINE = 9000;
-const CONCEPTS = ['capitalisation', 'actualisation', 'annuites'] as const;
 const OK = 200;
 const CREE = 201;
 const SANS_CONTENU = 204;
@@ -55,23 +54,18 @@ const DELAI_TEST_LONG_MS = 300_000;
 const POUR_CENT = 100;
 const MS_PAR_SECONDE = 1000;
 const DUREE_REPONSE_MS = 12_000;
+const ATTENTE_RESULTATS_MS = 15_000;
+const PAS_SONDAGE_MS = 50;
 
 interface Inscrit {
   participantId: string;
   sessionId: string;
-  seed: number;
   jeton: string;
 }
 
 interface Classe {
   sessionId: string;
   inscrits: Inscrit[];
-}
-
-interface Abonnement {
-  statut: number;
-  ferme: boolean;
-  fermer(): void;
 }
 
 const mesures: string[] = [];
@@ -126,10 +120,6 @@ async function chronometrer<T>(action: () => Promise<T>): Promise<[T, number]> {
   return [valeur, performance.now() - depart];
 }
 
-function patienter(delaiMs: number): Promise<void> {
-  return new Promise((resoudre) => setTimeout(resoudre, delaiMs));
-}
-
 function memoireStabilisee(): number {
   const collecter = (globalThis as { gc?: () => void }).gc;
   collecter?.();
@@ -137,20 +127,8 @@ function memoireStabilisee(): number {
   return process.memoryUsage().heapUsed;
 }
 
-function identifiantQuestion(question: number): string {
-  return `Q-CHARGE-${String(question).padStart(2, '0')}`;
-}
-
-function conceptDe(question: number): string {
-  return CONCEPTS[question % CONCEPTS.length];
-}
-
 function cleEtudiant(index: number): string {
   return `55555555-5555-4555-8555-${String(index).padStart(12, '0')}`;
-}
-
-function valeurJuste(tirage: number, question: number): number {
-  return 800000 + tirage * 100 + question;
 }
 
 function identiteDe(index: number): Record<string, string> {
@@ -162,73 +140,27 @@ function identiteDe(index: number): Record<string, string> {
   };
 }
 
-function corpsReponse(question: number): Record<string, unknown> {
-  return {
-    questionId: identifiantQuestion(question),
-    valeur: 1,
-    dureeMs: DUREE_REPONSE_MS,
-  };
-}
-
-function construireBareme(): Bareme {
-  const questions: BaremeQuestion[] = Array.from(
-    { length: NB_QUESTIONS },
-    (_, question) => ({
-      id: identifiantQuestion(question),
-      type: 'numeric' as const,
-      concept: conceptDe(question),
-      noteCompte: true,
-    }),
+function totalPousse(flux: FluxEcoute, questionId: string): number {
+  const derniers = flux.evenements
+    .filter((evenement) => evenement.type === 'resultats')
+    .map((evenement) => evenement.donnees as unknown as ResultatsSeance)
+    .at(-1);
+  return (
+    derniers?.questions.find((question) => question.questionId === questionId)
+      ?.total ?? 0
   );
-  const tirages: BaremeTirage[] = Array.from(
-    { length: TAILLE_CLASSE },
-    (_, rang) => ({
-      seed: PREMIERE_GRAINE + rang,
-      solutions: Object.fromEntries(
-        questions.map((question, index) => [
-          question.id,
-          { valeur: valeurJuste(rang, index), pieges: [] },
-        ]),
-      ),
-    }),
-  );
-  return { version: 1, questions, tirages };
 }
 
-function brancherAbonnement(
-  requete: ClientRequest,
-  reponse: IncomingMessage,
-): Abonnement {
-  const abonnement: Abonnement = {
-    statut: reponse.statusCode ?? 0,
-    ferme: false,
-    fermer: () => requete.destroy(),
-  };
-  reponse.on('data', () => undefined);
-  reponse.on('close', () => {
-    abonnement.ferme = true;
-  });
-  return abonnement;
-}
-
-function abonnerAuFlux(
-  port: number,
-  chemin: string,
-  jeton: string,
-): Promise<Abonnement> {
-  return new Promise((resoudre, rejeter) => {
-    const requete = requeteNode(
-      {
-        host: '127.0.0.1',
-        port,
-        path: chemin,
-        headers: { [EN_TETE_JETON]: jeton },
-      },
-      (reponse) => resoudre(brancherAbonnement(requete, reponse)),
-    );
-    requete.on('error', rejeter);
-    requete.end();
-  });
+async function attendreTotalPousse(
+  flux: FluxEcoute,
+  questionId: string,
+  attendu: number,
+): Promise<number> {
+  const limite = Date.now() + ATTENTE_RESULTATS_MS;
+  while (totalPousse(flux, questionId) !== attendu && Date.now() < limite) {
+    await patienter(PAS_SONDAGE_MS);
+  }
+  return totalPousse(flux, questionId);
 }
 
 function statutsEnEchec(
@@ -259,21 +191,33 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       .post(route(`/sessions/${code}/join`))
       .send(identiteDe(index));
 
-  const repondre = (sessionId: string, jeton: string, question: number): Test =>
+  const repondreJuste = (
+    sessionId: string,
+    inscrit: Inscrit,
+    valeur: AnswerValue,
+  ): Test =>
     request(serveur())
       .post(route(`/sessions/${sessionId}/answers`))
-      .set(EN_TETE_JETON, jeton)
-      .send(corpsReponse(question));
+      .set(EN_TETE_JETON, inscrit.jeton)
+      .send({
+        questionId: PREMIERE_QUESTION.id,
+        valeur,
+        dureeMs: DUREE_REPONSE_MS,
+      });
 
   const commander = (chemin: string): Test =>
     request(serveur())
       .post(route(chemin))
       .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`);
 
+  const ouvrirSeance = (): Test =>
+    commander('/sessions').send({ courseSlug: COURS.slug });
+
+  const solutionsDe = async (inscrit: Inscrit) =>
+    tirer(COURS, await contexte.graineDe(inscrit.participantId)).solutions;
+
   const preparerClasse = async (): Promise<Classe> => {
-    const ouverture = await commander('/sessions')
-      .send({ courseSlug: COURS, bareme: construireBareme() })
-      .expect(CREE);
+    const ouverture = await ouvrirSeance().expect(CREE);
     const { sessionId, code } = ouverture.body as {
       sessionId: string;
       code: string;
@@ -289,49 +233,55 @@ describeDb('Formations sous charge de classe (db integration)', () => {
 
   const semerReponses = async (classe: Classe): Promise<void> => {
     for (const inscrit of classe.inscrits) {
+      const seed = await contexte.graineDe(inscrit.participantId);
+      const { solutions } = tirer(COURS, seed);
       await Promise.all(
-        Array.from({ length: NB_QUESTIONS }, (_, question) =>
+        QUESTIONS.map((question, rang) =>
           contexte.answers.create({
             sessionId: classe.sessionId,
             participantId: inscrit.participantId,
-            questionId: identifiantQuestion(question),
-            concept: conceptDe(question),
-            valeur: valeurJuste(inscrit.seed - PREMIERE_GRAINE, question),
-            seed: inscrit.seed,
+            questionId: question.id,
+            concept: question.concept,
+            valeur: solutions[question.id].valeur,
+            seed,
             correcte: true,
             misconception: null,
-            dureeMs: DUREE_REPONSE_MS + question,
+            dureeMs: DUREE_REPONSE_MS + rang,
           }),
         ),
       );
     }
     await expect(
       contexte.answers.listBySession(classe.sessionId),
-    ).resolves.toHaveLength(TAILLE_CLASSE * NB_QUESTIONS);
+    ).resolves.toHaveLength(TAILLE_CLASSE * QUESTIONS.length);
   };
 
-  const ouvrirFlux = (sessionId: string, jeton: string): Promise<Abonnement> =>
-    abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), jeton);
+  const ouvrirFlux = (sessionId: string, jeton: string): Promise<FluxEcoute> =>
+    abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
+      [EN_TETE_JETON]: jeton,
+    });
 
   beforeAll(async () => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
     process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
     contexte = await ouvrirContexteFormations();
     mailer = createMockFormationMailer();
-    app = await monterApplicationFormations({
-      sessions: contexte.sessions,
-      participants: contexte.participants,
-      answers: contexte.answers,
-      incidents: contexte.incidents,
-      mastery: contexte.mastery,
-      mailer,
-    });
-    await app.listen(0);
-    port = (app.getHttpServer().address() as AddressInfo).port;
+    app = await monterApplicationFormations(
+      {
+        sessions: contexte.sessions,
+        participants: contexte.participants,
+        answers: contexte.answers,
+        incidents: contexte.incidents,
+        mastery: contexte.mastery,
+        mailer,
+      },
+      CATALOGUE_COURS_STATIQUE,
+    );
+    port = await ecouterEnBoucleLocale(app);
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
     await contexte.fermer();
     delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
     delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
@@ -346,10 +296,11 @@ describeDb('Formations sous charge de classe (db integration)', () => {
   it(
     'rattache trente etudiants simultanes dans le temps d une dictee de code',
     async () => {
-      const ouverture = await commander('/sessions')
-        .send({ courseSlug: COURS, bareme: construireBareme() })
-        .expect(CREE);
-      const { code } = ouverture.body as { code: string };
+      const ouverture = await ouvrirSeance().expect(CREE);
+      const { sessionId, code } = ouverture.body as {
+        sessionId: string;
+        code: string;
+      };
 
       const [inscriptions, duree] = await chronometrer(() =>
         Promise.all(
@@ -360,10 +311,10 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       );
 
       expect(statutsEnEchec(inscriptions, CREE)).toEqual([]);
-      expect(
-        new Set(inscriptions.map((reponse) => (reponse.body as Inscrit).seed))
-          .size,
-      ).toBe(TAILLE_CLASSE);
+      const inscrits = await contexte.participants.listBySession(sessionId);
+      expect(new Set(inscrits.map((inscrit) => inscrit.seed)).size).toBe(
+        TAILLE_CLASSE,
+      );
       exigerDuree(
         'rattachement de trente etudiants',
         duree,
@@ -374,29 +325,55 @@ describeDb('Formations sous charge de classe (db integration)', () => {
   );
 
   it(
-    'encaisse trente reponses simultanees au meme enonce',
+    'encaisse trente reponses simultanees au meme enonce, flux du formateur ouvert',
     async () => {
       const classe = await preparerClasse();
+      const valeurs = await Promise.all(
+        classe.inscrits.map(
+          async (inscrit) =>
+            (await solutionsDe(inscrit))[PREMIERE_QUESTION.id].valeur,
+        ),
+      );
+      const presentateur = await abonnerAuFlux(
+        port,
+        route(`/sessions/${classe.sessionId}/presenter-stream`),
+        { [EN_TETE_IDENTITE]: `${FORMATEUR}:teacher` },
+      );
+      await attendreTotalPousse(presentateur, PREMIERE_QUESTION.id, 0);
 
       const [envois, duree] = await chronometrer(() =>
         Promise.all(
-          classe.inscrits.map((inscrit) =>
-            repondre(classe.sessionId, inscrit.jeton, 0),
+          classe.inscrits.map((inscrit, rang) =>
+            repondreJuste(classe.sessionId, inscrit, valeurs[rang]),
           ),
         ),
       );
+      const pousses = await attendreTotalPousse(
+        presentateur,
+        PREMIERE_QUESTION.id,
+        TAILLE_CLASSE,
+      );
+      presentateur.fermer();
 
       expect(statutsEnEchec(envois, CREE)).toEqual([]);
       await expect(
         contexte.answers.listBySession(classe.sessionId),
       ).resolves.toHaveLength(TAILLE_CLASSE);
-      exigerDuree('trente reponses au meme enonce', duree, BUDGET_REPONSES_MS);
+      expect({
+        statut: presentateur.statut,
+        totalPousse: pousses,
+      }).toEqual({ statut: OK, totalPousse: TAILLE_CLASSE });
+      exigerDuree(
+        'trente reponses au meme enonce, flux formateur ouvert',
+        duree,
+        BUDGET_REPONSES_MS,
+      );
     },
     DELAI_TEST_COURT_MS,
   );
 
   it(
-    'cloture une seance de trente etudiants et trois cent soixante reponses',
+    'cloture une seance de trente etudiants ayant repondu a toutes les questions du cours',
     async () => {
       const classe = await preparerClasse();
       await semerReponses(classe);
@@ -409,7 +386,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       expect(mailer.sendSyntheseFormateur.mock.calls).toHaveLength(1);
       expect(mailer.sendCopieEtudiant.mock.calls).toHaveLength(TAILLE_CLASSE);
       exigerDuree(
-        'cloture de trois cent soixante reponses',
+        `cloture de ${TAILLE_CLASSE * QUESTIONS.length} reponses`,
         duree,
         BUDGET_CLOTURE_MS,
       );
@@ -429,10 +406,10 @@ describeDb('Formations sous charge de classe (db integration)', () => {
           .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`),
       );
 
+      const corps = lecture.body as ResultatsDeSeance;
       expect(lecture.status).toBe(OK);
-      expect((lecture.body as RapportSession).participants).toHaveLength(
-        TAILLE_CLASSE,
-      );
+      expect(corps.participants).toHaveLength(TAILLE_CLASSE);
+      expect(corps.resultats.questions).toHaveLength(QUESTIONS.length);
       exigerDuree('lecture des resultats', duree, BUDGET_LECTURE_MS);
     },
     DELAI_TEST_LONG_MS,

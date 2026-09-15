@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
+import { libelleDeConfusion } from '../domain/cours/banque/confusions';
 import {
   AnswerAlreadySubmittedError,
   ParticipantNotFoundError,
@@ -12,6 +13,7 @@ import {
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
+import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { nextBox } from '../domain/LeitnerBox';
 import type { Boite } from '../domain/LeitnerBox';
@@ -19,6 +21,7 @@ import {
   ANSWERS_REPOSITORY,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
+  SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 import type {
@@ -37,6 +40,8 @@ export class SubmitAnswerUseCase {
     private readonly answers: IAnswersRepository,
     @Inject(MASTERY_REPOSITORY)
     private readonly mastery: IMasteryRepository,
+    @Inject(SESSION_STATE_CACHE)
+    private readonly cache: ISessionStateCache,
   ) {}
 
   async execute(command: SubmitAnswerCommand): Promise<SubmitAnswerResult> {
@@ -78,7 +83,7 @@ export class SubmitAnswerUseCase {
     );
     if (!solution) {
       throw new DomainValidationError(
-        `Aucune solution pour le tirage ${participant.seed}`,
+        `Aucune solution du tirage de ce participant pour ${command.questionId}`,
       );
     }
 
@@ -104,6 +109,7 @@ export class SubmitAnswerUseCase {
       misconception: verdict.misconception,
       dureeMs: command.dureeMs,
     });
+    this.cache.signalerActivite(command.sessionId);
 
     await this.updateMastery(
       participant.studentKey,
@@ -111,7 +117,12 @@ export class SubmitAnswerUseCase {
       verdict.correcte,
     );
 
-    return verdict;
+    return {
+      ...verdict,
+      libelleConfusion: verdict.misconception
+        ? (libelleDeConfusion(verdict.misconception) ?? verdict.misconception)
+        : null,
+    };
   }
 
   private async updateMastery(

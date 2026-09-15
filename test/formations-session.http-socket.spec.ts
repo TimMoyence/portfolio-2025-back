@@ -8,10 +8,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { randomUUID } from 'node:crypto';
+import { request as requeteNode } from 'node:http';
 import request from 'supertest';
 import { IS_PUBLIC_KEY } from '../src/common/interfaces/auth/public.decorator';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
@@ -20,11 +22,19 @@ import { ControlSessionUseCase } from '../src/modules/formations/application/Con
 import { DueQuestionsUseCase } from '../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../src/modules/formations/application/JoinSession.useCase';
+import { LireDerouleUseCase } from '../src/modules/formations/application/LireDeroule.useCase';
+import { LireSujetUseCase } from '../src/modules/formations/application/LireSujet.useCase';
 import { OpenSessionUseCase } from '../src/modules/formations/application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from '../src/modules/formations/application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../src/modules/formations/application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../src/modules/formations/application/SubmitAnswer.useCase';
-import type { Bareme } from '../src/modules/formations/domain/Bareme';
+import type {
+  Cours,
+  Ecran,
+} from '../src/modules/formations/domain/cours/Cours';
+import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
+import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
+import type { ICatalogueCours } from '../src/modules/formations/domain/cours/ICatalogueCours.port';
 import type {
   AnswerRecord,
   IAnswersRepository,
@@ -39,6 +49,7 @@ import type {
 } from '../src/modules/formations/domain/ISessions.repository';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
@@ -50,12 +61,28 @@ import { SessionStateCacheService } from '../src/modules/formations/infrastructu
 import { CodeScanProtectionService } from '../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsPresenterController } from '../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../src/modules/formations/interfaces/FormationsStudent.controller';
-import { ParticipantTokenService } from '../src/modules/formations/interfaces/ParticipantToken.service';
+import {
+  EN_TETE_JETON,
+  ParticipantTokenService,
+} from '../src/modules/formations/interfaces/ParticipantToken.service';
+import {
+  buildCoursDeClasse,
+  buildCoursDeTest,
+  buildCoursSansTirageValide,
+  creerCatalogueDeTest,
+} from './factories/cours.factory';
 import {
   createMockFormationMailer,
   createMockIncidentsRepo,
   createMockMasteryRepo,
 } from './factories/formation.factory';
+import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
+import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
+import {
+  ADRESSE_BOUCLE_LOCALE,
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
 
 const API_PREFIX = 'api/v1/portfolio25';
@@ -75,42 +102,37 @@ const FORMATEUR_B = 'b2222222-2222-4222-8222-222222222222';
 const TEMOIN = {
   solution: 424242.42,
   piege: 919191.19,
-  misconception: 'sentinelle-misconception',
-  concept: 'sentinelle-concept',
+  misconception: 'ecart-absolu-au-lieu-du-taux',
+  concept: 'taux-evolution',
   question: 'Q-SENTINELLE-01',
-};
+} as const;
 
-const BAREME: Bareme = {
-  version: 1,
-  questions: [
-    {
-      id: TEMOIN.question,
-      type: 'numeric',
-      concept: TEMOIN.concept,
-      tolerance: { type: 'relative', valeur: 0.005 },
-      noteCompte: true,
-    },
-  ],
-  tirages: [
-    {
-      seed: 1001,
-      solutions: {
-        [TEMOIN.question]: {
-          valeur: TEMOIN.solution,
-          pieges: [
-            { valeur: TEMOIN.piege, misconception: TEMOIN.misconception },
-          ],
-        },
-      },
-    },
-    {
-      seed: 1002,
-      solutions: {
-        [TEMOIN.question]: { valeur: TEMOIN.solution, pieges: [] },
-      },
-    },
-  ],
-};
+function construireCoursSentinelle(solution: number): Cours {
+  const question = questionNumerique({
+    id: TEMOIN.question,
+    concept: TEMOIN.concept,
+    noteCompte: true,
+    donnees: () => ({}),
+    enonce: () => 'Quelle est la valeur sentinelle ?',
+    unite: null,
+    solution: () => solution,
+    tolerance: { type: 'relative', valeur: 0.005 },
+    pieges: [{ confusion: TEMOIN.misconception, valeur: () => TEMOIN.piege }],
+  });
+  const [premier, ...suite] = buildCoursDeTest().ecrans.map(
+    (ecran): Ecran =>
+      ecran.id === 'E-NUM' && ecran.brique === 'fp-numeric'
+        ? { ...ecran, question }
+        : ecran,
+  );
+  return buildCoursDeTest({ ecrans: [premier, ...suite] });
+}
+
+const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);
+
+const QUESTIONS_DU_COURS_DE_CLASSE = 12;
+const COURS_DE_CLASSE = buildCoursDeClasse(QUESTIONS_DU_COURS_DE_CLASSE);
+const COURS_SANS_TIRAGE = buildCoursSansTirageValide();
 
 const CORRIGE_EN_CLAIR = [
   String(TEMOIN.solution),
@@ -120,21 +142,7 @@ const CORRIGE_EN_CLAIR = [
 ];
 
 const TAILLE_CLASSE = 30;
-
-/**
- * Un bareme dimensionne pour une classe entiere : `pickFreeSeed`
- * (Bareme.ts) attribue un tirage distinct par etudiant, il en faut donc au
- * moins autant que de postes dans la salle.
- */
-const BAREME_CLASSE: Bareme = {
-  ...BAREME,
-  tirages: Array.from({ length: TAILLE_CLASSE + 10 }, (_, index) => ({
-    seed: 2000 + index,
-    solutions: {
-      [TEMOIN.question]: { valeur: TEMOIN.solution, pieges: [] },
-    },
-  })),
-};
+const DELAI_FERMETURE_FLUX_MS = 2000;
 
 function cleEtudiant(index: number): string {
   return `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`;
@@ -146,6 +154,21 @@ function inscription(studentKey: string) {
     prenom: 'Theo',
     nom: 'Martin',
     email: 'theo.martin@example.com',
+  };
+}
+
+interface CatalogueMutable {
+  readonly catalogue: ICatalogueCours;
+  remplacer(nouveau: ICatalogueCours): void;
+}
+
+function creerCatalogueMutable(initial: ICatalogueCours): CatalogueMutable {
+  let courant = initial;
+  return {
+    catalogue: { trouver: (slug) => courant.trouver(slug) },
+    remplacer(nouveau) {
+      courant = nouveau;
+    },
   };
 }
 
@@ -214,6 +237,8 @@ function creerParticipantsRepo(): IParticipantsRepository {
       ),
     findById: (id) => Promise.resolve(participants.get(id) ?? null),
     listBySession: (sessionId) => Promise.resolve(deLaSession(sessionId)),
+    countBySession: (sessionId) =>
+      Promise.resolve(deLaSession(sessionId).length),
     listSeedsBySession: (sessionId) =>
       Promise.resolve(
         deLaSession(sessionId).map((participant) => participant.seed),
@@ -275,6 +300,7 @@ class IdentiteDeTestGuard implements CanActivate {
 interface HarnaisFormations {
   app: INestApplication;
   mailer: ReturnType<typeof createMockFormationMailer>;
+  port: number;
 }
 
 /**
@@ -283,7 +309,13 @@ interface HarnaisFormations {
  * une limite qui ferme la porte a une classe entiere traverse la revue sans
  * qu'aucun test ne bronche.
  */
-async function creerHarnais(): Promise<HarnaisFormations> {
+async function creerHarnais(
+  catalogueHttp: ICatalogueCours = creerCatalogueDeTest(
+    COURS_SENTINELLE,
+    COURS_DE_CLASSE,
+    COURS_SANS_TIRAGE,
+  ),
+): Promise<HarnaisFormations> {
   process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
   process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
   const mailer = createMockFormationMailer();
@@ -301,6 +333,8 @@ async function creerHarnais(): Promise<HarnaisFormations> {
       RecordIncidentsUseCase,
       StreamSessionUseCase,
       DueQuestionsUseCase,
+      LireSujetUseCase,
+      LireDerouleUseCase,
       ParticipantTokenService,
       CodeScanProtectionService,
       { provide: SESSIONS_REPOSITORY, useValue: creerSessionsRepo() },
@@ -309,6 +343,7 @@ async function creerHarnais(): Promise<HarnaisFormations> {
       { provide: MASTERY_REPOSITORY, useValue: createMockMasteryRepo() },
       { provide: INCIDENTS_REPOSITORY, useValue: createMockIncidentsRepo() },
       { provide: FORMATION_MAILER, useValue: mailer },
+      { provide: CATALOGUE_COURS, useValue: catalogueHttp },
       { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
       { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
       { provide: APP_GUARD, useClass: ThrottlerGuard },
@@ -319,13 +354,14 @@ async function creerHarnais(): Promise<HarnaisFormations> {
   app.setGlobalPrefix(API_PREFIX);
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
-  await app.init();
-  return { app, mailer };
+  const port = await ecouterEnBoucleLocale(app);
+  return { app, mailer, port };
 }
 
 describe('Session de formation (e2e http socket)', () => {
   let app: INestApplication;
   let mailer: HarnaisFormations['mailer'];
+  let port: number;
 
   const serveur = (): Parameters<typeof request>[0] =>
     app.getHttpServer() as Parameters<typeof request>[0];
@@ -333,14 +369,18 @@ describe('Session de formation (e2e http socket)', () => {
   const route = (chemin: string): string =>
     `/${API_PREFIX}/formations${chemin}`;
 
+  const demanderOuverture = (formateur: string, corps: object) =>
+    request(serveur())
+      .post(route('/sessions'))
+      .set('x-test-identite', `${formateur}:teacher`)
+      .send(corps);
+
   const ouvrirSession = async (
     formateur: string,
   ): Promise<{ sessionId: string; code: string }> => {
-    const reponse = await request(serveur())
-      .post(route('/sessions'))
-      .set('x-test-identite', `${formateur}:teacher`)
-      .send({ courseSlug: 'maths-bts-suites-numeriques', bareme: BAREME })
-      .expect(201);
+    const reponse = await demanderOuverture(formateur, {
+      courseSlug: COURS_SENTINELLE.slug,
+    }).expect(201);
     return reponse.body as { sessionId: string; code: string };
   };
 
@@ -356,11 +396,186 @@ describe('Session de formation (e2e http socket)', () => {
       .send(inscription(studentKey));
 
   beforeAll(async () => {
-    ({ app, mailer } = await creerHarnais());
+    ({ app, mailer, port } = await creerHarnais());
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
+  });
+
+  describe('flux simultanes d une seance ouverte', () => {
+    const ouvrirFluxEtudiant = (sessionId: string, jeton: string) =>
+      abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
+        [EN_TETE_JETON]: jeton,
+      });
+
+    it('ferme le plus ancien flux du participant a l ouverture de son troisieme et garde au formateur sa place', async () => {
+      const { sessionId, code } = await ouvrirSession(FORMATEUR_A);
+      const inscrit = await rejoindre(
+        code,
+        '11111111-1111-4111-8111-111111111120',
+      ).expect(201);
+      const { jeton } = inscrit.body as { jeton: string };
+
+      const siens = [
+        await ouvrirFluxEtudiant(sessionId, jeton),
+        await ouvrirFluxEtudiant(sessionId, jeton),
+        await ouvrirFluxEtudiant(sessionId, jeton),
+      ];
+      const formateur = await abonnerAuFlux(
+        port,
+        route(`/sessions/${sessionId}/presenter-stream`),
+        { 'x-test-identite': `${FORMATEUR_A}:teacher` },
+      );
+      await attendreQue(() => siens[0].ferme, DELAI_FERMETURE_FLUX_MS);
+      const fermes = siens.map((flux) => flux.ferme);
+      [...siens, formateur].forEach((flux) => flux.fermer());
+
+      expect({
+        statuts: [...siens, formateur].map((flux) => flux.statut),
+        fermes,
+      }).toEqual({
+        statuts: [200, 200, 200, 200],
+        fermes: [true, false, false],
+      });
+    });
+
+    it('ne prend aucune place pour un flux formateur abandonne pendant la lecture de la seance', async () => {
+      const { sessionId } = await ouvrirSession(FORMATEUR_A);
+      const sessions = app.get<ISessionsRepository>(SESSIONS_REPOSITORY);
+      const cache = app.get<SessionStateCacheService>(SESSION_STATE_CACHE);
+      const lireSession = sessions.findById;
+      let lectureCommencee = false;
+      let lectureTerminee = false;
+      let reprendreLaLecture = (): void => undefined;
+      const lecture = jest
+        .spyOn(sessions, 'findById')
+        .mockImplementation(async (id) => {
+          if (id === sessionId && !lectureCommencee) {
+            lectureCommencee = true;
+            await new Promise<void>((resoudre) => {
+              reprendreLaLecture = resoudre;
+            });
+          }
+          const resultat = await lireSession(id);
+          lectureTerminee = true;
+          return resultat;
+        });
+      const passages = jest.spyOn(cache, 'read');
+
+      const requete = requeteNode({
+        host: ADRESSE_BOUCLE_LOCALE,
+        port,
+        path: route(`/sessions/${sessionId}/presenter-stream`),
+        headers: { 'x-test-identite': `${FORMATEUR_A}:teacher` },
+      });
+      requete.on('error', () => undefined);
+      const requeteFermee = new Promise<void>((resoudre) => {
+        requete.once('close', resoudre);
+      });
+      requete.end();
+      await attendreQue(() => lectureCommencee, DELAI_FERMETURE_FLUX_MS);
+      requete.destroy();
+      await requeteFermee;
+      reprendreLaLecture();
+      await attendreQue(() => lectureTerminee, DELAI_FERMETURE_FLUX_MS);
+      await new Promise<void>((resoudre) => setImmediate(resoudre));
+
+      const passagesDuFlux = passages.mock.calls.filter(
+        ([id]) => id === sessionId,
+      ).length;
+      lecture.mockRestore();
+      passages.mockRestore();
+
+      expect({ lectureCommencee, passagesDuFlux }).toEqual({
+        lectureCommencee: true,
+        passagesDuFlux: 0,
+      });
+    });
+  });
+
+  describe('contrat OpenAPI des lectures de la seance', () => {
+    it('documente exactement la forme rendue du sujet, du deroule et des resultats', async () => {
+      const { sessionId, code } = await ouvrirSession(FORMATEUR_A);
+      const inscrit = await rejoindre(
+        code,
+        '11111111-1111-4111-8111-111111111121',
+      ).expect(201);
+      const { jeton } = inscrit.body as { jeton: string };
+      await demarrerSession(sessionId, FORMATEUR_A);
+      await request(serveur())
+        .post(route(`/sessions/${sessionId}/answers`))
+        .set(EN_TETE_JETON, jeton)
+        .send({
+          questionId: TEMOIN.question,
+          valeur: TEMOIN.piege,
+          dureeMs: 1000,
+        })
+        .expect(201);
+      const lireEnFormateur = (suffixe: string) =>
+        request(serveur())
+          .get(route(`/sessions/${sessionId}/${suffixe}`))
+          .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+          .expect(200);
+
+      const sujet = await request(serveur())
+        .get(route(`/sessions/${sessionId}/sujet`))
+        .set(EN_TETE_JETON, jeton)
+        .expect(200);
+      const deroule = await lireEnFormateur('deroule');
+      const resultats = await lireEnFormateur('results');
+      const document = SwaggerModule.createDocument(
+        app,
+        new DocumentBuilder().setTitle('formations').build(),
+      );
+
+      expect([
+        ...ecartsAuSchemaDeReponse(document, '/{id}/sujet', sujet.body),
+        ...ecartsAuSchemaDeReponse(document, '/{id}/deroule', deroule.body),
+        ...ecartsAuSchemaDeReponse(document, '/{id}/results', resultats.body),
+      ]).toEqual([]);
+    });
+  });
+
+  describe('ouverture d une seance par le slug du cours', () => {
+    it('refuse un cours absent du catalogue', async () => {
+      const reponse = await demanderOuverture(FORMATEUR_A, {
+        courseSlug: 'inconnu',
+      });
+
+      expect(reponse.status).toBe(404);
+      expect((reponse.body as { detail: string }).detail).toBe(
+        'Cours introuvable: inconnu',
+      );
+    });
+
+    it('rend un conflit explicite, et non une erreur serveur, pour un cours qui ne produit pas assez de tirages', async () => {
+      const reponse = await demanderOuverture(FORMATEUR_A, {
+        courseSlug: COURS_SANS_TIRAGE.slug,
+      });
+
+      expect(reponse.status).toBe(409);
+      expect((reponse.body as { detail: string }).detail).toContain(
+        'ne produit pas 61 tirages non ambigus',
+      );
+    });
+
+    it('refuse un bareme envoye par le client, meme pour un cours connu', async () => {
+      const reponse = await demanderOuverture(FORMATEUR_A, {
+        courseSlug: COURS_SENTINELLE.slug,
+        bareme: {
+          version: 1,
+          graineReference: 7,
+          questions: [],
+          tirages: [{ seed: 7, solutions: {} }],
+        },
+      });
+
+      expect(reponse.status).toBe(400);
+      expect((reponse.body as { message: string[] }).message).toContain(
+        'property bareme should not exist',
+      );
+    });
   });
 
   describe('inscription de l etudiant', () => {
@@ -382,7 +597,7 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.status).toBe(404);
     });
 
-    it('ne renvoie jamais le bareme a l etudiant', async () => {
+    it('ne renvoie a l etudiant ni le bareme ni la graine de son tirage', async () => {
       const { code, sessionId } = await ouvrirSession(FORMATEUR_A);
 
       const reponse = await rejoindre(
@@ -399,12 +614,11 @@ describe('Session de formation (e2e http socket)', () => {
         'jeton',
         'modeRythme',
         'participantId',
-        'seed',
         'sessionId',
       ]);
+      expect(reponse.body).not.toHaveProperty('seed');
       expect(reponse.body).toMatchObject({
         sessionId,
-        seed: 1001,
         ecranCourant: 0,
         modeRythme: 'pilote',
       });
@@ -446,9 +660,35 @@ describe('Session de formation (e2e http socket)', () => {
         });
 
       expect(reponse.status).toBe(409);
+      expect(reponse.body).toMatchObject({ code: 'SEANCE_NON_DEMARREE' });
       expect((reponse.body as { detail: string }).detail).toContain(
         'pas encore commencé',
       );
+    });
+
+    it('distingue par son code la seconde reponse a une meme question', async () => {
+      const session = await ouvrirSession(FORMATEUR_A);
+      const inscrit = await rejoindre(
+        session.code,
+        '11111111-1111-4111-8111-111111111122',
+      ).expect(201);
+      const { jeton: jetonDuSecond } = inscrit.body as { jeton: string };
+      await demarrerSession(session.sessionId, FORMATEUR_A);
+      const envoyer = () =>
+        request(serveur())
+          .post(route(`/sessions/${session.sessionId}/answers`))
+          .set(EN_TETE_JETON, jetonDuSecond)
+          .send({
+            questionId: TEMOIN.question,
+            valeur: TEMOIN.solution,
+            dureeMs: 1000,
+          });
+      await envoyer().expect(201);
+
+      const seconde = await envoyer();
+
+      expect(seconde.status).toBe(409);
+      expect(seconde.body).toMatchObject({ code: 'REPONSE_DEJA_ENREGISTREE' });
     });
 
     it('refuse une reponse sans jeton de participant', async () => {
@@ -484,6 +724,7 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.body).toEqual({
         correcte: false,
         misconception: TEMOIN.misconception,
+        libelleConfusion: libelleDeConfusion(TEMOIN.misconception),
       });
       expect(reponse.text).not.toContain(String(TEMOIN.solution));
       expect(reponse.text).not.toContain(TEMOIN.concept);
@@ -504,7 +745,7 @@ describe('Session de formation (e2e http socket)', () => {
       const reponse = await request(serveur())
         .patch(route(`/sessions/${sessionId}/control`))
         .set('x-test-identite', `${FORMATEUR_B}:student`)
-        .send({ ecran: 9 });
+        .send({ ecran: 1 });
 
       expect(reponse.status).toBe(403);
     });
@@ -515,7 +756,7 @@ describe('Session de formation (e2e http socket)', () => {
       const pilotage = await request(serveur())
         .patch(route(`/sessions/${sessionId}/control`))
         .set('x-test-identite', entete)
-        .send({ ecran: 9 });
+        .send({ ecran: 1 });
       const demarrage = await request(serveur())
         .post(route(`/sessions/${sessionId}/start`))
         .set('x-test-identite', entete);
@@ -557,6 +798,21 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.body).toMatchObject({ ecranCourant: 4 });
     });
 
+    it('refuse un ecran hors du cours pour le formateur proprietaire', async () => {
+      const reponse = await request(serveur())
+        .patch(route(`/sessions/${sessionId}/control`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+        .send({ ecran: 99 });
+
+      expect(reponse.status).toBe(400);
+
+      const constat = await rejoindre(
+        code,
+        '11111111-1111-4111-8111-111111111119',
+      ).expect(201);
+      expect(constat.body).toMatchObject({ ecranCourant: 4 });
+    });
+
     it('refuse un pilotage vide', async () => {
       const reponse = await request(serveur())
         .patch(route(`/sessions/${sessionId}/control`))
@@ -582,6 +838,40 @@ describe('Session de formation (e2e http socket)', () => {
         ecranCourant: 4,
         modeRythme: 'pilote',
       });
+    });
+  });
+
+  describe('deroule du presentateur', () => {
+    let sessionId: string;
+
+    beforeAll(async () => {
+      const session = await ouvrirSession(FORMATEUR_A);
+      sessionId = session.sessionId;
+    });
+
+    it('sert le deroule annote au formateur proprietaire', async () => {
+      const reponse = await request(serveur())
+        .get(route(`/sessions/${sessionId}/deroule`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`);
+
+      expect(reponse.status).toBe(200);
+      expect((reponse.body as { id: string }).id).toBe(COURS_SENTINELLE.slug);
+    });
+
+    it('refuse le deroule a un autre formateur', async () => {
+      const reponse = await request(serveur())
+        .get(route(`/sessions/${sessionId}/deroule`))
+        .set('x-test-identite', `${FORMATEUR_B}:teacher`);
+
+      expect(reponse.status).toBe(403);
+    });
+
+    it('refuse le deroule a un role autre que formateur', async () => {
+      const reponse = await request(serveur())
+        .get(route(`/sessions/${sessionId}/deroule`))
+        .set('x-test-identite', `${FORMATEUR_A}:student`);
+
+      expect(reponse.status).toBe(403);
     });
   });
 
@@ -629,6 +919,20 @@ describe('Session de formation (e2e http socket)', () => {
       });
     });
 
+    it('retourne un code metier quand un participant repond apres la cloture', async () => {
+      const reponse = await request(serveur())
+        .post(route(`/sessions/${sessionId}/answers`))
+        .set('x-participant-token', jeton)
+        .send({
+          questionId: TEMOIN.question,
+          valeur: TEMOIN.solution,
+          dureeMs: 1000,
+        });
+
+      expect(reponse.status).toBe(409);
+      expect(reponse.body).toMatchObject({ code: 'SEANCE_TERMINEE' });
+    });
+
     it('n ouvre pas le flux a qui connait le sessionId sans etre inscrit', async () => {
       const sansJeton = await request(serveur()).get(
         route(`/sessions/${sessionId}/stream`),
@@ -657,6 +961,20 @@ describe('Session de formation (e2e http socket)', () => {
         expect(proprietaire.text).not.toContain(temoin);
       });
     });
+
+    it('pousse les resultats agreges au seul flux du formateur', async () => {
+      const presentateur = await request(serveur())
+        .get(route(`/sessions/${sessionId}/presenter-stream`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+        .expect(200);
+      const etudiant = await request(serveur())
+        .get(route(`/sessions/${sessionId}/stream`))
+        .set('x-participant-token', jeton)
+        .expect(200);
+
+      expect(presentateur.text).toContain('event: resultats');
+      expect(etudiant.text).not.toContain('event: resultats');
+    });
   });
 });
 
@@ -675,10 +993,7 @@ describe('Une salle informatique derriere une seule adresse publique', () => {
     const reponse = await request(serveur())
       .post(route('/sessions'))
       .set('x-test-identite', `${FORMATEUR_A}:teacher`)
-      .send({
-        courseSlug: 'maths-bts-suites-numeriques',
-        bareme: BAREME_CLASSE,
-      })
+      .send({ courseSlug: COURS_DE_CLASSE.slug })
       .expect(201);
     const { code } = reponse.body as { code: string };
     codesOuverts.push(code);
@@ -696,7 +1011,7 @@ describe('Une salle informatique derriere une seule adresse publique', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
   });
 
   it('laisse les trente postes de la salle rejoindre la meme seance', async () => {
@@ -739,5 +1054,177 @@ describe('Une salle informatique derriere une seule adresse publique', () => {
       statuts.length,
     );
     expect(statuts[statuts.length - 1]).toBe(429);
+  });
+});
+
+describe('sujet du participant (lecture par jeton)', () => {
+  let app: INestApplication;
+  let remplacerCatalogue: (nouveau: ICatalogueCours) => void;
+
+  const serveur = (): Parameters<typeof request>[0] =>
+    app.getHttpServer() as Parameters<typeof request>[0];
+
+  const route = (chemin: string): string =>
+    `/${API_PREFIX}/formations${chemin}`;
+
+  const ouvrirSession = async (): Promise<{
+    sessionId: string;
+    code: string;
+  }> => {
+    const reponse = await request(serveur())
+      .post(route('/sessions'))
+      .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+      .send({ courseSlug: COURS_SENTINELLE.slug })
+      .expect(201);
+    return reponse.body as { sessionId: string; code: string };
+  };
+
+  const rejoindreEtObtenirJeton = async (
+    code: string,
+    studentKey: string,
+  ): Promise<string> => {
+    const reponse = await request(serveur())
+      .post(route(`/sessions/${code}/join`))
+      .send(inscription(studentKey))
+      .expect(201);
+    return (reponse.body as { jeton: string }).jeton;
+  };
+
+  beforeAll(async () => {
+    const mutable = creerCatalogueMutable(
+      creerCatalogueDeTest(COURS_SENTINELLE, COURS_DE_CLASSE),
+    );
+    remplacerCatalogue = mutable.remplacer;
+    ({ app } = await creerHarnais(mutable.catalogue));
+  });
+
+  afterAll(async () => {
+    await fermerApplication(app);
+  });
+
+  it('refuse de lire le sujet sans jeton de participant', async () => {
+    const { sessionId } = await ouvrirSession();
+
+    const reponse = await request(serveur()).get(
+      route(`/sessions/${sessionId}/sujet`),
+    );
+
+    expect(reponse.status).toBe(401);
+  });
+
+  it('refuse le sujet d une seance au jeton emis pour une autre seance', async () => {
+    const seanceA = await ouvrirSession();
+    const seanceB = await ouvrirSession();
+    const jetonDeA = await rejoindreEtObtenirJeton(
+      seanceA.code,
+      '33333333-3333-4333-8333-333333333335',
+    );
+
+    const reponse = await request(serveur())
+      .get(route(`/sessions/${seanceB.sessionId}/sujet`))
+      .set('x-participant-token', jetonDeA);
+
+    expect(reponse.status).toBe(401);
+    expect(reponse.text).not.toContain(COURS_SENTINELLE.titre);
+  });
+
+  it('sert le sujet du tirage du participant sans jamais livrer le corrige', async () => {
+    const { sessionId, code } = await ouvrirSession();
+    const jeton = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333331',
+    );
+
+    const reponse = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jeton)
+      .expect(200);
+
+    expect((reponse.body as { id: string }).id).toBe(COURS_SENTINELLE.slug);
+    [
+      String(TEMOIN.solution),
+      String(TEMOIN.piege),
+      TEMOIN.misconception,
+    ].forEach((temoin) => {
+      expect(reponse.text).not.toContain(temoin);
+    });
+  });
+
+  it('ne livre pas le contenu des ecrans que le formateur n a pas encore reveles', async () => {
+    const { sessionId, code } = await ouvrirSession();
+    const jeton = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333336',
+    );
+
+    const reponse = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jeton)
+      .expect(200);
+    const ecrans = reponse.body as {
+      ecrans: readonly { type: string; donnees: Record<string, unknown> }[];
+    };
+
+    expect(ecrans.ecrans[0].type).not.toBe('ecran-verrouille');
+    expect(
+      ecrans.ecrans
+        .slice(1)
+        .every(
+          (ecran) =>
+            ecran.type === 'ecran-verrouille' &&
+            Object.keys(ecran.donnees).length === 0,
+        ),
+    ).toBe(true);
+  });
+
+  it('sert a chaque participant le sujet de son propre tirage', async () => {
+    const { sessionId, code } = await ouvrirSession();
+    const jetonA = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333332',
+    );
+    const jetonB = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333333',
+    );
+    await request(serveur())
+      .post(route(`/sessions/${sessionId}/start`))
+      .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+      .expect(204);
+
+    const sujetA = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jetonA)
+      .expect(200);
+    const sujetB = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jetonB)
+      .expect(200);
+
+    expect(sujetA.text).not.toEqual(sujetB.text);
+  });
+
+  it('refuse de servir un sujet quand le cours a change depuis l ouverture de la seance', async () => {
+    const { sessionId, code } = await ouvrirSession();
+    const jeton = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333334',
+    );
+
+    remplacerCatalogue(
+      creerCatalogueDeTest(
+        construireCoursSentinelle(TEMOIN.solution + 1),
+        COURS_DE_CLASSE,
+      ),
+    );
+
+    const reponse = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jeton);
+
+    expect(reponse.status).toBe(409);
+    expect((reponse.body as { detail: string }).detail).toContain(
+      'nouvelle séance',
+    );
   });
 });

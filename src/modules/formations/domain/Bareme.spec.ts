@@ -3,6 +3,7 @@ import {
   findQuestion,
   pickFreeSeed,
   solutionFor,
+  solutionsIdentiques,
 } from './Bareme';
 import type { Bareme } from './Bareme';
 import { NE_SAIT_PAS } from './GradingCore';
@@ -10,6 +11,7 @@ import type { Solution } from './AnswerGrading';
 
 const bareme: Bareme = {
   version: 1,
+  graineReference: 9_999_999,
   questions: [
     {
       id: 'Q-CAP-03',
@@ -94,5 +96,88 @@ describe('pickFreeSeed', () => {
 
   it('retourne le premier seed sur une session vide', () => {
     expect(pickFreeSeed(bareme, [])).toBe(1001);
+  });
+});
+
+describe('solutionsIdentiques', () => {
+  const attendues: Readonly<Record<string, Solution>> = {
+    'Q-CAP-03': {
+      valeur: 1338.23,
+      pieges: [{ valeur: 1300, misconception: 'interet-simple' }],
+    },
+    'Q-TEG-02': { valeur: 4.27, pieges: [] },
+  };
+
+  it('accepte un ordre de cles different, jsonb reordonnant les cles', () => {
+    const stockees: Readonly<Record<string, Solution>> = {
+      'Q-TEG-02': { valeur: 4.27, pieges: [] },
+      'Q-CAP-03': {
+        valeur: 1338.23,
+        pieges: [{ valeur: 1300, misconception: 'interet-simple' }],
+      },
+    };
+
+    expect(solutionsIdentiques(attendues, stockees)).toBe(true);
+  });
+
+  it('refuse une valeur de solution differente', () => {
+    const stockees: Readonly<Record<string, Solution>> = {
+      ...attendues,
+      'Q-CAP-03': { valeur: 1500, pieges: attendues['Q-CAP-03'].pieges },
+    };
+
+    expect(solutionsIdentiques(attendues, stockees)).toBe(false);
+  });
+
+  it('refuse un piege qui ne correspond plus', () => {
+    const stockees: Readonly<Record<string, Solution>> = {
+      ...attendues,
+      'Q-CAP-03': {
+        valeur: attendues['Q-CAP-03'].valeur,
+        pieges: [{ valeur: 1300, misconception: 'autre-confusion' }],
+      },
+    };
+
+    expect(solutionsIdentiques(attendues, stockees)).toBe(false);
+  });
+
+  it('refuse un piege de meme confusion dont seule la valeur a change', () => {
+    const stockees: Readonly<Record<string, Solution>> = {
+      ...attendues,
+      'Q-CAP-03': {
+        valeur: attendues['Q-CAP-03'].valeur,
+        pieges: [{ valeur: 1299, misconception: 'interet-simple' }],
+      },
+    };
+
+    expect(solutionsIdentiques(attendues, stockees)).toBe(false);
+  });
+
+  it('refuse un nombre de pieges different, meme quand les premiers concordent', () => {
+    const plusDePieges: Readonly<Record<string, Solution>> = {
+      ...attendues,
+      'Q-CAP-03': {
+        valeur: attendues['Q-CAP-03'].valeur,
+        pieges: [
+          ...attendues['Q-CAP-03'].pieges,
+          { valeur: 1400, misconception: 'autre-confusion' },
+        ],
+      },
+    };
+
+    expect(solutionsIdentiques(attendues, plusDePieges)).toBe(false);
+    expect(solutionsIdentiques(plusDePieges, attendues)).toBe(false);
+  });
+
+  it('refuse quand une cle attendue manque cote stockage', () => {
+    const stockees: Readonly<Record<string, Solution>> = Object.fromEntries(
+      Object.entries(attendues).filter(([cle]) => cle !== 'Q-TEG-02'),
+    );
+
+    expect(solutionsIdentiques(attendues, stockees)).toBe(false);
+  });
+
+  it('refuse un stockage absent', () => {
+    expect(solutionsIdentiques(attendues, undefined)).toBe(false);
   });
 });

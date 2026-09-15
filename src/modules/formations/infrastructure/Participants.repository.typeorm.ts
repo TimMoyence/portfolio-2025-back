@@ -84,8 +84,15 @@ export class ParticipantsRepositoryTypeORM
   async listBySession(
     sessionId: string,
   ): Promise<readonly ParticipantRecord[]> {
-    const entities = await this.repo.find({ where: { sessionId } });
+    const entities = await this.repo.find({
+      where: { sessionId },
+      order: { rejointLe: 'ASC', id: 'ASC' },
+    });
     return entities.map((entity) => this.toDomain(entity));
+  }
+
+  countBySession(sessionId: string): Promise<number> {
+    return this.repo.count({ where: { sessionId } });
   }
 
   async listSeedsBySession(sessionId: string): Promise<readonly number[]> {

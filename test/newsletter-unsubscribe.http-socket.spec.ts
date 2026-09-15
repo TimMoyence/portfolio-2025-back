@@ -15,6 +15,10 @@ import { SubscribeNewsletterUseCase } from '../src/modules/newsletter/applicatio
 import { UnsubscribeNewsletterUseCase } from '../src/modules/newsletter/application/UnsubscribeNewsletter.useCase';
 import { NewsletterController } from '../src/modules/newsletter/interfaces/Newsletter.controller';
 import { buildNewsletterSubscriber } from './factories/newsletter-subscriber.factory';
+import {
+  ecouterEnBoucleLocale,
+  fermerApplication,
+} from './helpers/nest-test-app';
 
 const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
 
@@ -73,11 +77,11 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
 
     app = moduleRef.createNestApplication();
     app.setGlobalPrefix(API_PREFIX);
-    await app.init();
+    await ecouterEnBoucleLocale(app);
   });
 
   afterAll(async () => {
-    await app.close();
+    await fermerApplication(app);
   });
 
   beforeEach(() => {
