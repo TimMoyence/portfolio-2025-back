@@ -7,6 +7,7 @@ import {
   createMockAnswersRepo,
   createMockMasteryRepo,
   createMockParticipantsRepo,
+  createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
@@ -24,6 +25,7 @@ describe('SubmitAnswerUseCase', () => {
   let participants: ReturnType<typeof createMockParticipantsRepo>;
   let answers: ReturnType<typeof createMockAnswersRepo>;
   let mastery: ReturnType<typeof createMockMasteryRepo>;
+  let cache: ReturnType<typeof createMockSessionStateCache>;
   let sut: SubmitAnswerUseCase;
 
   const commande = {
@@ -39,7 +41,30 @@ describe('SubmitAnswerUseCase', () => {
     participants = createMockParticipantsRepo();
     answers = createMockAnswersRepo();
     mastery = createMockMasteryRepo();
-    sut = new SubmitAnswerUseCase(sessions, participants, answers, mastery);
+    cache = createMockSessionStateCache();
+    sut = new SubmitAnswerUseCase(
+      sessions,
+      participants,
+      answers,
+      mastery,
+      cache,
+    );
+  });
+
+  it('signale une activite sur la session une fois la reponse enregistree', async () => {
+    await sut.execute(commande);
+    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
+    expect(answers.create.mock.invocationCallOrder[0]).toBeLessThan(
+      cache.signalerActivite.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('ne signale aucune activite quand la reponse est refusee', async () => {
+    answers.existsFor.mockResolvedValue(true);
+    await expect(sut.execute(commande)).rejects.toThrow(
+      AnswerAlreadySubmittedError,
+    );
+    expect(cache.signalerActivite).not.toHaveBeenCalled();
   });
 
   it('accepte une reponse juste', async () => {

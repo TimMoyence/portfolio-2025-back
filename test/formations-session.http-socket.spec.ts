@@ -757,6 +757,20 @@ describe('Session de formation (e2e http socket)', () => {
         expect(proprietaire.text).not.toContain(temoin);
       });
     });
+
+    it('pousse les resultats agreges au seul flux du formateur', async () => {
+      const presentateur = await request(serveur())
+        .get(route(`/sessions/${sessionId}/presenter-stream`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+        .expect(200);
+      const etudiant = await request(serveur())
+        .get(route(`/sessions/${sessionId}/stream`))
+        .set('x-participant-token', jeton)
+        .expect(200);
+
+      expect(presentateur.text).toContain('event: resultats');
+      expect(etudiant.text).not.toContain('event: resultats');
+    });
   });
 });
 

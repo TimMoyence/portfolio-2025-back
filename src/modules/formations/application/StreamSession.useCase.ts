@@ -1,17 +1,28 @@
 import { Inject, Injectable, MessageEvent, Optional } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import type { Bareme } from '../domain/Bareme';
 import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
+import type { IAnswersRepository } from '../domain/IAnswers.repository';
+import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type {
   ISessionStateCache,
   LiveSessionState,
 } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
+import { agregerResultats } from '../domain/ResultatsSeance';
+import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
-import { SESSION_STATE_CACHE, SESSIONS_REPOSITORY } from '../domain/token';
+import {
+  ANSWERS_REPOSITORY,
+  PARTICIPANTS_REPOSITORY,
+  SESSION_STATE_CACHE,
+  SESSIONS_REPOSITORY,
+} from '../domain/token';
 
 const INTERVALLE_MS = 500;
 const HEARTBEAT_MS = 15000;
 const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
+const AUCUNE_ACTIVITE_VUE = -1;
 export const MAX_ABONNEMENTS_PAR_SESSION = 100;
 
 export interface CadencesFlux {
@@ -33,6 +44,10 @@ export class StreamSessionUseCase {
     private readonly sessions: ISessionsRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
+    @Inject(ANSWERS_REPOSITORY)
+    private readonly answers: IAnswersRepository,
+    @Inject(PARTICIPANTS_REPOSITORY)
+    private readonly participants: IParticipantsRepository,
     @Optional()
     private readonly cadences: CadencesFlux = CADENCES_PRODUCTION,
   ) {}
@@ -48,19 +63,27 @@ export class StreamSessionUseCase {
     sessionId: string,
     teacherId: string,
   ): Promise<Observable<MessageEvent>> {
-    assertSessionOwnedBy(
+    const session = assertSessionOwnedBy(
       await this.sessions.findById(sessionId),
       sessionId,
       teacherId,
     );
-    return this.execute(sessionId);
+    return this.ouvrirFlux(sessionId, session.bareme);
   }
 
   execute(sessionId: string): Observable<MessageEvent> {
+    return this.ouvrirFlux(sessionId);
+  }
+
+  private ouvrirFlux(
+    sessionId: string,
+    baremeDuFormateur?: Bareme,
+  ): Observable<MessageEvent> {
     this.assertPlaceDisponible(sessionId);
     return new Observable<MessageEvent>((subscriber) => {
       this.entrer(sessionId);
       let derniereEmpreinte = '';
+      let derniereActivite = AUCUNE_ACTIVITE_VUE;
       let actif = true;
       let occupe = false;
 
@@ -69,6 +92,20 @@ export class StreamSessionUseCase {
         clearInterval(boucle);
         clearInterval(battement);
         clearTimeout(limite);
+      };
+
+      const pousserResultatsSiActivite = async (
+        bareme: Bareme,
+      ): Promise<void> => {
+        const activite = this.cache.activite(sessionId);
+        if (activite === derniereActivite) {
+          return;
+        }
+        subscriber.next({
+          type: 'resultats',
+          data: await this.lireResultats(sessionId, bareme),
+        });
+        derniereActivite = activite;
       };
 
       const tick = async (): Promise<void> => {
@@ -88,6 +125,9 @@ export class StreamSessionUseCase {
           if (empreinte !== derniereEmpreinte) {
             derniereEmpreinte = empreinte;
             subscriber.next({ type: 'etat', data: etat });
+          }
+          if (baremeDuFormateur) {
+            await pousserResultatsSiActivite(baremeDuFormateur);
           }
           if (etat.etat === 'terminee') {
             subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
@@ -143,6 +183,17 @@ export class StreamSessionUseCase {
       return;
     }
     this.abonnements.set(sessionId, restants);
+  }
+
+  private async lireResultats(
+    sessionId: string,
+    bareme: Bareme,
+  ): Promise<ResultatsSeance> {
+    const [answers, participants] = await Promise.all([
+      this.answers.listBySession(sessionId),
+      this.participants.listBySession(sessionId),
+    ]);
+    return agregerResultats({ bareme, answers, participants });
   }
 
   private async resolveState(

@@ -7,12 +7,17 @@ import {
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
+import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
 import { SessionCode } from '../domain/SessionCode';
-import { PARTICIPANTS_REPOSITORY, SESSIONS_REPOSITORY } from '../domain/token';
+import {
+  PARTICIPANTS_REPOSITORY,
+  SESSION_STATE_CACHE,
+  SESSIONS_REPOSITORY,
+} from '../domain/token';
 import type {
   JoinSessionCommand,
   JoinSessionResult,
@@ -27,6 +32,8 @@ export class JoinSessionUseCase {
     private readonly sessions: ISessionsRepository,
     @Inject(PARTICIPANTS_REPOSITORY)
     private readonly participants: IParticipantsRepository,
+    @Inject(SESSION_STATE_CACHE)
+    private readonly cache: ISessionStateCache,
   ) {}
 
   async execute(command: JoinSessionCommand): Promise<JoinSessionResult> {
@@ -70,6 +77,7 @@ export class JoinSessionUseCase {
           email: command.email,
           seed,
         });
+        this.cache.signalerActivite(session.id);
         return this.toResult(participant.id, session, seed);
       } catch (error) {
         if (!(error instanceof SeedAlreadyAssignedError)) {

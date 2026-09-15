@@ -201,6 +201,8 @@ export function createMockSessionStateCache(): jest.Mocked<ISessionStateCache> {
     read: jest.fn().mockReturnValue(null),
     drop: jest.fn(),
     fingerprint: jest.fn().mockReturnValue(''),
+    signalerActivite: jest.fn(),
+    activite: jest.fn().mockReturnValue(0),
   };
 }
 

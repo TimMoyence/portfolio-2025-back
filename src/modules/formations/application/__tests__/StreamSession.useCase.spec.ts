@@ -1,13 +1,22 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import type { MessageEvent } from '@nestjs/common';
 import { firstValueFrom, take, toArray } from 'rxjs';
+import type { Observable, Subscription } from 'rxjs';
 import {
+  buildAnswerRecord,
+  buildBareme,
+  buildParticipantRecord,
   buildSessionRecord,
+  createMockAnswersRepo,
+  createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
   SessionNotOwnedError,
   SessionStreamLimitError,
 } from '../../domain/errors/FormationErrors';
+import type { AnswerRecord } from '../../domain/IAnswers.repository';
+import type { ResultatsSeance } from '../../domain/ResultatsSeance';
 import { SessionStateCacheService } from '../../infrastructure/SessionStateCache.service';
 import {
   CADENCES_PRODUCTION,
@@ -17,18 +26,49 @@ import {
 
 const CINQ_HEURES_MS = 5 * 60 * 60 * 1000;
 const HEARTBEAT_MS_TEST = 15000;
+const INTERVALLE_MS_TEST = 500;
 const TEACHER_ID = 'teacher-uuid';
+
+const REPONSE_FAUSSE = buildAnswerRecord({
+  id: 'answer-fausse-uuid',
+  participantId: 'participant-2-uuid',
+  valeur: 1300,
+  correcte: false,
+  misconception: 'interet-simple',
+});
+
+interface Ecoute {
+  readonly abonnement: Subscription;
+  readonly evenements: MessageEvent[];
+  resultats(): ResultatsSeance[];
+}
+
+function ecouter(flux: Observable<MessageEvent>): Ecoute {
+  const evenements: MessageEvent[] = [];
+  return {
+    abonnement: flux.subscribe((evenement) => evenements.push(evenement)),
+    evenements,
+    resultats: () =>
+      evenements
+        .filter((evenement) => evenement.type === 'resultats')
+        .map((evenement) => evenement.data as ResultatsSeance),
+  };
+}
 
 describe('StreamSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let cache: SessionStateCacheService;
+  let answers: ReturnType<typeof createMockAnswersRepo>;
+  let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: StreamSessionUseCase;
 
   beforeEach(() => {
     jest.useFakeTimers();
     sessions = createMockSessionsRepo();
     cache = new SessionStateCacheService();
-    sut = new StreamSessionUseCase(sessions, cache);
+    answers = createMockAnswersRepo();
+    participants = createMockParticipantsRepo();
+    sut = new StreamSessionUseCase(sessions, cache, answers, participants);
   });
 
   afterEach(() => {
@@ -164,10 +204,13 @@ describe('StreamSessionUseCase', () => {
 
   it('tient le flux jusqu a sa duree maximale puis le termine avec la raison expiree', async () => {
     const dureeMaxMs = 60_000;
-    const brefs = new StreamSessionUseCase(sessions, cache, {
-      battementMs: HEARTBEAT_MS_TEST,
-      dureeMaxMs,
-    });
+    const brefs = new StreamSessionUseCase(
+      sessions,
+      cache,
+      answers,
+      participants,
+      { battementMs: HEARTBEAT_MS_TEST, dureeMaxMs },
+    );
     const collected: MessageEvent[] = [];
     let termine = false;
     const subscription = brefs.execute('session-uuid').subscribe({
@@ -192,5 +235,178 @@ describe('StreamSessionUseCase', () => {
   it('tient cinq heures en production, avec un battement toutes les quinze secondes', () => {
     expect(CADENCES_PRODUCTION.dureeMaxMs).toBe(CINQ_HEURES_MS);
     expect(CADENCES_PRODUCTION.battementMs).toBe(15_000);
+  });
+
+  describe('resultats agreges', () => {
+    it('pousse au formateur les resultats du depot des le premier passage', async () => {
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(ecoute.evenements.map((evenement) => evenement.type)).toEqual([
+        'etat',
+        'resultats',
+      ]);
+      expect(ecoute.resultats()).toEqual([
+        {
+          participants: 1,
+          questions: [
+            {
+              questionId: 'Q-CAP-03',
+              total: 1,
+              correctes: 1,
+              neSaitPas: 0,
+              confusions: [],
+            },
+          ],
+        },
+      ]);
+      expect(answers.listBySession).toHaveBeenCalledWith('session-uuid');
+      expect(participants.listBySession).toHaveBeenCalledWith('session-uuid');
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('ne recalcule pas les resultats sans activite nouvelle', async () => {
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10 * INTERVALLE_MS_TEST);
+
+      expect(ecoute.resultats()).toHaveLength(1);
+      expect(answers.listBySession).toHaveBeenCalledTimes(1);
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('repousse les resultats recalcules apres une activite signalee', async () => {
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+      answers.listBySession.mockResolvedValue([
+        buildAnswerRecord(),
+        REPONSE_FAUSSE,
+      ]);
+
+      cache.signalerActivite('session-uuid');
+      await jest.advanceTimersByTimeAsync(INTERVALLE_MS_TEST);
+
+      expect(ecoute.resultats()).toHaveLength(2);
+      expect(ecoute.resultats()[1].questions[0]).toMatchObject({
+        total: 2,
+        correctes: 1,
+      });
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('n emet jamais les resultats sur le flux etudiant, meme apres une activite', async () => {
+      const ecoute = ecouter(sut.execute('session-uuid'));
+      await jest.advanceTimersByTimeAsync(10);
+
+      cache.signalerActivite('session-uuid');
+      await jest.advanceTimersByTimeAsync(4 * INTERVALLE_MS_TEST);
+
+      expect(ecoute.resultats()).toEqual([]);
+      expect(answers.listBySession).not.toHaveBeenCalled();
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('recalcule depuis le depot les resultats d une nouvelle instance au cache neuf', async () => {
+      cache.signalerActivite('session-uuid');
+      cache.signalerActivite('session-uuid');
+      answers.listBySession.mockResolvedValue([
+        buildAnswerRecord(),
+        REPONSE_FAUSSE,
+      ]);
+      participants.listBySession.mockResolvedValue([
+        buildParticipantRecord(),
+        buildParticipantRecord({ id: 'participant-2-uuid', seed: 1002 }),
+      ]);
+      const redemarre = new StreamSessionUseCase(
+        sessions,
+        new SessionStateCacheService(),
+        answers,
+        participants,
+      );
+
+      const ecoute = ecouter(
+        await redemarre.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(ecoute.resultats()).toHaveLength(1);
+      expect(ecoute.resultats()[0]).toMatchObject({
+        participants: 2,
+        questions: [
+          {
+            total: 2,
+            correctes: 1,
+            confusions: [{ id: 'interet-simple', nombre: 1 }],
+          },
+        ],
+      });
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('agrege avec le bareme de la session lue au controle de propriete', async () => {
+      const bareme = buildBareme();
+      sessions.findById.mockResolvedValueOnce(
+        buildSessionRecord({
+          bareme: buildBareme({
+            questions: [
+              ...bareme.questions,
+              { ...bareme.questions[0], id: 'Q-CAP-04' },
+            ],
+          }),
+        }),
+      );
+
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(
+        ecoute.resultats()[0].questions.map((question) => question.questionId),
+      ).toEqual(['Q-CAP-03', 'Q-CAP-04']);
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('ne superpose pas deux recalculs quand le depot tarde a repondre', async () => {
+      answers.listBySession.mockReturnValueOnce(
+        new Promise<readonly AnswerRecord[]>((resoudre) => {
+          setTimeout(() => resoudre([]), 10 * INTERVALLE_MS_TEST);
+        }),
+      );
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      cache.signalerActivite('session-uuid');
+      await jest.advanceTimersByTimeAsync(6 * INTERVALLE_MS_TEST);
+
+      expect(answers.listBySession).toHaveBeenCalledTimes(1);
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('pousse les resultats definitifs avant de clore le flux d une seance terminee', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ etat: 'terminee' }),
+      );
+
+      const messages = firstValueFrom(
+        (await sut.executeForTeacher('session-uuid', TEACHER_ID)).pipe(
+          toArray(),
+        ),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect((await messages).map((message) => message.type)).toEqual([
+        'etat',
+        'resultats',
+        'fin',
+      ]);
+    });
   });
 });
