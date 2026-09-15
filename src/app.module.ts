@@ -5,8 +5,6 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
-import { randomUUID } from 'crypto';
-import type { IncomingMessage } from 'http';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -15,6 +13,7 @@ import { MetricsModule } from './common/interfaces/metrics/metrics.module';
 import { SecurityModule } from './common/interfaces/security/security.module';
 import { CorrelationIdMiddleware } from './common/interfaces/middleware/correlation-id.middleware';
 import { validateEnv } from './config/env.validation';
+import { optionsJournalHttp } from './config/journal-http';
 
 import { ensureDatabaseExists } from './database/ensure-database';
 import { resolveRuntimeContexts } from './runtime/runtime-contexts';
@@ -25,10 +24,6 @@ function logBootstrapStep(message: string): void {
   if (process.env.BOOTSTRAP_DEBUG === 'true') {
     console.log(`[bootstrap] ${message}`);
   }
-}
-
-function isHealthProbe(req: IncomingMessage): boolean {
-  return req.url?.includes('/health') ?? false;
 }
 
 function firstEnv(...names: string[]): string | undefined {
@@ -200,23 +195,7 @@ async function ensureTargetDatabase({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     LoggerModule.forRoot({
-      pinoHttp: {
-        transport:
-          process.env.NODE_ENV !== 'production'
-            ? {
-                target: 'pino-pretty',
-                options: { colorize: true, singleLine: true },
-              }
-            : undefined,
-        autoLogging: { ignore: isHealthProbe },
-        quietReqLogger: true,
-        genReqId: (req) =>
-          (req.headers['x-request-id'] as string) ?? randomUUID(),
-        customProps: (req) => ({
-          correlationId: req.id,
-        }),
-        ...(process.env.NODE_ENV === 'test' ? { level: 'silent' } : {}),
-      },
+      pinoHttp: optionsJournalHttp(process.env.NODE_ENV),
     }),
     ThrottlerModule.forRoot([
       {

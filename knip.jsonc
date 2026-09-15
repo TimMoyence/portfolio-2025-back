@@ -30,7 +30,7 @@
   "ignoreDependencies": [
     // Reporter Jest passe en CLI : `test:cov` -> `--reporters=jest-ratchet`.
     "jest-ratchet",
-    // Resolu par chaine a l execution : `src/app.module.ts` -> `transport.target: 'pino-pretty'`.
+    // Resolu par chaine a l execution : `src/config/journal-http.ts` -> `transport.target: 'pino-pretty'`.
     "pino-pretty",
     // CLI de schematics (`nest generate`), pilotee par `nest-cli.json`.
     "@nestjs/cli",
