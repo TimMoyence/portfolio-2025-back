@@ -60,7 +60,6 @@ const DUREE_REPONSE_MS = 12_000;
 interface Inscrit {
   participantId: string;
   sessionId: string;
-  seed: number;
   jeton: string;
 }
 
@@ -208,7 +207,8 @@ describeDb('Formations sous charge de classe (db integration)', () => {
 
   const semerReponses = async (classe: Classe): Promise<void> => {
     for (const inscrit of classe.inscrits) {
-      const { solutions } = tirer(COURS_DE_CLASSE, inscrit.seed);
+      const seed = await contexte.graineDe(inscrit.participantId);
+      const { solutions } = tirer(COURS_DE_CLASSE, seed);
       await Promise.all(
         QUESTIONS_NOTEES.map((question, rang) =>
           contexte.answers.create({
@@ -217,7 +217,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
             questionId: question.id,
             concept: question.concept,
             valeur: solutions[question.id].valeur,
-            seed: inscrit.seed,
+            seed,
             correcte: true,
             misconception: null,
             dureeMs: DUREE_REPONSE_MS + rang,
@@ -271,7 +271,10 @@ describeDb('Formations sous charge de classe (db integration)', () => {
     'rattache trente etudiants simultanes dans le temps d une dictee de code',
     async () => {
       const ouverture = await ouvrirSeance().expect(CREE);
-      const { code } = ouverture.body as { code: string };
+      const { sessionId, code } = ouverture.body as {
+        sessionId: string;
+        code: string;
+      };
 
       const [inscriptions, duree] = await chronometrer(() =>
         Promise.all(
@@ -282,10 +285,10 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       );
 
       expect(statutsEnEchec(inscriptions, CREE)).toEqual([]);
-      expect(
-        new Set(inscriptions.map((reponse) => (reponse.body as Inscrit).seed))
-          .size,
-      ).toBe(TAILLE_CLASSE);
+      const inscrits = await contexte.participants.listBySession(sessionId);
+      expect(new Set(inscrits.map((inscrit) => inscrit.seed)).size).toBe(
+        TAILLE_CLASSE,
+      );
       exigerDuree(
         'rattachement de trente etudiants',
         duree,

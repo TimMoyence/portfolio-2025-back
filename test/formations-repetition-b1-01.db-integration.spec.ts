@@ -66,7 +66,6 @@ const FRACTION_DANS_L_ARRONDI = 0.4;
 
 interface Inscription {
   participantId: string;
-  seed: number;
   jeton: string;
 }
 
@@ -253,7 +252,8 @@ describeDb('Repetition a blanc de B1-01 (db integration)', () => {
       })
       .expect(CREE);
     const inscription = reponse.body as Inscription;
-    return { ...inscription, index, tirage: tirer(COURS, inscription.seed) };
+    const graine = await banc.contexte.graineDe(inscription.participantId);
+    return { ...inscription, index, tirage: tirer(COURS, graine) };
   };
 
   const lireLeSujet = async (

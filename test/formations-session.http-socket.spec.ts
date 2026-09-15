@@ -476,7 +476,7 @@ describe('Session de formation (e2e http socket)', () => {
       expect(reponse.status).toBe(404);
     });
 
-    it('ne renvoie jamais le bareme a l etudiant', async () => {
+    it('ne renvoie a l etudiant ni le bareme ni la graine de son tirage', async () => {
       const { code, sessionId } = await ouvrirSession(FORMATEUR_A);
 
       const reponse = await rejoindre(
@@ -493,12 +493,11 @@ describe('Session de formation (e2e http socket)', () => {
         'jeton',
         'modeRythme',
         'participantId',
-        'seed',
         'sessionId',
       ]);
+      expect(reponse.body).not.toHaveProperty('seed');
       expect(reponse.body).toMatchObject({
         sessionId,
-        seed: expect.any(Number),
         ecranCourant: 0,
         modeRythme: 'pilote',
       });

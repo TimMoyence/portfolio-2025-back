@@ -71,7 +71,7 @@ describe('FormationsStudentController', () => {
     tokens.verify.mockReturnValue(PARTICIPANT_ID);
   });
 
-  it('inscrit l etudiant et lui rend un jeton lie a sa session', async () => {
+  it('inscrit l etudiant et lui rend un jeton lie a sa session, sans la graine de son tirage', async () => {
     const reponse = await rejoindre();
 
     expect(joinSession.execute).toHaveBeenCalledWith({
@@ -82,8 +82,13 @@ describe('FormationsStudentController', () => {
       email: 'theo@example.com',
     });
     expect(tokens.sign).toHaveBeenCalledWith(SESSION_ID, PARTICIPANT_ID);
-    expect(reponse.jeton).toBe(JETON);
-    expect(reponse.seed).toBe(7);
+    expect(reponse).toEqual({
+      participantId: PARTICIPANT_ID,
+      sessionId: SESSION_ID,
+      ecranCourant: 0,
+      modeRythme: 'pilote',
+      jeton: JETON,
+    });
   });
 
   it('arrete le robot qui remplit le champ piege avant tout appel metier', async () => {

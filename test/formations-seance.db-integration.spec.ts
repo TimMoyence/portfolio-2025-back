@@ -64,7 +64,6 @@ interface CourrielEnvoye {
 
 interface ReponseInscription {
   participantId: string;
-  seed: number;
   jeton: string;
 }
 
@@ -411,6 +410,7 @@ describeDb(
             .expect(201),
         );
         const corps = inscription.body as ReponseInscription;
+        const graine = await contexte.graineDe(corps.participantId);
         etudiants.push({
           index,
           studentKey: cleEtudiant(index),
@@ -419,8 +419,8 @@ describeDb(
           email: emailDe(index),
           participantId: corps.participantId,
           jeton: corps.jeton,
-          seed: corps.seed,
-          valeurs: valeursTirees(corps.seed),
+          seed: graine,
+          valeurs: valeursTirees(graine),
         });
       }
 

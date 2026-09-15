@@ -56,7 +56,6 @@ const CONFLIT = 409;
 interface ReponseInscription {
   participantId: string;
   sessionId: string;
-  seed: number;
   jeton: string;
 }
 
@@ -221,8 +220,10 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     );
 
     expect(statutsEnEchec(inscriptions, CREE)).toEqual([]);
-    const graines = inscriptions.map(
-      (reponse) => (reponse.body as ReponseInscription).seed,
+    const graines = await Promise.all(
+      inscriptions.map((reponse) =>
+        contexte.graineDe((reponse.body as ReponseInscription).participantId),
+      ),
     );
     expect(new Set(graines).size).toBe(TAILLE_CLASSE);
 

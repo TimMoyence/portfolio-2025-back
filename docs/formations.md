@@ -33,7 +33,7 @@ Routes publiques. Hors inscription, chaque appel presente le jeton rendu a l'ins
 
 | Methode | Route                        | Contrat                                                                                                                                            |
 | ------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST`  | `sessions/:code/join`        | Corps `{ studentKey, prenom, nom, email }` ; `201 { participantId, sessionId, seed, ecranCourant, modeRythme, jeton }`.                            |
+| `POST`  | `sessions/:code/join`        | Corps `{ studentKey, prenom, nom, email }` ; `201 { participantId, sessionId, ecranCourant, modeRythme, jeton }`, sans la graine du tirage.        |
 | `GET`   | `sessions/:id/sujet`         | Sujet du tirage du participant, sans corrige : `{ id, titre, niveau, duree, concepts, ecrans[] }` ; `409` si le cours a change depuis l'ouverture. |
 | `POST`  | `sessions/:id/answers`       | Corps `{ questionId, valeur, dureeMs }` ; `201 { correcte, misconception, libelleConfusion }`.                                                     |
 | `POST`  | `sessions/:id/incidents`     | Journal d'incidents du poste ; `204`.                                                                                                              |
@@ -43,6 +43,7 @@ Routes publiques. Hors inscription, chaque appel presente le jeton rendu a l'ins
 ## Contrats a connaitre
 
 - **Sujet** : `GET sessions/:id/sujet` recalcule le tirage du participant depuis le cours du catalogue et le compare au bareme stocke. S'ils divergent (cours modifie apres l'ouverture), la route rend `409` : le formateur doit ouvrir une nouvelle seance.
+- **Graine** : la graine attribuee a un participant ne quitte jamais le serveur. Le moteur de tirage et les cours sont publics : avec la graine, `tirer(cours, graine)` rendrait le corrige de l'etudiant.
 - **Verdict** : `misconception` est l'identifiant de la confusion detectee, `libelleConfusion` son libelle lisible (banque `domain/cours/banque/confusions.ts`) ; les deux valent `null` quand aucune confusion n'est reconnue, reponse juste comprise. Le verdict ne porte jamais la reponse attendue.
 - **Resultats** : `results.resultats` vaut `{ participants, questions[] }`, chaque question donnant `questionId`, `total`, `correctes`, `neSaitPas` et `confusions[] { id, libelle, nombre }` triees par frequence. Dans le rapport, la synthese et son CSV, les etudiants suivent leur ordre d'arrivee et leurs reponses leur ordre d'envoi (horodatage d'ecriture, puis identifiant en cas d'egalite).
 - **Evenement `resultats`** : pousse sur le seul flux du formateur, a l'ouverture du flux puis a chaque nouvelle inscription ou reponse ; meme forme que `results.resultats`. Le flux etudiant ne le recoit jamais.
@@ -61,5 +62,5 @@ Les exemples sont dans `deploy/backend.env.example`.
 ## Tests
 
 - Contrats HTTP et SSE : `test/formations-session.http-socket.spec.ts` (`pnpm run test:e2e:http`).
-- Postgres : `test/formations-{repositories,concurrence,resilience,seance}.db-integration.spec.ts` (`pnpm run test:integration:db:local`). Les suites HTTP montent un catalogue de test (`creerCatalogueDeTest(buildCoursDeClasse(12))`, `test/factories/cours.factory.ts`) pour ne pas dependre du contenu d'un cours publie ; les reponses attendues sont recalculees par `tirer(cours, seed)`.
+- Postgres : `test/formations-{repositories,concurrence,resilience,seance}.db-integration.spec.ts` (`pnpm run test:integration:db:local`). Les suites HTTP montent un catalogue de test (`creerCatalogueDeTest(buildCoursDeClasse(12))`, `test/factories/cours.factory.ts`) pour ne pas dependre du contenu d'un cours publie. L'API ne rendant pas la graine, les suites Postgres la lisent en base (`contexte.graineDe(participantId)`, `test/helpers/formations-db.ts`) et recalculent cote test les reponses attendues par `tirer(cours, graine)`.
 - Charge : `pnpm run db:integration:up`, `pnpm run test:charge:run`, puis `pnpm run db:integration:down`. Budgets : trente inscriptions simultanees en 5 s, trente reponses simultanees en 3 s, cloture de 360 reponses en 10 s, lecture des resultats en 2 s, trente flux tenus deux minutes avec moins de 20 % de croissance memoire.
