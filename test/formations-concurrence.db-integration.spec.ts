@@ -20,6 +20,7 @@ import {
 import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
+  patienter,
   PREFIXE_API,
 } from './helpers/formations-harness';
 import {
@@ -178,7 +179,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
       if (total > 0) {
         return total;
       }
-      await new Promise((resoudre) => setTimeout(resoudre, PAS_SONDAGE_MS));
+      await patienter(PAS_SONDAGE_MS);
     }
     return 0;
   };
