@@ -152,7 +152,7 @@ export class FormationsStudentController {
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
   @ApiConflictResponse({
     description:
-      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE (seance pas encore demarree) ou REPONSE_DEJA_ENREGISTREE (question deja repondue) ; une seance terminee rend 409 sans code',
+      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou REPONSE_DEJA_ENREGISTREE',
   })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async answer(

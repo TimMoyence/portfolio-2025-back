@@ -4,5 +4,6 @@ export interface RefreshToken {
   tokenHash: string;
   expiresAt: Date;
   revoked: boolean;
+  rotationGraceUntil?: Date | null;
   createdAt?: Date;
 }

@@ -76,6 +76,24 @@ describe('LireSujetUseCase', () => {
   });
 
   it('rend le sujet du tirage attribue au participant', async () => {
+    const sujet = await demander();
+
+    expect(sujet.ecrans[0]).toEqual(TIRAGE.sujet.ecrans[0]);
+    expect(
+      sujet.ecrans
+        .slice(1)
+        .every(
+          ({ type, donnees }) =>
+            type === 'ecran-verrouille' && Object.keys(donnees).length === 0,
+        ),
+    ).toBe(true);
+  });
+
+  it('rend tout le sujet apres la cloture de la seance', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ ...SESSION, etat: 'terminee' }),
+    );
+
     await expect(demander()).resolves.toEqual(TIRAGE.sujet);
   });
 

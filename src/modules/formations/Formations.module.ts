@@ -21,6 +21,7 @@ import {
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
+  STREAM_CAPACITY,
 } from './domain/token';
 import { AnswersRepositoryTypeORM } from './infrastructure/Answers.repository.typeorm';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
@@ -34,6 +35,7 @@ import { MasteryRepositoryTypeORM } from './infrastructure/Mastery.repository.ty
 import { ParticipantsRepositoryTypeORM } from './infrastructure/Participants.repository.typeorm';
 import { SessionsRepositoryTypeORM } from './infrastructure/Sessions.repository.typeorm';
 import { SessionStateCacheService } from './infrastructure/SessionStateCache.service';
+import { StreamCapacityService } from './infrastructure/StreamCapacity.service';
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
 import { CodeScanProtectionService } from './interfaces/CodeScanProtection.service';
@@ -59,6 +61,10 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     SubmitAnswerUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
+    {
+      provide: STREAM_CAPACITY,
+      useClass: StreamCapacityService,
+    },
     DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,

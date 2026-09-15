@@ -36,7 +36,7 @@ import {
 } from './helpers/formations-harness';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
-const SLUG = 'b1-01-proportions';
+const SLUG = 'b2-01-traitement-information-chiffree';
 const TAILLE_CLASSE = 30;
 const PERIODE_PIEGE = 5;
 const FORMATEUR = 'b7777777-7777-4777-8777-777777777777';
@@ -200,7 +200,7 @@ function cleEtudiant(index: number): string {
   return `88888888-8888-4888-8888-${String(index).padStart(12, '0')}`;
 }
 
-describeDb('Repetition a blanc de B1-01 (db integration)', () => {
+describeDb('Repetition a blanc de B2-01 (db integration)', () => {
   silenceNestLogger();
 
   let banc: BancFormations;
@@ -236,7 +236,19 @@ describeDb('Repetition a blanc de B1-01 (db integration)', () => {
       statut: reponse.status,
       clesDuCorrige: clesDuCorrigeDans(reponse.body),
     }).toEqual({ etudiant: etudiant.index, statut: OK, clesDuCorrige: [] });
-    expect(reponse.body).toEqual(etudiant.tirage.sujet);
+    expect(reponse.body).toEqual({
+      ...etudiant.tirage.sujet,
+      ecrans: etudiant.tirage.sujet.ecrans.map((ecran, index) =>
+        index === 0
+          ? ecran
+          : {
+              ...ecran,
+              type: 'ecran-verrouille',
+              interactif: false,
+              donnees: {},
+            },
+      ),
+    });
   };
 
   const piloter = (sessionId: string, ecran: number) =>
@@ -301,7 +313,7 @@ describeDb('Repetition a blanc de B1-01 (db integration)', () => {
   });
 
   it(
-    'joue la seance du 21 septembre de l ouverture a la cloture sur le vrai catalogue',
+    'joue une seance de cours B2 de l ouverture a la cloture sur le vrai catalogue',
     async () => {
       const ouverture = await client
         .formateur('post', '/sessions')

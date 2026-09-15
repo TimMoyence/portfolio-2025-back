@@ -16,6 +16,11 @@ import {
   SessionStreamLimitError,
 } from '../../domain/errors/FormationErrors';
 import type { AnswerRecord } from '../../domain/IAnswers.repository';
+import type {
+  IStreamCapacity,
+  StreamCapacityLease,
+  StreamCapacityRequest,
+} from '../../domain/IStreamCapacity.port';
 import type { ResultatsSeance } from '../../domain/ResultatsSeance';
 import { SessionStateCacheService } from '../../infrastructure/SessionStateCache.service';
 import {
@@ -69,6 +74,42 @@ function ecouter(flux: Observable<MessageEvent>): Ecoute {
         .map((evenement) => evenement.data as ResultatsSeance),
     types: () => evenements.map((evenement) => String(evenement.type)),
     terminee: () => terminee,
+  };
+}
+
+function capacitePartagee(): IStreamCapacity {
+  const occupants = new Map<string, Map<string, number>>();
+  let sequence = 0;
+  return {
+    acquire: (request: StreamCapacityRequest): Promise<StreamCapacityLease> => {
+      if (
+        request.places.some(({ key, limit }) => {
+          const compte = occupants.get(key)?.size ?? 0;
+          return compte >= limit;
+        })
+      ) {
+        throw new Error('plafond atteint');
+      }
+      const token = `bail-${sequence++}`;
+      for (const { key } of request.places) {
+        const places = occupants.get(key) ?? new Map<string, number>();
+        places.set(token, 1);
+        occupants.set(key, places);
+      }
+      return Promise.resolve({
+        token,
+        keys: request.places.map(({ key }) => key),
+      });
+    },
+    refresh: () => Promise.resolve(),
+    release: (lease: StreamCapacityLease) => {
+      for (const key of lease.keys) {
+        const places = occupants.get(key);
+        places?.delete(lease.token);
+        if (places?.size === 0) occupants.delete(key);
+      }
+      return Promise.resolve();
+    },
   };
 }
 
@@ -394,6 +435,51 @@ describe('StreamSessionUseCase', () => {
         ),
       ).toThrow(SessionStreamLimitError);
       fermer([...siens, ...autres, nouveau]);
+    });
+
+    it('applique le plafond de session entre deux instances', async () => {
+      const capacite = capacitePartagee();
+      const cetteInstance = new StreamSessionUseCase(
+        sessions,
+        new SessionStateCacheService(),
+        answers,
+        participants,
+        undefined,
+        capacite,
+      );
+      const autreInstance = new StreamSessionUseCase(
+        sessions,
+        new SessionStateCacheService(),
+        answers,
+        participants,
+        undefined,
+        capacite,
+      );
+      const surCetteInstance = Array.from(
+        { length: MAX_ABONNEMENTS_PAR_SESSION / 2 },
+        (_, rang) =>
+          ecouter(
+            cetteInstance.execute('session-uuid', participantDeRang(rang)),
+          ),
+      );
+      const surAutreInstance = Array.from(
+        { length: MAX_ABONNEMENTS_PAR_SESSION / 2 },
+        (_, rang) =>
+          ecouter(
+            autreInstance.execute('session-uuid', participantDeRang(50 + rang)),
+          ),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      const erreur = new Promise<unknown>((resolve) => {
+        autreInstance
+          .execute('session-uuid', 'participant-au-dela-du-plafond')
+          .subscribe({
+            error: resolve,
+          });
+      });
+      await expect(erreur).resolves.toBeInstanceOf(SessionStreamLimitError);
+      fermer([...surCetteInstance, ...surAutreInstance]);
     });
   });
 

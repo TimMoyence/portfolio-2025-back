@@ -1,5 +1,5 @@
 import { buildCoursDeTest } from '../../../../../../test/factories/cours.factory';
-import { B1_01_PROPORTIONS } from './b1-01-proportions';
+import { B2_01_TRAITEMENT_INFORMATION_CHIFFREE } from './b2-01-traitement-information-chiffree';
 import { creerCatalogue } from './Catalogue';
 import { CATALOGUE_COURS_STATIQUE } from './index';
 
@@ -27,10 +27,10 @@ describe('creerCatalogue', () => {
 });
 
 describe('CATALOGUE_COURS_STATIQUE', () => {
-  it('trouve le cours b1-01-proportions publie', () => {
-    expect(CATALOGUE_COURS_STATIQUE.trouver('b1-01-proportions')).toBe(
-      B1_01_PROPORTIONS,
-    );
+  it('trouve le cours b2-01-traitement-information-chiffree publie', () => {
+    expect(
+      CATALOGUE_COURS_STATIQUE.trouver('b2-01-traitement-information-chiffree'),
+    ).toBe(B2_01_TRAITEMENT_INFORMATION_CHIFFREE);
   });
 
   it('rend null pour un slug absent du catalogue publie', () => {

@@ -55,7 +55,41 @@ export class LireSujetUseCase {
     if (!solutionsIdentiques(tirage.solutions, stockees)) {
       throw new CoursModifieError();
     }
-    return tirage.sujet;
+    const dernier = this.dernierEcranServi(session, tirage.sujet.ecrans.length);
+    return {
+      ...tirage.sujet,
+      ecrans: tirage.sujet.ecrans.map((ecran, index) =>
+        index <= dernier
+          ? ecran
+          : {
+              ...ecran,
+              type: 'ecran-verrouille',
+              interactif: false,
+              donnees: {},
+            },
+      ),
+    };
+  }
+
+  private dernierEcranServi(
+    session: {
+      etat: string;
+      modeRythme: string;
+      ecranCourant: number;
+      intervalleLibre: { dernier: number } | null;
+    },
+    total: number,
+  ): number {
+    if (session.etat === 'terminee') {
+      return total - 1;
+    }
+    if (session.modeRythme === 'libre' && session.intervalleLibre === null) {
+      return total - 1;
+    }
+    if (session.modeRythme === 'libre' && session.intervalleLibre !== null) {
+      return session.intervalleLibre.dernier;
+    }
+    return session.ecranCourant;
   }
 
   private tirerOuLever(cours: Cours, seed: number): TirageDuCours {

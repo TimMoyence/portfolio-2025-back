@@ -35,6 +35,8 @@ export class SessionNotOwnedError extends InsufficientPermissionsError {
 }
 
 export class SessionClosedError extends ResourceConflictError {
+  readonly code = 'SEANCE_TERMINEE';
+
   constructor() {
     super(
       'La séance est terminée : les réponses ne sont plus acceptées, les résultats restent consultables.',

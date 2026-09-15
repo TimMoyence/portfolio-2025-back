@@ -8,6 +8,10 @@ import {
 import { Observable } from 'rxjs';
 import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
+import type {
+  IStreamCapacity,
+  StreamCapacityLease,
+} from '../domain/IStreamCapacity.port';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type {
   ISessionStateCache,
@@ -22,6 +26,7 @@ import {
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
+  STREAM_CAPACITY,
 } from '../domain/token';
 
 const INTERVALLE_MS = 500;
@@ -44,10 +49,17 @@ export const CADENCES_PRODUCTION: CadencesFlux = {
 
 type Fermeture = () => void;
 
+const CAPACITE_MEMOIRE: IStreamCapacity = {
+  acquire: () => Promise.resolve(null),
+  refresh: () => Promise.resolve(),
+  release: () => Promise.resolve(),
+};
+
 interface Place {
   readonly occupants: Map<string, Fermeture[]>;
   readonly cle: string;
   readonly plafond: number;
+  readonly capacite: string;
 }
 
 interface PlacesDuFlux {
@@ -92,6 +104,9 @@ export class StreamSessionUseCase {
     private readonly participants: IParticipantsRepository,
     @Optional()
     private readonly cadences: CadencesFlux = CADENCES_PRODUCTION,
+    @Optional()
+    @Inject(STREAM_CAPACITY)
+    private readonly capacity: IStreamCapacity = CAPACITE_MEMOIRE,
   ) {}
 
   async executeForTeacher(
@@ -110,6 +125,7 @@ export class StreamSessionUseCase {
           occupants: this.fluxFormateur,
           cle: sessionId,
           plafond: MAX_FLUX_FORMATEUR_PAR_SESSION,
+          capacite: `teacher:${sessionId}`,
         },
       },
       session.bareme.questions.map((question) => question.id),
@@ -122,11 +138,13 @@ export class StreamSessionUseCase {
         occupants: this.fluxParParticipant,
         cle: participantId,
         plafond: MAX_FLUX_PAR_PARTICIPANT,
+        capacite: `participant:${participantId}`,
       },
       seance: {
         occupants: this.fluxEtudiants,
         cle: sessionId,
         plafond: MAX_ABONNEMENTS_PAR_SESSION,
+        capacite: `session:${sessionId}`,
       },
     });
   }
@@ -142,12 +160,29 @@ export class StreamSessionUseCase {
       let derniereActivite = AUCUNE_ACTIVITE_VUE;
       let actif = true;
       let occupe = false;
+      let bail: StreamCapacityLease | null = null;
+      let boucle: ReturnType<typeof setInterval> | undefined;
+      let battement: ReturnType<typeof setInterval> | undefined;
+      let limite: ReturnType<typeof setTimeout> | undefined;
+
+      const libererCapacite = (): void => {
+        const aLiberer = bail;
+        bail = null;
+        if (aLiberer !== null) {
+          void this.capacity.release(aLiberer).catch((error: unknown) => {
+            this.logger.warn(
+              `Bail de flux non libere pour la session ${sessionId}: ${messageDe(error)}`,
+            );
+          });
+        }
+      };
 
       const arreter = (): void => {
         actif = false;
-        clearInterval(boucle);
-        clearInterval(battement);
-        clearTimeout(limite);
+        if (boucle !== undefined) clearInterval(boucle);
+        if (battement !== undefined) clearInterval(battement);
+        if (limite !== undefined) clearTimeout(limite);
+        libererCapacite();
       };
 
       const ceder = (): void => {
@@ -224,26 +259,52 @@ export class StreamSessionUseCase {
         }
       };
 
-      const boucle = setInterval(() => {
-        void tick();
-      }, INTERVALLE_MS);
+      const demande = {
+        places: [places.porteur, places.seance]
+          .filter((place): place is Place => place !== undefined)
+          .map(({ capacite, plafond }) => ({ key: capacite, limit: plafond })),
+      };
 
-      const battement = setInterval(() => {
-        subscriber.next({
-          type: 'heartbeat',
-          data: { ts: new Date().toISOString() },
-        });
-      }, this.cadences.battementMs);
+      const demarrer = async (): Promise<void> => {
+        try {
+          bail = await this.capacity.acquire(demande);
+          if (!actif) {
+            arreter();
+            return;
+          }
+          boucle = setInterval(() => {
+            void tick();
+          }, INTERVALLE_MS);
 
-      const limite = setTimeout(() => {
-        subscriber.next({ type: 'fin', data: { raison: 'expiree' } });
-        subscriber.complete();
-        arreter();
-      }, this.cadences.dureeMaxMs);
+          battement = setInterval(() => {
+            if (bail !== null) {
+              this.rafraichirCapacite(bail, sessionId);
+            }
+            subscriber.next({
+              type: 'heartbeat',
+              data: { ts: new Date().toISOString() },
+            });
+          }, this.cadences.battementMs);
 
-      fermerLesPlusAnciens(places.porteur);
-      occuper(places, ceder);
-      void tick();
+          limite = setTimeout(() => {
+            subscriber.next({ type: 'fin', data: { raison: 'expiree' } });
+            subscriber.complete();
+            arreter();
+          }, this.cadences.dureeMaxMs);
+
+          fermerLesPlusAnciens(places.porteur);
+          occuper(places, ceder);
+          void tick();
+        } catch (error) {
+          this.logger.warn(
+            `Ouverture du plafond de flux refusee pour la session ${sessionId}: ${messageDe(error)}`,
+          );
+          subscriber.error(new SessionStreamLimitError());
+          arreter();
+        }
+      };
+
+      void demarrer();
 
       return () => {
         liberer(places, ceder);
@@ -261,6 +322,17 @@ export class StreamSessionUseCase {
       this.participants.countBySession(sessionId),
     ]);
     return agregerResultats({ questionIds, answers, participants });
+  }
+
+  private rafraichirCapacite(
+    bail: StreamCapacityLease,
+    sessionId: string,
+  ): void {
+    void this.capacity.refresh(bail).catch((error: unknown) => {
+      this.logger.warn(
+        `Bail de flux non renouvele pour la session ${sessionId}: ${messageDe(error)}`,
+      );
+    });
   }
 
   private async resolveState(

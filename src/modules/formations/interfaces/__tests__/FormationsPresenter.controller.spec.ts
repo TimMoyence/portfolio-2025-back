@@ -11,6 +11,7 @@ const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
 
 const requeteFormateur = {
   user: { sub: TEACHER_ID },
+  once: jest.fn(),
 } as unknown as Request;
 
 describe('FormationsPresenterController', () => {

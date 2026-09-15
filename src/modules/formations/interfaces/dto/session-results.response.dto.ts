@@ -110,7 +110,7 @@ export class ResultatsSeanceResponseDto {
 }
 
 export class SessionResultsResponseDto {
-  @ApiProperty({ example: 'b1-01-proportions' })
+  @ApiProperty({ example: 'b2-01-traitement-information-chiffree' })
   courseSlug: string;
 
   @ApiProperty({ example: '4271' })

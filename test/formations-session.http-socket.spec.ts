@@ -76,11 +76,7 @@ import {
   createMockIncidentsRepo,
   createMockMasteryRepo,
 } from './factories/formation.factory';
-import {
-  abonnerAuFlux,
-  attendreQue,
-  patienter,
-} from './helpers/formations-harness';
+import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
 import {
   ADRESSE_BOUCLE_LOCALE,
@@ -147,7 +143,6 @@ const CORRIGE_EN_CLAIR = [
 
 const TAILLE_CLASSE = 30;
 const DELAI_FERMETURE_FLUX_MS = 2000;
-const DELAI_TRAITEMENT_ABANDON_MS = 100;
 
 function cleEtudiant(index: number): string {
   return `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`;
@@ -451,6 +446,7 @@ describe('Session de formation (e2e http socket)', () => {
       const cache = app.get<SessionStateCacheService>(SESSION_STATE_CACHE);
       const lireSession = sessions.findById;
       let lectureCommencee = false;
+      let lectureTerminee = false;
       let reprendreLaLecture = (): void => undefined;
       const lecture = jest
         .spyOn(sessions, 'findById')
@@ -461,7 +457,9 @@ describe('Session de formation (e2e http socket)', () => {
               reprendreLaLecture = resoudre;
             });
           }
-          return lireSession(id);
+          const resultat = await lireSession(id);
+          lectureTerminee = true;
+          return resultat;
         });
       const passages = jest.spyOn(cache, 'read');
 
@@ -472,12 +470,16 @@ describe('Session de formation (e2e http socket)', () => {
         headers: { 'x-test-identite': `${FORMATEUR_A}:teacher` },
       });
       requete.on('error', () => undefined);
+      const requeteFermee = new Promise<void>((resoudre) => {
+        requete.once('close', resoudre);
+      });
       requete.end();
       await attendreQue(() => lectureCommencee, DELAI_FERMETURE_FLUX_MS);
       requete.destroy();
-      await patienter(DELAI_TRAITEMENT_ABANDON_MS);
+      await requeteFermee;
       reprendreLaLecture();
-      await patienter(DELAI_TRAITEMENT_ABANDON_MS);
+      await attendreQue(() => lectureTerminee, DELAI_FERMETURE_FLUX_MS);
+      await new Promise<void>((resoudre) => setImmediate(resoudre));
 
       const passagesDuFlux = passages.mock.calls.filter(
         ([id]) => id === sessionId,
@@ -917,6 +919,20 @@ describe('Session de formation (e2e http socket)', () => {
       });
     });
 
+    it('retourne un code metier quand un participant repond apres la cloture', async () => {
+      const reponse = await request(serveur())
+        .post(route(`/sessions/${sessionId}/answers`))
+        .set('x-participant-token', jeton)
+        .send({
+          questionId: TEMOIN.question,
+          valeur: TEMOIN.solution,
+          dureeMs: 1000,
+        });
+
+      expect(reponse.status).toBe(409);
+      expect(reponse.body).toMatchObject({ code: 'SEANCE_TERMINEE' });
+    });
+
     it('n ouvre pas le flux a qui connait le sessionId sans etre inscrit', async () => {
       const sansJeton = await request(serveur()).get(
         route(`/sessions/${sessionId}/stream`),
@@ -1134,6 +1150,33 @@ describe('sujet du participant (lecture par jeton)', () => {
     });
   });
 
+  it('ne livre pas le contenu des ecrans que le formateur n a pas encore reveles', async () => {
+    const { sessionId, code } = await ouvrirSession();
+    const jeton = await rejoindreEtObtenirJeton(
+      code,
+      '33333333-3333-4333-8333-333333333336',
+    );
+
+    const reponse = await request(serveur())
+      .get(route(`/sessions/${sessionId}/sujet`))
+      .set('x-participant-token', jeton)
+      .expect(200);
+    const ecrans = reponse.body as {
+      ecrans: readonly { type: string; donnees: Record<string, unknown> }[];
+    };
+
+    expect(ecrans.ecrans[0].type).not.toBe('ecran-verrouille');
+    expect(
+      ecrans.ecrans
+        .slice(1)
+        .every(
+          (ecran) =>
+            ecran.type === 'ecran-verrouille' &&
+            Object.keys(ecran.donnees).length === 0,
+        ),
+    ).toBe(true);
+  });
+
   it('sert a chaque participant le sujet de son propre tirage', async () => {
     const { sessionId, code } = await ouvrirSession();
     const jetonA = await rejoindreEtObtenirJeton(
@@ -1144,6 +1187,10 @@ describe('sujet du participant (lecture par jeton)', () => {
       code,
       '33333333-3333-4333-8333-333333333333',
     );
+    await request(serveur())
+      .post(route(`/sessions/${sessionId}/start`))
+      .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+      .expect(204);
 
     const sujetA = await request(serveur())
       .get(route(`/sessions/${sessionId}/sujet`))

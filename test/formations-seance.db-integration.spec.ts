@@ -435,7 +435,20 @@ describeDb(
             .set(EN_TETE_JETON, etudiant.jeton)
             .expect(200),
         );
-        expect(sujet.body).toEqual(tirer(COURS_DE_CLASSE, etudiant.seed).sujet);
+        const sujetAttendu = tirer(COURS_DE_CLASSE, etudiant.seed).sujet;
+        expect(sujet.body).toEqual({
+          ...sujetAttendu,
+          ecrans: sujetAttendu.ecrans.map((ecran, index) =>
+            index === 0
+              ? ecran
+              : {
+                  ...ecran,
+                  type: 'ecran-verrouille',
+                  interactif: false,
+                  donnees: {},
+                },
+          ),
+        });
       }
 
       noter(

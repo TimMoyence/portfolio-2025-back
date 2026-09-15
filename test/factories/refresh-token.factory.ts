@@ -10,6 +10,7 @@ export function buildRefreshToken(
     tokenHash: 'hashed-refresh-token',
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     revoked: false,
+    rotationGraceUntil: null,
     createdAt: new Date('2026-01-01'),
     ...overrides,
   };
@@ -21,6 +22,7 @@ export function createMockRefreshTokensRepo(): jest.Mocked<IRefreshTokensReposit
     findByTokenHash: jest.fn(),
     revokeByUserId: jest.fn(),
     revokeById: jest.fn(),
+    rotateById: jest.fn(),
     purgeExpired: jest.fn(),
   };
 }

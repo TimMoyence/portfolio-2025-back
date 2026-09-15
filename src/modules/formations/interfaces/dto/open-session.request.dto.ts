@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class OpenSessionRequestDto {
-  @ApiProperty({ example: 'b1-01-proportions' })
+  @ApiProperty({ example: 'b2-01-traitement-information-chiffree' })
   @IsString()
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
   @MinLength(1)

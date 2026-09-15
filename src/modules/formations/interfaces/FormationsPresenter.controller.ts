@@ -153,11 +153,15 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<Observable<MessageEvent>> {
+    let clientDeconnecte = false;
+    request.once('close', () => {
+      clientDeconnecte = true;
+    });
     const flux = await this.streamSession.executeForTeacher(
       id,
       request.user!.sub,
     );
-    return request.destroyed ? EMPTY : flux;
+    return clientDeconnecte || request.destroyed ? EMPTY : flux;
   }
 
   @Get('sessions/:id/results')

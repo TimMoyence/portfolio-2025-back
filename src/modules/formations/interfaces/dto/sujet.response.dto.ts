@@ -26,13 +26,16 @@ export class EcranPublicResponseDto {
 }
 
 export class SujetResponseDto {
-  @ApiProperty({ description: 'Slug du cours', example: 'b1-01-proportions' })
+  @ApiProperty({
+    description: 'Slug du cours',
+    example: 'b2-01-traitement-information-chiffree',
+  })
   id: string;
 
   @ApiProperty({ example: 'Proportions, taux et évolutions' })
   titre: string;
 
-  @ApiProperty({ example: 'BTS CG 2' })
+  @ApiProperty({ example: 'B2' })
   niveau: string;
 
   @ApiProperty({ description: 'Duree du cours en minutes', example: 195 })

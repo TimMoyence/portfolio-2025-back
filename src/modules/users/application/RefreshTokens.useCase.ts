@@ -6,6 +6,7 @@ import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.reposito
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
+import { REFRESH_TOKEN_ROTATION_GRACE_MS } from '../domain/auth.constants';
 import type { AuthResult } from './AuthenticateUser.useCase';
 import { issueAuthSession } from './services/issue-auth-session';
 import { JwtTokenService } from './services/JwtTokenService';
@@ -28,6 +29,24 @@ export class RefreshTokensUseCase {
       throw new InvalidCredentialsError('Invalid refresh token');
     }
 
+    const maintenant = Date.now();
+    if (
+      stored.revoked &&
+      stored.rotationGraceUntil !== null &&
+      stored.rotationGraceUntil !== undefined &&
+      stored.rotationGraceUntil.getTime() > maintenant
+    ) {
+      const user = await this.usersRepo.findById(stored.userId);
+      if (!user || !user.isActive) {
+        throw new InvalidCredentialsError('User not found or inactive');
+      }
+      return issueAuthSession(
+        user,
+        this.jwtTokenService,
+        this.refreshTokensRepo,
+      );
+    }
+
     if (stored.revoked) {
       await this.refreshTokensRepo.revokeByUserId(stored.userId);
       throw new TokenReuseDetectedError('Refresh token reuse detected');
@@ -37,7 +56,10 @@ export class RefreshTokensUseCase {
       throw new TokenExpiredError('Refresh token expired');
     }
 
-    await this.refreshTokensRepo.revokeById(stored.id!);
+    await this.refreshTokensRepo.rotateById(
+      stored.id!,
+      new Date(maintenant + REFRESH_TOKEN_ROTATION_GRACE_MS),
+    );
 
     const user = await this.usersRepo.findById(stored.userId);
 

@@ -9,5 +9,7 @@ export interface IRefreshTokensRepository {
 
   revokeById(id: string): Promise<void>;
 
+  rotateById(id: string, graceUntil: Date): Promise<void>;
+
   purgeExpired(): Promise<number>;
 }

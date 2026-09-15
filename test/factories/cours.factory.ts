@@ -79,7 +79,7 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
   return {
     slug: 'cours-de-test',
     titre: 'Cours de test',
-    niveau: 'BTS CG 2',
+    niveau: 'B2',
     dureeMinutes: 38,
     concepts: ['taux-evolution'],
     ecrans: [
