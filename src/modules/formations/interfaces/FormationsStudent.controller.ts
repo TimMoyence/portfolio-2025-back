@@ -272,7 +272,7 @@ export class FormationsStudentController {
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   @ApiTooManyRequestsResponse({
     description:
-      'Trop de flux ouverts sur la session ou par ce participant (deux au plus)',
+      'Seance pleine (cent flux etudiants) ou trop d ouvertures par minute ; au-dela de deux flux, le plus ancien du participant est ferme',
   })
   stream(
     @Param('id', ParseUUIDPipe) id: string,

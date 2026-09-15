@@ -48,17 +48,27 @@ interface Ecoute {
   readonly abonnement: Subscription;
   readonly evenements: MessageEvent[];
   resultats(): ResultatsSeance[];
+  types(): string[];
+  terminee(): boolean;
 }
 
 function ecouter(flux: Observable<MessageEvent>): Ecoute {
   const evenements: MessageEvent[] = [];
+  let terminee = false;
   return {
-    abonnement: flux.subscribe((evenement) => evenements.push(evenement)),
+    abonnement: flux.subscribe({
+      next: (evenement) => evenements.push(evenement),
+      complete: () => {
+        terminee = true;
+      },
+    }),
     evenements,
     resultats: () =>
       evenements
         .filter((evenement) => evenement.type === 'resultats')
         .map((evenement) => evenement.data as ResultatsSeance),
+    types: () => evenements.map((evenement) => String(evenement.type)),
+    terminee: () => terminee,
   };
 }
 
@@ -161,17 +171,43 @@ describe('StreamSessionUseCase', () => {
     const ouvrirFluxEtudiants = async (
       nombre: number,
       sessionId = 'session-uuid',
-    ): Promise<Subscription[]> => {
+    ): Promise<Ecoute[]> => {
       const ouverts = Array.from({ length: nombre }, (_, rang) =>
-        sut.execute(sessionId, participantDeRang(rang)).subscribe(),
+        ecouter(sut.execute(sessionId, participantDeRang(rang))),
       );
       await jest.advanceTimersByTimeAsync(10);
       return ouverts;
     };
 
-    const fermer = (ouverts: readonly Subscription[]): void => {
-      ouverts.forEach((abonnement) => abonnement.unsubscribe());
+    const ouvrirFluxDuParticipant = async (
+      nombre: number,
+    ): Promise<Ecoute[]> => {
+      const ouverts = Array.from({ length: nombre }, () =>
+        ecouter(sut.execute('session-uuid', PARTICIPANT_ID)),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+      return ouverts;
     };
+
+    const ouvrirFluxFormateur = async (nombre: number): Promise<Ecoute[]> => {
+      const ouverts = await Promise.all(
+        Array.from({ length: nombre }, async () =>
+          ecouter(await sut.executeForTeacher('session-uuid', TEACHER_ID)),
+        ),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+      return ouverts;
+    };
+
+    const fermer = (ouverts: readonly Ecoute[]): void => {
+      ouverts.forEach((ecoute) => ecoute.abonnement.unsubscribe());
+    };
+
+    const terminees = (ouverts: readonly Ecoute[]): boolean[] =>
+      ouverts.map((ecoute) => ecoute.terminee());
+
+    const seulLePremierTermine = (nombre: number): boolean[] =>
+      Array.from({ length: nombre }, (_, rang) => rang === 0);
 
     it('borne le nombre de flux etudiants simultanes sur une meme session', async () => {
       const ouverts = await ouvrirFluxEtudiants(MAX_ABONNEMENTS_PAR_SESSION);
@@ -201,7 +237,7 @@ describe('StreamSessionUseCase', () => {
 
     it('rend sa place au plafond quand un client se desabonne', async () => {
       const ouverts = await ouvrirFluxEtudiants(MAX_ABONNEMENTS_PAR_SESSION);
-      ouverts[0].unsubscribe();
+      ouverts[0].abonnement.unsubscribe();
 
       expect(() =>
         sut.execute(
@@ -221,96 +257,143 @@ describe('StreamSessionUseCase', () => {
       );
       await jest.advanceTimersByTimeAsync(10);
 
-      expect(ecoute.evenements.map((evenement) => evenement.type)).toContain(
-        'etat',
-      );
+      expect(ecoute.types()).toContain('etat');
       ecoute.abonnement.unsubscribe();
       fermer(ouverts);
     });
 
     it('reserve au formateur des places que ses flux ne prennent pas aux etudiants', async () => {
-      const formateur = await Promise.all(
-        Array.from({ length: MAX_FLUX_FORMATEUR_PAR_SESSION }, async () =>
-          (await sut.executeForTeacher('session-uuid', TEACHER_ID)).subscribe(),
-        ),
+      const formateur = await ouvrirFluxFormateur(
+        MAX_FLUX_FORMATEUR_PAR_SESSION,
       );
-      await jest.advanceTimersByTimeAsync(10);
 
-      await expect(
-        sut.executeForTeacher('session-uuid', TEACHER_ID),
-      ).rejects.toThrow(SessionStreamLimitError);
       const etudiants = await ouvrirFluxEtudiants(MAX_ABONNEMENTS_PAR_SESSION);
-      expect(etudiants).toHaveLength(MAX_ABONNEMENTS_PAR_SESSION);
 
+      expect(terminees(formateur)).not.toContain(true);
+      expect(terminees(etudiants)).not.toContain(true);
       fermer(formateur);
       fermer(etudiants);
     });
 
-    it('rend sa place au formateur quand l un de ses flux se ferme', async () => {
-      const formateur = await Promise.all(
-        Array.from({ length: MAX_FLUX_FORMATEUR_PAR_SESSION }, async () =>
-          (await sut.executeForTeacher('session-uuid', TEACHER_ID)).subscribe(),
-        ),
+    it('clot sans evenement fin le plus ancien flux du formateur qui en ouvre un au-dela de ses places', async () => {
+      const formateur = await ouvrirFluxFormateur(
+        MAX_FLUX_FORMATEUR_PAR_SESSION,
+      );
+
+      const nouveau = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
       );
       await jest.advanceTimersByTimeAsync(10);
-      formateur[0].unsubscribe();
 
-      await expect(
-        sut.executeForTeacher('session-uuid', TEACHER_ID),
-      ).resolves.toBeDefined();
-
-      fermer(formateur.slice(1));
+      expect(terminees(formateur)).toEqual(
+        seulLePremierTermine(MAX_FLUX_FORMATEUR_PAR_SESSION),
+      );
+      expect(formateur[0].types()).not.toContain('fin');
+      expect(nouveau.types()).toContain('etat');
+      expect(nouveau.terminee()).toBe(false);
+      fermer([...formateur, nouveau]);
     });
 
-    it('refuse a un participant un flux au-dela de ses flux simultanes', async () => {
-      const siens = Array.from({ length: MAX_FLUX_PAR_PARTICIPANT }, () =>
-        sut.execute('session-uuid', PARTICIPANT_ID).subscribe(),
+    it('clot sans evenement fin le plus ancien flux d un participant qui en ouvre un au-dela de son plafond', async () => {
+      const siens = await ouvrirFluxDuParticipant(MAX_FLUX_PAR_PARTICIPANT);
+
+      const nouveau = ecouter(sut.execute('session-uuid', PARTICIPANT_ID));
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(terminees(siens)).toEqual(
+        seulLePremierTermine(MAX_FLUX_PAR_PARTICIPANT),
+      );
+      expect(siens[0].types()).not.toContain('fin');
+      expect(nouveau.types()).toContain('etat');
+      expect(nouveau.terminee()).toBe(false);
+      fermer([...siens, nouveau]);
+    });
+
+    it('rend sa place au formateur quand l un de ses flux se ferme', async () => {
+      const formateur = await ouvrirFluxFormateur(
+        MAX_FLUX_FORMATEUR_PAR_SESSION,
+      );
+      formateur[0].abonnement.unsubscribe();
+
+      const nouveau = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
       );
       await jest.advanceTimersByTimeAsync(10);
 
-      expect(() => sut.execute('session-uuid', PARTICIPANT_ID)).toThrow(
-        SessionStreamLimitError,
-      );
-      expect(() =>
-        sut.execute('session-uuid', participantDeRang(0)),
-      ).not.toThrow();
-
-      fermer(siens);
+      expect(terminees(formateur.slice(1))).not.toContain(true);
+      fermer([...formateur, nouveau]);
     });
 
     it('rend sa place au participant quand l un de ses flux se ferme', async () => {
-      const siens = Array.from({ length: MAX_FLUX_PAR_PARTICIPANT }, () =>
-        sut.execute('session-uuid', PARTICIPANT_ID).subscribe(),
-      );
+      const siens = await ouvrirFluxDuParticipant(MAX_FLUX_PAR_PARTICIPANT);
+      siens[0].abonnement.unsubscribe();
+
+      const nouveau = ecouter(sut.execute('session-uuid', PARTICIPANT_ID));
       await jest.advanceTimersByTimeAsync(10);
-      siens[0].unsubscribe();
 
-      expect(() => sut.execute('session-uuid', PARTICIPANT_ID)).not.toThrow();
-
-      fermer(siens.slice(1));
+      expect(terminees(siens.slice(1))).not.toContain(true);
+      fermer([...siens, nouveau]);
     });
 
-    it('ne compte pas au plafond de seance le flux refuse a un participant', async () => {
-      const siens = Array.from({ length: MAX_FLUX_PAR_PARTICIPANT }, () =>
-        sut.execute('session-uuid', PARTICIPANT_ID).subscribe(),
-      );
-      await jest.advanceTimersByTimeAsync(10);
-      expect(() => sut.execute('session-uuid', PARTICIPANT_ID)).toThrow(
-        SessionStreamLimitError,
-      );
+    it('ne laisse aucune place au participant ni a la seance apres un remplacement puis la fermeture de ses flux', async () => {
+      fermer(await ouvrirFluxDuParticipant(MAX_FLUX_PAR_PARTICIPANT + 1));
+      expect(jest.getTimerCount()).toBe(0);
 
+      const siens = await ouvrirFluxDuParticipant(MAX_FLUX_PAR_PARTICIPANT);
       const autres = await ouvrirFluxEtudiants(
         MAX_ABONNEMENTS_PAR_SESSION - MAX_FLUX_PAR_PARTICIPANT,
       );
+
+      expect(terminees(siens)).not.toContain(true);
       expect(() =>
         sut.execute(
           'session-uuid',
           participantDeRang(MAX_ABONNEMENTS_PAR_SESSION),
         ),
       ).toThrow(SessionStreamLimitError);
+      fermer([...siens, ...autres]);
+    });
 
-      fermer(siens);
-      fermer(autres);
+    it('ne laisse aucune place au formateur apres un remplacement puis la fermeture de ses flux', async () => {
+      fermer(await ouvrirFluxFormateur(MAX_FLUX_FORMATEUR_PAR_SESSION + 1));
+      expect(jest.getTimerCount()).toBe(0);
+
+      const formateur = await ouvrirFluxFormateur(
+        MAX_FLUX_FORMATEUR_PAR_SESSION,
+      );
+      expect(terminees(formateur)).not.toContain(true);
+
+      const nouveau = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(terminees(formateur)).toEqual(
+        seulLePremierTermine(MAX_FLUX_FORMATEUR_PAR_SESSION),
+      );
+      fermer([...formateur, nouveau]);
+    });
+
+    it('remplace le plus ancien flux d un participant a son plafond meme quand la seance est pleine, sans ouvrir la seance a un nouveau participant', async () => {
+      const siens = await ouvrirFluxDuParticipant(MAX_FLUX_PAR_PARTICIPANT);
+      const autres = await ouvrirFluxEtudiants(
+        MAX_ABONNEMENTS_PAR_SESSION - MAX_FLUX_PAR_PARTICIPANT,
+      );
+
+      const nouveau = ecouter(sut.execute('session-uuid', PARTICIPANT_ID));
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(terminees(siens)).toEqual(
+        seulLePremierTermine(MAX_FLUX_PAR_PARTICIPANT),
+      );
+      expect(nouveau.types()).toContain('etat');
+      expect(() =>
+        sut.execute(
+          'session-uuid',
+          participantDeRang(MAX_ABONNEMENTS_PAR_SESSION),
+        ),
+      ).toThrow(SessionStreamLimitError);
+      fermer([...siens, ...autres, nouveau]);
     });
   });
 

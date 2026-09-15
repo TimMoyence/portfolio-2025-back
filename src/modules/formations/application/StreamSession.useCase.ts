@@ -42,10 +42,17 @@ export const CADENCES_PRODUCTION: CadencesFlux = {
   dureeMaxMs: DUREE_MAX_MS,
 };
 
+type Fermeture = () => void;
+
 interface Place {
-  readonly occupees: Map<string, number>;
+  readonly occupants: Map<string, Fermeture[]>;
   readonly cle: string;
   readonly plafond: number;
+}
+
+interface PlacesDuFlux {
+  readonly porteur: Place;
+  readonly seance?: Place;
 }
 
 /**
@@ -60,13 +67,19 @@ interface Place {
  * leurs reconnexions), que les flux etudiants ne peuvent pas occuper. Le
  * throttler de FormationsStudent.controller.ts borne les ouvertures par
  * minute, pas les flux tenus ouverts.
+ *
+ * Au-dela de ses places, un porteur (participant ou formateur) voit son plus
+ * ancien flux clos sans evenement `fin` : une socket a demi ouverte n est
+ * detectee morte qu apres l echec des battements (jusqu a quinze minutes
+ * sous Linux), et le front (cours/runtime/core/sync.ts) cesse de se
+ * reconnecter apres `fin` mais relance un flux simplement termine.
  */
 @Injectable()
 export class StreamSessionUseCase {
   private readonly logger = new Logger(StreamSessionUseCase.name);
-  private readonly fluxEtudiants = new Map<string, number>();
-  private readonly fluxFormateur = new Map<string, number>();
-  private readonly fluxParParticipant = new Map<string, number>();
+  private readonly fluxEtudiants = new Map<string, Fermeture[]>();
+  private readonly fluxFormateur = new Map<string, Fermeture[]>();
+  private readonly fluxParParticipant = new Map<string, Fermeture[]>();
 
   constructor(
     @Inject(SESSIONS_REPOSITORY)
@@ -92,40 +105,39 @@ export class StreamSessionUseCase {
     );
     return this.ouvrirFlux(
       sessionId,
-      [
-        {
-          occupees: this.fluxFormateur,
+      {
+        porteur: {
+          occupants: this.fluxFormateur,
           cle: sessionId,
           plafond: MAX_FLUX_FORMATEUR_PAR_SESSION,
         },
-      ],
+      },
       session.bareme.questions.map((question) => question.id),
     );
   }
 
   execute(sessionId: string, participantId: string): Observable<MessageEvent> {
-    return this.ouvrirFlux(sessionId, [
-      {
-        occupees: this.fluxEtudiants,
-        cle: sessionId,
-        plafond: MAX_ABONNEMENTS_PAR_SESSION,
-      },
-      {
-        occupees: this.fluxParParticipant,
+    return this.ouvrirFlux(sessionId, {
+      porteur: {
+        occupants: this.fluxParParticipant,
         cle: participantId,
         plafond: MAX_FLUX_PAR_PARTICIPANT,
       },
-    ]);
+      seance: {
+        occupants: this.fluxEtudiants,
+        cle: sessionId,
+        plafond: MAX_ABONNEMENTS_PAR_SESSION,
+      },
+    });
   }
 
   private ouvrirFlux(
     sessionId: string,
-    places: readonly Place[],
+    places: PlacesDuFlux,
     questionsDuFormateur?: readonly string[],
   ): Observable<MessageEvent> {
-    assertPlacesDisponibles(places);
+    assertSeanceDisponible(places);
     return new Observable<MessageEvent>((subscriber) => {
-      places.forEach(entrer);
       let derniereEmpreinte = '';
       let derniereActivite = AUCUNE_ACTIVITE_VUE;
       let actif = true;
@@ -136,6 +148,11 @@ export class StreamSessionUseCase {
         clearInterval(boucle);
         clearInterval(battement);
         clearTimeout(limite);
+      };
+
+      const ceder = (): void => {
+        subscriber.complete();
+        arreter();
       };
 
       const pousserResultatsSiActivite = async (
@@ -224,10 +241,12 @@ export class StreamSessionUseCase {
         arreter();
       }, this.cadences.dureeMaxMs);
 
+      fermerLesPlusAnciens(places.porteur);
+      occuper(places, ceder);
       void tick();
 
       return () => {
-        places.forEach(sortir);
+        liberer(places, ceder);
         arreter();
       };
     });
@@ -272,25 +291,46 @@ function messageDe(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function assertPlacesDisponibles(places: readonly Place[]): void {
-  if (
-    places.some(
-      (place) => (place.occupees.get(place.cle) ?? 0) >= place.plafond,
-    )
-  ) {
+function occupantsDe(place: Place): readonly Fermeture[] {
+  return place.occupants.get(place.cle) ?? [];
+}
+
+function estPleine(place: Place): boolean {
+  return occupantsDe(place).length >= place.plafond;
+}
+
+function assertSeanceDisponible({ porteur, seance }: PlacesDuFlux): void {
+  if (seance && estPleine(seance) && !estPleine(porteur)) {
     throw new SessionStreamLimitError();
   }
 }
 
-function entrer(place: Place): void {
-  place.occupees.set(place.cle, (place.occupees.get(place.cle) ?? 0) + 1);
+function fermerLesPlusAnciens(porteur: Place): void {
+  const occupants = occupantsDe(porteur);
+  const enTrop = Math.max(0, occupants.length - porteur.plafond + 1);
+  occupants.slice(0, enTrop).forEach((fermer) => fermer());
 }
 
-function sortir(place: Place): void {
-  const restantes = (place.occupees.get(place.cle) ?? 1) - 1;
-  if (restantes <= 0) {
-    place.occupees.delete(place.cle);
-    return;
-  }
-  place.occupees.set(place.cle, restantes);
+function occuper(places: PlacesDuFlux, fermeture: Fermeture): void {
+  [places.porteur, places.seance].forEach((place) => {
+    if (place) {
+      place.occupants.set(place.cle, [...occupantsDe(place), fermeture]);
+    }
+  });
+}
+
+function liberer(places: PlacesDuFlux, fermeture: Fermeture): void {
+  [places.porteur, places.seance].forEach((place) => {
+    if (!place) {
+      return;
+    }
+    const restants = occupantsDe(place).filter(
+      (occupant) => occupant !== fermeture,
+    );
+    if (restants.length === 0) {
+      place.occupants.delete(place.cle);
+      return;
+    }
+    place.occupants.set(place.cle, restants);
+  });
 }

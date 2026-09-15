@@ -75,7 +75,7 @@ import {
   createMockIncidentsRepo,
   createMockMasteryRepo,
 } from './factories/formation.factory';
-import { abonnerAuFlux } from './helpers/formations-harness';
+import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
 import {
   ecouterEnBoucleLocale,
@@ -140,6 +140,7 @@ const CORRIGE_EN_CLAIR = [
 ];
 
 const TAILLE_CLASSE = 30;
+const DELAI_FERMETURE_FLUX_MS = 2000;
 
 function cleEtudiant(index: number): string {
   return `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`;
@@ -406,7 +407,7 @@ describe('Session de formation (e2e http socket)', () => {
         [EN_TETE_JETON]: jeton,
       });
 
-    it('refuse un troisieme flux au meme participant et garde au formateur sa place', async () => {
+    it('ferme le plus ancien flux du participant a l ouverture de son troisieme et garde au formateur sa place', async () => {
       const { sessionId, code } = await ouvrirSession(FORMATEUR_A);
       const inscrit = await rejoindre(
         code,
@@ -417,20 +418,24 @@ describe('Session de formation (e2e http socket)', () => {
       const siens = [
         await ouvrirFluxEtudiant(sessionId, jeton),
         await ouvrirFluxEtudiant(sessionId, jeton),
+        await ouvrirFluxEtudiant(sessionId, jeton),
       ];
-      const troisieme = await ouvrirFluxEtudiant(sessionId, jeton);
       const formateur = await abonnerAuFlux(
         port,
         route(`/sessions/${sessionId}/presenter-stream`),
         { 'x-test-identite': `${FORMATEUR_A}:teacher` },
       );
-      [...siens, troisieme, formateur].forEach((flux) => flux.fermer());
+      await attendreQue(() => siens[0].ferme, DELAI_FERMETURE_FLUX_MS);
+      const fermes = siens.map((flux) => flux.ferme);
+      [...siens, formateur].forEach((flux) => flux.fermer());
 
       expect({
-        siens: siens.map((flux) => flux.statut),
-        troisieme: troisieme.statut,
-        formateur: formateur.statut,
-      }).toEqual({ siens: [200, 200], troisieme: 429, formateur: 200 });
+        statuts: [...siens, formateur].map((flux) => flux.statut),
+        fermes,
+      }).toEqual({
+        statuts: [200, 200, 200, 200],
+        fermes: [true, false, false],
+      });
     });
   });
 

@@ -234,6 +234,18 @@ export function patienter(delaiMs: number): Promise<void> {
   return new Promise((resoudre) => setTimeout(resoudre, delaiMs));
 }
 
+const PAS_ATTENTE_MS = 10;
+
+export async function attendreQue(
+  condition: () => boolean,
+  delaiMaxMs: number,
+): Promise<void> {
+  const limite = Date.now() + delaiMaxMs;
+  while (!condition() && Date.now() < limite) {
+    await patienter(PAS_ATTENTE_MS);
+  }
+}
+
 export interface BancFormations {
   contexte: ContexteFormations;
   app: INestApplication;
