@@ -1,4 +1,10 @@
-import { Inject, Injectable, MessageEvent, Optional } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  MessageEvent,
+  Optional,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import type { Bareme } from '../domain/Bareme';
 import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
@@ -37,6 +43,7 @@ export const CADENCES_PRODUCTION: CadencesFlux = {
 
 @Injectable()
 export class StreamSessionUseCase {
+  private readonly logger = new Logger(StreamSessionUseCase.name);
   private readonly abonnements = new Map<string, number>();
 
   constructor(
@@ -135,6 +142,10 @@ export class StreamSessionUseCase {
             this.cache.drop(sessionId);
             arreter();
           }
+        } catch (error) {
+          this.logger.warn(
+            `Passage du flux de la session ${sessionId} en echec, nouvel essai au passage suivant: ${error instanceof Error ? error.message : String(error)}`,
+          );
         } finally {
           occupe = false;
         }

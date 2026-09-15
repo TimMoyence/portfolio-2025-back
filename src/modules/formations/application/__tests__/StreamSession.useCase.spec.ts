@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { Logger } from '@nestjs/common';
 import type { MessageEvent } from '@nestjs/common';
 import { firstValueFrom, take, toArray } from 'rxjs';
 import type { Observable, Subscription } from 'rxjs';
@@ -407,6 +408,65 @@ describe('StreamSessionUseCase', () => {
         'resultats',
         'fin',
       ]);
+    });
+  });
+
+  describe('panne passagere de la base', () => {
+    const PANNE = new Error('connexion au serveur perdue');
+    let avertissement: jest.SpyInstance;
+
+    beforeEach(() => {
+      avertissement = jest
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+      avertissement.mockRestore();
+    });
+
+    const passerDeuxPassages = async (): Promise<void> => {
+      await jest.advanceTimersByTimeAsync(10);
+      await jest.advanceTimersByTimeAsync(INTERVALLE_MS_TEST);
+    };
+
+    const expectPanneJournalisee = (): void => {
+      expect(avertissement).toHaveBeenCalledTimes(1);
+      expect(avertissement).toHaveBeenCalledWith(
+        expect.stringContaining('session-uuid'),
+      );
+      expect(avertissement).toHaveBeenCalledWith(
+        expect.stringContaining(PANNE.message),
+      );
+    };
+
+    it('garde le flux etudiant ouvert et emet l etat au passage suivant', async () => {
+      sessions.findById.mockRejectedValueOnce(PANNE);
+
+      const ecoute = ecouter(sut.execute('session-uuid'));
+      await passerDeuxPassages();
+
+      expectPanneJournalisee();
+      expect(ecoute.evenements.map((evenement) => evenement.type)).toEqual([
+        'etat',
+      ]);
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('garde le flux formateur ouvert et pousse les resultats au passage suivant', async () => {
+      answers.listBySession.mockRejectedValueOnce(PANNE);
+
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await passerDeuxPassages();
+
+      expectPanneJournalisee();
+      expect(ecoute.evenements.map((evenement) => evenement.type)).toEqual([
+        'etat',
+        'resultats',
+      ]);
+      ecoute.abonnement.unsubscribe();
     });
   });
 });
