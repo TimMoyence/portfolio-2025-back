@@ -26,6 +26,7 @@ import {
   ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { EMPTY, Observable } from 'rxjs';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
@@ -43,6 +44,10 @@ import { DerouleResponseDto } from './dto/deroule.response.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
 import { SessionResultsResponseDto } from './dto/session-results.response.dto';
+import {
+  FENETRE_THROTTLE_MS,
+  LIMITE_CONTROLE_PAR_MINUTE,
+} from './formations-throttling';
 
 /**
  * Pilotage d une session de cours par son formateur.
@@ -100,6 +105,12 @@ export class FormationsPresenterController {
   }
 
   @Patch('sessions/:id/control')
+  @Throttle({
+    default: {
+      limit: LIMITE_CONTROLE_PAR_MINUTE,
+      ttl: FENETRE_THROTTLE_MS,
+    },
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Change l ecran courant ou le rythme de la session',

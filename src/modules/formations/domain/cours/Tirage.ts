@@ -59,6 +59,8 @@ export const PROPRIETE_PAR_BRIQUE: Readonly<
   'fp-worked': 'exemple',
   'fp-concept4': 'definition',
   'fp-plot': 'definition',
+  'fp-challenge': 'probleme',
+  'fp-cardsort': 'plan',
   'fp-numeric': 'question',
   'fp-vote': 'question',
   'fp-recall': 'question',
