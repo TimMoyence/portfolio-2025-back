@@ -57,7 +57,7 @@ describe('B2_01_TRAITEMENT_INFORMATION_CHIFFREE', () => {
     expect(
       COURS.ecrans.reduce((total, ecran) => total + ecran.dureeMinutes, 0),
     ).toBe(210);
-    expect(COURS.ecrans.length).toBeGreaterThanOrEqual(30);
+    expect(COURS.ecrans).toHaveLength(60);
     expect(new Set(COURS.ecrans.map((ecran) => ecran.brique))).toEqual(
       new Set([
         'fp-recall',
@@ -86,12 +86,16 @@ describe('B2_01_TRAITEMENT_INFORMATION_CHIFFREE', () => {
     );
     expect(new Set(idsDesQuestions).size).toBe(idsDesQuestions.length);
     expect(COURS.remediations).toEqual({
-      'raisonnement-additif': 'B2-01-REMEDIATION',
-      'taux-valeur-facteur-cent': 'B2-01-REMEDIATION',
-      'base-arrivee': 'B2-01-REMEDIATION',
-      'ecart-absolu-au-lieu-du-taux': 'B2-01-REMEDIATION',
-      'coefficient-confondu-avec-taux': 'B2-01-REMEDIATION',
+      'raisonnement-additif': 'B2-01-V2-13-CALCUL-GUIDE',
+      'taux-valeur-facteur-cent': 'B2-01-V2-33-TABLEUR-GUIDE',
+      'base-arrivee': 'B2-01-V2-22-TAUX-GUIDE',
+      'ecart-absolu-au-lieu-du-taux': 'B2-01-V2-22-TAUX-GUIDE',
+      'coefficient-confondu-avec-taux': 'B2-01-V2-23-COEFFICIENT',
+      'taux-successifs-additionnes': 'B2-01-V2-29-DEBRIEF-EVOL',
+      'hausse-baisse-symetriques': 'B2-01-V2-29-DEBRIEF-EVOL',
+      'reciproque-meme-taux': 'B2-01-V2-55-TRANSFERT-GUIDE',
     });
+    expect(COURS.ecrans.every((ecran) => ecran.notes.length > 80)).toBe(true);
   });
 
   it('ne divulgue aucun corrigé dans le sujet tiré', () => {

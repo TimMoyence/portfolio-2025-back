@@ -177,6 +177,15 @@ interface ProprietesParBrique {
       readonly alt: string;
       readonly legende?: string;
     };
+    readonly video?: {
+      readonly src: string;
+      readonly type: 'video/webm' | 'video/mp4';
+      readonly titre: string;
+      readonly poster?: string;
+      readonly transcript: string;
+      readonly source: string;
+      readonly licence: string;
+    };
   };
   readonly 'fp-pro': {
     readonly metier: string;
@@ -200,6 +209,8 @@ interface ProprietesParBrique {
     readonly phrase: string;
   };
   readonly 'fp-plot': {
+    readonly titre?: string;
+    readonly source?: string;
     readonly abscisse: {
       readonly libelle: string;
       readonly min: number;
