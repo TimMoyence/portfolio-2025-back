@@ -47,17 +47,34 @@ describe('référentiel B2', () => {
 });
 
 describe('B2_01_TRAITEMENT_INFORMATION_CHIFFREE', () => {
-  it('est un cours de 90 minutes avec une évaluation métier', () => {
+  it('est un cours de 210 minutes avec une évaluation métier et un vrai parcours d activités', () => {
     expect(COURS).toMatchObject({
       slug: 'b2-01-traitement-information-chiffree',
       titre: "Lire et contrôler l'information chiffrée",
       niveau: 'B2',
-      dureeMinutes: 90,
+      dureeMinutes: 210,
     });
     expect(
       COURS.ecrans.reduce((total, ecran) => total + ecran.dureeMinutes, 0),
-    ).toBe(90);
-    expect(questionsDuCours(COURS)).toHaveLength(9);
+    ).toBe(210);
+    expect(COURS.ecrans.length).toBeGreaterThanOrEqual(30);
+    expect(new Set(COURS.ecrans.map((ecran) => ecran.brique))).toEqual(
+      new Set([
+        'fp-recall',
+        'fp-pro',
+        'fp-vote',
+        'fp-concept4',
+        'fp-numeric',
+        'questionnaire',
+        'fp-plot',
+        'fp-story',
+        'fp-worked',
+        'fp-exit',
+        'fp-challenge',
+        'fp-cardsort',
+      ]),
+    );
+    expect(questionsDuCours(COURS).length).toBeGreaterThanOrEqual(18);
     expect(verifierStructure(COURS)).toEqual([]);
   });
 

@@ -12,7 +12,9 @@ export type BriqueExposition =
   | 'fp-pro'
   | 'fp-worked'
   | 'fp-concept4'
-  | 'fp-plot';
+  | 'fp-plot'
+  | 'fp-challenge'
+  | 'fp-cardsort';
 
 const BRIQUES_QUESTION = [
   'fp-numeric',
@@ -170,6 +172,11 @@ interface ProprietesParBrique {
   readonly 'fp-story': {
     readonly titre: string;
     readonly paragraphes: AuMoinsUn<string>;
+    readonly visuel?: {
+      readonly src: string;
+      readonly alt: string;
+      readonly legende?: string;
+    };
   };
   readonly 'fp-pro': {
     readonly metier: string;
@@ -205,6 +212,27 @@ interface ProprietesParBrique {
       readonly libelle: string;
       readonly trait: 'plein' | 'tirets';
       readonly calcul: string;
+    }>;
+  };
+  readonly 'fp-challenge': {
+    readonly id: string;
+    readonly enonce: string;
+    readonly invite: string;
+    readonly strategies: AuMoinsUn<{
+      readonly id: string;
+      readonly libelle: string;
+    }>;
+  };
+  readonly 'fp-cardsort': {
+    readonly id: string;
+    readonly intitule: string;
+    readonly cartes: AuMoinsUn<{
+      readonly id: string;
+      readonly libelle: string;
+    }>;
+    readonly categories: AuMoinsUn<{
+      readonly id: string;
+      readonly libelle: string;
     }>;
   };
 }
@@ -269,6 +297,8 @@ export interface Cours {
 export function estInteractif(ecran: Ecran): boolean {
   return (
     ecran.brique === 'questionnaire' ||
+    ecran.brique === 'fp-challenge' ||
+    ecran.brique === 'fp-cardsort' ||
     (BRIQUES_QUESTION as readonly string[]).includes(ecran.brique)
   );
 }
