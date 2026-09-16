@@ -288,5 +288,10 @@ jobs:
             BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
             docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" run --rm migrate
 
-            BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
-            docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" up -d --no-deps --wait --wait-timeout 90 api
+            if ! BACK_IMAGE="$BACK_IMAGE_VALUE" FRONT_IMAGE="$FRONT_IMAGE_VALUE" \
+              docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" up -d --no-deps --wait --wait-timeout 90 api; then
+              echo 'API container diagnostics after failed healthcheck:'
+              docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" ps api
+              docker compose -p "$PROJECT" -f "$COMPOSE_FILE" --env-file "$WORKDIR/backend.env" logs --no-color --tail=200 api
+              exit 1
+            fi
