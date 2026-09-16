@@ -4,6 +4,7 @@ import {
 } from './ParticipantToken.service';
 
 export const FENETRE_THROTTLE_MS = 60_000;
+export const LIMITE_CONTROLE_PAR_MINUTE = 240;
 export const LIMITE_JOIN_PAR_CODE = 120;
 export const LIMITE_REPONSES_PAR_PARTICIPANT = 60;
 export const LIMITE_INCIDENTS_PAR_PARTICIPANT = 30;
