@@ -251,7 +251,7 @@ interface EcranCommun {
   readonly guide?: GuideFormateur;
 }
 
-export interface GuideFormateur {
+interface GuideFormateur {
   readonly aDire?: string;
   readonly question?: string;
   readonly reponse?: string;
