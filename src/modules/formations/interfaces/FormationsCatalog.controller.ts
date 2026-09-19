@@ -7,8 +7,8 @@ import {
 } from '@nestjs/swagger';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { LireCoursPublicUseCase } from '../application/LireCoursPublic.useCase';
-import type { CoursPublic } from '../domain/cours/CoursPublic';
-import { SujetResponseDto } from './dto/sujet.response.dto';
+import type { CoursPublic } from '../domain/contrats/tirage';
+import { SujetResponseDto } from './dto/contrat/sujet.response.dto';
 
 @ApiTags('formations')
 @Public()

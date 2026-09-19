@@ -77,6 +77,19 @@ describeDb('versions publiées du catalogue de formations', () => {
     }
   });
 
+  it('laisse les versions historiques sans titre, en diffusion catalogue, sans remédiation ni média', async () => {
+    const ecrans: { nombre: number }[] = await contexte.dataSource.query(
+      `SELECT COUNT(*)::int AS "nombre" FROM "formation_screen_contents"
+       WHERE "titre" IS NOT NULL OR "diffusion" <> 'catalogue'`,
+    );
+    const cours: { nombre: number }[] = await contexte.dataSource.query(
+      `SELECT COUNT(*)::int AS "nombre" FROM "formation_course_contents"
+       WHERE "remediations" <> '{}'::jsonb OR "medias" <> '[]'::jsonb`,
+    );
+
+    expect([ecrans[0].nombre, cours[0].nombre]).toEqual([0, 0]);
+  });
+
   it('garde les contenus figés des tests dorés identiques à la base migrée', async () => {
     const lus: ContenuDeCoursBrut[] = [];
     for (const version of await versionsPubliees()) {

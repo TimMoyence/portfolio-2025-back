@@ -1,7 +1,7 @@
 import { randomInt } from 'node:crypto';
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import type { Bareme, BaremeQuestion, BaremeTirage } from '../Bareme';
-import type { Cours } from './Cours';
+import type { Cours } from '../contrats/cours';
 import { questionsDuCours } from './Cours';
 import { TirageAmbiguError, tirer } from './Tirage';
 
@@ -73,20 +73,29 @@ function grainesValides(cours: Cours, tireur: TireurDeGraine): BaremeTirage[] {
 }
 
 function questionsBareme(cours: Cours): readonly BaremeQuestion[] {
-  return questionsDuCours(cours).map((question) =>
-    question.type === 'numeric'
-      ? {
-          id: question.id,
-          type: question.type,
-          concept: question.concept,
-          noteCompte: question.noteCompte,
-          tolerance: question.tolerance,
-        }
-      : {
-          id: question.id,
-          type: question.type,
-          concept: question.concept,
-          noteCompte: question.noteCompte,
-        },
-  );
+  return questionsDuCours(cours).flatMap((question): BaremeQuestion[] => {
+    switch (question.type) {
+      case 'numeric':
+        return [
+          {
+            id: question.id,
+            type: question.type,
+            concept: question.concept,
+            noteCompte: question.noteCompte,
+            tolerance: question.tolerance,
+          },
+        ];
+      case 'vote':
+        return [
+          {
+            id: question.id,
+            type: question.type,
+            concept: question.concept,
+            noteCompte: question.noteCompte,
+          },
+        ];
+      default:
+        return [];
+    }
+  });
 }

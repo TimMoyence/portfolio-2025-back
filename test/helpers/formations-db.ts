@@ -6,6 +6,7 @@ import { AlignB2SessionDeck1779300000000 } from '../../src/migrations/1779300000
 import { SeedB2QuizAndPresentationNotes1779400000000 } from '../../src/migrations/1779400000000-SeedB2QuizAndPresentationNotes';
 import { FixB2QuizScreenIds1779500000000 } from '../../src/migrations/1779500000000-FixB2QuizScreenIds';
 import { AddFormationCourseVersion1779550000000 } from '../../src/migrations/1779550000000-AddFormationCourseVersion';
+import { AddFormationContentV3Columns1779560000000 } from '../../src/migrations/1779560000000-AddFormationContentV3Columns';
 import { BackfillB2OpenSessionBaremes1779600000000 } from '../../src/migrations/1779600000000-BackfillB2OpenSessionBaremes';
 import { AlignB2ParticipantSeeds1779700000000 } from '../../src/migrations/1779700000000-AlignB2ParticipantSeeds';
 import { RecheckB2ParticipantSeeds1779800000000 } from '../../src/migrations/1779800000000-RecheckB2ParticipantSeeds';
@@ -65,6 +66,7 @@ const FORMATION_MIGRATIONS = [
   SeedB2QuizAndPresentationNotes1779400000000,
   FixB2QuizScreenIds1779500000000,
   AddFormationCourseVersion1779550000000,
+  AddFormationContentV3Columns1779560000000,
   BackfillB2OpenSessionBaremes1779600000000,
   AlignB2ParticipantSeeds1779700000000,
   RecheckB2ParticipantSeeds1779800000000,

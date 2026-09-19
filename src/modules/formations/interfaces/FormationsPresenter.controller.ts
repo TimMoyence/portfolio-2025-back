@@ -42,7 +42,7 @@ import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
 import { ControlSessionRequestDto } from './dto/control-session.request.dto';
-import { DerouleResponseDto } from './dto/deroule.response.dto';
+import { DerouleResponseDto } from './dto/contrat/deroule.response.dto';
 import { FreeResponsesResponseDto } from './dto/free-responses.response.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';

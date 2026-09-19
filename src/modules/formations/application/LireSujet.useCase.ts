@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { solutionsIdentiques } from '../domain/Bareme';
-import type { Cours } from '../domain/cours/Cours';
-import type { CoursPublic } from '../domain/cours/CoursPublic';
+import type { Cours } from '../domain/contrats/cours';
+import type { CoursPublic } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { TirageAmbiguError, tirer } from '../domain/cours/Tirage';
 import type { TirageDuCours } from '../domain/cours/Tirage';

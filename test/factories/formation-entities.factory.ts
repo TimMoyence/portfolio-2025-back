@@ -59,7 +59,13 @@ export function buildScreenContentEntity(
 ): FormationScreenContentEntity {
   return Object.assign(
     new FormationScreenContentEntity(),
-    { id: 'screen-row', courseId: 'course-row', position: 0 },
+    {
+      id: 'screen-row',
+      courseId: 'course-row',
+      position: 0,
+      titre: null,
+      diffusion: 'catalogue',
+    },
     buildEcranStocke(),
     overrides,
   );
@@ -79,6 +85,8 @@ export function buildCourseContentEntity(
       niveau: cours.niveau,
       dureeMinutes: cours.dureeMinutes,
       concepts: cours.concepts,
+      remediations: {},
+      medias: [],
       ecrans: [buildScreenContentEntity()],
       createdAt: new Date('2026-09-11T08:00:00.000Z'),
     },

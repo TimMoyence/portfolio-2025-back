@@ -1,30 +1,42 @@
 import { valeursAmbigues } from '../GradingCore';
 import type { AnswerValue, Solution } from '../GradingCore';
+import type { Cours, Ecran, Question } from '../contrats/cours';
+import type {
+  ExitBilletPublic,
+  MetadonneesBrique,
+  NumeriquePublic,
+  OptionPublique,
+  VotePublic,
+} from '../contrats/donnees-publiques';
+import type {
+  CoursPublic,
+  EcranPublic,
+  TirageDuCours,
+} from '../contrats/tirage';
 import { creerRng, creerTirage, melanger } from './Aleatoire';
 import type { Rng, Tirage } from './Aleatoire';
-import { estBriqueQuestion, estInteractif } from './Cours';
+import type { ConfusionId } from './banque/confusions';
+import { estInteractif } from './Cours';
 import type {
-  BriqueExposition,
-  BriqueQuestion,
-  Cours,
-  Ecran,
-  EcranQuestion,
-  EcranQuestionnaire,
-  Modalite,
-  Question,
+  AuMoinsUn,
   QuestionNumerique,
   QuestionVote,
   QuestionVoteTiree,
-  RegimeVerrou,
 } from './Cours';
-import type { CoursPublic, EcranPublic } from './CoursPublic';
-import type { ConfusionId } from './banque/confusions';
+
+export type { TirageDuCours } from '../contrats/tirage';
 
 const PROPRIETES_RESERVEES_AU_FORMATEUR: readonly string[] = [
   'guide',
   'correction',
   'interaction',
+  'questions',
+  'corrige',
+  'banque',
 ];
+
+const SEL_CARTES = 0x0ca7de5;
+const SEL_BANQUE = 0x0ba9c3e;
 
 export class TirageAmbiguError extends Error {
   readonly questionId: string;
@@ -49,63 +61,27 @@ export type LibellesDesOptions = Readonly<
   Record<string, Readonly<Record<string, string>>>
 >;
 
-export interface TirageDuCours {
-  readonly sujet: CoursPublic;
-  readonly solutions: Readonly<Record<string, Solution>>;
-  readonly corriges: Readonly<Record<string, CorrigeTire>>;
-  readonly libellesOptions: LibellesDesOptions;
-}
+type BriqueRuntime = Exclude<Ecran['brique'], 'questionnaire'>;
 
-export const PROPRIETE_PAR_BRIQUE: Readonly<
-  Record<BriqueExposition | BriqueQuestion, string>
-> = {
+export const PROPRIETE_PAR_BRIQUE: Readonly<Record<BriqueRuntime, string>> = {
   'fp-quote': 'citation',
   'fp-story': 'recit',
   'fp-pro': 'cas',
   'fp-worked': 'exemple',
   'fp-concept4': 'definition',
   'fp-plot': 'definition',
+  'fp-pulse': 'sondage',
   'fp-challenge': 'probleme',
   'fp-cardsort': 'plan',
+  'fp-sheet': 'plan',
+  'fp-table-build': 'plan',
+  'fp-escape': 'parcours',
+  'fp-spaced': 'rappel',
   'fp-numeric': 'question',
   'fp-vote': 'question',
   'fp-recall': 'question',
   'fp-exit': 'billet',
 };
-
-interface Metadonnees {
-  readonly concepts: readonly string[];
-  readonly misconceptionsCiblees: readonly string[];
-  readonly dureeMinutes: number;
-  readonly modalite: Modalite;
-  readonly regime: RegimeVerrou;
-}
-
-interface OptionPublique {
-  readonly id: string;
-  readonly libelle: string;
-}
-
-interface VotePublic {
-  readonly id: string;
-  readonly enonce: string;
-  readonly options: readonly OptionPublique[];
-}
-
-interface NumeriquePublic {
-  readonly id: string;
-  readonly enonce: string;
-  readonly unite: string | null;
-  readonly metadonnees: Metadonnees;
-}
-
-interface BilletPublic {
-  readonly id: string;
-  readonly question: string;
-  readonly invite: string;
-  readonly options: readonly OptionPublique[];
-  readonly metadonnees: Metadonnees;
-}
 
 type Donnees = Readonly<Record<string, unknown>>;
 
@@ -118,202 +94,115 @@ interface Contexte {
   readonly graine: number;
   readonly rng: Rng;
   readonly tirage: Tirage;
+  readonly rngCartes: Rng;
+  readonly rngBanque: Rng;
+  readonly tirageBanque: Tirage;
   readonly solutions: [string, Solution][];
   readonly corriges: [string, CorrigeTire][];
   readonly libellesOptions: [string, Readonly<Record<string, string>>][];
+  readonly banque: [string, VotePublic][];
+  readonly enonces: [string, string][];
 }
 
-export function tirer(cours: Cours, graine: number): TirageDuCours {
+export interface TirageDetaille {
+  readonly tirage: TirageDuCours;
+  readonly enonces: Readonly<Record<string, string>>;
+}
+
+function contexteDe(graine: number): Contexte {
   const rng = creerRng(graine);
-  const contexte: Contexte = {
+  const rngBanque = creerRng(graine ^ SEL_BANQUE);
+  return {
     graine,
     rng,
     tirage: creerTirage(rng),
+    rngCartes: creerRng(graine ^ SEL_CARTES),
+    rngBanque,
+    tirageBanque: creerTirage(rngBanque),
     solutions: [],
     corriges: [],
     libellesOptions: [],
-  };
-  const ecrans = cours.ecrans.map((ecran) => projeterEcran(ecran, contexte));
-  return {
-    sujet: {
-      id: cours.slug,
-      titre: cours.titre,
-      niveau: cours.niveau,
-      duree: cours.dureeMinutes,
-      concepts: [...cours.concepts],
-      ecrans,
-    },
-    solutions: Object.fromEntries(contexte.solutions),
-    corriges: Object.fromEntries(contexte.corriges),
-    libellesOptions: Object.fromEntries(contexte.libellesOptions),
+    banque: [],
+    enonces: [],
   };
 }
 
+export function tirerEnDetail(cours: Cours, graine: number): TirageDetaille {
+  const contexte = contexteDe(graine);
+  const ecrans = cours.ecrans.map((ecran) => projeterEcran(ecran, contexte));
+  const sujet: CoursPublic = {
+    id: cours.slug,
+    titre: cours.titre,
+    niveau: cours.niveau,
+    duree: cours.dureeMinutes,
+    concepts: [...cours.concepts],
+    ecrans,
+  };
+  return {
+    tirage: {
+      sujet,
+      solutions: Object.fromEntries(contexte.solutions),
+      corriges: Object.fromEntries(contexte.corriges),
+      libellesOptions: Object.fromEntries(contexte.libellesOptions),
+      banque: Object.fromEntries(contexte.banque),
+    },
+    enonces: Object.fromEntries(contexte.enonces),
+  };
+}
+
+export function tirer(cours: Cours, graine: number): TirageDuCours {
+  return tirerEnDetail(cours, graine).tirage;
+}
+
 function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {
-  if (ecran.question !== undefined && !estBriqueQuestion(ecran.brique)) {
-    enregistrerQuestionAttachee(ecran.question, contexte);
+  const attachee = questionAttachee(ecran);
+  if (attachee !== undefined) {
+    enregistrerQuestion(attachee, contexte);
   }
   return {
     id: ecran.id,
     type: ecran.brique,
+    titre: ecran.titre,
     duree: ecran.dureeMinutes,
     interactif: estInteractif(ecran),
     donnees: donneesDe(ecran, contexte),
   };
 }
 
-function enregistrerQuestionAttachee(
-  question: Question,
-  contexte: Contexte,
-): void {
-  if (question.type === 'numeric') {
-    const tiree = question.generer(contexte.tirage);
-    assurerNonAmbigu(
-      question,
-      [tiree.solution, ...tiree.pieges.map((piege) => piege.valeur)],
-      contexte.graine,
-    );
-    contexte.solutions.push([
-      question.id,
-      {
-        valeur: tiree.solution,
-        pieges: tiree.pieges.map((piege) => ({
-          valeur: piege.valeur,
-          misconception: piege.confusion,
-        })),
-      },
-    ]);
-    contexte.corriges.push([
-      question.id,
-      corrige(String(Number(tiree.solution.toFixed(6))), tiree.pieges),
-    ]);
-    return;
-  }
-
-  const tiree = question.generer(contexte.tirage);
-  contexte.solutions.push([
-    question.id,
-    {
-      valeur: tiree.bonne,
-      pieges: tiree.pieges.map((piege) => ({
-        valeur: piege.optionId ?? piege.libelle,
-        misconception: piege.confusion,
-      })),
-    },
-  ]);
-  contexte.corriges.push([question.id, corrige(tiree.bonne, tiree.pieges)]);
-  const libelles: Record<string, string> = {
-    [tiree.bonne]: tiree.bonneLibelle ?? tiree.bonne,
-  };
-  for (const piege of tiree.pieges) {
-    libelles[piege.optionId ?? piege.libelle] = piege.libelle;
-  }
-  contexte.libellesOptions.push([question.id, libelles]);
-}
-
-function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
+function questionAttachee(ecran: Ecran): QuestionVote | undefined {
   switch (ecran.brique) {
-    case 'questionnaire':
-      return tirerQuestionnaire(ecran, contexte);
     case 'fp-numeric':
     case 'fp-vote':
-      return projeterQuestion(ecran.question, metadonnees(ecran), contexte)
-        .donnees;
     case 'fp-recall':
-      return sousPropriete(ecran.brique, {
-        ...tirerVote(ecran.question, contexte),
-        metadonnees: metadonnees(ecran),
-      });
     case 'fp-exit':
-      return sousPropriete(ecran.brique, billet(ecran, contexte));
+      return undefined;
     default:
-      return sousPropriete(ecran.brique, {
-        id: ecran.id,
-        ...proprietesPubliques(ecran.proprietes),
-        metadonnees: metadonnees(ecran),
-      });
+      return ecran.question;
   }
 }
 
-function proprietesPubliques(
-  proprietes: Readonly<Record<string, unknown>>,
-): Readonly<Record<string, unknown>> {
-  return Object.fromEntries(
-    Object.entries(proprietes).filter(
-      ([cle]) => !PROPRIETES_RESERVEES_AU_FORMATEUR.includes(cle),
-    ),
-  );
-}
-
-function sousPropriete(
-  brique: BriqueExposition | BriqueQuestion,
-  contenu: object,
-): Donnees {
-  return { [PROPRIETE_PAR_BRIQUE[brique]]: contenu };
-}
-
-function metadonnees(ecran: Ecran): Metadonnees {
-  return {
-    concepts: [...ecran.concepts],
-    misconceptionsCiblees: [],
-    dureeMinutes: ecran.dureeMinutes,
-    modalite: ecran.modalite ?? 'solo',
-    regime: ecran.brique === 'questionnaire' ? ecran.regime : 'ouvert',
-  };
-}
-
-function tirerQuestionnaire(
-  ecran: EcranQuestionnaire,
-  contexte: Contexte,
-): Donnees {
-  const communes = metadonnees(ecran);
-  return {
-    regime: ecran.regime,
-    questions: melanger(ecran.questions, contexte.rng).map((question) =>
-      projeterQuestion(question, communes, contexte),
-    ),
-  };
-}
-
-function projeterQuestion(
-  question: Question,
-  communes: Metadonnees,
-  contexte: Contexte,
-): QuestionProjetee {
-  if (question.type === 'numeric') {
-    return {
-      brique: 'fp-numeric',
-      donnees: sousPropriete(
-        'fp-numeric',
-        tirerNumerique(question, communes, contexte),
-      ),
-    };
+function enregistrerQuestion(question: Question, contexte: Contexte): void {
+  switch (question.type) {
+    case 'numeric':
+      enregistrerNumerique(question, contexte);
+      return;
+    case 'vote':
+      enregistrerVoteAttache(question, contexte);
+      return;
+    case 'feuille':
+    case 'tableau':
+    case 'classement':
+    case 'enigme':
+      return;
+    default:
+      return question satisfies never;
   }
-  return {
-    brique: 'fp-vote',
-    donnees: sousPropriete('fp-vote', tirerVote(question, contexte)),
-  };
 }
 
-function billet(
-  ecran: Extract<EcranQuestion, { readonly brique: 'fp-exit' }>,
-  contexte: Contexte,
-): BilletPublic {
-  const vote = tirerVote(ecran.question, contexte);
-  return {
-    id: vote.id,
-    question: vote.enonce,
-    invite: ecran.invite,
-    options: vote.options,
-    metadonnees: metadonnees(ecran),
-  };
-}
-
-function tirerNumerique(
+function enregistrerNumerique(
   question: QuestionNumerique,
-  communes: Metadonnees,
   contexte: Contexte,
-): NumeriquePublic {
+): { readonly enonce: string; readonly unite: string | null } {
   const tiree = question.generer(contexte.tirage);
   assurerNonAmbigu(
     question,
@@ -334,16 +223,235 @@ function tirerNumerique(
     question.id,
     corrige(String(Number(tiree.solution.toFixed(6))), tiree.pieges),
   ]);
+  contexte.enonces.push([question.id, tiree.enonce]);
+  return { enonce: tiree.enonce, unite: tiree.unite };
+}
+
+function enregistrerVoteAttache(
+  question: QuestionVote,
+  contexte: Contexte,
+): void {
+  const tiree = question.generer(contexte.tirage);
+  contexte.solutions.push([
+    question.id,
+    {
+      valeur: tiree.bonne,
+      pieges: tiree.pieges.map((piege) => ({
+        valeur: piege.optionId ?? piege.libelle,
+        misconception: piege.confusion,
+      })),
+    },
+  ]);
+  contexte.corriges.push([question.id, corrige(tiree.bonne, tiree.pieges)]);
+  const libelles: Record<string, string> = {
+    [tiree.bonne]: tiree.bonneLibelle ?? tiree.bonne,
+  };
+  for (const piege of tiree.pieges) {
+    libelles[piege.optionId ?? piege.libelle] = piege.libelle;
+  }
+  contexte.libellesOptions.push([question.id, libelles]);
+  contexte.enonces.push([question.id, tiree.enonce]);
+}
+
+function metadonnees(ecran: Ecran): MetadonneesBrique {
   return {
-    id: question.id,
-    enonce: tiree.enonce,
-    unite: tiree.unite,
-    metadonnees: communes,
+    concepts: [...ecran.concepts],
+    misconceptionsCiblees: [],
+    dureeMinutes: ecran.dureeMinutes,
+    modalite: ecran.modalite ?? 'solo',
+    regime: ecran.brique === 'questionnaire' ? ecran.regime : 'ouvert',
   };
 }
 
-function tirerVote(question: QuestionVote, contexte: Contexte): VotePublic {
-  const tiree = question.generer(contexte.tirage);
+function proprietesPubliques(
+  proprietes: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, unknown>> {
+  return Object.fromEntries(
+    Object.entries(proprietes).filter(
+      ([cle]) => !PROPRIETES_RESERVEES_AU_FORMATEUR.includes(cle),
+    ),
+  );
+}
+
+function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
+  switch (ecran.brique) {
+    case 'questionnaire':
+      return tirerQuestionnaire(ecran, contexte);
+    case 'fp-numeric':
+      return {
+        question: tirerNumerique(ecran.question, metadonnees(ecran), contexte),
+      };
+    case 'fp-vote':
+      return {
+        question: tirerVote(ecran.question, contexte),
+        ...(ecran.questionJumelle === undefined
+          ? {}
+          : { questionJumelle: tirerVote(ecran.questionJumelle, contexte) }),
+      };
+    case 'fp-recall':
+      return {
+        question: {
+          ...tirerVote(ecran.question, contexte),
+          metadonnees: metadonnees(ecran),
+        },
+        delaiMs: ecran.delaiMs,
+      };
+    case 'fp-exit':
+      return { billet: billet(ecran, contexte) };
+    default:
+      return donneesDeBrique(ecran, contexte);
+  }
+}
+
+type EcranSansQuestionPropre = Exclude<
+  Ecran,
+  {
+    readonly brique:
+      | 'questionnaire'
+      | 'fp-numeric'
+      | 'fp-vote'
+      | 'fp-recall'
+      | 'fp-exit';
+  }
+>;
+
+function donneesDeBrique(
+  ecran: EcranSansQuestionPropre,
+  contexte: Contexte,
+): Donnees {
+  const communes = metadonnees(ecran);
+  switch (ecran.brique) {
+    case 'fp-worked':
+      return {
+        exemple: { ...ecran.proprietes.exemple, metadonnees: communes },
+        etayage: ecran.proprietes.etayage,
+      };
+    case 'fp-pulse':
+      return {
+        sondage: { ...ecran.proprietes.sondage, metadonnees: communes },
+      };
+    case 'fp-challenge':
+      return {
+        probleme: {
+          ...ecran.proprietes.probleme,
+          strategies: [],
+          metadonnees: communes,
+        },
+      };
+    case 'fp-cardsort':
+      return {
+        plan: {
+          ...ecran.proprietes.plan,
+          cartes: melanger(ecran.proprietes.plan.cartes, contexte.rngCartes),
+          metadonnees: communes,
+        },
+      };
+    case 'fp-sheet':
+    case 'fp-table-build':
+      return { plan: { ...ecran.proprietes.plan, metadonnees: communes } };
+    case 'fp-escape':
+      return {
+        parcours: { ...ecran.proprietes.parcours, metadonnees: communes },
+      };
+    case 'fp-spaced':
+      enregistrerBanque(ecran.banque, contexte);
+      return { rappel: { ...ecran.proprietes.rappel, metadonnees: communes } };
+    case 'fp-quote':
+    case 'fp-story':
+    case 'fp-pro':
+    case 'fp-concept4':
+    case 'fp-plot':
+      return {
+        [PROPRIETE_PAR_BRIQUE[ecran.brique]]: {
+          id: ecran.id,
+          ...proprietesPubliques(ecran.proprietes),
+          metadonnees: communes,
+        },
+      };
+    default:
+      return ecran satisfies never;
+  }
+}
+
+function enregistrerBanque(
+  banque: AuMoinsUn<QuestionVote>,
+  contexte: Contexte,
+): void {
+  for (const question of banque) {
+    contexte.banque.push([
+      question.id,
+      tirerVote(question, contexte, contexte.rngBanque, contexte.tirageBanque),
+    ]);
+  }
+}
+
+function tirerQuestionnaire(
+  ecran: Extract<Ecran, { readonly brique: 'questionnaire' }>,
+  contexte: Contexte,
+): Donnees {
+  const communes = metadonnees(ecran);
+  const questions =
+    ecran.ordre === 'fixe'
+      ? ecran.questions
+      : melanger(ecran.questions, contexte.rng);
+  return {
+    intitule: ecran.intitule,
+    consigne: ecran.consigne,
+    regime: ecran.regime,
+    ordre: ecran.ordre,
+    questions: questions.map((question) =>
+      projeterQuestion(question, communes, contexte),
+    ),
+  };
+}
+
+function projeterQuestion(
+  question: QuestionNumerique | QuestionVote,
+  communes: MetadonneesBrique,
+  contexte: Contexte,
+): QuestionProjetee {
+  if (question.type === 'numeric') {
+    return {
+      brique: 'fp-numeric',
+      donnees: { question: tirerNumerique(question, communes, contexte) },
+    };
+  }
+  return {
+    brique: 'fp-vote',
+    donnees: { question: tirerVote(question, contexte) },
+  };
+}
+
+function billet(
+  ecran: Extract<Ecran, { readonly brique: 'fp-exit' }>,
+  contexte: Contexte,
+): ExitBilletPublic {
+  const vote = tirerVote(ecran.question, contexte);
+  return {
+    id: vote.id,
+    question: vote.enonce,
+    invite: ecran.invite,
+    options: vote.options,
+    metadonnees: metadonnees(ecran),
+  };
+}
+
+function tirerNumerique(
+  question: QuestionNumerique,
+  communes: MetadonneesBrique,
+  contexte: Contexte,
+): NumeriquePublic {
+  const { enonce, unite } = enregistrerNumerique(question, contexte);
+  return { id: question.id, enonce, unite, metadonnees: communes };
+}
+
+function tirerVote(
+  question: QuestionVote,
+  contexte: Contexte,
+  rng: Rng = contexte.rng,
+  tirage: Tirage = contexte.tirage,
+): VotePublic {
+  const tiree = question.generer(tirage);
   const libelleDeLaBonne = tiree.bonneLibelle ?? tiree.bonne;
   assurerNonAmbigu(
     question,
@@ -352,7 +460,7 @@ function tirerVote(question: QuestionVote, contexte: Contexte): VotePublic {
     ),
     contexte.graine,
   );
-  const { options, solution } = optionsMelangees(tiree, contexte.rng);
+  const { options, solution } = optionsMelangees(tiree, rng);
   contexte.solutions.push([question.id, solution]);
   contexte.corriges.push([
     question.id,
@@ -362,6 +470,7 @@ function tirerVote(question: QuestionVote, contexte: Contexte): VotePublic {
     question.id,
     Object.fromEntries(options.map((option) => [option.id, option.libelle])),
   ]);
+  contexte.enonces.push([question.id, tiree.enonce]);
   return { id: question.id, enonce: tiree.enonce, options };
 }
 
@@ -423,7 +532,7 @@ function corrige(
 }
 
 function assurerNonAmbigu(
-  question: Question,
+  question: QuestionNumerique | QuestionVote,
   valeurs: readonly AnswerValue[],
   graine: number,
 ): void {

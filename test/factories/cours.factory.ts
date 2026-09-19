@@ -1,7 +1,7 @@
 import type {
   Cours,
   Ecran,
-} from '../../src/modules/formations/domain/cours/Cours';
+} from '../../src/modules/formations/domain/contrats/cours';
 import {
   questionNumerique,
   questionVote,
@@ -17,6 +17,8 @@ import {
   buildParticipantRecord,
   buildSessionRecord,
 } from './formation.factory';
+
+export const EN_CATALOGUE = { titre: null, diffusion: 'catalogue' } as const;
 
 export const QUESTION_NUMERIQUE_TEST = questionNumerique({
   id: 'Q-TEST-NUM',
@@ -93,15 +95,18 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
     concepts: ['taux-evolution'],
     ecrans: [
       {
+        ...EN_CATALOGUE,
         id: 'E-OUV',
         brique: 'fp-recall',
         dureeMinutes: 5,
         concepts: ['evolutions-successives'],
         notes: 'Rappel',
         question: QUESTION_RAPPEL_TEST,
+        delaiMs: 0,
         seuil: 0.6,
       },
       {
+        ...EN_CATALOGUE,
         id: 'E-CITATION',
         brique: 'fp-quote',
         dureeMinutes: 3,
@@ -114,6 +119,7 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
         },
       },
       {
+        ...EN_CATALOGUE,
         id: 'E-NUM',
         brique: 'fp-numeric',
         dureeMinutes: 5,
@@ -122,6 +128,7 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
         question: QUESTION_NUMERIQUE_TEST,
       },
       {
+        ...EN_CATALOGUE,
         id: 'E-CONCEPT',
         brique: 'fp-concept4',
         dureeMinutes: 5,
@@ -153,12 +160,16 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
         },
       },
       {
+        ...EN_CATALOGUE,
         id: 'E-PRATIQUE',
         brique: 'questionnaire',
         dureeMinutes: 10,
         concepts: ['coefficient-multiplicateur'],
         notes: 'Pratique',
+        intitule: 'Pratique',
+        consigne: 'Répondez aux trois questions.',
         regime: 'focus',
+        ordre: 'melange',
         questions: [
           numeriqueTest('Q-TEST-NUM-2'),
           numeriqueTest('Q-TEST-NUM-3'),
@@ -166,24 +177,30 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
         ],
       },
       {
+        ...EN_CATALOGUE,
         id: 'E-REM',
         brique: 'fp-worked',
         dureeMinutes: 5,
         concepts: ['taux-evolution'],
         notes: 'Remédiation',
         proprietes: {
-          enonce: 'Reprenons un taux pas à pas.',
-          etapes: [
-            {
-              id: 'etape-1',
-              intitule: 'Écart',
-              raisonnement: 'Arrivée moins départ.',
-              invite: 'Pourquoi le départ ?',
-            },
-          ],
+          exemple: {
+            id: 'E-REM',
+            enonce: 'Reprenons un taux pas à pas.',
+            etapes: [
+              {
+                id: 'etape-1',
+                intitule: 'Écart',
+                raisonnement: 'Arrivée moins départ.',
+                invite: 'Pourquoi le départ ?',
+              },
+            ],
+          },
+          etayage: 1,
         },
       },
       {
+        ...EN_CATALOGUE,
         id: 'E-EXIT',
         brique: 'fp-exit',
         dureeMinutes: 5,
@@ -198,6 +215,7 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
       'raisonnement-additif': 'E-REM',
       'ecart-absolu-au-lieu-du-taux': 'E-REM',
     },
+    medias: [],
     ...overrides,
   };
 }
@@ -206,6 +224,7 @@ export function buildCoursDeClasse(nombreQuestions: number): Cours {
   const ecrans: Ecran[] = Array.from(
     { length: nombreQuestions },
     (_, rang) => ({
+      ...EN_CATALOGUE,
       id: `E-Q-${String(rang).padStart(2, '0')}`,
       brique: 'fp-numeric' as const,
       dureeMinutes: 5,
@@ -222,6 +241,7 @@ export function buildCoursDeClasse(nombreQuestions: number): Cours {
       premier,
       ...suite,
       {
+        ...EN_CATALOGUE,
         id: 'E-FIN',
         brique: 'fp-exit',
         dureeMinutes: 5,
@@ -250,6 +270,7 @@ export function buildCoursSansTirageValide(): Cours {
     slug: 'cours-sans-tirage',
     ecrans: [
       {
+        ...EN_CATALOGUE,
         id: 'E-AMBIGU',
         brique: 'fp-numeric',
         dureeMinutes: 1,

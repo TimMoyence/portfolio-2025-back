@@ -48,7 +48,7 @@ import type { IParticipantsRepository } from '../../src/modules/formations/domai
 import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type { ISessionsRepository } from '../../src/modules/formations/domain/ISessions.repository';
 import type { ITeacherAnnotationsRepository } from '../../src/modules/formations/domain/ITeacherAnnotations.repository';
-import type { Cours } from '../../src/modules/formations/domain/cours/Cours';
+import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
 import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
   ANSWERS_REPOSITORY,

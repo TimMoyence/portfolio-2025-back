@@ -2,6 +2,7 @@ import { ResourceConflictError } from '../../../../common/domain/errors/Resource
 import {
   buildCoursDeTest,
   buildCoursSansTirageValide,
+  EN_CATALOGUE,
   tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
 import { questionNumerique } from './Cours';
@@ -21,6 +22,7 @@ describe('ouvrirTirages', () => {
     dureeMinutes: 2,
     ecrans: [
       {
+        ...EN_CATALOGUE,
         id: 'E-LECTURE',
         brique: 'fp-quote',
         dureeMinutes: 2,
@@ -135,6 +137,7 @@ describe('ouvrirTirages', () => {
     const cours2 = buildCoursDeTest({
       ecrans: [
         {
+          ...EN_CATALOGUE,
           id: 'E',
           brique: 'fp-numeric',
           dureeMinutes: 1,

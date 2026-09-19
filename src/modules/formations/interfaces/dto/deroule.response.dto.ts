@@ -1,5 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
-import { EcranPublicResponseDto, SujetResponseDto } from './sujet.response.dto';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ConfusionCorrigeeResponseDto {
   @ApiProperty({ example: 'hausse-baisse-symetriques' })
@@ -58,43 +57,4 @@ export class GuideFormateurResponseDto {
       'Le prochain écran montre comment une échelle modifie l’impression.',
   })
   transition?: string;
-}
-
-export class EcranDerouleResponseDto extends EcranPublicResponseDto {
-  @ApiProperty({ description: 'Notes du formateur' })
-  notes: string;
-
-  @ApiProperty({
-    description:
-      'Seuil de reussite du pivot, null pour un ecran sans question a seuil',
-    example: 0.7,
-    nullable: true,
-    type: Number,
-  })
-  seuil: number | null;
-
-  @ApiProperty({ type: [CorrigePresentateurResponseDto] })
-  corriges: CorrigePresentateurResponseDto[];
-
-  @ApiPropertyOptional({
-    type: GuideFormateurResponseDto,
-    description:
-      'Guide de l écran pour le formateur, absent quand l écran n en a pas',
-  })
-  guide?: GuideFormateurResponseDto;
-}
-
-export class DerouleResponseDto extends OmitType(SujetResponseDto, [
-  'ecrans',
-] as const) {
-  @ApiProperty({ type: [EcranDerouleResponseDto] })
-  ecrans: EcranDerouleResponseDto[];
-
-  @ApiProperty({
-    type: 'object',
-    additionalProperties: { type: 'string' },
-    description: 'Identifiant de l ecran de remediation de chaque confusion',
-    example: { 'hausse-baisse-symetriques': 'E-CLO-SUCCESSIVES' },
-  })
-  remediations: Record<string, string>;
 }

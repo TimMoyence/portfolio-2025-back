@@ -20,7 +20,7 @@ import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainEx
 import type {
   Cours,
   Ecran,
-} from '../src/modules/formations/domain/cours/Cours';
+} from '../src/modules/formations/domain/contrats/cours';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
 import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';

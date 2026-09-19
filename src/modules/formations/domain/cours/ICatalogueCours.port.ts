@@ -1,4 +1,4 @@
-import type { Cours } from './Cours';
+import type { Cours } from '../contrats/cours';
 
 export interface ICatalogueCours {
   trouver(slug: string, version?: number): Promise<Cours | null>;

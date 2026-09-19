@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import type { Cours } from '../domain/cours/Cours';
+import type { Cours } from '../domain/contrats/cours';
 import { lireCoursStocke } from '../domain/cours/CoursStocke';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { FormationCourseContentEntity } from './entities/FormationCourseContent.entity';
@@ -51,9 +51,13 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
       niveau: entity.niveau,
       dureeMinutes: entity.dureeMinutes,
       concepts: entity.concepts,
+      remediations: entity.remediations,
+      medias: entity.medias,
       ecrans: entity.ecrans.map((screen) => ({
         screenId: screen.screenId,
         brique: screen.brique,
+        titre: screen.titre,
+        diffusion: screen.diffusion,
         dureeMinutes: screen.dureeMinutes,
         concepts: screen.concepts,
         notes: screen.notes,

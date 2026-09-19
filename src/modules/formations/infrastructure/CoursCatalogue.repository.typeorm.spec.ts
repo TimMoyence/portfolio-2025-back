@@ -1,4 +1,5 @@
 import { buildQuizNote } from '../../../../test/factories/cours-stocke.factory';
+import { buildEcranStockeV3 } from '../../../../test/factories/ecrans-stockes.factory';
 import {
   buildCourseContentEntity,
   buildScreenContentEntity,
@@ -49,6 +50,42 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
       question: { id: 'quiz-1', type: 'vote' },
       guide: { aDire: 'Avant de commenter la pente, vérifiez le repère.' },
     });
+  });
+
+  it('lit le titre, la diffusion, les remédiations et les médias d une version 3', async () => {
+    const ecran = buildEcranStockeV3('fp-quote');
+    const media = {
+      id: 'M4',
+      chemins: ['/assets/cours/b2-01/v3/pacioli-1495.webp'],
+      pageSource: 'https://commons.wikimedia.org/wiki/File:Pacioli.jpg',
+      auteur: 'portrait attribué à Jacopo de’ Barbari, 1495',
+      date: '1495',
+      licence: 'domaine public (PD-Art)',
+      attribution: 'Portrait attribué à Jacopo de’ Barbari, 1495',
+    };
+    const { sut } = catalogueLisant(
+      buildCourseContentEntity({
+        version: 3,
+        remediations: { 'base-arrivee': ecran.screenId },
+        medias: [media],
+        ecrans: [
+          buildScreenContentEntity({
+            ...ecran,
+            titre: ecran.titre ?? null,
+            diffusion: ecran.diffusion,
+          }),
+        ],
+      }),
+    );
+
+    const cours = await sut.trouver(SLUG, 3);
+
+    expect(cours?.ecrans[0]).toMatchObject({
+      titre: 'Écran fp-quote',
+      diffusion: 'seance',
+    });
+    expect(cours?.remediations).toEqual({ 'base-arrivee': ecran.screenId });
+    expect(cours?.medias).toEqual([media]);
   });
 
   it('filtre sur la version demandée', async () => {

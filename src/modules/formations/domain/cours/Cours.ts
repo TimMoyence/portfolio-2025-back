@@ -1,32 +1,15 @@
 import type { Tolerance } from '../GradingCore';
+import type {
+  Cours as CoursDuContrat,
+  Ecran as EcranDuContrat,
+  Question as QuestionDuContrat,
+} from '../contrats/cours';
 import type { Tirage } from './Aleatoire';
 import type { ConceptId } from './banque/concepts';
 import type { ConfusionId } from './banque/confusions';
-import type { ProprietesRecit } from './CoursStocke';
+import type { ProprietesRecit } from './ProprietesStockees';
 
 export type AuMoinsUn<T> = readonly [T, ...T[]];
-
-export type BriqueExposition =
-  | 'fp-quote'
-  | 'fp-story'
-  | 'fp-pro'
-  | 'fp-worked'
-  | 'fp-concept4'
-  | 'fp-plot'
-  | 'fp-challenge'
-  | 'fp-cardsort';
-
-const BRIQUES_QUESTION = [
-  'fp-numeric',
-  'fp-vote',
-  'fp-recall',
-  'fp-exit',
-] as const;
-export type BriqueQuestion = (typeof BRIQUES_QUESTION)[number];
-
-export function estBriqueQuestion(brique: string): brique is BriqueQuestion {
-  return (BRIQUES_QUESTION as readonly string[]).includes(brique);
-}
 
 export type Modalite = 'solo' | 'binome' | 'groupe' | 'classe';
 export type RegimeVerrou = 'ouvert' | 'focus' | 'examen';
@@ -106,8 +89,6 @@ export interface QuestionVote extends QuestionCommune {
   readonly segments?: readonly string[];
 }
 
-export type Question = QuestionNumerique | QuestionVote;
-
 function confusionsDe<P extends { readonly confusion: ConfusionId }>(
   pieges: AuMoinsUn<P>,
 ): AuMoinsUn<ConfusionId> {
@@ -175,7 +156,7 @@ interface ParametreCurseur {
   readonly defaut: number;
 }
 
-interface ProprietesParBrique {
+interface ProprietesDesExpositionsHistoriques {
   readonly 'fp-quote': {
     readonly texte: string;
     readonly auteur: string | null;
@@ -187,15 +168,6 @@ interface ProprietesParBrique {
     readonly situation: string;
     readonly geste: string;
     readonly consequence: string | null;
-  };
-  readonly 'fp-worked': {
-    readonly enonce: string;
-    readonly etapes: AuMoinsUn<{
-      readonly id: string;
-      readonly intitule: string;
-      readonly raisonnement: string;
-      readonly invite: string;
-    }>;
   };
   readonly 'fp-concept4': {
     readonly parametres: AuMoinsUn<ParametreCurseur>;
@@ -220,37 +192,6 @@ interface ProprietesParBrique {
       readonly calcul: string;
     }>;
   };
-  readonly 'fp-challenge': {
-    readonly id: string;
-    readonly enonce: string;
-    readonly invite: string;
-    readonly strategies: AuMoinsUn<{
-      readonly id: string;
-      readonly libelle: string;
-    }>;
-  };
-  readonly 'fp-cardsort': {
-    readonly id: string;
-    readonly intitule: string;
-    readonly cartes: AuMoinsUn<{
-      readonly id: string;
-      readonly libelle: string;
-    }>;
-    readonly categories: AuMoinsUn<{
-      readonly id: string;
-      readonly libelle: string;
-    }>;
-  };
-}
-
-interface EcranCommun {
-  readonly id: string;
-  readonly dureeMinutes: number;
-  readonly concepts: AuMoinsUn<ConceptId>;
-  readonly notes: string;
-  readonly modalite?: Modalite;
-  readonly question?: Question;
-  readonly guide?: GuideFormateur;
 }
 
 interface GuideFormateur {
@@ -262,37 +203,24 @@ interface GuideFormateur {
   readonly transition?: string;
 }
 
-type EcranExposition = {
-  [B in BriqueExposition]: EcranCommun & {
-    readonly brique: B;
-    readonly proprietes: ProprietesParBrique[B];
-  };
-}[BriqueExposition];
-
-export type EcranQuestion =
-  | (EcranCommun & {
-      readonly brique: 'fp-numeric';
-      readonly question: QuestionNumerique;
-      readonly seuil?: number;
-    })
-  | (EcranCommun & {
-      readonly brique: 'fp-vote' | 'fp-recall';
-      readonly question: QuestionVote;
-      readonly seuil?: number;
-    })
-  | (EcranCommun & {
-      readonly brique: 'fp-exit';
-      readonly question: QuestionVote;
-      readonly invite: string;
-    });
-
-export interface EcranQuestionnaire extends EcranCommun {
-  readonly brique: 'questionnaire';
-  readonly regime: RegimeVerrou;
-  readonly questions: AuMoinsUn<Question>;
+interface SocleHistorique {
+  readonly id: string;
+  readonly dureeMinutes: number;
+  readonly concepts: AuMoinsUn<ConceptId>;
+  readonly notes: string;
+  readonly modalite?: Modalite;
+  readonly question?: QuestionVote;
+  readonly guide?: GuideFormateur;
 }
 
-export type Ecran = EcranExposition | EcranQuestion | EcranQuestionnaire;
+type BriqueDExpositionHistorique = keyof ProprietesDesExpositionsHistoriques;
+
+export type Ecran = {
+  [B in BriqueDExpositionHistorique]: SocleHistorique & {
+    readonly brique: B;
+    readonly proprietes: ProprietesDesExpositionsHistoriques[B];
+  };
+}[BriqueDExpositionHistorique];
 
 export interface Cours {
   readonly slug: string;
@@ -304,26 +232,60 @@ export interface Cours {
   readonly remediations: Readonly<Partial<Record<ConfusionId, string>>>;
 }
 
-export function estInteractif(ecran: Ecran): boolean {
+function recitInteractif(
+  ecran: Extract<EcranDuContrat, { readonly brique: 'fp-story' }>,
+): boolean {
+  const presentation = ecran.proprietes.presentation;
   return (
-    ecran.brique === 'questionnaire' ||
-    ecran.brique === 'fp-challenge' ||
-    ecran.brique === 'fp-cardsort' ||
-    estBriqueQuestion(ecran.brique) ||
-    ecran.question !== undefined
+    ecran.question !== undefined ||
+    (presentation?.version === 2 && presentation.renderer === 'reflection')
   );
 }
 
-export function questionsDe(ecran: Ecran): readonly Question[] {
-  if (ecran.brique === 'questionnaire') {
-    return ecran.questions;
+export function estInteractif(ecran: EcranDuContrat): boolean {
+  switch (ecran.brique) {
+    case 'fp-story':
+      return recitInteractif(ecran);
+    case 'fp-quote':
+    case 'fp-pro':
+    case 'fp-concept4':
+    case 'fp-plot':
+    case 'fp-pulse':
+      return ecran.question !== undefined;
+    default:
+      return true;
   }
-  if (ecran.question !== undefined) {
-    return [ecran.question];
-  }
-  return [];
 }
 
-export function questionsDuCours(cours: Cours): readonly Question[] {
+export function questionsDe(
+  ecran: EcranDuContrat,
+): readonly QuestionDuContrat[] {
+  switch (ecran.brique) {
+    case 'questionnaire':
+      return ecran.questions;
+    case 'fp-vote':
+      return ecran.questionJumelle === undefined
+        ? [ecran.question]
+        : [ecran.question, ecran.questionJumelle];
+    case 'fp-numeric':
+    case 'fp-recall':
+    case 'fp-exit':
+      return [ecran.question];
+    case 'fp-cardsort':
+    case 'fp-sheet':
+    case 'fp-table-build':
+      return [ecran.production];
+    case 'fp-escape':
+      return ecran.enigmes;
+    case 'fp-spaced':
+      return ecran.banque;
+    default:
+      return ecran.question === undefined ? [] : [ecran.question];
+  }
+}
+
+export function questionsDuCours(
+  cours: CoursDuContrat,
+): readonly QuestionDuContrat[] {
   return cours.ecrans.flatMap((ecran) => questionsDe(ecran));
 }

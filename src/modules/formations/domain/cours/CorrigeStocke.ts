@@ -1,10 +1,12 @@
 import { z } from 'zod';
 import { valeursAmbigues, type Tolerance } from '../GradingCore';
+import type { ConfusionId } from './banque/confusions';
 import type {
   CorrigeClassement,
   CorrigeDefi,
   CorrigeEnigme,
   CorrigeFeuille,
+  CorrigeProduction,
   CorrigeRevelation,
   CorrigeTableau,
 } from './Corrige';
@@ -17,23 +19,14 @@ import {
   auMoinsUn,
   confusion,
   identifiantDeQuestion,
+  signaleurDe,
   texte,
   tolerance,
+  type Signaleur,
 } from './SchemasCommuns';
 
 const piegeNumerique = z.object({ valeur: z.number(), confusion }).strict();
 const seuilReussite = z.number().gt(0).lte(1);
-
-type Signaleur = (
-  chemin: readonly (string | number)[],
-  message: string,
-) => void;
-
-function signaleurDe(contexte: z.RefinementCtx): Signaleur {
-  return (chemin, message) => {
-    contexte.addIssue({ code: 'custom', path: [...chemin], message });
-  };
-}
 
 function signalerDoublons(
   valeurs: readonly string[],
@@ -247,3 +240,36 @@ export const corrigeRevelation = z
     lignes: auMoinsUn(texte),
   })
   .strict() satisfies z.ZodType<CorrigeRevelation>;
+
+function confusionsDuCorrigeBrutes(
+  corrige: CorrigeProduction,
+): readonly ConfusionId[] {
+  switch (corrige.type) {
+    case 'feuille':
+      return corrige.attendus.flatMap((attendu) => [
+        ...attendu.pieges.map((piege) => piege.confusion),
+        ...(attendu.confusionSiErreurFormule === null
+          ? []
+          : [attendu.confusionSiErreurFormule]),
+        attendu.forme === 'references'
+          ? 'valeur-saisie-sans-formule'
+          : 'formule-non-recopiable',
+      ]);
+    case 'tableau':
+      return corrige.attendus.flatMap((attendu) =>
+        attendu.pieges.map((piege) => piege.confusion),
+      );
+    case 'classement':
+      return corrige.attendus.map((attendu) => attendu.confusionSiErreur);
+    case 'enigme':
+      return corrige.pieges.map((piege) => piege.confusion);
+    default:
+      return corrige satisfies never;
+  }
+}
+
+export function confusionsDuCorrige(
+  corrige: CorrigeProduction,
+): readonly ConfusionId[] {
+  return [...new Set(confusionsDuCorrigeBrutes(corrige))];
+}

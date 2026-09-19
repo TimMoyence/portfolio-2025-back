@@ -1,7 +1,7 @@
 import type { BaremeQuestion } from './Bareme';
 import { questionsNotees, solutionsIdentiques } from './Bareme';
 import { libelleDeConfusion } from './cours/banque/confusions';
-import type { Cours } from './cours/Cours';
+import type { Cours } from './contrats/cours';
 import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
 import { computeCohortScore } from './CompletionScore';

@@ -39,7 +39,7 @@ import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
-import type { CoursPublic } from '../domain/cours/CoursPublic';
+import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
   SessionNotFoundError,
@@ -53,7 +53,7 @@ import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
 import { SaveFreeResponseRequestDto } from './dto/save-free-response.request.dto';
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
-import { SujetResponseDto } from './dto/sujet.response.dto';
+import { SujetResponseDto } from './dto/contrat/sujet.response.dto';
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,

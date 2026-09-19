@@ -9,7 +9,7 @@ import {
 import type {
   Cours,
   Question,
-} from '../src/modules/formations/domain/cours/Cours';
+} from '../src/modules/formations/domain/contrats/cours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { TirageDuCours } from '../src/modules/formations/domain/cours/Tirage';
 import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';

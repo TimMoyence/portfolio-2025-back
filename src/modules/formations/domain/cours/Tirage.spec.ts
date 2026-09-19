@@ -1,10 +1,25 @@
-import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
+import {
+  buildCoursDeTest,
+  EN_CATALOGUE,
+} from '../../../../../test/factories/cours.factory';
+import { buildPlanFeuille } from '../../../../../test/factories/corriges.factory';
+import {
+  BRIQUES_STOCKEES,
+  buildCoursStockeV3,
+  buildEcranStockeV3,
+  PARCOURS_ENIGMES,
+} from '../../../../../test/factories/ecrans-stockes.factory';
 import { buildVoteStocke } from '../../../../../test/factories/questions-stockees.factory';
-import { clesDuCorrigeDans } from '../../../../../test/helpers/cles-du-corrige';
+import {
+  clesDuCorrigeDans,
+  clesSecretesDans,
+} from '../../../../../test/helpers/cles-du-corrige';
+import type { Cours, Ecran } from '../contrats/cours';
 import type { Tolerance } from '../GradingCore';
 import { questionNumerique, questionVote } from './Cours';
-import type { AuMoinsUn, Cours, Ecran, Question } from './Cours';
-import { questionDeVote } from './QuestionStockee';
+import type { AuMoinsUn, QuestionNumerique, QuestionVote } from './Cours';
+import { lireCoursStocke } from './CoursStocke';
+import { questionDeVote, slugOption } from './QuestionStockee';
 import { PROPRIETE_PAR_BRIQUE, tirer, TirageAmbiguError } from './Tirage';
 import type { CorrigeTire } from './Tirage';
 
@@ -43,7 +58,7 @@ function questionNumeriqueFigee(
   solution: number,
   pieges: AuMoinsUn<number>,
   tolerance: Tolerance,
-): Question {
+): QuestionNumerique {
   const [premier, ...suite] = pieges.map((valeur) => ({
     confusion: 'base-arrivee' as const,
     valeur: () => valeur,
@@ -61,8 +76,9 @@ function questionNumeriqueFigee(
   });
 }
 
-function coursAUneQuestion(question: Question): Cours {
+function coursAUneQuestion(question: QuestionNumerique | QuestionVote): Cours {
   const commun = {
+    ...EN_CATALOGUE,
     id: 'E',
     dureeMinutes: 1,
     concepts: ['proportion'] as const,
@@ -242,15 +258,18 @@ describe('tirer', () => {
     expect(sujet).not.toContain(aDire);
   });
 
-  it('range les donnees de chaque brique sous la propriete de la table partagee avec le front', () => {
+  it('range les donnees de chaque brique sous la propriete de la table partagee avec le front, soeurs du § 9.4 comprises', () => {
+    const SOEURS_DU_CONTRAT = ['delaiMs', 'questionJumelle', 'etayage'];
     const ecrans = tirer(cours, 5).sujet.ecrans.filter(
       (ecran) => ecran.type !== 'questionnaire',
     );
     for (const ecran of ecrans) {
       const brique = ecran.type as keyof typeof PROPRIETE_PAR_BRIQUE;
-      expect(Object.keys(ecran.donnees)).toEqual([
-        PROPRIETE_PAR_BRIQUE[brique],
-      ]);
+      const [principale, ...soeurs] = Object.keys(ecran.donnees);
+      expect(principale).toBe(PROPRIETE_PAR_BRIQUE[brique]);
+      expect(
+        soeurs.filter((soeur) => !SOEURS_DU_CONTRAT.includes(soeur)),
+      ).toEqual([]);
     }
   });
 
@@ -340,5 +359,134 @@ describe('tirer', () => {
         TirageAmbiguError,
       );
     }
+  });
+});
+
+describe('tirer (briques de la V3)', () => {
+  const coursDe = (briques: readonly string[]) =>
+    lireCoursStocke(
+      buildCoursStockeV3(briques.map((brique) => buildEcranStockeV3(brique))),
+    );
+  const TOUTES = coursDe(BRIQUES_STOCKEES);
+  const donneesDe = (tirage: ReturnType<typeof tirer>, brique: string) => {
+    const ecran = tirage.sujet.ecrans.find(
+      (candidat) => candidat.type === brique,
+    );
+    if (!ecran) throw new Error(`brique ${brique} absente du sujet`);
+    return ecran.donnees as Record<string, any>;
+  };
+  const ordreDesOptions = (tirage: ReturnType<typeof tirer>, id: string) =>
+    Object.keys(tirage.libellesOptions[id]).join(',');
+
+  it('porte le titre public de chaque écran et ne livre aucune clé secrète', () => {
+    for (let graine = 0; graine < 5; graine += 1) {
+      const tirage = tirer(TOUTES, graine);
+      expect(tirage.sujet.ecrans.map((ecran) => ecran.titre)).toEqual(
+        BRIQUES_STOCKEES.map((brique) => `Écran ${brique}`),
+      );
+      expect(clesSecretesDans(tirage.sujet)).toEqual([]);
+    }
+  });
+
+  it('projette chaque brique selon le § 9.4', () => {
+    const tirage = tirer(TOUTES, 7);
+
+    expect(donneesDe(tirage, 'fp-challenge').probleme).toMatchObject({
+      id: 'b2-01-a1-audit-diapositive',
+      strategies: [],
+    });
+    expect(donneesDe(tirage, 'fp-worked')).toMatchObject({
+      exemple: { id: 'b2-01-a2-points' },
+      etayage: 1,
+    });
+    expect(donneesDe(tirage, 'fp-pulse').sondage.id).toBe('b2-01-a1-jalon');
+    expect(donneesDe(tirage, 'fp-sheet').plan.cellules).toEqual(
+      buildPlanFeuille().cellules,
+    );
+    expect(donneesDe(tirage, 'fp-table-build').plan.colonnes).toHaveLength(3);
+    expect(donneesDe(tirage, 'fp-escape').parcours.enigmes).toEqual(
+      PARCOURS_ENIGMES.enigmes,
+    );
+    expect(donneesDe(tirage, 'fp-recall').delaiMs).toBe(45000);
+    expect(donneesDe(tirage, 'fp-vote').questionJumelle.id).toBe(
+      'b2-01-a3-remise-v2',
+    );
+    expect(donneesDe(tirage, 'questionnaire')).toMatchObject({
+      intitule: 'Atelier 1 — Lire, rapporter, estimer',
+      consigne: 'Calculatrice autorisée.',
+      regime: 'focus',
+      ordre: 'fixe',
+    });
+    expect(donneesDe(tirage, 'fp-concept4').definition.id).toBe(
+      'b2-01-a3-machine',
+    );
+    expect(donneesDe(tirage, 'fp-plot').definition.description).toBe(
+      'Courbe de la marge brute.',
+    );
+    expect(donneesDe(tirage, 'fp-story').recit.video.srcPoste).toBe(
+      '/assets/cours/b2-01/v3/capsule-480p.webm',
+    );
+  });
+
+  it('respecte l ordre fixe d un questionnaire pour toutes les graines', () => {
+    for (let graine = 0; graine < 20; graine += 1) {
+      const questions = donneesDe(tirer(TOUTES, graine), 'questionnaire')
+        .questions as { donnees: { question: { id: string } } }[];
+      expect(questions.map((question) => question.donnees.question.id)).toEqual(
+        ['b2-01-a2-evolution-marge', 'b2-01-a2-part-marketplace'],
+      );
+    }
+  });
+
+  it('projette la banque de rappel en privé, options mélangées par un générateur dérivé', () => {
+    const ordres = new Set<string>();
+    for (let graine = 0; graine < 40; graine += 1) {
+      const tirage = tirer(TOUTES, graine);
+      expect(Object.keys(tirage.banque)).toEqual([
+        'b2-01-r-compensation',
+        'b2-01-r-points',
+      ]);
+      expect(tirage.solutions['b2-01-r-points'].valeur).toBe(
+        slugOption('+1 point'),
+      );
+      expect(JSON.stringify(tirage.sujet)).not.toContain('b2-01-r-');
+      ordres.add(ordreDesOptions(tirage, 'b2-01-r-compensation'));
+    }
+    expect(ordres.size).toBe(2);
+    expect(donneesDe(tirer(TOUTES, 1), 'fp-spaced')).toEqual({
+      rappel: {
+        id: 'b2-01-a6-rappel',
+        intitule: 'Rappel de mémoire',
+        metadonnees: expect.any(Object),
+      },
+    });
+  });
+
+  it('mélange les cartes par un générateur dérivé sans toucher aux autres tirages', () => {
+    const avecCartes = coursDe(['fp-cardsort', 'fp-spaced', 'fp-vote']);
+    const sansCartes = coursDe(['fp-quote', 'fp-pro', 'fp-vote']);
+    const ordres = new Set<string>();
+    for (let graine = 0; graine < 40; graine += 1) {
+      const tirage = tirer(avecCartes, graine);
+      const cartes = donneesDe(tirage, 'fp-cardsort').plan.cartes as {
+        id: string;
+      }[];
+      ordres.add(cartes.map((carte) => carte.id).join(','));
+      expect(ordreDesOptions(tirage, 'b2-01-a3-sac-v1')).toBe(
+        ordreDesOptions(tirer(sansCartes, graine), 'b2-01-a3-sac-v1'),
+      );
+    }
+    expect(ordres.size).toBe(2);
+  });
+
+  it('ne tire ni solution ni corrigé pour une production', () => {
+    const tirage = tirer(TOUTES, 3);
+
+    expect(Object.keys(tirage.solutions)).not.toEqual(
+      expect.arrayContaining(['b2-01-a1-anatomie', 'b2-01-a6-e1-mix']),
+    );
+    expect(Object.keys(tirage.corriges)).not.toContain(
+      'b2-01-a4-feuille-canaux',
+    );
   });
 });

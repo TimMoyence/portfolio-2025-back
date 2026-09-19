@@ -169,8 +169,8 @@ describeDb('catalogue B2 migré', () => {
       ),
     ).rejects.toThrow('chk_formation_screen_notes_not_blank');
     await dataSource.query(
-      `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes")
-       SELECT $1, "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes"
+      `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "titre", "diffusion", "brique", "duree_minutes", "concepts", "notes", "proprietes")
+       SELECT $1, "position", "screen_id", "screen_id", 'catalogue', "brique", "duree_minutes", "concepts", "notes", "proprietes"
        FROM "formation_screen_contents" WHERE "course_id" = $2`,
       [publiee.id, course.id],
     );

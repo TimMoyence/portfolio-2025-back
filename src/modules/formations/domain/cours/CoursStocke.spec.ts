@@ -25,9 +25,12 @@ describe('lireCoursStocke', () => {
       slug: 'b2-01-traitement-information-chiffree',
       concepts: ['proportion'],
       remediations: {},
+      medias: [],
     });
     expect(ecran).toMatchObject({
       id: 'B2-01-S03-PREDICTION',
+      titre: null,
+      diffusion: 'catalogue',
       brique: 'fp-story',
       notes: 'À dire : vérifier le repère avant la pente.',
       guide: { aDire: 'Avant de commenter la pente, vérifiez le repère.' },
@@ -222,6 +225,10 @@ describe('lireCoursStocke', () => {
     ],
     [
       'une brique sans contrat de stockage',
+      buildEcranStocke({ brique: 'fp-carrousel' }),
+    ],
+    [
+      'des propriétés de récit sous une brique de citation',
       buildEcranStocke({ brique: 'fp-quote' }),
     ],
     ['un écran sans concept', buildEcranStocke({ concepts: [] })],

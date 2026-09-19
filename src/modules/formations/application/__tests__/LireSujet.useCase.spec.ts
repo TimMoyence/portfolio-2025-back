@@ -1,6 +1,7 @@
 import {
   buildCoursDeTest,
   creerCatalogueDeTest,
+  EN_CATALOGUE,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildBareme,
@@ -9,7 +10,7 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import type { Cours, Ecran } from '../../domain/cours/Cours';
+import type { Cours, Ecran } from '../../domain/contrats/cours';
 import { questionNumerique } from '../../domain/cours/Cours';
 import { tirer } from '../../domain/cours/Tirage';
 import {
@@ -45,6 +46,7 @@ function coursAmbigu(): Cours {
     pieges: [{ confusion: 'base-arrivee', valeur: () => 100.5 }],
   });
   const ecran: Ecran = {
+    ...EN_CATALOGUE,
     id: 'E',
     dureeMinutes: 1,
     concepts: ['proportion'],

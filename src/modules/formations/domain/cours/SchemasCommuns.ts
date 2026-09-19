@@ -41,3 +41,14 @@ export const tolerance = z
 export function auMoinsUn<T extends z.ZodType>(element: T): z.ZodTuple<[T], T> {
   return z.tuple([element], element);
 }
+
+export type Signaleur = (
+  chemin: readonly (string | number)[],
+  message: string,
+) => void;
+
+export function signaleurDe(contexte: z.RefinementCtx): Signaleur {
+  return (chemin, message) => {
+    contexte.addIssue({ code: 'custom', path: [...chemin], message });
+  };
+}

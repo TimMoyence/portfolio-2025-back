@@ -4194,7 +4194,7 @@
           "id": "B2-01-S11-C1",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "a30cb57c082cc9050239539e0833a9cea81e8721537609891908f637fb24d3f9"
         },
         {
@@ -4215,7 +4215,7 @@
           "id": "B2-01-S14-CALCUL",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "a8753ffa77444c4bfef7a6dc3b4d5f43d7eb9742fb7e7dce35aa4833febf37e4"
         },
         {
@@ -4271,7 +4271,7 @@
           "id": "B2-01-S22-C2",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "25f29931fee90cf883775205e97269520adf65a8647b090272457031c29a600d"
         },
         {
@@ -4313,7 +4313,7 @@
           "id": "B2-01-S28-CONCLUSION-INFLATION",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "d6ec48166dffc089c949eff8894785e378a9e6bd00310e00f5f31c88ba72ba0a"
         },
         {
@@ -4418,21 +4418,21 @@
           "id": "B2-01-S43-MARGE-2024",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "eaf1b0744a6498b81bc7adae52803a8a7fca2089094223515bf457aa8a83d53b"
         },
         {
           "id": "B2-01-S44-MARGE-2025",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "70cafe31e6e17f9deed6594ae729d4436305b9b128f556d0ac9333a42b4f5750"
         },
         {
           "id": "B2-01-S45-RECOMMANDATION",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "97e0d95060c3d2e37f1d20f83815027f7f7208caf1757f073e2aa091fbbb8538"
         },
         {
@@ -4446,7 +4446,7 @@
           "id": "B2-01-S47-PAIRS",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "2714f15fccd6cf393247e11171bc552f88282ad83df8b6c7b01302e295ee6a52"
         },
         {
@@ -4523,7 +4523,7 @@
           "id": "B2-01-S58-ALERTE",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "073dac75402e66e1589634ec23da47247bf241eda254772cbc5f19057840cd8c"
         },
         {
@@ -4551,7 +4551,7 @@
           "id": "B2-01-S62-DECISION",
           "type": "fp-story",
           "duree": 3,
-          "interactif": false,
+          "interactif": true,
           "donnees": "b1d650d4516859ec1a99d541d416a5ea0ba798ee6fdaa5c26f8ef8d5d5b416ae"
         },
         {
@@ -5119,7 +5119,7 @@
             "id": "B2-01-S11-C1",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "a30cb57c082cc9050239539e0833a9cea81e8721537609891908f637fb24d3f9",
             "notes": "bbeef39fd88f4a640474930d45018f90e864cbfc668d5b0be45feb07ab1823f2",
             "seuil": null,
@@ -5152,7 +5152,7 @@
             "id": "B2-01-S14-CALCUL",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "a8753ffa77444c4bfef7a6dc3b4d5f43d7eb9742fb7e7dce35aa4833febf37e4",
             "notes": "1b3b594d28b1607effab8c61ae12aedb0d1ade4f476422c21c8522fc4e23e483",
             "seuil": null,
@@ -5240,7 +5240,7 @@
             "id": "B2-01-S22-C2",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "25f29931fee90cf883775205e97269520adf65a8647b090272457031c29a600d",
             "notes": "d32d10e00b69b6c0ea512f508d1b7483513d2aebebf588822154088d2882ce5d",
             "seuil": null,
@@ -5340,7 +5340,7 @@
             "id": "B2-01-S28-CONCLUSION-INFLATION",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "d6ec48166dffc089c949eff8894785e378a9e6bd00310e00f5f31c88ba72ba0a",
             "notes": "aca80b407b2d11a3fcd52a504010e8220ccfd644d67945b085bf5b82a6106ed3",
             "seuil": null,
@@ -5554,7 +5554,7 @@
             "id": "B2-01-S43-MARGE-2024",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "eaf1b0744a6498b81bc7adae52803a8a7fca2089094223515bf457aa8a83d53b",
             "notes": "bbfb979c78d99494b16e2ec97a0dcfb44fa7a3eb1da91aad5b8430bc3eeab763",
             "seuil": null,
@@ -5565,7 +5565,7 @@
             "id": "B2-01-S44-MARGE-2025",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "70cafe31e6e17f9deed6594ae729d4436305b9b128f556d0ac9333a42b4f5750",
             "notes": "9281dfbeb19ba00d9f637076c979d249b815759e087f8881b2f2f9ed37b222cf",
             "seuil": null,
@@ -5576,7 +5576,7 @@
             "id": "B2-01-S45-RECOMMANDATION",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "97e0d95060c3d2e37f1d20f83815027f7f7208caf1757f073e2aa091fbbb8538",
             "notes": "fbccf4b843f074f1495d9eb2f36cb39909694c34dba86174678b296c2d406015",
             "seuil": null,
@@ -5617,7 +5617,7 @@
             "id": "B2-01-S47-PAIRS",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "2714f15fccd6cf393247e11171bc552f88282ad83df8b6c7b01302e295ee6a52",
             "notes": "91f80da7243ed954cb0485e3b180eaac6945e00f5a59b6c4031b4e524b56d4b2",
             "seuil": null,
@@ -5794,7 +5794,7 @@
             "id": "B2-01-S58-ALERTE",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "073dac75402e66e1589634ec23da47247bf241eda254772cbc5f19057840cd8c",
             "notes": "83ea076b1216479cd4b1d24b02e2b189b3196c3d77365775ffd4e48202108546",
             "seuil": null,
@@ -5838,7 +5838,7 @@
             "id": "B2-01-S62-DECISION",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "b1d650d4516859ec1a99d541d416a5ea0ba798ee6fdaa5c26f8ef8d5d5b416ae",
             "notes": "a05ff222925c4487dfae1ddf9b72d09ad7b32379481849bd3d3d53fd83e0555c",
             "seuil": null,
@@ -6565,7 +6565,7 @@
             "id": "B2-01-S11-C1",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "a30cb57c082cc9050239539e0833a9cea81e8721537609891908f637fb24d3f9"
           },
           {
@@ -6586,7 +6586,7 @@
             "id": "B2-01-S14-CALCUL",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "a8753ffa77444c4bfef7a6dc3b4d5f43d7eb9742fb7e7dce35aa4833febf37e4"
           },
           {
@@ -6642,7 +6642,7 @@
             "id": "B2-01-S22-C2",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "25f29931fee90cf883775205e97269520adf65a8647b090272457031c29a600d"
           },
           {
@@ -6684,7 +6684,7 @@
             "id": "B2-01-S28-CONCLUSION-INFLATION",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "d6ec48166dffc089c949eff8894785e378a9e6bd00310e00f5f31c88ba72ba0a"
           },
           {
@@ -7071,7 +7071,7 @@
             "id": "B2-01-S11-C1",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "a30cb57c082cc9050239539e0833a9cea81e8721537609891908f637fb24d3f9"
           },
           {
@@ -7092,7 +7092,7 @@
             "id": "B2-01-S14-CALCUL",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "a8753ffa77444c4bfef7a6dc3b4d5f43d7eb9742fb7e7dce35aa4833febf37e4"
           },
           {
@@ -7148,7 +7148,7 @@
             "id": "B2-01-S22-C2",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "25f29931fee90cf883775205e97269520adf65a8647b090272457031c29a600d"
           },
           {
@@ -7190,7 +7190,7 @@
             "id": "B2-01-S28-CONCLUSION-INFLATION",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "d6ec48166dffc089c949eff8894785e378a9e6bd00310e00f5f31c88ba72ba0a"
           },
           {
@@ -7577,7 +7577,7 @@
             "id": "B2-01-S11-C1",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "a30cb57c082cc9050239539e0833a9cea81e8721537609891908f637fb24d3f9"
           },
           {
@@ -7598,7 +7598,7 @@
             "id": "B2-01-S14-CALCUL",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "a8753ffa77444c4bfef7a6dc3b4d5f43d7eb9742fb7e7dce35aa4833febf37e4"
           },
           {
@@ -7654,7 +7654,7 @@
             "id": "B2-01-S22-C2",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "25f29931fee90cf883775205e97269520adf65a8647b090272457031c29a600d"
           },
           {
@@ -7696,7 +7696,7 @@
             "id": "B2-01-S28-CONCLUSION-INFLATION",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "d6ec48166dffc089c949eff8894785e378a9e6bd00310e00f5f31c88ba72ba0a"
           },
           {
@@ -7801,21 +7801,21 @@
             "id": "B2-01-S43-MARGE-2024",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "eaf1b0744a6498b81bc7adae52803a8a7fca2089094223515bf457aa8a83d53b"
           },
           {
             "id": "B2-01-S44-MARGE-2025",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "70cafe31e6e17f9deed6594ae729d4436305b9b128f556d0ac9333a42b4f5750"
           },
           {
             "id": "B2-01-S45-RECOMMANDATION",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "97e0d95060c3d2e37f1d20f83815027f7f7208caf1757f073e2aa091fbbb8538"
           },
           {
@@ -7829,7 +7829,7 @@
             "id": "B2-01-S47-PAIRS",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "2714f15fccd6cf393247e11171bc552f88282ad83df8b6c7b01302e295ee6a52"
           },
           {
@@ -7906,7 +7906,7 @@
             "id": "B2-01-S58-ALERTE",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "073dac75402e66e1589634ec23da47247bf241eda254772cbc5f19057840cd8c"
           },
           {
@@ -7934,7 +7934,7 @@
             "id": "B2-01-S62-DECISION",
             "type": "fp-story",
             "duree": 3,
-            "interactif": false,
+            "interactif": true,
             "donnees": "b1d650d4516859ec1a99d541d416a5ea0ba798ee6fdaa5c26f8ef8d5d5b416ae"
           },
           {
