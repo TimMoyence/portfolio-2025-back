@@ -15,16 +15,7 @@ import {
 } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildSessionRecord,
-  createMockAnswersRepo,
-  createMockFormationGroupsRepo,
-  createMockFormationMailer,
-  createMockFreeResponsesRepo,
-  createMockIncidentsRepo,
-  createMockMasteryRepo,
-  createMockParticipantsRepo,
-  createMockScoresRepo,
-  createMockSessionsRepo,
-  createMockTeacherAnnotationsRepo,
+  createMockDepotsFormations,
 } from './factories/formation.factory';
 import {
   coursPublie,
@@ -112,18 +103,7 @@ function seance(etat: SessionState = 'en_cours') {
 }
 
 describe('Acces formateur aux annotations, groupes, participants et reponses libres (e2e http socket)', () => {
-  const depots = {
-    sessions: createMockSessionsRepo(),
-    participants: createMockParticipantsRepo(),
-    answers: createMockAnswersRepo(),
-    incidents: createMockIncidentsRepo(),
-    mastery: createMockMasteryRepo(),
-    scores: createMockScoresRepo(),
-    freeResponses: createMockFreeResponsesRepo(),
-    annotations: createMockTeacherAnnotationsRepo(),
-    groups: createMockFormationGroupsRepo(),
-    mailer: createMockFormationMailer(),
-  };
+  const depots = createMockDepotsFormations();
   let app: INestApplication;
 
   const serveur = (): Parameters<typeof request>[0] =>

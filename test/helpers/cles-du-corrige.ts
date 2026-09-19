@@ -13,7 +13,7 @@ const CLES_DU_CORRIGE: readonly string[] = [
   'corriges',
 ];
 
-function clesImbriquees(valeur: unknown): string[] {
+export function clesImbriquees(valeur: unknown): string[] {
   if (Array.isArray(valeur)) {
     return valeur.flatMap((element: unknown) => clesImbriquees(element));
   }

@@ -8,6 +8,7 @@ import {
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { LireCoursPublicUseCase } from '../application/LireCoursPublic.useCase';
 import type { CoursPublic } from '../domain/cours/CoursPublic';
+import { SujetResponseDto } from './dto/sujet.response.dto';
 
 @ApiTags('formations')
 @Public()
@@ -19,7 +20,11 @@ export class FormationsCatalogController {
   @ApiOperation({
     summary: 'Lit le contenu public d un cours depuis le catalogue',
   })
-  @ApiOkResponse({ description: 'Cours public sans corrections ni notes' })
+  @ApiOkResponse({
+    type: SujetResponseDto,
+    description:
+      'Sujet public du tirage de référence : ni notes, ni guide, ni correction, ni quiz noté',
+  })
   @ApiNotFoundResponse({ description: 'Cours introuvable' })
   async get(@Param('slug') slug: string): Promise<CoursPublic> {
     return this.lireCoursPublic.execute(slug);

@@ -329,6 +329,21 @@ export function createMockFormationMailer(): jest.Mocked<IFormationMailer> {
   };
 }
 
+export function createMockDepotsFormations() {
+  return {
+    sessions: createMockSessionsRepo(),
+    participants: createMockParticipantsRepo(),
+    answers: createMockAnswersRepo(),
+    incidents: createMockIncidentsRepo(),
+    mastery: createMockMasteryRepo(),
+    scores: createMockScoresRepo(),
+    freeResponses: createMockFreeResponsesRepo(),
+    annotations: createMockTeacherAnnotationsRepo(),
+    groups: createMockFormationGroupsRepo(),
+    mailer: createMockFormationMailer(),
+  };
+}
+
 export function mockTypeOrmCreate(): jest.Mock {
   return jest.fn().mockImplementation((data: unknown) => data);
 }

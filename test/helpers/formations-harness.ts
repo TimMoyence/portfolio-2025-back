@@ -22,6 +22,7 @@ import { ControlSessionUseCase } from '../../src/modules/formations/application/
 import { DueQuestionsUseCase } from '../../src/modules/formations/application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from '../../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../../src/modules/formations/application/JoinSession.useCase';
+import { LireCoursPublicUseCase } from '../../src/modules/formations/application/LireCoursPublic.useCase';
 import { LireDerouleUseCase } from '../../src/modules/formations/application/LireDeroule.useCase';
 import { LireSujetUseCase } from '../../src/modules/formations/application/LireSujet.useCase';
 import { ListFreeResponsesUseCase } from '../../src/modules/formations/application/ListFreeResponses.useCase';
@@ -62,6 +63,7 @@ import {
 import { SessionStateCacheService } from '../../src/modules/formations/infrastructure/SessionStateCache.service';
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsAnnotationsController } from '../../src/modules/formations/interfaces/FormationsAnnotations.controller';
+import { FormationsCatalogController } from '../../src/modules/formations/interfaces/FormationsCatalog.controller';
 import { FormationsGroupsController } from '../../src/modules/formations/interfaces/FormationsGroups.controller';
 import { FormationsPresenterController } from '../../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../../src/modules/formations/interfaces/FormationsStudent.controller';
@@ -144,6 +146,7 @@ export const CONTROLEURS_FORMATIONS = [
   FormationsGroupsController,
   FormationsAnnotationsController,
   FormationsStudentController,
+  FormationsCatalogController,
 ];
 
 export function fournisseursFormations(
@@ -162,6 +165,7 @@ export function fournisseursFormations(
     DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,
+    LireCoursPublicUseCase,
     ManageTeacherAnnotationsUseCase,
     ManageFormationGroupsUseCase,
     ListSessionParticipantsUseCase,
