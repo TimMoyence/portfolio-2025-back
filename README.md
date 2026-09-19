@@ -48,7 +48,7 @@ Une fois l'API demarree :
 - les seances de formation reposent sur un cours servi par le serveur ([details](./docs/formations.md)) :
   - `POST /formations/sessions` avec `{ courseSlug }`, le serveur tirant le bareme
   - `GET /formations/sessions/:id/sujet` (sujet du tirage de l'etudiant, sans corrige)
-  - `GET /formations/sessions/:id/deroule` (deroule annote, formateur proprietaire)
+  - `GET /formations/sessions/:id/deroule` (deroule annote, formateur proprietaire ou administrateur)
   - `GET /formations/sessions/:id/presenter-stream` (SSE, dont l'evenement `resultats`)
 
 En production, `MORNING_BRIEF_HMAC_KEYS` ou le couple
