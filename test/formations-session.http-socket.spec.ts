@@ -478,21 +478,22 @@ describe('Session de formation (e2e http socket)', () => {
       });
       requete.end();
       await attendreQue(() => lectureCommencee, DELAI_FERMETURE_FLUX_MS);
+      passages.mockClear();
       requete.destroy();
       await requeteFermee;
       reprendreLaLecture();
       await attendreQue(() => lectureTerminee, DELAI_FERMETURE_FLUX_MS);
       await new Promise<void>((resoudre) => setImmediate(resoudre));
 
-      const passagesDuFlux = passages.mock.calls.filter(
+      const passagesApresAbandon = passages.mock.calls.filter(
         ([id]) => id === sessionId,
       ).length;
       lecture.mockRestore();
       passages.mockRestore();
 
-      expect({ lectureCommencee, passagesDuFlux }).toEqual({
+      expect({ lectureCommencee, passagesApresAbandon }).toEqual({
         lectureCommencee: true,
-        passagesDuFlux: 0,
+        passagesApresAbandon: 0,
       });
     });
   });
@@ -1198,6 +1199,11 @@ describe('sujet du participant (lecture par jeton)', () => {
     await request(serveur())
       .post(route(`/sessions/${sessionId}/start`))
       .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+      .expect(204);
+    await request(serveur())
+      .patch(route(`/sessions/${sessionId}/control`))
+      .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+      .send({ ecran: 4 })
       .expect(204);
 
     const sujetA = await request(serveur())
