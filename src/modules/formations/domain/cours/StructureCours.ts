@@ -24,7 +24,7 @@ export const REGLES_STRUCTURE = [
   'options-neutres',
 ] as const;
 
-export type RegleStructure = (typeof REGLES_STRUCTURE)[number];
+type RegleStructure = (typeof REGLES_STRUCTURE)[number];
 
 export interface ViolationStructure {
   readonly regle: RegleStructure | 'derogation-sans-justification';
