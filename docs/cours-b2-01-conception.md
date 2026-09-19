@@ -2009,7 +2009,9 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
 - **Correction serveur** : feuille reconstruite (cellules envoyées + cellules verrouillées réimposées
   depuis le plan), évaluée par le moteur canonique à complexité bornée (B6) ; par attendu, dans
   l’ordre : cellule vide → à revoir sans confusion ; forme `references` non respectée (aucune
-  référence, ou un littéral égal à la valeur attendue) → `valeur-saisie-sans-formule` ; code d’erreur
+  référence, ou un littéral égal en valeur absolue à la valeur attendue — sauf quand l’attendu est
+  une valeur de contrôle, 0, 1 ou −1 : la formule de référence de B7 contient elle-même le
+  littéral 1) → `valeur-saisie-sans-formule` ; code d’erreur
   (#DIV/0!, #REF!) → confusion déclarée de la cellule ; valeur hors tolérance → piège reconnu ou
   aucune confusion ; forme `{ memeQue }` non respectée (forme R1C1 différente de celle de la cellule
   de référence) → `formule-non-recopiable`. Score = justes ÷ 17 ; `correcte` si score ≥ 0,8.
@@ -3019,6 +3021,14 @@ et fines équivalents ; signe moins typographique et trait d’union équivalent
    française à la précision de chaque question numérique et incluses dans les textes publics ; les
    attendus des productions ayant au moins trois chiffres significatifs sont cherchés à 2, 4 et
    6 décimales (0,3452 ; 34,52) ; `metadonnees.misconceptionsCiblees` est vide partout.
+   **Exception mesurée pour les feuilles** : les attendus d’un `fp-sheet` sont cherchés à 4 et
+   6 décimales seulement, c’est-à-dire à la précision que le moteur calcule, jamais à leur arrondi
+   d’affichage à 2 décimales. Cherchés à 2 décimales, ils donnent deux faux positifs sur la V3, tous
+   deux du contenu de cours légitime : A2-06 affiche « 25,30 % », le taux de marge global 2025 qui
+   est une donnée du cas (§ 5.2) et non une réponse à trouver, quand F5 vaut 0,253043 ; la capsule
+   A4-01 affiche « 0,35 », une part de son propre exemple sur les sacs étanches, quand E2 vaut
+   0,345217 — deux nombres différents que seul l’arrondi confond. À 4 et 6 décimales la V3 ne lève
+   aucune fuite, et un écran qui publierait « 0,253043 » ou « 25,3043 » serait bien signalé.
 
 Résultat attendu sur la V3 : **0 fuite** (vérifié par le script de l’annexe E sur les textes de ce
 document). Premières apparitions publiques des réponses numériques, toutes **après** la question :

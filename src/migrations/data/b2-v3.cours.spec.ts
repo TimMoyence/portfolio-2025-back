@@ -194,6 +194,16 @@ describe('B2-01 V3 — fichier de données', () => {
     expect(verifierStructure(COURS)).toEqual([]);
   });
 
+  it('publie les arrondis d’affichage des attendus de A4-02 sans fuite (A2-06, capsule A4-01)', () => {
+    const ecrans = tirer(COURS, 0).sujet.ecrans;
+    const publie = (id: string): string =>
+      JSON.stringify(ecrans.find((ecran) => ecran.id === id)?.donnees);
+
+    expect(publie('B2-01-A2-06-POINTS')).toContain('25,30 %');
+    expect(publie('B2-01-A4-01-CAPSULE')).toContain('0,35');
+    expect(fuitesDeConfidentialite(COURS)).toEqual([]);
+  });
+
   it('refuserait le titre public de A4-04 qui portait la réponse du vote b2-01-a4-titre', () => {
     const avantArbitrage = coursDontLeTitre(
       ECRAN_DU_GRAPHIQUE_TRIMESTRIEL,

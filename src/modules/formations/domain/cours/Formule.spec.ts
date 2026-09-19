@@ -8,6 +8,7 @@ import {
   LONGUEUR_MAX_FORMULE,
   NOMBRE_MAX_CELLULES,
   PROFONDEUR_MAX,
+  surfaceDeFormule,
 } from './Formule';
 
 const REF = '#REF!';
@@ -289,6 +290,20 @@ describe('evaluerExpression', () => {
     expect(evaluerExpression('1+1+1+1+1', {}, { budgetNoeuds: 2 }).erreur).toBe(
       VALEUR,
     );
+  });
+});
+
+describe('surfaceDeFormule', () => {
+  it('relève les références sans le dollar et les littéraux décimaux', () => {
+    expect(surfaceDeFormule('=SOMME($C$2:C4)/100+0,5')).toEqual({
+      references: ['C2', 'C4'],
+      litteraux: [100, 0.5],
+    });
+  });
+
+  it('rend null pour une valeur tapée et pour une formule illisible', () => {
+    expect(surfaceDeFormule('0,345217')).toBeNull();
+    expect(surfaceDeFormule('=C2/')).toBeNull();
   });
 });
 

@@ -2,7 +2,18 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { B2_COURS_V3 } from '../src/migrations/data/b2-v3.cours';
 import type { Cours } from '../src/modules/formations/domain/contrats/cours';
+import type {
+  CorrigeFeuille,
+  CorrigeProduction,
+  CorrigeTableau,
+} from '../src/modules/formations/domain/cours/Corrige';
+import {
+  corrigerFeuille,
+  corrigerTableau,
+} from '../src/modules/formations/domain/cours/CorrectionProduction';
+import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
+import { evaluerFeuille } from '../src/modules/formations/domain/cours/Formule';
 import { projeterCatalogue } from '../src/modules/formations/domain/cours/Diffusion';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
@@ -108,6 +119,81 @@ describeDb('contenu V3 du B2-01 en base', () => {
         catalogue: projeterCatalogue(cours),
       }),
     ).toBe(INSTANTANE.empreinte);
+  });
+
+  function corrigeDe(id: string): CorrigeProduction | undefined {
+    const question = questionsDuCours(cours).find(
+      (candidate) => candidate.id === id,
+    );
+    return question?.type === 'feuille' || question?.type === 'tableau'
+      ? question.corrige
+      : undefined;
+  }
+
+  function corrigeDeLaFeuille(): CorrigeFeuille {
+    const corrige = corrigeDe('b2-01-a4-feuille-canaux');
+    if (corrige?.type !== 'feuille') {
+      throw new Error('la feuille A4-02 n’a pas été relue de la base');
+    }
+    return corrige;
+  }
+
+  function corrigeDuTableau(): CorrigeTableau {
+    const corrige = corrigeDe('b2-01-a4-indice-toile');
+    if (corrige?.type !== 'tableau') {
+      throw new Error('le tableau A4-05 n’a pas été relu de la base');
+    }
+    return corrige;
+  }
+
+  it('recalcule depuis la base les 17 valeurs du corrigé de A4-02 (AC-11)', () => {
+    const corrige = corrigeDeLaFeuille();
+    const formules = Object.fromEntries(
+      corrige.attendus.map((attendu) => [
+        attendu.reference,
+        attendu.formuleReference,
+      ]),
+    );
+
+    const resultats = evaluerFeuille({
+      lignes: corrige.plan.lignes,
+      colonnes: corrige.plan.colonnes,
+      cellules: { ...corrige.plan.cellules, ...formules },
+    });
+
+    expect(corrige.attendus).toHaveLength(17);
+    for (const attendu of corrige.attendus) {
+      expect(
+        resultats.get(attendu.reference)?.valeur ?? Number.NaN,
+      ).toBeCloseTo(attendu.valeur, 5);
+    }
+  });
+
+  it('corrige les deux productions relues de la base sans aucune cellule à revoir', () => {
+    const feuille = corrigeDeLaFeuille();
+    const tableau = corrigeDuTableau();
+    const saisies = [0, 1, 2, 3].map((rang) =>
+      Object.fromEntries(
+        tableau.attendus
+          .filter((attendu) => attendu.rang === rang)
+          .map((attendu) => [attendu.cle, attendu.valeur]),
+      ),
+    );
+
+    const surFeuille = corrigerFeuille(
+      feuille,
+      Object.fromEntries(
+        feuille.attendus.map((attendu) => [
+          attendu.reference,
+          attendu.formuleReference,
+        ]),
+      ),
+    );
+    const surTableau = corrigerTableau(tableau, saisies);
+
+    expect(surFeuille.verdicts.filter((cellule) => !cellule.juste)).toEqual([]);
+    expect(surTableau.verdicts.filter((ligne) => !ligne.juste)).toEqual([]);
+    expect([surFeuille.correcte, surTableau.correcte]).toEqual([true, true]);
   });
 
   it('refuse en base une diffusion hors catalogue et séance', async () => {

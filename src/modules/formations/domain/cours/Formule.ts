@@ -774,6 +774,32 @@ function formeRelative(reference: Reference, origine: Reference): string {
   );
 }
 
+export interface SurfaceFormule {
+  readonly references: readonly string[];
+  readonly litteraux: readonly number[];
+}
+
+export function surfaceDeFormule(formule: string): SurfaceFormule | null {
+  const source = sourceDeFormule(formule);
+  if (source === null) {
+    return null;
+  }
+  try {
+    const jetons = decouper(source);
+    new Analyseur(jetons).analyser();
+    return {
+      references: jetons
+        .filter((jeton) => jeton.genre === 'reference')
+        .map((jeton) => jeton.texte.replaceAll('$', '').toUpperCase()),
+      litteraux: jetons
+        .filter((jeton) => jeton.genre === 'nombre')
+        .map((jeton) => Number(jeton.texte.replace(',', '.'))),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function formeR1C1(formule: string, cellule: string): string | null {
   const source = sourceDeFormule(formule);
   const origine = referenceDeCellule(cellule);

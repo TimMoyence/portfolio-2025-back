@@ -15,6 +15,7 @@ const CLES_DE_LA_QUESTION: readonly string[] = [
   'options',
 ];
 const DECIMALES_DES_ATTENDUS: readonly number[] = [2, 4, 6];
+const DECIMALES_D_UNE_FEUILLE: readonly number[] = [4, 6];
 const FACTEUR_DE_POURCENTAGE = 100;
 const CHIFFRES_SIGNIFICATIFS_MINIMUM = 3;
 const TAILLE_D_UN_GROUPE = 3;
@@ -279,9 +280,13 @@ function fuitesDuVote(
 }
 
 function formesDesAttendus(corrige: CorrigeProduction): readonly string[] {
-  if (corrige.type !== 'tableau') {
+  if (corrige.type !== 'tableau' && corrige.type !== 'feuille') {
     return [];
   }
+  const decimales =
+    corrige.type === 'feuille'
+      ? DECIMALES_D_UNE_FEUILLE
+      : DECIMALES_DES_ATTENDUS;
   const valeurs = corrige.attendus
     .map((attendu) => attendu.valeur)
     .filter(
@@ -291,9 +296,9 @@ function formesDesAttendus(corrige: CorrigeProduction): readonly string[] {
   return [
     ...new Set(
       valeurs.flatMap((valeur) =>
-        DECIMALES_DES_ATTENDUS.flatMap((decimales) => [
-          enFrancais(Math.abs(valeur), decimales),
-          enFrancais(Math.abs(valeur) * FACTEUR_DE_POURCENTAGE, decimales),
+        decimales.flatMap((precision) => [
+          enFrancais(Math.abs(valeur), precision),
+          enFrancais(Math.abs(valeur) * FACTEUR_DE_POURCENTAGE, precision),
         ]),
       ),
     ),

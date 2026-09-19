@@ -340,18 +340,27 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
     },
   );
 
-  it('ne cherche pas les attendus d une feuille, corrigee sur la formule et non sur la valeur saisie', () => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
-      texteDe('B2-01-A1-04-AVANT', 'le CA du sur-mesure recule de 17,81 %'),
-      production('fp-sheet'),
-      cloture,
-    ]);
+  it.each([
+    ['un taux de 0,178054', ['B2-01-A1-04-AVANT']],
+    ['un taux de 17,8054 %', ['B2-01-A1-04-AVANT']],
+    ['un taux de 0,1781', ['B2-01-A1-04-AVANT']],
+    ['le CA du sur-mesure recule de 17,81 %', []],
+    ['un taux de 0,18', []],
+  ])(
+    'cherche les attendus d une feuille a leur precision calculee, pas a leur arrondi d affichage : « %s »',
+    (texte, attendu) => {
+      const cours = recomposer(base, [
+        ouverture,
+        citation,
+        atelier,
+        texteDe('B2-01-A1-04-AVANT', texte),
+        production('fp-sheet'),
+        cloture,
+      ]);
 
-    expect(fuites(cours)).toEqual([]);
-  });
+      expect(fuites(cours)).toEqual(attendu);
+    },
+  );
 
   const coffre = (indice: string): Ecran =>
     lireEcranStocke(
