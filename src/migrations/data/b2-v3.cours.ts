@@ -2131,7 +2131,7 @@ const ACTE_4: Acte = [
   ecranV2(
     {
       screenId: 'B2-01-A4-04-CA-TRIMESTRIEL',
-      titre: 'CA HT 2025 par canal et par trimestre',
+      titre: 'Le graphique retenu pour le dossier du comité',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['lecture-graphique'],

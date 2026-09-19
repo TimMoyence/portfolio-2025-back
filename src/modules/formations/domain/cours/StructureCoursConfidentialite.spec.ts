@@ -97,7 +97,7 @@ describe('garde confidentialite — volet exact', () => {
     expect(fuites(cours)).toEqual([APRES]);
   });
 
-  it('ne rejoue le volet catalogue que sur les ecrans catalogue, pas sur les titres verrouilles (§ 6.4, point 3)', () => {
+  it('rejoue le volet catalogue sur le titre d un ecran verrouille, visible au catalogue (§ 6.4, point 3)', () => {
     const verrouille = recomposer(base, [
       ouverture,
       citation,
@@ -116,8 +116,27 @@ describe('garde confidentialite — volet exact', () => {
       cloture,
     ]);
 
-    expect(fuites(verrouille)).toEqual([]);
+    expect(fuites(verrouille)).toEqual([APRES]);
     expect(fuites(catalogue)).toEqual([APRES]);
+  });
+
+  it('garde les donnees d un ecran verrouille hors du volet catalogue', () => {
+    const cours = recomposer(base, [
+      ouverture,
+      citation,
+      atelier,
+      buildEcranDeCitation(APRES, 1, {
+        titre: 'Un titre neutre',
+        proprietes: {
+          texte: 'La marketplace pèse 45,5 % du CA.',
+          auteur: null,
+          source: null,
+        },
+      }),
+      cloture,
+    ]);
+
+    expect(fuites(cours)).toEqual([]);
   });
 
   it('ne compte pas l enonce de la question elle-meme', () => {

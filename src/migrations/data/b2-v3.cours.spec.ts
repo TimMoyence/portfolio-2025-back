@@ -18,6 +18,7 @@ import {
   questionsDe,
   questionsDuCours,
 } from '../../modules/formations/domain/cours/Cours';
+import type { ContenuDeCoursBrut } from '../../modules/formations/domain/cours/CoursStocke';
 import { lireCoursStocke } from '../../modules/formations/domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../modules/formations/domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../modules/formations/domain/cours/Diffusion';
@@ -35,8 +36,28 @@ const LONGUEUR_MIN_D_UN_TEXTE_COMPARE = 12;
 const CLES_NON_TEXTUELLES = new Set(['id', 'formuleReference', 'transcript']);
 const RUBRIQUES = ['Action', 'Observé', 'Attendu', 'Contrôle', 'Transition'];
 
+const ECRAN_DU_GRAPHIQUE_TRIMESTRIEL = 'B2-01-A4-04-CA-TRIMESTRIEL';
+
 function acteDe(ecran: Ecran): number {
   return Number(ecran.id.slice('B2-01-A'.length, 'B2-01-A'.length + 1));
+}
+
+function coursDontLeTitre(screenId: string, titre: string): typeof COURS {
+  const brut = structuredClone(B2_COURS_V3) as unknown as {
+    ecrans: { screenId: string; titre: string }[];
+  };
+  const ecran = brut.ecrans.find((candidat) => candidat.screenId === screenId);
+  if (ecran === undefined) {
+    throw new Error(`écran inconnu dans la V3 : ${screenId}`);
+  }
+  ecran.titre = titre;
+  return lireCoursStocke(brut as unknown as ContenuDeCoursBrut);
+}
+
+function fuitesDeConfidentialite(cours: typeof COURS): (string | null)[] {
+  return verifierStructure(cours)
+    .filter((violation) => violation.regle === 'confidentialite')
+    .map((violation) => violation.ecran);
 }
 
 function renduDe(ecran: Ecran): string | null {
@@ -171,6 +192,18 @@ describe('B2-01 V3 — fichier de données', () => {
 
   it('ne lève aucune violation de structure, sans dérogation (AC-01, AC-14)', () => {
     expect(verifierStructure(COURS)).toEqual([]);
+  });
+
+  it('refuserait le titre public de A4-04 qui portait la réponse du vote b2-01-a4-titre', () => {
+    const avantArbitrage = coursDontLeTitre(
+      ECRAN_DU_GRAPHIQUE_TRIMESTRIEL,
+      'CA HT 2025 par canal et par trimestre',
+    );
+
+    expect(fuitesDeConfidentialite(avantArbitrage)).toEqual([
+      ECRAN_DU_GRAPHIQUE_TRIMESTRIEL,
+    ]);
+    expect(fuitesDeConfidentialite(COURS)).toEqual([]);
   });
 
   it('borne l’exposition continue à 5 min pour 161 min interactives et 49 d’exposition (AC-04)', () => {

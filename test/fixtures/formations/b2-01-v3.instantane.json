@@ -1,7 +1,7 @@
 {
   "version": 3,
   "graine": 0,
-  "empreinte": "ffb9f747451f8ed2dff9e75ed83fb3d7e83b6c70024e7e703e0bee6bd50509e1",
+  "empreinte": "f283ff9bf1ac6a0700a1a2dd7aae4f108a8dadae673ae64bc0481b6dce365af6",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Traitement de l’information chiffrée",
@@ -1797,7 +1797,7 @@
       {
         "id": "B2-01-A4-04-CA-TRIMESTRIEL",
         "type": "fp-story",
-        "titre": "CA HT 2025 par canal et par trimestre",
+        "titre": "Le graphique retenu pour le dossier du comité",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -5800,7 +5800,7 @@
       {
         "id": "B2-01-A4-04-CA-TRIMESTRIEL",
         "type": "fp-story",
-        "titre": "CA HT 2025 par canal et par trimestre",
+        "titre": "Le graphique retenu pour le dossier du comité",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -8701,7 +8701,7 @@
       {
         "id": "B2-01-A4-04-CA-TRIMESTRIEL",
         "type": "ecran-verrouille",
-        "titre": "CA HT 2025 par canal et par trimestre",
+        "titre": "Le graphique retenu pour le dossier du comité",
         "duree": 2,
         "interactif": false,
         "donnees": {}

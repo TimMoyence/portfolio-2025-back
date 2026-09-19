@@ -1255,7 +1255,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 #### A4-04 · `B2-01-A4-04-CA-TRIMESTRIEL` — 2 min · v2 `chart` (G4) · séance · Nouveau (reprend S20, S33)
 
 - **Contenu (public)** :
-  - Titre public : « CA HT 2025 par canal et par trimestre »
+  - Titre public : « Le graphique retenu pour le dossier du comité »
   - `title` « CA HT 2025 d’Atelier Rivage par canal et par trimestre » ; `caption` « Une courbe par
     canal : la forme suit la question (une évolution dans le temps) » ; `kind` line ; `labels` [« T1 »,
     « T2 », « T3 », « T4 »] ; `series` [{ « Sur-mesure », [120, 95, 102, 80], ink }, { « Entretien »,
@@ -1266,6 +1266,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - `source` « Comptabilité analytique d’Atelier Rivage, 2025 (données fictives). »
   - `description` « Trois courbes étiquetées sur quatre trimestres : sur-mesure 120, 95, 102, 80 ;
     entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180. »
+- **Confidentialité** : le titre public de cet écran est neutre parce qu’il est lu au catalogue,
+  écran verrouillé compris, donc avant la séance. Le titre descriptif reprenait mot pour mot les
+  segments de la bonne réponse de A4-03 Q2 (`b2-01-a4-titre`), qui demande précisément quel titre
+  donner au graphique ; il ne subsiste que dans `title`, servi en séance après la question.
 - **Notes** :
   - Action : comparer au choix fait à l’atelier 3.
   - Observé : trois courbes étiquetées directement (pas de légende à décoder), des marqueurs distincts.
@@ -3008,7 +3012,9 @@ et fines équivalents ; signe moins typographique et trait d’union équivalent
    reste appliqué.
 3. **Volet catalogue** : les volets 1 et 2 sont rejoués en remplaçant « écrans 0 à k » par « tous les
    écrans `catalogue` », quel que soit leur rang ; la règle `catalogue-sans-question` interdit toute
-   activité en diffusion `catalogue`.
+   activité en diffusion `catalogue`. Un écran `seance` paraît lui aussi au catalogue, verrouillé :
+   ses `donnees` sont vides, mais **son titre public reste lisible**, et il est donc cherché comme
+   un texte de catalogue. C’est ce volet qui a fait renommer le titre de A4-04 (§ 3, acte 4).
 4. **Valeurs numériques des propriétés** : les séries des graphiques (`values`) sont formatées à la
    française à la précision de chaque question numérique et incluses dans les textes publics ; les
    attendus des productions ayant au moins trois chiffres significatifs sont cherchés à 2, 4 et

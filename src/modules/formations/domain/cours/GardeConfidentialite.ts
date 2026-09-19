@@ -154,29 +154,33 @@ interface Portee {
   readonly decimales?: number;
 }
 
+function textesDeLEcran(
+  ecran: EcranPublic,
+  exclue: string | null,
+  decimales: number | undefined,
+): string[] {
+  const titre = ecran.titre === null ? [] : [ecran.titre];
+  if (ecran.type === TYPE_D_ECRAN_VERROUILLE) {
+    return titre;
+  }
+  const valeurs =
+    decimales === undefined
+      ? []
+      : valeursDesGraphiques(ecran.donnees).map((valeur) =>
+          enFrancais(valeur, decimales),
+        );
+  return [...titre, ...chainesDe(ecran.donnees, exclue), ...valeurs];
+}
+
 function textesVisibles(
   contexte: Contexte,
   portee: Portee,
 ): readonly TextePublic[] {
-  const { decimales } = portee;
   return contexte.sujet.flatMap((servi, position) => {
     const ecran =
       position <= portee.limite ? servi : contexte.catalogue[position];
-    if (ecran.type === TYPE_D_ECRAN_VERROUILLE) {
-      return [];
-    }
     const exclue = position === portee.rang ? portee.exclue : null;
-    const chaines = [
-      ...(ecran.titre === null ? [] : [ecran.titre]),
-      ...chainesDe(ecran.donnees, exclue),
-    ];
-    const valeurs =
-      decimales === undefined
-        ? []
-        : valeursDesGraphiques(ecran.donnees).map((valeur) =>
-            enFrancais(valeur, decimales),
-          );
-    return [...chaines, ...valeurs].map((texte) => ({
+    return textesDeLEcran(ecran, exclue, portee.decimales).map((texte) => ({
       ecran: ecran.id,
       texte,
     }));
