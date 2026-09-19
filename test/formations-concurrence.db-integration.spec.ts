@@ -187,14 +187,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
     contexte = await ouvrirContexteFormations();
     app = await monterApplicationFormations(
-      {
-        sessions: contexte.sessions,
-        participants: contexte.participants,
-        answers: contexte.answers,
-        incidents: contexte.incidents,
-        mastery: contexte.mastery,
-        mailer: createMockFormationMailer(),
-      },
+      { ...contexte, mailer: createMockFormationMailer() },
       creerCatalogueDeTest(COURS_DE_CLASSE),
     );
     await ecouterEnBoucleLocale(app);

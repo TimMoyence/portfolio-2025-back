@@ -54,6 +54,7 @@ import {
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
+  SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../src/modules/formations/domain/token';
@@ -75,6 +76,7 @@ import {
   createMockFormationMailer,
   createMockIncidentsRepo,
   createMockMasteryRepo,
+  createMockScoresRepo,
 } from './factories/formation.factory';
 import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
@@ -303,6 +305,7 @@ class IdentiteDeTestGuard implements CanActivate {
 interface HarnaisFormations {
   app: INestApplication;
   mailer: ReturnType<typeof createMockFormationMailer>;
+  scores: ReturnType<typeof createMockScoresRepo>;
   port: number;
 }
 
@@ -322,6 +325,7 @@ async function creerHarnais(
   process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
   process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
   const mailer = createMockFormationMailer();
+  const scores = createMockScoresRepo();
 
   const moduleRef = await Test.createTestingModule({
     imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 30 }])],
@@ -346,6 +350,7 @@ async function creerHarnais(
       { provide: MASTERY_REPOSITORY, useValue: createMockMasteryRepo() },
       { provide: INCIDENTS_REPOSITORY, useValue: createMockIncidentsRepo() },
       { provide: FORMATION_MAILER, useValue: mailer },
+      { provide: SCORES_REPOSITORY, useValue: scores },
       { provide: CATALOGUE_COURS, useValue: catalogueHttp },
       { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
       { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
@@ -358,12 +363,13 @@ async function creerHarnais(
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
   const port = await ecouterEnBoucleLocale(app);
-  return { app, mailer, port };
+  return { app, mailer, scores, port };
 }
 
 describe('Session de formation (e2e http socket)', () => {
   let app: INestApplication;
   let mailer: HarnaisFormations['mailer'];
+  let scores: HarnaisFormations['scores'];
   let port: number;
 
   const serveur = (): Parameters<typeof request>[0] =>
@@ -399,7 +405,7 @@ describe('Session de formation (e2e http socket)', () => {
       .send(inscription(studentKey));
 
   beforeAll(async () => {
-    ({ app, mailer, port } = await creerHarnais());
+    ({ app, mailer, scores, port } = await creerHarnais());
   });
 
   afterAll(async () => {
@@ -897,6 +903,20 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(201);
       jeton = (inscrit.body as { jeton: string }).jeton;
       mailer.sendSyntheseFormateur.mockClear();
+      scores.saveIndividuals.mockClear();
+      scores.saveSession.mockClear();
+    });
+
+    it('ne persiste aucun score a la lecture des resultats ni du bilan', async () => {
+      for (const lecture of ['results', 'report']) {
+        await request(serveur())
+          .get(route(`/sessions/${sessionId}/${lecture}`))
+          .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+          .expect(200);
+      }
+
+      expect(scores.saveIndividuals).not.toHaveBeenCalled();
+      expect(scores.saveSession).not.toHaveBeenCalled();
     });
 
     it('cloture et adresse la synthese a la boite configuree, jamais au teacherId', async () => {
@@ -905,6 +925,12 @@ describe('Session de formation (e2e http socket)', () => {
         .set('x-test-identite', `${FORMATEUR_A}:teacher`)
         .expect(204);
 
+      expect(scores.saveIndividuals).toHaveBeenCalledWith([
+        expect.objectContaining({ sessionId, note: 0, completion: 0 }),
+      ]);
+      expect(scores.saveSession).toHaveBeenCalledWith(
+        expect.objectContaining({ sessionId, tauxParticipation: 0 }),
+      );
       expect(mailer.sendSyntheseFormateur).toHaveBeenCalledWith(
         SYNTHESE_A,
         expect.anything(),

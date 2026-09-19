@@ -8,6 +8,10 @@ import type {
 } from '../domain/IScores.repository';
 import { FormationScoreEntity } from './entities/FormationScore.entity';
 
+const CLE_SCORE_INDIVIDUEL = ['sessionId', 'participantId', 'kind'];
+const CLE_SCORE_DE_SEANCE = ['sessionId', 'kind'];
+const PREDICAT_INDEX_SCORE_DE_SEANCE = '"participant_id" IS NULL';
+
 @Injectable()
 export class ScoresRepositoryTypeORM implements IScoresRepository {
   constructor(
@@ -15,83 +19,44 @@ export class ScoresRepositoryTypeORM implements IScoresRepository {
     private readonly repo: Repository<FormationScoreEntity>,
   ) {}
 
-  async saveIndividual(
-    input: Omit<IndividualScoreSnapshot, 'updatedAt'>,
+  async saveIndividuals(
+    scores: readonly IndividualScoreSnapshot[],
   ): Promise<void> {
+    if (scores.length === 0) {
+      return;
+    }
     await this.repo.upsert(
-      {
-        sessionId: input.sessionId,
-        participantId: input.participantId,
-        kind: 'individual',
-        score: input.score,
-        percentage: input.percentage,
+      scores.map((score) => ({
+        sessionId: score.sessionId,
+        participantId: score.participantId,
+        kind: 'individual' as const,
+        score: score.note,
+        percentage: score.completion,
         metrics: {},
-      },
-      ['sessionId', 'participantId', 'kind'],
+      })),
+      CLE_SCORE_INDIVIDUEL,
     );
   }
 
-  async saveSession(
-    input: Omit<SessionScoreSnapshot, 'updatedAt'>,
-  ): Promise<void> {
-    const values = {
-      sessionId: input.sessionId,
-      participantId: null,
-      kind: 'session' as const,
-      score: input.moyenne,
-      percentage: input.tauxReussite,
-      metrics: {
-        mediane: input.mediane,
-        dispersion: input.dispersion,
-        tauxParticipation: input.tauxParticipation,
-        questionsProblemes: input.questionsProblemes,
+  async saveSession(score: SessionScoreSnapshot): Promise<void> {
+    await this.repo.upsert(
+      {
+        sessionId: score.sessionId,
+        participantId: null,
+        kind: 'session',
+        score: score.moyenne,
+        percentage: score.tauxReussite,
+        metrics: {
+          mediane: score.mediane,
+          dispersion: score.dispersion,
+          tauxParticipation: score.tauxParticipation,
+          questionsProblemes: score.questionsProblemes,
+        },
       },
-    };
-    const existing = await this.repo.findOne({
-      where: { sessionId: input.sessionId, kind: 'session' },
-    });
-    if (existing) {
-      await this.repo.update(existing.id, values);
-    } else {
-      await this.repo.save(this.repo.create(values));
-    }
-  }
-
-  async listBySession(
-    sessionId: string,
-  ): Promise<readonly IndividualScoreSnapshot[]> {
-    const rows = await this.repo.find({
-      where: { sessionId, kind: 'individual' },
-      order: { updatedAt: 'ASC', participantId: 'ASC' },
-    });
-    return rows.map((row) => ({
-      sessionId: row.sessionId,
-      participantId: row.participantId as string,
-      score: row.score,
-      percentage: row.percentage,
-      updatedAt: row.updatedAt,
-    }));
-  }
-
-  async findSession(sessionId: string): Promise<SessionScoreSnapshot | null> {
-    const row = await this.repo.findOne({
-      where: { sessionId, kind: 'session' },
-    });
-    if (!row) return null;
-    const metrics = row.metrics;
-    return {
-      sessionId: row.sessionId,
-      moyenne: row.score,
-      mediane: Number(metrics['mediane'] ?? 0),
-      dispersion: Number(metrics['dispersion'] ?? 0),
-      tauxParticipation: Number(metrics['tauxParticipation'] ?? 0),
-      tauxReussite: row.percentage,
-      questionsProblemes: Array.isArray(metrics['questionsProblemes'])
-        ? metrics['questionsProblemes'].filter(
-            (value): value is string => typeof value === 'string',
-          )
-        : [],
-      updatedAt: row.updatedAt,
-    };
+      {
+        conflictPaths: CLE_SCORE_DE_SEANCE,
+        indexPredicate: PREDICAT_INDEX_SCORE_DE_SEANCE,
+      },
+    );
   }
 }

@@ -12,6 +12,7 @@ import {
   createMockFormationMailer,
   createMockIncidentsRepo,
   createMockParticipantsRepo,
+  createMockScoresRepo,
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
@@ -22,6 +23,7 @@ import {
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
 import { CloseSessionUseCase } from '../CloseSession.useCase';
+import { GetSessionResultsUseCase } from '../GetSessionResults.useCase';
 
 const COURS = buildCoursDeTest();
 const TEACHER_ID = 'teacher-uuid';
@@ -39,6 +41,7 @@ describe('CloseSessionUseCase', () => {
   let incidents: ReturnType<typeof createMockIncidentsRepo>;
   let mailer: ReturnType<typeof createMockFormationMailer>;
   let cache: ReturnType<typeof createMockSessionStateCache>;
+  let scores: ReturnType<typeof createMockScoresRepo>;
   let sut: CloseSessionUseCase;
 
   beforeEach(() => {
@@ -53,14 +56,19 @@ describe('CloseSessionUseCase', () => {
     incidents = createMockIncidentsRepo();
     mailer = createMockFormationMailer();
     cache = createMockSessionStateCache();
+    scores = createMockScoresRepo();
     sut = new CloseSessionUseCase(
       sessions,
-      participants,
-      answers,
-      incidents,
+      new GetSessionResultsUseCase(
+        sessions,
+        participants,
+        answers,
+        incidents,
+        creerCatalogueDeTest(COURS),
+      ),
+      scores,
       mailer,
       cache,
-      creerCatalogueDeTest(COURS),
     );
   });
 
@@ -180,6 +188,51 @@ describe('CloseSessionUseCase', () => {
     expect(rapport.conceptsFragiles).toContain('capitalisation');
   });
 
+  describe('scores de la seance', () => {
+    beforeEach(() => {
+      participants.listBySession.mockResolvedValue([
+        buildParticipantRecord({ id: 'p1', email: 'a@example.com' }),
+        buildParticipantRecord({ id: 'p2', email: 'b@example.com' }),
+      ]);
+      answers.listBySession.mockResolvedValue([
+        buildAnswerRecord({ participantId: 'p1' }),
+      ]);
+    });
+
+    it('enregistre a la cloture la note et la completion de chaque participant', async () => {
+      await sut.execute('session-uuid', TEACHER_ID);
+
+      expect(scores.saveIndividuals).toHaveBeenCalledWith([
+        {
+          sessionId: 'session-uuid',
+          participantId: 'p1',
+          note: 20,
+          completion: 1,
+        },
+        {
+          sessionId: 'session-uuid',
+          participantId: 'p2',
+          note: 0,
+          completion: 0,
+        },
+      ]);
+    });
+
+    it('enregistre a la cloture les statistiques de la seance', async () => {
+      await sut.execute('session-uuid', TEACHER_ID);
+
+      expect(scores.saveSession).toHaveBeenCalledWith({
+        sessionId: 'session-uuid',
+        moyenne: 10,
+        mediane: 10,
+        dispersion: 10,
+        tauxParticipation: 0.5,
+        tauxReussite: 1,
+        questionsProblemes: [],
+      });
+    });
+  });
+
   it('vide le cache d etat', async () => {
     await sut.execute('session-uuid', TEACHER_ID);
     expect(cache.drop).toHaveBeenCalledWith('session-uuid');
@@ -204,6 +257,8 @@ describe('CloseSessionUseCase', () => {
     expect(incidents.listBySession).not.toHaveBeenCalled();
     expect(sessions.update).not.toHaveBeenCalled();
     expect(cache.drop).not.toHaveBeenCalled();
+    expect(scores.saveIndividuals).not.toHaveBeenCalled();
+    expect(scores.saveSession).not.toHaveBeenCalled();
     expect(mailer.sendSyntheseFormateur).not.toHaveBeenCalled();
     expect(mailer.sendCopieEtudiant).not.toHaveBeenCalled();
   });

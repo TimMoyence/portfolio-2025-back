@@ -8,23 +8,22 @@ import {
 import { Observable } from 'rxjs';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
-import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type {
   IStreamCapacity,
   StreamCapacityLease,
 } from '../domain/IStreamCapacity.port';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type {
   ISessionStateCache,
   LiveSessionState,
 } from '../domain/ISessionStateCache.port';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { agregerResultats } from '../domain/ResultatsSeance';
+import type {
+  ISessionsRepository,
+  SessionRecord,
+} from '../domain/ISessions.repository';
 import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
+import type { StatistiquesSeance } from '../domain/SessionStatistics';
 import {
-  ANSWERS_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
   STREAM_CAPACITY,
@@ -68,6 +67,10 @@ interface PlacesDuFlux {
   readonly seance?: Place;
 }
 
+type ResultatsEnDirect = ResultatsSeance & {
+  readonly statistiques: StatistiquesSeance;
+};
+
 /**
  * Chaque abonnement tient trois minuteurs et une socket pendant cinq heures
  * dans le processus partage par tout le site : sans plafond, une boucle
@@ -99,17 +102,12 @@ export class StreamSessionUseCase {
     private readonly sessions: ISessionsRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
-    @Inject(ANSWERS_REPOSITORY)
-    private readonly answers: IAnswersRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
+    private readonly presenterResults: GetSessionResultsUseCase,
     @Optional()
     private readonly cadences: CadencesFlux = CADENCES_PRODUCTION,
     @Optional()
     @Inject(STREAM_CAPACITY)
     private readonly capacity: IStreamCapacity = CAPACITE_MEMOIRE,
-    @Optional()
-    private readonly presenterResults?: GetSessionResultsUseCase,
   ) {}
 
   async executeForTeacher(
@@ -131,8 +129,7 @@ export class StreamSessionUseCase {
           capacite: `teacher:${sessionId}`,
         },
       },
-      session.bareme.questions.map((question) => question.id),
-      teacherId,
+      session,
     );
   }
 
@@ -156,8 +153,7 @@ export class StreamSessionUseCase {
   private ouvrirFlux(
     sessionId: string,
     places: PlacesDuFlux,
-    questionsDuFormateur?: readonly string[],
-    teacherId?: string,
+    sessionDuFormateur?: SessionRecord,
   ): Observable<MessageEvent> {
     assertSeanceDisponible(places);
     return new Observable<MessageEvent>((subscriber) => {
@@ -196,7 +192,7 @@ export class StreamSessionUseCase {
       };
 
       const pousserResultatsSiActivite = async (
-        questionIds: readonly string[],
+        session: SessionRecord,
       ): Promise<void> => {
         const activite = this.cache.activite(sessionId);
         if (activite === derniereActivite) {
@@ -204,17 +200,17 @@ export class StreamSessionUseCase {
         }
         subscriber.next({
           type: 'resultats',
-          data: await this.lireResultats(sessionId, questionIds, teacherId),
+          data: await this.lireResultats(session),
         });
         derniereActivite = activite;
       };
 
       const pousserResultatsDefinitifs = async (): Promise<void> => {
-        if (!questionsDuFormateur) {
+        if (!sessionDuFormateur) {
           return;
         }
         try {
-          await pousserResultatsSiActivite(questionsDuFormateur);
+          await pousserResultatsSiActivite(sessionDuFormateur);
         } catch (error) {
           this.logger.warn(
             `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDe(error)}`,
@@ -252,8 +248,8 @@ export class StreamSessionUseCase {
             await clore();
             return;
           }
-          if (questionsDuFormateur) {
-            await pousserResultatsSiActivite(questionsDuFormateur);
+          if (sessionDuFormateur) {
+            await pousserResultatsSiActivite(sessionDuFormateur);
           }
         } catch (error) {
           this.logger.warn(
@@ -319,22 +315,10 @@ export class StreamSessionUseCase {
   }
 
   private async lireResultats(
-    sessionId: string,
-    questionIds: readonly string[],
-    teacherId?: string,
-  ): Promise<ResultatsSeance | Record<string, unknown>> {
-    if (teacherId !== undefined && this.presenterResults !== undefined) {
-      const rapport = await this.presenterResults.execute(sessionId, teacherId);
-      return {
-        ...rapport.resultats,
-        statistiques: rapport.statistiques,
-      };
-    }
-    const [answers, participants] = await Promise.all([
-      this.answers.listBySession(sessionId),
-      this.participants.countBySession(sessionId),
-    ]);
-    return agregerResultats({ questionIds, answers, participants });
+    session: SessionRecord,
+  ): Promise<ResultatsEnDirect> {
+    const { resultats } = await this.presenterResults.bilanDe(session);
+    return { ...resultats.resultats, statistiques: resultats.statistiques };
   }
 
   private rafraichirCapacite(

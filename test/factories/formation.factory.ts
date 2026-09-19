@@ -11,6 +11,7 @@ import type {
 } from '../../src/modules/formations/domain/IIncidents.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
+import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type { ISessionStateCache } from '../../src/modules/formations/domain/ISessionStateCache.port';
 import type {
   IParticipantsRepository,
@@ -194,6 +195,13 @@ export function createMockIncidentsRepo(): jest.Mocked<IIncidentsRepository> {
   return {
     createMany: jest.fn().mockResolvedValue(undefined),
     listBySession: jest.fn().mockResolvedValue([]),
+  };
+}
+
+export function createMockScoresRepo(): jest.Mocked<IScoresRepository> {
+  return {
+    saveIndividuals: jest.fn().mockResolvedValue(undefined),
+    saveSession: jest.fn().mockResolvedValue(undefined),
   };
 }
 

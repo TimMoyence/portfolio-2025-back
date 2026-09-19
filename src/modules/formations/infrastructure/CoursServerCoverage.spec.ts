@@ -326,76 +326,73 @@ describe('formation repositories for responses, annotations, groups and scores',
     ).rejects.toThrow('Participant introuvable');
   });
 
-  it('persiste les scores individuels et de séance puis relit leurs métriques', async () => {
-    const sessionRow = {
-      id: 'score-session',
-      sessionId: SESSION_ID,
-      participantId: null,
-      kind: 'session',
-      score: 8,
-      percentage: 80,
-      metrics: {
-        mediane: 8,
-        dispersion: 1.5,
-        tauxParticipation: 90,
-        questionsProblemes: ['Q1'],
-      },
-      updatedAt: date,
-    } as unknown as FormationScoreEntity;
-    const individualRow = {
-      ...sessionRow,
-      id: 'score-individual',
-      participantId: 'participant-1',
-      kind: 'individual',
-      score: 9,
-      percentage: 90,
-    } as FormationScoreEntity;
+  it('persiste en une seule requete atomique les scores individuels, completion comprise', async () => {
     const repo = {
       upsert: jest.fn().mockResolvedValue(undefined),
-      findOne: jest
-        .fn()
-        .mockResolvedValueOnce(null)
-        .mockResolvedValue(sessionRow),
-      create: jest.fn((value: unknown) => value),
-      save: jest.fn().mockResolvedValue(sessionRow),
-      update: jest.fn().mockResolvedValue(undefined),
-      find: jest.fn().mockResolvedValue([individualRow]),
     } as unknown as jest.Mocked<Repository<FormationScoreEntity>>;
     const sut = new ScoresRepositoryTypeORM(repo);
 
-    await sut.saveIndividual({
-      sessionId: SESSION_ID,
-      participantId: 'participant-1',
-      score: 9,
-      percentage: 90,
-    });
-    await sut.saveSession({
-      sessionId: SESSION_ID,
-      moyenne: 8,
-      mediane: 8,
-      dispersion: 1.5,
-      tauxParticipation: 90,
-      tauxReussite: 80,
-      questionsProblemes: ['Q1'],
-    });
-    await sut.saveSession({
-      sessionId: SESSION_ID,
-      moyenne: 8,
-      mediane: 8,
-      dispersion: 1.5,
-      tauxParticipation: 90,
-      tauxReussite: 80,
-      questionsProblemes: ['Q1'],
-    });
-    await expect(sut.listBySession(SESSION_ID)).resolves.toEqual([
-      expect.objectContaining({ participantId: 'participant-1', score: 9 }),
+    await sut.saveIndividuals([
+      {
+        sessionId: SESSION_ID,
+        participantId: 'participant-1',
+        note: 9,
+        completion: 0.45,
+      },
     ]);
-    await expect(sut.findSession(SESSION_ID)).resolves.toMatchObject({
+    await sut.saveIndividuals([]);
+
+    expect(repo.upsert).toHaveBeenCalledTimes(1);
+    expect(repo.upsert).toHaveBeenCalledWith(
+      [
+        {
+          sessionId: SESSION_ID,
+          participantId: 'participant-1',
+          kind: 'individual',
+          score: 9,
+          percentage: 0.45,
+          metrics: {},
+        },
+      ],
+      ['sessionId', 'participantId', 'kind'],
+    );
+  });
+
+  it('persiste le score de seance sur l index unique partiel des lignes sans participant', async () => {
+    const repo = {
+      upsert: jest.fn().mockResolvedValue(undefined),
+    } as unknown as jest.Mocked<Repository<FormationScoreEntity>>;
+    const sut = new ScoresRepositoryTypeORM(repo);
+
+    await sut.saveSession({
+      sessionId: SESSION_ID,
       moyenne: 8,
+      mediane: 8,
+      dispersion: 1.5,
+      tauxParticipation: 0.9,
+      tauxReussite: 0.8,
       questionsProblemes: ['Q1'],
     });
-    expect(repo.upsert).toHaveBeenCalled();
-    expect(repo.update).toHaveBeenCalled();
+
+    expect(repo.upsert).toHaveBeenCalledWith(
+      {
+        sessionId: SESSION_ID,
+        participantId: null,
+        kind: 'session',
+        score: 8,
+        percentage: 0.8,
+        metrics: {
+          mediane: 8,
+          dispersion: 1.5,
+          tauxParticipation: 0.9,
+          questionsProblemes: ['Q1'],
+        },
+      },
+      {
+        conflictPaths: ['sessionId', 'kind'],
+        indexPredicate: '"participant_id" IS NULL',
+      },
+    );
   });
 });
 

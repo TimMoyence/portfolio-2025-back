@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource, type EntityTarget, type ObjectLiteral } from 'typeorm';
 import { CreateFormations1778900000000 } from '../src/migrations/1778900000000-CreateFormations';
 import { CreateFormationCourseContent1779100000000 } from '../src/migrations/1779100000000-CreateFormationCourseContent';
 import { SeedB2StoryboardLots1231779200000 } from '../src/migrations/1779200000000-SeedB2StoryboardLots123';
@@ -41,7 +41,17 @@ import { ScoresRepositoryTypeORM } from '../src/modules/formations/infrastructur
 import { FormationParticipantEntity } from '../src/modules/formations/infrastructure/entities/FormationParticipant.entity';
 import { FormationGroupEntity } from '../src/modules/formations/infrastructure/entities/FormationGroup.entity';
 import { ParticipantsRepositoryTypeORM } from '../src/modules/formations/infrastructure/Participants.repository.typeorm';
-import { buildBareme } from './factories/formation.factory';
+import { AnswersRepositoryTypeORM } from '../src/modules/formations/infrastructure/Answers.repository.typeorm';
+import { IncidentsRepositoryTypeORM } from '../src/modules/formations/infrastructure/Incidents.repository.typeorm';
+import { FormationAnswerEntity } from '../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
+import { FormationIncidentEntity } from '../src/modules/formations/infrastructure/entities/FormationIncident.entity';
+import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
+import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
+import {
+  buildBareme,
+  createMockFormationMailer,
+  createMockSessionStateCache,
+} from './factories/formation.factory';
 import { FORMATION_ENTITIES } from './helpers/formations-db';
 import {
   buildDbIntegrationOptions,
@@ -50,6 +60,7 @@ import {
 } from './helpers/db-integration-datasource';
 
 const SLUG_B2 = 'b2-01-traitement-information-chiffree';
+const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const DELAI_MIGRATIONS_MS = 60_000;
 const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
 
@@ -443,7 +454,7 @@ describeDb('catalogue B2 migré', () => {
     ).resolves.toEqual([]);
   });
 
-  it('persiste les groupes, affectations et snapshots de score', async () => {
+  it('persiste les groupes et les affectations', async () => {
     const sessions = new SessionsRepositoryTypeORM(
       dataSource.getRepository(FormationSessionEntity),
     );
@@ -453,9 +464,6 @@ describeDb('catalogue B2 migré', () => {
     const groups = new FormationGroupsRepositoryTypeORM(
       dataSource.getRepository(FormationGroupEntity),
       dataSource.getRepository(FormationParticipantEntity),
-    );
-    const scores = new ScoresRepositoryTypeORM(
-      dataSource.getRepository(FormationScoreEntity),
     );
     const session = await sessions.create({
       courseSlug: 'b2-01-traitement-information-chiffree',
@@ -479,27 +487,118 @@ describeDb('catalogue B2 migré', () => {
     );
     await groups.rename(session.id, groupe.id, 'Groupe B');
     expect((await groups.listBySession(session.id))[0]?.name).toBe('Groupe B');
+  });
 
-    await scores.saveIndividual({
-      sessionId: session.id,
-      participantId: participant.id,
-      score: 16,
-      percentage: 0.8,
-    });
-    await scores.saveSession({
-      sessionId: session.id,
-      moyenne: 16,
-      mediane: 16,
-      dispersion: 0,
-      tauxParticipation: 1,
-      tauxReussite: 0.8,
-      questionsProblemes: ['Q-1'],
-    });
-    await expect(scores.listBySession(session.id)).resolves.toEqual([
-      expect.objectContaining({ participantId: participant.id, score: 16 }),
-    ]);
-    await expect(scores.findSession(session.id)).resolves.toEqual(
-      expect.objectContaining({ moyenne: 16, tauxReussite: 0.8 }),
+  it('persiste à la clôture la note et la complétion de chaque participant et les statistiques de la séance', async () => {
+    const depot = <T extends ObjectLiteral>(entite: EntityTarget<T>) =>
+      dataSource.getRepository(entite);
+    const sessions = new SessionsRepositoryTypeORM(
+      depot(FormationSessionEntity),
     );
+    const participants = new ParticipantsRepositoryTypeORM(
+      depot(FormationParticipantEntity),
+    );
+    const answers = new AnswersRepositoryTypeORM(depot(FormationAnswerEntity));
+    const scores = new ScoresRepositoryTypeORM(depot(FormationScoreEntity));
+    const session = await sessions.create({
+      courseSlug: SLUG_B2,
+      courseVersion: 2,
+      teacherId: FORMATEUR,
+      code: '7315',
+      bareme: buildBareme(),
+    });
+    const ada = await participants.create({
+      sessionId: session.id,
+      studentKey: 'b4111111-1111-4111-8111-111111111111',
+      prenom: 'Ada',
+      nom: 'Lovelace',
+      email: 'ada@example.test',
+      seed: 1001,
+    });
+    const grace = await participants.create({
+      sessionId: session.id,
+      studentKey: 'b5111111-1111-4111-8111-111111111111',
+      prenom: 'Grace',
+      nom: 'Hopper',
+      email: 'grace@example.test',
+      seed: 1002,
+    });
+    await answers.create({
+      sessionId: session.id,
+      participantId: ada.id,
+      questionId: 'Q-CAP-03',
+      concept: 'capitalisation',
+      valeur: 1338.23,
+      seed: 1001,
+      correcte: true,
+      misconception: null,
+      dureeMs: 1000,
+    });
+    const cloture = new CloseSessionUseCase(
+      sessions,
+      new GetSessionResultsUseCase(
+        sessions,
+        participants,
+        answers,
+        new IncidentsRepositoryTypeORM(depot(FormationIncidentEntity)),
+        new CoursCatalogueRepositoryTypeORM(
+          depot(FormationCourseContentEntity),
+        ),
+      ),
+      scores,
+      createMockFormationMailer(),
+      createMockSessionStateCache(),
+    );
+
+    await cloture.execute(session.id, FORMATEUR);
+    const statistiques = {
+      sessionId: session.id,
+      moyenne: 10,
+      mediane: 10,
+      dispersion: 10,
+      tauxParticipation: 0.5,
+      tauxReussite: 1,
+      questionsProblemes: [],
+    };
+    await Promise.all([
+      scores.saveSession(statistiques),
+      scores.saveSession(statistiques),
+    ]);
+
+    await expect(
+      dataSource.query(
+        `SELECT "participant_id" AS "participantId", "kind", "score", "percentage", "metrics"
+         FROM "formation_scores" WHERE "session_id" = $1
+         ORDER BY "kind", "score" DESC`,
+        [session.id],
+      ),
+    ).resolves.toEqual([
+      {
+        participantId: ada.id,
+        kind: 'individual',
+        score: 20,
+        percentage: 1,
+        metrics: {},
+      },
+      {
+        participantId: grace.id,
+        kind: 'individual',
+        score: 0,
+        percentage: 0,
+        metrics: {},
+      },
+      {
+        participantId: null,
+        kind: 'session',
+        score: 10,
+        percentage: 1,
+        metrics: {
+          mediane: 10,
+          dispersion: 10,
+          tauxParticipation: 0.5,
+          questionsProblemes: [],
+        },
+      },
+    ]);
   });
 });

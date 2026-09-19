@@ -32,6 +32,7 @@ import type { IFormationMailer } from '../../src/modules/formations/domain/IForm
 import type { IIncidentsRepository } from '../../src/modules/formations/domain/IIncidents.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type { IParticipantsRepository } from '../../src/modules/formations/domain/IParticipants.repository';
+import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type { ISessionsRepository } from '../../src/modules/formations/domain/ISessions.repository';
 import type { Cours } from '../../src/modules/formations/domain/cours/Cours';
 import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
@@ -42,6 +43,7 @@ import {
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
+  SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../../src/modules/formations/domain/token';
@@ -116,6 +118,7 @@ export interface DepotsFormations {
   answers: IAnswersRepository;
   incidents: IIncidentsRepository;
   mastery: IMasteryRepository;
+  scores: IScoresRepository;
   mailer: IFormationMailer;
 }
 
@@ -149,6 +152,7 @@ export async function monterApplicationFormations(
       { provide: ANSWERS_REPOSITORY, useValue: depots.answers },
       { provide: INCIDENTS_REPOSITORY, useValue: depots.incidents },
       { provide: MASTERY_REPOSITORY, useValue: depots.mastery },
+      { provide: SCORES_REPOSITORY, useValue: depots.scores },
       { provide: FORMATION_MAILER, useValue: depots.mailer },
       { provide: CATALOGUE_COURS, useValue: catalogue },
       { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
@@ -267,14 +271,7 @@ export async function monterBancFormations(
   const contexte = await ouvrirContexteFormations();
   const mailer = createMockFormationMailer();
   const app = await monterApplicationFormations(
-    {
-      sessions: contexte.sessions,
-      participants: contexte.participants,
-      answers: contexte.answers,
-      incidents: contexte.incidents,
-      mastery: contexte.mastery,
-      mailer,
-    },
+    { ...contexte, mailer },
     catalogue,
   );
   const port = await ecouterEnBoucleLocale(app);

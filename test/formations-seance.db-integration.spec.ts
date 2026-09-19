@@ -362,14 +362,7 @@ describeDb(
       contexte = await ouvrirContexteFormations();
       await contexte.nettoyer();
       app = await monterApplicationFormations(
-        {
-          sessions: contexte.sessions,
-          participants: contexte.participants,
-          answers: contexte.answers,
-          incidents: contexte.incidents,
-          mastery: contexte.mastery,
-          mailer: new FormationMailerService(),
-        },
+        { ...contexte, mailer: new FormationMailerService() },
         creerCatalogueDeTest(COURS_DE_CLASSE),
       );
       await ecouterEnBoucleLocale(app);

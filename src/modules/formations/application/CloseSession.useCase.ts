@@ -1,30 +1,23 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { createHmac } from 'node:crypto';
-import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import { SessionClosedError } from '../domain/errors/FormationErrors';
 import type {
   IFormationMailer,
   RapportSession,
 } from '../domain/IFormationMailer.port';
-import type { IIncidentsRepository } from '../domain/IIncidents.repository';
-import type {
-  IParticipantsRepository,
-  ParticipantRecord,
-} from '../domain/IParticipants.repository';
+import type { ParticipantRecord } from '../domain/IParticipants.repository';
+import type { IScoresRepository } from '../domain/IScores.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
-import { buildRapportSession } from '../domain/SessionReport';
 import {
-  ANSWERS_REPOSITORY,
-  CATALOGUE_COURS,
   FORMATION_MAILER,
-  INCIDENTS_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
+  SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
+import type { BilanDeSeance } from './GetSessionResults.useCase';
 
 const REVIEW_BASE_URL_PAR_DEFAUT = 'https://asilidesign.fr/cours/revision';
 const REVIEW_TOKEN_SECRET_LONGUEUR_MIN = 32;
@@ -36,18 +29,13 @@ export class CloseSessionUseCase {
   constructor(
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
-    @Inject(ANSWERS_REPOSITORY)
-    private readonly answers: IAnswersRepository,
-    @Inject(INCIDENTS_REPOSITORY)
-    private readonly incidents: IIncidentsRepository,
+    private readonly results: GetSessionResultsUseCase,
+    @Inject(SCORES_REPOSITORY)
+    private readonly scores: IScoresRepository,
     @Inject(FORMATION_MAILER)
     private readonly mailer: IFormationMailer,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
-    @Inject(CATALOGUE_COURS)
-    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async execute(
@@ -71,29 +59,31 @@ export class CloseSessionUseCase {
 
     this.cache.drop(sessionId);
 
-    const [participantsListe, reponses, incidentsListe] = await Promise.all([
-      this.participants.listBySession(sessionId),
-      this.answers.listBySession(sessionId),
-      this.incidents.listBySession(sessionId),
-    ]);
-
-    const rapport = buildRapportSession({
-      session: misAJour,
-      cours: await this.catalogue.trouver(
-        misAJour.courseSlug,
-        misAJour.courseVersion,
-      ),
-      participants: participantsListe,
-      answers: reponses,
-      incidents: incidentsListe,
-      avertir: (message) => this.logger.warn(message),
-    });
+    const bilan = await this.results.bilanDe(misAJour);
+    await this.enregistrerScores(sessionId, bilan);
 
     this.envoyerSynthese(
       this.resolveDestinataireFormateur(destinataireFormateur),
-      rapport,
+      bilan.resultats,
     );
-    this.envoyerCopies(sessionId, participantsListe, rapport);
+    this.envoyerCopies(sessionId, bilan.participants, bilan.resultats);
+  }
+
+  private async enregistrerScores(
+    sessionId: string,
+    { participants, resultats }: BilanDeSeance,
+  ): Promise<void> {
+    await Promise.all([
+      this.scores.saveIndividuals(
+        participants.map((participant, rang) => ({
+          sessionId,
+          participantId: participant.id,
+          note: resultats.participants[rang].note,
+          completion: resultats.participants[rang].completion,
+        })),
+      ),
+      this.scores.saveSession({ sessionId, ...resultats.statistiques }),
+    ]);
   }
 
   /**

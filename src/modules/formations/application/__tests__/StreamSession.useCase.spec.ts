@@ -3,11 +3,14 @@ import { Logger } from '@nestjs/common';
 import type { MessageEvent } from '@nestjs/common';
 import { firstValueFrom, take, toArray } from 'rxjs';
 import type { Observable, Subscription } from 'rxjs';
+import { creerCatalogueDeTest } from '../../../../../test/factories/cours.factory';
 import {
   buildAnswerRecord,
   buildBareme,
+  buildParticipantRecord,
   buildSessionRecord,
   createMockAnswersRepo,
+  createMockIncidentsRepo,
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
@@ -23,6 +26,7 @@ import type {
 } from '../../domain/IStreamCapacity.port';
 import type { ResultatsSeance } from '../../domain/ResultatsSeance';
 import { SessionStateCacheService } from '../../infrastructure/SessionStateCache.service';
+import { GetSessionResultsUseCase } from '../GetSessionResults.useCase';
 import {
   CADENCES_PRODUCTION,
   MAX_ABONNEMENTS_PAR_SESSION,
@@ -118,6 +122,7 @@ describe('StreamSessionUseCase', () => {
   let cache: SessionStateCacheService;
   let answers: ReturnType<typeof createMockAnswersRepo>;
   let participants: ReturnType<typeof createMockParticipantsRepo>;
+  let resultats: GetSessionResultsUseCase;
   let sut: StreamSessionUseCase;
 
   beforeEach(() => {
@@ -126,7 +131,14 @@ describe('StreamSessionUseCase', () => {
     cache = new SessionStateCacheService();
     answers = createMockAnswersRepo();
     participants = createMockParticipantsRepo();
-    sut = new StreamSessionUseCase(sessions, cache, answers, participants);
+    resultats = new GetSessionResultsUseCase(
+      sessions,
+      participants,
+      answers,
+      createMockIncidentsRepo(),
+      creerCatalogueDeTest(),
+    );
+    sut = new StreamSessionUseCase(sessions, cache, resultats);
   });
 
   afterEach(() => {
@@ -442,16 +454,14 @@ describe('StreamSessionUseCase', () => {
       const cetteInstance = new StreamSessionUseCase(
         sessions,
         new SessionStateCacheService(),
-        answers,
-        participants,
+        resultats,
         undefined,
         capacite,
       );
       const autreInstance = new StreamSessionUseCase(
         sessions,
         new SessionStateCacheService(),
-        answers,
-        participants,
+        resultats,
         undefined,
         capacite,
       );
@@ -507,13 +517,10 @@ describe('StreamSessionUseCase', () => {
 
   it('tient le flux jusqu a sa duree maximale puis le termine avec la raison expiree', async () => {
     const dureeMaxMs = 60_000;
-    const brefs = new StreamSessionUseCase(
-      sessions,
-      cache,
-      answers,
-      participants,
-      { battementMs: HEARTBEAT_MS_TEST, dureeMaxMs },
-    );
+    const brefs = new StreamSessionUseCase(sessions, cache, resultats, {
+      battementMs: HEARTBEAT_MS_TEST,
+      dureeMaxMs,
+    });
     const collected: MessageEvent[] = [];
     let termine = false;
     const subscription = brefs
@@ -543,7 +550,7 @@ describe('StreamSessionUseCase', () => {
   });
 
   describe('resultats agreges', () => {
-    it('pousse au formateur les resultats du depot des le premier passage', async () => {
+    it('pousse au formateur les resultats et les statistiques du depot des le premier passage', async () => {
       const ecoute = ecouter(
         await sut.executeForTeacher('session-uuid', TEACHER_ID),
       );
@@ -565,11 +572,18 @@ describe('StreamSessionUseCase', () => {
               confusions: [],
             },
           ],
+          statistiques: {
+            moyenne: 20,
+            mediane: 20,
+            dispersion: 0,
+            tauxParticipation: 1,
+            tauxReussite: 1,
+            questionsProblemes: [],
+          },
         },
       ]);
       expect(answers.listBySession).toHaveBeenCalledWith('session-uuid');
-      expect(participants.countBySession).toHaveBeenCalledWith('session-uuid');
-      expect(participants.listBySession).not.toHaveBeenCalled();
+      expect(participants.listBySession).toHaveBeenCalledWith('session-uuid');
       ecoute.abonnement.unsubscribe();
     });
 
@@ -624,12 +638,14 @@ describe('StreamSessionUseCase', () => {
         buildAnswerRecord(),
         REPONSE_FAUSSE,
       ]);
-      participants.countBySession.mockResolvedValue(2);
+      participants.listBySession.mockResolvedValue([
+        buildParticipantRecord(),
+        buildParticipantRecord({ id: 'participant-2-uuid', seed: 1002 }),
+      ]);
       const redemarre = new StreamSessionUseCase(
         sessions,
         new SessionStateCacheService(),
-        answers,
-        participants,
+        resultats,
       );
 
       const ecoute = ecouter(

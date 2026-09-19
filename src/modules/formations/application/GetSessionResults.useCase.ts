@@ -1,11 +1,16 @@
-import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { RapportSession } from '../domain/IFormationMailer.port';
 import type { IIncidentsRepository } from '../domain/IIncidents.repository';
-import type { IScoresRepository } from '../domain/IScores.repository';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
+import type {
+  IParticipantsRepository,
+  ParticipantRecord,
+} from '../domain/IParticipants.repository';
+import type {
+  ISessionsRepository,
+  SessionRecord,
+} from '../domain/ISessions.repository';
 import { REGLE_DE_NOTATION } from '../domain/RegleDeNotation';
 import type { RegleDeNotation } from '../domain/RegleDeNotation';
 import { agregerResultats } from '../domain/ResultatsSeance';
@@ -19,7 +24,6 @@ import {
   CATALOGUE_COURS,
   INCIDENTS_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
-  SCORES_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 
@@ -28,6 +32,11 @@ export type ResultatsDeSeance = RapportSession & {
   readonly statistiques: StatistiquesSeance;
   readonly notation: RegleDeNotation;
 };
+
+export interface BilanDeSeance {
+  readonly participants: readonly ParticipantRecord[];
+  readonly resultats: ResultatsDeSeance;
+}
 
 @Injectable()
 export class GetSessionResultsUseCase {
@@ -44,9 +53,6 @@ export class GetSessionResultsUseCase {
     private readonly incidents: IIncidentsRepository,
     @Inject(CATALOGUE_COURS)
     private readonly catalogue: ICatalogueCours,
-    @Optional()
-    @Inject(SCORES_REPOSITORY)
-    private readonly scores?: IScoresRepository,
   ) {}
 
   async execute(
@@ -58,13 +64,15 @@ export class GetSessionResultsUseCase {
       sessionId,
       teacherId,
     );
+    return (await this.bilanDe(session)).resultats;
+  }
 
+  async bilanDe(session: SessionRecord): Promise<BilanDeSeance> {
     const [participantsListe, reponses, incidentsListe] = await Promise.all([
-      this.participants.listBySession(sessionId),
-      this.answers.listBySession(sessionId),
-      this.incidents.listBySession(sessionId),
+      this.participants.listBySession(session.id),
+      this.answers.listBySession(session.id),
+      this.incidents.listBySession(session.id),
     ]);
-
     const rapport = buildRapportSession({
       session,
       cours: await this.catalogue.trouver(
@@ -81,29 +89,17 @@ export class GetSessionResultsUseCase {
       answers: reponses,
       participants: participantsListe.length,
     });
-    const statistiques = calculerStatistiquesSeance(
-      rapport.participants,
-      resultats,
-    );
-    if (this.scores !== undefined) {
-      await Promise.all([
-        ...participantsListe.map((participant, index) => {
-          const ligne = rapport.participants[index];
-          return this.scores!.saveIndividual({
-            sessionId,
-            participantId: participant.id,
-            score: ligne?.note ?? 0,
-            percentage: ligne?.completion ?? 0,
-          });
-        }),
-        this.scores.saveSession({ sessionId, ...statistiques }),
-      ]);
-    }
     return {
-      ...rapport,
-      resultats,
-      statistiques,
-      notation: REGLE_DE_NOTATION,
+      participants: participantsListe,
+      resultats: {
+        ...rapport,
+        resultats,
+        statistiques: calculerStatistiquesSeance(
+          rapport.participants,
+          resultats,
+        ),
+        notation: REGLE_DE_NOTATION,
+      },
     };
   }
 }

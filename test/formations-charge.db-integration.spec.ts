@@ -265,14 +265,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
     process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
     contexte = await ouvrirContexteFormations();
     mailer = createMockFormationMailer();
-    app = await monterApplicationFormations({
-      sessions: contexte.sessions,
-      participants: contexte.participants,
-      answers: contexte.answers,
-      incidents: contexte.incidents,
-      mastery: contexte.mastery,
-      mailer,
-    });
+    app = await monterApplicationFormations({ ...contexte, mailer });
     port = await ecouterEnBoucleLocale(app);
   });
 
