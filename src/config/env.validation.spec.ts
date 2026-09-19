@@ -1,27 +1,8 @@
+import {
+  buildValidEnv,
+  TEST_JWT_SECRET,
+} from '../../test/factories/env.factory';
 import { validateEnv } from './env.validation';
-
-const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
-const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
-const TEST_FORMATION_REVIEW_TOKEN_SECRET =
-  'test-formation-review-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)
-const TEST_FORMATION_TEACHER_NOTIFICATION_TO =
-  'formateur-notifications@example.com';
-
-function buildValidEnv(
-  overrides: Record<string, unknown> = {},
-): Record<string, unknown> {
-  return {
-    DB_HOST: '127.0.0.1',
-    DB_PORT: '5432',
-    DB_NAME: 'portfolio_test',
-    JWT_SECRET: TEST_JWT_SECRET,
-    SECURE_KEY_FOR_PASSWORD_HASHING: TEST_HASHING_KEY,
-    GOOGLE_CLIENT_ID: 'test-google-client-id.apps.googleusercontent.com',
-    FORMATION_REVIEW_TOKEN_SECRET: TEST_FORMATION_REVIEW_TOKEN_SECRET,
-    FORMATION_TEACHER_NOTIFICATION_TO: TEST_FORMATION_TEACHER_NOTIFICATION_TO,
-    ...overrides,
-  };
-}
 
 describe('validateEnv', () => {
   it('devrait valider un environnement avec toutes les variables critiques', () => {
