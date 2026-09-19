@@ -17,7 +17,7 @@ import { agregerResultats } from '../domain/ResultatsSeance';
 import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { calculerStatistiquesSeance } from '../domain/SessionStatistics';
 import type { StatistiquesSeance } from '../domain/SessionStatistics';
-import { assertSessionOwnedBy } from '../domain/SessionOwnership';
+import type { ActeurFormation } from '../domain/SessionOwnership';
 import { buildRapportSession } from '../domain/SessionReport';
 import {
   ANSWERS_REPOSITORY,
@@ -26,6 +26,7 @@ import {
   PARTICIPANTS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { seanceLisiblePar } from './SessionAccess';
 
 export type ResultatsDeSeance = RapportSession & {
   readonly resultats: ResultatsSeance;
@@ -57,13 +58,9 @@ export class GetSessionResultsUseCase {
 
   async execute(
     sessionId: string,
-    teacherId: string,
+    acteur: ActeurFormation,
   ): Promise<ResultatsDeSeance> {
-    const session = assertSessionOwnedBy(
-      await this.sessions.findById(sessionId),
-      sessionId,
-      teacherId,
-    );
+    const session = await seanceLisiblePar(this.sessions, sessionId, acteur);
     return (await this.bilanDe(session)).resultats;
   }
 

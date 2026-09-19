@@ -19,6 +19,7 @@ import {
 } from './helpers/formations-db';
 import {
   EN_TETE_IDENTITE,
+  depotsHorsSeanceSimules,
   monterApplicationFormations,
   patienter,
   PREFIXE_API,
@@ -187,7 +188,11 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
     contexte = await ouvrirContexteFormations();
     app = await monterApplicationFormations(
-      { ...contexte, mailer: createMockFormationMailer() },
+      {
+        ...contexte,
+        ...depotsHorsSeanceSimules(),
+        mailer: createMockFormationMailer(),
+      },
       creerCatalogueDeTest(COURS_DE_CLASSE),
     );
     await ecouterEnBoucleLocale(app);

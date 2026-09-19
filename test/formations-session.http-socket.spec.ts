@@ -17,17 +17,6 @@ import { request as requeteNode } from 'node:http';
 import request from 'supertest';
 import { IS_PUBLIC_KEY } from '../src/common/interfaces/auth/public.decorator';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
-import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
-import { ControlSessionUseCase } from '../src/modules/formations/application/ControlSession.useCase';
-import { DueQuestionsUseCase } from '../src/modules/formations/application/DueQuestions.useCase';
-import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
-import { JoinSessionUseCase } from '../src/modules/formations/application/JoinSession.useCase';
-import { LireDerouleUseCase } from '../src/modules/formations/application/LireDeroule.useCase';
-import { LireSujetUseCase } from '../src/modules/formations/application/LireSujet.useCase';
-import { OpenSessionUseCase } from '../src/modules/formations/application/OpenSession.useCase';
-import { RecordIncidentsUseCase } from '../src/modules/formations/application/RecordIncidents.useCase';
-import { StreamSessionUseCase } from '../src/modules/formations/application/StreamSession.useCase';
-import { SubmitAnswerUseCase } from '../src/modules/formations/application/SubmitAnswer.useCase';
 import type {
   Cours,
   Ecran,
@@ -48,24 +37,11 @@ import type {
   SessionRecord,
 } from '../src/modules/formations/domain/ISessions.repository';
 import {
-  ANSWERS_REPOSITORY,
-  CATALOGUE_COURS,
-  FORMATION_MAILER,
-  INCIDENTS_REPOSITORY,
-  MASTERY_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
-  SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../src/modules/formations/domain/token';
-import { SessionStateCacheService } from '../src/modules/formations/infrastructure/SessionStateCache.service';
-import { CodeScanProtectionService } from '../src/modules/formations/interfaces/CodeScanProtection.service';
-import { FormationsPresenterController } from '../src/modules/formations/interfaces/FormationsPresenter.controller';
-import { FormationsStudentController } from '../src/modules/formations/interfaces/FormationsStudent.controller';
-import {
-  EN_TETE_JETON,
-  ParticipantTokenService,
-} from '../src/modules/formations/interfaces/ParticipantToken.service';
+import type { SessionStateCacheService } from '../src/modules/formations/infrastructure/SessionStateCache.service';
+import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildCoursDeClasse,
   buildCoursDeTest,
@@ -73,12 +49,20 @@ import {
   creerCatalogueDeTest,
 } from './factories/cours.factory';
 import {
+  createMockFormationGroupsRepo,
   createMockFormationMailer,
+  createMockFreeResponsesRepo,
   createMockIncidentsRepo,
   createMockMasteryRepo,
   createMockScoresRepo,
+  createMockTeacherAnnotationsRepo,
 } from './factories/formation.factory';
-import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
+import {
+  abonnerAuFlux,
+  attendreQue,
+  CONTROLEURS_FORMATIONS,
+  fournisseursFormations,
+} from './helpers/formations-harness';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
 import {
   ADRESSE_BOUCLE_LOCALE,
@@ -329,30 +313,23 @@ async function creerHarnais(
 
   const moduleRef = await Test.createTestingModule({
     imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 30 }])],
-    controllers: [FormationsPresenterController, FormationsStudentController],
+    controllers: CONTROLEURS_FORMATIONS,
     providers: [
-      OpenSessionUseCase,
-      ControlSessionUseCase,
-      CloseSessionUseCase,
-      GetSessionResultsUseCase,
-      JoinSessionUseCase,
-      SubmitAnswerUseCase,
-      RecordIncidentsUseCase,
-      StreamSessionUseCase,
-      DueQuestionsUseCase,
-      LireSujetUseCase,
-      LireDerouleUseCase,
-      ParticipantTokenService,
-      CodeScanProtectionService,
-      { provide: SESSIONS_REPOSITORY, useValue: creerSessionsRepo() },
-      { provide: PARTICIPANTS_REPOSITORY, useValue: creerParticipantsRepo() },
-      { provide: ANSWERS_REPOSITORY, useValue: creerAnswersRepo() },
-      { provide: MASTERY_REPOSITORY, useValue: createMockMasteryRepo() },
-      { provide: INCIDENTS_REPOSITORY, useValue: createMockIncidentsRepo() },
-      { provide: FORMATION_MAILER, useValue: mailer },
-      { provide: SCORES_REPOSITORY, useValue: scores },
-      { provide: CATALOGUE_COURS, useValue: catalogueHttp },
-      { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
+      ...fournisseursFormations(
+        {
+          sessions: creerSessionsRepo(),
+          participants: creerParticipantsRepo(),
+          answers: creerAnswersRepo(),
+          incidents: createMockIncidentsRepo(),
+          mastery: createMockMasteryRepo(),
+          scores,
+          freeResponses: createMockFreeResponsesRepo(),
+          annotations: createMockTeacherAnnotationsRepo(),
+          groups: createMockFormationGroupsRepo(),
+          mailer,
+        },
+        catalogueHttp,
+      ),
       { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
       { provide: APP_GUARD, useClass: ThrottlerGuard },
     ],

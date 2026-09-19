@@ -5,6 +5,7 @@ import {
   Injectable,
   UnauthorizedException,
   ValidationPipe,
+  type Provider,
 } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { Test as ModuleDeTest } from '@nestjs/testing';
@@ -23,39 +24,56 @@ import { GetSessionResultsUseCase } from '../../src/modules/formations/applicati
 import { JoinSessionUseCase } from '../../src/modules/formations/application/JoinSession.useCase';
 import { LireDerouleUseCase } from '../../src/modules/formations/application/LireDeroule.useCase';
 import { LireSujetUseCase } from '../../src/modules/formations/application/LireSujet.useCase';
+import { ListFreeResponsesUseCase } from '../../src/modules/formations/application/ListFreeResponses.useCase';
+import { ListSessionParticipantsUseCase } from '../../src/modules/formations/application/ListSessionParticipants.useCase';
+import { ManageFormationGroupsUseCase } from '../../src/modules/formations/application/ManageFormationGroups.useCase';
+import { ManageTeacherAnnotationsUseCase } from '../../src/modules/formations/application/ManageTeacherAnnotations.useCase';
 import { OpenSessionUseCase } from '../../src/modules/formations/application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from '../../src/modules/formations/application/RecordIncidents.useCase';
+import { SaveFreeResponseUseCase } from '../../src/modules/formations/application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from '../../src/modules/formations/application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../../src/modules/formations/application/SubmitAnswer.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
+import type { IFormationGroupsRepository } from '../../src/modules/formations/domain/IFormationGroups.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
+import type { IFreeResponsesRepository } from '../../src/modules/formations/domain/IFreeResponses.repository';
 import type { IIncidentsRepository } from '../../src/modules/formations/domain/IIncidents.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type { IParticipantsRepository } from '../../src/modules/formations/domain/IParticipants.repository';
 import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type { ISessionsRepository } from '../../src/modules/formations/domain/ISessions.repository';
+import type { ITeacherAnnotationsRepository } from '../../src/modules/formations/domain/ITeacherAnnotations.repository';
 import type { Cours } from '../../src/modules/formations/domain/cours/Cours';
 import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
+  FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
+  FREE_RESPONSES_REPOSITORY,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
+  TEACHER_ANNOTATIONS_REPOSITORY,
 } from '../../src/modules/formations/domain/token';
 import { SessionStateCacheService } from '../../src/modules/formations/infrastructure/SessionStateCache.service';
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
+import { FormationsAnnotationsController } from '../../src/modules/formations/interfaces/FormationsAnnotations.controller';
+import { FormationsGroupsController } from '../../src/modules/formations/interfaces/FormationsGroups.controller';
 import { FormationsPresenterController } from '../../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../../src/modules/formations/interfaces/FormationsStudent.controller';
 import {
   EN_TETE_JETON,
   ParticipantTokenService,
 } from '../../src/modules/formations/interfaces/ParticipantToken.service';
-import { createMockFormationMailer } from '../factories/formation.factory';
+import {
+  createMockFormationMailer,
+  createMockFreeResponsesRepo,
+  createMockTeacherAnnotationsRepo,
+} from '../factories/formation.factory';
 import {
   buildCoursDeTest,
   creerCatalogueDeTest,
@@ -119,7 +137,65 @@ export interface DepotsFormations {
   incidents: IIncidentsRepository;
   mastery: IMasteryRepository;
   scores: IScoresRepository;
+  freeResponses: IFreeResponsesRepository;
+  annotations: ITeacherAnnotationsRepository;
+  groups: IFormationGroupsRepository;
   mailer: IFormationMailer;
+}
+
+export function depotsHorsSeanceSimules(): Pick<
+  DepotsFormations,
+  'freeResponses' | 'annotations'
+> {
+  return {
+    freeResponses: createMockFreeResponsesRepo(),
+    annotations: createMockTeacherAnnotationsRepo(),
+  };
+}
+
+export const CONTROLEURS_FORMATIONS = [
+  FormationsPresenterController,
+  FormationsGroupsController,
+  FormationsAnnotationsController,
+  FormationsStudentController,
+];
+
+export function fournisseursFormations(
+  depots: DepotsFormations,
+  catalogue: ICatalogueCours,
+): Provider[] {
+  return [
+    OpenSessionUseCase,
+    ControlSessionUseCase,
+    CloseSessionUseCase,
+    GetSessionResultsUseCase,
+    JoinSessionUseCase,
+    SubmitAnswerUseCase,
+    RecordIncidentsUseCase,
+    StreamSessionUseCase,
+    DueQuestionsUseCase,
+    LireSujetUseCase,
+    LireDerouleUseCase,
+    ManageTeacherAnnotationsUseCase,
+    ManageFormationGroupsUseCase,
+    ListSessionParticipantsUseCase,
+    ListFreeResponsesUseCase,
+    SaveFreeResponseUseCase,
+    ParticipantTokenService,
+    CodeScanProtectionService,
+    { provide: SESSIONS_REPOSITORY, useValue: depots.sessions },
+    { provide: PARTICIPANTS_REPOSITORY, useValue: depots.participants },
+    { provide: ANSWERS_REPOSITORY, useValue: depots.answers },
+    { provide: INCIDENTS_REPOSITORY, useValue: depots.incidents },
+    { provide: MASTERY_REPOSITORY, useValue: depots.mastery },
+    { provide: SCORES_REPOSITORY, useValue: depots.scores },
+    { provide: FREE_RESPONSES_REPOSITORY, useValue: depots.freeResponses },
+    { provide: TEACHER_ANNOTATIONS_REPOSITORY, useValue: depots.annotations },
+    { provide: FORMATION_GROUPS_REPOSITORY, useValue: depots.groups },
+    { provide: FORMATION_MAILER, useValue: depots.mailer },
+    { provide: CATALOGUE_COURS, useValue: catalogue },
+    { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
+  ];
 }
 
 export async function monterApplicationFormations(
@@ -132,30 +208,9 @@ export async function monterApplicationFormations(
         { ttl: FENETRE_THROTTLE_MS, limit: LIMITE_THROTTLE_PAR_DEFAUT },
       ]),
     ],
-    controllers: [FormationsPresenterController, FormationsStudentController],
+    controllers: CONTROLEURS_FORMATIONS,
     providers: [
-      OpenSessionUseCase,
-      ControlSessionUseCase,
-      CloseSessionUseCase,
-      GetSessionResultsUseCase,
-      JoinSessionUseCase,
-      SubmitAnswerUseCase,
-      RecordIncidentsUseCase,
-      StreamSessionUseCase,
-      DueQuestionsUseCase,
-      LireSujetUseCase,
-      LireDerouleUseCase,
-      ParticipantTokenService,
-      CodeScanProtectionService,
-      { provide: SESSIONS_REPOSITORY, useValue: depots.sessions },
-      { provide: PARTICIPANTS_REPOSITORY, useValue: depots.participants },
-      { provide: ANSWERS_REPOSITORY, useValue: depots.answers },
-      { provide: INCIDENTS_REPOSITORY, useValue: depots.incidents },
-      { provide: MASTERY_REPOSITORY, useValue: depots.mastery },
-      { provide: SCORES_REPOSITORY, useValue: depots.scores },
-      { provide: FORMATION_MAILER, useValue: depots.mailer },
-      { provide: CATALOGUE_COURS, useValue: catalogue },
-      { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
+      ...fournisseursFormations(depots, catalogue),
       { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
       { provide: APP_GUARD, useClass: ThrottlerGuard },
     ],
@@ -271,7 +326,7 @@ export async function monterBancFormations(
   const contexte = await ouvrirContexteFormations();
   const mailer = createMockFormationMailer();
   const app = await monterApplicationFormations(
-    { ...contexte, mailer },
+    { ...contexte, ...depotsHorsSeanceSimules(), mailer },
     catalogue,
   );
   const port = await ecouterEnBoucleLocale(app);

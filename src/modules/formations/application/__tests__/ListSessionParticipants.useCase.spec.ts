@@ -1,0 +1,58 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+import {
+  buildActeurFormation,
+  buildAdministrateur,
+  buildParticipantRecord,
+  buildSessionRecord,
+  createMockParticipantsRepo,
+  createMockSessionsRepo,
+} from '../../../../../test/factories/formation.factory';
+import { SessionNotOwnedError } from '../../domain/errors/FormationErrors';
+import { ListSessionParticipantsUseCase } from '../ListSessionParticipants.useCase';
+
+const SESSION_ID = 'session-uuid';
+const PROPRIETAIRE = buildActeurFormation({ id: 'teacher-uuid' });
+
+describe('ListSessionParticipantsUseCase', () => {
+  let sessions: ReturnType<typeof createMockSessionsRepo>;
+  let participants: ReturnType<typeof createMockParticipantsRepo>;
+  let sut: ListSessionParticipantsUseCase;
+
+  beforeEach(() => {
+    sessions = createMockSessionsRepo();
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ id: SESSION_ID, teacherId: PROPRIETAIRE.id }),
+    );
+    participants = createMockParticipantsRepo();
+    participants.listBySession.mockResolvedValue([
+      buildParticipantRecord({ id: 'p1', prenom: 'Ada', nom: 'Lovelace' }),
+      buildParticipantRecord({
+        id: 'p2',
+        prenom: 'Grace',
+        nom: 'Hopper',
+        groupId: 'group-uuid',
+      }),
+    ]);
+    sut = new ListSessionParticipantsUseCase(sessions, participants);
+  });
+
+  it('rend au formateur chaque participant avec son groupe, sans son adresse', async () => {
+    await expect(sut.execute(SESSION_ID, PROPRIETAIRE)).resolves.toEqual([
+      { id: 'p1', prenom: 'Ada', nom: 'Lovelace', groupId: null },
+      { id: 'p2', prenom: 'Grace', nom: 'Hopper', groupId: 'group-uuid' },
+    ]);
+    expect(participants.listBySession).toHaveBeenCalledWith(SESSION_ID);
+  });
+
+  it('rend la liste a un administrateur', async () => {
+    await expect(
+      sut.execute(SESSION_ID, buildAdministrateur()),
+    ).resolves.toHaveLength(2);
+  });
+
+  it('refuse la liste a un autre formateur', async () => {
+    await expect(
+      sut.execute(SESSION_ID, buildActeurFormation({ id: 'autre-uuid' })),
+    ).rejects.toThrow(SessionNotOwnedError);
+  });
+});

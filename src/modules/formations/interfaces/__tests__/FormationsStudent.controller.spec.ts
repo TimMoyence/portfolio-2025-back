@@ -42,7 +42,7 @@ describe('FormationsStudentController', () => {
     assertPasDeBalayage: jest.fn(),
     enregistrerEchec: jest.fn(),
   };
-  const freeResponses = { save: jest.fn() };
+  const saveFreeResponse = { execute: jest.fn() };
 
   const controller = new FormationsStudentController(
     joinSession as never,
@@ -51,10 +51,10 @@ describe('FormationsStudentController', () => {
     streamSession as never,
     dueQuestions as never,
     lireSujet as never,
+    saveFreeResponse as never,
     tokens as never,
     codeScan as never,
     new PublicFormProtectionService(),
-    freeResponses as never,
   );
 
   const rejoindre = (dto: JoinSessionRequestDto = inscription) =>
@@ -62,7 +62,7 @@ describe('FormationsStudentController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    freeResponses.save.mockResolvedValue({ status: 'enregistre' });
+    saveFreeResponse.execute.mockResolvedValue(undefined);
     joinSession.execute.mockResolvedValue({
       participantId: PARTICIPANT_ID,
       sessionId: SESSION_ID,
@@ -74,7 +74,7 @@ describe('FormationsStudentController', () => {
     tokens.verify.mockReturnValue(PARTICIPANT_ID);
   });
 
-  it('enregistre une réponse libre pour le participant porté par le jeton', async () => {
+  it('confie la réponse libre au cas d usage pour le participant porté par le jeton', async () => {
     await expect(
       controller.freeResponse(SESSION_ID, JETON, {
         screenId: 'B2-01-S11-REFLECTION',
@@ -84,7 +84,7 @@ describe('FormationsStudentController', () => {
       }),
     ).resolves.toEqual({ status: 'enregistre' });
     expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
-    expect(freeResponses.save).toHaveBeenCalledWith({
+    expect(saveFreeResponse.execute).toHaveBeenCalledWith({
       sessionId: SESSION_ID,
       participantId: PARTICIPANT_ID,
       screenId: 'B2-01-S11-REFLECTION',

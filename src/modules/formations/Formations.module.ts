@@ -8,8 +8,13 @@ import { JoinSessionUseCase } from './application/JoinSession.useCase';
 import { LireCoursPublicUseCase } from './application/LireCoursPublic.useCase';
 import { LireDerouleUseCase } from './application/LireDeroule.useCase';
 import { LireSujetUseCase } from './application/LireSujet.useCase';
+import { ListFreeResponsesUseCase } from './application/ListFreeResponses.useCase';
+import { ListSessionParticipantsUseCase } from './application/ListSessionParticipants.useCase';
+import { ManageFormationGroupsUseCase } from './application/ManageFormationGroups.useCase';
+import { ManageTeacherAnnotationsUseCase } from './application/ManageTeacherAnnotations.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
+import { SaveFreeResponseUseCase } from './application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import {
@@ -51,6 +56,8 @@ import { SessionsRepositoryTypeORM } from './infrastructure/Sessions.repository.
 import { SessionStateCacheService } from './infrastructure/SessionStateCache.service';
 import { StreamCapacityService } from './infrastructure/StreamCapacity.service';
 import { TeacherAnnotationsRepositoryTypeORM } from './infrastructure/TeacherAnnotations.repository.typeorm';
+import { FormationsAnnotationsController } from './interfaces/FormationsAnnotations.controller';
+import { FormationsGroupsController } from './interfaces/FormationsGroups.controller';
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
 import { FormationsCatalogController } from './interfaces/FormationsCatalog.controller';
@@ -76,6 +83,8 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
   controllers: [
     FormationsCatalogController,
     FormationsPresenterController,
+    FormationsGroupsController,
+    FormationsAnnotationsController,
     FormationsStudentController,
   ],
   providers: [
@@ -95,7 +104,11 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,
-    CoursCatalogueRepositoryTypeORM,
+    ManageTeacherAnnotationsUseCase,
+    ManageFormationGroupsUseCase,
+    ListSessionParticipantsUseCase,
+    ListFreeResponsesUseCase,
+    SaveFreeResponseUseCase,
     ParticipantTokenService,
     CodeScanProtectionService,
     {

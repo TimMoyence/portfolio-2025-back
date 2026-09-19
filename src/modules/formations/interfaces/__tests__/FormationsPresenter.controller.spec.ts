@@ -1,6 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
 import type { Request } from 'express';
 import { of } from 'rxjs';
+import { buildFreeResponseRecord } from '../../../../../test/factories/formation.factory';
+import { ROLES_KEY } from '../../../../common/interfaces/auth/roles.decorator';
 import type { DerouleCours } from '../../domain/cours/DeroulePresentateur';
 import type { RapportSession } from '../../domain/IFormationMailer.port';
 import { FormationsPresenterController } from '../FormationsPresenter.controller';
@@ -10,9 +12,10 @@ const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
 const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
 
 const requeteFormateur = {
-  user: { sub: TEACHER_ID },
+  user: { sub: TEACHER_ID, roles: ['teacher'] },
   once: jest.fn(),
 } as unknown as Request;
+const ACTEUR = { id: TEACHER_ID, roles: ['teacher'] };
 
 describe('FormationsPresenterController', () => {
   const openSession = { execute: jest.fn() };
@@ -24,6 +27,7 @@ describe('FormationsPresenterController', () => {
   const results = { execute: jest.fn() };
   const streamSession = { executeForTeacher: jest.fn() };
   const lireDeroule = { execute: jest.fn() };
+  const listFreeResponses = { execute: jest.fn() };
 
   const controller = new FormationsPresenterController(
     openSession as never,
@@ -32,6 +36,7 @@ describe('FormationsPresenterController', () => {
     results as never,
     streamSession as never,
     lireDeroule as never,
+    listFreeResponses as never,
   );
 
   const controle = (dto: ControlSessionRequestDto): Promise<void> =>
@@ -133,7 +138,7 @@ describe('FormationsPresenterController', () => {
     );
   });
 
-  it('rend le rapport de session au formateur proprietaire', async () => {
+  it('confie au cas d usage la lecture du rapport avec l identite et les roles de l appelant', async () => {
     const rapport = {
       code: '4271',
       participants: [],
@@ -143,7 +148,7 @@ describe('FormationsPresenterController', () => {
     await expect(
       controller.getResults(SESSION_ID, requeteFormateur),
     ).resolves.toBe(rapport);
-    expect(results.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+    expect(results.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
   });
 
   it('exporte le bilan JSON en reutilisant le rapport protege', async () => {
@@ -156,16 +161,40 @@ describe('FormationsPresenterController', () => {
     await expect(
       controller.exportReport(SESSION_ID, requeteFormateur),
     ).resolves.toBe(rapport);
-    expect(results.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+    expect(results.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
   });
 
-  it('rend le deroule annote au formateur proprietaire', async () => {
+  it('rend le deroule annote en transmettant l appelant', async () => {
     const deroule = { id: 'cours-de-test' } as unknown as DerouleCours;
     lireDeroule.execute.mockResolvedValue(deroule);
 
     await expect(
       controller.getDeroule(SESSION_ID, requeteFormateur),
     ).resolves.toBe(deroule);
-    expect(lireDeroule.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+    expect(lireDeroule.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
   });
+
+  it('rend les reponses libres sous la cle responses', async () => {
+    const reponses = [buildFreeResponseRecord()];
+    listFreeResponses.execute.mockResolvedValue(reponses);
+
+    await expect(
+      controller.getFreeResponses(SESSION_ID, requeteFormateur),
+    ).resolves.toEqual({ responses: reponses });
+    expect(listFreeResponses.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
+  });
+
+  it.each(['getResults', 'exportReport', 'getDeroule', 'getFreeResponses'])(
+    'ouvre %s a l administrateur en plus du formateur',
+    (route) => {
+      expect(
+        Reflect.getMetadata(
+          ROLES_KEY,
+          FormationsPresenterController.prototype[
+            route as keyof FormationsPresenterController
+          ],
+        ),
+      ).toEqual(['teacher', 'admin']);
+    },
+  );
 });

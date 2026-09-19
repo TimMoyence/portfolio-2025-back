@@ -22,6 +22,7 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
+  depotsHorsSeanceSimules,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
@@ -362,7 +363,11 @@ describeDb(
       contexte = await ouvrirContexteFormations();
       await contexte.nettoyer();
       app = await monterApplicationFormations(
-        { ...contexte, mailer: new FormationMailerService() },
+        {
+          ...contexte,
+          ...depotsHorsSeanceSimules(),
+          mailer: new FormationMailerService(),
+        },
         creerCatalogueDeTest(COURS_DE_CLASSE),
       );
       await ecouterEnBoucleLocale(app);

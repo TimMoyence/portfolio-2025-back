@@ -11,6 +11,7 @@ import { FormationParticipantEntity } from '../../src/modules/formations/infrast
 import { FormationGroupEntity } from '../../src/modules/formations/infrastructure/entities/FormationGroup.entity';
 import { FormationScoreEntity } from '../../src/modules/formations/infrastructure/entities/FormationScore.entity';
 import { FormationSessionEntity } from '../../src/modules/formations/infrastructure/entities/FormationSession.entity';
+import { FormationGroupsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/FormationGroups.repository.typeorm';
 import { IncidentsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Incidents.repository.typeorm';
 import { MasteryRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Mastery.repository.typeorm';
 import { ParticipantsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Participants.repository.typeorm';
@@ -46,6 +47,7 @@ export interface ContexteFormations {
   incidents: IncidentsRepositoryTypeORM;
   mastery: MasteryRepositoryTypeORM;
   scores: ScoresRepositoryTypeORM;
+  groups: FormationGroupsRepositoryTypeORM;
   graineDe(participantId: string): Promise<number>;
   nettoyer(): Promise<void>;
   rejouerMigration(): Promise<void>;
@@ -91,6 +93,10 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
     ),
     scores: new ScoresRepositoryTypeORM(
       dataSource.getRepository(FormationScoreEntity),
+    ),
+    groups: new FormationGroupsRepositoryTypeORM(
+      dataSource.getRepository(FormationGroupEntity),
+      dataSource.getRepository(FormationParticipantEntity),
     ),
     async graineDe(participantId: string): Promise<number> {
       const participant = await participants.findById(participantId);

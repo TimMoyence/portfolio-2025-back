@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import type { Request } from 'express';
 import type { Repository } from 'typeorm';
 import { mockTypeOrmCreate } from '../../../../test/factories/formation.factory';
 import {
@@ -23,7 +22,6 @@ import type { FormationParticipantEntity } from './entities/FormationParticipant
 import type { FormationFreeResponseEntity } from './entities/FormationFreeResponse.entity';
 import type { FormationTeacherAnnotationEntity } from './entities/FormationTeacherAnnotation.entity';
 import type { FormationIncidentEntity } from './entities/FormationIncident.entity';
-import { FormationsPresenterController } from '../interfaces/FormationsPresenter.controller';
 
 const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
 const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
@@ -571,104 +569,5 @@ describe('incidents et participants repositories', () => {
     }
     repo.findOne.mockResolvedValue(null);
     await expect(sut.findById('missing')).resolves.toBeNull();
-  });
-});
-
-describe('FormationsPresenterController routes for annotations, responses and groups', () => {
-  it('transmet l identité, protège la lecture et normalise les noms de groupe', async () => {
-    const results = { execute: jest.fn().mockResolvedValue({}) };
-    const annotations = {
-      listBySession: jest.fn().mockResolvedValue([]),
-      save: jest.fn().mockResolvedValue({ id: 'annotation' }),
-    };
-    const freeResponses = {
-      save: jest.fn(),
-      listBySession: jest.fn().mockResolvedValue([]),
-    };
-    const groups = {
-      listBySession: jest.fn().mockResolvedValue([]),
-      create: jest.fn().mockResolvedValue({ id: 'group' }),
-      rename: jest.fn().mockResolvedValue({ id: 'group' }),
-      assignParticipant: jest.fn().mockResolvedValue(undefined),
-    };
-    const controller = new FormationsPresenterController(
-      { execute: jest.fn() } as never,
-      { start: jest.fn(), apply: jest.fn() } as never,
-      { execute: jest.fn() } as never,
-      results as never,
-      { executeForTeacher: jest.fn() } as never,
-      { execute: jest.fn() } as never,
-      annotations,
-      freeResponses,
-      groups,
-    );
-    const request = {
-      user: { sub: TEACHER_ID },
-      once: jest.fn(),
-      destroyed: false,
-    } as unknown as Request;
-
-    await expect(
-      controller.getAnnotations(SESSION_ID, request),
-    ).resolves.toEqual({
-      annotations: [],
-    });
-    await expect(
-      controller.saveAnnotation(
-        SESSION_ID,
-        { screenId: 'B2-01-01', groupName: ' G1 ', note: ' Note ' },
-        request,
-      ),
-    ).resolves.toEqual({ id: 'annotation' });
-    await expect(
-      controller.getFreeResponses(SESSION_ID, request),
-    ).resolves.toEqual({
-      responses: [],
-    });
-    await expect(controller.getGroups(SESSION_ID, request)).resolves.toEqual({
-      groups: [],
-    });
-    await expect(
-      controller.createGroup(SESSION_ID, { name: ' Groupe 1 ' }, request),
-    ).resolves.toEqual({ id: 'group' });
-    await expect(
-      controller.renameGroup(
-        SESSION_ID,
-        'a0b1c2d3-e4f5-4678-9012-abcdefabcdef',
-        { name: ' Groupe 2 ' },
-        request,
-      ),
-    ).resolves.toEqual({ id: 'group' });
-    await controller.assignGroup(
-      SESSION_ID,
-      'a0b1c2d3-e4f5-4678-9012-abcdefabcdef',
-      { groupId: 'b0b1c2d3-e4f5-4678-9012-abcdefabcdef' },
-      request,
-    );
-    await controller.unassignGroup(
-      SESSION_ID,
-      'a0b1c2d3-e4f5-4678-9012-abcdefabcdef',
-      request,
-    );
-
-    expect(results.execute).toHaveBeenCalledTimes(6);
-    expect(groups.create).toHaveBeenCalledWith(SESSION_ID, 'Groupe 1');
-    expect(groups.rename).toHaveBeenCalledWith(
-      SESSION_ID,
-      'a0b1c2d3-e4f5-4678-9012-abcdefabcdef',
-      'Groupe 2',
-    );
-    expect(groups.assignParticipant).toHaveBeenNthCalledWith(
-      1,
-      SESSION_ID,
-      'a0b1c2d3-e4f5-4678-9012-abcdefabcdef',
-      'b0b1c2d3-e4f5-4678-9012-abcdefabcdef',
-    );
-    expect(groups.assignParticipant).toHaveBeenNthCalledWith(
-      2,
-      SESSION_ID,
-      'a0b1c2d3-e4f5-4678-9012-abcdefabcdef',
-      null,
-    );
   });
 });
