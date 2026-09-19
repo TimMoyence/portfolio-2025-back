@@ -24,6 +24,7 @@ import {
   B2_VISUAL_SOURCE_SHA256,
 } from '../src/migrations/data/b2-visual.snapshot';
 import { FormationCourseContentEntity } from '../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
+import { LireCoursPublicUseCase } from '../src/modules/formations/application/LireCoursPublic.useCase';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import { FormationScreenContentEntity } from '../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
@@ -47,6 +48,24 @@ import {
   describeDb,
   destroyDbIntegrationDataSource,
 } from './helpers/db-integration-datasource';
+
+const SLUG_B2 = 'b2-01-traitement-information-chiffree';
+const DELAI_MIGRATIONS_MS = 60_000;
+const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
+
+function aDireDuGuide(guide: unknown): string[] {
+  if (typeof guide !== 'object' || guide === null) return [];
+  const aDire = (guide as Record<string, unknown>)['aDire'];
+  return typeof aDire === 'string' && aDire.trim().length > 0
+    ? [aDire.trim()]
+    : [];
+}
+
+function aDireDesNotes(notes: string): string[] {
+  return [...notes.matchAll(RUBRIQUE_A_DIRE_DES_NOTES)].map(([, texte]) =>
+    texte.trim(),
+  );
+}
 
 const MIGRATIONS = [
   CreateFormations1778900000000,
@@ -90,7 +109,7 @@ describeDb('catalogue B2 migré', () => {
     });
     await dataSource.initialize();
     await dataSource.runMigrations({ transaction: 'all' });
-  });
+  }, DELAI_MIGRATIONS_MS);
 
   afterAll(async () => destroyDbIntegrationDataSource(dataSource));
 
@@ -280,6 +299,46 @@ describeDb('catalogue B2 migré', () => {
     expect(contenuEtudiant).not.toContain('"expected":');
     expect(contenuEtudiant).not.toContain('"notes":');
     expect(JSON.stringify(deroule)).toContain('"bonneReponse":');
+  });
+
+  it('ne sert ni interaction ni rubrique à dire hors du deck au poste étudiant ni au catalogue public', async () => {
+    const catalogue = new CoursCatalogueRepositoryTypeORM(
+      dataSource.getRepository(FormationCourseContentEntity),
+    );
+    const ecrans = await dataSource
+      .getRepository(FormationScreenContentEntity)
+      .find();
+    const rubriquesADire = ecrans.flatMap((ecran) => [
+      ...aDireDuGuide(ecran.proprietes['guide']),
+      ...aDireDesNotes(ecran.notes),
+    ]);
+    const sujets = await Promise.all(
+      [1, 2].map(async (version) => {
+        const cours = await catalogue.trouver(SLUG_B2, version);
+        if (cours === null) throw new Error(`Version ${version} absente`);
+        return tirer(cours, 0).sujet;
+      }),
+    );
+    const publics = [
+      ...sujets,
+      await new LireCoursPublicUseCase(catalogue).execute(SLUG_B2),
+    ];
+    const complets = publics.map((contenu) => JSON.stringify(contenu));
+    const horsDuDeck = publics.map((contenu) =>
+      JSON.stringify(contenu, (cle, valeur: unknown) =>
+        cle === 'presentation' ? undefined : valeur,
+      ),
+    );
+
+    expect(rubriquesADire.length).toBeGreaterThan(0);
+    expect(
+      complets.filter((contenu) => contenu.includes('"interaction"')),
+    ).toEqual([]);
+    expect(
+      rubriquesADire.filter((texte) =>
+        horsDuDeck.some((contenu) => contenu.includes(texte)),
+      ),
+    ).toEqual([]);
   });
 
   it('persiste une réponse libre de façon idempotente par participant et activité', async () => {

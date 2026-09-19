@@ -27,6 +27,12 @@ const BRIQUES_QUESTION = [
   'fp-exit',
 ] as const;
 
+const PROPRIETES_RESERVEES_AU_FORMATEUR: readonly string[] = [
+  'guide',
+  'correction',
+  'interaction',
+];
+
 export class TirageAmbiguError extends Error {
   readonly questionId: string;
   readonly graine: number;
@@ -243,35 +249,11 @@ function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
 function proprietesPubliques(
   proprietes: Readonly<Record<string, unknown>>,
 ): Readonly<Record<string, unknown>> {
-  const interaction = proprietes['interaction'];
-  const contenu = Object.fromEntries(
+  return Object.fromEntries(
     Object.entries(proprietes).filter(
-      ([key]) =>
-        key !== 'guide' && key !== 'correction' && key !== 'interaction',
+      ([cle]) => !PROPRIETES_RESERVEES_AU_FORMATEUR.includes(cle),
     ),
   );
-  if (
-    typeof interaction !== 'object' ||
-    interaction === null ||
-    Array.isArray(interaction)
-  ) {
-    return contenu;
-  }
-  const candidat = interaction as Readonly<Record<string, unknown>>;
-  if (candidat['type'] !== 'quiz') {
-    return contenu;
-  }
-  return {
-    ...contenu,
-    interaction: {
-      id: candidat['id'],
-      type: 'quiz',
-      question: candidat['question'],
-      options: candidat['options'],
-      context: candidat['context'],
-      competency: candidat['competency'],
-    },
-  };
 }
 
 function sousPropriete(

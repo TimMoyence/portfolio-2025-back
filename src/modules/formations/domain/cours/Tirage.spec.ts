@@ -203,6 +203,38 @@ describe('tirer', () => {
     expect(donnees.definition.calcul).toBe('prix*(1+taux/100)');
   });
 
+  it('garde au formateur l interaction du quiz et sa rubrique a dire', () => {
+    const aDire = 'La bonne reponse est la moyenne ponderee.';
+    const ecranQuiz = {
+      id: 'E-QUIZ',
+      brique: 'fp-quote',
+      dureeMinutes: 3,
+      concepts: ['proportion'],
+      notes: `Objectif : conclure. À dire : ${aDire}`,
+      proprietes: {
+        texte: 'Quel taux global ?',
+        auteur: null,
+        source: null,
+        interaction: {
+          type: 'quiz',
+          id: 'quiz-taux-global',
+          question: 'Quel taux global ?',
+          options: ['La moyenne simple', 'La moyenne ponderee'],
+          context: aDire,
+          competency: 'taux-global',
+        },
+        guide: { aDire },
+      },
+    } as unknown as Ecran;
+
+    const sujet = JSON.stringify(
+      tirer(buildCoursDeTest({ ecrans: [ecranQuiz] }), 0).sujet,
+    );
+
+    expect(sujet).not.toContain('"interaction"');
+    expect(sujet).not.toContain(aDire);
+  });
+
   it('range les donnees de chaque brique sous la propriete de la table partagee avec le front', () => {
     const ecrans = tirer(cours, 5).sujet.ecrans.filter(
       (ecran) => ecran.type !== 'questionnaire',
