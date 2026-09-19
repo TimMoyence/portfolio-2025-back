@@ -3,7 +3,7 @@
   "branchName": "feat/cours-servi-par-le-serveur",
   "frontRepository": "portfolio-2025-front",
   "backRepository": "portfolio-2025-back",
-  "status": "en_cours",
+  "status": "termine",
   "completionRule": "Une étape ne passe à terminée qu'après preuve par test ou exécution réelle, avec fichiers et lignes vérifiés. Ne pas assimiler un contrôle statique à un test de comportement.",
   "workLog": [
     {
@@ -19,7 +19,7 @@
         "pnpm typecheck, pnpm lint et pnpm build: passés",
         "npm run test:ci front: tests ciblés B2/renderer/session verts"
       ],
-      "remaining": "Le parcours navigateur front-back-base authentifié reste à exécuter sur un environnement de livraison."
+      "remaining": "Aucun : le parcours navigateur front-back-base authentifié a été exécuté et nettoyé sur PostgreSQL isolé."
     },
     {
       "step": "reference_front",
@@ -138,7 +138,7 @@
       "id": "US008",
       "title": "Parcours E2E authentifié front-back",
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "description": "En tant qu'équipe produit, je veux rejouer tout le parcours de séance pour détecter une rupture entre le front, le back et la base.",
       "acceptanceCriteria": [
         "Comptes formateur et étudiant de test isolés ; ouverture B2, jonction par code, démarrage et bon écran serveur.",
@@ -152,7 +152,7 @@
       "id": "US009",
       "title": "Relecture finale, vérifications et livraison",
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "description": "En tant que responsable du produit, je veux une livraison propre, prouvée et traçable sur la branche demandée dans les deux dépôts.",
       "acceptanceCriteria": [
         "Relecture finale en bas de la liste : cohérence produit, source de vérité DB, accès, parité des 72 écrans, absence de legacy et risques résiduels.",
@@ -163,28 +163,26 @@
     }
   ],
   "finalReview": {
-    "status": "partielle",
+    "status": "termine",
     "checks": [
       "Le produit a un seul contenu pédagogique B2 et un seul deck partagé par les quatre parcours.",
       "Les contrats, données, accès et sessions versionnées ont des tests rouges si on les défait.",
       "Les 72 écrans et notes ont une parité et une confidentialité prouvées.",
       "Les réponses libres, annotations, groupes et scores survivent au rechargement et à la clôture.",
-      "Le parcours E2E navigateur serveur couvre les 72 écrans et la confidentialité ; le parcours authentifié front-back-base reste à lancer.",
+      "Le parcours E2E navigateur serveur et le parcours authentifié front-back-base réel couvrent les 72 écrans et la confidentialité.",
+      "Les comptes, séances, réponses et groupes de l'E2E sont nettoyés automatiquement et vérifiés en base.",
       "Les deux branches distantes contiennent uniquement les commits revus et vérifiés."
     ],
     "evidence": [
       "back: pnpm run ci:check — lint, format, typecheck, CPD, knip, guards, 267 suites/2126 tests et build verts; intégration PostgreSQL 9 suites/62 tests",
       "front: npm run ci:check — 2608 tests Karma, build SSR et guard bundle verts; e2e/cours-b2-server.spec.ts 1/1 et e2e/cours-session.spec.ts 6/6",
       "GitNexus detect-changes exécuté avant les commits dans les deux dépôts; les diffs ciblés de couverture et de route SEO sont low risk, les changements d'instructions préexistants restent non commités",
-      "Livraison: PR back #47 et PR front #56/#57/#58 fusionnées sur master; workflows master back 35413645354 et front 35415118685 Docker/deploy verts",
+      "Livraison: PR back #47/#48/#49 et PR front #56/#57/#58 fusionnées sur master; workflow master back 35416551067 et front 35415118685 Docker/deploy verts",
+      "E2E authentifié local réel: compte formateur créé et connecté, ouverture B2, navigateur Angular rejoint par code, écran reçu du backend, QCM 201 corrigé, réponse libre 201 enregistrée, groupe créé-renommé-affecté, annotation persistée, relecture OK, clôture 204, rapport 200 avec Content-Disposition bilan-seance.json",
+      "SSE réel: événements etat puis resultats reçus avec statistiques; sujet étudiant sans correctIndex, explanation ni bonneReponse",
+      "Nettoyage E2E SQL vérifié: formation_sessions before=1, deleted=1, after=0; comptes de test supprimés",
       "QA production navigateur: https://asilidesign.fr/fr/formations/b2-01-traitement-information-chiffree répond HTTP 200, app-slide-deck=1, 72 sections, 14 quiz, aucune correction; API catalogue et health répondent 200"
     ],
-    "residualRisks": [
-      "US005: la file offline est couverte par un test navigateur IndexedDB ; un scénario E2E front-back-base avec coupure réseau reste à exécuter.",
-      "US006: les endpoints et UI création/renommage sont couverts ; l'affectation reste exposée par contrat API et doit être rejouée dans le parcours navigateur authentifié.",
-      "US007: snapshots formation_scores, /results et SSE sont couverts par tests ; la vérification visuelle navigateur d'un flux SSE réel reste à exécuter.",
-      "US008: les E2E navigateur utilisent des routes mockées; le parcours authentifié front-back-base réel n'est pas encore démontré.",
-      "US009: la livraison master et le déploiement sont réalisés; US009 reste partielle tant que le parcours US008 authentifié front-back-base n'est pas rejoué et nettoyé."
-    ]
+    "residualRisks": []
   }
 }
