@@ -6,7 +6,10 @@ import {
   questionsDe,
   questionsDuCours,
 } from '../src/modules/formations/domain/cours/Cours';
-import type { Question } from '../src/modules/formations/domain/cours/Cours';
+import type {
+  Cours,
+  Question,
+} from '../src/modules/formations/domain/cours/Cours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { TirageDuCours } from '../src/modules/formations/domain/cours/Tirage';
 import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';
@@ -27,7 +30,6 @@ import { DELAI_OUVERTURE_CONTEXTE_MS } from './helpers/formations-db';
 import {
   abonnerAuFlux,
   clientFormations,
-  coursPublie,
   EN_TETE_IDENTITE,
   monterBancFormations,
   patienter,
@@ -70,7 +72,9 @@ interface ReponseEnvoyee {
   confusion: string | null;
 }
 
-const COURS = coursPublie(SLUG);
+const VERSION_PUBLIEE = 2;
+const ECRANS_DU_DECK = 72;
+const QUIZ_DU_DECK = 14;
 
 function dansLaTolerance(valeur: number, tolerance: Tolerance): number {
   switch (tolerance.type) {
@@ -206,6 +210,8 @@ describeDb('Repetition a blanc de B2-01 (db integration)', () => {
 
   let banc: BancFormations;
   let client: ClientFormations;
+  let cours: Cours;
+  let versionCourante: number;
 
   const serveur = (): Parameters<typeof request>[0] =>
     banc.app.getHttpServer() as Parameters<typeof request>[0];
@@ -222,7 +228,7 @@ describeDb('Repetition a blanc de B2-01 (db integration)', () => {
       .expect(CREE);
     const inscription = reponse.body as Inscription;
     const graine = await banc.contexte.graineDe(inscription.participantId);
-    return { ...inscription, index, tirage: tirer(COURS, graine) };
+    return { ...inscription, index, tirage: tirer(cours, graine) };
   };
 
   const lireLeSujet = async (
@@ -287,7 +293,7 @@ describeDb('Repetition a blanc de B2-01 (db integration)', () => {
     etudiants: readonly Etudiant[],
   ): Promise<ReponseEnvoyee[]> => {
     const envoyees: ReponseEnvoyee[] = [];
-    for (const [rang, ecran] of COURS.ecrans.entries()) {
+    for (const [rang, ecran] of cours.ecrans.entries()) {
       await piloter(sessionId, rang).expect(SANS_CONTENU);
       const questions = estInteractif(ecran) ? questionsDe(ecran) : [];
       for (const question of questions) {
@@ -305,6 +311,11 @@ describeDb('Repetition a blanc de B2-01 (db integration)', () => {
     banc = await monterBancFormations();
     await banc.contexte.nettoyer();
     client = clientFormations(banc.app, FORMATEUR);
+    const courant = await banc.contexte.catalogue.trouverCourant(SLUG);
+    if (courant === null) {
+      throw new Error(`Le cours ${SLUG} est absent de la base migrée`);
+    }
+    ({ cours, version: versionCourante } = courant);
   }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
@@ -313,8 +324,20 @@ describeDb('Repetition a blanc de B2-01 (db integration)', () => {
     delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
   });
 
+  it('lit en base la version publiee du deck B2 migre, et non un cours synthetique', () => {
+    expect({
+      version: versionCourante,
+      ecrans: cours.ecrans.length,
+      quiz: questionsDuCours(cours).length,
+    }).toEqual({
+      version: VERSION_PUBLIEE,
+      ecrans: ECRANS_DU_DECK,
+      quiz: QUIZ_DU_DECK,
+    });
+  });
+
   it(
-    'joue une seance de cours B2 de l ouverture a la cloture sur le vrai catalogue',
+    'joue une seance de cours B2 de l ouverture a la cloture sur le contenu migre en base',
     async () => {
       const ouverture = await client
         .formateur('post', '/sessions')
@@ -343,12 +366,15 @@ describeDb('Repetition a blanc de B2-01 (db integration)', () => {
       );
 
       const envoyees = await jouerLesEcrans(sessionId, etudiants);
-      const dernierEcran = COURS.ecrans.length - 1;
-      await piloter(sessionId, COURS.ecrans.length).expect(REQUETE_INVALIDE);
+      const dernierEcran = cours.ecrans.length - 1;
+      await piloter(sessionId, cours.ecrans.length).expect(REQUETE_INVALIDE);
       const seance = await banc.contexte.sessions.findById(sessionId);
-      expect(seance?.ecranCourant).toBe(dernierEcran);
+      expect(seance).toMatchObject({
+        courseVersion: VERSION_PUBLIEE,
+        ecranCourant: dernierEcran,
+      });
 
-      const attendus = questionsDuCours(COURS).map((question) =>
+      const attendus = questionsDuCours(cours).map((question) =>
         resultatAttendu(question.id, envoyees),
       );
       const totauxAttendus = totauxParQuestion({

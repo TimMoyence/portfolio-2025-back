@@ -307,13 +307,13 @@ export interface BancFormations {
 }
 
 export async function monterBancFormations(
-  catalogue: ICatalogueCours = CATALOGUE_FORMATIONS_TEST,
+  catalogueDeTest?: ICatalogueCours,
 ): Promise<BancFormations> {
   const contexte = await ouvrirContexteFormations();
   const mailer = createMockFormationMailer();
   const app = await monterApplicationFormations(
     { ...contexte, mailer },
-    catalogue,
+    catalogueDeTest ?? contexte.catalogue,
   );
   const port = await ecouterEnBoucleLocale(app);
   return {
