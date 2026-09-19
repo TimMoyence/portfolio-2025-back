@@ -1,28 +1,35 @@
-import { B2_VISUAL_SNAPSHOT } from '../../../../migrations/data/b2-visual.snapshot';
+import {
+  buildQuizAffiche,
+  PRESENTATIONS_VISUELLES_VALIDES,
+} from '../../../../../test/factories/presentation-visuelle.factory';
 import { parseVisualPresentation } from './VisualPresentation';
 
 describe('contrat visuel du catalogue', () => {
-  it('valide les 72 écrans et les 14 layouts du deck B2 extrait', () => {
-    const presentations = B2_VISUAL_SNAPSHOT.map(({ renderer, props }) =>
-      parseVisualPresentation({ renderer, props }),
-    );
-    expect(presentations).toHaveLength(72);
-    expect(new Set(presentations.map((item) => item.renderer)).size).toBe(14);
+  it.each(Object.entries(PRESENTATIONS_VISUELLES_VALIDES))(
+    'valide un écran de rendu %s',
+    (renderer, props) => {
+      expect(parseVisualPresentation({ renderer, props })).toEqual({
+        renderer,
+        props,
+      });
+    },
+  );
+
+  it('couvre chacun des quatorze rendus du deck', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(14);
+  });
+
+  it('refuse un rendu inconnu', () => {
+    expect(() =>
+      parseVisualPresentation({ renderer: 'carrousel', props: {} }),
+    ).toThrow();
   });
 
   it('refuse une correction glissée dans un quiz étudiant', () => {
     expect(() =>
       parseVisualPresentation({
         renderer: 'quiz',
-        props: {
-          questionData: {
-            id: 'q1',
-            type: 'quiz',
-            question: 'Question ?',
-            options: ['A', 'B'],
-            correctIndex: 0,
-          },
-        },
+        props: { questionData: buildQuizAffiche({ correctIndex: 0 }) },
       }),
     ).toThrow();
   });

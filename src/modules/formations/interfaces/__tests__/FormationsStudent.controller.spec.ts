@@ -2,7 +2,10 @@ import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import type { Request } from 'express';
 import { of } from 'rxjs';
-import { PublicFormProtectionService } from '../../../../common/interfaces/security/public-form-protection.service';
+import {
+  buildFormationsStudentController,
+  createMockFormationsStudentDependances,
+} from '../../../../../test/factories/formations-controllers.factory';
 import {
   InvalidSessionCodeError,
   SeedPoolExhaustedError,
@@ -31,31 +34,19 @@ const inscription: JoinSessionRequestDto = {
 };
 
 describe('FormationsStudentController', () => {
-  const joinSession = { execute: jest.fn() };
-  const submitAnswer = { execute: jest.fn() };
-  const recordIncidents = { execute: jest.fn() };
-  const streamSession = { execute: jest.fn() };
-  const dueQuestions = { execute: jest.fn() };
-  const lireSujet = { execute: jest.fn() };
-  const tokens = { sign: jest.fn(), verify: jest.fn() };
-  const codeScan = {
-    assertPasDeBalayage: jest.fn(),
-    enregistrerEchec: jest.fn(),
-  };
-  const saveFreeResponse = { execute: jest.fn() };
-
-  const controller = new FormationsStudentController(
-    joinSession as never,
-    submitAnswer as never,
-    recordIncidents as never,
-    streamSession as never,
-    dueQuestions as never,
-    lireSujet as never,
-    saveFreeResponse as never,
-    tokens as never,
-    codeScan as never,
-    new PublicFormProtectionService(),
-  );
+  const dependances = createMockFormationsStudentDependances();
+  const {
+    joinSession,
+    submitAnswer,
+    recordIncidents,
+    streamSession,
+    dueQuestions,
+    lireSujet,
+    tokens,
+    codeScan,
+    saveFreeResponse,
+  } = dependances;
+  const controller = buildFormationsStudentController(dependances);
 
   const rejoindre = (dto: JoinSessionRequestDto = inscription) =>
     controller.join('4271', dto, requeteEtudiant);

@@ -1,4 +1,5 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
+import { parseVisualPresentation } from '../modules/formations/domain/cours/VisualPresentation';
 import { B2_VISUAL_SNAPSHOT } from './data/b2-visual.snapshot';
 import { SeedB2StoryboardLots1231779200000 } from './1779200000000-SeedB2StoryboardLots123';
 import { AlignB2SessionDeck1779300000000 } from './1779300000000-AlignB2SessionDeck';
@@ -43,6 +44,17 @@ describe('migrations de données B2 irréversibles', () => {
       expect(query).not.toHaveBeenCalled();
     },
   );
+});
+
+describe('deck visuel B2 extrait', () => {
+  it('respecte le contrat visuel du domaine sur ses 72 écrans et ses 14 rendus', () => {
+    const presentations = B2_VISUAL_SNAPSHOT.map(({ renderer, props }) =>
+      parseVisualPresentation({ renderer, props }),
+    );
+
+    expect(presentations).toHaveLength(72);
+    expect(new Set(presentations.map((item) => item.renderer)).size).toBe(14);
+  });
 });
 
 describe('migrations du contenu B2 servi par le serveur', () => {
