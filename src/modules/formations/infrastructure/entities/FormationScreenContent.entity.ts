@@ -31,7 +31,10 @@ export class FormationScreenContentEntity {
   @ManyToOne(() => FormationCourseContentEntity, (course) => course.ecrans, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'course_id' })
+  @JoinColumn({
+    name: 'course_id',
+    foreignKeyConstraintName: 'FK_formation_screen_contents_course',
+  })
   course: FormationCourseContentEntity;
 
   @Column({ type: 'int' })

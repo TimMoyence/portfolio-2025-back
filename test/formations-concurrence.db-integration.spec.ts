@@ -19,7 +19,6 @@ import {
 } from './helpers/formations-db';
 import {
   EN_TETE_IDENTITE,
-  depotsHorsSeanceSimules,
   monterApplicationFormations,
   patienter,
   PREFIXE_API,
@@ -190,7 +189,6 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     app = await monterApplicationFormations(
       {
         ...contexte,
-        ...depotsHorsSeanceSimules(),
         mailer: createMockFormationMailer(),
       },
       creerCatalogueDeTest(COURS_DE_CLASSE),

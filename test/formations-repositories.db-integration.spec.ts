@@ -49,18 +49,36 @@ interface ValeurBrute {
   valeur: string | number;
 }
 
-interface ContrainteUnique {
+interface ContrainteNommee {
   nom: string;
+}
+
+interface ContrainteUnique extends ContrainteNommee {
   colonnes: string[];
 }
 
-function trierParNom(
-  contraintes: readonly ContrainteUnique[],
-): ContrainteUnique[] {
+interface ClefEtrangere extends ContrainteUnique {
+  cible: string;
+  suppression: string;
+}
+
+function trierParNom<C extends ContrainteNommee>(
+  contraintes: readonly C[],
+): C[] {
   return [...contraintes].sort((gauche, droite) =>
     gauche.nom.localeCompare(droite.nom),
   );
 }
+
+function colonnesTriees(
+  colonnes: readonly { databaseName: string }[],
+): string[] {
+  return colonnes
+    .map((colonne) => colonne.databaseName)
+    .sort((gauche, droite) => gauche.localeCompare(droite));
+}
+
+const SUPPRESSION_PAR_DEFAUT = 'NO ACTION';
 
 describeDb('Formations repositories (db integration)', () => {
   let contexte: ContexteFormations;
@@ -133,7 +151,7 @@ describeDb('Formations repositories (db integration)', () => {
     await contexte.nettoyer();
   });
 
-  it('rejoue la migration CreateFormations apres un retour arriere', async () => {
+  it('rejoue la derniere migration formations apres un retour arriere', async () => {
     await contexte.rejouerMigration();
 
     const tables: Array<{ tablename: string }> =
@@ -438,13 +456,56 @@ describeDb('Formations repositories (db integration)', () => {
     const declarees: ContrainteUnique[] = FORMATION_ENTITIES.flatMap((entite) =>
       contexte.dataSource.getMetadata(entite).uniques.map((verrou) => ({
         nom: verrou.name,
-        colonnes: verrou.columns
-          .map((colonne) => colonne.databaseName)
-          .sort((gauche, droite) => gauche.localeCompare(droite)),
+        colonnes: colonnesTriees(verrou.columns),
       })),
     );
 
-    expect(enBase).toHaveLength(5);
+    expect(enBase).toHaveLength(7);
+    expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
+  });
+
+  it('declare les clefs etrangeres de la base, colonnes, cible et suppression comprises', async () => {
+    const enBase: ClefEtrangere[] = await contexte.dataSource.query(
+      `SELECT contrainte.conname AS nom, array_agg(colonne.attname::text ORDER BY colonne.attname) AS colonnes,
+              cible.relname AS cible,
+              CASE contrainte.confdeltype WHEN 'c' THEN 'CASCADE' WHEN 'n' THEN 'SET NULL' WHEN 'r' THEN 'RESTRICT' WHEN 'd' THEN 'SET DEFAULT' ELSE 'NO ACTION' END AS suppression
+       FROM pg_constraint contrainte
+       JOIN pg_class relation ON relation.oid = contrainte.conrelid
+       JOIN pg_namespace espace ON espace.oid = relation.relnamespace
+       JOIN pg_class cible ON cible.oid = contrainte.confrelid
+       JOIN unnest(contrainte.conkey) AS cle(attnum) ON true
+       JOIN pg_attribute colonne ON colonne.attrelid = relation.oid AND colonne.attnum = cle.attnum
+       WHERE contrainte.contype = 'f' AND espace.nspname = 'public' AND relation.relname LIKE 'formation_%'
+       GROUP BY contrainte.conname, cible.relname, contrainte.confdeltype`,
+    );
+    const declarees: ClefEtrangere[] = FORMATION_ENTITIES.flatMap((entite) =>
+      contexte.dataSource.getMetadata(entite).foreignKeys.map((clef) => ({
+        nom: clef.name,
+        colonnes: colonnesTriees(clef.columns),
+        cible: clef.referencedEntityMetadata.tableName,
+        suppression: clef.onDelete ?? SUPPRESSION_PAR_DEFAUT,
+      })),
+    );
+
+    expect(enBase).toHaveLength(12);
+    expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
+  });
+
+  it('declare les contraintes CHECK de la base sous le meme nom', async () => {
+    const enBase: ContrainteNommee[] = await contexte.dataSource.query(
+      `SELECT contrainte.conname AS nom
+       FROM pg_constraint contrainte
+       JOIN pg_class relation ON relation.oid = contrainte.conrelid
+       JOIN pg_namespace espace ON espace.oid = relation.relnamespace
+       WHERE contrainte.contype = 'c' AND espace.nspname = 'public' AND relation.relname LIKE 'formation_%'`,
+    );
+    const declarees: ContrainteNommee[] = FORMATION_ENTITIES.flatMap((entite) =>
+      contexte.dataSource
+        .getMetadata(entite)
+        .checks.map((controle) => ({ nom: controle.name })),
+    );
+
+    expect(enBase).toHaveLength(7);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -465,13 +526,11 @@ describeDb('Formations repositories (db integration)', () => {
     const declarees: ContrainteUnique[] = FORMATION_ENTITIES.flatMap((entite) =>
       contexte.dataSource.getMetadata(entite).indices.map((index) => ({
         nom: index.name,
-        colonnes: index.columns
-          .map((colonne) => colonne.databaseName)
-          .sort((gauche, droite) => gauche.localeCompare(droite)),
+        colonnes: colonnesTriees(index.columns),
       })),
     );
 
-    expect(enBase).toHaveLength(10);
+    expect(enBase).toHaveLength(15);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 

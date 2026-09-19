@@ -69,11 +69,7 @@ import {
   EN_TETE_JETON,
   ParticipantTokenService,
 } from '../../src/modules/formations/interfaces/ParticipantToken.service';
-import {
-  createMockFormationMailer,
-  createMockFreeResponsesRepo,
-  createMockTeacherAnnotationsRepo,
-} from '../factories/formation.factory';
+import { createMockFormationMailer } from '../factories/formation.factory';
 import {
   buildCoursDeTest,
   creerCatalogueDeTest,
@@ -141,16 +137,6 @@ export interface DepotsFormations {
   annotations: ITeacherAnnotationsRepository;
   groups: IFormationGroupsRepository;
   mailer: IFormationMailer;
-}
-
-export function depotsHorsSeanceSimules(): Pick<
-  DepotsFormations,
-  'freeResponses' | 'annotations'
-> {
-  return {
-    freeResponses: createMockFreeResponsesRepo(),
-    annotations: createMockTeacherAnnotationsRepo(),
-  };
 }
 
 export const CONTROLEURS_FORMATIONS = [
@@ -326,7 +312,7 @@ export async function monterBancFormations(
   const contexte = await ouvrirContexteFormations();
   const mailer = createMockFormationMailer();
   const app = await monterApplicationFormations(
-    { ...contexte, ...depotsHorsSeanceSimules(), mailer },
+    { ...contexte, mailer },
     catalogue,
   );
   const port = await ecouterEnBoucleLocale(app);

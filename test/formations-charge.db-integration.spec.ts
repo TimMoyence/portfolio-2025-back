@@ -18,7 +18,6 @@ import {
   abonnerAuFlux,
   coursPublie,
   EN_TETE_IDENTITE,
-  depotsHorsSeanceSimules,
   monterApplicationFormations,
   patienter,
   PREFIXE_API,
@@ -268,7 +267,6 @@ describeDb('Formations sous charge de classe (db integration)', () => {
     mailer = createMockFormationMailer();
     app = await monterApplicationFormations({
       ...contexte,
-      ...depotsHorsSeanceSimules(),
       mailer,
     });
     port = await ecouterEnBoucleLocale(app);

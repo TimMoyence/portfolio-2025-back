@@ -22,7 +22,6 @@ import {
   type ContexteFormations,
 } from './helpers/formations-db';
 import {
-  depotsHorsSeanceSimules,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
@@ -365,7 +364,6 @@ describeDb(
       app = await monterApplicationFormations(
         {
           ...contexte,
-          ...depotsHorsSeanceSimules(),
           mailer: new FormationMailerService(),
         },
         creerCatalogueDeTest(COURS_DE_CLASSE),
