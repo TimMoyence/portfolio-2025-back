@@ -46,7 +46,7 @@ describe('LireDerouleUseCase', () => {
 
   it('garde le déroulé sur la version ouverte même après une nouvelle publication', async () => {
     const catalogue = creerCatalogueDeTest(COURS);
-    const trouver = jest.spyOn(catalogue, 'trouver').mockReturnValue(COURS);
+    const trouver = jest.spyOn(catalogue, 'trouver').mockResolvedValue(COURS);
     sessions.findById.mockResolvedValue({ ...SESSION, courseVersion: 2 });
     sut = new LireDerouleUseCase(sessions, catalogue);
 

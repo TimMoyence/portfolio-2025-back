@@ -1,4 +1,3 @@
-import { creerCatalogue } from '../../src/modules/formations/domain/cours/catalogue/Catalogue';
 import type {
   Cours,
   Ecran,
@@ -189,7 +188,6 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
       'raisonnement-additif': 'E-REM',
       'ecart-absolu-au-lieu-du-taux': 'E-REM',
     },
-    derogations: [],
     ...overrides,
   };
 }
@@ -285,5 +283,27 @@ export function tireurSequentiel(depart = 0): (borne: number) => number {
 }
 
 export function creerCatalogueDeTest(...cours: Cours[]): ICatalogueCours {
-  return creerCatalogue(cours.length > 0 ? cours : [buildCoursDeTest()]);
+  const parSlug = new Map<string, Cours>();
+  for (const unCours of cours.length > 0 ? cours : [buildCoursDeTest()]) {
+    if (parSlug.has(unCours.slug)) {
+      throw new Error(
+        `Slug de cours en double dans le catalogue de test : « ${unCours.slug} ».`,
+      );
+    }
+    parSlug.set(unCours.slug, unCours);
+  }
+  return {
+    trouver: (slug, version) =>
+      Promise.resolve(
+        version === undefined || version === 1
+          ? (parSlug.get(slug) ?? null)
+          : null,
+      ),
+    trouverCourant: (slug) => {
+      const unCours = parSlug.get(slug);
+      return Promise.resolve(
+        unCours === undefined ? null : { cours: unCours, version: 1 },
+      );
+    },
+  };
 }

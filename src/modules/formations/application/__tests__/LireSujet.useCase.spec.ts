@@ -91,7 +91,7 @@ describe('LireSujetUseCase', () => {
 
   it('lit la version du cours fixée à l ouverture de la séance', async () => {
     const catalogue = creerCatalogueDeTest(COURS);
-    const trouver = jest.spyOn(catalogue, 'trouver').mockReturnValue(COURS);
+    const trouver = jest.spyOn(catalogue, 'trouver').mockResolvedValue(COURS);
     sessions.findById.mockResolvedValue({ ...SESSION, courseVersion: 2 });
     sut = new LireSujetUseCase(sessions, participants, catalogue);
 

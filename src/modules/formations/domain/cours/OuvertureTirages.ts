@@ -6,7 +6,7 @@ import { questionsDuCours } from './Cours';
 import { TirageAmbiguError, tirer } from './Tirage';
 
 export const NOMBRE_TIRAGES_DISTRIBUES = 60;
-export const BORNE_GRAINE = 2_147_483_647;
+const BORNE_GRAINE = 2_147_483_647;
 const GRAINES_A_RETENIR = NOMBRE_TIRAGES_DISTRIBUES + 1;
 const TENTATIVES_PAR_GRAINE = 10;
 

@@ -2,19 +2,20 @@ import type { Tolerance } from '../GradingCore';
 import type { Tirage } from './Aleatoire';
 import type { ConceptId } from './banque/concepts';
 import type { ConfusionId } from './banque/confusions';
-import type { RegleStructure } from './StructureCours';
 
 export type AuMoinsUn<T> = readonly [T, ...T[]];
 
-export type BriqueExposition =
-  | 'fp-quote'
-  | 'fp-story'
-  | 'fp-pro'
-  | 'fp-worked'
-  | 'fp-concept4'
-  | 'fp-plot'
-  | 'fp-challenge'
-  | 'fp-cardsort';
+export const BRIQUES_EXPOSITION = [
+  'fp-quote',
+  'fp-story',
+  'fp-pro',
+  'fp-worked',
+  'fp-concept4',
+  'fp-plot',
+  'fp-challenge',
+  'fp-cardsort',
+] as const;
+export type BriqueExposition = (typeof BRIQUES_EXPOSITION)[number];
 
 const BRIQUES_QUESTION = [
   'fp-numeric',
@@ -23,6 +24,10 @@ const BRIQUES_QUESTION = [
   'fp-exit',
 ] as const;
 export type BriqueQuestion = (typeof BRIQUES_QUESTION)[number];
+
+export function estBriqueQuestion(brique: string): brique is BriqueQuestion {
+  return (BRIQUES_QUESTION as readonly string[]).includes(brique);
+}
 
 export type Modalite = 'solo' | 'binome' | 'groupe' | 'classe';
 export type RegimeVerrou = 'ouvert' | 'focus' | 'examen';
@@ -305,12 +310,6 @@ export interface EcranQuestionnaire extends EcranCommun {
 
 export type Ecran = EcranExposition | EcranQuestion | EcranQuestionnaire;
 
-export interface Derogation {
-  readonly regle: RegleStructure;
-  readonly ecran?: string;
-  readonly raison: string;
-}
-
 export interface Cours {
   readonly slug: string;
   readonly titre: string;
@@ -319,7 +318,6 @@ export interface Cours {
   readonly concepts: AuMoinsUn<ConceptId>;
   readonly ecrans: AuMoinsUn<Ecran>;
   readonly remediations: Readonly<Partial<Record<ConfusionId, string>>>;
-  readonly derogations: readonly Derogation[];
 }
 
 export function estInteractif(ecran: Ecran): boolean {
@@ -327,7 +325,7 @@ export function estInteractif(ecran: Ecran): boolean {
     ecran.brique === 'questionnaire' ||
     ecran.brique === 'fp-challenge' ||
     ecran.brique === 'fp-cardsort' ||
-    (BRIQUES_QUESTION as readonly string[]).includes(ecran.brique) ||
+    estBriqueQuestion(ecran.brique) ||
     ecran.question !== undefined
   );
 }

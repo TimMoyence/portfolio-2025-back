@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   type AuMoinsUn,
+  BRIQUES_EXPOSITION,
   type BriqueExposition,
   type Cours,
   type Ecran,
@@ -15,17 +16,6 @@ import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { parseVisualPresentation } from '../domain/cours/VisualPresentation';
 import { FormationCourseContentEntity } from './entities/FormationCourseContent.entity';
 import type { FormationScreenContentEntity } from './entities/FormationScreenContent.entity';
-
-const BRIQUES_EXPOSITION: readonly BriqueExposition[] = [
-  'fp-quote',
-  'fp-story',
-  'fp-pro',
-  'fp-worked',
-  'fp-concept4',
-  'fp-plot',
-  'fp-challenge',
-  'fp-cardsort',
-];
 
 @Injectable()
 export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
@@ -77,12 +67,11 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
       concepts: entity.concepts as readonly [ConceptId, ...ConceptId[]],
       ecrans: ecrans as [Ecran, ...Ecran[]],
       remediations: {},
-      derogations: [],
     };
   }
 
   private toScreen(screen: FormationScreenContentEntity): Ecran {
-    if (!BRIQUES_EXPOSITION.includes(screen.brique as BriqueExposition)) {
+    if (!(BRIQUES_EXPOSITION as readonly string[]).includes(screen.brique)) {
       throw new Error(
         `Brique de formation inconnue pour ${screen.screenId}: ${screen.brique}`,
       );

@@ -6,12 +6,13 @@ import {
 } from '../../../../../test/factories/cours.factory';
 import { questionNumerique } from './Cours';
 import {
-  BORNE_GRAINE,
   NOMBRE_TIRAGES_DISTRIBUES,
   ouvrirTirages,
   TiragesInsuffisantsError,
 } from './OuvertureTirages';
 import { tirer } from './Tirage';
+
+const PLUS_GRAND_INTEGER_POSTGRESQL = 2_147_483_647;
 
 describe('ouvrirTirages', () => {
   const cours = buildCoursDeTest();
@@ -56,7 +57,7 @@ describe('ouvrirTirages', () => {
     expect(graines).not.toContain(bareme.graineReference);
   });
 
-  it('interroge le tireur avec la borne de graine', () => {
+  it('tire des graines que la colonne integer "seed" de PostgreSQL peut stocker', () => {
     const bornesRecues: number[] = [];
     const sequentiel = tireurSequentiel();
     ouvrirTirages(cours, (borne) => {
@@ -64,7 +65,9 @@ describe('ouvrirTirages', () => {
       return sequentiel(borne);
     });
     expect(bornesRecues.length).toBeGreaterThan(0);
-    expect(bornesRecues.every((borne) => borne === BORNE_GRAINE)).toBe(true);
+    expect(
+      bornesRecues.every((borne) => borne === PLUS_GRAND_INTEGER_POSTGRESQL),
+    ).toBe(true);
   });
 
   it('couvre chaque question du cours dans chaque tirage', () => {

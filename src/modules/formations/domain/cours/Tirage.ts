@@ -2,7 +2,7 @@ import { matchesSolution } from '../GradingCore';
 import type { AnswerValue, Solution, Tolerance } from '../GradingCore';
 import { creerRng, creerTirage, melanger } from './Aleatoire';
 import type { Rng, Tirage } from './Aleatoire';
-import { estInteractif } from './Cours';
+import { estBriqueQuestion, estInteractif } from './Cours';
 import type {
   BriqueExposition,
   BriqueQuestion,
@@ -19,13 +19,6 @@ import type {
 } from './Cours';
 import type { CoursPublic, EcranPublic } from './CoursPublic';
 import type { ConfusionId } from './banque/confusions';
-
-const BRIQUES_QUESTION = [
-  'fp-numeric',
-  'fp-vote',
-  'fp-recall',
-  'fp-exit',
-] as const;
 
 const PROPRIETES_RESERVEES_AU_FORMATEUR: readonly string[] = [
   'guide',
@@ -167,10 +160,6 @@ function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {
     interactif: estInteractif(ecran),
     donnees: donneesDe(ecran, contexte),
   };
-}
-
-function estBriqueQuestion(brique: Ecran['brique']): boolean {
-  return (BRIQUES_QUESTION as readonly string[]).includes(brique);
 }
 
 function enregistrerQuestionAttachee(
