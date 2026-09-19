@@ -23,9 +23,22 @@ describe('validateEnv', () => {
     expect(result.NODE_ENV).toBe('development');
     expect(result.PORT).toBe(3000);
     expect(result.API_PREFIX).toBe('api/v1/portfolio25');
-    expect(result.REDIS_HOST).toBe('127.0.0.1');
     expect(result.REDIS_PORT).toBe(6379);
     expect(result.SMTP_PORT).toBe(587);
+  });
+
+  it('ne reintroduit aucun hote Redis quand REDIS_URL et REDIS_HOST sont absents', () => {
+    const result = validateEnv(buildValidEnv());
+
+    expect(result.REDIS_URL).toBeUndefined();
+    expect(result.REDIS_HOST).toBeUndefined();
+  });
+
+  it('garde l hote Redis renseigne et lui donne le port 6379 par defaut', () => {
+    const result = validateEnv(buildValidEnv({ REDIS_HOST: 'redis' }));
+
+    expect(result.REDIS_HOST).toBe('redis');
+    expect(result.REDIS_PORT).toBe(6379);
   });
 
   it('devrait exiger une configuration HMAC complete en production', () => {

@@ -64,7 +64,7 @@ const envSchema = z
         'FORMATION_REVIEW_TOKEN_SECRET doit faire au moins 32 caracteres',
       ),
 
-    REDIS_HOST: z.string().default('127.0.0.1'),
+    REDIS_HOST: z.string().optional(),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().optional(),
 
