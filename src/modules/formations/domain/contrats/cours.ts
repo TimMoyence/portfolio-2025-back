@@ -23,15 +23,18 @@ import type {
   WorkedExemple,
 } from './donnees-publiques';
 
-export type Diffusion = 'catalogue' | 'seance';
+export const DIFFUSIONS = ['catalogue', 'seance'] as const;
+export type Diffusion = (typeof DIFFUSIONS)[number];
 export type OrdreQuestions = 'fixe' | 'melange';
-export type TypeQuestion =
-  | 'numeric'
-  | 'vote'
-  | 'feuille'
-  | 'tableau'
-  | 'classement'
-  | 'enigme';
+export const TYPES_QUESTION = [
+  'numeric',
+  'vote',
+  'feuille',
+  'tableau',
+  'classement',
+  'enigme',
+] as const;
+export type TypeQuestion = (typeof TYPES_QUESTION)[number];
 
 export type SheetPlanStocke = Omit<SheetPlanPublic, 'metadonnees'>;
 export type CardsortPlanStocke = Omit<CardsortPlanPublic, 'metadonnees'>;

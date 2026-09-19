@@ -1,5 +1,2188 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`OpenAPI contrat B2-01 V3 (lot 0, sans route active) fige les schemas des DTO du § 9.5 sans exposer de chemin 1`] = `
+{
+  "AttenduClassementPresentateurResponseDto": {
+    "properties": {
+      "carteId": {
+        "example": "carte-ca-2024-2025",
+        "type": "string",
+      },
+      "categorieId": {
+        "example": "comparable",
+        "type": "string",
+      },
+      "justification": {
+        "example": "Même périmètre, même unité, même durée.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "carteId",
+      "categorieId",
+      "justification",
+    ],
+    "type": "object",
+  },
+  "AttenduFeuillePresentateurResponseDto": {
+    "properties": {
+      "forme": {
+        "oneOf": [
+          {
+            "enum": [
+              "references",
+            ],
+            "type": "string",
+          },
+          {
+            "$ref": "#/components/schemas/FormeMemeQueResponseDto",
+          },
+        ],
+      },
+      "formuleReference": {
+        "example": "=C2/$C$5",
+        "type": "string",
+      },
+      "reference": {
+        "example": "E2",
+        "type": "string",
+      },
+      "tolerance": {
+        "$ref": "#/components/schemas/ToleranceResponseDto",
+      },
+      "valeur": {
+        "example": 0.345217,
+        "type": "number",
+      },
+    },
+    "required": [
+      "reference",
+      "formuleReference",
+      "valeur",
+      "tolerance",
+      "forme",
+    ],
+    "type": "object",
+  },
+  "AttenduTableauPresentateurResponseDto": {
+    "properties": {
+      "cle": {
+        "example": "prix",
+        "type": "string",
+      },
+      "rang": {
+        "example": 1,
+        "type": "number",
+      },
+      "valeur": {
+        "example": 20.52,
+        "type": "number",
+      },
+    },
+    "required": [
+      "rang",
+      "cle",
+      "valeur",
+    ],
+    "type": "object",
+  },
+  "ComptesJalonResponseDto": {
+    "properties": {
+      "ca-va": {
+        "example": 12,
+        "type": "number",
+      },
+      "clair": {
+        "example": 9,
+        "type": "number",
+      },
+      "perdu": {
+        "example": 3,
+        "type": "number",
+      },
+      "total": {
+        "example": 24,
+        "type": "number",
+      },
+    },
+    "required": [
+      "perdu",
+      "ca-va",
+      "clair",
+      "total",
+    ],
+    "type": "object",
+  },
+  "ConfusionCompteeResponseDto": {
+    "properties": {
+      "id": {
+        "example": "base-arrivee",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "Diviser l’écart par la valeur d’arrivée au lieu de la valeur de départ.",
+        "type": "string",
+      },
+      "nombre": {
+        "example": 4,
+        "type": "number",
+      },
+    },
+    "required": [
+      "id",
+      "libelle",
+      "nombre",
+    ],
+    "type": "object",
+  },
+  "ConfusionCorrigeeResponseDto": {
+    "properties": {
+      "id": {
+        "example": "hausse-baisse-symetriques",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "Croire qu’une hausse puis une baisse du même pourcentage ramènent à la valeur de départ.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "libelle",
+    ],
+    "type": "object",
+  },
+  "ControlSessionRequestDto": {
+    "properties": {
+      "ecran": {
+        "example": 4,
+        "type": "number",
+      },
+      "intervalle": {
+        "$ref": "#/components/schemas/FreeRangeDto",
+      },
+      "mode": {
+        "enum": [
+          "pilote",
+          "libre",
+        ],
+        "example": "pilote",
+        "type": "string",
+      },
+      "pilotage": {
+        "$ref": "#/components/schemas/PilotageEcranRequestDto",
+      },
+    },
+    "type": "object",
+  },
+  "CorrigeClassementPresentateurResponseDto": {
+    "properties": {
+      "attendus": {
+        "items": {
+          "$ref": "#/components/schemas/AttenduClassementPresentateurResponseDto",
+        },
+        "type": "array",
+      },
+      "seuilReussite": {
+        "example": 0.75,
+        "type": "number",
+      },
+      "type": {
+        "enum": [
+          "classement",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "attendus",
+      "seuilReussite",
+    ],
+    "type": "object",
+  },
+  "CorrigeDefiPresentateurResponseDto": {
+    "properties": {
+      "strategies": {
+        "items": {
+          "$ref": "#/components/schemas/StrategiePresentateurResponseDto",
+        },
+        "type": "array",
+      },
+      "type": {
+        "enum": [
+          "defi",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "strategies",
+    ],
+    "type": "object",
+  },
+  "CorrigeEnigmesPresentateurResponseDto": {
+    "properties": {
+      "codeFinal": {
+        "example": "7-3-1-9",
+        "type": "string",
+      },
+      "enigmes": {
+        "items": {
+          "$ref": "#/components/schemas/EnigmePresentateurResponseDto",
+        },
+        "type": "array",
+      },
+      "type": {
+        "enum": [
+          "enigmes",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "enigmes",
+      "codeFinal",
+    ],
+    "type": "object",
+  },
+  "CorrigeFeuillePresentateurResponseDto": {
+    "properties": {
+      "attendus": {
+        "items": {
+          "$ref": "#/components/schemas/AttenduFeuillePresentateurResponseDto",
+        },
+        "type": "array",
+      },
+      "seuilReussite": {
+        "example": 0.8,
+        "type": "number",
+      },
+      "type": {
+        "enum": [
+          "feuille",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "attendus",
+      "seuilReussite",
+    ],
+    "type": "object",
+  },
+  "CorrigePresentateurResponseDto": {
+    "properties": {
+      "bonneReponse": {
+        "description": "Bonne reponse du tirage de reference : libelle pour un vote, valeur pour une question numerique",
+        "example": "plus bas qu’au départ",
+        "type": "string",
+      },
+      "confusions": {
+        "items": {
+          "$ref": "#/components/schemas/ConfusionCorrigeeResponseDto",
+        },
+        "type": "array",
+      },
+      "questionId": {
+        "example": "Q-OUV-RAPPEL",
+        "type": "string",
+      },
+    },
+    "required": [
+      "questionId",
+      "bonneReponse",
+      "confusions",
+    ],
+    "type": "object",
+  },
+  "CorrigeRevelationPresentateurResponseDto": {
+    "properties": {
+      "lignes": {
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "titre": {
+        "example": "Une hausse puis une baisse de 20 %",
+        "type": "string",
+      },
+      "type": {
+        "enum": [
+          "revelation",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "titre",
+      "lignes",
+    ],
+    "type": "object",
+  },
+  "CorrigeTableauPresentateurResponseDto": {
+    "properties": {
+      "attendus": {
+        "items": {
+          "$ref": "#/components/schemas/AttenduTableauPresentateurResponseDto",
+        },
+        "type": "array",
+      },
+      "seuilReussite": {
+        "example": 0.75,
+        "type": "number",
+      },
+      "tolerance": {
+        "$ref": "#/components/schemas/ToleranceResponseDto",
+      },
+      "type": {
+        "enum": [
+          "tableau",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "attendus",
+      "tolerance",
+      "seuilReussite",
+    ],
+    "type": "object",
+  },
+  "CoursPublicCatalogueResponseDto": {
+    "properties": {
+      "concepts": {
+        "example": [
+          "proportion",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "duree": {
+        "description": "Duree du cours en minutes",
+        "example": 195,
+        "type": "number",
+      },
+      "ecrans": {
+        "items": {
+          "$ref": "#/components/schemas/EcranPublicResponseDto",
+        },
+        "type": "array",
+      },
+      "id": {
+        "description": "Slug du cours",
+        "example": "b2-01-traitement-information-chiffree",
+        "type": "string",
+      },
+      "niveau": {
+        "example": "B2",
+        "type": "string",
+      },
+      "publieLe": {
+        "description": "Date de la bascule de publication",
+        "format": "date-time",
+        "type": "string",
+      },
+      "titre": {
+        "example": "Proportions, taux et évolutions",
+        "type": "string",
+      },
+      "version": {
+        "description": "Version publiee du cours",
+        "example": 3,
+        "type": "number",
+      },
+    },
+    "required": [
+      "id",
+      "titre",
+      "niveau",
+      "duree",
+      "concepts",
+      "ecrans",
+      "version",
+      "publieLe",
+    ],
+    "type": "object",
+  },
+  "DeclarerJalonRequestDto": {
+    "properties": {
+      "etat": {
+        "enum": [
+          "perdu",
+          "ca-va",
+          "clair",
+        ],
+        "example": "ca-va",
+        "type": "string",
+      },
+    },
+    "required": [
+      "etat",
+    ],
+    "type": "object",
+  },
+  "DefiParticipantResponseDto": {
+    "properties": {
+      "defiId": {
+        "example": "b2-01-a5-defi-recommandation",
+        "type": "string",
+      },
+      "premiereTentative": {
+        "example": "Renforcer la marketplace.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "defiId",
+      "premiereTentative",
+    ],
+    "type": "object",
+  },
+  "DerouleResponseDto": {
+    "properties": {
+      "concepts": {
+        "example": [
+          "proportion",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "duree": {
+        "description": "Duree du cours en minutes",
+        "example": 195,
+        "type": "number",
+      },
+      "ecrans": {
+        "items": {
+          "$ref": "#/components/schemas/EcranDerouleResponseDto",
+        },
+        "type": "array",
+      },
+      "id": {
+        "description": "Slug du cours",
+        "example": "b2-01-traitement-information-chiffree",
+        "type": "string",
+      },
+      "niveau": {
+        "example": "B2",
+        "type": "string",
+      },
+      "remediations": {
+        "additionalProperties": {
+          "type": "string",
+        },
+        "example": {
+          "base-arrivee": "B2-01-A3-04-FIL-TECHNIQUE",
+        },
+        "type": "object",
+      },
+      "titre": {
+        "example": "Proportions, taux et évolutions",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "titre",
+      "niveau",
+      "duree",
+      "concepts",
+      "ecrans",
+      "remediations",
+    ],
+    "type": "object",
+  },
+  "DetailVerdictResponseDto": {
+    "properties": {
+      "cle": {
+        "description": "Cellule, carte, ou rang et cle d une ligne de tableau",
+        "example": "E3",
+        "type": "string",
+      },
+      "juste": {
+        "example": false,
+        "type": "boolean",
+      },
+      "libelleConfusion": {
+        "example": "Confondre le taux 70 % et la valeur 0,7.",
+        "nullable": true,
+        "type": "string",
+      },
+    },
+    "required": [
+      "cle",
+      "juste",
+      "libelleConfusion",
+    ],
+    "type": "object",
+  },
+  "EcranDerouleResponseDto": {
+    "properties": {
+      "corrigeEcran": {
+        "description": "Corrige de production, de defi ou de revelation, jamais servi au sujet ni au catalogue",
+        "nullable": true,
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CorrigeFeuillePresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeTableauPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeClassementPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeEnigmesPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeDefiPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeRevelationPresentateurResponseDto",
+          },
+        ],
+      },
+      "corriges": {
+        "items": {
+          "$ref": "#/components/schemas/CorrigePresentateurResponseDto",
+        },
+        "type": "array",
+      },
+      "diffusion": {
+        "enum": [
+          "catalogue",
+          "seance",
+        ],
+        "type": "string",
+      },
+      "donnees": {
+        "additionalProperties": true,
+        "description": "Proprietes de la brique, rangees sous la propriete de la brique ; sans solution, piege, confusion ni notes",
+        "type": "object",
+      },
+      "duree": {
+        "description": "Duree de l ecran en minutes",
+        "example": 4,
+        "type": "number",
+      },
+      "guide": {
+        "$ref": "#/components/schemas/GuideFormateurResponseDto",
+      },
+      "id": {
+        "example": "E-OUV-RAPPEL",
+        "type": "string",
+      },
+      "interactif": {
+        "example": true,
+        "type": "boolean",
+      },
+      "notes": {
+        "description": "Notes du formateur",
+        "type": "string",
+      },
+      "questions": {
+        "items": {
+          "$ref": "#/components/schemas/QuestionDerouleResponseDto",
+        },
+        "type": "array",
+      },
+      "seuil": {
+        "example": 0.7,
+        "nullable": true,
+        "type": "number",
+      },
+      "titre": {
+        "description": "Titre de l ecran, obligatoire a partir de la version 3",
+        "example": "Le tableau de bord par canal",
+        "nullable": true,
+        "type": "string",
+      },
+      "type": {
+        "description": "Brique qui rend l ecran",
+        "example": "fp-recall",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "type",
+      "duree",
+      "interactif",
+      "donnees",
+      "titre",
+      "notes",
+      "diffusion",
+      "seuil",
+      "corriges",
+      "questions",
+      "corrigeEcran",
+    ],
+    "type": "object",
+  },
+  "EcranPublicResponseDto": {
+    "properties": {
+      "donnees": {
+        "additionalProperties": true,
+        "description": "Proprietes de la brique, rangees sous la propriete de la brique ; sans solution, piege, confusion ni notes",
+        "type": "object",
+      },
+      "duree": {
+        "description": "Duree de l ecran en minutes",
+        "example": 4,
+        "type": "number",
+      },
+      "id": {
+        "example": "E-OUV-RAPPEL",
+        "type": "string",
+      },
+      "interactif": {
+        "example": true,
+        "type": "boolean",
+      },
+      "titre": {
+        "description": "Titre de l ecran, obligatoire a partir de la version 3",
+        "example": "Le tableau de bord par canal",
+        "nullable": true,
+        "type": "string",
+      },
+      "type": {
+        "description": "Brique qui rend l ecran",
+        "example": "fp-recall",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "type",
+      "duree",
+      "interactif",
+      "donnees",
+      "titre",
+    ],
+    "type": "object",
+  },
+  "EnigmePresentateurResponseDto": {
+    "properties": {
+      "enigmeId": {
+        "example": "enigme-1",
+        "type": "string",
+      },
+      "fragment": {
+        "example": "7",
+        "type": "string",
+      },
+      "solution": {
+        "example": "142 920",
+        "type": "string",
+      },
+    },
+    "required": [
+      "enigmeId",
+      "solution",
+      "fragment",
+    ],
+    "type": "object",
+  },
+  "EnigmeResolueResponseDto": {
+    "properties": {
+      "enigmeId": {
+        "example": "enigme-1",
+        "type": "string",
+      },
+      "fragment": {
+        "example": "7",
+        "type": "string",
+      },
+    },
+    "required": [
+      "enigmeId",
+      "fragment",
+    ],
+    "type": "object",
+  },
+  "EnigmesParticipantResponseDto": {
+    "properties": {
+      "parcoursId": {
+        "example": "b2-01-a6-coffre",
+        "type": "string",
+      },
+      "resolues": {
+        "items": {
+          "$ref": "#/components/schemas/EnigmeResolueResponseDto",
+        },
+        "type": "array",
+      },
+      "tentativesRestantes": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "description": "Tentatives restantes par enigme ouverte",
+        "example": {
+          "enigme-2": 9,
+        },
+        "type": "object",
+      },
+    },
+    "required": [
+      "parcoursId",
+      "resolues",
+      "tentativesRestantes",
+    ],
+    "type": "object",
+  },
+  "EtatParticipantResponseDto": {
+    "properties": {
+      "defis": {
+        "items": {
+          "$ref": "#/components/schemas/DefiParticipantResponseDto",
+        },
+        "type": "array",
+      },
+      "enigmes": {
+        "items": {
+          "$ref": "#/components/schemas/EnigmesParticipantResponseDto",
+        },
+        "type": "array",
+      },
+      "jalons": {
+        "items": {
+          "$ref": "#/components/schemas/JalonParticipantResponseDto",
+        },
+        "type": "array",
+      },
+      "participantId": {
+        "format": "uuid",
+        "type": "string",
+      },
+      "rappels": {
+        "$ref": "#/components/schemas/RappelsServisResponseDto",
+      },
+      "reponses": {
+        "items": {
+          "$ref": "#/components/schemas/ReponseParticipantResponseDto",
+        },
+        "type": "array",
+      },
+      "reponsesLibres": {
+        "items": {
+          "$ref": "#/components/schemas/ReponseLibreParticipantResponseDto",
+        },
+        "type": "array",
+      },
+      "revision": {
+        "example": 7,
+        "type": "number",
+      },
+      "sessionId": {
+        "format": "uuid",
+        "type": "string",
+      },
+    },
+    "required": [
+      "sessionId",
+      "participantId",
+      "revision",
+      "reponses",
+      "reponsesLibres",
+      "jalons",
+      "enigmes",
+      "defis",
+      "rappels",
+    ],
+    "type": "object",
+  },
+  "FormeMemeQueResponseDto": {
+    "properties": {
+      "memeQue": {
+        "description": "Cellule dont la forme R1C1 doit etre reprise",
+        "example": "D2",
+        "type": "string",
+      },
+    },
+    "required": [
+      "memeQue",
+    ],
+    "type": "object",
+  },
+  "FreeRangeDto": {
+    "properties": {
+      "dernier": {
+        "example": 9,
+        "type": "number",
+      },
+      "premier": {
+        "example": 3,
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "GuideFormateurResponseDto": {
+    "properties": {
+      "aDire": {
+        "example": "Avant de commenter la pente, vérifiez le repère.",
+        "type": "string",
+      },
+      "calcul": {
+        "example": "Poids d’un canal = CA du canal / CA total.",
+        "type": "string",
+      },
+      "question": {
+        "example": "Que faut-il contrôler avant de comparer les deux courbes ?",
+        "type": "string",
+      },
+      "relance": {
+        "example": "Les valeurs ont-elles changé ou seulement la représentation ?",
+        "type": "string",
+      },
+      "reponse": {
+        "example": "Les valeurs, l’unité, la période et l’échelle.",
+        "type": "string",
+      },
+      "transition": {
+        "example": "Le prochain écran montre comment une échelle modifie l’impression.",
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "JalonParticipantResponseDto": {
+    "properties": {
+      "etat": {
+        "enum": [
+          "perdu",
+          "ca-va",
+          "clair",
+        ],
+        "example": "ca-va",
+        "type": "string",
+      },
+      "sondageId": {
+        "example": "b2-01-jalon-1",
+        "type": "string",
+      },
+    },
+    "required": [
+      "sondageId",
+      "etat",
+    ],
+    "type": "object",
+  },
+  "JustesParCleResponseDto": {
+    "properties": {
+      "justes": {
+        "example": 19,
+        "type": "number",
+      },
+      "total": {
+        "example": 24,
+        "type": "number",
+      },
+    },
+    "required": [
+      "total",
+      "justes",
+    ],
+    "type": "object",
+  },
+  "NotationParTypeResponseDto": {
+    "properties": {
+      "nonNotees": {
+        "example": 13,
+        "type": "number",
+      },
+      "notees": {
+        "example": 19,
+        "type": "number",
+      },
+    },
+    "required": [
+      "notees",
+      "nonNotees",
+    ],
+    "type": "object",
+  },
+  "OpenSessionRequestDto": {
+    "properties": {
+      "capacite": {
+        "description": "Nombre maximal de participants, 40 par defaut",
+        "example": 40,
+        "maximum": 60,
+        "minimum": 1,
+        "type": "number",
+      },
+      "courseSlug": {
+        "example": "b2-01-traitement-information-chiffree",
+        "type": "string",
+      },
+      "version": {
+        "description": "Version du cours, reservee a l administrateur",
+        "example": 3,
+        "type": "number",
+      },
+    },
+    "required": [
+      "courseSlug",
+    ],
+    "type": "object",
+  },
+  "OptionPubliqueResponseDto": {
+    "properties": {
+      "id": {
+        "description": "Identifiant stable de l option, sans lien avec sa justesse",
+        "example": "plus-25-pct-ecd953a1",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "+25 %",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "libelle",
+    ],
+    "type": "object",
+  },
+  "ParTypeDeQuestionResponseDto": {
+    "properties": {
+      "classement": {
+        "$ref": "#/components/schemas/NotationParTypeResponseDto",
+      },
+      "enigme": {
+        "$ref": "#/components/schemas/NotationParTypeResponseDto",
+      },
+      "feuille": {
+        "$ref": "#/components/schemas/NotationParTypeResponseDto",
+      },
+      "numeric": {
+        "$ref": "#/components/schemas/NotationParTypeResponseDto",
+      },
+      "tableau": {
+        "$ref": "#/components/schemas/NotationParTypeResponseDto",
+      },
+      "vote": {
+        "$ref": "#/components/schemas/NotationParTypeResponseDto",
+      },
+    },
+    "required": [
+      "numeric",
+      "vote",
+      "feuille",
+      "tableau",
+      "classement",
+      "enigme",
+    ],
+    "type": "object",
+  },
+  "PilotageEcranRequestDto": {
+    "properties": {
+      "etayage": {
+        "description": "Etapes montrees d un exemple travaille",
+        "example": 2,
+        "minimum": 0,
+        "type": "number",
+      },
+      "phase": {
+        "description": "Phase d un vote a question jumelle, jamais ramenee en arriere",
+        "enum": [
+          "vote",
+          "discussion",
+          "revote",
+          "revele",
+        ],
+        "type": "string",
+      },
+      "revele": {
+        "description": "Revelation des pistes fausses d un defi, jamais retiree",
+        "type": "boolean",
+      },
+      "screenId": {
+        "example": "B2-01-A3-01-VOTE-HAUSSE-BAISSE",
+        "type": "string",
+      },
+    },
+    "required": [
+      "screenId",
+    ],
+    "type": "object",
+  },
+  "ProductionClassementDto": {
+    "properties": {
+      "classement": {
+        "additionalProperties": {
+          "type": "string",
+        },
+        "description": "Categorie choisie pour chaque carte",
+        "example": {
+          "carte-ca-2024-2025": "comparable",
+        },
+        "type": "object",
+      },
+      "type": {
+        "enum": [
+          "classement",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "classement",
+    ],
+    "type": "object",
+  },
+  "ProductionFeuilleDto": {
+    "properties": {
+      "cellules": {
+        "additionalProperties": {
+          "maxLength": 200,
+          "type": "string",
+        },
+        "description": "Saisie brute de chaque cellule, formule ou valeur",
+        "example": {
+          "B5": "=SOMME(B2:B4)",
+          "E2": "=C2/$C$5",
+        },
+        "type": "object",
+      },
+      "type": {
+        "enum": [
+          "feuille",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "cellules",
+    ],
+    "type": "object",
+  },
+  "ProductionNeSaitPasDto": {
+    "properties": {
+      "neSaitPas": {
+        "enum": [
+          true,
+        ],
+        "type": "number",
+      },
+      "type": {
+        "enum": [
+          "feuille",
+          "tableau",
+          "classement",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "neSaitPas",
+    ],
+    "type": "object",
+  },
+  "ProductionTableauDto": {
+    "properties": {
+      "saisies": {
+        "items": {
+          "$ref": "#/components/schemas/SaisieTableauDto",
+        },
+        "type": "array",
+      },
+      "type": {
+        "enum": [
+          "tableau",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "saisies",
+    ],
+    "type": "object",
+  },
+  "ProgressionEnigmeResponseDto": {
+    "properties": {
+      "enigmeId": {
+        "example": "enigme-1",
+        "type": "string",
+      },
+      "epuisees": {
+        "example": 1,
+        "type": "number",
+      },
+      "ouvertes": {
+        "example": 20,
+        "type": "number",
+      },
+      "parcoursId": {
+        "example": "b2-01-a6-coffre",
+        "type": "string",
+      },
+      "resolues": {
+        "example": 17,
+        "type": "number",
+      },
+      "tentativesMoyennes": {
+        "example": 1.6,
+        "type": "number",
+      },
+    },
+    "required": [
+      "parcoursId",
+      "enigmeId",
+      "ouvertes",
+      "resolues",
+      "tentativesMoyennes",
+      "epuisees",
+    ],
+    "type": "object",
+  },
+  "PublicationResponseDto": {
+    "properties": {
+      "publieeLe": {
+        "description": "Date de la bascule de publication",
+        "format": "date-time",
+        "type": "string",
+      },
+      "slug": {
+        "example": "b2-01-traitement-information-chiffree",
+        "type": "string",
+      },
+      "versionPubliee": {
+        "example": 3,
+        "type": "number",
+      },
+    },
+    "required": [
+      "slug",
+      "versionPubliee",
+      "publieeLe",
+    ],
+    "type": "object",
+  },
+  "PublierVersionRequestDto": {
+    "properties": {
+      "version": {
+        "description": "Version du cours a publier au catalogue",
+        "example": 3,
+        "type": "number",
+      },
+    },
+    "required": [
+      "version",
+    ],
+    "type": "object",
+  },
+  "QuestionDerouleResponseDto": {
+    "properties": {
+      "enonce": {
+        "example": "Le prix monte de 20 %, puis baisse de 20 %.",
+        "type": "string",
+      },
+      "id": {
+        "example": "b2-01-a3-vote-hausse-baisse",
+        "type": "string",
+      },
+      "options": {
+        "description": "Options d un vote, null pour une question numerique",
+        "items": {
+          "$ref": "#/components/schemas/OptionPubliqueResponseDto",
+        },
+        "nullable": true,
+        "type": "array",
+      },
+    },
+    "required": [
+      "id",
+      "enonce",
+      "options",
+    ],
+    "type": "object",
+  },
+  "RappelsResponseDto": {
+    "properties": {
+      "questions": {
+        "description": "Liste figee au premier appel",
+        "items": {
+          "$ref": "#/components/schemas/SpacedQuestionPubliqueResponseDto",
+        },
+        "type": "array",
+      },
+    },
+    "required": [
+      "questions",
+    ],
+    "type": "object",
+  },
+  "RappelsServisResponseDto": {
+    "properties": {
+      "questionIds": {
+        "example": [
+          "b2-01-r-compensation",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+    },
+    "required": [
+      "questionIds",
+    ],
+    "type": "object",
+  },
+  "RapportParticipantResponseDto": {
+    "properties": {
+      "completion": {
+        "description": "Part des questions notees repondues",
+        "example": 1,
+        "type": "number",
+      },
+      "email": {
+        "example": "theo.martin@example.com",
+        "type": "string",
+      },
+      "incidents": {
+        "description": "Nombre d incidents du poste",
+        "example": 0,
+        "type": "number",
+      },
+      "nom": {
+        "example": "Martin",
+        "type": "string",
+      },
+      "note": {
+        "description": "Note sur 20",
+        "example": 20,
+        "type": "number",
+      },
+      "prenom": {
+        "example": "Theo",
+        "type": "string",
+      },
+      "reponses": {
+        "items": {
+          "$ref": "#/components/schemas/RapportQuestionResponseDto",
+        },
+        "type": "array",
+      },
+      "sousSeuil": {
+        "example": false,
+        "type": "boolean",
+      },
+    },
+    "required": [
+      "prenom",
+      "nom",
+      "email",
+      "completion",
+      "note",
+      "sousSeuil",
+      "incidents",
+      "reponses",
+    ],
+    "type": "object",
+  },
+  "RapportQuestionResponseDto": {
+    "properties": {
+      "concept": {
+        "example": "evolutions-successives",
+        "type": "string",
+      },
+      "correcte": {
+        "example": true,
+        "type": "boolean",
+      },
+      "dureeMs": {
+        "example": 42000,
+        "type": "number",
+      },
+      "libelleConfusion": {
+        "example": null,
+        "nullable": true,
+        "type": "string",
+      },
+      "misconception": {
+        "example": null,
+        "nullable": true,
+        "type": "string",
+      },
+      "questionId": {
+        "example": "Q-OUV-RAPPEL",
+        "type": "string",
+      },
+      "reponse": {
+        "description": "Reponse lisible : libelle de l option pour un vote, « Je ne sais pas », sinon la valeur",
+        "example": "plus bas qu’au départ",
+        "type": "string",
+      },
+      "score": {
+        "description": "Score d une production, null pour une question fermee",
+        "example": 0.8235,
+        "nullable": true,
+        "type": "number",
+      },
+      "type": {
+        "enum": [
+          "numeric",
+          "vote",
+          "feuille",
+          "tableau",
+          "classement",
+          "enigme",
+        ],
+        "example": "feuille",
+        "type": "string",
+      },
+      "valeur": {
+        "description": "Valeur envoyee par l etudiant",
+        "example": "o2",
+        "type": "string",
+      },
+    },
+    "required": [
+      "questionId",
+      "concept",
+      "valeur",
+      "reponse",
+      "correcte",
+      "misconception",
+      "libelleConfusion",
+      "dureeMs",
+      "type",
+      "score",
+    ],
+    "type": "object",
+  },
+  "RegleDeNotationResponseDto": {
+    "properties": {
+      "base": {
+        "description": "Note de participation : part des questions notees repondues, rapportee a la reference de la cohorte",
+        "enum": [
+          "participation-relative-cohorte",
+        ],
+        "example": "participation-relative-cohorte",
+        "type": "string",
+      },
+      "decimalesStatistiques": {
+        "description": "Nombre de decimales des statistiques arrondies",
+        "example": 2,
+        "type": "number",
+      },
+      "neSaitPasCompteCommeReponse": {
+        "description": "Une reponse « Je ne sais pas » compte comme repondue",
+        "example": true,
+        "type": "boolean",
+      },
+      "noteMax": {
+        "description": "Note maximale",
+        "example": 20,
+        "type": "number",
+      },
+      "partCohorteReference": {
+        "description": "Part de la cohorte qui fixe la reference : completion du participant classe a ce rang, qui obtient la note maximale",
+        "example": 0.2,
+        "type": "number",
+      },
+      "pointsNonReponse": {
+        "description": "Points d une question notee sans reponse",
+        "example": 0,
+        "type": "number",
+      },
+      "productionCompteSi": {
+        "enum": [
+          "au-moins-une-saisie",
+        ],
+        "type": "string",
+      },
+      "ratioSeuilValidation": {
+        "description": "Seuil de validation, en fraction de la completion de reference",
+        "example": 0.4,
+        "type": "number",
+      },
+      "reponsesLibresNotees": {
+        "description": "Les reponses libres entrent-elles dans la note",
+        "example": false,
+        "type": "boolean",
+      },
+      "seuilQuestionProbleme": {
+        "description": "Taux de reussite sous lequel une question est problematique",
+        "example": 0.7,
+        "type": "number",
+      },
+      "statistiquesSurQuestionsNotees": {
+        "description": "Les statistiques ne portent que sur les questions notees",
+        "example": true,
+        "type": "boolean",
+      },
+      "typesNotables": {
+        "example": [
+          "vote",
+          "numeric",
+          "classement",
+          "feuille",
+          "tableau",
+        ],
+        "items": {
+          "enum": [
+            "numeric",
+            "vote",
+            "feuille",
+            "tableau",
+            "classement",
+            "enigme",
+          ],
+          "type": "string",
+        },
+        "type": "array",
+      },
+    },
+    "required": [
+      "noteMax",
+      "base",
+      "partCohorteReference",
+      "ratioSeuilValidation",
+      "neSaitPasCompteCommeReponse",
+      "pointsNonReponse",
+      "reponsesLibresNotees",
+      "seuilQuestionProbleme",
+      "decimalesStatistiques",
+      "typesNotables",
+      "productionCompteSi",
+      "statistiquesSurQuestionsNotees",
+    ],
+    "type": "object",
+  },
+  "ReponseLibreParticipantResponseDto": {
+    "properties": {
+      "activityId": {
+        "example": "b2-01-a1-diagnostic:rappel",
+        "type": "string",
+      },
+      "response": {
+        "example": "Un taux se calcule sur la valeur de départ.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "activityId",
+      "response",
+    ],
+    "type": "object",
+  },
+  "ReponseParticipantResponseDto": {
+    "properties": {
+      "correcte": {
+        "example": false,
+        "type": "boolean",
+      },
+      "details": {
+        "items": {
+          "$ref": "#/components/schemas/DetailVerdictResponseDto",
+        },
+        "nullable": true,
+        "type": "array",
+      },
+      "libelleConfusion": {
+        "nullable": true,
+        "type": "string",
+      },
+      "questionId": {
+        "example": "b2-01-a4-feuille-canaux",
+        "type": "string",
+      },
+      "score": {
+        "description": "Score d une production, null pour une question fermee",
+        "example": 0.7647,
+        "nullable": true,
+        "type": "number",
+      },
+      "valeur": {
+        "description": "Valeur enregistree : nombre, texte ou identifiant d option, « je ne sais pas » ou production",
+        "oneOf": [
+          {
+            "type": "number",
+          },
+          {
+            "type": "string",
+          },
+          {
+            "$ref": "#/components/schemas/ProductionFeuilleDto",
+          },
+          {
+            "$ref": "#/components/schemas/ProductionTableauDto",
+          },
+          {
+            "$ref": "#/components/schemas/ProductionClassementDto",
+          },
+          {
+            "$ref": "#/components/schemas/ProductionNeSaitPasDto",
+          },
+        ],
+      },
+    },
+    "required": [
+      "questionId",
+      "valeur",
+      "correcte",
+      "score",
+      "details",
+      "libelleConfusion",
+    ],
+    "type": "object",
+  },
+  "ResultatQuestionResponseDto": {
+    "properties": {
+      "confusions": {
+        "description": "Confusions triees par frequence",
+        "items": {
+          "$ref": "#/components/schemas/ConfusionCompteeResponseDto",
+        },
+        "type": "array",
+      },
+      "correctes": {
+        "example": 21,
+        "type": "number",
+      },
+      "ecranId": {
+        "example": "B2-01-A4-02-FEUILLE-CANAUX",
+        "type": "string",
+      },
+      "neSaitPas": {
+        "example": 2,
+        "type": "number",
+      },
+      "noteCompte": {
+        "example": true,
+        "type": "boolean",
+      },
+      "parCle": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/JustesParCleResponseDto",
+        },
+        "description": "Productions : justesse par cellule, carte ou ligne",
+        "nullable": true,
+        "type": "object",
+      },
+      "parOption": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "description": "Votes : nombre par identifiant stable d option, et __je_ne_sais_pas__",
+        "example": {
+          "__je_ne_sais_pas__": 2,
+          "plus-25-pct-ecd953a1": 12,
+        },
+        "nullable": true,
+        "type": "object",
+      },
+      "questionId": {
+        "example": "Q-M2-PIVOT",
+        "type": "string",
+      },
+      "scoreMoyen": {
+        "description": "Productions : score moyen",
+        "example": 0.71,
+        "nullable": true,
+        "type": "number",
+      },
+      "total": {
+        "example": 30,
+        "type": "number",
+      },
+      "type": {
+        "enum": [
+          "numeric",
+          "vote",
+          "feuille",
+          "tableau",
+          "classement",
+          "enigme",
+        ],
+        "example": "feuille",
+        "type": "string",
+      },
+    },
+    "required": [
+      "questionId",
+      "total",
+      "correctes",
+      "neSaitPas",
+      "confusions",
+      "ecranId",
+      "type",
+      "noteCompte",
+      "parOption",
+      "scoreMoyen",
+      "parCle",
+    ],
+    "type": "object",
+  },
+  "ResultatsSeanceResponseDto": {
+    "properties": {
+      "participants": {
+        "description": "Nombre de participants inscrits",
+        "example": 30,
+        "type": "number",
+      },
+      "questions": {
+        "items": {
+          "$ref": "#/components/schemas/ResultatQuestionResponseDto",
+        },
+        "type": "array",
+      },
+    },
+    "required": [
+      "participants",
+      "questions",
+    ],
+    "type": "object",
+  },
+  "ResumeBaremeResponseDto": {
+    "properties": {
+      "parType": {
+        "$ref": "#/components/schemas/ParTypeDeQuestionResponseDto",
+      },
+      "questionsNotees": {
+        "example": 31,
+        "type": "number",
+      },
+    },
+    "required": [
+      "questionsNotees",
+      "parType",
+    ],
+    "type": "object",
+  },
+  "SaisieTableauDto": {
+    "properties": {
+      "cle": {
+        "example": "prix",
+        "type": "string",
+      },
+      "rang": {
+        "example": 1,
+        "type": "number",
+      },
+      "valeur": {
+        "example": 20.52,
+        "type": "number",
+      },
+    },
+    "required": [
+      "rang",
+      "cle",
+      "valeur",
+    ],
+    "type": "object",
+  },
+  "SessionResultsResponseDto": {
+    "properties": {
+      "bareme": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResumeBaremeResponseDto",
+          },
+        ],
+        "description": "Denominateur de la note : questions notees par type",
+      },
+      "code": {
+        "example": "4271",
+        "type": "string",
+      },
+      "conceptsFragiles": {
+        "example": [
+          "taux-evolution",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "courseSlug": {
+        "example": "b2-01-traitement-information-chiffree",
+        "type": "string",
+      },
+      "enigmes": {
+        "items": {
+          "$ref": "#/components/schemas/ProgressionEnigmeResponseDto",
+        },
+        "type": "array",
+      },
+      "fermeeLe": {
+        "description": "Date de cloture, ou date de lecture si la seance est ouverte",
+        "format": "date-time",
+        "type": "string",
+      },
+      "jalons": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/ComptesJalonResponseDto",
+        },
+        "description": "Comptes de chaque jalon de confiance",
+        "type": "object",
+      },
+      "notation": {
+        "$ref": "#/components/schemas/RegleDeNotationResponseDto",
+      },
+      "ouverteLe": {
+        "format": "date-time",
+        "type": "string",
+      },
+      "participants": {
+        "description": "Participants dans leur ordre d arrivee",
+        "items": {
+          "$ref": "#/components/schemas/RapportParticipantResponseDto",
+        },
+        "type": "array",
+      },
+      "resultats": {
+        "$ref": "#/components/schemas/ResultatsSeanceResponseDto",
+      },
+      "statistiques": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StatistiquesSeanceResponseDto",
+          },
+        ],
+        "description": "Indicateurs calculés côté serveur pour le pilotage formateur",
+      },
+    },
+    "required": [
+      "courseSlug",
+      "code",
+      "ouverteLe",
+      "fermeeLe",
+      "conceptsFragiles",
+      "statistiques",
+      "participants",
+      "resultats",
+      "notation",
+      "bareme",
+      "jalons",
+      "enigmes",
+    ],
+    "type": "object",
+  },
+  "SpacedQuestionPubliqueResponseDto": {
+    "properties": {
+      "boite": {
+        "enum": [
+          1,
+          2,
+          3,
+        ],
+        "example": 1,
+        "type": "number",
+      },
+      "concept": {
+        "example": "evolution-reciproque",
+        "type": "string",
+      },
+      "cours": {
+        "example": "B2-01 · Traitement de l’information chiffrée",
+        "type": "string",
+      },
+      "enonce": {
+        "example": "Après une baisse de 20 %, quelle hausse ramène au départ ?",
+        "type": "string",
+      },
+      "options": {
+        "description": "Options melangees selon la graine du participant",
+        "items": {
+          "$ref": "#/components/schemas/OptionPubliqueResponseDto",
+        },
+        "type": "array",
+      },
+      "questionId": {
+        "example": "b2-01-r-compensation",
+        "type": "string",
+      },
+    },
+    "required": [
+      "questionId",
+      "concept",
+      "boite",
+      "cours",
+      "enonce",
+      "options",
+    ],
+    "type": "object",
+  },
+  "StatistiquesSeanceResponseDto": {
+    "properties": {
+      "dispersion": {
+        "description": "Ecart type des notes",
+        "example": 3.21,
+        "type": "number",
+      },
+      "mediane": {
+        "description": "Mediane des notes sur 20",
+        "example": 13,
+        "type": "number",
+      },
+      "moyenne": {
+        "description": "Moyenne des notes sur 20",
+        "example": 12.5,
+        "type": "number",
+      },
+      "questionsProblemes": {
+        "description": "Questions dont le taux de reussite est sous le seuil",
+        "example": [
+          "Q-M2-PIVOT",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "tauxParticipation": {
+        "description": "Part des participants ayant repondu a au moins une question",
+        "example": 0.9,
+        "type": "number",
+      },
+      "tauxReussite": {
+        "description": "Part des reponses correctes parmi toutes les reponses",
+        "example": 0.64,
+        "type": "number",
+      },
+    },
+    "required": [
+      "moyenne",
+      "mediane",
+      "dispersion",
+      "tauxParticipation",
+      "tauxReussite",
+      "questionsProblemes",
+    ],
+    "type": "object",
+  },
+  "StrategieDefiResponseDto": {
+    "properties": {
+      "fausse": {
+        "description": "Present seulement apres la revelation pilotee",
+        "example": true,
+        "type": "boolean",
+      },
+      "id": {
+        "example": "somme-des-taux",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "Additionner les taux annoncés",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "libelle",
+    ],
+    "type": "object",
+  },
+  "StrategiePresentateurResponseDto": {
+    "properties": {
+      "fausse": {
+        "example": true,
+        "type": "boolean",
+      },
+      "id": {
+        "example": "somme-des-taux",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "Additionner les taux annoncés",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "libelle",
+      "fausse",
+    ],
+    "type": "object",
+  },
+  "StrategiesDefiResponseDto": {
+    "properties": {
+      "strategies": {
+        "items": {
+          "$ref": "#/components/schemas/StrategieDefiResponseDto",
+        },
+        "type": "array",
+      },
+    },
+    "required": [
+      "strategies",
+    ],
+    "type": "object",
+  },
+  "SubmitDefiRequestDto": {
+    "properties": {
+      "dureeMs": {
+        "example": 180000,
+        "type": "number",
+      },
+      "texte": {
+        "description": "Tentative du participant, la premiere envoyee est figee",
+        "example": "Multiplier les coefficients de chaque revision.",
+        "type": "string",
+      },
+    },
+    "required": [
+      "texte",
+      "dureeMs",
+    ],
+    "type": "object",
+  },
+  "SubmitProductionRequestDto": {
+    "properties": {
+      "dureeMs": {
+        "example": 600000,
+        "type": "number",
+      },
+      "questionId": {
+        "description": "Identifiant de la question de production, egal a celui du plan",
+        "example": "b2-01-a4-feuille-canaux",
+        "type": "string",
+      },
+      "valeur": {
+        "description": "Production brute du poste, corrigee cote serveur contre le plan",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ProductionFeuilleDto",
+          },
+          {
+            "$ref": "#/components/schemas/ProductionTableauDto",
+          },
+          {
+            "$ref": "#/components/schemas/ProductionClassementDto",
+          },
+          {
+            "$ref": "#/components/schemas/ProductionNeSaitPasDto",
+          },
+        ],
+      },
+    },
+    "required": [
+      "questionId",
+      "valeur",
+      "dureeMs",
+    ],
+    "type": "object",
+  },
+  "SubmitProductionResponseDto": {
+    "properties": {
+      "correcte": {
+        "example": false,
+        "type": "boolean",
+      },
+      "details": {
+        "items": {
+          "$ref": "#/components/schemas/DetailVerdictResponseDto",
+        },
+        "type": "array",
+      },
+      "libelleConfusion": {
+        "description": "Libelle de la confusion la plus frequente du detail",
+        "nullable": true,
+        "type": "string",
+      },
+      "score": {
+        "description": "Part des attendus justes, de 0 a 1",
+        "example": 0.7647,
+        "type": "number",
+      },
+    },
+    "required": [
+      "correcte",
+      "score",
+      "details",
+      "libelleConfusion",
+    ],
+    "type": "object",
+  },
+  "SujetResponseDto": {
+    "properties": {
+      "concepts": {
+        "example": [
+          "proportion",
+        ],
+        "items": {
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "duree": {
+        "description": "Duree du cours en minutes",
+        "example": 195,
+        "type": "number",
+      },
+      "ecrans": {
+        "items": {
+          "$ref": "#/components/schemas/EcranPublicResponseDto",
+        },
+        "type": "array",
+      },
+      "id": {
+        "description": "Slug du cours",
+        "example": "b2-01-traitement-information-chiffree",
+        "type": "string",
+      },
+      "niveau": {
+        "example": "B2",
+        "type": "string",
+      },
+      "titre": {
+        "example": "Proportions, taux et évolutions",
+        "type": "string",
+      },
+    },
+    "required": [
+      "id",
+      "titre",
+      "niveau",
+      "duree",
+      "concepts",
+      "ecrans",
+    ],
+    "type": "object",
+  },
+  "SyntheseConceptResponseDto": {
+    "properties": {
+      "boite1": {
+        "example": 6,
+        "type": "number",
+      },
+      "boite2": {
+        "example": 14,
+        "type": "number",
+      },
+      "boite3": {
+        "example": 3,
+        "type": "number",
+      },
+      "concept": {
+        "example": "evolution-reciproque",
+        "type": "string",
+      },
+      "libelle": {
+        "example": "Évolution réciproque",
+        "type": "string",
+      },
+      "nonVus": {
+        "example": 1,
+        "type": "number",
+      },
+    },
+    "required": [
+      "concept",
+      "libelle",
+      "boite1",
+      "boite2",
+      "boite3",
+      "nonVus",
+    ],
+    "type": "object",
+  },
+  "SyntheseRappelsResponseDto": {
+    "properties": {
+      "concepts": {
+        "items": {
+          "$ref": "#/components/schemas/SyntheseConceptResponseDto",
+        },
+        "type": "array",
+      },
+    },
+    "required": [
+      "concepts",
+    ],
+    "type": "object",
+  },
+  "TentativeEnigmeResponseDto": {
+    "properties": {
+      "correcte": {
+        "example": true,
+        "type": "boolean",
+      },
+      "fragment": {
+        "description": "Fragment du code, livre seulement a la resolution",
+        "example": "7",
+        "nullable": true,
+        "type": "string",
+      },
+      "tentativesRestantes": {
+        "example": 9,
+        "maximum": 10,
+        "minimum": 0,
+        "type": "number",
+      },
+    },
+    "required": [
+      "correcte",
+      "fragment",
+      "tentativesRestantes",
+    ],
+    "type": "object",
+  },
+  "TenterEnigmeRequestDto": {
+    "properties": {
+      "dureeMs": {
+        "example": 42000,
+        "type": "number",
+      },
+      "enigmeId": {
+        "example": "enigme-1",
+        "type": "string",
+      },
+      "reponse": {
+        "description": "Saisie brute, lue par lireNombreSaisi pour une solution chiffree",
+        "example": "142 920",
+        "type": "string",
+      },
+    },
+    "required": [
+      "enigmeId",
+      "reponse",
+      "dureeMs",
+    ],
+    "type": "object",
+  },
+  "ToleranceResponseDto": {
+    "properties": {
+      "type": {
+        "enum": [
+          "relative",
+          "absolue",
+          "decimales",
+        ],
+        "type": "string",
+      },
+      "valeur": {
+        "example": 0.0001,
+        "type": "number",
+      },
+    },
+    "required": [
+      "type",
+      "valeur",
+    ],
+    "type": "object",
+  },
+}
+`;
+
 exports[`OpenAPI core contract keeps AuditRequests path contracts stable 1`] = `
 {
   "/api/audits": {

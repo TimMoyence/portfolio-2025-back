@@ -2,9 +2,18 @@ import type { LiveSessionState as LiveSessionStateServi } from '../ISessionState
 import type { FreeRange, PacingMode } from '../PacingMode';
 import type { ValeurReponse } from './resultats';
 
-export type EtatPulse = 'perdu' | 'ca-va' | 'clair';
+export const ETATS_PULSE = ['perdu', 'ca-va', 'clair'] as const;
 
-export type VotePhase = 'vote' | 'discussion' | 'revote' | 'revele';
+export type EtatPulse = (typeof ETATS_PULSE)[number];
+
+export const PHASES_DE_VOTE = [
+  'vote',
+  'discussion',
+  'revote',
+  'revele',
+] as const;
+
+export type VotePhase = (typeof PHASES_DE_VOTE)[number];
 
 export interface PilotageEcran {
   readonly phase?: VotePhase;
