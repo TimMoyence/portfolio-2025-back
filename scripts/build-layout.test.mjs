@@ -4,6 +4,11 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
+import {
+  fichiersDeMigration,
+  migrationsChargees,
+} from './lib/migrations-chargees.mjs';
+
 const root = new URL('..', import.meta.url).pathname;
 
 void test('le build produit les points d entree utilises par Docker et les migrations', () => {
@@ -18,6 +23,13 @@ void test('le build produit les points d entree utilises par Docker et les migra
     existsSync(join(root, 'dist/src/database/data-source.js')),
     false,
   );
+
+  const chargeesEnProduction = migrationsChargees({
+    root,
+    dataSource: './dist/database/data-source.js',
+    viaTsNode: false,
+  });
+  assert.equal(chargeesEnProduction.length, fichiersDeMigration(root).length);
 });
 
 void test('les commandes de production utilisent les points d entree du build', () => {
