@@ -21,6 +21,14 @@ export interface EcranDeroule extends EcranPublic {
   readonly notes: string;
   readonly seuil: number | null;
   readonly corriges: readonly CorrigePresentateur[];
+  readonly guide?: {
+    readonly aDire?: string;
+    readonly question?: string;
+    readonly reponse?: string;
+    readonly calcul?: string;
+    readonly relance?: string;
+    readonly transition?: string;
+  };
 }
 
 export interface DerouleCours extends Omit<CoursPublic, 'ecrans'> {
@@ -52,6 +60,7 @@ function versEcranDeroule(
     notes: ecran.notes,
     seuil: seuilDe(ecran),
     corriges: corrigesDe(ecran, corriges),
+    guide: ecran.guide,
   };
 }
 

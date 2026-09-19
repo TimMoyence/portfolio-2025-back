@@ -42,6 +42,16 @@ describe('verifierStructure', () => {
     expect(verifierStructure(base)).toEqual([]);
   });
 
+  it('accepte un cours de lecture sans rappel, exit ticket ni interaction', () => {
+    const cours: Cours = {
+      ...base,
+      dureeMinutes: 8,
+      ecrans: [citation('LECTURE', 8)],
+      remediations: {},
+    };
+    expect(verifierStructure(cours)).toEqual([]);
+  });
+
   it('refuse sept minutes d exposition d affilee et accepte six', () => {
     const sept: Cours = {
       ...base,

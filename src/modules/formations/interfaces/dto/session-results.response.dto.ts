@@ -137,4 +137,16 @@ export class SessionResultsResponseDto {
 
   @ApiProperty({ type: ResultatsSeanceResponseDto })
   resultats: ResultatsSeanceResponseDto;
+
+  @ApiProperty({
+    description: 'Indicateurs calculés côté serveur pour le pilotage formateur',
+  })
+  statistiques: {
+    moyenne: number;
+    mediane: number;
+    dispersion: number;
+    tauxParticipation: number;
+    tauxReussite: number;
+    questionsProblemes: string[];
+  };
 }

@@ -20,6 +20,13 @@ import type {
 import type { CoursPublic, EcranPublic } from './CoursPublic';
 import type { ConfusionId } from './banque/confusions';
 
+const BRIQUES_QUESTION = [
+  'fp-numeric',
+  'fp-vote',
+  'fp-recall',
+  'fp-exit',
+] as const;
+
 export class TirageAmbiguError extends Error {
   readonly questionId: string;
   readonly graine: number;
@@ -144,6 +151,9 @@ export function tirer(cours: Cours, graine: number): TirageDuCours {
 }
 
 function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {
+  if (ecran.question !== undefined && !estBriqueQuestion(ecran.brique)) {
+    enregistrerQuestionAttachee(ecran.question, contexte);
+  }
   return {
     id: ecran.id,
     type: ecran.brique,
@@ -151,6 +161,59 @@ function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {
     interactif: estInteractif(ecran),
     donnees: donneesDe(ecran, contexte),
   };
+}
+
+function estBriqueQuestion(brique: Ecran['brique']): boolean {
+  return (BRIQUES_QUESTION as readonly string[]).includes(brique);
+}
+
+function enregistrerQuestionAttachee(
+  question: Question,
+  contexte: Contexte,
+): void {
+  if (question.type === 'numeric') {
+    const tiree = question.generer(contexte.tirage);
+    assurerNonAmbigu(
+      question,
+      [tiree.solution, ...tiree.pieges.map((piege) => piege.valeur)],
+      contexte.graine,
+    );
+    contexte.solutions.push([
+      question.id,
+      {
+        valeur: tiree.solution,
+        pieges: tiree.pieges.map((piege) => ({
+          valeur: piege.valeur,
+          misconception: piege.confusion,
+        })),
+      },
+    ]);
+    contexte.corriges.push([
+      question.id,
+      corrige(String(Number(tiree.solution.toFixed(6))), tiree.pieges),
+    ]);
+    return;
+  }
+
+  const tiree = question.generer(contexte.tirage);
+  contexte.solutions.push([
+    question.id,
+    {
+      valeur: tiree.bonne,
+      pieges: tiree.pieges.map((piege) => ({
+        valeur: piege.optionId ?? piege.libelle,
+        misconception: piege.confusion,
+      })),
+    },
+  ]);
+  contexte.corriges.push([question.id, corrige(tiree.bonne, tiree.pieges)]);
+  const libelles: Record<string, string> = {
+    [tiree.bonne]: tiree.bonneLibelle ?? tiree.bonne,
+  };
+  for (const piege of tiree.pieges) {
+    libelles[piege.optionId ?? piege.libelle] = piege.libelle;
+  }
+  contexte.libellesOptions.push([question.id, libelles]);
 }
 
 function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
@@ -171,10 +234,44 @@ function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
     default:
       return sousPropriete(ecran.brique, {
         id: ecran.id,
-        ...ecran.proprietes,
+        ...proprietesPubliques(ecran.proprietes),
         metadonnees: metadonnees(ecran),
       });
   }
+}
+
+function proprietesPubliques(
+  proprietes: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, unknown>> {
+  const interaction = proprietes['interaction'];
+  const contenu = Object.fromEntries(
+    Object.entries(proprietes).filter(
+      ([key]) =>
+        key !== 'guide' && key !== 'correction' && key !== 'interaction',
+    ),
+  );
+  if (
+    typeof interaction !== 'object' ||
+    interaction === null ||
+    Array.isArray(interaction)
+  ) {
+    return contenu;
+  }
+  const candidat = interaction as Readonly<Record<string, unknown>>;
+  if (candidat['type'] !== 'quiz') {
+    return contenu;
+  }
+  return {
+    ...contenu,
+    interaction: {
+      id: candidat['id'],
+      type: 'quiz',
+      question: candidat['question'],
+      options: candidat['options'],
+      context: candidat['context'],
+      competency: candidat['competency'],
+    },
+  };
 }
 
 function sousPropriete(

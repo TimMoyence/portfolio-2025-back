@@ -44,6 +44,7 @@ describe('OpenSessionUseCase', () => {
     const [depot] = sessions.create.mock.calls[0];
     const graines = depot.bareme.tirages.map((tirage) => tirage.seed);
     expect(depot).toMatchObject(COMMANDE);
+    expect(depot.courseVersion).toBe(1);
     expect(depot.bareme.tirages).toHaveLength(NOMBRE_TIRAGES_DISTRIBUES);
     expect(graines).not.toContain(depot.bareme.graineReference);
     expect(depot.bareme.questions.map((question) => question.id)).toEqual(

@@ -1,5 +1,4 @@
 import { buildCoursDeTest } from '../../../../../../test/factories/cours.factory';
-import { B2_01_TRAITEMENT_INFORMATION_CHIFFREE } from './b2-01-traitement-information-chiffree';
 import { creerCatalogue } from './Catalogue';
 import { CATALOGUE_COURS_STATIQUE } from './index';
 
@@ -27,10 +26,10 @@ describe('creerCatalogue', () => {
 });
 
 describe('CATALOGUE_COURS_STATIQUE', () => {
-  it('trouve le cours b2-01-traitement-information-chiffree publie', () => {
+  it('reste vide : le catalogue de production est charge depuis la base', () => {
     expect(
       CATALOGUE_COURS_STATIQUE.trouver('b2-01-traitement-information-chiffree'),
-    ).toBe(B2_01_TRAITEMENT_INFORMATION_CHIFFREE);
+    ).toBeNull();
   });
 
   it('rend null pour un slug absent du catalogue publie', () => {

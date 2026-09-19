@@ -5,6 +5,7 @@ import type { SessionState } from './SessionState';
 export interface SessionRecord {
   id: string;
   courseSlug: string;
+  courseVersion: number;
   teacherId: string;
   code: string;
   etat: SessionState;
@@ -19,6 +20,7 @@ export interface SessionRecord {
 
 export interface CreateSessionInput {
   courseSlug: string;
+  courseVersion: number;
   teacherId: string;
   code: string;
   bareme: Bareme;

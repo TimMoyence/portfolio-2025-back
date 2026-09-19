@@ -5,30 +5,44 @@ import { ControlSessionUseCase } from './application/ControlSession.useCase';
 import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
+import { LireCoursPublicUseCase } from './application/LireCoursPublic.useCase';
 import { LireDerouleUseCase } from './application/LireDeroule.useCase';
 import { LireSujetUseCase } from './application/LireSujet.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
-import { CATALOGUE_COURS_STATIQUE } from './domain/cours/catalogue';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
+  FREE_RESPONSES_REPOSITORY,
+  FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
+  SCORES_REPOSITORY,
   SESSIONS_REPOSITORY,
   STREAM_CAPACITY,
+  TEACHER_ANNOTATIONS_REPOSITORY,
 } from './domain/token';
 import { AnswersRepositoryTypeORM } from './infrastructure/Answers.repository.typeorm';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
+import { FreeResponsesRepositoryTypeORM } from './infrastructure/FreeResponses.repository.typeorm';
+import { FormationGroupsRepositoryTypeORM } from './infrastructure/FormationGroups.repository.typeorm';
+import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
+import { FormationGroupEntity } from './infrastructure/entities/FormationGroup.entity';
+import { FormationScoreEntity } from './infrastructure/entities/FormationScore.entity';
+import { ScoresRepositoryTypeORM } from './infrastructure/Scores.repository.typeorm';
+import { FormationTeacherAnnotationEntity } from './infrastructure/entities/FormationTeacherAnnotation.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
 import { FormationMasteryEntity } from './infrastructure/entities/FormationMastery.entity';
 import { FormationParticipantEntity } from './infrastructure/entities/FormationParticipant.entity';
 import { FormationSessionEntity } from './infrastructure/entities/FormationSession.entity';
+import { CoursCatalogueRepositoryTypeORM } from './infrastructure/CoursCatalogue.repository.typeorm';
+import { FormationCourseContentEntity } from './infrastructure/entities/FormationCourseContent.entity';
+import { FormationScreenContentEntity } from './infrastructure/entities/FormationScreenContent.entity';
 import { FormationMailerService } from './infrastructure/FormationMailer.service';
 import { IncidentsRepositoryTypeORM } from './infrastructure/Incidents.repository.typeorm';
 import { MasteryRepositoryTypeORM } from './infrastructure/Mastery.repository.typeorm';
@@ -36,8 +50,10 @@ import { ParticipantsRepositoryTypeORM } from './infrastructure/Participants.rep
 import { SessionsRepositoryTypeORM } from './infrastructure/Sessions.repository.typeorm';
 import { SessionStateCacheService } from './infrastructure/SessionStateCache.service';
 import { StreamCapacityService } from './infrastructure/StreamCapacity.service';
+import { TeacherAnnotationsRepositoryTypeORM } from './infrastructure/TeacherAnnotations.repository.typeorm';
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
+import { FormationsCatalogController } from './interfaces/FormationsCatalog.controller';
 import { CodeScanProtectionService } from './interfaces/CodeScanProtection.service';
 import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
 
@@ -47,17 +63,28 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       FormationSessionEntity,
       FormationParticipantEntity,
       FormationAnswerEntity,
+      FormationFreeResponseEntity,
       FormationMasteryEntity,
       FormationIncidentEntity,
+      FormationCourseContentEntity,
+      FormationScreenContentEntity,
+      FormationTeacherAnnotationEntity,
+      FormationGroupEntity,
+      FormationScoreEntity,
     ]),
   ],
-  controllers: [FormationsPresenterController, FormationsStudentController],
+  controllers: [
+    FormationsCatalogController,
+    FormationsPresenterController,
+    FormationsStudentController,
+  ],
   providers: [
     OpenSessionUseCase,
     ControlSessionUseCase,
     CloseSessionUseCase,
     GetSessionResultsUseCase,
     JoinSessionUseCase,
+    LireCoursPublicUseCase,
     SubmitAnswerUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
@@ -68,6 +95,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,
+    CoursCatalogueRepositoryTypeORM,
     ParticipantTokenService,
     CodeScanProtectionService,
     {
@@ -81,6 +109,22 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: ANSWERS_REPOSITORY,
       useClass: AnswersRepositoryTypeORM,
+    },
+    {
+      provide: FREE_RESPONSES_REPOSITORY,
+      useClass: FreeResponsesRepositoryTypeORM,
+    },
+    {
+      provide: TEACHER_ANNOTATIONS_REPOSITORY,
+      useClass: TeacherAnnotationsRepositoryTypeORM,
+    },
+    {
+      provide: FORMATION_GROUPS_REPOSITORY,
+      useClass: FormationGroupsRepositoryTypeORM,
+    },
+    {
+      provide: SCORES_REPOSITORY,
+      useClass: ScoresRepositoryTypeORM,
     },
     {
       provide: MASTERY_REPOSITORY,
@@ -100,7 +144,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     },
     {
       provide: CATALOGUE_COURS,
-      useValue: CATALOGUE_COURS_STATIQUE,
+      useClass: CoursCatalogueRepositoryTypeORM,
     },
   ],
 })

@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  Header,
+  Inject,
   HttpCode,
   HttpStatus,
   MessageEvent,
@@ -10,6 +13,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Optional,
   Req,
   Sse,
   UseGuards,
@@ -36,6 +40,14 @@ import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
 import type { ResultatsDeSeance } from '../application/GetSessionResults.useCase';
 import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
+import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
+import type { ITeacherAnnotationsRepository } from '../domain/ITeacherAnnotations.repository';
+import type { IFormationGroupsRepository } from '../domain/IFormationGroups.repository';
+import {
+  FREE_RESPONSES_REPOSITORY,
+  FORMATION_GROUPS_REPOSITORY,
+  TEACHER_ANNOTATIONS_REPOSITORY,
+} from '../domain/token';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
@@ -44,6 +56,10 @@ import { DerouleResponseDto } from './dto/deroule.response.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
 import { SessionResultsResponseDto } from './dto/session-results.response.dto';
+import { SaveTeacherAnnotationRequestDto } from './dto/save-teacher-annotation.request.dto';
+import { CreateFormationGroupRequestDto } from './dto/create-formation-group.request.dto';
+import { RenameFormationGroupRequestDto } from './dto/rename-formation-group.request.dto';
+import { AssignFormationGroupRequestDto } from './dto/assign-formation-group.request.dto';
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_CONTROLE_PAR_MINUTE,
@@ -71,6 +87,15 @@ export class FormationsPresenterController {
     private readonly results: GetSessionResultsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly lireDeroule: LireDerouleUseCase,
+    @Optional()
+    @Inject(TEACHER_ANNOTATIONS_REPOSITORY)
+    private readonly annotations?: ITeacherAnnotationsRepository,
+    @Optional()
+    @Inject(FREE_RESPONSES_REPOSITORY)
+    private readonly freeResponses?: IFreeResponsesRepository,
+    @Optional()
+    @Inject(FORMATION_GROUPS_REPOSITORY)
+    private readonly groups?: IFormationGroupsRepository,
   ) {}
 
   @Post('sessions')
@@ -190,6 +215,18 @@ export class FormationsPresenterController {
     return this.results.execute(id, request.user!.sub);
   }
 
+  @Get('sessions/:id/report')
+  @Header('Content-Type', 'application/json')
+  @Header('Content-Disposition', 'attachment; filename="bilan-seance.json"')
+  @ApiOperation({ summary: 'Exporte le bilan JSON de la séance' })
+  @ApiOkResponse({ type: SessionResultsResponseDto })
+  async exportReport(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ): Promise<ResultatsDeSeance> {
+    return this.results.execute(id, request.user!.sub);
+  }
+
   @Get('sessions/:id/deroule')
   @ApiOperation({
     summary: 'Deroule annote de la seance, reserve au formateur proprietaire',
@@ -206,5 +243,134 @@ export class FormationsPresenterController {
     @Req() request: Request,
   ): Promise<DerouleCours> {
     return this.lireDeroule.execute(id, request.user!.sub);
+  }
+
+  @Get('sessions/:id/annotations')
+  @ApiOperation({
+    summary: 'Liste les annotations du formateur pour une séance',
+  })
+  @ApiOkResponse({ description: 'Annotations synchronisées entre postes' })
+  @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
+  async getAnnotations(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ) {
+    if (this.annotations === undefined) {
+      throw new Error('Le dépôt des annotations n’est pas configuré');
+    }
+    return {
+      annotations: await this.annotations.listBySession(id, request.user!.sub),
+    };
+  }
+
+  @Post('sessions/:id/annotations')
+  @ApiOperation({ summary: 'Enregistre une annotation formateur idempotente' })
+  @ApiCreatedResponse({ description: 'Annotation enregistrée' })
+  @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
+  async saveAnnotation(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: SaveTeacherAnnotationRequestDto,
+    @Req() request: Request,
+  ) {
+    if (this.annotations === undefined) {
+      throw new Error('Le dépôt des annotations n’est pas configuré');
+    }
+    return this.annotations.save({
+      sessionId: id,
+      teacherId: request.user!.sub,
+      screenId: dto.screenId,
+      groupName: dto.groupName,
+      note: dto.note,
+    });
+  }
+
+  @Get('sessions/:id/free-responses')
+  @ApiOperation({
+    summary:
+      'Liste les réponses libres de la séance pour le formateur propriétaire',
+  })
+  @ApiOkResponse({
+    description: 'Réponses libres étudiantes, sans correction automatique',
+  })
+  @ApiForbiddenResponse({ description: 'Session d un autre formateur' })
+  async getFreeResponses(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ) {
+    if (this.freeResponses === undefined) {
+      throw new Error('Le dépôt des réponses libres n’est pas configuré');
+    }
+    await this.results.execute(id, request.user!.sub);
+    return { responses: await this.freeResponses.listBySession(id) };
+  }
+
+  @Get('sessions/:id/groups')
+  @ApiOperation({ summary: 'Liste les groupes de la séance' })
+  async getGroups(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ) {
+    await this.results.execute(id, request.user!.sub);
+    if (this.groups === undefined) {
+      throw new Error('Le dépôt des groupes n’est pas configuré');
+    }
+    return { groups: await this.groups.listBySession(id) };
+  }
+
+  @Post('sessions/:id/groups')
+  @ApiCreatedResponse({ description: 'Groupe créé' })
+  async createGroup(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CreateFormationGroupRequestDto,
+    @Req() request: Request,
+  ) {
+    await this.results.execute(id, request.user!.sub);
+    if (this.groups === undefined) {
+      throw new Error('Le dépôt des groupes n’est pas configuré');
+    }
+    return this.groups.create(id, dto.name.trim());
+  }
+
+  @Patch('sessions/:id/groups/:groupId')
+  async renameGroup(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('groupId', ParseUUIDPipe) groupId: string,
+    @Body() dto: RenameFormationGroupRequestDto,
+    @Req() request: Request,
+  ) {
+    await this.results.execute(id, request.user!.sub);
+    if (this.groups === undefined) {
+      throw new Error('Le dépôt des groupes n’est pas configuré');
+    }
+    return this.groups.rename(id, groupId, dto.name.trim());
+  }
+
+  @Patch('sessions/:id/participants/:participantId/group')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async assignGroup(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('participantId', ParseUUIDPipe) participantId: string,
+    @Body() dto: AssignFormationGroupRequestDto,
+    @Req() request: Request,
+  ): Promise<void> {
+    await this.results.execute(id, request.user!.sub);
+    if (this.groups === undefined) {
+      throw new Error('Le dépôt des groupes n’est pas configuré');
+    }
+    await this.groups.assignParticipant(id, participantId, dto.groupId);
+  }
+
+  @Delete('sessions/:id/participants/:participantId/group')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unassignGroup(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('participantId', ParseUUIDPipe) participantId: string,
+    @Req() request: Request,
+  ): Promise<void> {
+    await this.results.execute(id, request.user!.sub);
+    if (this.groups === undefined) {
+      throw new Error('Le dépôt des groupes n’est pas configuré');
+    }
+    await this.groups.assignParticipant(id, participantId, null);
   }
 }

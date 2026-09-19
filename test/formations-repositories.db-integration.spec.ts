@@ -68,6 +68,7 @@ describeDb('Formations repositories (db integration)', () => {
   const ouvrirSeance = (code: string) =>
     contexte.sessions.create({
       courseSlug: 'b1-09-interets-composes',
+      courseVersion: 1,
       teacherId: FORMATEUR,
       code,
       bareme: buildBareme(),
@@ -151,6 +152,7 @@ describeDb('Formations repositories (db integration)', () => {
     const bareme = ouvrirTirages(cours);
     const seance = await contexte.sessions.create({
       courseSlug: cours.slug,
+      courseVersion: 1,
       teacherId: FORMATEUR,
       code: '4271',
       bareme,
@@ -442,7 +444,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(3);
+    expect(enBase).toHaveLength(5);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -469,7 +471,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(6);
+    expect(enBase).toHaveLength(10);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 

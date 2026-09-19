@@ -58,6 +58,13 @@ export function pickFreeSeed(
   bareme: Bareme,
   seedsPris: readonly number[],
 ): number | null {
+  if (bareme.questions.length === 0) {
+    let seed = 0;
+    while (seedsPris.includes(seed)) {
+      seed += 1;
+    }
+    return seed;
+  }
   const libre = bareme.tirages.find(
     (tirage) => !seedsPris.includes(tirage.seed),
   );

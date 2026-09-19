@@ -1,0 +1,188 @@
+{
+  "description": "Faire du backend la source de vérité du cours B2 : contenu, interactions, corrections, réponses, annotations et scores. Le frontend conserve le rendu du design system et les interactions.",
+  "branchName": "feat/cours-servi-par-le-serveur",
+  "frontRepository": "portfolio-2025-front",
+  "backRepository": "portfolio-2025-back",
+  "status": "en_cours",
+  "completionRule": "Une étape ne passe à terminée qu'après preuve par test ou exécution réelle, avec fichiers et lignes vérifiés. Ne pas assimiler un contrôle statique à un test de comportement.",
+  "workLog": [
+    {
+      "step": "socle_et_catalogue_migre",
+      "status": "termine",
+      "evidence": [
+        "test/formations-catalogue-b2.db-integration.spec.ts: 72 écrans ordonnés, 14 interactions, notes et deck visuel versionné",
+        "src/migrations/1779550000000-AddFormationCourseVersion.ts, src/migrations/1780050000000-AddFormationSessionCourseVersion.ts: version de séance fixée à l'ouverture",
+        "src/modules/formations/domain/cours/VisualPresentation.ts: union zod des 14 layouts"
+      ],
+      "verification": [
+        "pnpm run test:integration:db:local: 9 suites, 61 tests passés",
+        "pnpm typecheck, pnpm lint et pnpm build: passés",
+        "npm run test:ci front: tests ciblés B2/renderer/session verts"
+      ],
+      "remaining": "Le parcours navigateur front-back-base authentifié reste à exécuter sur un environnement de livraison."
+    },
+    {
+      "step": "reference_front",
+      "status": "termine",
+      "verification": [
+        "e2e/cours-b2-server.spec.ts: test navigateur serveur B2, 72 écrans et absence de correction"
+      ],
+      "remaining": "Aucun catalogue pédagogique B2 complet ne doit revenir dans le front."
+    }
+  ],
+  "userStories": [
+    {
+      "id": "US001",
+      "title": "Socle DB et contrats versionnés",
+      "priority": 1,
+      "passes": true,
+      "description": "En tant que formateur, je veux ouvrir une séance sur une version stable du contenu pour que le cours ne change pas pendant sa présentation.",
+      "acceptanceCriteria": [
+        "Contrats TypeScript et DB : écran, propriété visuelle, interaction, correction, note de présentation, réponse libre, annotation formateur et score.",
+        "Migrations, clés, index, unicités et contraintes d'intégrité testés en base.",
+        "Accès contrôlés pour étudiant, formateur propriétaire et administrateur, avec tests des refus.",
+        "Chaque séance fixe la version du contenu à son ouverture ; une publication ultérieure ne modifie pas les séances ouvertes.",
+        "Typecheck passes"
+      ]
+    },
+    {
+      "id": "US002",
+      "title": "Notes de présentation des 72 écrans",
+      "priority": 2,
+      "passes": true,
+      "description": "En tant que formateur, je veux des notes courtes et utiles pour piloter chaque écran sans exposer ces notes aux étudiants.",
+      "acceptanceCriteria": [
+        "La colonne notes est remplie pour les 72 écrans ; les 14 guides existants sont transformés en notes homogènes.",
+        "Chaque note pertinente couvre objectif, à dire, question, réponse attendue, calcul, erreur typique, relance et transition, sans prose longue.",
+        "Une validation empêche les notes vides sur les écrans importants.",
+        "Un test prouve l'absence de notes dans les réponses étudiant et projection, ainsi que leur présence pour le formateur.",
+        "Typecheck passes"
+      ]
+    },
+    {
+      "id": "US003",
+      "title": "Propriétés visuelles complètes servies par la DB",
+      "priority": 3,
+      "passes": true,
+      "description": "En tant qu'utilisateur, je veux voir le même deck B2 alors que tout son contenu vient du serveur.",
+      "acceptanceCriteria": [
+        "Union typée et validation backend pour hero, method-path, quiz, chart, grid, comparison, stats, reflection, quote, table, image, CTA et guide.",
+        "Les 72 écrans DB portent titres, sous-titres, paragraphes, cartes, colonnes, statistiques, tableaux, séries et axes graphiques, unités, formules, sources, images, corrections et réflexions nécessaires.",
+        "Le contenu actuellement en HTML/TypeScript est migré dans le catalogue DB, sans double version pédagogique sur le front.",
+        "Le composant B2 existant et app-slide-deck avec ses graphiques rendent les propriétés serveur ; un fallback technique contrôlé évite la page blanche lors d'une indisponibilité DB.",
+        "Un test de parité compare les 72 écrans DB avec le deck visuel initial.",
+        "Typecheck passes"
+      ]
+    },
+    {
+      "id": "US004",
+      "title": "Suppression du legacy B2 spécifique",
+      "priority": 4,
+      "passes": true,
+      "description": "En tant que mainteneur, je veux un seul deck B2 partagé entre catalogue, étudiant, formateur et projection.",
+      "acceptanceCriteria": [
+        "Les anciens shells, navigation « Écran suivant », rails de phases et écrans parallèles sont supprimés après analyse d'impact GitNexus.",
+        "Plus aucune référence à CoursEcran ni CoursSlideFrame ; ancien catalogue TypeScript, JSON et adaptateurs B2 inutiles supprimés.",
+        "Aucun fallback ne recrée un second rendu B2 ; les abstractions génériques utilisées par les autres formations restent intactes.",
+        "Tests, imports, module NestJS et documentation mis à jour ; un test prouve l'unicité du deck sur les quatre parcours.",
+        "Typecheck passes"
+      ]
+    },
+    {
+      "id": "US005",
+      "title": "Réponses libres étudiantes persistées et reprises hors ligne",
+      "priority": 5,
+      "passes": true,
+      "description": "En tant qu'étudiant, je veux enregistrer une réponse libre, même en cas de coupure, et connaître son état réel.",
+      "acceptanceCriteria": [
+        "Table dédiée : session, participant, écran, activité, réponse, date, durée et statut ; unicité participant + activité dans la séance.",
+        "API étudiant autorisée au participant concerné, avec sauvegarde idempotente et tests HTTP/DB.",
+        "File d'attente locale offline et reprise d'envoi ; SlideReflectionComponent n'emploie plus localStorage comme source de vérité.",
+        "L'étudiant voit enregistré, en attente et échec ; le formateur voit les réponses, mais lui seul peut révéler la réponse attendue.",
+        "Typecheck passes",
+        "Evidence: test/formations-catalogue-b2.db-integration.spec.ts (upsert idempotent), FormationsStudent.controller.spec.ts (jeton/session), free-response.queue.spec.ts (IndexedDB reprise), SlideReflectionComponent affiche les quatre états"
+      ]
+    },
+    {
+      "id": "US006",
+      "title": "Annotations formateur et suivi des groupes",
+      "priority": 6,
+      "passes": true,
+      "description": "En tant que formateur propriétaire, je veux retrouver mes notes et mes groupes sur tous mes postes, même après la clôture.",
+      "acceptanceCriteria": [
+        "Table d'annotations : session, formateur, écran, groupe, note et date de modification ; contraintes d'accès testées.",
+        "Création, renommage, affectation des participants et suivi des groupes par écran.",
+        "Endpoints sécurisés de lecture et écriture ; CoursPanneauPedagogiqueComponent ne prend plus localStorage pour source de vérité.",
+        "Synchronisation multi-postes, persistance après fermeture/réouverture et export du bilan de séance testés.",
+        "Typecheck passes",
+        "Evidence: test/formations-catalogue-b2.db-integration.spec.ts (annotations, groupes, affectation), FormationsPresenter.controller.spec.ts (ownership), formations-http.adapter.spec.ts (API groupes/annotations), panneau pédagogique (lecture serveur et création/renommage)"
+      ]
+    },
+    {
+      "id": "US007",
+      "title": "Score numérique calculé et diffusé par le backend",
+      "priority": 7,
+      "passes": true,
+      "description": "En tant que formateur, je veux des résultats en direct vérifiables sans divulguer les corrections ou les notes individuelles aux autres élèves.",
+      "acceptanceCriteria": [
+        "Barème explicite : points QCM, non-réponses, réponses libres, seuil éventuel et arrondis.",
+        "Backend : score et pourcentage individuels, score de classe, réussite par question et progression en direct ; scores individuels et de séance persistés.",
+        "Scores présents dans SSE formateur et /results ; tests de recalcul après chaque réponse et après clôture.",
+        "Panneau formateur : moyenne, médiane, participation, réussite, dispersion et questions problématiques.",
+        "Test de confidentialité : aucun corrigé ni note d'un autre étudiant au poste étudiant.",
+        "Typecheck passes",
+        "Evidence: SessionStatistics.spec.ts, GetSessionResults.useCase.spec.ts, StreamSession.useCase.spec.ts, test/formations-catalogue-b2.db-integration.spec.ts (snapshots formation_scores), guard étudiant et front presentateur-statistiques"
+      ]
+    },
+    {
+      "id": "US008",
+      "title": "Parcours E2E authentifié front-back",
+      "priority": 8,
+      "passes": false,
+      "description": "En tant qu'équipe produit, je veux rejouer tout le parcours de séance pour détecter une rupture entre le front, le back et la base.",
+      "acceptanceCriteria": [
+        "Comptes formateur et étudiant de test isolés ; ouverture B2, jonction par code, démarrage et bon écran serveur.",
+        "QCM et réponse libre persistés ; correction et note calculées au backend ; résultats reçus en SSE formateur.",
+        "Groupe et annotation enregistrés, encore présents après rechargement ; clôture puis rapport final récupérable.",
+        "Nettoyage automatique et vérifié des données de test.",
+        "Typecheck passes"
+      ]
+    },
+    {
+      "id": "US009",
+      "title": "Relecture finale, vérifications et livraison",
+      "priority": 9,
+      "passes": false,
+      "description": "En tant que responsable du produit, je veux une livraison propre, prouvée et traçable sur la branche demandée dans les deux dépôts.",
+      "acceptanceCriteria": [
+        "Relecture finale en bas de la liste : cohérence produit, source de vérité DB, accès, parité des 72 écrans, absence de legacy et risques résiduels.",
+        "Migrations réelles, tests ciblés et complets, lint, typecheck, builds et E2E authentifié exécutés ; résultats et échecs consignés.",
+        "GitNexus detect-changes non partiel dans chaque dépôt avant chaque commit ; changements préexistants et non liés préservés.",
+        "Nettoyage final, commits cohérents puis push de feat/cours-servi-par-le-serveur dans les deux dépôts après réussite des contrôles."
+      ]
+    }
+  ],
+  "finalReview": {
+    "status": "partielle",
+    "checks": [
+      "Le produit a un seul contenu pédagogique B2 et un seul deck partagé par les quatre parcours.",
+      "Les contrats, données, accès et sessions versionnées ont des tests rouges si on les défait.",
+      "Les 72 écrans et notes ont une parité et une confidentialité prouvées.",
+      "Les réponses libres, annotations, groupes et scores survivent au rechargement et à la clôture.",
+      "Le parcours E2E navigateur serveur couvre les 72 écrans et la confidentialité ; le parcours authentifié front-back-base reste à lancer.",
+      "Les deux branches distantes contiennent uniquement les commits revus et vérifiés."
+    ],
+    "evidence": [
+      "back: pnpm run ci:check — lint, format, typecheck, CPD, knip, guards, 265 suites/2109 tests et build verts; intégration PostgreSQL 9 suites/62 tests",
+      "front: npm run ci:check — 2608 tests Karma, build SSR et guard bundle verts; e2e/cours-b2-server.spec.ts 1/1 et e2e/cours-session.spec.ts 6/6",
+      "GitNexus detect-changes exécuté après réindexation dans les deux dépôts; back critical et front high à relire avant merge"
+    ],
+    "residualRisks": [
+      "US005: la file offline est couverte par un test navigateur IndexedDB ; un scénario E2E front-back-base avec coupure réseau reste à exécuter.",
+      "US006: les endpoints et UI création/renommage sont couverts ; l'affectation reste exposée par contrat API et doit être rejouée dans le parcours navigateur authentifié.",
+      "US007: snapshots formation_scores, /results et SSE sont couverts par tests ; la vérification visuelle navigateur d'un flux SSE réel reste à exécuter.",
+      "US008: les E2E navigateur utilisent des routes mockées; le parcours authentifié front-back-base réel n'est pas encore démontré.",
+      "US009: aucun commit, push, merge main ou déploiement ne doit être déclaré tant que ces risques et le niveau de risque GitNexus ne sont pas arbitrés."
+    ]
+  }
+}

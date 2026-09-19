@@ -5,6 +5,7 @@ export interface ParticipantRecord {
   prenom: string;
   nom: string;
   email: string;
+  groupId?: string | null;
   seed: number;
   rejointLe: Date;
   dernierPing: Date;

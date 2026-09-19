@@ -5,6 +5,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Inject,
   MessageEvent,
   Optional,
   Param,
@@ -38,7 +39,9 @@ import { LireSujetUseCase } from '../application/LireSujet.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
+import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
 import type { CoursPublic } from '../domain/cours/CoursPublic';
+import { FREE_RESPONSES_REPOSITORY } from '../domain/token';
 import {
   InvalidSessionCodeError,
   SessionNotFoundError,
@@ -48,6 +51,7 @@ import { ParticipantTokenGuard } from './ParticipantToken.guard';
 import { JoinSessionRequestDto } from './dto/join-session.request.dto';
 import { JoinSessionResponseDto } from './dto/join-session.response.dto';
 import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
+import { SaveFreeResponseRequestDto } from './dto/save-free-response.request.dto';
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
 import { SujetResponseDto } from './dto/sujet.response.dto';
@@ -92,6 +96,9 @@ export class FormationsStudentController {
     private readonly codeScan: CodeScanProtectionService,
     @Optional()
     private readonly formProtection = new PublicFormProtectionService(),
+    @Optional()
+    @Inject(FREE_RESPONSES_REPOSITORY)
+    private readonly freeResponses?: IFreeResponsesRepository,
   ) {}
 
   @Throttle({
@@ -173,6 +180,37 @@ export class FormationsStudentController {
       misconception: verdict.misconception,
       libelleConfusion: verdict.libelleConfusion,
     };
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_REPONSES_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Post('sessions/:id/free-responses')
+  @ApiOperation({ summary: 'Enregistre une reponse libre etudiant' })
+  @ApiCreatedResponse({ description: 'Reponse libre enregistree' })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async freeResponse(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: SaveFreeResponseRequestDto,
+  ): Promise<{ status: 'enregistre' }> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    if (this.freeResponses === undefined) {
+      throw new Error('Le dépôt des réponses libres n’est pas configuré');
+    }
+    await this.freeResponses.save({
+      sessionId,
+      participantId,
+      screenId: dto.screenId,
+      activityId: dto.activityId,
+      response: dto.response,
+      dureeMs: dto.dureeMs,
+    });
+    return { status: 'enregistre' };
   }
 
   @Throttle({

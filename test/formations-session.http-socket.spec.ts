@@ -165,7 +165,10 @@ interface CatalogueMutable {
 function creerCatalogueMutable(initial: ICatalogueCours): CatalogueMutable {
   let courant = initial;
   return {
-    catalogue: { trouver: (slug) => courant.trouver(slug) },
+    catalogue: {
+      trouver: (slug, version) => courant.trouver(slug, version),
+      trouverCourant: (slug) => courant.trouverCourant(slug),
+    },
     remplacer(nouveau) {
       courant = nouveau;
     },
@@ -524,6 +527,7 @@ describe('Session de formation (e2e http socket)', () => {
         .expect(200);
       const deroule = await lireEnFormateur('deroule');
       const resultats = await lireEnFormateur('results');
+      const exportBilan = await lireEnFormateur('report');
       const document = SwaggerModule.createDocument(
         app,
         new DocumentBuilder().setTitle('formations').build(),
@@ -533,7 +537,11 @@ describe('Session de formation (e2e http socket)', () => {
         ...ecartsAuSchemaDeReponse(document, '/{id}/sujet', sujet.body),
         ...ecartsAuSchemaDeReponse(document, '/{id}/deroule', deroule.body),
         ...ecartsAuSchemaDeReponse(document, '/{id}/results', resultats.body),
+        ...ecartsAuSchemaDeReponse(document, '/{id}/report', exportBilan.body),
       ]).toEqual([]);
+      expect(exportBilan.headers['content-disposition']).toContain(
+        'bilan-seance.json',
+      );
     });
   });
 
