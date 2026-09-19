@@ -75,7 +75,7 @@ Apres `pnpm install`, Husky installe automatiquement trois hooks :
 
 - `pre-commit` : lance `lint-staged` sur les fichiers indexes ;
 - `commit-msg` : impose un message au format Conventional Commit ;
-- `pre-push` : lance `pnpm run ci:check`.
+- `pre-push` : lance `pnpm run pre-push:check` (la sequence de `ci:check`, sans le build).
 
 La CI GitHub complete ces garde-fous avec lint, format, typecheck, tests unitaires, e2e, integration DB et build.
 
@@ -87,11 +87,13 @@ La CI GitHub complete ces garde-fous avec lint, format, typecheck, tests unitair
 
 ## Base de donnees et migrations
 
-Creer une migration :
+Creer une migration (generee depuis les entites contre la base de `.env`, puis appliquee) :
 
 ```bash
 pnpm run migration:new --name=TheNameInCamelCase
 ```
+
+`pnpm run migration:generate --name=TheNameInCamelCase` genere sans appliquer. Sur une base ou toutes les migrations sont jouees, la generation ne doit rien produire : le test `test/schema-entites-migrations.db-integration.spec.ts` echoue des qu'une entite et les migrations divergent.
 
 Tests d'integration base de donnees :
 
@@ -125,7 +127,7 @@ Les details de securisation contre le prompt injection et les contenus non fiabl
 ## Docker et deploiement
 
 - Image locale : `docker build -t ghcr.io/<owner>/portfolio-2025-back:dev .`
-- Run local containerise : `docker run --rm -p 3000:3000 --env-file deploy/backend.env.example ghcr.io/<owner>/portfolio-2025-back:dev`
+- Run local containerise : copier `deploy/backend.env.example` vers `deploy/backend.env` et renseigner ses secrets (le gabarit brut est refuse par la validation d'environnement), puis `docker run --rm -p 3000:3000 --env-file deploy/backend.env ghcr.io/<owner>/portfolio-2025-back:dev`
 - Stack de production : copier `deploy/.env.example` vers `deploy/.env` et `deploy/backend.env.example` vers `deploy/backend.env`, puis lancer `docker compose -f deploy/compose.yaml up -d`
 
-Le workflow [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) construit l'image, publie sur GHCR et peut relancer le service `api` via SSH quand la branche `main` est mise a jour.
+Le workflow [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) construit l'image, publie sur GHCR et peut relancer le service `api` via SSH quand la branche `master` est mise a jour.

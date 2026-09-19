@@ -52,7 +52,7 @@ Les hooks Git suivants tournent automatiquement apres installation des dependanc
 
 - `pre-commit` via `lint-staged` ;
 - `commit-msg` via `commitlint` ;
-- `pre-push` via `pnpm run ci:check`.
+- `pre-push` via `pnpm run pre-push:check` (la sequence de `ci:check`, sans le build).
 
 Si la base de donnees est impactee, ajouter le flux d'integration DB documente.
 

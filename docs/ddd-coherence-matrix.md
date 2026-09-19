@@ -151,7 +151,7 @@
    - `IDX_projects_status_order`
    - `IDX_redirects_enabled_created_at`
 3. Ajout d'une migration dediee pour environnements `synchronize=false`:
-   - `src/migrations/1772100000000-AddLegacyListQueryIndexes.ts`
+   - `src/migrations/1771585098371-AddLegacyListQueryIndexes.ts`
 4. Renforcement des tests:
    - e2e transportless/HTTP: forwarding + validation des filtres query.
    - DB integration: verification des filtres effectifs et presence des indexes.

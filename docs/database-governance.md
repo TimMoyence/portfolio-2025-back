@@ -7,7 +7,7 @@ Le schema est defini par le code et les migrations. Les bases de staging ou prod
 ## 2. Workflow de changement
 
 1. Mettre a jour le modele de persistence et le comportement repository.
-2. Ajouter ou generer une migration.
+2. Generer la migration depuis l'entite (`pnpm run migration:generate --name=...`). Une migration ecrite a la main declare dans l'entite, sous le meme nom, chaque clef etrangere, index, contrainte et defaut qu'elle pose : sur une base ou toutes les migrations sont jouees, la generation ne doit rien produire, ce que verifie `test/schema-entites-migrations.db-integration.spec.ts`.
 3. Ajouter ou mettre a jour la couverture d'integration si requetes, indexes, pagination ou filtres changent.
 4. Documenter toute nouvelle variable d'environnement ou etape operationnelle.
 
