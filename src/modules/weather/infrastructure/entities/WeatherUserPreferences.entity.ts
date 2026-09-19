@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ForeignKey,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { UsersEntity } from '../../../users/infrastructure/entities/Users.entity';
 import type { FavoriteCity } from '../../domain/WeatherUserPreferences';
 
 @Entity({ name: 'weather_user_preferences' })
@@ -11,6 +13,10 @@ export class WeatherUserPreferencesEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ForeignKey(() => UsersEntity, {
+    name: 'weather_user_preferences_user_id_fkey',
+    onDelete: 'CASCADE',
+  })
   @Column({ name: 'user_id', type: 'uuid', unique: true })
   userId: string;
 
@@ -39,7 +45,7 @@ export class WeatherUserPreferencesEntity {
 
   @Column({
     type: 'jsonb',
-    default: '{"temperature":"celsius","speed":"kmh","pressure":"hpa"}',
+    default: { temperature: 'celsius', speed: 'kmh', pressure: 'hpa' },
   })
   units: { temperature: string; speed: string; pressure: string };
 

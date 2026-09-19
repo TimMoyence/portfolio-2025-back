@@ -2,6 +2,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import type { InteractionProfile } from '../../domain/InteractionProfile';
 
 @Entity({ name: 'lead_magnet_requests' })
+@Index('idx_lead_magnet_requests_email_slug', ['email', 'formationSlug'])
 export class LeadMagnetRequestEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -9,7 +10,6 @@ export class LeadMagnetRequestEntity {
   @Column({ name: 'first_name', type: 'varchar', length: 50 })
   firstName: string;
 
-  @Index()
   @Column({ type: 'varchar', length: 255 })
   email: string;
 

@@ -2,27 +2,33 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
+  ForeignKey,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
+import { ArticleEntity } from './article.entity';
 
 @Entity({ name: 'article_deliveries' })
+@Unique('UQ_article_delivery_delivery', ['deliveryId'])
+@Unique('UQ_article_delivery_idempotency', ['idempotencyKey'])
+@Unique('UQ_article_delivery_nonce', ['nonce'])
 export class ArticleDeliveryEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Index({ unique: true })
   @Column({ type: 'varchar', length: 128 })
   deliveryId: string;
 
-  @Index({ unique: true })
   @Column({ type: 'varchar', length: 160 })
   idempotencyKey: string;
 
-  @Index({ unique: true })
   @Column({ type: 'varchar', length: 128 })
   nonce: string;
 
+  @ForeignKey(() => ArticleEntity, {
+    name: 'FK_article_delivery_article',
+    onDelete: 'RESTRICT',
+  })
   @Column({ type: 'uuid' })
   articleRecordId: string;
 
