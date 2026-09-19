@@ -180,7 +180,7 @@ function doublonsDe(valeurs: readonly string[]): readonly string[] {
   ];
 }
 
-const coursStocke = z
+export const coursStocke = z
   .object({
     slug: texte,
     version: duree,
