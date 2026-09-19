@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { creerCatalogueDeTest } from '../../../../../test/factories/cours.factory';
+import {
+  buildCoursDeClasse,
+  buildCoursDeTest,
+  buildSeanceRepondueAuRappel,
+  creerCatalogueAVersions,
+  creerCatalogueDeTest,
+} from '../../../../../test/factories/cours.factory';
 import {
   buildActeurFormation,
   buildAdministrateur,
@@ -55,6 +61,32 @@ describe('GetSessionResultsUseCase', () => {
 
     expect(rapport.participants[0].reponses).toEqual([
       expect.objectContaining({ valeur: 'o2', reponse: 'o2' }),
+    ]);
+  });
+
+  it('lit les libelles dans la version figee a l ouverture, pas dans la derniere publiee', async () => {
+    const cours = buildCoursDeTest();
+    const seance = buildSeanceRepondueAuRappel({ courseVersion: 2 }, cours);
+    sessions.findById.mockResolvedValue(seance.session);
+    participants.listBySession.mockResolvedValue([seance.participant]);
+    answers.listBySession.mockResolvedValue([seance.reponse]);
+    sut = new GetSessionResultsUseCase(
+      sessions,
+      participants,
+      answers,
+      incidents,
+      creerCatalogueAVersions({
+        [cours.slug]: {
+          2: cours,
+          3: { ...buildCoursDeClasse(2), slug: cours.slug },
+        },
+      }),
+    );
+
+    const rapport = await sut.execute(seance.session.id, PROPRIETAIRE);
+
+    expect(rapport.participants[0].reponses).toEqual([
+      expect.objectContaining({ reponse: seance.libelleAttendu }),
     ]);
   });
 

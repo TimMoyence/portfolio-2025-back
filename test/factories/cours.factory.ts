@@ -7,6 +7,16 @@ import {
   questionVote,
 } from '../../src/modules/formations/domain/cours/Cours';
 import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
+import { ouvrirTirages } from '../../src/modules/formations/domain/cours/OuvertureTirages';
+import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
+import type { AnswerRecord } from '../../src/modules/formations/domain/IAnswers.repository';
+import type { ParticipantRecord } from '../../src/modules/formations/domain/IParticipants.repository';
+import type { SessionRecord } from '../../src/modules/formations/domain/ISessions.repository';
+import {
+  buildAnswerRecord,
+  buildParticipantRecord,
+  buildSessionRecord,
+} from './formation.factory';
 
 export const QUESTION_NUMERIQUE_TEST = questionNumerique({
   id: 'Q-TEST-NUM',
@@ -282,28 +292,69 @@ export function tireurSequentiel(depart = 0): (borne: number) => number {
   return () => courant++;
 }
 
+export interface SeanceRepondue {
+  readonly session: SessionRecord;
+  readonly participant: ParticipantRecord;
+  readonly reponse: AnswerRecord;
+  readonly libelleAttendu: string;
+}
+
+export function buildSeanceRepondueAuRappel(
+  session: Partial<SessionRecord> = {},
+  cours: Cours = buildCoursDeTest(),
+): SeanceRepondue {
+  const bareme = ouvrirTirages(cours, tireurSequentiel());
+  const graine = bareme.tirages[0].seed;
+  const tirage = tirer(cours, graine);
+  const bonne = String(tirage.solutions[QUESTION_RAPPEL_TEST.id].valeur);
+  const participant = buildParticipantRecord({ id: 'p1', seed: graine });
+  return {
+    session: buildSessionRecord({ courseSlug: cours.slug, bareme, ...session }),
+    participant,
+    reponse: buildAnswerRecord({
+      participantId: participant.id,
+      questionId: QUESTION_RAPPEL_TEST.id,
+      valeur: bonne,
+      seed: graine,
+    }),
+    libelleAttendu: tirage.libellesOptions[QUESTION_RAPPEL_TEST.id][bonne],
+  };
+}
+
+type VersionsDuCours = Readonly<Record<number, Cours>>;
+
+export function creerCatalogueAVersions(
+  versionsParSlug: Readonly<Record<string, VersionsDuCours>>,
+): ICatalogueCours {
+  const versionsDe = (slug: string): VersionsDuCours =>
+    Object.hasOwn(versionsParSlug, slug) ? versionsParSlug[slug] : {};
+  const courant = (slug: string): { cours: Cours; version: number } | null => {
+    const versions = versionsDe(slug);
+    const derniere = Math.max(...Object.keys(versions).map(Number));
+    return Number.isFinite(derniere)
+      ? { cours: versions[derniere], version: derniere }
+      : null;
+  };
+  return {
+    trouver: (slug, version) =>
+      Promise.resolve(
+        version === undefined
+          ? (courant(slug)?.cours ?? null)
+          : (versionsDe(slug)[version] ?? null),
+      ),
+    trouverCourant: (slug) => Promise.resolve(courant(slug)),
+  };
+}
+
 export function creerCatalogueDeTest(...cours: Cours[]): ICatalogueCours {
-  const parSlug = new Map<string, Cours>();
+  const versionsParSlug: Record<string, VersionsDuCours> = {};
   for (const unCours of cours.length > 0 ? cours : [buildCoursDeTest()]) {
-    if (parSlug.has(unCours.slug)) {
+    if (Object.hasOwn(versionsParSlug, unCours.slug)) {
       throw new Error(
         `Slug de cours en double dans le catalogue de test : « ${unCours.slug} ».`,
       );
     }
-    parSlug.set(unCours.slug, unCours);
+    versionsParSlug[unCours.slug] = { 1: unCours };
   }
-  return {
-    trouver: (slug, version) =>
-      Promise.resolve(
-        version === undefined || version === 1
-          ? (parSlug.get(slug) ?? null)
-          : null,
-      ),
-    trouverCourant: (slug) => {
-      const unCours = parSlug.get(slug);
-      return Promise.resolve(
-        unCours === undefined ? null : { cours: unCours, version: 1 },
-      );
-    },
-  };
+  return creerCatalogueAVersions(versionsParSlug);
 }

@@ -2,6 +2,7 @@
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
   buildCoursDeTest,
+  creerCatalogueAVersions,
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
 import {
@@ -77,6 +78,29 @@ describe('ControlSessionUseCase', () => {
   it('accepte l ecran de la derniere position du cours', async () => {
     const dernierEcran = NOMBRE_ECRANS - 1;
     await sut.apply('session-uuid', TEACHER_ID, { ecran: dernierEcran });
+    expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
+      ecranCourant: dernierEcran,
+    });
+  });
+
+  it('borne l ecran par la version du cours figee a l ouverture, pas par la derniere publiee', async () => {
+    const dernierEcran = NOMBRE_ECRANS - 1;
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ teacherId: TEACHER_ID, courseVersion: 2 }),
+    );
+    sut = new ControlSessionUseCase(
+      sessions,
+      cache,
+      creerCatalogueAVersions({
+        [COURS_SLUG]: {
+          2: COURS,
+          3: buildCoursDeTest({ slug: COURS_SLUG, ecrans: [COURS.ecrans[0]] }),
+        },
+      }),
+    );
+
+    await sut.apply('session-uuid', TEACHER_ID, { ecran: dernierEcran });
+
     expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
       ecranCourant: dernierEcran,
     });

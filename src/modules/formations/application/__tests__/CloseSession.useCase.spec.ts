@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import {
+  buildCoursDeClasse,
   buildCoursDeTest,
+  buildSeanceRepondueAuRappel,
+  creerCatalogueAVersions,
   creerCatalogueDeTest,
-  tireurSequentiel,
+  type SeanceRepondue,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildAnswerRecord,
@@ -16,12 +19,11 @@ import {
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
-import { tirer } from '../../domain/cours/Tirage';
 import {
   SessionClosedError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
+import type { RapportQuestion } from '../../domain/IFormationMailer.port';
 import { CloseSessionUseCase } from '../CloseSession.useCase';
 import { GetSessionResultsUseCase } from '../GetSessionResults.useCase';
 
@@ -286,39 +288,61 @@ describe('CloseSessionUseCase', () => {
     expect(mailer.sendCopieEtudiant).not.toHaveBeenCalled();
   });
 
-  it('envoie a l etudiant l option choisie lue dans le tirage du cours de la seance', async () => {
-    const bareme = ouvrirTirages(COURS, tireurSequentiel());
-    const graine = bareme.tirages[0].seed;
-    const bonne = String(
-      tirer(COURS, graine).solutions['Q-TEST-RAPPEL'].valeur,
-    );
-    const seance = { courseSlug: COURS.slug, bareme };
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ ...seance, teacherId: TEACHER_ID }),
-    );
-    sessions.update.mockResolvedValue(
-      buildSessionRecord({ ...seance, etat: 'terminee' }),
-    );
-    participants.listBySession.mockResolvedValue([
-      buildParticipantRecord({ id: 'p1', seed: graine }),
-    ]);
-    answers.listBySession.mockResolvedValue([
-      buildAnswerRecord({
-        participantId: 'p1',
-        questionId: 'Q-TEST-RAPPEL',
-        valeur: bonne,
-        seed: graine,
-      }),
-    ]);
+  describe('libelles des copies', () => {
+    const cloturerSeanceRepondue = async (
+      seance: SeanceRepondue,
+    ): Promise<readonly RapportQuestion[]> => {
+      sessions.findById.mockResolvedValue(seance.session);
+      sessions.update.mockResolvedValue({
+        ...seance.session,
+        etat: 'terminee',
+      });
+      participants.listBySession.mockResolvedValue([seance.participant]);
+      answers.listBySession.mockResolvedValue([seance.reponse]);
 
-    await sut.execute('session-uuid', TEACHER_ID);
+      await sut.execute(seance.session.id, TEACHER_ID);
 
-    const [copie] = mailer.sendCopieEtudiant.mock.calls[0];
-    expect(copie.participant.reponses).toEqual([
-      expect.objectContaining({
-        questionId: 'Q-TEST-RAPPEL',
-        reponse: 'plus bas qu’au départ',
-      }),
-    ]);
+      return mailer.sendCopieEtudiant.mock.calls[0][0].participant.reponses;
+    };
+
+    it('envoie a l etudiant l option choisie lue dans le tirage du cours de la seance', async () => {
+      const seance = buildSeanceRepondueAuRappel({ teacherId: TEACHER_ID });
+
+      await expect(cloturerSeanceRepondue(seance)).resolves.toEqual([
+        expect.objectContaining({
+          questionId: 'Q-TEST-RAPPEL',
+          reponse: 'plus bas qu’au départ',
+        }),
+      ]);
+    });
+
+    it('lit les libelles dans la version figee a l ouverture, pas dans la derniere publiee', async () => {
+      const seance = buildSeanceRepondueAuRappel({
+        teacherId: TEACHER_ID,
+        courseVersion: 2,
+      });
+      sut = new CloseSessionUseCase(
+        sessions,
+        new GetSessionResultsUseCase(
+          sessions,
+          participants,
+          answers,
+          incidents,
+          creerCatalogueAVersions({
+            [COURS.slug]: {
+              2: COURS,
+              3: { ...buildCoursDeClasse(2), slug: COURS.slug },
+            },
+          }),
+        ),
+        scores,
+        mailer,
+        cache,
+      );
+
+      await expect(cloturerSeanceRepondue(seance)).resolves.toEqual([
+        expect.objectContaining({ reponse: seance.libelleAttendu }),
+      ]);
+    });
   });
 });

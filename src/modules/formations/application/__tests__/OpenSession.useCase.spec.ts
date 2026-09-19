@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
+  buildCoursDeClasse,
   buildCoursDeTest,
+  creerCatalogueAVersions,
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
 import {
@@ -49,6 +51,24 @@ describe('OpenSessionUseCase', () => {
     expect(graines).not.toContain(depot.bareme.graineReference);
     expect(depot.bareme.questions.map((question) => question.id)).toEqual(
       questionsDuCours(COURS).map((question) => question.id),
+    );
+  });
+
+  it('fige dans la seance la version courante du catalogue et en tire le bareme', async () => {
+    const versionCourante = { ...buildCoursDeClasse(3), slug: COURS.slug };
+    sut = new OpenSessionUseCase(
+      sessions,
+      creerCatalogueAVersions({
+        [COURS.slug]: { 1: COURS, 2: versionCourante },
+      }),
+    );
+
+    await sut.execute(COMMANDE);
+
+    const [depot] = sessions.create.mock.calls[0];
+    expect(depot.courseVersion).toBe(2);
+    expect(depot.bareme.questions.map((question) => question.id)).toEqual(
+      questionsDuCours(versionCourante).map((question) => question.id),
     );
   });
 
