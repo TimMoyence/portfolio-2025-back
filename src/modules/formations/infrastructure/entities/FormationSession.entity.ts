@@ -1,4 +1,5 @@
 import {
+  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -10,6 +11,7 @@ import type { FreeRange, PacingMode } from '../../domain/PacingMode';
 import type { SessionState } from '../../domain/SessionState';
 
 @Entity({ name: 'formation_sessions' })
+@Check('chk_formation_session_course_version_positive', '"course_version" > 0')
 @Index('uq_formation_sessions_code_active', ['code'], {
   unique: true,
   where: `"etat" <> 'terminee'`,
@@ -21,6 +23,9 @@ export class FormationSessionEntity {
 
   @Column({ name: 'course_slug', type: 'varchar', length: 120 })
   courseSlug: string;
+
+  @Column({ name: 'course_version', type: 'int', default: 1 })
+  courseVersion: number;
 
   @Column({ name: 'teacher_id', type: 'uuid' })
   teacherId: string;

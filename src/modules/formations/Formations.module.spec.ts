@@ -11,21 +11,33 @@ import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
-import { CATALOGUE_COURS_STATIQUE } from './domain/cours/catalogue';
 import { CATALOGUE_COURS } from './domain/token';
 import { FormationsModule } from './Formations.module';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
+import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
+import { FormationGroupEntity } from './infrastructure/entities/FormationGroup.entity';
+import { FormationScoreEntity } from './infrastructure/entities/FormationScore.entity';
 import { FormationMasteryEntity } from './infrastructure/entities/FormationMastery.entity';
 import { FormationParticipantEntity } from './infrastructure/entities/FormationParticipant.entity';
 import { FormationSessionEntity } from './infrastructure/entities/FormationSession.entity';
+import { FormationTeacherAnnotationEntity } from './infrastructure/entities/FormationTeacherAnnotation.entity';
+import { CoursCatalogueRepositoryTypeORM } from './infrastructure/CoursCatalogue.repository.typeorm';
+import { FormationCourseContentEntity } from './infrastructure/entities/FormationCourseContent.entity';
+import { FormationScreenContentEntity } from './infrastructure/entities/FormationScreenContent.entity';
 
 const ENTITES = [
   FormationSessionEntity,
+  FormationCourseContentEntity,
+  FormationScreenContentEntity,
   FormationParticipantEntity,
   FormationAnswerEntity,
+  FormationFreeResponseEntity,
   FormationMasteryEntity,
   FormationIncidentEntity,
+  FormationTeacherAnnotationEntity,
+  FormationGroupEntity,
+  FormationScoreEntity,
 ];
 
 const SERVICES = [
@@ -57,9 +69,11 @@ describe('FormationsModule', () => {
     await expect(monter()).resolves.toBeDefined();
   });
 
-  it('ouvre les seances sur le catalogue des cours publies', async () => {
+  it('charge le catalogue des cours depuis la base', async () => {
     const module = await monter();
-    expect(module.get(CATALOGUE_COURS)).toBe(CATALOGUE_COURS_STATIQUE);
+    expect(module.get(CATALOGUE_COURS)).toBeInstanceOf(
+      CoursCatalogueRepositoryTypeORM,
+    );
   });
 
   for (const service of SERVICES) {

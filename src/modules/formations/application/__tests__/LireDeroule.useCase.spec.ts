@@ -41,6 +41,17 @@ describe('LireDerouleUseCase', () => {
     expect(deroule).toEqual(deroulePresentateur(COURS, GRAINE_REFERENCE));
   });
 
+  it('garde le déroulé sur la version ouverte même après une nouvelle publication', async () => {
+    const catalogue = creerCatalogueDeTest(COURS);
+    const trouver = jest.spyOn(catalogue, 'trouver').mockReturnValue(COURS);
+    sessions.findById.mockResolvedValue({ ...SESSION, courseVersion: 2 });
+    sut = new LireDerouleUseCase(sessions, catalogue);
+
+    await sut.execute(SESSION.id, TEACHER_ID);
+
+    expect(trouver).toHaveBeenCalledWith(COURS.slug, 2);
+  });
+
   it('refuse une session introuvable', async () => {
     sessions.findById.mockResolvedValue(null);
 

@@ -6,6 +6,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type {
@@ -107,6 +108,8 @@ export class StreamSessionUseCase {
     @Optional()
     @Inject(STREAM_CAPACITY)
     private readonly capacity: IStreamCapacity = CAPACITE_MEMOIRE,
+    @Optional()
+    private readonly presenterResults?: GetSessionResultsUseCase,
   ) {}
 
   async executeForTeacher(
@@ -129,6 +132,7 @@ export class StreamSessionUseCase {
         },
       },
       session.bareme.questions.map((question) => question.id),
+      teacherId,
     );
   }
 
@@ -153,6 +157,7 @@ export class StreamSessionUseCase {
     sessionId: string,
     places: PlacesDuFlux,
     questionsDuFormateur?: readonly string[],
+    teacherId?: string,
   ): Observable<MessageEvent> {
     assertSeanceDisponible(places);
     return new Observable<MessageEvent>((subscriber) => {
@@ -199,7 +204,7 @@ export class StreamSessionUseCase {
         }
         subscriber.next({
           type: 'resultats',
-          data: await this.lireResultats(sessionId, questionIds),
+          data: await this.lireResultats(sessionId, questionIds, teacherId),
         });
         derniereActivite = activite;
       };
@@ -316,7 +321,15 @@ export class StreamSessionUseCase {
   private async lireResultats(
     sessionId: string,
     questionIds: readonly string[],
-  ): Promise<ResultatsSeance> {
+    teacherId?: string,
+  ): Promise<ResultatsSeance | Record<string, unknown>> {
+    if (teacherId !== undefined && this.presenterResults !== undefined) {
+      const rapport = await this.presenterResults.execute(sessionId, teacherId);
+      return {
+        ...rapport.resultats,
+        statistiques: rapport.statistiques,
+      };
+    }
     const [answers, participants] = await Promise.all([
       this.answers.listBySession(sessionId),
       this.participants.countBySession(sessionId),

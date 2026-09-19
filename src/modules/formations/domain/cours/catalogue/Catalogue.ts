@@ -12,8 +12,14 @@ export function creerCatalogue(cours: readonly Cours[]): ICatalogueCours {
     parSlug.set(unCours.slug, unCours);
   }
   return {
-    trouver(slug) {
-      return parSlug.get(slug) ?? null;
+    trouver(slug, version) {
+      return version === undefined || version === 1
+        ? (parSlug.get(slug) ?? null)
+        : null;
+    },
+    trouverCourant(slug) {
+      const cours = parSlug.get(slug);
+      return cours === undefined ? null : { cours, version: 1 };
     },
   };
 }

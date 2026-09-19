@@ -22,7 +22,10 @@ export class LireDerouleUseCase {
       sessionId,
       teacherId,
     );
-    const cours = this.catalogue.trouver(session.courseSlug);
+    const cours = await this.catalogue.trouver(
+      session.courseSlug,
+      session.courseVersion,
+    );
     if (!cours) {
       throw new CoursInconnuError(session.courseSlug);
     }

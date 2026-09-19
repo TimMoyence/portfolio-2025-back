@@ -25,7 +25,6 @@
     "guard:comments:count": "node scripts/guard-no-comments.cli.mjs --root . --count",
     "guard:comments:tighten": "node scripts/guard-no-comments.cli.mjs --root . --tighten",
     "test:guards": "node --test \"scripts/**/*.test.mjs\"",
-    "cours:exporter-sujet": "ts-node --transpile-only scripts/exporter-sujet.ts",
     "quality:cpd": "pnpm exec jscpd",
     "quality:cpd:tests": "pnpm exec jscpd --config .jscpd.tests.json",
     "quality:knip": "pnpm exec knip --no-progress",

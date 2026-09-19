@@ -42,6 +42,7 @@ describe('FormationsStudentController', () => {
     assertPasDeBalayage: jest.fn(),
     enregistrerEchec: jest.fn(),
   };
+  const freeResponses = { save: jest.fn() };
 
   const controller = new FormationsStudentController(
     joinSession as never,
@@ -53,6 +54,7 @@ describe('FormationsStudentController', () => {
     tokens as never,
     codeScan as never,
     new PublicFormProtectionService(),
+    freeResponses as never,
   );
 
   const rejoindre = (dto: JoinSessionRequestDto = inscription) =>
@@ -60,6 +62,7 @@ describe('FormationsStudentController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    freeResponses.save.mockResolvedValue({ status: 'enregistre' });
     joinSession.execute.mockResolvedValue({
       participantId: PARTICIPANT_ID,
       sessionId: SESSION_ID,
@@ -69,6 +72,26 @@ describe('FormationsStudentController', () => {
     });
     tokens.sign.mockReturnValue(JETON);
     tokens.verify.mockReturnValue(PARTICIPANT_ID);
+  });
+
+  it('enregistre une réponse libre pour le participant porté par le jeton', async () => {
+    await expect(
+      controller.freeResponse(SESSION_ID, JETON, {
+        screenId: 'B2-01-S11-REFLECTION',
+        activityId: 'b2-s11-c1',
+        response: 'Je vérifie la période.',
+        dureeMs: 1400,
+      }),
+    ).resolves.toEqual({ status: 'enregistre' });
+    expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
+    expect(freeResponses.save).toHaveBeenCalledWith({
+      sessionId: SESSION_ID,
+      participantId: PARTICIPANT_ID,
+      screenId: 'B2-01-S11-REFLECTION',
+      activityId: 'b2-s11-c1',
+      response: 'Je vérifie la période.',
+      dureeMs: 1400,
+    });
   });
 
   it('inscrit l etudiant et lui rend un jeton lie a sa session, sans la graine de son tirage', async () => {

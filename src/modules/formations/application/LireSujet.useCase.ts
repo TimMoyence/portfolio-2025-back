@@ -44,7 +44,10 @@ export class LireSujetUseCase {
     if (!participant || participant.sessionId !== query.sessionId) {
       throw new ParticipantNotFoundError(query.participantId);
     }
-    const cours = this.catalogue.trouver(session.courseSlug);
+    const cours = await this.catalogue.trouver(
+      session.courseSlug,
+      session.courseVersion,
+    );
     if (!cours) {
       throw new CoursInconnuError(session.courseSlug);
     }
@@ -52,7 +55,10 @@ export class LireSujetUseCase {
     const stockees = session.bareme.tirages.find(
       (entree) => entree.seed === participant.seed,
     )?.solutions;
-    if (!solutionsIdentiques(tirage.solutions, stockees)) {
+    if (
+      Object.keys(tirage.solutions).length !== 0 &&
+      !solutionsIdentiques(tirage.solutions, stockees)
+    ) {
       throw new CoursModifieError();
     }
     const dernier = this.dernierEcranServi(session, tirage.sujet.ecrans.length);

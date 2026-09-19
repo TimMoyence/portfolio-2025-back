@@ -16,6 +16,38 @@ import { tirer } from './Tirage';
 describe('ouvrirTirages', () => {
   const cours = buildCoursDeTest();
 
+  const coursSansQuestions = buildCoursDeTest({
+    dureeMinutes: 2,
+    ecrans: [
+      {
+        id: 'E-LECTURE',
+        brique: 'fp-quote',
+        dureeMinutes: 2,
+        concepts: ['proportion'],
+        notes: '',
+        proprietes: {
+          texte: 'Lire avant de calculer.',
+          auteur: null,
+          source: null,
+        },
+      },
+    ],
+    remediations: {},
+  });
+
+  it('ouvre un cours sans questions sans générer de tirages', () => {
+    expect(
+      ouvrirTirages(coursSansQuestions, () => {
+        throw new Error('un cours sans questions ne tire aucune graine');
+      }),
+    ).toEqual({
+      version: 1,
+      graineReference: 0,
+      questions: [],
+      tirages: [],
+    });
+  });
+
   it('distribue soixante tirages et garde une graine de reference hors distribution', () => {
     const bareme = ouvrirTirages(cours, tireurSequentiel());
     const graines = bareme.tirages.map((tirage) => tirage.seed);

@@ -35,6 +35,7 @@ interface PiegeNumerique<D> {
 interface PiegeVote<D> {
   readonly confusion: ConfusionId;
   readonly libelle: (donnees: D) => string;
+  readonly optionId?: (donnees: D) => string;
 }
 
 interface DefinitionCommune<D> {
@@ -54,6 +55,7 @@ export interface DefinitionNumerique<D> extends DefinitionCommune<D> {
 
 export interface DefinitionVote<D> extends DefinitionCommune<D> {
   readonly bonne: (donnees: D) => string;
+  readonly bonneLibelle?: (donnees: D) => string;
   readonly pieges: AuMoinsUn<PiegeVote<D>>;
 }
 
@@ -72,9 +74,11 @@ export interface QuestionVoteTiree {
   readonly type: 'vote';
   readonly enonce: string;
   readonly bonne: string;
+  readonly bonneLibelle?: string;
   readonly pieges: readonly {
     readonly confusion: ConfusionId;
     readonly libelle: string;
+    readonly optionId?: string;
   }[];
 }
 
@@ -145,9 +149,11 @@ export function questionVote<D>(definition: DefinitionVote<D>): QuestionVote {
         type: 'vote',
         enonce: definition.enonce(donnees),
         bonne: definition.bonne(donnees),
+        bonneLibelle: definition.bonneLibelle?.(donnees),
         pieges: definition.pieges.map((piege) => ({
           confusion: piege.confusion,
           libelle: piege.libelle(donnees),
+          optionId: piege.optionId?.(donnees),
         })),
       };
     },
@@ -254,6 +260,17 @@ interface EcranCommun {
   readonly concepts: AuMoinsUn<ConceptId>;
   readonly notes: string;
   readonly modalite?: Modalite;
+  readonly question?: Question;
+  readonly guide?: GuideFormateur;
+}
+
+export interface GuideFormateur {
+  readonly aDire?: string;
+  readonly question?: string;
+  readonly reponse?: string;
+  readonly calcul?: string;
+  readonly relance?: string;
+  readonly transition?: string;
 }
 
 type EcranExposition = {
@@ -310,7 +327,8 @@ export function estInteractif(ecran: Ecran): boolean {
     ecran.brique === 'questionnaire' ||
     ecran.brique === 'fp-challenge' ||
     ecran.brique === 'fp-cardsort' ||
-    (BRIQUES_QUESTION as readonly string[]).includes(ecran.brique)
+    (BRIQUES_QUESTION as readonly string[]).includes(ecran.brique) ||
+    ecran.question !== undefined
   );
 }
 
@@ -318,7 +336,10 @@ export function questionsDe(ecran: Ecran): readonly Question[] {
   if (ecran.brique === 'questionnaire') {
     return ecran.questions;
   }
-  return 'question' in ecran ? [ecran.question] : [];
+  if (ecran.question !== undefined) {
+    return [ecran.question];
+  }
+  return [];
 }
 
 export function questionsDuCours(cours: Cours): readonly Question[] {

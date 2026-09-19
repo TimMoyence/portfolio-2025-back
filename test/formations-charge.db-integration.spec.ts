@@ -3,7 +3,6 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
 import type { ResultatsDeSeance } from '../src/modules/formations/application/GetSessionResults.useCase';
-import { CATALOGUE_COURS_STATIQUE } from '../src/modules/formations/domain/cours/catalogue';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { AnswerValue } from '../src/modules/formations/domain/GradingCore';
@@ -266,17 +265,14 @@ describeDb('Formations sous charge de classe (db integration)', () => {
     process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
     contexte = await ouvrirContexteFormations();
     mailer = createMockFormationMailer();
-    app = await monterApplicationFormations(
-      {
-        sessions: contexte.sessions,
-        participants: contexte.participants,
-        answers: contexte.answers,
-        incidents: contexte.incidents,
-        mastery: contexte.mastery,
-        mailer,
-      },
-      CATALOGUE_COURS_STATIQUE,
-    );
+    app = await monterApplicationFormations({
+      sessions: contexte.sessions,
+      participants: contexte.participants,
+      answers: contexte.answers,
+      incidents: contexte.incidents,
+      mastery: contexte.mastery,
+      mailer,
+    });
     port = await ecouterEnBoucleLocale(app);
   });
 

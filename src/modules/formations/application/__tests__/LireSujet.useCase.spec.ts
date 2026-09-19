@@ -89,6 +89,17 @@ describe('LireSujetUseCase', () => {
     ).toBe(true);
   });
 
+  it('lit la version du cours fixée à l ouverture de la séance', async () => {
+    const catalogue = creerCatalogueDeTest(COURS);
+    const trouver = jest.spyOn(catalogue, 'trouver').mockReturnValue(COURS);
+    sessions.findById.mockResolvedValue({ ...SESSION, courseVersion: 2 });
+    sut = new LireSujetUseCase(sessions, participants, catalogue);
+
+    await demander();
+
+    expect(trouver).toHaveBeenCalledWith(COURS.slug, 2);
+  });
+
   it('rend tout le sujet apres la cloture de la seance', async () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({ ...SESSION, etat: 'terminee' }),

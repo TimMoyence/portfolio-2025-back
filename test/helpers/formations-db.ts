@@ -1,10 +1,15 @@
 import { DataSource, type DataSourceOptions } from 'typeorm';
 import { CreateFormations1778900000000 } from '../../src/migrations/1778900000000-CreateFormations';
+import { AddFormationSessionCourseVersion1780050000000 } from '../../src/migrations/1780050000000-AddFormationSessionCourseVersion';
+import { CreateFormationGroups1780500000000 } from '../../src/migrations/1780500000000-CreateFormationGroups';
+import { CreateFormationScores1780600000000 } from '../../src/migrations/1780600000000-CreateFormationScores';
 import { AnswersRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Answers.repository.typeorm';
 import { FormationAnswerEntity } from '../../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
 import { FormationIncidentEntity } from '../../src/modules/formations/infrastructure/entities/FormationIncident.entity';
 import { FormationMasteryEntity } from '../../src/modules/formations/infrastructure/entities/FormationMastery.entity';
 import { FormationParticipantEntity } from '../../src/modules/formations/infrastructure/entities/FormationParticipant.entity';
+import { FormationGroupEntity } from '../../src/modules/formations/infrastructure/entities/FormationGroup.entity';
+import { FormationScoreEntity } from '../../src/modules/formations/infrastructure/entities/FormationScore.entity';
 import { FormationSessionEntity } from '../../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { IncidentsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Incidents.repository.typeorm';
 import { MasteryRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Mastery.repository.typeorm';
@@ -18,6 +23,8 @@ export const FORMATION_ENTITIES = [
   FormationAnswerEntity,
   FormationIncidentEntity,
   FormationMasteryEntity,
+  FormationGroupEntity,
+  FormationScoreEntity,
 ];
 
 export const FORMATION_TABLES = [
@@ -26,6 +33,8 @@ export const FORMATION_TABLES = [
   'formation_answers',
   'formation_incidents',
   'formation_mastery',
+  'formation_groups',
+  'formation_scores',
 ] as const;
 
 export interface ContexteFormations {
@@ -46,7 +55,12 @@ function buildFormationsOptions(): DataSourceOptions {
     ...buildDbIntegrationOptions(FORMATION_ENTITIES),
     synchronize: false,
     dropSchema: true,
-    migrations: [CreateFormations1778900000000],
+    migrations: [
+      CreateFormations1778900000000,
+      AddFormationSessionCourseVersion1780050000000,
+      CreateFormationGroups1780500000000,
+      CreateFormationScores1780600000000,
+    ],
   };
 }
 

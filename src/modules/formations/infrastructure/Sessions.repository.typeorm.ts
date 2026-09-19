@@ -28,6 +28,7 @@ export class SessionsRepositoryTypeORM
   async create(input: CreateSessionInput): Promise<SessionRecord> {
     const entity = this.repo.create({
       courseSlug: input.courseSlug,
+      courseVersion: input.courseVersion,
       teacherId: input.teacherId,
       code: input.code,
       bareme: input.bareme,
@@ -80,6 +81,7 @@ export class SessionsRepositoryTypeORM
     return {
       id: entity.id,
       courseSlug: entity.courseSlug,
+      courseVersion: entity.courseVersion,
       teacherId: entity.teacherId,
       code: entity.code,
       etat: entity.etat,

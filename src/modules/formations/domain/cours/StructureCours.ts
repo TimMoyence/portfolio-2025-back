@@ -93,6 +93,9 @@ function etapeExposition(
 }
 
 function controlerExposition(cours: Cours): readonly Manquement[] {
+  if (questionsDuCours(cours).length === 0) {
+    return [];
+  }
   const etatInitial: EtatExposition = { manquements: [], bloc: [], cumul: 0 };
   const etatFinal = cours.ecrans.reduce(
     (etat, ecran, rang) => etapeExposition(etat, ecran, rang),
@@ -105,6 +108,9 @@ function controlerExposition(cours: Cours): readonly Manquement[] {
 }
 
 function controlerRatio(cours: Cours): readonly Manquement[] {
+  if (questionsDuCours(cours).length === 0) {
+    return [];
+  }
   const interaction = cours.ecrans
     .filter((ecran) => estInteractif(ecran))
     .reduce((total, ecran) => total + minutesDe(ecran), 0);
@@ -160,6 +166,9 @@ function controlerCloture(dernier: Ecran, rang: number): readonly Manquement[] {
 }
 
 function controlerOuvertureCloture(cours: Cours): readonly Manquement[] {
+  if (questionsDuCours(cours).length === 0) {
+    return [];
+  }
   const [premier] = cours.ecrans;
   const rangDernier = cours.ecrans.length - 1;
   const dernier = cours.ecrans[rangDernier];

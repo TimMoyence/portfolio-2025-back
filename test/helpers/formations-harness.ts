@@ -33,7 +33,6 @@ import type { IIncidentsRepository } from '../../src/modules/formations/domain/I
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type { IParticipantsRepository } from '../../src/modules/formations/domain/IParticipants.repository';
 import type { ISessionsRepository } from '../../src/modules/formations/domain/ISessions.repository';
-import { CATALOGUE_COURS_STATIQUE } from '../../src/modules/formations/domain/cours/catalogue';
 import type { Cours } from '../../src/modules/formations/domain/cours/Cours';
 import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
@@ -56,6 +55,10 @@ import {
 } from '../../src/modules/formations/interfaces/ParticipantToken.service';
 import { createMockFormationMailer } from '../factories/formation.factory';
 import {
+  buildCoursDeTest,
+  creerCatalogueDeTest,
+} from '../factories/cours.factory';
+import {
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './formations-db';
@@ -69,12 +72,16 @@ import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 export const PREFIXE_API = 'api/v1/portfolio25';
 export const EN_TETE_IDENTITE = 'x-test-identite';
 
+const COURS_FORMATION_TEST = buildCoursDeTest({
+  slug: 'b2-01-traitement-information-chiffree',
+});
+const CATALOGUE_FORMATIONS_TEST = creerCatalogueDeTest(COURS_FORMATION_TEST);
+
 export function coursPublie(slug: string): Cours {
-  const cours = CATALOGUE_COURS_STATIQUE.trouver(slug);
-  if (cours === null) {
+  if (slug !== COURS_FORMATION_TEST.slug) {
     throw new Error(`Le cours ${slug} est absent du catalogue publie`);
   }
-  return cours;
+  return COURS_FORMATION_TEST;
 }
 
 const FENETRE_THROTTLE_MS = 60_000;
@@ -114,7 +121,7 @@ export interface DepotsFormations {
 
 export async function monterApplicationFormations(
   depots: DepotsFormations,
-  catalogue: ICatalogueCours = CATALOGUE_COURS_STATIQUE,
+  catalogue: ICatalogueCours = CATALOGUE_FORMATIONS_TEST,
 ): Promise<INestApplication> {
   const moduleRef = await ModuleDeTest.createTestingModule({
     imports: [
@@ -255,7 +262,7 @@ export interface BancFormations {
 }
 
 export async function monterBancFormations(
-  catalogue: ICatalogueCours = CATALOGUE_COURS_STATIQUE,
+  catalogue: ICatalogueCours = CATALOGUE_FORMATIONS_TEST,
 ): Promise<BancFormations> {
   const contexte = await ouvrirContexteFormations();
   const mailer = createMockFormationMailer();

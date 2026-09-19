@@ -146,6 +146,19 @@ describe('FormationsPresenterController', () => {
     expect(results.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
   });
 
+  it('exporte le bilan JSON en reutilisant le rapport protege', async () => {
+    const rapport = {
+      code: '4271',
+      participants: [],
+    } as unknown as RapportSession;
+    results.execute.mockResolvedValue(rapport);
+
+    await expect(
+      controller.exportReport(SESSION_ID, requeteFormateur),
+    ).resolves.toBe(rapport);
+    expect(results.execute).toHaveBeenCalledWith(SESSION_ID, TEACHER_ID);
+  });
+
   it('rend le deroule annote au formateur proprietaire', async () => {
     const deroule = { id: 'cours-de-test' } as unknown as DerouleCours;
     lireDeroule.execute.mockResolvedValue(deroule);

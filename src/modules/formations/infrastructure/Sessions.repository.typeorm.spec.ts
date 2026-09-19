@@ -18,6 +18,7 @@ function ligne(
   return {
     id: 'session-ouverte',
     courseSlug: 'b1-09-interets-composes',
+    courseVersion: 1,
     teacherId: 'teacher-uuid',
     code: CODE,
     etat: 'attente',
@@ -88,6 +89,7 @@ describe('SessionsRepositoryTypeORM', () => {
   const creerSession = () =>
     sut.create({
       courseSlug: 'b1-09-interets-composes',
+      courseVersion: 1,
       teacherId: 'teacher-uuid',
       code: CODE,
       bareme: buildBareme(),

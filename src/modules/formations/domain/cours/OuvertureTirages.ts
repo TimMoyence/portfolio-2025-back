@@ -24,6 +24,14 @@ export function ouvrirTirages(
   cours: Cours,
   tireur: TireurDeGraine = randomInt,
 ): Bareme {
+  if (questionsDuCours(cours).length === 0) {
+    return {
+      version: 1,
+      graineReference: 0,
+      questions: [],
+      tirages: [],
+    };
+  }
   const [reference, ...tirages] = grainesValides(cours, tireur);
   return {
     version: 1,

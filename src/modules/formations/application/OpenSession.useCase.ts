@@ -30,13 +30,14 @@ export class OpenSessionUseCase {
   ) {}
 
   async execute(command: OpenSessionCommand): Promise<OpenSessionResult> {
-    const cours = this.catalogue.trouver(command.courseSlug);
-    if (!cours) {
+    const courant = await this.catalogue.trouverCourant(command.courseSlug);
+    if (!courant) {
       throw new CoursInconnuError(command.courseSlug);
     }
     const session = await this.createSurUnCodeLibre(
       command,
-      ouvrirTirages(cours),
+      ouvrirTirages(courant.cours),
+      courant.version,
     );
     return { sessionId: session.id, code: session.code };
   }
@@ -44,6 +45,7 @@ export class OpenSessionUseCase {
   private async createSurUnCodeLibre(
     command: OpenSessionCommand,
     bareme: Bareme,
+    courseVersion: number,
   ): Promise<SessionRecord> {
     for (let tentative = 0; tentative < MAX_TENTATIVES_CODE; tentative += 1) {
       const candidat = SessionCode.generate();
@@ -54,6 +56,7 @@ export class OpenSessionUseCase {
       try {
         return await this.sessions.create({
           courseSlug: command.courseSlug,
+          courseVersion,
           teacherId: command.teacherId,
           code: candidat,
           bareme,

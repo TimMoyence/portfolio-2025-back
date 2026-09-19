@@ -33,6 +33,7 @@ export class ParticipantsRepositoryTypeORM
       prenom: input.prenom,
       nom: input.nom,
       email: input.email,
+      groupId: null,
       seed: input.seed,
     });
     try {
@@ -115,6 +116,7 @@ export class ParticipantsRepositoryTypeORM
       prenom: entity.prenom,
       nom: entity.nom,
       email: entity.email,
+      groupId: entity.groupId,
       seed: entity.seed,
       rejointLe: entity.rejointLe,
       dernierPing: entity.dernierPing,

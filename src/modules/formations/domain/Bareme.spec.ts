@@ -86,6 +86,16 @@ describe('estValeurConnue', () => {
 });
 
 describe('pickFreeSeed', () => {
+  it('attribue des seeds techniques quand le cours ne contient aucune question', () => {
+    const sansQuestions: Bareme = {
+      version: 1,
+      graineReference: 0,
+      questions: [],
+      tirages: [],
+    };
+    expect(pickFreeSeed(sansQuestions, [0, 1])).toBe(2);
+  });
+
   it('retourne un seed non attribue', () => {
     expect(pickFreeSeed(bareme, [1001])).toBe(1002);
   });

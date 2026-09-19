@@ -61,19 +61,24 @@ export class ControlSessionUseCase {
   ): Promise<void> {
     const misAJour = this.validerEtProjeter(changements);
     const session = await this.assertPilotable(sessionId, teacherId);
-    this.assertDansLesBornesDuCours(session.courseSlug, misAJour);
+    await this.assertDansLesBornesDuCours(
+      session.courseSlug,
+      session.courseVersion,
+      misAJour,
+    );
     const sessionMiseAJour = await this.sessions.update(sessionId, misAJour);
     this.publier(sessionId, sessionMiseAJour);
   }
 
-  private assertDansLesBornesDuCours(
+  private async assertDansLesBornesDuCours(
     courseSlug: string,
+    courseVersion: number,
     misAJour: UpdateSessionInput,
-  ): void {
+  ): Promise<void> {
     if (misAJour.ecranCourant === undefined && !misAJour.intervalleLibre) {
       return;
     }
-    const cours = this.catalogue.trouver(courseSlug);
+    const cours = await this.catalogue.trouver(courseSlug, courseVersion);
     if (!cours) {
       throw new CoursInconnuError(courseSlug);
     }

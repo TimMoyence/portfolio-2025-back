@@ -9,6 +9,7 @@ function buildSession(overrides: Partial<SessionRecord> = {}): SessionRecord {
   return {
     id: 'session-uuid',
     courseSlug: 'b1-09-interets-composes',
+    courseVersion: 1,
     teacherId: 'teacher-uuid',
     code: '4271',
     etat: 'en_cours',

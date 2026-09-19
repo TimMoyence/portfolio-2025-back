@@ -79,7 +79,10 @@ export class CloseSessionUseCase {
 
     const rapport = buildRapportSession({
       session: misAJour,
-      cours: this.catalogue.trouver(misAJour.courseSlug),
+      cours: await this.catalogue.trouver(
+        misAJour.courseSlug,
+        misAJour.courseVersion,
+      ),
       participants: participantsListe,
       answers: reponses,
       incidents: incidentsListe,
