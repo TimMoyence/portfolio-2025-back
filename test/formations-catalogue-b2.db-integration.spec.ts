@@ -48,6 +48,11 @@ import { FormationIncidentEntity } from '../src/modules/formations/infrastructur
 import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import {
+  FormationGroupNameTakenError,
+  FormationGroupNotFoundError,
+  ParticipantNotFoundError,
+} from '../src/modules/formations/domain/errors/FormationErrors';
+import {
   buildBareme,
   createMockFormationMailer,
   createMockSessionStateCache,
@@ -378,24 +383,33 @@ describeDb('catalogue B2 migré', () => {
       seed: 4,
     });
 
-    const first = await responses.save({
+    const reponse = {
       sessionId: session.id,
       participantId: participant.id,
       screenId: 'B2-01-S11-REFLECTION',
       activityId: 'b2-s11-c1',
-      response: 'Première réponse',
-      dureeMs: 1200,
-    });
-    const second = await responses.save({
-      sessionId: session.id,
-      participantId: participant.id,
-      screenId: 'B2-01-S11-REFLECTION',
-      activityId: 'b2-s11-c1',
+    };
+
+    await expect(
+      Promise.all([
+        responses.save({
+          ...reponse,
+          response: 'Envoi du premier onglet',
+          dureeMs: 1200,
+        }),
+        responses.save({
+          ...reponse,
+          response: 'Envoi du second onglet',
+          dureeMs: 1300,
+        }),
+      ]),
+    ).resolves.toEqual([undefined, undefined]);
+    await responses.save({
+      ...reponse,
       response: 'Réponse reprise après reconnexion',
       dureeMs: 2200,
     });
 
-    expect(second.id).toBe(first.id);
     await expect(responses.listBySession(session.id)).resolves.toEqual([
       expect.objectContaining({
         participantId: participant.id,
@@ -421,22 +435,25 @@ describeDb('catalogue B2 migré', () => {
       code: '9473',
       bareme: buildBareme(),
     });
-    const first = await annotations.save({
+    const annotation = {
       sessionId: session.id,
       teacherId: session.teacherId,
       screenId: 'B2-01-S11-REFLECTION',
       groupName: 'Groupe A',
-      note: 'Relancer sur la base de comparaison.',
-    });
-    const second = await annotations.save({
-      sessionId: session.id,
-      teacherId: session.teacherId,
-      screenId: 'B2-01-S11-REFLECTION',
-      groupName: 'Groupe A',
+    };
+    const [pupitre, scene] = await Promise.all([
+      annotations.save({
+        ...annotation,
+        note: 'Relancer sur la base de comparaison.',
+      }),
+      annotations.save({ ...annotation, note: 'Noter au tableau.' }),
+    ]);
+    const reprise = await annotations.save({
+      ...annotation,
       note: 'Faire verbaliser la formule.',
     });
 
-    expect(second.id).toBe(first.id);
+    expect([scene.id, reprise.id]).toEqual([pupitre.id, pupitre.id]);
     await expect(
       annotations.listBySession(session.id, session.teacherId),
     ).resolves.toEqual([
@@ -487,6 +504,24 @@ describeDb('catalogue B2 migré', () => {
     );
     await groups.rename(session.id, groupe.id, 'Groupe B');
     expect((await groups.listBySession(session.id))[0]?.name).toBe('Groupe B');
+
+    const autre = await groups.create(session.id, 'Groupe C');
+    const inconnu = 'c9999999-9999-4999-8999-999999999999';
+    await expect(groups.create(session.id, 'Groupe B')).rejects.toBeInstanceOf(
+      FormationGroupNameTakenError,
+    );
+    await expect(
+      groups.rename(session.id, autre.id, 'Groupe B'),
+    ).rejects.toBeInstanceOf(FormationGroupNameTakenError);
+    await expect(
+      groups.rename(session.id, inconnu, 'Groupe D'),
+    ).rejects.toBeInstanceOf(FormationGroupNotFoundError);
+    await expect(
+      groups.assignParticipant(session.id, participant.id, inconnu),
+    ).rejects.toBeInstanceOf(FormationGroupNotFoundError);
+    await expect(
+      groups.assignParticipant(session.id, inconnu, groupe.id),
+    ).rejects.toBeInstanceOf(ParticipantNotFoundError);
   });
 
   it('persiste à la clôture la note et la complétion de chaque participant et les statistiques de la séance', async () => {

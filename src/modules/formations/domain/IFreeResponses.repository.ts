@@ -22,6 +22,6 @@ export interface SaveFreeResponseInput {
 }
 
 export interface IFreeResponsesRepository {
-  save(input: SaveFreeResponseInput): Promise<FreeResponseRecord>;
+  save(input: SaveFreeResponseInput): Promise<void>;
   listBySession(sessionId: string): Promise<readonly FreeResponseRecord[]>;
 }

@@ -8,6 +8,8 @@ import type {
 } from '../domain/IFreeResponses.repository';
 import { FormationFreeResponseEntity } from './entities/FormationFreeResponse.entity';
 
+const CLE_REPONSE_LIBRE = ['sessionId', 'participantId', 'activityId'];
+
 @Injectable()
 export class FreeResponsesRepositoryTypeORM implements IFreeResponsesRepository {
   constructor(
@@ -15,20 +17,19 @@ export class FreeResponsesRepositoryTypeORM implements IFreeResponsesRepository 
     private readonly repo: Repository<FormationFreeResponseEntity>,
   ) {}
 
-  async save(input: SaveFreeResponseInput): Promise<FreeResponseRecord> {
-    const existing = await this.repo.findOne({
-      where: {
+  async save(input: SaveFreeResponseInput): Promise<void> {
+    await this.repo.upsert(
+      {
         sessionId: input.sessionId,
         participantId: input.participantId,
+        screenId: input.screenId,
         activityId: input.activityId,
+        response: input.response,
+        dureeMs: input.dureeMs,
+        status: 'enregistre',
       },
-    });
-    const entity = this.repo.create({
-      ...existing,
-      ...input,
-      status: 'enregistre',
-    });
-    return this.toDomain(await this.repo.save(entity));
+      CLE_REPONSE_LIBRE,
+    );
   }
 
   async listBySession(

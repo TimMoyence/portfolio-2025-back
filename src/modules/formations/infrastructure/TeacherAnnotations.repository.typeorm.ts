@@ -8,6 +8,8 @@ import type {
 } from '../domain/ITeacherAnnotations.repository';
 import { FormationTeacherAnnotationEntity } from './entities/FormationTeacherAnnotation.entity';
 
+const CLE_ANNOTATION = ['sessionId', 'screenId', 'groupName'];
+
 @Injectable()
 export class TeacherAnnotationsRepositoryTypeORM implements ITeacherAnnotationsRepository {
   constructor(
@@ -18,19 +20,24 @@ export class TeacherAnnotationsRepositoryTypeORM implements ITeacherAnnotationsR
   async save(
     input: SaveTeacherAnnotationInput,
   ): Promise<TeacherAnnotationRecord> {
-    const existing = await this.repo.findOne({
-      where: {
+    await this.repo.upsert(
+      {
+        sessionId: input.sessionId,
+        teacherId: input.teacherId,
+        screenId: input.screenId,
+        groupName: input.groupName,
+        note: input.note,
+        updatedAt: new Date(),
+      },
+      CLE_ANNOTATION,
+    );
+    return this.toDomain(
+      await this.repo.findOneByOrFail({
         sessionId: input.sessionId,
         screenId: input.screenId,
         groupName: input.groupName,
-      },
-    });
-    const entity = this.repo.create({
-      ...existing,
-      ...input,
-      updatedAt: new Date(),
-    });
-    return this.toDomain(await this.repo.save(entity));
+      }),
+    );
   }
 
   async listBySession(

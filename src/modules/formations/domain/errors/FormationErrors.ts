@@ -28,6 +28,22 @@ export class ParticipantNotFoundError extends ResourceNotFoundError {
   }
 }
 
+export class FormationGroupNotFoundError extends ResourceNotFoundError {
+  constructor(groupId: string) {
+    super(`Groupe introuvable dans cette séance : ${groupId}`);
+  }
+}
+
+export class FormationGroupNameTakenError extends ResourceConflictError {
+  readonly code = 'NOM_DE_GROUPE_DEJA_PRIS';
+
+  constructor(name: string) {
+    super(
+      `Le groupe « ${name} » existe déjà dans cette séance : choisissez un autre nom.`,
+    );
+  }
+}
+
 export class SessionNotOwnedError extends InsufficientPermissionsError {
   constructor(sessionId: string) {
     super(`La session ${sessionId} appartient a un autre formateur`);

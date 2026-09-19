@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { Request } from 'express';
 import type { Repository } from 'typeorm';
+import { mockTypeOrmCreate } from '../../../../test/factories/formation.factory';
+import {
+  FormationGroupNameTakenError,
+  FormationGroupNotFoundError,
+  ParticipantNotFoundError,
+} from '../domain/errors/FormationErrors';
 import { CoursCatalogueRepositoryTypeORM } from './CoursCatalogue.repository.typeorm';
 import { FormationGroupsRepositoryTypeORM } from './FormationGroups.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from './FreeResponses.repository.typeorm';
@@ -188,7 +194,7 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
 describe('formation repositories for responses, annotations, groups and scores', () => {
   const date = new Date('2026-09-11T08:00:00.000Z');
 
-  it('sauvegarde puis relit une réponse libre', async () => {
+  it('ecrit une reponse libre en un seul upsert sur participant et activite, puis la relit', async () => {
     const row = {
       id: 'free-row',
       sessionId: SESSION_ID,
@@ -201,14 +207,12 @@ describe('formation repositories for responses, annotations, groups and scores',
       submittedAt: date,
     } as FormationFreeResponseEntity;
     const repo = {
-      findOne: jest.fn().mockResolvedValue(null),
-      create: jest.fn((value: unknown) => value),
-      save: jest.fn().mockResolvedValue(row),
+      upsert: jest.fn().mockResolvedValue(undefined),
       find: jest.fn().mockResolvedValue([row]),
     } as unknown as jest.Mocked<Repository<FormationFreeResponseEntity>>;
     const sut = new FreeResponsesRepositoryTypeORM(repo);
 
-    const saved = await sut.save({
+    await sut.save({
       sessionId: SESSION_ID,
       participantId: 'participant-1',
       screenId: 'B2-01-01',
@@ -218,15 +222,28 @@ describe('formation repositories for responses, annotations, groups and scores',
     });
     const listed = await sut.listBySession(SESSION_ID);
 
-    expect(saved).toMatchObject({ id: 'free-row', status: 'enregistre' });
-    expect(listed).toHaveLength(1);
+    expect(repo.upsert).toHaveBeenCalledWith(
+      {
+        sessionId: SESSION_ID,
+        participantId: 'participant-1',
+        screenId: 'B2-01-01',
+        activityId: 'reflection-1',
+        response: 'Ma réponse',
+        dureeMs: 1200,
+        status: 'enregistre',
+      },
+      ['sessionId', 'participantId', 'activityId'],
+    );
+    expect(listed).toEqual([
+      expect.objectContaining({ id: 'free-row', status: 'enregistre' }),
+    ]);
     expect(repo.find).toHaveBeenCalledWith({
       where: { sessionId: SESSION_ID },
       order: { submittedAt: 'ASC' },
     });
   });
 
-  it('met à jour une annotation et filtre les postes par formateur', async () => {
+  it('ecrit une annotation en un seul upsert sur seance, ecran et groupe, et filtre les postes par formateur', async () => {
     const row = {
       id: 'annotation-row',
       sessionId: SESSION_ID,
@@ -237,9 +254,8 @@ describe('formation repositories for responses, annotations, groups and scores',
       updatedAt: date,
     } as FormationTeacherAnnotationEntity;
     const repo = {
-      findOne: jest.fn().mockResolvedValue(null),
-      create: jest.fn((value: unknown) => value),
-      save: jest.fn().mockResolvedValue(row),
+      upsert: jest.fn().mockResolvedValue(undefined),
+      findOneByOrFail: jest.fn().mockResolvedValue(row),
       find: jest.fn().mockResolvedValue([row]),
     } as unknown as jest.Mocked<Repository<FormationTeacherAnnotationEntity>>;
     const sut = new TeacherAnnotationsRepositoryTypeORM(repo);
@@ -252,7 +268,17 @@ describe('formation repositories for responses, annotations, groups and scores',
         groupName: 'Classe entière',
         note: 'Relancer',
       }),
-    ).resolves.toMatchObject({ teacherId: TEACHER_ID });
+    ).resolves.toMatchObject({ id: 'annotation-row', teacherId: TEACHER_ID });
+    expect(repo.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: SESSION_ID,
+        teacherId: TEACHER_ID,
+        screenId: 'B2-01-01',
+        groupName: 'Classe entière',
+        note: 'Relancer',
+      }),
+      ['sessionId', 'screenId', 'groupName'],
+    );
     await expect(sut.listBySession(SESSION_ID, TEACHER_ID)).resolves.toEqual([
       expect.objectContaining({ note: 'Relancer' }),
     ]);
@@ -314,16 +340,44 @@ describe('formation repositories for responses, annotations, groups and scores',
     } as unknown as jest.Mocked<Repository<FormationParticipantEntity>>;
     const sut = new FormationGroupsRepositoryTypeORM(groups, participants);
 
-    await expect(sut.rename(SESSION_ID, 'missing', 'B')).rejects.toThrow(
-      'Groupe introuvable',
+    await expect(sut.rename(SESSION_ID, 'missing', 'B')).rejects.toBeInstanceOf(
+      FormationGroupNotFoundError,
     );
     await expect(
       sut.assignParticipant(SESSION_ID, 'participant-1', 'missing'),
-    ).rejects.toThrow('Groupe introuvable');
+    ).rejects.toBeInstanceOf(FormationGroupNotFoundError);
     groups.findOne.mockResolvedValue({ id: 'group-1' } as FormationGroupEntity);
     await expect(
       sut.assignParticipant(SESSION_ID, 'participant-1', 'group-1'),
-    ).rejects.toThrow('Participant introuvable');
+    ).rejects.toBeInstanceOf(ParticipantNotFoundError);
+  });
+
+  it('classe le nom de groupe deja pris dans la seance et laisse passer les autres pannes', async () => {
+    const doublon = {
+      code: '23505',
+      constraint: 'UQ_formation_groups_session_name',
+    };
+    const panne = new Error('connexion perdue');
+    const groups = {
+      create: mockTypeOrmCreate(),
+      save: jest
+        .fn()
+        .mockRejectedValueOnce(doublon)
+        .mockRejectedValueOnce(panne),
+      update: jest.fn().mockRejectedValueOnce(doublon),
+    } as unknown as jest.Mocked<Repository<FormationGroupEntity>>;
+    const sut = new FormationGroupsRepositoryTypeORM(
+      groups,
+      {} as Repository<FormationParticipantEntity>,
+    );
+
+    await expect(sut.create(SESSION_ID, 'A')).rejects.toBeInstanceOf(
+      FormationGroupNameTakenError,
+    );
+    await expect(sut.create(SESSION_ID, 'A')).rejects.toBe(panne);
+    await expect(sut.rename(SESSION_ID, 'group-1', 'A')).rejects.toBeInstanceOf(
+      FormationGroupNameTakenError,
+    );
   });
 
   it('persiste en une seule requete atomique les scores individuels, completion comprise', async () => {
