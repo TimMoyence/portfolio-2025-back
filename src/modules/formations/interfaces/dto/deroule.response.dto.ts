@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { EcranPublicResponseDto, SujetResponseDto } from './sujet.response.dto';
 
 export class ConfusionCorrigeeResponseDto {
@@ -27,6 +27,39 @@ export class CorrigePresentateurResponseDto {
   confusions: ConfusionCorrigeeResponseDto[];
 }
 
+export class GuideFormateurResponseDto {
+  @ApiPropertyOptional({
+    example: 'Avant de commenter la pente, vérifiez le repère.',
+  })
+  aDire?: string;
+
+  @ApiPropertyOptional({
+    example: 'Que faut-il contrôler avant de comparer les deux courbes ?',
+  })
+  question?: string;
+
+  @ApiPropertyOptional({
+    example: 'Les valeurs, l’unité, la période et l’échelle.',
+  })
+  reponse?: string;
+
+  @ApiPropertyOptional({
+    example: 'Poids d’un canal = CA du canal / CA total.',
+  })
+  calcul?: string;
+
+  @ApiPropertyOptional({
+    example: 'Les valeurs ont-elles changé ou seulement la représentation ?',
+  })
+  relance?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'Le prochain écran montre comment une échelle modifie l’impression.',
+  })
+  transition?: string;
+}
+
 export class EcranDerouleResponseDto extends EcranPublicResponseDto {
   @ApiProperty({ description: 'Notes du formateur' })
   notes: string;
@@ -42,6 +75,13 @@ export class EcranDerouleResponseDto extends EcranPublicResponseDto {
 
   @ApiProperty({ type: [CorrigePresentateurResponseDto] })
   corriges: CorrigePresentateurResponseDto[];
+
+  @ApiPropertyOptional({
+    type: GuideFormateurResponseDto,
+    description:
+      'Guide de l écran pour le formateur, absent quand l écran n en a pas',
+  })
+  guide?: GuideFormateurResponseDto;
 }
 
 export class DerouleResponseDto extends OmitType(SujetResponseDto, [

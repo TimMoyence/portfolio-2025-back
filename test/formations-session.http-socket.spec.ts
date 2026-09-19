@@ -23,6 +23,8 @@ import type {
 } from '../src/modules/formations/domain/cours/Cours';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
+import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
+import type { DerouleCours } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import type { ICatalogueCours } from '../src/modules/formations/domain/cours/ICatalogueCours.port';
 import type {
   AnswerRecord,
@@ -48,6 +50,7 @@ import {
   buildCoursSansTirageValide,
   creerCatalogueDeTest,
 } from './factories/cours.factory';
+import { buildCoursStocke } from './factories/cours-stocke.factory';
 import {
   createMockFormationGroupsRepo,
   createMockFormationMailer,
@@ -120,6 +123,9 @@ const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);
 const QUESTIONS_DU_COURS_DE_CLASSE = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(QUESTIONS_DU_COURS_DE_CLASSE);
 const COURS_SANS_TIRAGE = buildCoursSansTirageValide();
+const COURS_GUIDE = lireCoursStocke(
+  buildCoursStocke({ slug: 'cours-stocke-avec-guide' }),
+);
 
 const CORRIGE_EN_CLAIR = [
   String(TEMOIN.solution),
@@ -305,6 +311,7 @@ async function creerHarnais(
     COURS_SENTINELLE,
     COURS_DE_CLASSE,
     COURS_SANS_TIRAGE,
+    COURS_GUIDE,
   ),
 ): Promise<HarnaisFormations> {
   process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
@@ -526,6 +533,29 @@ describe('Session de formation (e2e http socket)', () => {
       expect(exportBilan.headers['content-disposition']).toContain(
         'bilan-seance.json',
       );
+    });
+
+    it('documente le guide formateur que le deroule rend avec chaque ecran', async () => {
+      const ouverture = await demanderOuverture(FORMATEUR_A, {
+        courseSlug: COURS_GUIDE.slug,
+      }).expect(201);
+      const { sessionId } = ouverture.body as { sessionId: string };
+
+      const deroule = await request(serveur())
+        .get(route(`/sessions/${sessionId}/deroule`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+        .expect(200);
+      const document = SwaggerModule.createDocument(
+        app,
+        new DocumentBuilder().setTitle('formations').build(),
+      );
+
+      expect((deroule.body as DerouleCours).ecrans[0].guide).toEqual(
+        COURS_GUIDE.ecrans[0].guide,
+      );
+      expect(
+        ecartsAuSchemaDeReponse(document, '/{id}/deroule', deroule.body),
+      ).toEqual([]);
     });
   });
 
