@@ -11,7 +11,11 @@ import { APP_GUARD, Reflector } from '@nestjs/core';
 import { Test as ModuleDeTest } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request } from 'express';
-import { request as requeteNode, type IncomingMessage } from 'node:http';
+import {
+  request as requeteNode,
+  type IncomingMessage,
+  type Server,
+} from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
 import { IS_PUBLIC_KEY } from '../../src/common/interfaces/auth/public.decorator';
@@ -283,6 +287,23 @@ export function abonnerAuFlux(
     );
     requete.on('error', rejeter);
     requete.end();
+  });
+}
+
+export function fermetureCoteServeur(
+  app: INestApplication,
+  chemin: string,
+): Promise<void> {
+  const serveur = app.getHttpServer() as Server;
+  return new Promise((resoudre) => {
+    const surRequete = (requete: IncomingMessage): void => {
+      if (requete.url !== chemin) {
+        return;
+      }
+      serveur.off('request', surRequete);
+      requete.once('close', () => resoudre());
+    };
+    serveur.on('request', surRequete);
   });
 }
 

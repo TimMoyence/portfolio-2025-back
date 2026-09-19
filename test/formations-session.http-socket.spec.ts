@@ -61,6 +61,7 @@ import {
   abonnerAuFlux,
   attendreQue,
   CONTROLEURS_FORMATIONS,
+  fermetureCoteServeur,
   fournisseursFormations,
 } from './helpers/formations-harness';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
@@ -448,22 +449,21 @@ describe('Session de formation (e2e http socket)', () => {
           return resultat;
         });
       const passages = jest.spyOn(cache, 'read');
+      const chemin = route(`/sessions/${sessionId}/presenter-stream`);
+      const abandonVuParLeServeur = fermetureCoteServeur(app, chemin);
 
       const requete = requeteNode({
         host: ADRESSE_BOUCLE_LOCALE,
         port,
-        path: route(`/sessions/${sessionId}/presenter-stream`),
+        path: chemin,
         headers: { 'x-test-identite': `${FORMATEUR_A}:teacher` },
       });
       requete.on('error', () => undefined);
-      const requeteFermee = new Promise<void>((resoudre) => {
-        requete.once('close', resoudre);
-      });
       requete.end();
       await attendreQue(() => lectureCommencee, DELAI_FERMETURE_FLUX_MS);
       passages.mockClear();
       requete.destroy();
-      await requeteFermee;
+      await abandonVuParLeServeur;
       reprendreLaLecture();
       await attendreQue(() => lectureTerminee, DELAI_FERMETURE_FLUX_MS);
       await new Promise<void>((resoudre) => setImmediate(resoudre));
