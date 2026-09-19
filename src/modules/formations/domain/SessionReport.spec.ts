@@ -46,6 +46,33 @@ describe('buildRapportSession', () => {
     expect(rapport.participants[0].completion).toBe(1);
   });
 
+  it('compte je ne sais pas comme une reponse et une question sans reponse pour zero', () => {
+    const rapport = rapportDe({
+      session: buildSessionRecord({
+        bareme: buildBareme({
+          questions: ['Q-1', 'Q-2', 'Q-3', 'Q-4'].map((id) => ({
+            id,
+            type: 'numeric',
+            concept: 'capitalisation',
+            noteCompte: true,
+          })),
+        }),
+      }),
+      participants: [buildParticipantRecord({ id: 'p1' })],
+      answers: [
+        buildAnswerRecord({ participantId: 'p1', questionId: 'Q-1' }),
+        buildAnswerRecord({
+          participantId: 'p1',
+          questionId: 'Q-2',
+          valeur: NE_SAIT_PAS,
+          correcte: false,
+        }),
+      ],
+    });
+
+    expect(rapport.participants[0].completion).toBe(0.5);
+  });
+
   it('exclut les questions non notees du denominateur de completion', () => {
     const session = buildSessionRecord({
       bareme: {

@@ -11,6 +11,7 @@ import {
   SessionNotFoundError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
+import { REGLE_DE_NOTATION } from '../../domain/RegleDeNotation';
 import type {
   ConfusionComptee,
   ResultatQuestion,
@@ -75,6 +76,12 @@ describe('GetSessionResultsUseCase', () => {
     expect(participants.listBySession).not.toHaveBeenCalled();
     expect(answers.listBySession).not.toHaveBeenCalled();
     expect(incidents.listBySession).not.toHaveBeenCalled();
+  });
+
+  it('annonce la regle de notation appliquee aux notes du rapport', async () => {
+    const rapport = await sut.execute('session-uuid', TEACHER_ID);
+
+    expect(rapport.notation).toBe(REGLE_DE_NOTATION);
   });
 
   it('reprend le bareme de la session pour calculer la completion', async () => {

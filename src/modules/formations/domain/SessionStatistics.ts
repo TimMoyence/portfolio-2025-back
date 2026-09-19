@@ -1,5 +1,9 @@
 import type { RapportParticipant } from './IFormationMailer.port';
+import { REGLE_DE_NOTATION } from './RegleDeNotation';
 import type { ResultatsSeance } from './ResultatsSeance';
+
+const { seuilQuestionProbleme, decimalesStatistiques } = REGLE_DE_NOTATION;
+const ECHELLE_D_ARRONDI = 10 ** decimalesStatistiques;
 
 export interface StatistiquesSeance {
   readonly moyenne: number;
@@ -48,7 +52,8 @@ export function calculerStatistiquesSeance(
     questionsProblemes: resultats.questions
       .filter(
         (question) =>
-          question.total > 0 && question.correctes / question.total < 0.7,
+          question.total > 0 &&
+          question.correctes / question.total < seuilQuestionProbleme,
       )
       .map((question) => question.questionId),
   };
@@ -63,5 +68,5 @@ function medianeDe(notes: readonly number[]): number {
 }
 
 function arrondir(valeur: number): number {
-  return Math.round(valeur * 100) / 100;
+  return Math.round(valeur * ECHELLE_D_ARRONDI) / ECHELLE_D_ARRONDI;
 }

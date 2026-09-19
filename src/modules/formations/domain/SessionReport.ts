@@ -15,9 +15,11 @@ import type {
 import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
+import { REGLE_DE_NOTATION } from './RegleDeNotation';
 
 const SEUIL_CONCEPT_FRAGILE = 0.7;
 const LIBELLE_NE_SAIT_PAS = 'Je ne sais pas';
+const POINT_PAR_QUESTION_REPONDUE = 1;
 
 export interface SessionReportInput {
   session: SessionRecord;
@@ -92,14 +94,27 @@ function completionDe(
   if (notees.length === 0) {
     return 0;
   }
-  const repondues = notees.filter((question) =>
-    reponses.some(
-      (reponse) =>
-        reponse.participantId === participantId &&
-        reponse.questionId === question.id,
-    ),
+  const points = notees.reduce(
+    (total, question) =>
+      total +
+      (reponses.some(
+        (reponse) =>
+          reponse.participantId === participantId &&
+          reponse.questionId === question.id &&
+          compteCommeReponse(reponse),
+      )
+        ? POINT_PAR_QUESTION_REPONDUE
+        : REGLE_DE_NOTATION.pointsNonReponse),
+    0,
   );
-  return repondues.length / notees.length;
+  return points / notees.length;
+}
+
+function compteCommeReponse(reponse: AnswerRecord): boolean {
+  return (
+    reponse.valeur !== NE_SAIT_PAS ||
+    REGLE_DE_NOTATION.neSaitPasCompteCommeReponse
+  );
 }
 
 function reponsesDe(

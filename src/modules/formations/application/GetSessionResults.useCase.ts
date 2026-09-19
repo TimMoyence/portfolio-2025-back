@@ -6,6 +6,8 @@ import type { IIncidentsRepository } from '../domain/IIncidents.repository';
 import type { IScoresRepository } from '../domain/IScores.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
+import { REGLE_DE_NOTATION } from '../domain/RegleDeNotation';
+import type { RegleDeNotation } from '../domain/RegleDeNotation';
 import { agregerResultats } from '../domain/ResultatsSeance';
 import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { calculerStatistiquesSeance } from '../domain/SessionStatistics';
@@ -24,6 +26,7 @@ import {
 export type ResultatsDeSeance = RapportSession & {
   readonly resultats: ResultatsSeance;
   readonly statistiques: StatistiquesSeance;
+  readonly notation: RegleDeNotation;
 };
 
 @Injectable()
@@ -100,6 +103,7 @@ export class GetSessionResultsUseCase {
       ...rapport,
       resultats,
       statistiques,
+      notation: REGLE_DE_NOTATION,
     };
   }
 }
