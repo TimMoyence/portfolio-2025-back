@@ -1,10 +1,17 @@
 import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
+import { buildVoteStocke } from '../../../../../test/factories/questions-stockees.factory';
 import { clesDuCorrigeDans } from '../../../../../test/helpers/cles-du-corrige';
 import type { Tolerance } from '../GradingCore';
 import { questionNumerique, questionVote } from './Cours';
 import type { AuMoinsUn, Cours, Ecran, Question } from './Cours';
+import { questionDeVote } from './QuestionStockee';
 import { PROPRIETE_PAR_BRIQUE, tirer, TirageAmbiguError } from './Tirage';
 import type { CorrigeTire } from './Tirage';
+
+const parIdentifiant = (
+  premiere: { readonly id: string },
+  seconde: { readonly id: string },
+): number => premiere.id.localeCompare(seconde.id);
 
 const CAS_NUMERIQUES_AMBIGUS: readonly {
   readonly cas: string;
@@ -258,6 +265,40 @@ describe('tirer', () => {
       tirage.solutions['Q-TEST-NUM'].valeur as number,
       5,
     );
+  });
+
+  it('garde les identifiants stables d un vote stocke et n en melange que l ordre selon la graine', () => {
+    const stocke = buildVoteStocke();
+    const cours = coursAUneQuestion(questionDeVote(stocke));
+    const identifiants = stocke.options.map((option) => option.id);
+    const [bonne, ...pieges] = stocke.options;
+    const ordres = new Set<string>();
+
+    for (let graine = 0; graine < 30; graine += 1) {
+      const tirage = tirer(cours, graine);
+      const { options } = (
+        ecranDe(tirage, 'E').donnees as {
+          question: { options: { id: string; libelle: string }[] };
+        }
+      ).question;
+      ordres.add(options.map((option) => option.id).join(','));
+      expect([...options].sort(parIdentifiant)).toEqual(
+        stocke.options
+          .map(({ id, libelle }) => ({ id, libelle }))
+          .sort(parIdentifiant),
+      );
+      expect(tirage.solutions[stocke.id]).toEqual({
+        valeur: bonne.id,
+        pieges: pieges.map((option) => ({
+          valeur: option.id,
+          misconception: option.confusion,
+        })),
+      });
+      expect(new Set(Object.keys(tirage.libellesOptions[stocke.id]))).toEqual(
+        new Set(identifiants),
+      );
+    }
+    expect(ordres.size).toBeGreaterThan(1);
   });
 
   it('place la bonne option de vote a une position qui varie selon la graine', () => {

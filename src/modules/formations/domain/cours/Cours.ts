@@ -97,11 +97,13 @@ export interface QuestionNumerique extends QuestionCommune {
   readonly type: 'numeric';
   readonly tolerance: Tolerance;
   readonly generer: (tirage: Tirage) => QuestionNumeriqueTiree;
+  readonly formePubliee?: string;
 }
 
 export interface QuestionVote extends QuestionCommune {
   readonly type: 'vote';
   readonly generer: (tirage: Tirage) => QuestionVoteTiree;
+  readonly segments?: readonly string[];
 }
 
 export type Question = QuestionNumerique | QuestionVote;

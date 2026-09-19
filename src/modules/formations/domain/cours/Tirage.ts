@@ -344,21 +344,46 @@ function tirerNumerique(
 
 function tirerVote(question: QuestionVote, contexte: Contexte): VotePublic {
   const tiree = question.generer(contexte.tirage);
+  const libelleDeLaBonne = tiree.bonneLibelle ?? tiree.bonne;
   assurerNonAmbigu(
     question,
-    [tiree.bonne, ...tiree.pieges.map((piege) => piege.libelle)].map(
+    [libelleDeLaBonne, ...tiree.pieges.map((piege) => piege.libelle)].map(
       (libelle) => libelle.trim(),
     ),
     contexte.graine,
   );
   const { options, solution } = optionsMelangees(tiree, contexte.rng);
   contexte.solutions.push([question.id, solution]);
-  contexte.corriges.push([question.id, corrige(tiree.bonne, tiree.pieges)]);
+  contexte.corriges.push([
+    question.id,
+    corrige(libelleDeLaBonne, tiree.pieges),
+  ]);
   contexte.libellesOptions.push([
     question.id,
     Object.fromEntries(options.map((option) => [option.id, option.libelle])),
   ]);
   return { id: question.id, enonce: tiree.enonce, options };
+}
+
+interface EntreeDeVote {
+  readonly libelle: string;
+  readonly idStable?: string;
+}
+
+function entreesDuVote(tiree: QuestionVoteTiree): {
+  readonly bonne: EntreeDeVote;
+  readonly pieges: readonly EntreeDeVote[];
+} {
+  return {
+    bonne:
+      tiree.bonneLibelle === undefined
+        ? { libelle: tiree.bonne }
+        : { libelle: tiree.bonneLibelle, idStable: tiree.bonne },
+    pieges: tiree.pieges.map((piege) => ({
+      libelle: piege.libelle,
+      idStable: piege.optionId,
+    })),
+  };
 }
 
 function optionsMelangees(
@@ -368,10 +393,13 @@ function optionsMelangees(
   readonly options: readonly OptionPublique[];
   readonly solution: Solution;
 } {
-  const bonne = { libelle: tiree.bonne };
-  const ordre = melanger([bonne, ...tiree.pieges], rng);
-  const idDe = (entree: { readonly libelle: string }): string =>
-    `o${ordre.indexOf(entree) + 1}`;
+  const { bonne, pieges } = entreesDuVote(tiree);
+  const ordre = melanger([bonne, ...pieges], rng);
+  const stables = ordre.every((entree) => entree.idStable !== undefined);
+  const idDe = (entree: EntreeDeVote): string =>
+    stables && entree.idStable !== undefined
+      ? entree.idStable
+      : `o${ordre.indexOf(entree) + 1}`;
   return {
     options: ordre.map((entree) => ({
       id: idDe(entree),
@@ -379,8 +407,8 @@ function optionsMelangees(
     })),
     solution: {
       valeur: idDe(bonne),
-      pieges: tiree.pieges.map((piege) => ({
-        valeur: idDe(piege),
+      pieges: tiree.pieges.map((piege, rang) => ({
+        valeur: idDe(pieges[rang]),
         misconception: piege.confusion,
       })),
     },
