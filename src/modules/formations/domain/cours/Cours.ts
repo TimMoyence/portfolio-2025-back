@@ -2,20 +2,19 @@ import type { Tolerance } from '../GradingCore';
 import type { Tirage } from './Aleatoire';
 import type { ConceptId } from './banque/concepts';
 import type { ConfusionId } from './banque/confusions';
+import type { ProprietesRecit } from './CoursStocke';
 
 export type AuMoinsUn<T> = readonly [T, ...T[]];
 
-export const BRIQUES_EXPOSITION = [
-  'fp-quote',
-  'fp-story',
-  'fp-pro',
-  'fp-worked',
-  'fp-concept4',
-  'fp-plot',
-  'fp-challenge',
-  'fp-cardsort',
-] as const;
-export type BriqueExposition = (typeof BRIQUES_EXPOSITION)[number];
+export type BriqueExposition =
+  | 'fp-quote'
+  | 'fp-story'
+  | 'fp-pro'
+  | 'fp-worked'
+  | 'fp-concept4'
+  | 'fp-plot'
+  | 'fp-challenge'
+  | 'fp-cardsort';
 
 const BRIQUES_QUESTION = [
   'fp-numeric',
@@ -180,24 +179,7 @@ interface ProprietesParBrique {
     readonly auteur: string | null;
     readonly source: string | null;
   };
-  readonly 'fp-story': {
-    readonly titre: string;
-    readonly paragraphes: AuMoinsUn<string>;
-    readonly visuel?: {
-      readonly src: string;
-      readonly alt: string;
-      readonly legende?: string;
-    };
-    readonly video?: {
-      readonly src: string;
-      readonly type: 'video/webm' | 'video/mp4';
-      readonly titre: string;
-      readonly poster?: string;
-      readonly transcript: string;
-      readonly source: string;
-      readonly licence: string;
-    };
-  };
+  readonly 'fp-story': ProprietesRecit;
   readonly 'fp-pro': {
     readonly metier: string;
     readonly situation: string;

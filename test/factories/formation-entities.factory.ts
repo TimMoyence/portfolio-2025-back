@@ -6,6 +6,7 @@ import { FormationIncidentEntity } from '../../src/modules/formations/infrastruc
 import { FormationParticipantEntity } from '../../src/modules/formations/infrastructure/entities/FormationParticipant.entity';
 import { FormationScreenContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
 import { FormationTeacherAnnotationEntity } from '../../src/modules/formations/infrastructure/entities/FormationTeacherAnnotation.entity';
+import { buildCoursStocke, buildEcranStocke } from './cours-stocke.factory';
 import {
   buildFormationGroupRecord,
   buildFreeResponseRecord,
@@ -56,52 +57,33 @@ export function mockTypeOrmQueryBuilder(getOne: jest.Mock): QueryBuilderSimule {
 export function buildScreenContentEntity(
   overrides: Partial<FormationScreenContentEntity> = {},
 ): FormationScreenContentEntity {
-  return Object.assign(new FormationScreenContentEntity(), {
-    id: 'screen-row',
-    courseId: 'course-row',
-    position: 0,
-    screenId: 'B2-01-01',
-    brique: 'fp-quote',
-    dureeMinutes: 5,
-    concepts: ['proportion'],
-    notes: 'Note formateur',
-    proprietes: {
-      presentation: {
-        version: 2,
-        renderer: 'hero',
-        props: { title: 'Titre', bullets: ['Point'] },
-      },
-      interaction: {
-        type: 'quiz',
-        id: 'quiz-1',
-        concept: 'proportion',
-        question: 'Quelle option ?',
-        options: ['A', 'B', 'C'],
-        optionIds: ['a', 'b', 'c'],
-        correctIndex: 1,
-        confusions: ['raisonnement-additif', 'unite-oubliee'],
-      },
-      guide: { objective: 'Faire émerger le raisonnement' },
-    },
-    ...overrides,
-  });
+  return Object.assign(
+    new FormationScreenContentEntity(),
+    { id: 'screen-row', courseId: 'course-row', position: 0 },
+    buildEcranStocke(),
+    overrides,
+  );
 }
 
 export function buildCourseContentEntity(
   overrides: Partial<FormationCourseContentEntity> = {},
 ): FormationCourseContentEntity {
-  return Object.assign(new FormationCourseContentEntity(), {
-    id: 'course-row',
-    slug: 'b2-01',
-    version: 2,
-    titre: 'B2',
-    niveau: 'B2',
-    dureeMinutes: 90,
-    concepts: ['proportion'],
-    ecrans: [buildScreenContentEntity()],
-    createdAt: new Date('2026-09-11T08:00:00.000Z'),
-    ...overrides,
-  });
+  const cours = buildCoursStocke();
+  return Object.assign(
+    new FormationCourseContentEntity(),
+    {
+      id: 'course-row',
+      slug: cours.slug,
+      version: cours.version,
+      titre: cours.titre,
+      niveau: cours.niveau,
+      dureeMinutes: cours.dureeMinutes,
+      concepts: cours.concepts,
+      ecrans: [buildScreenContentEntity()],
+      createdAt: new Date('2026-09-11T08:00:00.000Z'),
+    },
+    overrides,
+  );
 }
 
 export function buildFreeResponseEntity(

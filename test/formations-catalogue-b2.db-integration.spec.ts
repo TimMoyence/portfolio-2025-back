@@ -5,6 +5,7 @@ import {
 import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { LireCoursPublicUseCase } from '../src/modules/formations/application/LireCoursPublic.useCase';
+import { ContenuDeCoursInvalideError } from '../src/modules/formations/domain/cours/CoursStocke';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import {
@@ -14,6 +15,10 @@ import {
 } from '../src/modules/formations/domain/errors/FormationErrors';
 import { FormationCourseContentEntity } from '../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
 import { FormationScreenContentEntity } from '../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
+import {
+  buildEcranStockeAvec,
+  buildQuizNote,
+} from './factories/cours-stocke.factory';
 import {
   buildBareme,
   createMockFormationMailer,
@@ -182,6 +187,45 @@ describeDb('catalogue B2 migré', () => {
         [course.id],
       ),
     ).rejects.toThrow('version publiée immuable');
+  });
+
+  it('valide à la lecture le contenu réellement migré des versions 1 et 2', async () => {
+    const lus = await Promise.all([1, 2].map(coursDeLaVersion));
+
+    expect(lus.map((cours) => cours.ecrans.length)).toEqual([72, 72]);
+    expect(
+      lus.map((cours) => cours.ecrans.filter((ecran) => ecran.question).length),
+    ).toEqual([14, 14]);
+  });
+
+  it('refuse à la lecture un contenu stocké hors contrat au lieu de le rafistoler', async () => {
+    const { dataSource, catalogue } = contexte;
+    const [cours]: Array<{ id: string }> = await dataSource.query(
+      `INSERT INTO "formation_course_contents" ("slug", "version", "titre", "niveau", "duree_minutes", "concepts")
+       VALUES ('cours-hors-contrat', 1, 'Cours hors contrat', 'B2', 3, '["proportion"]'::jsonb) RETURNING "id"`,
+    );
+    const ecran = buildEcranStockeAvec({
+      interaction: buildQuizNote({
+        confusions: ['raisonnement-additif', 'unite-oubliee'],
+      }),
+    });
+    await dataSource.query(
+      `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes")
+       VALUES ($1, 0, $2, $3, $4, $5::jsonb, $6, $7::jsonb)`,
+      [
+        cours.id,
+        ecran.screenId,
+        ecran.brique,
+        ecran.dureeMinutes,
+        JSON.stringify(ecran.concepts),
+        ecran.notes,
+        JSON.stringify(ecran.proprietes),
+      ],
+    );
+
+    await expect(
+      catalogue.trouver('cours-hors-contrat', 1),
+    ).rejects.toBeInstanceOf(ContenuDeCoursInvalideError);
   });
 
   it('réserve les notes au déroulé formateur', async () => {

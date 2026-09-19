@@ -58,7 +58,7 @@ const image = {
   sourceLink: lien.optional(),
 };
 
-const schema = z.discriminatedUnion('renderer', [
+export const presentationVisuelle = z.discriminatedUnion('renderer', [
   z
     .object({
       renderer: z.literal('hero'),
@@ -239,8 +239,8 @@ const schema = z.discriminatedUnion('renderer', [
     .strict(),
 ]);
 
-export type VisualPresentation = z.infer<typeof schema>;
+export type VisualPresentation = z.infer<typeof presentationVisuelle>;
 
 export function parseVisualPresentation(value: unknown): VisualPresentation {
-  return schema.parse(value);
+  return presentationVisuelle.parse(value);
 }
