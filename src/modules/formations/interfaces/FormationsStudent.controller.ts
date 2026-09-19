@@ -70,16 +70,6 @@ import {
   ParticipantTokenService,
 } from './ParticipantToken.service';
 
-/**
- * Poste etudiant : aucune de ces reponses ne porte le corrige.
- *
- * L inscription ne rend ni le bareme ni la graine du tirage attribue : le
- * moteur de tirage et le cours sont publics (domain/cours), la graine
- * suffirait a recalculer le corrige de l etudiant. Le sujet est calcule par
- * le serveur et servi par `GET sessions/:id/sujet`. La correction reste au
- * serveur (SubmitAnswer.useCase.ts) et ne redescend que sous forme de
- * verdict et d etiquette de confusion.
- */
 @ApiTags('formations')
 @Public()
 @Controller('formations')
