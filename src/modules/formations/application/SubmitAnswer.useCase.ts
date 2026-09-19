@@ -3,6 +3,7 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import { libelleDeConfusion } from '../domain/cours/banque/confusions';
+import { assertEcranServi } from '../domain/cours/EcranServi';
 import {
   AnswerAlreadySubmittedError,
   ParticipantNotFoundError,
@@ -80,6 +81,9 @@ export class SubmitAnswerUseCase {
       throw new DomainValidationError(
         `La question ${command.questionId} de type ${question.type} passe par sa propre route`,
       );
+    }
+    if ('rangEcran' in question) {
+      assertEcranServi(session, question.rangEcran, question.ecranId);
     }
 
     const solution = solutionFor(

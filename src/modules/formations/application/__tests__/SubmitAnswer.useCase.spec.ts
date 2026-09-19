@@ -15,6 +15,7 @@ import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
 import { NE_SAIT_PAS } from '../../domain/GradingCore';
 import {
   AnswerAlreadySubmittedError,
+  EcranNonServiError,
   ParticipantNotFoundError,
   SessionClosedError,
   SessionNotStartedError,
@@ -238,6 +239,31 @@ describe('SubmitAnswerUseCase', () => {
       );
     });
 
+    it('refuse une reponse visant un ecran que le formateur n a pas projete', async () => {
+      await expect(
+        sut.execute({
+          ...commande,
+          questionId: 'b2-01-a2-part-marketplace',
+          valeur: 45.478261,
+        }),
+      ).rejects.toThrow(EcranNonServiError);
+      expect(answers.create).not.toHaveBeenCalled();
+    });
+
+    it('accepte la reponse une fois l ecran projete', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
+      );
+
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'b2-01-a2-part-marketplace',
+        valeur: 45.478261,
+      });
+
+      expect(result.correcte).toBe(true);
+    });
+
     it('corrige un vote par son identifiant stable, dans les solutions communes', async () => {
       const result = await sut.execute({
         ...commande,
@@ -249,6 +275,9 @@ describe('SubmitAnswerUseCase', () => {
     });
 
     it('corrige une question numérique par l écart de la graine du participant', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
+      );
       participants.findById.mockResolvedValue(
         buildParticipantRecord({ seed: 12 }),
       );

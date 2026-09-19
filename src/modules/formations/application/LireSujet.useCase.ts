@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
 import { ecranVerrouille } from '../domain/cours/Diffusion';
+import { dernierEcranServi } from '../domain/cours/EcranServi';
 import type { Cours } from '../domain/contrats/cours';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
@@ -60,34 +61,13 @@ export class LireSujetUseCase {
     ) {
       throw new CoursModifieError();
     }
-    const dernier = this.dernierEcranServi(session, tirage.sujet.ecrans.length);
+    const dernier = dernierEcranServi(session, tirage.sujet.ecrans.length);
     return {
       ...tirage.sujet,
       ecrans: tirage.sujet.ecrans.map((ecran, index) =>
         index <= dernier ? ecran : ecranVerrouille(ecran),
       ),
     };
-  }
-
-  private dernierEcranServi(
-    session: {
-      etat: string;
-      modeRythme: string;
-      ecranCourant: number;
-      intervalleLibre: { dernier: number } | null;
-    },
-    total: number,
-  ): number {
-    if (session.etat === 'terminee') {
-      return total - 1;
-    }
-    if (session.modeRythme === 'libre' && session.intervalleLibre === null) {
-      return total - 1;
-    }
-    if (session.modeRythme === 'libre' && session.intervalleLibre !== null) {
-      return session.intervalleLibre.dernier;
-    }
-    return session.ecranCourant;
   }
 
   private tirerOuLever(cours: Cours, seed: number): TirageDuCours {

@@ -1,11 +1,19 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import {
+  buildCoursDeTest,
+  creerCatalogueAVersions,
+  creerCatalogueDeTest,
+} from '../../../../../test/factories/cours.factory';
+import {
   buildSessionRecord,
   createMockFreeResponsesRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
+  ActiviteInconnueError,
   BlankFieldError,
+  CoursInconnuError,
+  EcranNonServiError,
   SessionClosedError,
   SessionNotFoundError,
   SessionNotStartedError,
@@ -15,11 +23,14 @@ import { SaveFreeResponseUseCase } from '../SaveFreeResponse.useCase';
 const REPONSE = {
   sessionId: 'session-uuid',
   participantId: 'participant-uuid',
-  screenId: 'B2-01-S11-REFLECTION',
-  activityId: 'b2-s11-c1',
+  screenId: 'E-REM',
+  activityId: 'E-REM:etape-1',
   response: '  Je vérifie la base.  ',
   dureeMs: 1400,
 };
+
+const COURS = buildCoursDeTest();
+const RANG_DE_L_EXEMPLE = 5;
 
 describe('SaveFreeResponseUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -29,10 +40,18 @@ describe('SaveFreeResponseUseCase', () => {
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({ etat: 'en_cours' }),
+      buildSessionRecord({
+        etat: 'en_cours',
+        courseSlug: COURS.slug,
+        ecranCourant: RANG_DE_L_EXEMPLE,
+      }),
     );
     freeResponses = createMockFreeResponsesRepo();
-    sut = new SaveFreeResponseUseCase(sessions, freeResponses);
+    sut = new SaveFreeResponseUseCase(
+      sessions,
+      freeResponses,
+      creerCatalogueDeTest(COURS),
+    );
   });
 
   it('enregistre la reponse du participant d une seance en cours, sans blancs superflus', async () => {
@@ -48,7 +67,9 @@ describe('SaveFreeResponseUseCase', () => {
     ['avant le demarrage de la seance', 'attente', SessionNotStartedError],
     ['apres la cloture de la seance', 'terminee', SessionClosedError],
   ] as const)('refuse la reponse %s', async (_cas, etat, erreur) => {
-    sessions.findById.mockResolvedValue(buildSessionRecord({ etat }));
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ etat, courseSlug: COURS.slug }),
+    );
 
     await expect(sut.execute(REPONSE)).rejects.toThrow(erreur);
     expect(freeResponses.save).not.toHaveBeenCalled();
@@ -66,5 +87,64 @@ describe('SaveFreeResponseUseCase', () => {
     sessions.findById.mockResolvedValue(null);
 
     await expect(sut.execute(REPONSE)).rejects.toThrow(SessionNotFoundError);
+  });
+
+  it('signale un cours introuvable', async () => {
+    sut = new SaveFreeResponseUseCase(
+      sessions,
+      freeResponses,
+      creerCatalogueAVersions({}),
+    );
+
+    await expect(sut.execute(REPONSE)).rejects.toThrow(CoursInconnuError);
+  });
+
+  it('refuse une activite que l ecran n admet pas', async () => {
+    await expect(
+      sut.execute({ ...REPONSE, activityId: 'E-REM:etape-inventee' }),
+    ).rejects.toThrow(ActiviteInconnueError);
+    expect(freeResponses.save).not.toHaveBeenCalled();
+  });
+
+  it('refuse une reponse visant un ecran que le formateur n a pas projete', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        etat: 'en_cours',
+        courseSlug: COURS.slug,
+        ecranCourant: RANG_DE_L_EXEMPLE - 1,
+      }),
+    );
+
+    await expect(sut.execute(REPONSE)).rejects.toThrow(EcranNonServiError);
+    expect(freeResponses.save).not.toHaveBeenCalled();
+  });
+
+  it('refuse une reponse visant un ecran absent du cours', async () => {
+    await expect(
+      sut.execute({
+        ...REPONSE,
+        screenId: 'E-INCONNU',
+        activityId: 'E-INCONNU:etape-1',
+      }),
+    ).rejects.toThrow(EcranNonServiError);
+  });
+
+  it('accepte le texte argumente du billet de sortie une fois la seance terminee pour tous', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        etat: 'en_cours',
+        courseSlug: COURS.slug,
+        modeRythme: 'libre',
+        intervalleLibre: null,
+      }),
+    );
+
+    await sut.execute({
+      ...REPONSE,
+      screenId: 'E-EXIT',
+      activityId: 'Q-TEST-EXIT',
+    });
+
+    expect(freeResponses.save).toHaveBeenCalled();
   });
 });

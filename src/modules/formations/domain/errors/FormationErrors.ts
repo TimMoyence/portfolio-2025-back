@@ -98,6 +98,26 @@ export class AnswerAlreadySubmittedError extends ResourceConflictError {
   }
 }
 
+export class ActiviteInconnueError extends DomainValidationError {
+  readonly code = 'ACTIVITE_INCONNUE';
+
+  constructor(screenId: string, activityId: string) {
+    super(
+      `L’activité ${activityId} n’existe pas sur l’écran ${screenId} de ce cours.`,
+    );
+  }
+}
+
+export class EcranNonServiError extends ResourceConflictError {
+  readonly code = 'ECRAN_NON_SERVI';
+
+  constructor(screenId: string) {
+    super(
+      `L’écran ${screenId} n’a pas encore été projeté : attendez que le formateur y arrive.`,
+    );
+  }
+}
+
 export class SessionStreamLimitError extends RateLimitExceededError {
   constructor() {
     super(
