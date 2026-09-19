@@ -17,7 +17,7 @@ import {
   buildVoteStocke,
 } from './questions-stockees.factory';
 
-const NOTES_EN_CINQ_RUBRIQUES = [
+export const NOTES_EN_CINQ_RUBRIQUES = [
   'Action : projeter.',
   'Observé : la réponse dominante.',
   'Attendu : la bonne réponse.',
