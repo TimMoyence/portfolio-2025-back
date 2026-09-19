@@ -97,16 +97,27 @@ describe('garde confidentialite — volet exact', () => {
     expect(fuites(cours)).toEqual([APRES]);
   });
 
-  it('refuse la forme dans le titre public d un ecran verrouille posterieur', () => {
-    const cours = recomposer(base, [
+  it('ne rejoue le volet catalogue que sur les ecrans catalogue, pas sur les titres verrouilles (§ 6.4, point 3)', () => {
+    const verrouille = recomposer(base, [
       ouverture,
       citation,
       atelier,
       buildEcranDeCitation(APRES, 1, { titre: 'Pourquoi 45,5 % ?' }),
       cloture,
     ]);
+    const catalogue = recomposer(base, [
+      ouverture,
+      citation,
+      atelier,
+      buildEcranDeCitation(APRES, 1, {
+        titre: 'Pourquoi 45,5 % ?',
+        diffusion: 'catalogue',
+      }),
+      cloture,
+    ]);
 
-    expect(fuites(cours)).toEqual([APRES]);
+    expect(fuites(verrouille)).toEqual([]);
+    expect(fuites(catalogue)).toEqual([APRES]);
   });
 
   it('ne compte pas l enonce de la question elle-meme', () => {
@@ -281,33 +292,47 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
     expect(fuites(exact)).toEqual([APRES]);
   });
 
-  const feuille = (): Ecran =>
+  const production = (brique: 'fp-sheet' | 'fp-table-build'): Ecran =>
     lireEcranStocke(
-      buildEcranStockeV3('fp-sheet', {
-        screenId: 'B2-01-A1-05-FEUILLE',
+      buildEcranStockeV3(brique, {
+        screenId: 'B2-01-A1-05-PRODUCTION',
         dureeMinutes: 8,
       }),
     );
 
   it.each([
-    ['le CA du sur-mesure recule de 17,81 %', ['B2-01-A1-04-AVANT']],
-    ['un taux de -0,1781', ['B2-01-A1-04-AVANT']],
-    ['un recul de 17,8 %', []],
+    ['le prix passe à 21,60 €', ['B2-01-A1-04-AVANT']],
+    ['soit 2 052,00 centimes', ['B2-01-A1-04-AVANT']],
+    ['un prix de 20,5200 €', ['B2-01-A1-04-AVANT']],
+    ['un prix de 21,6 €', []],
   ])(
-    'cherche les attendus d une production a 2, 4 et 6 decimales : « %s »',
+    'cherche les valeurs saisies d un tableau a 2, 4 et 6 decimales : « %s »',
     (texte, attendu) => {
       const cours = recomposer(base, [
         ouverture,
         citation,
         atelier,
         texteDe('B2-01-A1-04-AVANT', texte),
-        feuille(),
+        production('fp-table-build'),
         cloture,
       ]);
 
       expect(fuites(cours)).toEqual(attendu);
     },
   );
+
+  it('ne cherche pas les attendus d une feuille, corrigee sur la formule et non sur la valeur saisie', () => {
+    const cours = recomposer(base, [
+      ouverture,
+      citation,
+      atelier,
+      texteDe('B2-01-A1-04-AVANT', 'le CA du sur-mesure recule de 17,81 %'),
+      production('fp-sheet'),
+      cloture,
+    ]);
+
+    expect(fuites(cours)).toEqual([]);
+  });
 
   const coffre = (indice: string): Ecran =>
     lireEcranStocke(

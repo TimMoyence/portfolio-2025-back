@@ -23,6 +23,7 @@ const ESPACE_INSECABLE = String.fromCodePoint(0x00a0);
 const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x202f);
 const SIGNE_MOINS = String.fromCodePoint(0x2212);
 const CHIFFRE = /\d/;
+const TYPE_D_ECRAN_VERROUILLE = 'ecran-verrouille';
 
 interface Contexte {
   readonly sujet: readonly EcranPublic[];
@@ -161,6 +162,9 @@ function textesVisibles(
   return contexte.sujet.flatMap((servi, position) => {
     const ecran =
       position <= portee.limite ? servi : contexte.catalogue[position];
+    if (ecran.type === TYPE_D_ECRAN_VERROUILLE) {
+      return [];
+    }
     const exclue = position === portee.rang ? portee.exclue : null;
     const chaines = [
       ...(ecran.titre === null ? [] : [ecran.titre]),
@@ -271,7 +275,7 @@ function fuitesDuVote(
 }
 
 function formesDesAttendus(corrige: CorrigeProduction): readonly string[] {
-  if (corrige.type !== 'feuille' && corrige.type !== 'tableau') {
+  if (corrige.type !== 'tableau') {
     return [];
   }
   const valeurs = corrige.attendus
