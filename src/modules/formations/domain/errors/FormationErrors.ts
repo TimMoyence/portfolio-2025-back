@@ -10,6 +10,12 @@ export class InvalidSessionCodeError extends DomainValidationError {
   }
 }
 
+export class BlankFieldError extends DomainValidationError {
+  constructor(champ: string) {
+    super(`${champ} ne peut pas être vide.`);
+  }
+}
+
 export class SessionNotFoundError extends ResourceNotFoundError {
   constructor(id: string) {
     super(`Session introuvable: ${id}`);

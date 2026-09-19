@@ -6,9 +6,7 @@ import { libelleDeConfusion } from '../domain/cours/banque/confusions';
 import {
   AnswerAlreadySubmittedError,
   ParticipantNotFoundError,
-  SessionClosedError,
   SessionNotFoundError,
-  SessionNotStartedError,
 } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
@@ -16,6 +14,7 @@ import type { IParticipantsRepository } from '../domain/IParticipants.repository
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { nextBox } from '../domain/LeitnerBox';
+import { assertReponsesOuvertes } from '../domain/SessionState';
 import type { Boite } from '../domain/LeitnerBox';
 import {
   ANSWERS_REPOSITORY,
@@ -49,12 +48,7 @@ export class SubmitAnswerUseCase {
     if (!session) {
       throw new SessionNotFoundError(command.sessionId);
     }
-    if (session.etat === 'terminee') {
-      throw new SessionClosedError();
-    }
-    if (session.etat !== 'en_cours') {
-      throw new SessionNotStartedError();
-    }
+    assertReponsesOuvertes(session.etat);
 
     const deja = await this.answers.existsFor(
       command.participantId,

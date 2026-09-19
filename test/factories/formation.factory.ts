@@ -9,7 +9,20 @@ import type {
   IIncidentsRepository,
   IncidentInput,
 } from '../../src/modules/formations/domain/IIncidents.repository';
+import type {
+  FormationGroupRecord,
+  IFormationGroupsRepository,
+} from '../../src/modules/formations/domain/IFormationGroups.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
+import type {
+  FreeResponseRecord,
+  IFreeResponsesRepository,
+} from '../../src/modules/formations/domain/IFreeResponses.repository';
+import type {
+  ITeacherAnnotationsRepository,
+  SaveTeacherAnnotationInput,
+  TeacherAnnotationRecord,
+} from '../../src/modules/formations/domain/ITeacherAnnotations.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type { ISessionStateCache } from '../../src/modules/formations/domain/ISessionStateCache.port';
@@ -21,6 +34,7 @@ import type {
   ISessionsRepository,
   SessionRecord,
 } from '../../src/modules/formations/domain/ISessions.repository';
+import type { ActeurFormation } from '../../src/modules/formations/domain/SessionOwnership';
 
 export function buildBareme(overrides: Partial<Bareme> = {}): Bareme {
   return {
@@ -92,6 +106,16 @@ export function buildSessionRecord(
     majLe: new Date('2026-09-11T08:00:00.000Z'),
     ...overrides,
   };
+}
+
+export function buildActeurFormation(
+  overrides: Partial<ActeurFormation> = {},
+): ActeurFormation {
+  return { id: 'teacher-uuid', roles: ['teacher'], ...overrides };
+}
+
+export function buildAdministrateur(): ActeurFormation {
+  return buildActeurFormation({ id: 'admin-uuid', roles: ['admin'] });
 }
 
 export function buildParticipantRecord(
@@ -195,6 +219,88 @@ export function createMockIncidentsRepo(): jest.Mocked<IIncidentsRepository> {
   return {
     createMany: jest.fn().mockResolvedValue(undefined),
     listBySession: jest.fn().mockResolvedValue([]),
+  };
+}
+
+export function buildFreeResponseRecord(
+  overrides: Partial<FreeResponseRecord> = {},
+): FreeResponseRecord {
+  return {
+    id: 'free-response-uuid',
+    sessionId: 'session-uuid',
+    participantId: 'participant-uuid',
+    screenId: 'B2-01-S11-REFLECTION',
+    activityId: 'b2-s11-c1',
+    response: 'Je vérifie la base avant de comparer.',
+    dureeMs: 12000,
+    status: 'enregistre',
+    submittedAt: new Date('2026-09-11T08:20:00.000Z'),
+    ...overrides,
+  };
+}
+
+export function createMockFreeResponsesRepo(): jest.Mocked<IFreeResponsesRepository> {
+  return {
+    save: jest.fn().mockResolvedValue(undefined),
+    listBySession: jest.fn().mockResolvedValue([buildFreeResponseRecord()]),
+  };
+}
+
+export function buildTeacherAnnotationRecord(
+  overrides: Partial<TeacherAnnotationRecord> = {},
+): TeacherAnnotationRecord {
+  return {
+    id: 'annotation-uuid',
+    sessionId: 'session-uuid',
+    teacherId: 'teacher-uuid',
+    screenId: 'B2-01-S11-REFLECTION',
+    groupName: 'Classe entière',
+    note: 'Faire expliciter la base de comparaison.',
+    updatedAt: new Date('2026-09-11T08:25:00.000Z'),
+    ...overrides,
+  };
+}
+
+export function createMockTeacherAnnotationsRepo(): jest.Mocked<ITeacherAnnotationsRepository> {
+  return {
+    save: jest
+      .fn()
+      .mockImplementation((input: SaveTeacherAnnotationInput) =>
+        Promise.resolve(buildTeacherAnnotationRecord(input)),
+      ),
+    listBySession: jest
+      .fn()
+      .mockResolvedValue([buildTeacherAnnotationRecord()]),
+  };
+}
+
+export function buildFormationGroupRecord(
+  overrides: Partial<FormationGroupRecord> = {},
+): FormationGroupRecord {
+  return {
+    id: 'group-uuid',
+    sessionId: 'session-uuid',
+    name: 'Groupe A',
+    createdAt: new Date('2026-09-11T08:15:00.000Z'),
+    updatedAt: new Date('2026-09-11T08:15:00.000Z'),
+    ...overrides,
+  };
+}
+
+export function createMockFormationGroupsRepo(): jest.Mocked<IFormationGroupsRepository> {
+  return {
+    create: jest
+      .fn()
+      .mockImplementation((sessionId: string, name: string) =>
+        Promise.resolve(buildFormationGroupRecord({ sessionId, name })),
+      ),
+    rename: jest
+      .fn()
+      .mockImplementation((sessionId: string, id: string, name: string) =>
+        Promise.resolve(buildFormationGroupRecord({ id, sessionId, name })),
+      ),
+    listBySession: jest.fn().mockResolvedValue([buildFormationGroupRecord()]),
+    assignParticipant: jest.fn().mockResolvedValue(undefined),
   };
 }
 

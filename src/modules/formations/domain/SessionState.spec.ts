@@ -1,4 +1,12 @@
-import { canTransition, SESSION_STATES } from './SessionState';
+import {
+  SessionClosedError,
+  SessionNotStartedError,
+} from './errors/FormationErrors';
+import {
+  assertReponsesOuvertes,
+  canTransition,
+  SESSION_STATES,
+} from './SessionState';
 
 describe('SessionState', () => {
   it('declare les trois etats', () => {
@@ -24,5 +32,23 @@ describe('SessionState', () => {
 
   it('refuse un retour en arriere depuis en_cours', () => {
     expect(canTransition('en_cours', 'attente')).toBe(false);
+  });
+});
+
+describe('assertReponsesOuvertes', () => {
+  it('accepte les reponses d une seance en cours', () => {
+    expect(() => assertReponsesOuvertes('en_cours')).not.toThrow();
+  });
+
+  it('refuse les reponses tant que le formateur n a pas demarre la seance', () => {
+    expect(() => assertReponsesOuvertes('attente')).toThrow(
+      SessionNotStartedError,
+    );
+  });
+
+  it('refuse les reponses d une seance terminee', () => {
+    expect(() => assertReponsesOuvertes('terminee')).toThrow(
+      SessionClosedError,
+    );
   });
 });
