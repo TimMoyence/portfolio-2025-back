@@ -50,3 +50,28 @@ export function matchesSolution(
   }
   return Math.abs(valeur - solution) <= Math.abs(solution) * tolerance.valeur;
 }
+
+function estFinie(valeur: AnswerValue): boolean {
+  return typeof valeur === 'string' || Number.isFinite(valeur);
+}
+
+function seConfondent(
+  a: AnswerValue,
+  b: AnswerValue,
+  tolerance: Tolerance | undefined,
+): boolean {
+  return matchesSolution(a, b, tolerance) || matchesSolution(b, a, tolerance);
+}
+
+export function valeursAmbigues(
+  valeurs: readonly AnswerValue[],
+  tolerance?: Tolerance,
+): boolean {
+  return valeurs.some(
+    (valeur, rang) =>
+      !estFinie(valeur) ||
+      valeurs
+        .slice(rang + 1)
+        .some((autre) => seConfondent(valeur, autre, tolerance)),
+  );
+}
