@@ -62,8 +62,11 @@ export class AlignB2ParticipantSeeds1779700000000 implements MigrationInterface 
     }
   }
 
-  async down(): Promise<void> {
-    // The migration only replaces seeds that no longer belonged to a valid
-    // session draw; the previous value is intentionally not reconstructed.
+  down(): Promise<void> {
+    return Promise.reject(
+      new Error(
+        'Migration de données irréversible : AlignB2ParticipantSeeds ne conserve pas les graines de participants qu’elle remplace.',
+      ),
+    );
   }
 }

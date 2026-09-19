@@ -110,14 +110,11 @@ export class AlignB2SessionDeck1779300000000 implements MigrationInterface {
     }
   }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `DELETE FROM "formation_screen_contents" WHERE "course_id" = $1`,
-      [COURSE_ID],
-    );
-    await queryRunner.query(
-      `UPDATE "formation_course_contents" SET "duree_minutes" = $1 WHERE "id" = $2`,
-      [70, COURSE_ID],
+  down(): Promise<void> {
+    return Promise.reject(
+      new Error(
+        'Migration de données irréversible : AlignB2SessionDeck a remplacé les 22 écrans du storyboard B2 par les 72 écrans du deck, qui ne sont pas restaurés.',
+      ),
     );
   }
 }

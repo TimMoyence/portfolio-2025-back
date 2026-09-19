@@ -1,6 +1,11 @@
-import type { QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 import { B2_VISUAL_SNAPSHOT } from './data/b2-visual.snapshot';
+import { SeedB2StoryboardLots1231779200000 } from './1779200000000-SeedB2StoryboardLots123';
+import { AlignB2SessionDeck1779300000000 } from './1779300000000-AlignB2SessionDeck';
 import { AddFormationCourseVersion1779550000000 } from './1779550000000-AddFormationCourseVersion';
+import { BackfillB2OpenSessionBaremes1779600000000 } from './1779600000000-BackfillB2OpenSessionBaremes';
+import { AlignB2ParticipantSeeds1779700000000 } from './1779700000000-AlignB2ParticipantSeeds';
+import { RecheckB2ParticipantSeeds1779800000000 } from './1779800000000-RecheckB2ParticipantSeeds';
 import { SeedB2PresentationContent1779900000000 } from './1779900000000-SeedB2PresentationContent';
 import { CleanB2PlaceholderContent1780000000000 } from './1780000000000-CleanB2PlaceholderContent';
 import { AddFormationSessionCourseVersion1780050000000 } from './1780050000000-AddFormationSessionCourseVersion';
@@ -13,6 +18,32 @@ function runner(
 ): QueryRunner {
   return { query } as unknown as QueryRunner;
 }
+
+const MIGRATIONS_DE_DONNEES_IRREVERSIBLES: readonly MigrationInterface[] = [
+  new SeedB2StoryboardLots1231779200000(),
+  new AlignB2SessionDeck1779300000000(),
+  new BackfillB2OpenSessionBaremes1779600000000(),
+  new AlignB2ParticipantSeeds1779700000000(),
+  new RecheckB2ParticipantSeeds1779800000000(),
+];
+
+describe('migrations de données B2 irréversibles', () => {
+  it.each(
+    MIGRATIONS_DE_DONNEES_IRREVERSIBLES.map(
+      (migration) => [migration.name, migration] as const,
+    ),
+  )(
+    '%s refuse son retour arrière sans toucher à la base',
+    async (_nom, migration) => {
+      const query = jest.fn().mockResolvedValue(undefined);
+
+      await expect(migration.down(runner(query))).rejects.toThrow(
+        /^Migration de données irréversible/,
+      );
+      expect(query).not.toHaveBeenCalled();
+    },
+  );
+});
 
 describe('migrations du contenu B2 servi par le serveur', () => {
   it('applique et annule les contraintes de version et d immutabilité', async () => {
