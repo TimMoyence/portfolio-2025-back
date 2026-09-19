@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { tirer } from '../domain/cours/Tirage';
+import { projeterCatalogue } from '../domain/cours/Diffusion';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { CoursInconnuError } from '../domain/errors/FormationErrors';
@@ -17,6 +17,6 @@ export class LireCoursPublicUseCase {
     if (cours === null) {
       throw new CoursInconnuError(slug);
     }
-    return tirer(cours, 0).sujet;
+    return projeterCatalogue(cours);
   }
 }

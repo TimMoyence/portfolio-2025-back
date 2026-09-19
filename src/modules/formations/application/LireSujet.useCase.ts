@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
+import { ecranVerrouille } from '../domain/cours/Diffusion';
 import type { Cours } from '../domain/contrats/cours';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
@@ -63,14 +64,7 @@ export class LireSujetUseCase {
     return {
       ...tirage.sujet,
       ecrans: tirage.sujet.ecrans.map((ecran, index) =>
-        index <= dernier
-          ? ecran
-          : {
-              ...ecran,
-              type: 'ecran-verrouille',
-              interactif: false,
-              donnees: {},
-            },
+        index <= dernier ? ecran : ecranVerrouille(ecran),
       ),
     };
   }

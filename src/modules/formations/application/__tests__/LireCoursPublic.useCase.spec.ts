@@ -5,6 +5,10 @@ import {
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
 import { buildCoursStocke } from '../../../../../test/factories/cours-stocke.factory';
+import {
+  buildCoursStockeV3,
+  buildEcranStockeV3,
+} from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { tirer } from '../../domain/cours/Tirage';
 import { CoursInconnuError } from '../../domain/errors/FormationErrors';
@@ -49,6 +53,28 @@ describe('LireCoursPublicUseCase', () => {
     await expect(sut.execute(initiale.slug)).resolves.toEqual(
       tirer(publiee, 0).sujet,
     );
+  });
+
+  it('verrouille au catalogue les écrans réservés à la séance (B19)', async () => {
+    const v3 = lireCoursStocke(
+      buildCoursStockeV3([
+        buildEcranStockeV3('fp-quote', { diffusion: 'catalogue' }),
+        buildEcranStockeV3('fp-cardsort'),
+      ]),
+    );
+    const sut = new LireCoursPublicUseCase(creerCatalogueDeTest(v3));
+
+    const { ecrans } = await sut.execute(v3.slug);
+
+    expect(ecrans[0].type).toBe('fp-quote');
+    expect(ecrans[1]).toEqual({
+      id: 'B2-01-A1-01-FP-CARDSORT',
+      type: 'ecran-verrouille',
+      titre: 'Écran fp-cardsort',
+      duree: 8,
+      interactif: false,
+      donnees: {},
+    });
   });
 
   it('refuse un cours absent du catalogue', async () => {
