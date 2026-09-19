@@ -6,7 +6,7 @@ import {
   Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import type { Bareme } from '../../domain/Bareme';
+import type { Bareme } from '../../domain/contrats/bareme';
 import type { FreeRange, PacingMode } from '../../domain/PacingMode';
 import type { SessionState } from '../../domain/SessionState';
 

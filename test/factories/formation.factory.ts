@@ -1,5 +1,6 @@
 import type { Piege } from '../../src/modules/formations/domain/AnswerGrading';
 import type { Bareme } from '../../src/modules/formations/domain/Bareme';
+import type { BaremeV2 } from '../../src/modules/formations/domain/contrats/bareme';
 import type {
   AnswerRecord,
   CreateAnswerInput,
@@ -64,6 +65,83 @@ export function buildBareme(overrides: Partial<Bareme> = {}): Bareme {
         solutions: { 'Q-CAP-03': { valeur: 1500, pieges: [] } },
       },
     ],
+    ...overrides,
+  };
+}
+
+export function buildBaremeV2(overrides: Partial<BaremeV2> = {}): BaremeV2 {
+  return {
+    version: 2,
+    graineReference: 7,
+    questions: [
+      {
+        id: 'b2-01-a1-diagnostic',
+        type: 'vote',
+        concept: 'taux-evolution',
+        noteCompte: true,
+        ecranId: 'B2-01-A1-01-DIAGNOSTIC',
+        rangEcran: 0,
+      },
+      {
+        id: 'b2-01-a2-part-marketplace',
+        type: 'numeric',
+        concept: 'proportion',
+        noteCompte: true,
+        ecranId: 'B2-01-A2-03-ATELIER-1',
+        rangEcran: 13,
+        tolerance: { type: 'absolue', valeur: 0.05 },
+      },
+      {
+        id: 'b2-01-a4-feuille-canaux',
+        type: 'feuille',
+        concept: 'tableur',
+        noteCompte: true,
+        ecranId: 'B2-01-A4-02-FEUILLE-CANAUX',
+        rangEcran: 30,
+      },
+      {
+        id: 'b2-01-r-compensation',
+        type: 'vote',
+        concept: 'controle-coherence',
+        noteCompte: false,
+        ecranId: 'B2-01-A6-05-RAPPEL',
+        rangEcran: 48,
+        origine: 'banque',
+      },
+    ],
+    solutionsCommunes: {
+      'b2-01-a1-diagnostic': {
+        valeur: 'plus-25-pct-ecd953a1',
+        pieges: [
+          { valeur: 'plus-20-pct-0a1b2c3d', misconception: 'base-arrivee' },
+        ],
+      },
+      'b2-01-a2-part-marketplace': {
+        valeur: 45.478261,
+        pieges: [
+          { valeur: 0.454783, misconception: 'taux-valeur-facteur-cent' },
+        ],
+      },
+      'b2-01-r-compensation': {
+        valeur: 'non-deux-erreurs-12345678',
+        pieges: [
+          {
+            valeur: 'oui-le-total-87654321',
+            misconception: 'total-concordant-vaut-preuve',
+          },
+        ],
+      },
+    },
+    tirages: [
+      { seed: 11, ecarts: {} },
+      {
+        seed: 12,
+        ecarts: {
+          'b2-01-a2-part-marketplace': { valeur: 12.5, pieges: [] },
+        },
+      },
+    ],
+    corriges: {},
     ...overrides,
   };
 }

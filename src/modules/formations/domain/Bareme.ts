@@ -1,4 +1,11 @@
 import type { AnswerValue, Solution, Tolerance } from './AnswerGrading';
+import type {
+  BaremeQuestionV2,
+  Bareme as BaremeDeSeance,
+} from './contrats/bareme';
+import type { Cours } from './contrats/cours';
+import { CONCEPTS, type ConceptId } from './cours/banque/concepts';
+import { questionsDe } from './cours/Cours';
 import { NE_SAIT_PAS } from './GradingCore';
 
 type QuestionType = 'numeric' | 'vote' | 'asn' | 'order';
@@ -23,22 +30,46 @@ export interface Bareme {
   tirages: readonly BaremeTirage[];
 }
 
+export type QuestionDeBareme = BaremeQuestion | BaremeQuestionV2;
+
+function questionsDuBareme(
+  bareme: BaremeDeSeance,
+): readonly QuestionDeBareme[] {
+  return bareme.questions;
+}
+
 export function findQuestion(
-  bareme: Bareme,
+  bareme: BaremeDeSeance,
   questionId: string,
-): BaremeQuestion | null {
+): QuestionDeBareme | null {
   return (
-    bareme.questions.find((question) => question.id === questionId) ?? null
+    questionsDuBareme(bareme).find((question) => question.id === questionId) ??
+    null
   );
 }
 
+export function solutionsDuTirage(
+  bareme: BaremeDeSeance,
+  seed: number,
+): Readonly<Record<string, Solution>> | undefined {
+  if (bareme.version === 1) {
+    return bareme.tirages.find((tirage) => tirage.seed === seed)?.solutions;
+  }
+  const tirage = bareme.tirages.find((entree) => entree.seed === seed);
+  return tirage === undefined
+    ? undefined
+    : { ...bareme.solutionsCommunes, ...tirage.ecarts };
+}
+
 export function solutionFor(
-  bareme: Bareme,
+  bareme: BaremeDeSeance,
   seed: number,
   questionId: string,
 ): Solution | null {
-  const tirage = bareme.tirages.find((entree) => entree.seed === seed);
-  return tirage?.solutions[questionId] ?? null;
+  const solutions = solutionsDuTirage(bareme, seed);
+  return solutions !== undefined && Object.hasOwn(solutions, questionId)
+    ? solutions[questionId]
+    : null;
 }
 
 export function estValeurConnue(
@@ -55,7 +86,7 @@ export function estValeurConnue(
 }
 
 export function pickFreeSeed(
-  bareme: Bareme,
+  bareme: BaremeDeSeance,
   seedsPris: readonly number[],
 ): number | null {
   if (bareme.questions.length === 0) {
@@ -65,14 +96,59 @@ export function pickFreeSeed(
     }
     return seed;
   }
-  const libre = bareme.tirages.find(
-    (tirage) => !seedsPris.includes(tirage.seed),
+  const graines: readonly number[] = bareme.tirages.map(
+    (tirage) => tirage.seed,
   );
-  return libre ? libre.seed : null;
+  return graines.find((seed) => !seedsPris.includes(seed)) ?? null;
 }
 
-export function questionsNotees(bareme: Bareme): readonly BaremeQuestion[] {
-  return bareme.questions.filter((question) => question.noteCompte);
+export function questionsNotees(
+  bareme: BaremeDeSeance,
+): readonly QuestionDeBareme[] {
+  return questionsDuBareme(bareme).filter((question) => question.noteCompte);
+}
+
+function estConcept(concept: string): concept is ConceptId {
+  return (CONCEPTS as readonly string[]).includes(concept);
+}
+
+export function questionDuBareme(
+  bareme: BaremeDeSeance,
+  questionId: string,
+  cours: Cours | null,
+): BaremeQuestionV2 | null {
+  if (bareme.version === 2) {
+    return (
+      bareme.questions.find((question) => question.id === questionId) ?? null
+    );
+  }
+  const question = bareme.questions.find(
+    (candidate) => candidate.id === questionId,
+  );
+  const rangEcran =
+    cours?.ecrans.findIndex((ecran) =>
+      questionsDe(ecran).some((candidate) => candidate.id === questionId),
+    ) ?? -1;
+  if (
+    question === undefined ||
+    cours === null ||
+    rangEcran < 0 ||
+    (question.type !== 'numeric' && question.type !== 'vote') ||
+    !estConcept(question.concept)
+  ) {
+    return null;
+  }
+  return {
+    id: question.id,
+    type: question.type,
+    concept: question.concept,
+    noteCompte: question.noteCompte,
+    ecranId: cours.ecrans[rangEcran].id,
+    rangEcran,
+    ...(question.tolerance === undefined
+      ? {}
+      : { tolerance: question.tolerance }),
+  };
 }
 
 export function solutionsIdentiques(

@@ -28,6 +28,13 @@ import type {
   SubmitAnswerResult,
 } from './dto/SubmitAnswer.command';
 
+const TYPES_A_ROUTE_PROPRE: readonly string[] = [
+  'feuille',
+  'tableau',
+  'classement',
+  'enigme',
+];
+
 @Injectable()
 export class SubmitAnswerUseCase {
   constructor(
@@ -67,6 +74,11 @@ export class SubmitAnswerUseCase {
     if (!question) {
       throw new DomainValidationError(
         `Question absente du bareme: ${command.questionId}`,
+      );
+    }
+    if (TYPES_A_ROUTE_PROPRE.includes(question.type)) {
+      throw new DomainValidationError(
+        `La question ${command.questionId} de type ${question.type} passe par sa propre route`,
       );
     }
 

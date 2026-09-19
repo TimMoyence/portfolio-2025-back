@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
+  buildBaremeV2,
   buildParticipantRecord,
   buildSessionRecord,
   buildVoteBareme,
@@ -225,5 +226,51 @@ describe('SubmitAnswerUseCase', () => {
     );
     const result = await sut.execute({ ...commande, valeur: 'a' });
     expect(result.libelleConfusion).toBe(libelleDeConfusion('base-arrivee'));
+  });
+
+  describe('sur un barème v2', () => {
+    beforeEach(() => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ bareme: buildBaremeV2() }),
+      );
+      participants.findById.mockResolvedValue(
+        buildParticipantRecord({ seed: 11 }),
+      );
+    });
+
+    it('corrige un vote par son identifiant stable, dans les solutions communes', async () => {
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'b2-01-a1-diagnostic',
+        valeur: 'plus-25-pct-ecd953a1',
+      });
+
+      expect(result.correcte).toBe(true);
+    });
+
+    it('corrige une question numérique par l écart de la graine du participant', async () => {
+      participants.findById.mockResolvedValue(
+        buildParticipantRecord({ seed: 12 }),
+      );
+
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'b2-01-a2-part-marketplace',
+        valeur: 12.5,
+      });
+
+      expect(result.correcte).toBe(true);
+    });
+
+    it('refuse une production, qui a sa propre route', async () => {
+      await expect(
+        sut.execute({
+          ...commande,
+          questionId: 'b2-01-a4-feuille-canaux',
+          valeur: 1,
+        }),
+      ).rejects.toThrow(DomainValidationError);
+      expect(answers.create).not.toHaveBeenCalled();
+    });
   });
 });

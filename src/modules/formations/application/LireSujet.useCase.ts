@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { solutionsIdentiques } from '../domain/Bareme';
+import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
 import type { Cours } from '../domain/contrats/cours';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
@@ -52,9 +52,7 @@ export class LireSujetUseCase {
       throw new CoursInconnuError(session.courseSlug);
     }
     const tirage = this.tirerOuLever(cours, participant.seed);
-    const stockees = session.bareme.tirages.find(
-      (entree) => entree.seed === participant.seed,
-    )?.solutions;
+    const stockees = solutionsDuTirage(session.bareme, participant.seed);
     if (
       Object.keys(tirage.solutions).length !== 0 &&
       !solutionsIdentiques(tirage.solutions, stockees)

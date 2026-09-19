@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import type { Bareme } from '../domain/Bareme';
+import type { Bareme } from '../domain/contrats/bareme';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { ouvrirTirages } from '../domain/cours/OuvertureTirages';
 import {
@@ -36,7 +36,7 @@ export class OpenSessionUseCase {
     }
     const session = await this.createSurUnCodeLibre(
       command,
-      ouvrirTirages(courant.cours),
+      ouvrirTirages(courant.cours, undefined, courant.version),
       courant.version,
     );
     return { sessionId: session.id, code: session.code };

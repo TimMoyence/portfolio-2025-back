@@ -1,5 +1,9 @@
-import type { BaremeQuestion } from './Bareme';
-import { questionsNotees, solutionsIdentiques } from './Bareme';
+import type { QuestionDeBareme } from './Bareme';
+import {
+  questionsNotees,
+  solutionsDuTirage,
+  solutionsIdentiques,
+} from './Bareme';
 import { libelleDeConfusion } from './cours/banque/confusions';
 import type { Cours } from './contrats/cours';
 import { tirer } from './cours/Tirage';
@@ -89,7 +93,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
 function completionDe(
   participantId: string,
   reponses: readonly AnswerRecord[],
-  notees: readonly BaremeQuestion[],
+  notees: readonly QuestionDeBareme[],
 ): number {
   if (notees.length === 0) {
     return 0;
@@ -166,9 +170,7 @@ function libellesDuTirage(
   if (input.cours === null) {
     return {};
   }
-  const stockees = input.session.bareme.tirages.find(
-    (tirage) => tirage.seed === graine,
-  )?.solutions;
+  const stockees = solutionsDuTirage(input.session.bareme, graine);
   const tirage = tirer(input.cours, graine);
   return solutionsIdentiques(tirage.solutions, stockees)
     ? tirage.libellesOptions

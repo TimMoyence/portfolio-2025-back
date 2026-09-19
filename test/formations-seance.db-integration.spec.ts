@@ -2,7 +2,8 @@ import type { INestApplication } from '@nestjs/common';
 import { createTransport } from 'nodemailer';
 import request from 'supertest';
 import type { Response } from 'supertest';
-import type { Bareme } from '../src/modules/formations/domain/Bareme';
+import { solutionsDuTirage } from '../src/modules/formations/domain/Bareme';
+import type { Bareme } from '../src/modules/formations/domain/contrats/bareme';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import { NOMBRE_TIRAGES_DISTRIBUES } from '../src/modules/formations/domain/cours/OuvertureTirages';
@@ -137,7 +138,7 @@ function corrigeComplet(bareme: Bareme): string[] {
       tirer(COURS_DE_CLASSE, bareme.graineReference).solutions,
     ),
     ...bareme.tirages.flatMap((tirage) =>
-      solutionsNumeriques(tirage.solutions),
+      solutionsNumeriques(solutionsDuTirage(bareme, tirage.seed) ?? {}),
     ),
   ];
 }

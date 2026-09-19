@@ -1,4 +1,4 @@
-import type { Bareme } from './Bareme';
+import type { Bareme } from './contrats/bareme';
 import type { FreeRange, PacingMode } from './PacingMode';
 import type { SessionState } from './SessionState';
 

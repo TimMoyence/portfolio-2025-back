@@ -1,11 +1,20 @@
 import {
+  buildCoursDeTest,
+  tireurSequentiel,
+} from '../../../../test/factories/cours.factory';
+import { buildBaremeV2 } from '../../../../test/factories/formation.factory';
+import {
   estValeurConnue,
   findQuestion,
   pickFreeSeed,
+  questionDuBareme,
+  questionsNotees,
   solutionFor,
+  solutionsDuTirage,
   solutionsIdentiques,
 } from './Bareme';
 import type { Bareme } from './Bareme';
+import { ouvrirTirages } from './cours/OuvertureTirages';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { Solution } from './AnswerGrading';
 
@@ -189,5 +198,76 @@ describe('solutionsIdentiques', () => {
 
   it('refuse un stockage absent', () => {
     expect(solutionsIdentiques(attendues, undefined)).toBe(false);
+  });
+});
+
+describe('barème v2 (§ 9.3.4)', () => {
+  const v2 = buildBaremeV2();
+
+  it('rend l écart de la graine avant la solution commune', () => {
+    expect(solutionFor(v2, 12, 'b2-01-a2-part-marketplace')).toEqual({
+      valeur: 12.5,
+      pieges: [],
+    });
+    expect(solutionFor(v2, 11, 'b2-01-a2-part-marketplace')).toEqual(
+      v2.solutionsCommunes['b2-01-a2-part-marketplace'],
+    );
+    expect(solutionFor(v2, 11, 'b2-01-a1-diagnostic')?.valeur).toBe(
+      'plus-25-pct-ecd953a1',
+    );
+  });
+
+  it('ne rend aucune solution à une graine absente du barème ni à une production', () => {
+    expect(solutionFor(v2, 999, 'b2-01-a1-diagnostic')).toBeNull();
+    expect(solutionFor(v2, 11, 'b2-01-a4-feuille-canaux')).toBeNull();
+  });
+
+  it('reconstitue les solutions complètes d une graine', () => {
+    expect(solutionsDuTirage(v2, 12)).toEqual({
+      ...v2.solutionsCommunes,
+      'b2-01-a2-part-marketplace': { valeur: 12.5, pieges: [] },
+    });
+    expect(solutionsDuTirage(v2, 999)).toBeUndefined();
+    expect(solutionsDuTirage(bareme, 1002)).toEqual(
+      bareme.tirages[1].solutions,
+    );
+  });
+
+  it('retrouve une question, distribue les graines et liste les questions notées', () => {
+    expect(findQuestion(v2, 'b2-01-a4-feuille-canaux')?.type).toBe('feuille');
+    expect(pickFreeSeed(v2, [11])).toBe(12);
+    expect(questionsNotees(v2).map((question) => question.id)).toEqual([
+      'b2-01-a1-diagnostic',
+      'b2-01-a2-part-marketplace',
+      'b2-01-a4-feuille-canaux',
+    ]);
+    expect(questionsNotees(bareme).map((question) => question.id)).toEqual([
+      'Q-CAP-03',
+    ]);
+  });
+
+  describe('questionDuBareme', () => {
+    const cours = buildCoursDeTest();
+
+    it('rend la question v2 telle qu elle est stockée', () => {
+      expect(questionDuBareme(v2, 'b2-01-r-compensation', null)).toEqual(
+        v2.questions[3],
+      );
+    });
+
+    it('dérive du cours l écran d une question d un barème v1', () => {
+      const v1 = ouvrirTirages(cours, tireurSequentiel());
+
+      expect(questionDuBareme(v1, 'Q-TEST-VOTE', cours)).toEqual({
+        id: 'Q-TEST-VOTE',
+        type: 'vote',
+        concept: 'evolutions-successives',
+        noteCompte: false,
+        ecranId: 'E-PRATIQUE',
+        rangEcran: 4,
+      });
+      expect(questionDuBareme(v1, 'Q-TEST-VOTE', null)).toBeNull();
+      expect(questionDuBareme(v1, 'Q-INCONNUE', cours)).toBeNull();
+    });
   });
 });
