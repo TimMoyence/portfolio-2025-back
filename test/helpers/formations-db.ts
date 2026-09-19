@@ -124,6 +124,8 @@ function buildFormationsOptions(): DataSourceOptions {
   };
 }
 
+export const DELAI_OUVERTURE_CONTEXTE_MS = 60_000;
+
 const FONCTIONS_HORS_DU_DROP_SCHEMA = [
   '"reject_formation_course_content_change"()',
 ];

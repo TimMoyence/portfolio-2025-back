@@ -12,6 +12,7 @@ import { buildCoursDeClasse } from './factories/cours.factory';
 import { buildBareme } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
   FORMATION_ENTITIES,
   FORMATION_TABLES,
   ouvrirContexteFormations,
@@ -141,7 +142,7 @@ describeDb('Formations repositories (db integration)', () => {
 
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
-  });
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await contexte.fermer();

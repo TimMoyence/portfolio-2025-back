@@ -15,7 +15,10 @@ import {
   creerCatalogueDeTest,
 } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
-import type { ContexteFormations } from './helpers/formations-db';
+import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
+  type ContexteFormations,
+} from './helpers/formations-db';
 import {
   abonnerAuFlux,
   clientFormations,
@@ -226,7 +229,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
       .mockImplementation((message: unknown) => {
         journal.push(String(message));
       });
-  });
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await banc.fermer();

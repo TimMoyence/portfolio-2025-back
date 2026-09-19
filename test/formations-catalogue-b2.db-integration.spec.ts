@@ -21,13 +21,13 @@ import {
 } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
 
 const SLUG_B2 = 'b2-01-traitement-information-chiffree';
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
-const DELAI_MIGRATIONS_MS = 60_000;
 const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
 
 function aDireDuGuide(guide: unknown): string[] {
@@ -75,7 +75,7 @@ describeDb('catalogue B2 migré', () => {
 
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
-  }, DELAI_MIGRATIONS_MS);
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => contexte.fermer());
 

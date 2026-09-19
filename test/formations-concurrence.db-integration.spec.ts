@@ -14,6 +14,7 @@ import {
 } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
@@ -194,7 +195,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
       creerCatalogueDeTest(COURS_DE_CLASSE),
     );
     await ecouterEnBoucleLocale(app);
-  });
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await fermerApplication(app);

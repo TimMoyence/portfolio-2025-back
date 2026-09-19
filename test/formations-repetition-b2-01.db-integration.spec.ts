@@ -23,6 +23,7 @@ import type {
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { clesDuCorrigeDans } from './helpers/cles-du-corrige';
 import { describeDb } from './helpers/db-integration-datasource';
+import { DELAI_OUVERTURE_CONTEXTE_MS } from './helpers/formations-db';
 import {
   abonnerAuFlux,
   clientFormations,
@@ -304,7 +305,7 @@ describeDb('Repetition a blanc de B2-01 (db integration)', () => {
     banc = await monterBancFormations();
     await banc.contexte.nettoyer();
     client = clientFormations(banc.app, FORMATEUR);
-  });
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await banc.fermer();
