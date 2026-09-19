@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { CodeErreur, Feuille, ResultatFormule } from './Formule';
+import { evaluerExpression, evaluerFeuille, formeR1C1 } from './Formule';
 import type { FichierVecteursFormule, VecteurFormule } from './VecteursFormule';
 import { empreinteDesVecteurs, serialiserCanonique } from './VecteursFormule';
 
@@ -131,4 +132,34 @@ describe('formule.vecteurs.json', () => {
     }
     expect(erreurs).toContain(cycle.erreur);
   });
+});
+
+function executerVecteur(vecteur: VecteurFormule): unknown {
+  switch (vecteur.type) {
+    case 'feuille':
+      return Object.fromEntries(evaluerFeuille(vecteur.entree));
+    case 'expression':
+      return evaluerExpression(
+        vecteur.entree.expression,
+        vecteur.entree.variables,
+      );
+    case 'r1c1':
+      return formeR1C1(vecteur.entree.formule, vecteur.entree.cellule);
+    default:
+      return vecteur satisfies never;
+  }
+}
+
+describe('parité du moteur de formules avec les vecteurs signés', () => {
+  const fichier = lireFichier();
+
+  it('exécute les douze vecteurs du fichier partagé', () => {
+    expect(fichier.vecteurs).toHaveLength(12);
+  });
+
+  for (const vecteur of lireFichier().vecteurs) {
+    it(`${vecteur.type} « ${vecteur.id} » rend l’attendu signé`, () => {
+      expect(executerVecteur(vecteur)).toEqual(vecteur.attendu);
+    });
+  }
 });
