@@ -52,7 +52,7 @@ export class FormationScreenContentEntity {
   @Column({ type: 'jsonb' })
   concepts: readonly string[];
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'text' })
   notes: string;
 
   @Column({ type: 'jsonb' })

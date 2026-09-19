@@ -166,6 +166,28 @@ describeDb('Formations repositories (db integration)', () => {
     );
   });
 
+  it('refuse un ecran de cours sans note au lieu de lui donner une note vide par defaut', async () => {
+    await contexte.rejouerMigration();
+    const [colonne]: Array<{ defaut: string | null }> =
+      await contexte.dataSource.query(
+        `SELECT column_default AS defaut FROM information_schema.columns
+         WHERE table_name = 'formation_screen_contents' AND column_name = 'notes'`,
+      );
+    const [cours]: Array<{ id: string }> = await contexte.dataSource.query(
+      `INSERT INTO "formation_course_contents" ("slug", "version", "titre", "niveau", "duree_minutes", "concepts")
+       VALUES ('cours-sans-note', 1, 'Cours sans note', 'B2', 5, '["proportion"]'::jsonb) RETURNING "id"`,
+    );
+
+    expect(colonne.defaut).toBeNull();
+    await expect(
+      contexte.dataSource.query(
+        `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "proprietes")
+         VALUES ($1, 0, 'ECRAN-SANS-NOTE', 'fp-story', 5, '["proportion"]'::jsonb, '{}'::jsonb)`,
+        [cours.id],
+      ),
+    ).rejects.toThrow('null value in column "notes"');
+  });
+
   it('relit a l identique le bareme tire a l ouverture, graine de reference comprise', async () => {
     const cours = buildCoursDeClasse(12);
     const bareme = ouvrirTirages(cours);
