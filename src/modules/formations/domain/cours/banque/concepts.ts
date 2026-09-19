@@ -6,6 +6,13 @@ export const CONCEPTS = [
   'evolutions-successives',
   'evolution-reciproque',
   'taux-moyen',
+  'indice-base-100',
+  'point-de-pourcentage',
+  'moyenne-ponderee',
+  'lecture-graphique',
+  'controle-coherence',
+  'contrat-de-lecture',
+  'tableur',
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];
