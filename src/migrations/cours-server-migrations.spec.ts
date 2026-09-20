@@ -13,6 +13,7 @@ import { AddFormationSessionCourseVersion1780050000000 } from './1780050000000-A
 import { SeedB2PresentationNotes1780060000000 } from './1780060000000-SeedB2PresentationNotes';
 import { VersionFormationCourseContent1780100000000 } from './1780100000000-VersionFormationCourseContent';
 import { PublishB2VisualDeck1780200000000 } from './1780200000000-PublishB2VisualDeck';
+import { AmorcerPublicationsDeCours1789871600000 } from './1789871600000-AmorcerPublicationsDeCours';
 
 function runner(
   query: jest.Mock = jest.fn().mockResolvedValue(undefined),
@@ -44,6 +45,18 @@ describe('migrations de données B2 irréversibles', () => {
       expect(query).not.toHaveBeenCalled();
     },
   );
+});
+
+describe('amorcage des publications de cours', () => {
+  it('ne depublie au retour arriere que les lignes qu aucun administrateur n a posees', async () => {
+    const query = jest.fn().mockResolvedValue(undefined);
+
+    await new AmorcerPublicationsDeCours1789871600000().down(runner(query));
+
+    const [[sql]] = query.mock.calls as [string][];
+    expect(sql).toContain('DELETE FROM "formation_course_publications"');
+    expect(sql).toContain('WHERE "publiee_par" IS NULL');
+  });
 });
 
 describe('deck visuel B2 extrait', () => {

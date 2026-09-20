@@ -13,6 +13,15 @@ import type { FormationCoursePublicationEntity } from './entities/FormationCours
 
 const SLUG = 'b2-01-traitement-information-chiffree';
 
+function publicationDe(version: number): FormationCoursePublicationEntity {
+  return {
+    slug: SLUG,
+    versionPubliee: version,
+    publieeLe: new Date('2026-09-01T08:00:00.000Z'),
+    publieePar: null,
+  };
+}
+
 function catalogueLisant(...lignes: (FormationCourseContentEntity | null)[]) {
   const getOne = jest.fn();
   for (const ligne of lignes) {
@@ -22,7 +31,7 @@ function catalogueLisant(...lignes: (FormationCourseContentEntity | null)[]) {
   const depot = mockTypeOrmRepository<FormationCourseContentEntity>({
     createQueryBuilder: jest.fn().mockReturnValue(requete),
   });
-  const findOnePublication = jest.fn().mockResolvedValue(null);
+  const findOnePublication = jest.fn().mockResolvedValue(publicationDe(2));
   const publications = mockTypeOrmRepository<FormationCoursePublicationEntity>({
     findOne: findOnePublication,
     upsert: jest.fn().mockResolvedValue(undefined),
@@ -153,6 +162,28 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
 
     await expect(sut.trouver('absent')).resolves.toBeNull();
     await expect(sut.trouverCourant('absent')).resolves.toBeNull();
+  });
+
+  it('ne sert aucune version courante tant que le slug n a pas de publication', async () => {
+    const { sut, findOnePublication, requete } = catalogueLisant(
+      buildCourseContentEntity(),
+    );
+    findOnePublication.mockResolvedValue(null);
+
+    await expect(sut.trouverCourant(SLUG)).resolves.toBeNull();
+    expect(requete.getOne).not.toHaveBeenCalled();
+  });
+
+  it('date la version courante par la bascule de publication, jamais par la création du contenu', async () => {
+    const { sut, findOnePublication } = catalogueLisant(
+      buildCourseContentEntity(),
+    );
+    const publication = publicationDe(2);
+    findOnePublication.mockResolvedValue(publication);
+
+    const courant = await sut.trouverCourant(SLUG);
+
+    expect(courant?.publieLe).toBe(publication.publieeLe);
   });
 
   it.each([

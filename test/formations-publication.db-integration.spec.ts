@@ -24,7 +24,9 @@ const OK = 200;
 const CREE = 201;
 const NON_AUTORISE = 401;
 const INTERDIT = 403;
+const INTROUVABLE = 404;
 const CONFLIT = 409;
+const SLUG_JAMAIS_PUBLIE = 'cours-insere-apres-l-amorcage';
 
 interface CataloguePublic {
   version: number;
@@ -102,6 +104,28 @@ describeDb(
       const servi = reponse.body as CataloguePublic;
       expect(servi.version).toBe(2);
       expect(Date.parse(servi.publieLe)).not.toBeNaN();
+    });
+
+    it('ne sert ni au public ni a une seance un slug insere sans ligne de publication', async () => {
+      await contexte.dataSource.query(
+        `INSERT INTO "formation_course_contents"
+           ("slug", "version", "titre", "niveau", "duree_minutes", "concepts")
+         VALUES ($1, 1, 'Brouillon jamais publie', 'B2', 5, '["proportion"]'::jsonb)`,
+        [SLUG_JAMAIS_PUBLIE],
+      );
+
+      const publique = await request(serveur()).get(
+        route(`/catalogue/${SLUG_JAMAIS_PUBLIE}`),
+      );
+      const parUnFormateur = await request(serveur())
+        .post(route('/sessions'))
+        .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`)
+        .send({ courseSlug: SLUG_JAMAIS_PUBLIE });
+
+      expect({
+        publique: publique.status,
+        seance: parUnFormateur.status,
+      }).toEqual({ publique: INTROUVABLE, seance: INTROUVABLE });
     });
 
     it('laisse la V3 migree hors publication tant que personne ne bascule (AC-36)', async () => {

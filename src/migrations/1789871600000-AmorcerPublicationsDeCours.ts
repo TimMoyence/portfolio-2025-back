@@ -14,6 +14,8 @@ export class AmorcerPublicationsDeCours1789871600000 implements MigrationInterfa
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DELETE FROM "formation_course_publications"`);
+    await queryRunner.query(
+      `DELETE FROM "formation_course_publications" WHERE "publiee_par" IS NULL`,
+    );
   }
 }

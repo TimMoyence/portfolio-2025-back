@@ -42,26 +42,27 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
 
   async trouverCourant(slug: string): Promise<CoursPublie | null> {
     const publication = await this.publications.findOne({ where: { slug } });
-    if (publication) {
-      const memorise = this.coursLus.lire(
-        cleDuCours(slug, publication.versionPubliee),
-      );
-      if (memorise !== undefined) {
-        return {
-          cours: memorise,
-          version: publication.versionPubliee,
-          publieLe: publication.publieeLe,
-        };
-      }
+    if (publication === null) {
+      return null;
     }
-    const entity = await this.findEntity(slug, publication?.versionPubliee);
+    const memorise = this.coursLus.lire(
+      cleDuCours(slug, publication.versionPubliee),
+    );
+    if (memorise !== undefined) {
+      return {
+        cours: memorise,
+        version: publication.versionPubliee,
+        publieLe: publication.publieeLe,
+      };
+    }
+    const entity = await this.findEntity(slug, publication.versionPubliee);
     if (entity === null) {
       return null;
     }
     return {
       cours: this.toDomain(entity),
       version: entity.version,
-      publieLe: publication?.publieeLe ?? entity.createdAt,
+      publieLe: publication.publieeLe,
     };
   }
 
