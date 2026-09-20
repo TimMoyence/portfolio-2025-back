@@ -27,6 +27,8 @@ import { CreateFormationEscape1789864720421 } from '../../src/migrations/1789864
 import { CreateFormationPulses1789867324005 } from '../../src/migrations/1789867324005-CreateFormationPulses';
 import { AddFormationDefiColumns1789869335826 } from '../../src/migrations/1789869335826-AddFormationDefiColumns';
 import { AddFormationCapaciteEtEviction1789870829038 } from '../../src/migrations/1789870829038-AddFormationCapaciteEtEviction';
+import { CreateFormationCoursePublications1789871582928 } from '../../src/migrations/1789871582928-CreateFormationCoursePublications';
+import { AmorcerPublicationsDeCours1789871600000 } from '../../src/migrations/1789871600000-AmorcerPublicationsDeCours';
 import { AnswersRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Answers.repository.typeorm';
 import { CoursCatalogueRepositoryTypeORM } from '../../src/modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
 import { FormationAnswerEntity } from '../../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
@@ -36,6 +38,7 @@ import { EscapeRepositoryTypeORM } from '../../src/modules/formations/infrastruc
 import { FormationPulseEntity } from '../../src/modules/formations/infrastructure/entities/FormationPulse.entity';
 import { PulsesRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Pulses.repository.typeorm';
 import { FormationCourseContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
+import { FormationCoursePublicationEntity } from '../../src/modules/formations/infrastructure/entities/FormationCoursePublication.entity';
 import { FormationFreeResponseEntity } from '../../src/modules/formations/infrastructure/entities/FormationFreeResponse.entity';
 import { FormationGroupEntity } from '../../src/modules/formations/infrastructure/entities/FormationGroup.entity';
 import { FormationIncidentEntity } from '../../src/modules/formations/infrastructure/entities/FormationIncident.entity';
@@ -67,6 +70,7 @@ export const FORMATION_ENTITIES = [
   FormationTeacherAnnotationEntity,
   FormationCourseContentEntity,
   FormationScreenContentEntity,
+  FormationCoursePublicationEntity,
   FormationEscapeProgressEntity,
   FormationEscapeAttemptEntity,
   FormationPulseEntity,
@@ -101,6 +105,8 @@ const FORMATION_MIGRATIONS = [
   CreateFormationPulses1789867324005,
   AddFormationDefiColumns1789869335826,
   AddFormationCapaciteEtEviction1789870829038,
+  CreateFormationCoursePublications1789871582928,
+  AmorcerPublicationsDeCours1789871600000,
 ];
 
 const TABLES_DE_SEANCE = [
@@ -122,6 +128,7 @@ export const FORMATION_TABLES = [
   ...TABLES_DE_SEANCE,
   'formation_course_contents',
   'formation_screen_contents',
+  'formation_course_publications',
 ] as const;
 
 export interface ContexteFormations {
@@ -207,6 +214,7 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
     ),
     catalogue: new CoursCatalogueRepositoryTypeORM(
       dataSource.getRepository(FormationCourseContentEntity),
+      dataSource.getRepository(FormationCoursePublicationEntity),
     ),
     async graineDe(participantId: string): Promise<number> {
       const participant = await participants.findById(participantId);

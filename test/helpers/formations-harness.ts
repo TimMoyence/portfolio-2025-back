@@ -41,6 +41,7 @@ import { SubmitAnswerUseCase } from '../../src/modules/formations/application/Su
 import { DeclarerJalonUseCase } from '../../src/modules/formations/application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../../src/modules/formations/application/Defis.useCase';
 import { EvincerParticipantUseCase } from '../../src/modules/formations/application/EvincerParticipant.useCase';
+import { PublierVersionUseCase } from '../../src/modules/formations/application/PublierVersion.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
@@ -182,6 +183,7 @@ export function fournisseursFormations(
     DefisUseCase,
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
+    PublierVersionUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     DueQuestionsUseCase,

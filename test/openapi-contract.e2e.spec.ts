@@ -98,12 +98,12 @@ const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
   '/sessions/{id}/defis/{defiId}/strategies',
   '/sessions/{id}/moi',
   '/sessions/{id}/participants/{participantId}',
+  '/catalogue/{slug}/publication',
 ];
 
 const ROUTES_A_VENIR_DU_CONTRAT_V3 = [
   '/sessions/{id}/rappels',
   '/sessions/{id}/rappels/synthese',
-  '/catalogue/{slug}/publication',
 ];
 
 describe('OpenAPI legacy contract (phase 11)', () => {

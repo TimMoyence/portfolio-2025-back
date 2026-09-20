@@ -9,6 +9,7 @@ import {
 import { ContenuDeCoursInvalideError } from '../domain/cours/CoursStocke';
 import { CoursCatalogueRepositoryTypeORM } from './CoursCatalogue.repository.typeorm';
 import type { FormationCourseContentEntity } from './entities/FormationCourseContent.entity';
+import type { FormationCoursePublicationEntity } from './entities/FormationCoursePublication.entity';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
 
@@ -21,7 +22,15 @@ function catalogueLisant(...lignes: (FormationCourseContentEntity | null)[]) {
   const depot = mockTypeOrmRepository<FormationCourseContentEntity>({
     createQueryBuilder: jest.fn().mockReturnValue(requete),
   });
-  return { requete, sut: new CoursCatalogueRepositoryTypeORM(depot) };
+  const publications = mockTypeOrmRepository<FormationCoursePublicationEntity>({
+    findOne: jest.fn().mockResolvedValue(null),
+    upsert: jest.fn().mockResolvedValue(undefined),
+  });
+  return {
+    requete,
+    publications,
+    sut: new CoursCatalogueRepositoryTypeORM(depot, publications),
+  };
 }
 
 function coursAvecProprietes(

@@ -2,6 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 import { ouvrirTirages } from '../modules/formations/domain/cours/OuvertureTirages';
 import { CoursCatalogueRepositoryTypeORM } from '../modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
 import { FormationCourseContentEntity } from '../modules/formations/infrastructure/entities/FormationCourseContent.entity';
+import { FormationCoursePublicationEntity } from '../modules/formations/infrastructure/entities/FormationCoursePublication.entity';
 
 const COURSE_SLUG = 'b2-01-traitement-information-chiffree';
 
@@ -11,6 +12,7 @@ export class BackfillB2OpenSessionBaremes1779600000000 implements MigrationInter
   async up(queryRunner: QueryRunner): Promise<void> {
     const catalogue = new CoursCatalogueRepositoryTypeORM(
       queryRunner.manager.getRepository(FormationCourseContentEntity),
+      queryRunner.manager.getRepository(FormationCoursePublicationEntity),
     );
     const cours = await catalogue.trouver(COURSE_SLUG);
     if (cours === null) {

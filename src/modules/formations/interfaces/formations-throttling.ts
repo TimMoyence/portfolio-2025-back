@@ -15,6 +15,7 @@ export const LIMITE_TENTATIVES_PAR_PARTICIPANT = 20;
 export const LIMITE_JALONS_PAR_PARTICIPANT = 30;
 export const LIMITE_ETAT_PAR_PARTICIPANT = 30;
 export const LIMITE_EVICTION_PAR_MINUTE = 60;
+export const LIMITE_PUBLICATION_PAR_MINUTE = 10;
 
 /**
  * Les trente postes d'une salle informatique sortent par une seule adresse

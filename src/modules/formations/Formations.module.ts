@@ -20,6 +20,7 @@ import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
 import { DefisUseCase } from './application/Defis.useCase';
 import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
+import { PublierVersionUseCase } from './application/PublierVersion.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
@@ -45,6 +46,7 @@ import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer
 import { FormationEscapeAttemptEntity } from './infrastructure/entities/FormationEscapeAttempt.entity';
 import { FormationEscapeProgressEntity } from './infrastructure/entities/FormationEscapeProgress.entity';
 import { EscapeRepositoryTypeORM } from './infrastructure/Escape.repository.typeorm';
+import { FormationCoursePublicationEntity } from './infrastructure/entities/FormationCoursePublication.entity';
 import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.entity';
 import { PulsesRepositoryTypeORM } from './infrastructure/Pulses.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from './infrastructure/FreeResponses.repository.typeorm';
@@ -94,6 +96,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       FormationEscapeProgressEntity,
       FormationEscapeAttemptEntity,
       FormationPulseEntity,
+      FormationCoursePublicationEntity,
     ]),
   ],
   controllers: [
@@ -117,6 +120,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     DefisUseCase,
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
+    PublierVersionUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     {

@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
   Req,
   Sse,
   UseGuards,
@@ -19,6 +20,7 @@ import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -38,15 +40,22 @@ import type { ResultatsDeSeance } from '../application/GetSessionResults.useCase
 import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
 import { ListFreeResponsesUseCase } from '../application/ListFreeResponses.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
+import {
+  assertAdministrateur,
+  PublierVersionUseCase,
+} from '../application/PublierVersion.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
 import { ControlSessionRequestDto } from './dto/contrat/control-session.request.dto';
+import { PublicationResponseDto } from './dto/contrat/publication.response.dto';
+import { PublierVersionRequestDto } from './dto/contrat/publication.request.dto';
 import { DerouleResponseDto } from './dto/contrat/deroule.response.dto';
 import { FreeResponsesResponseDto } from './dto/free-responses.response.dto';
 import { OpenSessionRequestDto } from './dto/contrat/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
 import { SessionResultsResponseDto } from './dto/session-results.response.dto';
+import { ROLE_ADMINISTRATEUR } from '../domain/SessionOwnership';
 import {
   acteurDe,
   LectureDeSeance,
@@ -56,6 +65,7 @@ import {
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_CONTROLE_PAR_MINUTE,
+  LIMITE_PUBLICATION_PAR_MINUTE,
 } from './formations-throttling';
 
 /**
@@ -82,6 +92,7 @@ export class FormationsPresenterController {
     private readonly streamSession: StreamSessionUseCase,
     private readonly lireDeroule: LireDerouleUseCase,
     private readonly listFreeResponses: ListFreeResponsesUseCase,
+    private readonly publierVersion: PublierVersionUseCase,
   ) {}
 
   @Post('sessions')
@@ -91,14 +102,21 @@ export class FormationsPresenterController {
   @ApiConflictResponse({
     description: 'Le cours ne produit pas assez de tirages non ambigus',
   })
+  @ApiForbiddenResponse({
+    description: 'Le champ version est reserve a l administrateur',
+  })
   async open(
     @Body() dto: OpenSessionRequestDto,
     @Req() request: Request,
   ): Promise<OpenSessionResponseDto> {
+    if (dto.version !== undefined) {
+      assertAdministrateur(acteurDe(request));
+    }
     const result = await this.openSession.execute({
       courseSlug: dto.courseSlug,
       teacherId: request.user!.sub,
       capacite: dto.capacite,
+      version: dto.version,
     });
     return { sessionId: result.sessionId, code: result.code };
   }
@@ -253,5 +271,34 @@ export class FormationsPresenterController {
     return {
       responses: await this.listFreeResponses.execute(id, acteurDe(request)),
     };
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_PUBLICATION_PAR_MINUTE,
+      ttl: FENETRE_THROTTLE_MS,
+    },
+  })
+  @Put('catalogue/:slug/publication')
+  @Roles(ROLE_ADMINISTRATEUR)
+  @ApiOperation({
+    summary:
+      'Bascule la version publiee au catalogue, reservee a l administrateur',
+  })
+  @ApiOkResponse({ type: PublicationResponseDto })
+  @ApiForbiddenResponse({
+    description: 'Publication reservee a l administrateur',
+  })
+  @ApiNotFoundResponse({ description: 'Cours introuvable' })
+  @ApiConflictResponse({
+    description:
+      'Version refusee, cause dans le champ code du corps : VERSION_NON_PUBLIABLE',
+  })
+  async publier(
+    @Param('slug') slug: string,
+    @Body() dto: PublierVersionRequestDto,
+    @Req() request: Request,
+  ): Promise<PublicationResponseDto> {
+    return this.publierVersion.execute(slug, dto.version, acteurDe(request));
   }
 }

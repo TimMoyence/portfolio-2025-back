@@ -28,9 +28,26 @@ describe('LireCoursPublicUseCase', () => {
   it('rend le sujet public du cours, celui du tirage de reference', async () => {
     const sut = new LireCoursPublicUseCase(creerCatalogueDeTest(COURS_STOCKE));
 
-    await expect(sut.execute(COURS_STOCKE.slug)).resolves.toEqual(
-      tirer(COURS_STOCKE, 0).sujet,
-    );
+    await expect(sut.execute(COURS_STOCKE.slug)).resolves.toEqual({
+      ...tirer(COURS_STOCKE, 0).sujet,
+      version: 1,
+      publieLe: expect.any(String),
+    });
+  });
+
+  it('sert la version publiee et sa date de bascule (H1)', async () => {
+    const initiale = buildCoursDeTest();
+    const suivante = { ...buildCoursDeClasse(2), slug: initiale.slug };
+    const catalogue = creerCatalogueAVersions({
+      [initiale.slug]: { 1: initiale, 2: suivante },
+    });
+    const sut = new LireCoursPublicUseCase(catalogue);
+    await catalogue.publier({ slug: initiale.slug, version: 1, parQui: null });
+
+    const servi = await sut.execute(initiale.slug);
+
+    expect(servi.version).toBe(1);
+    expect(Date.parse(servi.publieLe)).not.toBeNaN();
   });
 
   it('ne livre ni notes, ni guide, ni correction, ni quiz note', async () => {
@@ -50,9 +67,11 @@ describe('LireCoursPublicUseCase', () => {
       creerCatalogueAVersions({ [initiale.slug]: { 1: initiale, 2: publiee } }),
     );
 
-    await expect(sut.execute(initiale.slug)).resolves.toEqual(
-      tirer(publiee, 0).sujet,
-    );
+    await expect(sut.execute(initiale.slug)).resolves.toEqual({
+      ...tirer(publiee, 0).sujet,
+      version: 2,
+      publieLe: expect.any(String),
+    });
   });
 
   it('verrouille au catalogue les écrans réservés à la séance (B19)', async () => {

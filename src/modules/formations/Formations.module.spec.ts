@@ -20,6 +20,7 @@ import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
 import { DefisUseCase } from './application/Defis.useCase';
 import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
+import { PublierVersionUseCase } from './application/PublierVersion.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
@@ -28,6 +29,7 @@ import { FormationsModule } from './Formations.module';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
 import { FormationEscapeAttemptEntity } from './infrastructure/entities/FormationEscapeAttempt.entity';
 import { FormationEscapeProgressEntity } from './infrastructure/entities/FormationEscapeProgress.entity';
+import { FormationCoursePublicationEntity } from './infrastructure/entities/FormationCoursePublication.entity';
 import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
@@ -56,6 +58,7 @@ const ENTITES = [
   FormationEscapeProgressEntity,
   FormationEscapeAttemptEntity,
   FormationPulseEntity,
+  FormationCoursePublicationEntity,
 ];
 
 const SERVICES = [
@@ -72,6 +75,7 @@ const SERVICES = [
   DefisUseCase,
   LireEtatParticipantUseCase,
   EvincerParticipantUseCase,
+  PublierVersionUseCase,
   RecordIncidentsUseCase,
   StreamSessionUseCase,
   DueQuestionsUseCase,

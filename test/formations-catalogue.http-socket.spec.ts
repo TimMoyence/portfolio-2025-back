@@ -46,7 +46,19 @@ describe('Catalogue public des formations (e2e http socket)', () => {
   it('sert sans authentification le sujet public du cours publie', async () => {
     const reponse = await lire(COURS.slug).expect(200);
 
-    expect(reponse.body).toEqual(tirer(COURS, 0).sujet);
+    expect(reponse.body).toEqual({
+      ...tirer(COURS, 0).sujet,
+      version: 1,
+      publieLe: expect.any(String),
+    });
+  });
+
+  it('sert la version publiee et sa date de bascule au sitemap (H1)', async () => {
+    const reponse = await lire(COURS.slug).expect(200);
+
+    const servi = reponse.body as { version: number; publieLe: string };
+    expect(servi.version).toBe(1);
+    expect(Date.parse(servi.publieLe)).not.toBeNaN();
   });
 
   it('ne livre ni donnee du formateur, ni quiz note, ni corrige', async () => {

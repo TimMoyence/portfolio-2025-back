@@ -6,7 +6,10 @@ import {
   questionNumerique,
   questionVote,
 } from '../../src/modules/formations/domain/cours/Cours';
-import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
+import type {
+  CoursPublie,
+  ICatalogueCours,
+} from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import { ouvrirTirages } from '../../src/modules/formations/domain/cours/OuvertureTirages';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import type { AnswerRecord } from '../../src/modules/formations/domain/IAnswers.repository';
@@ -604,11 +607,18 @@ export function creerCatalogueAVersions(
 ): ICatalogueCours {
   const versionsDe = (slug: string): VersionsDuCours =>
     Object.hasOwn(versionsParSlug, slug) ? versionsParSlug[slug] : {};
-  const courant = (slug: string): { cours: Cours; version: number } | null => {
+  const publications = new Map<string, { version: number; publieLe: Date }>();
+  const courant = (slug: string): CoursPublie | null => {
     const versions = versionsDe(slug);
-    const derniere = Math.max(...Object.keys(versions).map(Number));
-    return Number.isFinite(derniere)
-      ? { cours: versions[derniere], version: derniere }
+    const publiee = publications.get(slug);
+    const derniere =
+      publiee?.version ?? Math.max(...Object.keys(versions).map(Number));
+    return Number.isFinite(derniere) && versions[derniere] !== undefined
+      ? {
+          cours: versions[derniere],
+          version: derniere,
+          publieLe: publiee?.publieLe ?? new Date('2026-09-01T08:00:00.000Z'),
+        }
       : null;
   };
   return {
@@ -619,6 +629,13 @@ export function creerCatalogueAVersions(
           : (versionsDe(slug)[version] ?? null),
       ),
     trouverCourant: (slug) => Promise.resolve(courant(slug)),
+    publier: ({ slug, version }) => {
+      if (versionsDe(slug)[version] === undefined) {
+        throw new Error(`Version absente du catalogue de test : ${version}`);
+      }
+      publications.set(slug, { version, publieLe: new Date() });
+      return Promise.resolve(courant(slug) as CoursPublie);
+    },
   };
 }
 

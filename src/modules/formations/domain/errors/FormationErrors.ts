@@ -260,6 +260,14 @@ export class SessionCodeAlreadyActiveError extends ResourceConflictError {
   }
 }
 
+export class VersionNonPubliableError extends ResourceConflictError {
+  readonly code = 'VERSION_NON_PUBLIABLE';
+
+  constructor(slug: string, version: number, raison: string) {
+    super(`La version ${version} de ${slug} n’est pas publiable : ${raison}.`);
+  }
+}
+
 export class CoursModifieError extends ResourceConflictError {
   constructor() {
     super(

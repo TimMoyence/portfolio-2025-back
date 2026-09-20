@@ -163,6 +163,7 @@ function creerCatalogueMutable(initial: ICatalogueCours): CatalogueMutable {
     catalogue: {
       trouver: (slug, version) => courant.trouver(slug, version),
       trouverCourant: (slug) => courant.trouverCourant(slug),
+      publier: (entree) => courant.publier(entree),
     },
     remplacer(nouveau) {
       courant = nouveau;

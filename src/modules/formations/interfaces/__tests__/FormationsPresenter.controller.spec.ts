@@ -28,6 +28,7 @@ describe('FormationsPresenterController', () => {
   const streamSession = { executeForTeacher: jest.fn() };
   const lireDeroule = { execute: jest.fn() };
   const listFreeResponses = { execute: jest.fn() };
+  const publierVersion = { execute: jest.fn() };
 
   const controller = new FormationsPresenterController(
     openSession as never,
@@ -37,6 +38,7 @@ describe('FormationsPresenterController', () => {
     streamSession as never,
     lireDeroule as never,
     listFreeResponses as never,
+    publierVersion as never,
   );
 
   const controle = (dto: ControlSessionRequestDto): Promise<void> =>
