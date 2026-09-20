@@ -301,6 +301,44 @@ describe('buildRapportSession', () => {
       );
     });
 
+    it('lit une production par la part de ses attendus justes', () => {
+      const [lue] = rapportDe({
+        participants: [buildParticipantRecord({ id: 'p1' })],
+        answers: [
+          buildAnswerRecord({
+            participantId: 'p1',
+            questionId: 'Q-TEST-FEUILLE',
+            valeur: { type: 'feuille', cellules: { D2: '=(C2-B2)/B2' } },
+            score: 0.5,
+            details: [
+              { cle: 'D2', juste: true, confusion: null },
+              { cle: 'D3', juste: false, confusion: 'base-arrivee' },
+            ],
+          }),
+        ],
+      }).participants[0].reponses;
+
+      expect(lue.reponse).toBe('Feuille : 1/2 cellules justes');
+      expect(lue.valeur).toBe('feuille');
+    });
+
+    it('lit une production declaree « je ne sais pas » sans compter d attendu', () => {
+      const [lue] = rapportDe({
+        participants: [buildParticipantRecord({ id: 'p1' })],
+        answers: [
+          buildAnswerRecord({
+            participantId: 'p1',
+            questionId: 'Q-TEST-CLASSEMENT',
+            valeur: { type: 'classement', neSaitPas: true },
+            score: 0,
+            details: [],
+          }),
+        ],
+      }).participants[0].reponses;
+
+      expect(lue.reponse).toBe('Classement : je ne sais pas');
+    });
+
     it('ne lit jamais une propriete heritee comme libelle d option', () => {
       const [lue] = rapportDe({
         session: buildSessionRecord({ courseSlug: cours.slug, bareme }),

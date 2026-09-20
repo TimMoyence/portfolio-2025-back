@@ -6,6 +6,7 @@ import {
 } from './Bareme';
 import { libelleDeConfusion } from './cours/banque/confusions';
 import type { Cours } from './contrats/cours';
+import type { DetailProduction, ValeurReponse } from './contrats/resultats';
 import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
 import { computeCohortScore } from './CompletionScore';
@@ -135,7 +136,7 @@ function reponsesDe(
     .map((reponse) => ({
       questionId: reponse.questionId,
       concept: reponse.concept,
-      valeur: String(reponse.valeur),
+      valeur: texteDeValeur(reponse.valeur),
       reponse: reponseLisible(reponse, libelles),
       correcte: reponse.correcte,
       misconception: reponse.misconception,
@@ -148,10 +149,47 @@ function reponsesDe(
     }));
 }
 
+function estProduction(
+  valeur: ValeurReponse,
+): valeur is Extract<ValeurReponse, { readonly type: string }> {
+  return typeof valeur === 'object';
+}
+
+function texteDeValeur(valeur: ValeurReponse): string {
+  return estProduction(valeur) ? valeur.type : String(valeur);
+}
+
+const LIBELLE_PAR_TYPE: Readonly<Record<string, string>> = {
+  feuille: 'Feuille',
+  tableau: 'Tableau',
+  classement: 'Classement',
+};
+
+const UNITE_PAR_TYPE: Readonly<Record<string, string>> = {
+  feuille: 'cellules justes',
+  tableau: 'lignes justes',
+  classement: 'cartes bien placées',
+};
+
+function productionLisible(
+  valeur: Extract<ValeurReponse, { readonly type: string }>,
+  details: readonly DetailProduction[] | null,
+): string {
+  const titre = LIBELLE_PAR_TYPE[valeur.type] ?? valeur.type;
+  if ('neSaitPas' in valeur || details === null) {
+    return `${titre} : ${LIBELLE_NE_SAIT_PAS.toLowerCase()}`;
+  }
+  const justes = details.filter((detail) => detail.juste).length;
+  return `${titre} : ${justes}/${details.length} ${UNITE_PAR_TYPE[valeur.type] ?? 'attendus justes'}`;
+}
+
 function reponseLisible(
   reponse: AnswerRecord,
   libelles: LibellesDesOptions,
 ): string {
+  if (estProduction(reponse.valeur)) {
+    return productionLisible(reponse.valeur, reponse.details);
+  }
   if (reponse.valeur === NE_SAIT_PAS) {
     return LIBELLE_NE_SAIT_PAS;
   }

@@ -90,8 +90,9 @@ const DTO_DU_CONTRAT_V3 = [
   PublicationResponseDto,
 ];
 
-const ROUTES_NOUVELLES_DU_CONTRAT_V3 = [
-  '/sessions/{id}/productions',
+const ROUTES_ACTIVES_DU_CONTRAT_V3 = ['/sessions/{id}/productions'];
+
+const ROUTES_A_VENIR_DU_CONTRAT_V3 = [
   '/sessions/{id}/escape/{parcoursId}/tentatives',
   '/sessions/{id}/pulses/{sondageId}',
   '/sessions/{id}/rappels',
@@ -258,7 +259,7 @@ describe('OpenAPI core contract', () => {
   });
 });
 
-describe('OpenAPI contrat B2-01 V3 (lot 0, sans route active)', () => {
+describe('OpenAPI contrat B2-01 V3', () => {
   it('fige les schemas des DTO du § 9.5 sans exposer de chemin', async () => {
     const moduleRef = await Test.createTestingModule({}).compile();
     const app = moduleRef.createNestApplication();
@@ -274,20 +275,19 @@ describe('OpenAPI contrat B2-01 V3 (lot 0, sans route active)', () => {
     expect(document.components?.schemas).toMatchSnapshot();
   });
 
-  it('ne branche aucune route nouvelle du § 9.5 sur les controleurs', async () => {
+  it('branche les routes du § 9.5 deja livrees et aucune autre', async () => {
     const app = await monterApplicationFormations(createMockDepotsFormations());
     const chemins = Object.keys(
       SwaggerModule.createDocument(app, new DocumentBuilder().build()).paths,
     );
     await fermerApplication(app);
+    const servie = (route: string): boolean =>
+      chemins.some((chemin) => chemin.endsWith(route));
 
     expect(
-      ROUTES_NOUVELLES_DU_CONTRAT_V3.filter((route) =>
-        chemins.some((chemin) => chemin.endsWith(route)),
-      ),
+      ROUTES_ACTIVES_DU_CONTRAT_V3.filter((route) => !servie(route)),
     ).toEqual([]);
-    expect(
-      chemins.some((chemin) => chemin.endsWith('/sessions/{id}/sujet')),
-    ).toBe(true);
+    expect(ROUTES_A_VENIR_DU_CONTRAT_V3.filter(servie)).toEqual([]);
+    expect(servie('/sessions/{id}/sujet')).toBe(true);
   });
 });

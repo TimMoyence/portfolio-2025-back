@@ -38,6 +38,7 @@ import { RecordIncidentsUseCase } from '../../src/modules/formations/application
 import { SaveFreeResponseUseCase } from '../../src/modules/formations/application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from '../../src/modules/formations/application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../../src/modules/formations/application/SubmitAnswer.useCase';
+import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
 import type { IFormationGroupsRepository } from '../../src/modules/formations/domain/IFormationGroups.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
@@ -164,6 +165,7 @@ export function fournisseursFormations(
     GetSessionResultsUseCase,
     JoinSessionUseCase,
     SubmitAnswerUseCase,
+    SubmitProductionUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     DueQuestionsUseCase,

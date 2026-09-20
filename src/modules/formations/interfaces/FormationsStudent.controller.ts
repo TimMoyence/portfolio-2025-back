@@ -39,6 +39,7 @@ import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
 import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
+import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
@@ -53,6 +54,8 @@ import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
 import { SaveFreeResponseRequestDto } from './dto/save-free-response.request.dto';
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
+import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
+import { SubmitProductionResponseDto } from './dto/contrat/verdict-production.response.dto';
 import { SujetResponseDto } from './dto/contrat/sujet.response.dto';
 import {
   FENETRE_THROTTLE_MS,
@@ -77,6 +80,7 @@ export class FormationsStudentController {
   constructor(
     private readonly joinSession: JoinSessionUseCase,
     private readonly submitAnswer: SubmitAnswerUseCase,
+    private readonly submitProduction: SubmitProductionUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
@@ -205,6 +209,42 @@ export class FormationsStudentController {
       dureeMs: dto.dureeMs,
     });
     return { status: 'enregistre' };
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_REPONSES_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Post('sessions/:id/productions')
+  @ApiOperation({
+    summary: 'Soumet une production, corrigee et notee cote serveur',
+  })
+  @ApiCreatedResponse({ type: SubmitProductionResponseDto })
+  @ApiBadRequestResponse({
+    description:
+      'Production refusee, cause dans le champ code du corps : TYPE_DE_QUESTION, PRODUCTION_VIDE ou PRODUCTION_INVALIDE',
+  })
+  @ApiConflictResponse({
+    description:
+      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI ou REPONSE_DEJA_ENREGISTREE',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async production(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: SubmitProductionRequestDto,
+  ): Promise<SubmitProductionResponseDto> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.submitProduction.execute({
+      sessionId,
+      participantId,
+      questionId: dto.questionId,
+      valeur: dto.valeur,
+      dureeMs: dto.dureeMs,
+    });
   }
 
   @Throttle({

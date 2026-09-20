@@ -8,7 +8,10 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import type { AnswerValue } from '../../domain/AnswerGrading';
+import type {
+  DetailProduction,
+  ValeurReponse,
+} from '../../domain/contrats/resultats';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
 import { FormationSessionEntity } from './FormationSession.entity';
 
@@ -49,7 +52,7 @@ export class FormationAnswerEntity {
   concept: string;
 
   @Column({ type: 'jsonb' })
-  valeur: AnswerValue;
+  valeur: ValeurReponse;
 
   @Column({ type: 'int' })
   seed: number;
@@ -59,6 +62,12 @@ export class FormationAnswerEntity {
 
   @Column({ type: 'varchar', length: 120, nullable: true })
   misconception: string | null;
+
+  @Column({ type: 'real', nullable: true })
+  score: number | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  details: readonly DetailProduction[] | null;
 
   @Column({ name: 'duree_ms', type: 'int' })
   dureeMs: number;

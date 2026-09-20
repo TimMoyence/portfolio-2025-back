@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`OpenAPI contrat B2-01 V3 (lot 0, sans route active) fige les schemas des DTO du § 9.5 sans exposer de chemin 1`] = `
+exports[`OpenAPI contrat B2-01 V3 fige les schemas des DTO du § 9.5 sans exposer de chemin 1`] = `
 {
   "AttenduClassementPresentateurResponseDto": {
     "properties": {

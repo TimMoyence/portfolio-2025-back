@@ -108,6 +108,32 @@ export class ActiviteInconnueError extends DomainValidationError {
   }
 }
 
+export class TypeDeQuestionError extends DomainValidationError {
+  readonly code = 'TYPE_DE_QUESTION';
+
+  constructor(questionId: string, raison: string) {
+    super(`La question ${questionId} ${raison}.`);
+  }
+}
+
+export class ProductionVideError extends DomainValidationError {
+  readonly code = 'PRODUCTION_VIDE';
+
+  constructor(questionId: string) {
+    super(
+      `Aucune saisie envoyée pour ${questionId} : répondez ou déclarez « je ne sais pas ».`,
+    );
+  }
+}
+
+export class ProductionInvalideError extends DomainValidationError {
+  readonly code = 'PRODUCTION_INVALIDE';
+
+  constructor(questionId: string, raison: string) {
+    super(`Production refusée pour ${questionId} : ${raison}.`);
+  }
+}
+
 export class PilotageIncompatibleError extends DomainValidationError {
   constructor(screenId: string, raison: string) {
     super(`Pilotage impossible sur l’écran ${screenId} : ${raison}.`);

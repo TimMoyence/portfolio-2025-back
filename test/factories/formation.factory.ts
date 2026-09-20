@@ -247,6 +247,8 @@ export function buildAnswerRecord(
     seed: 1001,
     correcte: true,
     misconception: null,
+    score: null,
+    details: null,
     dureeMs: 42000,
     soumisLe: new Date('2026-09-11T08:10:00.000Z'),
     ...overrides,

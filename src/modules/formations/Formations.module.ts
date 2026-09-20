@@ -17,6 +17,7 @@ import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
 import { SaveFreeResponseUseCase } from './application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
+import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
@@ -95,6 +96,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     JoinSessionUseCase,
     LireCoursPublicUseCase,
     SubmitAnswerUseCase,
+    SubmitProductionUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     {

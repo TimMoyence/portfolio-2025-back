@@ -66,6 +66,8 @@ export class AnswersRepositoryTypeORM
       seed: input.seed,
       correcte: input.correcte,
       misconception: input.misconception,
+      score: input.score ?? null,
+      details: input.details ?? null,
       dureeMs: input.dureeMs,
     });
     try {
@@ -122,6 +124,8 @@ export class AnswersRepositoryTypeORM
       seed: entity.seed,
       correcte: entity.correcte,
       misconception: entity.misconception,
+      score: entity.score,
+      details: entity.details,
       dureeMs: entity.dureeMs,
       soumisLe: entity.soumisLe,
     };

@@ -256,6 +256,8 @@ function creerAnswersRepo(): IAnswersRepository {
     create: (input) => {
       const reponse: AnswerRecord = {
         ...input,
+        score: input.score ?? null,
+        details: input.details ?? null,
         id: randomUUID(),
         soumisLe: new Date(),
       };

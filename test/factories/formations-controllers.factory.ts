@@ -5,6 +5,7 @@ export function createMockFormationsStudentDependances() {
   return {
     joinSession: { execute: jest.fn() },
     submitAnswer: { execute: jest.fn() },
+    submitProduction: { execute: jest.fn() },
     recordIncidents: { execute: jest.fn() },
     streamSession: { execute: jest.fn() },
     dueQuestions: { execute: jest.fn() },
@@ -25,6 +26,7 @@ export function buildFormationsStudentController(
   return new FormationsStudentController(
     dependances.joinSession as never,
     dependances.submitAnswer as never,
+    dependances.submitProduction as never,
     dependances.recordIncidents as never,
     dependances.streamSession as never,
     dependances.dueQuestions as never,

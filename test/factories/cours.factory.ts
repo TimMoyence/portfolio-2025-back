@@ -13,6 +13,12 @@ import type { AnswerRecord } from '../../src/modules/formations/domain/IAnswers.
 import type { ParticipantRecord } from '../../src/modules/formations/domain/IParticipants.repository';
 import type { SessionRecord } from '../../src/modules/formations/domain/ISessions.repository';
 import {
+  buildCorrigeClassement,
+  buildCorrigeFeuille,
+  buildCorrigeTableau,
+  buildPlanFeuille,
+} from './corriges.factory';
+import {
   buildAnswerRecord,
   buildParticipantRecord,
   buildSessionRecord,
@@ -108,6 +114,119 @@ export function buildCoursAvecVoteJumele(
   return {
     ...socle,
     ecrans: [...socle.ecrans, buildEcranDeVoteJumele()],
+  };
+}
+
+function planDeFeuilleTest() {
+  const socle = buildPlanFeuille({ id: 'Q-TEST-FEUILLE' });
+  return {
+    ...socle,
+    cellules: { ...socle.cellules, B3: '210000', C3: '230000' },
+    verrouillees: [...socle.verrouillees, 'B3', 'C3'],
+  };
+}
+
+export const PLAN_DE_CLASSEMENT_TEST = {
+  id: 'Q-TEST-CLASSEMENT',
+  intitule: 'Trier les indicateurs',
+  cartes: [
+    { id: 'ca-2025', libelle: 'CA 2025 : 397 000 €' },
+    { id: 'inflation', libelle: 'Inflation' },
+  ],
+  categories: [
+    { id: 'valeur', libelle: 'Valeur' },
+    { id: 'ambigu', libelle: 'Ambigu' },
+    { id: 'taux', libelle: 'Taux' },
+  ],
+} as const;
+
+const PLAN_DE_TABLEAU_TEST = {
+  id: 'Q-TEST-TABLEAU',
+  intitule: 'Chaîne d’évolutions',
+  consignes: ['Saisissez le prix facturé de chaque révision.'],
+  echeances: 2,
+  libellesLignes: ['Révision 1', 'Révision 2'],
+  parametres: { prixInitial: 20 },
+  colonnes: [
+    {
+      cle: 'taux',
+      intitule: 'Taux',
+      role: 'donnee' as const,
+      decimales: 2,
+      valeurs: [8, -5],
+      totalise: false,
+    },
+    {
+      cle: 'prix',
+      intitule: 'Prix facturé',
+      role: 'saisie' as const,
+      decimales: 2,
+      totalise: false,
+    },
+  ],
+  synthese: [],
+};
+
+export function buildCoursAvecProductions(
+  overrides: Partial<Cours> = {},
+): Cours {
+  const socle = buildCoursDeTest(overrides);
+  return {
+    ...socle,
+    ecrans: [
+      ...socle.ecrans,
+      {
+        ...EN_CATALOGUE,
+        id: 'E-FEUILLE',
+        brique: 'fp-sheet',
+        dureeMinutes: 12,
+        concepts: ['tableur'],
+        notes: 'Tâche de tableur',
+        proprietes: { plan: planDeFeuilleTest() },
+        production: {
+          id: 'Q-TEST-FEUILLE',
+          type: 'feuille',
+          concept: 'tableur',
+          noteCompte: true,
+          confusions: ['taux-valeur-facteur-cent'],
+          corrige: buildCorrigeFeuille({ plan: planDeFeuilleTest() }),
+        },
+      },
+      {
+        ...EN_CATALOGUE,
+        id: 'E-CARTES',
+        brique: 'fp-cardsort',
+        dureeMinutes: 10,
+        concepts: ['lecture-graphique'],
+        notes: 'Tri de cartes',
+        proprietes: { plan: PLAN_DE_CLASSEMENT_TEST },
+        production: {
+          id: 'Q-TEST-CLASSEMENT',
+          type: 'classement',
+          concept: 'lecture-graphique',
+          noteCompte: true,
+          confusions: ['valeur-confondue-avec-taux'],
+          corrige: buildCorrigeClassement(),
+        },
+      },
+      {
+        ...EN_CATALOGUE,
+        id: 'E-TABLEAU',
+        brique: 'fp-table-build',
+        dureeMinutes: 12,
+        concepts: ['evolutions-successives'],
+        notes: 'Construction de tableau',
+        proprietes: { plan: PLAN_DE_TABLEAU_TEST },
+        production: {
+          id: 'Q-TEST-TABLEAU',
+          type: 'tableau',
+          concept: 'evolutions-successives',
+          noteCompte: true,
+          confusions: ['taux-successifs-additionnes'],
+          corrige: buildCorrigeTableau(),
+        },
+      },
+    ],
   };
 }
 

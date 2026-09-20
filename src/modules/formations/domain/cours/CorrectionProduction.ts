@@ -1,7 +1,12 @@
 import type { Tolerance } from '../GradingCore';
 import { matchesSolution } from '../GradingCore';
 import type { SheetPlanStocke } from '../contrats/cours';
-import type { CorrigeFeuille, CorrigeTableau, PiegeNumerique } from './Corrige';
+import type {
+  CorrigeClassement,
+  CorrigeFeuille,
+  CorrigeTableau,
+  PiegeNumerique,
+} from './Corrige';
 import type { ConfusionId } from './banque/confusions';
 import type { Feuille, ResultatFormule } from './Formule';
 import { evaluerFeuille, formeR1C1, surfaceDeFormule } from './Formule';
@@ -17,6 +22,18 @@ interface VerdictDeLigne {
   readonly cle: string;
   readonly juste: boolean;
   readonly confusion: ConfusionId | null;
+}
+
+interface VerdictDeCarte {
+  readonly carteId: string;
+  readonly juste: boolean;
+  readonly confusion: ConfusionId | null;
+}
+
+export interface CorrectionDeClassement {
+  readonly verdicts: readonly VerdictDeCarte[];
+  readonly score: number;
+  readonly correcte: boolean;
 }
 
 export interface CorrectionDeFeuille {
@@ -141,6 +158,22 @@ export function corrigerFeuille(
       reference: attendu.reference,
       juste: confusion === undefined,
       confusion: confusion ?? null,
+    };
+  });
+  const score = proportionJuste(verdicts);
+  return { verdicts, score, correcte: score >= corrige.seuilReussite };
+}
+
+export function corrigerClassement(
+  corrige: CorrigeClassement,
+  classement: Readonly<Record<string, string>>,
+): CorrectionDeClassement {
+  const verdicts = corrige.attendus.map((attendu) => {
+    const juste = classement[attendu.carteId] === attendu.categorieId;
+    return {
+      carteId: attendu.carteId,
+      juste,
+      confusion: juste ? null : attendu.confusionSiErreur,
     };
   });
   const score = proportionJuste(verdicts);

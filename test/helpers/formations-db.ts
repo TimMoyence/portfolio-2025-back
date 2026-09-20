@@ -22,6 +22,7 @@ import { CreateFormationGroups1780500000000 } from '../../src/migrations/1780500
 import { CreateFormationScores1780600000000 } from '../../src/migrations/1780600000000-CreateFormationScores';
 import { DropFormationScreenNotesDefault1789818127042 } from '../../src/migrations/1789818127042-DropFormationScreenNotesDefault';
 import { AddFormationSessionPilotage1789861524871 } from '../../src/migrations/1789861524871-AddFormationSessionPilotage';
+import { AddFormationAnswerProduction1789862782667 } from '../../src/migrations/1789862782667-AddFormationAnswerProduction';
 import { AnswersRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Answers.repository.typeorm';
 import { CoursCatalogueRepositoryTypeORM } from '../../src/modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
 import { FormationAnswerEntity } from '../../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
@@ -83,6 +84,7 @@ const FORMATION_MIGRATIONS = [
   CreateFormationScores1780600000000,
   DropFormationScreenNotesDefault1789818127042,
   AddFormationSessionPilotage1789861524871,
+  AddFormationAnswerProduction1789862782667,
 ];
 
 const TABLES_DE_SEANCE = [
