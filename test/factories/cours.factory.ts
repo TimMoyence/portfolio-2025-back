@@ -225,6 +225,27 @@ export function buildEcranDEnigmes(): Ecran {
   };
 }
 
+export const SONDAGE_DE_TEST = 'jalon-test-1';
+
+export function buildEcranDeJalon(): Ecran {
+  return {
+    ...EN_CATALOGUE,
+    id: 'E-JALON',
+    brique: 'fp-pulse',
+    dureeMinutes: 1,
+    concepts: ['evolutions-successives'],
+    notes: 'Jalon de confiance',
+    proprietes: {
+      sondage: { id: SONDAGE_DE_TEST, invite: 'Où en êtes-vous ?' },
+    },
+  };
+}
+
+export function buildCoursAvecJalon(overrides: Partial<Cours> = {}): Cours {
+  const socle = buildCoursDeTest(overrides);
+  return { ...socle, ecrans: [...socle.ecrans, buildEcranDeJalon()] };
+}
+
 export function buildCoursAvecEnigmes(overrides: Partial<Cours> = {}): Cours {
   const socle = buildCoursDeTest(overrides);
   return { ...socle, ecrans: [...socle.ecrans, buildEcranDEnigmes()] };

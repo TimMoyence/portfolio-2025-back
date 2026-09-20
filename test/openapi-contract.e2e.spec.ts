@@ -93,10 +93,10 @@ const DTO_DU_CONTRAT_V3 = [
 const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
   '/sessions/{id}/productions',
   '/sessions/{id}/escape/{parcoursId}/tentatives',
+  '/sessions/{id}/pulses/{sondageId}',
 ];
 
 const ROUTES_A_VENIR_DU_CONTRAT_V3 = [
-  '/sessions/{id}/pulses/{sondageId}',
   '/sessions/{id}/rappels',
   '/sessions/{id}/defis/{defiId}/tentative',
   '/sessions/{id}/defis/{defiId}/strategies',

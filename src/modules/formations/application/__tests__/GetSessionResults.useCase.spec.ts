@@ -11,8 +11,10 @@ import {
   buildAdministrateur,
   buildAnswerRecord,
   createMockAnswersRepo,
+  createMockEscapeRepo,
   createMockIncidentsRepo,
   createMockParticipantsRepo,
+  createMockPulsesRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
@@ -49,6 +51,8 @@ describe('GetSessionResultsUseCase', () => {
       answers,
       incidents,
       creerCatalogueDeTest(),
+      createMockPulsesRepo(),
+      createMockEscapeRepo(),
     );
   });
 
@@ -81,6 +85,8 @@ describe('GetSessionResultsUseCase', () => {
           3: { ...buildCoursDeClasse(2), slug: cours.slug },
         },
       }),
+      createMockPulsesRepo(),
+      createMockEscapeRepo(),
     );
 
     const rapport = await sut.execute(seance.session.id, PROPRIETAIRE);

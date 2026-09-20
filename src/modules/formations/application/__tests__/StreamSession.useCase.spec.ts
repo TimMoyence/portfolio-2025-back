@@ -10,7 +10,9 @@ import {
   buildParticipantRecord,
   buildSessionRecord,
   createMockAnswersRepo,
+  createMockEscapeRepo,
   createMockIncidentsRepo,
+  createMockPulsesRepo,
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
@@ -137,6 +139,8 @@ describe('StreamSessionUseCase', () => {
       answers,
       createMockIncidentsRepo(),
       creerCatalogueDeTest(),
+      createMockPulsesRepo(),
+      createMockEscapeRepo(),
     );
     sut = new StreamSessionUseCase(sessions, cache, resultats);
   });

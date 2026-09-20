@@ -24,12 +24,15 @@ import { DropFormationScreenNotesDefault1789818127042 } from '../../src/migratio
 import { AddFormationSessionPilotage1789861524871 } from '../../src/migrations/1789861524871-AddFormationSessionPilotage';
 import { AddFormationAnswerProduction1789862782667 } from '../../src/migrations/1789862782667-AddFormationAnswerProduction';
 import { CreateFormationEscape1789864720421 } from '../../src/migrations/1789864720421-CreateFormationEscape';
+import { CreateFormationPulses1789867324005 } from '../../src/migrations/1789867324005-CreateFormationPulses';
 import { AnswersRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Answers.repository.typeorm';
 import { CoursCatalogueRepositoryTypeORM } from '../../src/modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
 import { FormationAnswerEntity } from '../../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
 import { FormationEscapeAttemptEntity } from '../../src/modules/formations/infrastructure/entities/FormationEscapeAttempt.entity';
 import { FormationEscapeProgressEntity } from '../../src/modules/formations/infrastructure/entities/FormationEscapeProgress.entity';
 import { EscapeRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Escape.repository.typeorm';
+import { FormationPulseEntity } from '../../src/modules/formations/infrastructure/entities/FormationPulse.entity';
+import { PulsesRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Pulses.repository.typeorm';
 import { FormationCourseContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
 import { FormationFreeResponseEntity } from '../../src/modules/formations/infrastructure/entities/FormationFreeResponse.entity';
 import { FormationGroupEntity } from '../../src/modules/formations/infrastructure/entities/FormationGroup.entity';
@@ -64,6 +67,7 @@ export const FORMATION_ENTITIES = [
   FormationScreenContentEntity,
   FormationEscapeProgressEntity,
   FormationEscapeAttemptEntity,
+  FormationPulseEntity,
 ];
 
 const FORMATION_MIGRATIONS = [
@@ -92,6 +96,7 @@ const FORMATION_MIGRATIONS = [
   AddFormationSessionPilotage1789861524871,
   AddFormationAnswerProduction1789862782667,
   CreateFormationEscape1789864720421,
+  CreateFormationPulses1789867324005,
 ];
 
 const TABLES_DE_SEANCE = [
@@ -106,6 +111,7 @@ const TABLES_DE_SEANCE = [
   'formation_teacher_annotations',
   'formation_escape_progress',
   'formation_escape_attempts',
+  'formation_pulses',
 ] as const;
 
 export const FORMATION_TABLES = [
@@ -126,6 +132,7 @@ export interface ContexteFormations {
   freeResponses: FreeResponsesRepositoryTypeORM;
   annotations: TeacherAnnotationsRepositoryTypeORM;
   escape: EscapeRepositoryTypeORM;
+  pulses: PulsesRepositoryTypeORM;
   catalogue: CoursCatalogueRepositoryTypeORM;
   graineDe(participantId: string): Promise<number>;
   nettoyer(): Promise<void>;
@@ -190,6 +197,9 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
     escape: new EscapeRepositoryTypeORM(
       dataSource.getRepository(FormationEscapeProgressEntity),
       dataSource.getRepository(FormationEscapeAttemptEntity),
+    ),
+    pulses: new PulsesRepositoryTypeORM(
+      dataSource.getRepository(FormationPulseEntity),
     ),
     catalogue: new CoursCatalogueRepositoryTypeORM(
       dataSource.getRepository(FormationCourseContentEntity),

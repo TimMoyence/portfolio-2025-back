@@ -21,7 +21,9 @@ import {
 } from './factories/cours-stocke.factory';
 import {
   buildBareme,
+  createMockEscapeRepo,
   createMockFormationMailer,
+  createMockPulsesRepo,
   createMockSessionStateCache,
 } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
@@ -463,6 +465,8 @@ describeDb('catalogue B2 migré', () => {
         answers,
         incidents,
         catalogue,
+        createMockPulsesRepo(),
+        createMockEscapeRepo(),
       ),
       scores,
       createMockFormationMailer(),

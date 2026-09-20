@@ -17,6 +17,7 @@ import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
 import { SaveFreeResponseUseCase } from './application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
+import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import {
@@ -24,6 +25,7 @@ import {
   CATALOGUE_COURS,
   ESCAPE_REPOSITORY,
   FREE_RESPONSES_REPOSITORY,
+  PULSES_REPOSITORY,
   FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
@@ -40,6 +42,8 @@ import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer
 import { FormationEscapeAttemptEntity } from './infrastructure/entities/FormationEscapeAttempt.entity';
 import { FormationEscapeProgressEntity } from './infrastructure/entities/FormationEscapeProgress.entity';
 import { EscapeRepositoryTypeORM } from './infrastructure/Escape.repository.typeorm';
+import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.entity';
+import { PulsesRepositoryTypeORM } from './infrastructure/Pulses.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from './infrastructure/FreeResponses.repository.typeorm';
 import { FormationGroupsRepositoryTypeORM } from './infrastructure/FormationGroups.repository.typeorm';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
@@ -86,6 +90,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       FormationScoreEntity,
       FormationEscapeProgressEntity,
       FormationEscapeAttemptEntity,
+      FormationPulseEntity,
     ]),
   ],
   controllers: [
@@ -105,6 +110,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
     TenterEnigmeUseCase,
+    DeclarerJalonUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     {
@@ -152,6 +158,10 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: ESCAPE_REPOSITORY,
       useClass: EscapeRepositoryTypeORM,
+    },
+    {
+      provide: PULSES_REPOSITORY,
+      useClass: PulsesRepositoryTypeORM,
     },
     {
       provide: MASTERY_REPOSITORY,

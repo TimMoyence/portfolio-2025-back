@@ -10,6 +10,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   Req,
   Sse,
   UseGuards,
@@ -42,6 +43,7 @@ import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
+import { DeclarerJalonUseCase } from '../application/DeclarerJalon.useCase';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
@@ -56,6 +58,7 @@ import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
 import { SaveFreeResponseRequestDto } from './dto/save-free-response.request.dto';
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
+import { DeclarerJalonRequestDto } from './dto/contrat/declarer-jalon.request.dto';
 import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
 import { TentativeEnigmeResponseDto } from './dto/contrat/tentative-enigme.response.dto';
 import { TenterEnigmeRequestDto } from './dto/contrat/tenter-enigme.request.dto';
@@ -65,6 +68,7 @@ import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
+  LIMITE_JALONS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
   LIMITE_REPONSES_PAR_PARTICIPANT,
   LIMITE_REVISION_PAR_PARTICIPANT,
@@ -87,6 +91,7 @@ export class FormationsStudentController {
     private readonly submitAnswer: SubmitAnswerUseCase,
     private readonly submitProduction: SubmitProductionUseCase,
     private readonly tenterEnigme: TenterEnigmeUseCase,
+    private readonly declarerJalon: DeclarerJalonUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
@@ -285,6 +290,40 @@ export class FormationsStudentController {
       enigmeId: dto.enigmeId,
       reponse: dto.reponse,
       dureeMs: dto.dureeMs,
+    });
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_JALONS_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Put('sessions/:id/pulses/:sondageId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Declare l etat du jalon de confiance, anonymise par HMAC',
+  })
+  @ApiNoContentResponse({ description: 'Jalon enregistre' })
+  @ApiBadRequestResponse({ description: 'Sondage inconnu du cours' })
+  @ApiConflictResponse({
+    description:
+      'Jalon refuse, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou ECRAN_NON_SERVI',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async jalon(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('sondageId') sondageId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: DeclarerJalonRequestDto,
+  ): Promise<void> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    await this.declarerJalon.execute({
+      sessionId,
+      participantId,
+      sondageId,
+      etat: dto.etat,
     });
   }
 

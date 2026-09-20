@@ -26,6 +26,7 @@ import type {
 } from '../../src/modules/formations/domain/ITeacherAnnotations.repository';
 import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
+import type { IPulsesRepository } from '../../src/modules/formations/domain/IPulses.repository';
 import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type {
   ISessionStateCache,
@@ -417,6 +418,14 @@ export function createMockEscapeRepo(): jest.Mocked<IEscapeRepository> {
   };
 }
 
+export function createMockPulsesRepo(): jest.Mocked<IPulsesRepository> {
+  return {
+    declarer: jest.fn().mockResolvedValue(undefined),
+    compterParSondage: jest.fn().mockResolvedValue({}),
+    listerDuParticipant: jest.fn().mockResolvedValue([]),
+  };
+}
+
 export function createMockScoresRepo(): jest.Mocked<IScoresRepository> {
   return {
     saveIndividuals: jest.fn().mockResolvedValue(undefined),
@@ -454,6 +463,7 @@ export function createMockDepotsFormations() {
     annotations: createMockTeacherAnnotationsRepo(),
     groups: createMockFormationGroupsRepo(),
     escape: createMockEscapeRepo(),
+    pulses: createMockPulsesRepo(),
     mailer: createMockFormationMailer(),
   };
 }

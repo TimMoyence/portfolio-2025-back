@@ -38,12 +38,14 @@ import { RecordIncidentsUseCase } from '../../src/modules/formations/application
 import { SaveFreeResponseUseCase } from '../../src/modules/formations/application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from '../../src/modules/formations/application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../../src/modules/formations/application/SubmitAnswer.useCase';
+import { DeclarerJalonUseCase } from '../../src/modules/formations/application/DeclarerJalon.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
 import type { IFormationGroupsRepository } from '../../src/modules/formations/domain/IFormationGroups.repository';
 import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
+import type { IPulsesRepository } from '../../src/modules/formations/domain/IPulses.repository';
 import type { IFreeResponsesRepository } from '../../src/modules/formations/domain/IFreeResponses.repository';
 import type { IIncidentsRepository } from '../../src/modules/formations/domain/IIncidents.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
@@ -63,6 +65,7 @@ import {
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   ESCAPE_REPOSITORY,
+  PULSES_REPOSITORY,
   SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
@@ -147,6 +150,7 @@ export interface DepotsFormations {
   annotations: ITeacherAnnotationsRepository;
   groups: IFormationGroupsRepository;
   escape: IEscapeRepository;
+  pulses: IPulsesRepository;
   mailer: IFormationMailer;
 }
 
@@ -171,6 +175,7 @@ export function fournisseursFormations(
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
     TenterEnigmeUseCase,
+    DeclarerJalonUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     DueQuestionsUseCase,
@@ -194,6 +199,7 @@ export function fournisseursFormations(
     { provide: TEACHER_ANNOTATIONS_REPOSITORY, useValue: depots.annotations },
     { provide: FORMATION_GROUPS_REPOSITORY, useValue: depots.groups },
     { provide: ESCAPE_REPOSITORY, useValue: depots.escape },
+    { provide: PULSES_REPOSITORY, useValue: depots.pulses },
     { provide: FORMATION_MAILER, useValue: depots.mailer },
     { provide: CATALOGUE_COURS, useValue: catalogue },
     { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },

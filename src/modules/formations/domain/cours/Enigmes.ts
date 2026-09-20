@@ -124,3 +124,59 @@ export function corrigerEnigme(
     confusion: piege?.confusion ?? null,
   };
 }
+
+export interface ProgressionAgregee {
+  readonly parcoursId: string;
+  readonly enigmeId: string;
+  readonly ouvertes: number;
+  readonly resolues: number;
+  readonly tentativesMoyennes: number;
+  readonly epuisees: number;
+}
+
+interface CumulDEnigme {
+  ouvertes: number;
+  resolues: number;
+  tentatives: number;
+  epuisees: number;
+}
+
+export function agregerEnigmes(
+  progressions: readonly {
+    readonly parcoursId: string;
+    readonly enigmeId: string;
+    readonly tentatives: number;
+    readonly resolueLe: Date | null;
+  }[],
+  plafond: number = TENTATIVES_MAX_PAR_ENIGME,
+): readonly ProgressionAgregee[] {
+  const cumuls = new Map<string, CumulDEnigme>();
+  for (const ligne of progressions) {
+    const cle = `${ligne.parcoursId}|${ligne.enigmeId}`;
+    const cumul = cumuls.get(cle) ?? {
+      ouvertes: 0,
+      resolues: 0,
+      tentatives: 0,
+      epuisees: 0,
+    };
+    cumuls.set(cle, {
+      ouvertes: cumul.ouvertes + 1,
+      resolues: cumul.resolues + (ligne.resolueLe === null ? 0 : 1),
+      tentatives: cumul.tentatives + ligne.tentatives,
+      epuisees:
+        cumul.epuisees +
+        (ligne.resolueLe === null && ligne.tentatives >= plafond ? 1 : 0),
+    });
+  }
+  return [...cumuls.entries()].map(([cle, cumul]) => {
+    const [parcoursId, enigmeId] = cle.split('|');
+    return {
+      parcoursId,
+      enigmeId,
+      ouvertes: cumul.ouvertes,
+      resolues: cumul.resolues,
+      tentativesMoyennes: cumul.tentatives / cumul.ouvertes,
+      epuisees: cumul.epuisees,
+    };
+  });
+}

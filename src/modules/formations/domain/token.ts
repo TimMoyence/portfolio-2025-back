@@ -16,3 +16,4 @@ export const FORMATION_GROUPS_REPOSITORY = Symbol(
 );
 export const SCORES_REPOSITORY = Symbol('SCORES_REPOSITORY');
 export const ESCAPE_REPOSITORY = Symbol('ESCAPE_REPOSITORY');
+export const PULSES_REPOSITORY = Symbol('PULSES_REPOSITORY');
