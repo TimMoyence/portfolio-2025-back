@@ -7,7 +7,10 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
-import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
+import {
+  PlafondDeFluxAtteintError,
+  SessionStreamLimitError,
+} from '../domain/errors/FormationErrors';
 import type {
   IStreamCapacity,
   StreamCapacityLease,
@@ -266,43 +269,55 @@ export class StreamSessionUseCase {
           .map(({ capacite, plafond }) => ({ key: capacite, limit: plafond })),
       };
 
+      const installer = (): void => {
+        if (!actif) {
+          arreter();
+          return;
+        }
+        boucle = setInterval(() => {
+          void tick();
+        }, INTERVALLE_MS);
+
+        battement = setInterval(() => {
+          if (bail !== null) {
+            this.rafraichirCapacite(bail, sessionId);
+          }
+          subscriber.next({
+            type: 'heartbeat',
+            data: { ts: new Date().toISOString() },
+          });
+        }, this.cadences.battementMs);
+
+        limite = setTimeout(() => {
+          subscriber.next({ type: 'fin', data: { raison: 'expiree' } });
+          subscriber.complete();
+          arreter();
+        }, this.cadences.dureeMaxMs);
+
+        fermerLesPlusAnciens(places.porteur);
+        occuper(places, ceder);
+        void tick();
+      };
+
       const demarrer = async (): Promise<void> => {
         try {
           bail = await this.capacity.acquire(demande);
-          if (!actif) {
+        } catch (error) {
+          if (error instanceof PlafondDeFluxAtteintError) {
+            this.logger.warn(
+              `Plafond de flux atteint pour la session ${sessionId}: ${messageDe(error)}`,
+            );
+            subscriber.error(new SessionStreamLimitError());
             arreter();
             return;
           }
-          boucle = setInterval(() => {
-            void tick();
-          }, INTERVALLE_MS);
-
-          battement = setInterval(() => {
-            if (bail !== null) {
-              this.rafraichirCapacite(bail, sessionId);
-            }
-            subscriber.next({
-              type: 'heartbeat',
-              data: { ts: new Date().toISOString() },
-            });
-          }, this.cadences.battementMs);
-
-          limite = setTimeout(() => {
-            subscriber.next({ type: 'fin', data: { raison: 'expiree' } });
-            subscriber.complete();
-            arreter();
-          }, this.cadences.dureeMaxMs);
-
-          fermerLesPlusAnciens(places.porteur);
-          occuper(places, ceder);
-          void tick();
-        } catch (error) {
-          this.logger.warn(
-            `Ouverture du plafond de flux refusee pour la session ${sessionId}: ${messageDe(error)}`,
+          bail = null;
+          this.logger.error(
+            `Plafond de flux partage indisponible pour la session ${sessionId}, ouverture en mode degrade borne par le processus`,
+            messageDe(error),
           );
-          subscriber.error(new SessionStreamLimitError());
-          arreter();
         }
+        installer();
       };
 
       void demarrer();

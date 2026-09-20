@@ -222,6 +222,14 @@ export class EcranNonServiError extends ResourceConflictError {
   }
 }
 
+export class PlafondDeFluxAtteintError extends RateLimitExceededError {
+  readonly code = 'PLAFOND_DE_FLUX_ATTEINT';
+
+  constructor(cle: string) {
+    super(`Plafond de flux atteint pour ${cle} sur une autre instance.`);
+  }
+}
+
 export class SessionStreamLimitError extends RateLimitExceededError {
   constructor() {
     super(

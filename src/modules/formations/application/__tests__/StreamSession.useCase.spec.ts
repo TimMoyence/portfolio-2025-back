@@ -17,6 +17,7 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
+  PlafondDeFluxAtteintError,
   SessionNotOwnedError,
   SessionStreamLimitError,
 } from '../../domain/errors/FormationErrors';
@@ -94,7 +95,9 @@ function capacitePartagee(): IStreamCapacity {
           return compte >= limit;
         })
       ) {
-        throw new Error('plafond atteint');
+        throw new PlafondDeFluxAtteintError(
+          request.places.map(({ key }) => key).join(', '),
+        );
       }
       const token = `bail-${sequence++}`;
       for (const { key } of request.places) {
@@ -222,6 +225,87 @@ describe('StreamSessionUseCase', () => {
     await jest.advanceTimersByTimeAsync(10);
     const recus = await messages;
     expect(recus[recus.length - 1].type).toBe('fin');
+  });
+
+  describe('plafond partage indisponible (H6, AC-39)', () => {
+    const fermerLesEcoutes = (ouverts: readonly Ecoute[]): void => {
+      ouverts.forEach((ecoute) => ecoute.abonnement.unsubscribe());
+    };
+
+    const capaciteEnPanne = (): IStreamCapacity => ({
+      acquire: () => Promise.reject(new Error('Redis indisponible')),
+      refresh: () => Promise.resolve(),
+      release: () => Promise.resolve(),
+    });
+
+    const capaciteAuPlafond = (): IStreamCapacity => ({
+      acquire: () =>
+        Promise.reject(new PlafondDeFluxAtteintError('session:session-uuid')),
+      refresh: () => Promise.resolve(),
+      release: () => Promise.resolve(),
+    });
+
+    const fluxAvec = (capacite: IStreamCapacity): StreamSessionUseCase =>
+      new StreamSessionUseCase(
+        sessions,
+        new SessionStateCacheService(),
+        resultats,
+        undefined,
+        capacite,
+      );
+
+    it('refuse le flux en 429 et journalise un avertissement quand le plafond est atteint', async () => {
+      const avertir = jest
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
+      const erreur = new Promise<unknown>((resolve) => {
+        fluxAvec(capaciteAuPlafond())
+          .execute('session-uuid', PARTICIPANT_ID)
+          .subscribe({ error: resolve });
+      });
+      await jest.advanceTimersByTimeAsync(10);
+
+      await expect(erreur).resolves.toBeInstanceOf(SessionStreamLimitError);
+      expect(avertir).toHaveBeenCalledWith(
+        expect.stringContaining('Plafond de flux atteint'),
+      );
+      avertir.mockRestore();
+    });
+
+    it('ouvre le flux en mode degrade et journalise une erreur quand Redis tombe', async () => {
+      const signaler = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation(() => undefined);
+      const flux = ecouter(
+        fluxAvec(capaciteEnPanne()).execute('session-uuid', PARTICIPANT_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(flux.types()).toContain('etat');
+      expect(signaler).toHaveBeenCalledWith(
+        expect.stringContaining('mode degrade'),
+        expect.stringContaining('Redis indisponible'),
+      );
+      fermerLesEcoutes([flux]);
+      signaler.mockRestore();
+    });
+
+    it('borne le mode degrade par les plafonds du processus', async () => {
+      const sut = fluxAvec(capaciteEnPanne());
+      jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+      const ouverts = Array.from(
+        { length: MAX_ABONNEMENTS_PAR_SESSION },
+        (_, rang) =>
+          ecouter(sut.execute('session-uuid', participantDeRang(rang))),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(() =>
+        sut.execute('session-uuid', 'participant-au-dela-du-plafond'),
+      ).toThrow(SessionStreamLimitError);
+      fermerLesEcoutes(ouverts);
+      jest.restoreAllMocks();
+    });
   });
 
   describe('budgets de flux simultanes', () => {
