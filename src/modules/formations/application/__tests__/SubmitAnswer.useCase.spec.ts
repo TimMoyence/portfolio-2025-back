@@ -144,7 +144,7 @@ describe('SubmitAnswerUseCase', () => {
     );
     await expect(sut.execute(commande)).rejects.toThrow(SessionNotStartedError);
     expect(answers.create).not.toHaveBeenCalled();
-    expect(mastery.upsert).not.toHaveBeenCalled();
+    expect(mastery.enregistrerTentative).not.toHaveBeenCalled();
   });
 
   it('dit a l etudiant que la seance n a pas commence plutot que de refuser sans raison', async () => {
@@ -161,32 +161,23 @@ describe('SubmitAnswerUseCase', () => {
     );
   });
 
-  it('fait monter la boite de Leitner apres une reussite', async () => {
+  it('enregistre une tentative reussie sur le concept de la question', async () => {
     await sut.execute(commande);
-    expect(mastery.upsert).toHaveBeenCalledWith(
+    expect(mastery.enregistrerTentative).toHaveBeenCalledWith(
       expect.objectContaining({
+        studentKey: '11111111-1111-4111-8111-111111111111',
         concept: 'capitalisation',
-        boite: 2,
-        succes: 1,
+        reussi: true,
       }),
     );
   });
 
-  it('redescend en premiere boite apres un echec', async () => {
-    mastery.findByStudentKey.mockResolvedValue([
-      {
-        studentKey: '11111111-1111-4111-8111-111111111111',
-        concept: 'capitalisation',
-        boite: 3,
-        derniereVue: new Date('2026-09-01T08:00:00.000Z'),
-        succes: 4,
-        echecs: 0,
-      },
-    ]);
+  it('enregistre une tentative ratee sans relire la maitrise existante', async () => {
     await sut.execute({ ...commande, valeur: 1300 });
-    expect(mastery.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ boite: 1, echecs: 1 }),
+    expect(mastery.enregistrerTentative).toHaveBeenCalledWith(
+      expect.objectContaining({ concept: 'capitalisation', reussi: false }),
     );
+    expect(mastery.findByStudentKey).not.toHaveBeenCalled();
   });
 
   it('enregistre la duree de reponse', async () => {

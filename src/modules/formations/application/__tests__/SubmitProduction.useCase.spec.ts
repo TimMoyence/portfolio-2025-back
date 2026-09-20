@@ -111,8 +111,8 @@ describe('SubmitProductionUseCase', () => {
   it('met la maitrise du concept a jour', async () => {
     await sut.execute(commande);
 
-    expect(mastery.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ concept: 'tableur', boite: 2, succes: 1 }),
+    expect(mastery.enregistrerTentative).toHaveBeenCalledWith(
+      expect.objectContaining({ concept: 'tableur', reussi: true }),
     );
   });
 

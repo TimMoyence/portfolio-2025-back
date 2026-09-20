@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { Cours } from '../domain/contrats/cours';
+import { creerCacheLRU } from '../domain/cours/CacheLRU';
 import { lireCoursStocke } from '../domain/cours/CoursStocke';
 import { CoursInconnuError } from '../domain/errors/FormationErrors';
 import type {
@@ -11,8 +12,16 @@ import type {
 import { FormationCourseContentEntity } from './entities/FormationCourseContent.entity';
 import { FormationCoursePublicationEntity } from './entities/FormationCoursePublication.entity';
 
+const TAILLE_CACHE_DES_COURS = 8;
+
+function cleDuCours(slug: string, version: number): string {
+  return `${slug}@${String(version)}`;
+}
+
 @Injectable()
 export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
+  private readonly coursLus = creerCacheLRU<Cours>(TAILLE_CACHE_DES_COURS);
+
   constructor(
     @InjectRepository(FormationCourseContentEntity)
     private readonly repo: Repository<FormationCourseContentEntity>,
@@ -21,12 +30,30 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
   ) {}
 
   async trouver(slug: string, version?: number): Promise<Cours | null> {
+    if (version !== undefined) {
+      const memorise = this.coursLus.lire(cleDuCours(slug, version));
+      if (memorise !== undefined) {
+        return memorise;
+      }
+    }
     const entity = await this.findEntity(slug, version);
     return entity === null ? null : this.toDomain(entity);
   }
 
   async trouverCourant(slug: string): Promise<CoursPublie | null> {
     const publication = await this.publications.findOne({ where: { slug } });
+    if (publication) {
+      const memorise = this.coursLus.lire(
+        cleDuCours(slug, publication.versionPubliee),
+      );
+      if (memorise !== undefined) {
+        return {
+          cours: memorise,
+          version: publication.versionPubliee,
+          publieLe: publication.publieeLe,
+        };
+      }
+    }
     const entity = await this.findEntity(slug, publication?.versionPubliee);
     if (entity === null) {
       return null;
@@ -84,7 +111,7 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
   }
 
   private toDomain(entity: FormationCourseContentEntity): Cours {
-    return lireCoursStocke({
+    const cours = lireCoursStocke({
       slug: entity.slug,
       version: entity.version,
       titre: entity.titre,
@@ -104,5 +131,7 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
         proprietes: screen.proprietes,
       })),
     });
+    this.coursLus.ecrire(cleDuCours(entity.slug, entity.version), cours);
+    return cours;
   }
 }

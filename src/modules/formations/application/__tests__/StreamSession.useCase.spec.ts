@@ -33,6 +33,7 @@ import { SessionStateCacheService } from '../../infrastructure/SessionStateCache
 import { GetSessionResultsUseCase } from '../GetSessionResults.useCase';
 import {
   CADENCES_PRODUCTION,
+  DELAI_MIN_BILAN_MS,
   MAX_ABONNEMENTS_PAR_SESSION,
   MAX_FLUX_FORMATEUR_PAR_SESSION,
   MAX_FLUX_PAR_PARTICIPANT,
@@ -723,13 +724,65 @@ describe('StreamSessionUseCase', () => {
       ]);
 
       cache.signalerActivite('session-uuid');
-      await jest.advanceTimersByTimeAsync(INTERVALLE_MS_TEST);
+      await jest.advanceTimersByTimeAsync(DELAI_MIN_BILAN_MS);
 
       expect(ecoute.resultats()).toHaveLength(2);
       expect(ecoute.resultats()[1].questions[0]).toMatchObject({
         total: 2,
         correctes: 1,
       });
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('ne calcule qu un bilan pour les deux flux du formateur', async () => {
+      const premier = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      const second = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      expect(premier.resultats()).toHaveLength(1);
+      expect(second.resultats()).toHaveLength(1);
+      expect(second.resultats()[0]).toBe(premier.resultats()[0]);
+      expect(answers.listBySession).toHaveBeenCalledTimes(1);
+      premier.abonnement.unsubscribe();
+      second.abonnement.unsubscribe();
+    });
+
+    it('ne recalcule pas le bilan plus d une fois par seconde malgre l activite', async () => {
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      cache.signalerActivite('session-uuid');
+      await jest.advanceTimersByTimeAsync(INTERVALLE_MS_TEST);
+      expect(answers.listBySession).toHaveBeenCalledTimes(1);
+      expect(ecoute.resultats()).toHaveLength(1);
+
+      await jest.advanceTimersByTimeAsync(INTERVALLE_MS_TEST);
+      expect(answers.listBySession).toHaveBeenCalledTimes(2);
+      expect(ecoute.resultats()).toHaveLength(2);
+      ecoute.abonnement.unsubscribe();
+    });
+
+    it('pousse le bilan definitif d une seance terminee sans attendre la seconde', async () => {
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ etat: 'terminee' }),
+      );
+      cache.drop('session-uuid');
+      cache.signalerActivite('session-uuid');
+      await jest.advanceTimersByTimeAsync(INTERVALLE_MS_TEST);
+
+      expect(ecoute.resultats()).toHaveLength(2);
+      expect(ecoute.types()).toContain('fin');
       ecoute.abonnement.unsubscribe();
     });
 

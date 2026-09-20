@@ -22,6 +22,16 @@ export interface SessionRecord {
   majLe: Date;
 }
 
+export interface EtatDeSeanceRecord {
+  readonly etat: SessionState;
+  readonly modeRythme: PacingMode;
+  readonly ecranCourant: number;
+  readonly intervalleLibre: FreeRange | null;
+  readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
+  readonly revision: number;
+  readonly majLe: Date;
+}
+
 export interface CreateSessionInput {
   courseSlug: string;
   courseVersion: number;
@@ -43,6 +53,7 @@ export interface UpdateSessionInput {
 export interface ISessionsRepository {
   create(input: CreateSessionInput): Promise<SessionRecord>;
   findById(id: string): Promise<SessionRecord | null>;
+  lireEtat(id: string): Promise<EtatDeSeanceRecord | null>;
   findActiveByCode(code: string): Promise<SessionRecord | null>;
   isCodeTaken(code: string): Promise<boolean>;
   update(id: string, input: UpdateSessionInput): Promise<SessionRecord>;

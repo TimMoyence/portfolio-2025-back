@@ -7,6 +7,7 @@ import {
   SessionCodeAlreadyActiveError,
 } from '../src/modules/formations/domain/errors/FormationErrors';
 import type { ParticipantRecord } from '../src/modules/formations/domain/IParticipants.repository';
+import { nextBox } from '../src/modules/formations/domain/LeitnerBox';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { buildCoursDeClasse } from './factories/cours.factory';
 import { buildBareme } from './factories/formation.factory';
@@ -435,28 +436,73 @@ describeDb('Formations repositories (db integration)', () => {
 
   it('remplace la maitrise existante au lieu de la dupliquer', async () => {
     const derniereVue = new Date('2026-09-11T09:00:00.000Z');
-    await contexte.mastery.upsert({
+    await contexte.mastery.enregistrerTentative({
       studentKey: CLE_ETUDIANT,
       concept: 'capitalisation',
-      boite: 1,
-      derniereVue,
-      succes: 1,
-      echecs: 0,
+      reussi: true,
+      vueLe: derniereVue,
     });
-    await contexte.mastery.upsert({
+    await contexte.mastery.enregistrerTentative({
       studentKey: CLE_ETUDIANT,
       concept: 'capitalisation',
-      boite: 2,
-      derniereVue,
-      succes: 2,
-      echecs: 0,
+      reussi: true,
+      vueLe: derniereVue,
     });
 
     const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
     expect(maitrise).toHaveLength(1);
-    expect(maitrise[0].boite).toBe(2);
+    expect(maitrise[0].boite).toBe(3);
     expect(typeof maitrise[0].succes).toBe('number');
+    expect(maitrise[0].succes).toBe(2);
     expect(maitrise[0].derniereVue.getTime()).toBe(derniereVue.getTime());
+  });
+
+  it('compte chaque tentative simultanee sans perte de mise a jour', async () => {
+    const vueLe = new Date('2026-09-11T09:30:00.000Z');
+    const tentatives = Array.from({ length: 20 }, (_, rang) =>
+      contexte.mastery.enregistrerTentative({
+        studentKey: CLE_ETUDIANT,
+        concept: 'taux-evolution',
+        reussi: rang % 2 === 0,
+        vueLe,
+      }),
+    );
+
+    await Promise.all(tentatives);
+
+    const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
+    const ligne = maitrise.find(
+      (entree) => entree.concept === 'taux-evolution',
+    );
+    expect(ligne).toBeDefined();
+    expect(ligne!.succes + ligne!.echecs).toBe(20);
+    expect(ligne!.succes).toBe(10);
+    expect(ligne!.echecs).toBe(10);
+  });
+
+  it('applique en base la meme transition de boite que le domaine', async () => {
+    for (const reussi of [true, false]) {
+      for (const boiteDepart of [1, 2, 3] as const) {
+        await contexte.nettoyer();
+        for (let montee = 1; montee < boiteDepart; montee += 1) {
+          await contexte.mastery.enregistrerTentative({
+            studentKey: CLE_ETUDIANT,
+            concept: 'controle-coherence',
+            reussi: true,
+            vueLe: new Date('2026-09-11T10:00:00.000Z'),
+          });
+        }
+        await contexte.mastery.enregistrerTentative({
+          studentKey: CLE_ETUDIANT,
+          concept: 'controle-coherence',
+          reussi,
+          vueLe: new Date('2026-09-11T10:05:00.000Z'),
+        });
+
+        const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
+        expect(maitrise[0].boite).toBe(nextBox(boiteDepart, reussi));
+      }
+    }
   });
 
   it('decrit dans les entites le schema exact que produit la migration', async () => {

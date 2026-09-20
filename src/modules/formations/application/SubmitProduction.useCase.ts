@@ -23,7 +23,6 @@ import type { IParticipantsRepository } from '../domain/IParticipants.repository
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { assertReponsesOuvertes } from '../domain/SessionState';
-import { MiseAJourDeMaitrise } from './MiseAJourDeMaitrise';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
@@ -56,8 +55,6 @@ export interface SubmitProductionResult {
 
 @Injectable()
 export class SubmitProductionUseCase {
-  private readonly maitrise: MiseAJourDeMaitrise;
-
   constructor(
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
@@ -66,14 +63,12 @@ export class SubmitProductionUseCase {
     @Inject(ANSWERS_REPOSITORY)
     private readonly answers: IAnswersRepository,
     @Inject(MASTERY_REPOSITORY)
-    mastery: IMasteryRepository,
+    private readonly mastery: IMasteryRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
     @Inject(CATALOGUE_COURS)
     private readonly catalogue: ICatalogueCours,
-  ) {
-    this.maitrise = new MiseAJourDeMaitrise(mastery);
-  }
+  ) {}
 
   async execute(
     command: SubmitProductionCommand,
@@ -127,11 +122,12 @@ export class SubmitProductionUseCase {
       valeur,
     });
     this.cache.signalerActivite(command.sessionId);
-    await this.maitrise.appliquer(
-      participant.studentKey,
-      cible.question.concept,
-      verdict.correcte,
-    );
+    await this.mastery.enregistrerTentative({
+      studentKey: participant.studentKey,
+      concept: cible.question.concept,
+      reussi: verdict.correcte,
+      vueLe: new Date(),
+    });
 
     return {
       correcte: verdict.correcte,

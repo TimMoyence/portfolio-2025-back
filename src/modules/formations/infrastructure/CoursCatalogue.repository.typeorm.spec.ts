@@ -22,13 +22,14 @@ function catalogueLisant(...lignes: (FormationCourseContentEntity | null)[]) {
   const depot = mockTypeOrmRepository<FormationCourseContentEntity>({
     createQueryBuilder: jest.fn().mockReturnValue(requete),
   });
+  const findOnePublication = jest.fn().mockResolvedValue(null);
   const publications = mockTypeOrmRepository<FormationCoursePublicationEntity>({
-    findOne: jest.fn().mockResolvedValue(null),
+    findOne: findOnePublication,
     upsert: jest.fn().mockResolvedValue(undefined),
   });
   return {
     requete,
-    publications,
+    findOnePublication,
     sut: new CoursCatalogueRepositoryTypeORM(depot, publications),
   };
 }
@@ -104,6 +105,47 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
     expect(requete.andWhere).toHaveBeenCalledWith('course.version = :version', {
       version: 2,
     });
+  });
+
+  it('ne relit pas en base une version deja lue', async () => {
+    const { requete, sut } = catalogueLisant(buildCourseContentEntity());
+
+    const premier = await sut.trouver(SLUG, 2);
+    const second = await sut.trouver(SLUG, 2);
+
+    expect(second).toBe(premier);
+    expect(requete.getOne).toHaveBeenCalledTimes(1);
+  });
+
+  it('relit en base une version differente du meme cours', async () => {
+    const { requete, sut } = catalogueLisant(
+      buildCourseContentEntity({ version: 1 }),
+      buildCourseContentEntity({ version: 2 }),
+    );
+
+    await sut.trouver(SLUG, 1);
+    await sut.trouver(SLUG, 2);
+
+    expect(requete.getOne).toHaveBeenCalledTimes(2);
+  });
+
+  it('relit la publication a chaque appel mais sert le contenu deja lu', async () => {
+    const { requete, findOnePublication, sut } = catalogueLisant(
+      buildCourseContentEntity({ version: 2 }),
+    );
+    findOnePublication.mockResolvedValue({
+      slug: SLUG,
+      versionPubliee: 2,
+      publieeLe: new Date('2026-09-11T08:00:00.000Z'),
+      publieePar: null,
+    });
+
+    const premier = await sut.trouverCourant(SLUG);
+    const second = await sut.trouverCourant(SLUG);
+
+    expect(second?.cours).toBe(premier?.cours);
+    expect(requete.getOne).toHaveBeenCalledTimes(1);
+    expect(findOnePublication).toHaveBeenCalledTimes(2);
   });
 
   it('retourne null quand le catalogue ne trouve aucune version', async () => {

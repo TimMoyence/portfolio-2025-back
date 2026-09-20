@@ -9,7 +9,14 @@ export interface MasteryRecord {
   echecs: number;
 }
 
+export interface TentativeDeMaitrise {
+  readonly studentKey: string;
+  readonly concept: string;
+  readonly reussi: boolean;
+  readonly vueLe: Date;
+}
+
 export interface IMasteryRepository {
   findByStudentKey(studentKey: string): Promise<readonly MasteryRecord[]>;
-  upsert(record: MasteryRecord): Promise<void>;
+  enregistrerTentative(tentative: TentativeDeMaitrise): Promise<void>;
 }

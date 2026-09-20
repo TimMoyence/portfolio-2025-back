@@ -16,7 +16,6 @@ import type { IParticipantsRepository } from '../domain/IParticipants.repository
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { assertReponsesOuvertes } from '../domain/SessionState';
-import { MiseAJourDeMaitrise } from './MiseAJourDeMaitrise';
 import {
   ANSWERS_REPOSITORY,
   MASTERY_REPOSITORY,
@@ -38,8 +37,6 @@ const TYPES_A_ROUTE_PROPRE: readonly string[] = [
 
 @Injectable()
 export class SubmitAnswerUseCase {
-  private readonly maitrise: MiseAJourDeMaitrise;
-
   constructor(
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
@@ -48,12 +45,10 @@ export class SubmitAnswerUseCase {
     @Inject(ANSWERS_REPOSITORY)
     private readonly answers: IAnswersRepository,
     @Inject(MASTERY_REPOSITORY)
-    mastery: IMasteryRepository,
+    private readonly mastery: IMasteryRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
-  ) {
-    this.maitrise = new MiseAJourDeMaitrise(mastery);
-  }
+  ) {}
 
   async execute(command: SubmitAnswerCommand): Promise<SubmitAnswerResult> {
     const session = await this.sessions.findById(command.sessionId);
@@ -126,11 +121,12 @@ export class SubmitAnswerUseCase {
     });
     this.cache.signalerActivite(command.sessionId);
 
-    await this.maitrise.appliquer(
-      participant.studentKey,
-      question.concept,
-      verdict.correcte,
-    );
+    await this.mastery.enregistrerTentative({
+      studentKey: participant.studentKey,
+      concept: question.concept,
+      reussi: verdict.correcte,
+      vueLe: new Date(),
+    });
 
     return {
       ...verdict,

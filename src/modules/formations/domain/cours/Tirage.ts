@@ -14,6 +14,7 @@ import type {
   TirageDuCours,
 } from '../contrats/tirage';
 import { creerRng, creerTirage, melanger } from './Aleatoire';
+import { creerCacheLRU } from './CacheLRU';
 import type { Rng, Tirage } from './Aleatoire';
 import type { ConfusionId } from './banque/confusions';
 import { estInteractif } from './Cours';
@@ -150,8 +151,24 @@ export function tirerEnDetail(cours: Cours, graine: number): TirageDetaille {
   };
 }
 
+export const TAILLE_MEMO_TIRAGES = 64;
+
+interface TirageMemorise {
+  readonly cours: Cours;
+  readonly tirage: TirageDuCours;
+}
+
+const memoDesTirages = creerCacheLRU<TirageMemorise>(TAILLE_MEMO_TIRAGES);
+
 export function tirer(cours: Cours, graine: number): TirageDuCours {
-  return tirerEnDetail(cours, graine).tirage;
+  const cle = `${cours.slug}#${String(graine)}`;
+  const memorise = memoDesTirages.lire(cle);
+  if (memorise !== undefined && memorise.cours === cours) {
+    return memorise.tirage;
+  }
+  const { tirage } = tirerEnDetail(cours, graine);
+  memoDesTirages.ecrire(cle, { cours, tirage });
+  return tirage;
 }
 
 function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {

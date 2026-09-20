@@ -20,7 +20,12 @@ import { questionNumerique, questionVote } from './Cours';
 import type { AuMoinsUn, QuestionNumerique, QuestionVote } from './Cours';
 import { lireCoursStocke } from './CoursStocke';
 import { questionDeVote, slugOption } from './QuestionStockee';
-import { PROPRIETE_PAR_BRIQUE, tirer, TirageAmbiguError } from './Tirage';
+import {
+  PROPRIETE_PAR_BRIQUE,
+  TAILLE_MEMO_TIRAGES,
+  tirer,
+  TirageAmbiguError,
+} from './Tirage';
 import type { CorrigeTire } from './Tirage';
 
 const parIdentifiant = (
@@ -488,5 +493,36 @@ describe('tirer (briques de la V3)', () => {
     expect(Object.keys(tirage.corriges)).not.toContain(
       'b2-01-a4-feuille-canaux',
     );
+  });
+});
+
+describe('memo des tirages', () => {
+  const cours = buildCoursDeTest();
+
+  it('ne retire pas deux fois le meme cours avec la meme graine', () => {
+    expect(tirer(cours, 4242)).toBe(tirer(cours, 4242));
+  });
+
+  it('retire a nouveau pour une autre graine', () => {
+    expect(tirer(cours, 4243)).not.toBe(tirer(cours, 4242));
+  });
+
+  it('ne confond pas deux cours de meme slug servis en memoire', () => {
+    const autreVersion = buildCoursDeTest({ titre: 'Version publiee 2' });
+
+    expect(autreVersion.slug).toBe(cours.slug);
+    expect(tirer(autreVersion, 4242).sujet.titre).toBe('Version publiee 2');
+    expect(tirer(cours, 4242).sujet.titre).toBe(cours.titre);
+  });
+
+  it('retire a nouveau une graine evincee du memo sans changer le resultat', () => {
+    const attendu = tirer(cours, 5000);
+    for (let graine = 5001; graine <= 5000 + TAILLE_MEMO_TIRAGES; graine += 1) {
+      tirer(cours, graine);
+    }
+    const apresEviction = tirer(cours, 5000);
+
+    expect(apresEviction).not.toBe(attendu);
+    expect(apresEviction).toEqual(attendu);
   });
 });

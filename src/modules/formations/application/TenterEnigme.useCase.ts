@@ -25,7 +25,6 @@ import type { IParticipantsRepository } from '../domain/IParticipants.repository
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { assertReponsesOuvertes } from '../domain/SessionState';
-import { MiseAJourDeMaitrise } from './MiseAJourDeMaitrise';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
@@ -53,8 +52,6 @@ export interface TenterEnigmeResult {
 
 @Injectable()
 export class TenterEnigmeUseCase {
-  private readonly maitrise: MiseAJourDeMaitrise;
-
   constructor(
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
@@ -65,14 +62,12 @@ export class TenterEnigmeUseCase {
     @Inject(ANSWERS_REPOSITORY)
     private readonly answers: IAnswersRepository,
     @Inject(MASTERY_REPOSITORY)
-    mastery: IMasteryRepository,
+    private readonly mastery: IMasteryRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
     @Inject(CATALOGUE_COURS)
     private readonly catalogue: ICatalogueCours,
-  ) {
-    this.maitrise = new MiseAJourDeMaitrise(mastery);
-  }
+  ) {}
 
   async execute(command: TenterEnigmeCommand): Promise<TenterEnigmeResult> {
     const session = await this.sessions.findById(command.sessionId);
@@ -217,10 +212,11 @@ export class TenterEnigmeUseCase {
       }
       throw erreur;
     }
-    await this.maitrise.appliquer(
-      question.studentKey,
-      question.concept,
-      question.correcte,
-    );
+    await this.mastery.enregistrerTentative({
+      studentKey: question.studentKey,
+      concept: question.concept,
+      reussi: question.correcte,
+      vueLe: new Date(),
+    });
   }
 }

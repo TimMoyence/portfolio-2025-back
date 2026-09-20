@@ -4,6 +4,7 @@ import { Not, Repository } from 'typeorm';
 import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
 import type {
   CreateSessionInput,
+  EtatDeSeanceRecord,
   ISessionsRepository,
   SessionRecord,
   UpdateSessionInput,
@@ -56,6 +57,33 @@ export class SessionsRepositoryTypeORM
   async findById(id: string): Promise<SessionRecord | null> {
     const entity = await this.repo.findOne({ where: { id } });
     return entity ? this.toDomain(entity) : null;
+  }
+
+  async lireEtat(id: string): Promise<EtatDeSeanceRecord | null> {
+    const entity = await this.repo.findOne({
+      where: { id },
+      select: {
+        etat: true,
+        modeRythme: true,
+        ecranCourant: true,
+        intervalleLibre: true,
+        pilotageEcrans: true,
+        revision: true,
+        majLe: true,
+      },
+    });
+    if (!entity) {
+      return null;
+    }
+    return {
+      etat: entity.etat,
+      modeRythme: entity.modeRythme,
+      ecranCourant: entity.ecranCourant,
+      intervalleLibre: entity.intervalleLibre,
+      pilotageEcrans: entity.pilotageEcrans,
+      revision: entity.revision,
+      majLe: entity.majLe,
+    };
   }
 
   async findActiveByCode(code: string): Promise<SessionRecord | null> {

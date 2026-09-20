@@ -45,6 +45,7 @@ import type {
   ParticipantRecord,
 } from '../../src/modules/formations/domain/IParticipants.repository';
 import type {
+  EtatDeSeanceRecord,
   ISessionsRepository,
   SessionRecord,
 } from '../../src/modules/formations/domain/ISessions.repository';
@@ -315,11 +316,29 @@ export function buildIncidentInput(
   };
 }
 
+function etatDeSeance(session: SessionRecord): EtatDeSeanceRecord {
+  return {
+    etat: session.etat,
+    modeRythme: session.modeRythme,
+    ecranCourant: session.ecranCourant,
+    intervalleLibre: session.intervalleLibre,
+    pilotageEcrans: session.pilotageEcrans,
+    revision: session.revision,
+    majLe: session.majLe,
+  };
+}
+
 export function createMockSessionsRepo(): jest.Mocked<ISessionsRepository> {
   const session = buildSessionRecord();
+  const findById = jest.fn().mockResolvedValue(session);
   return {
     create: jest.fn().mockResolvedValue(session),
-    findById: jest.fn().mockResolvedValue(session),
+    findById,
+    lireEtat: jest.fn((id: string) =>
+      (findById(id) as Promise<SessionRecord | null>).then((trouvee) =>
+        trouvee === null ? null : etatDeSeance(trouvee),
+      ),
+    ),
     findActiveByCode: jest.fn().mockResolvedValue(session),
     isCodeTaken: jest.fn().mockResolvedValue(false),
     update: jest
@@ -375,7 +394,7 @@ export function buildMasteryRecord(
 export function createMockMasteryRepo(): jest.Mocked<IMasteryRepository> {
   return {
     findByStudentKey: jest.fn().mockResolvedValue([]),
-    upsert: jest.fn().mockResolvedValue(undefined),
+    enregistrerTentative: jest.fn().mockResolvedValue(undefined),
   };
 }
 

@@ -195,6 +195,22 @@ function creerSessionsRepo(): ISessionsRepository {
       return Promise.resolve(session);
     },
     findById: (id) => Promise.resolve(sessions.get(id) ?? null),
+    lireEtat: (id) => {
+      const session = sessions.get(id);
+      return Promise.resolve(
+        session === undefined
+          ? null
+          : {
+              etat: session.etat,
+              modeRythme: session.modeRythme,
+              ecranCourant: session.ecranCourant,
+              intervalleLibre: session.intervalleLibre,
+              pilotageEcrans: session.pilotageEcrans,
+              revision: session.revision,
+              majLe: session.majLe,
+            },
+      );
+    },
     findActiveByCode: (code) =>
       Promise.resolve(
         toutes().find(

@@ -234,7 +234,7 @@ describe('TenterEnigmeUseCase', () => {
         correcte: true,
       }),
     );
-    expect(mastery.upsert).toHaveBeenCalled();
+    expect(mastery.enregistrerTentative).toHaveBeenCalled();
   });
 
   it('ne double jamais la reponse de la premiere tentative', async () => {
@@ -243,7 +243,7 @@ describe('TenterEnigmeUseCase', () => {
     await sut.execute({ ...commande, reponse: '10' });
 
     expect(answers.create).not.toHaveBeenCalled();
-    expect(mastery.upsert).not.toHaveBeenCalled();
+    expect(mastery.enregistrerTentative).not.toHaveBeenCalled();
   });
 
   it('signale l activite de la seance', async () => {

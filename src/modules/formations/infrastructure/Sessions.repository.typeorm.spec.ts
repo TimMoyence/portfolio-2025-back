@@ -169,6 +169,31 @@ describe('SessionsRepositoryTypeORM', () => {
     await expect(sut.findActiveByCode(CODE)).resolves.toBeNull();
   });
 
+  it('lit l etat d une seance sans charger son bareme', async () => {
+    table = [ligne({ id: 'session-uuid', etat: 'en_cours', ecranCourant: 7 })];
+
+    const etat = await sut.lireEtat('session-uuid');
+
+    expect(etat).toEqual({
+      etat: 'en_cours',
+      modeRythme: 'pilote',
+      ecranCourant: 7,
+      intervalleLibre: null,
+      pilotageEcrans: {},
+      revision: 0,
+      majLe: new Date('2026-09-11T08:00:00.000Z'),
+    });
+    const options = repo.findOne.mock.calls[0][0] as {
+      select?: Record<string, boolean>;
+    };
+    expect(options.select).toBeDefined();
+    expect(options.select?.bareme).toBeUndefined();
+  });
+
+  it('retourne null quand la seance dont on lit l etat n existe pas', async () => {
+    await expect(sut.lireEtat('session-absente')).resolves.toBeNull();
+  });
+
   it('signale un code deja pris par une session ouverte', async () => {
     table = [ligne({ etat: 'en_cours' })];
 

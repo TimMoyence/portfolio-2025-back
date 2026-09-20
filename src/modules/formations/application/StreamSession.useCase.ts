@@ -35,6 +35,7 @@ import {
 } from '../domain/token';
 
 const INTERVALLE_MS = 500;
+export const DELAI_MIN_BILAN_MS = 1000;
 const HEARTBEAT_MS = 15000;
 const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
 const AUCUNE_ACTIVITE_VUE = -1;
@@ -79,6 +80,12 @@ type ResultatsEnDirect = ResultatsSeance & {
   readonly bareme: ResumeBareme;
 };
 
+interface BilanPartage {
+  readonly activite: number;
+  readonly calculeLe: number;
+  readonly valeur: Promise<ResultatsEnDirect>;
+}
+
 /**
  * Chaque abonnement tient trois minuteurs et une socket pendant cinq heures
  * dans le processus partage par tout le site : sans plafond, une boucle
@@ -104,6 +111,7 @@ export class StreamSessionUseCase {
   private readonly fluxEtudiants = new Map<string, Fermeture[]>();
   private readonly fluxFormateur = new Map<string, Fermeture[]>();
   private readonly fluxParParticipant = new Map<string, Fermeture[]>();
+  private readonly bilansPartages = new Map<string, BilanPartage>();
 
   constructor(
     @Inject(SESSIONS_REPOSITORY)
@@ -201,15 +209,17 @@ export class StreamSessionUseCase {
 
       const pousserResultatsSiActivite = async (
         session: SessionRecord,
+        options: { readonly sansAttendre: boolean } = { sansAttendre: false },
       ): Promise<void> => {
         const activite = this.cache.activite(sessionId);
         if (activite === derniereActivite) {
           return;
         }
-        subscriber.next({
-          type: 'resultats',
-          data: await this.lireResultats(session),
-        });
+        const bilan = this.bilanPartage(session, activite, options);
+        if (bilan === null) {
+          return;
+        }
+        subscriber.next({ type: 'resultats', data: await bilan });
         derniereActivite = activite;
       };
 
@@ -218,7 +228,9 @@ export class StreamSessionUseCase {
           return;
         }
         try {
-          await pousserResultatsSiActivite(sessionDuFormateur);
+          await pousserResultatsSiActivite(sessionDuFormateur, {
+            sansAttendre: true,
+          });
         } catch (error) {
           this.logger.warn(
             `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDe(error)}`,
@@ -231,6 +243,7 @@ export class StreamSessionUseCase {
         subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
         subscriber.complete();
         this.cache.drop(sessionId);
+        this.bilansPartages.delete(sessionId);
         arreter();
       };
 
@@ -329,9 +342,39 @@ export class StreamSessionUseCase {
 
       return () => {
         liberer(places, ceder);
+        if (!this.fluxFormateur.has(sessionId)) {
+          this.bilansPartages.delete(sessionId);
+        }
         arreter();
       };
     });
+  }
+
+  private bilanPartage(
+    session: SessionRecord,
+    activite: number,
+    options: { readonly sansAttendre: boolean },
+  ): Promise<ResultatsEnDirect> | null {
+    const partage = this.bilansPartages.get(session.id);
+    if (partage !== undefined && partage.activite === activite) {
+      return partage.valeur;
+    }
+    const maintenant = Date.now();
+    if (
+      partage !== undefined &&
+      !options.sansAttendre &&
+      maintenant - partage.calculeLe < DELAI_MIN_BILAN_MS
+    ) {
+      return null;
+    }
+    const valeur = this.lireResultats(session);
+    this.bilansPartages.set(session.id, {
+      activite,
+      calculeLe: maintenant,
+      valeur,
+    });
+    void valeur.catch(() => this.bilansPartages.delete(session.id));
+    return valeur;
   }
 
   private async lireResultats(
@@ -365,7 +408,7 @@ export class StreamSessionUseCase {
     if (enCache) {
       return enCache;
     }
-    const session = await this.sessions.findById(sessionId);
+    const session = await this.sessions.lireEtat(sessionId);
     if (!session) {
       return null;
     }
