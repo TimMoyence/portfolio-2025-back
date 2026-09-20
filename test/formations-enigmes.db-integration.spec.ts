@@ -1,7 +1,4 @@
-import type { INestApplication } from '@nestjs/common';
-import request from 'supertest';
 import type { Response, Test } from 'supertest';
-import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildCoursAvecEnigmes,
   creerCatalogueDeTest,
@@ -9,44 +6,20 @@ import {
   PARCOURS_DE_TEST,
   TENTATIVES_MAX_DE_TEST,
 } from './factories/cours.factory';
-import { createMockFormationMailer } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
-  DELAI_OUVERTURE_CONTEXTE_MS,
-  ouvrirContexteFormations,
-  type ContexteFormations,
-} from './helpers/formations-db';
-import {
-  EN_TETE_IDENTITE,
-  monterApplicationFormations,
-  PREFIXE_API,
-} from './helpers/formations-harness';
-import { fermerApplication } from './helpers/nest-test-app';
-import { silenceNestLogger } from './helpers/silence-nest-logger';
+  CODE_HTTP,
+  installerBancDeSeance,
+  type SeanceDeTest,
+} from './helpers/formations-banc-seance';
 
 const COURS = buildCoursAvecEnigmes({ slug: 'cours-enigmes-integration' });
 const CATALOGUE = creerCatalogueDeTest(COURS);
-const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SOLUTION = '23,4';
 const FAUSSE = '99';
-const CREE = 201;
-const SANS_CONTENU = 204;
-const NON_AUTORISE = 401;
-const INTROUVABLE = 404;
-const CONFLIT = 409;
+const { CREE, NON_AUTORISE, INTROUVABLE, CONFLIT } = CODE_HTTP;
 const TENTATIVES_SIMULTANEES = 20;
-
-interface ReponseOuverture {
-  sessionId: string;
-  code: string;
-}
-
-interface ReponseInscription {
-  participantId: string;
-  jeton: string;
-}
 
 interface VerdictTentative {
   correcte: boolean;
@@ -54,87 +27,33 @@ interface VerdictTentative {
   tentativesRestantes: number;
 }
 
-interface Seance {
-  sessionId: string;
-  jeton: string;
-  participantId: string;
-}
-
 function codeDe(reponse: Response): string | undefined {
   return (reponse.body as { code?: string }).code;
 }
 
 describeDb('Enigmes du mini-jeu (B7, db integration)', () => {
-  silenceNestLogger(['log', 'warn', 'error']);
+  const banc = installerBancDeSeance({
+    catalogue: CATALOGUE,
+    slug: COURS.slug,
+    ecran: DERNIER_ECRAN,
+  });
+  const contexte = () => banc.contexte();
 
-  let contexte: ContexteFormations;
-  let app: INestApplication;
-  let secretInitial: string | undefined;
-
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
-
-  const route = (chemin: string): string =>
-    `/${PREFIXE_API}/formations${chemin}`;
-
-  const formateur = (methode: 'post' | 'patch', chemin: string): Test =>
-    request(serveur())
-      [methode](route(chemin))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`);
-
-  const tenter = (seance: Seance, enigmeId: string, reponse: string): Test =>
-    request(serveur())
-      .post(
-        route(
-          `/sessions/${seance.sessionId}/escape/${PARCOURS_DE_TEST}/tentatives`,
-        ),
+  const tenter = (
+    seance: SeanceDeTest,
+    enigmeId: string,
+    reponse: string,
+  ): Test =>
+    banc
+      .avecJeton(
+        'post',
+        `/sessions/${seance.sessionId}/escape/${PARCOURS_DE_TEST}/tentatives`,
+        seance.jeton,
       )
-      .set(EN_TETE_JETON, seance.jeton)
       .send({ enigmeId, reponse, dureeMs: 30000 });
 
-  const ouvrirSeance = async (cle: string): Promise<Seance> => {
-    const ouverture = await formateur('post', '/sessions')
-      .send({ courseSlug: COURS.slug })
-      .expect(CREE);
-    const { sessionId, code } = ouverture.body as ReponseOuverture;
-    await formateur('post', `/sessions/${sessionId}/start`).expect(
-      SANS_CONTENU,
-    );
-    await formateur('patch', `/sessions/${sessionId}/control`)
-      .send({ ecran: DERNIER_ECRAN })
-      .expect(SANS_CONTENU);
-    const inscription = await request(serveur())
-      .post(route(`/sessions/${code}/join`))
-      .send({
-        studentKey: cle,
-        prenom: 'Theo',
-        nom: 'Martin',
-        email: 'theo.martin@example.test',
-      })
-      .expect(CREE);
-    const { jeton, participantId } = inscription.body as ReponseInscription;
-    return { sessionId, jeton, participantId };
-  };
-
-  beforeAll(async () => {
-    secretInitial = process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    contexte = await ouvrirContexteFormations();
-    app = await monterApplicationFormations(
-      { ...contexte, mailer: createMockFormationMailer() },
-      CATALOGUE,
-    );
-  }, DELAI_OUVERTURE_CONTEXTE_MS);
-
-  afterEach(async () => {
-    await contexte.nettoyer();
-  });
-
-  afterAll(async () => {
-    await fermerApplication(app);
-    await contexte.fermer();
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = secretInitial;
-  });
+  const ouvrirSeance = (cle: string): Promise<SeanceDeTest> =>
+    banc.ouvrirSeance({ cle });
 
   it('livre le fragment a la premiere reponse juste et enregistre la resolution', async () => {
     const seance = await ouvrirSeance('55555555-5555-4555-8555-000000000001');
@@ -148,7 +67,7 @@ describeDb('Enigmes du mini-jeu (B7, db integration)', () => {
       fragment: 'F0',
       tentativesRestantes: TENTATIVES_MAX_DE_TEST - 1,
     });
-    const progression = await contexte.escape.listerProgression(
+    const progression = await contexte().escape.listerProgression(
       seance.participantId,
       PARCOURS_DE_TEST,
     );
@@ -164,7 +83,7 @@ describeDb('Enigmes du mini-jeu (B7, db integration)', () => {
       ),
     );
 
-    const progression = await contexte.escape.listerProgression(
+    const progression = await contexte().escape.listerProgression(
       seance.participantId,
       PARCOURS_DE_TEST,
     );
@@ -198,7 +117,7 @@ describeDb('Enigmes du mini-jeu (B7, db integration)', () => {
 
     await tenter(seance, ENIGMES_DE_TEST[0], ' 26,666667 ').expect(CREE);
 
-    const progression = await contexte.escape.listerProgression(
+    const progression = await contexte().escape.listerProgression(
       seance.participantId,
       PARCOURS_DE_TEST,
     );
@@ -265,7 +184,7 @@ describeDb('Enigmes du mini-jeu (B7, db integration)', () => {
       tenter(seance, ENIGMES_DE_TEST[0], '303'),
     ]);
 
-    const reponses = await contexte.answers.listBySession(seance.sessionId);
+    const reponses = await contexte().answers.listBySession(seance.sessionId);
     expect(
       reponses.filter((reponse) => reponse.questionId === ENIGMES_DE_TEST[0]),
     ).toHaveLength(1);
@@ -275,12 +194,12 @@ describeDb('Enigmes du mini-jeu (B7, db integration)', () => {
     const seance = await ouvrirSeance('55555555-5555-4555-8555-000000000012');
     await tenter(seance, ENIGMES_DE_TEST[0], SOLUTION).expect(CREE);
 
-    await contexte.dataSource.query(
+    await contexte().dataSource.query(
       'DELETE FROM formation_sessions WHERE id = $1',
       [seance.sessionId],
     );
 
-    const restantes = await contexte.escape.listerProgressionDeSeance(
+    const restantes = await contexte().escape.listerProgressionDeSeance(
       seance.sessionId,
     );
     expect(restantes).toEqual([]);
