@@ -20,6 +20,7 @@ import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
 import { DefisUseCase } from './application/Defis.useCase';
 import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
+import { ReadmettreParticipantUseCase } from './application/ReadmettreParticipant.useCase';
 import { LireRappelsUseCase } from './application/LireRappels.useCase';
 import { PublierVersionUseCase } from './application/PublierVersion.useCase';
 import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
@@ -126,6 +127,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     DefisUseCase,
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
+    ReadmettreParticipantUseCase,
     PublierVersionUseCase,
     LireRappelsUseCase,
     SyntheseRappelsUseCase,

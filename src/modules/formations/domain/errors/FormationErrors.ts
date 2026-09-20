@@ -234,7 +234,7 @@ export class TentativesEpuiseesError extends ResourceConflictError {
   }
 }
 
-export class EcranNonServiError extends ResourceConflictError {
+export class EcranNonServiError extends ResourceNotFoundError {
   readonly code = 'ECRAN_NON_SERVI';
 
   constructor(screenId: string) {

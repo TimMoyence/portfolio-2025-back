@@ -173,7 +173,11 @@ export class FormationsStudentController {
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
   @ApiConflictResponse({
     description:
-      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI, PHASE_FERMEE, REPONSE_DEJA_ENREGISTREE ou COURS_MODIFIE',
+      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, PHASE_FERMEE, REPONSE_DEJA_ENREGISTREE ou COURS_MODIFIE',
+  })
+  @ApiNotFoundResponse({
+    description:
+      'Ecran non encore projete par le formateur : code ECRAN_NON_SERVI',
   })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async answer(
@@ -213,10 +217,13 @@ export class FormationsStudentController {
     description:
       'Reponse vide une fois les blancs retires, ou activite inconnue de l ecran : code ACTIVITE_INCONNUE',
   })
-  @ApiNotFoundResponse({ description: 'Seance ou cours introuvable' })
+  @ApiNotFoundResponse({
+    description:
+      'Seance ou cours introuvable, ou ecran non encore projete : code ECRAN_NON_SERVI',
+  })
   @ApiConflictResponse({
     description:
-      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou ECRAN_NON_SERVI',
+      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
   })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async freeResponse(

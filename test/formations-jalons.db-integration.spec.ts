@@ -157,7 +157,7 @@ describeDb('Jalons de confiance anonymises (B8, db integration)', () => {
 
     const refus = await declarer(seance, 'ca-va');
 
-    expect(refus.status).toBe(CODE_HTTP.CONFLIT);
+    expect(refus.status).toBe(CODE_HTTP.INTROUVABLE);
     expect(codeDe(refus)).toBe('ECRAN_NON_SERVI');
   });
 

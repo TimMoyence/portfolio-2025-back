@@ -283,6 +283,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     const { sessionId, code } = await ouvrirSeance();
     const etudiant = await premierInscrit(code);
     await demarrer(sessionId);
+    await piloter(sessionId, FORMATEUR, NB_QUESTIONS - 1).expect(SANS_CONTENU);
 
     const [cloture, ...envois] = await Promise.all([
       fermer(sessionId),

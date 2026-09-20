@@ -31,6 +31,7 @@ import { EvincerParticipantUseCase } from '../application/EvincerParticipant.use
 import { ListSessionParticipantsUseCase } from '../application/ListSessionParticipants.useCase';
 import type { ParticipantDeSeance } from '../application/ListSessionParticipants.useCase';
 import { ManageFormationGroupsUseCase } from '../application/ManageFormationGroups.useCase';
+import { ReadmettreParticipantUseCase } from '../application/ReadmettreParticipant.useCase';
 import type { FormationGroupRecord } from '../domain/IFormationGroups.repository';
 import { AssignFormationGroupRequestDto } from './dto/assign-formation-group.request.dto';
 import { FormationGroupNameRequestDto } from './dto/formation-group-name.request.dto';
@@ -64,6 +65,7 @@ export class FormationsGroupsController {
     private readonly groups: ManageFormationGroupsUseCase,
     private readonly participants: ListSessionParticipantsUseCase,
     private readonly evincerParticipant: EvincerParticipantUseCase,
+    private readonly readmettreParticipant: ReadmettreParticipantUseCase,
   ) {}
 
   @Get('sessions/:id/participants')
@@ -178,5 +180,39 @@ export class FormationsGroupsController {
     @Req() request: Request,
   ): Promise<void> {
     await this.evincerParticipant.execute(id, request.user!.sub, participantId);
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_EVICTION_PAR_MINUTE,
+      ttl: FENETRE_THROTTLE_MS,
+    },
+  })
+  @Post('sessions/:id/participants/:participantId/readmission')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @PilotageDeSeance()
+  @ApiOperation({
+    summary:
+      'Readmet un participant evince : il reprend sa place, sa graine et ses reponses',
+  })
+  @ApiNoContentResponse({ description: 'Participant readmis' })
+  @ApiNotFoundResponse({
+    description:
+      'Seance introuvable, ou participant absent de la seance ou jamais evince',
+  })
+  @ApiConflictResponse({
+    description:
+      'Seance revenue a sa capacite depuis l eviction : code SEANCE_COMPLETE',
+  })
+  async readmettre(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('participantId', ParseUUIDPipe) participantId: string,
+    @Req() request: Request,
+  ): Promise<void> {
+    await this.readmettreParticipant.execute(
+      id,
+      request.user!.sub,
+      participantId,
+    );
   }
 }

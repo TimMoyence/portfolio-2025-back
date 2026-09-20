@@ -123,6 +123,10 @@ function construireCoursSentinelle(solution: number): Cours {
 
 const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);
 
+const RANG_DE_LA_SENTINELLE = COURS_SENTINELLE.ecrans.findIndex(
+  (ecran) => ecran.question?.id === TEMOIN.question,
+);
+
 const QUESTIONS_DU_COURS_DE_CLASSE = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(QUESTIONS_DU_COURS_DE_CLASSE);
 const COURS_SANS_TIRAGE = buildCoursSansTirageValide();
@@ -240,7 +244,13 @@ function creerParticipantsRepo(): IParticipantsRepository {
   const participants = new Map<string, ParticipantRecord>();
   const deLaSession = (sessionId: string): ParticipantRecord[] =>
     [...participants.values()].filter(
-      (participant) => participant.sessionId === sessionId,
+      (participant) =>
+        participant.sessionId === sessionId && participant.evinceLe === null,
+    );
+  const evincesDeLaSession = (sessionId: string): ParticipantRecord[] =>
+    [...participants.values()].filter(
+      (participant) =>
+        participant.sessionId === sessionId && participant.evinceLe !== null,
     );
   return {
     create: (input) => {
@@ -262,6 +272,8 @@ function creerParticipantsRepo(): IParticipantsRepository {
       ),
     findById: (id) => Promise.resolve(participants.get(id) ?? null),
     listBySession: (sessionId) => Promise.resolve(deLaSession(sessionId)),
+    listEvincesBySession: (sessionId) =>
+      Promise.resolve(evincesDeLaSession(sessionId)),
     countBySession: (sessionId) =>
       Promise.resolve(deLaSession(sessionId).length),
     listSeedsBySession: (sessionId) =>
@@ -275,6 +287,14 @@ function creerParticipantsRepo(): IParticipantsRepository {
         return Promise.resolve(false);
       }
       participants.set(participantId, { ...cible, evinceLe: new Date() });
+      return Promise.resolve(true);
+    },
+    readmettre: (sessionId, participantId) => {
+      const cible = participants.get(participantId);
+      if (!cible || cible.sessionId !== sessionId || cible.evinceLe === null) {
+        return Promise.resolve(false);
+      }
+      participants.set(participantId, { ...cible, evinceLe: null });
       return Promise.resolve(true);
     },
   };
@@ -434,6 +454,13 @@ describe('Session de formation (e2e http socket)', () => {
       .set('x-test-identite', `${formateur}:teacher`)
       .expect(204);
 
+  const servirLaSentinelle = (sessionId: string, formateur: string) =>
+    request(serveur())
+      .patch(route(`/sessions/${sessionId}/control`))
+      .set('x-test-identite', `${formateur}:teacher`)
+      .send({ ecran: RANG_DE_LA_SENTINELLE })
+      .expect(204);
+
   const rejoindre = (code: string, studentKey: string) =>
     request(serveur())
       .post(route(`/sessions/${code}/join`))
@@ -547,6 +574,7 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(201);
       const { jeton } = inscrit.body as { jeton: string };
       await demarrerSession(sessionId, FORMATEUR_A);
+      await servirLaSentinelle(sessionId, FORMATEUR_A);
       await request(serveur())
         .post(route(`/sessions/${sessionId}/answers`))
         .set(EN_TETE_JETON, jeton)
@@ -713,6 +741,7 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(201);
       jeton = (inscrit.body as { jeton: string }).jeton;
       await demarrerSession(sessionId, FORMATEUR_A);
+      await servirLaSentinelle(sessionId, FORMATEUR_A);
     });
 
     it('refuse une reponse avant que le formateur ait demarre la seance', async () => {
@@ -746,6 +775,7 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(201);
       const { jeton: jetonDuSecond } = inscrit.body as { jeton: string };
       await demarrerSession(session.sessionId, FORMATEUR_A);
+      await servirLaSentinelle(session.sessionId, FORMATEUR_A);
       const envoyer = () =>
         request(serveur())
           .post(route(`/sessions/${session.sessionId}/answers`))

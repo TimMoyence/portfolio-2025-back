@@ -29,8 +29,12 @@ export interface IParticipantsRepository {
   ): Promise<ParticipantRecord | null>;
   findById(id: string): Promise<ParticipantRecord | null>;
   listBySession(sessionId: string): Promise<readonly ParticipantRecord[]>;
+  listEvincesBySession(
+    sessionId: string,
+  ): Promise<readonly ParticipantRecord[]>;
   countBySession(sessionId: string): Promise<number>;
   listSeedsBySession(sessionId: string): Promise<readonly number[]>;
   touch(id: string): Promise<void>;
   evincer(sessionId: string, participantId: string): Promise<boolean>;
+  readmettre(sessionId: string, participantId: string): Promise<boolean>;
 }

@@ -38,10 +38,58 @@ describe('ListSessionParticipantsUseCase', () => {
 
   it('rend au formateur chaque participant avec son groupe, sans son adresse', async () => {
     await expect(sut.execute(SESSION_ID, PROPRIETAIRE)).resolves.toEqual([
-      { id: 'p1', prenom: 'Ada', nom: 'Lovelace', groupId: null },
-      { id: 'p2', prenom: 'Grace', nom: 'Hopper', groupId: 'group-uuid' },
+      {
+        id: 'p1',
+        prenom: 'Ada',
+        nom: 'Lovelace',
+        groupId: null,
+        evince: false,
+      },
+      {
+        id: 'p2',
+        prenom: 'Grace',
+        nom: 'Hopper',
+        groupId: 'group-uuid',
+        evince: false,
+      },
     ]);
     expect(participants.listBySession).toHaveBeenCalledWith(SESSION_ID);
+  });
+
+  it('rend aussi les evinces, marques comme tels, pour que le formateur puisse les readmettre', async () => {
+    participants.listEvincesBySession.mockResolvedValue([
+      buildParticipantRecord({
+        id: 'p3',
+        prenom: 'Katherine',
+        nom: 'Johnson',
+        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
+      }),
+    ]);
+
+    await expect(sut.execute(SESSION_ID, PROPRIETAIRE)).resolves.toEqual([
+      {
+        id: 'p1',
+        prenom: 'Ada',
+        nom: 'Lovelace',
+        groupId: null,
+        evince: false,
+      },
+      {
+        id: 'p2',
+        prenom: 'Grace',
+        nom: 'Hopper',
+        groupId: 'group-uuid',
+        evince: false,
+      },
+      {
+        id: 'p3',
+        prenom: 'Katherine',
+        nom: 'Johnson',
+        groupId: null,
+        evince: true,
+      },
+    ]);
+    expect(participants.listEvincesBySession).toHaveBeenCalledWith(SESSION_ID);
   });
 
   it('rend la liste a un administrateur', async () => {

@@ -24,10 +24,12 @@ describe('FormationsGroupsController', () => {
   };
   const participants = { execute: jest.fn() };
   const evincerParticipant = { execute: jest.fn() };
+  const readmettreParticipant = { execute: jest.fn() };
   const controller = new FormationsGroupsController(
     groups as never,
     participants as never,
     evincerParticipant as never,
+    readmettreParticipant as never,
   );
 
   beforeEach(() => {
@@ -38,6 +40,16 @@ describe('FormationsGroupsController', () => {
     await controller.evincer(SESSION_ID, PARTICIPANT_ID, requete);
 
     expect(evincerParticipant.execute).toHaveBeenCalledWith(
+      SESSION_ID,
+      TEACHER_ID,
+      PARTICIPANT_ID,
+    );
+  });
+
+  it('readmet un participant avec l identite du formateur proprietaire', async () => {
+    await controller.readmettre(SESSION_ID, PARTICIPANT_ID, requete);
+
+    expect(readmettreParticipant.execute).toHaveBeenCalledWith(
       SESSION_ID,
       TEACHER_ID,
       PARTICIPANT_ID,

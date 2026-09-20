@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { SeedAlreadyAssignedError } from '../domain/errors/FormationErrors';
 import type {
@@ -92,6 +92,16 @@ export class ParticipantsRepositoryTypeORM
     return entities.map((entity) => this.toDomain(entity));
   }
 
+  async listEvincesBySession(
+    sessionId: string,
+  ): Promise<readonly ParticipantRecord[]> {
+    const entities = await this.repo.find({
+      where: { sessionId, evinceLe: Not(IsNull()) },
+      order: { evinceLe: 'ASC', id: 'ASC' },
+    });
+    return entities.map((entity) => this.toDomain(entity));
+  }
+
   countBySession(sessionId: string): Promise<number> {
     return this.repo.count({ where: { sessionId, evinceLe: IsNull() } });
   }
@@ -112,6 +122,14 @@ export class ParticipantsRepositoryTypeORM
     const misAJour = await this.repo.update(
       { id: participantId, sessionId, evinceLe: IsNull() },
       { evinceLe: new Date() },
+    );
+    return (misAJour.affected ?? 0) > 0;
+  }
+
+  async readmettre(sessionId: string, participantId: string): Promise<boolean> {
+    const misAJour = await this.repo.update(
+      { id: participantId, sessionId, evinceLe: Not(IsNull()) },
+      { evinceLe: null },
     );
     return (misAJour.affected ?? 0) > 0;
   }

@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
+import type {
+  IParticipantsRepository,
+  ParticipantRecord,
+} from '../domain/IParticipants.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import type { ActeurFormation } from '../domain/SessionOwnership';
 import { PARTICIPANTS_REPOSITORY, SESSIONS_REPOSITORY } from '../domain/token';
@@ -10,6 +13,20 @@ export interface ParticipantDeSeance {
   readonly prenom: string;
   readonly nom: string;
   readonly groupId: string | null;
+  readonly evince: boolean;
+}
+
+function presenter(
+  participant: ParticipantRecord,
+  evince: boolean,
+): ParticipantDeSeance {
+  return {
+    id: participant.id,
+    prenom: participant.prenom,
+    nom: participant.nom,
+    groupId: participant.groupId ?? null,
+    evince,
+  };
 }
 
 @Injectable()
@@ -26,12 +43,13 @@ export class ListSessionParticipantsUseCase {
     acteur: ActeurFormation,
   ): Promise<readonly ParticipantDeSeance[]> {
     await seanceLisiblePar(this.sessions, sessionId, acteur);
-    const inscrits = await this.participants.listBySession(sessionId);
-    return inscrits.map((participant) => ({
-      id: participant.id,
-      prenom: participant.prenom,
-      nom: participant.nom,
-      groupId: participant.groupId ?? null,
-    }));
+    const [inscrits, evinces] = await Promise.all([
+      this.participants.listBySession(sessionId),
+      this.participants.listEvincesBySession(sessionId),
+    ]);
+    return [
+      ...inscrits.map((participant) => presenter(participant, false)),
+      ...evinces.map((participant) => presenter(participant, true)),
+    ];
   }
 }

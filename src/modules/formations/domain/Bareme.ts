@@ -7,7 +7,7 @@ import type { Cours, TypeQuestion } from './contrats/cours';
 import type { ResumeBareme } from './contrats/resultats';
 import type { QuestionAAgreger } from './ResultatsSeance';
 import { CONCEPTS, type ConceptId } from './cours/banque/concepts';
-import { questionsDe } from './cours/Cours';
+import { rangDeLaQuestion } from './cours/EcranServi';
 import { NE_SAIT_PAS } from './GradingCore';
 
 type QuestionType = 'numeric' | 'vote' | 'asn' | 'order';
@@ -127,10 +127,7 @@ export function questionDuBareme(
   const question = bareme.questions.find(
     (candidate) => candidate.id === questionId,
   );
-  const rangEcran =
-    cours?.ecrans.findIndex((ecran) =>
-      questionsDe(ecran).some((candidate) => candidate.id === questionId),
-    ) ?? -1;
+  const rangEcran = cours === null ? -1 : rangDeLaQuestion(cours, questionId);
   if (
     question === undefined ||
     cours === null ||

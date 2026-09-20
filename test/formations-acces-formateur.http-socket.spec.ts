@@ -172,6 +172,7 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
             prenom: 'Theo',
             nom: 'Martin',
             groupId: null,
+            evince: false,
           },
         ],
       });

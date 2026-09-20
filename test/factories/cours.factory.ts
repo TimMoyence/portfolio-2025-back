@@ -344,6 +344,42 @@ export function buildCoursAvecProductions(
   };
 }
 
+export function buildCoursDuBaremeV1(): Cours {
+  return {
+    slug: 'b1-09-interets-composes',
+    titre: 'Interets composes',
+    niveau: 'B2',
+    dureeMinutes: 10,
+    concepts: ['coefficient-multiplicateur'],
+    ecrans: [
+      {
+        ...EN_CATALOGUE,
+        id: 'E-OUVERTURE',
+        brique: 'fp-quote',
+        dureeMinutes: 2,
+        concepts: ['coefficient-multiplicateur'],
+        notes: 'Accroche',
+        proprietes: {
+          texte: 'Le temps travaille pour qui epargne.',
+          auteur: null,
+          source: null,
+        },
+      },
+      {
+        ...EN_CATALOGUE,
+        id: 'E-NUM',
+        brique: 'fp-numeric',
+        dureeMinutes: 8,
+        concepts: ['coefficient-multiplicateur'],
+        notes: 'Pivot',
+        question: numeriqueTest('Q-CAP-03'),
+      },
+    ],
+    remediations: {},
+    medias: [],
+  };
+}
+
 export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
   return {
     slug: 'cours-de-test',

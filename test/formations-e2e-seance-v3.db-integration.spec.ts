@@ -612,7 +612,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
     expect({
       admise: admise.status,
       refusee: [refusee.status, codeDe(refusee)],
-    }).toEqual({ admise: CREE, refusee: [CONFLIT, 'ECRAN_NON_SERVI'] });
+    }).toEqual({ admise: CREE, refusee: [INTROUVABLE, 'ECRAN_NON_SERVI'] });
   };
 
   const jouerEcran = async (rang: number, ecran: Ecran): Promise<void> => {
@@ -858,7 +858,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
 
       expect(
         enAvance.map((reponse) => [reponse.status, codeDe(reponse)]),
-      ).toEqual(enAvance.map(() => [CONFLIT, 'ECRAN_NON_SERVI']));
+      ).toEqual(enAvance.map(() => [INTROUVABLE, 'ECRAN_NON_SERVI']));
       expect({
         jetonRevoque: jetonRevoque.status,
         ecritureDeLEvince: ecritureDeLEvince.status,
@@ -1110,17 +1110,28 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
 
       const listeDesGroupes = (groupes.body as { groups: { name: string }[] })
         .groups;
-      const affectations = (
+      const listeDesParticipants = (
         participants.body as {
-          participants: { id: string; groupId: string | null }[];
+          participants: {
+            id: string;
+            groupId: string | null;
+            evince: boolean;
+          }[];
         }
-      ).participants.filter((inscrit) => inscrit.groupId !== null);
+      ).participants;
+      const affectations = listeDesParticipants.filter(
+        (inscrit) => inscrit.groupId !== null,
+      );
       expect({
         annotations: (annotations.body as { annotations: unknown[] })
           .annotations.length,
         libres: (libres.body as { responses: unknown[] }).responses.length > 0,
-        participants: (participants.body as { participants: unknown[] })
-          .participants.length,
+        participantsActifs: listeDesParticipants.filter(
+          (inscrit) => !inscrit.evince,
+        ).length,
+        participantsEvinces: listeDesParticipants
+          .filter((inscrit) => inscrit.evince)
+          .map((inscrit) => inscrit.id),
         groupes: listeDesGroupes.map((groupe) => groupe.name),
         affectes: affectations.map((inscrit) => inscrit.id),
         ecransDuDeroule: (deroule.body as { ecrans: unknown[] }).ecrans.length,
@@ -1132,7 +1143,8 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       }).toEqual({
         annotations: 1,
         libres: true,
-        participants: CAPACITE,
+        participantsActifs: CAPACITE,
+        participantsEvinces: [evince.participantId],
         groupes: [NOM_DU_GROUPE],
         affectes: [postes[0].participantId],
         ecransDuDeroule: ECRANS_DE_LA_V3,

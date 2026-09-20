@@ -3,13 +3,15 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import { libelleDeConfusion } from '../domain/cours/banque/confusions';
-import { assertEcranServi } from '../domain/cours/EcranServi';
+import { assertEcranServi, rangDeLaQuestion } from '../domain/cours/EcranServi';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   AnswerAlreadySubmittedError,
+  CoursInconnuError,
   ParticipantNotFoundError,
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
@@ -18,6 +20,7 @@ import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { assertReponsesOuvertes } from '../domain/SessionState';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
@@ -48,6 +51,8 @@ export class SubmitAnswerUseCase {
     private readonly mastery: IMasteryRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async execute(command: SubmitAnswerCommand): Promise<SubmitAnswerResult> {
@@ -81,10 +86,26 @@ export class SubmitAnswerUseCase {
         `La question ${command.questionId} de type ${question.type} passe par sa propre route`,
       );
     }
-    if ('rangEcran' in question) {
-      assertEcranServi(session, question.rangEcran, question.ecranId);
-      assertPhaseOuverte(session.pilotageEcrans, question);
+    const cours = await this.catalogue.trouver(
+      session.courseSlug,
+      session.courseVersion,
+    );
+    if (!cours) {
+      throw new CoursInconnuError(session.courseSlug);
     }
+    const rangEcran =
+      'rangEcran' in question
+        ? question.rangEcran
+        : rangDeLaQuestion(cours, command.questionId);
+    const ecranId =
+      'ecranId' in question
+        ? question.ecranId
+        : (cours.ecrans[rangEcran]?.id ?? command.questionId);
+    assertEcranServi(session, rangEcran, ecranId, cours.ecrans.length);
+    assertPhaseOuverte(session.pilotageEcrans, {
+      ...question,
+      ecranId,
+    });
 
     const solution = solutionFor(
       session.bareme,

@@ -92,7 +92,7 @@ describeDb('Rappels espaces (B9, db integration)', () => {
 
     const refus = await lireRappels(seance);
 
-    expect(refus.status).toBe(CODE_HTTP.CONFLIT);
+    expect(refus.status).toBe(CODE_HTTP.INTROUVABLE);
     expect((refus.body as { code?: string }).code).toBe('ECRAN_NON_SERVI');
   });
 

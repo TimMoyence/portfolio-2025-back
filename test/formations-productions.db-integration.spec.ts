@@ -20,7 +20,8 @@ const FEUILLE_JUSTE: ValeurProduction = {
   type: 'feuille',
   cellules: { D2: '=(C2-B2)/B2', D3: '=(C3-B3)/B3' },
 };
-const { CREE, SANS_CONTENU, INVALIDE, NON_AUTORISE, CONFLIT } = CODE_HTTP;
+const { CREE, SANS_CONTENU, INVALIDE, NON_AUTORISE, CONFLIT, INTROUVABLE } =
+  CODE_HTTP;
 const MAUVAISE_REQUETE = INVALIDE;
 const PRODUCTIONS_SIMULTANEES = 6;
 
@@ -170,7 +171,7 @@ describeDb('Route des productions (B5, B11, db integration)', () => {
       dureeMs: 1000,
     });
 
-    expect(refus.status).toBe(CONFLIT);
+    expect(refus.status).toBe(INTROUVABLE);
     expect(codeDe(refus)).toBe('ECRAN_NON_SERVI');
   });
 

@@ -2,12 +2,14 @@ import {
   buildCoursDeTest,
   EN_CATALOGUE,
 } from '../../../../../test/factories/cours.factory';
+import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import type { Ecran } from '../contrats/cours';
 import { EcranNonServiError } from '../errors/FormationErrors';
 import {
   activitesLibres,
   assertEcranServi,
   dernierEcranServi,
+  rangDeLaQuestion,
   rangDeLEcran,
 } from './EcranServi';
 import type { DiffusionDeSeance } from './EcranServi';
@@ -82,6 +84,12 @@ describe('assertEcranServi', () => {
   it('porte le code ECRAN_NON_SERVI', () => {
     expect(new EcranNonServiError('E-CONCEPT').code).toBe('ECRAN_NON_SERVI');
   });
+
+  it('se presente comme une ressource absente, donc en 404', () => {
+    expect(new EcranNonServiError('E-CONCEPT')).toBeInstanceOf(
+      ResourceNotFoundError,
+    );
+  });
 });
 
 describe('rangDeLEcran', () => {
@@ -91,6 +99,16 @@ describe('rangDeLEcran', () => {
 
   it('rend moins un pour un ecran inconnu', () => {
     expect(rangDeLEcran(buildCoursDeTest(), 'E-INCONNU')).toBe(-1);
+  });
+});
+
+describe('rangDeLaQuestion', () => {
+  it('rend le rang de l ecran qui porte la question', () => {
+    expect(rangDeLaQuestion(buildCoursDeTest(), 'Q-TEST-NUM')).toBe(2);
+  });
+
+  it('rend moins un pour une question qui ne figure sur aucun ecran', () => {
+    expect(rangDeLaQuestion(buildCoursDeTest(), 'Q-HORS-COURS')).toBe(-1);
   });
 });
 

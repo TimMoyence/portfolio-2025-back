@@ -42,12 +42,20 @@ export class SessionParticipantResponseDto {
     description: 'Groupe du participant, null s’il n’est affecté à aucun',
   })
   groupId: string | null;
+
+  @ApiProperty({
+    example: false,
+    description:
+      'Vrai si le participant a été évincé : sa place est libérée, il reste réadmissible',
+  })
+  evince: boolean;
 }
 
 export class SessionParticipantsResponseDto {
   @ApiProperty({
     type: [SessionParticipantResponseDto],
-    description: 'Participants dans leur ordre d’arrivée, sans adresse',
+    description:
+      'Participants inscrits dans leur ordre d’arrivée, puis les évincés, sans adresse',
   })
   participants: SessionParticipantResponseDto[];
 }

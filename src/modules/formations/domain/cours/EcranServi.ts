@@ -1,4 +1,5 @@
 import type { Cours, Ecran } from '../contrats/cours';
+import { questionsDe } from './Cours';
 import { EcranNonServiError } from '../errors/FormationErrors';
 import type { FreeRange, PacingMode } from '../PacingMode';
 import type { SessionState } from '../SessionState';
@@ -38,6 +39,12 @@ export function assertEcranServi(
 
 export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
+}
+
+export function rangDeLaQuestion(cours: Cours, questionId: string): number {
+  return cours.ecrans.findIndex((ecran) =>
+    questionsDe(ecran).some((question) => question.id === questionId),
+  );
 }
 
 function activitesDeLEcran(ecran: Ecran): readonly string[] {

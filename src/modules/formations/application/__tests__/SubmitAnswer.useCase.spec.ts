@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
+  buildCoursDuBaremeV1,
+  creerCatalogueDeTest,
+} from '../../../../../test/factories/cours.factory';
+import {
   buildBaremeV2,
   buildParticipantRecord,
   buildSessionRecord,
@@ -22,6 +26,11 @@ import {
   SessionNotStartedError,
 } from '../../domain/errors/FormationErrors';
 import { SubmitAnswerUseCase } from '../SubmitAnswer.useCase';
+
+const EN_RYTHME_LIBRE = {
+  modeRythme: 'libre',
+  intervalleLibre: null,
+} as const;
 
 describe('SubmitAnswerUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -45,13 +54,24 @@ describe('SubmitAnswerUseCase', () => {
     answers = createMockAnswersRepo();
     mastery = createMockMasteryRepo();
     cache = createMockSessionStateCache();
+    sessions.findById.mockResolvedValue(buildSessionRecord(EN_RYTHME_LIBRE));
     sut = new SubmitAnswerUseCase(
       sessions,
       participants,
       answers,
       mastery,
       cache,
+      creerCatalogueDeTest(buildCoursDuBaremeV1()),
     );
+  });
+
+  it('refuse une reponse dont l ecran n a pas encore ete projete, meme quand le bareme ne porte pas son rang', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ ecranCourant: 0 }),
+    );
+
+    await expect(sut.execute(commande)).rejects.toThrow(EcranNonServiError);
+    expect(answers.create).not.toHaveBeenCalled();
   });
 
   it('signale une activite sur la session une fois la reponse enregistree', async () => {
@@ -190,6 +210,7 @@ describe('SubmitAnswerUseCase', () => {
   it('refuse une valeur hors des options connues sur une question de vote', async () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({
+        ...EN_RYTHME_LIBRE,
         bareme: buildVoteBareme([
           { valeur: 'a', misconception: 'interet-simple' },
         ]),
@@ -203,7 +224,7 @@ describe('SubmitAnswerUseCase', () => {
 
   it('accepte je ne sais pas sur une question de vote', async () => {
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({ bareme: buildVoteBareme() }),
+      buildSessionRecord({ ...EN_RYTHME_LIBRE, bareme: buildVoteBareme() }),
     );
     const result = await sut.execute({ ...commande, valeur: NE_SAIT_PAS });
     expect(result.correcte).toBe(false);
@@ -212,6 +233,7 @@ describe('SubmitAnswerUseCase', () => {
   it('traduit une misconception connue de la banque par son libelle humain', async () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({
+        ...EN_RYTHME_LIBRE,
         bareme: buildVoteBareme([
           { valeur: 'a', misconception: 'base-arrivee' },
         ]),

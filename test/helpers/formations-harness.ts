@@ -42,6 +42,7 @@ import { DeclarerJalonUseCase } from '../../src/modules/formations/application/D
 import { DefisUseCase } from '../../src/modules/formations/application/Defis.useCase';
 import { EvincerParticipantUseCase } from '../../src/modules/formations/application/EvincerParticipant.useCase';
 import { LireRappelsUseCase } from '../../src/modules/formations/application/LireRappels.useCase';
+import { ReadmettreParticipantUseCase } from '../../src/modules/formations/application/ReadmettreParticipant.useCase';
 import { PublierVersionUseCase } from '../../src/modules/formations/application/PublierVersion.useCase';
 import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
@@ -188,6 +189,7 @@ export function fournisseursFormations(
     DefisUseCase,
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
+    ReadmettreParticipantUseCase,
     PublierVersionUseCase,
     LireRappelsUseCase,
     SyntheseRappelsUseCase,

@@ -319,6 +319,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
       for (let essai = 0; essai < 3; essai += 1) {
         rejeux.push(await repondre(seance.sessionId, etudiant.jeton, 0));
       }
+      await piloter(seance.sessionId, 1).expect(SANS_CONTENU);
       const suite = await repondre(seance.sessionId, etudiant.jeton, 1);
 
       expect(rejeux.map((reponse) => reponse.status)).toEqual([
@@ -381,6 +382,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
       );
 
       const lecture = await lireResultats(seance.sessionId);
+      await piloter(seance.sessionId, 1).expect(SANS_CONTENU);
       const lendemain = await repondre(seance.sessionId, etudiant.jeton, 1);
       const avantCloture = await contexte.sessions.findById(seance.sessionId);
       const cloture = await commander(`/sessions/${seance.sessionId}/close`);
