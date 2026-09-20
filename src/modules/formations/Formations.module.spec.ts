@@ -20,7 +20,9 @@ import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
 import { DefisUseCase } from './application/Defis.useCase';
 import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
+import { LireRappelsUseCase } from './application/LireRappels.useCase';
 import { PublierVersionUseCase } from './application/PublierVersion.useCase';
+import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
@@ -31,6 +33,7 @@ import { FormationEscapeAttemptEntity } from './infrastructure/entities/Formatio
 import { FormationEscapeProgressEntity } from './infrastructure/entities/FormationEscapeProgress.entity';
 import { FormationCoursePublicationEntity } from './infrastructure/entities/FormationCoursePublication.entity';
 import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.entity';
+import { FormationRappelServiEntity } from './infrastructure/entities/FormationRappelServi.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
 import { FormationGroupEntity } from './infrastructure/entities/FormationGroup.entity';
@@ -59,6 +62,7 @@ const ENTITES = [
   FormationEscapeAttemptEntity,
   FormationPulseEntity,
   FormationCoursePublicationEntity,
+  FormationRappelServiEntity,
 ];
 
 const SERVICES = [
@@ -76,6 +80,8 @@ const SERVICES = [
   LireEtatParticipantUseCase,
   EvincerParticipantUseCase,
   PublierVersionUseCase,
+  LireRappelsUseCase,
+  SyntheseRappelsUseCase,
   RecordIncidentsUseCase,
   StreamSessionUseCase,
   DueQuestionsUseCase,

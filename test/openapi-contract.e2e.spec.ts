@@ -99,12 +99,11 @@ const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
   '/sessions/{id}/moi',
   '/sessions/{id}/participants/{participantId}',
   '/catalogue/{slug}/publication',
-];
-
-const ROUTES_A_VENIR_DU_CONTRAT_V3 = [
   '/sessions/{id}/rappels',
   '/sessions/{id}/rappels/synthese',
 ];
+
+const ROUTES_A_VENIR_DU_CONTRAT_V3: readonly string[] = [];
 
 describe('OpenAPI legacy contract (phase 11)', () => {
   let app: INestApplication;

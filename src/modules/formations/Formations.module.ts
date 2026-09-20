@@ -20,7 +20,9 @@ import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
 import { DefisUseCase } from './application/Defis.useCase';
 import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
+import { LireRappelsUseCase } from './application/LireRappels.useCase';
 import { PublierVersionUseCase } from './application/PublierVersion.useCase';
+import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
@@ -30,6 +32,7 @@ import {
   ESCAPE_REPOSITORY,
   FREE_RESPONSES_REPOSITORY,
   PULSES_REPOSITORY,
+  RAPPELS_SERVIS_REPOSITORY,
   FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
@@ -48,6 +51,8 @@ import { FormationEscapeProgressEntity } from './infrastructure/entities/Formati
 import { EscapeRepositoryTypeORM } from './infrastructure/Escape.repository.typeorm';
 import { FormationCoursePublicationEntity } from './infrastructure/entities/FormationCoursePublication.entity';
 import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.entity';
+import { FormationRappelServiEntity } from './infrastructure/entities/FormationRappelServi.entity';
+import { RappelsServisRepositoryTypeORM } from './infrastructure/RappelsServis.repository.typeorm';
 import { PulsesRepositoryTypeORM } from './infrastructure/Pulses.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from './infrastructure/FreeResponses.repository.typeorm';
 import { FormationGroupsRepositoryTypeORM } from './infrastructure/FormationGroups.repository.typeorm';
@@ -97,6 +102,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       FormationEscapeAttemptEntity,
       FormationPulseEntity,
       FormationCoursePublicationEntity,
+      FormationRappelServiEntity,
     ]),
   ],
   controllers: [
@@ -121,6 +127,8 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
     PublierVersionUseCase,
+    LireRappelsUseCase,
+    SyntheseRappelsUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     {
@@ -172,6 +180,10 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: PULSES_REPOSITORY,
       useClass: PulsesRepositoryTypeORM,
+    },
+    {
+      provide: RAPPELS_SERVIS_REPOSITORY,
+      useClass: RappelsServisRepositoryTypeORM,
     },
     {
       provide: MASTERY_REPOSITORY,

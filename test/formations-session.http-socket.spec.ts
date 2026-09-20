@@ -59,6 +59,7 @@ import {
   createMockIncidentsRepo,
   createMockMasteryRepo,
   createMockPulsesRepo,
+  createMockRappelsServisRepo,
   createMockScoresRepo,
   createMockTeacherAnnotationsRepo,
 } from './factories/formation.factory';
@@ -366,6 +367,7 @@ async function creerHarnais(
           groups: createMockFormationGroupsRepo(),
           escape: createMockEscapeRepo(),
           pulses: createMockPulsesRepo(),
+          rappels: createMockRappelsServisRepo(),
           mailer,
         },
         catalogueHttp,

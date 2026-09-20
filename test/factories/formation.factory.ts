@@ -26,8 +26,15 @@ import type {
   TeacherAnnotationRecord,
 } from '../../src/modules/formations/domain/ITeacherAnnotations.repository';
 import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
-import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
+import type {
+  IMasteryRepository,
+  MasteryRecord,
+} from '../../src/modules/formations/domain/IMastery.repository';
 import type { IPulsesRepository } from '../../src/modules/formations/domain/IPulses.repository';
+import type {
+  IRappelsServisRepository,
+  RappelServiRecord,
+} from '../../src/modules/formations/domain/IRappelsServis.repository';
 import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type {
   ISessionStateCache,
@@ -351,6 +358,20 @@ export function createMockAnswersRepo(): jest.Mocked<IAnswersRepository> {
   };
 }
 
+export function buildMasteryRecord(
+  overrides: Partial<MasteryRecord> = {},
+): MasteryRecord {
+  return {
+    studentKey: '11111111-1111-4111-8111-111111111111',
+    concept: 'taux-evolution',
+    boite: 1,
+    derniereVue: new Date('2026-09-11T08:00:00.000Z'),
+    succes: 0,
+    echecs: 0,
+    ...overrides,
+  };
+}
+
 export function createMockMasteryRepo(): jest.Mocked<IMasteryRepository> {
   return {
     findByStudentKey: jest.fn().mockResolvedValue([]),
@@ -481,6 +502,27 @@ export function createMockPulsesRepo(): jest.Mocked<IPulsesRepository> {
   };
 }
 
+export function createMockRappelsServisRepo(): jest.Mocked<IRappelsServisRepository> {
+  const servis: RappelServiRecord[] = [];
+  return {
+    lister: jest.fn().mockImplementation(() => Promise.resolve([...servis])),
+    figer: jest
+      .fn()
+      .mockImplementation(
+        (input: { participantId: string; questionIds: string[] }) => {
+          servis.push(
+            ...input.questionIds.map((questionId, rang) => ({
+              participantId: input.participantId,
+              questionId,
+              rang,
+            })),
+          );
+          return Promise.resolve([...servis]);
+        },
+      ),
+  };
+}
+
 export function createMockScoresRepo(): jest.Mocked<IScoresRepository> {
   return {
     saveIndividuals: jest.fn().mockResolvedValue(undefined),
@@ -519,6 +561,7 @@ export function createMockDepotsFormations() {
     groups: createMockFormationGroupsRepo(),
     escape: createMockEscapeRepo(),
     pulses: createMockPulsesRepo(),
+    rappels: createMockRappelsServisRepo(),
     mailer: createMockFormationMailer(),
   };
 }

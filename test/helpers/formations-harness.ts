@@ -41,7 +41,9 @@ import { SubmitAnswerUseCase } from '../../src/modules/formations/application/Su
 import { DeclarerJalonUseCase } from '../../src/modules/formations/application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../../src/modules/formations/application/Defis.useCase';
 import { EvincerParticipantUseCase } from '../../src/modules/formations/application/EvincerParticipant.useCase';
+import { LireRappelsUseCase } from '../../src/modules/formations/application/LireRappels.useCase';
 import { PublierVersionUseCase } from '../../src/modules/formations/application/PublierVersion.useCase';
+import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
@@ -50,6 +52,7 @@ import type { IFormationGroupsRepository } from '../../src/modules/formations/do
 import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
 import type { IPulsesRepository } from '../../src/modules/formations/domain/IPulses.repository';
+import type { IRappelsServisRepository } from '../../src/modules/formations/domain/IRappelsServis.repository';
 import type { IFreeResponsesRepository } from '../../src/modules/formations/domain/IFreeResponses.repository';
 import type { IIncidentsRepository } from '../../src/modules/formations/domain/IIncidents.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
@@ -70,6 +73,7 @@ import {
   PARTICIPANTS_REPOSITORY,
   ESCAPE_REPOSITORY,
   PULSES_REPOSITORY,
+  RAPPELS_SERVIS_REPOSITORY,
   SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
@@ -155,6 +159,7 @@ export interface DepotsFormations {
   groups: IFormationGroupsRepository;
   escape: IEscapeRepository;
   pulses: IPulsesRepository;
+  rappels: IRappelsServisRepository;
   mailer: IFormationMailer;
 }
 
@@ -184,6 +189,8 @@ export function fournisseursFormations(
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
     PublierVersionUseCase,
+    LireRappelsUseCase,
+    SyntheseRappelsUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     DueQuestionsUseCase,
@@ -208,6 +215,7 @@ export function fournisseursFormations(
     { provide: FORMATION_GROUPS_REPOSITORY, useValue: depots.groups },
     { provide: ESCAPE_REPOSITORY, useValue: depots.escape },
     { provide: PULSES_REPOSITORY, useValue: depots.pulses },
+    { provide: RAPPELS_SERVIS_REPOSITORY, useValue: depots.rappels },
     { provide: FORMATION_MAILER, useValue: depots.mailer },
     { provide: CATALOGUE_COURS, useValue: catalogue },
     { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },

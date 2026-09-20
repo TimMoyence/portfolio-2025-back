@@ -18,6 +18,7 @@ import {
   createMockFreeResponsesRepo,
   createMockParticipantsRepo,
   createMockPulsesRepo,
+  createMockRappelsServisRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import { cleDeJalon } from '../../domain/cours/CleDeJalon';
@@ -42,6 +43,7 @@ describe('LireEtatParticipantUseCase', () => {
   let freeResponses: ReturnType<typeof createMockFreeResponsesRepo>;
   let pulses: ReturnType<typeof createMockPulsesRepo>;
   let escape: ReturnType<typeof createMockEscapeRepo>;
+  let rappels: ReturnType<typeof createMockRappelsServisRepo>;
   let sut: LireEtatParticipantUseCase;
   let secretInitial: string | undefined;
 
@@ -64,6 +66,7 @@ describe('LireEtatParticipantUseCase', () => {
     freeResponses = createMockFreeResponsesRepo();
     pulses = createMockPulsesRepo();
     escape = createMockEscapeRepo();
+    rappels = createMockRappelsServisRepo();
     sut = new LireEtatParticipantUseCase(
       sessions,
       participants,
@@ -71,6 +74,7 @@ describe('LireEtatParticipantUseCase', () => {
       freeResponses,
       pulses,
       escape,
+      rappels,
       creerCatalogueDeTest(COURS),
     );
   });
@@ -208,6 +212,21 @@ describe('LireEtatParticipantUseCase', () => {
     ).rejects.toThrow(SessionNotFoundError);
   });
 
+  it('rend la liste figee des rappels deja servis', async () => {
+    await rappels.figer({
+      sessionId: 'session-uuid',
+      participantId: 'participant-uuid',
+      questionIds: ['R-COMPENSATION', 'R-MULTIPLE-NEUF'],
+    });
+
+    const etat = await sut.execute('session-uuid', 'participant-uuid');
+
+    expect(etat.rappels.questionIds).toEqual([
+      'R-COMPENSATION',
+      'R-MULTIPLE-NEUF',
+    ]);
+  });
+
   it('rend un etat vide quand le participant n a encore rien envoye', async () => {
     sut = new LireEtatParticipantUseCase(
       sessions,
@@ -216,6 +235,7 @@ describe('LireEtatParticipantUseCase', () => {
       freeResponses,
       pulses,
       escape,
+      rappels,
       creerCatalogueDeTest(buildCoursDeTest({ slug: COURS.slug })),
     );
 

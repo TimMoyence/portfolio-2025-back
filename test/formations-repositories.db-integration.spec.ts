@@ -510,7 +510,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(17);
+    expect(enBase).toHaveLength(19);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -554,7 +554,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(20);
+    expect(enBase).toHaveLength(21);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 

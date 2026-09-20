@@ -46,6 +46,7 @@ import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
 import { DeclarerJalonUseCase } from '../application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../application/Defis.useCase';
 import { LireEtatParticipantUseCase } from '../application/LireEtatParticipant.useCase';
+import { LireRappelsUseCase } from '../application/LireRappels.useCase';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
@@ -62,6 +63,7 @@ import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
 import { DeclarerJalonRequestDto } from './dto/contrat/declarer-jalon.request.dto';
 import { EtatParticipantResponseDto } from './dto/contrat/etat-participant.response.dto';
+import { RappelsResponseDto } from './dto/contrat/rappels.response.dto';
 import { StrategiesDefiResponseDto } from './dto/contrat/strategies-defi.response.dto';
 import { SubmitDefiRequestDto } from './dto/contrat/submit-defi.request.dto';
 import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
@@ -76,6 +78,7 @@ import {
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
   LIMITE_JALONS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
+  LIMITE_RAPPELS_PAR_PARTICIPANT,
   LIMITE_REPONSES_PAR_PARTICIPANT,
   LIMITE_REVISION_PAR_PARTICIPANT,
   LIMITE_SUJET_PAR_PARTICIPANT,
@@ -100,6 +103,7 @@ export class FormationsStudentController {
     private readonly declarerJalon: DeclarerJalonUseCase,
     private readonly defis: DefisUseCase,
     private readonly lireEtatParticipant: LireEtatParticipantUseCase,
+    private readonly lireRappels: LireRappelsUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
@@ -169,7 +173,7 @@ export class FormationsStudentController {
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
   @ApiConflictResponse({
     description:
-      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou REPONSE_DEJA_ENREGISTREE',
+      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI, PHASE_FERMEE, REPONSE_DEJA_ENREGISTREE ou COURS_MODIFIE',
   })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async answer(
@@ -206,11 +210,13 @@ export class FormationsStudentController {
   })
   @ApiCreatedResponse({ type: FreeResponseSavedResponseDto })
   @ApiBadRequestResponse({
-    description: 'Reponse vide une fois les blancs retires',
+    description:
+      'Reponse vide une fois les blancs retires, ou activite inconnue de l ecran : code ACTIVITE_INCONNUE',
   })
+  @ApiNotFoundResponse({ description: 'Seance ou cours introuvable' })
   @ApiConflictResponse({
     description:
-      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
+      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou ECRAN_NON_SERVI',
   })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async freeResponse(
@@ -416,6 +422,36 @@ export class FormationsStudentController {
       sessionId,
       request.participantId!,
     ) as Promise<EtatParticipantResponseDto>;
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_RAPPELS_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @UseGuards(ParticipantTokenGuard)
+  @Get('sessions/:id/rappels')
+  @ApiOperation({
+    summary:
+      'Sert la liste figee des rappels espaces du participant, options melangees par sa graine',
+  })
+  @ApiOkResponse({ type: RappelsResponseDto })
+  @ApiNotFoundResponse({ description: 'Cours sans ecran de rappel espace' })
+  @ApiConflictResponse({
+    description:
+      'Rappels refuses, cause dans le champ code du corps : ECRAN_NON_SERVI',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async rappels(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Req() request: Request,
+  ): Promise<RappelsResponseDto> {
+    return this.lireRappels.execute(
+      sessionId,
+      request.participantId!,
+    ) as Promise<RappelsResponseDto>;
   }
 
   @Throttle({

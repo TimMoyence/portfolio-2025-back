@@ -45,11 +45,13 @@ import {
   PublierVersionUseCase,
 } from '../application/PublierVersion.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
+import { SyntheseRappelsUseCase } from '../application/SyntheseRappels.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
 import { ControlSessionRequestDto } from './dto/contrat/control-session.request.dto';
 import { PublicationResponseDto } from './dto/contrat/publication.response.dto';
 import { PublierVersionRequestDto } from './dto/contrat/publication.request.dto';
+import { SyntheseRappelsResponseDto } from './dto/contrat/synthese-rappels.response.dto';
 import { DerouleResponseDto } from './dto/contrat/deroule.response.dto';
 import { FreeResponsesResponseDto } from './dto/free-responses.response.dto';
 import { OpenSessionRequestDto } from './dto/contrat/open-session.request.dto';
@@ -66,6 +68,7 @@ import {
   FENETRE_THROTTLE_MS,
   LIMITE_CONTROLE_PAR_MINUTE,
   LIMITE_PUBLICATION_PAR_MINUTE,
+  LIMITE_SYNTHESE_PAR_MINUTE,
 } from './formations-throttling';
 
 /**
@@ -93,6 +96,7 @@ export class FormationsPresenterController {
     private readonly lireDeroule: LireDerouleUseCase,
     private readonly listFreeResponses: ListFreeResponsesUseCase,
     private readonly publierVersion: PublierVersionUseCase,
+    private readonly syntheseRappels: SyntheseRappelsUseCase,
   ) {}
 
   @Post('sessions')
@@ -271,6 +275,28 @@ export class FormationsPresenterController {
     return {
       responses: await this.listFreeResponses.execute(id, acteurDe(request)),
     };
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_SYNTHESE_PAR_MINUTE,
+      ttl: FENETRE_THROTTLE_MS,
+    },
+  })
+  @Get('sessions/:id/rappels/synthese')
+  @LectureDeSeance()
+  @ApiOperation({
+    summary: 'Carte de maitrise de la classe, concept par concept',
+  })
+  @ApiOkResponse({ type: SyntheseRappelsResponseDto })
+  async syntheseDesRappels(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() request: Request,
+  ): Promise<SyntheseRappelsResponseDto> {
+    return this.syntheseRappels.execute(
+      id,
+      acteurDe(request),
+    ) as Promise<SyntheseRappelsResponseDto>;
   }
 
   @Throttle({

@@ -17,18 +17,24 @@ export class BlankFieldError extends DomainValidationError {
 }
 
 export class SessionNotFoundError extends ResourceNotFoundError {
+  readonly code = 'SEANCE_INTROUVABLE';
+
   constructor(id: string) {
     super(`Session introuvable: ${id}`);
   }
 }
 
 export class CoursInconnuError extends ResourceNotFoundError {
+  readonly code = 'COURS_INTROUVABLE';
+
   constructor(slug: string) {
     super(`Cours introuvable: ${slug}`);
   }
 }
 
 export class ParticipantNotFoundError extends ResourceNotFoundError {
+  readonly code = 'PARTICIPANT_INTROUVABLE';
+
   constructor(id: string) {
     super(`Participant introuvable: ${id}`);
   }
@@ -188,6 +194,12 @@ export class DefiSansTentativeError extends ResourceNotFoundError {
   }
 }
 
+export class RappelsIndisponiblesError extends ResourceNotFoundError {
+  constructor(slug: string) {
+    super(`Aucun écran de rappel espacé dans le cours ${slug}`);
+  }
+}
+
 export class EnigmeInconnueError extends ResourceNotFoundError {
   constructor(parcoursId: string, enigmeId: string) {
     super(`Énigme ${enigmeId} absente du parcours ${parcoursId}`);
@@ -269,6 +281,8 @@ export class VersionNonPubliableError extends ResourceConflictError {
 }
 
 export class CoursModifieError extends ResourceConflictError {
+  readonly code = 'COURS_MODIFIE';
+
   constructor() {
     super(
       'Le cours a changé depuis l’ouverture de la séance : le formateur doit ouvrir une nouvelle séance.',

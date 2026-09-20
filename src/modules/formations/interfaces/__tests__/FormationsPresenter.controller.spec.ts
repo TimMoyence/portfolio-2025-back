@@ -29,6 +29,7 @@ describe('FormationsPresenterController', () => {
   const lireDeroule = { execute: jest.fn() };
   const listFreeResponses = { execute: jest.fn() };
   const publierVersion = { execute: jest.fn() };
+  const syntheseRappels = { execute: jest.fn() };
 
   const controller = new FormationsPresenterController(
     openSession as never,
@@ -39,6 +40,7 @@ describe('FormationsPresenterController', () => {
     lireDeroule as never,
     listFreeResponses as never,
     publierVersion as never,
+    syntheseRappels as never,
   );
 
   const controle = (dto: ControlSessionRequestDto): Promise<void> =>

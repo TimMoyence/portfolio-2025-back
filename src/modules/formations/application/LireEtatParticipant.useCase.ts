@@ -21,6 +21,7 @@ import type {
 import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { IPulsesRepository } from '../domain/IPulses.repository';
+import type { IRappelsServisRepository } from '../domain/IRappelsServis.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import {
   ANSWERS_REPOSITORY,
@@ -29,6 +30,7 @@ import {
   FREE_RESPONSES_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   PULSES_REPOSITORY,
+  RAPPELS_SERVIS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 
@@ -49,6 +51,8 @@ export class LireEtatParticipantUseCase {
     private readonly pulses: IPulsesRepository,
     @Inject(ESCAPE_REPOSITORY)
     private readonly escape: IEscapeRepository,
+    @Inject(RAPPELS_SERVIS_REPOSITORY)
+    private readonly rappels: IRappelsServisRepository,
     @Inject(CATALOGUE_COURS)
     private readonly catalogue: ICatalogueCours,
   ) {}
@@ -77,15 +81,18 @@ export class LireEtatParticipantUseCase {
       throw new CoursInconnuError(session.courseSlug);
     }
 
-    const [reponses, libres, jalons, progressions] = await Promise.all([
-      this.answers.listerDuParticipant(sessionId, participantId),
-      this.freeResponses.listerDuParticipant(sessionId, participantId),
-      this.pulses.listerDuParticipant(
-        sessionId,
-        cleDeJalon(sessionId, participantId),
-      ),
-      this.escape.listerProgressionDuParticipant(participantId),
-    ]);
+    const [reponses, libres, jalons, progressions, rappels] = await Promise.all(
+      [
+        this.answers.listerDuParticipant(sessionId, participantId),
+        this.freeResponses.listerDuParticipant(sessionId, participantId),
+        this.pulses.listerDuParticipant(
+          sessionId,
+          cleDeJalon(sessionId, participantId),
+        ),
+        this.escape.listerProgressionDuParticipant(participantId),
+        this.rappels.lister(participantId),
+      ],
+    );
 
     return {
       sessionId,
@@ -106,7 +113,9 @@ export class LireEtatParticipantUseCase {
           defiId: libre.activityId,
           premiereTentative: libre.premiereReponse ?? libre.response,
         })),
-      rappels: { questionIds: [] },
+      rappels: {
+        questionIds: rappels.map((servi) => servi.questionId),
+      },
     };
   }
 
