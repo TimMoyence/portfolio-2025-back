@@ -96,6 +96,17 @@ export class AnswersRepositoryTypeORM
     return entities.map((entity) => this.toDomain(entity));
   }
 
+  async listerDuParticipant(
+    sessionId: string,
+    participantId: string,
+  ): Promise<readonly AnswerRecord[]> {
+    const entities = await this.repo.find({
+      where: { sessionId, participantId },
+      order: { soumisLe: 'ASC', id: 'ASC' },
+    });
+    return entities.map((entity) => this.toDomain(entity));
+  }
+
   async tallyBySession(sessionId: string): Promise<readonly QuestionTally[]> {
     const lignes = await this.repo
       .createQueryBuilder('reponse')

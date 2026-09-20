@@ -23,6 +23,9 @@ export interface IEscapeRepository {
   listerProgressionDeSeance(
     sessionId: string,
   ): Promise<readonly ProgressionEnigmeRecord[]>;
+  listerProgressionDuParticipant(
+    participantId: string,
+  ): Promise<readonly ProgressionEnigmeRecord[]>;
   incrementerTentative(input: {
     readonly sessionId: string;
     readonly participantId: string;

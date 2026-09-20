@@ -39,6 +39,13 @@ export class EscapeRepositoryTypeORM implements IEscapeRepository {
     return lignes.map((ligne) => this.toDomain(ligne));
   }
 
+  async listerProgressionDuParticipant(
+    participantId: string,
+  ): Promise<readonly ProgressionEnigmeRecord[]> {
+    const lignes = await this.progression.find({ where: { participantId } });
+    return lignes.map((ligne) => this.toDomain(ligne));
+  }
+
   async incrementerTentative(input: {
     readonly sessionId: string;
     readonly participantId: string;

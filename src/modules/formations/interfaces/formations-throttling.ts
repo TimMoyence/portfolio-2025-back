@@ -13,6 +13,7 @@ export const LIMITE_REVISION_PAR_PARTICIPANT = 30;
 export const LIMITE_SUJET_PAR_PARTICIPANT = 20;
 export const LIMITE_TENTATIVES_PAR_PARTICIPANT = 20;
 export const LIMITE_JALONS_PAR_PARTICIPANT = 30;
+export const LIMITE_ETAT_PAR_PARTICIPANT = 30;
 
 /**
  * Les trente postes d'une salle informatique sortent par une seule adresse

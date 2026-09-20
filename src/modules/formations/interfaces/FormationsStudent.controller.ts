@@ -45,6 +45,7 @@ import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase
 import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
 import { DeclarerJalonUseCase } from '../application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../application/Defis.useCase';
+import { LireEtatParticipantUseCase } from '../application/LireEtatParticipant.useCase';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
@@ -60,6 +61,7 @@ import { SaveFreeResponseRequestDto } from './dto/save-free-response.request.dto
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
 import { DeclarerJalonRequestDto } from './dto/contrat/declarer-jalon.request.dto';
+import { EtatParticipantResponseDto } from './dto/contrat/etat-participant.response.dto';
 import { StrategiesDefiResponseDto } from './dto/contrat/strategies-defi.response.dto';
 import { SubmitDefiRequestDto } from './dto/contrat/submit-defi.request.dto';
 import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
@@ -70,6 +72,7 @@ import { SujetResponseDto } from './dto/contrat/sujet.response.dto';
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,
+  LIMITE_ETAT_PAR_PARTICIPANT,
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
   LIMITE_JALONS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
@@ -96,6 +99,7 @@ export class FormationsStudentController {
     private readonly tenterEnigme: TenterEnigmeUseCase,
     private readonly declarerJalon: DeclarerJalonUseCase,
     private readonly defis: DefisUseCase,
+    private readonly lireEtatParticipant: LireEtatParticipantUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
@@ -387,6 +391,31 @@ export class FormationsStudentController {
   ): Promise<StrategiesDefiResponseDto> {
     const participantId = this.tokens.verify(sessionId, jeton);
     return this.defis.strategies(sessionId, participantId, defiId);
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_ETAT_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @UseGuards(ParticipantTokenGuard)
+  @Get('sessions/:id/moi')
+  @ApiOperation({
+    summary:
+      'Rend l etat du seul participant porte par le jeton, pour reprendre apres un rechargement',
+  })
+  @ApiOkResponse({ type: EtatParticipantResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async monEtat(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Req() request: Request,
+  ): Promise<EtatParticipantResponseDto> {
+    return this.lireEtatParticipant.execute(
+      sessionId,
+      request.participantId!,
+    ) as Promise<EtatParticipantResponseDto>;
   }
 
   @Throttle({

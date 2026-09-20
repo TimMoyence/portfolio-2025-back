@@ -301,6 +301,7 @@ export function createMockParticipantsRepo(): jest.Mocked<IParticipantsRepositor
 
 export function createMockAnswersRepo(): jest.Mocked<IAnswersRepository> {
   return {
+    listerDuParticipant: jest.fn().mockResolvedValue([]),
     create: jest
       .fn()
       .mockImplementation((input: CreateAnswerInput) =>
@@ -426,6 +427,7 @@ export function createMockEscapeRepo(): jest.Mocked<IEscapeRepository> {
   return {
     listerProgression: jest.fn().mockResolvedValue([]),
     listerProgressionDeSeance: jest.fn().mockResolvedValue([]),
+    listerProgressionDuParticipant: jest.fn().mockResolvedValue([]),
     incrementerTentative: jest.fn().mockResolvedValue(1),
     marquerResolue: jest.fn().mockResolvedValue(undefined),
     journaliser: jest.fn().mockResolvedValue(undefined),

@@ -266,6 +266,14 @@ function creerAnswersRepo(): IAnswersRepository {
       reponses.push(reponse);
       return Promise.resolve(reponse);
     },
+    listerDuParticipant: (sessionId, participantId) =>
+      Promise.resolve(
+        reponses.filter(
+          (reponse) =>
+            reponse.sessionId === sessionId &&
+            reponse.participantId === participantId,
+        ),
+      ),
     existsFor: (participantId, questionId) =>
       Promise.resolve(
         reponses.some(

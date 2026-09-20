@@ -41,5 +41,9 @@ export interface IAnswersRepository {
   create(input: CreateAnswerInput): Promise<AnswerRecord>;
   existsFor(participantId: string, questionId: string): Promise<boolean>;
   listBySession(sessionId: string): Promise<readonly AnswerRecord[]>;
+  listerDuParticipant(
+    sessionId: string,
+    participantId: string,
+  ): Promise<readonly AnswerRecord[]>;
   tallyBySession(sessionId: string): Promise<readonly QuestionTally[]>;
 }

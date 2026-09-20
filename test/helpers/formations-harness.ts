@@ -40,6 +40,7 @@ import { StreamSessionUseCase } from '../../src/modules/formations/application/S
 import { SubmitAnswerUseCase } from '../../src/modules/formations/application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from '../../src/modules/formations/application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../../src/modules/formations/application/Defis.useCase';
+import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
@@ -178,6 +179,7 @@ export function fournisseursFormations(
     TenterEnigmeUseCase,
     DeclarerJalonUseCase,
     DefisUseCase,
+    LireEtatParticipantUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     DueQuestionsUseCase,
