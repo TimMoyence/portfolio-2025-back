@@ -3,7 +3,9 @@
   "branchName": "feat/cours-servi-par-le-serveur",
   "frontRepository": "portfolio-2025-front",
   "backRepository": "portfolio-2025-back",
-  "status": "termine",
+  "status": "repris",
+  "repriseParTaskList": "docs/cours-b2-01-qa-prod-task-list.json",
+  "repriseMotif": "Cette liste s'est déclarée terminée sans risque résiduel alors que US006, US007 et US008 n'étaient que partiels : annotations sans contrôle de propriété du formateur, lecture des résultats qui écrivait en base, parcours E2E joué une fois à la main et rejoué par aucune porte. La reprise QA production tient le reste du travail.",
   "completionRule": "Une étape ne passe à terminée qu'après preuve par test ou exécution réelle, avec fichiers et lignes vérifiés. Ne pas assimiler un contrôle statique à un test de comportement.",
   "workLog": [
     {
@@ -107,7 +109,8 @@
       "id": "US006",
       "title": "Annotations formateur et suivi des groupes",
       "priority": 6,
-      "passes": true,
+      "passes": false,
+      "partielMotif": "Les endpoints d'annotation ne vérifiaient pas la propriété : un formateur lisait et écrivait les notes d'un autre. Fermé dans la reprise QA production.",
       "description": "En tant que formateur propriétaire, je veux retrouver mes notes et mes groupes sur tous mes postes, même après la clôture.",
       "acceptanceCriteria": [
         "Table d'annotations : session, formateur, écran, groupe, note et date de modification ; contraintes d'accès testées.",
@@ -122,7 +125,8 @@
       "id": "US007",
       "title": "Score numérique calculé et diffusé par le backend",
       "priority": 7,
-      "passes": true,
+      "passes": false,
+      "partielMotif": "La lecture des résultats écrivait en base, et le verdict des quiz n'atteignait jamais le poste étudiant. Fermé dans la reprise QA production.",
       "description": "En tant que formateur, je veux des résultats en direct vérifiables sans divulguer les corrections ou les notes individuelles aux autres élèves.",
       "acceptanceCriteria": [
         "Barème explicite : points QCM, non-réponses, réponses libres, seuil éventuel et arrondis.",
@@ -138,7 +142,8 @@
       "id": "US008",
       "title": "Parcours E2E authentifié front-back",
       "priority": 8,
-      "passes": true,
+      "passes": false,
+      "partielMotif": "Le parcours a été joué une fois à la main et rejoué par aucune porte : le niveau e2e du back n'était qu'un instantané de contrat sans requête. Rejoué par un scénario de séance sur la V3 migrée dans la reprise QA production.",
       "description": "En tant qu'équipe produit, je veux rejouer tout le parcours de séance pour détecter une rupture entre le front, le back et la base.",
       "acceptanceCriteria": [
         "Comptes formateur et étudiant de test isolés ; ouverture B2, jonction par code, démarrage et bon écran serveur.",
@@ -163,7 +168,9 @@
     }
   ],
   "finalReview": {
-    "status": "termine",
+    "status": "invalide",
+    "invaliditeMotif": "Verdict rendu sans preuve suffisante : trois de ses sept contrôles étaient faux au moment où ils ont été cochés. Les accès n'avaient pas de test rouge (annotations sans contrôle de propriété, portail de publication contournable), la confidentialité n'était pas prouvée (le corrigé d'un défi fuyait à l'éviction, la rubrique « À dire » partait au poste étudiant), et le parcours E2E n'était rejoué par aucune porte. La liste de risques résiduels vide est le défaut central : elle a servi de conclusion au lieu de résulter d'un examen.",
+    "repriseParTaskList": "docs/cours-b2-01-qa-prod-task-list.json",
     "checks": [
       "Le produit a un seul contenu pédagogique B2 et un seul deck partagé par les quatre parcours.",
       "Les contrats, données, accès et sessions versionnées ont des tests rouges si on les défait.",
@@ -183,6 +190,12 @@
       "Nettoyage E2E SQL vérifié: formation_sessions before=1, deleted=1, after=0; comptes de test supprimés",
       "QA production navigateur: https://asilidesign.fr/fr/formations/b2-01-traitement-information-chiffree répond HTTP 200, app-slide-deck=1, 72 sections, 14 quiz, aucune correction; API catalogue et health répondent 200"
     ],
-    "residualRisks": []
+    "residualRisks": [
+      "US006 : annotations lisibles et modifiables par un formateur qui n'en est pas le propriétaire.",
+      "US007 : la lecture des résultats écrivait en base ; le verdict d'un quiz n'atteignait jamais l'étudiant.",
+      "US008 : parcours E2E joué une seule fois à la main, rejoué par aucune porte.",
+      "Le portail de publication se contournait, et l'éviction laissait fuir le corrigé d'un défi.",
+      "Toutes ces reprises sont suivies dans docs/cours-b2-01-qa-prod-task-list.json."
+    ]
   }
 }
