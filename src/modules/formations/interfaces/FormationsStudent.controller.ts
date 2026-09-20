@@ -473,6 +473,8 @@ export class FormationsStudentController {
   ): Promise<void> {
     const participantId = this.tokens.verify(sessionId, jeton);
     await this.recordIncidents.execute(
+      sessionId,
+      participantId,
       dto.incidents.map((incident) => ({
         sessionId,
         participantId,

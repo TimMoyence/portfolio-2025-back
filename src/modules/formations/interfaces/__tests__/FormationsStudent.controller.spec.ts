@@ -209,22 +209,26 @@ describe('FormationsStudentController', () => {
       ],
     });
 
-    expect(recordIncidents.execute).toHaveBeenCalledWith([
-      {
-        sessionId: SESSION_ID,
-        participantId: PARTICIPANT_ID,
-        type: 'tab_hidden',
-        contexte: null,
-        horodatage,
-      },
-      {
-        sessionId: SESSION_ID,
-        participantId: PARTICIPANT_ID,
-        type: 'copy_attempt',
-        contexte: { cible: 'enonce' },
-        horodatage,
-      },
-    ]);
+    expect(recordIncidents.execute).toHaveBeenCalledWith(
+      SESSION_ID,
+      PARTICIPANT_ID,
+      [
+        {
+          sessionId: SESSION_ID,
+          participantId: PARTICIPANT_ID,
+          type: 'tab_hidden',
+          contexte: null,
+          horodatage,
+        },
+        {
+          sessionId: SESSION_ID,
+          participantId: PARTICIPANT_ID,
+          type: 'copy_attempt',
+          contexte: { cible: 'enonce' },
+          horodatage,
+        },
+      ],
+    );
   });
 
   it('n enregistre aucun incident quand le jeton est refuse', async () => {

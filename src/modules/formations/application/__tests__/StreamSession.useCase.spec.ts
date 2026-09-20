@@ -147,7 +147,7 @@ describe('StreamSessionUseCase', () => {
       createMockPulsesRepo(),
       createMockEscapeRepo(),
     );
-    sut = new StreamSessionUseCase(sessions, cache, resultats);
+    sut = new StreamSessionUseCase(sessions, cache, resultats, participants);
   });
 
   afterEach(() => {
@@ -159,6 +159,34 @@ describe('StreamSessionUseCase', () => {
     await jest.advanceTimersByTimeAsync(10);
     const message = await premier;
     expect(message.type).toBe('etat');
+  });
+
+  it('ferme le flux du participant evince pendant qu il est ouvert', async () => {
+    const ecoute = ecouter(sut.execute('session-uuid', PARTICIPANT_ID));
+    await jest.advanceTimersByTimeAsync(INTERVALLE_MS_TEST);
+    const avantEviction = ecoute.terminee();
+
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
+      }),
+    );
+    await jest.advanceTimersByTimeAsync(INTERVALLE_MS_TEST * 8);
+
+    expect({
+      avantEviction,
+      apresEviction: ecoute.terminee(),
+      derniereRaison: (
+        ecoute.evenements[ecoute.evenements.length - 1].data as {
+          raison?: string;
+        }
+      ).raison,
+    }).toEqual({
+      avantEviction: false,
+      apresEviction: true,
+      derniereRaison: 'evince',
+    });
+    ecoute.abonnement.unsubscribe();
   });
 
   it('n emet pas deux fois le meme etat', async () => {
@@ -252,6 +280,7 @@ describe('StreamSessionUseCase', () => {
         sessions,
         new SessionStateCacheService(),
         resultats,
+        participants,
         undefined,
         capacite,
       );
@@ -545,6 +574,7 @@ describe('StreamSessionUseCase', () => {
         sessions,
         new SessionStateCacheService(),
         resultats,
+        participants,
         undefined,
         capacite,
       );
@@ -552,6 +582,7 @@ describe('StreamSessionUseCase', () => {
         sessions,
         new SessionStateCacheService(),
         resultats,
+        participants,
         undefined,
         capacite,
       );
@@ -607,10 +638,13 @@ describe('StreamSessionUseCase', () => {
 
   it('tient le flux jusqu a sa duree maximale puis le termine avec la raison expiree', async () => {
     const dureeMaxMs = 60_000;
-    const brefs = new StreamSessionUseCase(sessions, cache, resultats, {
-      battementMs: HEARTBEAT_MS_TEST,
-      dureeMaxMs,
-    });
+    const brefs = new StreamSessionUseCase(
+      sessions,
+      cache,
+      resultats,
+      participants,
+      { battementMs: HEARTBEAT_MS_TEST, dureeMaxMs },
+    );
     const collected: MessageEvent[] = [];
     let termine = false;
     const subscription = brefs
@@ -813,6 +847,7 @@ describe('StreamSessionUseCase', () => {
         sessions,
         new SessionStateCacheService(),
         resultats,
+        participants,
       );
 
       const ecoute = ecouter(

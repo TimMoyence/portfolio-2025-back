@@ -19,6 +19,7 @@ import type {
   ISessionStateCache,
   LiveSessionState,
 } from '../domain/ISessionStateCache.port';
+import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type {
   ISessionsRepository,
   SessionRecord,
@@ -29,6 +30,7 @@ import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import type { StatistiquesSeance } from '../domain/SessionStatistics';
 import {
+  PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
   STREAM_CAPACITY,
@@ -39,6 +41,7 @@ export const DELAI_MIN_BILAN_MS = 1000;
 const HEARTBEAT_MS = 15000;
 const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
 const AUCUNE_ACTIVITE_VUE = -1;
+const PASSAGES_ENTRE_CONTROLES = 4;
 export const MAX_ABONNEMENTS_PAR_SESSION = 100;
 export const MAX_FLUX_FORMATEUR_PAR_SESSION = 4;
 export const MAX_FLUX_PAR_PARTICIPANT = 2;
@@ -119,6 +122,8 @@ export class StreamSessionUseCase {
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
     private readonly presenterResults: GetSessionResultsUseCase,
+    @Inject(PARTICIPANTS_REPOSITORY)
+    private readonly participants: IParticipantsRepository,
     @Optional()
     private readonly cadences: CadencesFlux = CADENCES_PRODUCTION,
     @Optional()
@@ -150,26 +155,44 @@ export class StreamSessionUseCase {
   }
 
   execute(sessionId: string, participantId: string): Observable<MessageEvent> {
-    return this.ouvrirFlux(sessionId, {
-      porteur: {
-        occupants: this.fluxParParticipant,
-        cle: participantId,
-        plafond: MAX_FLUX_PAR_PARTICIPANT,
-        capacite: `participant:${participantId}`,
+    return this.ouvrirFlux(
+      sessionId,
+      {
+        porteur: {
+          occupants: this.fluxParParticipant,
+          cle: participantId,
+          plafond: MAX_FLUX_PAR_PARTICIPANT,
+          capacite: `participant:${participantId}`,
+        },
+        seance: {
+          occupants: this.fluxEtudiants,
+          cle: sessionId,
+          plafond: MAX_ABONNEMENTS_PAR_SESSION,
+          capacite: `session:${sessionId}`,
+        },
       },
-      seance: {
-        occupants: this.fluxEtudiants,
-        cle: sessionId,
-        plafond: MAX_ABONNEMENTS_PAR_SESSION,
-        capacite: `session:${sessionId}`,
-      },
-    });
+      undefined,
+      participantId,
+    );
+  }
+
+  private async participantAdmis(
+    sessionId: string,
+    participantId: string,
+  ): Promise<boolean> {
+    const participant = await this.participants.findById(participantId);
+    return (
+      participant !== null &&
+      participant.sessionId === sessionId &&
+      participant.evinceLe === null
+    );
   }
 
   private ouvrirFlux(
     sessionId: string,
     places: PlacesDuFlux,
     sessionDuFormateur?: SessionRecord,
+    participantId?: string,
   ): Observable<MessageEvent> {
     assertSeanceDisponible(places);
     return new Observable<MessageEvent>((subscriber) => {
@@ -177,6 +200,7 @@ export class StreamSessionUseCase {
       let derniereActivite = AUCUNE_ACTIVITE_VUE;
       let actif = true;
       let occupe = false;
+      let passagesDepuisLeControle = 0;
       let bail: StreamCapacityLease | null = null;
       let boucle: ReturnType<typeof setInterval> | undefined;
       let battement: ReturnType<typeof setInterval> | undefined;
@@ -253,6 +277,17 @@ export class StreamSessionUseCase {
         }
         occupe = true;
         try {
+          if (
+            participantId !== undefined &&
+            passagesDepuisLeControle % PASSAGES_ENTRE_CONTROLES === 0 &&
+            !(await this.participantAdmis(sessionId, participantId))
+          ) {
+            subscriber.next({ type: 'fin', data: { raison: 'evince' } });
+            subscriber.complete();
+            arreter();
+            return;
+          }
+          passagesDepuisLeControle += 1;
           const etat = await this.resolveState(sessionId);
           if (!etat) {
             subscriber.next({ type: 'fin', data: { raison: 'introuvable' } });
