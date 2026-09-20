@@ -14,11 +14,7 @@ import type {
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { TirageDuCours } from '../src/modules/formations/domain/cours/Tirage';
 import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';
-import type {
-  AnswerValue,
-  Solution,
-  Tolerance,
-} from '../src/modules/formations/domain/GradingCore';
+import type { AnswerValue } from '../src/modules/formations/domain/GradingCore';
 import type {
   ConfusionComptee,
   ResultatQuestion,
@@ -38,6 +34,7 @@ import {
   type ClientFormations,
   type FluxEcoute,
 } from './helpers/formations-harness';
+import { bonneValeur } from './helpers/reponses-v3';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
@@ -54,8 +51,6 @@ const REQUETE_INVALIDE = 400;
 const ATTENTE_FLUX_MS = 15_000;
 const PAS_SONDAGE_MS = 50;
 const DELAI_TEST_MS = 600_000;
-const DEMI = 2;
-const FRACTION_DANS_L_ARRONDI = 0.4;
 
 interface Inscription {
   participantId: string;
@@ -76,25 +71,6 @@ interface ReponseEnvoyee {
 const VERSION_PUBLIEE = 2;
 const ECRANS_DU_DECK = 72;
 const QUIZ_DU_DECK = 14;
-
-function dansLaTolerance(valeur: number, tolerance: Tolerance): number {
-  switch (tolerance.type) {
-    case 'absolue':
-      return valeur + tolerance.valeur / DEMI;
-    case 'relative':
-      return valeur * (1 + tolerance.valeur / DEMI);
-    case 'decimales': {
-      const facteur = 10 ** tolerance.valeur;
-      return (Math.round(valeur * facteur) + FRACTION_DANS_L_ARRONDI) / facteur;
-    }
-  }
-}
-
-function bonneValeur(question: Question, solution: Solution): AnswerValue {
-  return question.type === 'numeric' && typeof solution.valeur === 'number'
-    ? dansLaTolerance(solution.valeur, question.tolerance)
-    : solution.valeur;
-}
 
 function reponseDe(etudiant: Etudiant, question: Question): ReponseEnvoyee {
   const solution = etudiant.tirage.solutions[question.id];

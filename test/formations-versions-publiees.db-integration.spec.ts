@@ -1,3 +1,4 @@
+import { B2_COURS_V3 } from '../src/migrations/data/b2-v3.cours';
 import type { ContenuDeCoursBrut } from '../src/modules/formations/domain/cours/CoursStocke';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -26,6 +27,8 @@ interface EcranPublie {
   readonly proprietes: Record<string, unknown>;
 }
 
+const HORS_HISTORIQUE = [B2_COURS_V3.slug, B2_COURS_V3.version] as const;
+
 describeDb('versions publiées du catalogue de formations', () => {
   let contexte: ContexteFormations;
 
@@ -33,6 +36,13 @@ describeDb('versions publiées du catalogue de formations', () => {
     await contexte.dataSource.query(
       `SELECT "id", "slug", "version", "titre", "niveau", "duree_minutes", "concepts"
        FROM "formation_course_contents" ORDER BY "slug", "version"`,
+    );
+
+  const versionsHistoriques = async (): Promise<VersionPubliee[]> =>
+    (await versionsPubliees()).filter(
+      (version) =>
+        version.slug !== B2_COURS_V3.slug ||
+        version.version !== B2_COURS_V3.version,
     );
 
   const contenuBrut = async (
@@ -79,12 +89,17 @@ describeDb('versions publiées du catalogue de formations', () => {
 
   it('laisse les versions historiques sans titre, en diffusion catalogue, sans remédiation ni média', async () => {
     const ecrans: { nombre: number }[] = await contexte.dataSource.query(
-      `SELECT COUNT(*)::int AS "nombre" FROM "formation_screen_contents"
-       WHERE "titre" IS NOT NULL OR "diffusion" <> 'catalogue'`,
+      `SELECT COUNT(*)::int AS "nombre" FROM "formation_screen_contents" AS "ecran"
+       JOIN "formation_course_contents" AS "cours" ON "cours"."id" = "ecran"."course_id"
+       WHERE NOT ("cours"."slug" = $1 AND "cours"."version" = $2)
+         AND ("ecran"."titre" IS NOT NULL OR "ecran"."diffusion" <> 'catalogue')`,
+      [...HORS_HISTORIQUE],
     );
     const cours: { nombre: number }[] = await contexte.dataSource.query(
       `SELECT COUNT(*)::int AS "nombre" FROM "formation_course_contents"
-       WHERE "remediations" <> '{}'::jsonb OR "medias" <> '[]'::jsonb`,
+       WHERE NOT ("slug" = $1 AND "version" = $2)
+         AND ("remediations" <> '{}'::jsonb OR "medias" <> '[]'::jsonb)`,
+      [...HORS_HISTORIQUE],
     );
 
     expect([ecrans[0].nombre, cours[0].nombre]).toEqual([0, 0]);
@@ -92,7 +107,7 @@ describeDb('versions publiées du catalogue de formations', () => {
 
   it('garde les contenus figés des tests dorés identiques à la base migrée', async () => {
     const lus: ContenuDeCoursBrut[] = [];
-    for (const version of await versionsPubliees()) {
+    for (const version of await versionsHistoriques()) {
       lus.push(await contenuBrut(version));
     }
 

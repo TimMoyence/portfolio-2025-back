@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { InsertB2CoursV31789893879954 } from '../src/migrations/1789893879954-InsertB2CoursV3';
 import { B2_COURS_V3 } from '../src/migrations/data/b2-v3.cours';
 import type { Cours } from '../src/modules/formations/domain/contrats/cours';
 import type {
@@ -19,7 +20,7 @@ import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureT
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import { tireurSequentiel } from './factories/cours.factory';
-import { insererB2V3 } from './helpers/b2-v3-en-base';
+import { buildBareme } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
@@ -29,6 +30,7 @@ import {
 import { empreinte } from './helpers/portrait-tirages-b2';
 
 const GRAINE_DE_REFERENCE = 0;
+const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const INSTANTANE = JSON.parse(
   readFileSync(
     join(__dirname, 'fixtures/formations/b2-01-v3.instantane.json'),
@@ -40,12 +42,31 @@ describeDb('contenu V3 du B2-01 en base', () => {
   let contexte: ContexteFormations;
   let cours: Cours;
 
+  const comptesDeLaV3 = async (): Promise<{
+    cours: number;
+    ecrans: number;
+  }> => {
+    const [{ cours: nombreDeCours, ecrans }]: {
+      cours: number;
+      ecrans: number;
+    }[] = await contexte.dataSource.query(
+      `SELECT COUNT(DISTINCT "cours"."id")::int AS "cours",
+              COUNT("ecran"."id")::int AS "ecrans"
+       FROM "formation_course_contents" AS "cours"
+       LEFT JOIN "formation_screen_contents" AS "ecran" ON "ecran"."course_id" = "cours"."id"
+       WHERE "cours"."slug" = $1 AND "cours"."version" = 3`,
+      [B2_COURS_V3.slug],
+    );
+    return { cours: nombreDeCours, ecrans };
+  };
+
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
-    await insererB2V3(contexte.dataSource);
     const lu = await contexte.catalogue.trouver(B2_COURS_V3.slug, 3);
     if (lu === null) {
-      throw new Error('la version 3 du B2-01 n’a pas été relue du catalogue');
+      throw new Error(
+        'la migration InsertB2CoursV3 n’a pas posé la version 3 du B2-01',
+      );
     }
     cours = lu;
   }, DELAI_OUVERTURE_CONTEXTE_MS);
@@ -173,5 +194,41 @@ describeDb('contenu V3 du B2-01 en base', () => {
         [id],
       ),
     ).rejects.toThrow('chk_formation_screen_diffusion');
+  });
+
+  it('ne duplique rien quand la migration InsertB2CoursV3 est rejouée', async () => {
+    const runner = contexte.dataSource.createQueryRunner();
+    try {
+      await new InsertB2CoursV31789893879954().up(runner);
+    } finally {
+      await runner.release();
+    }
+
+    expect(await comptesDeLaV3()).toEqual({ cours: 1, ecrans: 52 });
+  });
+
+  it('refuse le retour arrière tant qu’une séance sert la version 3', async () => {
+    const seance = await contexte.sessions.create({
+      courseSlug: B2_COURS_V3.slug,
+      courseVersion: 3,
+      teacherId: FORMATEUR,
+      code: '4821',
+      bareme: buildBareme(),
+    });
+    const runner = contexte.dataSource.createQueryRunner();
+
+    try {
+      await expect(
+        new InsertB2CoursV31789893879954().down(runner),
+      ).rejects.toThrow('utilise par une seance');
+    } finally {
+      await runner.release();
+      await contexte.dataSource.query(
+        'DELETE FROM formation_sessions WHERE id = $1',
+        [seance.id],
+      );
+    }
+
+    expect(await comptesDeLaV3()).toEqual({ cours: 1, ecrans: 52 });
   });
 });

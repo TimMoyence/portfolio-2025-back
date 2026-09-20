@@ -6,14 +6,13 @@ import type {
   Question,
   QuestionProduction,
 } from '../src/modules/formations/domain/contrats/cours';
-import type { ValeurProduction } from '../src/modules/formations/domain/contrats/resultats';
 import { activitesLibres } from '../src/modules/formations/domain/cours/EcranServi';
 import { questionsDe } from '../src/modules/formations/domain/cours/Cours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { TirageDuCours } from '../src/modules/formations/domain/cours/Tirage';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
-import { insererB2V3 } from './helpers/b2-v3-en-base';
 import { describeDb } from './helpers/db-integration-datasource';
+import { installerEnvFormations } from './helpers/env-formations';
 import { DELAI_OUVERTURE_CONTEXTE_MS } from './helpers/formations-db';
 import {
   clientFormations,
@@ -22,6 +21,11 @@ import {
   type BancFormations,
   type ClientFormations,
 } from './helpers/formations-harness';
+import {
+  estProduction,
+  productionJuste,
+  reponseDEnigme,
+} from './helpers/reponses-v3';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
@@ -73,61 +77,6 @@ function centile(durees: readonly number[], fraction: number): number {
 
 function cleEtudiant(index: number): string {
   return `c0000000-0000-4000-8000-${String(index).padStart(12, '0')}`;
-}
-
-function productionJuste(question: QuestionProduction): ValeurProduction {
-  const corrige = question.corrige;
-  if (corrige.type === 'feuille') {
-    return {
-      type: 'feuille',
-      cellules: Object.fromEntries(
-        corrige.attendus.map((attendu) => [
-          attendu.reference,
-          attendu.formuleReference,
-        ]),
-      ),
-    };
-  }
-  if (corrige.type === 'tableau') {
-    return {
-      type: 'tableau',
-      saisies: corrige.attendus.map((attendu) => ({
-        rang: attendu.rang,
-        cle: attendu.cle,
-        valeur: attendu.valeur,
-      })),
-    };
-  }
-  if (corrige.type === 'classement') {
-    return {
-      type: 'classement',
-      classement: Object.fromEntries(
-        corrige.attendus.map((attendu) => [
-          attendu.carteId,
-          attendu.categorieId,
-        ]),
-      ),
-    };
-  }
-  throw new Error(`Question ${question.id} sans production jouable`);
-}
-
-function reponseDEnigme(question: QuestionProduction): string {
-  const corrige = question.corrige;
-  if (corrige.type !== 'enigme') {
-    throw new Error(`Question ${question.id} n est pas une enigme`);
-  }
-  return corrige.solution.type === 'nombre'
-    ? corrige.solution.formePubliee
-    : corrige.solution.acceptees[0];
-}
-
-function estProduction(question: Question): question is QuestionProduction {
-  return (
-    question.type === 'feuille' ||
-    question.type === 'tableau' ||
-    question.type === 'classement'
-  );
 }
 
 describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
@@ -331,26 +280,23 @@ describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
     expect(envois.filter((envoi) => envoi.status !== CREE)).toEqual([]);
   };
 
+  installerEnvFormations({ secret: SECRET, syntheseA: SYNTHESE_A });
+
   beforeAll(async () => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    process.env.FORMATIONS_PULSE_SECRET = SECRET;
-    process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
     banc = await monterBancFormations();
     await banc.contexte.nettoyer();
     client = clientFormations(banc.app, ADMIN);
-    await insererB2V3(banc.contexte.dataSource);
     const lu = await banc.contexte.catalogue.trouver(SLUG, VERSION_V3);
     if (lu === null) {
-      throw new Error(`La version ${VERSION_V3} de ${SLUG} manque en base`);
+      throw new Error(
+        `La version ${VERSION_V3} de ${SLUG} manque a la base migree`,
+      );
     }
     cours = lu;
   }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await banc.fermer();
-    delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    delete process.env.FORMATIONS_PULSE_SECRET;
-    delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
     process.stdout.write(`\nMesures V3\n${mesures.join('\n')}\n`);
   });
 

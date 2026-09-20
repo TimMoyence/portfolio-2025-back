@@ -85,9 +85,10 @@ interface ReponseInscription {
 }
 
 export function installerBancDeSeance(options: {
-  readonly catalogue: ICatalogueCours;
+  readonly catalogue?: ICatalogueCours;
   readonly slug: string;
   readonly ecran?: number;
+  readonly version?: number;
 }): BancDeSeance {
   silenceNestLogger(['log', 'warn', 'error']);
 
@@ -95,6 +96,10 @@ export function installerBancDeSeance(options: {
   let app: INestApplication;
   let secretJeton: string | undefined;
   let secretJalon: string | undefined;
+  const identiteParDefaut =
+    options.version === undefined
+      ? `${FORMATEUR_DE_TEST}:teacher`
+      : `${FORMATEUR_DE_TEST}:teacher:admin`;
 
   const serveur = (): Parameters<typeof request>[0] =>
     app.getHttpServer() as Parameters<typeof request>[0];
@@ -105,7 +110,7 @@ export function installerBancDeSeance(options: {
   const formateur = (
     methode: MethodeHttp,
     chemin: string,
-    identite = `${FORMATEUR_DE_TEST}:teacher`,
+    identite = identiteParDefaut,
   ): Test =>
     request(serveur())[methode](route(chemin)).set(EN_TETE_IDENTITE, identite);
 
@@ -141,7 +146,11 @@ export function installerBancDeSeance(options: {
   ): Promise<SeanceDeTest> => {
     const identite = ouverture.identite;
     const reponse = await formateur('post', '/sessions', identite)
-      .send({ courseSlug: options.slug, ...ouverture.corps })
+      .send({
+        courseSlug: options.slug,
+        ...(options.version === undefined ? {} : { version: options.version }),
+        ...ouverture.corps,
+      })
       .expect(CODE_HTTP.CREE);
     const { sessionId, code } = reponse.body as ReponseOuverture;
     if (ouverture.demarrer !== false) {
@@ -169,7 +178,7 @@ export function installerBancDeSeance(options: {
     contexte = await ouvrirContexteFormations();
     app = await monterApplicationFormations(
       { ...contexte, mailer: createMockFormationMailer() },
-      options.catalogue,
+      options.catalogue ?? contexte.catalogue,
     );
   }, DELAI_OUVERTURE_CONTEXTE_MS);
 

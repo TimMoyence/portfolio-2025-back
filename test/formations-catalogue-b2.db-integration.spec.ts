@@ -35,6 +35,7 @@ import {
 
 const SLUG_B2 = 'b2-01-traitement-information-chiffree';
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
+const VERSION_APRES_LA_V3 = 4;
 const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
 
 function aDireDuGuide(guide: unknown): string[] {
@@ -155,7 +156,7 @@ describeDb('catalogue B2 migré', () => {
       .getRepository(FormationCourseContentEntity)
       .create({
         slug: course.slug,
-        version: 3,
+        version: VERSION_APRES_LA_V3,
         titre: 'Nouvelle édition',
         niveau: course.niveau,
         dureeMinutes: course.dureeMinutes,
@@ -180,14 +181,16 @@ describeDb('catalogue B2 migré', () => {
     expect((await catalogue.trouverCourant(course.slug))?.version).toBe(2);
     await catalogue.publier({
       slug: course.slug,
-      version: 3,
+      version: VERSION_APRES_LA_V3,
       parQui: null,
     });
-    expect((await catalogue.trouverCourant(course.slug))?.version).toBe(3);
-    expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
-    expect((await catalogue.trouver(course.slug, 3))?.titre).toBe(
-      'Nouvelle édition',
+    expect((await catalogue.trouverCourant(course.slug))?.version).toBe(
+      VERSION_APRES_LA_V3,
     );
+    expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
+    expect(
+      (await catalogue.trouver(course.slug, VERSION_APRES_LA_V3))?.titre,
+    ).toBe('Nouvelle édition');
     expect((await sessions.findById(session.id))?.courseVersion).toBe(1);
     await expect(
       dataSource.query(

@@ -30,6 +30,7 @@ import { AddFormationCapaciteEtEviction1789870829038 } from '../../src/migration
 import { CreateFormationCoursePublications1789871582928 } from '../../src/migrations/1789871582928-CreateFormationCoursePublications';
 import { AmorcerPublicationsDeCours1789871600000 } from '../../src/migrations/1789871600000-AmorcerPublicationsDeCours';
 import { CreateFormationRappelsServis1789875476980 } from '../../src/migrations/1789875476980-CreateFormationRappelsServis';
+import { InsertB2CoursV31789893879954 } from '../../src/migrations/1789893879954-InsertB2CoursV3';
 import { AnswersRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Answers.repository.typeorm';
 import { CoursCatalogueRepositoryTypeORM } from '../../src/modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
 import { FormationAnswerEntity } from '../../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
@@ -112,9 +113,10 @@ const FORMATION_MIGRATIONS = [
   CreateFormationCoursePublications1789871582928,
   AmorcerPublicationsDeCours1789871600000,
   CreateFormationRappelsServis1789875476980,
+  InsertB2CoursV31789893879954,
 ];
 
-const TABLES_DE_SEANCE = [
+export const TABLES_DE_SEANCE = [
   'formation_sessions',
   'formation_participants',
   'formation_answers',

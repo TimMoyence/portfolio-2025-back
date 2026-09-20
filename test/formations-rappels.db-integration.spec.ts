@@ -1,8 +1,6 @@
 import type { Test } from 'supertest';
 import { B2_COURS_V3 } from '../src/migrations/data/b2-v3.cours';
-import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
 import type { SpacedQuestionPublique } from '../src/modules/formations/domain/contrats/donnees-publiques';
-import { creerCatalogueAVersions } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   ADMIN_DE_TEST,
@@ -12,14 +10,12 @@ import {
   type SeanceDeTest,
 } from './helpers/formations-banc-seance';
 
-const COURS = lireCoursStocke(B2_COURS_V3);
-const CATALOGUE = creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } });
-const DERNIER_ECRAN = COURS.ecrans.length - 1;
+const DERNIER_ECRAN = B2_COURS_V3.ecrans.length - 1;
 
 describeDb('Rappels espaces (B9, db integration)', () => {
   const banc = installerBancDeSeance({
-    catalogue: CATALOGUE,
-    slug: COURS.slug,
+    slug: B2_COURS_V3.slug,
+    version: B2_COURS_V3.version,
     ecran: DERNIER_ECRAN,
   });
 

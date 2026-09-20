@@ -17,6 +17,7 @@ import { fermerApplication } from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
+const V3 = 3;
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const ADMIN = 'f6666666-6666-4666-8666-666666666666';
 const OK = 200;
@@ -103,6 +104,24 @@ describeDb(
       expect(Date.parse(servi.publieLe)).not.toBeNaN();
     });
 
+    it('laisse la V3 migree hors publication tant que personne ne bascule (AC-36)', async () => {
+      const presente: { version: number }[] = await contexte.dataSource.query(
+        'SELECT version FROM formation_course_contents WHERE slug = $1 AND version = $2',
+        [SLUG, V3],
+      );
+      const servi = (await catalogue().expect(OK)).body as CataloguePublic;
+      const ouverture = await ouvrirSeance().expect(CREE);
+
+      const seance = await contexte.sessions.findById(
+        (ouverture.body as ReponseOuverture).sessionId,
+      );
+      expect({
+        migree: presente.length,
+        servi: servi.version,
+        seance: seance?.courseVersion,
+      }).toEqual({ migree: 1, servi: 2, seance: 2 });
+    });
+
     it('bascule vers la version 1 puis rebascule vers la 2 sans rien supprimer', async () => {
       const bascule = await publier(1, `${ADMIN}:admin`).expect(OK);
       const apresBascule = (await catalogue().expect(OK))
@@ -120,7 +139,7 @@ describeDb(
         'SELECT version FROM formation_course_contents WHERE slug = $1 ORDER BY version',
         [SLUG],
       );
-      expect(versions.map((ligne) => ligne.version)).toEqual([1, 2]);
+      expect(versions.map((ligne) => ligne.version)).toEqual([1, 2, V3]);
     });
 
     it('ouvre les seances sur la version publiee', async () => {
