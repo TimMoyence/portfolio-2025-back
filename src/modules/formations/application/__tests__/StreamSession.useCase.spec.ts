@@ -639,6 +639,19 @@ describe('StreamSessionUseCase', () => {
   });
 
   describe('resultats agreges', () => {
+    it('emet les jalons, les enigmes et le bareme avec chaque poussee de resultats', async () => {
+      const ecoute = ecouter(
+        await sut.executeForTeacher('session-uuid', TEACHER_ID),
+      );
+      await jest.advanceTimersByTimeAsync(10);
+
+      const [pousses] = ecoute.resultats();
+      expect(Object.keys(pousses as object)).toEqual(
+        expect.arrayContaining(['jalons', 'enigmes', 'bareme']),
+      );
+      ecoute.abonnement.unsubscribe();
+    });
+
     it('pousse au formateur les resultats et les statistiques du depot des le premier passage', async () => {
       const ecoute = ecouter(
         await sut.executeForTeacher('session-uuid', TEACHER_ID),
@@ -667,6 +680,19 @@ describe('StreamSessionUseCase', () => {
             tauxParticipation: 1,
             tauxReussite: 1,
             questionsProblemes: [],
+          },
+          jalons: {},
+          enigmes: [],
+          bareme: {
+            questionsNotees: 1,
+            parType: {
+              numeric: { notees: 1, nonNotees: 0 },
+              vote: { notees: 0, nonNotees: 0 },
+              feuille: { notees: 0, nonNotees: 0 },
+              tableau: { notees: 0, nonNotees: 0 },
+              classement: { notees: 0, nonNotees: 0 },
+              enigme: { notees: 0, nonNotees: 0 },
+            },
           },
         },
       ]);

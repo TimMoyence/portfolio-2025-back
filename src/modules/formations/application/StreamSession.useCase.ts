@@ -23,6 +23,8 @@ import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
+import type { ComptesJalon, ResumeBareme } from '../domain/contrats/resultats';
+import type { ProgressionAgregee } from '../domain/cours/Enigmes';
 import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
 import type { StatistiquesSeance } from '../domain/SessionStatistics';
@@ -72,6 +74,9 @@ interface PlacesDuFlux {
 
 type ResultatsEnDirect = ResultatsSeance & {
   readonly statistiques: StatistiquesSeance;
+  readonly jalons: Readonly<Record<string, ComptesJalon>>;
+  readonly enigmes: readonly ProgressionAgregee[];
+  readonly bareme: ResumeBareme;
 };
 
 /**
@@ -333,7 +338,13 @@ export class StreamSessionUseCase {
     session: SessionRecord,
   ): Promise<ResultatsEnDirect> {
     const { resultats } = await this.presenterResults.bilanDe(session);
-    return { ...resultats.resultats, statistiques: resultats.statistiques };
+    return {
+      ...resultats.resultats,
+      statistiques: resultats.statistiques,
+      jalons: resultats.jalons,
+      enigmes: resultats.enigmes,
+      bareme: resultats.bareme,
+    };
   }
 
   private rafraichirCapacite(
