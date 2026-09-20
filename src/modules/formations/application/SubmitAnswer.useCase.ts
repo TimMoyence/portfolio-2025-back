@@ -4,6 +4,7 @@ import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import { libelleDeConfusion } from '../domain/cours/banque/confusions';
 import { assertEcranServi } from '../domain/cours/EcranServi';
+import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   AnswerAlreadySubmittedError,
   ParticipantNotFoundError,
@@ -84,6 +85,7 @@ export class SubmitAnswerUseCase {
     }
     if ('rangEcran' in question) {
       assertEcranServi(session, question.rangEcran, question.ecranId);
+      assertPhaseOuverte(session.pilotageEcrans, question);
     }
 
     const solution = solutionFor(

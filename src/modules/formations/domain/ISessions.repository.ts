@@ -1,4 +1,5 @@
 import type { Bareme } from './contrats/bareme';
+import type { PilotageEcran } from './contrats/pilotage';
 import type { FreeRange, PacingMode } from './PacingMode';
 import type { SessionState } from './SessionState';
 
@@ -12,6 +13,8 @@ export interface SessionRecord {
   modeRythme: PacingMode;
   ecranCourant: number;
   intervalleLibre: FreeRange | null;
+  pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
+  revision: number;
   bareme: Bareme;
   ouverteLe: Date;
   fermeeLe: Date | null;
@@ -31,6 +34,7 @@ export interface UpdateSessionInput {
   modeRythme?: PacingMode;
   ecranCourant?: number;
   intervalleLibre?: FreeRange | null;
+  pilotageEcrans?: Readonly<Record<string, PilotageEcran>>;
   fermeeLe?: Date | null;
 }
 

@@ -26,7 +26,10 @@ import type {
 } from '../../src/modules/formations/domain/ITeacherAnnotations.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
-import type { ISessionStateCache } from '../../src/modules/formations/domain/ISessionStateCache.port';
+import type {
+  ISessionStateCache,
+  LiveSessionState,
+} from '../../src/modules/formations/domain/ISessionStateCache.port';
 import type {
   IParticipantsRepository,
   ParticipantRecord,
@@ -178,9 +181,27 @@ export function buildSessionRecord(
     modeRythme: 'pilote',
     ecranCourant: 0,
     intervalleLibre: null,
+    pilotageEcrans: {},
+    revision: 0,
     bareme: buildBareme(),
     ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
     fermeeLe: null,
+    majLe: new Date('2026-09-11T08:00:00.000Z'),
+    ...overrides,
+  };
+}
+
+export function buildLiveSessionState(
+  overrides: Partial<LiveSessionState> = {},
+): LiveSessionState {
+  return {
+    etat: 'en_cours',
+    modeRythme: 'pilote',
+    ecranCourant: 0,
+    intervalleLibre: null,
+    participants: 0,
+    revision: 0,
+    pilotage: {},
     majLe: new Date('2026-09-11T08:00:00.000Z'),
     ...overrides,
   };

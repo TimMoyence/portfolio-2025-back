@@ -40,6 +40,7 @@ export class SessionStateCacheService implements ISessionStateCache {
       state.ecranCourant,
       intervalle,
       state.participants,
+      state.revision,
     ].join('|');
   }
 }

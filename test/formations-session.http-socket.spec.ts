@@ -180,6 +180,8 @@ function creerSessionsRepo(): ISessionsRepository {
         modeRythme: 'pilote',
         ecranCourant: 0,
         intervalleLibre: null,
+        pilotageEcrans: {},
+        revision: 0,
         ouverteLe: new Date(),
         fermeeLe: null,
         majLe: new Date(),
@@ -201,7 +203,12 @@ function creerSessionsRepo(): ISessionsRepository {
       if (!courante) {
         throw new Error(`Session absente du depot de test: ${id}`);
       }
-      const maj: SessionRecord = { ...courante, ...input, majLe: new Date() };
+      const maj: SessionRecord = {
+        ...courante,
+        ...input,
+        revision: courante.revision + 1,
+        majLe: new Date(),
+      };
       sessions.set(id, maj);
       return Promise.resolve(maj);
     },

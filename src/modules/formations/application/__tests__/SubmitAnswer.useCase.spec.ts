@@ -17,6 +17,7 @@ import {
   AnswerAlreadySubmittedError,
   EcranNonServiError,
   ParticipantNotFoundError,
+  PhaseFermeeError,
   SessionClosedError,
   SessionNotStartedError,
 } from '../../domain/errors/FormationErrors';
@@ -300,6 +301,86 @@ describe('SubmitAnswerUseCase', () => {
         }),
       ).rejects.toThrow(DomainValidationError);
       expect(answers.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('phases d un vote à question jumelle', () => {
+    const bareme = buildBaremeV2({
+      questions: [
+        {
+          id: 'Q-PRINCIPALE',
+          type: 'vote',
+          concept: 'evolutions-successives',
+          noteCompte: true,
+          ecranId: 'E-VOTE',
+          rangEcran: 0,
+          ouverture: 'principale',
+        },
+        {
+          id: 'Q-JUMELLE',
+          type: 'vote',
+          concept: 'evolutions-successives',
+          noteCompte: true,
+          ecranId: 'E-VOTE',
+          rangEcran: 0,
+          ouverture: 'jumelle',
+        },
+      ],
+      solutionsCommunes: {
+        'Q-PRINCIPALE': { valeur: 'a', pieges: [] },
+        'Q-JUMELLE': { valeur: 'b', pieges: [] },
+      },
+      tirages: [{ seed: 1001, ecarts: {} }],
+    });
+
+    const seanceEnPhase = (phase?: 'discussion' | 'revote' | 'revele') =>
+      buildSessionRecord({
+        bareme,
+        pilotageEcrans: phase === undefined ? {} : { 'E-VOTE': { phase } },
+      });
+
+    it('accepte la principale avant toute phase pilotée', async () => {
+      sessions.findById.mockResolvedValue(seanceEnPhase());
+
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'Q-PRINCIPALE',
+        valeur: 'a',
+      });
+
+      expect(result.correcte).toBe(true);
+    });
+
+    it('refuse la jumelle avant le revote', async () => {
+      sessions.findById.mockResolvedValue(seanceEnPhase());
+
+      await expect(
+        sut.execute({ ...commande, questionId: 'Q-JUMELLE', valeur: 'b' }),
+      ).rejects.toThrow(PhaseFermeeError);
+      expect(answers.create).not.toHaveBeenCalled();
+    });
+
+    it('ferme les deux questions pendant la discussion', async () => {
+      sessions.findById.mockResolvedValue(seanceEnPhase('discussion'));
+
+      await expect(
+        sut.execute({ ...commande, questionId: 'Q-PRINCIPALE', valeur: 'a' }),
+      ).rejects.toThrow(PhaseFermeeError);
+    });
+
+    it('ouvre la jumelle seule au revote', async () => {
+      sessions.findById.mockResolvedValue(seanceEnPhase('revote'));
+
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'Q-JUMELLE',
+        valeur: 'b',
+      });
+
+      expect(result.correcte).toBe(true);
+      await expect(
+        sut.execute({ ...commande, questionId: 'Q-PRINCIPALE', valeur: 'a' }),
+      ).rejects.toThrow(PhaseFermeeError);
     });
   });
 });

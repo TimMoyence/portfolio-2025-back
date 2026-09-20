@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
+  buildCoursAvecVoteJumele,
   buildCoursDeTest,
   creerCatalogueAVersions,
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
 import {
+  buildLiveSessionState,
   buildSessionRecord,
   createMockSessionsRepo,
   createMockSessionStateCache,
@@ -14,6 +16,8 @@ import { ControlSessionUseCase } from '../ControlSession.useCase';
 import {
   CoursInconnuError,
   InvalidStateTransitionError,
+  PhaseNonMonotoneError,
+  PilotageIncompatibleError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
 
@@ -54,14 +58,7 @@ describe('ControlSessionUseCase', () => {
   });
 
   it('reprend le nombre de participants deja en cache lors de la publication', async () => {
-    cache.read.mockReturnValue({
-      etat: 'en_cours',
-      modeRythme: 'pilote',
-      ecranCourant: 0,
-      intervalleLibre: null,
-      participants: 9,
-      majLe: new Date('2026-09-11T08:00:00.000Z'),
-    });
+    cache.read.mockReturnValue(buildLiveSessionState({ participants: 9 }));
     await sut.apply('session-uuid', TEACHER_ID, { ecran: 4 });
     expect(cache.publish).toHaveBeenCalledWith(
       'session-uuid',
@@ -268,6 +265,110 @@ describe('ControlSessionUseCase', () => {
     ).rejects.toThrow(DomainValidationError);
     expect(sessions.update).not.toHaveBeenCalled();
     expect(cache.publish).not.toHaveBeenCalled();
+  });
+
+  describe('pilotage par ecran', () => {
+    it('inscrit l etayage d un exemple travaille', async () => {
+      await sut.apply('session-uuid', TEACHER_ID, {
+        pilotage: { screenId: 'E-REM', etayage: 1 },
+      });
+
+      expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
+        pilotageEcrans: { 'E-REM': { etayage: 1 } },
+      });
+    });
+
+    it('conserve le pilotage deja enregistre des autres ecrans', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({
+          pilotageEcrans: { 'E-AUTRE': { etayage: 2 } },
+        }),
+      );
+
+      await sut.apply('session-uuid', TEACHER_ID, {
+        pilotage: { screenId: 'E-REM', etayage: 1 },
+      });
+
+      expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
+        pilotageEcrans: { 'E-AUTRE': { etayage: 2 }, 'E-REM': { etayage: 1 } },
+      });
+    });
+
+    it('refuse un ecran absent du cours sans ecrire ni publier', async () => {
+      await expect(
+        sut.apply('session-uuid', TEACHER_ID, {
+          pilotage: { screenId: 'E-INVENTE', etayage: 1 },
+        }),
+      ).rejects.toThrow(DomainValidationError);
+      expect(sessions.update).not.toHaveBeenCalled();
+      expect(cache.publish).not.toHaveBeenCalled();
+    });
+
+    it('refuse un pilotage incompatible avec la brique de l ecran', async () => {
+      await expect(
+        sut.apply('session-uuid', TEACHER_ID, {
+          pilotage: { screenId: 'E-NUM', etayage: 1 },
+        }),
+      ).rejects.toThrow(PilotageIncompatibleError);
+      expect(sessions.update).not.toHaveBeenCalled();
+    });
+
+    it('avance la phase d un vote a question jumelle', async () => {
+      sut = new ControlSessionUseCase(
+        sessions,
+        cache,
+        creerCatalogueDeTest(buildCoursAvecVoteJumele({ slug: COURS_SLUG })),
+      );
+
+      await sut.apply('session-uuid', TEACHER_ID, {
+        pilotage: { screenId: 'E-VOTE', phase: 'revote' },
+      });
+
+      expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
+        pilotageEcrans: { 'E-VOTE': { phase: 'revote' } },
+      });
+    });
+
+    it('refuse de ramener une phase en arriere', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({
+          pilotageEcrans: { 'E-VOTE': { phase: 'revele' } },
+        }),
+      );
+      sut = new ControlSessionUseCase(
+        sessions,
+        cache,
+        creerCatalogueDeTest(buildCoursAvecVoteJumele({ slug: COURS_SLUG })),
+      );
+
+      await expect(
+        sut.apply('session-uuid', TEACHER_ID, {
+          pilotage: { screenId: 'E-VOTE', phase: 'vote' },
+        }),
+      ).rejects.toThrow(PhaseNonMonotoneError);
+      expect(sessions.update).not.toHaveBeenCalled();
+    });
+
+    it('publie la revision et le pilotage relus en base', async () => {
+      sessions.update.mockResolvedValue(
+        buildSessionRecord({
+          revision: 12,
+          pilotageEcrans: { 'E-REM': { etayage: 1 } },
+        }),
+      );
+
+      await sut.apply('session-uuid', TEACHER_ID, {
+        pilotage: { screenId: 'E-REM', etayage: 1 },
+      });
+
+      expect(cache.publish).toHaveBeenCalledWith(
+        'session-uuid',
+        expect.objectContaining({
+          revision: 12,
+          pilotage: { 'E-REM': { etayage: 1 } },
+        }),
+      );
+    });
   });
 
   it('demarre une session en attente', async () => {

@@ -2,6 +2,10 @@
 import { FindOperator, Not } from 'typeorm';
 import type { FindOptionsWhere, Repository } from 'typeorm';
 import {
+  mockTypeOrmUpdateBuilder,
+  type PatchSimule,
+} from '../../../../test/factories/formation-entities.factory';
+import {
   buildBareme,
   mockTypeOrmCreate,
   mockTypeOrmSave,
@@ -25,6 +29,8 @@ function ligne(
     modeRythme: 'pilote',
     ecranCourant: 0,
     intervalleLibre: null,
+    pilotageEcrans: {},
+    revision: 0,
     bareme: buildBareme(),
     ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
     fermeeLe: null,
@@ -64,6 +70,19 @@ describe('SessionsRepositoryTypeORM', () => {
   const filtrer = (options: OptionsRecherche): FormationSessionEntity[] =>
     table.filter((entite) => satisfait(entite, options.where ?? {}));
 
+  const appliquer = (id: string, patch: PatchSimule): number => {
+    const cible = table.find((entite) => entite.id === id);
+    if (!cible) {
+      return 0;
+    }
+    const { revision, ...champs } = patch;
+    Object.assign(cible, champs);
+    if (typeof revision === 'function') {
+      cible.revision += 1;
+    }
+    return 1;
+  };
+
   beforeEach(() => {
     table = [];
     repo = {
@@ -75,13 +94,7 @@ describe('SessionsRepositoryTypeORM', () => {
       count: jest.fn((options: OptionsRecherche) =>
         Promise.resolve(filtrer(options).length),
       ),
-      update: jest.fn((id: string, patch: Partial<FormationSessionEntity>) => {
-        const cible = table.find((entite) => entite.id === id);
-        if (cible) {
-          Object.assign(cible, patch);
-        }
-        return Promise.resolve({ affected: cible ? 1 : 0 });
-      }),
+      createQueryBuilder: jest.fn(() => mockTypeOrmUpdateBuilder(appliquer)),
     } as unknown as jest.Mocked<Repository<FormationSessionEntity>>;
     sut = new SessionsRepositoryTypeORM(repo);
   });
@@ -181,6 +194,24 @@ describe('SessionsRepositoryTypeORM', () => {
     expect(session.etat).toBe('en_cours');
     expect(session.ecranCourant).toBe(4);
     expect(table[0].etat).toBe('en_cours');
+  });
+
+  it('incremente la revision a chaque mise a jour', async () => {
+    table = [ligne({ id: 'session-uuid', revision: 4 })];
+
+    const session = await sut.update('session-uuid', { ecranCourant: 1 });
+
+    expect(session.revision).toBe(5);
+  });
+
+  it('rend le pilotage par ecran enregistre', async () => {
+    table = [ligne({ id: 'session-uuid' })];
+
+    const session = await sut.update('session-uuid', {
+      pilotageEcrans: { 'E-VOTE': { phase: 'revote' } },
+    });
+
+    expect(session.pilotageEcrans).toEqual({ 'E-VOTE': { phase: 'revote' } });
   });
 
   it('horodate chaque mise a jour', async () => {

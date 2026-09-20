@@ -21,6 +21,7 @@ import { CreateFormationTeacherAnnotations1780400000000 } from '../../src/migrat
 import { CreateFormationGroups1780500000000 } from '../../src/migrations/1780500000000-CreateFormationGroups';
 import { CreateFormationScores1780600000000 } from '../../src/migrations/1780600000000-CreateFormationScores';
 import { DropFormationScreenNotesDefault1789818127042 } from '../../src/migrations/1789818127042-DropFormationScreenNotesDefault';
+import { AddFormationSessionPilotage1789861524871 } from '../../src/migrations/1789861524871-AddFormationSessionPilotage';
 import { AnswersRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Answers.repository.typeorm';
 import { CoursCatalogueRepositoryTypeORM } from '../../src/modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
 import { FormationAnswerEntity } from '../../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
@@ -81,6 +82,7 @@ const FORMATION_MIGRATIONS = [
   CreateFormationGroups1780500000000,
   CreateFormationScores1780600000000,
   DropFormationScreenNotesDefault1789818127042,
+  AddFormationSessionPilotage1789861524871,
 ];
 
 const TABLES_DE_SEANCE = [

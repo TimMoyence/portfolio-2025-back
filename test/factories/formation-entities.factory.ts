@@ -54,6 +54,38 @@ export function mockTypeOrmQueryBuilder(getOne: jest.Mock): QueryBuilderSimule {
   return builder;
 }
 
+export type PatchSimule = Readonly<Record<string, unknown>>;
+
+export interface UpdateBuilderSimule {
+  readonly update: jest.Mock;
+  readonly set: jest.Mock;
+  readonly where: jest.Mock;
+  readonly execute: jest.Mock;
+}
+
+export function mockTypeOrmUpdateBuilder(
+  appliquer: (id: string, patch: PatchSimule) => number,
+): UpdateBuilderSimule {
+  let patch: PatchSimule = {};
+  let identifiant = '';
+  const builder: UpdateBuilderSimule = {
+    update: jest.fn(),
+    set: jest.fn((valeurs: PatchSimule) => {
+      patch = valeurs;
+      return builder;
+    }),
+    where: jest.fn((_condition: string, params: { id: string }) => {
+      identifiant = params.id;
+      return builder;
+    }),
+    execute: jest.fn(() =>
+      Promise.resolve({ affected: appliquer(identifiant, patch) }),
+    ),
+  };
+  builder.update.mockReturnValue(builder);
+  return builder;
+}
+
 export function buildScreenContentEntity(
   overrides: Partial<FormationScreenContentEntity> = {},
 ): FormationScreenContentEntity {

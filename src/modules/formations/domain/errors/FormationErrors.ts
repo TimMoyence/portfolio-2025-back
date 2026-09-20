@@ -108,6 +108,32 @@ export class ActiviteInconnueError extends DomainValidationError {
   }
 }
 
+export class PilotageIncompatibleError extends DomainValidationError {
+  constructor(screenId: string, raison: string) {
+    super(`Pilotage impossible sur l’écran ${screenId} : ${raison}.`);
+  }
+}
+
+export class PhaseNonMonotoneError extends ResourceConflictError {
+  readonly code = 'PHASE_NON_MONOTONE';
+
+  constructor(screenId: string) {
+    super(
+      `Le pilotage de l’écran ${screenId} ne revient pas en arrière : la classe a déjà vu l’étape suivante.`,
+    );
+  }
+}
+
+export class PhaseFermeeError extends ResourceConflictError {
+  readonly code = 'PHASE_FERMEE';
+
+  constructor(screenId: string) {
+    super(
+      `Cette question de l’écran ${screenId} n’est pas ouverte dans la phase en cours.`,
+    );
+  }
+}
+
 export class EcranNonServiError extends ResourceConflictError {
   readonly code = 'ECRAN_NON_SERVI';
 

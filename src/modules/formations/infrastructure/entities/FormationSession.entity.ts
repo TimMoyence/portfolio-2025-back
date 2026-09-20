@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import type { Bareme } from '../../domain/contrats/bareme';
+import type { PilotageEcran } from '../../domain/contrats/pilotage';
 import type { FreeRange, PacingMode } from '../../domain/PacingMode';
 import type { SessionState } from '../../domain/SessionState';
 
@@ -49,6 +50,12 @@ export class FormationSessionEntity {
 
   @Column({ name: 'intervalle_libre', type: 'jsonb', nullable: true })
   intervalleLibre: FreeRange | null;
+
+  @Column({ name: 'pilotage_ecrans', type: 'jsonb', default: {} })
+  pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
+
+  @Column({ type: 'int', default: 0 })
+  revision: number;
 
   @Column({ type: 'jsonb' })
   bareme: Bareme;

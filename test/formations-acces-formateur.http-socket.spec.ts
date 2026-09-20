@@ -98,6 +98,7 @@ function seance(etat: SessionState = 'en_cours') {
     teacherId: PROPRIETAIRE_ID,
     courseSlug: COURS.slug,
     bareme: BAREME,
+    ecranCourant: COURS.ecrans.length - 1,
     etat,
   });
 }
@@ -292,8 +293,8 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
 
   describe('reponse libre de l etudiant', () => {
     const reponseLibre = {
-      screenId: 'B2-01-S11-REFLECTION',
-      activityId: 'b2-s11-c1',
+      screenId: 'E-REM',
+      activityId: 'E-REM:etape-1',
       response: '  Je vérifie la base.  ',
       dureeMs: 1400,
     };

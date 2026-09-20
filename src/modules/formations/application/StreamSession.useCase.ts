@@ -349,6 +349,8 @@ export class StreamSessionUseCase {
       ecranCourant: session.ecranCourant,
       intervalleLibre: session.intervalleLibre,
       participants: 0,
+      revision: session.revision,
+      pilotage: session.pilotageEcrans,
       majLe: session.majLe,
     };
     this.cache.publish(sessionId, etat);

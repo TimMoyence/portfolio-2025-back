@@ -36,6 +36,8 @@ export class SessionsRepositoryTypeORM
       modeRythme: 'pilote',
       ecranCourant: 0,
       intervalleLibre: null,
+      pilotageEcrans: {},
+      revision: 0,
       fermeeLe: null,
       majLe: new Date(),
     });
@@ -69,7 +71,12 @@ export class SessionsRepositoryTypeORM
   }
 
   async update(id: string, input: UpdateSessionInput): Promise<SessionRecord> {
-    await this.repo.update(id, { ...input, majLe: new Date() });
+    await this.repo
+      .createQueryBuilder()
+      .update(FormationSessionEntity)
+      .set({ ...input, majLe: new Date(), revision: () => '"revision" + 1' })
+      .where('id = :id', { id })
+      .execute();
     const entity = await this.repo.findOne({ where: { id } });
     if (!entity) {
       throw new Error(`Session introuvable apres mise a jour: ${id}`);
@@ -88,6 +95,8 @@ export class SessionsRepositoryTypeORM
       modeRythme: entity.modeRythme,
       ecranCourant: entity.ecranCourant,
       intervalleLibre: entity.intervalleLibre,
+      pilotageEcrans: entity.pilotageEcrans,
+      revision: entity.revision,
       bareme: entity.bareme,
       ouverteLe: entity.ouverteLe,
       fermeeLe: entity.fermeeLe,

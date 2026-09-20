@@ -85,6 +85,31 @@ function voteTest(id: string) {
 export const QUESTION_RAPPEL_TEST = voteTest('Q-TEST-RAPPEL');
 export const QUESTION_VOTE_TEST = voteTest('Q-TEST-VOTE');
 export const QUESTION_EXIT_TEST = voteTest('Q-TEST-EXIT');
+export const QUESTION_PAIRS_TEST = voteTest('Q-TEST-PAIRS');
+export const QUESTION_JUMELLE_TEST = voteTest('Q-TEST-JUMELLE');
+
+export function buildEcranDeVoteJumele(): Ecran {
+  return {
+    ...EN_CATALOGUE,
+    id: 'E-VOTE',
+    brique: 'fp-vote',
+    dureeMinutes: 6,
+    concepts: ['evolutions-successives'],
+    notes: 'Vote, débat, cas jumeau',
+    question: QUESTION_PAIRS_TEST,
+    questionJumelle: QUESTION_JUMELLE_TEST,
+  };
+}
+
+export function buildCoursAvecVoteJumele(
+  overrides: Partial<Cours> = {},
+): Cours {
+  const socle = buildCoursDeTest(overrides);
+  return {
+    ...socle,
+    ecrans: [...socle.ecrans, buildEcranDeVoteJumele()],
+  };
+}
 
 export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
   return {

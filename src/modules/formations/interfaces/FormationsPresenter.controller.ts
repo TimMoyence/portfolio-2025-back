@@ -41,7 +41,7 @@ import { OpenSessionUseCase } from '../application/OpenSession.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
-import { ControlSessionRequestDto } from './dto/control-session.request.dto';
+import { ControlSessionRequestDto } from './dto/contrat/control-session.request.dto';
 import { DerouleResponseDto } from './dto/contrat/deroule.response.dto';
 import { FreeResponsesResponseDto } from './dto/free-responses.response.dto';
 import { OpenSessionRequestDto } from './dto/open-session.request.dto';
@@ -132,15 +132,20 @@ export class FormationsPresenterController {
     @Body() dto: ControlSessionRequestDto,
     @Req() request: Request,
   ): Promise<void> {
-    if (dto.ecran === undefined && dto.mode === undefined) {
+    if (
+      dto.ecran === undefined &&
+      dto.mode === undefined &&
+      dto.pilotage === undefined
+    ) {
       throw new BadRequestException(
-        'Indiquez un écran ou un mode de rythme à appliquer.',
+        'Indiquez un écran, un mode de rythme ou un pilotage d’écran à appliquer.',
       );
     }
     await this.controlSession.apply(id, request.user!.sub, {
       ecran: dto.ecran,
       mode: dto.mode,
       intervalle: dto.intervalle ?? null,
+      pilotage: dto.pilotage,
     });
   }
 
