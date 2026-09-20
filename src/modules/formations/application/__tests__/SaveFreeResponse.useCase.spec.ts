@@ -5,8 +5,10 @@ import {
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
 import {
+  buildParticipantRecord,
   buildSessionRecord,
   createMockFreeResponsesRepo,
+  createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
@@ -14,6 +16,7 @@ import {
   BlankFieldError,
   CoursInconnuError,
   EcranNonServiError,
+  ParticipantNotFoundError,
   SessionClosedError,
   SessionNotFoundError,
   SessionNotStartedError,
@@ -35,6 +38,7 @@ const RANG_DE_L_EXEMPLE = 5;
 describe('SaveFreeResponseUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let freeResponses: ReturnType<typeof createMockFreeResponsesRepo>;
+  let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: SaveFreeResponseUseCase;
 
   beforeEach(() => {
@@ -47,10 +51,12 @@ describe('SaveFreeResponseUseCase', () => {
       }),
     );
     freeResponses = createMockFreeResponsesRepo();
+    participants = createMockParticipantsRepo();
     sut = new SaveFreeResponseUseCase(
       sessions,
       freeResponses,
       creerCatalogueDeTest(COURS),
+      participants,
     );
   });
 
@@ -94,6 +100,7 @@ describe('SaveFreeResponseUseCase', () => {
       sessions,
       freeResponses,
       creerCatalogueAVersions({}),
+      participants,
     );
 
     await expect(sut.execute(REPONSE)).rejects.toThrow(CoursInconnuError);
@@ -146,5 +153,18 @@ describe('SaveFreeResponseUseCase', () => {
     });
 
     expect(freeResponses.save).toHaveBeenCalled();
+  });
+
+  it('refuse la reponse libre d un participant evince', async () => {
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
+      }),
+    );
+
+    await expect(sut.execute(REPONSE)).rejects.toThrow(
+      ParticipantNotFoundError,
+    );
+    expect(freeResponses.save).not.toHaveBeenCalled();
   });
 });

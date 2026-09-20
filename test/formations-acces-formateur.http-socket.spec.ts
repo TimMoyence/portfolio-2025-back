@@ -14,6 +14,7 @@ import {
   ParticipantTokenService,
 } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
+  buildParticipantRecord,
   buildSessionRecord,
   createMockDepotsFormations,
 } from './factories/formation.factory';
@@ -137,6 +138,9 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
   beforeEach(() => {
     jest.clearAllMocks();
     depots.sessions.findById.mockResolvedValue(seance());
+    depots.participants.findById.mockResolvedValue(
+      buildParticipantRecord({ id: PARTICIPANT_ID, sessionId: SESSION_ID }),
+    );
   });
 
   describe('lectures reservees au proprietaire et ouvertes a l administrateur', () => {

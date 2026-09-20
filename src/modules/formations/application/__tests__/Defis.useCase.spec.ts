@@ -7,7 +7,9 @@ import {
 import {
   buildFreeResponseRecord,
   buildSessionRecord,
+  buildParticipantRecord,
   createMockFreeResponsesRepo,
+  createMockParticipantsRepo,
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
@@ -16,6 +18,7 @@ import {
   DefiInconnuError,
   DefiSansTentativeError,
   EcranNonServiError,
+  ParticipantNotFoundError,
   SessionClosedError,
 } from '../../domain/errors/FormationErrors';
 import { DefisUseCase } from '../Defis.useCase';
@@ -28,6 +31,7 @@ describe('DefisUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let freeResponses: ReturnType<typeof createMockFreeResponsesRepo>;
   let cache: ReturnType<typeof createMockSessionStateCache>;
+  let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: DefisUseCase;
 
   const commande = {
@@ -50,11 +54,13 @@ describe('DefisUseCase', () => {
     sessions.findById.mockResolvedValue(seance());
     freeResponses = createMockFreeResponsesRepo();
     cache = createMockSessionStateCache();
+    participants = createMockParticipantsRepo();
     sut = new DefisUseCase(
       sessions,
       freeResponses,
       cache,
       creerCatalogueDeTest(COURS),
+      participants,
     );
   });
 
@@ -161,6 +167,45 @@ describe('DefisUseCase', () => {
     expect(freeResponses.trouverParActivite).toHaveBeenCalledWith(
       'autre-participant',
       DEFI_DE_TEST,
+    );
+  });
+
+  it('ne livre plus le corrige du defi a un participant evince', async () => {
+    sessions.findById.mockResolvedValue(
+      seance({ [ECRAN_DU_DEFI]: { revele: true } }),
+    );
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
+      }),
+    );
+
+    await expect(
+      sut.strategies('session-uuid', 'participant-uuid', DEFI_DE_TEST),
+    ).rejects.toThrow(ParticipantNotFoundError);
+    expect(freeResponses.trouverParActivite).not.toHaveBeenCalled();
+  });
+
+  it('refuse la tentative d un participant evince', async () => {
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
+      }),
+    );
+
+    await expect(sut.tenter(commande)).rejects.toThrow(
+      ParticipantNotFoundError,
+    );
+    expect(freeResponses.enregistrerTentativeDeDefi).not.toHaveBeenCalled();
+  });
+
+  it('refuse le participant d une autre seance', async () => {
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({ sessionId: 'une-autre-seance' }),
+    );
+
+    await expect(sut.tenter(commande)).rejects.toThrow(
+      ParticipantNotFoundError,
     );
   });
 });

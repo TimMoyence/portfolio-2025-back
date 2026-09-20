@@ -9,16 +9,19 @@ import {
   CoursInconnuError,
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
+import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { IPulsesRepository } from '../domain/IPulses.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import { assertReponsesOuvertes } from '../domain/SessionState';
 import {
   CATALOGUE_COURS,
+  PARTICIPANTS_REPOSITORY,
   PULSES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { participantActif } from './ParticipantActif';
 
 export interface DeclarerJalonCommand {
   readonly sessionId: string;
@@ -38,6 +41,8 @@ export class DeclarerJalonUseCase {
     private readonly cache: ISessionStateCache,
     @Inject(CATALOGUE_COURS)
     private readonly catalogue: ICatalogueCours,
+    @Inject(PARTICIPANTS_REPOSITORY)
+    private readonly participants: IParticipantsRepository,
   ) {}
 
   async execute(command: DeclarerJalonCommand): Promise<void> {
@@ -46,6 +51,11 @@ export class DeclarerJalonUseCase {
       throw new SessionNotFoundError(command.sessionId);
     }
     assertReponsesOuvertes(session.etat);
+    await participantActif(
+      this.participants,
+      command.sessionId,
+      command.participantId,
+    );
 
     const cours = await this.catalogue.trouver(
       session.courseSlug,

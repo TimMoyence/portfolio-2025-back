@@ -14,6 +14,7 @@ import {
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
 import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
+import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type {
   ISessionsRepository,
@@ -24,9 +25,11 @@ import { texteRenseigne } from '../domain/TexteRenseigne';
 import {
   CATALOGUE_COURS,
   FREE_RESPONSES_REPOSITORY,
+  PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { participantActif } from './ParticipantActif';
 
 export interface TentativeDeDefiCommand {
   readonly sessionId: string;
@@ -51,6 +54,8 @@ export class DefisUseCase {
     private readonly cache: ISessionStateCache,
     @Inject(CATALOGUE_COURS)
     private readonly catalogue: ICatalogueCours,
+    @Inject(PARTICIPANTS_REPOSITORY)
+    private readonly participants: IParticipantsRepository,
   ) {}
 
   async tenter(command: TentativeDeDefiCommand): Promise<StrategiesDeDefi> {
@@ -60,6 +65,11 @@ export class DefisUseCase {
       throw new SessionNotFoundError(command.sessionId);
     }
     assertReponsesOuvertes(session.etat);
+    await participantActif(
+      this.participants,
+      command.sessionId,
+      command.participantId,
+    );
     const cible = await this.cibleServie(session, command.defiId);
 
     await this.freeResponses.enregistrerTentativeDeDefi({
@@ -91,6 +101,7 @@ export class DefisUseCase {
     if (!session) {
       throw new SessionNotFoundError(sessionId);
     }
+    await participantActif(this.participants, sessionId, participantId);
     const cible = await this.cibleServie(session, defiId);
     const tentative = await this.freeResponses.trouverParActivite(
       participantId,

@@ -838,6 +838,21 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
         `/sessions/${sessionId}/sujet`,
         evince.jeton,
       );
+      const ecritureDeLEvince = await poste(
+        'post',
+        `/sessions/${sessionId}/free-responses`,
+        evince.jeton,
+      ).send({
+        screenId: rappel.id,
+        activityId: (activitesLibres(cours).get(rappel.id) ?? [''])[0],
+        response: 'Encore la, malgre l eviction.',
+        dureeMs: DUREE_MS,
+      });
+      const lectureDeLEvince = await poste(
+        'get',
+        `/sessions/${sessionId}/due-questions`,
+        evince.jeton,
+      );
       const remplacant = await inscrire(postes[3]);
       const reponses = await banc.contexte.answers.listBySession(sessionId);
 
@@ -846,6 +861,8 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       ).toEqual(enAvance.map(() => [CONFLIT, 'ECRAN_NON_SERVI']));
       expect({
         jetonRevoque: jetonRevoque.status,
+        ecritureDeLEvince: ecritureDeLEvince.status,
+        lectureDeLEvince: lectureDeLEvince.status,
         remplacant: remplacant.status,
         graineReprise: postes[3].graine,
         graineLiberee: evince.graine,
@@ -859,6 +876,8 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
         ),
       }).toEqual({
         jetonRevoque: INTROUVABLE,
+        ecritureDeLEvince: INTROUVABLE,
+        lectureDeLEvince: INTROUVABLE,
         remplacant: CREE,
         graineReprise: evince.graine,
         graineLiberee: evince.graine,

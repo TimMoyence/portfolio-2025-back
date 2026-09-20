@@ -7,7 +7,9 @@ import {
   SONDAGE_DE_TEST,
 } from '../../../../../test/factories/cours.factory';
 import {
+  buildParticipantRecord,
   buildSessionRecord,
+  createMockParticipantsRepo,
   createMockPulsesRepo,
   createMockSessionStateCache,
   createMockSessionsRepo,
@@ -16,6 +18,7 @@ import { cleDeJalon } from '../../domain/cours/CleDeJalon';
 import {
   CoursInconnuError,
   EcranNonServiError,
+  ParticipantNotFoundError,
   SessionClosedError,
   SessionNotFoundError,
 } from '../../domain/errors/FormationErrors';
@@ -29,6 +32,7 @@ describe('DeclarerJalonUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let pulses: ReturnType<typeof createMockPulsesRepo>;
   let cache: ReturnType<typeof createMockSessionStateCache>;
+  let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: DeclarerJalonUseCase;
   let secretInitial: string | undefined;
 
@@ -58,11 +62,13 @@ describe('DeclarerJalonUseCase', () => {
     );
     pulses = createMockPulsesRepo();
     cache = createMockSessionStateCache();
+    participants = createMockParticipantsRepo();
     sut = new DeclarerJalonUseCase(
       sessions,
       pulses,
       cache,
       creerCatalogueDeTest(COURS),
+      participants,
     );
   });
 
@@ -132,6 +138,7 @@ describe('DeclarerJalonUseCase', () => {
       pulses,
       cache,
       creerCatalogueAVersions({}),
+      participants,
     );
 
     await expect(sut.execute(commande)).rejects.toThrow(CoursInconnuError);
@@ -146,5 +153,18 @@ describe('DeclarerJalonUseCase', () => {
     );
 
     process.env.FORMATIONS_PULSE_SECRET = secret;
+  });
+
+  it('refuse le jalon d un participant evince', async () => {
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
+      }),
+    );
+
+    await expect(sut.execute(commande)).rejects.toThrow(
+      ParticipantNotFoundError,
+    );
+    expect(pulses.declarer).not.toHaveBeenCalled();
   });
 });
