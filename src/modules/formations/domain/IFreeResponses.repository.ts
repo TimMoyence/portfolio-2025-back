@@ -7,6 +7,8 @@ export interface FreeResponseRecord {
   screenId: string;
   activityId: string;
   response: string;
+  premiereReponse: string | null;
+  strategiesServiesLe: Date | null;
   dureeMs: number;
   status: FreeResponseStatus;
   submittedAt: Date;
@@ -23,5 +25,16 @@ export interface SaveFreeResponseInput {
 
 export interface IFreeResponsesRepository {
   save(input: SaveFreeResponseInput): Promise<void>;
+  enregistrerTentativeDeDefi(
+    input: SaveFreeResponseInput,
+  ): Promise<FreeResponseRecord>;
+  trouverParActivite(
+    participantId: string,
+    activityId: string,
+  ): Promise<FreeResponseRecord | null>;
   listBySession(sessionId: string): Promise<readonly FreeResponseRecord[]>;
+  listerDuParticipant(
+    sessionId: string,
+    participantId: string,
+  ): Promise<readonly FreeResponseRecord[]>;
 }

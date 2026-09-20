@@ -14,6 +14,7 @@ import type { ParticipantRecord } from '../../src/modules/formations/domain/IPar
 import type { SessionRecord } from '../../src/modules/formations/domain/ISessions.repository';
 import {
   buildCorrigeClassement,
+  buildCorrigeDefi,
   buildCorrigeEnigme,
   buildCorrigeFeuille,
   buildCorrigeTableau,
@@ -223,6 +224,32 @@ export function buildEcranDEnigmes(): Ecran {
     },
     enigmes: [enigmeDeTest(0), enigmeDeTest(1), enigmeDeTest(2)],
   };
+}
+
+export const DEFI_DE_TEST = 'defi-test-1';
+
+export function buildEcranDeDefi(): Ecran {
+  return {
+    ...EN_CATALOGUE,
+    id: 'E-DEFI',
+    brique: 'fp-challenge',
+    dureeMinutes: 5,
+    concepts: ['lecture-graphique'],
+    notes: 'Défi ouvert',
+    proprietes: {
+      probleme: {
+        id: DEFI_DE_TEST,
+        enonce: 'Que vérifiez-vous avant de croire ce graphique ?',
+        invite: 'Écrivez votre méthode.',
+      },
+    },
+    defi: buildCorrigeDefi(),
+  };
+}
+
+export function buildCoursAvecDefi(overrides: Partial<Cours> = {}): Cours {
+  const socle = buildCoursDeTest(overrides);
+  return { ...socle, ecrans: [...socle.ecrans, buildEcranDeDefi()] };
 }
 
 export const SONDAGE_DE_TEST = 'jalon-test-1';

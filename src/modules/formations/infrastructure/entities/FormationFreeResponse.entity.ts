@@ -58,6 +58,16 @@ export class FormationFreeResponseEntity {
   @Column({ type: 'text' })
   response: string;
 
+  @Column({ name: 'premiere_reponse', type: 'text', nullable: true })
+  premiereReponse: string | null;
+
+  @Column({
+    name: 'strategies_servies_le',
+    type: 'timestamptz',
+    nullable: true,
+  })
+  strategiesServiesLe: Date | null;
+
   @Column({ name: 'duree_ms', type: 'int' })
   dureeMs: number;
 

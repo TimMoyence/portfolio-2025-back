@@ -18,6 +18,7 @@ import type { IFormationMailer } from '../../src/modules/formations/domain/IForm
 import type {
   FreeResponseRecord,
   IFreeResponsesRepository,
+  SaveFreeResponseInput,
 } from '../../src/modules/formations/domain/IFreeResponses.repository';
 import type {
   ITeacherAnnotationsRepository,
@@ -335,6 +336,8 @@ export function buildFreeResponseRecord(
     screenId: 'B2-01-S11-REFLECTION',
     activityId: 'b2-s11-c1',
     response: 'Je vérifie la base avant de comparer.',
+    premiereReponse: null,
+    strategiesServiesLe: null,
     dureeMs: 12000,
     status: 'enregistre',
     submittedAt: new Date('2026-09-11T08:20:00.000Z'),
@@ -345,6 +348,18 @@ export function buildFreeResponseRecord(
 export function createMockFreeResponsesRepo(): jest.Mocked<IFreeResponsesRepository> {
   return {
     save: jest.fn().mockResolvedValue(undefined),
+    enregistrerTentativeDeDefi: jest
+      .fn()
+      .mockImplementation((input: SaveFreeResponseInput) =>
+        Promise.resolve(
+          buildFreeResponseRecord({
+            ...input,
+            premiereReponse: input.response,
+          }),
+        ),
+      ),
+    trouverParActivite: jest.fn().mockResolvedValue(null),
+    listerDuParticipant: jest.fn().mockResolvedValue([]),
     listBySession: jest.fn().mockResolvedValue([buildFreeResponseRecord()]),
   };
 }

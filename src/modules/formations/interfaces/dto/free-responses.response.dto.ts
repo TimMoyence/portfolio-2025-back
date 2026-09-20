@@ -19,6 +19,21 @@ export class FreeResponseResponseDto {
   @ApiProperty({ example: 'Je vérifie la base avant de comparer.' })
   response: string;
 
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Première tentative d’un défi, jamais réécrite',
+  })
+  premiereReponse: string | null;
+
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    nullable: true,
+    description: 'Date à laquelle les stratégies du défi ont été servies',
+  })
+  strategiesServiesLe: Date | null;
+
   @ApiProperty({ example: 12000 })
   dureeMs: number;
 

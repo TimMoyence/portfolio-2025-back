@@ -160,6 +160,24 @@ export class PhaseFermeeError extends ResourceConflictError {
   }
 }
 
+export class DefiInconnuError extends ResourceNotFoundError {
+  readonly code = 'ACTIVITE_INCONNUE';
+
+  constructor(defiId: string) {
+    super(`Défi absent du cours de cette séance : ${defiId}`);
+  }
+}
+
+export class DefiSansTentativeError extends ResourceNotFoundError {
+  readonly code = 'DEFI_SANS_TENTATIVE';
+
+  constructor(defiId: string) {
+    super(
+      `Les stratégies du défi ${defiId} ne sont servies qu’après votre propre tentative.`,
+    );
+  }
+}
+
 export class EnigmeInconnueError extends ResourceNotFoundError {
   constructor(parcoursId: string, enigmeId: string) {
     super(`Énigme ${enigmeId} absente du parcours ${parcoursId}`);

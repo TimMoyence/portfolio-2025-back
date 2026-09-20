@@ -18,6 +18,7 @@ import { SaveFreeResponseUseCase } from './application/SaveFreeResponse.useCase'
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
+import { DefisUseCase } from './application/Defis.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import { CATALOGUE_COURS } from './domain/token';
@@ -66,6 +67,7 @@ const SERVICES = [
   SubmitProductionUseCase,
   TenterEnigmeUseCase,
   DeclarerJalonUseCase,
+  DefisUseCase,
   RecordIncidentsUseCase,
   StreamSessionUseCase,
   DueQuestionsUseCase,

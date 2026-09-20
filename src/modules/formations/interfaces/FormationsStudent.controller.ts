@@ -44,6 +44,7 @@ import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
 import { DeclarerJalonUseCase } from '../application/DeclarerJalon.useCase';
+import { DefisUseCase } from '../application/Defis.useCase';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
@@ -59,6 +60,8 @@ import { SaveFreeResponseRequestDto } from './dto/save-free-response.request.dto
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
 import { DeclarerJalonRequestDto } from './dto/contrat/declarer-jalon.request.dto';
+import { StrategiesDefiResponseDto } from './dto/contrat/strategies-defi.response.dto';
+import { SubmitDefiRequestDto } from './dto/contrat/submit-defi.request.dto';
 import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
 import { TentativeEnigmeResponseDto } from './dto/contrat/tentative-enigme.response.dto';
 import { TenterEnigmeRequestDto } from './dto/contrat/tenter-enigme.request.dto';
@@ -92,6 +95,7 @@ export class FormationsStudentController {
     private readonly submitProduction: SubmitProductionUseCase,
     private readonly tenterEnigme: TenterEnigmeUseCase,
     private readonly declarerJalon: DeclarerJalonUseCase,
+    private readonly defis: DefisUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
@@ -325,6 +329,64 @@ export class FormationsStudentController {
       sondageId,
       etat: dto.etat,
     });
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_TENTATIVES_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Post('sessions/:id/defis/:defiId/tentative')
+  @ApiOperation({
+    summary:
+      'Envoie la tentative du defi et rend les strategies de reference, sans leur justesse',
+  })
+  @ApiCreatedResponse({ type: StrategiesDefiResponseDto })
+  @ApiNotFoundResponse({ description: 'Defi absent du cours' })
+  @ApiBadRequestResponse({ description: 'Tentative vide' })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async tentativeDeDefi(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('defiId') defiId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: SubmitDefiRequestDto,
+  ): Promise<StrategiesDefiResponseDto> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.defis.tenter({
+      sessionId,
+      participantId,
+      defiId,
+      texte: dto.texte,
+      dureeMs: dto.dureeMs,
+    });
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_JALONS_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Get('sessions/:id/defis/:defiId/strategies')
+  @ApiOperation({
+    summary:
+      'Resert les strategies du defi, avec leur justesse seulement apres la revelation',
+  })
+  @ApiOkResponse({ type: StrategiesDefiResponseDto })
+  @ApiNotFoundResponse({
+    description: 'Defi inconnu, ou aucune tentative envoyee',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async strategiesDuDefi(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('defiId') defiId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+  ): Promise<StrategiesDefiResponseDto> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.defis.strategies(sessionId, participantId, defiId);
   }
 
   @Throttle({
