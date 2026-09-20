@@ -1,4 +1,5 @@
 export interface OpenSessionCommand {
+  capacite?: number;
   courseSlug: string;
   teacherId: string;
 }

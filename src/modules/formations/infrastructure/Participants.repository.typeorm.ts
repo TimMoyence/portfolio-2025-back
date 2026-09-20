@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { SeedAlreadyAssignedError } from '../domain/errors/FormationErrors';
 import type {
@@ -11,8 +11,8 @@ import type {
 import { PostgresErrorClassifier } from './PostgresErrorClassifier';
 import { FormationParticipantEntity } from './entities/FormationParticipant.entity';
 
-const SESSION_KEY_CONSTRAINT = 'UQ_formation_participants_session_key';
-const SESSION_SEED_CONSTRAINT = 'UQ_formation_participants_session_seed';
+const SESSION_KEY_CONSTRAINT = 'uq_formation_participants_session_key';
+const SESSION_SEED_CONSTRAINT = 'uq_formation_participants_session_seed';
 
 @Injectable()
 export class ParticipantsRepositoryTypeORM
@@ -72,7 +72,7 @@ export class ParticipantsRepositoryTypeORM
     studentKey: string,
   ): Promise<ParticipantRecord | null> {
     const entity = await this.repo.findOne({
-      where: { sessionId, studentKey },
+      where: { sessionId, studentKey, evinceLe: IsNull() },
     });
     return entity ? this.toDomain(entity) : null;
   }
@@ -86,19 +86,19 @@ export class ParticipantsRepositoryTypeORM
     sessionId: string,
   ): Promise<readonly ParticipantRecord[]> {
     const entities = await this.repo.find({
-      where: { sessionId },
+      where: { sessionId, evinceLe: IsNull() },
       order: { rejointLe: 'ASC', id: 'ASC' },
     });
     return entities.map((entity) => this.toDomain(entity));
   }
 
   countBySession(sessionId: string): Promise<number> {
-    return this.repo.count({ where: { sessionId } });
+    return this.repo.count({ where: { sessionId, evinceLe: IsNull() } });
   }
 
   async listSeedsBySession(sessionId: string): Promise<readonly number[]> {
     const entities = await this.repo.find({
-      where: { sessionId },
+      where: { sessionId, evinceLe: IsNull() },
       select: ['seed'],
     });
     return entities.map((entity) => entity.seed);
@@ -106,6 +106,14 @@ export class ParticipantsRepositoryTypeORM
 
   async touch(id: string): Promise<void> {
     await this.repo.update(id, { dernierPing: new Date() });
+  }
+
+  async evincer(sessionId: string, participantId: string): Promise<boolean> {
+    const misAJour = await this.repo.update(
+      { id: participantId, sessionId, evinceLe: IsNull() },
+      { evinceLe: new Date() },
+    );
+    return (misAJour.affected ?? 0) > 0;
   }
 
   private toDomain(entity: FormationParticipantEntity): ParticipantRecord {
@@ -120,6 +128,7 @@ export class ParticipantsRepositoryTypeORM
       seed: entity.seed,
       rejointLe: entity.rejointLe,
       dernierPing: entity.dernierPing,
+      evinceLe: entity.evinceLe,
     };
   }
 }

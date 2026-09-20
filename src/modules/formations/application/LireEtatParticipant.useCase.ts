@@ -62,7 +62,11 @@ export class LireEtatParticipantUseCase {
       throw new SessionNotFoundError(sessionId);
     }
     const participant = await this.participants.findById(participantId);
-    if (!participant || participant.sessionId !== sessionId) {
+    if (
+      !participant ||
+      participant.sessionId !== sessionId ||
+      participant.evinceLe !== null
+    ) {
       throw new ParticipantNotFoundError(participantId);
     }
     const cours = await this.catalogue.trouver(

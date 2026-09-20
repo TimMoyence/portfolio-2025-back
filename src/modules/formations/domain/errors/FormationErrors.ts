@@ -82,6 +82,16 @@ export class InvalidStateTransitionError extends ResourceConflictError {
   }
 }
 
+export class SeanceCompleteError extends ResourceConflictError {
+  readonly code = 'SEANCE_COMPLETE';
+
+  constructor(capacite: number) {
+    super(
+      `Cette séance a atteint sa capacité de ${capacite} participants : demandez au formateur de libérer une place.`,
+    );
+  }
+}
+
 export class SeedPoolExhaustedError extends ResourceConflictError {
   constructor() {
     super('Plus aucun tirage disponible pour cette session');

@@ -71,7 +71,7 @@ export class SubmitAnswerUseCase {
     }
 
     const participant = await this.participants.findById(command.participantId);
-    if (!participant) {
+    if (!participant || participant.evinceLe !== null) {
       throw new ParticipantNotFoundError(command.participantId);
     }
 

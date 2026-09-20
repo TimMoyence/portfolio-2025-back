@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { pickFreeSeed } from '../domain/Bareme';
 import {
+  SeanceCompleteError,
   SeedAlreadyAssignedError,
   SeedPoolExhaustedError,
   SessionClosedError,
@@ -53,6 +54,11 @@ export class JoinSessionUseCase {
     if (existant) {
       await this.participants.touch(existant.id);
       return this.toResult(existant.id, session, existant.seed);
+    }
+
+    const inscrits = await this.participants.countBySession(session.id);
+    if (inscrits >= session.capacite) {
+      throw new SeanceCompleteError(session.capacite);
     }
 
     return this.inscrireSurUneGraineLibre(session, command);

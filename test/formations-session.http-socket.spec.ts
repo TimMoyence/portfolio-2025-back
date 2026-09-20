@@ -184,6 +184,7 @@ function creerSessionsRepo(): ISessionsRepository {
         intervalleLibre: null,
         pilotageEcrans: {},
         revision: 0,
+        capacite: input.capacite ?? 40,
         ouverteLe: new Date(),
         fermeeLe: null,
         majLe: new Date(),
@@ -230,6 +231,7 @@ function creerParticipantsRepo(): IParticipantsRepository {
         id: randomUUID(),
         rejointLe: new Date(),
         dernierPing: new Date(),
+        evinceLe: null,
       };
       participants.set(participant.id, participant);
       return Promise.resolve(participant);
@@ -249,6 +251,14 @@ function creerParticipantsRepo(): IParticipantsRepository {
         deLaSession(sessionId).map((participant) => participant.seed),
       ),
     touch: () => Promise.resolve(),
+    evincer: (sessionId, participantId) => {
+      const cible = participants.get(participantId);
+      if (!cible || cible.sessionId !== sessionId || cible.evinceLe !== null) {
+        return Promise.resolve(false);
+      }
+      participants.set(participantId, { ...cible, evinceLe: new Date() });
+      return Promise.resolve(true);
+    },
   };
 }
 

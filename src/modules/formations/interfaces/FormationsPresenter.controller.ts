@@ -44,7 +44,7 @@ import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
 import { ControlSessionRequestDto } from './dto/contrat/control-session.request.dto';
 import { DerouleResponseDto } from './dto/contrat/deroule.response.dto';
 import { FreeResponsesResponseDto } from './dto/free-responses.response.dto';
-import { OpenSessionRequestDto } from './dto/open-session.request.dto';
+import { OpenSessionRequestDto } from './dto/contrat/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
 import { SessionResultsResponseDto } from './dto/session-results.response.dto';
 import {
@@ -98,6 +98,7 @@ export class FormationsPresenterController {
     const result = await this.openSession.execute({
       courseSlug: dto.courseSlug,
       teacherId: request.user!.sub,
+      capacite: dto.capacite,
     });
     return { sessionId: result.sessionId, code: result.code };
   }

@@ -1,3 +1,4 @@
+import { IsNull } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import { SeedAlreadyAssignedError } from '../domain/errors/FormationErrors';
 import {
@@ -57,10 +58,10 @@ describe('ParticipantsRepositoryTypeORM', () => {
     expect(participant.seed).toBe(1001);
   });
 
-  it('traduit la violation de UQ_formation_participants_session_key en conflit de session deja rejointe', async () => {
+  it('traduit la violation de uq_formation_participants_session_key en conflit de session deja rejointe', async () => {
     save.mockRejectedValue({
       code: '23505',
-      constraint: 'UQ_formation_participants_session_key',
+      constraint: 'uq_formation_participants_session_key',
     });
     await expect(sut.create(input)).rejects.toThrow(ResourceConflictError);
     await expect(sut.create(input)).rejects.toThrow(
@@ -68,10 +69,10 @@ describe('ParticipantsRepositoryTypeORM', () => {
     );
   });
 
-  it('traduit la violation de UQ_formation_participants_session_seed en tirage deja attribue, distinct du conflit de session', async () => {
+  it('traduit la violation de uq_formation_participants_session_seed en tirage deja attribue, distinct du conflit de session', async () => {
     save.mockRejectedValue({
       code: '23505',
-      constraint: 'UQ_formation_participants_session_seed',
+      constraint: 'uq_formation_participants_session_seed',
     });
     await expect(sut.create(input)).rejects.toBeInstanceOf(
       SeedAlreadyAssignedError,
@@ -104,7 +105,15 @@ describe('ParticipantsRepositoryTypeORM', () => {
       id: 'participant-uuid',
     });
     expect(findOne.mock.calls).toEqual([
-      [{ where: { sessionId: 'session-uuid', studentKey: 'student-uuid' } }],
+      [
+        {
+          where: {
+            sessionId: 'session-uuid',
+            studentKey: 'student-uuid',
+            evinceLe: IsNull(),
+          },
+        },
+      ],
       [{ where: { id: 'participant-uuid' } }],
     ]);
   });
@@ -122,18 +131,23 @@ describe('ParticipantsRepositoryTypeORM', () => {
     expect(find.mock.calls).toEqual([
       [
         {
-          where: { sessionId: 'session-uuid' },
+          where: { sessionId: 'session-uuid', evinceLe: IsNull() },
           order: { rejointLe: 'ASC', id: 'ASC' },
         },
       ],
-      [{ where: { sessionId: 'session-uuid' }, select: ['seed'] }],
+      [
+        {
+          where: { sessionId: 'session-uuid', evinceLe: IsNull() },
+          select: ['seed'],
+        },
+      ],
     ]);
   });
 
   it('compte les participants d une seance sans les charger', async () => {
     await expect(sut.countBySession('session-uuid')).resolves.toBe(3);
     expect(count).toHaveBeenCalledWith({
-      where: { sessionId: 'session-uuid' },
+      where: { sessionId: 'session-uuid', evinceLe: IsNull() },
     });
   });
 

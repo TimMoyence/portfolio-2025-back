@@ -60,6 +60,7 @@ export class OpenSessionUseCase {
           teacherId: command.teacherId,
           code: candidat,
           bareme,
+          capacite: command.capacite,
         });
       } catch (error) {
         if (!(error instanceof SessionCodeAlreadyActiveError)) {

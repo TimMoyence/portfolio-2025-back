@@ -15,6 +15,7 @@ export interface SessionRecord {
   intervalleLibre: FreeRange | null;
   pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
   revision: number;
+  capacite: number;
   bareme: Bareme;
   ouverteLe: Date;
   fermeeLe: Date | null;
@@ -27,6 +28,7 @@ export interface CreateSessionInput {
   teacherId: string;
   code: string;
   bareme: Bareme;
+  capacite?: number;
 }
 
 export interface UpdateSessionInput {

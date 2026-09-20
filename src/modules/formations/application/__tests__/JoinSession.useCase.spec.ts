@@ -7,6 +7,7 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
+  SeanceCompleteError,
   SeedAlreadyAssignedError,
   SeedPoolExhaustedError,
   SessionClosedError,
@@ -35,6 +36,41 @@ describe('JoinSessionUseCase', () => {
     participants = createMockParticipantsRepo();
     cache = createMockSessionStateCache();
     sut = new JoinSessionUseCase(sessions, participants, cache);
+  });
+
+  it('refuse une inscription au-dela de la capacite de la seance', async () => {
+    sessions.findActiveByCode.mockResolvedValue(
+      buildSessionRecord({ capacite: 2 }),
+    );
+    participants.countBySession.mockResolvedValue(2);
+
+    await expect(sut.execute(commande)).rejects.toThrow(SeanceCompleteError);
+    expect(participants.create).not.toHaveBeenCalled();
+  });
+
+  it('inscrit tant qu une place reste libre sous la capacite', async () => {
+    sessions.findActiveByCode.mockResolvedValue(
+      buildSessionRecord({ capacite: 2 }),
+    );
+    participants.countBySession.mockResolvedValue(1);
+
+    await expect(sut.execute(commande)).resolves.toMatchObject({
+      sessionId: 'session-uuid',
+    });
+  });
+
+  it('laisse revenir un participant deja inscrit meme a capacite atteinte', async () => {
+    sessions.findActiveByCode.mockResolvedValue(
+      buildSessionRecord({ capacite: 1 }),
+    );
+    participants.countBySession.mockResolvedValue(1);
+    participants.findBySessionAndStudentKey.mockResolvedValue(
+      buildParticipantRecord(),
+    );
+
+    await expect(sut.execute(commande)).resolves.toMatchObject({
+      participantId: 'participant-uuid',
+    });
   });
 
   it('signale une activite sur la session une fois le nouveau participant inscrit', async () => {

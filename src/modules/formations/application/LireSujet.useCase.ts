@@ -43,7 +43,11 @@ export class LireSujetUseCase {
       throw new SessionNotFoundError(query.sessionId);
     }
     const participant = await this.participants.findById(query.participantId);
-    if (!participant || participant.sessionId !== query.sessionId) {
+    if (
+      !participant ||
+      participant.sessionId !== query.sessionId ||
+      participant.evinceLe !== null
+    ) {
       throw new ParticipantNotFoundError(query.participantId);
     }
     const cours = await this.catalogue.trouver(

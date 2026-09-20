@@ -19,6 +19,7 @@ import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
 import { DefisUseCase } from './application/Defis.useCase';
+import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
@@ -115,6 +116,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     DeclarerJalonUseCase,
     DefisUseCase,
     LireEtatParticipantUseCase,
+    EvincerParticipantUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     {

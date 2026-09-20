@@ -31,6 +31,7 @@ function ligne(
     intervalleLibre: null,
     pilotageEcrans: {},
     revision: 0,
+    capacite: 40,
     bareme: buildBareme(),
     ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
     fermeeLe: null,

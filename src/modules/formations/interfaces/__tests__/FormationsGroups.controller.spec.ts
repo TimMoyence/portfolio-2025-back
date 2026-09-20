@@ -23,13 +23,25 @@ describe('FormationsGroupsController', () => {
     assign: jest.fn(),
   };
   const participants = { execute: jest.fn() };
+  const evincerParticipant = { execute: jest.fn() };
   const controller = new FormationsGroupsController(
     groups as never,
     participants as never,
+    evincerParticipant as never,
   );
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('evince un participant avec l identite du formateur proprietaire', async () => {
+    await controller.evincer(SESSION_ID, PARTICIPANT_ID, requete);
+
+    expect(evincerParticipant.execute).toHaveBeenCalledWith(
+      SESSION_ID,
+      TEACHER_ID,
+      PARTICIPANT_ID,
+    );
   });
 
   it('lit participants et groupes avec l identite et les roles de l appelant', async () => {

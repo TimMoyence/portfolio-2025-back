@@ -108,7 +108,11 @@ export class SubmitProductionUseCase {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
     const participant = await this.participants.findById(command.participantId);
-    if (!participant || participant.sessionId !== command.sessionId) {
+    if (
+      !participant ||
+      participant.sessionId !== command.sessionId ||
+      participant.evinceLe !== null
+    ) {
       throw new ParticipantNotFoundError(command.participantId);
     }
 

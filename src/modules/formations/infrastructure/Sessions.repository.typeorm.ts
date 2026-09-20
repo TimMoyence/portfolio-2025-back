@@ -12,6 +12,7 @@ import { PostgresErrorClassifier } from './PostgresErrorClassifier';
 import { FormationSessionEntity } from './entities/FormationSession.entity';
 
 const CODE_ACTIF_CONSTRAINT = 'uq_formation_sessions_code_active';
+const CAPACITE_PAR_DEFAUT = 40;
 
 @Injectable()
 export class SessionsRepositoryTypeORM
@@ -38,6 +39,7 @@ export class SessionsRepositoryTypeORM
       intervalleLibre: null,
       pilotageEcrans: {},
       revision: 0,
+      capacite: input.capacite ?? CAPACITE_PAR_DEFAUT,
       fermeeLe: null,
       majLe: new Date(),
     });
@@ -97,6 +99,7 @@ export class SessionsRepositoryTypeORM
       intervalleLibre: entity.intervalleLibre,
       pilotageEcrans: entity.pilotageEcrans,
       revision: entity.revision,
+      capacite: entity.capacite,
       bareme: entity.bareme,
       ouverteLe: entity.ouverteLe,
       fermeeLe: entity.fermeeLe,

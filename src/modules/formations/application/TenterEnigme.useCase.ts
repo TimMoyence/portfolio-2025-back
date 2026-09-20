@@ -99,7 +99,11 @@ export class TenterEnigmeUseCase {
       throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
     }
     const participant = await this.participants.findById(command.participantId);
-    if (!participant || participant.sessionId !== command.sessionId) {
+    if (
+      !participant ||
+      participant.sessionId !== command.sessionId ||
+      participant.evinceLe !== null
+    ) {
       throw new ParticipantNotFoundError(command.participantId);
     }
 

@@ -13,6 +13,7 @@ import type { SessionState } from '../../domain/SessionState';
 
 @Entity({ name: 'formation_sessions' })
 @Check('chk_formation_session_course_version_positive', '"course_version" > 0')
+@Check('chk_formation_session_capacite', '"capacite" BETWEEN 1 AND 60')
 @Index('uq_formation_sessions_code_active', ['code'], {
   unique: true,
   where: `"etat" <> 'terminee'`,
@@ -56,6 +57,9 @@ export class FormationSessionEntity {
 
   @Column({ type: 'int', default: 0 })
   revision: number;
+
+  @Column({ type: 'smallint', default: 40 })
+  capacite: number;
 
   @Column({ type: 'jsonb' })
   bareme: Bareme;

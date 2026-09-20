@@ -97,12 +97,12 @@ const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
   '/sessions/{id}/defis/{defiId}/tentative',
   '/sessions/{id}/defis/{defiId}/strategies',
   '/sessions/{id}/moi',
+  '/sessions/{id}/participants/{participantId}',
 ];
 
 const ROUTES_A_VENIR_DU_CONTRAT_V3 = [
   '/sessions/{id}/rappels',
   '/sessions/{id}/rappels/synthese',
-  '/sessions/{id}/participants/{participantId}',
   '/catalogue/{slug}/publication',
 ];
 

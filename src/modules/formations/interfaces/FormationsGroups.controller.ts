@@ -23,9 +23,11 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
+import { EvincerParticipantUseCase } from '../application/EvincerParticipant.useCase';
 import { ListSessionParticipantsUseCase } from '../application/ListSessionParticipants.useCase';
 import type { ParticipantDeSeance } from '../application/ListSessionParticipants.useCase';
 import { ManageFormationGroupsUseCase } from '../application/ManageFormationGroups.useCase';
@@ -43,6 +45,10 @@ import {
   PilotageDeSeance,
   ROLE_FORMATEUR,
 } from './formations-acces';
+import {
+  FENETRE_THROTTLE_MS,
+  LIMITE_EVICTION_PAR_MINUTE,
+} from './formations-throttling';
 
 const NOM_DEJA_PRIS =
   'Nom déjà pris dans la séance, cause dans le champ code : NOM_DE_GROUPE_DEJA_PRIS';
@@ -57,6 +63,7 @@ export class FormationsGroupsController {
   constructor(
     private readonly groups: ManageFormationGroupsUseCase,
     private readonly participants: ListSessionParticipantsUseCase,
+    private readonly evincerParticipant: EvincerParticipantUseCase,
   ) {}
 
   @Get('sessions/:id/participants')
@@ -146,5 +153,30 @@ export class FormationsGroupsController {
     @Req() request: Request,
   ): Promise<void> {
     await this.groups.assign(id, request.user!.sub, participantId, null);
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_EVICTION_PAR_MINUTE,
+      ttl: FENETRE_THROTTLE_MS,
+    },
+  })
+  @Delete('sessions/:id/participants/:participantId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @PilotageDeSeance()
+  @ApiOperation({
+    summary:
+      'Evince un participant : jeton revoque, place et graine liberees, reponses conservees',
+  })
+  @ApiNoContentResponse({ description: 'Participant evince' })
+  @ApiNotFoundResponse({
+    description: 'Seance ou participant introuvable dans la seance',
+  })
+  async evincer(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('participantId', ParseUUIDPipe) participantId: string,
+    @Req() request: Request,
+  ): Promise<void> {
+    await this.evincerParticipant.execute(id, request.user!.sub, participantId);
   }
 }

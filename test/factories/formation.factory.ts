@@ -186,6 +186,7 @@ export function buildSessionRecord(
     intervalleLibre: null,
     pilotageEcrans: {},
     revision: 0,
+    capacite: 40,
     bareme: buildBareme(),
     ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
     fermeeLe: null,
@@ -233,6 +234,7 @@ export function buildParticipantRecord(
     seed: 1001,
     rejointLe: new Date('2026-09-11T08:05:00.000Z'),
     dernierPing: new Date('2026-09-11T08:05:00.000Z'),
+    evinceLe: null,
     ...overrides,
   };
 }
@@ -296,6 +298,7 @@ export function createMockParticipantsRepo(): jest.Mocked<IParticipantsRepositor
     countBySession: jest.fn().mockResolvedValue(1),
     listSeedsBySession: jest.fn().mockResolvedValue([]),
     touch: jest.fn().mockResolvedValue(undefined),
+    evincer: jest.fn().mockResolvedValue(true),
   };
 }
 

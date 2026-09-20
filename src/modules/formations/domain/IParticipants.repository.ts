@@ -9,6 +9,7 @@ export interface ParticipantRecord {
   seed: number;
   rejointLe: Date;
   dernierPing: Date;
+  evinceLe: Date | null;
 }
 
 export interface CreateParticipantInput {
@@ -31,4 +32,5 @@ export interface IParticipantsRepository {
   countBySession(sessionId: string): Promise<number>;
   listSeedsBySession(sessionId: string): Promise<readonly number[]>;
   touch(id: string): Promise<void>;
+  evincer(sessionId: string, participantId: string): Promise<boolean>;
 }
