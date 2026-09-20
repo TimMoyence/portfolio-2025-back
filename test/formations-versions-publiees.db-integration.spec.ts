@@ -87,6 +87,19 @@ describeDb('versions publiées du catalogue de formations', () => {
     }
   });
 
+  it('ne laisse aucun cours muet : chaque slug migré porte une ligne de publication', async () => {
+    const muets: { slug: string }[] = await contexte.dataSource.query(
+      `SELECT DISTINCT "cours"."slug" AS "slug"
+       FROM "formation_course_contents" AS "cours"
+       LEFT JOIN "formation_course_publications" AS "publication"
+         ON "publication"."slug" = "cours"."slug"
+       WHERE "publication"."slug" IS NULL
+       ORDER BY "cours"."slug"`,
+    );
+
+    expect(muets.map((ligne) => ligne.slug)).toEqual([]);
+  });
+
   it('laisse les versions historiques sans titre, en diffusion catalogue, sans remédiation ni média', async () => {
     const ecrans: { nombre: number }[] = await contexte.dataSource.query(
       `SELECT COUNT(*)::int AS "nombre" FROM "formation_screen_contents" AS "ecran"
