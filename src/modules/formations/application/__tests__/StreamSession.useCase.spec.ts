@@ -10,6 +10,7 @@ import {
   buildParticipantRecord,
   buildSessionRecord,
   createMockAnswersRepo,
+  buildResultatQuestion,
   createMockEscapeRepo,
   createMockIncidentsRepo,
   createMockPulsesRepo,
@@ -652,13 +653,12 @@ describe('StreamSessionUseCase', () => {
         {
           participants: 1,
           questions: [
-            {
+            buildResultatQuestion({
               questionId: 'Q-CAP-03',
+              ecranId: '',
               total: 1,
               correctes: 1,
-              neSaitPas: 0,
-              confusions: [],
-            },
+            }),
           ],
           statistiques: {
             moyenne: 20,

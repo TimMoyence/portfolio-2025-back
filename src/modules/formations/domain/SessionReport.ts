@@ -1,11 +1,12 @@
 import type { QuestionDeBareme } from './Bareme';
 import {
+  questionsAAgreger,
   questionsNotees,
   solutionsDuTirage,
   solutionsIdentiques,
 } from './Bareme';
 import { libelleDeConfusion } from './cours/banque/confusions';
-import type { Cours } from './contrats/cours';
+import type { Cours, TypeQuestion } from './contrats/cours';
 import type { DetailProduction, ValeurReponse } from './contrats/resultats';
 import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
@@ -45,6 +46,12 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
   const rangs = new Map(
     input.session.bareme.questions.map((question, rang) => [question.id, rang]),
   );
+  const types = new Map(
+    questionsAAgreger(input.session.bareme, input.cours).map((question) => [
+      question.id,
+      question.type,
+    ]),
+  );
   const tiragesEnEchec: string[] = [];
   const libellesDe = (graine: number): LibellesDesOptions => {
     try {
@@ -72,6 +79,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
           input.answers,
           rangs,
           libellesDe(participant.seed),
+          types,
         ),
         incidents: input.incidents.filter(
           (incident) => incident.participantId === participant.id,
@@ -127,6 +135,7 @@ function reponsesDe(
   reponses: readonly AnswerRecord[],
   rangs: ReadonlyMap<string, number>,
   libelles: LibellesDesOptions,
+  types: ReadonlyMap<string, TypeQuestion>,
 ): readonly RapportQuestion[] {
   const rangDe = (reponse: AnswerRecord): number =>
     rangs.get(reponse.questionId) ?? rangs.size;
@@ -136,6 +145,8 @@ function reponsesDe(
     .map((reponse) => ({
       questionId: reponse.questionId,
       concept: reponse.concept,
+      type: types.get(reponse.questionId) ?? 'vote',
+      score: reponse.score,
       valeur: texteDeValeur(reponse.valeur),
       reponse: reponseLisible(reponse, libelles),
       correcte: reponse.correcte,

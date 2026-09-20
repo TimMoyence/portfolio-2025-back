@@ -1,4 +1,9 @@
+import type { TypeQuestion } from './contrats/cours';
+
 export interface RegleDeNotation {
+  readonly typesNotables: readonly TypeQuestion[];
+  readonly productionCompteSi: 'au-moins-une-saisie';
+  readonly statistiquesSurQuestionsNotees: boolean;
   readonly noteMax: number;
   readonly base: 'participation-relative-cohorte';
   readonly partCohorteReference: number;
@@ -11,6 +16,15 @@ export interface RegleDeNotation {
 }
 
 export const REGLE_DE_NOTATION: RegleDeNotation = Object.freeze({
+  typesNotables: [
+    'numeric',
+    'vote',
+    'feuille',
+    'tableau',
+    'classement',
+  ] as const,
+  productionCompteSi: 'au-moins-une-saisie',
+  statistiquesSurQuestionsNotees: true,
   noteMax: 20,
   base: 'participation-relative-cohorte',
   partCohorteReference: 0.2,

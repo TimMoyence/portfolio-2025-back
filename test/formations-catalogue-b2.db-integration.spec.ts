@@ -177,6 +177,12 @@ describeDb('catalogue B2 migré', () => {
       [publiee.id, course.id],
     );
 
+    expect((await catalogue.trouverCourant(course.slug))?.version).toBe(2);
+    await catalogue.publier({
+      slug: course.slug,
+      version: 3,
+      parQui: null,
+    });
     expect((await catalogue.trouverCourant(course.slug))?.version).toBe(3);
     expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
     expect((await catalogue.trouver(course.slug, 3))?.titre).toBe(

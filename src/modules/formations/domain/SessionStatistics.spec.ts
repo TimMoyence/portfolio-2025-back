@@ -1,3 +1,4 @@
+import { buildResultatQuestion } from '../../../../test/factories/formation.factory';
 import { calculerStatistiquesSeance } from './SessionStatistics';
 
 describe('calculerStatistiquesSeance', () => {
@@ -38,20 +39,16 @@ describe('calculerStatistiquesSeance', () => {
       {
         participants: 3,
         questions: [
-          {
+          buildResultatQuestion({
             questionId: 'Q1',
             total: 3,
             correctes: 1,
-            neSaitPas: 0,
-            confusions: [],
-          },
-          {
+          }),
+          buildResultatQuestion({
             questionId: 'Q2',
             total: 2,
             correctes: 2,
-            neSaitPas: 0,
-            confusions: [],
-          },
+          }),
         ],
       },
     );

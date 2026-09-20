@@ -10,6 +10,7 @@ import {
   buildActeurFormation,
   buildAdministrateur,
   buildAnswerRecord,
+  buildResultatQuestion,
   createMockAnswersRepo,
   createMockEscapeRepo,
   createMockIncidentsRepo,
@@ -143,13 +144,13 @@ describe('GetSessionResultsUseCase', () => {
     const rapport = await sut.execute('session-uuid', PROPRIETAIRE);
     const confusionsAttendues: readonly ConfusionComptee[] = [];
     const questionsAttendues: readonly ResultatQuestion[] = [
-      {
+      buildResultatQuestion({
         questionId: 'Q-CAP-03',
+        ecranId: '',
         total: 1,
         correctes: 1,
-        neSaitPas: 0,
         confusions: confusionsAttendues,
-      },
+      }),
     ];
     const resultatsAttendus: ResultatsSeance = {
       participants: 1,

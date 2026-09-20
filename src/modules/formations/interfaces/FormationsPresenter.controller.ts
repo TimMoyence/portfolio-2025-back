@@ -54,7 +54,7 @@ import { DerouleResponseDto } from './dto/contrat/deroule.response.dto';
 import { FreeResponsesResponseDto } from './dto/free-responses.response.dto';
 import { OpenSessionRequestDto } from './dto/contrat/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
-import { SessionResultsResponseDto } from './dto/session-results.response.dto';
+import { SessionResultsResponseDto } from './dto/contrat/session-results.response.dto';
 import { ROLE_ADMINISTRATEUR } from '../domain/SessionOwnership';
 import {
   acteurDe,

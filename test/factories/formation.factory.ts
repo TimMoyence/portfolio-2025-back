@@ -41,6 +41,10 @@ import type {
   ISessionsRepository,
   SessionRecord,
 } from '../../src/modules/formations/domain/ISessions.repository';
+import type {
+  QuestionAAgreger,
+  ResultatQuestion,
+} from '../../src/modules/formations/domain/ResultatsSeance';
 import type { ActeurFormation } from '../../src/modules/formations/domain/SessionOwnership';
 
 export function buildBareme(overrides: Partial<Bareme> = {}): Bareme {
@@ -256,6 +260,37 @@ export function buildAnswerRecord(
     details: null,
     dureeMs: 42000,
     soumisLe: new Date('2026-09-11T08:10:00.000Z'),
+    ...overrides,
+  };
+}
+
+export function buildQuestionAAgreger(
+  overrides: Partial<QuestionAAgreger> = {},
+): QuestionAAgreger {
+  return {
+    id: 'Q-CAP-03',
+    type: 'numeric',
+    noteCompte: true,
+    ecranId: 'E-NUM',
+    ...overrides,
+  };
+}
+
+export function buildResultatQuestion(
+  overrides: Partial<ResultatQuestion> = {},
+): ResultatQuestion {
+  return {
+    questionId: 'Q-CAP-03',
+    ecranId: 'E-NUM',
+    type: 'numeric',
+    noteCompte: true,
+    total: 0,
+    correctes: 0,
+    neSaitPas: 0,
+    confusions: [],
+    parOption: null,
+    scoreMoyen: null,
+    parCle: null,
     ...overrides,
   };
 }

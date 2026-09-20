@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { buildResultatQuestion } from './factories/formation.factory';
 import type { ResultatsDeSeance } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import {
@@ -153,14 +154,18 @@ function resultatAttendu(
   const reponses = envoyees.filter(
     (reponse) => reponse.questionId === questionId,
   );
-  return {
+  return buildResultatQuestion({
     questionId,
+    ecranId: expect.any(String) as string,
+    type: expect.any(String) as ResultatQuestion['type'],
+    noteCompte: expect.any(Boolean) as boolean,
     total: reponses.length,
     correctes: reponses.filter((reponse) => reponse.confusion === null).length,
     neSaitPas: reponses.filter((reponse) => reponse.valeur === NE_SAIT_PAS)
       .length,
     confusions: confusionsComptees(reponses),
-  };
+    parOption: expect.anything() as Readonly<Record<string, number>>,
+  });
 }
 
 function resultatObserve(resultat: ResultatQuestion): ResultatQuestion {

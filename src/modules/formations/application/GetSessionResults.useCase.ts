@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import type { ComptesJalon } from '../domain/contrats/resultats';
+import { questionsAAgreger, resumeDuBareme } from '../domain/Bareme';
+import type { ComptesJalon, ResumeBareme } from '../domain/contrats/resultats';
 import { agregerEnigmes } from '../domain/cours/Enigmes';
 import type { ProgressionAgregee } from '../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
@@ -39,6 +40,7 @@ export type ResultatsDeSeance = RapportSession & {
   readonly resultats: ResultatsSeance;
   readonly statistiques: StatistiquesSeance;
   readonly notation: RegleDeNotation;
+  readonly bareme: ResumeBareme;
   readonly jalons: Readonly<Record<string, ComptesJalon>>;
   readonly enigmes: readonly ProgressionAgregee[];
 };
@@ -86,19 +88,20 @@ export class GetSessionResultsUseCase {
         this.pulses.compterParSondage(session.id),
         this.escape.listerProgressionDeSeance(session.id),
       ]);
+    const cours = await this.catalogue.trouver(
+      session.courseSlug,
+      session.courseVersion,
+    );
     const rapport = buildRapportSession({
       session,
-      cours: await this.catalogue.trouver(
-        session.courseSlug,
-        session.courseVersion,
-      ),
+      cours,
       participants: participantsListe,
       answers: reponses,
       incidents: incidentsListe,
       avertir: (message) => this.logger.warn(message),
     });
     const resultats = agregerResultats({
-      questionIds: session.bareme.questions.map((question) => question.id),
+      questions: questionsAAgreger(session.bareme, cours),
       answers: reponses,
       participants: participantsListe.length,
     });
@@ -112,6 +115,7 @@ export class GetSessionResultsUseCase {
           resultats,
         ),
         notation: REGLE_DE_NOTATION,
+        bareme: resumeDuBareme(session.bareme),
         jalons,
         enigmes: agregerEnigmes(progressions),
       },

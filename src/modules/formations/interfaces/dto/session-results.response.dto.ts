@@ -1,38 +1,4 @@
-import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-
-export class ComptesJalonResponseDto {
-  @ApiProperty({ example: 3 })
-  perdu: number;
-
-  @ApiProperty({ example: 12 })
-  'ca-va': number;
-
-  @ApiProperty({ example: 9 })
-  clair: number;
-
-  @ApiProperty({ example: 24 })
-  total: number;
-}
-
-export class ProgressionEnigmeResponseDto {
-  @ApiProperty({ example: 'b2-01-a6-coffre' })
-  parcoursId: string;
-
-  @ApiProperty({ example: 'b2-01-a6-e1-mix' })
-  enigmeId: string;
-
-  @ApiProperty({ example: 24 })
-  ouvertes: number;
-
-  @ApiProperty({ example: 18 })
-  resolues: number;
-
-  @ApiProperty({ example: 2.4 })
-  tentativesMoyennes: number;
-
-  @ApiProperty({ example: 1 })
-  epuisees: number;
-}
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RapportQuestionResponseDto {
   @ApiProperty({ example: 'Q-OUV-RAPPEL' })
@@ -230,7 +196,6 @@ export class RegleDeNotationResponseDto {
   decimalesStatistiques: number;
 }
 
-@ApiExtraModels(ComptesJalonResponseDto)
 export class SessionResultsResponseDto {
   @ApiProperty({ example: 'b2-01-traitement-information-chiffree' })
   courseSlug: string;
@@ -271,14 +236,4 @@ export class SessionResultsResponseDto {
     description: 'Barème appliqué aux notes et aux statistiques du rapport',
   })
   notation: RegleDeNotationResponseDto;
-
-  @ApiProperty({
-    type: 'object',
-    additionalProperties: { $ref: getSchemaPath(ComptesJalonResponseDto) },
-    description: 'Comptes de chaque jalon de confiance',
-  })
-  jalons: Record<string, ComptesJalonResponseDto>;
-
-  @ApiProperty({ type: [ProgressionEnigmeResponseDto] })
-  enigmes: ProgressionEnigmeResponseDto[];
 }

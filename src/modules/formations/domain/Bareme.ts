@@ -3,7 +3,9 @@ import type {
   BaremeQuestionV2,
   Bareme as BaremeDeSeance,
 } from './contrats/bareme';
-import type { Cours } from './contrats/cours';
+import type { Cours, TypeQuestion } from './contrats/cours';
+import type { ResumeBareme } from './contrats/resultats';
+import type { QuestionAAgreger } from './ResultatsSeance';
 import { CONCEPTS, type ConceptId } from './cours/banque/concepts';
 import { questionsDe } from './cours/Cours';
 import { NE_SAIT_PAS } from './GradingCore';
@@ -148,6 +150,53 @@ export function questionDuBareme(
     ...(question.tolerance === undefined
       ? {}
       : { tolerance: question.tolerance }),
+  };
+}
+
+const TYPES_DE_QUESTION: readonly string[] = [
+  'numeric',
+  'vote',
+  'feuille',
+  'tableau',
+  'classement',
+  'enigme',
+];
+
+function typeAgregeable(type: string): TypeQuestion {
+  return TYPES_DE_QUESTION.includes(type) ? (type as TypeQuestion) : 'vote';
+}
+
+export function questionsAAgreger(
+  bareme: BaremeDeSeance,
+  cours: Cours | null,
+): readonly QuestionAAgreger[] {
+  return questionsDuBareme(bareme).map((question) => {
+    const enrichie = questionDuBareme(bareme, question.id, cours);
+    return {
+      id: question.id,
+      type: enrichie?.type ?? typeAgregeable(question.type),
+      noteCompte: question.noteCompte,
+      ecranId: enrichie?.ecranId ?? '',
+    };
+  });
+}
+
+export function resumeDuBareme(bareme: BaremeDeSeance): ResumeBareme {
+  const parType: Record<string, { notees: number; nonNotees: number }> = {};
+  for (const type of TYPES_DE_QUESTION) {
+    parType[type] = { notees: 0, nonNotees: 0 };
+  }
+  for (const question of questionsDuBareme(bareme)) {
+    const compte = parType[typeAgregeable(question.type)];
+    if (question.noteCompte) {
+      compte.notees += 1;
+    } else {
+      compte.nonNotees += 1;
+    }
+  }
+  return {
+    questionsNotees: questionsNotees(bareme).length,
+    parType: parType as ResumeBareme['parType'],
   };
 }
 
