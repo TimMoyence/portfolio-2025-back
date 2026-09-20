@@ -160,6 +160,40 @@ export class PhaseFermeeError extends ResourceConflictError {
   }
 }
 
+export class EnigmeInconnueError extends ResourceNotFoundError {
+  constructor(parcoursId: string, enigmeId: string) {
+    super(`Énigme ${enigmeId} absente du parcours ${parcoursId}`);
+  }
+}
+
+export class EnigmeVerrouilleeError extends ResourceConflictError {
+  readonly code = 'ENIGME_VERROUILLEE';
+
+  constructor(enigmeId: string) {
+    super(
+      `L’énigme ${enigmeId} n’est pas encore ouverte : résolvez la précédente ou épuisez ses tentatives.`,
+    );
+  }
+}
+
+export class EnigmeDejaResolueError extends ResourceConflictError {
+  readonly code = 'ENIGME_DEJA_RESOLUE';
+
+  constructor(enigmeId: string) {
+    super(`Vous avez déjà trouvé le fragment de l’énigme ${enigmeId}.`);
+  }
+}
+
+export class TentativesEpuiseesError extends ResourceConflictError {
+  readonly code = 'TENTATIVES_EPUISEES';
+
+  constructor(enigmeId: string) {
+    super(
+      `Les tentatives de l’énigme ${enigmeId} sont épuisées : passez à la suivante.`,
+    );
+  }
+}
+
 export class EcranNonServiError extends ResourceConflictError {
   readonly code = 'ECRAN_NON_SERVI';
 

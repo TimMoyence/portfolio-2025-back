@@ -90,10 +90,12 @@ const DTO_DU_CONTRAT_V3 = [
   PublicationResponseDto,
 ];
 
-const ROUTES_ACTIVES_DU_CONTRAT_V3 = ['/sessions/{id}/productions'];
+const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
+  '/sessions/{id}/productions',
+  '/sessions/{id}/escape/{parcoursId}/tentatives',
+];
 
 const ROUTES_A_VENIR_DU_CONTRAT_V3 = [
-  '/sessions/{id}/escape/{parcoursId}/tentatives',
   '/sessions/{id}/pulses/{sondageId}',
   '/sessions/{id}/rappels',
   '/sessions/{id}/defis/{defiId}/tentative',

@@ -24,6 +24,7 @@ import type {
   SaveTeacherAnnotationInput,
   TeacherAnnotationRecord,
 } from '../../src/modules/formations/domain/ITeacherAnnotations.repository';
+import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
 import type { IMasteryRepository } from '../../src/modules/formations/domain/IMastery.repository';
 import type { IScoresRepository } from '../../src/modules/formations/domain/IScores.repository';
 import type {
@@ -405,6 +406,17 @@ export function createMockFormationGroupsRepo(): jest.Mocked<IFormationGroupsRep
   };
 }
 
+export function createMockEscapeRepo(): jest.Mocked<IEscapeRepository> {
+  return {
+    listerProgression: jest.fn().mockResolvedValue([]),
+    listerProgressionDeSeance: jest.fn().mockResolvedValue([]),
+    incrementerTentative: jest.fn().mockResolvedValue(1),
+    marquerResolue: jest.fn().mockResolvedValue(undefined),
+    journaliser: jest.fn().mockResolvedValue(undefined),
+    tentativeDejaFaite: jest.fn().mockResolvedValue(false),
+  };
+}
+
 export function createMockScoresRepo(): jest.Mocked<IScoresRepository> {
   return {
     saveIndividuals: jest.fn().mockResolvedValue(undefined),
@@ -441,6 +453,7 @@ export function createMockDepotsFormations() {
     freeResponses: createMockFreeResponsesRepo(),
     annotations: createMockTeacherAnnotationsRepo(),
     groups: createMockFormationGroupsRepo(),
+    escape: createMockEscapeRepo(),
     mailer: createMockFormationMailer(),
   };
 }

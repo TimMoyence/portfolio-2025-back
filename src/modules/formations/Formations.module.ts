@@ -18,9 +18,11 @@ import { SaveFreeResponseUseCase } from './application/SaveFreeResponse.useCase'
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
+import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
+  ESCAPE_REPOSITORY,
   FREE_RESPONSES_REPOSITORY,
   FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
@@ -35,6 +37,9 @@ import {
 } from './domain/token';
 import { AnswersRepositoryTypeORM } from './infrastructure/Answers.repository.typeorm';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
+import { FormationEscapeAttemptEntity } from './infrastructure/entities/FormationEscapeAttempt.entity';
+import { FormationEscapeProgressEntity } from './infrastructure/entities/FormationEscapeProgress.entity';
+import { EscapeRepositoryTypeORM } from './infrastructure/Escape.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from './infrastructure/FreeResponses.repository.typeorm';
 import { FormationGroupsRepositoryTypeORM } from './infrastructure/FormationGroups.repository.typeorm';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
@@ -79,6 +84,8 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       FormationTeacherAnnotationEntity,
       FormationGroupEntity,
       FormationScoreEntity,
+      FormationEscapeProgressEntity,
+      FormationEscapeAttemptEntity,
     ]),
   ],
   controllers: [
@@ -97,6 +104,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     LireCoursPublicUseCase,
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
+    TenterEnigmeUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     {
@@ -140,6 +148,10 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: SCORES_REPOSITORY,
       useClass: ScoresRepositoryTypeORM,
+    },
+    {
+      provide: ESCAPE_REPOSITORY,
+      useClass: EscapeRepositoryTypeORM,
     },
     {
       provide: MASTERY_REPOSITORY,

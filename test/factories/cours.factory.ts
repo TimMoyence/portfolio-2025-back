@@ -14,6 +14,7 @@ import type { ParticipantRecord } from '../../src/modules/formations/domain/IPar
 import type { SessionRecord } from '../../src/modules/formations/domain/ISessions.repository';
 import {
   buildCorrigeClassement,
+  buildCorrigeEnigme,
   buildCorrigeFeuille,
   buildCorrigeTableau,
   buildPlanFeuille,
@@ -166,6 +167,68 @@ const PLAN_DE_TABLEAU_TEST = {
   ],
   synthese: [],
 };
+
+export const PARCOURS_DE_TEST = 'P-TEST-COFFRE';
+export const ENIGMES_DE_TEST = ['E1-MIX', 'E2-IND', 'E3-TVA'] as const;
+export const TENTATIVES_MAX_DE_TEST = 10;
+
+function enigmeDeTest(rang: number) {
+  const id = ENIGMES_DE_TEST[rang];
+  return {
+    id,
+    type: 'enigme' as const,
+    concept: 'evolutions-successives' as const,
+    noteCompte: false,
+    confusions: ['moyenne-simple-des-taux'] as ['moyenne-simple-des-taux'],
+    corrige: buildCorrigeEnigme({
+      parcoursId: PARCOURS_DE_TEST,
+      enigmeId: id,
+      rang,
+      solution: {
+        type: 'nombre',
+        valeur: 23.4 + rang,
+        tolerance: { type: 'absolue', valeur: 0.05 },
+        formePubliee: String(23.4 + rang),
+      },
+      fragment: `F${rang}`,
+    }),
+  };
+}
+
+export function buildEcranDEnigmes(): Ecran {
+  return {
+    ...EN_CATALOGUE,
+    id: 'E-COFFRE',
+    brique: 'fp-escape',
+    dureeMinutes: 12,
+    concepts: ['evolutions-successives'],
+    notes: 'Mini-jeu du coffre',
+    proprietes: {
+      parcours: {
+        id: PARCOURS_DE_TEST,
+        intitule: 'Le coffre du comité',
+        delaiIndiceMs: 60000,
+        budgetEnigmeMs: 180000,
+        tentativesMax: TENTATIVES_MAX_DE_TEST,
+        enigmes: ENIGMES_DE_TEST.map((id, rang) => ({
+          id,
+          intitule: `Énigme ${rang + 1}`,
+          enonce: `Énoncé de l’énigme ${rang + 1}.`,
+          indice: 'Relisez la base de calcul.',
+        })) as [
+          { id: string; intitule: string; enonce: string; indice: string },
+          ...{ id: string; intitule: string; enonce: string; indice: string }[],
+        ],
+      },
+    },
+    enigmes: [enigmeDeTest(0), enigmeDeTest(1), enigmeDeTest(2)],
+  };
+}
+
+export function buildCoursAvecEnigmes(overrides: Partial<Cours> = {}): Cours {
+  const socle = buildCoursDeTest(overrides);
+  return { ...socle, ecrans: [...socle.ecrans, buildEcranDEnigmes()] };
+}
 
 export function buildCoursAvecProductions(
   overrides: Partial<Cours> = {},

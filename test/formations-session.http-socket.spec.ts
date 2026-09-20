@@ -52,6 +52,7 @@ import {
 } from './factories/cours.factory';
 import { buildCoursStocke } from './factories/cours-stocke.factory';
 import {
+  createMockEscapeRepo,
   createMockFormationGroupsRepo,
   createMockFormationMailer,
   createMockFreeResponsesRepo,
@@ -343,6 +344,7 @@ async function creerHarnais(
           freeResponses: createMockFreeResponsesRepo(),
           annotations: createMockTeacherAnnotationsRepo(),
           groups: createMockFormationGroupsRepo(),
+          escape: createMockEscapeRepo(),
           mailer,
         },
         catalogueHttp,

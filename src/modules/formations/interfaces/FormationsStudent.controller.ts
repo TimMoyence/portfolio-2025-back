@@ -19,6 +19,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -40,6 +41,7 @@ import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
+import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
 import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
@@ -55,6 +57,8 @@ import { SaveFreeResponseRequestDto } from './dto/save-free-response.request.dto
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
 import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
+import { TentativeEnigmeResponseDto } from './dto/contrat/tentative-enigme.response.dto';
+import { TenterEnigmeRequestDto } from './dto/contrat/tenter-enigme.request.dto';
 import { SubmitProductionResponseDto } from './dto/contrat/verdict-production.response.dto';
 import { SujetResponseDto } from './dto/contrat/sujet.response.dto';
 import {
@@ -65,6 +69,7 @@ import {
   LIMITE_REPONSES_PAR_PARTICIPANT,
   LIMITE_REVISION_PAR_PARTICIPANT,
   LIMITE_SUJET_PAR_PARTICIPANT,
+  LIMITE_TENTATIVES_PAR_PARTICIPANT,
   suivreParCodeDeSession,
   suivreParParticipant,
 } from './formations-throttling';
@@ -81,6 +86,7 @@ export class FormationsStudentController {
     private readonly joinSession: JoinSessionUseCase,
     private readonly submitAnswer: SubmitAnswerUseCase,
     private readonly submitProduction: SubmitProductionUseCase,
+    private readonly tenterEnigme: TenterEnigmeUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
@@ -243,6 +249,41 @@ export class FormationsStudentController {
       participantId,
       questionId: dto.questionId,
       valeur: dto.valeur,
+      dureeMs: dto.dureeMs,
+    });
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_TENTATIVES_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Post('sessions/:id/escape/:parcoursId/tentatives')
+  @ApiOperation({
+    summary: 'Tente une enigme, corrigee et plafonnee cote serveur',
+  })
+  @ApiCreatedResponse({ type: TentativeEnigmeResponseDto })
+  @ApiNotFoundResponse({ description: 'Enigme absente du parcours' })
+  @ApiConflictResponse({
+    description:
+      'Tentative refusee, cause dans le champ code du corps : ECRAN_NON_SERVI, ENIGME_VERROUILLEE, ENIGME_DEJA_RESOLUE ou TENTATIVES_EPUISEES',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async tentativeEnigme(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('parcoursId') parcoursId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: TenterEnigmeRequestDto,
+  ): Promise<TentativeEnigmeResponseDto> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.tenterEnigme.execute({
+      sessionId,
+      participantId,
+      parcoursId,
+      enigmeId: dto.enigmeId,
+      reponse: dto.reponse,
       dureeMs: dto.dureeMs,
     });
   }

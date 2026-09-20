@@ -39,8 +39,10 @@ import { SaveFreeResponseUseCase } from '../../src/modules/formations/applicatio
 import { StreamSessionUseCase } from '../../src/modules/formations/application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../../src/modules/formations/application/SubmitAnswer.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
+import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
 import type { IFormationGroupsRepository } from '../../src/modules/formations/domain/IFormationGroups.repository';
+import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
 import type { IFreeResponsesRepository } from '../../src/modules/formations/domain/IFreeResponses.repository';
 import type { IIncidentsRepository } from '../../src/modules/formations/domain/IIncidents.repository';
@@ -60,6 +62,7 @@ import {
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
+  ESCAPE_REPOSITORY,
   SCORES_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
@@ -143,6 +146,7 @@ export interface DepotsFormations {
   freeResponses: IFreeResponsesRepository;
   annotations: ITeacherAnnotationsRepository;
   groups: IFormationGroupsRepository;
+  escape: IEscapeRepository;
   mailer: IFormationMailer;
 }
 
@@ -166,6 +170,7 @@ export function fournisseursFormations(
     JoinSessionUseCase,
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
+    TenterEnigmeUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     DueQuestionsUseCase,
@@ -188,6 +193,7 @@ export function fournisseursFormations(
     { provide: FREE_RESPONSES_REPOSITORY, useValue: depots.freeResponses },
     { provide: TEACHER_ANNOTATIONS_REPOSITORY, useValue: depots.annotations },
     { provide: FORMATION_GROUPS_REPOSITORY, useValue: depots.groups },
+    { provide: ESCAPE_REPOSITORY, useValue: depots.escape },
     { provide: FORMATION_MAILER, useValue: depots.mailer },
     { provide: CATALOGUE_COURS, useValue: catalogue },
     { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },

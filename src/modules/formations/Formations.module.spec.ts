@@ -17,9 +17,13 @@ import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
 import { SaveFreeResponseUseCase } from './application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
+import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
+import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import { CATALOGUE_COURS } from './domain/token';
 import { FormationsModule } from './Formations.module';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
+import { FormationEscapeAttemptEntity } from './infrastructure/entities/FormationEscapeAttempt.entity';
+import { FormationEscapeProgressEntity } from './infrastructure/entities/FormationEscapeProgress.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
 import { FormationGroupEntity } from './infrastructure/entities/FormationGroup.entity';
@@ -44,6 +48,8 @@ const ENTITES = [
   FormationTeacherAnnotationEntity,
   FormationGroupEntity,
   FormationScoreEntity,
+  FormationEscapeProgressEntity,
+  FormationEscapeAttemptEntity,
 ];
 
 const SERVICES = [
@@ -54,6 +60,8 @@ const SERVICES = [
   JoinSessionUseCase,
   LireCoursPublicUseCase,
   SubmitAnswerUseCase,
+  SubmitProductionUseCase,
+  TenterEnigmeUseCase,
   RecordIncidentsUseCase,
   StreamSessionUseCase,
   DueQuestionsUseCase,
