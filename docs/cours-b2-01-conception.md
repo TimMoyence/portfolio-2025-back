@@ -463,8 +463,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     préparé par Samir Haddad, responsable commercial : « Samir annonce une excellente année et veut
     investir dans la marketplace. Est-ce qu’on gagne vraiment plus qu’en 2024 ? Préparez-moi un
     dossier fiable pour le comité de jeudi. » »
-  - `geste` « Avant de calculer : dire ce que mesure chaque chiffre, vérifier qu’il est comparable, le
-    recalculer, puis défendre une recommandation que le comité peut contrôler. »
+  - `geste` « Avant de recommander un investissement, répondez à trois questions : que mesure chaque
+    chiffre ? Les bases et les périodes sont-elles comparables ? Le recalcul confirme-t-il la recommandation ? »
   - `consequence` « Si le comité décide sur un chiffre mal lu, Atelier Rivage peut investir dans le
     canal qui dégrade sa rentabilité. »
 - **Notes** :
@@ -479,8 +479,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Intention** : donner l’artefact de travail, avec ses défauts, sans les signaler.
 - **Contenu (public)** :
   - Titre public : « Tableau de bord 2025 transmis au comité »
-  - `title` « Tableau de bord 2025 transmis au comité » ; `subtitle` « Version préparée par le service
-    commercial, lundi 8 h 40. »
+  - `title` « Tableau de bord 2025 transmis au comité » ; `subtitle` « Avant de calculer, repérez pour
+    chaque ligne ce qu’elle mesure, sa base et sa période. »
   - `columns` : indicateur « Indicateur », a2024 « 2024 », a2025 « 2025 », evolution « Évolution
     affichée »
   - `rows` (libellés de Samir, reproduits tels quels) :
