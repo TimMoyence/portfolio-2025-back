@@ -255,7 +255,7 @@ const ACTE_1: Acte = [
       situation:
         'Lundi, 8 h 40. Hélène Garnier, la dirigeante, vous transfère le tableau de bord 2025 préparé par Samir Haddad, responsable commercial : « Samir annonce une excellente année et veut investir dans la marketplace. Est-ce qu’on gagne vraiment plus qu’en 2024 ? Préparez-moi un dossier fiable pour le comité de jeudi. »',
       geste:
-        'Avant de calculer : dire ce que mesure chaque chiffre, vérifier qu’il est comparable, le recalculer, puis défendre une recommandation que le comité peut contrôler.',
+        'Avant de recommander un investissement, répondez à trois questions : que mesure chaque chiffre ? Les bases et les périodes sont-elles comparables ? Le recalcul confirme-t-il la recommandation ?',
       consequence:
         'Si le comité décide sur un chiffre mal lu, Atelier Rivage peut investir dans le canal qui dégrade sa rentabilité.',
     },
@@ -278,7 +278,8 @@ const ACTE_1: Acte = [
     'table',
     {
       title: 'Tableau de bord 2025 transmis au comité',
-      subtitle: 'Version préparée par le service commercial, lundi 8 h 40.',
+      subtitle:
+        'Avant de calculer, repérez pour chaque ligne ce qu’elle mesure, sa base et sa période.',
       columns: [
         { key: 'indicateur', label: 'Indicateur' },
         { key: 'a2024', label: '2024' },

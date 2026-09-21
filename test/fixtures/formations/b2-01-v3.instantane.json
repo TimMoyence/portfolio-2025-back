@@ -1,7 +1,7 @@
 {
   "version": 3,
   "graine": 0,
-  "empreinte": "f283ff9bf1ac6a0700a1a2dd7aae4f108a8dadae673ae64bc0481b6dce365af6",
+  "empreinte": "f798f6dd298f792cd3b2d5edaa20efa549a5f5d8d7f7c7d6f4add45ff9d8d632",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Traitement de l’information chiffrée",
@@ -108,7 +108,7 @@
             "id": "B2-01-A1-03-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
             "situation": "Lundi, 8 h 40. Hélène Garnier, la dirigeante, vous transfère le tableau de bord 2025 préparé par Samir Haddad, responsable commercial : « Samir annonce une excellente année et veut investir dans la marketplace. Est-ce qu’on gagne vraiment plus qu’en 2024 ? Préparez-moi un dossier fiable pour le comité de jeudi. »",
-            "geste": "Avant de calculer : dire ce que mesure chaque chiffre, vérifier qu’il est comparable, le recalculer, puis défendre une recommandation que le comité peut contrôler.",
+            "geste": "Avant de recommander un investissement, répondez à trois questions : que mesure chaque chiffre ? Les bases et les périodes sont-elles comparables ? Le recalcul confirme-t-il la recommandation ?",
             "consequence": "Si le comité décide sur un chiffre mal lu, Atelier Rivage peut investir dans le canal qui dégrade sa rentabilité.",
             "metadonnees": {
               "concepts": ["contrat-de-lecture"],
@@ -135,7 +135,7 @@
               "renderer": "table",
               "props": {
                 "title": "Tableau de bord 2025 transmis au comité",
-                "subtitle": "Version préparée par le service commercial, lundi 8 h 40.",
+                "subtitle": "Avant de calculer, repérez pour chaque ligne ce qu’elle mesure, sa base et sa période.",
                 "note": "Données fictives Atelier Rivage, créées pour ce cours.",
                 "columns": [
                   {
