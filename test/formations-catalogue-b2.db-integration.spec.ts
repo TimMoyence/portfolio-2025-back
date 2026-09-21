@@ -1,112 +1,96 @@
-import { DataSource } from 'typeorm';
-import { CreateFormations1778900000000 } from '../src/migrations/1778900000000-CreateFormations';
-import { CreateFormationCourseContent1779100000000 } from '../src/migrations/1779100000000-CreateFormationCourseContent';
-import { SeedB2StoryboardLots1231779200000 } from '../src/migrations/1779200000000-SeedB2StoryboardLots123';
-import { AlignB2SessionDeck1779300000000 } from '../src/migrations/1779300000000-AlignB2SessionDeck';
-import { SeedB2QuizAndPresentationNotes1779400000000 } from '../src/migrations/1779400000000-SeedB2QuizAndPresentationNotes';
-import { FixB2QuizScreenIds1779500000000 } from '../src/migrations/1779500000000-FixB2QuizScreenIds';
-import { AddFormationCourseVersion1779550000000 } from '../src/migrations/1779550000000-AddFormationCourseVersion';
-import { BackfillB2OpenSessionBaremes1779600000000 } from '../src/migrations/1779600000000-BackfillB2OpenSessionBaremes';
-import { AlignB2ParticipantSeeds1779700000000 } from '../src/migrations/1779700000000-AlignB2ParticipantSeeds';
-import { RecheckB2ParticipantSeeds1779800000000 } from '../src/migrations/1779800000000-RecheckB2ParticipantSeeds';
-import { SeedB2PresentationContent1779900000000 } from '../src/migrations/1779900000000-SeedB2PresentationContent';
-import { CleanB2PlaceholderContent1780000000000 } from '../src/migrations/1780000000000-CleanB2PlaceholderContent';
-import { AddFormationSessionCourseVersion1780050000000 } from '../src/migrations/1780050000000-AddFormationSessionCourseVersion';
-import { SeedB2PresentationNotes1780060000000 } from '../src/migrations/1780060000000-SeedB2PresentationNotes';
-import { VersionFormationCourseContent1780100000000 } from '../src/migrations/1780100000000-VersionFormationCourseContent';
-import { PublishB2VisualDeck1780200000000 } from '../src/migrations/1780200000000-PublishB2VisualDeck';
-import { CreateFormationFreeResponses1780300000000 } from '../src/migrations/1780300000000-CreateFormationFreeResponses';
-import { CreateFormationTeacherAnnotations1780400000000 } from '../src/migrations/1780400000000-CreateFormationTeacherAnnotations';
-import { CreateFormationGroups1780500000000 } from '../src/migrations/1780500000000-CreateFormationGroups';
-import { CreateFormationScores1780600000000 } from '../src/migrations/1780600000000-CreateFormationScores';
 import {
   B2_VISUAL_SNAPSHOT,
   B2_VISUAL_SOURCE_SHA256,
 } from '../src/migrations/data/b2-visual.snapshot';
-import { FormationCourseContentEntity } from '../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
+import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
+import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
+import { LireCoursPublicUseCase } from '../src/modules/formations/application/LireCoursPublic.useCase';
+import { ContenuDeCoursInvalideError } from '../src/modules/formations/domain/cours/CoursStocke';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
-import { FormationScreenContentEntity } from '../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
-import { CoursCatalogueRepositoryTypeORM } from '../src/modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
-import { FreeResponsesRepositoryTypeORM } from '../src/modules/formations/infrastructure/FreeResponses.repository.typeorm';
-import { TeacherAnnotationsRepositoryTypeORM } from '../src/modules/formations/infrastructure/TeacherAnnotations.repository.typeorm';
-import { SessionsRepositoryTypeORM } from '../src/modules/formations/infrastructure/Sessions.repository.typeorm';
-import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
-import { FormationFreeResponseEntity } from '../src/modules/formations/infrastructure/entities/FormationFreeResponse.entity';
-import { FormationTeacherAnnotationEntity } from '../src/modules/formations/infrastructure/entities/FormationTeacherAnnotation.entity';
-import { FormationGroupsRepositoryTypeORM } from '../src/modules/formations/infrastructure/FormationGroups.repository.typeorm';
-import { FormationScoreEntity } from '../src/modules/formations/infrastructure/entities/FormationScore.entity';
-import { ScoresRepositoryTypeORM } from '../src/modules/formations/infrastructure/Scores.repository.typeorm';
-import { FormationParticipantEntity } from '../src/modules/formations/infrastructure/entities/FormationParticipant.entity';
-import { FormationGroupEntity } from '../src/modules/formations/infrastructure/entities/FormationGroup.entity';
-import { ParticipantsRepositoryTypeORM } from '../src/modules/formations/infrastructure/Participants.repository.typeorm';
-import { buildBareme } from './factories/formation.factory';
-import { FORMATION_ENTITIES } from './helpers/formations-db';
 import {
-  buildDbIntegrationOptions,
-  describeDb,
-  destroyDbIntegrationDataSource,
-} from './helpers/db-integration-datasource';
+  FormationGroupNameTakenError,
+  FormationGroupNotFoundError,
+  ParticipantNotFoundError,
+} from '../src/modules/formations/domain/errors/FormationErrors';
+import { FormationCourseContentEntity } from '../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
+import { FormationScreenContentEntity } from '../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
+import {
+  buildEcranStockeAvec,
+  buildQuizNote,
+} from './factories/cours-stocke.factory';
+import {
+  buildBareme,
+  createMockEscapeRepo,
+  createMockFormationMailer,
+  createMockPulsesRepo,
+  createMockSessionStateCache,
+} from './factories/formation.factory';
+import { describeDb } from './helpers/db-integration-datasource';
+import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
+  inscrireParticipant,
+  ouvrirContexteFormations,
+  type ContexteFormations,
+} from './helpers/formations-db';
 
-const MIGRATIONS = [
-  CreateFormations1778900000000,
-  CreateFormationCourseContent1779100000000,
-  SeedB2StoryboardLots1231779200000,
-  AlignB2SessionDeck1779300000000,
-  SeedB2QuizAndPresentationNotes1779400000000,
-  FixB2QuizScreenIds1779500000000,
-  AddFormationCourseVersion1779550000000,
-  BackfillB2OpenSessionBaremes1779600000000,
-  AlignB2ParticipantSeeds1779700000000,
-  RecheckB2ParticipantSeeds1779800000000,
-  SeedB2PresentationContent1779900000000,
-  CleanB2PlaceholderContent1780000000000,
-  AddFormationSessionCourseVersion1780050000000,
-  SeedB2PresentationNotes1780060000000,
-  VersionFormationCourseContent1780100000000,
-  PublishB2VisualDeck1780200000000,
-  CreateFormationFreeResponses1780300000000,
-  CreateFormationTeacherAnnotations1780400000000,
-  CreateFormationGroups1780500000000,
-  CreateFormationScores1780600000000,
-];
+const SLUG_B2 = 'b2-01-traitement-information-chiffree';
+const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
+const VERSION_PUBLIEE = 3;
+const VERSION_APRES_LA_V3 = 4;
+const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
+
+function aDireDuGuide(guide: unknown): string[] {
+  if (typeof guide !== 'object' || guide === null) return [];
+  const aDire = (guide as Record<string, unknown>)['aDire'];
+  return typeof aDire === 'string' && aDire.trim().length > 0
+    ? [aDire.trim()]
+    : [];
+}
+
+function aDireDesNotes(notes: string): string[] {
+  return [...notes.matchAll(RUBRIQUE_A_DIRE_DES_NOTES)].map(([, texte]) =>
+    texte.trim(),
+  );
+}
 
 describeDb('catalogue B2 migré', () => {
-  let dataSource: DataSource;
+  let contexte: ContexteFormations;
+
+  const ecransDeLaVersion = async (
+    version: number,
+  ): Promise<FormationScreenContentEntity[]> => {
+    const course = await contexte.dataSource
+      .getRepository(FormationCourseContentEntity)
+      .findOneByOrFail({ slug: SLUG_B2, version });
+    return contexte.dataSource
+      .getRepository(FormationScreenContentEntity)
+      .find({ where: { courseId: course.id }, order: { position: 'ASC' } });
+  };
+
+  const ouvrirSeanceB2 = (code: string, courseVersion = 2) =>
+    contexte.sessions.create({
+      courseSlug: SLUG_B2,
+      courseVersion,
+      teacherId: FORMATEUR,
+      code,
+      bareme: buildBareme(),
+    });
+
+  const coursDeLaVersion = async (version: number) => {
+    const cours = await contexte.catalogue.trouver(SLUG_B2, version);
+    if (cours === null) throw new Error(`Version ${version} absente`);
+    return cours;
+  };
 
   beforeAll(async () => {
-    dataSource = new DataSource({
-      ...buildDbIntegrationOptions([
-        ...FORMATION_ENTITIES,
-        FormationCourseContentEntity,
-        FormationScreenContentEntity,
-        FormationFreeResponseEntity,
-        FormationTeacherAnnotationEntity,
-        FormationGroupEntity,
-        FormationScoreEntity,
-      ]),
-      synchronize: false,
-      migrations: MIGRATIONS,
-    });
-    await dataSource.initialize();
-    await dataSource.runMigrations({ transaction: 'all' });
-  });
+    contexte = await ouvrirContexteFormations();
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
-  afterAll(async () => destroyDbIntegrationDataSource(dataSource));
+  afterAll(async () => contexte.fermer());
 
   it('installe les 72 écrans dans un ordre stable, sans doublon ni contenu de remplissage', async () => {
-    const course = await dataSource
-      .getRepository(FormationCourseContentEntity)
-      .findOneByOrFail({
-        slug: 'b2-01-traitement-information-chiffree',
-        version: 1,
-      });
-    const ecrans = await dataSource
-      .getRepository(FormationScreenContentEntity)
-      .find({
-        where: { courseId: course.id },
-        order: { position: 'ASC' },
-      });
+    const ecrans = await ecransDeLaVersion(1);
 
     expect(ecrans).toHaveLength(72);
     expect(ecrans.map((ecran) => ecran.position)).toEqual(
@@ -133,15 +117,7 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('sert les 72 propriétés visuelles issues du deck source dans une version publiée', async () => {
-    const course = await dataSource
-      .getRepository(FormationCourseContentEntity)
-      .findOneByOrFail({
-        slug: 'b2-01-traitement-information-chiffree',
-        version: 2,
-      });
-    const ecrans = await dataSource
-      .getRepository(FormationScreenContentEntity)
-      .find({ where: { courseId: course.id }, order: { position: 'ASC' } });
+    const ecrans = await ecransDeLaVersion(2);
     expect(ecrans).toHaveLength(72);
     expect(B2_VISUAL_SOURCE_SHA256).toMatch(/^[a-f0-9]{64}$/);
     expect(
@@ -166,25 +142,11 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('garde la version publiée immuable et permet une nouvelle version du même cours', async () => {
-    const catalogue = new CoursCatalogueRepositoryTypeORM(
-      dataSource.getRepository(FormationCourseContentEntity),
-    );
-    const sessions = new SessionsRepositoryTypeORM(
-      dataSource.getRepository(FormationSessionEntity),
-    );
+    const { dataSource, catalogue, sessions } = contexte;
     const course = await dataSource
       .getRepository(FormationCourseContentEntity)
-      .findOneByOrFail({
-        slug: 'b2-01-traitement-information-chiffree',
-        version: 1,
-      });
-    const session = await sessions.create({
-      courseSlug: course.slug,
-      courseVersion: 1,
-      teacherId: 'a1111111-1111-4111-8111-111111111111',
-      code: '5982',
-      bareme: buildBareme(),
-    });
+      .findOneByOrFail({ slug: SLUG_B2, version: 1 });
+    const session = await ouvrirSeanceB2('5982', 1);
     await expect(
       dataSource.query(
         'UPDATE formation_course_contents SET titre = $1 WHERE id = $2',
@@ -196,7 +158,7 @@ describeDb('catalogue B2 migré', () => {
       .getRepository(FormationCourseContentEntity)
       .create({
         slug: course.slug,
-        version: 3,
+        version: VERSION_APRES_LA_V3,
         titre: 'Nouvelle édition',
         niveau: course.niveau,
         dureeMinutes: course.dureeMinutes,
@@ -212,17 +174,19 @@ describeDb('catalogue B2 migré', () => {
       ),
     ).rejects.toThrow('chk_formation_screen_notes_not_blank');
     await dataSource.query(
-      `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes")
-       SELECT $1, "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes"
+      `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "titre", "diffusion", "brique", "duree_minutes", "concepts", "notes", "proprietes")
+       SELECT $1, "position", "screen_id", "screen_id", 'catalogue', "brique", "duree_minutes", "concepts", "notes", "proprietes"
        FROM "formation_screen_contents" WHERE "course_id" = $2`,
       [publiee.id, course.id],
     );
 
-    expect((await catalogue.trouverCourant(course.slug))?.version).toBe(3);
-    expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
-    expect((await catalogue.trouver(course.slug, 3))?.titre).toBe(
-      'Nouvelle édition',
+    expect((await catalogue.trouverCourant(course.slug))?.version).toBe(
+      VERSION_PUBLIEE,
     );
+    expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
+    expect(
+      (await catalogue.trouver(course.slug, VERSION_APRES_LA_V3))?.titre,
+    ).toBe('Nouvelle édition');
     expect((await sessions.findById(session.id))?.courseVersion).toBe(1);
     await expect(
       dataSource.query(
@@ -232,17 +196,47 @@ describeDb('catalogue B2 migré', () => {
     ).rejects.toThrow('version publiée immuable');
   });
 
+  it('valide à la lecture le contenu réellement migré des versions 1 et 2', async () => {
+    const lus = await Promise.all([1, 2].map(coursDeLaVersion));
+
+    expect(lus.map((cours) => cours.ecrans.length)).toEqual([72, 72]);
+    expect(
+      lus.map((cours) => cours.ecrans.filter((ecran) => ecran.question).length),
+    ).toEqual([14, 14]);
+  });
+
+  it('refuse à la lecture un contenu stocké hors contrat au lieu de le rafistoler', async () => {
+    const { dataSource, catalogue } = contexte;
+    const [cours]: Array<{ id: string }> = await dataSource.query(
+      `INSERT INTO "formation_course_contents" ("slug", "version", "titre", "niveau", "duree_minutes", "concepts")
+       VALUES ('cours-hors-contrat', 1, 'Cours hors contrat', 'B2', 3, '["proportion"]'::jsonb) RETURNING "id"`,
+    );
+    const ecran = buildEcranStockeAvec({
+      interaction: buildQuizNote({
+        confusions: ['raisonnement-additif', 'unite-oubliee'],
+      }),
+    });
+    await dataSource.query(
+      `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes")
+       VALUES ($1, 0, $2, $3, $4, $5::jsonb, $6, $7::jsonb)`,
+      [
+        cours.id,
+        ecran.screenId,
+        ecran.brique,
+        ecran.dureeMinutes,
+        JSON.stringify(ecran.concepts),
+        ecran.notes,
+        JSON.stringify(ecran.proprietes),
+      ],
+    );
+
+    await expect(
+      catalogue.trouver('cours-hors-contrat', 1),
+    ).rejects.toBeInstanceOf(ContenuDeCoursInvalideError);
+  });
+
   it('réserve les notes au déroulé formateur', async () => {
-    const catalogue = new CoursCatalogueRepositoryTypeORM(
-      dataSource.getRepository(FormationCourseContentEntity),
-    );
-    const cours = await catalogue.trouver(
-      'b2-01-traitement-information-chiffree',
-      1,
-    );
-    if (cours === null) {
-      throw new Error('Cours B2 absent après migration');
-    }
+    const cours = await coursDeLaVersion(1);
 
     const sujet = tirer(cours, 0).sujet;
     const deroule = deroulePresentateur(cours, 0);
@@ -260,14 +254,7 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('sert la version visuelle sans réponse attendue ni correction au poste étudiant', async () => {
-    const catalogue = new CoursCatalogueRepositoryTypeORM(
-      dataSource.getRepository(FormationCourseContentEntity),
-    );
-    const cours = await catalogue.trouver(
-      'b2-01-traitement-information-chiffree',
-      2,
-    );
-    if (cours === null) throw new Error('Version visuelle B2 absente');
+    const cours = await coursDeLaVersion(2);
 
     const sujet = tirer(cours, 0).sujet;
     const deroule = deroulePresentateur(cours, 0);
@@ -282,24 +269,45 @@ describeDb('catalogue B2 migré', () => {
     expect(JSON.stringify(deroule)).toContain('"bonneReponse":');
   });
 
+  it('ne sert ni interaction ni rubrique à dire hors du deck au poste étudiant ni au catalogue public', async () => {
+    const ecrans = await contexte.dataSource
+      .getRepository(FormationScreenContentEntity)
+      .find();
+    const rubriquesADire = ecrans.flatMap((ecran) => [
+      ...aDireDuGuide(ecran.proprietes['guide']),
+      ...aDireDesNotes(ecran.notes),
+    ]);
+    const sujets = await Promise.all(
+      [1, 2].map(
+        async (version) => tirer(await coursDeLaVersion(version), 0).sujet,
+      ),
+    );
+    const publics = [
+      ...sujets,
+      await new LireCoursPublicUseCase(contexte.catalogue).execute(SLUG_B2),
+    ];
+    const complets = publics.map((contenu) => JSON.stringify(contenu));
+    const horsDuDeck = publics.map((contenu) =>
+      JSON.stringify(contenu, (cle, valeur: unknown) =>
+        cle === 'presentation' ? undefined : valeur,
+      ),
+    );
+
+    expect(rubriquesADire.length).toBeGreaterThan(0);
+    expect(
+      complets.filter((contenu) => contenu.includes('"interaction"')),
+    ).toEqual([]);
+    expect(
+      rubriquesADire.filter((texte) =>
+        horsDuDeck.some((contenu) => contenu.includes(texte)),
+      ),
+    ).toEqual([]);
+  });
+
   it('persiste une réponse libre de façon idempotente par participant et activité', async () => {
-    const sessions = new SessionsRepositoryTypeORM(
-      dataSource.getRepository(FormationSessionEntity),
-    );
-    const participants = new ParticipantsRepositoryTypeORM(
-      dataSource.getRepository(FormationParticipantEntity),
-    );
-    const responses = new FreeResponsesRepositoryTypeORM(
-      dataSource.getRepository(FormationFreeResponseEntity),
-    );
-    const session = await sessions.create({
-      courseSlug: 'b2-01-traitement-information-chiffree',
-      courseVersion: 2,
-      teacherId: 'a1111111-1111-4111-8111-111111111111',
-      code: '8364',
-      bareme: buildBareme(),
-    });
-    const participant = await participants.create({
+    const { participants, freeResponses } = contexte;
+    const session = await ouvrirSeanceB2('8364');
+    const participant = await inscrireParticipant(participants, {
       sessionId: session.id,
       studentKey: 'b1111111-1111-4111-8111-111111111111',
       prenom: 'Ada',
@@ -308,25 +316,34 @@ describeDb('catalogue B2 migré', () => {
       seed: 4,
     });
 
-    const first = await responses.save({
+    const reponse = {
       sessionId: session.id,
       participantId: participant.id,
       screenId: 'B2-01-S11-REFLECTION',
       activityId: 'b2-s11-c1',
-      response: 'Première réponse',
-      dureeMs: 1200,
-    });
-    const second = await responses.save({
-      sessionId: session.id,
-      participantId: participant.id,
-      screenId: 'B2-01-S11-REFLECTION',
-      activityId: 'b2-s11-c1',
+    };
+
+    await expect(
+      Promise.all([
+        freeResponses.save({
+          ...reponse,
+          response: 'Envoi du premier onglet',
+          dureeMs: 1200,
+        }),
+        freeResponses.save({
+          ...reponse,
+          response: 'Envoi du second onglet',
+          dureeMs: 1300,
+        }),
+      ]),
+    ).resolves.toEqual([undefined, undefined]);
+    await freeResponses.save({
+      ...reponse,
       response: 'Réponse reprise après reconnexion',
       dureeMs: 2200,
     });
 
-    expect(second.id).toBe(first.id);
-    await expect(responses.listBySession(session.id)).resolves.toEqual([
+    await expect(freeResponses.listBySession(session.id)).resolves.toEqual([
       expect.objectContaining({
         participantId: participant.id,
         activityId: 'b2-s11-c1',
@@ -338,35 +355,27 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('synchronise les annotations formateur par écran et groupe', async () => {
-    const sessions = new SessionsRepositoryTypeORM(
-      dataSource.getRepository(FormationSessionEntity),
-    );
-    const annotations = new TeacherAnnotationsRepositoryTypeORM(
-      dataSource.getRepository(FormationTeacherAnnotationEntity),
-    );
-    const session = await sessions.create({
-      courseSlug: 'b2-01-traitement-information-chiffree',
-      courseVersion: 2,
-      teacherId: 'a1111111-1111-4111-8111-111111111111',
-      code: '9473',
-      bareme: buildBareme(),
-    });
-    const first = await annotations.save({
+    const { annotations } = contexte;
+    const session = await ouvrirSeanceB2('9473');
+    const annotation = {
       sessionId: session.id,
       teacherId: session.teacherId,
       screenId: 'B2-01-S11-REFLECTION',
       groupName: 'Groupe A',
-      note: 'Relancer sur la base de comparaison.',
-    });
-    const second = await annotations.save({
-      sessionId: session.id,
-      teacherId: session.teacherId,
-      screenId: 'B2-01-S11-REFLECTION',
-      groupName: 'Groupe A',
+    };
+    const [pupitre, scene] = await Promise.all([
+      annotations.save({
+        ...annotation,
+        note: 'Relancer sur la base de comparaison.',
+      }),
+      annotations.save({ ...annotation, note: 'Noter au tableau.' }),
+    ]);
+    const reprise = await annotations.save({
+      ...annotation,
       note: 'Faire verbaliser la formule.',
     });
 
-    expect(second.id).toBe(first.id);
+    expect([scene.id, reprise.id]).toEqual([pupitre.id, pupitre.id]);
     await expect(
       annotations.listBySession(session.id, session.teacherId),
     ).resolves.toEqual([
@@ -384,28 +393,10 @@ describeDb('catalogue B2 migré', () => {
     ).resolves.toEqual([]);
   });
 
-  it('persiste les groupes, affectations et snapshots de score', async () => {
-    const sessions = new SessionsRepositoryTypeORM(
-      dataSource.getRepository(FormationSessionEntity),
-    );
-    const participants = new ParticipantsRepositoryTypeORM(
-      dataSource.getRepository(FormationParticipantEntity),
-    );
-    const groups = new FormationGroupsRepositoryTypeORM(
-      dataSource.getRepository(FormationGroupEntity),
-      dataSource.getRepository(FormationParticipantEntity),
-    );
-    const scores = new ScoresRepositoryTypeORM(
-      dataSource.getRepository(FormationScoreEntity),
-    );
-    const session = await sessions.create({
-      courseSlug: 'b2-01-traitement-information-chiffree',
-      courseVersion: 2,
-      teacherId: 'a1111111-1111-4111-8111-111111111111',
-      code: '1582',
-      bareme: buildBareme(),
-    });
-    const participant = await participants.create({
+  it('persiste les groupes et les affectations', async () => {
+    const { participants, groups } = contexte;
+    const session = await ouvrirSeanceB2('1582');
+    const participant = await inscrireParticipant(participants, {
       sessionId: session.id,
       studentKey: 'b3111111-1111-4111-8111-111111111111',
       prenom: 'Grace',
@@ -421,26 +412,121 @@ describeDb('catalogue B2 migré', () => {
     await groups.rename(session.id, groupe.id, 'Groupe B');
     expect((await groups.listBySession(session.id))[0]?.name).toBe('Groupe B');
 
-    await scores.saveIndividual({
-      sessionId: session.id,
-      participantId: participant.id,
-      score: 16,
-      percentage: 0.8,
-    });
-    await scores.saveSession({
-      sessionId: session.id,
-      moyenne: 16,
-      mediane: 16,
-      dispersion: 0,
-      tauxParticipation: 1,
-      tauxReussite: 0.8,
-      questionsProblemes: ['Q-1'],
-    });
-    await expect(scores.listBySession(session.id)).resolves.toEqual([
-      expect.objectContaining({ participantId: participant.id, score: 16 }),
-    ]);
-    await expect(scores.findSession(session.id)).resolves.toEqual(
-      expect.objectContaining({ moyenne: 16, tauxReussite: 0.8 }),
+    const autre = await groups.create(session.id, 'Groupe C');
+    const inconnu = 'c9999999-9999-4999-8999-999999999999';
+    await expect(groups.create(session.id, 'Groupe B')).rejects.toBeInstanceOf(
+      FormationGroupNameTakenError,
     );
+    await expect(
+      groups.rename(session.id, autre.id, 'Groupe B'),
+    ).rejects.toBeInstanceOf(FormationGroupNameTakenError);
+    await expect(
+      groups.rename(session.id, inconnu, 'Groupe D'),
+    ).rejects.toBeInstanceOf(FormationGroupNotFoundError);
+    await expect(
+      groups.assignParticipant(session.id, participant.id, inconnu),
+    ).rejects.toBeInstanceOf(FormationGroupNotFoundError);
+    await expect(
+      groups.assignParticipant(session.id, inconnu, groupe.id),
+    ).rejects.toBeInstanceOf(ParticipantNotFoundError);
+  });
+
+  it('persiste à la clôture la note et la complétion de chaque participant et les statistiques de la séance', async () => {
+    const { sessions, participants, answers, incidents, catalogue, scores } =
+      contexte;
+    const session = await ouvrirSeanceB2('7315');
+    const ada = await inscrireParticipant(participants, {
+      sessionId: session.id,
+      studentKey: 'b4111111-1111-4111-8111-111111111111',
+      prenom: 'Ada',
+      nom: 'Lovelace',
+      email: 'ada@example.test',
+      seed: 1001,
+    });
+    const grace = await inscrireParticipant(participants, {
+      sessionId: session.id,
+      studentKey: 'b5111111-1111-4111-8111-111111111111',
+      prenom: 'Grace',
+      nom: 'Hopper',
+      email: 'grace@example.test',
+      seed: 1002,
+    });
+    await answers.create({
+      sessionId: session.id,
+      participantId: ada.id,
+      questionId: 'Q-CAP-03',
+      concept: 'capitalisation',
+      valeur: 1338.23,
+      seed: 1001,
+      correcte: true,
+      misconception: null,
+      dureeMs: 1000,
+    });
+    const cloture = new CloseSessionUseCase(
+      sessions,
+      new GetSessionResultsUseCase(
+        sessions,
+        participants,
+        answers,
+        incidents,
+        catalogue,
+        createMockPulsesRepo(),
+        createMockEscapeRepo(),
+      ),
+      scores,
+      createMockFormationMailer(),
+      createMockSessionStateCache(),
+    );
+
+    await cloture.execute(session.id, FORMATEUR);
+    const statistiques = {
+      sessionId: session.id,
+      moyenne: 10,
+      mediane: 10,
+      dispersion: 10,
+      tauxParticipation: 0.5,
+      tauxReussite: 1,
+      questionsProblemes: [],
+    };
+    await Promise.all([
+      scores.saveSession(statistiques),
+      scores.saveSession(statistiques),
+    ]);
+
+    await expect(
+      contexte.dataSource.query(
+        `SELECT "participant_id" AS "participantId", "kind", "score", "percentage", "metrics"
+         FROM "formation_scores" WHERE "session_id" = $1
+         ORDER BY "kind", "score" DESC`,
+        [session.id],
+      ),
+    ).resolves.toEqual([
+      {
+        participantId: ada.id,
+        kind: 'individual',
+        score: 20,
+        percentage: 1,
+        metrics: {},
+      },
+      {
+        participantId: grace.id,
+        kind: 'individual',
+        score: 0,
+        percentage: 0,
+        metrics: {},
+      },
+      {
+        participantId: null,
+        kind: 'session',
+        score: 10,
+        percentage: 1,
+        metrics: {
+          mediane: 10,
+          dispersion: 10,
+          tauxParticipation: 0.5,
+          questionsProblemes: [],
+        },
+      },
+    ]);
   });
 });

@@ -1,6 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import type { Cours } from '../domain/contrats/cours';
+import type { PilotageEcran } from '../domain/contrats/pilotage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import type { PilotageDemande } from '../domain/cours/PilotageEcrans';
+import {
+  assertPilotageCompatible,
+  fusionnerPilotage,
+} from '../domain/cours/PilotageEcrans';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type {
   ISessionsRepository,
@@ -10,6 +17,7 @@ import type {
 import {
   CoursInconnuError,
   InvalidStateTransitionError,
+  RevisionDeSeanceObsoleteError,
   SessionClosedError,
   SessionNotFoundError,
   SessionNotOwnedError,
@@ -23,10 +31,13 @@ import {
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 
+const TENTATIVES_SUR_REVISION_OBSOLETE = 5;
+
 export interface ControlSessionChanges {
   ecran?: number;
   mode?: PacingMode;
   intervalle?: FreeRange | null;
+  pilotage?: PilotageDemande;
 }
 
 @Injectable()
@@ -40,47 +51,54 @@ export class ControlSessionUseCase {
     private readonly catalogue: ICatalogueCours,
   ) {}
 
-  /**
-   * Le pilotage valide en deux temps : la syntaxe des changements (numero
-   * d'ecran, mode connu) est verifiee avant la moindre lecture ; les bornes
-   * qui dependent du cours de la session (ecran dans le cours, intervalle de
-   * rythme libre) ne peuvent l'etre qu'apres la lecture de la session dans
-   * assertPilotable, mais restent verifiees avant l'unique ecriture et
-   * l'unique publication.
-   *
-   * Un ecran applique avant qu'un rythme invalide ne soit refuse laisserait
-   * les trente postes de la classe sur une diapositive que le formateur ne
-   * croit pas avoir envoyee, avec un 400 pour seule trace — la validation
-   * doit donc preceder l'effet, pas l'accompagner
-   * (FormationsPresenter.controller.ts).
-   */
   async apply(
     sessionId: string,
     teacherId: string,
     changements: ControlSessionChanges,
   ): Promise<void> {
-    const misAJour = this.validerEtProjeter(changements);
-    const session = await this.assertPilotable(sessionId, teacherId);
-    await this.assertDansLesBornesDuCours(
-      session.courseSlug,
-      session.courseVersion,
-      misAJour,
-    );
-    const sessionMiseAJour = await this.sessions.update(sessionId, misAJour);
-    this.publier(sessionId, sessionMiseAJour);
+    for (
+      let tentative = 0;
+      tentative < TENTATIVES_SUR_REVISION_OBSOLETE;
+      tentative += 1
+    ) {
+      const misAJour = this.validerEtProjeter(changements);
+      const session = await this.assertPilotable(sessionId, teacherId);
+      await this.assertDansLesBornesDuCours(session, misAJour, changements);
+      try {
+        const sessionMiseAJour = await this.sessions.update(
+          sessionId,
+          misAJour,
+          session.revision,
+        );
+        this.publier(sessionId, sessionMiseAJour);
+        return;
+      } catch (error) {
+        if (!(error instanceof RevisionDeSeanceObsoleteError)) {
+          throw error;
+        }
+      }
+    }
+    throw new RevisionDeSeanceObsoleteError(sessionId);
   }
 
   private async assertDansLesBornesDuCours(
-    courseSlug: string,
-    courseVersion: number,
+    session: SessionRecord,
     misAJour: UpdateSessionInput,
+    changements: ControlSessionChanges,
   ): Promise<void> {
-    if (misAJour.ecranCourant === undefined && !misAJour.intervalleLibre) {
+    if (
+      misAJour.ecranCourant === undefined &&
+      !misAJour.intervalleLibre &&
+      changements.pilotage === undefined
+    ) {
       return;
     }
-    const cours = await this.catalogue.trouver(courseSlug, courseVersion);
+    const cours = await this.catalogue.trouver(
+      session.courseSlug,
+      session.courseVersion,
+    );
     if (!cours) {
-      throw new CoursInconnuError(courseSlug);
+      throw new CoursInconnuError(session.courseSlug);
     }
     const totalEcrans = cours.ecrans.length;
     if (
@@ -99,6 +117,30 @@ export class ControlSessionUseCase {
         `Intervalle de rythme libre hors du cours : ${totalEcrans} écrans`,
       );
     }
+    if (changements.pilotage !== undefined) {
+      misAJour.pilotageEcrans = this.pilotageFusionne(
+        cours,
+        session,
+        changements.pilotage,
+      );
+    }
+  }
+
+  private pilotageFusionne(
+    cours: Cours,
+    session: SessionRecord,
+    demande: PilotageDemande,
+  ): Readonly<Record<string, PilotageEcran>> {
+    const ecran = cours.ecrans.find(
+      (candidat) => candidat.id === demande.screenId,
+    );
+    if (ecran === undefined) {
+      throw new DomainValidationError(
+        `Écran ${demande.screenId} absent du cours de cette séance`,
+      );
+    }
+    assertPilotageCompatible(ecran, demande);
+    return fusionnerPilotage(session.pilotageEcrans, demande);
   }
 
   private validerEtProjeter(
@@ -151,6 +193,8 @@ export class ControlSessionUseCase {
       ecranCourant: session.ecranCourant,
       intervalleLibre: session.intervalleLibre,
       participants: enCache?.participants ?? 0,
+      revision: session.revision,
+      pilotage: session.pilotageEcrans,
       majLe: session.majLe,
     });
   }

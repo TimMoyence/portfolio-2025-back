@@ -4,8 +4,9 @@ import { deroulePresentateur } from '../domain/cours/DeroulePresentateur';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { CoursInconnuError } from '../domain/errors/FormationErrors';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { assertSessionOwnedBy } from '../domain/SessionOwnership';
+import type { ActeurFormation } from '../domain/SessionOwnership';
 import { CATALOGUE_COURS, SESSIONS_REPOSITORY } from '../domain/token';
+import { seanceLisiblePar } from './SessionAccess';
 
 @Injectable()
 export class LireDerouleUseCase {
@@ -16,12 +17,11 @@ export class LireDerouleUseCase {
     private readonly catalogue: ICatalogueCours,
   ) {}
 
-  async execute(sessionId: string, teacherId: string): Promise<DerouleCours> {
-    const session = assertSessionOwnedBy(
-      await this.sessions.findById(sessionId),
-      sessionId,
-      teacherId,
-    );
+  async execute(
+    sessionId: string,
+    acteur: ActeurFormation,
+  ): Promise<DerouleCours> {
+    const session = await seanceLisiblePar(this.sessions, sessionId, acteur);
     const cours = await this.catalogue.trouver(
       session.courseSlug,
       session.courseVersion,

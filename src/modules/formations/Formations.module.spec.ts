@@ -5,15 +5,34 @@ import { ControlSessionUseCase } from './application/ControlSession.useCase';
 import { DueQuestionsUseCase } from './application/DueQuestions.useCase';
 import { GetSessionResultsUseCase } from './application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
+import { LireCoursPublicUseCase } from './application/LireCoursPublic.useCase';
 import { LireDerouleUseCase } from './application/LireDeroule.useCase';
 import { LireSujetUseCase } from './application/LireSujet.useCase';
+import { ListFreeResponsesUseCase } from './application/ListFreeResponses.useCase';
+import { ListSessionParticipantsUseCase } from './application/ListSessionParticipants.useCase';
+import { ManageFormationGroupsUseCase } from './application/ManageFormationGroups.useCase';
+import { ManageTeacherAnnotationsUseCase } from './application/ManageTeacherAnnotations.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
+import { SaveFreeResponseUseCase } from './application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
+import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
+import { DefisUseCase } from './application/Defis.useCase';
+import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
+import { LireRappelsUseCase } from './application/LireRappels.useCase';
+import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
+import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
+import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
+import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import { CATALOGUE_COURS } from './domain/token';
 import { FormationsModule } from './Formations.module';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
+import { FormationEscapeAttemptEntity } from './infrastructure/entities/FormationEscapeAttempt.entity';
+import { FormationEscapeProgressEntity } from './infrastructure/entities/FormationEscapeProgress.entity';
+import { FormationCoursePublicationEntity } from './infrastructure/entities/FormationCoursePublication.entity';
+import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.entity';
+import { FormationRappelServiEntity } from './infrastructure/entities/FormationRappelServi.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
 import { FormationGroupEntity } from './infrastructure/entities/FormationGroup.entity';
@@ -38,6 +57,11 @@ const ENTITES = [
   FormationTeacherAnnotationEntity,
   FormationGroupEntity,
   FormationScoreEntity,
+  FormationEscapeProgressEntity,
+  FormationEscapeAttemptEntity,
+  FormationPulseEntity,
+  FormationCoursePublicationEntity,
+  FormationRappelServiEntity,
 ];
 
 const SERVICES = [
@@ -46,12 +70,26 @@ const SERVICES = [
   CloseSessionUseCase,
   GetSessionResultsUseCase,
   JoinSessionUseCase,
+  LireCoursPublicUseCase,
   SubmitAnswerUseCase,
+  SubmitProductionUseCase,
+  TenterEnigmeUseCase,
+  DeclarerJalonUseCase,
+  DefisUseCase,
+  LireEtatParticipantUseCase,
+  EvincerParticipantUseCase,
+  LireRappelsUseCase,
+  SyntheseRappelsUseCase,
   RecordIncidentsUseCase,
   StreamSessionUseCase,
   DueQuestionsUseCase,
   LireSujetUseCase,
   LireDerouleUseCase,
+  ManageTeacherAnnotationsUseCase,
+  ManageFormationGroupsUseCase,
+  ListSessionParticipantsUseCase,
+  ListFreeResponsesUseCase,
+  SaveFreeResponseUseCase,
 ];
 
 describe('FormationsModule', () => {

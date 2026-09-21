@@ -1,16 +1,60 @@
 import {
   buildCoursDeTest,
+  EN_CATALOGUE,
   QUESTION_NUMERIQUE_TEST,
   QUESTION_VOTE_TEST,
 } from '../../../../../test/factories/cours.factory';
+import {
+  buildEcranStocke,
+  buildCoursStocke,
+} from '../../../../../test/factories/cours-stocke.factory';
+import {
+  BRIQUES_STOCKEES,
+  buildCoursStockeV3,
+  buildEcranStockeV3,
+} from '../../../../../test/factories/ecrans-stockes.factory';
+import type { Cours, Ecran } from '../contrats/cours';
 import { creerRng, creerTirage } from './Aleatoire';
-import type { Cours, Ecran } from './Cours';
 import {
   estInteractif,
   questionNumerique,
+  questionsDe,
   questionsDuCours,
   questionVote,
 } from './Cours';
+import { lireCoursStocke } from './CoursStocke';
+
+const EXPOSITIONS = [
+  'fp-quote',
+  'fp-pro',
+  'fp-concept4',
+  'fp-plot',
+  'fp-pulse',
+];
+
+function ecranV3(brique: string): Ecran {
+  return lireCoursStocke(buildCoursStockeV3([buildEcranStockeV3(brique)]))
+    .ecrans[0];
+}
+
+function recitDeRendu(renderer: string, props: Record<string, unknown>) {
+  return lireCoursStocke(
+    buildCoursStocke({
+      ecrans: [
+        buildEcranStocke({
+          proprietes: {
+            presentation: {
+              version: 2,
+              screenId: 'B2-01-S03-PREDICTION',
+              renderer,
+              props,
+            },
+          },
+        }),
+      ],
+    }),
+  ).ecrans[0];
+}
 
 describe('questionNumerique', () => {
   it('genere enonce, solution et pieges depuis les memes donnees', () => {
@@ -44,7 +88,7 @@ describe('questionVote', () => {
   });
 });
 
-describe('estInteractif', () => {
+describe('estInteractif (§ 2.6.1)', () => {
   it('deduit l interactivite de la brique', () => {
     const cours = buildCoursDeTest();
     expect(cours.ecrans.map((ecran) => estInteractif(ecran))).toEqual([
@@ -53,9 +97,63 @@ describe('estInteractif', () => {
       true,
       false,
       true,
-      false,
+      true,
       true,
     ]);
+  });
+
+  it.each(BRIQUES_STOCKEES)(
+    'compte %s comme interactif si et seulement s il recueille une production',
+    (brique) => {
+      expect(estInteractif(ecranV3(brique))).toBe(
+        !EXPOSITIONS.includes(brique) && brique !== 'fp-story',
+      );
+    },
+  );
+
+  it('compte un récit comme interactif s il porte un quiz ou une réflexion v2', () => {
+    expect(estInteractif(lireCoursStocke(buildCoursStocke()).ecrans[0])).toBe(
+      true,
+    );
+    expect(
+      estInteractif(
+        recitDeRendu('reflection', {
+          promptData: {
+            id: 'reflexion',
+            type: 'reflection',
+            question: 'Que demander ?',
+          },
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      estInteractif(
+        recitDeRendu('stats', {
+          title: 'Repères',
+          stats: [{ value: '27,6 %', label: 'Taux' }],
+        }),
+      ),
+    ).toBe(false);
+  });
+});
+
+describe('questionsDe', () => {
+  it('liste la jumelle, les productions, les énigmes et la banque de rappel', () => {
+    const identifiants = (brique: string) =>
+      questionsDe(ecranV3(brique)).map((question) => question.id);
+
+    expect(identifiants('fp-vote')).toEqual([
+      'b2-01-a3-sac-v1',
+      'b2-01-a3-remise-v2',
+    ]);
+    expect(identifiants('fp-cardsort')).toEqual(['b2-01-a1-anatomie']);
+    expect(identifiants('fp-escape')).toEqual(['b2-01-a6-e1-mix']);
+    expect(identifiants('fp-spaced')).toEqual([
+      'b2-01-r-compensation',
+      'b2-01-r-points',
+    ]);
+    expect(identifiants('fp-challenge')).toEqual([]);
+    expect(identifiants('fp-pulse')).toEqual([]);
   });
 });
 
@@ -115,6 +213,7 @@ describe('contraintes portees par le type', () => {
       pieges: [],
     });
     const classement: Ecran = {
+      ...EN_CATALOGUE,
       id: 'E',
       // @ts-expect-error aucun palmares nominatif : la brique classement n existe pas
       brique: 'classement',

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import Redis, { type RedisOptions } from 'ioredis';
 import { envInt, envString } from '../../../config/env-readers.util';
+import { PlafondDeFluxAtteintError } from '../domain/errors/FormationErrors';
 import type {
   IStreamCapacity,
   StreamCapacityLease,
@@ -97,8 +98,8 @@ export class StreamCapacityService implements IStreamCapacity, OnModuleDestroy {
       ...request.places.map(({ limit }) => limit),
     ]);
     if (result !== 1) {
-      return Promise.reject(
-        new Error('Plafond de flux atteint sur une autre instance.'),
+      throw new PlafondDeFluxAtteintError(
+        request.places.map(({ key }) => key).join(', '),
       );
     }
     return { token, keys };

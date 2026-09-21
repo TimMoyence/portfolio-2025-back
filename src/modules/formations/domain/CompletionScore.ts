@@ -1,6 +1,7 @@
-const PART_COHORTE_REFERENCE = 0.2;
-const NOTE_MAX = 20;
-const RATIO_SEUIL_VALIDATION = 0.4;
+import { REGLE_DE_NOTATION } from './RegleDeNotation';
+
+const { partCohorteReference, noteMax, ratioSeuilValidation } =
+  REGLE_DE_NOTATION;
 
 export interface ParticipantCompletion {
   participantId: string;
@@ -21,14 +22,14 @@ export function computeCohortScore(
     return [];
   }
   const reference = computeReference(completions);
-  const seuil = reference * RATIO_SEUIL_VALIDATION;
+  const seuil = reference * ratioSeuilValidation;
   return completions.map((entree) => ({
     participantId: entree.participantId,
     completion: entree.completion,
     note:
       reference === 0
         ? 0
-        : Math.min(NOTE_MAX, (NOTE_MAX * entree.completion) / reference),
+        : Math.min(noteMax, (noteMax * entree.completion) / reference),
     sousSeuil: entree.completion < seuil,
   }));
 }
@@ -39,9 +40,6 @@ function computeReference(
   const triees = completions
     .map((entree) => entree.completion)
     .sort((gauche, droite) => droite - gauche);
-  const rang = Math.max(
-    0,
-    Math.ceil(triees.length * PART_COHORTE_REFERENCE) - 1,
-  );
+  const rang = Math.max(0, Math.ceil(triees.length * partCohorteReference) - 1);
   return triees[rang] ?? 0;
 }

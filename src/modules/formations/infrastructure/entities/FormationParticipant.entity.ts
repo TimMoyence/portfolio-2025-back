@@ -6,14 +6,19 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { FormationSessionEntity } from './FormationSession.entity';
 import { FormationGroupEntity } from './FormationGroup.entity';
 
 @Entity({ name: 'formation_participants' })
-@Unique('UQ_formation_participants_session_key', ['sessionId', 'studentKey'])
-@Unique('UQ_formation_participants_session_seed', ['sessionId', 'seed'])
+@Index('uq_formation_participants_session_key', ['sessionId', 'studentKey'], {
+  unique: true,
+  where: '"evince_le" IS NULL',
+})
+@Index('uq_formation_participants_session_seed', ['sessionId', 'seed'], {
+  unique: true,
+  where: '"evince_le" IS NULL',
+})
 @Index('idx_formation_participants_student_key', ['studentKey'])
 @Index('idx_formation_participants_group', ['groupId'])
 export class FormationParticipantEntity {
@@ -30,7 +35,7 @@ export class FormationParticipantEntity {
   })
   session: FormationSessionEntity;
 
-  @Column({ name: 'student_key', type: 'uuid' })
+  @Column({ name: 'student_key', type: 'varchar', length: 64 })
   studentKey: string;
 
   @Column({ type: 'varchar', length: 80 })
@@ -63,4 +68,7 @@ export class FormationParticipantEntity {
 
   @Column({ name: 'dernier_ping', type: 'timestamptz', default: () => 'now()' })
   dernierPing: Date;
+
+  @Column({ name: 'evince_le', type: 'timestamptz', nullable: true })
+  evinceLe: Date | null;
 }

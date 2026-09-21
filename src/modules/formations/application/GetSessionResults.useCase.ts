@@ -1,30 +1,54 @@
-import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { questionsAAgreger, resumeDuBareme } from '../domain/Bareme';
+import type { ComptesJalon, ResumeBareme } from '../domain/contrats/resultats';
+import { agregerEnigmes } from '../domain/cours/Enigmes';
+import type { ProgressionAgregee } from '../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import type { IEscapeRepository } from '../domain/IEscape.repository';
+import type { IPulsesRepository } from '../domain/IPulses.repository';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { RapportSession } from '../domain/IFormationMailer.port';
 import type { IIncidentsRepository } from '../domain/IIncidents.repository';
-import type { IScoresRepository } from '../domain/IScores.repository';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
+import type {
+  IParticipantsRepository,
+  ParticipantRecord,
+} from '../domain/IParticipants.repository';
+import type {
+  ISessionsRepository,
+  SessionRecord,
+} from '../domain/ISessions.repository';
+import { REGLE_DE_NOTATION } from '../domain/RegleDeNotation';
+import type { RegleDeNotation } from '../domain/RegleDeNotation';
 import { agregerResultats } from '../domain/ResultatsSeance';
 import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { calculerStatistiquesSeance } from '../domain/SessionStatistics';
 import type { StatistiquesSeance } from '../domain/SessionStatistics';
-import { assertSessionOwnedBy } from '../domain/SessionOwnership';
+import type { ActeurFormation } from '../domain/SessionOwnership';
 import { buildRapportSession } from '../domain/SessionReport';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
+  ESCAPE_REPOSITORY,
   INCIDENTS_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
-  SCORES_REPOSITORY,
+  PULSES_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { seanceLisiblePar } from './SessionAccess';
 
 export type ResultatsDeSeance = RapportSession & {
   readonly resultats: ResultatsSeance;
   readonly statistiques: StatistiquesSeance;
+  readonly notation: RegleDeNotation;
+  readonly bareme: ResumeBareme;
+  readonly jalons: Readonly<Record<string, ComptesJalon>>;
+  readonly enigmes: readonly ProgressionAgregee[];
 };
+
+export interface BilanDeSeance {
+  readonly participants: readonly ParticipantRecord[];
+  readonly resultats: ResultatsDeSeance;
+}
 
 @Injectable()
 export class GetSessionResultsUseCase {
@@ -41,65 +65,60 @@ export class GetSessionResultsUseCase {
     private readonly incidents: IIncidentsRepository,
     @Inject(CATALOGUE_COURS)
     private readonly catalogue: ICatalogueCours,
-    @Optional()
-    @Inject(SCORES_REPOSITORY)
-    private readonly scores?: IScoresRepository,
+    @Inject(PULSES_REPOSITORY)
+    private readonly pulses: IPulsesRepository,
+    @Inject(ESCAPE_REPOSITORY)
+    private readonly escape: IEscapeRepository,
   ) {}
 
   async execute(
     sessionId: string,
-    teacherId: string,
+    acteur: ActeurFormation,
   ): Promise<ResultatsDeSeance> {
-    const session = assertSessionOwnedBy(
-      await this.sessions.findById(sessionId),
-      sessionId,
-      teacherId,
+    const session = await seanceLisiblePar(this.sessions, sessionId, acteur);
+    return (await this.bilanDe(session)).resultats;
+  }
+
+  async bilanDe(session: SessionRecord): Promise<BilanDeSeance> {
+    const [participantsListe, reponses, incidentsListe, jalons, progressions] =
+      await Promise.all([
+        this.participants.listBySession(session.id),
+        this.answers.listBySession(session.id),
+        this.incidents.listBySession(session.id),
+        this.pulses.compterParSondage(session.id),
+        this.escape.listerProgressionDeSeance(session.id),
+      ]);
+    const cours = await this.catalogue.trouver(
+      session.courseSlug,
+      session.courseVersion,
     );
-
-    const [participantsListe, reponses, incidentsListe] = await Promise.all([
-      this.participants.listBySession(sessionId),
-      this.answers.listBySession(sessionId),
-      this.incidents.listBySession(sessionId),
-    ]);
-
     const rapport = buildRapportSession({
       session,
-      cours: await this.catalogue.trouver(
-        session.courseSlug,
-        session.courseVersion,
-      ),
+      cours,
       participants: participantsListe,
       answers: reponses,
       incidents: incidentsListe,
       avertir: (message) => this.logger.warn(message),
     });
     const resultats = agregerResultats({
-      questionIds: session.bareme.questions.map((question) => question.id),
+      questions: questionsAAgreger(session.bareme, cours),
       answers: reponses,
       participants: participantsListe.length,
     });
-    const statistiques = calculerStatistiquesSeance(
-      rapport.participants,
-      resultats,
-    );
-    if (this.scores !== undefined) {
-      await Promise.all([
-        ...participantsListe.map((participant, index) => {
-          const ligne = rapport.participants[index];
-          return this.scores!.saveIndividual({
-            sessionId,
-            participantId: participant.id,
-            score: ligne?.note ?? 0,
-            percentage: ligne?.completion ?? 0,
-          });
-        }),
-        this.scores.saveSession({ sessionId, ...statistiques }),
-      ]);
-    }
     return {
-      ...rapport,
-      resultats,
-      statistiques,
+      participants: participantsListe,
+      resultats: {
+        ...rapport,
+        resultats,
+        statistiques: calculerStatistiquesSeance(
+          rapport.participants,
+          resultats,
+        ),
+        notation: REGLE_DE_NOTATION,
+        bareme: resumeDuBareme(session.bareme),
+        jalons,
+        enigmes: agregerEnigmes(progressions),
+      },
     };
   }
 }

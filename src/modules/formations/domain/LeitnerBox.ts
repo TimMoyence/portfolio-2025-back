@@ -1,5 +1,8 @@
 export type Boite = 1 | 2 | 3;
 
+export const BOITE_MIN: Boite = 1;
+export const BOITE_MAX: Boite = 3;
+
 export const SEANCES_AVANT_REVISION: Readonly<Record<Boite, number>> = {
   1: 1,
   2: 2,
@@ -13,9 +16,9 @@ export interface MasteryState {
 
 export function nextBox(boite: Boite, reussi: boolean): Boite {
   if (!reussi) {
-    return 1;
+    return BOITE_MIN;
   }
-  return boite === 3 ? 3 : ((boite + 1) as Boite);
+  return Math.min(boite + 1, BOITE_MAX) as Boite;
 }
 
 export function isDue(mastery: MasteryState): boolean {

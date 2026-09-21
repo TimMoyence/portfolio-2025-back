@@ -15,7 +15,10 @@ import {
   creerCatalogueDeTest,
 } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
-import type { ContexteFormations } from './helpers/formations-db';
+import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
+  type ContexteFormations,
+} from './helpers/formations-db';
 import {
   abonnerAuFlux,
   clientFormations,
@@ -142,10 +145,6 @@ function identifiantQuestion(question: number): string {
 
 const MESSAGE_DOUBLON = `Votre réponse à la question ${identifiantQuestion(0)} est déjà enregistrée : passez à la suivante.`;
 
-function cleEtudiant(index: number): string {
-  return `66666666-6666-4666-8666-${String(index).padStart(12, '0')}`;
-}
-
 function detailDe(reponse: Response): unknown {
   return (reponse.body as { detail?: unknown }).detail;
 }
@@ -186,7 +185,6 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
     const reponse = await client
       .anonyme(`/sessions/${code}/join`)
       .send({
-        studentKey: cleEtudiant(index),
         prenom: `Prenom-${index}`,
         nom: `Nom-${index}`,
         email: `resilience-${index}@example.test`,
@@ -226,7 +224,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
       .mockImplementation((message: unknown) => {
         journal.push(String(message));
       });
-  });
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await banc.fermer();
@@ -316,6 +314,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
       for (let essai = 0; essai < 3; essai += 1) {
         rejeux.push(await repondre(seance.sessionId, etudiant.jeton, 0));
       }
+      await piloter(seance.sessionId, 1).expect(SANS_CONTENU);
       const suite = await repondre(seance.sessionId, etudiant.jeton, 1);
 
       expect(rejeux.map((reponse) => reponse.status)).toEqual([
@@ -378,6 +377,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
       );
 
       const lecture = await lireResultats(seance.sessionId);
+      await piloter(seance.sessionId, 1).expect(SANS_CONTENU);
       const lendemain = await repondre(seance.sessionId, etudiant.jeton, 1);
       const avantCloture = await contexte.sessions.findById(seance.sessionId);
       const cloture = await commander(`/sessions/${seance.sessionId}/close`);

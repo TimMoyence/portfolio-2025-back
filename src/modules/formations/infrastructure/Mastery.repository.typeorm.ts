@@ -4,7 +4,9 @@ import { Repository } from 'typeorm';
 import type {
   IMasteryRepository,
   MasteryRecord,
+  TentativeDeMaitrise,
 } from '../domain/IMastery.repository';
+import { BOITE_MAX, BOITE_MIN } from '../domain/LeitnerBox';
 import { FormationMasteryEntity } from './entities/FormationMastery.entity';
 
 @Injectable()
@@ -21,17 +23,30 @@ export class MasteryRepositoryTypeORM implements IMasteryRepository {
     return entities.map((entity) => this.toDomain(entity));
   }
 
-  async upsert(record: MasteryRecord): Promise<void> {
-    await this.repo.upsert(
-      {
-        studentKey: record.studentKey,
-        concept: record.concept,
-        boite: record.boite,
-        derniereVue: record.derniereVue,
-        succes: record.succes,
-        echecs: record.echecs,
-      },
-      ['studentKey', 'concept'],
+  async enregistrerTentative(tentative: TentativeDeMaitrise): Promise<void> {
+    await this.repo.query(
+      `INSERT INTO formation_mastery
+         (student_key, concept, boite, derniere_vue, succes, echecs)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (student_key, concept) DO UPDATE
+         SET boite = CASE
+               WHEN $7 THEN LEAST(formation_mastery.boite + 1, $8)
+               ELSE $9
+             END,
+             derniere_vue = EXCLUDED.derniere_vue,
+             succes = formation_mastery.succes + EXCLUDED.succes,
+             echecs = formation_mastery.echecs + EXCLUDED.echecs`,
+      [
+        tentative.studentKey,
+        tentative.concept,
+        tentative.reussi ? BOITE_MIN + 1 : BOITE_MIN,
+        tentative.vueLe,
+        tentative.reussi ? 1 : 0,
+        tentative.reussi ? 0 : 1,
+        tentative.reussi,
+        BOITE_MAX,
+        BOITE_MIN,
+      ],
     );
   }
 

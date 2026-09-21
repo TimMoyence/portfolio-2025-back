@@ -7,23 +7,29 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
-import { SessionStreamLimitError } from '../domain/errors/FormationErrors';
-import type { IAnswersRepository } from '../domain/IAnswers.repository';
+import {
+  PlafondDeFluxAtteintError,
+  SessionStreamLimitError,
+} from '../domain/errors/FormationErrors';
 import type {
   IStreamCapacity,
   StreamCapacityLease,
 } from '../domain/IStreamCapacity.port';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type {
   ISessionStateCache,
   LiveSessionState,
 } from '../domain/ISessionStateCache.port';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { agregerResultats } from '../domain/ResultatsSeance';
+import type { IParticipantsRepository } from '../domain/IParticipants.repository';
+import type {
+  ISessionsRepository,
+  SessionRecord,
+} from '../domain/ISessions.repository';
+import type { ComptesJalon, ResumeBareme } from '../domain/contrats/resultats';
+import type { ProgressionAgregee } from '../domain/cours/Enigmes';
 import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
+import type { StatistiquesSeance } from '../domain/SessionStatistics';
 import {
-  ANSWERS_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
@@ -31,9 +37,11 @@ import {
 } from '../domain/token';
 
 const INTERVALLE_MS = 500;
+export const DELAI_MIN_BILAN_MS = 1000;
 const HEARTBEAT_MS = 15000;
 const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
 const AUCUNE_ACTIVITE_VUE = -1;
+const PASSAGES_ENTRE_CONTROLES = 4;
 export const MAX_ABONNEMENTS_PAR_SESSION = 100;
 export const MAX_FLUX_FORMATEUR_PAR_SESSION = 4;
 export const MAX_FLUX_PAR_PARTICIPANT = 2;
@@ -68,6 +76,19 @@ interface PlacesDuFlux {
   readonly seance?: Place;
 }
 
+type ResultatsEnDirect = ResultatsSeance & {
+  readonly statistiques: StatistiquesSeance;
+  readonly jalons: Readonly<Record<string, ComptesJalon>>;
+  readonly enigmes: readonly ProgressionAgregee[];
+  readonly bareme: ResumeBareme;
+};
+
+interface BilanPartage {
+  readonly activite: number;
+  readonly calculeLe: number;
+  readonly valeur: Promise<ResultatsEnDirect>;
+}
+
 /**
  * Chaque abonnement tient trois minuteurs et une socket pendant cinq heures
  * dans le processus partage par tout le site : sans plafond, une boucle
@@ -93,14 +114,14 @@ export class StreamSessionUseCase {
   private readonly fluxEtudiants = new Map<string, Fermeture[]>();
   private readonly fluxFormateur = new Map<string, Fermeture[]>();
   private readonly fluxParParticipant = new Map<string, Fermeture[]>();
+  private readonly bilansPartages = new Map<string, BilanPartage>();
 
   constructor(
     @Inject(SESSIONS_REPOSITORY)
     private readonly sessions: ISessionsRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
-    @Inject(ANSWERS_REPOSITORY)
-    private readonly answers: IAnswersRepository,
+    private readonly presenterResults: GetSessionResultsUseCase,
     @Inject(PARTICIPANTS_REPOSITORY)
     private readonly participants: IParticipantsRepository,
     @Optional()
@@ -108,8 +129,6 @@ export class StreamSessionUseCase {
     @Optional()
     @Inject(STREAM_CAPACITY)
     private readonly capacity: IStreamCapacity = CAPACITE_MEMOIRE,
-    @Optional()
-    private readonly presenterResults?: GetSessionResultsUseCase,
   ) {}
 
   async executeForTeacher(
@@ -131,33 +150,49 @@ export class StreamSessionUseCase {
           capacite: `teacher:${sessionId}`,
         },
       },
-      session.bareme.questions.map((question) => question.id),
-      teacherId,
+      session,
     );
   }
 
   execute(sessionId: string, participantId: string): Observable<MessageEvent> {
-    return this.ouvrirFlux(sessionId, {
-      porteur: {
-        occupants: this.fluxParParticipant,
-        cle: participantId,
-        plafond: MAX_FLUX_PAR_PARTICIPANT,
-        capacite: `participant:${participantId}`,
+    return this.ouvrirFlux(
+      sessionId,
+      {
+        porteur: {
+          occupants: this.fluxParParticipant,
+          cle: participantId,
+          plafond: MAX_FLUX_PAR_PARTICIPANT,
+          capacite: `participant:${participantId}`,
+        },
+        seance: {
+          occupants: this.fluxEtudiants,
+          cle: sessionId,
+          plafond: MAX_ABONNEMENTS_PAR_SESSION,
+          capacite: `session:${sessionId}`,
+        },
       },
-      seance: {
-        occupants: this.fluxEtudiants,
-        cle: sessionId,
-        plafond: MAX_ABONNEMENTS_PAR_SESSION,
-        capacite: `session:${sessionId}`,
-      },
-    });
+      undefined,
+      participantId,
+    );
+  }
+
+  private async participantAdmis(
+    sessionId: string,
+    participantId: string,
+  ): Promise<boolean> {
+    const participant = await this.participants.findById(participantId);
+    return (
+      participant !== null &&
+      participant.sessionId === sessionId &&
+      participant.evinceLe === null
+    );
   }
 
   private ouvrirFlux(
     sessionId: string,
     places: PlacesDuFlux,
-    questionsDuFormateur?: readonly string[],
-    teacherId?: string,
+    sessionDuFormateur?: SessionRecord,
+    participantId?: string,
   ): Observable<MessageEvent> {
     assertSeanceDisponible(places);
     return new Observable<MessageEvent>((subscriber) => {
@@ -165,6 +200,7 @@ export class StreamSessionUseCase {
       let derniereActivite = AUCUNE_ACTIVITE_VUE;
       let actif = true;
       let occupe = false;
+      let passagesDepuisLeControle = 0;
       let bail: StreamCapacityLease | null = null;
       let boucle: ReturnType<typeof setInterval> | undefined;
       let battement: ReturnType<typeof setInterval> | undefined;
@@ -196,25 +232,29 @@ export class StreamSessionUseCase {
       };
 
       const pousserResultatsSiActivite = async (
-        questionIds: readonly string[],
+        session: SessionRecord,
+        options: { readonly sansAttendre: boolean } = { sansAttendre: false },
       ): Promise<void> => {
         const activite = this.cache.activite(sessionId);
         if (activite === derniereActivite) {
           return;
         }
-        subscriber.next({
-          type: 'resultats',
-          data: await this.lireResultats(sessionId, questionIds, teacherId),
-        });
+        const bilan = this.bilanPartage(session, activite, options);
+        if (bilan === null) {
+          return;
+        }
+        subscriber.next({ type: 'resultats', data: await bilan });
         derniereActivite = activite;
       };
 
       const pousserResultatsDefinitifs = async (): Promise<void> => {
-        if (!questionsDuFormateur) {
+        if (!sessionDuFormateur) {
           return;
         }
         try {
-          await pousserResultatsSiActivite(questionsDuFormateur);
+          await pousserResultatsSiActivite(sessionDuFormateur, {
+            sansAttendre: true,
+          });
         } catch (error) {
           this.logger.warn(
             `Resultats definitifs de la session ${sessionId} non pousses, le flux se clot quand meme: ${messageDe(error)}`,
@@ -226,7 +266,6 @@ export class StreamSessionUseCase {
         await pousserResultatsDefinitifs();
         subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
         subscriber.complete();
-        this.cache.drop(sessionId);
         arreter();
       };
 
@@ -236,6 +275,17 @@ export class StreamSessionUseCase {
         }
         occupe = true;
         try {
+          if (
+            participantId !== undefined &&
+            passagesDepuisLeControle % PASSAGES_ENTRE_CONTROLES === 0 &&
+            !(await this.participantAdmis(sessionId, participantId))
+          ) {
+            subscriber.next({ type: 'fin', data: { raison: 'evince' } });
+            subscriber.complete();
+            arreter();
+            return;
+          }
+          passagesDepuisLeControle += 1;
           const etat = await this.resolveState(sessionId);
           if (!etat) {
             subscriber.next({ type: 'fin', data: { raison: 'introuvable' } });
@@ -252,8 +302,8 @@ export class StreamSessionUseCase {
             await clore();
             return;
           }
-          if (questionsDuFormateur) {
-            await pousserResultatsSiActivite(questionsDuFormateur);
+          if (sessionDuFormateur) {
+            await pousserResultatsSiActivite(sessionDuFormateur);
           }
         } catch (error) {
           this.logger.warn(
@@ -270,71 +320,107 @@ export class StreamSessionUseCase {
           .map(({ capacite, plafond }) => ({ key: capacite, limit: plafond })),
       };
 
+      const installer = (): void => {
+        if (!actif) {
+          arreter();
+          return;
+        }
+        boucle = setInterval(() => {
+          void tick();
+        }, INTERVALLE_MS);
+
+        battement = setInterval(() => {
+          if (bail !== null) {
+            this.rafraichirCapacite(bail, sessionId);
+          }
+          subscriber.next({
+            type: 'heartbeat',
+            data: { ts: new Date().toISOString() },
+          });
+        }, this.cadences.battementMs);
+
+        limite = setTimeout(() => {
+          subscriber.next({ type: 'fin', data: { raison: 'expiree' } });
+          subscriber.complete();
+          arreter();
+        }, this.cadences.dureeMaxMs);
+
+        fermerLesPlusAnciens(places.porteur);
+        occuper(places, ceder);
+        void tick();
+      };
+
       const demarrer = async (): Promise<void> => {
         try {
           bail = await this.capacity.acquire(demande);
-          if (!actif) {
+        } catch (error) {
+          if (error instanceof PlafondDeFluxAtteintError) {
+            this.logger.warn(
+              `Plafond de flux atteint pour la session ${sessionId}: ${messageDe(error)}`,
+            );
+            subscriber.error(new SessionStreamLimitError());
             arreter();
             return;
           }
-          boucle = setInterval(() => {
-            void tick();
-          }, INTERVALLE_MS);
-
-          battement = setInterval(() => {
-            if (bail !== null) {
-              this.rafraichirCapacite(bail, sessionId);
-            }
-            subscriber.next({
-              type: 'heartbeat',
-              data: { ts: new Date().toISOString() },
-            });
-          }, this.cadences.battementMs);
-
-          limite = setTimeout(() => {
-            subscriber.next({ type: 'fin', data: { raison: 'expiree' } });
-            subscriber.complete();
-            arreter();
-          }, this.cadences.dureeMaxMs);
-
-          fermerLesPlusAnciens(places.porteur);
-          occuper(places, ceder);
-          void tick();
-        } catch (error) {
-          this.logger.warn(
-            `Ouverture du plafond de flux refusee pour la session ${sessionId}: ${messageDe(error)}`,
+          bail = null;
+          this.logger.error(
+            `Plafond de flux partage indisponible pour la session ${sessionId}, ouverture en mode degrade borne par le processus`,
+            messageDe(error),
           );
-          subscriber.error(new SessionStreamLimitError());
-          arreter();
         }
+        installer();
       };
 
       void demarrer();
 
       return () => {
         liberer(places, ceder);
+        if (!this.fluxFormateur.has(sessionId)) {
+          this.bilansPartages.delete(sessionId);
+        }
         arreter();
       };
     });
   }
 
-  private async lireResultats(
-    sessionId: string,
-    questionIds: readonly string[],
-    teacherId?: string,
-  ): Promise<ResultatsSeance | Record<string, unknown>> {
-    if (teacherId !== undefined && this.presenterResults !== undefined) {
-      const rapport = await this.presenterResults.execute(sessionId, teacherId);
-      return {
-        ...rapport.resultats,
-        statistiques: rapport.statistiques,
-      };
+  private bilanPartage(
+    session: SessionRecord,
+    activite: number,
+    options: { readonly sansAttendre: boolean },
+  ): Promise<ResultatsEnDirect> | null {
+    const partage = this.bilansPartages.get(session.id);
+    if (partage !== undefined && partage.activite === activite) {
+      return partage.valeur;
     }
-    const [answers, participants] = await Promise.all([
-      this.answers.listBySession(sessionId),
-      this.participants.countBySession(sessionId),
-    ]);
-    return agregerResultats({ questionIds, answers, participants });
+    const maintenant = Date.now();
+    if (
+      partage !== undefined &&
+      !options.sansAttendre &&
+      maintenant - partage.calculeLe < DELAI_MIN_BILAN_MS
+    ) {
+      return null;
+    }
+    const valeur = this.lireResultats(session);
+    this.bilansPartages.set(session.id, {
+      activite,
+      calculeLe: maintenant,
+      valeur,
+    });
+    void valeur.catch(() => this.bilansPartages.delete(session.id));
+    return valeur;
+  }
+
+  private async lireResultats(
+    session: SessionRecord,
+  ): Promise<ResultatsEnDirect> {
+    const { resultats } = await this.presenterResults.bilanDe(session);
+    return {
+      ...resultats.resultats,
+      statistiques: resultats.statistiques,
+      jalons: resultats.jalons,
+      enigmes: resultats.enigmes,
+      bareme: resultats.bareme,
+    };
   }
 
   private rafraichirCapacite(
@@ -355,7 +441,7 @@ export class StreamSessionUseCase {
     if (enCache) {
       return enCache;
     }
-    const session = await this.sessions.findById(sessionId);
+    const session = await this.sessions.lireEtat(sessionId);
     if (!session) {
       return null;
     }
@@ -365,6 +451,8 @@ export class StreamSessionUseCase {
       ecranCourant: session.ecranCourant,
       intervalleLibre: session.intervalleLibre,
       participants: 0,
+      revision: session.revision,
+      pilotage: session.pilotageEcrans,
       majLe: session.majLe,
     };
     this.cache.publish(sessionId, etat);

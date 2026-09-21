@@ -6,12 +6,14 @@ import {
   Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import type { Bareme } from '../../domain/Bareme';
+import type { Bareme } from '../../domain/contrats/bareme';
+import type { PilotageEcran } from '../../domain/contrats/pilotage';
 import type { FreeRange, PacingMode } from '../../domain/PacingMode';
 import type { SessionState } from '../../domain/SessionState';
 
 @Entity({ name: 'formation_sessions' })
 @Check('chk_formation_session_course_version_positive', '"course_version" > 0')
+@Check('chk_formation_session_capacite', '"capacite" BETWEEN 1 AND 60')
 @Index('uq_formation_sessions_code_active', ['code'], {
   unique: true,
   where: `"etat" <> 'terminee'`,
@@ -49,6 +51,15 @@ export class FormationSessionEntity {
 
   @Column({ name: 'intervalle_libre', type: 'jsonb', nullable: true })
   intervalleLibre: FreeRange | null;
+
+  @Column({ name: 'pilotage_ecrans', type: 'jsonb', default: {} })
+  pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
+
+  @Column({ type: 'int', default: 0 })
+  revision: number;
+
+  @Column({ type: 'smallint', default: 40 })
+  capacite: number;
 
   @Column({ type: 'jsonb' })
   bareme: Bareme;

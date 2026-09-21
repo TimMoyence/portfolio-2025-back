@@ -1,4 +1,14 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Check,
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
+import { FormationSessionEntity } from './FormationSession.entity';
 
 @Entity({ name: 'formation_teacher_annotations' })
 @Unique('UQ_formation_teacher_annotations_session_screen_group', [
@@ -10,12 +20,20 @@ import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
   'sessionId',
   'teacherId',
 ])
+@Check('CHK_formation_teacher_annotations_note', 'length(btrim("note")) > 0')
 export class FormationTeacherAnnotationEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ name: 'session_id', type: 'uuid' })
   sessionId: string;
+
+  @ManyToOne(() => FormationSessionEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({
+    name: 'session_id',
+    foreignKeyConstraintName: 'FK_formation_teacher_annotations_session',
+  })
+  session: FormationSessionEntity;
 
   @Column({ name: 'teacher_id', type: 'uuid' })
   teacherId: string;

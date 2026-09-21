@@ -66,6 +66,8 @@ export class AnswersRepositoryTypeORM
       seed: input.seed,
       correcte: input.correcte,
       misconception: input.misconception,
+      score: input.score ?? null,
+      details: input.details ?? null,
       dureeMs: input.dureeMs,
     });
     try {
@@ -89,6 +91,17 @@ export class AnswersRepositoryTypeORM
   async listBySession(sessionId: string): Promise<readonly AnswerRecord[]> {
     const entities = await this.repo.find({
       where: { sessionId },
+      order: { soumisLe: 'ASC', id: 'ASC' },
+    });
+    return entities.map((entity) => this.toDomain(entity));
+  }
+
+  async listerDuParticipant(
+    sessionId: string,
+    participantId: string,
+  ): Promise<readonly AnswerRecord[]> {
+    const entities = await this.repo.find({
+      where: { sessionId, participantId },
       order: { soumisLe: 'ASC', id: 'ASC' },
     });
     return entities.map((entity) => this.toDomain(entity));
@@ -122,6 +135,8 @@ export class AnswersRepositoryTypeORM
       seed: entity.seed,
       correcte: entity.correcte,
       misconception: entity.misconception,
+      score: entity.score,
+      details: entity.details,
       dureeMs: entity.dureeMs,
       soumisLe: entity.soumisLe,
     };

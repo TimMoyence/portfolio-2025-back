@@ -1,8 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  ParticipantNotFoundError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
+import { SessionNotFoundError } from '../domain/errors/FormationErrors';
 import type {
   IMasteryRepository,
   MasteryRecord,
@@ -16,6 +13,7 @@ import {
   PARTICIPANTS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { participantActif } from './ParticipantActif';
 
 export interface DueQuestionsQuery {
   sessionId: string;
@@ -45,10 +43,11 @@ export class DueQuestionsUseCase {
       throw new SessionNotFoundError(query.sessionId);
     }
 
-    const participant = await this.participants.findById(query.participantId);
-    if (!participant || participant.sessionId !== query.sessionId) {
-      throw new ParticipantNotFoundError(query.participantId);
-    }
+    const participant = await participantActif(
+      this.participants,
+      query.sessionId,
+      query.participantId,
+    );
 
     const maitrises = await this.mastery.findByStudentKey(
       participant.studentKey,

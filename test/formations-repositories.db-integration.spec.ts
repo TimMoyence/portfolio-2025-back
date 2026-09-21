@@ -1,5 +1,4 @@
 import { QueryFailedError } from 'typeorm';
-import { ResourceConflictError } from '../src/common/domain/errors/ResourceConflictError';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import {
   AnswerAlreadySubmittedError,
@@ -7,13 +6,16 @@ import {
   SessionCodeAlreadyActiveError,
 } from '../src/modules/formations/domain/errors/FormationErrors';
 import type { ParticipantRecord } from '../src/modules/formations/domain/IParticipants.repository';
+import { nextBox } from '../src/modules/formations/domain/LeitnerBox';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { buildCoursDeClasse } from './factories/cours.factory';
 import { buildBareme } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
   FORMATION_ENTITIES,
   FORMATION_TABLES,
+  inscrireParticipant,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
@@ -49,18 +51,36 @@ interface ValeurBrute {
   valeur: string | number;
 }
 
-interface ContrainteUnique {
+interface ContrainteNommee {
   nom: string;
+}
+
+interface ContrainteUnique extends ContrainteNommee {
   colonnes: string[];
 }
 
-function trierParNom(
-  contraintes: readonly ContrainteUnique[],
-): ContrainteUnique[] {
+interface ClefEtrangere extends ContrainteUnique {
+  cible: string;
+  suppression: string;
+}
+
+function trierParNom<C extends ContrainteNommee>(
+  contraintes: readonly C[],
+): C[] {
   return [...contraintes].sort((gauche, droite) =>
     gauche.nom.localeCompare(droite.nom),
   );
 }
+
+function colonnesTriees(
+  colonnes: readonly { databaseName: string }[],
+): string[] {
+  return colonnes
+    .map((colonne) => colonne.databaseName)
+    .sort((gauche, droite) => gauche.localeCompare(droite));
+}
+
+const SUPPRESSION_PAR_DEFAUT = 'NO ACTION';
 
 describeDb('Formations repositories (db integration)', () => {
   let contexte: ContexteFormations;
@@ -75,7 +95,7 @@ describeDb('Formations repositories (db integration)', () => {
     });
 
   const inscrire = (sessionId: string, studentKey: string, seed: number) =>
-    contexte.participants.create({
+    inscrireParticipant(contexte.participants, {
       sessionId,
       studentKey,
       prenom: 'Theo',
@@ -123,7 +143,7 @@ describeDb('Formations repositories (db integration)', () => {
 
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
-  });
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await contexte.fermer();
@@ -133,7 +153,7 @@ describeDb('Formations repositories (db integration)', () => {
     await contexte.nettoyer();
   });
 
-  it('rejoue la migration CreateFormations apres un retour arriere', async () => {
+  it('rejoue la derniere migration formations apres un retour arriere', async () => {
     await contexte.rejouerMigration();
 
     const tables: Array<{ tablename: string }> =
@@ -145,6 +165,28 @@ describeDb('Formations repositories (db integration)', () => {
     expect(tables.map((table) => table.tablename)).toEqual(
       expect.arrayContaining([...FORMATION_TABLES]),
     );
+  });
+
+  it('refuse un ecran de cours sans note au lieu de lui donner une note vide par defaut', async () => {
+    await contexte.rejouerMigration();
+    const [colonne]: Array<{ defaut: string | null }> =
+      await contexte.dataSource.query(
+        `SELECT column_default AS defaut FROM information_schema.columns
+         WHERE table_name = 'formation_screen_contents' AND column_name = 'notes'`,
+      );
+    const [cours]: Array<{ id: string }> = await contexte.dataSource.query(
+      `INSERT INTO "formation_course_contents" ("slug", "version", "titre", "niveau", "duree_minutes", "concepts")
+       VALUES ('cours-sans-note', 1, 'Cours sans note', 'B2', 5, '["proportion"]'::jsonb) RETURNING "id"`,
+    );
+
+    expect(colonne.defaut).toBeNull();
+    await expect(
+      contexte.dataSource.query(
+        `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "proprietes")
+         VALUES ($1, 0, 'ECRAN-SANS-NOTE', 'fp-story', 5, '["proportion"]'::jsonb, '{}'::jsonb)`,
+        [cours.id],
+      ),
+    ).rejects.toThrow('null value in column "notes"');
   });
 
   it('relit a l identique le bareme tire a l ouverture, graine de reference comprise', async () => {
@@ -264,15 +306,15 @@ describeDb('Formations repositories (db integration)', () => {
     expect(active?.id).toEqual(ouverte.id);
   });
 
-  it('traduit un second passage du meme etudiant en conflit et non en erreur brute', async () => {
+  it('rend sa place au meme etudiant qui repasse, sans nouveau tirage', async () => {
     const seance = await ouvrirSeance('4271');
-    await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    const premier = await inscrire(seance.id, CLE_ETUDIANT, 1001);
 
-    const second = inscrire(seance.id, CLE_ETUDIANT, 1002);
+    const second = await inscrire(seance.id, CLE_ETUDIANT, 1002);
 
-    await expect(second).rejects.toBeInstanceOf(ResourceConflictError);
-    await expect(second).rejects.toThrow(
-      'Ce participant a deja rejoint cette session',
+    expect(second).toMatchObject({ id: premier.id, seed: 1001 });
+    await expect(contexte.participants.countBySession(seance.id)).resolves.toBe(
+      1,
     );
   });
 
@@ -394,28 +436,73 @@ describeDb('Formations repositories (db integration)', () => {
 
   it('remplace la maitrise existante au lieu de la dupliquer', async () => {
     const derniereVue = new Date('2026-09-11T09:00:00.000Z');
-    await contexte.mastery.upsert({
+    await contexte.mastery.enregistrerTentative({
       studentKey: CLE_ETUDIANT,
       concept: 'capitalisation',
-      boite: 1,
-      derniereVue,
-      succes: 1,
-      echecs: 0,
+      reussi: true,
+      vueLe: derniereVue,
     });
-    await contexte.mastery.upsert({
+    await contexte.mastery.enregistrerTentative({
       studentKey: CLE_ETUDIANT,
       concept: 'capitalisation',
-      boite: 2,
-      derniereVue,
-      succes: 2,
-      echecs: 0,
+      reussi: true,
+      vueLe: derniereVue,
     });
 
     const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
     expect(maitrise).toHaveLength(1);
-    expect(maitrise[0].boite).toBe(2);
+    expect(maitrise[0].boite).toBe(3);
     expect(typeof maitrise[0].succes).toBe('number');
+    expect(maitrise[0].succes).toBe(2);
     expect(maitrise[0].derniereVue.getTime()).toBe(derniereVue.getTime());
+  });
+
+  it('compte chaque tentative simultanee sans perte de mise a jour', async () => {
+    const vueLe = new Date('2026-09-11T09:30:00.000Z');
+    const tentatives = Array.from({ length: 20 }, (_, rang) =>
+      contexte.mastery.enregistrerTentative({
+        studentKey: CLE_ETUDIANT,
+        concept: 'taux-evolution',
+        reussi: rang % 2 === 0,
+        vueLe,
+      }),
+    );
+
+    await Promise.all(tentatives);
+
+    const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
+    const ligne = maitrise.find(
+      (entree) => entree.concept === 'taux-evolution',
+    );
+    expect(ligne).toBeDefined();
+    expect(ligne!.succes + ligne!.echecs).toBe(20);
+    expect(ligne!.succes).toBe(10);
+    expect(ligne!.echecs).toBe(10);
+  });
+
+  it('applique en base la meme transition de boite que le domaine', async () => {
+    for (const reussi of [true, false]) {
+      for (const boiteDepart of [1, 2, 3] as const) {
+        await contexte.nettoyer();
+        for (let montee = 1; montee < boiteDepart; montee += 1) {
+          await contexte.mastery.enregistrerTentative({
+            studentKey: CLE_ETUDIANT,
+            concept: 'controle-coherence',
+            reussi: true,
+            vueLe: new Date('2026-09-11T10:00:00.000Z'),
+          });
+        }
+        await contexte.mastery.enregistrerTentative({
+          studentKey: CLE_ETUDIANT,
+          concept: 'controle-coherence',
+          reussi,
+          vueLe: new Date('2026-09-11T10:05:00.000Z'),
+        });
+
+        const maitrise = await contexte.mastery.findByStudentKey(CLE_ETUDIANT);
+        expect(maitrise[0].boite).toBe(nextBox(boiteDepart, reussi));
+      }
+    }
   });
 
   it('decrit dans les entites le schema exact que produit la migration', async () => {
@@ -438,13 +525,57 @@ describeDb('Formations repositories (db integration)', () => {
     const declarees: ContrainteUnique[] = FORMATION_ENTITIES.flatMap((entite) =>
       contexte.dataSource.getMetadata(entite).uniques.map((verrou) => ({
         nom: verrou.name,
-        colonnes: verrou.columns
-          .map((colonne) => colonne.databaseName)
-          .sort((gauche, droite) => gauche.localeCompare(droite)),
+        colonnes: colonnesTriees(verrou.columns),
       })),
     );
 
-    expect(enBase).toHaveLength(5);
+    expect(enBase).toHaveLength(6);
+    expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
+  });
+
+  it('declare les clefs etrangeres de la base, colonnes, cible et suppression comprises', async () => {
+    const enBase: ClefEtrangere[] = await contexte.dataSource.query(
+      `SELECT contrainte.conname AS nom, array_agg(colonne.attname::text ORDER BY colonne.attname) AS colonnes,
+              cible.relname AS cible,
+              CASE contrainte.confdeltype WHEN 'c' THEN 'CASCADE' WHEN 'n' THEN 'SET NULL' WHEN 'r' THEN 'RESTRICT' WHEN 'd' THEN 'SET DEFAULT' ELSE 'NO ACTION' END AS suppression
+       FROM pg_constraint contrainte
+       JOIN pg_class relation ON relation.oid = contrainte.conrelid
+       JOIN pg_namespace espace ON espace.oid = relation.relnamespace
+       JOIN pg_class cible ON cible.oid = contrainte.confrelid
+       JOIN unnest(contrainte.conkey) AS cle(attnum) ON true
+       JOIN pg_attribute colonne ON colonne.attrelid = relation.oid AND colonne.attnum = cle.attnum
+       WHERE contrainte.contype = 'f' AND espace.nspname = 'public' AND relation.relname LIKE 'formation_%'
+       GROUP BY contrainte.conname, cible.relname, contrainte.confdeltype`,
+    );
+    const declarees: ClefEtrangere[] = FORMATION_ENTITIES.flatMap((entite) =>
+      contexte.dataSource.getMetadata(entite).foreignKeys.map((clef) => ({
+        nom: clef.name,
+        colonnes: colonnesTriees(clef.columns),
+        cible: clef.referencedEntityMetadata.tableName,
+        suppression: clef.onDelete ?? SUPPRESSION_PAR_DEFAUT,
+      })),
+    );
+
+    expect(enBase).toHaveLength(19);
+    expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
+  });
+
+  it('declare les contraintes CHECK de la base sous le meme nom', async () => {
+    const enBase: ContrainteNommee[] = await contexte.dataSource.query(
+      `SELECT contrainte.conname AS nom
+       FROM pg_constraint contrainte
+       JOIN pg_class relation ON relation.oid = contrainte.conrelid
+       JOIN pg_namespace espace ON espace.oid = relation.relnamespace
+       WHERE contrainte.contype = 'c' AND espace.nspname = 'public' AND relation.relname LIKE 'formation_%'`,
+    );
+    const declarees: ContrainteNommee[] = FORMATION_ENTITIES.flatMap((entite) =>
+      contexte.dataSource
+        .getMetadata(entite)
+        .checks.map((controle) => ({ nom: controle.name })),
+    );
+
+    expect(enBase).toHaveLength(12);
+    expect(enBase).toContainEqual({ nom: 'chk_formation_screen_diffusion' });
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -465,13 +596,11 @@ describeDb('Formations repositories (db integration)', () => {
     const declarees: ContrainteUnique[] = FORMATION_ENTITIES.flatMap((entite) =>
       contexte.dataSource.getMetadata(entite).indices.map((index) => ({
         nom: index.name,
-        colonnes: index.columns
-          .map((colonne) => colonne.databaseName)
-          .sort((gauche, droite) => gauche.localeCompare(droite)),
+        colonnes: colonnesTriees(index.columns),
       })),
     );
 
-    expect(enBase).toHaveLength(10);
+    expect(enBase).toHaveLength(21);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 

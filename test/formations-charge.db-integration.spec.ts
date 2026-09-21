@@ -11,6 +11,7 @@ import type { ResultatsSeance } from '../src/modules/formations/domain/Resultats
 import { createMockFormationMailer } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
@@ -126,13 +127,8 @@ function memoireStabilisee(): number {
   return process.memoryUsage().heapUsed;
 }
 
-function cleEtudiant(index: number): string {
-  return `55555555-5555-4555-8555-${String(index).padStart(12, '0')}`;
-}
-
 function identiteDe(index: number): Record<string, string> {
   return {
-    studentKey: cleEtudiant(index),
     prenom: `Prenom-${index}`,
     nom: `Nom-${index}`,
     email: `charge-${index}@example.test`,
@@ -266,15 +262,11 @@ describeDb('Formations sous charge de classe (db integration)', () => {
     contexte = await ouvrirContexteFormations();
     mailer = createMockFormationMailer();
     app = await monterApplicationFormations({
-      sessions: contexte.sessions,
-      participants: contexte.participants,
-      answers: contexte.answers,
-      incidents: contexte.incidents,
-      mastery: contexte.mastery,
+      ...contexte,
       mailer,
     });
     port = await ecouterEnBoucleLocale(app);
-  });
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await fermerApplication(app);

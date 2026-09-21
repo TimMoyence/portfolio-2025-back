@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "sha256": "d95119feb3e14213f2c0675a4977b1e18cc15a4333540214ba7f79fa4f8fed66",
+  "vecteurs": [
+    {
+      "id": "feuille-cycle-deux-maillons",
+      "type": "feuille",
+      "entree": {
+        "lignes": 1,
+        "colonnes": 2,
+        "cellules": { "A1": "=B1", "B1": "=A1" }
+      },
+      "attendu": {
+        "A1": { "valeur": null, "erreur": "#REF!" },
+        "B1": { "valeur": null, "erreur": "#REF!" }
+      }
+    },
+    {
+      "id": "feuille-division-par-cellule-vide",
+      "type": "feuille",
+      "entree": {
+        "lignes": 1,
+        "colonnes": 2,
+        "cellules": { "A1": "=1/B1" }
+      },
+      "attendu": {
+        "A1": { "valeur": null, "erreur": "#DIV/0!" }
+      }
+    },
+    {
+      "id": "feuille-reference-hors-grille",
+      "type": "feuille",
+      "entree": {
+        "lignes": 1,
+        "colonnes": 1,
+        "cellules": { "A1": "=A2" }
+      },
+      "attendu": {
+        "A1": { "valeur": null, "erreur": "#REF!" }
+      }
+    },
+    {
+      "id": "expression-puissance-associative-a-gauche",
+      "type": "expression",
+      "entree": { "expression": "2^3^2", "variables": {} },
+      "attendu": { "valeur": 64, "erreur": null }
+    },
+    {
+      "id": "expression-arrondi-mi-chemin-negatif",
+      "type": "expression",
+      "entree": { "expression": "ARRONDI(-2,5;0)", "variables": {} },
+      "attendu": { "valeur": -3, "erreur": null }
+    },
+    {
+      "id": "expression-coefficient-de-la-toile",
+      "type": "expression",
+      "entree": {
+        "expression": "prix / avantPrix",
+        "variables": { "prix": 20.52, "avantPrix": 21.6 }
+      },
+      "attendu": { "valeur": 0.95, "erreur": null }
+    },
+    {
+      "id": "expression-evolution-depuis-l-indice",
+      "type": "expression",
+      "entree": {
+        "expression": "indice - 100",
+        "variables": { "indice": 103.5 }
+      },
+      "attendu": { "valeur": 3.5, "erreur": null }
+    },
+    {
+      "id": "expression-total-des-taux",
+      "type": "expression",
+      "entree": {
+        "expression": "totalTaux",
+        "variables": { "totalTaux": 4 }
+      },
+      "attendu": { "valeur": 4, "erreur": null }
+    },
+    {
+      "id": "r1c1-taux-d-evolution-d2",
+      "type": "r1c1",
+      "entree": { "formule": "=(C2-B2)/B2", "cellule": "D2" },
+      "attendu": "=(RC[-1]-RC[-2])/RC[-2]"
+    },
+    {
+      "id": "r1c1-part-figee-e2",
+      "type": "r1c1",
+      "entree": { "formule": "=C2/$C$5", "cellule": "E2" },
+      "attendu": "=RC[-2]/R5C3"
+    },
+    {
+      "id": "r1c1-part-figee-recopiee-e3",
+      "type": "r1c1",
+      "entree": { "formule": "=C3/$C$5", "cellule": "E3" },
+      "attendu": "=RC[-2]/R5C3"
+    },
+    {
+      "id": "r1c1-marge-g2",
+      "type": "r1c1",
+      "entree": { "formule": "=C2*F2", "cellule": "G2" },
+      "attendu": "=RC[-4]*RC[-1]"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { media, texte } from './SchemasCommuns';
 
-const texte = z.string().min(1);
 const textes = z.array(texte).min(1);
 const lien = z.object({ href: z.url(), label: texte }).strict();
 const quiz = z
@@ -51,14 +51,14 @@ const series = z
   .strict();
 const image = {
   ...titled,
-  image: z.url(),
+  image: media,
   imageAlt: texte,
   paragraphs: textes,
   items: textes.optional(),
   sourceLink: lien.optional(),
 };
 
-const schema = z.discriminatedUnion('renderer', [
+export const presentationVisuelle = z.discriminatedUnion('renderer', [
   z
     .object({
       renderer: z.literal('hero'),
@@ -66,7 +66,7 @@ const schema = z.discriminatedUnion('renderer', [
         .object({
           ...titled,
           bullets: textes,
-          bgImage: z.url().optional(),
+          bgImage: media.optional(),
           bgImageAlt: texte.optional(),
         })
         .strict(),
@@ -118,6 +118,7 @@ const schema = z.discriminatedUnion('renderer', [
           reading: texte.optional(),
           source: texte.optional(),
           kind: z.enum(['bars', 'line']).optional(),
+          description: texte.optional(),
         })
         .strict(),
     })
@@ -125,7 +126,13 @@ const schema = z.discriminatedUnion('renderer', [
   z
     .object({
       renderer: z.literal('grid'),
-      props: z.object({ ...titled, items: z.array(item).min(1) }).strict(),
+      props: z
+        .object({
+          ...titled,
+          items: z.array(item).min(1),
+          imprimable: z.boolean().optional(),
+        })
+        .strict(),
     })
     .strict(),
   z
@@ -239,8 +246,8 @@ const schema = z.discriminatedUnion('renderer', [
     .strict(),
 ]);
 
-export type VisualPresentation = z.infer<typeof schema>;
+export type VisualPresentation = z.infer<typeof presentationVisuelle>;
 
 export function parseVisualPresentation(value: unknown): VisualPresentation {
-  return schema.parse(value);
+  return presentationVisuelle.parse(value);
 }

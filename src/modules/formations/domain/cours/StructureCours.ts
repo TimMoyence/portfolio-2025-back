@@ -1,5 +1,12 @@
-import type { Cours, Derogation, Ecran } from './Cours';
-import { estInteractif, questionsDuCours } from './Cours';
+import type { Cours, Ecran } from '../contrats/cours';
+import type { TirageDuCours } from '../contrats/tirage';
+import { estInteractif, questionsDe, questionsDuCours } from './Cours';
+import {
+  controlerConfidentialite,
+  type Manquement,
+} from './GardeConfidentialite';
+import { slugOption } from './QuestionStockee';
+import { tirer } from './Tirage';
 
 export const REGLES_STRUCTURE = [
   'exposition-continue',
@@ -9,9 +16,15 @@ export const REGLES_STRUCTURE = [
   'duree-cours',
   'reference-inconnue',
   'reference-circulaire',
+  'notes-formateur',
+  'atelier-questions-fermees',
+  'confidentialite',
+  'catalogue-sans-question',
+  'media-sans-licence',
+  'options-neutres',
 ] as const;
 
-export type RegleStructure = (typeof REGLES_STRUCTURE)[number];
+type RegleStructure = (typeof REGLES_STRUCTURE)[number];
 
 export interface ViolationStructure {
   readonly regle: RegleStructure | 'derogation-sans-justification';
@@ -19,29 +32,56 @@ export interface ViolationStructure {
   readonly raison: string;
 }
 
-interface Manquement {
-  readonly ecran: string | null;
+export interface Derogation {
+  readonly regle: RegleStructure;
+  readonly ecran?: string;
   readonly raison: string;
 }
 
+interface Analyse {
+  readonly cours: Cours;
+  readonly tirage: TirageDuCours;
+}
+
+const GRAINE_DE_CONTROLE = 0;
 const EXPOSITION_MAXIMALE_MINUTES = 6;
 const RATIO_INTERACTION_MINIMAL = 0.3;
-const TOLERANCE_DUREE_ANNONCEE = 0.05;
 const BRIQUE_OUVERTURE = 'fp-recall';
 const BRIQUE_CLOTURE = 'fp-exit';
 const PREFIXE_REFERENCE = 'ref:';
 const DIACRITIQUES = /\p{M}/gu;
+const RUBRIQUES_DES_NOTES = [
+  'Action',
+  'Observé',
+  'Attendu',
+  'Contrôle',
+  'Transition',
+] as const;
+const DUREE_MINIMALE_D_ATELIER = 8;
+const DUREE_MAXIMALE_D_ATELIER = 15;
+const TYPES_DE_QUESTION_FERMEE: readonly string[] = [
+  'vote',
+  'numeric',
+  'classement',
+];
+const CLES_DE_MEDIA: readonly string[] = [
+  'image',
+  'bgImage',
+  'src',
+  'srcPoste',
+  'poster',
+];
 
 function nomEcran(ecran: Ecran, rang: number): string {
   return ecran.id !== '' ? ecran.id : `#${rang}`;
 }
 
-function estDureePositive(minutes: number): boolean {
-  return Number.isFinite(minutes) && minutes > 0;
+function estDureeValide(minutes: number): boolean {
+  return Number.isInteger(minutes) && minutes > 0;
 }
 
 function minutesDe(ecran: Ecran): number {
-  return estDureePositive(ecran.dureeMinutes) ? ecran.dureeMinutes : 0;
+  return estDureeValide(ecran.dureeMinutes) ? ecran.dureeMinutes : 0;
 }
 
 function enFrancais(part: number): string {
@@ -92,7 +132,7 @@ function etapeExposition(
   };
 }
 
-function controlerExposition(cours: Cours): readonly Manquement[] {
+function controlerExposition({ cours }: Analyse): readonly Manquement[] {
   if (questionsDuCours(cours).length === 0) {
     return [];
   }
@@ -107,7 +147,7 @@ function controlerExposition(cours: Cours): readonly Manquement[] {
   ];
 }
 
-function controlerRatio(cours: Cours): readonly Manquement[] {
+function controlerRatio({ cours }: Analyse): readonly Manquement[] {
   if (questionsDuCours(cours).length === 0) {
     return [];
   }
@@ -165,7 +205,7 @@ function controlerCloture(dernier: Ecran, rang: number): readonly Manquement[] {
   ];
 }
 
-function controlerOuvertureCloture(cours: Cours): readonly Manquement[] {
+function controlerOuvertureCloture({ cours }: Analyse): readonly Manquement[] {
   if (questionsDuCours(cours).length === 0) {
     return [];
   }
@@ -178,28 +218,28 @@ function controlerOuvertureCloture(cours: Cours): readonly Manquement[] {
   ];
 }
 
-function controlerDureeEcran(cours: Cours): readonly Manquement[] {
+function controlerDureeEcran({ cours }: Analyse): readonly Manquement[] {
   return cours.ecrans.flatMap((ecran, rang) => {
-    if (estDureePositive(ecran.dureeMinutes)) {
+    if (estDureeValide(ecran.dureeMinutes)) {
       return [];
     }
     const identifiant = nomEcran(ecran, rang);
     return [
       {
         ecran: identifiant,
-        raison: `l'écran « ${identifiant} » annonce une durée de « ${ecran.dureeMinutes} » : une durée doit être un nombre strictement positif.`,
+        raison: `l'écran « ${identifiant} » annonce une durée de « ${ecran.dureeMinutes} » : une durée doit être un nombre entier de minutes strictement positif.`,
       },
     ];
   });
 }
 
-function controlerDureeCours(cours: Cours): readonly Manquement[] {
+function controlerDureeCours({ cours }: Analyse): readonly Manquement[] {
   const annoncee = cours.dureeMinutes;
-  if (!estDureePositive(annoncee)) {
+  if (!estDureeValide(annoncee)) {
     return [
       {
         ecran: null,
-        raison: `le cours annonce une durée de « ${annoncee} » : une durée annoncée doit être un nombre strictement positif.`,
+        raison: `le cours annonce une durée de « ${annoncee} » : une durée annoncée doit être un nombre entier de minutes strictement positif.`,
       },
     ];
   }
@@ -207,15 +247,13 @@ function controlerDureeCours(cours: Cours): readonly Manquement[] {
     (total, ecran) => total + minutesDe(ecran),
     0,
   );
-  const ecart = Math.abs(declarees - annoncee);
-  const tolerance = annoncee * TOLERANCE_DUREE_ANNONCEE;
-  if (ecart <= tolerance) {
+  if (declarees === annoncee) {
     return [];
   }
   return [
     {
       ecran: null,
-      raison: `${declarees} min déclarées par les écrans pour ${annoncee} min annoncées : l'écart de ${ecart} min dépasse la tolérance de ${tolerance} min.`,
+      raison: `${declarees} min déclarées par les écrans pour ${annoncee} min annoncées : la somme des écrans doit égaler la durée annoncée.`,
     },
   ];
 }
@@ -241,17 +279,12 @@ function raisonIntrouvable(
   sujet: string,
   identifiant: string,
   connus: ReadonlySet<string>,
-  absence: string,
 ): string {
   const voisin = voisinIndistinct(identifiant, connus);
   if (voisin === null) {
-    return `${sujet} « ${identifiant} » ${absence}`;
+    return `${sujet} « ${identifiant} » qui n'est déclaré par aucun écran ni aucune question de ce cours.`;
   }
   return `${sujet} « ${identifiant} » est un identifiant distinct de « ${voisin} » : la casse et les accents ne sont jamais rapprochés en silence.`;
-}
-
-function estTableau(valeur: unknown): valeur is readonly unknown[] {
-  return Array.isArray(valeur);
 }
 
 function estObjet(
@@ -268,8 +301,8 @@ function referencesDansValeur(valeur: unknown): readonly string[] {
       ? [valeur.slice(PREFIXE_REFERENCE.length)]
       : [];
   }
-  if (estTableau(valeur)) {
-    return valeur.flatMap((element) => referencesDansValeur(element));
+  if (Array.isArray(valeur)) {
+    return valeur.flatMap((element: unknown) => referencesDansValeur(element));
   }
   if (estObjet(valeur)) {
     return Object.values(valeur).flatMap((element) =>
@@ -317,7 +350,7 @@ function sujetDe(cible: CibleReferencee): string {
     : `l'écran « ${cible.ecran} » renvoie vers`;
 }
 
-function controlerReferences(cours: Cours): readonly Manquement[] {
+function controlerReferences({ cours }: Analyse): readonly Manquement[] {
   const connus = identifiantsConnus(cours);
   const references = [
     ...referencesEcrans(cours),
@@ -327,12 +360,7 @@ function controlerReferences(cours: Cours): readonly Manquement[] {
     .filter((reference) => !connus.has(reference.cible))
     .map((reference) => ({
       ecran: reference.ecran,
-      raison: raisonIntrouvable(
-        sujetDe(reference),
-        reference.cible,
-        connus,
-        "qui n'est déclaré par aucun écran ni aucune question de ce cours.",
-      ),
+      raison: raisonIntrouvable(sujetDe(reference), reference.cible, connus),
     }));
 }
 
@@ -382,7 +410,7 @@ function explorer(
   etats.set(depart, 'clos');
 }
 
-function controlerCycles(cours: Cours): readonly Manquement[] {
+function controlerCycles({ cours }: Analyse): readonly Manquement[] {
   const connus = identifiantsConnus(cours);
   const sortantes = aretes(cours, connus);
   const etats = new Map<string, EtatSommet>();
@@ -395,9 +423,133 @@ function controlerCycles(cours: Cours): readonly Manquement[] {
   return cycles;
 }
 
+function rubriquesManquantes(notes: string): readonly string[] {
+  const lignes = notes.split('\n').map((ligne) => ligne.trim());
+  return RUBRIQUES_DES_NOTES.filter((rubrique) => {
+    const entete = `${rubrique} :`;
+    return !lignes.some(
+      (ligne) =>
+        ligne.startsWith(entete) && ligne.slice(entete.length).trim() !== '',
+    );
+  });
+}
+
+function controlerNotes({ cours }: Analyse): readonly Manquement[] {
+  return cours.ecrans.flatMap((ecran, rang) => {
+    const manquantes = rubriquesManquantes(ecran.notes);
+    if (manquantes.length === 0) {
+      return [];
+    }
+    return [
+      {
+        ecran: nomEcran(ecran, rang),
+        raison: `les notes du formateur n'ont pas de rubrique « ${manquantes.join(' », « ')} » renseignée : chaque écran porte les cinq rubriques Action, Observé, Attendu, Contrôle et Transition.`,
+      },
+    ];
+  });
+}
+
+function estExempteDAtelier(
+  ecran: Ecran,
+  rang: number,
+  dernier: number,
+): boolean {
+  return (
+    (rang === 0 && ecran.brique === BRIQUE_OUVERTURE) ||
+    (rang === dernier && ecran.brique === BRIQUE_CLOTURE)
+  );
+}
+
+function controlerAteliers({ cours }: Analyse): readonly Manquement[] {
+  const dernier = cours.ecrans.length - 1;
+  return cours.ecrans.flatMap((ecran, rang) => {
+    const fermees = questionsDe(ecran).filter(
+      (question) =>
+        question.noteCompte && TYPES_DE_QUESTION_FERMEE.includes(question.type),
+    );
+    const duree = ecran.dureeMinutes;
+    if (
+      fermees.length === 0 ||
+      estExempteDAtelier(ecran, rang, dernier) ||
+      (duree >= DUREE_MINIMALE_D_ATELIER && duree <= DUREE_MAXIMALE_D_ATELIER)
+    ) {
+      return [];
+    }
+    return [
+      {
+        ecran: nomEcran(ecran, rang),
+        raison: `${fermees.length} question(s) fermée(s) notée(s) sur un écran de ${duree} min : un atelier noté dure de ${DUREE_MINIMALE_D_ATELIER} à ${DUREE_MAXIMALE_D_ATELIER} min, hors rappel d'ouverture et billet de clôture.`,
+      },
+    ];
+  });
+}
+
+function controlerCatalogue({ cours }: Analyse): readonly Manquement[] {
+  return cours.ecrans.flatMap((ecran, rang) =>
+    ecran.diffusion === 'catalogue' && estInteractif(ecran)
+      ? [
+          {
+            ecran: nomEcran(ecran, rang),
+            raison: `l'écran interactif « ${nomEcran(ecran, rang)} » est en diffusion catalogue : une activité n'est servie qu'en séance.`,
+          },
+        ]
+      : [],
+  );
+}
+
+function mediasDe(valeur: unknown): readonly string[] {
+  if (Array.isArray(valeur)) {
+    return valeur.flatMap((element: unknown) => mediasDe(element));
+  }
+  if (!estObjet(valeur)) {
+    return [];
+  }
+  return Object.entries(valeur).flatMap(([cle, element]) =>
+    CLES_DE_MEDIA.includes(cle) && typeof element === 'string'
+      ? [element]
+      : mediasDe(element),
+  );
+}
+
+function controlerMedias({ cours, tirage }: Analyse): readonly Manquement[] {
+  const catalogues = new Set(cours.medias.flatMap((media) => media.chemins));
+  return tirage.sujet.ecrans.flatMap((ecran) =>
+    mediasDe(ecran.donnees)
+      .filter((media) => !catalogues.has(media))
+      .map((media) => ({
+        ecran: ecran.id,
+        raison: `le média « ${media} » n'est pas au catalogue des médias du cours : page source, auteur, date et licence y sont obligatoires.`,
+      })),
+  );
+}
+
+function ecranDesQuestions(cours: Cours): ReadonlyMap<string, string> {
+  return new Map(
+    cours.ecrans.flatMap((ecran, rang) =>
+      questionsDe(ecran).map((question) => [
+        question.id,
+        nomEcran(ecran, rang),
+      ]),
+    ),
+  );
+}
+
+function controlerOptions({ cours, tirage }: Analyse): readonly Manquement[] {
+  const ecrans = ecranDesQuestions(cours);
+  return Object.entries(tirage.libellesOptions).flatMap(
+    ([questionId, libelles]) =>
+      Object.entries(libelles)
+        .filter(([id, libelle]) => id !== slugOption(libelle))
+        .map(([id, libelle]) => ({
+          ecran: ecrans.get(questionId) ?? null,
+          raison: `l'option « ${libelle} » de la question « ${questionId} » porte l'identifiant « ${id} » au lieu de « ${slugOption(libelle)} ».`,
+        })),
+  );
+}
+
 interface Regle {
   readonly id: RegleStructure;
-  readonly controler: (cours: Cours) => readonly Manquement[];
+  readonly controler: (analyse: Analyse) => readonly Manquement[];
 }
 
 const REGLES: readonly Regle[] = [
@@ -408,10 +560,22 @@ const REGLES: readonly Regle[] = [
   { id: 'duree-cours', controler: controlerDureeCours },
   { id: 'reference-inconnue', controler: controlerReferences },
   { id: 'reference-circulaire', controler: controlerCycles },
+  { id: 'notes-formateur', controler: controlerNotes },
+  { id: 'atelier-questions-fermees', controler: controlerAteliers },
+  {
+    id: 'confidentialite',
+    controler: ({ cours, tirage }) => controlerConfidentialite(cours, tirage),
+  },
+  { id: 'catalogue-sans-question', controler: controlerCatalogue },
+  { id: 'media-sans-licence', controler: controlerMedias },
+  { id: 'options-neutres', controler: controlerOptions },
 ];
 
-function executer(regle: Regle, cours: Cours): readonly ViolationStructure[] {
-  return regle.controler(cours).map((manquement) => ({
+function executer(
+  regle: Regle,
+  analyse: Analyse,
+): readonly ViolationStructure[] {
+  return regle.controler(analyse).map((manquement) => ({
     regle: regle.id,
     ecran: manquement.ecran,
     raison: manquement.raison,
@@ -455,7 +619,11 @@ function appliquerDerogations(
   return [...restantes, ...signalees];
 }
 
-export function verifierStructure(cours: Cours): readonly ViolationStructure[] {
-  const violations = REGLES.flatMap((regle) => executer(regle, cours));
-  return appliquerDerogations(violations, cours.derogations);
+export function verifierStructure(
+  cours: Cours,
+  derogations: readonly Derogation[] = [],
+): readonly ViolationStructure[] {
+  const analyse: Analyse = { cours, tirage: tirer(cours, GRAINE_DE_CONTROLE) };
+  const violations = REGLES.flatMap((regle) => executer(regle, analyse));
+  return appliquerDerogations(violations, derogations);
 }

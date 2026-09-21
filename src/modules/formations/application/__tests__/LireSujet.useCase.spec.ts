@@ -1,6 +1,8 @@
 import {
   buildCoursDeTest,
   creerCatalogueDeTest,
+  EN_CATALOGUE,
+  tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildBareme,
@@ -9,8 +11,9 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import type { Cours, Ecran } from '../../domain/cours/Cours';
+import type { Cours, Ecran } from '../../domain/contrats/cours';
 import { questionNumerique } from '../../domain/cours/Cours';
+import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { tirer } from '../../domain/cours/Tirage';
 import {
   CoursInconnuError,
@@ -45,6 +48,7 @@ function coursAmbigu(): Cours {
     pieges: [{ confusion: 'base-arrivee', valeur: () => 100.5 }],
   });
   const ecran: Ecran = {
+    ...EN_CATALOGUE,
     id: 'E',
     dureeMinutes: 1,
     concepts: ['proportion'],
@@ -91,7 +95,7 @@ describe('LireSujetUseCase', () => {
 
   it('lit la version du cours fixée à l ouverture de la séance', async () => {
     const catalogue = creerCatalogueDeTest(COURS);
-    const trouver = jest.spyOn(catalogue, 'trouver').mockReturnValue(COURS);
+    const trouver = jest.spyOn(catalogue, 'trouver').mockResolvedValue(COURS);
     sessions.findById.mockResolvedValue({ ...SESSION, courseVersion: 2 });
     sut = new LireSujetUseCase(sessions, participants, catalogue);
 
@@ -171,5 +175,44 @@ describe('LireSujetUseCase', () => {
     );
 
     await expect(demander()).rejects.toBeInstanceOf(CoursModifieError);
+  });
+
+  describe('sur un barème v2', () => {
+    const v2 = ouvrirTirages(COURS, tireurSequentiel(300), 3);
+    const [{ seed }] = v2.tirages;
+
+    beforeEach(() => {
+      participants.findById.mockResolvedValue(
+        buildParticipantRecord({ sessionId: SESSION.id, seed }),
+      );
+    });
+
+    it('rend le sujet quand les solutions recalculées égalent écarts et solutions communes', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ ...SESSION, etat: 'terminee', bareme: v2 }),
+      );
+
+      await expect(demander()).resolves.toEqual(tirer(COURS, seed).sujet);
+    });
+
+    it('refuse quand une solution commune a changé', async () => {
+      if (v2.version !== 2) {
+        throw new Error('barème v2 attendu');
+      }
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({
+          ...SESSION,
+          bareme: {
+            ...v2,
+            solutionsCommunes: {
+              ...v2.solutionsCommunes,
+              'Q-TEST-VOTE-INCONNUE': { valeur: 'o1', pieges: [] },
+            },
+          },
+        }),
+      );
+
+      await expect(demander()).rejects.toBeInstanceOf(CoursModifieError);
+    });
   });
 });

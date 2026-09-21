@@ -1,5 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { EcranPublicResponseDto, SujetResponseDto } from './sujet.response.dto';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ConfusionCorrigeeResponseDto {
   @ApiProperty({ example: 'hausse-baisse-symetriques' })
@@ -27,34 +26,35 @@ export class CorrigePresentateurResponseDto {
   confusions: ConfusionCorrigeeResponseDto[];
 }
 
-export class EcranDerouleResponseDto extends EcranPublicResponseDto {
-  @ApiProperty({ description: 'Notes du formateur' })
-  notes: string;
-
-  @ApiProperty({
-    description:
-      'Seuil de reussite du pivot, null pour un ecran sans question a seuil',
-    example: 0.7,
-    nullable: true,
-    type: Number,
+export class GuideFormateurResponseDto {
+  @ApiPropertyOptional({
+    example: 'Avant de commenter la pente, vérifiez le repère.',
   })
-  seuil: number | null;
+  aDire?: string;
 
-  @ApiProperty({ type: [CorrigePresentateurResponseDto] })
-  corriges: CorrigePresentateurResponseDto[];
-}
-
-export class DerouleResponseDto extends OmitType(SujetResponseDto, [
-  'ecrans',
-] as const) {
-  @ApiProperty({ type: [EcranDerouleResponseDto] })
-  ecrans: EcranDerouleResponseDto[];
-
-  @ApiProperty({
-    type: 'object',
-    additionalProperties: { type: 'string' },
-    description: 'Identifiant de l ecran de remediation de chaque confusion',
-    example: { 'hausse-baisse-symetriques': 'E-CLO-SUCCESSIVES' },
+  @ApiPropertyOptional({
+    example: 'Que faut-il contrôler avant de comparer les deux courbes ?',
   })
-  remediations: Record<string, string>;
+  question?: string;
+
+  @ApiPropertyOptional({
+    example: 'Les valeurs, l’unité, la période et l’échelle.',
+  })
+  reponse?: string;
+
+  @ApiPropertyOptional({
+    example: 'Poids d’un canal = CA du canal / CA total.',
+  })
+  calcul?: string;
+
+  @ApiPropertyOptional({
+    example: 'Les valeurs ont-elles changé ou seulement la représentation ?',
+  })
+  relance?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'Le prochain écran montre comment une échelle modifie l’impression.',
+  })
+  transition?: string;
 }

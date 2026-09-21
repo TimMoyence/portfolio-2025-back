@@ -653,14 +653,11 @@ export class SeedB2StoryboardLots1231779200000 implements MigrationInterface {
     }
   }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `DELETE FROM "formation_screen_contents" WHERE "course_id" = $1`,
-      [COURSE_ID],
-    );
-    await queryRunner.query(
-      `UPDATE "formation_course_contents" SET "titre" = $1, "duree_minutes" = $2 WHERE "id" = $3`,
-      ["Lire et contrôler l'information chiffrée", 90, COURSE_ID],
+  down(): Promise<void> {
+    return Promise.reject(
+      new Error(
+        'Migration de données irréversible : SeedB2StoryboardLots123 a remplacé les 12 écrans initiaux du cours B2, qui ne sont pas restaurés.',
+      ),
     );
   }
 }

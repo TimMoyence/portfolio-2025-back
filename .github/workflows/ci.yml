@@ -75,6 +75,9 @@ jobs:
       - name: Code mort (knip)
         run: pnpm run quality:knip
 
+      - name: Parite des vecteurs de formules (back et front)
+        run: pnpm run quality:parite-formules
+
       - name: Tests des gardes d outillage
         run: pnpm run test:guards
 

@@ -14,6 +14,7 @@ import {
 } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
@@ -68,10 +69,6 @@ function identifiantQuestion(question: number): string {
   return questionsDuCours(COURS_DE_CLASSE)[question].id;
 }
 
-function cleEtudiant(index: number): string {
-  return `44444444-4444-4444-8444-${String(index).padStart(12, '0')}`;
-}
-
 function statutsEnEchec(
   reponses: readonly Response[],
   attendu: number,
@@ -111,7 +108,6 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     request(serveur())
       .post(route(`/sessions/${code}/join`))
       .send({
-        studentKey: cleEtudiant(index),
         prenom: `Prenom-${index}`,
         nom: `Nom-${index}`,
         email: `etudiant-${index}@example.test`,
@@ -188,17 +184,13 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     contexte = await ouvrirContexteFormations();
     app = await monterApplicationFormations(
       {
-        sessions: contexte.sessions,
-        participants: contexte.participants,
-        answers: contexte.answers,
-        incidents: contexte.incidents,
-        mastery: contexte.mastery,
+        ...contexte,
         mailer: createMockFormationMailer(),
       },
       creerCatalogueDeTest(COURS_DE_CLASSE),
     );
     await ecouterEnBoucleLocale(app);
-  });
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => {
     await fermerApplication(app);
@@ -286,6 +278,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     const { sessionId, code } = await ouvrirSeance();
     const etudiant = await premierInscrit(code);
     await demarrer(sessionId);
+    await piloter(sessionId, FORMATEUR, NB_QUESTIONS - 1).expect(SANS_CONTENU);
 
     const [cloture, ...envois] = await Promise.all([
       fermer(sessionId),

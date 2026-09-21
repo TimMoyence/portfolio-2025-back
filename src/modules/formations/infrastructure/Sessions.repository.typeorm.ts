@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
-import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
+import {
+  RevisionDeSeanceObsoleteError,
+  SessionCodeAlreadyActiveError,
+} from '../domain/errors/FormationErrors';
 import type {
   CreateSessionInput,
+  EtatDeSeanceRecord,
   ISessionsRepository,
   SessionRecord,
   UpdateSessionInput,
@@ -12,6 +16,7 @@ import { PostgresErrorClassifier } from './PostgresErrorClassifier';
 import { FormationSessionEntity } from './entities/FormationSession.entity';
 
 const CODE_ACTIF_CONSTRAINT = 'uq_formation_sessions_code_active';
+const CAPACITE_PAR_DEFAUT = 40;
 
 @Injectable()
 export class SessionsRepositoryTypeORM
@@ -36,6 +41,9 @@ export class SessionsRepositoryTypeORM
       modeRythme: 'pilote',
       ecranCourant: 0,
       intervalleLibre: null,
+      pilotageEcrans: {},
+      revision: 0,
+      capacite: input.capacite ?? CAPACITE_PAR_DEFAUT,
       fermeeLe: null,
       majLe: new Date(),
     });
@@ -54,6 +62,33 @@ export class SessionsRepositoryTypeORM
     return entity ? this.toDomain(entity) : null;
   }
 
+  async lireEtat(id: string): Promise<EtatDeSeanceRecord | null> {
+    const entity = await this.repo.findOne({
+      where: { id },
+      select: {
+        etat: true,
+        modeRythme: true,
+        ecranCourant: true,
+        intervalleLibre: true,
+        pilotageEcrans: true,
+        revision: true,
+        majLe: true,
+      },
+    });
+    if (!entity) {
+      return null;
+    }
+    return {
+      etat: entity.etat,
+      modeRythme: entity.modeRythme,
+      ecranCourant: entity.ecranCourant,
+      intervalleLibre: entity.intervalleLibre,
+      pilotageEcrans: entity.pilotageEcrans,
+      revision: entity.revision,
+      majLe: entity.majLe,
+    };
+  }
+
   async findActiveByCode(code: string): Promise<SessionRecord | null> {
     const entity = await this.repo.findOne({
       where: { code, etat: Not('terminee') },
@@ -68,8 +103,23 @@ export class SessionsRepositoryTypeORM
     return total > 0;
   }
 
-  async update(id: string, input: UpdateSessionInput): Promise<SessionRecord> {
-    await this.repo.update(id, { ...input, majLe: new Date() });
+  async update(
+    id: string,
+    input: UpdateSessionInput,
+    revisionAttendue?: number,
+  ): Promise<SessionRecord> {
+    const ecriture = this.repo
+      .createQueryBuilder()
+      .update(FormationSessionEntity)
+      .set({ ...input, majLe: new Date(), revision: () => '"revision" + 1' })
+      .where('id = :id', { id });
+    if (revisionAttendue !== undefined) {
+      ecriture.andWhere('revision = :revisionAttendue', { revisionAttendue });
+    }
+    const resultat = await ecriture.execute();
+    if (revisionAttendue !== undefined && (resultat.affected ?? 0) === 0) {
+      throw new RevisionDeSeanceObsoleteError(id);
+    }
     const entity = await this.repo.findOne({ where: { id } });
     if (!entity) {
       throw new Error(`Session introuvable apres mise a jour: ${id}`);
@@ -88,6 +138,9 @@ export class SessionsRepositoryTypeORM
       modeRythme: entity.modeRythme,
       ecranCourant: entity.ecranCourant,
       intervalleLibre: entity.intervalleLibre,
+      pilotageEcrans: entity.pilotageEcrans,
+      revision: entity.revision,
+      capacite: entity.capacite,
       bareme: entity.bareme,
       ouverteLe: entity.ouverteLe,
       fermeeLe: entity.fermeeLe,

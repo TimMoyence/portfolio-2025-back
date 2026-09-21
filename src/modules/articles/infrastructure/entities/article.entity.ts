@@ -4,15 +4,17 @@ import {
   Entity,
   Index,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity({ name: 'articles' })
 @Index('uq_articles_locale_slug', ['locale', 'slug'], { unique: true })
+@Index('idx_articles_published_at', ['publishedAt'])
+@Unique('UQ_articles_id', ['articleId'])
 export class ArticleEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Index({ unique: true })
   @Column({ type: 'varchar', length: 160 })
   articleId: string;
 
@@ -22,7 +24,7 @@ export class ArticleEntity {
   @Column({ type: 'varchar', length: 2 })
   locale: 'fr' | 'en';
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'varchar', length: 20, default: 'published' })
   status: 'published';
 
   @Column({ type: 'varchar', length: 180 })
@@ -52,14 +54,12 @@ export class ArticleEntity {
   @Column({ type: 'jsonb' })
   seo: Record<string, unknown>;
 
-  @Index()
   @Column({ type: 'timestamp with time zone' })
   publishedAt: Date;
 
   @Column({ type: 'timestamp with time zone' })
   updatedAt: Date;
 
-  @Index()
   @Column({ type: 'varchar', length: 64 })
   contentSha256: string;
 

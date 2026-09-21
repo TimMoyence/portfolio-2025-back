@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
@@ -12,6 +13,14 @@ import type {
 import type { EngineCoverage } from '../../domain/EngineCoverage';
 
 @Entity({ name: 'audit_requests' })
+@Index('idx_audit_requests_status_created_at', [
+  'processingStatus',
+  'createdAt',
+])
+@Index('idx_audit_requests_request_id', ['requestId'])
+@Index('idx_audit_requests_ip_created_at', ['ip', 'createdAt'], {
+  where: '"ip" IS NOT NULL',
+})
 export class AuditRequestEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -49,16 +58,16 @@ export class AuditRequestEntity {
   @Column({ type: 'text', nullable: true })
   finalUrl?: string | null;
 
-  @Column({ type: 'jsonb', default: () => "'[]'::jsonb" })
+  @Column({ type: 'jsonb', default: [] })
   redirectChain: string[];
 
-  @Column({ type: 'jsonb', default: () => "'{}'::jsonb" })
+  @Column({ type: 'jsonb', default: {} })
   keyChecks: Record<string, unknown>;
 
-  @Column({ type: 'jsonb', default: () => "'[]'::jsonb" })
+  @Column({ type: 'jsonb', default: [] })
   quickWins: string[];
 
-  @Column({ type: 'jsonb', default: () => "'{}'::jsonb" })
+  @Column({ type: 'jsonb', default: {} })
   pillarScores: Record<string, number>;
 
   @Column({ type: 'text', nullable: true })

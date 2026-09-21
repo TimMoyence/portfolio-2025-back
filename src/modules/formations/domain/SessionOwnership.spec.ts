@@ -1,54 +1,76 @@
+import { buildSessionRecord } from '../../../../test/factories/formation.factory';
 import {
   SessionNotFoundError,
   SessionNotOwnedError,
 } from './errors/FormationErrors';
-import { assertSessionOwnedBy } from './SessionOwnership';
-import type { SessionRecord } from './ISessions.repository';
+import {
+  assertSessionOwnedBy,
+  assertSessionReadableBy,
+} from './SessionOwnership';
 
-function buildSession(overrides: Partial<SessionRecord> = {}): SessionRecord {
-  return {
-    id: 'session-uuid',
-    courseSlug: 'b1-09-interets-composes',
-    courseVersion: 1,
-    teacherId: 'teacher-uuid',
-    code: '4271',
-    etat: 'en_cours',
-    modeRythme: 'pilote',
-    ecranCourant: 0,
-    intervalleLibre: null,
-    bareme: {
-      version: 1,
-      graineReference: 9_999_999,
-      questions: [],
-      tirages: [],
-    },
-    ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
-    fermeeLe: null,
-    majLe: new Date('2026-09-11T08:00:00.000Z'),
-    ...overrides,
-  };
-}
+const SESSION_ID = 'session-uuid';
+const PROPRIETAIRE = 'teacher-uuid';
 
 describe('assertSessionOwnedBy', () => {
   it('retourne la session quand elle existe et appartient a l appelant', () => {
-    const session = buildSession();
+    const session = buildSessionRecord({ teacherId: PROPRIETAIRE });
 
-    expect(assertSessionOwnedBy(session, 'session-uuid', 'teacher-uuid')).toBe(
+    expect(assertSessionOwnedBy(session, SESSION_ID, PROPRIETAIRE)).toBe(
       session,
     );
   });
 
   it('leve SessionNotFoundError quand la session est introuvable', () => {
-    expect(() =>
-      assertSessionOwnedBy(null, 'session-uuid', 'teacher-uuid'),
-    ).toThrow(SessionNotFoundError);
+    expect(() => assertSessionOwnedBy(null, SESSION_ID, PROPRIETAIRE)).toThrow(
+      SessionNotFoundError,
+    );
   });
 
   it('leve SessionNotOwnedError quand l appelant n est pas le formateur', () => {
-    const session = buildSession({ teacherId: 'teacher-uuid' });
+    const session = buildSessionRecord({ teacherId: PROPRIETAIRE });
 
     expect(() =>
-      assertSessionOwnedBy(session, 'session-uuid', 'autre-teacher-uuid'),
+      assertSessionOwnedBy(session, SESSION_ID, 'autre-teacher-uuid'),
     ).toThrow(SessionNotOwnedError);
+  });
+});
+
+describe('assertSessionReadableBy', () => {
+  const session = buildSessionRecord({ teacherId: PROPRIETAIRE });
+
+  it('laisse le formateur proprietaire lire sa seance', () => {
+    expect(
+      assertSessionReadableBy(session, SESSION_ID, {
+        id: PROPRIETAIRE,
+        roles: ['teacher'],
+      }),
+    ).toBe(session);
+  });
+
+  it('laisse un administrateur lire la seance d un formateur', () => {
+    expect(
+      assertSessionReadableBy(session, SESSION_ID, {
+        id: 'admin-uuid',
+        roles: ['admin'],
+      }),
+    ).toBe(session);
+  });
+
+  it('refuse la lecture a un autre formateur', () => {
+    expect(() =>
+      assertSessionReadableBy(session, SESSION_ID, {
+        id: 'autre-teacher-uuid',
+        roles: ['teacher'],
+      }),
+    ).toThrow(SessionNotOwnedError);
+  });
+
+  it('leve SessionNotFoundError quand la seance est introuvable, meme pour un administrateur', () => {
+    expect(() =>
+      assertSessionReadableBy(null, SESSION_ID, {
+        id: 'admin-uuid',
+        roles: ['admin'],
+      }),
+    ).toThrow(SessionNotFoundError);
   });
 });

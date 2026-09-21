@@ -8,14 +8,31 @@ import { JoinSessionUseCase } from './application/JoinSession.useCase';
 import { LireCoursPublicUseCase } from './application/LireCoursPublic.useCase';
 import { LireDerouleUseCase } from './application/LireDeroule.useCase';
 import { LireSujetUseCase } from './application/LireSujet.useCase';
+import { ListFreeResponsesUseCase } from './application/ListFreeResponses.useCase';
+import { ListSessionParticipantsUseCase } from './application/ListSessionParticipants.useCase';
+import { ManageFormationGroupsUseCase } from './application/ManageFormationGroups.useCase';
+import { ManageTeacherAnnotationsUseCase } from './application/ManageTeacherAnnotations.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
+import { SaveFreeResponseUseCase } from './application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from './application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from './application/SubmitAnswer.useCase';
+import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
+import { DefisUseCase } from './application/Defis.useCase';
+import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
+import { ReadmettreParticipantUseCase } from './application/ReadmettreParticipant.useCase';
+import { LireRappelsUseCase } from './application/LireRappels.useCase';
+import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
+import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
+import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
+import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
+  ESCAPE_REPOSITORY,
   FREE_RESPONSES_REPOSITORY,
+  PULSES_REPOSITORY,
+  RAPPELS_SERVIS_REPOSITORY,
   FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
@@ -29,6 +46,14 @@ import {
 } from './domain/token';
 import { AnswersRepositoryTypeORM } from './infrastructure/Answers.repository.typeorm';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
+import { FormationEscapeAttemptEntity } from './infrastructure/entities/FormationEscapeAttempt.entity';
+import { FormationEscapeProgressEntity } from './infrastructure/entities/FormationEscapeProgress.entity';
+import { EscapeRepositoryTypeORM } from './infrastructure/Escape.repository.typeorm';
+import { FormationCoursePublicationEntity } from './infrastructure/entities/FormationCoursePublication.entity';
+import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.entity';
+import { FormationRappelServiEntity } from './infrastructure/entities/FormationRappelServi.entity';
+import { RappelsServisRepositoryTypeORM } from './infrastructure/RappelsServis.repository.typeorm';
+import { PulsesRepositoryTypeORM } from './infrastructure/Pulses.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from './infrastructure/FreeResponses.repository.typeorm';
 import { FormationGroupsRepositoryTypeORM } from './infrastructure/FormationGroups.repository.typeorm';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
@@ -51,9 +76,12 @@ import { SessionsRepositoryTypeORM } from './infrastructure/Sessions.repository.
 import { SessionStateCacheService } from './infrastructure/SessionStateCache.service';
 import { StreamCapacityService } from './infrastructure/StreamCapacity.service';
 import { TeacherAnnotationsRepositoryTypeORM } from './infrastructure/TeacherAnnotations.repository.typeorm';
+import { FormationsAnnotationsController } from './interfaces/FormationsAnnotations.controller';
+import { FormationsGroupsController } from './interfaces/FormationsGroups.controller';
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
 import { FormationsCatalogController } from './interfaces/FormationsCatalog.controller';
+import { CleEtudiantService } from './interfaces/CleEtudiant.service';
 import { CodeScanProtectionService } from './interfaces/CodeScanProtection.service';
 import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
 
@@ -71,11 +99,18 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       FormationTeacherAnnotationEntity,
       FormationGroupEntity,
       FormationScoreEntity,
+      FormationEscapeProgressEntity,
+      FormationEscapeAttemptEntity,
+      FormationPulseEntity,
+      FormationCoursePublicationEntity,
+      FormationRappelServiEntity,
     ]),
   ],
   controllers: [
     FormationsCatalogController,
     FormationsPresenterController,
+    FormationsGroupsController,
+    FormationsAnnotationsController,
     FormationsStudentController,
   ],
   providers: [
@@ -86,6 +121,15 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     JoinSessionUseCase,
     LireCoursPublicUseCase,
     SubmitAnswerUseCase,
+    SubmitProductionUseCase,
+    TenterEnigmeUseCase,
+    DeclarerJalonUseCase,
+    DefisUseCase,
+    LireEtatParticipantUseCase,
+    EvincerParticipantUseCase,
+    ReadmettreParticipantUseCase,
+    LireRappelsUseCase,
+    SyntheseRappelsUseCase,
     RecordIncidentsUseCase,
     StreamSessionUseCase,
     {
@@ -95,8 +139,13 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     DueQuestionsUseCase,
     LireSujetUseCase,
     LireDerouleUseCase,
-    CoursCatalogueRepositoryTypeORM,
+    ManageTeacherAnnotationsUseCase,
+    ManageFormationGroupsUseCase,
+    ListSessionParticipantsUseCase,
+    ListFreeResponsesUseCase,
+    SaveFreeResponseUseCase,
     ParticipantTokenService,
+    CleEtudiantService,
     CodeScanProtectionService,
     {
       provide: SESSIONS_REPOSITORY,
@@ -125,6 +174,18 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: SCORES_REPOSITORY,
       useClass: ScoresRepositoryTypeORM,
+    },
+    {
+      provide: ESCAPE_REPOSITORY,
+      useClass: EscapeRepositoryTypeORM,
+    },
+    {
+      provide: PULSES_REPOSITORY,
+      useClass: PulsesRepositoryTypeORM,
+    },
+    {
+      provide: RAPPELS_SERVIS_REPOSITORY,
+      useClass: RappelsServisRepositoryTypeORM,
     },
     {
       provide: MASTERY_REPOSITORY,

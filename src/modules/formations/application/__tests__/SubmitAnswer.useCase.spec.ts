@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
+  buildCoursDuBaremeV1,
+  creerCatalogueDeTest,
+} from '../../../../../test/factories/cours.factory';
+import {
+  buildBaremeV2,
   buildParticipantRecord,
   buildSessionRecord,
   buildVoteBareme,
@@ -14,11 +19,18 @@ import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
 import { NE_SAIT_PAS } from '../../domain/GradingCore';
 import {
   AnswerAlreadySubmittedError,
+  EcranNonServiError,
   ParticipantNotFoundError,
+  PhaseFermeeError,
   SessionClosedError,
   SessionNotStartedError,
 } from '../../domain/errors/FormationErrors';
 import { SubmitAnswerUseCase } from '../SubmitAnswer.useCase';
+
+const EN_RYTHME_LIBRE = {
+  modeRythme: 'libre',
+  intervalleLibre: null,
+} as const;
 
 describe('SubmitAnswerUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -42,13 +54,24 @@ describe('SubmitAnswerUseCase', () => {
     answers = createMockAnswersRepo();
     mastery = createMockMasteryRepo();
     cache = createMockSessionStateCache();
+    sessions.findById.mockResolvedValue(buildSessionRecord(EN_RYTHME_LIBRE));
     sut = new SubmitAnswerUseCase(
       sessions,
       participants,
       answers,
       mastery,
       cache,
+      creerCatalogueDeTest(buildCoursDuBaremeV1()),
     );
+  });
+
+  it('refuse une reponse dont l ecran n a pas encore ete projete, meme quand le bareme ne porte pas son rang', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ ecranCourant: 0 }),
+    );
+
+    await expect(sut.execute(commande)).rejects.toThrow(EcranNonServiError);
+    expect(answers.create).not.toHaveBeenCalled();
   });
 
   it('signale une activite sur la session une fois la reponse enregistree', async () => {
@@ -141,7 +164,7 @@ describe('SubmitAnswerUseCase', () => {
     );
     await expect(sut.execute(commande)).rejects.toThrow(SessionNotStartedError);
     expect(answers.create).not.toHaveBeenCalled();
-    expect(mastery.upsert).not.toHaveBeenCalled();
+    expect(mastery.enregistrerTentative).not.toHaveBeenCalled();
   });
 
   it('dit a l etudiant que la seance n a pas commence plutot que de refuser sans raison', async () => {
@@ -158,32 +181,23 @@ describe('SubmitAnswerUseCase', () => {
     );
   });
 
-  it('fait monter la boite de Leitner apres une reussite', async () => {
+  it('enregistre une tentative reussie sur le concept de la question', async () => {
     await sut.execute(commande);
-    expect(mastery.upsert).toHaveBeenCalledWith(
+    expect(mastery.enregistrerTentative).toHaveBeenCalledWith(
       expect.objectContaining({
+        studentKey: '11111111-1111-4111-8111-111111111111',
         concept: 'capitalisation',
-        boite: 2,
-        succes: 1,
+        reussi: true,
       }),
     );
   });
 
-  it('redescend en premiere boite apres un echec', async () => {
-    mastery.findByStudentKey.mockResolvedValue([
-      {
-        studentKey: '11111111-1111-4111-8111-111111111111',
-        concept: 'capitalisation',
-        boite: 3,
-        derniereVue: new Date('2026-09-01T08:00:00.000Z'),
-        succes: 4,
-        echecs: 0,
-      },
-    ]);
+  it('enregistre une tentative ratee sans relire la maitrise existante', async () => {
     await sut.execute({ ...commande, valeur: 1300 });
-    expect(mastery.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ boite: 1, echecs: 1 }),
+    expect(mastery.enregistrerTentative).toHaveBeenCalledWith(
+      expect.objectContaining({ concept: 'capitalisation', reussi: false }),
     );
+    expect(mastery.findByStudentKey).not.toHaveBeenCalled();
   });
 
   it('enregistre la duree de reponse', async () => {
@@ -196,6 +210,7 @@ describe('SubmitAnswerUseCase', () => {
   it('refuse une valeur hors des options connues sur une question de vote', async () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({
+        ...EN_RYTHME_LIBRE,
         bareme: buildVoteBareme([
           { valeur: 'a', misconception: 'interet-simple' },
         ]),
@@ -209,7 +224,7 @@ describe('SubmitAnswerUseCase', () => {
 
   it('accepte je ne sais pas sur une question de vote', async () => {
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({ bareme: buildVoteBareme() }),
+      buildSessionRecord({ ...EN_RYTHME_LIBRE, bareme: buildVoteBareme() }),
     );
     const result = await sut.execute({ ...commande, valeur: NE_SAIT_PAS });
     expect(result.correcte).toBe(false);
@@ -218,6 +233,7 @@ describe('SubmitAnswerUseCase', () => {
   it('traduit une misconception connue de la banque par son libelle humain', async () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({
+        ...EN_RYTHME_LIBRE,
         bareme: buildVoteBareme([
           { valeur: 'a', misconception: 'base-arrivee' },
         ]),
@@ -225,5 +241,159 @@ describe('SubmitAnswerUseCase', () => {
     );
     const result = await sut.execute({ ...commande, valeur: 'a' });
     expect(result.libelleConfusion).toBe(libelleDeConfusion('base-arrivee'));
+  });
+
+  describe('sur un barème v2', () => {
+    beforeEach(() => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ bareme: buildBaremeV2() }),
+      );
+      participants.findById.mockResolvedValue(
+        buildParticipantRecord({ seed: 11 }),
+      );
+    });
+
+    it('refuse une reponse visant un ecran que le formateur n a pas projete', async () => {
+      await expect(
+        sut.execute({
+          ...commande,
+          questionId: 'b2-01-a2-part-marketplace',
+          valeur: 45.478261,
+        }),
+      ).rejects.toThrow(EcranNonServiError);
+      expect(answers.create).not.toHaveBeenCalled();
+    });
+
+    it('accepte la reponse une fois l ecran projete', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
+      );
+
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'b2-01-a2-part-marketplace',
+        valeur: 45.478261,
+      });
+
+      expect(result.correcte).toBe(true);
+    });
+
+    it('corrige un vote par son identifiant stable, dans les solutions communes', async () => {
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'b2-01-a1-diagnostic',
+        valeur: 'plus-25-pct-ecd953a1',
+      });
+
+      expect(result.correcte).toBe(true);
+    });
+
+    it('corrige une question numérique par l écart de la graine du participant', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
+      );
+      participants.findById.mockResolvedValue(
+        buildParticipantRecord({ seed: 12 }),
+      );
+
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'b2-01-a2-part-marketplace',
+        valeur: 12.5,
+      });
+
+      expect(result.correcte).toBe(true);
+    });
+
+    it('refuse une production, qui a sa propre route', async () => {
+      await expect(
+        sut.execute({
+          ...commande,
+          questionId: 'b2-01-a4-feuille-canaux',
+          valeur: 1,
+        }),
+      ).rejects.toThrow(DomainValidationError);
+      expect(answers.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('phases d un vote à question jumelle', () => {
+    const bareme = buildBaremeV2({
+      questions: [
+        {
+          id: 'Q-PRINCIPALE',
+          type: 'vote',
+          concept: 'evolutions-successives',
+          noteCompte: true,
+          ecranId: 'E-VOTE',
+          rangEcran: 0,
+          ouverture: 'principale',
+        },
+        {
+          id: 'Q-JUMELLE',
+          type: 'vote',
+          concept: 'evolutions-successives',
+          noteCompte: true,
+          ecranId: 'E-VOTE',
+          rangEcran: 0,
+          ouverture: 'jumelle',
+        },
+      ],
+      solutionsCommunes: {
+        'Q-PRINCIPALE': { valeur: 'a', pieges: [] },
+        'Q-JUMELLE': { valeur: 'b', pieges: [] },
+      },
+      tirages: [{ seed: 1001, ecarts: {} }],
+    });
+
+    const seanceEnPhase = (phase?: 'discussion' | 'revote' | 'revele') =>
+      buildSessionRecord({
+        bareme,
+        pilotageEcrans: phase === undefined ? {} : { 'E-VOTE': { phase } },
+      });
+
+    it('accepte la principale avant toute phase pilotée', async () => {
+      sessions.findById.mockResolvedValue(seanceEnPhase());
+
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'Q-PRINCIPALE',
+        valeur: 'a',
+      });
+
+      expect(result.correcte).toBe(true);
+    });
+
+    it('refuse la jumelle avant le revote', async () => {
+      sessions.findById.mockResolvedValue(seanceEnPhase());
+
+      await expect(
+        sut.execute({ ...commande, questionId: 'Q-JUMELLE', valeur: 'b' }),
+      ).rejects.toThrow(PhaseFermeeError);
+      expect(answers.create).not.toHaveBeenCalled();
+    });
+
+    it('ferme les deux questions pendant la discussion', async () => {
+      sessions.findById.mockResolvedValue(seanceEnPhase('discussion'));
+
+      await expect(
+        sut.execute({ ...commande, questionId: 'Q-PRINCIPALE', valeur: 'a' }),
+      ).rejects.toThrow(PhaseFermeeError);
+    });
+
+    it('ouvre la jumelle seule au revote', async () => {
+      sessions.findById.mockResolvedValue(seanceEnPhase('revote'));
+
+      const result = await sut.execute({
+        ...commande,
+        questionId: 'Q-JUMELLE',
+        valeur: 'b',
+      });
+
+      expect(result.correcte).toBe(true);
+      await expect(
+        sut.execute({ ...commande, questionId: 'Q-PRINCIPALE', valeur: 'a' }),
+      ).rejects.toThrow(PhaseFermeeError);
+    });
   });
 });

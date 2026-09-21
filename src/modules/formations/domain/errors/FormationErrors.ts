@@ -10,21 +10,49 @@ export class InvalidSessionCodeError extends DomainValidationError {
   }
 }
 
+export class BlankFieldError extends DomainValidationError {
+  constructor(champ: string) {
+    super(`${champ} ne peut pas être vide.`);
+  }
+}
+
 export class SessionNotFoundError extends ResourceNotFoundError {
+  readonly code = 'SEANCE_INTROUVABLE';
+
   constructor(id: string) {
     super(`Session introuvable: ${id}`);
   }
 }
 
 export class CoursInconnuError extends ResourceNotFoundError {
+  readonly code = 'COURS_INTROUVABLE';
+
   constructor(slug: string) {
     super(`Cours introuvable: ${slug}`);
   }
 }
 
 export class ParticipantNotFoundError extends ResourceNotFoundError {
+  readonly code = 'PARTICIPANT_INTROUVABLE';
+
   constructor(id: string) {
     super(`Participant introuvable: ${id}`);
+  }
+}
+
+export class FormationGroupNotFoundError extends ResourceNotFoundError {
+  constructor(groupId: string) {
+    super(`Groupe introuvable dans cette séance : ${groupId}`);
+  }
+}
+
+export class FormationGroupNameTakenError extends ResourceConflictError {
+  readonly code = 'NOM_DE_GROUPE_DEJA_PRIS';
+
+  constructor(name: string) {
+    super(
+      `Le groupe « ${name} » existe déjà dans cette séance : choisissez un autre nom.`,
+    );
   }
 }
 
@@ -60,6 +88,16 @@ export class InvalidStateTransitionError extends ResourceConflictError {
   }
 }
 
+export class SeanceCompleteError extends ResourceConflictError {
+  readonly code = 'SEANCE_COMPLETE';
+
+  constructor(capacite: number) {
+    super(
+      `Cette séance a atteint sa capacité de ${capacite} participants : demandez au formateur de libérer une place.`,
+    );
+  }
+}
+
 export class SeedPoolExhaustedError extends ResourceConflictError {
   constructor() {
     super('Plus aucun tirage disponible pour cette session');
@@ -73,6 +111,144 @@ export class AnswerAlreadySubmittedError extends ResourceConflictError {
     super(
       `Votre réponse à la question ${questionId} est déjà enregistrée : passez à la suivante.`,
     );
+  }
+}
+
+export class ActiviteInconnueError extends DomainValidationError {
+  readonly code = 'ACTIVITE_INCONNUE';
+
+  constructor(screenId: string, activityId: string) {
+    super(
+      `L’activité ${activityId} n’existe pas sur l’écran ${screenId} de ce cours.`,
+    );
+  }
+}
+
+export class TypeDeQuestionError extends DomainValidationError {
+  readonly code = 'TYPE_DE_QUESTION';
+
+  constructor(questionId: string, raison: string) {
+    super(`La question ${questionId} ${raison}.`);
+  }
+}
+
+export class ProductionVideError extends DomainValidationError {
+  readonly code = 'PRODUCTION_VIDE';
+
+  constructor(questionId: string) {
+    super(
+      `Aucune saisie envoyée pour ${questionId} : répondez ou déclarez « je ne sais pas ».`,
+    );
+  }
+}
+
+export class ProductionInvalideError extends DomainValidationError {
+  readonly code = 'PRODUCTION_INVALIDE';
+
+  constructor(questionId: string, raison: string) {
+    super(`Production refusée pour ${questionId} : ${raison}.`);
+  }
+}
+
+export class PilotageIncompatibleError extends DomainValidationError {
+  constructor(screenId: string, raison: string) {
+    super(`Pilotage impossible sur l’écran ${screenId} : ${raison}.`);
+  }
+}
+
+export class PhaseNonMonotoneError extends ResourceConflictError {
+  readonly code = 'PHASE_NON_MONOTONE';
+
+  constructor(screenId: string) {
+    super(
+      `Le pilotage de l’écran ${screenId} ne revient pas en arrière : la classe a déjà vu l’étape suivante.`,
+    );
+  }
+}
+
+export class PhaseFermeeError extends ResourceConflictError {
+  readonly code = 'PHASE_FERMEE';
+
+  constructor(screenId: string) {
+    super(
+      `Cette question de l’écran ${screenId} n’est pas ouverte dans la phase en cours.`,
+    );
+  }
+}
+
+export class DefiInconnuError extends ResourceNotFoundError {
+  readonly code = 'ACTIVITE_INCONNUE';
+
+  constructor(defiId: string) {
+    super(`Défi absent du cours de cette séance : ${defiId}`);
+  }
+}
+
+export class DefiSansTentativeError extends ResourceNotFoundError {
+  readonly code = 'DEFI_SANS_TENTATIVE';
+
+  constructor(defiId: string) {
+    super(
+      `Les stratégies du défi ${defiId} ne sont servies qu’après votre propre tentative.`,
+    );
+  }
+}
+
+export class RappelsIndisponiblesError extends ResourceNotFoundError {
+  constructor(slug: string) {
+    super(`Aucun écran de rappel espacé dans le cours ${slug}`);
+  }
+}
+
+export class EnigmeInconnueError extends ResourceNotFoundError {
+  constructor(parcoursId: string, enigmeId: string) {
+    super(`Énigme ${enigmeId} absente du parcours ${parcoursId}`);
+  }
+}
+
+export class EnigmeVerrouilleeError extends ResourceConflictError {
+  readonly code = 'ENIGME_VERROUILLEE';
+
+  constructor(enigmeId: string) {
+    super(
+      `L’énigme ${enigmeId} n’est pas encore ouverte : résolvez la précédente ou épuisez ses tentatives.`,
+    );
+  }
+}
+
+export class EnigmeDejaResolueError extends ResourceConflictError {
+  readonly code = 'ENIGME_DEJA_RESOLUE';
+
+  constructor(enigmeId: string) {
+    super(`Vous avez déjà trouvé le fragment de l’énigme ${enigmeId}.`);
+  }
+}
+
+export class TentativesEpuiseesError extends ResourceConflictError {
+  readonly code = 'TENTATIVES_EPUISEES';
+
+  constructor(enigmeId: string) {
+    super(
+      `Les tentatives de l’énigme ${enigmeId} sont épuisées : passez à la suivante.`,
+    );
+  }
+}
+
+export class EcranNonServiError extends ResourceNotFoundError {
+  readonly code = 'ECRAN_NON_SERVI';
+
+  constructor(screenId: string) {
+    super(
+      `L’écran ${screenId} n’a pas encore été projeté : attendez que le formateur y arrive.`,
+    );
+  }
+}
+
+export class PlafondDeFluxAtteintError extends RateLimitExceededError {
+  readonly code = 'PLAFOND_DE_FLUX_ATTEINT';
+
+  constructor(cle: string) {
+    super(`Plafond de flux atteint pour ${cle} sur une autre instance.`);
   }
 }
 
@@ -96,7 +272,19 @@ export class SessionCodeAlreadyActiveError extends ResourceConflictError {
   }
 }
 
+export class RevisionDeSeanceObsoleteError extends ResourceConflictError {
+  readonly code = 'REVISION_OBSOLETE';
+
+  constructor(sessionId: string) {
+    super(
+      `Le pilotage de la séance ${sessionId} a changé depuis sa lecture : la commande a été rejouée sur l’état à jour.`,
+    );
+  }
+}
+
 export class CoursModifieError extends ResourceConflictError {
+  readonly code = 'COURS_MODIFIE';
+
   constructor() {
     super(
       'Le cours a changé depuis l’ouverture de la séance : le formateur doit ouvrir une nouvelle séance.',

@@ -11,7 +11,7 @@
   "entry": [
     // DataSource consomme par la CLI TypeORM (`migration:run`, `migration:generate`).
     "src/database/data-source.ts",
-    // Migrations chargees par glob : `src/database/data-source.ts` -> `migrations: [__dirname + '/../migrations/*']`.
+    // Migrations chargees par glob : `src/database/data-source.ts` -> `migrations: [__dirname + '/../migrations/!(*.spec).{js,ts}']`.
     "src/migrations/*.ts",
     // Entites chargees par glob : `src/app.module.ts` -> `entities: [join(__dirname, '**/*.entity.{js,ts}')]`.
     "src/**/*.entity.ts",

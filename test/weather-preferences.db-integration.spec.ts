@@ -2,6 +2,8 @@ import type { DataSource } from 'typeorm';
 import { WeatherPreferencesRepositoryTypeORM } from '../src/modules/weather/infrastructure/WeatherPreferences.repository.typeORM';
 import { WeatherUserPreferencesEntity } from '../src/modules/weather/infrastructure/entities/WeatherUserPreferences.entity';
 import { WeatherUserPreferences } from '../src/modules/weather/domain/WeatherUserPreferences';
+import { UsersEntity } from '../src/modules/users/infrastructure/entities/Users.entity';
+import { buildUser } from './factories/user.factory';
 import {
   describeDb,
   destroyDbIntegrationDataSource,
@@ -16,8 +18,12 @@ describeDb('WeatherPreferencesRepositoryTypeORM (db integration)', () => {
 
   beforeAll(async () => {
     dataSource = await initDbIntegrationDataSource([
+      UsersEntity,
       WeatherUserPreferencesEntity,
     ]);
+    await dataSource
+      .getRepository(UsersEntity)
+      .insert(buildUser({ id: TEST_USER_ID }));
 
     repository = new WeatherPreferencesRepositoryTypeORM(
       dataSource.getRepository(WeatherUserPreferencesEntity),

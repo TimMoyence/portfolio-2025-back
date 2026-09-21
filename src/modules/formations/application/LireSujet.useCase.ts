@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { solutionsIdentiques } from '../domain/Bareme';
-import type { Cours } from '../domain/cours/Cours';
-import type { CoursPublic } from '../domain/cours/CoursPublic';
+import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
+import { ecranVerrouille } from '../domain/cours/Diffusion';
+import { dernierEcranServi } from '../domain/cours/EcranServi';
+import type { Cours } from '../domain/contrats/cours';
+import type { CoursPublic } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { TirageAmbiguError, tirer } from '../domain/cours/Tirage';
 import type { TirageDuCours } from '../domain/cours/Tirage';
@@ -41,7 +43,11 @@ export class LireSujetUseCase {
       throw new SessionNotFoundError(query.sessionId);
     }
     const participant = await this.participants.findById(query.participantId);
-    if (!participant || participant.sessionId !== query.sessionId) {
+    if (
+      !participant ||
+      participant.sessionId !== query.sessionId ||
+      participant.evinceLe !== null
+    ) {
       throw new ParticipantNotFoundError(query.participantId);
     }
     const cours = await this.catalogue.trouver(
@@ -52,50 +58,20 @@ export class LireSujetUseCase {
       throw new CoursInconnuError(session.courseSlug);
     }
     const tirage = this.tirerOuLever(cours, participant.seed);
-    const stockees = session.bareme.tirages.find(
-      (entree) => entree.seed === participant.seed,
-    )?.solutions;
+    const stockees = solutionsDuTirage(session.bareme, participant.seed);
     if (
       Object.keys(tirage.solutions).length !== 0 &&
       !solutionsIdentiques(tirage.solutions, stockees)
     ) {
       throw new CoursModifieError();
     }
-    const dernier = this.dernierEcranServi(session, tirage.sujet.ecrans.length);
+    const dernier = dernierEcranServi(session, tirage.sujet.ecrans.length);
     return {
       ...tirage.sujet,
       ecrans: tirage.sujet.ecrans.map((ecran, index) =>
-        index <= dernier
-          ? ecran
-          : {
-              ...ecran,
-              type: 'ecran-verrouille',
-              interactif: false,
-              donnees: {},
-            },
+        index <= dernier ? ecran : ecranVerrouille(ecran),
       ),
     };
-  }
-
-  private dernierEcranServi(
-    session: {
-      etat: string;
-      modeRythme: string;
-      ecranCourant: number;
-      intervalleLibre: { dernier: number } | null;
-    },
-    total: number,
-  ): number {
-    if (session.etat === 'terminee') {
-      return total - 1;
-    }
-    if (session.modeRythme === 'libre' && session.intervalleLibre === null) {
-      return total - 1;
-    }
-    if (session.modeRythme === 'libre' && session.intervalleLibre !== null) {
-      return session.intervalleLibre.dernier;
-    }
-    return session.ecranCourant;
   }
 
   private tirerOuLever(cours: Cours, seed: number): TirageDuCours {

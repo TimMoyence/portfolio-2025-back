@@ -1,16 +1,10 @@
+import { buildLiveSessionState } from '../../../../test/factories/formation.factory';
 import { SessionStateCacheService } from './SessionStateCache.service';
 
 describe('SessionStateCacheService', () => {
   let sut: SessionStateCacheService;
 
-  const etat = {
-    etat: 'en_cours' as const,
-    modeRythme: 'pilote' as const,
-    ecranCourant: 3,
-    intervalleLibre: null,
-    participants: 12,
-    majLe: new Date('2026-09-11T08:00:00.000Z'),
-  };
+  const etat = buildLiveSessionState({ ecranCourant: 3, participants: 12 });
 
   beforeEach(() => {
     sut = new SessionStateCacheService();
@@ -79,6 +73,12 @@ describe('SessionStateCacheService', () => {
       sut.fingerprint({ ...etat, intervalleLibre: { premier: 1, dernier: 2 } }),
     ).not.toBe(
       sut.fingerprint({ ...etat, intervalleLibre: { premier: 1, dernier: 3 } }),
+    );
+  });
+
+  it('produit une empreinte differente quand la revision change', () => {
+    expect(sut.fingerprint(etat)).not.toBe(
+      sut.fingerprint({ ...etat, revision: etat.revision + 1 }),
     );
   });
 });

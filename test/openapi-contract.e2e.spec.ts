@@ -43,7 +43,62 @@ import {
 
 import { RolesGuard } from '../src/common/interfaces/auth/roles.guard';
 
+import { ControlSessionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/control-session.request.dto';
+import { DeclarerJalonRequestDto } from '../src/modules/formations/interfaces/dto/contrat/declarer-jalon.request.dto';
+import { DerouleResponseDto } from '../src/modules/formations/interfaces/dto/contrat/deroule.response.dto';
+import { EtatParticipantResponseDto } from '../src/modules/formations/interfaces/dto/contrat/etat-participant.response.dto';
+import { OpenSessionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/open-session.request.dto';
+import { RappelsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/rappels.response.dto';
+import { SessionResultsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/session-results.response.dto';
+import { StrategiesDefiResponseDto } from '../src/modules/formations/interfaces/dto/contrat/strategies-defi.response.dto';
+import { SubmitDefiRequestDto } from '../src/modules/formations/interfaces/dto/contrat/submit-defi.request.dto';
+import { SubmitProductionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/submit-production.request.dto';
+import {
+  CoursPublicCatalogueResponseDto,
+  SujetResponseDto,
+} from '../src/modules/formations/interfaces/dto/contrat/sujet.response.dto';
+import { SyntheseRappelsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/synthese-rappels.response.dto';
+import { TentativeEnigmeResponseDto } from '../src/modules/formations/interfaces/dto/contrat/tentative-enigme.response.dto';
+import { TenterEnigmeRequestDto } from '../src/modules/formations/interfaces/dto/contrat/tenter-enigme.request.dto';
+import { SubmitProductionResponseDto } from '../src/modules/formations/interfaces/dto/contrat/verdict-production.response.dto';
+import { createMockDepotsFormations } from './factories/formation.factory';
+import { monterApplicationFormations } from './helpers/formations-harness';
+import { fermerApplication } from './helpers/nest-test-app';
+
 const stub = () => ({ execute: jest.fn() });
+
+const DTO_DU_CONTRAT_V3 = [
+  SubmitProductionRequestDto,
+  SubmitProductionResponseDto,
+  TenterEnigmeRequestDto,
+  TentativeEnigmeResponseDto,
+  DeclarerJalonRequestDto,
+  RappelsResponseDto,
+  SubmitDefiRequestDto,
+  StrategiesDefiResponseDto,
+  EtatParticipantResponseDto,
+  OpenSessionRequestDto,
+  ControlSessionRequestDto,
+  SujetResponseDto,
+  DerouleResponseDto,
+  SessionResultsResponseDto,
+  SyntheseRappelsResponseDto,
+  CoursPublicCatalogueResponseDto,
+];
+
+const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
+  '/sessions/{id}/productions',
+  '/sessions/{id}/escape/{parcoursId}/tentatives',
+  '/sessions/{id}/pulses/{sondageId}',
+  '/sessions/{id}/defis/{defiId}/tentative',
+  '/sessions/{id}/defis/{defiId}/strategies',
+  '/sessions/{id}/moi',
+  '/sessions/{id}/participants/{participantId}',
+  '/sessions/{id}/rappels',
+  '/sessions/{id}/rappels/synthese',
+];
+
+const ROUTES_A_VENIR_DU_CONTRAT_V3: readonly string[] = [];
 
 describe('OpenAPI legacy contract (phase 11)', () => {
   let app: INestApplication;
@@ -197,5 +252,38 @@ describe('OpenAPI core contract', () => {
 
   it('keeps AuditRequests path contracts stable', () => {
     expect(pathsContaining('audits')).toMatchSnapshot();
+  });
+});
+
+describe('OpenAPI contrat B2-01 V3', () => {
+  it('fige les schemas des DTO du § 9.5 sans exposer de chemin', async () => {
+    const moduleRef = await Test.createTestingModule({}).compile();
+    const app = moduleRef.createNestApplication();
+    await app.init();
+    const document = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder().setTitle('Contrat V3').setVersion('1.0').build(),
+      { extraModels: DTO_DU_CONTRAT_V3 },
+    );
+    await app.close();
+
+    expect(document.paths).toEqual({});
+    expect(document.components?.schemas).toMatchSnapshot();
+  });
+
+  it('branche les routes du § 9.5 deja livrees et aucune autre', async () => {
+    const app = await monterApplicationFormations(createMockDepotsFormations());
+    const chemins = Object.keys(
+      SwaggerModule.createDocument(app, new DocumentBuilder().build()).paths,
+    );
+    await fermerApplication(app);
+    const servie = (route: string): boolean =>
+      chemins.some((chemin) => chemin.endsWith(route));
+
+    expect(
+      ROUTES_ACTIVES_DU_CONTRAT_V3.filter((route) => !servie(route)),
+    ).toEqual([]);
+    expect(ROUTES_A_VENIR_DU_CONTRAT_V3.filter(servie)).toEqual([]);
+    expect(servie('/sessions/{id}/sujet')).toBe(true);
   });
 });

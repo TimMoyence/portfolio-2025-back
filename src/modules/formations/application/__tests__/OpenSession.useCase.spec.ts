@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { DomainValidationError } from '../../../../common/domain/errors/DomainValidationError';
 import {
+  buildCoursDeClasse,
   buildCoursDeTest,
+  creerCatalogueAVersions,
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildSessionRecord,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { solutionsDuTirage } from '../../domain/Bareme';
 import { questionsDuCours } from '../../domain/cours/Cours';
 import { NOMBRE_TIRAGES_DISTRIBUES } from '../../domain/cours/OuvertureTirages';
 import {
@@ -52,6 +55,38 @@ describe('OpenSessionUseCase', () => {
     );
   });
 
+  it('fige dans la seance la version courante du catalogue et en tire le bareme', async () => {
+    const versionCourante = { ...buildCoursDeClasse(3), slug: COURS.slug };
+    sut = new OpenSessionUseCase(
+      sessions,
+      creerCatalogueAVersions({
+        [COURS.slug]: { 1: COURS, 2: versionCourante },
+      }),
+    );
+
+    await sut.execute(COMMANDE);
+
+    const [depot] = sessions.create.mock.calls[0];
+    expect(depot.courseVersion).toBe(2);
+    expect(depot.bareme.questions.map((question) => question.id)).toEqual(
+      questionsDuCours(versionCourante).map((question) => question.id),
+    );
+  });
+
+  it('tire un barème v2 pour une version de cours à partir de la 3', async () => {
+    sut = new OpenSessionUseCase(
+      sessions,
+      creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
+    );
+
+    await sut.execute(COMMANDE);
+
+    const [depot] = sessions.create.mock.calls[0];
+    expect(depot.courseVersion).toBe(3);
+    expect(depot.bareme.version).toBe(2);
+    expect(depot.bareme.tirages).toHaveLength(NOMBRE_TIRAGES_DISTRIBUES);
+  });
+
   it('couvre toutes les questions du cours dans chacun des soixante tirages', async () => {
     await sut.execute(COMMANDE);
 
@@ -61,7 +96,7 @@ describe('OpenSessionUseCase', () => {
       .sort((a, b) => a.localeCompare(b));
     const incomplets = depot.bareme.tirages.filter(
       (tirage) =>
-        Object.keys(tirage.solutions)
+        Object.keys(solutionsDuTirage(depot.bareme, tirage.seed) ?? {})
           .sort((a, b) => a.localeCompare(b))
           .join() !== attendues.join(),
     );

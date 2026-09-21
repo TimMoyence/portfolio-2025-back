@@ -69,6 +69,8 @@ function buildReponse(
   return {
     questionId: 'Q-1',
     concept: 'capitalisation',
+    type: 'numeric',
+    score: null,
     valeur: '10',
     reponse: '10',
     correcte: true,

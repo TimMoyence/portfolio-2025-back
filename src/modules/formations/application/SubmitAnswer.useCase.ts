@@ -3,22 +3,24 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import { libelleDeConfusion } from '../domain/cours/banque/confusions';
+import { assertEcranServi, rangDeLaQuestion } from '../domain/cours/EcranServi';
+import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   AnswerAlreadySubmittedError,
-  ParticipantNotFoundError,
-  SessionClosedError,
+  CoursInconnuError,
   SessionNotFoundError,
-  SessionNotStartedError,
 } from '../domain/errors/FormationErrors';
+import { participantActif } from './ParticipantActif';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { nextBox } from '../domain/LeitnerBox';
-import type { Boite } from '../domain/LeitnerBox';
+import { assertReponsesOuvertes } from '../domain/SessionState';
 import {
   ANSWERS_REPOSITORY,
+  CATALOGUE_COURS,
   MASTERY_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
@@ -28,6 +30,13 @@ import type {
   SubmitAnswerCommand,
   SubmitAnswerResult,
 } from './dto/SubmitAnswer.command';
+
+const TYPES_A_ROUTE_PROPRE: readonly string[] = [
+  'feuille',
+  'tableau',
+  'classement',
+  'enigme',
+];
 
 @Injectable()
 export class SubmitAnswerUseCase {
@@ -42,6 +51,8 @@ export class SubmitAnswerUseCase {
     private readonly mastery: IMasteryRepository,
     @Inject(SESSION_STATE_CACHE)
     private readonly cache: ISessionStateCache,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async execute(command: SubmitAnswerCommand): Promise<SubmitAnswerResult> {
@@ -49,12 +60,7 @@ export class SubmitAnswerUseCase {
     if (!session) {
       throw new SessionNotFoundError(command.sessionId);
     }
-    if (session.etat === 'terminee') {
-      throw new SessionClosedError();
-    }
-    if (session.etat !== 'en_cours') {
-      throw new SessionNotStartedError();
-    }
+    assertReponsesOuvertes(session.etat);
 
     const deja = await this.answers.existsFor(
       command.participantId,
@@ -64,10 +70,11 @@ export class SubmitAnswerUseCase {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
 
-    const participant = await this.participants.findById(command.participantId);
-    if (!participant) {
-      throw new ParticipantNotFoundError(command.participantId);
-    }
+    const participant = await participantActif(
+      this.participants,
+      command.sessionId,
+      command.participantId,
+    );
 
     const question = findQuestion(session.bareme, command.questionId);
     if (!question) {
@@ -75,6 +82,31 @@ export class SubmitAnswerUseCase {
         `Question absente du bareme: ${command.questionId}`,
       );
     }
+    if (TYPES_A_ROUTE_PROPRE.includes(question.type)) {
+      throw new DomainValidationError(
+        `La question ${command.questionId} de type ${question.type} passe par sa propre route`,
+      );
+    }
+    const cours = await this.catalogue.trouver(
+      session.courseSlug,
+      session.courseVersion,
+    );
+    if (!cours) {
+      throw new CoursInconnuError(session.courseSlug);
+    }
+    const rangEcran =
+      'rangEcran' in question
+        ? question.rangEcran
+        : rangDeLaQuestion(cours, command.questionId);
+    const ecranId =
+      'ecranId' in question
+        ? question.ecranId
+        : (cours.ecrans[rangEcran]?.id ?? command.questionId);
+    assertEcranServi(session, rangEcran, ecranId, cours.ecrans.length);
+    assertPhaseOuverte(session.pilotageEcrans, {
+      ...question,
+      ecranId,
+    });
 
     const solution = solutionFor(
       session.bareme,
@@ -111,11 +143,12 @@ export class SubmitAnswerUseCase {
     });
     this.cache.signalerActivite(command.sessionId);
 
-    await this.updateMastery(
-      participant.studentKey,
-      question.concept,
-      verdict.correcte,
-    );
+    await this.mastery.enregistrerTentative({
+      studentKey: participant.studentKey,
+      concept: question.concept,
+      reussi: verdict.correcte,
+      vueLe: new Date(),
+    });
 
     return {
       ...verdict,
@@ -123,23 +156,5 @@ export class SubmitAnswerUseCase {
         ? (libelleDeConfusion(verdict.misconception) ?? verdict.misconception)
         : null,
     };
-  }
-
-  private async updateMastery(
-    studentKey: string,
-    concept: string,
-    reussi: boolean,
-  ): Promise<void> {
-    const existants = await this.mastery.findByStudentKey(studentKey);
-    const courant = existants.find((entree) => entree.concept === concept);
-    const boite: Boite = courant ? courant.boite : 1;
-    await this.mastery.upsert({
-      studentKey,
-      concept,
-      boite: nextBox(boite, reussi),
-      derniereVue: new Date(),
-      succes: (courant?.succes ?? 0) + (reussi ? 1 : 0),
-      echecs: (courant?.echecs ?? 0) + (reussi ? 0 : 1),
-    });
   }
 }

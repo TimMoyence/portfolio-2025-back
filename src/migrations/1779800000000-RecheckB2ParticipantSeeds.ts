@@ -50,5 +50,11 @@ export class RecheckB2ParticipantSeeds1779800000000 implements MigrationInterfac
     }
   }
 
-  async down(): Promise<void> {}
+  down(): Promise<void> {
+    return Promise.reject(
+      new Error(
+        'Migration de données irréversible : RecheckB2ParticipantSeeds ne conserve pas les graines de participants qu’elle remplace.',
+      ),
+    );
+  }
 }

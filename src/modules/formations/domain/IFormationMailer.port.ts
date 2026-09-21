@@ -1,6 +1,10 @@
+import type { TypeQuestion } from './contrats/cours';
+
 export interface RapportQuestion {
   questionId: string;
   concept: string;
+  type: TypeQuestion;
+  score: number | null;
   valeur: string;
   reponse: string;
   correcte: boolean;

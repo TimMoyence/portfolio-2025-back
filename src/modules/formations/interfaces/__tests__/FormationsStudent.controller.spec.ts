@@ -2,7 +2,10 @@ import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import type { Request } from 'express';
 import { of } from 'rxjs';
-import { PublicFormProtectionService } from '../../../../common/interfaces/security/public-form-protection.service';
+import {
+  buildFormationsStudentController,
+  createMockFormationsStudentDependances,
+} from '../../../../../test/factories/formations-controllers.factory';
 import {
   InvalidSessionCodeError,
   SeedPoolExhaustedError,
@@ -24,45 +27,33 @@ function requeteVerifiee(participantId: string): Request {
 }
 
 const inscription: JoinSessionRequestDto = {
-  studentKey: '11111111-1111-4111-8111-111111111111',
   prenom: 'Theo',
   nom: 'Martin',
   email: 'theo@example.com',
 };
 
 describe('FormationsStudentController', () => {
-  const joinSession = { execute: jest.fn() };
-  const submitAnswer = { execute: jest.fn() };
-  const recordIncidents = { execute: jest.fn() };
-  const streamSession = { execute: jest.fn() };
-  const dueQuestions = { execute: jest.fn() };
-  const lireSujet = { execute: jest.fn() };
-  const tokens = { sign: jest.fn(), verify: jest.fn() };
-  const codeScan = {
-    assertPasDeBalayage: jest.fn(),
-    enregistrerEchec: jest.fn(),
-  };
-  const freeResponses = { save: jest.fn() };
-
-  const controller = new FormationsStudentController(
-    joinSession as never,
-    submitAnswer as never,
-    recordIncidents as never,
-    streamSession as never,
-    dueQuestions as never,
-    lireSujet as never,
-    tokens as never,
-    codeScan as never,
-    new PublicFormProtectionService(),
-    freeResponses as never,
-  );
+  const dependances = createMockFormationsStudentDependances();
+  const {
+    joinSession,
+    submitAnswer,
+    recordIncidents,
+    streamSession,
+    dueQuestions,
+    lireSujet,
+    tokens,
+    clesEtudiants,
+    codeScan,
+    saveFreeResponse,
+  } = dependances;
+  const controller = buildFormationsStudentController(dependances);
 
   const rejoindre = (dto: JoinSessionRequestDto = inscription) =>
     controller.join('4271', dto, requeteEtudiant);
 
   beforeEach(() => {
     jest.clearAllMocks();
-    freeResponses.save.mockResolvedValue({ status: 'enregistre' });
+    saveFreeResponse.execute.mockResolvedValue(undefined);
     joinSession.execute.mockResolvedValue({
       participantId: PARTICIPANT_ID,
       sessionId: SESSION_ID,
@@ -74,7 +65,7 @@ describe('FormationsStudentController', () => {
     tokens.verify.mockReturnValue(PARTICIPANT_ID);
   });
 
-  it('enregistre une réponse libre pour le participant porté par le jeton', async () => {
+  it('confie la réponse libre au cas d usage pour le participant porté par le jeton', async () => {
     await expect(
       controller.freeResponse(SESSION_ID, JETON, {
         screenId: 'B2-01-S11-REFLECTION',
@@ -84,7 +75,7 @@ describe('FormationsStudentController', () => {
       }),
     ).resolves.toEqual({ status: 'enregistre' });
     expect(tokens.verify).toHaveBeenCalledWith(SESSION_ID, JETON);
-    expect(freeResponses.save).toHaveBeenCalledWith({
+    expect(saveFreeResponse.execute).toHaveBeenCalledWith({
       sessionId: SESSION_ID,
       participantId: PARTICIPANT_ID,
       screenId: 'B2-01-S11-REFLECTION',
@@ -99,7 +90,7 @@ describe('FormationsStudentController', () => {
 
     expect(joinSession.execute).toHaveBeenCalledWith({
       code: '4271',
-      studentKey: inscription.studentKey,
+      studentKey: 'cle-etudiant',
       prenom: 'Theo',
       nom: 'Martin',
       email: 'theo@example.com',
@@ -112,6 +103,18 @@ describe('FormationsStudentController', () => {
       modeRythme: 'pilote',
       jeton: JETON,
     });
+  });
+
+  it('derive la cle etudiante du courriel cote serveur, sans jamais lire celle du corps', async () => {
+    await rejoindre({
+      ...inscription,
+      studentKey: 'cle-forgee-par-le-client',
+    } as JoinSessionRequestDto);
+
+    expect(clesEtudiants.de).toHaveBeenCalledWith('theo@example.com');
+    expect(joinSession.execute).toHaveBeenCalledWith(
+      expect.objectContaining({ studentKey: 'cle-etudiant' }),
+    );
   });
 
   it('arrete le robot qui remplit le champ piege avant tout appel metier', async () => {
@@ -218,22 +221,26 @@ describe('FormationsStudentController', () => {
       ],
     });
 
-    expect(recordIncidents.execute).toHaveBeenCalledWith([
-      {
-        sessionId: SESSION_ID,
-        participantId: PARTICIPANT_ID,
-        type: 'tab_hidden',
-        contexte: null,
-        horodatage,
-      },
-      {
-        sessionId: SESSION_ID,
-        participantId: PARTICIPANT_ID,
-        type: 'copy_attempt',
-        contexte: { cible: 'enonce' },
-        horodatage,
-      },
-    ]);
+    expect(recordIncidents.execute).toHaveBeenCalledWith(
+      SESSION_ID,
+      PARTICIPANT_ID,
+      [
+        {
+          sessionId: SESSION_ID,
+          participantId: PARTICIPANT_ID,
+          type: 'tab_hidden',
+          contexte: null,
+          horodatage,
+        },
+        {
+          sessionId: SESSION_ID,
+          participantId: PARTICIPANT_ID,
+          type: 'copy_attempt',
+          contexte: { cible: 'enonce' },
+          horodatage,
+        },
+      ],
+    );
   });
 
   it('n enregistre aucun incident quand le jeton est refuse', async () => {

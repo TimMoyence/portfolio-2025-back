@@ -5,12 +5,12 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
-  Inject,
   MessageEvent,
   Optional,
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   Req,
   Sse,
   UseGuards,
@@ -20,6 +20,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -37,32 +38,52 @@ import { DueQuestionsUseCase } from '../application/DueQuestions.useCase';
 import { JoinSessionUseCase } from '../application/JoinSession.useCase';
 import { LireSujetUseCase } from '../application/LireSujet.useCase';
 import { RecordIncidentsUseCase } from '../application/RecordIncidents.useCase';
+import { SaveFreeResponseUseCase } from '../application/SaveFreeResponse.useCase';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SubmitAnswerUseCase } from '../application/SubmitAnswer.useCase';
-import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
-import type { CoursPublic } from '../domain/cours/CoursPublic';
-import { FREE_RESPONSES_REPOSITORY } from '../domain/token';
+import { SubmitProductionUseCase } from '../application/SubmitProduction.useCase';
+import { TenterEnigmeUseCase } from '../application/TenterEnigme.useCase';
+import { DeclarerJalonUseCase } from '../application/DeclarerJalon.useCase';
+import { DefisUseCase } from '../application/Defis.useCase';
+import { LireEtatParticipantUseCase } from '../application/LireEtatParticipant.useCase';
+import { LireRappelsUseCase } from '../application/LireRappels.useCase';
+import type { CoursPublic } from '../domain/contrats/tirage';
 import {
   InvalidSessionCodeError,
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
+import { CleEtudiantService } from './CleEtudiant.service';
 import { CodeScanProtectionService } from './CodeScanProtection.service';
 import { ParticipantTokenGuard } from './ParticipantToken.guard';
 import { JoinSessionRequestDto } from './dto/join-session.request.dto';
 import { JoinSessionResponseDto } from './dto/join-session.response.dto';
+import { FreeResponseSavedResponseDto } from './dto/free-responses.response.dto';
 import { ReportIncidentsRequestDto } from './dto/report-incidents.request.dto';
 import { SaveFreeResponseRequestDto } from './dto/save-free-response.request.dto';
 import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from './dto/submit-answer.response.dto';
-import { SujetResponseDto } from './dto/sujet.response.dto';
+import { DeclarerJalonRequestDto } from './dto/contrat/declarer-jalon.request.dto';
+import { EtatParticipantResponseDto } from './dto/contrat/etat-participant.response.dto';
+import { RappelsResponseDto } from './dto/contrat/rappels.response.dto';
+import { StrategiesDefiResponseDto } from './dto/contrat/strategies-defi.response.dto';
+import { SubmitDefiRequestDto } from './dto/contrat/submit-defi.request.dto';
+import { SubmitProductionRequestDto } from './dto/contrat/submit-production.request.dto';
+import { TentativeEnigmeResponseDto } from './dto/contrat/tentative-enigme.response.dto';
+import { TenterEnigmeRequestDto } from './dto/contrat/tenter-enigme.request.dto';
+import { SubmitProductionResponseDto } from './dto/contrat/verdict-production.response.dto';
+import { SujetResponseDto } from './dto/contrat/sujet.response.dto';
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_FLUX_PAR_PARTICIPANT,
+  LIMITE_ETAT_PAR_PARTICIPANT,
   LIMITE_INCIDENTS_PAR_PARTICIPANT,
+  LIMITE_JALONS_PAR_PARTICIPANT,
   LIMITE_JOIN_PAR_CODE,
+  LIMITE_RAPPELS_PAR_PARTICIPANT,
   LIMITE_REPONSES_PAR_PARTICIPANT,
   LIMITE_REVISION_PAR_PARTICIPANT,
   LIMITE_SUJET_PAR_PARTICIPANT,
+  LIMITE_TENTATIVES_PAR_PARTICIPANT,
   suivreParCodeDeSession,
   suivreParParticipant,
 } from './formations-throttling';
@@ -71,16 +92,6 @@ import {
   ParticipantTokenService,
 } from './ParticipantToken.service';
 
-/**
- * Poste etudiant : aucune de ces reponses ne porte le corrige.
- *
- * L inscription ne rend ni le bareme ni la graine du tirage attribue : le
- * moteur de tirage et le cours sont publics (domain/cours), la graine
- * suffirait a recalculer le corrige de l etudiant. Le sujet est calcule par
- * le serveur et servi par `GET sessions/:id/sujet`. La correction reste au
- * serveur (SubmitAnswer.useCase.ts) et ne redescend que sous forme de
- * verdict et d etiquette de confusion.
- */
 @ApiTags('formations')
 @Public()
 @Controller('formations')
@@ -88,17 +99,22 @@ export class FormationsStudentController {
   constructor(
     private readonly joinSession: JoinSessionUseCase,
     private readonly submitAnswer: SubmitAnswerUseCase,
+    private readonly submitProduction: SubmitProductionUseCase,
+    private readonly tenterEnigme: TenterEnigmeUseCase,
+    private readonly declarerJalon: DeclarerJalonUseCase,
+    private readonly defis: DefisUseCase,
+    private readonly lireEtatParticipant: LireEtatParticipantUseCase,
+    private readonly lireRappels: LireRappelsUseCase,
     private readonly recordIncidents: RecordIncidentsUseCase,
     private readonly streamSession: StreamSessionUseCase,
     private readonly dueQuestions: DueQuestionsUseCase,
     private readonly lireSujet: LireSujetUseCase,
+    private readonly saveFreeResponse: SaveFreeResponseUseCase,
     private readonly tokens: ParticipantTokenService,
+    private readonly clesEtudiants: CleEtudiantService,
     private readonly codeScan: CodeScanProtectionService,
     @Optional()
     private readonly formProtection = new PublicFormProtectionService(),
-    @Optional()
-    @Inject(FREE_RESPONSES_REPOSITORY)
-    private readonly freeResponses?: IFreeResponsesRepository,
   ) {}
 
   @Throttle({
@@ -127,7 +143,7 @@ export class FormationsStudentController {
     const result = await this.joinSession
       .execute({
         code,
-        studentKey: dto.studentKey,
+        studentKey: this.clesEtudiants.de(dto.email),
         prenom: dto.prenom,
         nom: dto.nom,
         email: dto.email,
@@ -159,7 +175,11 @@ export class FormationsStudentController {
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
   @ApiConflictResponse({
     description:
-      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou REPONSE_DEJA_ENREGISTREE',
+      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, PHASE_FERMEE, REPONSE_DEJA_ENREGISTREE ou COURS_MODIFIE',
+  })
+  @ApiNotFoundResponse({
+    description:
+      'Ecran non encore projete par le formateur : code ECRAN_NON_SERVI',
   })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async answer(
@@ -190,19 +210,31 @@ export class FormationsStudentController {
     },
   })
   @Post('sessions/:id/free-responses')
-  @ApiOperation({ summary: 'Enregistre une reponse libre etudiant' })
-  @ApiCreatedResponse({ description: 'Reponse libre enregistree' })
+  @ApiOperation({
+    summary:
+      'Enregistre la reponse libre du participant, la derniere envoyee remplace la precedente',
+  })
+  @ApiCreatedResponse({ type: FreeResponseSavedResponseDto })
+  @ApiBadRequestResponse({
+    description:
+      'Reponse vide une fois les blancs retires, ou activite inconnue de l ecran : code ACTIVITE_INCONNUE',
+  })
+  @ApiNotFoundResponse({
+    description:
+      'Seance ou cours introuvable, ou ecran non encore projete : code ECRAN_NON_SERVI',
+  })
+  @ApiConflictResponse({
+    description:
+      'Reponse refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE ou SEANCE_TERMINEE',
+  })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async freeResponse(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Headers(EN_TETE_JETON) jeton: string | undefined,
     @Body() dto: SaveFreeResponseRequestDto,
-  ): Promise<{ status: 'enregistre' }> {
+  ): Promise<FreeResponseSavedResponseDto> {
     const participantId = this.tokens.verify(sessionId, jeton);
-    if (this.freeResponses === undefined) {
-      throw new Error('Le dépôt des réponses libres n’est pas configuré');
-    }
-    await this.freeResponses.save({
+    await this.saveFreeResponse.execute({
       sessionId,
       participantId,
       screenId: dto.screenId,
@@ -211,6 +243,224 @@ export class FormationsStudentController {
       dureeMs: dto.dureeMs,
     });
     return { status: 'enregistre' };
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_REPONSES_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Post('sessions/:id/productions')
+  @ApiOperation({
+    summary: 'Soumet une production, corrigee et notee cote serveur',
+  })
+  @ApiCreatedResponse({ type: SubmitProductionResponseDto })
+  @ApiBadRequestResponse({
+    description:
+      'Production refusee, cause dans le champ code du corps : TYPE_DE_QUESTION, PRODUCTION_VIDE ou PRODUCTION_INVALIDE',
+  })
+  @ApiConflictResponse({
+    description:
+      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI ou REPONSE_DEJA_ENREGISTREE',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async production(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: SubmitProductionRequestDto,
+  ): Promise<SubmitProductionResponseDto> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.submitProduction.execute({
+      sessionId,
+      participantId,
+      questionId: dto.questionId,
+      valeur: dto.valeur,
+      dureeMs: dto.dureeMs,
+    });
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_TENTATIVES_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Post('sessions/:id/escape/:parcoursId/tentatives')
+  @ApiOperation({
+    summary: 'Tente une enigme, corrigee et plafonnee cote serveur',
+  })
+  @ApiCreatedResponse({ type: TentativeEnigmeResponseDto })
+  @ApiNotFoundResponse({ description: 'Enigme absente du parcours' })
+  @ApiConflictResponse({
+    description:
+      'Tentative refusee, cause dans le champ code du corps : ECRAN_NON_SERVI, ENIGME_VERROUILLEE, ENIGME_DEJA_RESOLUE ou TENTATIVES_EPUISEES',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async tentativeEnigme(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('parcoursId') parcoursId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: TenterEnigmeRequestDto,
+  ): Promise<TentativeEnigmeResponseDto> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.tenterEnigme.execute({
+      sessionId,
+      participantId,
+      parcoursId,
+      enigmeId: dto.enigmeId,
+      reponse: dto.reponse,
+      dureeMs: dto.dureeMs,
+    });
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_JALONS_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Put('sessions/:id/pulses/:sondageId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Declare l etat du jalon de confiance, anonymise par HMAC',
+  })
+  @ApiNoContentResponse({ description: 'Jalon enregistre' })
+  @ApiBadRequestResponse({ description: 'Sondage inconnu du cours' })
+  @ApiConflictResponse({
+    description:
+      'Jalon refuse, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE ou ECRAN_NON_SERVI',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async jalon(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('sondageId') sondageId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: DeclarerJalonRequestDto,
+  ): Promise<void> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    await this.declarerJalon.execute({
+      sessionId,
+      participantId,
+      sondageId,
+      etat: dto.etat,
+    });
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_TENTATIVES_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Post('sessions/:id/defis/:defiId/tentative')
+  @ApiOperation({
+    summary:
+      'Envoie la tentative du defi et rend les strategies de reference, sans leur justesse',
+  })
+  @ApiCreatedResponse({ type: StrategiesDefiResponseDto })
+  @ApiNotFoundResponse({ description: 'Defi absent du cours' })
+  @ApiBadRequestResponse({ description: 'Tentative vide' })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async tentativeDeDefi(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('defiId') defiId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+    @Body() dto: SubmitDefiRequestDto,
+  ): Promise<StrategiesDefiResponseDto> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.defis.tenter({
+      sessionId,
+      participantId,
+      defiId,
+      texte: dto.texte,
+      dureeMs: dto.dureeMs,
+    });
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_JALONS_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @Get('sessions/:id/defis/:defiId/strategies')
+  @ApiOperation({
+    summary:
+      'Resert les strategies du defi, avec leur justesse seulement apres la revelation',
+  })
+  @ApiOkResponse({ type: StrategiesDefiResponseDto })
+  @ApiNotFoundResponse({
+    description: 'Defi inconnu, ou aucune tentative envoyee',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async strategiesDuDefi(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Param('defiId') defiId: string,
+    @Headers(EN_TETE_JETON) jeton: string | undefined,
+  ): Promise<StrategiesDefiResponseDto> {
+    const participantId = this.tokens.verify(sessionId, jeton);
+    return this.defis.strategies(sessionId, participantId, defiId);
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_ETAT_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @UseGuards(ParticipantTokenGuard)
+  @Get('sessions/:id/moi')
+  @ApiOperation({
+    summary:
+      'Rend l etat du seul participant porte par le jeton, pour reprendre apres un rechargement',
+  })
+  @ApiOkResponse({ type: EtatParticipantResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async monEtat(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Req() request: Request,
+  ): Promise<EtatParticipantResponseDto> {
+    return this.lireEtatParticipant.execute(
+      sessionId,
+      request.participantId!,
+    ) as Promise<EtatParticipantResponseDto>;
+  }
+
+  @Throttle({
+    default: {
+      limit: LIMITE_RAPPELS_PAR_PARTICIPANT,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  })
+  @UseGuards(ParticipantTokenGuard)
+  @Get('sessions/:id/rappels')
+  @ApiOperation({
+    summary:
+      'Sert la liste figee des rappels espaces du participant, options melangees par sa graine',
+  })
+  @ApiOkResponse({ type: RappelsResponseDto })
+  @ApiNotFoundResponse({ description: 'Cours sans ecran de rappel espace' })
+  @ApiConflictResponse({
+    description:
+      'Rappels refuses, cause dans le champ code du corps : ECRAN_NON_SERVI',
+  })
+  @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  async rappels(
+    @Param('id', ParseUUIDPipe) sessionId: string,
+    @Req() request: Request,
+  ): Promise<RappelsResponseDto> {
+    return this.lireRappels.execute(
+      sessionId,
+      request.participantId!,
+    ) as Promise<RappelsResponseDto>;
   }
 
   @Throttle({
@@ -232,6 +482,8 @@ export class FormationsStudentController {
   ): Promise<void> {
     const participantId = this.tokens.verify(sessionId, jeton);
     await this.recordIncidents.execute(
+      sessionId,
+      participantId,
       dto.incidents.map((incident) => ({
         sessionId,
         participantId,

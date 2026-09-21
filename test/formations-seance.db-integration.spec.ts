@@ -2,7 +2,8 @@ import type { INestApplication } from '@nestjs/common';
 import { createTransport } from 'nodemailer';
 import request from 'supertest';
 import type { Response } from 'supertest';
-import type { Bareme } from '../src/modules/formations/domain/Bareme';
+import { solutionsDuTirage } from '../src/modules/formations/domain/Bareme';
+import type { Bareme } from '../src/modules/formations/domain/contrats/bareme';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import { NOMBRE_TIRAGES_DISTRIBUES } from '../src/modules/formations/domain/cours/OuvertureTirages';
@@ -18,6 +19,8 @@ import {
 import { setSmtpEnv } from './factories/mailer.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  cleEtudianteDe,
+  DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
@@ -136,7 +139,7 @@ function corrigeComplet(bareme: Bareme): string[] {
       tirer(COURS_DE_CLASSE, bareme.graineReference).solutions,
     ),
     ...bareme.tirages.flatMap((tirage) =>
-      solutionsNumeriques(tirage.solutions),
+      solutionsNumeriques(solutionsDuTirage(bareme, tirage.seed) ?? {}),
     ),
   ];
 }
@@ -301,10 +304,6 @@ const MAITRISE_ETUDIANT_PIEGE = [
   },
 ];
 
-function cleEtudiant(index: number): string {
-  return `33333333-3333-4333-8333-${String(index).padStart(12, '0')}`;
-}
-
 function nomDe(index: number): string {
   return `Nom-${String(index).padStart(2, '0')}`;
 }
@@ -363,17 +362,13 @@ describeDb(
       await contexte.nettoyer();
       app = await monterApplicationFormations(
         {
-          sessions: contexte.sessions,
-          participants: contexte.participants,
-          answers: contexte.answers,
-          incidents: contexte.incidents,
-          mastery: contexte.mastery,
+          ...contexte,
           mailer: new FormationMailerService(),
         },
         creerCatalogueDeTest(COURS_DE_CLASSE),
       );
       await ecouterEnBoucleLocale(app);
-    });
+    }, DELAI_OUVERTURE_CONTEXTE_MS);
 
     afterAll(async () => {
       await fermerApplication(app);
@@ -402,7 +397,6 @@ describeDb(
           await request(serveur())
             .post(route(`/sessions/${code}/join`))
             .send({
-              studentKey: cleEtudiant(index),
               prenom: prenomDe(index),
               nom: nomDe(index),
               email: emailDe(index),
@@ -413,7 +407,7 @@ describeDb(
         const graine = await contexte.graineDe(corps.participantId);
         etudiants.push({
           index,
-          studentKey: cleEtudiant(index),
+          studentKey: cleEtudianteDe(emailDe(index)),
           prenom: prenomDe(index),
           nom: nomDe(index),
           email: emailDe(index),

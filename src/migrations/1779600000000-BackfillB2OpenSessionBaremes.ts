@@ -2,6 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 import { ouvrirTirages } from '../modules/formations/domain/cours/OuvertureTirages';
 import { CoursCatalogueRepositoryTypeORM } from '../modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
 import { FormationCourseContentEntity } from '../modules/formations/infrastructure/entities/FormationCourseContent.entity';
+import { FormationCoursePublicationEntity } from '../modules/formations/infrastructure/entities/FormationCoursePublication.entity';
 
 const COURSE_SLUG = 'b2-01-traitement-information-chiffree';
 
@@ -11,6 +12,7 @@ export class BackfillB2OpenSessionBaremes1779600000000 implements MigrationInter
   async up(queryRunner: QueryRunner): Promise<void> {
     const catalogue = new CoursCatalogueRepositoryTypeORM(
       queryRunner.manager.getRepository(FormationCourseContentEntity),
+      queryRunner.manager.getRepository(FormationCoursePublicationEntity),
     );
     const cours = await catalogue.trouver(COURSE_SLUG);
     if (cours === null) {
@@ -45,20 +47,11 @@ export class BackfillB2OpenSessionBaremes1779600000000 implements MigrationInter
     }
   }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `UPDATE "formation_sessions"
-       SET "bareme" = jsonb_build_object(
-         'version', 1,
-         'graineReference', 0,
-         'questions', '[]'::jsonb,
-         'tirages', '[]'::jsonb
-       )
-       WHERE "course_slug" = $1
-         AND "etat" IN ('attente', 'en_cours')
-         AND COALESCE(jsonb_array_length("bareme"->'questions'), 0) = 14
-         AND "bareme"->'questions' @> '[{"id":"b2-s03-prediction"}]'::jsonb`,
-      [COURSE_SLUG],
+  down(): Promise<void> {
+    return Promise.reject(
+      new Error(
+        'Migration de données irréversible : BackfillB2OpenSessionBaremes ne garde pas la liste des séances complétées ; vider leur barème toucherait aussi les séances B2 ouvertes depuis.',
+      ),
     );
   }
 }

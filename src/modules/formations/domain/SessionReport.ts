@@ -1,7 +1,13 @@
-import type { BaremeQuestion } from './Bareme';
-import { questionsNotees, solutionsIdentiques } from './Bareme';
+import type { QuestionDeBareme } from './Bareme';
+import {
+  questionsAAgreger,
+  questionsNotees,
+  solutionsDuTirage,
+  solutionsIdentiques,
+} from './Bareme';
 import { libelleDeConfusion } from './cours/banque/confusions';
-import type { Cours } from './cours/Cours';
+import type { Cours, TypeQuestion } from './contrats/cours';
+import type { DetailProduction, ValeurReponse } from './contrats/resultats';
 import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
 import { computeCohortScore } from './CompletionScore';
@@ -15,9 +21,11 @@ import type {
 import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
+import { REGLE_DE_NOTATION } from './RegleDeNotation';
 
 const SEUIL_CONCEPT_FRAGILE = 0.7;
 const LIBELLE_NE_SAIT_PAS = 'Je ne sais pas';
+const POINT_PAR_QUESTION_REPONDUE = 1;
 
 export interface SessionReportInput {
   session: SessionRecord;
@@ -37,6 +45,12 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
   const scores = computeCohortScore(completions);
   const rangs = new Map(
     input.session.bareme.questions.map((question, rang) => [question.id, rang]),
+  );
+  const types = new Map(
+    questionsAAgreger(input.session.bareme, input.cours).map((question) => [
+      question.id,
+      question.type,
+    ]),
   );
   const tiragesEnEchec: string[] = [];
   const libellesDe = (graine: number): LibellesDesOptions => {
@@ -65,6 +79,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
           input.answers,
           rangs,
           libellesDe(participant.seed),
+          types,
         ),
         incidents: input.incidents.filter(
           (incident) => incident.participantId === participant.id,
@@ -87,19 +102,32 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
 function completionDe(
   participantId: string,
   reponses: readonly AnswerRecord[],
-  notees: readonly BaremeQuestion[],
+  notees: readonly QuestionDeBareme[],
 ): number {
   if (notees.length === 0) {
     return 0;
   }
-  const repondues = notees.filter((question) =>
-    reponses.some(
-      (reponse) =>
-        reponse.participantId === participantId &&
-        reponse.questionId === question.id,
-    ),
+  const points = notees.reduce(
+    (total, question) =>
+      total +
+      (reponses.some(
+        (reponse) =>
+          reponse.participantId === participantId &&
+          reponse.questionId === question.id &&
+          compteCommeReponse(reponse),
+      )
+        ? POINT_PAR_QUESTION_REPONDUE
+        : REGLE_DE_NOTATION.pointsNonReponse),
+    0,
   );
-  return repondues.length / notees.length;
+  return points / notees.length;
+}
+
+function compteCommeReponse(reponse: AnswerRecord): boolean {
+  return (
+    reponse.valeur !== NE_SAIT_PAS ||
+    REGLE_DE_NOTATION.neSaitPasCompteCommeReponse
+  );
 }
 
 function reponsesDe(
@@ -107,6 +135,7 @@ function reponsesDe(
   reponses: readonly AnswerRecord[],
   rangs: ReadonlyMap<string, number>,
   libelles: LibellesDesOptions,
+  types: ReadonlyMap<string, TypeQuestion>,
 ): readonly RapportQuestion[] {
   const rangDe = (reponse: AnswerRecord): number =>
     rangs.get(reponse.questionId) ?? rangs.size;
@@ -116,7 +145,9 @@ function reponsesDe(
     .map((reponse) => ({
       questionId: reponse.questionId,
       concept: reponse.concept,
-      valeur: String(reponse.valeur),
+      type: types.get(reponse.questionId) ?? 'vote',
+      score: reponse.score,
+      valeur: texteDeValeur(reponse.valeur),
       reponse: reponseLisible(reponse, libelles),
       correcte: reponse.correcte,
       misconception: reponse.misconception,
@@ -129,10 +160,47 @@ function reponsesDe(
     }));
 }
 
+function estProduction(
+  valeur: ValeurReponse,
+): valeur is Extract<ValeurReponse, { readonly type: string }> {
+  return typeof valeur === 'object';
+}
+
+function texteDeValeur(valeur: ValeurReponse): string {
+  return estProduction(valeur) ? valeur.type : String(valeur);
+}
+
+const LIBELLE_PAR_TYPE: Readonly<Record<string, string>> = {
+  feuille: 'Feuille',
+  tableau: 'Tableau',
+  classement: 'Classement',
+};
+
+const UNITE_PAR_TYPE: Readonly<Record<string, string>> = {
+  feuille: 'cellules justes',
+  tableau: 'lignes justes',
+  classement: 'cartes bien placées',
+};
+
+function productionLisible(
+  valeur: Extract<ValeurReponse, { readonly type: string }>,
+  details: readonly DetailProduction[] | null,
+): string {
+  const titre = LIBELLE_PAR_TYPE[valeur.type] ?? valeur.type;
+  if ('neSaitPas' in valeur || details === null) {
+    return `${titre} : ${LIBELLE_NE_SAIT_PAS.toLowerCase()}`;
+  }
+  const justes = details.filter((detail) => detail.juste).length;
+  return `${titre} : ${justes}/${details.length} ${UNITE_PAR_TYPE[valeur.type] ?? 'attendus justes'}`;
+}
+
 function reponseLisible(
   reponse: AnswerRecord,
   libelles: LibellesDesOptions,
 ): string {
+  if (estProduction(reponse.valeur)) {
+    return productionLisible(reponse.valeur, reponse.details);
+  }
   if (reponse.valeur === NE_SAIT_PAS) {
     return LIBELLE_NE_SAIT_PAS;
   }
@@ -151,9 +219,7 @@ function libellesDuTirage(
   if (input.cours === null) {
     return {};
   }
-  const stockees = input.session.bareme.tirages.find(
-    (tirage) => tirage.seed === graine,
-  )?.solutions;
+  const stockees = solutionsDuTirage(input.session.bareme, graine);
   const tirage = tirer(input.cours, graine);
   return solutionsIdentiques(tirage.solutions, stockees)
     ? tirage.libellesOptions

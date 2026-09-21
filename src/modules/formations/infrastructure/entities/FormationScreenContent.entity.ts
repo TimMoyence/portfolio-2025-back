@@ -11,6 +11,10 @@ import { FormationCourseContentEntity } from './FormationCourseContent.entity';
 
 @Entity({ name: 'formation_screen_contents' })
 @Check('chk_formation_screen_notes_not_blank', 'length(btrim("notes")) > 0')
+@Check(
+  'chk_formation_screen_diffusion',
+  `"diffusion" IN ('catalogue', 'seance')`,
+)
 @Index('uq_formation_screen_course_screen_id', ['courseId', 'screenId'], {
   unique: true,
 })
@@ -31,7 +35,10 @@ export class FormationScreenContentEntity {
   @ManyToOne(() => FormationCourseContentEntity, (course) => course.ecrans, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'course_id' })
+  @JoinColumn({
+    name: 'course_id',
+    foreignKeyConstraintName: 'FK_formation_screen_contents_course',
+  })
   course: FormationCourseContentEntity;
 
   @Column({ type: 'int' })
@@ -39,6 +46,12 @@ export class FormationScreenContentEntity {
 
   @Column({ name: 'screen_id', type: 'varchar', length: 120 })
   screenId: string;
+
+  @Column({ type: 'varchar', length: 120, nullable: true })
+  titre: string | null;
+
+  @Column({ type: 'varchar', length: 10, default: 'catalogue' })
+  diffusion: string;
 
   @Column({ type: 'varchar', length: 40 })
   brique: string;
@@ -49,7 +62,7 @@ export class FormationScreenContentEntity {
   @Column({ type: 'jsonb' })
   concepts: readonly string[];
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'text' })
   notes: string;
 
   @Column({ type: 'jsonb' })

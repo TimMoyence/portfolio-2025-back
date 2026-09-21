@@ -1,50 +1,121 @@
 import { getMetadataArgsStorage } from 'typeorm';
 import { FormationAnswerEntity } from './FormationAnswer.entity';
+import { FormationCourseContentEntity } from './FormationCourseContent.entity';
+import { FormationFreeResponseEntity } from './FormationFreeResponse.entity';
+import { FormationGroupEntity } from './FormationGroup.entity';
 import { FormationIncidentEntity } from './FormationIncident.entity';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
+import { FormationScoreEntity } from './FormationScore.entity';
+import { FormationScreenContentEntity } from './FormationScreenContent.entity';
 import { FormationSessionEntity } from './FormationSession.entity';
+import { FormationTeacherAnnotationEntity } from './FormationTeacherAnnotation.entity';
 
 type Cible = () => unknown;
 type Entite = new () => object;
 
-const ATTENDUES: ReadonlyArray<{
-  depuis: Entite;
-  propriete: string;
-  vers: Entite;
-  contrainte: string;
-}> = [
+interface RelationAttendue {
+  readonly depuis: Entite;
+  readonly propriete: string;
+  readonly vers: Entite;
+  readonly contrainte: string;
+  readonly suppression: 'CASCADE' | 'SET NULL';
+}
+
+const cascade = (
+  depuis: Entite,
+  propriete: string,
+  vers: Entite,
+  contrainte: string,
+): RelationAttendue => ({
+  depuis,
+  propriete,
+  vers,
+  contrainte,
+  suppression: 'CASCADE',
+});
+
+const ATTENDUES: readonly RelationAttendue[] = [
+  cascade(
+    FormationParticipantEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_participants_session',
+  ),
   {
     depuis: FormationParticipantEntity,
-    propriete: 'session',
-    vers: FormationSessionEntity,
-    contrainte: 'FK_formation_participants_session',
+    propriete: 'group',
+    vers: FormationGroupEntity,
+    contrainte: 'FK_formation_participants_group',
+    suppression: 'SET NULL',
   },
-  {
-    depuis: FormationAnswerEntity,
-    propriete: 'session',
-    vers: FormationSessionEntity,
-    contrainte: 'FK_formation_answers_session',
-  },
-  {
-    depuis: FormationAnswerEntity,
-    propriete: 'participant',
-    vers: FormationParticipantEntity,
-    contrainte: 'FK_formation_answers_participant',
-  },
-  {
-    depuis: FormationIncidentEntity,
-    propriete: 'participant',
-    vers: FormationParticipantEntity,
-    contrainte: 'FK_formation_incidents_participant',
-  },
+  cascade(
+    FormationAnswerEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_answers_session',
+  ),
+  cascade(
+    FormationAnswerEntity,
+    'participant',
+    FormationParticipantEntity,
+    'FK_formation_answers_participant',
+  ),
+  cascade(
+    FormationIncidentEntity,
+    'participant',
+    FormationParticipantEntity,
+    'FK_formation_incidents_participant',
+  ),
+  cascade(
+    FormationGroupEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_groups_session',
+  ),
+  cascade(
+    FormationScoreEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_scores_session',
+  ),
+  cascade(
+    FormationScoreEntity,
+    'participant',
+    FormationParticipantEntity,
+    'FK_formation_scores_participant',
+  ),
+  cascade(
+    FormationFreeResponseEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_free_responses_session',
+  ),
+  cascade(
+    FormationFreeResponseEntity,
+    'participant',
+    FormationParticipantEntity,
+    'FK_formation_free_responses_participant',
+  ),
+  cascade(
+    FormationTeacherAnnotationEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_teacher_annotations_session',
+  ),
+  cascade(
+    FormationScreenContentEntity,
+    'course',
+    FormationCourseContentEntity,
+    'FK_formation_screen_contents_course',
+  ),
 ];
 
 describe('relations des entites formations', () => {
   const relations = getMetadataArgsStorage().relations;
   const jointures = getMetadataArgsStorage().joinColumns;
 
-  it('declare les quatre clefs etrangeres attendues', () => {
-    expect(ATTENDUES).toHaveLength(4);
+  it('declare les douze clefs etrangeres des migrations', () => {
+    expect(ATTENDUES).toHaveLength(12);
   });
 
   for (const attendue of ATTENDUES) {
@@ -60,8 +131,8 @@ describe('relations des entites formations', () => {
         expect((relation!.type as Cible)()).toBe(attendue.vers);
       });
 
-      it('efface la ligne fille quand la ligne mere disparait', () => {
-        expect(relation!.options.onDelete).toBe('CASCADE');
+      it('applique a la ligne fille la regle de suppression de la migration', () => {
+        expect(relation!.options.onDelete).toBe(attendue.suppression);
       });
 
       it('porte le nom de contrainte de la migration', () => {

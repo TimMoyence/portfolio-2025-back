@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import type { Bareme } from '../domain/Bareme';
+import type { Bareme } from '../domain/contrats/bareme';
+import type { Cours } from '../domain/contrats/cours';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { ouvrirTirages } from '../domain/cours/OuvertureTirages';
 import {
@@ -30,16 +31,33 @@ export class OpenSessionUseCase {
   ) {}
 
   async execute(command: OpenSessionCommand): Promise<OpenSessionResult> {
-    const courant = await this.catalogue.trouverCourant(command.courseSlug);
-    if (!courant) {
-      throw new CoursInconnuError(command.courseSlug);
-    }
+    const { cours, version } = await this.versionAOuvrir(command);
     const session = await this.createSurUnCodeLibre(
       command,
-      ouvrirTirages(courant.cours),
-      courant.version,
+      ouvrirTirages(cours, undefined, version),
+      version,
     );
     return { sessionId: session.id, code: session.code };
+  }
+
+  private async versionAOuvrir(
+    command: OpenSessionCommand,
+  ): Promise<{ cours: Cours; version: number }> {
+    if (command.version === undefined) {
+      const courant = await this.catalogue.trouverCourant(command.courseSlug);
+      if (!courant) {
+        throw new CoursInconnuError(command.courseSlug);
+      }
+      return { cours: courant.cours, version: courant.version };
+    }
+    const cours = await this.catalogue.trouver(
+      command.courseSlug,
+      command.version,
+    );
+    if (!cours) {
+      throw new CoursInconnuError(command.courseSlug);
+    }
+    return { cours, version: command.version };
   }
 
   private async createSurUnCodeLibre(
@@ -60,6 +78,7 @@ export class OpenSessionUseCase {
           teacherId: command.teacherId,
           code: candidat,
           bareme,
+          capacite: command.capacite,
         });
       } catch (error) {
         if (!(error instanceof SessionCodeAlreadyActiveError)) {

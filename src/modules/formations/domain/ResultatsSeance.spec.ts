@@ -1,11 +1,18 @@
-import { buildAnswerRecord } from '../../../../test/factories/formation.factory';
+import {
+  buildAnswerRecord,
+  buildQuestionAAgreger,
+  buildResultatQuestion,
+} from '../../../../test/factories/formation.factory';
 import { NE_SAIT_PAS } from './GradingCore';
 import { agregerResultats } from './ResultatsSeance';
 
 describe('agregerResultats', () => {
   it('compte par sens et non par valeur saisie', () => {
     const resultats = agregerResultats({
-      questionIds: ['Q-1', 'Q-2'],
+      questions: [
+        buildQuestionAAgreger({ id: 'Q-1' }),
+        buildQuestionAAgreger({ id: 'Q-2' }),
+      ],
       participants: 3,
       answers: [
         buildAnswerRecord({ questionId: 'Q-1', correcte: true, valeur: 12 }),
@@ -31,7 +38,7 @@ describe('agregerResultats', () => {
     });
     expect(resultats.participants).toBe(3);
     expect(resultats.questions).toEqual([
-      {
+      buildResultatQuestion({
         questionId: 'Q-1',
         total: 4,
         correctes: 1,
@@ -39,19 +46,93 @@ describe('agregerResultats', () => {
         confusions: [
           {
             id: 'base-arrivee',
-            libelle: expect.stringContaining('valeur d’arrivée'),
+            libelle: expect.stringContaining('valeur d’arrivée') as string,
             nombre: 2,
           },
         ],
-      },
-      {
-        questionId: 'Q-2',
-        total: 0,
-        correctes: 0,
-        neSaitPas: 0,
-        confusions: [],
-      },
+      }),
+      buildResultatQuestion({ questionId: 'Q-2' }),
     ]);
+  });
+
+  it('indexe un vote par identifiant stable d option et compte « je ne sais pas »', () => {
+    const [question] = agregerResultats({
+      questions: [buildQuestionAAgreger({ id: 'Q-VOTE', type: 'vote' })],
+      participants: 3,
+      answers: [
+        buildAnswerRecord({ questionId: 'Q-VOTE', valeur: 'plus-25-pct-ecd9' }),
+        buildAnswerRecord({ questionId: 'Q-VOTE', valeur: 'plus-25-pct-ecd9' }),
+        buildAnswerRecord({ questionId: 'Q-VOTE', valeur: 'plus-20-pct-0a1b' }),
+        buildAnswerRecord({ questionId: 'Q-VOTE', valeur: NE_SAIT_PAS }),
+      ],
+    }).questions;
+
+    expect(question.parOption).toEqual({
+      'plus-25-pct-ecd9': 2,
+      'plus-20-pct-0a1b': 1,
+      __je_ne_sais_pas__: 1,
+    });
+  });
+
+  it('n indexe aucune option sur une question qui n est pas un vote', () => {
+    const [question] = agregerResultats({
+      questions: [buildQuestionAAgreger({ id: 'Q-NUM', type: 'numeric' })],
+      participants: 1,
+      answers: [buildAnswerRecord({ questionId: 'Q-NUM', valeur: 12 })],
+    }).questions;
+
+    expect(question.parOption).toBeNull();
+  });
+
+  it('rend le score moyen et le detail par cle des productions', () => {
+    const [question] = agregerResultats({
+      questions: [buildQuestionAAgreger({ id: 'Q-FEUILLE', type: 'feuille' })],
+      participants: 2,
+      answers: [
+        buildAnswerRecord({
+          questionId: 'Q-FEUILLE',
+          valeur: { type: 'feuille', cellules: { D2: '=1' } },
+          score: 1,
+          details: [
+            { cle: 'D2', juste: true, confusion: null },
+            { cle: 'D3', juste: true, confusion: null },
+          ],
+        }),
+        buildAnswerRecord({
+          questionId: 'Q-FEUILLE',
+          valeur: { type: 'feuille', cellules: { D2: '=2' } },
+          score: 0.5,
+          details: [
+            { cle: 'D2', juste: false, confusion: 'base-arrivee' },
+            { cle: 'D3', juste: true, confusion: null },
+          ],
+        }),
+      ],
+    }).questions;
+
+    expect(question.scoreMoyen).toBe(0.75);
+    expect(question.parCle).toEqual({
+      D2: { total: 2, justes: 1 },
+      D3: { total: 2, justes: 2 },
+    });
+  });
+
+  it('compte « je ne sais pas » d une production comme une reponse sans saisie', () => {
+    const [question] = agregerResultats({
+      questions: [buildQuestionAAgreger({ id: 'Q-FEUILLE', type: 'feuille' })],
+      participants: 1,
+      answers: [
+        buildAnswerRecord({
+          questionId: 'Q-FEUILLE',
+          valeur: { type: 'feuille', neSaitPas: true },
+          score: 0,
+          details: [],
+        }),
+      ],
+    }).questions;
+
+    expect(question.neSaitPas).toBe(1);
+    expect(question.parCle).toBeNull();
   });
 
   it('departage deux confusions de meme frequence par leur identifiant', () => {
@@ -59,7 +140,7 @@ describe('agregerResultats', () => {
       buildAnswerRecord({ questionId: 'Q-1', correcte: false, misconception });
 
     const [question] = agregerResultats({
-      questionIds: ['Q-1'],
+      questions: [buildQuestionAAgreger({ id: 'Q-1' })],
       participants: 5,
       answers: [
         fausse('taux-successifs-additionnes'),
@@ -81,7 +162,7 @@ describe('agregerResultats', () => {
 
   it('libelle une confusion absente de la banque par son identifiant', () => {
     const [question] = agregerResultats({
-      questionIds: ['Q-1'],
+      questions: [buildQuestionAAgreger({ id: 'Q-1' })],
       participants: 1,
       answers: [
         buildAnswerRecord({

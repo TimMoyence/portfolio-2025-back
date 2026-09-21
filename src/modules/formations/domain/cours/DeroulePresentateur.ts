@@ -1,10 +1,17 @@
+import type { Cours, Ecran, Question } from '../contrats/cours';
+import type {
+  CorrigeEcranPresentateur,
+  DerouleCours,
+  EcranDeroule,
+} from '../contrats/deroule';
+import type { EcranPublic, TirageDuCours } from '../contrats/tirage';
 import type { ConfusionId } from './banque/confusions';
 import { libelleDeConfusion } from './banque/confusions';
-import type { Cours, Ecran } from './Cours';
+import type { CorrigeEnigme } from './Corrige';
 import { questionsDe } from './Cours';
-import type { CoursPublic, EcranPublic } from './CoursPublic';
-import type { CorrigeTire } from './Tirage';
-import { tirer } from './Tirage';
+import { tirerEnDetail } from './Tirage';
+
+export type { DerouleCours, EcranDeroule } from '../contrats/deroule';
 
 export const SEUIL_PAR_DEFAUT = 0.7;
 
@@ -17,34 +24,22 @@ export interface CorrigePresentateur {
   }[];
 }
 
-export interface EcranDeroule extends EcranPublic {
-  readonly notes: string;
-  readonly seuil: number | null;
-  readonly corriges: readonly CorrigePresentateur[];
-  readonly guide?: {
-    readonly aDire?: string;
-    readonly question?: string;
-    readonly reponse?: string;
-    readonly calcul?: string;
-    readonly relance?: string;
-    readonly transition?: string;
-  };
-}
+type QuestionDuDeroule = EcranDeroule['questions'][number];
 
-export interface DerouleCours extends Omit<CoursPublic, 'ecrans'> {
-  readonly ecrans: readonly EcranDeroule[];
-  readonly remediations: Readonly<Record<string, string>>;
+interface Projection {
+  readonly tirage: TirageDuCours;
+  readonly enonces: Readonly<Record<string, string>>;
 }
 
 export function deroulePresentateur(
   cours: Cours,
   graineReference: number,
 ): DerouleCours {
-  const tirage = tirer(cours, graineReference);
+  const projection = tirerEnDetail(cours, graineReference);
   return {
-    ...tirage.sujet,
-    ecrans: tirage.sujet.ecrans.map((ecranPublic, index) =>
-      versEcranDeroule(ecranPublic, cours.ecrans[index], tirage.corriges),
+    ...projection.tirage.sujet,
+    ecrans: projection.tirage.sujet.ecrans.map((ecranPublic, index) =>
+      versEcranDeroule(ecranPublic, cours.ecrans[index], projection),
     ),
     remediations: remediationsDe(cours),
   };
@@ -53,13 +48,18 @@ export function deroulePresentateur(
 function versEcranDeroule(
   ecranPublic: EcranPublic,
   ecran: Ecran,
-  corriges: Readonly<Record<string, CorrigeTire>>,
+  projection: Projection,
 ): EcranDeroule {
   return {
     ...ecranPublic,
     notes: ecran.notes,
+    diffusion: ecran.diffusion,
     seuil: seuilDe(ecran),
-    corriges: corrigesDe(ecran, corriges),
+    corriges: corrigesDe(ecran, projection.tirage),
+    questions: questionsDe(ecran).map((question) =>
+      questionDuDeroule(question, ecran, projection),
+    ),
+    corrigeEcran: corrigeDeLEcran(ecran),
     guide: ecran.guide,
   };
 }
@@ -77,16 +77,157 @@ function seuilDe(ecran: Ecran): number | null {
 
 function corrigesDe(
   ecran: Ecran,
-  corriges: Readonly<Record<string, CorrigeTire>>,
+  tirage: TirageDuCours,
 ): readonly CorrigePresentateur[] {
-  return questionsDe(ecran).map((question) => {
-    const corrige = corriges[question.id];
+  return questionsDe(ecran)
+    .filter(
+      (question) => question.type === 'vote' || question.type === 'numeric',
+    )
+    .map((question) => {
+      const corrige = tirage.corriges[question.id];
+      return {
+        questionId: question.id,
+        bonneReponse: corrige.bonneReponse,
+        confusions: corrige.confusions.map((id) => confusionPresentateur(id)),
+      };
+    });
+}
+
+function enonceDeProduction(ecran: Ecran, question: Question): string {
+  switch (ecran.brique) {
+    case 'fp-cardsort':
+    case 'fp-sheet':
+    case 'fp-table-build':
+      return ecran.proprietes.plan.intitule;
+    case 'fp-escape': {
+      const enigme = ecran.proprietes.parcours.enigmes.find(
+        (candidate) => candidate.id === question.id,
+      );
+      if (enigme !== undefined) {
+        return enigme.enonce;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  throw new RangeError(
+    `La production ${question.id} n'a pas d'énoncé sur l'écran ${ecran.id}`,
+  );
+}
+
+function questionDuDeroule(
+  question: Question,
+  ecran: Ecran,
+  { tirage, enonces }: Projection,
+): QuestionDuDeroule {
+  if (question.type !== 'vote' && question.type !== 'numeric') {
     return {
-      questionId: question.id,
-      bonneReponse: corrige.bonneReponse,
-      confusions: corrige.confusions.map((id) => confusionPresentateur(id)),
+      id: question.id,
+      enonce: enonceDeProduction(ecran, question),
+      options: null,
     };
-  });
+  }
+  return {
+    id: question.id,
+    enonce: enonces[question.id],
+    options:
+      question.type === 'vote'
+        ? Object.entries(tirage.libellesOptions[question.id]).map(
+            ([id, libelle]) => ({ id, libelle }),
+          )
+        : null,
+  };
+}
+
+function solutionLisible(corrige: CorrigeEnigme): string {
+  return corrige.solution.type === 'nombre'
+    ? corrige.solution.formePubliee
+    : corrige.solution.acceptees[0];
+}
+
+function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
+  switch (ecran.brique) {
+    case 'fp-cardsort':
+    case 'fp-sheet':
+    case 'fp-table-build':
+      return corrigeDeProduction(ecran.production.corrige);
+    case 'fp-escape': {
+      const corriges = ecran.enigmes.flatMap((enigme) =>
+        enigme.corrige.type === 'enigme' ? [enigme.corrige] : [],
+      );
+      return {
+        type: 'enigmes',
+        enigmes: corriges.map((corrige) => ({
+          enigmeId: corrige.enigmeId,
+          solution: solutionLisible(corrige),
+          fragment: corrige.fragment,
+        })),
+        codeFinal: corriges.map((corrige) => corrige.fragment).join(''),
+      };
+    }
+    case 'fp-challenge':
+      return { type: 'defi', strategies: ecran.defi.strategies };
+    case 'fp-vote':
+      return ecran.revelation === undefined
+        ? null
+        : {
+            type: 'revelation',
+            titre: ecran.revelation.titre,
+            lignes: ecran.revelation.lignes,
+          };
+    default:
+      return null;
+  }
+}
+
+function corrigeDeProduction(
+  corrige: Extract<
+    Ecran,
+    { readonly brique: 'fp-sheet' }
+  >['production']['corrige'],
+): CorrigeEcranPresentateur | null {
+  switch (corrige.type) {
+    case 'feuille':
+      return {
+        type: 'feuille',
+        attendus: corrige.attendus.map((attendu) => ({
+          reference: attendu.reference,
+          formuleReference: attendu.formuleReference,
+          valeur: attendu.valeur,
+          tolerance: attendu.tolerance,
+          forme: attendu.forme,
+        })),
+        seuilReussite: corrige.seuilReussite,
+      };
+    case 'tableau':
+      return {
+        type: 'tableau',
+        attendus: corrige.attendus.map(({ rang, cle, valeur }) => ({
+          rang,
+          cle,
+          valeur,
+        })),
+        tolerance: corrige.tolerance,
+        seuilReussite: corrige.seuilReussite,
+      };
+    case 'classement':
+      return {
+        type: 'classement',
+        attendus: corrige.attendus.map(
+          ({ carteId, categorieId, justification }) => ({
+            carteId,
+            categorieId,
+            justification,
+          }),
+        ),
+        seuilReussite: corrige.seuilReussite,
+      };
+    case 'enigme':
+      return null;
+    default:
+      return corrige satisfies never;
+  }
 }
 
 function confusionPresentateur(id: ConfusionId): {

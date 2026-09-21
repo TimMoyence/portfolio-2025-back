@@ -1,11 +1,12 @@
-import type { Cours } from './Cours';
+import type { Cours } from '../contrats/cours';
+
+export interface CoursPublie {
+  readonly cours: Cours;
+  readonly version: number;
+  readonly publieLe: Date;
+}
 
 export interface ICatalogueCours {
-  trouver(slug: string, version?: number): Cours | null | Promise<Cours | null>;
-  trouverCourant(
-    slug: string,
-  ):
-    | { cours: Cours; version: number }
-    | null
-    | Promise<{ cours: Cours; version: number } | null>;
+  trouver(slug: string, version?: number): Promise<Cours | null>;
+  trouverCourant(slug: string): Promise<CoursPublie | null>;
 }

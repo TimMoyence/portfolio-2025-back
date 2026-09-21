@@ -17,24 +17,20 @@ import { request as requeteNode } from 'node:http';
 import request from 'supertest';
 import { IS_PUBLIC_KEY } from '../src/common/interfaces/auth/public.decorator';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
-import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
-import { ControlSessionUseCase } from '../src/modules/formations/application/ControlSession.useCase';
-import { DueQuestionsUseCase } from '../src/modules/formations/application/DueQuestions.useCase';
-import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
-import { JoinSessionUseCase } from '../src/modules/formations/application/JoinSession.useCase';
-import { LireDerouleUseCase } from '../src/modules/formations/application/LireDeroule.useCase';
-import { LireSujetUseCase } from '../src/modules/formations/application/LireSujet.useCase';
-import { OpenSessionUseCase } from '../src/modules/formations/application/OpenSession.useCase';
-import { RecordIncidentsUseCase } from '../src/modules/formations/application/RecordIncidents.useCase';
-import { StreamSessionUseCase } from '../src/modules/formations/application/StreamSession.useCase';
-import { SubmitAnswerUseCase } from '../src/modules/formations/application/SubmitAnswer.useCase';
 import type {
   Cours,
   Ecran,
-} from '../src/modules/formations/domain/cours/Cours';
+} from '../src/modules/formations/domain/contrats/cours';
 import { libelleDeConfusion } from '../src/modules/formations/domain/cours/banque/confusions';
 import { questionNumerique } from '../src/modules/formations/domain/cours/Cours';
+import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
+import type { DerouleCours } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import type { ICatalogueCours } from '../src/modules/formations/domain/cours/ICatalogueCours.port';
+import {
+  RevisionDeSeanceObsoleteError,
+  SeanceCompleteError,
+  SeedPoolExhaustedError,
+} from '../src/modules/formations/domain/errors/FormationErrors';
 import type {
   AnswerRecord,
   IAnswersRepository,
@@ -48,35 +44,37 @@ import type {
   SessionRecord,
 } from '../src/modules/formations/domain/ISessions.repository';
 import {
-  ANSWERS_REPOSITORY,
-  CATALOGUE_COURS,
-  FORMATION_MAILER,
-  INCIDENTS_REPOSITORY,
-  MASTERY_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../src/modules/formations/domain/token';
-import { SessionStateCacheService } from '../src/modules/formations/infrastructure/SessionStateCache.service';
-import { CodeScanProtectionService } from '../src/modules/formations/interfaces/CodeScanProtection.service';
-import { FormationsPresenterController } from '../src/modules/formations/interfaces/FormationsPresenter.controller';
-import { FormationsStudentController } from '../src/modules/formations/interfaces/FormationsStudent.controller';
-import {
-  EN_TETE_JETON,
-  ParticipantTokenService,
-} from '../src/modules/formations/interfaces/ParticipantToken.service';
+import type { SessionStateCacheService } from '../src/modules/formations/infrastructure/SessionStateCache.service';
+import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {
   buildCoursDeClasse,
   buildCoursDeTest,
   buildCoursSansTirageValide,
   creerCatalogueDeTest,
 } from './factories/cours.factory';
+import { buildCoursStocke } from './factories/cours-stocke.factory';
 import {
+  createMockEscapeRepo,
+  createMockFormationGroupsRepo,
   createMockFormationMailer,
+  createMockFreeResponsesRepo,
   createMockIncidentsRepo,
   createMockMasteryRepo,
+  createMockPulsesRepo,
+  createMockRappelsServisRepo,
+  createMockScoresRepo,
+  createMockTeacherAnnotationsRepo,
 } from './factories/formation.factory';
-import { abonnerAuFlux, attendreQue } from './helpers/formations-harness';
+import {
+  abonnerAuFlux,
+  attendreQue,
+  CONTROLEURS_FORMATIONS,
+  fermetureCoteServeur,
+  fournisseursFormations,
+} from './helpers/formations-harness';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
 import {
   ADRESSE_BOUCLE_LOCALE,
@@ -130,9 +128,16 @@ function construireCoursSentinelle(solution: number): Cours {
 
 const COURS_SENTINELLE = construireCoursSentinelle(TEMOIN.solution);
 
+const RANG_DE_LA_SENTINELLE = COURS_SENTINELLE.ecrans.findIndex(
+  (ecran) => ecran.question?.id === TEMOIN.question,
+);
+
 const QUESTIONS_DU_COURS_DE_CLASSE = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(QUESTIONS_DU_COURS_DE_CLASSE);
 const COURS_SANS_TIRAGE = buildCoursSansTirageValide();
+const COURS_GUIDE = lireCoursStocke(
+  buildCoursStocke({ slug: 'cours-stocke-avec-guide' }),
+);
 
 const CORRIGE_EN_CLAIR = [
   String(TEMOIN.solution),
@@ -145,15 +150,14 @@ const TAILLE_CLASSE = 30;
 const DELAI_FERMETURE_FLUX_MS = 2000;
 
 function cleEtudiant(index: number): string {
-  return `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`;
+  return `poste-${String(index).padStart(4, '0')}`;
 }
 
-function inscription(studentKey: string) {
+function inscription(identifiant: string) {
   return {
-    studentKey,
     prenom: 'Theo',
     nom: 'Martin',
-    email: 'theo.martin@example.com',
+    email: `${identifiant}@example.com`,
   };
 }
 
@@ -187,6 +191,9 @@ function creerSessionsRepo(): ISessionsRepository {
         modeRythme: 'pilote',
         ecranCourant: 0,
         intervalleLibre: null,
+        pilotageEcrans: {},
+        revision: 0,
+        capacite: input.capacite ?? 40,
         ouverteLe: new Date(),
         fermeeLe: null,
         majLe: new Date(),
@@ -195,6 +202,22 @@ function creerSessionsRepo(): ISessionsRepository {
       return Promise.resolve(session);
     },
     findById: (id) => Promise.resolve(sessions.get(id) ?? null),
+    lireEtat: (id) => {
+      const session = sessions.get(id);
+      return Promise.resolve(
+        session === undefined
+          ? null
+          : {
+              etat: session.etat,
+              modeRythme: session.modeRythme,
+              ecranCourant: session.ecranCourant,
+              intervalleLibre: session.intervalleLibre,
+              pilotageEcrans: session.pilotageEcrans,
+              revision: session.revision,
+              majLe: session.majLe,
+            },
+      );
+    },
     findActiveByCode: (code) =>
       Promise.resolve(
         toutes().find(
@@ -203,12 +226,23 @@ function creerSessionsRepo(): ISessionsRepository {
       ),
     isCodeTaken: (code) =>
       Promise.resolve(toutes().some((session) => session.code === code)),
-    update: (id, input) => {
+    update: (id, input, revisionAttendue) => {
       const courante = sessions.get(id);
       if (!courante) {
         throw new Error(`Session absente du depot de test: ${id}`);
       }
-      const maj: SessionRecord = { ...courante, ...input, majLe: new Date() };
+      if (
+        revisionAttendue !== undefined &&
+        revisionAttendue !== courante.revision
+      ) {
+        return Promise.reject(new RevisionDeSeanceObsoleteError(id));
+      }
+      const maj: SessionRecord = {
+        ...courante,
+        ...input,
+        revision: courante.revision + 1,
+        majLe: new Date(),
+      };
       sessions.set(id, maj);
       return Promise.resolve(maj);
     },
@@ -219,18 +253,41 @@ function creerParticipantsRepo(): IParticipantsRepository {
   const participants = new Map<string, ParticipantRecord>();
   const deLaSession = (sessionId: string): ParticipantRecord[] =>
     [...participants.values()].filter(
-      (participant) => participant.sessionId === sessionId,
+      (participant) =>
+        participant.sessionId === sessionId && participant.evinceLe === null,
+    );
+  const evincesDeLaSession = (sessionId: string): ParticipantRecord[] =>
+    [...participants.values()].filter(
+      (participant) =>
+        participant.sessionId === sessionId && participant.evinceLe !== null,
     );
   return {
-    create: (input) => {
+    inscrire: ({ capacite, choisirGraine, ...identite }) => {
+      const inscrits = deLaSession(identite.sessionId);
+      const existant = inscrits.find(
+        (participant) => participant.studentKey === identite.studentKey,
+      );
+      if (existant !== undefined) {
+        return Promise.resolve({ participant: existant, nouveau: false });
+      }
+      if (inscrits.length >= capacite) {
+        return Promise.reject(new SeanceCompleteError(capacite));
+      }
+      const seed = choisirGraine(inscrits.map((inscrit) => inscrit.seed));
+      if (seed === null) {
+        return Promise.reject(new SeedPoolExhaustedError());
+      }
       const participant: ParticipantRecord = {
-        ...input,
+        ...identite,
+        seed,
+        groupId: null,
         id: randomUUID(),
         rejointLe: new Date(),
         dernierPing: new Date(),
+        evinceLe: null,
       };
       participants.set(participant.id, participant);
-      return Promise.resolve(participant);
+      return Promise.resolve({ participant, nouveau: true });
     },
     findBySessionAndStudentKey: (sessionId, studentKey) =>
       Promise.resolve(
@@ -240,13 +297,27 @@ function creerParticipantsRepo(): IParticipantsRepository {
       ),
     findById: (id) => Promise.resolve(participants.get(id) ?? null),
     listBySession: (sessionId) => Promise.resolve(deLaSession(sessionId)),
+    listEvincesBySession: (sessionId) =>
+      Promise.resolve(evincesDeLaSession(sessionId)),
     countBySession: (sessionId) =>
       Promise.resolve(deLaSession(sessionId).length),
-    listSeedsBySession: (sessionId) =>
-      Promise.resolve(
-        deLaSession(sessionId).map((participant) => participant.seed),
-      ),
     touch: () => Promise.resolve(),
+    evincer: (sessionId, participantId) => {
+      const cible = participants.get(participantId);
+      if (!cible || cible.sessionId !== sessionId || cible.evinceLe !== null) {
+        return Promise.resolve(false);
+      }
+      participants.set(participantId, { ...cible, evinceLe: new Date() });
+      return Promise.resolve(true);
+    },
+    readmettre: (sessionId, participantId) => {
+      const cible = participants.get(participantId);
+      if (!cible || cible.sessionId !== sessionId || cible.evinceLe === null) {
+        return Promise.resolve(false);
+      }
+      participants.set(participantId, { ...cible, evinceLe: null });
+      return Promise.resolve(true);
+    },
   };
 }
 
@@ -256,12 +327,22 @@ function creerAnswersRepo(): IAnswersRepository {
     create: (input) => {
       const reponse: AnswerRecord = {
         ...input,
+        score: input.score ?? null,
+        details: input.details ?? null,
         id: randomUUID(),
         soumisLe: new Date(),
       };
       reponses.push(reponse);
       return Promise.resolve(reponse);
     },
+    listerDuParticipant: (sessionId, participantId) =>
+      Promise.resolve(
+        reponses.filter(
+          (reponse) =>
+            reponse.sessionId === sessionId &&
+            reponse.participantId === participantId,
+        ),
+      ),
     existsFor: (participantId, questionId) =>
       Promise.resolve(
         reponses.some(
@@ -303,6 +384,7 @@ class IdentiteDeTestGuard implements CanActivate {
 interface HarnaisFormations {
   app: INestApplication;
   mailer: ReturnType<typeof createMockFormationMailer>;
+  scores: ReturnType<typeof createMockScoresRepo>;
   port: number;
 }
 
@@ -317,37 +399,36 @@ async function creerHarnais(
     COURS_SENTINELLE,
     COURS_DE_CLASSE,
     COURS_SANS_TIRAGE,
+    COURS_GUIDE,
   ),
 ): Promise<HarnaisFormations> {
   process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
   process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
   const mailer = createMockFormationMailer();
+  const scores = createMockScoresRepo();
 
   const moduleRef = await Test.createTestingModule({
     imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 30 }])],
-    controllers: [FormationsPresenterController, FormationsStudentController],
+    controllers: CONTROLEURS_FORMATIONS,
     providers: [
-      OpenSessionUseCase,
-      ControlSessionUseCase,
-      CloseSessionUseCase,
-      GetSessionResultsUseCase,
-      JoinSessionUseCase,
-      SubmitAnswerUseCase,
-      RecordIncidentsUseCase,
-      StreamSessionUseCase,
-      DueQuestionsUseCase,
-      LireSujetUseCase,
-      LireDerouleUseCase,
-      ParticipantTokenService,
-      CodeScanProtectionService,
-      { provide: SESSIONS_REPOSITORY, useValue: creerSessionsRepo() },
-      { provide: PARTICIPANTS_REPOSITORY, useValue: creerParticipantsRepo() },
-      { provide: ANSWERS_REPOSITORY, useValue: creerAnswersRepo() },
-      { provide: MASTERY_REPOSITORY, useValue: createMockMasteryRepo() },
-      { provide: INCIDENTS_REPOSITORY, useValue: createMockIncidentsRepo() },
-      { provide: FORMATION_MAILER, useValue: mailer },
-      { provide: CATALOGUE_COURS, useValue: catalogueHttp },
-      { provide: SESSION_STATE_CACHE, useClass: SessionStateCacheService },
+      ...fournisseursFormations(
+        {
+          sessions: creerSessionsRepo(),
+          participants: creerParticipantsRepo(),
+          answers: creerAnswersRepo(),
+          incidents: createMockIncidentsRepo(),
+          mastery: createMockMasteryRepo(),
+          scores,
+          freeResponses: createMockFreeResponsesRepo(),
+          annotations: createMockTeacherAnnotationsRepo(),
+          groups: createMockFormationGroupsRepo(),
+          escape: createMockEscapeRepo(),
+          pulses: createMockPulsesRepo(),
+          rappels: createMockRappelsServisRepo(),
+          mailer,
+        },
+        catalogueHttp,
+      ),
       { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
       { provide: APP_GUARD, useClass: ThrottlerGuard },
     ],
@@ -358,12 +439,13 @@ async function creerHarnais(
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
   const port = await ecouterEnBoucleLocale(app);
-  return { app, mailer, port };
+  return { app, mailer, scores, port };
 }
 
 describe('Session de formation (e2e http socket)', () => {
   let app: INestApplication;
   let mailer: HarnaisFormations['mailer'];
+  let scores: HarnaisFormations['scores'];
   let port: number;
 
   const serveur = (): Parameters<typeof request>[0] =>
@@ -393,13 +475,20 @@ describe('Session de formation (e2e http socket)', () => {
       .set('x-test-identite', `${formateur}:teacher`)
       .expect(204);
 
+  const servirLaSentinelle = (sessionId: string, formateur: string) =>
+    request(serveur())
+      .patch(route(`/sessions/${sessionId}/control`))
+      .set('x-test-identite', `${formateur}:teacher`)
+      .send({ ecran: RANG_DE_LA_SENTINELLE })
+      .expect(204);
+
   const rejoindre = (code: string, studentKey: string) =>
     request(serveur())
       .post(route(`/sessions/${code}/join`))
       .send(inscription(studentKey));
 
   beforeAll(async () => {
-    ({ app, mailer, port } = await creerHarnais());
+    ({ app, mailer, scores, port } = await creerHarnais());
   });
 
   afterAll(async () => {
@@ -465,22 +554,21 @@ describe('Session de formation (e2e http socket)', () => {
           return resultat;
         });
       const passages = jest.spyOn(cache, 'read');
+      const chemin = route(`/sessions/${sessionId}/presenter-stream`);
+      const abandonVuParLeServeur = fermetureCoteServeur(app, chemin);
 
       const requete = requeteNode({
         host: ADRESSE_BOUCLE_LOCALE,
         port,
-        path: route(`/sessions/${sessionId}/presenter-stream`),
+        path: chemin,
         headers: { 'x-test-identite': `${FORMATEUR_A}:teacher` },
       });
       requete.on('error', () => undefined);
-      const requeteFermee = new Promise<void>((resoudre) => {
-        requete.once('close', resoudre);
-      });
       requete.end();
       await attendreQue(() => lectureCommencee, DELAI_FERMETURE_FLUX_MS);
       passages.mockClear();
       requete.destroy();
-      await requeteFermee;
+      await abandonVuParLeServeur;
       reprendreLaLecture();
       await attendreQue(() => lectureTerminee, DELAI_FERMETURE_FLUX_MS);
       await new Promise<void>((resoudre) => setImmediate(resoudre));
@@ -507,6 +595,7 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(201);
       const { jeton } = inscrit.body as { jeton: string };
       await demarrerSession(sessionId, FORMATEUR_A);
+      await servirLaSentinelle(sessionId, FORMATEUR_A);
       await request(serveur())
         .post(route(`/sessions/${sessionId}/answers`))
         .set(EN_TETE_JETON, jeton)
@@ -543,6 +632,29 @@ describe('Session de formation (e2e http socket)', () => {
       expect(exportBilan.headers['content-disposition']).toContain(
         'bilan-seance.json',
       );
+    });
+
+    it('documente le guide formateur que le deroule rend avec chaque ecran', async () => {
+      const ouverture = await demanderOuverture(FORMATEUR_A, {
+        courseSlug: COURS_GUIDE.slug,
+      }).expect(201);
+      const { sessionId } = ouverture.body as { sessionId: string };
+
+      const deroule = await request(serveur())
+        .get(route(`/sessions/${sessionId}/deroule`))
+        .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+        .expect(200);
+      const document = SwaggerModule.createDocument(
+        app,
+        new DocumentBuilder().setTitle('formations').build(),
+      );
+
+      expect((deroule.body as DerouleCours).ecrans[0].guide).toEqual(
+        COURS_GUIDE.ecrans[0].guide,
+      );
+      expect(
+        ecartsAuSchemaDeReponse(document, '/{id}/deroule', deroule.body),
+      ).toEqual([]);
     });
   });
 
@@ -650,6 +762,7 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(201);
       jeton = (inscrit.body as { jeton: string }).jeton;
       await demarrerSession(sessionId, FORMATEUR_A);
+      await servirLaSentinelle(sessionId, FORMATEUR_A);
     });
 
     it('refuse une reponse avant que le formateur ait demarre la seance', async () => {
@@ -683,6 +796,7 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(201);
       const { jeton: jetonDuSecond } = inscrit.body as { jeton: string };
       await demarrerSession(session.sessionId, FORMATEUR_A);
+      await servirLaSentinelle(session.sessionId, FORMATEUR_A);
       const envoyer = () =>
         request(serveur())
           .post(route(`/sessions/${session.sessionId}/answers`))
@@ -897,6 +1011,20 @@ describe('Session de formation (e2e http socket)', () => {
       ).expect(201);
       jeton = (inscrit.body as { jeton: string }).jeton;
       mailer.sendSyntheseFormateur.mockClear();
+      scores.saveIndividuals.mockClear();
+      scores.saveSession.mockClear();
+    });
+
+    it('ne persiste aucun score a la lecture des resultats ni du bilan', async () => {
+      for (const lecture of ['results', 'report']) {
+        await request(serveur())
+          .get(route(`/sessions/${sessionId}/${lecture}`))
+          .set('x-test-identite', `${FORMATEUR_A}:teacher`)
+          .expect(200);
+      }
+
+      expect(scores.saveIndividuals).not.toHaveBeenCalled();
+      expect(scores.saveSession).not.toHaveBeenCalled();
     });
 
     it('cloture et adresse la synthese a la boite configuree, jamais au teacherId', async () => {
@@ -905,6 +1033,12 @@ describe('Session de formation (e2e http socket)', () => {
         .set('x-test-identite', `${FORMATEUR_A}:teacher`)
         .expect(204);
 
+      expect(scores.saveIndividuals).toHaveBeenCalledWith([
+        expect.objectContaining({ sessionId, note: 0, completion: 0 }),
+      ]);
+      expect(scores.saveSession).toHaveBeenCalledWith(
+        expect.objectContaining({ sessionId, tauxParticipation: 0 }),
+      );
       expect(mailer.sendSyntheseFormateur).toHaveBeenCalledWith(
         SYNTHESE_A,
         expect.anything(),

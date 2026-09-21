@@ -4,6 +4,7 @@ interface SchemaOpenApi {
   $ref?: string;
   type?: string;
   properties?: Record<string, SchemaOpenApi>;
+  required?: string[];
   items?: SchemaOpenApi;
 }
 
@@ -33,6 +34,7 @@ function estObjet(valeur: unknown): valeur is Record<string, unknown> {
 function ecartsDesProprietes(
   document: OpenAPIObject,
   proprietes: Record<string, SchemaOpenApi>,
+  requises: readonly string[],
   valeur: unknown,
   chemin: string,
 ): string[] {
@@ -42,7 +44,7 @@ function ecartsDesProprietes(
   const documentees = Object.keys(proprietes);
   const recues = Object.keys(valeur);
   return [
-    ...documentees
+    ...requises
       .filter((cle) => !recues.includes(cle))
       .map((cle) => `${chemin}.${cle} : documente mais absent de la reponse`),
     ...recues
@@ -69,7 +71,13 @@ function ecartsAuSchema(
 ): string[] {
   const resolu = resoudre(document, schema);
   if (resolu.properties !== undefined) {
-    return ecartsDesProprietes(document, resolu.properties, valeur, chemin);
+    return ecartsDesProprietes(
+      document,
+      resolu.properties,
+      resolu.required ?? [],
+      valeur,
+      chemin,
+    );
   }
   const items = resolu.items;
   if (items !== undefined && Array.isArray(valeur)) {
