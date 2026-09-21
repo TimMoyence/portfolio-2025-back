@@ -72,6 +72,19 @@ describe('migration AlignB2CoursV3Presentation', () => {
     ]);
   });
 
+  it('accepte le format de retour PostgreSQL de UPDATE ... RETURNING', async () => {
+    const { runner, query } = banc();
+    query.mockImplementation((sql: string) => {
+      if (sql.startsWith(VERSION_CHERCHEE))
+        return Promise.resolve([{ id: 'cours-v3' }]);
+      if (sql.startsWith(ECRAN_MIS_A_JOUR))
+        return Promise.resolve([[{ screen_id: 'ecran' }], 1]);
+      return Promise.resolve(undefined);
+    });
+
+    await expect(migration.up(runner)).resolves.toBeUndefined();
+  });
+
   it('rétablit le déclencheur même si un écran manque', async () => {
     const { runner, query } = banc([{ id: 'cours-v3' }], []);
 

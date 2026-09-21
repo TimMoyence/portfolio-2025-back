@@ -81,13 +81,18 @@ export class AlignB2CoursV3Presentation1789980000000 implements MigrationInterfa
     chemin: string[],
     valeur: string,
   ): Promise<void> {
-    const ecrans = (await queryRunner.query(
+    const resultat = (await queryRunner.query(
       `UPDATE "formation_screen_contents"
        SET "proprietes" = jsonb_set("proprietes", $1::text[], to_jsonb($2::text), true)
        WHERE "course_id" = $3 AND "screen_id" = $4
        RETURNING "screen_id"`,
       [chemin, valeur, coursId, screenId],
-    )) as LigneEcran[];
+    )) as unknown;
+    const ecrans = (
+      Array.isArray(resultat) && Array.isArray(resultat[0])
+        ? resultat[0]
+        : resultat
+    ) as LigneEcran[];
     if (ecrans.length !== 1) {
       throw new Error(`Écran B2 V3 introuvable ou non unique : ${screenId}`);
     }
