@@ -8,9 +8,9 @@ import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   AnswerAlreadySubmittedError,
   CoursInconnuError,
-  ParticipantNotFoundError,
   SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
+import { participantActif } from './ParticipantActif';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
@@ -70,10 +70,11 @@ export class SubmitAnswerUseCase {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
 
-    const participant = await this.participants.findById(command.participantId);
-    if (!participant || participant.evinceLe !== null) {
-      throw new ParticipantNotFoundError(command.participantId);
-    }
+    const participant = await participantActif(
+      this.participants,
+      command.sessionId,
+      command.participantId,
+    );
 
     const question = findQuestion(session.bareme, command.questionId);
     if (!question) {

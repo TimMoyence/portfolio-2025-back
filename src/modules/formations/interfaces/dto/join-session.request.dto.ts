@@ -4,7 +4,6 @@ import {
   IsInt,
   IsOptional,
   IsString,
-  IsUUID,
   MaxLength,
   Min,
   MinLength,
@@ -26,10 +25,6 @@ export class JoinSessionRequestDto {
   @IsInt()
   @Min(0)
   formStartedAt?: number;
-
-  @ApiProperty({ example: '11111111-1111-4111-8111-111111111111' })
-  @IsUUID('4')
-  studentKey: string;
 
   @ApiProperty({ example: 'Theo' })
   @IsString()

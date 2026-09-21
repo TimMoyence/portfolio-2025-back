@@ -23,6 +23,31 @@ export function mockTypeOrmRepository<E extends ObjectLiteral>(
   return methodes as unknown as Repository<E>;
 }
 
+export interface GestionnaireSimule extends MethodesSimulees {
+  readonly transaction: jest.Mock;
+}
+
+export function mockTypeOrmManager(
+  methodes: MethodesSimulees,
+): GestionnaireSimule {
+  const gestionnaire = {
+    ...methodes,
+    transaction: jest
+      .fn()
+      .mockImplementation((travail: (manager: unknown) => unknown) =>
+        Promise.resolve(travail(gestionnaire)),
+      ),
+  };
+  return gestionnaire;
+}
+
+export function mockTypeOrmRepositoryAvecManager<E extends ObjectLiteral>(
+  methodes: MethodesSimulees,
+  manager: GestionnaireSimule,
+): Repository<E> {
+  return { ...methodes, manager } as unknown as Repository<E>;
+}
+
 export interface QueryBuilderSimule {
   readonly leftJoinAndSelect: jest.Mock;
   readonly where: jest.Mock;

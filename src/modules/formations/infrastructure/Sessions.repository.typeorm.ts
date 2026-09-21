@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
-import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
+import {
+  RevisionDeSeanceObsoleteError,
+  SessionCodeAlreadyActiveError,
+} from '../domain/errors/FormationErrors';
 import type {
   CreateSessionInput,
   EtatDeSeanceRecord,
@@ -100,13 +103,23 @@ export class SessionsRepositoryTypeORM
     return total > 0;
   }
 
-  async update(id: string, input: UpdateSessionInput): Promise<SessionRecord> {
-    await this.repo
+  async update(
+    id: string,
+    input: UpdateSessionInput,
+    revisionAttendue?: number,
+  ): Promise<SessionRecord> {
+    const ecriture = this.repo
       .createQueryBuilder()
       .update(FormationSessionEntity)
       .set({ ...input, majLe: new Date(), revision: () => '"revision" + 1' })
-      .where('id = :id', { id })
-      .execute();
+      .where('id = :id', { id });
+    if (revisionAttendue !== undefined) {
+      ecriture.andWhere('revision = :revisionAttendue', { revisionAttendue });
+    }
+    const resultat = await ecriture.execute();
+    if (revisionAttendue !== undefined && (resultat.affected ?? 0) === 0) {
+      throw new RevisionDeSeanceObsoleteError(id);
+    }
     const entity = await this.repo.findOne({ where: { id } });
     if (!entity) {
       throw new Error(`Session introuvable apres mise a jour: ${id}`);

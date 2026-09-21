@@ -127,13 +127,8 @@ function memoireStabilisee(): number {
   return process.memoryUsage().heapUsed;
 }
 
-function cleEtudiant(index: number): string {
-  return `55555555-5555-4555-8555-${String(index).padStart(12, '0')}`;
-}
-
 function identiteDe(index: number): Record<string, string> {
   return {
-    studentKey: cleEtudiant(index),
     prenom: `Prenom-${index}`,
     nom: `Nom-${index}`,
     email: `charge-${index}@example.test`,

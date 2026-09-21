@@ -56,5 +56,9 @@ export interface ISessionsRepository {
   lireEtat(id: string): Promise<EtatDeSeanceRecord | null>;
   findActiveByCode(code: string): Promise<SessionRecord | null>;
   isCodeTaken(code: string): Promise<boolean>;
-  update(id: string, input: UpdateSessionInput): Promise<SessionRecord>;
+  update(
+    id: string,
+    input: UpdateSessionInput,
+    revisionAttendue?: number,
+  ): Promise<SessionRecord>;
 }

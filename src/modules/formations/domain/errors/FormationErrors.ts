@@ -272,11 +272,13 @@ export class SessionCodeAlreadyActiveError extends ResourceConflictError {
   }
 }
 
-export class VersionNonPubliableError extends ResourceConflictError {
-  readonly code = 'VERSION_NON_PUBLIABLE';
+export class RevisionDeSeanceObsoleteError extends ResourceConflictError {
+  readonly code = 'REVISION_OBSOLETE';
 
-  constructor(slug: string, version: number, raison: string) {
-    super(`La version ${version} de ${slug} n’est pas publiable : ${raison}.`);
+  constructor(sessionId: string) {
+    super(
+      `Le pilotage de la séance ${sessionId} a changé depuis sa lecture : la commande a été rejouée sur l’état à jour.`,
+    );
   }
 }
 

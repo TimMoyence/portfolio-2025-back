@@ -19,6 +19,7 @@ import {
 import { setSmtpEnv } from './factories/mailer.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  cleEtudianteDe,
   DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
@@ -303,10 +304,6 @@ const MAITRISE_ETUDIANT_PIEGE = [
   },
 ];
 
-function cleEtudiant(index: number): string {
-  return `33333333-3333-4333-8333-${String(index).padStart(12, '0')}`;
-}
-
 function nomDe(index: number): string {
   return `Nom-${String(index).padStart(2, '0')}`;
 }
@@ -400,7 +397,6 @@ describeDb(
           await request(serveur())
             .post(route(`/sessions/${code}/join`))
             .send({
-              studentKey: cleEtudiant(index),
               prenom: prenomDe(index),
               nom: nomDe(index),
               email: emailDe(index),
@@ -411,7 +407,7 @@ describeDb(
         const graine = await contexte.graineDe(corps.participantId);
         etudiants.push({
           index,
-          studentKey: cleEtudiant(index),
+          studentKey: cleEtudianteDe(emailDe(index)),
           prenom: prenomDe(index),
           nom: nomDe(index),
           email: emailDe(index),

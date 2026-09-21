@@ -17,6 +17,7 @@ export function createMockFormationsStudentDependances() {
     lireSujet: { execute: jest.fn() },
     saveFreeResponse: { execute: jest.fn() },
     tokens: { sign: jest.fn(), verify: jest.fn() },
+    clesEtudiants: { de: jest.fn().mockReturnValue('cle-etudiant') },
     codeScan: { assertPasDeBalayage: jest.fn(), enregistrerEchec: jest.fn() },
   };
 }
@@ -43,6 +44,7 @@ export function buildFormationsStudentController(
     dependances.lireSujet as never,
     dependances.saveFreeResponse as never,
     dependances.tokens as never,
+    dependances.clesEtudiants as never,
     dependances.codeScan as never,
     new PublicFormProtectionService(),
   );

@@ -48,8 +48,6 @@ import { DeclarerJalonRequestDto } from '../src/modules/formations/interfaces/dt
 import { DerouleResponseDto } from '../src/modules/formations/interfaces/dto/contrat/deroule.response.dto';
 import { EtatParticipantResponseDto } from '../src/modules/formations/interfaces/dto/contrat/etat-participant.response.dto';
 import { OpenSessionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/open-session.request.dto';
-import { PublierVersionRequestDto } from '../src/modules/formations/interfaces/dto/contrat/publication.request.dto';
-import { PublicationResponseDto } from '../src/modules/formations/interfaces/dto/contrat/publication.response.dto';
 import { RappelsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/rappels.response.dto';
 import { SessionResultsResponseDto } from '../src/modules/formations/interfaces/dto/contrat/session-results.response.dto';
 import { StrategiesDefiResponseDto } from '../src/modules/formations/interfaces/dto/contrat/strategies-defi.response.dto';
@@ -86,8 +84,6 @@ const DTO_DU_CONTRAT_V3 = [
   SessionResultsResponseDto,
   SyntheseRappelsResponseDto,
   CoursPublicCatalogueResponseDto,
-  PublierVersionRequestDto,
-  PublicationResponseDto,
 ];
 
 const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
@@ -98,7 +94,6 @@ const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
   '/sessions/{id}/defis/{defiId}/strategies',
   '/sessions/{id}/moi',
   '/sessions/{id}/participants/{participantId}',
-  '/catalogue/{slug}/publication',
   '/sessions/{id}/rappels',
   '/sessions/{id}/rappels/synthese',
 ];

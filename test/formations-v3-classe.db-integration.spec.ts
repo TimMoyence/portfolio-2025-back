@@ -75,10 +75,6 @@ function centile(durees: readonly number[], fraction: number): number {
   return triees[Math.max(0, rang)];
 }
 
-function cleEtudiant(index: number): string {
-  return `c0000000-0000-4000-8000-${String(index).padStart(12, '0')}`;
-}
-
 describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
   silenceNestLogger();
 
@@ -323,7 +319,6 @@ describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
           request(serveur())
             .post(client.chemin(`/sessions/${code}/join`))
             .send({
-              studentKey: cleEtudiant(index),
               prenom: `Prenom-${index}`,
               nom: `Nom-${index}`,
               email: `v3-${index}@example.test`,

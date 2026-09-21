@@ -43,7 +43,6 @@ import { DefisUseCase } from '../../src/modules/formations/application/Defis.use
 import { EvincerParticipantUseCase } from '../../src/modules/formations/application/EvincerParticipant.useCase';
 import { LireRappelsUseCase } from '../../src/modules/formations/application/LireRappels.useCase';
 import { ReadmettreParticipantUseCase } from '../../src/modules/formations/application/ReadmettreParticipant.useCase';
-import { PublierVersionUseCase } from '../../src/modules/formations/application/PublierVersion.useCase';
 import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
@@ -81,6 +80,7 @@ import {
   TEACHER_ANNOTATIONS_REPOSITORY,
 } from '../../src/modules/formations/domain/token';
 import { SessionStateCacheService } from '../../src/modules/formations/infrastructure/SessionStateCache.service';
+import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleEtudiant.service';
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsAnnotationsController } from '../../src/modules/formations/interfaces/FormationsAnnotations.controller';
 import { FormationsCatalogController } from '../../src/modules/formations/interfaces/FormationsCatalog.controller';
@@ -190,7 +190,6 @@ export function fournisseursFormations(
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
     ReadmettreParticipantUseCase,
-    PublierVersionUseCase,
     LireRappelsUseCase,
     SyntheseRappelsUseCase,
     RecordIncidentsUseCase,
@@ -205,6 +204,7 @@ export function fournisseursFormations(
     ListFreeResponsesUseCase,
     SaveFreeResponseUseCase,
     ParticipantTokenService,
+    CleEtudiantService,
     CodeScanProtectionService,
     { provide: SESSIONS_REPOSITORY, useValue: depots.sessions },
     { provide: PARTICIPANTS_REPOSITORY, useValue: depots.participants },

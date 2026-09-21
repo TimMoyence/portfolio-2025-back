@@ -266,8 +266,6 @@ export class StreamSessionUseCase {
         await pousserResultatsDefinitifs();
         subscriber.next({ type: 'fin', data: { raison: 'cloturee' } });
         subscriber.complete();
-        this.cache.drop(sessionId);
-        this.bilansPartages.delete(sessionId);
         arreter();
       };
 

@@ -352,13 +352,12 @@ export function createMockSessionsRepo(): jest.Mocked<ISessionsRepository> {
 export function createMockParticipantsRepo(): jest.Mocked<IParticipantsRepository> {
   const participant = buildParticipantRecord();
   return {
-    create: jest.fn().mockResolvedValue(participant),
+    inscrire: jest.fn().mockResolvedValue({ participant, nouveau: true }),
     findBySessionAndStudentKey: jest.fn().mockResolvedValue(null),
     findById: jest.fn().mockResolvedValue(participant),
     listBySession: jest.fn().mockResolvedValue([participant]),
     listEvincesBySession: jest.fn().mockResolvedValue([]),
     countBySession: jest.fn().mockResolvedValue(1),
-    listSeedsBySession: jest.fn().mockResolvedValue([]),
     touch: jest.fn().mockResolvedValue(undefined),
     evincer: jest.fn().mockResolvedValue(true),
     readmettre: jest.fn().mockResolvedValue(true),
@@ -588,7 +587,9 @@ export function createMockDepotsFormations() {
 }
 
 export function mockTypeOrmCreate(): jest.Mock {
-  return jest.fn().mockImplementation((data: unknown) => data);
+  return jest
+    .fn()
+    .mockImplementation((...args: unknown[]) => args[args.length - 1]);
 }
 
 export function mockTypeOrmSave(extra: Record<string, unknown>): jest.Mock {

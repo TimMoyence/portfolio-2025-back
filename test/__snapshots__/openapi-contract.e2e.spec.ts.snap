@@ -1151,42 +1151,6 @@ exports[`OpenAPI contrat B2-01 V3 fige les schemas des DTO du § 9.5 sans expose
     ],
     "type": "object",
   },
-  "PublicationResponseDto": {
-    "properties": {
-      "publieeLe": {
-        "description": "Date de la bascule de publication",
-        "format": "date-time",
-        "type": "string",
-      },
-      "slug": {
-        "example": "b2-01-traitement-information-chiffree",
-        "type": "string",
-      },
-      "versionPubliee": {
-        "example": 3,
-        "type": "number",
-      },
-    },
-    "required": [
-      "slug",
-      "versionPubliee",
-      "publieeLe",
-    ],
-    "type": "object",
-  },
-  "PublierVersionRequestDto": {
-    "properties": {
-      "version": {
-        "description": "Version du cours a publier au catalogue",
-        "example": 3,
-        "type": "number",
-      },
-    },
-    "required": [
-      "version",
-    ],
-    "type": "object",
-  },
   "QuestionDerouleResponseDto": {
     "properties": {
       "enonce": {

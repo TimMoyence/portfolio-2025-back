@@ -8,14 +8,10 @@ import {
 } from '../../../../../test/factories/formation.factory';
 import {
   SeanceCompleteError,
-  SeedAlreadyAssignedError,
-  SeedPoolExhaustedError,
   SessionClosedError,
   SessionNotFoundError,
 } from '../../domain/errors/FormationErrors';
 import { JoinSessionUseCase } from '../JoinSession.useCase';
-
-const MAX_TENTATIVES_GRAINE = 60;
 
 describe('JoinSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -25,7 +21,7 @@ describe('JoinSessionUseCase', () => {
 
   const commande = {
     code: '4271',
-    studentKey: '11111111-1111-4111-8111-111111111111',
+    studentKey: 'cle-derivee-du-courriel',
     prenom: 'Theo',
     nom: 'Martin',
     email: 'theo.martin@example.com',
@@ -38,151 +34,94 @@ describe('JoinSessionUseCase', () => {
     sut = new JoinSessionUseCase(sessions, participants, cache);
   });
 
-  it('refuse une inscription au-dela de la capacite de la seance', async () => {
+  it('confie l inscription au depot avec la capacite de la seance', async () => {
     sessions.findActiveByCode.mockResolvedValue(
-      buildSessionRecord({ capacite: 2 }),
+      buildSessionRecord({ capacite: 12 }),
     );
-    participants.countBySession.mockResolvedValue(2);
+
+    await sut.execute(commande);
+
+    expect(participants.inscrire).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: 'session-uuid',
+        studentKey: 'cle-derivee-du-courriel',
+        capacite: 12,
+      }),
+    );
+  });
+
+  it('choisit une graine libre parmi celles que le depot lui presente', async () => {
+    await sut.execute(commande);
+
+    const { choisirGraine } = participants.inscrire.mock.calls[0][0];
+
+    expect(choisirGraine([])).toBe(1001);
+    expect(choisirGraine([1001])).toBe(1002);
+    expect(choisirGraine([1001, 1002])).toBeNull();
+  });
+
+  it('laisse remonter la seance complete refusee par le depot', async () => {
+    participants.inscrire.mockRejectedValue(new SeanceCompleteError(2));
 
     await expect(sut.execute(commande)).rejects.toThrow(SeanceCompleteError);
-    expect(participants.create).not.toHaveBeenCalled();
+    expect(cache.signalerActivite).not.toHaveBeenCalled();
   });
 
-  it('inscrit tant qu une place reste libre sous la capacite', async () => {
-    sessions.findActiveByCode.mockResolvedValue(
-      buildSessionRecord({ capacite: 2 }),
-    );
-    participants.countBySession.mockResolvedValue(1);
-
-    await expect(sut.execute(commande)).resolves.toMatchObject({
-      sessionId: 'session-uuid',
-    });
-  });
-
-  it('laisse revenir un participant deja inscrit meme a capacite atteinte', async () => {
-    sessions.findActiveByCode.mockResolvedValue(
-      buildSessionRecord({ capacite: 1 }),
-    );
-    participants.countBySession.mockResolvedValue(1);
-    participants.findBySessionAndStudentKey.mockResolvedValue(
-      buildParticipantRecord(),
-    );
-
-    await expect(sut.execute(commande)).resolves.toMatchObject({
-      participantId: 'participant-uuid',
-    });
-  });
-
-  it('signale une activite sur la session une fois le nouveau participant inscrit', async () => {
+  it('signale une activite une fois le nouveau participant inscrit', async () => {
     await sut.execute(commande);
+
     expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
-    expect(participants.create.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(participants.inscrire.mock.invocationCallOrder[0]).toBeLessThan(
       cache.signalerActivite.mock.invocationCallOrder[0],
     );
   });
 
-  it('ne signale aucune activite au retour d un participant deja inscrit', async () => {
-    participants.findBySessionAndStudentKey.mockResolvedValue(
-      buildParticipantRecord(),
-    );
-    await sut.execute(commande);
+  it('rend sa place au participant deja inscrit, sans conflit ni activite', async () => {
+    participants.inscrire.mockResolvedValue({
+      participant: buildParticipantRecord({ seed: 1001 }),
+      nouveau: false,
+    });
+
+    const result = await sut.execute(commande);
+
+    expect(result).toMatchObject({
+      participantId: 'participant-uuid',
+      seed: 1001,
+    });
+    expect(participants.touch).toHaveBeenCalledWith('participant-uuid');
     expect(cache.signalerActivite).not.toHaveBeenCalled();
   });
 
   it('ne signale aucune activite quand l inscription echoue', async () => {
-    participants.create.mockRejectedValue(new Error('panne du depot'));
+    participants.inscrire.mockRejectedValue(new Error('panne du depot'));
+
     await expect(sut.execute(commande)).rejects.toThrow('panne du depot');
     expect(cache.signalerActivite).not.toHaveBeenCalled();
   });
 
-  it('inscrit un nouveau participant avec un seed libre', async () => {
-    const result = await sut.execute(commande);
-    expect(result.seed).toBe(1001);
-    expect(participants.create).toHaveBeenCalled();
-  });
-
-  it('attribue un seed different au deuxieme participant', async () => {
-    participants.listSeedsBySession.mockResolvedValue([1001]);
-    await sut.execute(commande);
-    expect(participants.create).toHaveBeenCalledWith(
-      expect.objectContaining({ seed: 1002 }),
-    );
-  });
-
-  it('reconnait un participant deja inscrit sans le recreer', async () => {
-    participants.findBySessionAndStudentKey.mockResolvedValue(
-      buildParticipantRecord({ seed: 1001 }),
-    );
-    const result = await sut.execute(commande);
-    expect(participants.create).not.toHaveBeenCalled();
-    expect(result.seed).toBe(1001);
-  });
-
-  it('reprend sur la graine suivante quand celle qu il visait vient d etre prise', async () => {
-    participants.listSeedsBySession
-      .mockResolvedValueOnce([])
-      .mockResolvedValue([1001]);
-    participants.create
-      .mockRejectedValueOnce(new SeedAlreadyAssignedError(1001))
-      .mockResolvedValue(buildParticipantRecord({ seed: 1002 }));
-
-    const result = await sut.execute(commande);
-
-    expect(result.seed).toBe(1002);
-    expect(participants.create).toHaveBeenCalledTimes(2);
-  });
-
-  it('ne signale qu une seule activite quand l inscription reprend sur une autre graine', async () => {
-    participants.listSeedsBySession
-      .mockResolvedValueOnce([])
-      .mockResolvedValue([1001]);
-    participants.create
-      .mockRejectedValueOnce(new SeedAlreadyAssignedError(1001))
-      .mockResolvedValue(buildParticipantRecord({ seed: 1002 }));
-
-    await sut.execute(commande);
-
-    expect(cache.signalerActivite).toHaveBeenCalledTimes(1);
-    expect(participants.create.mock.invocationCallOrder[1]).toBeLessThan(
-      cache.signalerActivite.mock.invocationCallOrder[0],
-    );
-  });
-
-  it('laisse remonter une erreur d inscription qui n est pas un conflit de graine', async () => {
-    participants.create.mockRejectedValue(new Error('panne du depot'));
-    await expect(sut.execute(commande)).rejects.toThrow('panne du depot');
-    expect(participants.create).toHaveBeenCalledTimes(1);
-  });
-
-  it('abandonne quand chaque tentative se heurte a une graine deja prise', async () => {
-    participants.create.mockRejectedValue(new SeedAlreadyAssignedError(1001));
-    await expect(sut.execute(commande)).rejects.toThrow(SeedPoolExhaustedError);
-    expect(participants.create).toHaveBeenCalledTimes(MAX_TENTATIVES_GRAINE);
-  });
-
   it('refuse un code inconnu', async () => {
     sessions.findActiveByCode.mockResolvedValue(null);
+
     await expect(sut.execute(commande)).rejects.toThrow(SessionNotFoundError);
+    expect(participants.inscrire).not.toHaveBeenCalled();
   });
 
   it('refuse de rejoindre une session terminee', async () => {
     sessions.findActiveByCode.mockResolvedValue(
       buildSessionRecord({ etat: 'terminee' }),
     );
-    await expect(sut.execute(commande)).rejects.toThrow(SessionClosedError);
-  });
 
-  it('refuse quand tous les tirages sont attribues', async () => {
-    participants.listSeedsBySession.mockResolvedValue([1001, 1002]);
-    await expect(sut.execute(commande)).rejects.toThrow(SeedPoolExhaustedError);
-    expect(participants.create).not.toHaveBeenCalled();
+    await expect(sut.execute(commande)).rejects.toThrow(SessionClosedError);
+    expect(participants.inscrire).not.toHaveBeenCalled();
   });
 
   it('retourne l ecran courant et le mode de rythme', async () => {
     sessions.findActiveByCode.mockResolvedValue(
       buildSessionRecord({ ecranCourant: 5, modeRythme: 'libre' }),
     );
+
     const result = await sut.execute(commande);
+
     expect(result.ecranCourant).toBe(5);
     expect(result.modeRythme).toBe('libre');
   });

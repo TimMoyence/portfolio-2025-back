@@ -29,12 +29,14 @@ import {
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
+  inscrireParticipant,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
 
 const SLUG_B2 = 'b2-01-traitement-information-chiffree';
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
+const VERSION_PUBLIEE = 3;
 const VERSION_APRES_LA_V3 = 4;
 const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
 
@@ -178,14 +180,8 @@ describeDb('catalogue B2 migré', () => {
       [publiee.id, course.id],
     );
 
-    expect((await catalogue.trouverCourant(course.slug))?.version).toBe(2);
-    await catalogue.publier({
-      slug: course.slug,
-      version: VERSION_APRES_LA_V3,
-      parQui: null,
-    });
     expect((await catalogue.trouverCourant(course.slug))?.version).toBe(
-      VERSION_APRES_LA_V3,
+      VERSION_PUBLIEE,
     );
     expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
     expect(
@@ -311,7 +307,7 @@ describeDb('catalogue B2 migré', () => {
   it('persiste une réponse libre de façon idempotente par participant et activité', async () => {
     const { participants, freeResponses } = contexte;
     const session = await ouvrirSeanceB2('8364');
-    const participant = await participants.create({
+    const participant = await inscrireParticipant(participants, {
       sessionId: session.id,
       studentKey: 'b1111111-1111-4111-8111-111111111111',
       prenom: 'Ada',
@@ -400,7 +396,7 @@ describeDb('catalogue B2 migré', () => {
   it('persiste les groupes et les affectations', async () => {
     const { participants, groups } = contexte;
     const session = await ouvrirSeanceB2('1582');
-    const participant = await participants.create({
+    const participant = await inscrireParticipant(participants, {
       sessionId: session.id,
       studentKey: 'b3111111-1111-4111-8111-111111111111',
       prenom: 'Grace',
@@ -439,7 +435,7 @@ describeDb('catalogue B2 migré', () => {
     const { sessions, participants, answers, incidents, catalogue, scores } =
       contexte;
     const session = await ouvrirSeanceB2('7315');
-    const ada = await participants.create({
+    const ada = await inscrireParticipant(participants, {
       sessionId: session.id,
       studentKey: 'b4111111-1111-4111-8111-111111111111',
       prenom: 'Ada',
@@ -447,7 +443,7 @@ describeDb('catalogue B2 migré', () => {
       email: 'ada@example.test',
       seed: 1001,
     });
-    const grace = await participants.create({
+    const grace = await inscrireParticipant(participants, {
       sessionId: session.id,
       studentKey: 'b5111111-1111-4111-8111-111111111111',
       prenom: 'Grace',

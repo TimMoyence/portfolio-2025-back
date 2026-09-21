@@ -4,7 +4,7 @@ import type { Boite } from '../../domain/LeitnerBox';
 @Entity({ name: 'formation_mastery' })
 @Index('idx_formation_mastery_derniere_vue', ['derniereVue'])
 export class FormationMasteryEntity {
-  @PrimaryColumn({ name: 'student_key', type: 'uuid' })
+  @PrimaryColumn({ name: 'student_key', type: 'varchar', length: 64 })
   studentKey: string;
 
   @PrimaryColumn({ type: 'varchar', length: 80 })

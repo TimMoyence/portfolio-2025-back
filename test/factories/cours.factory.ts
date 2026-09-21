@@ -640,20 +640,20 @@ type VersionsDuCours = Readonly<Record<number, Cours>>;
 
 export function creerCatalogueAVersions(
   versionsParSlug: Readonly<Record<string, VersionsDuCours>>,
+  versionsPubliees: Readonly<Record<string, number>> = {},
 ): ICatalogueCours {
   const versionsDe = (slug: string): VersionsDuCours =>
     Object.hasOwn(versionsParSlug, slug) ? versionsParSlug[slug] : {};
-  const publications = new Map<string, { version: number; publieLe: Date }>();
   const courant = (slug: string): CoursPublie | null => {
     const versions = versionsDe(slug);
-    const publiee = publications.get(slug);
-    const derniere =
-      publiee?.version ?? Math.max(...Object.keys(versions).map(Number));
-    return Number.isFinite(derniere) && versions[derniere] !== undefined
+    const publiee = Object.hasOwn(versionsPubliees, slug)
+      ? versionsPubliees[slug]
+      : Math.max(...Object.keys(versions).map(Number));
+    return Number.isFinite(publiee) && versions[publiee] !== undefined
       ? {
-          cours: versions[derniere],
-          version: derniere,
-          publieLe: publiee?.publieLe ?? new Date('2026-09-01T08:00:00.000Z'),
+          cours: versions[publiee],
+          version: publiee,
+          publieLe: new Date('2026-09-01T08:00:00.000Z'),
         }
       : null;
   };
@@ -665,13 +665,6 @@ export function creerCatalogueAVersions(
           : (versionsDe(slug)[version] ?? null),
       ),
     trouverCourant: (slug) => Promise.resolve(courant(slug)),
-    publier: ({ slug, version }) => {
-      if (versionsDe(slug)[version] === undefined) {
-        throw new Error(`Version absente du catalogue de test : ${version}`);
-      }
-      publications.set(slug, { version, publieLe: new Date() });
-      return Promise.resolve(courant(slug) as CoursPublie);
-    },
   };
 }
 

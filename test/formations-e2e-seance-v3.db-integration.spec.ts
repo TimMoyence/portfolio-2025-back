@@ -58,7 +58,6 @@ const JALONS_DE_LA_V3 = 5;
 const TYPES_NOTABLES = 5;
 const CAPACITE = 4;
 const FORMATEUR = 'e1111111-1111-4111-8111-111111111111:teacher';
-const ADMIN = 'e2222222-2222-4222-8222-222222222222:admin:teacher';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'e2e-formateur@example.test';
 const DUREE_MS = 30_000;
@@ -81,7 +80,6 @@ type Methode = 'get' | 'post' | 'patch' | 'put' | 'delete';
 
 interface Poste {
   readonly nom: string;
-  readonly cle: string;
   readonly profil: Profil;
   participantId: string;
   jeton: string;
@@ -89,10 +87,9 @@ interface Poste {
   tirage: TirageDuCours | null;
 }
 
-function posteDe(nom: string, rang: number, profil: Profil): Poste {
+function posteDe(nom: string, profil: Profil): Poste {
   return {
     nom,
-    cle: cleDe(rang),
     profil,
     participantId: '',
     jeton: '',
@@ -128,10 +125,6 @@ function noterConflit(reponse: Response): Response {
   return reponse;
 }
 
-function cleDe(rang: number): string {
-  return `e0000000-0000-4000-8000-${String(rang).padStart(12, '0')}`;
-}
-
 describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
   silenceNestLogger();
 
@@ -148,12 +141,12 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
   let bilanEspionne: jest.SpyInstance;
 
   const postes: Poste[] = [
-    posteDe('E1', 1, 'juste'),
-    posteDe('E2', 2, 'piege'),
-    posteDe('E3', 3, 'ignorant'),
-    posteDe('E4', 4, 'juste'),
+    posteDe('E1', 'juste'),
+    posteDe('E2', 'piege'),
+    posteDe('E3', 'ignorant'),
+    posteDe('E4', 'juste'),
   ];
-  const evince: Poste = posteDe('X', 9, 'juste');
+  const evince: Poste = posteDe('X', 'juste');
 
   const serveur = (): Parameters<typeof request>[0] =>
     banc.app.getHttpServer() as Parameters<typeof request>[0];
@@ -172,9 +165,6 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
 
   const formateur = (methode: Methode, suffixe: string): Test =>
     avecIdentite(methode, suffixe, FORMATEUR);
-
-  const administrateur = (methode: Methode, suffixe: string): Test =>
-    avecIdentite(methode, suffixe, ADMIN);
 
   const poste = (methode: Methode, suffixe: string, jeton: string): Test =>
     request(serveur())[methode](chemin(suffixe)).set(EN_TETE_JETON, jeton);
@@ -217,7 +207,6 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
     const reponse = await request(serveur())
       .post(chemin(`/sessions/${codeDeJonction}/join`))
       .send({
-        studentKey: unPoste.cle,
         prenom: `Prenom-${unPoste.nom}`,
         nom: `Nom-${unPoste.nom}`,
         email: `${unPoste.nom.toLowerCase()}@example.test`,
@@ -675,18 +664,9 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
   });
 
   it(
-    'publie la V3 migree et fige sa version a l ouverture de la seance',
+    'sert la V3 publiee par la migration et fige sa version a l ouverture de la seance',
     async () => {
-      const avant = (
-        await request(serveur())
-          .get(chemin(`/catalogue/${SLUG}`))
-          .expect(OK)
-      ).body as { version: number };
-
-      await administrateur('put', `/catalogue/${SLUG}/publication`)
-        .send({ version: V3 })
-        .expect(OK);
-      const apres = (
+      const servi = (
         await request(serveur())
           .get(chemin(`/catalogue/${SLUG}`))
           .expect(OK)
@@ -704,16 +684,14 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       cours = lu;
 
       expect({
-        avant: avant.version,
-        apres: apres.version,
+        servi: servi.version,
         version: seance?.courseVersion,
         bareme: seance?.bareme.version,
         capacite: seance?.capacite,
         ecrans: cours.ecrans.length,
-        titres: apres.ecrans.length,
+        titres: servi.ecrans.length,
       }).toEqual({
-        avant: V2,
-        apres: V3,
+        servi: V3,
         version: V3,
         bareme: V2,
         capacite: CAPACITE,
@@ -1215,9 +1193,10 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
   it(
     'rebascule le catalogue vers la v2 sans toucher a la seance jouee en V3 (AC-36)',
     async () => {
-      await administrateur('put', `/catalogue/${SLUG}/publication`)
-        .send({ version: V2 })
-        .expect(OK);
+      await banc.contexte.dataSource.query(
+        `UPDATE "formation_course_publications" SET "version_publiee" = $2 WHERE "slug" = $1`,
+        [SLUG, V2],
+      );
       const servi = (
         await request(serveur())
           .get(chemin(`/catalogue/${SLUG}`))

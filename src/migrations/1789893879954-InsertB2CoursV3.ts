@@ -11,6 +11,10 @@ interface Compte {
   count: number;
 }
 
+interface VersionRestante {
+  version: number | null;
+}
+
 const TRIGGERS_D_IMMUTABILITE = [
   ['formation_screen_contents', 'trg_formation_screen_immutable'],
   ['formation_course_contents', 'trg_formation_course_immutable'],
@@ -40,6 +44,7 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
       [B2_COURS_V3.slug, B2_COURS_V3.version],
     )) as LigneDeCours[];
     if (deja.length > 0) {
+      await this.publier(queryRunner);
       return;
     }
 
@@ -81,6 +86,44 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
         ],
       );
     }
+
+    await this.publier(queryRunner);
+  }
+
+  private async publier(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `INSERT INTO "formation_course_publications" ("slug", "version_publiee", "publiee_le")
+       VALUES ($1, $2, now())
+       ON CONFLICT ("slug") DO UPDATE
+         SET "version_publiee" = EXCLUDED."version_publiee",
+             "publiee_le" = EXCLUDED."publiee_le",
+             "publiee_par" = NULL`,
+      [B2_COURS_V3.slug, B2_COURS_V3.version],
+    );
+  }
+
+  private async republierLaVersionPrecedente(
+    queryRunner: QueryRunner,
+  ): Promise<void> {
+    const restantes = (await queryRunner.query(
+      `SELECT MAX("version")::int AS "version" FROM "formation_course_contents"
+       WHERE "slug" = $1 AND "version" <> $2`,
+      [B2_COURS_V3.slug, B2_COURS_V3.version],
+    )) as VersionRestante[];
+    const precedente = restantes[0]?.version ?? null;
+    if (precedente === null) {
+      await queryRunner.query(
+        `DELETE FROM "formation_course_publications" WHERE "slug" = $1`,
+        [B2_COURS_V3.slug],
+      );
+      return;
+    }
+    await queryRunner.query(
+      `UPDATE "formation_course_publications"
+         SET "version_publiee" = $2, "publiee_le" = now(), "publiee_par" = NULL
+       WHERE "slug" = $1`,
+      [B2_COURS_V3.slug, precedente],
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -94,14 +137,7 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
         'Impossible de supprimer un contenu utilise par une seance',
       );
     }
-    const publications = (await queryRunner.query(
-      `SELECT COUNT(*)::int AS "count" FROM "formation_course_publications"
-       WHERE "slug" = $1 AND "version_publiee" = $2`,
-      [B2_COURS_V3.slug, B2_COURS_V3.version],
-    )) as Compte[];
-    if (publications[0].count > 0) {
-      throw new Error('Impossible de supprimer un contenu publie');
-    }
+    await this.republierLaVersionPrecedente(queryRunner);
 
     for (const [table, declencheur] of TRIGGERS_D_IMMUTABILITE) {
       await queryRunner.query(

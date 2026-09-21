@@ -12,17 +12,23 @@ export interface ParticipantRecord {
   evinceLe: Date | null;
 }
 
-export interface CreateParticipantInput {
+export interface InscriptionInput {
   sessionId: string;
   studentKey: string;
   prenom: string;
   nom: string;
   email: string;
-  seed: number;
+  capacite: number;
+  choisirGraine: (grainesPrises: readonly number[]) => number | null;
+}
+
+export interface Inscription {
+  readonly participant: ParticipantRecord;
+  readonly nouveau: boolean;
 }
 
 export interface IParticipantsRepository {
-  create(input: CreateParticipantInput): Promise<ParticipantRecord>;
+  inscrire(input: InscriptionInput): Promise<Inscription>;
   findBySessionAndStudentKey(
     sessionId: string,
     studentKey: string,
@@ -33,7 +39,6 @@ export interface IParticipantsRepository {
     sessionId: string,
   ): Promise<readonly ParticipantRecord[]>;
   countBySession(sessionId: string): Promise<number>;
-  listSeedsBySession(sessionId: string): Promise<readonly number[]>;
   touch(id: string): Promise<void>;
   evincer(sessionId: string, participantId: string): Promise<boolean>;
   readmettre(sessionId: string, participantId: string): Promise<boolean>;

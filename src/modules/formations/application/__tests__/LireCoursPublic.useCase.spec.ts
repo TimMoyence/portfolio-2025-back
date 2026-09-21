@@ -38,11 +38,11 @@ describe('LireCoursPublicUseCase', () => {
   it('sert la version publiee et sa date de bascule (H1)', async () => {
     const initiale = buildCoursDeTest();
     const suivante = { ...buildCoursDeClasse(2), slug: initiale.slug };
-    const catalogue = creerCatalogueAVersions({
-      [initiale.slug]: { 1: initiale, 2: suivante },
-    });
+    const catalogue = creerCatalogueAVersions(
+      { [initiale.slug]: { 1: initiale, 2: suivante } },
+      { [initiale.slug]: 1 },
+    );
     const sut = new LireCoursPublicUseCase(catalogue);
-    await catalogue.publier({ slug: initiale.slug, version: 1, parQui: null });
 
     const servi = await sut.execute(initiale.slug);
 

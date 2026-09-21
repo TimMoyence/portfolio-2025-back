@@ -41,7 +41,6 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
 
   const inscrire = (code: string, cleEtudiant: string): Test =>
     banc.anonyme('post', `/sessions/${code}/join`).send({
-      studentKey: cleEtudiant,
       prenom: 'Theo',
       nom: 'Martin',
       email: `${cleEtudiant}@example.test`,

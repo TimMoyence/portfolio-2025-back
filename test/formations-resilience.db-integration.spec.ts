@@ -145,10 +145,6 @@ function identifiantQuestion(question: number): string {
 
 const MESSAGE_DOUBLON = `Votre réponse à la question ${identifiantQuestion(0)} est déjà enregistrée : passez à la suivante.`;
 
-function cleEtudiant(index: number): string {
-  return `66666666-6666-4666-8666-${String(index).padStart(12, '0')}`;
-}
-
 function detailDe(reponse: Response): unknown {
   return (reponse.body as { detail?: unknown }).detail;
 }
@@ -189,7 +185,6 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
     const reponse = await client
       .anonyme(`/sessions/${code}/join`)
       .send({
-        studentKey: cleEtudiant(index),
         prenom: `Prenom-${index}`,
         nom: `Nom-${index}`,
         email: `resilience-${index}@example.test`,

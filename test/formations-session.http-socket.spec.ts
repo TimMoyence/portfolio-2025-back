@@ -26,6 +26,11 @@ import { questionNumerique } from '../src/modules/formations/domain/cours/Cours'
 import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
 import type { DerouleCours } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import type { ICatalogueCours } from '../src/modules/formations/domain/cours/ICatalogueCours.port';
+import {
+  RevisionDeSeanceObsoleteError,
+  SeanceCompleteError,
+  SeedPoolExhaustedError,
+} from '../src/modules/formations/domain/errors/FormationErrors';
 import type {
   AnswerRecord,
   IAnswersRepository,
@@ -145,15 +150,14 @@ const TAILLE_CLASSE = 30;
 const DELAI_FERMETURE_FLUX_MS = 2000;
 
 function cleEtudiant(index: number): string {
-  return `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`;
+  return `poste-${String(index).padStart(4, '0')}`;
 }
 
-function inscription(studentKey: string) {
+function inscription(identifiant: string) {
   return {
-    studentKey,
     prenom: 'Theo',
     nom: 'Martin',
-    email: 'theo.martin@example.com',
+    email: `${identifiant}@example.com`,
   };
 }
 
@@ -168,7 +172,6 @@ function creerCatalogueMutable(initial: ICatalogueCours): CatalogueMutable {
     catalogue: {
       trouver: (slug, version) => courant.trouver(slug, version),
       trouverCourant: (slug) => courant.trouverCourant(slug),
-      publier: (entree) => courant.publier(entree),
     },
     remplacer(nouveau) {
       courant = nouveau;
@@ -223,10 +226,16 @@ function creerSessionsRepo(): ISessionsRepository {
       ),
     isCodeTaken: (code) =>
       Promise.resolve(toutes().some((session) => session.code === code)),
-    update: (id, input) => {
+    update: (id, input, revisionAttendue) => {
       const courante = sessions.get(id);
       if (!courante) {
         throw new Error(`Session absente du depot de test: ${id}`);
+      }
+      if (
+        revisionAttendue !== undefined &&
+        revisionAttendue !== courante.revision
+      ) {
+        return Promise.reject(new RevisionDeSeanceObsoleteError(id));
       }
       const maj: SessionRecord = {
         ...courante,
@@ -253,16 +262,32 @@ function creerParticipantsRepo(): IParticipantsRepository {
         participant.sessionId === sessionId && participant.evinceLe !== null,
     );
   return {
-    create: (input) => {
+    inscrire: ({ capacite, choisirGraine, ...identite }) => {
+      const inscrits = deLaSession(identite.sessionId);
+      const existant = inscrits.find(
+        (participant) => participant.studentKey === identite.studentKey,
+      );
+      if (existant !== undefined) {
+        return Promise.resolve({ participant: existant, nouveau: false });
+      }
+      if (inscrits.length >= capacite) {
+        return Promise.reject(new SeanceCompleteError(capacite));
+      }
+      const seed = choisirGraine(inscrits.map((inscrit) => inscrit.seed));
+      if (seed === null) {
+        return Promise.reject(new SeedPoolExhaustedError());
+      }
       const participant: ParticipantRecord = {
-        ...input,
+        ...identite,
+        seed,
+        groupId: null,
         id: randomUUID(),
         rejointLe: new Date(),
         dernierPing: new Date(),
         evinceLe: null,
       };
       participants.set(participant.id, participant);
-      return Promise.resolve(participant);
+      return Promise.resolve({ participant, nouveau: true });
     },
     findBySessionAndStudentKey: (sessionId, studentKey) =>
       Promise.resolve(
@@ -276,10 +301,6 @@ function creerParticipantsRepo(): IParticipantsRepository {
       Promise.resolve(evincesDeLaSession(sessionId)),
     countBySession: (sessionId) =>
       Promise.resolve(deLaSession(sessionId).length),
-    listSeedsBySession: (sessionId) =>
-      Promise.resolve(
-        deLaSession(sessionId).map((participant) => participant.seed),
-      ),
     touch: () => Promise.resolve(),
     evincer: (sessionId, participantId) => {
       const cible = participants.get(participantId);

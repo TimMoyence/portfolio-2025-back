@@ -69,10 +69,6 @@ function identifiantQuestion(question: number): string {
   return questionsDuCours(COURS_DE_CLASSE)[question].id;
 }
 
-function cleEtudiant(index: number): string {
-  return `44444444-4444-4444-8444-${String(index).padStart(12, '0')}`;
-}
-
 function statutsEnEchec(
   reponses: readonly Response[],
   attendu: number,
@@ -112,7 +108,6 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     request(serveur())
       .post(route(`/sessions/${code}/join`))
       .send({
-        studentKey: cleEtudiant(index),
         prenom: `Prenom-${index}`,
         nom: `Nom-${index}`,
         email: `etudiant-${index}@example.test`,

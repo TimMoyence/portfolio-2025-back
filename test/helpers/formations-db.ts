@@ -31,8 +31,14 @@ import { CreateFormationCoursePublications1789871582928 } from '../../src/migrat
 import { AmorcerPublicationsDeCours1789871600000 } from '../../src/migrations/1789871600000-AmorcerPublicationsDeCours';
 import { CreateFormationRappelsServis1789875476980 } from '../../src/migrations/1789875476980-CreateFormationRappelsServis';
 import { InsertB2CoursV31789893879954 } from '../../src/migrations/1789893879954-InsertB2CoursV3';
+import { CleEtudianteDerivee1789974322913 } from '../../src/migrations/1789974322913-CleEtudianteDerivee';
+import type {
+  IParticipantsRepository,
+  ParticipantRecord,
+} from '../../src/modules/formations/domain/IParticipants.repository';
 import { AnswersRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Answers.repository.typeorm';
 import { CoursCatalogueRepositoryTypeORM } from '../../src/modules/formations/infrastructure/CoursCatalogue.repository.typeorm';
+import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleEtudiant.service';
 import { FormationAnswerEntity } from '../../src/modules/formations/infrastructure/entities/FormationAnswer.entity';
 import { FormationEscapeAttemptEntity } from '../../src/modules/formations/infrastructure/entities/FormationEscapeAttempt.entity';
 import { FormationEscapeProgressEntity } from '../../src/modules/formations/infrastructure/entities/FormationEscapeProgress.entity';
@@ -114,6 +120,7 @@ const FORMATION_MIGRATIONS = [
   AmorcerPublicationsDeCours1789871600000,
   CreateFormationRappelsServis1789875476980,
   InsertB2CoursV31789893879954,
+  CleEtudianteDerivee1789974322913,
 ];
 
 export const TABLES_DE_SEANCE = [
@@ -138,6 +145,35 @@ export const FORMATION_TABLES = [
   'formation_screen_contents',
   'formation_course_publications',
 ] as const;
+
+const CAPACITE_MAXIMALE_DE_SEANCE = 60;
+
+export interface InscriptionDeTest {
+  sessionId: string;
+  studentKey: string;
+  prenom: string;
+  nom: string;
+  email: string;
+  seed: number;
+}
+
+const clesEtudiants = new CleEtudiantService();
+
+export function cleEtudianteDe(email: string): string {
+  return clesEtudiants.de(email);
+}
+
+export async function inscrireParticipant(
+  participants: IParticipantsRepository,
+  { seed, ...identite }: InscriptionDeTest,
+): Promise<ParticipantRecord> {
+  const { participant } = await participants.inscrire({
+    ...identite,
+    capacite: CAPACITE_MAXIMALE_DE_SEANCE,
+    choisirGraine: () => seed,
+  });
+  return participant;
+}
 
 export interface ContexteFormations {
   dataSource: DataSource;

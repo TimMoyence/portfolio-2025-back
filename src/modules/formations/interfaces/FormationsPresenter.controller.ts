@@ -11,7 +11,6 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Put,
   Req,
   Sse,
   UseGuards,
@@ -40,24 +39,18 @@ import type { ResultatsDeSeance } from '../application/GetSessionResults.useCase
 import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
 import { ListFreeResponsesUseCase } from '../application/ListFreeResponses.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
-import {
-  assertAdministrateur,
-  PublierVersionUseCase,
-} from '../application/PublierVersion.useCase';
+import { assertAdministrateur } from '../application/SessionAccess';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SyntheseRappelsUseCase } from '../application/SyntheseRappels.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
 import type { FreeResponseRecord } from '../domain/IFreeResponses.repository';
 import { ControlSessionRequestDto } from './dto/contrat/control-session.request.dto';
-import { PublicationResponseDto } from './dto/contrat/publication.response.dto';
-import { PublierVersionRequestDto } from './dto/contrat/publication.request.dto';
 import { SyntheseRappelsResponseDto } from './dto/contrat/synthese-rappels.response.dto';
 import { DerouleResponseDto } from './dto/contrat/deroule.response.dto';
 import { FreeResponsesResponseDto } from './dto/free-responses.response.dto';
 import { OpenSessionRequestDto } from './dto/contrat/open-session.request.dto';
 import { OpenSessionResponseDto } from './dto/open-session.response.dto';
 import { SessionResultsResponseDto } from './dto/contrat/session-results.response.dto';
-import { ROLE_ADMINISTRATEUR } from '../domain/SessionOwnership';
 import {
   acteurDe,
   LectureDeSeance,
@@ -67,7 +60,6 @@ import {
 import {
   FENETRE_THROTTLE_MS,
   LIMITE_CONTROLE_PAR_MINUTE,
-  LIMITE_PUBLICATION_PAR_MINUTE,
   LIMITE_SYNTHESE_PAR_MINUTE,
 } from './formations-throttling';
 
@@ -95,7 +87,6 @@ export class FormationsPresenterController {
     private readonly streamSession: StreamSessionUseCase,
     private readonly lireDeroule: LireDerouleUseCase,
     private readonly listFreeResponses: ListFreeResponsesUseCase,
-    private readonly publierVersion: PublierVersionUseCase,
     private readonly syntheseRappels: SyntheseRappelsUseCase,
   ) {}
 
@@ -297,34 +288,5 @@ export class FormationsPresenterController {
       id,
       acteurDe(request),
     ) as Promise<SyntheseRappelsResponseDto>;
-  }
-
-  @Throttle({
-    default: {
-      limit: LIMITE_PUBLICATION_PAR_MINUTE,
-      ttl: FENETRE_THROTTLE_MS,
-    },
-  })
-  @Put('catalogue/:slug/publication')
-  @Roles(ROLE_ADMINISTRATEUR)
-  @ApiOperation({
-    summary:
-      'Bascule la version publiee au catalogue, reservee a l administrateur',
-  })
-  @ApiOkResponse({ type: PublicationResponseDto })
-  @ApiForbiddenResponse({
-    description: 'Publication reservee a l administrateur',
-  })
-  @ApiNotFoundResponse({ description: 'Cours introuvable' })
-  @ApiConflictResponse({
-    description:
-      'Version refusee, cause dans le champ code du corps : VERSION_NON_PUBLIABLE',
-  })
-  async publier(
-    @Param('slug') slug: string,
-    @Body() dto: PublierVersionRequestDto,
-    @Req() request: Request,
-  ): Promise<PublicationResponseDto> {
-    return this.publierVersion.execute(slug, dto.version, acteurDe(request));
   }
 }

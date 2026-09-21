@@ -27,7 +27,6 @@ function requeteVerifiee(participantId: string): Request {
 }
 
 const inscription: JoinSessionRequestDto = {
-  studentKey: '11111111-1111-4111-8111-111111111111',
   prenom: 'Theo',
   nom: 'Martin',
   email: 'theo@example.com',
@@ -43,6 +42,7 @@ describe('FormationsStudentController', () => {
     dueQuestions,
     lireSujet,
     tokens,
+    clesEtudiants,
     codeScan,
     saveFreeResponse,
   } = dependances;
@@ -90,7 +90,7 @@ describe('FormationsStudentController', () => {
 
     expect(joinSession.execute).toHaveBeenCalledWith({
       code: '4271',
-      studentKey: inscription.studentKey,
+      studentKey: 'cle-etudiant',
       prenom: 'Theo',
       nom: 'Martin',
       email: 'theo@example.com',
@@ -103,6 +103,18 @@ describe('FormationsStudentController', () => {
       modeRythme: 'pilote',
       jeton: JETON,
     });
+  });
+
+  it('derive la cle etudiante du courriel cote serveur, sans jamais lire celle du corps', async () => {
+    await rejoindre({
+      ...inscription,
+      studentKey: 'cle-forgee-par-le-client',
+    } as JoinSessionRequestDto);
+
+    expect(clesEtudiants.de).toHaveBeenCalledWith('theo@example.com');
+    expect(joinSession.execute).toHaveBeenCalledWith(
+      expect.objectContaining({ studentKey: 'cle-etudiant' }),
+    );
   });
 
   it('arrete le robot qui remplit le champ piege avant tout appel metier', async () => {

@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Not, Repository } from 'typeorm';
+import { EntityManager, IsNull, Not, Repository } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
-import { SeedAlreadyAssignedError } from '../domain/errors/FormationErrors';
+import {
+  SeanceCompleteError,
+  SeedAlreadyAssignedError,
+  SeedPoolExhaustedError,
+} from '../domain/errors/FormationErrors';
 import type {
-  CreateParticipantInput,
+  Inscription,
+  InscriptionInput,
   IParticipantsRepository,
   ParticipantRecord,
 } from '../domain/IParticipants.repository';
@@ -26,27 +31,65 @@ export class ParticipantsRepositoryTypeORM
     super();
   }
 
-  async create(input: CreateParticipantInput): Promise<ParticipantRecord> {
-    const entity = this.repo.create({
+  inscrire(input: InscriptionInput): Promise<Inscription> {
+    return this.repo.manager.transaction((manager) =>
+      this.inscrireSousVerrou(manager, input),
+    );
+  }
+
+  private async inscrireSousVerrou(
+    manager: EntityManager,
+    input: InscriptionInput,
+  ): Promise<Inscription> {
+    await manager.query(
+      `SELECT "id" FROM "formation_sessions" WHERE "id" = $1 FOR UPDATE`,
+      [input.sessionId],
+    );
+
+    const existant = await manager.findOne(FormationParticipantEntity, {
+      where: {
+        sessionId: input.sessionId,
+        studentKey: input.studentKey,
+        evinceLe: IsNull(),
+      },
+    });
+    if (existant !== null) {
+      return { participant: this.toDomain(existant), nouveau: false };
+    }
+
+    const inscrits = await manager.count(FormationParticipantEntity, {
+      where: { sessionId: input.sessionId, evinceLe: IsNull() },
+    });
+    if (inscrits >= input.capacite) {
+      throw new SeanceCompleteError(input.capacite);
+    }
+
+    const prises = await manager.find(FormationParticipantEntity, {
+      where: { sessionId: input.sessionId, evinceLe: IsNull() },
+      select: ['seed'],
+    });
+    const seed = input.choisirGraine(prises.map((prise) => prise.seed));
+    if (seed === null) {
+      throw new SeedPoolExhaustedError();
+    }
+
+    const entity = manager.create(FormationParticipantEntity, {
       sessionId: input.sessionId,
       studentKey: input.studentKey,
       prenom: input.prenom,
       nom: input.nom,
       email: input.email,
       groupId: null,
-      seed: input.seed,
+      seed,
     });
     try {
-      const saved = await this.repo.save(entity);
-      return this.toDomain(saved);
+      const enregistre = await manager.save(entity);
+      return { participant: this.toDomain(enregistre), nouveau: true };
     } catch (error) {
       if (!this.isUniqueViolation(error)) {
         throw error;
       }
-      throw this.conflictErrorFor(
-        input.seed,
-        this.uniqueViolationConstraint(error),
-      );
+      throw this.conflictErrorFor(seed, this.uniqueViolationConstraint(error));
     }
   }
 
@@ -104,14 +147,6 @@ export class ParticipantsRepositoryTypeORM
 
   countBySession(sessionId: string): Promise<number> {
     return this.repo.count({ where: { sessionId, evinceLe: IsNull() } });
-  }
-
-  async listSeedsBySession(sessionId: string): Promise<readonly number[]> {
-    const entities = await this.repo.find({
-      where: { sessionId, evinceLe: IsNull() },
-      select: ['seed'],
-    });
-    return entities.map((entity) => entity.seed);
   }
 
   async touch(id: string): Promise<void> {

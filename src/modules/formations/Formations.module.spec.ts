@@ -21,7 +21,6 @@ import { DeclarerJalonUseCase } from './application/DeclarerJalon.useCase';
 import { DefisUseCase } from './application/Defis.useCase';
 import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
 import { LireRappelsUseCase } from './application/LireRappels.useCase';
-import { PublierVersionUseCase } from './application/PublierVersion.useCase';
 import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
@@ -79,7 +78,6 @@ const SERVICES = [
   DefisUseCase,
   LireEtatParticipantUseCase,
   EvincerParticipantUseCase,
-  PublierVersionUseCase,
   LireRappelsUseCase,
   SyntheseRappelsUseCase,
   RecordIncidentsUseCase,

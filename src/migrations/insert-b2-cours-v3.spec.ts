@@ -8,7 +8,10 @@ const COURS_INSERE = 'INSERT INTO "formation_course_contents"';
 const ECRAN_INSERE = 'INSERT INTO "formation_screen_contents"';
 const VERSION_CHERCHEE = 'SELECT "id" FROM "formation_course_contents"';
 const SEANCES_COMPTEES = 'FROM "formation_sessions"';
-const PUBLICATIONS_COMPTEES = 'FROM "formation_course_publications"';
+const PUBLICATION_POSEE = 'INSERT INTO "formation_course_publications"';
+const VERSION_RESTANTE = 'SELECT MAX("version")';
+const PUBLICATION_RAMENEE = 'UPDATE "formation_course_publications"';
+const PUBLICATION_SUPPRIMEE = 'DELETE FROM "formation_course_publications"';
 
 type Reponse = (sql: string) => unknown;
 
@@ -29,10 +32,13 @@ function baseAvecLaV3(sql: string): unknown {
   return sql.startsWith(VERSION_CHERCHEE) ? [{ id: 'cours-v3' }] : undefined;
 }
 
-function comptes(seances: number, publications: number): Reponse {
+function retourArriere(
+  seances: number,
+  versionRestante: number | null,
+): Reponse {
   return (sql: string) => {
     if (sql.includes(SEANCES_COMPTEES)) return [{ count: seances }];
-    if (sql.includes(PUBLICATIONS_COMPTEES)) return [{ count: publications }];
+    if (sql.startsWith(VERSION_RESTANTE)) return [{ version: versionRestante }];
     return undefined;
   };
 }
@@ -92,13 +98,25 @@ describe('migration InsertB2CoursV3', () => {
     ).toEqual(B2_COURS_V3.ecrans.map((ecran) => ecran.notes));
   });
 
-  it('ne réinsère rien quand la version 3 est déjà en base', async () => {
+  it('publie la version 3 des son insertion, sans bascule manuelle', async () => {
+    const { runner, query } = banc(baseSansLaV3);
+
+    await migration.up(runner);
+
+    expect(requetes(query, PUBLICATION_POSEE)).toEqual([
+      [B2_COURS_V3.slug, B2_COURS_V3.version],
+    ]);
+  });
+
+  it('ne réinsère rien quand la version 3 est déjà en base, mais la republie', async () => {
     const { runner, query } = banc(baseAvecLaV3);
 
     await migration.up(runner);
 
-    expect(query).toHaveBeenCalledTimes(1);
     expect(requetes(query, COURS_INSERE)).toEqual([]);
+    expect(requetes(query, PUBLICATION_POSEE)).toEqual([
+      [B2_COURS_V3.slug, B2_COURS_V3.version],
+    ]);
   });
 
   it('refuse d insérer un contenu que la validation du domaine rejette', async () => {
@@ -120,7 +138,7 @@ describe('migration InsertB2CoursV3', () => {
   });
 
   it('refuse son retour arrière quand une séance sert la version 3', async () => {
-    const { runner, query } = banc(comptes(1, 0));
+    const { runner, query } = banc(retourArriere(1, 2));
 
     await expect(migration.down(runner)).rejects.toThrow(
       'utilise par une seance',
@@ -128,15 +146,30 @@ describe('migration InsertB2CoursV3', () => {
     expect(query).toHaveBeenCalledTimes(1);
   });
 
-  it('refuse son retour arrière quand la version 3 est publiée', async () => {
-    const { runner, query } = banc(comptes(0, 1));
+  it('republie la version précédente avant de supprimer la version 3', async () => {
+    const { runner, query } = banc(retourArriere(0, 2));
 
-    await expect(migration.down(runner)).rejects.toThrow('contenu publie');
-    expect(query).toHaveBeenCalledTimes(2);
+    await migration.down(runner);
+
+    expect(requetes(query, PUBLICATION_RAMENEE)).toEqual([
+      [B2_COURS_V3.slug, 2],
+    ]);
+    expect(requetes(query, PUBLICATION_SUPPRIMEE)).toEqual([]);
+  });
+
+  it('retire la ligne de publication quand la version 3 était la seule du cours', async () => {
+    const { runner, query } = banc(retourArriere(0, null));
+
+    await migration.down(runner);
+
+    expect(requetes(query, PUBLICATION_SUPPRIMEE)).toEqual([
+      [B2_COURS_V3.slug],
+    ]);
+    expect(requetes(query, PUBLICATION_RAMENEE)).toEqual([]);
   });
 
   it('supprime la version 3 en désactivant puis en rétablissant les déclencheurs', async () => {
-    const { runner, query } = banc(comptes(0, 0));
+    const { runner, query } = banc(retourArriere(0, 2));
 
     await migration.down(runner);
 

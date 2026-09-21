@@ -22,7 +22,6 @@ import { DefisUseCase } from './application/Defis.useCase';
 import { EvincerParticipantUseCase } from './application/EvincerParticipant.useCase';
 import { ReadmettreParticipantUseCase } from './application/ReadmettreParticipant.useCase';
 import { LireRappelsUseCase } from './application/LireRappels.useCase';
-import { PublierVersionUseCase } from './application/PublierVersion.useCase';
 import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
@@ -82,6 +81,7 @@ import { FormationsGroupsController } from './interfaces/FormationsGroups.contro
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
 import { FormationsCatalogController } from './interfaces/FormationsCatalog.controller';
+import { CleEtudiantService } from './interfaces/CleEtudiant.service';
 import { CodeScanProtectionService } from './interfaces/CodeScanProtection.service';
 import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
 
@@ -128,7 +128,6 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
     ReadmettreParticipantUseCase,
-    PublierVersionUseCase,
     LireRappelsUseCase,
     SyntheseRappelsUseCase,
     RecordIncidentsUseCase,
@@ -146,6 +145,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     ListFreeResponsesUseCase,
     SaveFreeResponseUseCase,
     ParticipantTokenService,
+    CleEtudiantService,
     CodeScanProtectionService,
     {
       provide: SESSIONS_REPOSITORY,

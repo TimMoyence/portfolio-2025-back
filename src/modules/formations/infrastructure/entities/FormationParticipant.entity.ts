@@ -35,7 +35,7 @@ export class FormationParticipantEntity {
   })
   session: FormationSessionEntity;
 
-  @Column({ name: 'student_key', type: 'uuid' })
+  @Column({ name: 'student_key', type: 'varchar', length: 64 })
   studentKey: string;
 
   @Column({ type: 'varchar', length: 80 })

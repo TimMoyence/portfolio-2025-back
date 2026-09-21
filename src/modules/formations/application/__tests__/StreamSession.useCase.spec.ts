@@ -225,16 +225,19 @@ describe('StreamSessionUseCase', () => {
     expect(recus[recus.length - 1].type).toBe('fin');
   });
 
-  it('vide le cache quand la session se termine', async () => {
+  it('laisse le cache d etat a la cloture de la seance, qui le vide une seule fois', async () => {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'terminee' }),
     );
-    const subscription = sut
-      .execute('session-uuid', PARTICIPANT_ID)
-      .subscribe();
+    const abonnements = Array.from({ length: 3 }, (_, rang) =>
+      sut.execute('session-uuid', `${PARTICIPANT_ID}-${rang}`).subscribe(),
+    );
     await jest.advanceTimersByTimeAsync(10);
-    expect(cache.read('session-uuid')).toBeNull();
-    subscription.unsubscribe();
+
+    expect(cache.read('session-uuid')).not.toBeNull();
+    for (const abonnement of abonnements) {
+      abonnement.unsubscribe();
+    }
   });
 
   it('ne vide pas le cache quand un client se desabonne d une session active', async () => {
@@ -1005,7 +1008,6 @@ describe('StreamSessionUseCase', () => {
         'fin',
       ]);
       expectPanneJournalisee();
-      expect(cache.read('session-uuid')).toBeNull();
       ecoute.abonnement.unsubscribe();
     });
   });

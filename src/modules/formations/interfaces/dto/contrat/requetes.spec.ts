@@ -3,7 +3,6 @@ import { validateBody } from '../../../../../../test/helpers/validation-pipe';
 import { ControlSessionRequestDto } from './control-session.request.dto';
 import { DeclarerJalonRequestDto } from './declarer-jalon.request.dto';
 import { OpenSessionRequestDto } from './open-session.request.dto';
-import { PublierVersionRequestDto } from './publication.request.dto';
 import { SubmitDefiRequestDto } from './submit-defi.request.dto';
 import { SubmitProductionRequestDto } from './submit-production.request.dto';
 import { TenterEnigmeRequestDto } from './tenter-enigme.request.dto';
@@ -134,20 +133,6 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
     ])('refuse une tentative %s', async (_cas, texte) => {
       await expect(
         validateBody({ texte, dureeMs: DUREE_MS }, SubmitDefiRequestDto),
-      ).rejects.toThrow(BadRequestException);
-    });
-  });
-
-  describe('PUT catalogue/:slug/publication', () => {
-    it('accepte un numéro de version entier', async () => {
-      const dto = await validateBody({ version: 3 }, PublierVersionRequestDto);
-
-      expect(dto.version).toBe(3);
-    });
-
-    it.each([0, 1.5, '3'])('refuse la version %p', async (version) => {
-      await expect(
-        validateBody({ version }, PublierVersionRequestDto),
       ).rejects.toThrow(BadRequestException);
     });
   });

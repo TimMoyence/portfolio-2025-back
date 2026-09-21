@@ -1,5 +1,4 @@
 import { QueryFailedError } from 'typeorm';
-import { ResourceConflictError } from '../src/common/domain/errors/ResourceConflictError';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import {
   AnswerAlreadySubmittedError,
@@ -16,6 +15,7 @@ import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   FORMATION_ENTITIES,
   FORMATION_TABLES,
+  inscrireParticipant,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
@@ -95,7 +95,7 @@ describeDb('Formations repositories (db integration)', () => {
     });
 
   const inscrire = (sessionId: string, studentKey: string, seed: number) =>
-    contexte.participants.create({
+    inscrireParticipant(contexte.participants, {
       sessionId,
       studentKey,
       prenom: 'Theo',
@@ -306,15 +306,15 @@ describeDb('Formations repositories (db integration)', () => {
     expect(active?.id).toEqual(ouverte.id);
   });
 
-  it('traduit un second passage du meme etudiant en conflit et non en erreur brute', async () => {
+  it('rend sa place au meme etudiant qui repasse, sans nouveau tirage', async () => {
     const seance = await ouvrirSeance('4271');
-    await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    const premier = await inscrire(seance.id, CLE_ETUDIANT, 1001);
 
-    const second = inscrire(seance.id, CLE_ETUDIANT, 1002);
+    const second = await inscrire(seance.id, CLE_ETUDIANT, 1002);
 
-    await expect(second).rejects.toBeInstanceOf(ResourceConflictError);
-    await expect(second).rejects.toThrow(
-      'Ce participant a deja rejoint cette session',
+    expect(second).toMatchObject({ id: premier.id, seed: 1001 });
+    await expect(contexte.participants.countBySession(seance.id)).resolves.toBe(
+      1,
     );
   });
 

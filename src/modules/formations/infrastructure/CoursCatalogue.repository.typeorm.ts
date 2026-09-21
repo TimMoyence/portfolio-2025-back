@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import type { Cours } from '../domain/contrats/cours';
 import { creerCacheLRU } from '../domain/cours/CacheLRU';
 import { lireCoursStocke } from '../domain/cours/CoursStocke';
-import { CoursInconnuError } from '../domain/errors/FormationErrors';
 import type {
   CoursPublie,
   ICatalogueCours,
@@ -63,35 +62,6 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
       cours: this.toDomain(entity),
       version: entity.version,
       publieLe: publication.publieeLe,
-    };
-  }
-
-  async publier(input: {
-    readonly slug: string;
-    readonly version: number;
-    readonly parQui: string | null;
-  }): Promise<CoursPublie> {
-    const entity = await this.findEntity(input.slug, input.version);
-    if (entity === null) {
-      throw new CoursInconnuError(`${input.slug}@${String(input.version)}`);
-    }
-    const cours = this.toDomain(entity);
-    await this.publications.upsert(
-      {
-        slug: input.slug,
-        versionPubliee: input.version,
-        publieeLe: new Date(),
-        publieePar: input.parQui,
-      },
-      ['slug'],
-    );
-    const publication = await this.publications.findOne({
-      where: { slug: input.slug },
-    });
-    return {
-      cours,
-      version: input.version,
-      publieLe: publication?.publieeLe ?? new Date(),
     };
   }
 

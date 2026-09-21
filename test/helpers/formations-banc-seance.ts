@@ -131,7 +131,6 @@ export function installerBancDeSeance(options: {
   ): Promise<SeanceDeTest> => {
     const inscription = await anonyme('post', `/sessions/${seance.code}/join`)
       .send({
-        studentKey: cle,
         prenom,
         nom: 'Martin',
         email: `${cle}@example.test`,

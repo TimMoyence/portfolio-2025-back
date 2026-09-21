@@ -17,6 +17,7 @@ import type {
 import {
   CoursInconnuError,
   InvalidStateTransitionError,
+  RevisionDeSeanceObsoleteError,
   SessionClosedError,
   SessionNotFoundError,
   SessionNotOwnedError,
@@ -29,6 +30,8 @@ import {
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+
+const TENTATIVES_SUR_REVISION_OBSOLETE = 5;
 
 export interface ControlSessionChanges {
   ecran?: number;
@@ -48,30 +51,34 @@ export class ControlSessionUseCase {
     private readonly catalogue: ICatalogueCours,
   ) {}
 
-  /**
-   * Le pilotage valide en deux temps : la syntaxe des changements (numero
-   * d'ecran, mode connu) est verifiee avant la moindre lecture ; les bornes
-   * qui dependent du cours de la session (ecran dans le cours, intervalle de
-   * rythme libre) ne peuvent l'etre qu'apres la lecture de la session dans
-   * assertPilotable, mais restent verifiees avant l'unique ecriture et
-   * l'unique publication.
-   *
-   * Un ecran applique avant qu'un rythme invalide ne soit refuse laisserait
-   * les trente postes de la classe sur une diapositive que le formateur ne
-   * croit pas avoir envoyee, avec un 400 pour seule trace — la validation
-   * doit donc preceder l'effet, pas l'accompagner
-   * (FormationsPresenter.controller.ts).
-   */
   async apply(
     sessionId: string,
     teacherId: string,
     changements: ControlSessionChanges,
   ): Promise<void> {
-    const misAJour = this.validerEtProjeter(changements);
-    const session = await this.assertPilotable(sessionId, teacherId);
-    await this.assertDansLesBornesDuCours(session, misAJour, changements);
-    const sessionMiseAJour = await this.sessions.update(sessionId, misAJour);
-    this.publier(sessionId, sessionMiseAJour);
+    for (
+      let tentative = 0;
+      tentative < TENTATIVES_SUR_REVISION_OBSOLETE;
+      tentative += 1
+    ) {
+      const misAJour = this.validerEtProjeter(changements);
+      const session = await this.assertPilotable(sessionId, teacherId);
+      await this.assertDansLesBornesDuCours(session, misAJour, changements);
+      try {
+        const sessionMiseAJour = await this.sessions.update(
+          sessionId,
+          misAJour,
+          session.revision,
+        );
+        this.publier(sessionId, sessionMiseAJour);
+        return;
+      } catch (error) {
+        if (!(error instanceof RevisionDeSeanceObsoleteError)) {
+          throw error;
+        }
+      }
+    }
+    throw new RevisionDeSeanceObsoleteError(sessionId);
   }
 
   private async assertDansLesBornesDuCours(
