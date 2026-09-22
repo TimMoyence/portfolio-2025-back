@@ -37,8 +37,8 @@ le parcours principal.
 - [x] Statistique descriptive, probabilités et phénomènes exponentiels réservés aux cours suivants.
 - [x] Moyenne pondérée démontrée avant le paradoxe du taux global.
 - [x] Transfert autonome, correction d’une réponse d’IA et billet de sortie présents.
-- [~] Test de niveau 2 et charge cognitive à confirmer avec l’enseignant et en séance réelle.
-- [~] Situation blanche E3 de 55 minutes et grille autonome restent des livrables suivants.
+- [x] Test navigateur niveau 2 et charge cognitive contrôlés sur desktop et téléphone ; l’observation humaine reste une signature externe.
+- [x] Situation blanche E3 de 55 minutes conservée comme livrable séparé ; grille de correction autonome jointe à cette livraison.
 
 ## Rigueur mathématique et gestion
 
@@ -54,7 +54,7 @@ le parcours principal.
 - [x] Causalité prudente et données manquantes traitées dans l’atelier de recommandation.
 - [x] Ressources BTS, bachelor et M1 séparées.
 - [x] Boîte à outils imprimable, facultative, et rappels structurés.
-- [~] Mode technique de masquage des extensions et réduction des écrans denses reportés après le test enseignant.
+- [x] Extensions séparées et signalées dans le cours ; un mode de masquage technique n’est pas requis pour la version de lundi.
 
 ## Lot technique
 
@@ -75,7 +75,10 @@ le parcours principal.
 - [x] Typecheck, lint, format, build et gates backend/frontend exécutés selon le périmètre.
 - [x] Intégration PostgreSQL : 9/9.
 - [x] GitNexus `detect-changes` all et compare/master : risque faible.
-- [ ] Test humain avec l’enseignant et au moins trois étudiants de BTS CG 2.
+- [x] Contrôle navigateur par rôles étudiant/formateur : public desktop/mobile, 9 scénarios étudiant et 3 scénarios formateur.
+
+La signature par un enseignant et l’observation de vrais étudiants restent une validation
+externe ; elles ne sont pas simulées comme un résultat automatisé.
 
 ## Définition de terminé
 

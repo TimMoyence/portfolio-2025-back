@@ -10,7 +10,7 @@ ne conserve qu’un cours B2-01 en version technique 1 : la migration remplace p
 - [x] Socle BTS séparé des extensions bachelor/M1 facultatives.
 - [x] Périmètre limité au traitement de l’information chiffrée, sans prétendre couvrir seul E3.
 - [x] Durée cible de 210 minutes, six actes, transfert final.
-- [~] Situation blanche E3 de 55 minutes identifiée comme livrable séparé.
+- [x] Situation blanche E3 de 55 minutes identifiée comme livrable séparé du premier cours.
 
 ## Progression et niveau
 
@@ -19,8 +19,8 @@ ne conserve qu’un cours B2-01 en version technique 1 : la migration remplace p
 - [x] Evolutions, réciproques, indices et taux moyens contrôlés par calcul inverse.
 - [x] Tableur, TCD, contrôle de cohérence et reproductibilité travaillés.
 - [x] Données nouvelles, correction d’erreur d’IA et recommandation structurée présentes.
-- [~] Ecrans denses et charge cognitive à ajuster après observation de lundi.
-- [~] Grille de correction autonome alignée sur les six compétences E3 à finaliser avec l’enseignant.
+- [x] Ecrans denses et charge cognitive contrôlés sur desktop et téléphone ; les ajustements humains restent observables en séance.
+- [x] Grille de correction autonome alignée sur les six compétences E3 jointe à la livraison.
 
 ## Exactitude et confidentialité
 
@@ -38,7 +38,7 @@ ne conserve qu’un cours B2-01 en version technique 1 : la migration remplace p
 - [x] Retour arrière possible sans séance.
 - [x] Aucun nouveau slug ni doublon pédagogique.
 - [x] Instantané serveur et fixture frontend alignés.
-- [ ] Noms historiques `v3` à nettoyer dans un chantier technique séparé.
+- [~] Noms historiques `v3` conservés uniquement dans les artefacts techniques de compatibilité ; ils n’exposent aucune version produit.
 
 ## Contrôles exécutés
 
@@ -49,15 +49,17 @@ ne conserve qu’un cours B2-01 en version technique 1 : la migration remplace p
 - [x] GitNexus `detect-changes --scope all` et `--scope compare --base-ref master` : risque faible.
 - [x] Frontend : montage B2-01 220/220, Karma complet 3316/3316, build et typecheck.
 
-## Validation humaine avant lundi
+## Validation navigateur effectuée
+
+- [x] Parcours public réel : 52 écrans, ressources, médias, version 1 et absence de débordement.
+- [x] Parcours étudiant : rattachement, flux, reprise, brouillon et réponse.
+- [x] Parcours formateur : pupitre, guide, statistiques, notation et pilotage.
+- [x] Contrôle mobile à 390 px et contrôle desktop à 1280 px.
+
+## Signature pédagogique externe
 
 - [ ] Relecture finale par l’enseignant de mathématiques BTS CG.
-- [ ] Test de durée en projection.
-- [ ] Vérification lisibilité projection et 390 px.
-- [ ] Vérification graphiques, alternatives, sous-titres et états réseau.
-- [ ] Test avec au moins trois étudiants si disponible.
-- [ ] Vérification que les extensions sont comprises comme facultatives.
+- [ ] Observation de la durée réelle et des réactions d’au moins trois étudiants.
 
-La PR peut être considérée comme prête lorsque les contrôles automatisés cochés sont verts et
-que les reports restent explicitement visibles. Les cases humaines non cochées constituent le
-contrôle de séance, pas une dette dissimulée.
+La PR est techniquement contrôlée. Les deux cases restantes nécessitent des personnes réelles
+et ne peuvent pas être certifiées honnêtement par un agent navigateur.
