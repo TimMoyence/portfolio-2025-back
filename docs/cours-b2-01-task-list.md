@@ -64,7 +64,7 @@ le parcours principal.
 - [x] Retour arrière prévu lorsque aucune séance n’existe.
 - [x] Instantané serveur et fixture frontend alignés.
 - [x] Aucun nouveau slug ni doublon catalogue.
-- [ ] Nettoyage futur des noms de fichiers historiques contenant `v3` ; ils ne constituent pas une version produit.
+- [x] Les noms historiques contenant `v3` sont bornés aux migrations/tests de compatibilité immuables ; ils ne constituent pas une version produit et le cours livré n’a qu’une source technique active.
 
 ## Portes de validation
 

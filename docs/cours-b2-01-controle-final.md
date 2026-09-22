@@ -38,7 +38,7 @@ ne conserve qu’un cours B2-01 en version technique 1 : la migration remplace p
 - [x] Retour arrière possible sans séance.
 - [x] Aucun nouveau slug ni doublon pédagogique.
 - [x] Instantané serveur et fixture frontend alignés.
-- [~] Noms historiques `v3` conservés uniquement dans les artefacts techniques de compatibilité ; ils n’exposent aucune version produit.
+- [x] Les identifiants historiques `v3` restent uniquement dans la chaîne immuable des migrations et des tests de compatibilité ; le cours livré est une source unique en version technique 1 et n’expose aucune version produit V3/V4.
 
 ## Contrôles exécutés
 
