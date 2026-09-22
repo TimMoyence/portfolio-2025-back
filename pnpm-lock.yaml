@@ -31,7 +31,7 @@ overrides:
 
 patchedDependencies:
   extract-zip@2.0.1:
-    hash: b6293b0d44b1790008b7204cad020feddaf1e542a7e02976765a51a86b5a123b
+    hash: c10f4c4825d0db153e61732ddc5181354b3660a9895111412c248cacf7bc1f31
     path: patches/extract-zip@2.0.1.patch
 
 importers:
@@ -7167,7 +7167,7 @@ snapshots:
   '@puppeteer/browsers@2.13.0':
     dependencies:
       debug: 4.4.3
-      extract-zip: 2.0.1(patch_hash=b6293b0d44b1790008b7204cad020feddaf1e542a7e02976765a51a86b5a123b)
+      extract-zip: 2.0.1(patch_hash=c10f4c4825d0db153e61732ddc5181354b3660a9895111412c248cacf7bc1f31)
       progress: 2.0.3
       proxy-agent: 6.5.0
       semver: 7.7.4
@@ -8930,7 +8930,7 @@ snapshots:
 
   extend@3.0.2: {}
 
-  extract-zip@2.0.1(patch_hash=b6293b0d44b1790008b7204cad020feddaf1e542a7e02976765a51a86b5a123b):
+  extract-zip@2.0.1(patch_hash=c10f4c4825d0db153e61732ddc5181354b3660a9895111412c248cacf7bc1f31):
     dependencies:
       debug: 4.4.3
       get-stream: 5.2.0
