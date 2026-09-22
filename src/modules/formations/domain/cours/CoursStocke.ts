@@ -27,6 +27,7 @@ import { auMoinsUn, concepts, confusion, media, texte } from './SchemasCommuns';
 const LONGUEUR_MAX_IDENTIFIANT_D_ECRAN = 120;
 const LONGUEUR_MAX_TITRE = 120;
 const PREMIERE_VERSION_TITREE = 3;
+const SLUG_B2_01 = 'b2-01-traitement-information-chiffree';
 const DIFFUSION_HISTORIQUE: Diffusion = 'catalogue';
 
 export class ContenuDeCoursInvalideError extends Error {
@@ -172,6 +173,23 @@ function controlerChampsDeLaV3(
   });
 }
 
+function contratPublicActif(
+  slug: string,
+  version: number,
+  ecrans: readonly EcranStocke[],
+): boolean {
+  return (
+    version >= PREMIERE_VERSION_TITREE ||
+    (slug === SLUG_B2_01 &&
+      version === 1 &&
+      ecrans.some(
+        (ecran) =>
+          (ecran.titre !== undefined && ecran.titre !== null) ||
+          ecran.diffusion === 'seance',
+      ))
+  );
+}
+
 function doublonsDe(valeurs: readonly string[]): readonly string[] {
   return [
     ...new Set(
@@ -194,7 +212,7 @@ export const coursStocke = z
   })
   .strict()
   .superRefine((cours, contexte) => {
-    if (cours.version >= PREMIERE_VERSION_TITREE) {
+    if (contratPublicActif(cours.slug, cours.version, cours.ecrans)) {
       controlerChampsDeLaV3(cours.ecrans, contexte);
     }
     const doublons = doublonsDe(cours.ecrans.map((ecran) => ecran.screenId));
@@ -283,14 +301,13 @@ type BriqueDeProductionUnique = 'fp-cardsort' | 'fp-sheet' | 'fp-table-build';
 
 function socleDe(
   ecran: EcranStocke,
-  version: number,
+  contratPublic: boolean,
   { modalite, guide }: Communes,
 ): SocleDEcran {
-  const titree = version >= PREMIERE_VERSION_TITREE;
   return {
     id: ecran.screenId,
-    titre: titree ? (ecran.titre ?? null) : null,
-    diffusion: titree
+    titre: contratPublic ? (ecran.titre ?? null) : null,
+    diffusion: contratPublic
       ? (ecran.diffusion ?? DIFFUSION_HISTORIQUE)
       : DIFFUSION_HISTORIQUE,
     dureeMinutes: ecran.dureeMinutes,
@@ -331,12 +348,12 @@ function seuilDe(seuil: number | undefined): { readonly seuil?: number } {
 
 function versEcranDeRecit(
   ecran: Extract<EcranStocke, { readonly brique: 'fp-story' }>,
-  version: number,
+  contratPublic: boolean,
 ): Ecran {
   const { modalite, ...proprietes } = ecran.proprietes;
   const { interaction, guide } = proprietes;
   return {
-    ...socleDe(ecran, version, { modalite }),
+    ...socleDe(ecran, contratPublic, { modalite }),
     brique: ecran.brique,
     proprietes,
     question:
@@ -395,11 +412,11 @@ function versEcranDeRappel(
   };
 }
 
-function versEcran(ecran: EcranStocke, version: number): Ecran {
+function versEcran(ecran: EcranStocke, contratPublic: boolean): Ecran {
   if (ecran.brique === 'fp-story') {
-    return versEcranDeRecit(ecran, version);
+    return versEcranDeRecit(ecran, contratPublic);
   }
-  const socle = socleDe(ecran, version, ecran.proprietes);
+  const socle = socleDe(ecran, contratPublic, ecran.proprietes);
   switch (ecran.brique) {
     case 'fp-quote':
     case 'fp-pro':
@@ -469,6 +486,11 @@ export function lireCoursStocke(brut: ContenuDeCoursBrut): Cours {
     );
   }
   const stocke = lecture.data;
+  const contratPublic = contratPublicActif(
+    stocke.slug,
+    stocke.version,
+    stocke.ecrans,
+  );
   const cours: Cours = {
     slug: stocke.slug,
     titre: stocke.titre,
@@ -476,7 +498,7 @@ export function lireCoursStocke(brut: ContenuDeCoursBrut): Cours {
     dureeMinutes: stocke.dureeMinutes,
     concepts: stocke.concepts,
     ecrans: mapperAuMoinsUn(stocke.ecrans, (ecran) =>
-      versEcran(ecran, stocke.version),
+      versEcran(ecran, contratPublic),
     ),
     remediations: stocke.remediations ?? {},
     medias: stocke.medias ?? [],

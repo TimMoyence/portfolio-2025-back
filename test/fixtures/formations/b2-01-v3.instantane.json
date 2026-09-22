@@ -1,10 +1,10 @@
 {
-  "version": 3,
+  "version": 1,
   "graine": 0,
-  "empreinte": "f798f6dd298f792cd3b2d5edaa20efa549a5f5d8d7f7c7d6f4add45ff9d8d632",
+  "empreinte": "d9f24f34dd1a8184579a4c41dbb17e2eb5ecce5a0fa23e20df4bf64bd87b9281",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
-    "titre": "Traitement de l’information chiffrée",
+    "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
     "duree": 210,
     "concepts": [
@@ -80,8 +80,8 @@
                 "title": "Lire un chiffre, ce n’est pas le croire",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Lundi, 9 h : le comité de direction se réunit jeudi. Votre mission : fiabiliser le tableau de bord 2025.",
                 "bullets": [
-                  "BTS Comptabilité et gestion · 1re année · module Traitement de l’information chiffrée",
-                  "3 h 30 · 6 actes · 2 tâches de tableur · 2 mini-jeux · 1 billet de sortie"
+                  "BTS Comptabilité et gestion · 2e année · premier cours de mathématiques",
+                  "3 h 30 · 6 actes · socle BTS 2 · extensions bachelor et M1 facultatives"
                 ],
                 "bgImage": "/assets/cours/b2-01/v3/playfair-ecosse-1786.webp",
                 "bgImageAlt": "Graphique en barres de William Playfair (1786) : exportations et importations de l’Écosse avec ses partenaires commerciaux sur une année"
@@ -348,7 +348,7 @@
       {
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
-        "titre": "Votre plan jusqu’à jeudi",
+        "titre": "Votre plan de reprise et de transfert",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -359,50 +359,50 @@
               "screenId": "B2-01-A1-07-PLAN",
               "renderer": "method-path",
               "props": {
-                "title": "Votre plan jusqu’à jeudi",
-                "subtitle": "Six gestes, six actes : chaque acte se termine par une preuve que vous savez faire.",
+                "title": "Votre plan de reprise et de transfert",
+                "subtitle": "Six gestes, six actes : on réactive les acquis, on les met sous contrôle, puis on les transfère à une décision de gestion.",
                 "steps": [
                   {
                     "id": "lire",
-                    "title": "Acte 1 · Lire",
+                    "title": "Acte 1 · Diagnostiquer",
                     "question": "Que mesure chaque chiffre ?",
                     "proof": "Unité, base, période, périmètre, source.",
-                    "result": "Un tableau de bord dont chaque ligne a un sens."
+                    "result": "Un diagnostic de niveau 2 et un tableau de bord qualifié."
                   },
                   {
                     "id": "comparer",
-                    "title": "Acte 2 · Comparer",
+                    "title": "Acte 2 · Auditer",
                     "question": "Compare-t-on la même chose ?",
                     "proof": "Population de référence, axe, ordre de grandeur.",
-                    "result": "Des comparaisons honnêtes."
+                    "result": "Des comparaisons justes et défendables."
                   },
                   {
                     "id": "evoluer",
-                    "title": "Acte 3 · Raconter une évolution",
+                    "title": "Acte 3 · Modéliser",
                     "question": "Quelle base, quel coefficient ?",
                     "proof": "Écart, taux, coefficient, indice.",
-                    "result": "Des évolutions justes, même successives."
+                    "result": "Des évolutions justes, y compris successives et réciproques."
                   },
                   {
                     "id": "outiller",
-                    "title": "Acte 4 · Outiller",
+                    "title": "Acte 4 · Reproduire",
                     "question": "La feuille se contrôle-t-elle seule ?",
                     "proof": "Formules, références, contrôles, graphique.",
-                    "result": "Un classeur qu’un tiers peut refaire."
+                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
                   },
                   {
                     "id": "defendre",
-                    "title": "Acte 5 · Défendre",
+                    "title": "Acte 5 · Expliquer",
                     "question": "Quel mécanisme explique l’écart ?",
                     "proof": "Poids, répartition, preuve, limite.",
-                    "result": "Une recommandation argumentée."
+                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
                   },
                   {
                     "id": "transferer",
                     "title": "Acte 6 · Transférer",
                     "question": "Saurez-vous le refaire seul·e ?",
-                    "proof": "Mini-jeu, erreur d’IA corrigée, rappel.",
-                    "result": "Des réflexes durables."
+                    "proof": "Situation nouvelle, erreur d’IA corrigée, rappel adaptatif.",
+                    "result": "Des réflexes durables et une trace exploitable en CCF."
                   }
                 ]
               }
@@ -579,14 +579,14 @@
       {
         "id": "B2-01-A2-02-ORIGINE-AXE",
         "type": "fp-plot",
-        "titre": "Déplacez l’origine de l’axe",
+        "titre": "La diapositive de Samir — axe réglable",
         "duree": 2,
         "interactif": false,
         "donnees": {
           "definition": {
             "id": "b2-01-a2-origine-axe",
-            "titre": "Marge brute d’Atelier Rivage, 2022–2025 : déplacez l’origine et le haut de l’axe",
-            "source": "Données fictives Atelier Rivage",
+            "titre": "Diapositive de Samir : marge brute et axe réglable",
+            "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
               "libelle": "Année (0 = 2022, 3 = 2025)",
               "min": 0,
@@ -623,7 +623,7 @@
               "minParametre": "origine",
               "maxParametre": "maximum"
             },
-            "description": "Courbe de la marge brute de 2022 à 2025 ; deux curseurs règlent le bas et le haut de l’axe vertical ; au départ, l’axe va de 284 000 € à 292 000 €, comme sur la diapositive de Samir.",
+            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
@@ -813,7 +813,7 @@
                 "axisLabels": ["0 à 300 000 €"],
                 "unit": "€",
                 "formula": "Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021",
-                "reading": "La marge brute passe de 285 000 € à 291 000 € : +6 000 € en trois ans, soit +2,1 %. La progression est réelle mais faible, et elle ralentit chaque année.",
+                "reading": "La marge brute augmente sur la période. L’écart reste faible à l’échelle du graphique et le rythme annuel ralentit.",
                 "source": "Comptes de résultat 2022 à 2025 d’Atelier Rivage (données fictives).",
                 "description": "Diagramme en barres à partir de zéro : quatre barres presque égales, de 285 000 € en 2022 à 291 000 € en 2025."
               }
@@ -1170,7 +1170,7 @@
       {
         "id": "B2-01-A3-04-FIL-TECHNIQUE",
         "type": "fp-worked",
-        "titre": "Le fil technique : coefficients, base et TVA",
+        "titre": "Le fil technique : choisir l’opération inverse",
         "duree": 4,
         "interactif": true,
         "donnees": {
@@ -1278,7 +1278,7 @@
       {
         "id": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN",
         "type": "fp-worked",
-        "titre": "Le loyer de l’atelier : indice et taux moyen",
+        "titre": "Le loyer de l’atelier : lire un indice et un rythme",
         "duree": 5,
         "interactif": true,
         "donnees": {
@@ -1458,7 +1458,7 @@
       {
         "id": "B2-01-A3-08-INDICE-PRIX",
         "type": "fp-story",
-        "titre": "Indice des prix, base 100 en 2019",
+        "titre": "Extension : lire un indice de prix fourni",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -1492,11 +1492,11 @@
                 "axisRanges": [[95, 120]],
                 "axisLabels": ["95 à 120"],
                 "unit": "indice (base 100 en 2019)",
-                "formula": "Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97",
+                "formula": "Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97 ; ce calcul est une reconstitution pédagogique, pas la construction de l’IPC officiel.",
                 "reading": "Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation.",
-                "source": "Calcul du cours à partir des taux annuels moyens publiés par l’Insee (IPC, « L’essentiel sur… l’inflation », paru le 23 mars 2026). L’indice officiel, publié en base 100 = moyenne 2025 et rebasé à 100 en 2019, vaut 116,04 en 2025 : les taux publiés étant arrondis au dixième, l’indice reconstitué s’en écarte de quelques centièmes.",
+                "source": "Lecture d’un indice fourni et reconstitution pédagogique à partir de taux annuels moyens publiés par l’Insee. Le cours ne demande pas de construire un indice synthétique officiel.",
                 "kind": "line",
-                "description": "Courbe croissante de l’indice : 100 en 2019, 107,42 en 2022, 112,68 en 2023, 115,97 en 2025 ; axe gradué de 95 à 120."
+                "description": "Courbe croissante de l’indice : base 100 en 2019, niveau intermédiaire en 2022, niveau final supérieur à 115 en 2025 ; axe gradué de 95 à 120."
               }
             },
             "metadonnees": {
@@ -1808,7 +1808,7 @@
               "screenId": "B2-01-A4-04-CA-TRIMESTRIEL",
               "renderer": "chart",
               "props": {
-                "title": "CA HT 2025 d’Atelier Rivage par canal et par trimestre",
+                "title": "CA HT 2025 : choisir une représentation temporelle",
                 "caption": "Une courbe par canal : la forme suit la question (une évolution dans le temps)",
                 "labels": ["T1", "T2", "T3", "T4"],
                 "series": [
@@ -1834,7 +1834,7 @@
                 "reading": "La marketplace culmine au 3e trimestre (167 000 €) ; le sur-mesure recule de 120 000 € à 80 000 € entre le 1er et le 4e trimestre ; l’entretien reste entre 49 000 € et 62 000 €.",
                 "source": "Comptabilité analytique d’Atelier Rivage, 2025 (données fictives).",
                 "kind": "line",
-                "description": "Trois courbes étiquetées sur quatre trimestres : sur-mesure 120, 95, 102, 80 ; entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180."
+                "description": "Trois séries étiquetées sur quatre périodes : sur-mesure 120, 95, 102, 80 ; entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180."
               }
             },
             "metadonnees": {
@@ -1997,51 +1997,6 @@
         }
       },
       {
-        "id": "B2-01-A5-02-VOTE-PARADOXE",
-        "type": "fp-vote",
-        "titre": "Vote : le paradoxe du taux global",
-        "duree": 8,
-        "interactif": true,
-        "donnees": {
-          "question": {
-            "id": "b2-01-a5-paradoxe-v1",
-            "enonce": "Entre 2024 et 2025, chaque canal d’Atelier Rivage garde exactement le même taux de marge brute (36 %, 28 % et 16 %). Pourtant, le taux global passe de 27,6 % à 25,3 %. Comment l’expliquez-vous ?",
-            "options": [
-              {
-                "id": "plus-de-ca-fait-toujours-baisser-un-taux-d754aae6",
-                "libelle": "Plus de CA fait toujours baisser un taux."
-              },
-              {
-                "id": "le-poids-des-canaux-dans-le-ca-a-change-871f0d7f",
-                "libelle": "Le poids des canaux dans le CA a changé."
-              },
-              {
-                "id": "taux-locaux-stables-taux-global-stable-c-749856b8",
-                "libelle": "Taux locaux stables, taux global stable : c’est une erreur."
-              }
-            ]
-          },
-          "questionJumelle": {
-            "id": "b2-01-a5-paradoxe-v2",
-            "enonce": "Dans un lycée qui ne prépare que deux BTS, le taux de réussite reste de 90 % en CG et de 70 % en MCO d’une session à l’autre. Pourtant, le taux de réussite global du lycée baisse. Comment l’expliquez-vous ?",
-            "options": [
-              {
-                "id": "il-y-a-eu-plus-de-candidats-au-total-ae9ca466",
-                "libelle": "Il y a eu plus de candidats au total."
-              },
-              {
-                "id": "c-est-impossible-le-taux-global-est-la-m-903baf10",
-                "libelle": "C’est impossible : le taux global est la moyenne de 90 % et 70 %."
-              },
-              {
-                "id": "les-candidats-de-mco-pesent-davantage-da-333e1344",
-                "libelle": "Les candidats de MCO pèsent davantage dans l’ensemble des candidats."
-              }
-            ]
-          }
-        }
-      },
-      {
         "id": "B2-01-A5-03-MOYENNE-PONDEREE",
         "type": "fp-worked",
         "titre": "Prouver l’effet de répartition",
@@ -2055,7 +2010,7 @@
               {
                 "id": "poids",
                 "intitule": "Poids des canaux",
-                "raisonnement": "Poids d’un canal = CA du canal ÷ CA total. 2024 : 46 %, 20 %, 34 %. 2025 : 34,5 %, 20 %, 45,5 %.",
+                "raisonnement": "Poids d’un canal = CA du canal ÷ CA total. 2024 : 529 ÷ 1 150 ; 230 ÷ 1 150 ; 391 ÷ 1 150. 2025 : 397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150.",
                 "invite": "Calculez les poids des deux années."
               },
               {
@@ -2098,6 +2053,51 @@
             }
           },
           "etayage": 3
+        }
+      },
+      {
+        "id": "B2-01-A5-02-VOTE-PARADOXE",
+        "type": "fp-vote",
+        "titre": "Vote : le paradoxe du taux global",
+        "duree": 8,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b2-01-a5-paradoxe-v1",
+            "enonce": "Entre 2024 et 2025, chaque canal d’Atelier Rivage garde exactement le même taux de marge brute (36 %, 28 % et 16 %). Pourtant, le taux global passe de 27,6 % à 25,3 %. Comment l’expliquez-vous ?",
+            "options": [
+              {
+                "id": "plus-de-ca-fait-toujours-baisser-un-taux-d754aae6",
+                "libelle": "Plus de CA fait toujours baisser un taux."
+              },
+              {
+                "id": "le-poids-des-canaux-dans-le-ca-a-change-871f0d7f",
+                "libelle": "Le poids des canaux dans le CA a changé."
+              },
+              {
+                "id": "taux-locaux-stables-taux-global-stable-c-749856b8",
+                "libelle": "Taux locaux stables, taux global stable : c’est une erreur."
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b2-01-a5-paradoxe-v2",
+            "enonce": "Dans un lycée qui ne prépare que deux BTS, le taux de réussite reste de 90 % en CG et de 70 % en MCO d’une session à l’autre. Pourtant, le taux de réussite global du lycée baisse. Comment l’expliquez-vous ?",
+            "options": [
+              {
+                "id": "il-y-a-eu-plus-de-candidats-au-total-ae9ca466",
+                "libelle": "Il y a eu plus de candidats au total."
+              },
+              {
+                "id": "c-est-impossible-le-taux-global-est-la-m-903baf10",
+                "libelle": "C’est impossible : le taux global est la moyenne de 90 % et 70 %."
+              },
+              {
+                "id": "les-candidats-de-mco-pesent-davantage-da-333e1344",
+                "libelle": "Les candidats de MCO pèsent davantage dans l’ensemble des candidats."
+              }
+            ]
+          }
         }
       },
       {
@@ -2453,7 +2453,7 @@
           "probleme": {
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
-            "invite": "Rédigez six phrases : 1) le constat chiffré ; 2) le mécanisme qui l’explique ; 3) ce qui reste à prouver ; 4) la décision que vous proposez ; 5) la limite de votre analyse ; 6) les anomalies du dossier, classées de la plus importante à la moins importante pour la décision.",
+            "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet.",
             "strategies": [],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
@@ -2790,7 +2790,7 @@
       {
         "id": "B2-01-A6-07-BOITE-A-OUTILS",
         "type": "fp-story",
-        "titre": "Votre boîte à outils",
+        "titre": "Ressources de transfert : BTS, bachelor, M1",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -2801,8 +2801,8 @@
               "screenId": "B2-01-A6-07-BOITE-A-OUTILS",
               "renderer": "grid",
               "props": {
-                "title": "Votre boîte à outils",
-                "subtitle": "Les gestes du tableur professionnel et les sources officielles de ce cours.",
+                "title": "Ressources de transfert : BTS, bachelor, M1",
+                "subtitle": "Le socle nécessaire pour le BTS, puis les ressources facultatives pour prolonger l’analyse.",
                 "items": [
                   {
                     "title": "Une ligne = une observation",
@@ -2880,6 +2880,16 @@
                     "description": "Le programme de mathématiques et l’épreuve E3.",
                     "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
                     "external": true
+                  },
+                  {
+                    "title": "Extension bachelor · volume / mix / taux",
+                    "description": "Décomposer un écart avant de recommander.",
+                    "back": "Séparer effet de volume, effet de structure et effet de taux ; cette lecture prolonge le simulateur de mix et reste facultative dans le socle BTS."
+                  },
+                  {
+                    "title": "Extension M1 · sensibilité et preuve",
+                    "description": "Tester une hypothèse sans la transformer en certitude.",
+                    "back": "Faire varier une hypothèse, documenter l’intervalle de résultat et distinguer scénario, corrélation et causalité. Cette extension n’est pas évaluée au BTS."
                   }
                 ]
               }
@@ -2937,7 +2947,7 @@
   },
   "deroule": {
     "id": "b2-01-traitement-information-chiffree",
-    "titre": "Traitement de l’information chiffrée",
+    "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
     "duree": 210,
     "concepts": [
@@ -2995,7 +3005,7 @@
           },
           "delaiMs": 45000
         },
-        "notes": "Action : projeter ; annoncer « question de reprise : seule la participation compte » ; 45 s d’écriture individuelle sans regarder les options, puis vote.\nObservé : l’histogramme du pupitre et la confusion dominante (« +20 % » : division par la valeur d’arrivée).\nAttendu : (100 − 80) / 80 = 0,25, soit +25 % ; le dénominateur est la valeur de départ.\nContrôle : 80 × 1,25 = 100. Si plus de 30 % de « +20 % », le noter : la question 5 de l’atelier 2 (A3-07) repose la situation à l’envers, et l’atelier 1 (Q6) la retrouve dans le taux de marge.\nTransition : « Cette question — quelle est la base ? — va vous suivre toute la journée. Voici l’entreprise pour laquelle vous travaillez. »",
+        "notes": "Action : projeter ; annoncer « question de reprise : seule la participation compte » ; 45 s d’écriture individuelle sans regarder les options, puis vote.\nObservé : l’histogramme du pupitre et la confusion dominante (« +20 % » : division par la valeur d’arrivée).\nAttendu : (100 − 80) / 80 = 0,25, soit +25 % ; le dénominateur est la valeur de départ.\nContrôle : 80 × 1,25 = 100. Si plus de 30 % de « +20 % », le noter : la question 5 de l’atelier 2 (A3-07) repose la situation à l’envers, et l’atelier 1 (Q6) la retrouve dans le taux de marge.\nTransition : « Cette question — quelle est la base ? — revient dans toutes les analyses de deuxième année. Voici l’entreprise pour laquelle vous travaillez. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3061,8 +3071,8 @@
                 "title": "Lire un chiffre, ce n’est pas le croire",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Lundi, 9 h : le comité de direction se réunit jeudi. Votre mission : fiabiliser le tableau de bord 2025.",
                 "bullets": [
-                  "BTS Comptabilité et gestion · 1re année · module Traitement de l’information chiffrée",
-                  "3 h 30 · 6 actes · 2 tâches de tableur · 2 mini-jeux · 1 billet de sortie"
+                  "BTS Comptabilité et gestion · 2e année · premier cours de mathématiques",
+                  "3 h 30 · 6 actes · socle BTS 2 · extensions bachelor et M1 facultatives"
                 ],
                 "bgImage": "/assets/cours/b2-01/v3/playfair-ecosse-1786.webp",
                 "bgImageAlt": "Graphique en barres de William Playfair (1786) : exportations et importations de l’Écosse avec ses partenaires commerciaux sur une année"
@@ -3410,7 +3420,7 @@
       {
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
-        "titre": "Votre plan jusqu’à jeudi",
+        "titre": "Votre plan de reprise et de transfert",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -3421,50 +3431,50 @@
               "screenId": "B2-01-A1-07-PLAN",
               "renderer": "method-path",
               "props": {
-                "title": "Votre plan jusqu’à jeudi",
-                "subtitle": "Six gestes, six actes : chaque acte se termine par une preuve que vous savez faire.",
+                "title": "Votre plan de reprise et de transfert",
+                "subtitle": "Six gestes, six actes : on réactive les acquis, on les met sous contrôle, puis on les transfère à une décision de gestion.",
                 "steps": [
                   {
                     "id": "lire",
-                    "title": "Acte 1 · Lire",
+                    "title": "Acte 1 · Diagnostiquer",
                     "question": "Que mesure chaque chiffre ?",
                     "proof": "Unité, base, période, périmètre, source.",
-                    "result": "Un tableau de bord dont chaque ligne a un sens."
+                    "result": "Un diagnostic de niveau 2 et un tableau de bord qualifié."
                   },
                   {
                     "id": "comparer",
-                    "title": "Acte 2 · Comparer",
+                    "title": "Acte 2 · Auditer",
                     "question": "Compare-t-on la même chose ?",
                     "proof": "Population de référence, axe, ordre de grandeur.",
-                    "result": "Des comparaisons honnêtes."
+                    "result": "Des comparaisons justes et défendables."
                   },
                   {
                     "id": "evoluer",
-                    "title": "Acte 3 · Raconter une évolution",
+                    "title": "Acte 3 · Modéliser",
                     "question": "Quelle base, quel coefficient ?",
                     "proof": "Écart, taux, coefficient, indice.",
-                    "result": "Des évolutions justes, même successives."
+                    "result": "Des évolutions justes, y compris successives et réciproques."
                   },
                   {
                     "id": "outiller",
-                    "title": "Acte 4 · Outiller",
+                    "title": "Acte 4 · Reproduire",
                     "question": "La feuille se contrôle-t-elle seule ?",
                     "proof": "Formules, références, contrôles, graphique.",
-                    "result": "Un classeur qu’un tiers peut refaire."
+                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
                   },
                   {
                     "id": "defendre",
-                    "title": "Acte 5 · Défendre",
+                    "title": "Acte 5 · Expliquer",
                     "question": "Quel mécanisme explique l’écart ?",
                     "proof": "Poids, répartition, preuve, limite.",
-                    "result": "Une recommandation argumentée."
+                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
                   },
                   {
                     "id": "transferer",
                     "title": "Acte 6 · Transférer",
                     "question": "Saurez-vous le refaire seul·e ?",
-                    "proof": "Mini-jeu, erreur d’IA corrigée, rappel.",
-                    "result": "Des réflexes durables."
+                    "proof": "Situation nouvelle, erreur d’IA corrigée, rappel adaptatif.",
+                    "result": "Des réflexes durables et une trace exploitable en CCF."
                   }
                 ]
               }
@@ -3706,14 +3716,14 @@
       {
         "id": "B2-01-A2-02-ORIGINE-AXE",
         "type": "fp-plot",
-        "titre": "Déplacez l’origine de l’axe",
+        "titre": "La diapositive de Samir — axe réglable",
         "duree": 2,
         "interactif": false,
         "donnees": {
           "definition": {
             "id": "b2-01-a2-origine-axe",
-            "titre": "Marge brute d’Atelier Rivage, 2022–2025 : déplacez l’origine et le haut de l’axe",
-            "source": "Données fictives Atelier Rivage",
+            "titre": "Diapositive de Samir : marge brute et axe réglable",
+            "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
               "libelle": "Année (0 = 2022, 3 = 2025)",
               "min": 0,
@@ -3750,7 +3760,7 @@
               "minParametre": "origine",
               "maxParametre": "maximum"
             },
-            "description": "Courbe de la marge brute de 2022 à 2025 ; deux curseurs règlent le bas et le haut de l’axe vertical ; au départ, l’axe va de 284 000 € à 292 000 €, comme sur la diapositive de Samir.",
+            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
@@ -4128,7 +4138,7 @@
                 "axisLabels": ["0 à 300 000 €"],
                 "unit": "€",
                 "formula": "Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021",
-                "reading": "La marge brute passe de 285 000 € à 291 000 € : +6 000 € en trois ans, soit +2,1 %. La progression est réelle mais faible, et elle ralentit chaque année.",
+                "reading": "La marge brute augmente sur la période. L’écart reste faible à l’échelle du graphique et le rythme annuel ralentit.",
                 "source": "Comptes de résultat 2022 à 2025 d’Atelier Rivage (données fictives).",
                 "description": "Diagramme en barres à partir de zéro : quatre barres presque égales, de 285 000 € en 2022 à 291 000 € en 2025."
               }
@@ -4663,7 +4673,7 @@
       {
         "id": "B2-01-A3-04-FIL-TECHNIQUE",
         "type": "fp-worked",
-        "titre": "Le fil technique : coefficients, base et TVA",
+        "titre": "Le fil technique : choisir l’opération inverse",
         "duree": 4,
         "interactif": true,
         "donnees": {
@@ -4718,7 +4728,7 @@
           },
           "etayage": 3
         },
-        "notes": "Action : étapes 1 à 3 commentées rapidement ; 4 à 6 rédigées (étayage 3) ; 4 minutes au total.\nObservé : ceux qui retirent 10 % de 13,75 € à l’étape 4 (12,375 €) et ceux qui retirent 20 % du TTC à l’étape 6 (2 880 €).\nAttendu : +1,2 % ; 12,65 € ; 12,50 € ; −9,1 % ; 3 000 € et −16,67 %.\nContrôle : 12,65 ÷ 12,50 = 1,012 ; 3 000 × 1,20 = 3 600.\nTransition : « À l’échelle de l’économie, le même calcul s’appelle l’inflation. »",
+        "notes": "Action : faire distinguer trois opérations inverses : retrouver une base, annuler une évolution, passer du TTC au HT ; les calculs sont ensuite contrôlés par retour au montant connu.\nObservé : ceux qui retirent 10 % de 13,75 € à l’étape 4 (12,375 €) et ceux qui retirent 20 % du TTC à l’étape 6 (2 880 €).\nAttendu : +1,2 % ; 12,65 € ; 12,50 € ; −9,1 % ; 3 000 € et −16,67 %.\nContrôle : 12,65 ÷ 12,50 = 1,012 ; 3 000 × 1,20 = 3 600.\nTransition : « Le niveau 2 consiste à choisir l’opération inverse et à prouver qu’elle fonctionne. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4783,7 +4793,7 @@
       {
         "id": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN",
         "type": "fp-worked",
-        "titre": "Le loyer de l’atelier : indice et taux moyen",
+        "titre": "Le loyer de l’atelier : lire un indice et un rythme",
         "duree": 5,
         "interactif": true,
         "donnees": {
@@ -4832,7 +4842,7 @@
           },
           "etayage": 3
         },
-        "notes": "Action : étapes 1 et 2 commentées ; 3 à 5 rédigées ; montrer la touche puissance de la calculatrice au vidéoprojecteur.\nObservé : ceux qui lisent 119,10 comme +119,10 %, et ceux qui divisent 19,10 par 3.\nAttendu : 106,00 ; 112,36 ; 119,10 ; +19,10 % ; 6,00 % par an ; 6,37 % faux.\nContrôle : 1,06³ = 1,191016 ; 1,0637³ ≈ 1,2035.\nTransition : « Atelier 2 : rythme, niveau, indice, avec les données de l’Insee. »",
+        "notes": "Action : étapes 1 et 2 commentées ; 3 à 5 rédigées ; distinguer explicitement le niveau atteint, le taux global et le rythme annuel moyen.\nObservé : ceux qui lisent 119,10 comme +119,10 %, et ceux qui divisent 19,10 par 3.\nAttendu : 106,00 ; 112,36 ; 119,10 ; +19,10 % ; 6,00 % par an ; 6,37 % faux.\nContrôle : 1,06³ = 1,191016 ; 1,0637³ ≈ 1,2035.\nTransition : « Atelier 2 : rythme, niveau, indice, avec les données de l’Insee. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5098,7 +5108,7 @@
       {
         "id": "B2-01-A3-08-INDICE-PRIX",
         "type": "fp-story",
-        "titre": "Indice des prix, base 100 en 2019",
+        "titre": "Extension : lire un indice de prix fourni",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -5132,11 +5142,11 @@
                 "axisRanges": [[95, 120]],
                 "axisLabels": ["95 à 120"],
                 "unit": "indice (base 100 en 2019)",
-                "formula": "Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97",
+                "formula": "Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97 ; ce calcul est une reconstitution pédagogique, pas la construction de l’IPC officiel.",
                 "reading": "Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation.",
-                "source": "Calcul du cours à partir des taux annuels moyens publiés par l’Insee (IPC, « L’essentiel sur… l’inflation », paru le 23 mars 2026). L’indice officiel, publié en base 100 = moyenne 2025 et rebasé à 100 en 2019, vaut 116,04 en 2025 : les taux publiés étant arrondis au dixième, l’indice reconstitué s’en écarte de quelques centièmes.",
+                "source": "Lecture d’un indice fourni et reconstitution pédagogique à partir de taux annuels moyens publiés par l’Insee. Le cours ne demande pas de construire un indice synthétique officiel.",
                 "kind": "line",
-                "description": "Courbe croissante de l’indice : 100 en 2019, 107,42 en 2022, 112,68 en 2023, 115,97 en 2025 ; axe gradué de 95 à 120."
+                "description": "Courbe croissante de l’indice : base 100 en 2019, niveau intermédiaire en 2022, niveau final supérieur à 115 en 2025 ; axe gradué de 95 à 120."
               }
             },
             "metadonnees": {
@@ -5148,7 +5158,7 @@
             }
           }
         },
-        "notes": "Action : superposer mentalement G2 et G3.\nObservé : des barres qui baissent, une courbe qui monte.\nAttendu : rythme ≠ niveau ; le mot « désinflation ».\nContrôle : 115,97 − 100 = 15,97 % ; l’indice officiel rebasé (116,04) correspond à un taux moyen de 2,51 %.\nTransition : « Répondez à Samir, qui veut baisser les tarifs. »",
+        "notes": "Action : superposer mentalement le rythme annuel et le niveau de l’indice.\nObservé : des barres qui baissent, une courbe qui monte.\nAttendu : rythme ≠ niveau ; le mot « désinflation ».\nContrôle : 115,97 − 100 = 15,97 % ; on lit un indice fourni ou reconstitué pour le cours, sans prétendre calculer un indice synthétique officiel.\nTransition : « Répondez à Samir, qui veut baisser les tarifs. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5811,7 +5821,7 @@
               "screenId": "B2-01-A4-04-CA-TRIMESTRIEL",
               "renderer": "chart",
               "props": {
-                "title": "CA HT 2025 d’Atelier Rivage par canal et par trimestre",
+                "title": "CA HT 2025 : choisir une représentation temporelle",
                 "caption": "Une courbe par canal : la forme suit la question (une évolution dans le temps)",
                 "labels": ["T1", "T2", "T3", "T4"],
                 "series": [
@@ -5837,7 +5847,7 @@
                 "reading": "La marketplace culmine au 3e trimestre (167 000 €) ; le sur-mesure recule de 120 000 € à 80 000 € entre le 1er et le 4e trimestre ; l’entretien reste entre 49 000 € et 62 000 €.",
                 "source": "Comptabilité analytique d’Atelier Rivage, 2025 (données fictives).",
                 "kind": "line",
-                "description": "Trois courbes étiquetées sur quatre trimestres : sur-mesure 120, 95, 102, 80 ; entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180."
+                "description": "Trois séries étiquetées sur quatre périodes : sur-mesure 120, 95, 102, 80 ; entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180."
               }
             },
             "metadonnees": {
@@ -6079,6 +6089,71 @@
         "corrigeEcran": null
       },
       {
+        "id": "B2-01-A5-03-MOYENNE-PONDEREE",
+        "type": "fp-worked",
+        "titre": "Prouver l’effet de répartition",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b2-01-a5-ponderee",
+            "enonce": "Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
+            "etapes": [
+              {
+                "id": "poids",
+                "intitule": "Poids des canaux",
+                "raisonnement": "Poids d’un canal = CA du canal ÷ CA total. 2024 : 529 ÷ 1 150 ; 230 ÷ 1 150 ; 391 ÷ 1 150. 2025 : 397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150.",
+                "invite": "Calculez les poids des deux années."
+              },
+              {
+                "id": "taux-2024",
+                "intitule": "Taux global 2024",
+                "raisonnement": "0,46 × 36 + 0,20 × 28 + 0,34 × 16 = 16,56 + 5,60 + 5,44 = 27,60 %.",
+                "invite": "Pondérez chaque taux par son poids."
+              },
+              {
+                "id": "taux-2025",
+                "intitule": "Taux global 2025",
+                "raisonnement": "0,345 × 36 + 0,20 × 28 + 0,455 × 16 = 12,42 + 5,60 + 7,28 = 25,30 %. Avec les poids exacts (397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150), on obtient 25,304 %, soit 291 000 ÷ 1 150 000.",
+                "invite": "Refaites le calcul avec les poids 2025."
+              },
+              {
+                "id": "moyenne-simple",
+                "intitule": "Pourquoi pas la moyenne simple ?",
+                "raisonnement": "(36 + 28 + 16) ÷ 3 ≈ 26,7 % : ce nombre ne correspond à aucune année, car il suppose trois canaux de même poids.",
+                "invite": "Expliquez pourquoi la moyenne simple ne convient pas."
+              },
+              {
+                "id": "effet",
+                "intitule": "Chiffrer l’effet de répartition",
+                "raisonnement": "Avec la répartition de 2024, le CA 2025 (1 150 000 €) aurait donné 27,6 % de marge, soit 317 400 €. La marge réelle est de 291 000 € : le changement de répartition « coûte » 26 400 € de marge.",
+                "invite": "Chiffrez l’effet du changement de répartition."
+              },
+              {
+                "id": "logique",
+                "intitule": "Réfuter une implication",
+                "raisonnement": "L’affirmation « si chaque canal garde son taux, alors le taux global est inchangé » est fausse : Atelier Rivage en est un contre-exemple. Sa négation s’écrit : « il existe une répartition du CA pour laquelle chaque canal garde son taux et le taux global change ».",
+                "invite": "Écrivez la négation de l’affirmation, puis le contre-exemple."
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["moyenne-ponderee"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 5,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 3
+        },
+        "notes": "Action : étapes 1 et 2 guidées, 3 à 6 rédigées.\nObservé : l’étape 5 (raisonnement contrefactuel) et l’étape 6 (négation d’un « si… alors »).\nAttendu : 27,60 % ; 25,30 % ; 317 400 € ; −26 400 € ; une négation de la forme « il existe… et… ».\nContrôle : effet volume (+27 600 €) + effet de répartition (−26 400 €) = +1 200 €.\nTransition : « Faites varier la part de la marketplace. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
         "id": "B2-01-A5-02-VOTE-PARADOXE",
         "type": "fp-vote",
         "titre": "Vote : le paradoxe du taux global",
@@ -6122,7 +6197,7 @@
             ]
           }
         },
-        "notes": "Action : vote 1 (2 min), débat (3 min) sur la consigne « prouvez-le avec deux canaux et des chiffres », vote 2 (2 min), révélation (1 min) avec la grille du débat.\nObservé : la part de « c’est une erreur » au vote 1 ; le vote 1 n’a été préparé par aucun écran (l’acte 4 a montré les trimestres, pas la répartition annuelle).\nAttendu : le poids de chaque canal dans le CA a changé ; au lycée, la part des candidats de MCO a augmenté.\nContrôle : un argument complet contient un mécanisme (poids) et un exemple chiffré.\nTransition : « Prouvons-le par le calcul. »",
+        "notes": "Action : vote 1 (2 min), débat (3 min) après la démonstration de la moyenne pondérée, vote 2 (2 min), révélation (1 min) avec la grille du débat.\nObservé : la part de « c’est une erreur » au vote 1 ; la démonstration précédente doit permettre de justifier le choix par un poids et un exemple chiffré.\nAttendu : le poids de chaque canal dans le CA a changé ; au lycée, la part des candidats de MCO a augmenté.\nContrôle : un argument complet contient un mécanisme (poids) et un exemple chiffré.\nTransition : « Maintenant que la méthode est posée, prouvons-le par le calcul. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -6202,71 +6277,6 @@
             "Au lycée, la part des candidats de MCO, moins souvent reçus, a augmenté."
           ]
         }
-      },
-      {
-        "id": "B2-01-A5-03-MOYENNE-PONDEREE",
-        "type": "fp-worked",
-        "titre": "Prouver l’effet de répartition",
-        "duree": 5,
-        "interactif": true,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a5-ponderee",
-            "enonce": "Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
-            "etapes": [
-              {
-                "id": "poids",
-                "intitule": "Poids des canaux",
-                "raisonnement": "Poids d’un canal = CA du canal ÷ CA total. 2024 : 46 %, 20 %, 34 %. 2025 : 34,5 %, 20 %, 45,5 %.",
-                "invite": "Calculez les poids des deux années."
-              },
-              {
-                "id": "taux-2024",
-                "intitule": "Taux global 2024",
-                "raisonnement": "0,46 × 36 + 0,20 × 28 + 0,34 × 16 = 16,56 + 5,60 + 5,44 = 27,60 %.",
-                "invite": "Pondérez chaque taux par son poids."
-              },
-              {
-                "id": "taux-2025",
-                "intitule": "Taux global 2025",
-                "raisonnement": "0,345 × 36 + 0,20 × 28 + 0,455 × 16 = 12,42 + 5,60 + 7,28 = 25,30 %. Avec les poids exacts (397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150), on obtient 25,304 %, soit 291 000 ÷ 1 150 000.",
-                "invite": "Refaites le calcul avec les poids 2025."
-              },
-              {
-                "id": "moyenne-simple",
-                "intitule": "Pourquoi pas la moyenne simple ?",
-                "raisonnement": "(36 + 28 + 16) ÷ 3 ≈ 26,7 % : ce nombre ne correspond à aucune année, car il suppose trois canaux de même poids.",
-                "invite": "Expliquez pourquoi la moyenne simple ne convient pas."
-              },
-              {
-                "id": "effet",
-                "intitule": "Chiffrer l’effet de répartition",
-                "raisonnement": "Avec la répartition de 2024, le CA 2025 (1 150 000 €) aurait donné 27,6 % de marge, soit 317 400 €. La marge réelle est de 291 000 € : le changement de répartition « coûte » 26 400 € de marge.",
-                "invite": "Chiffrez l’effet du changement de répartition."
-              },
-              {
-                "id": "logique",
-                "intitule": "Réfuter une implication",
-                "raisonnement": "L’affirmation « si chaque canal garde son taux, alors le taux global est inchangé » est fausse : Atelier Rivage en est un contre-exemple. Sa négation s’écrit : « il existe une répartition du CA pour laquelle chaque canal garde son taux et le taux global change ».",
-                "invite": "Écrivez la négation de l’affirmation, puis le contre-exemple."
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 3
-        },
-        "notes": "Action : étapes 1 et 2 guidées, 3 à 6 rédigées.\nObservé : l’étape 5 (raisonnement contrefactuel) et l’étape 6 (négation d’un « si… alors »).\nAttendu : 27,60 % ; 25,30 % ; 317 400 € ; −26 400 € ; une négation de la forme « il existe… et… ».\nContrôle : effet volume (+27 600 €) + effet de répartition (−26 400 €) = +1 200 €.\nTransition : « Faites varier la part de la marketplace. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
       },
       {
         "id": "B2-01-A5-04-SIMULATEUR-MIX",
@@ -6841,7 +6851,7 @@
           "probleme": {
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
-            "invite": "Rédigez six phrases : 1) le constat chiffré ; 2) le mécanisme qui l’explique ; 3) ce qui reste à prouver ; 4) la décision que vous proposez ; 5) la limite de votre analyse ; 6) les anomalies du dossier, classées de la plus importante à la moins importante pour la décision.",
+            "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet.",
             "strategies": [],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
@@ -6852,7 +6862,7 @@
             }
           }
         },
-        "notes": "Action : 4 min d’écriture, révélation, 2 min d’échange.\nObservé : les recommandations qui confondent taux et montant ; l’ordre des priorités.\nAttendu : la marketplace apporte +26 560 € de marge : l’arrêter serait une erreur ; il faut piloter la marge en euros ; la priorité va à l’effet qui pèse le plus sur la décision.\nContrôle : chaque phrase cite un chiffre ou une pièce.\nTransition : jalon 5, puis jeudi.",
+        "notes": "Action : 3 min d’écriture, révélation, 3 min d’échange ; la production attendue est courte mais doit articuler constat, mécanisme et décision.\nObservé : les recommandations qui confondent taux et montant ; l’ordre des priorités.\nAttendu : la marketplace apporte +26 560 € de marge : l’arrêter serait une erreur ; il faut piloter la marge en euros ; la priorité va à l’effet qui pèse le plus sur la décision.\nContrôle : chaque phrase cite un chiffre ou une pièce.\nTransition : jalon 5, puis jeudi.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -7753,7 +7763,7 @@
       {
         "id": "B2-01-A6-07-BOITE-A-OUTILS",
         "type": "fp-story",
-        "titre": "Votre boîte à outils",
+        "titre": "Ressources de transfert : BTS, bachelor, M1",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -7764,8 +7774,8 @@
               "screenId": "B2-01-A6-07-BOITE-A-OUTILS",
               "renderer": "grid",
               "props": {
-                "title": "Votre boîte à outils",
-                "subtitle": "Les gestes du tableur professionnel et les sources officielles de ce cours.",
+                "title": "Ressources de transfert : BTS, bachelor, M1",
+                "subtitle": "Le socle nécessaire pour le BTS, puis les ressources facultatives pour prolonger l’analyse.",
                 "items": [
                   {
                     "title": "Une ligne = une observation",
@@ -7843,6 +7853,16 @@
                     "description": "Le programme de mathématiques et l’épreuve E3.",
                     "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
                     "external": true
+                  },
+                  {
+                    "title": "Extension bachelor · volume / mix / taux",
+                    "description": "Décomposer un écart avant de recommander.",
+                    "back": "Séparer effet de volume, effet de structure et effet de taux ; cette lecture prolonge le simulateur de mix et reste facultative dans le socle BTS."
+                  },
+                  {
+                    "title": "Extension M1 · sensibilité et preuve",
+                    "description": "Tester une hypothèse sans la transformer en certitude.",
+                    "back": "Faire varier une hypothèse, documenter l’intervalle de résultat et distinguer scénario, corrélation et causalité. Cette extension n’est pas évaluée au BTS."
                   }
                 ]
               }
@@ -7994,7 +8014,7 @@
   },
   "catalogue": {
     "id": "b2-01-traitement-information-chiffree",
-    "titre": "Traitement de l’information chiffrée",
+    "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
     "duree": 210,
     "concepts": [
@@ -8039,8 +8059,8 @@
                 "title": "Lire un chiffre, ce n’est pas le croire",
                 "subtitle": "Atelier Rivage, voilerie de La Rochelle. Lundi, 9 h : le comité de direction se réunit jeudi. Votre mission : fiabiliser le tableau de bord 2025.",
                 "bullets": [
-                  "BTS Comptabilité et gestion · 1re année · module Traitement de l’information chiffrée",
-                  "3 h 30 · 6 actes · 2 tâches de tableur · 2 mini-jeux · 1 billet de sortie"
+                  "BTS Comptabilité et gestion · 2e année · premier cours de mathématiques",
+                  "3 h 30 · 6 actes · socle BTS 2 · extensions bachelor et M1 facultatives"
                 ],
                 "bgImage": "/assets/cours/b2-01/v3/playfair-ecosse-1786.webp",
                 "bgImageAlt": "Graphique en barres de William Playfair (1786) : exportations et importations de l’Écosse avec ses partenaires commerciaux sur une année"
@@ -8239,7 +8259,7 @@
       {
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
-        "titre": "Votre plan jusqu’à jeudi",
+        "titre": "Votre plan de reprise et de transfert",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -8250,50 +8270,50 @@
               "screenId": "B2-01-A1-07-PLAN",
               "renderer": "method-path",
               "props": {
-                "title": "Votre plan jusqu’à jeudi",
-                "subtitle": "Six gestes, six actes : chaque acte se termine par une preuve que vous savez faire.",
+                "title": "Votre plan de reprise et de transfert",
+                "subtitle": "Six gestes, six actes : on réactive les acquis, on les met sous contrôle, puis on les transfère à une décision de gestion.",
                 "steps": [
                   {
                     "id": "lire",
-                    "title": "Acte 1 · Lire",
+                    "title": "Acte 1 · Diagnostiquer",
                     "question": "Que mesure chaque chiffre ?",
                     "proof": "Unité, base, période, périmètre, source.",
-                    "result": "Un tableau de bord dont chaque ligne a un sens."
+                    "result": "Un diagnostic de niveau 2 et un tableau de bord qualifié."
                   },
                   {
                     "id": "comparer",
-                    "title": "Acte 2 · Comparer",
+                    "title": "Acte 2 · Auditer",
                     "question": "Compare-t-on la même chose ?",
                     "proof": "Population de référence, axe, ordre de grandeur.",
-                    "result": "Des comparaisons honnêtes."
+                    "result": "Des comparaisons justes et défendables."
                   },
                   {
                     "id": "evoluer",
-                    "title": "Acte 3 · Raconter une évolution",
+                    "title": "Acte 3 · Modéliser",
                     "question": "Quelle base, quel coefficient ?",
                     "proof": "Écart, taux, coefficient, indice.",
-                    "result": "Des évolutions justes, même successives."
+                    "result": "Des évolutions justes, y compris successives et réciproques."
                   },
                   {
                     "id": "outiller",
-                    "title": "Acte 4 · Outiller",
+                    "title": "Acte 4 · Reproduire",
                     "question": "La feuille se contrôle-t-elle seule ?",
                     "proof": "Formules, références, contrôles, graphique.",
-                    "result": "Un classeur qu’un tiers peut refaire."
+                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
                   },
                   {
                     "id": "defendre",
-                    "title": "Acte 5 · Défendre",
+                    "title": "Acte 5 · Expliquer",
                     "question": "Quel mécanisme explique l’écart ?",
                     "proof": "Poids, répartition, preuve, limite.",
-                    "result": "Une recommandation argumentée."
+                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
                   },
                   {
                     "id": "transferer",
                     "title": "Acte 6 · Transférer",
                     "question": "Saurez-vous le refaire seul·e ?",
-                    "proof": "Mini-jeu, erreur d’IA corrigée, rappel.",
-                    "result": "Des réflexes durables."
+                    "proof": "Situation nouvelle, erreur d’IA corrigée, rappel adaptatif.",
+                    "result": "Des réflexes durables et une trace exploitable en CCF."
                   }
                 ]
               }
@@ -8418,14 +8438,14 @@
       {
         "id": "B2-01-A2-02-ORIGINE-AXE",
         "type": "fp-plot",
-        "titre": "Déplacez l’origine de l’axe",
+        "titre": "La diapositive de Samir — axe réglable",
         "duree": 2,
         "interactif": false,
         "donnees": {
           "definition": {
             "id": "b2-01-a2-origine-axe",
-            "titre": "Marge brute d’Atelier Rivage, 2022–2025 : déplacez l’origine et le haut de l’axe",
-            "source": "Données fictives Atelier Rivage",
+            "titre": "Diapositive de Samir : marge brute et axe réglable",
+            "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
               "libelle": "Année (0 = 2022, 3 = 2025)",
               "min": 0,
@@ -8462,7 +8482,7 @@
               "minParametre": "origine",
               "maxParametre": "maximum"
             },
-            "description": "Courbe de la marge brute de 2022 à 2025 ; deux curseurs règlent le bas et le haut de l’axe vertical ; au départ, l’axe va de 284 000 € à 292 000 €, comme sur la diapositive de Samir.",
+            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
@@ -8548,7 +8568,7 @@
       {
         "id": "B2-01-A3-04-FIL-TECHNIQUE",
         "type": "ecran-verrouille",
-        "titre": "Le fil technique : coefficients, base et TVA",
+        "titre": "Le fil technique : choisir l’opération inverse",
         "duree": 4,
         "interactif": false,
         "donnees": {}
@@ -8605,7 +8625,7 @@
       {
         "id": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN",
         "type": "ecran-verrouille",
-        "titre": "Le loyer de l’atelier : indice et taux moyen",
+        "titre": "Le loyer de l’atelier : lire un indice et un rythme",
         "duree": 5,
         "interactif": false,
         "donnees": {}
@@ -8621,7 +8641,7 @@
       {
         "id": "B2-01-A3-08-INDICE-PRIX",
         "type": "ecran-verrouille",
-        "titre": "Indice des prix, base 100 en 2019",
+        "titre": "Extension : lire un indice de prix fourni",
         "duree": 2,
         "interactif": false,
         "donnees": {}
@@ -8761,18 +8781,18 @@
         }
       },
       {
-        "id": "B2-01-A5-02-VOTE-PARADOXE",
-        "type": "ecran-verrouille",
-        "titre": "Vote : le paradoxe du taux global",
-        "duree": 8,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
         "id": "B2-01-A5-03-MOYENNE-PONDEREE",
         "type": "ecran-verrouille",
         "titre": "Prouver l’effet de répartition",
         "duree": 5,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B2-01-A5-02-VOTE-PARADOXE",
+        "type": "ecran-verrouille",
+        "titre": "Vote : le paradoxe du taux global",
+        "duree": 8,
         "interactif": false,
         "donnees": {}
       },
@@ -8925,7 +8945,7 @@
       {
         "id": "B2-01-A6-07-BOITE-A-OUTILS",
         "type": "fp-story",
-        "titre": "Votre boîte à outils",
+        "titre": "Ressources de transfert : BTS, bachelor, M1",
         "duree": 2,
         "interactif": false,
         "donnees": {
@@ -8936,8 +8956,8 @@
               "screenId": "B2-01-A6-07-BOITE-A-OUTILS",
               "renderer": "grid",
               "props": {
-                "title": "Votre boîte à outils",
-                "subtitle": "Les gestes du tableur professionnel et les sources officielles de ce cours.",
+                "title": "Ressources de transfert : BTS, bachelor, M1",
+                "subtitle": "Le socle nécessaire pour le BTS, puis les ressources facultatives pour prolonger l’analyse.",
                 "items": [
                   {
                     "title": "Une ligne = une observation",
@@ -9015,6 +9035,16 @@
                     "description": "Le programme de mathématiques et l’épreuve E3.",
                     "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
                     "external": true
+                  },
+                  {
+                    "title": "Extension bachelor · volume / mix / taux",
+                    "description": "Décomposer un écart avant de recommander.",
+                    "back": "Séparer effet de volume, effet de structure et effet de taux ; cette lecture prolonge le simulateur de mix et reste facultative dans le socle BTS."
+                  },
+                  {
+                    "title": "Extension M1 · sensibilité et preuve",
+                    "description": "Tester une hypothèse sans la transformer en certitude.",
+                    "back": "Faire varier une hypothèse, documenter l’intervalle de résultat et distinguer scénario, corrélation et causalité. Cette extension n’est pas évaluée au BTS."
                   }
                 ]
               }

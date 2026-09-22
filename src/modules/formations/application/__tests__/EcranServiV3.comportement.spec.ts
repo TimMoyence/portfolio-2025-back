@@ -1,4 +1,4 @@
-import { B2_COURS_V3 } from '../../../../migrations/data/b2-v3.cours';
+import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
 import {
   activitesLibres,
   assertEcranServi,
@@ -9,7 +9,7 @@ import type { DiffusionDeSeance } from '../../domain/cours/EcranServi';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { EcranNonServiError } from '../../domain/errors/FormationErrors';
 
-const COURS = lireCoursStocke(B2_COURS_V3);
+const COURS = lireCoursStocke(B2_COURS);
 const TOTAL = COURS.ecrans.length;
 
 function seancePilotee(ecranCourant: number): DiffusionDeSeance {

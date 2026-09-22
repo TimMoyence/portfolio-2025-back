@@ -7,7 +7,7 @@ import { lireCoursStocke } from '../../modules/formations/domain/cours/CoursStoc
 import { deroulePresentateur } from '../../modules/formations/domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../modules/formations/domain/cours/Diffusion';
 import { tirer } from '../../modules/formations/domain/cours/Tirage';
-import { B2_COURS_V3 } from './b2-v3.cours';
+import { B2_COURS } from './b2-v3.cours';
 
 interface InstantaneV3 {
   readonly version: number;
@@ -25,14 +25,14 @@ const CHEMIN = join(
 const GRAINE_DE_REFERENCE = 0;
 
 function construire(): InstantaneV3 {
-  const cours = lireCoursStocke(B2_COURS_V3);
+  const cours = lireCoursStocke(B2_COURS);
   const projection = {
     sujet: tirer(cours, GRAINE_DE_REFERENCE).sujet,
     deroule: deroulePresentateur(cours, GRAINE_DE_REFERENCE),
     catalogue: projeterCatalogue(cours),
   };
   return {
-    version: B2_COURS_V3.version,
+    version: B2_COURS.version,
     graine: GRAINE_DE_REFERENCE,
     empreinte: empreinte(projection),
     ...projection,
@@ -62,7 +62,7 @@ describe('instantané V3 livré au front', () => {
   it('porte les 52 écrans du sujet, du déroulé et du catalogue', () => {
     const livre = lire();
 
-    expect(livre.version).toBe(3);
+    expect(livre.version).toBe(1);
     expect(livre.sujet.ecrans).toHaveLength(52);
     expect(livre.deroule.ecrans).toHaveLength(52);
     expect(

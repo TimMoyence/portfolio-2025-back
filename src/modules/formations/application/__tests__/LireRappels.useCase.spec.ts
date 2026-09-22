@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { B2_COURS_V3 } from '../../../../migrations/data/b2-v3.cours';
+import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
 import { creerCatalogueAVersions } from '../../../../../test/factories/cours.factory';
 import {
   buildMasteryRecord,
@@ -19,7 +19,7 @@ import {
 } from '../../domain/errors/FormationErrors';
 import { LireRappelsUseCase } from '../LireRappels.useCase';
 
-const COURS = lireCoursStocke(B2_COURS_V3);
+const COURS = lireCoursStocke(B2_COURS);
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
 const OBLIGATOIRES = ['b2-01-r-compensation', 'b2-01-r-multiple-neuf'];
 

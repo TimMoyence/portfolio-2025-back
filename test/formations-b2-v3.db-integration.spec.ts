@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { InsertB2CoursV31789893879954 } from '../src/migrations/1789893879954-InsertB2CoursV3';
-import { B2_COURS_V3 } from '../src/migrations/data/b2-v3.cours';
+import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import type { Cours } from '../src/modules/formations/domain/contrats/cours';
 import type {
   CorrigeFeuille,
@@ -54,19 +54,20 @@ describeDb('contenu V3 du B2-01 en base', () => {
               COUNT("ecran"."id")::int AS "ecrans"
        FROM "formation_course_contents" AS "cours"
        LEFT JOIN "formation_screen_contents" AS "ecran" ON "ecran"."course_id" = "cours"."id"
-       WHERE "cours"."slug" = $1 AND "cours"."version" = 3`,
-      [B2_COURS_V3.slug],
+       WHERE "cours"."slug" = $1 AND "cours"."version" = $2`,
+      [B2_COURS.slug, B2_COURS.version],
     );
     return { cours: nombreDeCours, ecrans };
   };
 
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
-    const lu = await contexte.catalogue.trouver(B2_COURS_V3.slug, 3);
+    const lu = await contexte.catalogue.trouver(
+      B2_COURS.slug,
+      B2_COURS.version,
+    );
     if (lu === null) {
-      throw new Error(
-        'la migration InsertB2CoursV3 n’a pas posé la version 3 du B2-01',
-      );
+      throw new Error('la migration de référence n’a pas posé le B2-01');
     }
     cours = lu;
   }, DELAI_OUVERTURE_CONTEXTE_MS);
@@ -83,8 +84,8 @@ describeDb('contenu V3 du B2-01 en base', () => {
   });
 
   it('relit les 38 remédiations et les 5 médias persistés en jsonb', () => {
-    expect(cours.remediations).toEqual(B2_COURS_V3.remediations);
-    expect(cours.medias).toEqual(B2_COURS_V3.medias);
+    expect(cours.remediations).toEqual(B2_COURS.remediations);
+    expect(cours.medias).toEqual(B2_COURS.medias);
   });
 
   it('ne lève aucune violation de structure sur le cours relu de la base', () => {
@@ -182,8 +183,8 @@ describeDb('contenu V3 du B2-01 en base', () => {
 
   it('refuse en base une diffusion hors catalogue et séance', async () => {
     const [{ id }]: { id: string }[] = await contexte.dataSource.query(
-      `SELECT "id" FROM "formation_course_contents" WHERE "slug" = $1 AND "version" = 3`,
-      [B2_COURS_V3.slug],
+      `SELECT "id" FROM "formation_course_contents" WHERE "slug" = $1 AND "version" = $2`,
+      [B2_COURS.slug, B2_COURS.version],
     );
 
     await expect(
@@ -209,8 +210,8 @@ describeDb('contenu V3 du B2-01 en base', () => {
 
   it('refuse le retour arrière tant qu’une séance sert la version 3', async () => {
     const seance = await contexte.sessions.create({
-      courseSlug: B2_COURS_V3.slug,
-      courseVersion: 3,
+      courseSlug: B2_COURS.slug,
+      courseVersion: B2_COURS.version,
       teacherId: FORMATEUR,
       code: '4821',
       bareme: buildBareme(),

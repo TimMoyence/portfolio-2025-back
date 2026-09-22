@@ -1,21 +1,21 @@
-# B2-01 · Traitement de l’information chiffrée — conception finale (V3)
+# B2-01 · Lire, contrôler et décider avec l’information chiffrée — conception de référence
 
-> Cahier des charges figé du cours B2-01 : fusion du deck en production (72 écrans « v2 ») et du
-> brief V2 (fil rouge « Atelier Rivage »), après intégration de la relecture pédagogique et
+> Cahier des charges de référence du cours B2-01 : fusion du deck existant et du fil rouge
+> « Atelier Rivage », recadrés pour le premier cours de mathématiques de BTS CG 2, après intégration de la relecture pédagogique et
 > mathématique (51 constats) et de la relecture technique (43 constats). Ce document ne contient
 > aucun code exécutable : il fixe les contenus, les données, les contrats (§ 9), le plan de lots
 > et les critères de sortie (§ 7 et § 10). Toute divergence d’implémentation est un défaut de
 > l’implémentation, pas une liberté.
 
-| Rubrique    | Valeur                                                                                                                                                                                              |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Date        | 19 septembre 2026                                                                                                                                                                                   |
-| Statut      | **Figé** : version finale, les deux relectures sont intégrées (traçabilité en annexe C)                                                                                                             |
-| Cours       | `b2-01-traitement-information-chiffree`, **version 3**, insérée non publiée puis publiée par bascule réversible (§ 9.10, R15) ; les versions 1 et 2 restent servies aux séances qui les référencent |
-| Titre servi | « Traitement de l’information chiffrée »                                                                                                                                                            |
-| Durée       | **210 minutes exactes** (somme des écrans), 6 actes aux durées du brief (30, 36, 36, 38, 42, 28), plus une pause de 15 minutes hors durée                                                           |
-| Écrans      | **52** (option A de la relecture pédagogique : budget rééquilibré acte par acte, § 2.5)                                                                                                             |
-| Remplace    | `docs/formation-b2-01-brief-v2.md` (V2) ; le deck `src/migrations/data/b2-visual.snapshot.ts` (v2 servie) ; la conception V3 à 49 écrans                                                            |
+| Rubrique    | Valeur                                                                                                                                    |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Date        | 19 septembre 2026                                                                                                                         |
+| Statut      | **Référence pédagogique** : socle BTS CG 2, extensions bachelor/M1 facultatives, contenu remplaçable avant le prochain cours              |
+| Cours       | `b2-01-traitement-information-chiffree`, contenu unique du cours ; la migration de travail remplace les données existantes                |
+| Titre servi | « Lire, contrôler et décider avec l’information chiffrée »                                                                                |
+| Durée       | **210 minutes exactes** (somme des écrans), 6 actes aux durées du brief (30, 36, 36, 38, 42, 28), plus une pause de 15 minutes hors durée |
+| Écrans      | **52** (option A de la relecture pédagogique : budget rééquilibré acte par acte, § 2.5)                                                   |
+| Remplace    | `docs/formation-b2-01-brief.md` et les textes précédents du cours ; cette fiche devient la source de vérité pédagogique                   |
 
 Code lu pour figer les contrats (lecture seule, branche `fix/cours-qa-prod` des deux dépôts) : back
 `Cours.ts`, `CoursStocke.ts`, `CoursPublic.ts`, `Tirage.ts`, `DeroulePresentateur.ts`,
@@ -85,10 +85,25 @@ Code lu pour figer les contrats (lecture seule, branche `fix/cours-qa-prod` des 
     marge commerciale ; la marge d’Atelier Rivage (CA HT − coûts directs) est une marge sur coûts
     directs, appelée « marge brute » dans le cours, et le « taux de marge brute (sur CA HT) » est
     défini explicitement dès la fiche A1-06.
-12. **`verifierStructure` est restauré et adapté** (§ 2.6) : la V3 ne lève aucune violation, sans
+12. **`verifierStructure` est restauré et adapté** (§ 2.6) : le cours de référence ne lève aucune violation, sans
     dérogation ; la vérification est rejouée par le script de l’annexe E.
-13. **Publication réversible** : la V3 est insérée non publiée, testée en préproduction, puis
-    publiée par une bascule que l’administrateur peut annuler (§ 10.1, lot 6).
+13. **Remplacement explicite** : la migration supprime le contenu B2-01 existant, insère le cours
+    de référence en version technique 1 et le publie immédiatement pour le cours du lundi.
+
+### 0.1 Recadrage BTS CG 2 appliqué au contenu servi
+
+Le cours est le premier cours de mathématiques de deuxième année. Les formulations suivantes sont
+contractuelles et doivent rester synchronisées avec la source de données :
+
+- Transition diagnostic : « Cette question — quelle est la base ? — revient dans toutes les analyses de deuxième année. Voici l’entreprise pour laquelle vous travaillez. »
+- Bandeau : « BTS Comptabilité et gestion · 2e année · premier cours de mathématiques » ; « 3 h 30 · 6 actes · socle BTS 2 · extensions bachelor et M1 facultatives ».
+- Parcours : « Votre plan de reprise et de transfert » ; « Six gestes, six actes : on réactive les acquis, on les met sous contrôle, puis on les transfère à une décision de gestion. »
+- Résultats attendus : « Un diagnostic de niveau 2 et un tableau de bord qualifié. » ; « Des comparaisons justes et défendables. » ; « Des évolutions justes, y compris successives et réciproques. » ; « Un classeur contrôlable qu’un tiers peut reproduire. » ; « Une recommandation fondée sur les poids, les scénarios et les limites. » ; « Situation nouvelle, erreur d’IA corrigée, rappel adaptatif. » ; « Des réflexes durables et une trace exploitable en CCF. »
+- Opération inverse : « Le fil technique : choisir l’opération inverse » ; « faire distinguer trois opérations inverses : retrouver une base, annuler une évolution, passer du TTC au HT ; les calculs sont ensuite contrôlés par retour au montant connu. » ; « Le niveau 2 consiste à choisir l’opération inverse et à prouver qu’elle fonctionne. »
+- Indice : « Le loyer de l’atelier : lire un indice et un rythme » ; « étapes 1 et 2 commentées ; 3 à 5 rédigées ; distinguer explicitement le niveau atteint, le taux global et le rythme annuel moyen. » ; « Extension : lire un indice de prix fourni » ; « superposer mentalement le rythme annuel et le niveau de l’indice. » ; « 115,97 − 100 = 15,97 % ; on lit un indice fourni ou reconstitué pour le cours, sans prétendre calculer un indice synthétique officiel. » ; « Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97 ; ce calcul est une reconstitution pédagogique, pas la construction de l’IPC officiel. » ; « Lecture d’un indice fourni et reconstitution pédagogique à partir de taux annuels moyens publiés par l’Insee. Le cours ne demande pas de construire un indice synthétique officiel. »
+- Moyenne pondérée : « vote 1 (2 min), débat (3 min) après la démonstration de la moyenne pondérée, vote 2 (2 min), révélation (1 min) avec la grille du débat. » ; « la part de « c’est une erreur » au vote 1 ; la démonstration précédente doit permettre de justifier le choix par un poids et un exemple chiffré. » ; « Maintenant que la méthode est posée, prouvons-le par le calcul. »
+- Production finale : « 3 min d’écriture, révélation, 3 min d’échange ; la production attendue est courte mais doit articuler constat, mécanisme et décision. » ; « Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet. »
+- Ressources : « Ressources de transfert : BTS, bachelor, M1 » ; « Le socle nécessaire pour le BTS, puis les ressources facultatives pour prolonger l’analyse. » ; « Extension bachelor · volume / mix / taux » ; « Décomposer un écart avant de recommander. » ; « Séparer effet de volume, effet de structure et effet de taux ; cette lecture prolonge le simulateur de mix et reste facultative dans le socle BTS. » ; « Extension M1 · sensibilité et preuve » ; « Tester une hypothèse sans la transformer en certitude. » ; « Faire varier une hypothèse, documenter l’intervalle de résultat et distinguer scénario, corrélation et causalité. Cette extension n’est pas évaluée au BTS. »
 
 ---
 
@@ -139,9 +154,9 @@ complète d’un TCD sur un fichier professionnel est approfondie par B2-03, les
 
 ### 1.3 Public et conditions
 
-- **Public** : étudiants de BTS Comptabilité et gestion, **première année**, premier trimestre (le
-  module est évalué en CCF 1, avant la fin de la première année). Le deck actuel indique « Deuxième
-  année » : c’est corrigé. Le cours convient aussi à un public en reconversion vers la gestion.
+- **Public** : étudiants de BTS Comptabilité et gestion, **deuxième année**, premier cours de la
+  progression de mathématiques. Le cours réactive les acquis de première année, exige davantage de
+  justification et ouvre vers le bachelor puis le M1 sans rendre ces extensions obligatoires.
 - **Prérequis** : pourcentages du lycée (appliquer un taux, calculer une part). Le rappel d’ouverture
   A1-01 les diagnostique.
 - **Effectif** : 12 à 35 étudiants (capacité de séance réglée à l’ouverture, 40 par défaut, 60 au
@@ -163,15 +178,15 @@ complète d’un TCD sur un fichier professionnel est approfondie par B2-03, les
 
 ### 2.1 Les six actes
 
-| Acte | Titre                              | Minutes | Écrans | Preuve attendue (brief V2)                                 | Où la preuve est recueillie                                   |
-| ---: | ---------------------------------- | ------: | -----: | ---------------------------------------------------------- | ------------------------------------------------------------- |
-|    1 | Le chiffre qui déclenche l’alerte  |      30 |     11 | identifier partie, total, unité et question de gestion     | tri A1-05 (noté), question de gestion A1-08, audit A1-10      |
-|    2 | Comparer sans tromper              |      36 |      8 | proportion, pourcentage, base commune et ordre de grandeur | atelier 1 A2-03 (6 questions notées), mini-jeu A2-07          |
-|    3 | Raconter une évolution             |      36 |     10 | écart, taux, coefficient et interprétation                 | votes A3-01, atelier 2 A3-07, note A3-09                      |
-|    4 | Construire une feuille contrôlable |      38 |      6 | formule, contrôles et graphique lisible                    | feuille A4-02, atelier 3 A4-03, tableau A4-05                 |
-|    5 | Défendre une décision au comité    |      42 |      9 | dossier complet avec comparaison et recommandation         | votes A5-02, atelier 4 A5-06, tri A5-07, recommandation A5-08 |
-|    6 | Transférer et vérifier             |      28 |      8 | résolution autonome, correction d’une erreur et bilan      | coffre A6-02, défi IA A6-04, rappel A6-05, billet A6-08       |
-|      | **Total**                          | **210** | **52** |                                                            |                                                               |
+| Acte | Titre                      | Minutes | Écrans | Preuve attendue (brief V2)                                 | Où la preuve est recueillie                                   |
+| ---: | -------------------------- | ------: | -----: | ---------------------------------------------------------- | ------------------------------------------------------------- |
+|    1 | Diagnostiquer le chiffre   |      30 |     11 | identifier partie, total, unité et question de gestion     | tri A1-05 (noté), question de gestion A1-08, audit A1-10      |
+|    2 | Auditer une comparaison    |      36 |      8 | proportion, pourcentage, base commune et ordre de grandeur | atelier 1 A2-03 (6 questions notées), mini-jeu A2-07          |
+|    3 | Modéliser une évolution    |      36 |     10 | écart, taux, coefficient et interprétation                 | votes A3-01, atelier 2 A3-07, note A3-09                      |
+|    4 | Reproduire avec le tableur |      38 |      6 | formule, contrôles et graphique lisible                    | feuille A4-02, atelier 3 A4-03, tableau A4-05                 |
+|    5 | Expliquer une décision     |      42 |      9 | dossier complet avec comparaison et recommandation         | votes A5-02, atelier 4 A5-06, tri A5-07, recommandation A5-08 |
+|    6 | Transférer et vérifier     |      28 |      8 | résolution autonome, correction d’une erreur et bilan      | coffre A6-02, défi IA A6-04, rappel A6-05, billet A6-08       |
+|      | **Total**                  | **210** | **52** |                                                            |                                                               |
 
 ### 2.2 Le fil rouge « Atelier Rivage »
 
@@ -376,8 +391,8 @@ deck, **C** = conservé sur le fond (texte adapté au fil rouge).
 |   34 | B2-01-A4-05-INDICE-TOILE          |  11 | `fp-table-build` (tableur 2)  |  I  |   0 | seance    | N                              |
 |   35 | B2-01-A4-06-JALON-4               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
 |   36 | B2-01-A5-01-NIGHTINGALE           |   1 | `fp-story` · v2 `image-right` |     |   0 | catalogue | M (S36)                        |
-|   37 | B2-01-A5-02-VOTE-PARADOXE         |   8 | `fp-vote` (pairs)             |  I  |   2 | seance    | M (S38, S46 à S49)             |
-|   38 | B2-01-A5-03-MOYENNE-PONDEREE      |   5 | `fp-worked`                   |  I  |   0 | seance    | M (S39, S40, S42)              |
+|   37 | B2-01-A5-03-MOYENNE-PONDEREE      |   5 | `fp-worked`                   |  I  |   0 | seance    | M (S39, S40, S42)              |
+|   38 | B2-01-A5-02-VOTE-PARADOXE         |   8 | `fp-vote` (pairs)             |  I  |   2 | seance    | M (S38, S46 à S49)             |
 |   39 | B2-01-A5-04-SIMULATEUR-MIX        |   2 | `fp-plot`                     |     |   0 | seance    | M (S41)                        |
 |   40 | B2-01-A5-05-TCD                   |   2 | `fp-story` · v2 `table`       |     |   0 | seance    | N (N3, reprend S68)            |
 |   41 | B2-01-A5-06-ATELIER-4             |   9 | `questionnaire`               |  I  |   5 | seance    | N (reprend S35, S42 à S44)     |
@@ -425,8 +440,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Attendu : (100 − 80) / 80 = 0,25, soit +25 % ; le dénominateur est la valeur de départ.
   - Contrôle : 80 × 1,25 = 100. Si plus de 30 % de « +20 % », le noter : la question 5 de l’atelier 2
     (A3-07) repose la situation à l’envers, et l’atelier 1 (Q6) la retrouve dans le taux de marge.
-  - Transition : « Cette question — quelle est la base ? — va vous suivre toute la journée. Voici
-    l’entreprise pour laquelle vous travaillez. »
+  - Transition : « Cette question — quelle est la base ? — revient dans toutes les analyses de
+    deuxième année. Voici l’entreprise pour laquelle vous travaillez. »
 
 #### A1-02 · `B2-01-A1-02-ACCROCHE` — 1 min · v2 `hero` · catalogue · Modifié (S01)
 
@@ -575,19 +590,19 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 
 - **Intention** : organiser la séance (organisateur préalable) ; chaque étape = un acte.
 - **Contenu (public)** :
-  - Titre public : « Votre plan jusqu’à jeudi »
-  - `title` « Votre plan jusqu’à jeudi » ; `subtitle` « Six gestes, six actes : chaque acte se termine
-    par une preuve que vous savez faire. »
+  - Titre public : « Votre plan de reprise et de transfert »
+  - `title` « Votre plan de reprise et de transfert » ; `subtitle` « Six gestes, six actes : on réactive
+    les acquis, on les met sous contrôle, puis on les transfère à une décision de gestion. »
   - `steps` :
 
-    | id         | title                           | question                              | proof                                            | result                                          |
-    | ---------- | ------------------------------- | ------------------------------------- | ------------------------------------------------ | ----------------------------------------------- |
-    | lire       | Acte 1 · Lire                   | Que mesure chaque chiffre ?           | Unité, base, période, périmètre, source.         | Un tableau de bord dont chaque ligne a un sens. |
-    | comparer   | Acte 2 · Comparer               | Compare-t-on la même chose ?          | Population de référence, axe, ordre de grandeur. | Des comparaisons honnêtes.                      |
-    | evoluer    | Acte 3 · Raconter une évolution | Quelle base, quel coefficient ?       | Écart, taux, coefficient, indice.                | Des évolutions justes, même successives.        |
-    | outiller   | Acte 4 · Outiller               | La feuille se contrôle-t-elle seule ? | Formules, références, contrôles, graphique.      | Un classeur qu’un tiers peut refaire.           |
-    | defendre   | Acte 5 · Défendre               | Quel mécanisme explique l’écart ?     | Poids, répartition, preuve, limite.              | Une recommandation argumentée.                  |
-    | transferer | Acte 6 · Transférer             | Saurez-vous le refaire seul·e ?       | Mini-jeu, erreur d’IA corrigée, rappel.          | Des réflexes durables.                          |
+    | id            | title                  | question                              | proof                                                       | result                                                                 |
+    | ------------- | ---------------------- | ------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
+    | diagnostiquer | Acte 1 · Diagnostiquer | Que mesure chaque chiffre ?           | Unité, base, période, périmètre, source.                    | Un diagnostic de niveau 2 et un tableau de bord qualifié.              |
+    | auditer       | Acte 2 · Auditer       | Compare-t-on la même chose ?          | Population de référence, axe, ordre de grandeur.            | Des comparaisons justes et défendables.                                |
+    | modeliser     | Acte 3 · Modéliser     | Quelle base, quel coefficient ?       | Écart, taux, coefficient, indice.                           | Des évolutions justes, y compris successives et réciproques.           |
+    | reproduire    | Acte 4 · Reproduire    | La feuille se contrôle-t-elle seule ? | Formules, références, contrôles, graphique.                 | Un classeur contrôlable qu’un tiers peut reproduire.                   |
+    | expliquer     | Acte 5 · Expliquer     | Quel mécanisme explique l’écart ?     | Poids, répartition, preuve, limite.                         | Une recommandation fondée sur les poids, les scénarios et les limites. |
+    | transferer    | Acte 6 · Transférer    | Saurez-vous le refaire seul·e ?       | Situation nouvelle, erreur d’IA corrigée, rappel adaptatif. | Des réflexes durables et une trace exploitable en CCF.                 |
 
 - **Notes** :
   - Action : parcourir les six étapes en 90 secondes.
@@ -723,18 +738,17 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 #### A2-02 · `B2-01-A2-02-ORIGINE-AXE` — 2 min · `fp-plot` · catalogue · Modifié (S04, S32)
 
 - **Contenu (public)** :
-  - Titre public : « Déplacez l’origine de l’axe »
-  - `definition` : `id` `b2-01-a2-origine-axe` ; `titre` « Marge brute d’Atelier Rivage, 2022–2025 :
-    déplacez l’origine et le haut de l’axe » ; `source` « Données fictives Atelier Rivage » ;
+  - Titre public : « La diapositive de Samir — axe réglable »
+  - `definition` : `id` `b2-01-a2-origine-axe` ; `titre` « Diapositive de Samir : marge brute et axe
+    réglable » ; `source` « Service commercial d’Atelier Rivage (données fictives). » ;
     `abscisse` { libelle « Année (0 = 2022, 3 = 2025) », min 0, max 3 } ; `ordonnee` « Marge brute
     (€) » ; `bornesOrdonnee` { minParametre « origine », maxParametre « maximum » } ; `parametres`
     [{ cle « origine », libelle « Origine de l’axe vertical (€) », min 0, max 284000, pas 4000,
     defaut 284000 }, { cle « maximum », libelle « Haut de l’axe vertical (€) », min 292000, max 600000,
     pas 4000, defaut 292000 }] ; `series` [{ id « marge », libelle « Marge brute », trait « plein »,
     calcul `SI(x<=1;285000+3000*x;SI(x<=2;288000+1800*(x-1);289800+1200*(x-2)))` }]
-  - `description` « Courbe de la marge brute de 2022 à 2025 ; deux curseurs règlent le bas et le haut de
-    l’axe vertical ; au départ, l’axe va de 284 000 € à 292 000 €, comme sur la diapositive de
-    Samir. »
+  - `description` « Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la
+    lecture, sans changer les valeurs. »
 - **Notes** :
   - Action : chaque étudiant fait glisser l’origine de 284 000 € à 0 €, puis le haut de l’axe de
     292 000 € à 600 000 €.
@@ -791,8 +805,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     288000, 289800, 291000], tone teal }] ; `axisRanges` [[0, 300000]] ; `axisLabels` [« 0 à
     300 000 € »] ; `unit` « € »
   - `formula` « Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021 »
-  - `reading` « La marge brute passe de 285 000 € à 291 000 € : +6 000 € en trois ans, soit +2,1 %. La
-    progression est réelle mais faible, et elle ralentit chaque année. »
+  - `reading` « La marge brute augmente sur la période. L’écart reste faible à l’échelle du graphique et le
+    rythme annuel ralentit. »
   - `source` « Comptes de résultat 2022 à 2025 d’Atelier Rivage (données fictives). »
   - `description` « Diagramme en barres à partir de zéro : quatre barres presque égales, de 285 000 € en
     2022 à 291 000 € en 2025. »
@@ -984,7 +998,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 
 - **Concept · modalité** : `evolutions-successives` · solo.
 - **Contenu (public)** :
-  - Titre public : « Le fil technique : coefficients, base et TVA »
+  - Titre public : « Le fil technique : choisir l’opération inverse »
   - `exemple` : `id` `b2-01-a3-fil` ; `enonce` « Atelier Rivage achète son fil technique 12,50 € HT la
     bobine. Le fournisseur annonce +10 % au 1er avril, puis −8 % au 1er octobre. Le service
     commercial écrit : « au final, +2 % ». » ; `etayage` initial 3.
@@ -1009,12 +1023,13 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Interaction et correction** : étayage dégressif piloté ; une réponse libre par étape rédigée,
   non notée.
 - **Notes** :
-  - Action : étapes 1 à 3 commentées rapidement ; 4 à 6 rédigées (étayage 3) ; 4 minutes au total.
+  - Action : faire distinguer trois opérations inverses : retrouver une base, annuler une évolution,
+    passer du TTC au HT ; les calculs sont ensuite contrôlés par retour au montant connu.
   - Observé : ceux qui retirent 10 % de 13,75 € à l’étape 4 (12,375 €) et ceux qui retirent 20 % du TTC
     à l’étape 6 (2 880 €).
   - Attendu : +1,2 % ; 12,65 € ; 12,50 € ; −9,1 % ; 3 000 € et −16,67 %.
   - Contrôle : 12,65 ÷ 12,50 = 1,012 ; 3 000 × 1,20 = 3 600.
-  - Transition : « À l’échelle de l’économie, le même calcul s’appelle l’inflation. »
+  - Transition : « Le niveau 2 consiste à choisir l’opération inverse et à prouver qu’elle fonctionne. »
 
 #### A3-05 · `B2-01-A3-05-INFLATION-RYTHME` — 1 min · v2 `chart` (G2) · catalogue · Modifié (S24, S26)
 
@@ -1045,7 +1060,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   évalue, avec d’autres nombres.
 - **Concept · modalité** : `indice-base-100`, `taux-moyen` · solo.
 - **Contenu (public)** :
-  - Titre public : « Le loyer de l’atelier : indice et taux moyen »
+  - Titre public : « Le loyer de l’atelier : lire un indice et un rythme »
   - `exemple` : `id` `b2-01-a3-indice-taux-moyen` ; `enonce` « Le loyer de l’atelier d’Atelier Rivage
     passe de 1 000 € (2021) à 1 060 € (2022), 1 123,60 € (2023) et 1 191,02 € (2024). Samir écrit :
     « +19,10 % en trois ans, donc +6,37 % par an ». » ; `etayage` initial 3.
@@ -1067,8 +1082,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Interaction et correction** : étayage dégressif piloté ; une réponse libre par étape rédigée, non
   notée.
 - **Notes** :
-  - Action : étapes 1 et 2 commentées ; 3 à 5 rédigées ; montrer la touche puissance de la calculatrice
-    au vidéoprojecteur.
+  - Action : étapes 1 et 2 commentées ; 3 à 5 rédigées ; distinguer explicitement le niveau atteint,
+    le taux global et le rythme annuel moyen.
   - Observé : ceux qui lisent 119,10 comme +119,10 %, et ceux qui divisent 19,10 par 3.
   - Attendu : 106,00 ; 112,36 ; 119,10 ; +19,10 % ; 6,00 % par an ; 6,37 % faux.
   - Contrôle : 1,06³ = 1,191016 ; 1,0637³ ≈ 1,2035.
@@ -1107,7 +1122,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 #### A3-08 · `B2-01-A3-08-INDICE-PRIX` — 2 min · v2 `chart` (G3) · séance · Modifié (S26, S27)
 
 - **Contenu (public)** :
-  - Titre public : « Indice des prix, base 100 en 2019 »
+  - Titre public : « Extension : lire un indice de prix fourni »
   - `title` « Indice des prix à la consommation, base 100 = moyenne 2019 » ; `caption` « Indice
     reconstitué à partir des taux annuels moyens de l’Insee » ; `kind` line ; `labels` ["2019" …
     "2025"] ; `series` [{ « Indice des prix », [100, 100.5, 102.11, 107.42, 112.68, 114.93, 115.97],
@@ -1120,18 +1135,18 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     « L’essentiel sur… l’inflation », paru le 23 mars 2026). L’indice officiel, publié en base 100 =
     moyenne 2025 et rebasé à 100 en 2019, vaut 116,04 en 2025 : les taux publiés étant arrondis au
     dixième, l’indice reconstitué s’en écarte de quelques centièmes. »
-  - `description` « Courbe croissante de l’indice : 100 en 2019, 107,42 en 2022, 112,68 en 2023, 115,97
-    en 2025 ; axe gradué de 95 à 120. »
+  - `description` « Courbe croissante de l’indice : base 100 en 2019, niveau intermédiaire en 2022, niveau
+    final supérieur à 115 en 2025 ; axe gradué de 95 à 120. »
 - **Modification** : « base 100 fin 2019 » était faux (des taux en moyenne annuelle se chaînent depuis
   la moyenne 2019) ; « l’indice officiel peut différer au centième » supprimé (l’écart atteint 7
   centièmes) ; placé après l’atelier ; axe explicite de 95 à 120 (un axe non nul est acceptable pour
   une courbe d’indice si l’échelle est affichée : c’est l’occasion de le dire).
 - **Notes** :
-  - Action : superposer mentalement G2 et G3.
+  - Action : superposer mentalement le rythme annuel et le niveau de l’indice.
   - Observé : des barres qui baissent, une courbe qui monte.
   - Attendu : rythme ≠ niveau ; le mot « désinflation ».
-  - Contrôle : 115,97 − 100 = 15,97 % ; l’indice officiel rebasé (116,04) correspond à un taux moyen
-    de 2,51 %.
+  - Contrôle : 115,97 − 100 = 15,97 % ; on lit un indice fourni ou reconstitué pour le cours, sans
+    prétendre calculer un indice synthétique officiel.
   - Transition : « Répondez à Samir, qui veut baisser les tarifs. »
 
 #### A3-09 · `B2-01-A3-09-NOTE-CONJONCTURE` — 2 min · v2 `reflection` · séance · Modifié (S28)
@@ -1256,7 +1271,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 
 - **Contenu (public)** :
   - Titre public : « Le graphique retenu pour le dossier du comité »
-  - `title` « CA HT 2025 d’Atelier Rivage par canal et par trimestre » ; `caption` « Une courbe par
+  - `title` « CA HT 2025 : choisir une représentation temporelle » ; `caption` « Une courbe par
     canal : la forme suit la question (une évolution dans le temps) » ; `kind` line ; `labels` [« T1 »,
     « T2 », « T3 », « T4 »] ; `series` [{ « Sur-mesure », [120, 95, 102, 80], ink }, { « Entretien »,
     [58, 61, 49, 62], gold }, { « Marketplace », [98, 131, 167, 127], teal }] ; `axisRanges` [[0, 180]] ;
@@ -1264,7 +1279,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - `reading` « La marketplace culmine au 3e trimestre (167 000 €) ; le sur-mesure recule de 120 000 €
     à 80 000 € entre le 1er et le 4e trimestre ; l’entretien reste entre 49 000 € et 62 000 €. »
   - `source` « Comptabilité analytique d’Atelier Rivage, 2025 (données fictives). »
-  - `description` « Trois courbes étiquetées sur quatre trimestres : sur-mesure 120, 95, 102, 80 ;
+  - `description` « Trois séries étiquetées sur quatre périodes : sur-mesure 120, 95, 102, 80 ;
     entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180. »
 - **Confidentialité** : le titre public de cet écran est neutre parce qu’il est lu au catalogue,
   écran verrouillé compris, donc avant la séance. Le titre descriptif reprenait mot pour mot les
@@ -1363,14 +1378,14 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   augmenté. »
 - **Interaction et correction** : mêmes phases que A3-01 ; deux réponses notées.
 - **Notes** :
-  - Action : vote 1 (2 min), débat (3 min) sur la consigne « prouvez-le avec deux canaux et des
-    chiffres », vote 2 (2 min), révélation (1 min) avec la grille du débat.
-  - Observé : la part de « c’est une erreur » au vote 1 ; le vote 1 n’a été préparé par aucun écran
-    (l’acte 4 a montré les trimestres, pas la répartition annuelle).
+  - Action : vote 1 (2 min), débat (3 min) après la démonstration de la moyenne pondérée, vote 2 (2
+    min), révélation (1 min) avec la grille du débat.
+  - Observé : la part de « c’est une erreur » au vote 1 ; la démonstration précédente doit permettre
+    de justifier le choix par un poids et un exemple chiffré.
   - Attendu : le poids de chaque canal dans le CA a changé ; au lycée, la part des candidats de MCO a
     augmenté.
   - Contrôle : un argument complet contient un mécanisme (poids) et un exemple chiffré.
-  - Transition : « Prouvons-le par le calcul. »
+  - Transition : « Maintenant que la méthode est posée, prouvons-le par le calcul. »
 
 #### A5-03 · `B2-01-A5-03-MOYENNE-PONDEREE` — 5 min · `fp-worked` · séance · Modifié (S39, S40, S42)
 
@@ -1380,8 +1395,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - `exemple` : `id` `b2-01-a5-ponderee` ; `enonce` « Prouvez au comité que la baisse du taux global
     vient du changement de répartition du CA. » ; `etayage` initial 3.
   - `etapes` :
-    1. `poids` · « Poids des canaux » · « Poids d’un canal = CA du canal ÷ CA total. 2024 : 46 %, 20 %,
-       34 %. 2025 : 34,5 %, 20 %, 45,5 %. » · invite « Calculez les poids des deux années. »
+    1. `poids` · « Poids des canaux » · « Poids d’un canal = CA du canal ÷ CA total. 2024 : 529 ÷ 1 150 ;
+       230 ÷ 1 150 ; 391 ÷ 1 150. 2025 : 397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150. » · invite
+       « Calculez les poids des deux années. »
     2. `taux-2024` · « Taux global 2024 » · « 0,46 × 36 + 0,20 × 28 + 0,34 × 16 = 16,56 + 5,60 + 5,44 =
        27,60 %. » · invite « Pondérez chaque taux par son poids. »
     3. `taux-2025` · « Taux global 2025 » · « 0,345 × 36 + 0,20 × 28 + 0,455 × 16 = 12,42 + 5,60 +
@@ -1546,7 +1562,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   corriger. » ; `arreter` (fausse) « Arrêter la marketplace, puisqu’elle fait baisser le taux
   global. »
 - **Notes** :
-  - Action : 4 min d’écriture, révélation, 2 min d’échange.
+  - Action : 3 min d’écriture, révélation, 3 min d’échange ; la production attendue est courte mais
+    doit articuler constat, mécanisme et décision.
   - Observé : les recommandations qui confondent taux et montant ; l’ordre des priorités.
   - Attendu : la marketplace apporte +26 560 € de marge : l’arrêter serait une erreur ; il faut piloter
     la marge en euros ; la priorité va à l’effet qui pèse le plus sur la décision.
@@ -1770,9 +1787,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 #### A6-07 · `B2-01-A6-07-BOITE-A-OUTILS` — 2 min · v2 `grid` · catalogue · Modifié (S67 à S69, S72)
 
 - **Contenu (public)** :
-  - Titre public : « Votre boîte à outils »
-  - `title` « Votre boîte à outils » ; `subtitle` « Les gestes du tableur professionnel et les sources
-    officielles de ce cours. »
+  - Titre public : « Ressources de transfert : BTS, bachelor, M1 »
+  - `title` « Ressources de transfert : BTS, bachelor, M1 » ; `subtitle` « Le socle nécessaire pour le BTS,
+    puis les ressources facultatives pour prolonger l’analyse. »
   - `items` (liens en `external: true`, URL au § 8.1) :
     - « Une ligne = une observation » · « Des données propres avant tout calcul. » · « Pas de cellule
       fusionnée, ni de sous-total ou de titre au milieu des données : le tableau croisé dynamique en
@@ -2599,7 +2616,7 @@ avec prix arrondis (21,34 × 0,97 = 20,6998) redonne 20,70. Les expressions `pri
 | G1        | A2-04 | Marge brute d’Atelier Rivage, 2022–2025                    | € (axe 0 à 300 000)               | comptes de résultat 2022–2025 (fictifs)                                         | +6 000 € en trois ans, soit +2,1 % ; progression faible qui ralentit |
 | G2        | A3-05 | Inflation annuelle en France, 2019–2025                    | % par an                          | Insee, paru le 23 mars 2026                                                     | le taux culmine à 5,2 % en 2022, puis diminue                        |
 | G3        | A3-08 | Indice des prix à la consommation, base 100 = moyenne 2019 | indice (axe 95 à 120)             | calcul du cours à partir des taux Insee ; indice officiel rebasé 116,04 en 2025 | prix 2025 supérieurs de 16,0 % à 2019 ; désinflation, pas déflation  |
-| G4        | A4-04 | CA HT 2025 d’Atelier Rivage par canal et par trimestre     | milliers d’euros HT (axe 0 à 180) | comptabilité analytique 2025 (fictive)                                          | marketplace au plus haut au 3e trimestre ; sur-mesure de 120 à 80 k€ |
+| G4        | A4-04 | CA HT 2025 : choisir une représentation temporelle         | milliers d’euros HT (axe 0 à 180) | comptabilité analytique 2025 (fictive)                                          | marketplace au plus haut au 3e trimestre ; sur-mesure de 120 à 80 k€ |
 
 Complémentaires : A3-03 (prix du sac, avec titre, unité, source et lecture) ; A1-09 (pièce trompeuse à
 auditer, volontairement non conforme) ; A2-02 et A5-04 (graphiques manipulables `fp-plot`) ; A5-05

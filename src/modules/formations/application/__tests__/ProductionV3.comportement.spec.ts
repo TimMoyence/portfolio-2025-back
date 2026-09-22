@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { B2_COURS_V3 } from '../../../../migrations/data/b2-v3.cours';
+import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
 import { creerCatalogueAVersions } from '../../../../../test/factories/cours.factory';
 import {
   buildSessionRecord,
@@ -15,7 +15,7 @@ import { ecranDeProduction } from '../../domain/cours/ProductionSoumise';
 import { ProductionVideError } from '../../domain/errors/FormationErrors';
 import { SubmitProductionUseCase } from '../SubmitProduction.useCase';
 
-const COURS = lireCoursStocke(B2_COURS_V3);
+const COURS = lireCoursStocke(B2_COURS);
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
 const FEUILLE = 'b2-01-a4-feuille-canaux';
 const TABLEAU = 'b2-01-a4-indice-toile';

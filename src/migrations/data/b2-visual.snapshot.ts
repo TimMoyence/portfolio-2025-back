@@ -1,5 +1,3 @@
-export const B2_VISUAL_SOURCE_SHA256 =
-  '4bd78bbd842cc4921c057f24edea7843920c52070c112045984a48d0cdd75ee0';
 export const B2_VISUAL_SNAPSHOT = [
   {
     position: 0,

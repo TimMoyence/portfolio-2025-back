@@ -1,11 +1,9 @@
-import {
-  B2_VISUAL_SNAPSHOT,
-  B2_VISUAL_SOURCE_SHA256,
-} from '../src/migrations/data/b2-visual.snapshot';
+import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { LireCoursPublicUseCase } from '../src/modules/formations/application/LireCoursPublic.useCase';
 import { ContenuDeCoursInvalideError } from '../src/modules/formations/domain/cours/CoursStocke';
+import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import {
@@ -36,8 +34,12 @@ import {
 
 const SLUG_B2 = 'b2-01-traitement-information-chiffree';
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
-const VERSION_PUBLIEE = 3;
-const VERSION_APRES_LA_V3 = 4;
+const VERSION_PUBLIEE = B2_COURS.version;
+const NOMBRE_ECRANS = B2_COURS.ecrans.length;
+const COURS_DE_REFERENCE = lireCoursStocke(B2_COURS);
+const NOMBRE_QUESTIONS = COURS_DE_REFERENCE.ecrans.filter(
+  (ecran) => ecran.question !== undefined,
+).length;
 const RUBRIQUE_A_DIRE_DES_NOTES = /À dire : (.+?)(?= [A-ZÉ][\p{L}’' ]* : |$)/gu;
 
 function aDireDuGuide(guide: unknown): string[] {
@@ -68,7 +70,7 @@ describeDb('catalogue B2 migré', () => {
       .find({ where: { courseId: course.id }, order: { position: 'ASC' } });
   };
 
-  const ouvrirSeanceB2 = (code: string, courseVersion = 2) =>
+  const ouvrirSeanceB2 = (code: string, courseVersion = VERSION_PUBLIEE) =>
     contexte.sessions.create({
       courseSlug: SLUG_B2,
       courseVersion,
@@ -89,24 +91,26 @@ describeDb('catalogue B2 migré', () => {
 
   afterAll(async () => contexte.fermer());
 
-  it('installe les 72 écrans dans un ordre stable, sans doublon ni contenu de remplissage', async () => {
-    const ecrans = await ecransDeLaVersion(1);
+  it('installe les 52 écrans dans un ordre stable, sans doublon ni contenu de remplissage', async () => {
+    const ecrans = await ecransDeLaVersion(VERSION_PUBLIEE);
 
-    expect(ecrans).toHaveLength(72);
+    expect(ecrans).toHaveLength(NOMBRE_ECRANS);
     expect(ecrans.map((ecran) => ecran.position)).toEqual(
-      Array.from({ length: 72 }, (_, position) => position),
+      Array.from({ length: NOMBRE_ECRANS }, (_, position) => position),
     );
-    expect(new Set(ecrans.map((ecran) => ecran.screenId)).size).toBe(72);
-    expect(ecrans.every((ecran) => ecran.proprietes['presentation'])).toBe(
-      true,
+    expect(new Set(ecrans.map((ecran) => ecran.screenId)).size).toBe(
+      NOMBRE_ECRANS,
     );
+    expect(
+      ecrans.every((ecran) => Object.keys(ecran.proprietes).length > 0),
+    ).toBe(true);
     expect(ecrans.every((ecran) => ecran.notes.trim().length > 0)).toBe(true);
     expect(
-      ecrans.find((ecran) => ecran.screenId === 'B2-01-S03-PREDICTION')?.notes,
+      ecrans.find((ecran) => ecran.screenId === 'B2-01-A1-03-MISSION')?.notes,
     ).toContain('Attendu :');
     expect(
       ecrans.filter((ecran) => ecran.proprietes['interaction'] !== undefined),
-    ).toHaveLength(14);
+    ).toHaveLength(0);
     expect(
       ecrans.some((ecran) =>
         JSON.stringify(ecran.proprietes).includes(
@@ -116,28 +120,36 @@ describeDb('catalogue B2 migré', () => {
     ).toBe(false);
   });
 
-  it('sert les 72 propriétés visuelles issues du deck source dans une version publiée', async () => {
-    const ecrans = await ecransDeLaVersion(2);
-    expect(ecrans).toHaveLength(72);
-    expect(B2_VISUAL_SOURCE_SHA256).toMatch(/^[a-f0-9]{64}$/);
+  it('sert les propriétés visuelles du cours publié', async () => {
+    const ecrans = await ecransDeLaVersion(VERSION_PUBLIEE);
+    expect(ecrans).toHaveLength(NOMBRE_ECRANS);
     expect(
       ecrans.map((ecran) => ({
         position: ecran.position,
         screenId: ecran.screenId,
-        renderer: (ecran.proprietes['presentation'] as Record<string, unknown>)[
-          'renderer'
-        ],
-        props: (ecran.proprietes['presentation'] as Record<string, unknown>)[
-          'props'
-        ],
+        renderer: (
+          ecran.proprietes['presentation'] as
+            | Record<string, unknown>
+            | undefined
+        )?.['renderer'],
+        props: (
+          ecran.proprietes['presentation'] as
+            | Record<string, unknown>
+            | undefined
+        )?.['props'],
       })),
     ).toEqual(
-      B2_VISUAL_SNAPSHOT.map(({ position, screenId, renderer, props }) => ({
-        position,
-        screenId,
-        renderer,
-        props,
-      })),
+      B2_COURS.ecrans.map((ecran, position) => {
+        const presentation = (
+          ecran.proprietes as { presentation?: Record<string, unknown> }
+        ).presentation;
+        return {
+          position,
+          screenId: ecran.screenId,
+          renderer: presentation?.renderer,
+          props: presentation?.props,
+        };
+      }),
     );
   });
 
@@ -158,7 +170,7 @@ describeDb('catalogue B2 migré', () => {
       .getRepository(FormationCourseContentEntity)
       .create({
         slug: course.slug,
-        version: VERSION_APRES_LA_V3,
+        version: VERSION_PUBLIEE + 1,
         titre: 'Nouvelle édition',
         niveau: course.niveau,
         dureeMinutes: course.dureeMinutes,
@@ -185,7 +197,7 @@ describeDb('catalogue B2 migré', () => {
     );
     expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
     expect(
-      (await catalogue.trouver(course.slug, VERSION_APRES_LA_V3))?.titre,
+      (await catalogue.trouver(course.slug, VERSION_PUBLIEE + 1))?.titre,
     ).toBe('Nouvelle édition');
     expect((await sessions.findById(session.id))?.courseVersion).toBe(1);
     await expect(
@@ -196,13 +208,13 @@ describeDb('catalogue B2 migré', () => {
     ).rejects.toThrow('version publiée immuable');
   });
 
-  it('valide à la lecture le contenu réellement migré des versions 1 et 2', async () => {
-    const lus = await Promise.all([1, 2].map(coursDeLaVersion));
+  it('valide à la lecture le contenu réellement migré', async () => {
+    const lus = await Promise.all([VERSION_PUBLIEE].map(coursDeLaVersion));
 
-    expect(lus.map((cours) => cours.ecrans.length)).toEqual([72, 72]);
+    expect(lus.map((cours) => cours.ecrans.length)).toEqual([NOMBRE_ECRANS]);
     expect(
       lus.map((cours) => cours.ecrans.filter((ecran) => ecran.question).length),
-    ).toEqual([14, 14]);
+    ).toEqual([NOMBRE_QUESTIONS]);
   });
 
   it('refuse à la lecture un contenu stocké hors contrat au lieu de le rafistoler', async () => {
@@ -236,7 +248,7 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('réserve les notes au déroulé formateur', async () => {
-    const cours = await coursDeLaVersion(1);
+    const cours = await coursDeLaVersion(VERSION_PUBLIEE);
 
     const sujet = tirer(cours, 0).sujet;
     const deroule = deroulePresentateur(cours, 0);
@@ -254,12 +266,12 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('sert la version visuelle sans réponse attendue ni correction au poste étudiant', async () => {
-    const cours = await coursDeLaVersion(2);
+    const cours = await coursDeLaVersion(VERSION_PUBLIEE);
 
     const sujet = tirer(cours, 0).sujet;
     const deroule = deroulePresentateur(cours, 0);
     const contenuEtudiant = JSON.stringify(sujet);
-    expect(sujet.ecrans).toHaveLength(72);
+    expect(sujet.ecrans).toHaveLength(NOMBRE_ECRANS);
     expect(contenuEtudiant).toContain('axisRanges');
     expect(contenuEtudiant).not.toContain('"correction":');
     expect(contenuEtudiant).not.toContain('"guide":');
@@ -278,7 +290,7 @@ describeDb('catalogue B2 migré', () => {
       ...aDireDesNotes(ecran.notes),
     ]);
     const sujets = await Promise.all(
-      [1, 2].map(
+      [VERSION_PUBLIEE].map(
         async (version) => tirer(await coursDeLaVersion(version), 0).sujet,
       ),
     );

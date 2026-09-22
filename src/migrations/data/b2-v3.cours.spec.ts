@@ -26,10 +26,10 @@ import { ouvrirTirages } from '../../modules/formations/domain/cours/OuvertureTi
 import { slugOption } from '../../modules/formations/domain/cours/QuestionStockee';
 import { verifierStructure } from '../../modules/formations/domain/cours/StructureCours';
 import { tirer } from '../../modules/formations/domain/cours/Tirage';
-import { B2_COURS_V3 } from './b2-v3.cours';
+import { B2_COURS } from './b2-v3.cours';
 
 const DOCUMENT = lireConception();
-const COURS = lireCoursStocke(B2_COURS_V3);
+const COURS = lireCoursStocke(B2_COURS);
 const TAILLE_MAX_DU_BAREME = 400 * 1024;
 const IDENTIFIANT_D_ECRAN = /^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$/;
 const LONGUEUR_MIN_D_UN_TEXTE_COMPARE = 12;
@@ -43,7 +43,7 @@ function acteDe(ecran: Ecran): number {
 }
 
 function coursDontLeTitre(screenId: string, titre: string): typeof COURS {
-  const brut = structuredClone(B2_COURS_V3) as unknown as {
+  const brut = structuredClone(B2_COURS) as unknown as {
     ecrans: { screenId: string; titre: string }[];
   };
   const ecran = brut.ecrans.find((candidat) => candidat.screenId === screenId);
@@ -429,7 +429,7 @@ describe('B2-01 V3 — fichier de données', () => {
 
   it('recopie mot pour mot les textes du document (§ 3, § 5 et annexe A.6)', () => {
     const reference = texteNormalise(DOCUMENT);
-    const textes = B2_COURS_V3.ecrans.flatMap((ecran) => [
+    const textes = B2_COURS.ecrans.flatMap((ecran) => [
       ecran.titre ?? '',
       ...ecran.notes.split('\n'),
       ...chainesDe(ecran.proprietes),
@@ -451,6 +451,42 @@ describe('B2-01 V3 — fichier de données', () => {
         .map((plan) => plan.replace('[', '(').replace(']', ')'))
         .filter((plan) => !reference.includes(plan)),
     ).toEqual([]);
+  });
+
+  it('présente la diapositive de Samir comme un graphique réglable', () => {
+    const graphique = COURS.ecrans.find(
+      (ecran) => ecran.id === 'B2-01-A2-02-ORIGINE-AXE',
+    );
+    const graphiqueBrut = B2_COURS.ecrans.find(
+      (ecran) => ecran.screenId === 'B2-01-A2-02-ORIGINE-AXE',
+    );
+    const proprietesGraphique =
+      graphiqueBrut !== undefined && 'proprietes' in graphiqueBrut
+        ? graphiqueBrut.proprietes
+        : null;
+    const atelierBrut = B2_COURS.ecrans.find(
+      (ecran) => ecran.screenId === 'B2-01-A2-03-ATELIER-1',
+    );
+    const proprietesBrutes =
+      atelierBrut !== undefined && 'proprietes' in atelierBrut
+        ? atelierBrut.proprietes
+        : null;
+
+    expect(graphique?.titre).toBe('La diapositive de Samir — axe réglable');
+    expect(
+      proprietesGraphique !== null && 'description' in proprietesGraphique
+        ? proprietesGraphique.description
+        : null,
+    ).toBe(
+      'Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.',
+    );
+    expect(
+      proprietesBrutes !== null && 'consigne' in proprietesBrutes
+        ? proprietesBrutes.consigne
+        : null,
+    ).toBe(
+      'Calculatrice autorisée, sauf pour la question sur le nombre de commandes (ordre de grandeur). Répondez seul·e, puis comparez avec votre voisin·e avant la correction.',
+    );
   });
 
   it('catalogue les cinq médias du § 8.2 avec page source, licence et attribution (AC-20)', () => {

@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Test } from 'supertest';
+import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import { createMockFormationMailer } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -17,7 +18,7 @@ import { fermerApplication } from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
-const V3 = 3;
+const VERSION_COURS = B2_COURS.version;
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const ADMIN = 'f6666666-6666-4666-8666-666666666666';
 const OK = 200;
@@ -69,20 +70,23 @@ describeDb('Publication du catalogue par la migration (db integration)', () => {
     await contexte.fermer();
   });
 
-  it('publie la V3 des l installation de la migration', async () => {
+  it('publie le cours unique dès l installation de la migration', async () => {
     const lignes: { slug: string; version_publiee: number }[] =
       await contexte.dataSource.query(
         'SELECT slug, version_publiee FROM formation_course_publications',
       );
 
-    expect(lignes).toContainEqual({ slug: SLUG, version_publiee: V3 });
+    expect(lignes).toContainEqual({
+      slug: SLUG,
+      version_publiee: VERSION_COURS,
+    });
   });
 
   it('sert la version publiee et sa date de bascule au catalogue public', async () => {
     const reponse = await catalogue().expect(OK);
 
     const servi = reponse.body as CataloguePublic;
-    expect(servi.version).toBe(V3);
+    expect(servi.version).toBe(VERSION_COURS);
     expect(Date.parse(servi.publieLe)).not.toBeNaN();
   });
 
@@ -118,7 +122,7 @@ describeDb('Publication du catalogue par la migration (db integration)', () => {
     const seance = await contexte.sessions.findById(
       (ouverture.body as ReponseOuverture).sessionId,
     );
-    expect(seance?.courseVersion).toBe(V3);
+    expect(seance?.courseVersion).toBe(VERSION_COURS);
   });
 
   it('laisse l administrateur ouvrir une seance sur une version anterieure', async () => {
