@@ -1,5 +1,31 @@
 import { z } from 'zod';
 
+const cryptographicSecretKeys = [
+  'JWT_SECRET',
+  'SECURE_KEY_FOR_PASSWORD_HASHING',
+  'FORMATION_REVIEW_TOKEN_SECRET',
+  'FORMATIONS_PULSE_SECRET',
+  'MORNING_BRIEF_HMAC_SECRET',
+] as const;
+
+type CryptographicSecretKey = (typeof cryptographicSecretKeys)[number];
+
+function findDuplicateCryptographicSecret(
+  values: Readonly<Record<CryptographicSecretKey, string | undefined>>,
+): { key: CryptographicSecretKey; previousKey: CryptographicSecretKey } | null {
+  const seenSecrets = new Map<string, CryptographicSecretKey>();
+  for (const key of cryptographicSecretKeys) {
+    const secret = values[key]?.trim();
+    if (!secret) continue;
+
+    const previousKey = seenSecrets.get(secret);
+    if (previousKey) return { key, previousKey };
+    seenSecrets.set(secret, key);
+  }
+
+  return null;
+}
+
 const envSchema = z
   .object({
     NODE_ENV: z
@@ -171,6 +197,21 @@ const envSchema = z
     ENABLE_LEGACY_CMS_CONTEXTS: z.string().default('false'),
   })
   .superRefine((env, ctx) => {
+    const duplicateSecret = findDuplicateCryptographicSecret({
+      JWT_SECRET: env.JWT_SECRET,
+      SECURE_KEY_FOR_PASSWORD_HASHING: env.SECURE_KEY_FOR_PASSWORD_HASHING,
+      FORMATION_REVIEW_TOKEN_SECRET: env.FORMATION_REVIEW_TOKEN_SECRET,
+      FORMATIONS_PULSE_SECRET: env.FORMATIONS_PULSE_SECRET,
+      MORNING_BRIEF_HMAC_SECRET: env.MORNING_BRIEF_HMAC_SECRET,
+    });
+    if (duplicateSecret) {
+      ctx.addIssue({
+        code: 'custom',
+        path: [duplicateSecret.key],
+        message: `doit etre distinct de ${duplicateSecret.previousKey}`,
+      });
+    }
+
     // Un transporter SMTP n'est cree que si HOST/USER/PASS sont renseignes
     // (cf. `createOptionalSmtpTransporter`). Dans ce cas, les mailers
     // enverront reellement — et sans expediteur, nodemailer recoit

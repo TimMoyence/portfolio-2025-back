@@ -151,6 +151,14 @@ describe('validateEnv', () => {
     expect(() => validateEnv(env)).toThrow('32');
   });
 
+  it('devrait rejeter la reutilisation d’un secret cryptographique entre usages', () => {
+    const env = buildValidEnv({
+      FORMATIONS_PULSE_SECRET: TEST_JWT_SECRET,
+    });
+
+    expect(() => validateEnv(env)).toThrow('FORMATIONS_PULSE_SECRET');
+  });
+
   it('devrait lancer une erreur si FORMATION_REVIEW_TOKEN_SECRET est manquant', () => {
     const env = buildValidEnv({ FORMATION_REVIEW_TOKEN_SECRET: undefined });
 

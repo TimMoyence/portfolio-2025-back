@@ -1,10 +1,12 @@
 FROM node:22-slim AS base
 WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@9.15.3 --activate
+RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 FROM base AS deps
 ENV NODE_ENV=development
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches ./patches
 RUN pnpm install --frozen-lockfile
 COPY . .
 
@@ -13,7 +15,8 @@ RUN rm -rf dist && pnpm build
 
 FROM base AS production-deps
 ENV NODE_ENV=production
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches ./patches
 RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 FROM node:22-slim AS runner
