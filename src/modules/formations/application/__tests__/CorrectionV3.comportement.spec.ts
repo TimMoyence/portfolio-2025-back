@@ -1,4 +1,4 @@
-import { B2_COURS_V3 } from '../../../../migrations/data/b2-v3.cours';
+import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
 import type {
   CorrigeFeuille,
   CorrigeTableau,
@@ -12,7 +12,7 @@ import { questionsDuCours } from '../../domain/cours/Cours';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { evaluerExpression, evaluerFeuille } from '../../domain/cours/Formule';
 
-const COURS = lireCoursStocke(B2_COURS_V3);
+const COURS = lireCoursStocke(B2_COURS);
 const SANS_FORMULE = 'valeur-saisie-sans-formule';
 const CELLULES_ATTENDUES = 17;
 const JUSTES_DES_CONSTATS = 13;

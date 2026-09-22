@@ -1,6 +1,6 @@
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
-import { B2_COURS_V3 } from '../src/migrations/data/b2-v3.cours';
+import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import {
   GetSessionResultsUseCase,
   type ResultatsDeSeance,
@@ -48,7 +48,7 @@ import {
 } from './helpers/reponses-v3';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
-const SLUG = B2_COURS_V3.slug;
+const SLUG = B2_COURS.slug;
 const V3 = 3;
 const V2 = 2;
 const ECRANS_DE_LA_V3 = 52;

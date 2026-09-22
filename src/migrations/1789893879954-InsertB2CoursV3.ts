@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { lireCoursStocke } from '../modules/formations/domain/cours/CoursStocke';
 import { verifierStructure } from '../modules/formations/domain/cours/StructureCours';
-import { B2_COURS_V3 } from './data/b2-v3.cours';
+import { B2_COURS } from './data/b2-v3.cours';
 
 interface LigneDeCours {
   id: string;
@@ -21,7 +21,7 @@ const TRIGGERS_D_IMMUTABILITE = [
 ] as const;
 
 function validerLeContenu(): void {
-  const violations = verifierStructure(lireCoursStocke(B2_COURS_V3));
+  const violations = verifierStructure(lireCoursStocke(B2_COURS));
   if (violations.length > 0) {
     const detail = violations
       .map(
@@ -41,7 +41,7 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     const deja = (await queryRunner.query(
       `SELECT "id" FROM "formation_course_contents" WHERE "slug" = $1 AND "version" = $2`,
-      [B2_COURS_V3.slug, B2_COURS_V3.version],
+      [B2_COURS.slug, B2_COURS.version],
     )) as LigneDeCours[];
     if (deja.length > 0) {
       await this.publier(queryRunner);
@@ -55,19 +55,19 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
          ("slug", "version", "titre", "niveau", "duree_minutes", "concepts", "remediations", "medias")
        VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb) RETURNING "id"`,
       [
-        B2_COURS_V3.slug,
-        B2_COURS_V3.version,
-        B2_COURS_V3.titre,
-        B2_COURS_V3.niveau,
-        B2_COURS_V3.dureeMinutes,
-        JSON.stringify(B2_COURS_V3.concepts),
-        JSON.stringify(B2_COURS_V3.remediations),
-        JSON.stringify(B2_COURS_V3.medias),
+        B2_COURS.slug,
+        B2_COURS.version,
+        B2_COURS.titre,
+        B2_COURS.niveau,
+        B2_COURS.dureeMinutes,
+        JSON.stringify(B2_COURS.concepts),
+        JSON.stringify(B2_COURS.remediations),
+        JSON.stringify(B2_COURS.medias),
       ],
     )) as LigneDeCours[];
     const coursId = inseres[0].id;
 
-    for (const [position, ecran] of B2_COURS_V3.ecrans.entries()) {
+    for (const [position, ecran] of B2_COURS.ecrans.entries()) {
       await queryRunner.query(
         `INSERT INTO "formation_screen_contents"
            ("course_id", "position", "screen_id", "titre", "diffusion", "brique", "duree_minutes", "concepts", "notes", "proprietes")
@@ -98,7 +98,7 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
          SET "version_publiee" = EXCLUDED."version_publiee",
              "publiee_le" = EXCLUDED."publiee_le",
              "publiee_par" = NULL`,
-      [B2_COURS_V3.slug, B2_COURS_V3.version],
+      [B2_COURS.slug, B2_COURS.version],
     );
   }
 
@@ -108,13 +108,13 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
     const restantes = (await queryRunner.query(
       `SELECT MAX("version")::int AS "version" FROM "formation_course_contents"
        WHERE "slug" = $1 AND "version" <> $2`,
-      [B2_COURS_V3.slug, B2_COURS_V3.version],
+      [B2_COURS.slug, B2_COURS.version],
     )) as VersionRestante[];
     const precedente = restantes[0]?.version ?? null;
     if (precedente === null) {
       await queryRunner.query(
         `DELETE FROM "formation_course_publications" WHERE "slug" = $1`,
-        [B2_COURS_V3.slug],
+        [B2_COURS.slug],
       );
       return;
     }
@@ -122,7 +122,7 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
       `UPDATE "formation_course_publications"
          SET "version_publiee" = $2, "publiee_le" = now(), "publiee_par" = NULL
        WHERE "slug" = $1`,
-      [B2_COURS_V3.slug, precedente],
+      [B2_COURS.slug, precedente],
     );
   }
 
@@ -130,7 +130,7 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
     const seances = (await queryRunner.query(
       `SELECT COUNT(*)::int AS "count" FROM "formation_sessions"
        WHERE "course_slug" = $1 AND "course_version" = $2`,
-      [B2_COURS_V3.slug, B2_COURS_V3.version],
+      [B2_COURS.slug, B2_COURS.version],
     )) as Compte[];
     if (seances[0].count > 0) {
       throw new Error(
@@ -147,7 +147,7 @@ export class InsertB2CoursV31789893879954 implements MigrationInterface {
     try {
       await queryRunner.query(
         `DELETE FROM "formation_course_contents" WHERE "slug" = $1 AND "version" = $2`,
-        [B2_COURS_V3.slug, B2_COURS_V3.version],
+        [B2_COURS.slug, B2_COURS.version],
       );
     } finally {
       for (const [table, declencheur] of [

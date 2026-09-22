@@ -13,16 +13,16 @@ import {
   TiragesInsuffisantsError,
 } from '../../modules/formations/domain/cours/OuvertureTirages';
 import { tirer } from '../../modules/formations/domain/cours/Tirage';
-import { B2_COURS_V3 } from './b2-v3.cours';
+import { B2_COURS } from './b2-v3.cours';
 
-const COURS = lireCoursStocke(B2_COURS_V3);
+const COURS = lireCoursStocke(B2_COURS);
 const REFERENCE = tirer(COURS, 0);
 const BORNE_GRAINE = 2_147_483_647;
 const SEANCES_SIMULEES = 1000;
 const graine = fc.integer({ min: 0, max: BORNE_GRAINE });
 
 function brut(): ContenuDeCoursBrut {
-  return structuredClone(B2_COURS_V3) as ContenuDeCoursBrut;
+  return structuredClone(B2_COURS) as ContenuDeCoursBrut;
 }
 
 function sansChamp(
@@ -159,9 +159,9 @@ describe('B2-01 V3 — simulation du tirage et de l’ouverture', () => {
             position === rang ? sansChamp(ecran, champ) : ecran,
           );
 
-          expect(() => lireCoursStocke({ ...contenu, ecrans })).toThrow(
-            ContenuDeCoursInvalideError,
-          );
+          expect(() =>
+            lireCoursStocke({ ...contenu, version: 3, ecrans }),
+          ).toThrow(ContenuDeCoursInvalideError);
         },
       ),
       { numRuns: 60 },

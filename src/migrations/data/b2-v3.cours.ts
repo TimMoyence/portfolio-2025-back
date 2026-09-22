@@ -185,7 +185,7 @@ const ACTE_1: Acte = [
       'l’histogramme du pupitre et la confusion dominante (« +20 % » : division par la valeur d’arrivée).',
       '(100 − 80) / 80 = 0,25, soit +25 % ; le dénominateur est la valeur de départ.',
       '80 × 1,25 = 100. Si plus de 30 % de « +20 % », le noter : la question 5 de l’atelier 2 (A3-07) repose la situation à l’envers, et l’atelier 1 (Q6) la retrouve dans le taux de marge.',
-      '« Cette question — quelle est la base ? — va vous suivre toute la journée. Voici l’entreprise pour laquelle vous travaillez. »',
+      '« Cette question — quelle est la base ? — revient dans toutes les analyses de deuxième année. Voici l’entreprise pour laquelle vous travaillez. »',
     ),
     proprietes: {
       modalite: 'solo',
@@ -227,8 +227,8 @@ const ACTE_1: Acte = [
       subtitle:
         'Atelier Rivage, voilerie de La Rochelle. Lundi, 9 h : le comité de direction se réunit jeudi. Votre mission : fiabiliser le tableau de bord 2025.',
       bullets: [
-        'BTS Comptabilité et gestion · 1re année · module Traitement de l’information chiffrée',
-        '3 h 30 · 6 actes · 2 tâches de tableur · 2 mini-jeux · 1 billet de sortie',
+        'BTS Comptabilité et gestion · 2e année · premier cours de mathématiques',
+        '3 h 30 · 6 actes · socle BTS 2 · extensions bachelor et M1 facultatives',
       ],
       bgImage: '/assets/cours/b2-01/v3/playfair-ecosse-1786.webp',
       bgImageAlt:
@@ -478,7 +478,7 @@ const ACTE_1: Acte = [
   ecranV2(
     {
       screenId: 'B2-01-A1-07-PLAN',
-      titre: 'Votre plan jusqu’à jeudi',
+      titre: 'Votre plan de reprise et de transfert',
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['contrat-de-lecture'],
@@ -492,51 +492,53 @@ const ACTE_1: Acte = [
     },
     'method-path',
     {
-      title: 'Votre plan jusqu’à jeudi',
+      title: 'Votre plan de reprise et de transfert',
       subtitle:
-        'Six gestes, six actes : chaque acte se termine par une preuve que vous savez faire.',
+        'Six gestes, six actes : on réactive les acquis, on les met sous contrôle, puis on les transfère à une décision de gestion.',
       steps: [
         {
           id: 'lire',
-          title: 'Acte 1 · Lire',
+          title: 'Acte 1 · Diagnostiquer',
           question: 'Que mesure chaque chiffre ?',
           proof: 'Unité, base, période, périmètre, source.',
-          result: 'Un tableau de bord dont chaque ligne a un sens.',
+          result: 'Un diagnostic de niveau 2 et un tableau de bord qualifié.',
         },
         {
           id: 'comparer',
-          title: 'Acte 2 · Comparer',
+          title: 'Acte 2 · Auditer',
           question: 'Compare-t-on la même chose ?',
           proof: 'Population de référence, axe, ordre de grandeur.',
-          result: 'Des comparaisons honnêtes.',
+          result: 'Des comparaisons justes et défendables.',
         },
         {
           id: 'evoluer',
-          title: 'Acte 3 · Raconter une évolution',
+          title: 'Acte 3 · Modéliser',
           question: 'Quelle base, quel coefficient ?',
           proof: 'Écart, taux, coefficient, indice.',
-          result: 'Des évolutions justes, même successives.',
+          result:
+            'Des évolutions justes, y compris successives et réciproques.',
         },
         {
           id: 'outiller',
-          title: 'Acte 4 · Outiller',
+          title: 'Acte 4 · Reproduire',
           question: 'La feuille se contrôle-t-elle seule ?',
           proof: 'Formules, références, contrôles, graphique.',
-          result: 'Un classeur qu’un tiers peut refaire.',
+          result: 'Un classeur contrôlable qu’un tiers peut reproduire.',
         },
         {
           id: 'defendre',
-          title: 'Acte 5 · Défendre',
+          title: 'Acte 5 · Expliquer',
           question: 'Quel mécanisme explique l’écart ?',
           proof: 'Poids, répartition, preuve, limite.',
-          result: 'Une recommandation argumentée.',
+          result:
+            'Une recommandation fondée sur les poids, les scénarios et les limites.',
         },
         {
           id: 'transferer',
           title: 'Acte 6 · Transférer',
           question: 'Saurez-vous le refaire seul·e ?',
-          proof: 'Mini-jeu, erreur d’IA corrigée, rappel.',
-          result: 'Des réflexes durables.',
+          proof: 'Situation nouvelle, erreur d’IA corrigée, rappel adaptatif.',
+          result: 'Des réflexes durables et une trace exploitable en CCF.',
         },
       ],
     },
@@ -728,7 +730,7 @@ const ACTE_2: Acte = [
   ),
   {
     screenId: 'B2-01-A2-02-ORIGINE-AXE',
-    titre: 'Déplacez l’origine de l’axe',
+    titre: 'La diapositive de Samir — axe réglable',
     diffusion: 'catalogue',
     brique: 'fp-plot',
     dureeMinutes: 2,
@@ -742,9 +744,8 @@ const ACTE_2: Acte = [
     ),
     proprietes: {
       id: 'b2-01-a2-origine-axe',
-      titre:
-        'Marge brute d’Atelier Rivage, 2022–2025 : déplacez l’origine et le haut de l’axe',
-      source: 'Données fictives Atelier Rivage',
+      titre: 'Diapositive de Samir : marge brute et axe réglable',
+      source: 'Service commercial d’Atelier Rivage (données fictives).',
       abscisse: { libelle: 'Année (0 = 2022, 3 = 2025)', min: 0, max: 3 },
       ordonnee: 'Marge brute (€)',
       bornesOrdonnee: { minParametre: 'origine', maxParametre: 'maximum' },
@@ -776,7 +777,7 @@ const ACTE_2: Acte = [
         },
       ],
       description:
-        'Courbe de la marge brute de 2022 à 2025 ; deux curseurs règlent le bas et le haut de l’axe vertical ; au départ, l’axe va de 284 000 € à 292 000 €, comme sur la diapositive de Samir.',
+        'Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.',
     },
   },
   {
@@ -927,7 +928,7 @@ const ACTE_2: Acte = [
       unit: '€',
       formula: 'Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021',
       reading:
-        'La marge brute passe de 285 000 € à 291 000 € : +6 000 € en trois ans, soit +2,1 %. La progression est réelle mais faible, et elle ralentit chaque année.',
+        'La marge brute augmente sur la période. L’écart reste faible à l’échelle du graphique et le rythme annuel ralentit.',
       source:
         'Comptes de résultat 2022 à 2025 d’Atelier Rivage (données fictives).',
       description:
@@ -1312,17 +1313,17 @@ const ACTE_3: Acte = [
   ),
   {
     screenId: 'B2-01-A3-04-FIL-TECHNIQUE',
-    titre: 'Le fil technique : coefficients, base et TVA',
+    titre: 'Le fil technique : choisir l’opération inverse',
     diffusion: 'seance',
     brique: 'fp-worked',
     dureeMinutes: 4,
     concepts: ['evolutions-successives'],
     notes: notes(
-      'étapes 1 à 3 commentées rapidement ; 4 à 6 rédigées (étayage 3) ; 4 minutes au total.',
+      'faire distinguer trois opérations inverses : retrouver une base, annuler une évolution, passer du TTC au HT ; les calculs sont ensuite contrôlés par retour au montant connu.',
       'ceux qui retirent 10 % de 13,75 € à l’étape 4 (12,375 €) et ceux qui retirent 20 % du TTC à l’étape 6 (2 880 €).',
       '+1,2 % ; 12,65 € ; 12,50 € ; −9,1 % ; 3 000 € et −16,67 %.',
       '12,65 ÷ 12,50 = 1,012 ; 3 000 × 1,20 = 3 600.',
-      '« À l’échelle de l’économie, le même calcul s’appelle l’inflation. »',
+      '« Le niveau 2 consiste à choisir l’opération inverse et à prouver qu’elle fonctionne. »',
     ),
     proprietes: {
       modalite: 'solo',
@@ -1417,13 +1418,13 @@ const ACTE_3: Acte = [
   ),
   {
     screenId: 'B2-01-A3-06-INDICE-ET-TAUX-MOYEN',
-    titre: 'Le loyer de l’atelier : indice et taux moyen',
+    titre: 'Le loyer de l’atelier : lire un indice et un rythme',
     diffusion: 'seance',
     brique: 'fp-worked',
     dureeMinutes: 5,
     concepts: ['indice-base-100', 'taux-moyen'],
     notes: notes(
-      'étapes 1 et 2 commentées ; 3 à 5 rédigées ; montrer la touche puissance de la calculatrice au vidéoprojecteur.',
+      'étapes 1 et 2 commentées ; 3 à 5 rédigées ; distinguer explicitement le niveau atteint, le taux global et le rythme annuel moyen.',
       'ceux qui lisent 119,10 comme +119,10 %, et ceux qui divisent 19,10 par 3.',
       '106,00 ; 112,36 ; 119,10 ; +19,10 % ; 6,00 % par an ; 6,37 % faux.',
       '1,06³ = 1,191016 ; 1,0637³ ≈ 1,2035.',
@@ -1570,15 +1571,15 @@ const ACTE_3: Acte = [
   ecranV2(
     {
       screenId: 'B2-01-A3-08-INDICE-PRIX',
-      titre: 'Indice des prix, base 100 en 2019',
+      titre: 'Extension : lire un indice de prix fourni',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['indice-base-100'],
       notes: notes(
-        'superposer mentalement G2 et G3.',
+        'superposer mentalement le rythme annuel et le niveau de l’indice.',
         'des barres qui baissent, une courbe qui monte.',
         'rythme ≠ niveau ; le mot « désinflation ».',
-        '115,97 − 100 = 15,97 % ; l’indice officiel rebasé (116,04) correspond à un taux moyen de 2,51 %.',
+        '115,97 − 100 = 15,97 % ; on lit un indice fourni ou reconstitué pour le cours, sans prétendre calculer un indice synthétique officiel.',
         '« Répondez à Samir, qui veut baisser les tarifs. »',
       ),
     },
@@ -1599,13 +1600,13 @@ const ACTE_3: Acte = [
       axisLabels: ['95 à 120'],
       unit: 'indice (base 100 en 2019)',
       formula:
-        'Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97',
+        'Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97 ; ce calcul est une reconstitution pédagogique, pas la construction de l’IPC officiel.',
       reading:
         'Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation.',
       source:
-        'Calcul du cours à partir des taux annuels moyens publiés par l’Insee (IPC, « L’essentiel sur… l’inflation », paru le 23 mars 2026). L’indice officiel, publié en base 100 = moyenne 2025 et rebasé à 100 en 2019, vaut 116,04 en 2025 : les taux publiés étant arrondis au dixième, l’indice reconstitué s’en écarte de quelques centièmes.',
+        'Lecture d’un indice fourni et reconstitution pédagogique à partir de taux annuels moyens publiés par l’Insee. Le cours ne demande pas de construire un indice synthétique officiel.',
       description:
-        'Courbe croissante de l’indice : 100 en 2019, 107,42 en 2022, 112,68 en 2023, 115,97 en 2025 ; axe gradué de 95 à 120.',
+        'Courbe croissante de l’indice : base 100 en 2019, niveau intermédiaire en 2022, niveau final supérieur à 115 en 2025 ; axe gradué de 95 à 120.',
     },
   ),
   ecranV2(
@@ -2146,7 +2147,7 @@ const ACTE_4: Acte = [
     },
     'chart',
     {
-      title: 'CA HT 2025 d’Atelier Rivage par canal et par trimestre',
+      title: 'CA HT 2025 : choisir une représentation temporelle',
       caption:
         'Une courbe par canal : la forme suit la question (une évolution dans le temps)',
       kind: 'line',
@@ -2164,7 +2165,7 @@ const ACTE_4: Acte = [
       source:
         'Comptabilité analytique d’Atelier Rivage, 2025 (données fictives).',
       description:
-        'Trois courbes étiquetées sur quatre trimestres : sur-mesure 120, 95, 102, 80 ; entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180.',
+        'Trois séries étiquetées sur quatre périodes : sur-mesure 120, 95, 102, 80 ; entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180.',
     },
   ),
   {
@@ -2266,11 +2267,11 @@ const ACTE_5: Acte = [
     dureeMinutes: 8,
     concepts: ['moyenne-ponderee'],
     notes: notes(
-      'vote 1 (2 min), débat (3 min) sur la consigne « prouvez-le avec deux canaux et des chiffres », vote 2 (2 min), révélation (1 min) avec la grille du débat.',
-      'la part de « c’est une erreur » au vote 1 ; le vote 1 n’a été préparé par aucun écran (l’acte 4 a montré les trimestres, pas la répartition annuelle).',
+      'vote 1 (2 min), débat (3 min) après la démonstration de la moyenne pondérée, vote 2 (2 min), révélation (1 min) avec la grille du débat.',
+      'la part de « c’est une erreur » au vote 1 ; la démonstration précédente doit permettre de justifier le choix par un poids et un exemple chiffré.',
       'le poids de chaque canal dans le CA a changé ; au lycée, la part des candidats de MCO a augmenté.',
       'un argument complet contient un mécanisme (poids) et un exemple chiffré.',
-      '« Prouvons-le par le calcul. »',
+      '« Maintenant que la méthode est posée, prouvons-le par le calcul. »',
     ),
     proprietes: {
       modalite: 'solo',
@@ -2291,7 +2292,6 @@ const ACTE_5: Acte = [
               'hausse-base-baisse-taux',
             ],
           ],
-          ['poids', 'canaux'],
         ),
         vote(
           'b2-01-a5-paradoxe-v2',
@@ -2309,7 +2309,6 @@ const ACTE_5: Acte = [
               'hausse-base-baisse-taux',
             ],
           ],
-          ['MCO', 'davantage'],
         ),
       ],
       corrige: {
@@ -2348,7 +2347,7 @@ const ACTE_5: Acte = [
             id: 'poids',
             intitule: 'Poids des canaux',
             raisonnement:
-              'Poids d’un canal = CA du canal ÷ CA total. 2024 : 46 %, 20 %, 34 %. 2025 : 34,5 %, 20 %, 45,5 %.',
+              'Poids d’un canal = CA du canal ÷ CA total. 2024 : 529 ÷ 1 150 ; 230 ÷ 1 150 ; 391 ÷ 1 150. 2025 : 397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150.',
             invite: 'Calculez les poids des deux années.',
           },
           {
@@ -2728,7 +2727,7 @@ const ACTE_5: Acte = [
     dureeMinutes: 6,
     concepts: ['moyenne-ponderee'],
     notes: notes(
-      '4 min d’écriture, révélation, 2 min d’échange.',
+      '3 min d’écriture, révélation, 3 min d’échange ; la production attendue est courte mais doit articuler constat, mécanisme et décision.',
       'les recommandations qui confondent taux et montant ; l’ordre des priorités.',
       'la marketplace apporte +26 560 € de marge : l’arrêter serait une erreur ; il faut piloter la marge en euros ; la priorité va à l’effet qui pèse le plus sur la décision.',
       'chaque phrase cite un chiffre ou une pièce.',
@@ -2741,7 +2740,7 @@ const ACTE_5: Acte = [
         enonce:
           'Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.',
         invite:
-          'Rédigez six phrases : 1) le constat chiffré ; 2) le mécanisme qui l’explique ; 3) ce qui reste à prouver ; 4) la décision que vous proposez ; 5) la limite de votre analyse ; 6) les anomalies du dossier, classées de la plus importante à la moins importante pour la décision.',
+          'Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet.',
       },
       corrige: {
         type: 'defi',
@@ -3387,7 +3386,7 @@ const ACTE_6: Acte = [
   ecranV2(
     {
       screenId: 'B2-01-A6-07-BOITE-A-OUTILS',
-      titre: 'Votre boîte à outils',
+      titre: 'Ressources de transfert : BTS, bachelor, M1',
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['tableur'],
@@ -3401,9 +3400,9 @@ const ACTE_6: Acte = [
     },
     'grid',
     {
-      title: 'Votre boîte à outils',
+      title: 'Ressources de transfert : BTS, bachelor, M1',
       subtitle:
-        'Les gestes du tableur professionnel et les sources officielles de ce cours.',
+        'Le socle nécessaire pour le BTS, puis les ressources facultatives pour prolonger l’analyse.',
       items: [
         {
           title: 'Une ligne = une observation',
@@ -3482,6 +3481,16 @@ const ACTE_6: Acte = [
           description: 'Le programme de mathématiques et l’épreuve E3.',
           href: 'https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf',
           external: true,
+        },
+        {
+          title: 'Extension bachelor · volume / mix / taux',
+          description: 'Décomposer un écart avant de recommander.',
+          back: 'Séparer effet de volume, effet de structure et effet de taux ; cette lecture prolonge le simulateur de mix et reste facultative dans le socle BTS.',
+        },
+        {
+          title: 'Extension M1 · sensibilité et preuve',
+          description: 'Tester une hypothèse sans la transformer en certitude.',
+          back: 'Faire varier une hypothèse, documenter l’intervalle de résultat et distinguer scénario, corrélation et causalité. Cette extension n’est pas évaluée au BTS.',
         },
       ],
     },
@@ -3633,10 +3642,22 @@ const MEDIAS: CoursV3['medias'] = [
   },
 ];
 
-export const B2_COURS_V3: CoursV3 = {
+const ECRANS_DU_COURS: CoursV3['ecrans'] = [
+  ...ACTE_1,
+  ...ACTE_2,
+  ...ACTE_3,
+  ...ACTE_4,
+  ACTE_5[0],
+  ACTE_5[2],
+  ACTE_5[1],
+  ...ACTE_5.slice(3),
+  ...ACTE_6,
+];
+
+export const B2_COURS: CoursV3 = {
   slug: 'b2-01-traitement-information-chiffree',
-  version: 3,
-  titre: 'Traitement de l’information chiffrée',
+  version: 1,
+  titre: 'Lire, contrôler et décider avec l’information chiffrée',
   niveau: 'B2',
   dureeMinutes: 210,
   concepts: [
@@ -3657,5 +3678,5 @@ export const B2_COURS_V3: CoursV3 = {
   ],
   remediations: REMEDIATIONS,
   medias: MEDIAS,
-  ecrans: [...ACTE_1, ...ACTE_2, ...ACTE_3, ...ACTE_4, ...ACTE_5, ...ACTE_6],
+  ecrans: ECRANS_DU_COURS,
 };

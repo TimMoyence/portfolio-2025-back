@@ -31,6 +31,7 @@ import { CreateFormationCoursePublications1789871582928 } from '../../src/migrat
 import { AmorcerPublicationsDeCours1789871600000 } from '../../src/migrations/1789871600000-AmorcerPublicationsDeCours';
 import { CreateFormationRappelsServis1789875476980 } from '../../src/migrations/1789875476980-CreateFormationRappelsServis';
 import { InsertB2CoursV31789893879954 } from '../../src/migrations/1789893879954-InsertB2CoursV3';
+import { ReplaceB2Cours1790000000000 } from '../../src/migrations/1790000000000-ReplaceB2Cours';
 import { CleEtudianteDerivee1789974322913 } from '../../src/migrations/1789974322913-CleEtudianteDerivee';
 import type {
   IParticipantsRepository,
@@ -120,6 +121,7 @@ const FORMATION_MIGRATIONS = [
   AmorcerPublicationsDeCours1789871600000,
   CreateFormationRappelsServis1789875476980,
   InsertB2CoursV31789893879954,
+  ReplaceB2Cours1790000000000,
   CleEtudianteDerivee1789974322913,
 ];
 

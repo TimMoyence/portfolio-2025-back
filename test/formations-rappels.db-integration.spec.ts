@@ -1,5 +1,5 @@
 import type { Test } from 'supertest';
-import { B2_COURS_V3 } from '../src/migrations/data/b2-v3.cours';
+import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import type { SpacedQuestionPublique } from '../src/modules/formations/domain/contrats/donnees-publiques';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -10,12 +10,12 @@ import {
   type SeanceDeTest,
 } from './helpers/formations-banc-seance';
 
-const DERNIER_ECRAN = B2_COURS_V3.ecrans.length - 1;
+const DERNIER_ECRAN = B2_COURS.ecrans.length - 1;
 
 describeDb('Rappels espaces (B9, db integration)', () => {
   const banc = installerBancDeSeance({
-    slug: B2_COURS_V3.slug,
-    version: B2_COURS_V3.version,
+    slug: B2_COURS.slug,
+    version: B2_COURS.version,
     ecran: DERNIER_ECRAN,
   });
 

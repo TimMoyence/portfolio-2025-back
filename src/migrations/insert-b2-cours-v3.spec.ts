@@ -1,7 +1,7 @@
 import type { QueryRunner } from 'typeorm';
 import * as StructureCours from '../modules/formations/domain/cours/StructureCours';
 import { InsertB2CoursV31789893879954 } from './1789893879954-InsertB2CoursV3';
-import { B2_COURS_V3 } from './data/b2-v3.cours';
+import { B2_COURS } from './data/b2-v3.cours';
 
 const ECRANS_DE_LA_V3 = 52;
 const COURS_INSERE = 'INSERT INTO "formation_course_contents"';
@@ -64,15 +64,15 @@ describe('migration InsertB2CoursV3', () => {
     const [cours] = requetes(query, COURS_INSERE);
     const ecrans = requetes(query, ECRAN_INSERE);
     expect(cours.slice(0, 5)).toEqual([
-      B2_COURS_V3.slug,
-      B2_COURS_V3.version,
-      B2_COURS_V3.titre,
-      B2_COURS_V3.niveau,
-      B2_COURS_V3.dureeMinutes,
+      B2_COURS.slug,
+      B2_COURS.version,
+      B2_COURS.titre,
+      B2_COURS.niveau,
+      B2_COURS.dureeMinutes,
     ]);
     expect(ecrans).toHaveLength(ECRANS_DE_LA_V3);
     expect(ecrans.map((parametres) => parametres.slice(0, 6))).toEqual(
-      B2_COURS_V3.ecrans.map((ecran, position) => [
+      B2_COURS.ecrans.map((ecran, position) => [
         'cours-v3',
         position,
         ecran.screenId,
@@ -90,12 +90,12 @@ describe('migration InsertB2CoursV3', () => {
 
     const [cours] = requetes(query, COURS_INSERE);
     expect(cours.slice(6)).toEqual([
-      JSON.stringify(B2_COURS_V3.remediations),
-      JSON.stringify(B2_COURS_V3.medias),
+      JSON.stringify(B2_COURS.remediations),
+      JSON.stringify(B2_COURS.medias),
     ]);
     expect(
       requetes(query, ECRAN_INSERE).map((parametres) => parametres[8]),
-    ).toEqual(B2_COURS_V3.ecrans.map((ecran) => ecran.notes));
+    ).toEqual(B2_COURS.ecrans.map((ecran) => ecran.notes));
   });
 
   it('publie la version 3 des son insertion, sans bascule manuelle', async () => {
@@ -104,7 +104,7 @@ describe('migration InsertB2CoursV3', () => {
     await migration.up(runner);
 
     expect(requetes(query, PUBLICATION_POSEE)).toEqual([
-      [B2_COURS_V3.slug, B2_COURS_V3.version],
+      [B2_COURS.slug, B2_COURS.version],
     ]);
   });
 
@@ -115,7 +115,7 @@ describe('migration InsertB2CoursV3', () => {
 
     expect(requetes(query, COURS_INSERE)).toEqual([]);
     expect(requetes(query, PUBLICATION_POSEE)).toEqual([
-      [B2_COURS_V3.slug, B2_COURS_V3.version],
+      [B2_COURS.slug, B2_COURS.version],
     ]);
   });
 
@@ -151,9 +151,7 @@ describe('migration InsertB2CoursV3', () => {
 
     await migration.down(runner);
 
-    expect(requetes(query, PUBLICATION_RAMENEE)).toEqual([
-      [B2_COURS_V3.slug, 2],
-    ]);
+    expect(requetes(query, PUBLICATION_RAMENEE)).toEqual([[B2_COURS.slug, 2]]);
     expect(requetes(query, PUBLICATION_SUPPRIMEE)).toEqual([]);
   });
 
@@ -162,9 +160,7 @@ describe('migration InsertB2CoursV3', () => {
 
     await migration.down(runner);
 
-    expect(requetes(query, PUBLICATION_SUPPRIMEE)).toEqual([
-      [B2_COURS_V3.slug],
-    ]);
+    expect(requetes(query, PUBLICATION_SUPPRIMEE)).toEqual([[B2_COURS.slug]]);
     expect(requetes(query, PUBLICATION_RAMENEE)).toEqual([]);
   });
 
