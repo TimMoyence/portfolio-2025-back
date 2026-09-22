@@ -44,11 +44,13 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
     await this.repo.update({ id }, { revoked: true, rotationGraceUntil: null });
   }
 
-  async rotateById(id: string, graceUntil: Date): Promise<void> {
-    await this.repo.update(
+  async rotateById(id: string, graceUntil: Date): Promise<boolean> {
+    const result = await this.repo.update(
       { id, revoked: false },
       { revoked: true, rotationGraceUntil: graceUntil },
     );
+
+    return result.affected === 1;
   }
 
   async purgeExpired(): Promise<number> {

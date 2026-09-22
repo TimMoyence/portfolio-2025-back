@@ -43,7 +43,7 @@ describe('RefreshTokensUseCase', () => {
     const stored = buildRefreshToken();
     const user = buildUser();
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
-    refreshTokensRepo.rotateById.mockResolvedValue(undefined);
+    refreshTokensRepo.rotateById.mockResolvedValue(true);
     refreshTokensRepo.create.mockResolvedValue(
       buildRefreshToken({ id: 'rt-2' }),
     );
@@ -60,6 +60,18 @@ describe('RefreshTokensUseCase', () => {
     expect(result.accessToken).toBe('new-jwt-token');
     expect(result.refreshToken).toBeDefined();
     expect(result.user).toBe(user);
+  });
+
+  it('refuse de creer une session si une autre requete a deja gagne la rotation', async () => {
+    refreshTokensRepo.findByTokenHash.mockResolvedValue(buildRefreshToken());
+    refreshTokensRepo.rotateById.mockResolvedValue(false);
+
+    await expect(
+      useCase.execute('racing-refresh-token'),
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
+
+    expect(usersRepo.findById).not.toHaveBeenCalled();
+    expect(refreshTokensRepo.create).not.toHaveBeenCalled();
   });
 
   it('lance InvalidCredentialsError quand le token est inexistant', async () => {
@@ -132,7 +144,7 @@ describe('RefreshTokensUseCase', () => {
   it("lance InvalidCredentialsError quand l'utilisateur est introuvable ou inactif", async () => {
     const stored = buildRefreshToken();
     refreshTokensRepo.findByTokenHash.mockResolvedValue(stored);
-    refreshTokensRepo.rotateById.mockResolvedValue(undefined);
+    refreshTokensRepo.rotateById.mockResolvedValue(true);
     usersRepo.findById.mockResolvedValue(null);
 
     await expect(useCase.execute('valid-token')).rejects.toBeInstanceOf(

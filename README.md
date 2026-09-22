@@ -24,6 +24,11 @@ Regle non negociable : le domaine ne depend jamais de Nest, TypeORM ou d'un deta
 
 ## Prise en main rapide
 
+Corepack utilise la version pnpm épinglée dans `package.json`. L'installation
+est configurée pour ne pas télécharger Chromium ; dans Docker, Puppeteer utilise
+le Chromium système. Pour générer des PDF localement, configurez
+`PUPPETEER_EXECUTABLE_PATH` vers un Chromium installé sur la machine.
+
 ```bash
 pnpm install
 pnpm run start:dev

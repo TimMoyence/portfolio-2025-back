@@ -2,13 +2,15 @@ export const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long'; //
 const TEST_HASHING_KEY = 'test-hashing-key-at-least-32-characters-long'; // gitleaks:allow (ci.yml)
 const TEST_FORMATION_REVIEW_TOKEN_SECRET =
   'test-formation-review-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)
+const TEST_FORMATIONS_PULSE_SECRET =
+  'test-formations-pulse-secret-at-least-32-chars'; // gitleaks:allow (ci.yml)
 
 const SECRETS_REQUIS = {
   JWT_SECRET: TEST_JWT_SECRET,
   SECURE_KEY_FOR_PASSWORD_HASHING: TEST_HASHING_KEY,
   GOOGLE_CLIENT_ID: 'test-google-client-id.apps.googleusercontent.com',
   FORMATION_REVIEW_TOKEN_SECRET: TEST_FORMATION_REVIEW_TOKEN_SECRET,
-  FORMATIONS_PULSE_SECRET: TEST_FORMATION_REVIEW_TOKEN_SECRET,
+  FORMATIONS_PULSE_SECRET: TEST_FORMATIONS_PULSE_SECRET,
   FORMATION_TEACHER_NOTIFICATION_TO: 'formateur-notifications@example.com',
 };
 

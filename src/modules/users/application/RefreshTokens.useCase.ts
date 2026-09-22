@@ -56,10 +56,13 @@ export class RefreshTokensUseCase {
       throw new TokenExpiredError('Refresh token expired');
     }
 
-    await this.refreshTokensRepo.rotateById(
+    const rotationApplied = await this.refreshTokensRepo.rotateById(
       stored.id!,
       new Date(maintenant + REFRESH_TOKEN_ROTATION_GRACE_MS),
     );
+    if (!rotationApplied) {
+      throw new InvalidCredentialsError('Invalid refresh token');
+    }
 
     const user = await this.usersRepo.findById(stored.userId);
 
