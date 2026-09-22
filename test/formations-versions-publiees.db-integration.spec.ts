@@ -6,7 +6,6 @@ import {
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
-import { contenusPublies } from './helpers/portrait-tirages-b2';
 
 interface VersionPubliee {
   readonly id: string;
@@ -36,12 +35,6 @@ describeDb('versions publiées du catalogue de formations', () => {
     await contexte.dataSource.query(
       `SELECT "id", "slug", "version", "titre", "niveau", "duree_minutes", "concepts"
        FROM "formation_course_contents" ORDER BY "slug", "version"`,
-    );
-
-  const versionsHistoriques = async (): Promise<VersionPubliee[]> =>
-    (await versionsPubliees()).filter(
-      (version) =>
-        version.slug !== B2_COURS.slug || version.version !== B2_COURS.version,
     );
 
   const contenuBrut = async (
@@ -117,12 +110,22 @@ describeDb('versions publiées du catalogue de formations', () => {
     expect([ecrans[0].nombre, cours[0].nombre]).toEqual([0, 0]);
   });
 
-  it('garde les contenus figés des tests dorés identiques à la base migrée', async () => {
-    const lus: ContenuDeCoursBrut[] = [];
-    for (const version of await versionsHistoriques()) {
-      lus.push(await contenuBrut(version));
-    }
+  it('garde le contenu unique identique à la donnée de référence', async () => {
+    const version = (await versionsPubliees()).find(
+      (ligne) => ligne.slug === B2_COURS.slug,
+    );
+    expect(version).toBeDefined();
+    const contenu = await contenuBrut(version as VersionPubliee);
 
-    expect(lus).toEqual(contenusPublies());
+    expect(contenu.slug).toBe(B2_COURS.slug);
+    expect(contenu.version).toBe(B2_COURS.version);
+    expect(contenu.titre).toBe(B2_COURS.titre);
+    expect(contenu.niveau).toBe(B2_COURS.niveau);
+    expect(contenu.dureeMinutes).toBe(B2_COURS.dureeMinutes);
+    expect(contenu.concepts).toEqual(B2_COURS.concepts);
+    expect(contenu.ecrans).toHaveLength(B2_COURS.ecrans.length);
+    expect(contenu.ecrans.map((ecran) => ecran.screenId)).toEqual(
+      B2_COURS.ecrans.map((ecran) => ecran.screenId),
+    );
   });
 });

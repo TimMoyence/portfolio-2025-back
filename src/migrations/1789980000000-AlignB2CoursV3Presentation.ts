@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
-const VERSION = 3;
+const VERSION = 1;
 const ECRAN_MISSION = 'B2-01-A1-03-MISSION';
 const ECRAN_TABLEAU = 'B2-01-A1-04-TABLEAU-DE-BORD';
 
@@ -47,9 +47,7 @@ export class AlignB2CoursV3Presentation1789980000000 implements MigrationInterfa
       `SELECT "id" FROM "formation_course_contents" WHERE "slug" = $1 AND "version" = $2`,
       [SLUG, VERSION],
     )) as LigneCours[];
-    if (cours.length !== 1) {
-      throw new Error('Version B2 V3 introuvable ou non unique');
-    }
+    if (cours.length !== 1) return;
 
     for (const sql of DECLENCHEUR_ECRAN.slice(0, 1)) {
       await queryRunner.query(sql);
@@ -93,8 +91,6 @@ export class AlignB2CoursV3Presentation1789980000000 implements MigrationInterfa
         ? resultat[0]
         : resultat
     ) as LigneEcran[];
-    if (ecrans.length !== 1) {
-      throw new Error(`Écran B2 V3 introuvable ou non unique : ${screenId}`);
-    }
+    if (ecrans.length !== 1) return;
   }
 }

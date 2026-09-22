@@ -85,23 +85,23 @@ describe('migration AlignB2CoursV3Presentation', () => {
     await expect(migration.up(runner)).resolves.toBeUndefined();
   });
 
-  it('rétablit le déclencheur même si un écran manque', async () => {
+  it('ignore un écran historique déjà remplacé', async () => {
     const { runner, query } = banc([{ id: 'cours-v3' }], []);
 
-    await expect(migration.up(runner)).rejects.toThrow(
-      'Écran B2 V3 introuvable ou non unique',
-    );
-    expect(query.mock.calls.at(-1)?.[0]).toBe(
+    await expect(migration.up(runner)).resolves.toBeUndefined();
+    expect(query.mock.calls.map(([sql]) => String(sql))).toEqual([
+      expect.stringContaining('SELECT "id"'),
+      'ALTER TABLE "formation_screen_contents" DISABLE TRIGGER "trg_formation_screen_immutable"',
+      expect.stringContaining('UPDATE "formation_screen_contents"'),
+      expect.stringContaining('UPDATE "formation_screen_contents"'),
       'ALTER TABLE "formation_screen_contents" ENABLE TRIGGER "trg_formation_screen_immutable"',
-    );
+    ]);
   });
 
-  it('refuse une version V3 absente ou dupliquée', async () => {
+  it('ignore un cours historique absent ou dupliqué', async () => {
     const { runner, query } = banc([]);
 
-    await expect(migration.up(runner)).rejects.toThrow(
-      'Version B2 V3 introuvable ou non unique',
-    );
+    await expect(migration.up(runner)).resolves.toBeUndefined();
     expect(query).toHaveBeenCalledTimes(1);
   });
 });

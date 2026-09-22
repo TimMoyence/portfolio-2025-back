@@ -1,5 +1,6 @@
 import request from 'supertest';
 import type { Test } from 'supertest';
+import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import type {
   Cours,
   Ecran,
@@ -29,7 +30,7 @@ import {
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
-const VERSION_V3 = 3;
+const VERSION_COURS = B2_COURS.version;
 const TAILLE_CLASSE = 35;
 const ADMIN = 'c3333333-3333-4333-8333-333333333333';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
@@ -282,11 +283,9 @@ describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
     banc = await monterBancFormations();
     await banc.contexte.nettoyer();
     client = clientFormations(banc.app, ADMIN);
-    const lu = await banc.contexte.catalogue.trouver(SLUG, VERSION_V3);
+    const lu = await banc.contexte.catalogue.trouver(SLUG, VERSION_COURS);
     if (lu === null) {
-      throw new Error(
-        `La version ${VERSION_V3} de ${SLUG} manque a la base migree`,
-      );
+      throw new Error(`Le cours ${SLUG} manque a la base migree`);
     }
     cours = lu;
   }, DELAI_OUVERTURE_CONTEXTE_MS);
@@ -304,7 +303,7 @@ describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
         .set(EN_TETE_IDENTITE, `${ADMIN}:admin:teacher`)
         .send({
           courseSlug: SLUG,
-          version: VERSION_V3,
+          version: VERSION_COURS,
           capacite: TAILLE_CLASSE,
         })
         .expect(CREE);
