@@ -346,6 +346,17 @@ describe('B2-01 V3 — fichier de données', () => {
     ).toHaveLength(11);
   });
 
+  it('RET-32 · montre au pupitre la bonne réponse numérique sous sa forme publiée', () => {
+    const corriges = new Map(
+      deroulePresentateur(COURS, 0)
+        .ecrans.flatMap((ecran) => ecran.corriges)
+        .map((corrige) => [corrige.questionId, corrige.bonneReponse]),
+    );
+
+    expect(corriges.get('b2-01-a2-part-marketplace')).toBe('45,5');
+    expect(corriges.get('b2-01-a5-variation-marge-sur-mesure')).toBe('−30 960');
+  });
+
   it('sert au catalogue les 13 écrans catalogue et verrouille les 39 autres (B19)', () => {
     const catalogue = projeterCatalogue(COURS);
     const verrouilles = catalogue.ecrans.filter(

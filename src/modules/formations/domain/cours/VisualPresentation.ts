@@ -49,6 +49,30 @@ const series = z
     tone: z.enum(['teal', 'gold', 'ink']).optional(),
   })
   .strict();
+const categorieCorrigee = z.object({ id: texte, label: texte }).strict();
+const carteCorrigee = z
+  .object({ id: texte, label: texte, category: texte, justification: texte })
+  .strict();
+const correctionDeTri = z
+  .object({
+    ...titled,
+    source: z.object({ screenId: texte, sortId: texte }).strict(),
+    categories: z.array(categorieCorrigee).min(1),
+    cards: z.array(carteCorrigee).min(1),
+  })
+  .strict()
+  .superRefine(({ categories, cards }, contexte) => {
+    const connues = new Set(categories.map(({ id }) => id));
+    for (const [position, carte] of cards.entries()) {
+      if (!connues.has(carte.category)) {
+        contexte.addIssue({
+          code: 'custom',
+          path: ['cards', position, 'category'],
+          message: `catégorie ${carte.category} absente de la correction`,
+        });
+      }
+    }
+  });
 const image = {
   ...titled,
   image: media,
@@ -242,6 +266,12 @@ export const presentationVisuelle = z.discriminatedUnion('renderer', [
             .min(1),
         })
         .strict(),
+    })
+    .strict(),
+  z
+    .object({
+      renderer: z.literal('sort-review'),
+      props: correctionDeTri,
     })
     .strict(),
 ]);

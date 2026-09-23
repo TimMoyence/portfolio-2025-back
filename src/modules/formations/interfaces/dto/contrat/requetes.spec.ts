@@ -174,6 +174,29 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
       expect(dto.pilotage).toEqual(pilotage);
     });
 
+    it('RET-21 · accepte les reglages numeriques de la machine', async () => {
+      const pilotage = {
+        screenId: 'B2-01-A3-02-MACHINE-COEFFICIENTS',
+        reglages: { prix: 250, taux: -12.5 },
+      };
+      const dto = await validateBody({ pilotage }, ControlSessionRequestDto);
+
+      expect(dto.pilotage).toEqual(pilotage);
+    });
+
+    it.each([
+      [
+        'un réglage non numérique',
+        { screenId: 'M', reglages: { prix: 'cent' } },
+      ],
+      ['un réglage infini', { screenId: 'M', reglages: { prix: Infinity } }],
+      ['des réglages en liste', { screenId: 'M', reglages: [1, 2] }],
+    ])('RET-21 · refuse %s', async (_cas, pilotage) => {
+      await expect(
+        validateBody({ pilotage }, ControlSessionRequestDto),
+      ).rejects.toThrow(BadRequestException);
+    });
+
     it.each([
       ['une phase inconnue', { screenId: 'B2-01-A3-01', phase: 'fin' }],
       ['un étayage négatif', { screenId: 'B2-01-A3-06', etayage: -1 }],

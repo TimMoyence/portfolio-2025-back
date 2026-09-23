@@ -332,6 +332,26 @@ export function buildProprietesStockees(
   return structuredClone(PROPRIETES_PAR_BRIQUE[brique]);
 }
 
+export function buildCasAQuestionsLibres(): EcranDeCoursBrut {
+  return buildEcranStockeV3('fp-pro', {
+    screenId: 'B2-01-A1-03-MISSION',
+    proprietes: {
+      ...buildProprietesStockees('fp-pro'),
+      questionsLibres: [
+        {
+          id: 'b2-01-a1-mission:mesure',
+          question: 'Que mesure chaque chiffre ?',
+          placeholder: 'Un montant, une part, une évolution…',
+        },
+        {
+          id: 'b2-01-a1-mission:comparable',
+          question: 'Les bases et les périodes sont-elles comparables ?',
+        },
+      ],
+    },
+  });
+}
+
 export function buildEcranStockeV3(
   brique: string,
   overrides: Partial<EcranDeCoursBrut> = {},

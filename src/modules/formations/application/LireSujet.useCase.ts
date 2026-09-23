@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
-import { ecranVerrouille } from '../domain/cours/Diffusion';
+import {
+  ecranVerrouille,
+  exempleAuRythmeDuPilotage,
+} from '../domain/cours/Diffusion';
 import { dernierEcranServi } from '../domain/cours/EcranServi';
 import type { Cours } from '../domain/contrats/cours';
 import type { CoursPublic } from '../domain/contrats/tirage';
@@ -65,11 +68,16 @@ export class LireSujetUseCase {
     ) {
       throw new CoursModifieError();
     }
+    if (session.etat === 'terminee') {
+      return tirage.sujet;
+    }
     const dernier = dernierEcranServi(session, tirage.sujet.ecrans.length);
     return {
       ...tirage.sujet,
       ecrans: tirage.sujet.ecrans.map((ecran, index) =>
-        index <= dernier ? ecran : ecranVerrouille(ecran),
+        index <= dernier
+          ? exempleAuRythmeDuPilotage(ecran, session.pilotageEcrans[ecran.id])
+          : ecranVerrouille(ecran),
       ),
     };
   }

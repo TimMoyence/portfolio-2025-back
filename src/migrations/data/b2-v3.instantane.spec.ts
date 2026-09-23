@@ -7,7 +7,7 @@ import { lireCoursStocke } from '../../modules/formations/domain/cours/CoursStoc
 import { deroulePresentateur } from '../../modules/formations/domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../modules/formations/domain/cours/Diffusion';
 import { tirer } from '../../modules/formations/domain/cours/Tirage';
-import { B2_COURS } from './b2-v3.cours';
+import { B2_COURS_ENRICHI } from './b2-enrichi.cours';
 
 interface InstantaneV3 {
   readonly version: number;
@@ -25,14 +25,14 @@ const CHEMIN = join(
 const GRAINE_DE_REFERENCE = 0;
 
 function construire(): InstantaneV3 {
-  const cours = lireCoursStocke(B2_COURS);
+  const cours = lireCoursStocke(B2_COURS_ENRICHI);
   const projection = {
     sujet: tirer(cours, GRAINE_DE_REFERENCE).sujet,
     deroule: deroulePresentateur(cours, GRAINE_DE_REFERENCE),
     catalogue: projeterCatalogue(cours),
   };
   return {
-    version: B2_COURS.version,
+    version: B2_COURS_ENRICHI.version,
     graine: GRAINE_DE_REFERENCE,
     empreinte: empreinte(projection),
     ...projection,
@@ -59,16 +59,16 @@ describe('instantané V3 livré au front', () => {
     expect(livre).toEqual(construit);
   });
 
-  it('porte les 52 écrans du sujet, du déroulé et du catalogue', () => {
+  it('P1 · porte les 54 écrans de la version 3 publiée, mission, correction du tri et exercice des points compris', () => {
     const livre = lire();
 
-    expect(livre.version).toBe(1);
-    expect(livre.sujet.ecrans).toHaveLength(52);
-    expect(livre.deroule.ecrans).toHaveLength(52);
+    expect(livre.version).toBe(3);
+    expect(livre.sujet.ecrans).toHaveLength(54);
+    expect(livre.deroule.ecrans).toHaveLength(54);
     expect(
       livre.catalogue.ecrans.filter(
         (ecran) => ecran.type === 'ecran-verrouille',
       ),
-    ).toHaveLength(39);
+    ).toHaveLength(42);
   });
 });

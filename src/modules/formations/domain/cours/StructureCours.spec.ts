@@ -114,6 +114,16 @@ describe('verifierStructure', () => {
     expect(regles(present)).toEqual([]);
   });
 
+  it('E10 · refuse un renvoi vers un écran absent et accepte un écran du cours', () => {
+    const renvoyer = (renvoi: string): Cours =>
+      recomposer(base, [ouverture, citation, { ...atelier, renvoi }, cloture]);
+
+    expect(regles(renvoyer('B2-01-A9-99-ABSENT'))).toContain(
+      'reference-inconnue',
+    );
+    expect(regles(renvoyer(citation.id))).toEqual([]);
+  });
+
   it('leve une violation par une derogation justifiee et signale une derogation vide', () => {
     const decale: Cours = { ...base, dureeMinutes: 100 };
 

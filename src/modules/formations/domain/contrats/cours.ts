@@ -90,6 +90,7 @@ interface EcranCommun {
   readonly modalite?: Modalite;
   readonly question?: QuestionVote;
   readonly guide?: GuideFormateur;
+  readonly renvoi?: string;
 }
 
 type EcranExposition = {

@@ -1,7 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Test } from 'supertest';
-import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
+import { B2_COURS_ENRICHI } from '../src/migrations/data/b2-enrichi.cours';
 import { createMockFormationMailer } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -18,7 +18,7 @@ import { fermerApplication } from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
-const VERSION_COURS = B2_COURS.version;
+const VERSION_COURS = B2_COURS_ENRICHI.version;
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const ADMIN = 'f6666666-6666-4666-8666-666666666666';
 const OK = 200;

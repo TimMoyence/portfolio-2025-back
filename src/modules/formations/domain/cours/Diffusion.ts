@@ -1,4 +1,6 @@
 import type { Cours } from '../contrats/cours';
+import type { DonneesParBrique } from '../contrats/donnees-publiques';
+import type { PilotageEcran } from '../contrats/pilotage';
 import type { CoursPublic, EcranPublic } from '../contrats/tirage';
 import { tirer } from './Tirage';
 
@@ -13,6 +15,27 @@ export function ecranVerrouille(ecran: EcranPublic): EcranPublic {
     interactif: false,
     donnees: {},
   };
+}
+
+export function exempleAuRythmeDuPilotage(
+  ecran: EcranPublic,
+  pilotage: PilotageEcran | undefined,
+): EcranPublic {
+  if (ecran.type !== 'fp-worked') {
+    return ecran;
+  }
+  const { exemple } = ecran.donnees as DonneesParBrique['fp-worked'];
+  const etayage = pilotage?.etayage ?? 0;
+  const servi: DonneesParBrique['fp-worked'] = {
+    exemple: {
+      ...exemple,
+      etapes: exemple.etapes.map((etape, rang) =>
+        rang < etayage ? etape : { ...etape, raisonnement: '' },
+      ),
+    },
+    etayage,
+  };
+  return { ...ecran, donnees: servi };
 }
 
 export function projeterCatalogue(cours: Cours): CoursPublic {

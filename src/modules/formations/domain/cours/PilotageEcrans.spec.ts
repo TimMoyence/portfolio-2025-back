@@ -1,4 +1,8 @@
-import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
+import {
+  buildCoursAvecProductions,
+  buildCoursDeTest,
+} from '../../../../../test/factories/cours.factory';
+import type { Ecran } from '../contrats/cours';
 import type { PilotageEcran } from '../contrats/pilotage';
 import {
   PhaseFermeeError,
@@ -14,6 +18,19 @@ import {
 const COURS = buildCoursDeTest();
 const EXEMPLE = COURS.ecrans[5];
 const NUMERIQUE = COURS.ecrans[2];
+
+function ecranDuCours(id: string): Ecran {
+  const ecran = buildCoursAvecProductions().ecrans.find(
+    (candidat) => candidat.id === id,
+  );
+  if (ecran === undefined) {
+    throw new Error(`écran absent de la factory : ${id}`);
+  }
+  return ecran;
+}
+
+const QUESTIONNAIRE = ecranDuCours('E-PRATIQUE');
+const FEUILLE = ecranDuCours('E-FEUILLE');
 
 describe('assertPilotageCompatible', () => {
   it('accepte un etayage sur un exemple travaille', () => {
@@ -43,10 +60,62 @@ describe('assertPilotageCompatible', () => {
     }).toThrow(PilotageIncompatibleError);
   });
 
+  it('RET-32 · accepte la revelation de la correction d un questionnaire', () => {
+    expect(() => {
+      assertPilotageCompatible(QUESTIONNAIRE, {
+        screenId: 'E-PRATIQUE',
+        revele: true,
+      });
+    }).not.toThrow();
+  });
+
+  it('RET-31 · accepte sur la feuille la correction par formules puis par valeurs', () => {
+    expect(() => {
+      assertPilotageCompatible(FEUILLE, { screenId: 'E-FEUILLE', etayage: 2 });
+    }).not.toThrow();
+  });
+
+  it('RET-31 · refuse sur la feuille un troisieme niveau de correction', () => {
+    expect(() => {
+      assertPilotageCompatible(FEUILLE, { screenId: 'E-FEUILLE', etayage: 3 });
+    }).toThrow(PilotageIncompatibleError);
+  });
+
   it('refuse une revelation sur un ecran sans defi', () => {
     expect(() => {
       assertPilotageCompatible(NUMERIQUE, { screenId: 'E-NUM', revele: true });
     }).toThrow(PilotageIncompatibleError);
+  });
+
+  describe('reglages de la machine', () => {
+    const MACHINE = COURS.ecrans.find(({ id }) => id === 'E-CONCEPT') as Ecran;
+
+    it('RET-21 · accepte les reglages de la machine sur ses parametres, dans leurs bornes', () => {
+      expect(() => {
+        assertPilotageCompatible(MACHINE, {
+          screenId: 'E-CONCEPT',
+          reglages: { prix: 250, taux: -20 },
+        });
+      }).not.toThrow();
+    });
+
+    it.each([
+      ['un parametre inconnu', { cout: 5 }],
+      ['une valeur hors bornes', { prix: 5000 }],
+    ])('RET-21 · refuse %s', (_cas, reglages) => {
+      expect(() => {
+        assertPilotageCompatible(MACHINE, { screenId: 'E-CONCEPT', reglages });
+      }).toThrow(PilotageIncompatibleError);
+    });
+
+    it('RET-21 · refuse des reglages sur un ecran qui n est pas une machine', () => {
+      expect(() => {
+        assertPilotageCompatible(NUMERIQUE, {
+          screenId: 'E-NUM',
+          reglages: { prix: 250 },
+        });
+      }).toThrow(PilotageIncompatibleError);
+    });
   });
 });
 
@@ -108,6 +177,18 @@ describe('assertPhaseOuverte', () => {
   it('laisse passer une question sans ouverture declaree', () => {
     expect(() => {
       assertPhaseOuverte({}, { ecranId: 'E-NUM' });
+    }).not.toThrow();
+  });
+
+  it('RET-32 · ferme aux reponses un questionnaire dont la correction est revelee', () => {
+    expect(() => {
+      assertPhaseOuverte(
+        { 'E-PRATIQUE': { revele: true } },
+        { ecranId: 'E-PRATIQUE' },
+      );
+    }).toThrow(PhaseFermeeError);
+    expect(() => {
+      assertPhaseOuverte({ 'E-PRATIQUE': {} }, { ecranId: 'E-PRATIQUE' });
     }).not.toThrow();
   });
 

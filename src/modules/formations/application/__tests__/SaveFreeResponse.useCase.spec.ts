@@ -17,6 +17,7 @@ import {
   CoursInconnuError,
   EcranNonServiError,
   ParticipantNotFoundError,
+  PhaseFermeeError,
   SessionClosedError,
   SessionNotFoundError,
   SessionNotStartedError,
@@ -67,6 +68,20 @@ describe('SaveFreeResponseUseCase', () => {
       ...REPONSE,
       response: 'Je vérifie la base.',
     });
+  });
+
+  it('RET-23 · refuse la redaction d une etape dont la correction est revelee', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        etat: 'en_cours',
+        courseSlug: COURS.slug,
+        ecranCourant: RANG_DE_L_EXEMPLE,
+        pilotageEcrans: { 'E-REM': { etayage: 1 } },
+      }),
+    );
+
+    await expect(sut.execute(REPONSE)).rejects.toThrow(PhaseFermeeError);
+    expect(freeResponses.save).not.toHaveBeenCalled();
   });
 
   it.each([

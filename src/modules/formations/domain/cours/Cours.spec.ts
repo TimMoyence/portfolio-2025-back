@@ -10,6 +10,7 @@ import {
 } from '../../../../../test/factories/cours-stocke.factory';
 import {
   BRIQUES_STOCKEES,
+  buildCasAQuestionsLibres,
   buildCoursStockeV3,
   buildEcranStockeV3,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -134,6 +135,14 @@ describe('estInteractif (§ 2.6.1)', () => {
         }),
       ),
     ).toBe(false);
+  });
+
+  it('L3 · compte un cas professionnel comme interactif quand il pose des questions libres', () => {
+    const ecran = lireCoursStocke(
+      buildCoursStockeV3([buildCasAQuestionsLibres()]),
+    ).ecrans[0];
+
+    expect(estInteractif(ecran)).toBe(true);
   });
 });
 

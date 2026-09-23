@@ -1,6 +1,6 @@
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
-import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
+import { B2_COURS_ENRICHI } from '../src/migrations/data/b2-enrichi.cours';
 import {
   GetSessionResultsUseCase,
   type ResultatsDeSeance,
@@ -48,10 +48,11 @@ import {
 } from './helpers/reponses-v3';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
-const SLUG = B2_COURS.slug;
-const VERSION_COURS = B2_COURS.version;
-const ECRANS_DU_COURS = B2_COURS.ecrans.length;
-const QUESTIONS_NOTEES = 26;
+const SLUG = B2_COURS_ENRICHI.slug;
+const VERSION_COURS = B2_COURS_ENRICHI.version;
+const ECRANS_DU_COURS = B2_COURS_ENRICHI.ecrans.length;
+const QUESTIONS_NOTEES = 31;
+const BAREME_DE_LA_V3 = 2;
 const ENIGMES_DU_COURS = 4;
 const JALONS_DU_COURS = 5;
 const TYPES_NOTABLES = 5;
@@ -277,8 +278,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       pilotage: { screenId: ecran.id, phase: 'revote' },
     }).expect(SANS_CONTENU);
     for (const unPoste of postes) {
-      const revote = await repondre(unPoste, ecran.questionJumelle);
-      expect([CREE, CONFLIT]).toContain(revote.status);
+      await repondre(unPoste, ecran.questionJumelle).expect(CREE);
     }
     await piloter({
       pilotage: { screenId: ecran.id, phase: 'revele' },
@@ -295,8 +295,8 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       ],
       retourEnArriere: [retourEnArriere.status, codeDe(retourEnArriere)],
     }).toEqual({
-      jumelleAvantRevote: [CREE, undefined],
-      principaleEnDiscussion: [CREE, undefined],
+      jumelleAvantRevote: [CONFLIT, 'PHASE_FERMEE'],
+      principaleEnDiscussion: [CONFLIT, 'PHASE_FERMEE'],
       retourEnArriere: [CONFLIT, 'PHASE_NON_MONOTONE'],
     });
   };
@@ -693,7 +693,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       }).toEqual({
         servi: VERSION_COURS,
         version: VERSION_COURS,
-        bareme: 1,
+        bareme: BAREME_DE_LA_V3,
         capacite: CAPACITE,
         ecrans: ECRANS_DU_COURS,
         titres: ECRANS_DU_COURS,
@@ -869,7 +869,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
   );
 
   it(
-    'deroule les cinquante-deux ecrans et joue chaque brique de la V3',
+    'deroule les cinquante-trois ecrans et joue chaque brique de la V3',
     async () => {
       fluxFormateurA = await abonnerAuFlux(
         banc.port,
@@ -896,7 +896,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
         await jouerEcran(rang, ecran);
       }
       mesures.push(
-        `deroule des 52 ecrans : ${((Date.now() - debutDesFlux) / 1000).toFixed(1)} s`,
+        `deroule des ${ECRANS_DU_COURS} ecrans : ${((Date.now() - debutDesFlux) / 1000).toFixed(1)} s`,
       );
       await jouerRythmeLibre();
 
@@ -908,6 +908,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       expect([...conflitsObserves].sort(parOrdreAlphabetique)).toEqual([
         'ECRAN_NON_SERVI',
         'ENIGME_VERROUILLEE',
+        'PHASE_FERMEE',
         'PHASE_NON_MONOTONE',
         'PRODUCTION_VIDE',
         'SEANCE_COMPLETE',
@@ -1174,7 +1175,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       }).toEqual({
         apresCloture: [CONFLIT, 'SEANCE_TERMINEE'],
         etat: 'terminee',
-        baremeDeLaSeance: 1,
+        baremeDeLaSeance: BAREME_DE_LA_V3,
         participants: CAPACITE,
         questionsNotees: QUESTIONS_NOTEES,
         notation: TYPES_NOTABLES,

@@ -74,4 +74,26 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
     ctaHref: '/formations/ia-solopreneurs/toolkit',
   },
   guide: { title: 'Méthode', items: [ELEMENT] },
+  'sort-review': {
+    title: 'Correction du tri',
+    source: { screenId: 'B2-01-A1-05-ANATOMIE', sortId: 'b2-01-a1-anatomie' },
+    categories: [
+      { id: 'valeur', label: 'Valeur en euros' },
+      { id: 'ambigu', label: 'Ambigu en l’état' },
+    ],
+    cards: [
+      {
+        id: 'ca-2025',
+        label: 'CA HT 2025 : 1 150 000 €',
+        category: 'valeur',
+        justification: 'montant en euros : « combien ? »',
+      },
+      {
+        id: 'inflation',
+        label: 'Inflation : « 4,9 »',
+        category: 'ambigu',
+        justification: 'ni unité, ni période, ni source',
+      },
+    ],
+  },
 };

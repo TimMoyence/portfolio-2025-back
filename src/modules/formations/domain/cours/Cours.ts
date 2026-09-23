@@ -14,6 +14,12 @@ export type AuMoinsUn<T> = readonly [T, ...T[]];
 export type Modalite = 'solo' | 'binome' | 'groupe' | 'classe';
 export type RegimeVerrou = 'ouvert' | 'focus' | 'examen';
 
+export interface QuestionLibre {
+  readonly id: string;
+  readonly question: string;
+  readonly placeholder?: string;
+}
+
 interface PiegeNumerique<D> {
   readonly confusion: ConfusionId;
   readonly valeur: (donnees: D) => number;
@@ -156,6 +162,11 @@ interface ParametreCurseur {
   readonly defaut: number;
 }
 
+interface EtapeDeMachine {
+  readonly libelle: string;
+  readonly calcul: string;
+}
+
 interface ProprietesDesExpositionsHistoriques {
   readonly 'fp-quote': {
     readonly texte: string;
@@ -168,12 +179,14 @@ interface ProprietesDesExpositionsHistoriques {
     readonly situation: string;
     readonly geste: string;
     readonly consequence: string | null;
+    readonly questionsLibres?: AuMoinsUn<QuestionLibre>;
   };
   readonly 'fp-concept4': {
     readonly parametres: AuMoinsUn<ParametreCurseur>;
     readonly formuleLatexSimplifie: string;
     readonly calcul: string;
     readonly phrase: string;
+    readonly etapes?: AuMoinsUn<EtapeDeMachine>;
   };
   readonly 'fp-plot': {
     readonly titre?: string;
@@ -211,6 +224,7 @@ interface SocleHistorique {
   readonly modalite?: Modalite;
   readonly question?: QuestionVote;
   readonly guide?: GuideFormateur;
+  readonly renvoi?: string;
 }
 
 type BriqueDExpositionHistorique = keyof ProprietesDesExpositionsHistoriques;
@@ -246,8 +260,12 @@ export function estInteractif(ecran: EcranDuContrat): boolean {
   switch (ecran.brique) {
     case 'fp-story':
       return recitInteractif(ecran);
-    case 'fp-quote':
     case 'fp-pro':
+      return (
+        ecran.question !== undefined ||
+        ecran.proprietes.questionsLibres !== undefined
+      );
+    case 'fp-quote':
     case 'fp-concept4':
     case 'fp-plot':
     case 'fp-pulse':

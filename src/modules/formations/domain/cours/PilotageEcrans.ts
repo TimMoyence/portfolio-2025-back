@@ -14,10 +14,43 @@ export interface QuestionPilotee {
   readonly ouverture?: 'principale' | 'jumelle';
 }
 
+const BRIQUES_A_REVELATION: ReadonlySet<Ecran['brique']> = new Set([
+  'fp-challenge',
+  'questionnaire',
+]);
+
+const CORRECTIONS_DE_LA_FEUILLE = ['formules', 'valeurs'] as const;
+
 function etapesDeLEcran(ecran: Ecran): number | null {
+  if (ecran.brique === 'fp-sheet') {
+    return CORRECTIONS_DE_LA_FEUILLE.length;
+  }
   return ecran.brique === 'fp-worked'
     ? ecran.proprietes.exemple.etapes.length
     : null;
+}
+
+function assertReglagesDeLaMachine(
+  ecran: Ecran,
+  reglages: Readonly<Record<string, number>>,
+  refuser: (raison: string) => never,
+): void {
+  if (ecran.brique !== 'fp-concept4') {
+    refuser('seule une machine porte des réglages');
+    return;
+  }
+  for (const [cle, valeur] of Object.entries(reglages)) {
+    const parametre = ecran.proprietes.parametres.find(
+      (candidat) => candidat.cle === cle,
+    );
+    if (parametre === undefined) {
+      refuser(`paramètre ${cle} absent de la machine`);
+      return;
+    }
+    if (valeur < parametre.min || valeur > parametre.max) {
+      refuser(`réglage ${cle} hors de [${parametre.min} ; ${parametre.max}]`);
+    }
+  }
 }
 
 export function assertPilotageCompatible(
@@ -37,15 +70,18 @@ export function assertPilotageCompatible(
   ) {
     refuser('ce vote n’a pas de question jumelle');
   }
-  if (demande.revele !== undefined && ecran.brique !== 'fp-challenge') {
-    refuser('seul un défi porte une révélation');
+  if (demande.revele !== undefined && !BRIQUES_A_REVELATION.has(ecran.brique)) {
+    refuser('seuls un défi et un questionnaire portent une révélation');
+  }
+  if (demande.reglages !== undefined) {
+    assertReglagesDeLaMachine(ecran, demande.reglages, refuser);
   }
   if (demande.etayage === undefined) {
     return;
   }
   const etapes = etapesDeLEcran(ecran);
   if (etapes === null) {
-    refuser('seul un exemple travaillé porte un étayage');
+    refuser('seuls un exemple travaillé et une feuille portent un étayage');
     return;
   }
   if (demande.etayage > etapes) {
@@ -80,6 +116,9 @@ export function assertPhaseOuverte(
   question: QuestionPilotee,
 ): void {
   if (question.ouverture === undefined) {
+    if (pilotage[question.ecranId]?.revele === true) {
+      throw new PhaseFermeeError(question.ecranId);
+    }
     return;
   }
   const phase = pilotage[question.ecranId]?.phase ?? 'vote';
@@ -89,5 +128,22 @@ export function assertPhaseOuverte(
       : phase === 'revote' || phase === 'revele';
   if (!ouverte) {
     throw new PhaseFermeeError(question.ecranId);
+  }
+}
+
+export function assertEtapeNonCorrigee(
+  pilotage: Readonly<Record<string, PilotageEcran>>,
+  ecran: Ecran | undefined,
+  activiteId: string,
+): void {
+  if (ecran?.brique !== 'fp-worked') {
+    return;
+  }
+  const exemple = ecran.proprietes.exemple;
+  const rang = exemple.etapes.findIndex(
+    (etape) => `${exemple.id}:${etape.id}` === activiteId,
+  );
+  if (rang >= 0 && rang < (pilotage[ecran.id]?.etayage ?? 0)) {
+    throw new PhaseFermeeError(ecran.id);
   }
 }

@@ -238,7 +238,10 @@ function enregistrerNumerique(
   ]);
   contexte.corriges.push([
     question.id,
-    corrige(String(Number(tiree.solution.toFixed(6))), tiree.pieges),
+    corrige(
+      question.formePubliee ?? String(Number(tiree.solution.toFixed(6))),
+      tiree.pieges,
+    ),
   ]);
   contexte.enonces.push([question.id, tiree.enonce]);
   return { enonce: tiree.enonce, unite: tiree.unite };

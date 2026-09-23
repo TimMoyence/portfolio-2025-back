@@ -1,4 +1,9 @@
-import type { Modalite, RegimeVerrou } from '../cours/Cours';
+import type {
+  AuMoinsUn,
+  Modalite,
+  QuestionLibre,
+  RegimeVerrou,
+} from '../cours/Cours';
 import type { OrdreQuestions, ProprietesExposition } from './cours';
 
 export interface MetadonneesBrique {
@@ -187,6 +192,7 @@ export interface DonneesParBrique {
       readonly situation: string;
       readonly geste: string;
       readonly consequence: string | null;
+      readonly questionsLibres?: AuMoinsUn<QuestionLibre>;
       readonly metadonnees: MetadonneesBrique;
     };
   };

@@ -264,6 +264,7 @@ export type ProprietesRecit = Omit<
 const communes = {
   guide: guideFormateur.optional(),
   modalite: modalite.optional(),
+  renvoi: texte.optional(),
 };
 
 const parametreCurseur = z
@@ -286,15 +287,36 @@ const proprietesCitation = z
   })
   .strict();
 
+const questionLibre = z
+  .object({
+    id: identifiantDeQuestion,
+    question: texte,
+    placeholder: texte.optional(),
+  })
+  .strict();
+
 const proprietesCas = z
   .object({
     metier: texte,
     situation: texte,
     geste: texte,
     consequence: texte.nullable(),
+    questionsLibres: auMoinsUn(questionLibre).optional(),
     ...communes,
   })
-  .strict();
+  .strict()
+  .superRefine(({ questionsLibres = [] }, contexte) => {
+    const vus = new Set<string>();
+    for (const [position, { id }] of questionsLibres.entries()) {
+      if (vus.has(id)) {
+        signaleurDe(contexte)(
+          ['questionsLibres', position, 'id'],
+          `question libre ${id} en double`,
+        );
+      }
+      vus.add(id);
+    }
+  });
 
 const proprietesExemple = z
   .object({
@@ -334,6 +356,9 @@ const proprietesMachine = z
     formuleLatexSimplifie: texte,
     calcul: texte,
     phrase: texte,
+    etapes: auMoinsUn(
+      z.object({ libelle: texte, calcul: texte }).strict(),
+    ).optional(),
     ...communes,
   })
   .strict();
