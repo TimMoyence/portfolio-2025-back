@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { InsertB2CoursV31789893879954 } from '../src/migrations/1789893879954-InsertB2CoursV3';
+import { B2_COURS_ENRICHI } from '../src/migrations/data/b2-enrichi.cours';
 import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import type { Cours } from '../src/modules/formations/domain/contrats/cours';
 import type {
@@ -92,16 +93,21 @@ describeDb('contenu V3 du B2-01 en base', () => {
     expect(verifierStructure(cours)).toEqual([]);
   });
 
-  it('ouvre un barème v2 et sert le même instantané que le fichier livré', () => {
-    const bareme = ouvrirTirages(cours, tireurSequentiel(1), 3);
+  it('ouvre un barème v2 et sert le même instantané que le fichier livré', async () => {
+    const publie = await contexte.catalogue.trouverCourant(B2_COURS.slug);
+    if (publie === null) {
+      throw new Error('aucune version publiée du B2-01');
+    }
+    const bareme = ouvrirTirages(publie.cours, tireurSequentiel(1), 3);
 
+    expect(publie.version).toBe(B2_COURS_ENRICHI.version);
     expect(bareme.version).toBe(2);
     expect(bareme.tirages).toHaveLength(60);
     expect(
       empreinte({
-        sujet: tirer(cours, GRAINE_DE_REFERENCE).sujet,
-        deroule: deroulePresentateur(cours, GRAINE_DE_REFERENCE),
-        catalogue: projeterCatalogue(cours),
+        sujet: tirer(publie.cours, GRAINE_DE_REFERENCE).sujet,
+        deroule: deroulePresentateur(publie.cours, GRAINE_DE_REFERENCE),
+        catalogue: projeterCatalogue(publie.cours),
       }),
     ).toBe(INSTANTANE.empreinte);
   });

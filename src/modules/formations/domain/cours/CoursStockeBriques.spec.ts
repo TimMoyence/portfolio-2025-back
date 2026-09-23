@@ -4,6 +4,7 @@ import {
 } from '../../../../../test/factories/cours-stocke.factory';
 import {
   BRIQUES_STOCKEES,
+  buildCasAQuestionsLibres,
   buildCoursStockeV3,
   buildEcranStockeV3,
   buildProprietesStockees,
@@ -121,6 +122,13 @@ describe('stockage multi-briques (B1)', () => {
   });
 
   it.each<readonly [string, string, (proprietes: any) => void]>([
+    [
+      'fp-plot',
+      'un préréglage qui règle un paramètre absent du tracé',
+      (p) => {
+        p.prereglages = [{ libelle: 'Axe à zéro', valeurs: { absent: 0 } }];
+      },
+    ],
     [
       'fp-cardsort',
       'un corrigé qui classe une carte absente du plan',
@@ -440,6 +448,43 @@ describe('stockage multi-briques (B1)', () => {
         45.478261,
         10,
       );
+    });
+  });
+
+  describe('cas professionnel à questions libres', () => {
+    it('L3 · lit les questions libres d un cas professionnel', () => {
+      const ecran = lireEcran(buildCasAQuestionsLibres());
+
+      expect(ecran.brique === 'fp-pro' && ecran.proprietes).toMatchObject({
+        questionsLibres: [
+          {
+            id: 'b2-01-a1-mission:mesure',
+            question: 'Que mesure chaque chiffre ?',
+            placeholder: 'Un montant, une part, une évolution…',
+          },
+          {
+            id: 'b2-01-a1-mission:comparable',
+            question: 'Les bases et les périodes sont-elles comparables ?',
+          },
+        ],
+      });
+    });
+
+    it('L3 · refuse une clé inconnue dans une question libre', () => {
+      const ecran = buildCasAQuestionsLibres();
+      avecCleInconnue(ecran.proprietes, ['questionsLibres', 0]);
+
+      expect(() => lireEcran(ecran)).toThrow(ContenuDeCoursInvalideError);
+    });
+
+    it('L3 · refuse deux questions libres de même identifiant', () => {
+      const ecran = buildCasAQuestionsLibres();
+      const [premiere, seconde] = ecran.proprietes.questionsLibres as {
+        id: string;
+      }[];
+      seconde.id = premiere.id;
+
+      expect(() => lireEcran(ecran)).toThrow(ContenuDeCoursInvalideError);
     });
   });
 });

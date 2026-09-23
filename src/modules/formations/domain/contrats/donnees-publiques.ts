@@ -1,4 +1,9 @@
-import type { Modalite, RegimeVerrou } from '../cours/Cours';
+import type {
+  AuMoinsUn,
+  Modalite,
+  QuestionLibre,
+  RegimeVerrou,
+} from '../cours/Cours';
 import type { OrdreQuestions, ProprietesExposition } from './cours';
 
 export interface MetadonneesBrique {
@@ -187,12 +192,14 @@ export interface DonneesParBrique {
       readonly situation: string;
       readonly geste: string;
       readonly consequence: string | null;
+      readonly questionsLibres?: AuMoinsUn<QuestionLibre>;
       readonly metadonnees: MetadonneesBrique;
     };
   };
   readonly 'fp-worked': {
     readonly exemple: WorkedExemple;
     readonly etayage: number;
+    readonly pilote?: boolean;
   };
   readonly 'fp-concept4': { readonly definition: Concept4Definition };
   readonly 'fp-plot': { readonly definition: PlotDefinition };

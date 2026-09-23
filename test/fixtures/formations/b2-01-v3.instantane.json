@@ -1,12 +1,12 @@
 {
-  "version": 1,
+  "version": 3,
   "graine": 0,
-  "empreinte": "d9f24f34dd1a8184579a4c41dbb17e2eb5ecce5a0fa23e20df4bf64bd87b9281",
+  "empreinte": "461a90dbd1b9f6a9db72dba8a9725d8404af88bcaadf1be84c26577be7a2a5fa",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 210,
+    "duree": 213,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -101,19 +101,36 @@
         "id": "B2-01-A1-03-MISSION",
         "type": "fp-pro",
         "titre": "Votre mission chez Atelier Rivage",
-        "duree": 2,
-        "interactif": false,
+        "duree": 4,
+        "interactif": true,
         "donnees": {
           "cas": {
             "id": "B2-01-A1-03-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
             "situation": "Lundi, 8 h 40. Hélène Garnier, la dirigeante, vous transfère le tableau de bord 2025 préparé par Samir Haddad, responsable commercial : « Samir annonce une excellente année et veut investir dans la marketplace. Est-ce qu’on gagne vraiment plus qu’en 2024 ? Préparez-moi un dossier fiable pour le comité de jeudi. »",
-            "geste": "Avant de recommander un investissement, répondez à trois questions : que mesure chaque chiffre ? Les bases et les périodes sont-elles comparables ? Le recalcul confirme-t-il la recommandation ?",
+            "geste": "Avant de recommander un investissement, répondez par écrit aux trois questions ci-dessous.",
             "consequence": "Si le comité décide sur un chiffre mal lu, Atelier Rivage peut investir dans le canal qui dégrade sa rentabilité.",
+            "questionsLibres": [
+              {
+                "id": "b2-01-a1-mission:mesure",
+                "question": "Que mesure chaque chiffre ?",
+                "placeholder": "Un montant, une part, une évolution…"
+              },
+              {
+                "id": "b2-01-a1-mission:comparable",
+                "question": "Les bases et les périodes sont-elles comparables ?",
+                "placeholder": "Même base de départ, même période ?"
+              },
+              {
+                "id": "b2-01-a1-mission:recalcul",
+                "question": "Le recalcul confirme-t-il la recommandation ?",
+                "placeholder": "Ce qu’il faudrait recalculer avant de décider…"
+              }
+            ],
             "metadonnees": {
               "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -276,6 +293,110 @@
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-01-A1-05-CORRECTION",
+        "type": "fp-story",
+        "titre": "Correction : ce que dit chaque chiffre du tableau de bord",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A1-05-CORRECTION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A1-05-CORRECTION",
+              "renderer": "sort-review",
+              "props": {
+                "title": "Correction du tri",
+                "subtitle": "Chaque carte à sa place, avec la raison qui l’y range.",
+                "source": {
+                  "screenId": "B2-01-A1-05-ANATOMIE",
+                  "sortId": "b2-01-a1-anatomie"
+                },
+                "categories": [
+                  {
+                    "id": "valeur",
+                    "label": "Valeur en euros"
+                  },
+                  {
+                    "id": "proportion",
+                    "label": "Proportion : part d’un total"
+                  },
+                  {
+                    "id": "evolution",
+                    "label": "Évolution : variation par rapport à une valeur de départ"
+                  },
+                  {
+                    "id": "points",
+                    "label": "Écart entre deux taux, en points"
+                  },
+                  {
+                    "id": "ambigu",
+                    "label": "Ambigu en l’état : unité, base ou période manquante"
+                  }
+                ],
+                "cards": [
+                  {
+                    "id": "ca-2025",
+                    "label": "CA HT 2025 : 1 150 000 €",
+                    "category": "valeur",
+                    "justification": "montant en euros : « combien ? »"
+                  },
+                  {
+                    "id": "evolution-ca",
+                    "label": "CA : « +9,5 % » par rapport à 2024",
+                    "category": "evolution",
+                    "justification": "variation rapportée à la valeur de 2024"
+                  },
+                  {
+                    "id": "part-entretien",
+                    "label": "Entretien : 20 % du CA 2025",
+                    "category": "proportion",
+                    "justification": "230 000 € rapportés à 1 150 000 €"
+                  },
+                  {
+                    "id": "taux-marge",
+                    "label": "Taux de marge 2025 : 25,3 %",
+                    "category": "proportion",
+                    "justification": "marge brute rapportée au CA HT de la même année : une part"
+                  },
+                  {
+                    "id": "ecart-taux",
+                    "label": "Taux de marge : « −2,3 % » par rapport à 2024",
+                    "category": "points",
+                    "justification": "libellé imprécis (taux de marge brute) et unité fausse : −2,3 points"
+                  },
+                  {
+                    "id": "marge-sans-unite",
+                    "label": "Marge brute : « +1 200 » (colonne « Évolution affichée », dont les autres lignes sont en %)",
+                    "category": "ambigu",
+                    "justification": "euros ou pourcentage ? Dans une colonne de %, un nombre sans unité est ambigu"
+                  },
+                  {
+                    "id": "inflation",
+                    "label": "Inflation : « 4,9 »",
+                    "category": "ambigu",
+                    "justification": "ni unité, ni période, ni source"
+                  },
+                  {
+                    "id": "toile",
+                    "label": "Prix de la toile : « +4 % » sur l’année",
+                    "category": "evolution",
+                    "justification": "variation depuis le 1er janvier (calcul à vérifier à l’acte 4)"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["contrat-de-lecture"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
               "regime": "ouvert"
             }
           }
@@ -588,7 +709,7 @@
             "titre": "Diapositive de Samir : marge brute et axe réglable",
             "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
-              "libelle": "Année (0 = 2022, 3 = 2025)",
+              "libelle": "Année",
               "min": 0,
               "max": 3
             },
@@ -601,14 +722,6 @@
                 "max": 284000,
                 "pas": 4000,
                 "defaut": 284000
-              },
-              {
-                "cle": "maximum",
-                "libelle": "Haut de l’axe vertical (€)",
-                "min": 292000,
-                "max": 600000,
-                "pas": 4000,
-                "defaut": 292000
               }
             ],
             "series": [
@@ -620,10 +733,27 @@
               }
             ],
             "bornesOrdonnee": {
-              "minParametre": "origine",
-              "maxParametre": "maximum"
+              "max": 292000,
+              "minParametre": "origine"
             },
-            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
+            "description": "Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.",
+            "forme": "barres",
+            "unite": "euros",
+            "etiquettes": ["2022", "2023", "2024", "2025"],
+            "prereglages": [
+              {
+                "libelle": "Axe de Samir",
+                "valeurs": {
+                  "origine": 284000
+                }
+              },
+              {
+                "libelle": "Axe à zéro",
+                "valeurs": {
+                  "origine": 0
+                }
+              }
+            ],
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
@@ -879,11 +1009,56 @@
         }
       },
       {
+        "id": "B2-01-A2-06-POINTS-EXERCICE",
+        "type": "fp-pro",
+        "titre": "Points ou pourcentage : à vous de rédiger",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B2-01-A2-06-POINTS-EXERCICE",
+            "metier": "Assistant·e de gestion — Atelier Rivage",
+            "situation": "Le taux de marge brute passe de 27,60 % (2024) à 25,30 % (2025). Hélène veut une phrase juste pour le comité.",
+            "geste": "Rédigez chaque étape sur votre poste, avant la correction.",
+            "consequence": null,
+            "questionsLibres": [
+              {
+                "id": "b2-01-a2-points-exercice:ecart",
+                "question": "Écrivez l’écart avec son unité.",
+                "placeholder": "Écart entre les deux taux"
+              },
+              {
+                "id": "b2-01-a2-points-exercice:relatif",
+                "question": "Calculez l’évolution relative en précisant la base.",
+                "placeholder": "Évolution relative du taux"
+              },
+              {
+                "id": "b2-01-a2-points-exercice:phrase",
+                "question": "Rédigez la phrase sans écrire « −2,3 % ».",
+                "placeholder": "Phrase pour le comité"
+              },
+              {
+                "id": "b2-01-a2-points-exercice:controle",
+                "question": "Faites le contrôle inverse.",
+                "placeholder": "Contrôle"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["point-de-pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B2-01-A2-06-POINTS",
         "type": "fp-worked",
-        "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 5,
-        "interactif": true,
+        "titre": "Correction : points ou pourcentage",
+        "duree": 2,
+        "interactif": false,
         "donnees": {
           "exemple": {
             "id": "b2-01-a2-points",
@@ -917,12 +1092,13 @@
             "metadonnees": {
               "concepts": ["point-de-pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
-          "etayage": 3
+          "etayage": 0,
+          "pilote": true
         }
       },
       {
@@ -2949,7 +3125,7 @@
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 210,
+    "duree": 213,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -3098,26 +3274,43 @@
         "id": "B2-01-A1-03-MISSION",
         "type": "fp-pro",
         "titre": "Votre mission chez Atelier Rivage",
-        "duree": 2,
-        "interactif": false,
+        "duree": 4,
+        "interactif": true,
         "donnees": {
           "cas": {
             "id": "B2-01-A1-03-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
             "situation": "Lundi, 8 h 40. Hélène Garnier, la dirigeante, vous transfère le tableau de bord 2025 préparé par Samir Haddad, responsable commercial : « Samir annonce une excellente année et veut investir dans la marketplace. Est-ce qu’on gagne vraiment plus qu’en 2024 ? Préparez-moi un dossier fiable pour le comité de jeudi. »",
-            "geste": "Avant de recommander un investissement, répondez à trois questions : que mesure chaque chiffre ? Les bases et les périodes sont-elles comparables ? Le recalcul confirme-t-il la recommandation ?",
+            "geste": "Avant de recommander un investissement, répondez par écrit aux trois questions ci-dessous.",
             "consequence": "Si le comité décide sur un chiffre mal lu, Atelier Rivage peut investir dans le canal qui dégrade sa rentabilité.",
+            "questionsLibres": [
+              {
+                "id": "b2-01-a1-mission:mesure",
+                "question": "Que mesure chaque chiffre ?",
+                "placeholder": "Un montant, une part, une évolution…"
+              },
+              {
+                "id": "b2-01-a1-mission:comparable",
+                "question": "Les bases et les périodes sont-elles comparables ?",
+                "placeholder": "Même base de départ, même période ?"
+              },
+              {
+                "id": "b2-01-a1-mission:recalcul",
+                "question": "Le recalcul confirme-t-il la recommandation ?",
+                "placeholder": "Ce qu’il faudrait recalculer avant de décider…"
+              }
+            ],
             "metadonnees": {
               "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "Action : lecture à voix haute, classe entière, en 90 secondes.\nObservé : la demande d’Hélène (« gagner plus ») et la proposition de Samir (investir).\nAttendu : repérer que « gagner » peut désigner un montant ou un taux.\nContrôle : faire reformuler l’enjeu par un étudiant en une phrase.\nTransition : « Regardons le tableau de bord tel qu’il a été envoyé. »",
-        "diffusion": "catalogue",
+        "notes": "Action : lecture à voix haute, classe entière, en 90 secondes, puis 2 min d’écriture individuelle : une réponse par question sur son poste.\nObservé : la demande d’Hélène (« gagner plus ») et la proposition de Samir (investir).\nAttendu : repérer que « gagner » peut désigner un montant ou un taux, et le noter dès la première question.\nContrôle : lire au pupitre deux réponses à la première question, l’une sur un montant, l’autre sur un taux.\nTransition : « Regardons le tableau de bord tel qu’il a été envoyé. »",
+        "diffusion": "seance",
         "seuil": null,
         "corriges": [],
         "questions": [],
@@ -3346,6 +3539,116 @@
           ],
           "seuilReussite": 0.75
         }
+      },
+      {
+        "id": "B2-01-A1-05-CORRECTION",
+        "type": "fp-story",
+        "titre": "Correction : ce que dit chaque chiffre du tableau de bord",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A1-05-CORRECTION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A1-05-CORRECTION",
+              "renderer": "sort-review",
+              "props": {
+                "title": "Correction du tri",
+                "subtitle": "Chaque carte à sa place, avec la raison qui l’y range.",
+                "source": {
+                  "screenId": "B2-01-A1-05-ANATOMIE",
+                  "sortId": "b2-01-a1-anatomie"
+                },
+                "categories": [
+                  {
+                    "id": "valeur",
+                    "label": "Valeur en euros"
+                  },
+                  {
+                    "id": "proportion",
+                    "label": "Proportion : part d’un total"
+                  },
+                  {
+                    "id": "evolution",
+                    "label": "Évolution : variation par rapport à une valeur de départ"
+                  },
+                  {
+                    "id": "points",
+                    "label": "Écart entre deux taux, en points"
+                  },
+                  {
+                    "id": "ambigu",
+                    "label": "Ambigu en l’état : unité, base ou période manquante"
+                  }
+                ],
+                "cards": [
+                  {
+                    "id": "ca-2025",
+                    "label": "CA HT 2025 : 1 150 000 €",
+                    "category": "valeur",
+                    "justification": "montant en euros : « combien ? »"
+                  },
+                  {
+                    "id": "evolution-ca",
+                    "label": "CA : « +9,5 % » par rapport à 2024",
+                    "category": "evolution",
+                    "justification": "variation rapportée à la valeur de 2024"
+                  },
+                  {
+                    "id": "part-entretien",
+                    "label": "Entretien : 20 % du CA 2025",
+                    "category": "proportion",
+                    "justification": "230 000 € rapportés à 1 150 000 €"
+                  },
+                  {
+                    "id": "taux-marge",
+                    "label": "Taux de marge 2025 : 25,3 %",
+                    "category": "proportion",
+                    "justification": "marge brute rapportée au CA HT de la même année : une part"
+                  },
+                  {
+                    "id": "ecart-taux",
+                    "label": "Taux de marge : « −2,3 % » par rapport à 2024",
+                    "category": "points",
+                    "justification": "libellé imprécis (taux de marge brute) et unité fausse : −2,3 points"
+                  },
+                  {
+                    "id": "marge-sans-unite",
+                    "label": "Marge brute : « +1 200 » (colonne « Évolution affichée », dont les autres lignes sont en %)",
+                    "category": "ambigu",
+                    "justification": "euros ou pourcentage ? Dans une colonne de %, un nombre sans unité est ambigu"
+                  },
+                  {
+                    "id": "inflation",
+                    "label": "Inflation : « 4,9 »",
+                    "category": "ambigu",
+                    "justification": "ni unité, ni période, ni source"
+                  },
+                  {
+                    "id": "toile",
+                    "label": "Prix de la toile : « +4 % » sur l’année",
+                    "category": "evolution",
+                    "justification": "variation depuis le 1er janvier (calcul à vérifier à l’acte 4)"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["contrat-de-lecture"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "Action : projeter le plateau corrigé, carte par carte, en partant des deux cartes qui concentrent les erreurs.\nObservé : sur chaque poste, les cartes mal placées au tri sont bordées de rouge.\nAttendu : « −2,3 % » est un écart de deux taux, en points ; « +1 200 » et « 4,9 » restent ambigus sans unité, base ni période.\nContrôle : faire dire à un binôme pourquoi sa carte bordée de rouge change de colonne.\nTransition : « Un taux n’est une information que si l’on connaît sa fiche d’identité. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
       },
       {
         "id": "B2-01-A1-06-FICHE-INDICATEUR",
@@ -3639,7 +3942,8 @@
               "fausse": true
             }
           ]
-        }
+        },
+        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
       },
       {
         "id": "B2-01-A1-11-JALON-1",
@@ -3725,7 +4029,7 @@
             "titre": "Diapositive de Samir : marge brute et axe réglable",
             "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
-              "libelle": "Année (0 = 2022, 3 = 2025)",
+              "libelle": "Année",
               "min": 0,
               "max": 3
             },
@@ -3738,14 +4042,6 @@
                 "max": 284000,
                 "pas": 4000,
                 "defaut": 284000
-              },
-              {
-                "cle": "maximum",
-                "libelle": "Haut de l’axe vertical (€)",
-                "min": 292000,
-                "max": 600000,
-                "pas": 4000,
-                "defaut": 292000
               }
             ],
             "series": [
@@ -3757,10 +4053,27 @@
               }
             ],
             "bornesOrdonnee": {
-              "minParametre": "origine",
-              "maxParametre": "maximum"
+              "max": 292000,
+              "minParametre": "origine"
             },
-            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
+            "description": "Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.",
+            "forme": "barres",
+            "unite": "euros",
+            "etiquettes": ["2022", "2023", "2024", "2025"],
+            "prereglages": [
+              {
+                "libelle": "Axe de Samir",
+                "valeurs": {
+                  "origine": 284000
+                }
+              },
+              {
+                "libelle": "Axe à zéro",
+                "valeurs": {
+                  "origine": 0
+                }
+              }
+            ],
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
@@ -3770,7 +4083,7 @@
             }
           }
         },
-        "notes": "Action : chaque étudiant fait glisser l’origine de 284 000 € à 0 €, puis le haut de l’axe de 292 000 € à 600 000 €.\nObservé : la pente s’écrase, les valeurs ne changent pas ; le premier affichage reproduit la diapositive de A1-09.\nAttendu : « l’échelle change l’impression, pas la donnée ».\nContrôle : faire lire la valeur 2025 dans les deux positions (291 000 €).\nTransition : « Atelier 1 : lire, rapporter, estimer. »",
+        "notes": "Action : chaque étudiant fait glisser l’origine de l’axe de 284 000 € à 0 €, ou bascule d’un préréglage à l’autre.\nObservé : les montants ne bougent pas ; seul le rapport des hauteurs change, de ×7 sur l’axe de Samir à presque ×1 sur l’axe à zéro.\nAttendu : « l’échelle change l’impression, pas la donnée » : l’évolution réelle reste +2,1 %.\nContrôle : faire lire la barre 2025 dans les deux positions (291 000 €) et comparer le rapport des hauteurs au réel.\nTransition : « Atelier 1 : lire, rapporter, estimer. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3947,7 +4260,7 @@
           },
           {
             "questionId": "b2-01-a2-part-marketplace",
-            "bonneReponse": "45.478261",
+            "bonneReponse": "45,5",
             "confusions": [
               {
                 "id": "taux-valeur-facteur-cent",
@@ -3975,7 +4288,7 @@
           },
           {
             "questionId": "b2-01-a2-evolution-sur-mesure",
-            "bonneReponse": "-17.805383",
+            "bonneReponse": "−17,81",
             "confusions": [
               {
                 "id": "base-arrivee",
@@ -4216,11 +4529,62 @@
         "corrigeEcran": null
       },
       {
+        "id": "B2-01-A2-06-POINTS-EXERCICE",
+        "type": "fp-pro",
+        "titre": "Points ou pourcentage : à vous de rédiger",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B2-01-A2-06-POINTS-EXERCICE",
+            "metier": "Assistant·e de gestion — Atelier Rivage",
+            "situation": "Le taux de marge brute passe de 27,60 % (2024) à 25,30 % (2025). Hélène veut une phrase juste pour le comité.",
+            "geste": "Rédigez chaque étape sur votre poste, avant la correction.",
+            "consequence": null,
+            "questionsLibres": [
+              {
+                "id": "b2-01-a2-points-exercice:ecart",
+                "question": "Écrivez l’écart avec son unité.",
+                "placeholder": "Écart entre les deux taux"
+              },
+              {
+                "id": "b2-01-a2-points-exercice:relatif",
+                "question": "Calculez l’évolution relative en précisant la base.",
+                "placeholder": "Évolution relative du taux"
+              },
+              {
+                "id": "b2-01-a2-points-exercice:phrase",
+                "question": "Rédigez la phrase sans écrire « −2,3 % ».",
+                "placeholder": "Phrase pour le comité"
+              },
+              {
+                "id": "b2-01-a2-points-exercice:controle",
+                "question": "Faites le contrôle inverse.",
+                "placeholder": "Contrôle"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["point-de-pourcentage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "Action : 3 min d’écriture individuelle, sans correction affichée : une réponse par étape sur son poste.\nObservé : ceux qui écrivent « −2,3 % » à l’étape de l’écart.\nAttendu : aucune correction à ce stade ; l’écran suivant la déroule étape par étape.\nContrôle : lire au pupitre une réponse en points et une réponse en pourcentage à la première étape.\nTransition : « Corrigeons ensemble, étape par étape. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
         "id": "B2-01-A2-06-POINTS",
         "type": "fp-worked",
-        "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 5,
-        "interactif": true,
+        "titre": "Correction : points ou pourcentage",
+        "duree": 2,
+        "interactif": false,
         "donnees": {
           "exemple": {
             "id": "b2-01-a2-points",
@@ -4254,19 +4618,21 @@
             "metadonnees": {
               "concepts": ["point-de-pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
-          "etayage": 3
+          "etayage": 0,
+          "pilote": true
         },
-        "notes": "Action : première étape commentée, les suivantes rédigées par les étudiants ; baisser l’étayage à 2 si la classe a réussi A1-05.\nObservé : ceux qui écrivent « −2,3 % » à l’étape 3.\nAttendu : −2,30 points ; −8,3 % en relatif ; une phrase qui contient les deux taux.\nContrôle : 27,6 × 0,917 = 25,31 (écart d’arrondi assumé).\nTransition : « Mini-jeu : tout n’est pas comparable. »",
+        "notes": "Action : dérouler la correction depuis le pupitre, une étape à la fois (« Montrer une étape de plus »).\nObservé : les réponses de l’exercice précédent, relues au pupitre avant chaque étape.\nAttendu : −2,30 points ; −8,3 % en relatif ; une phrase qui contient les deux taux.\nContrôle : 27,6 × 0,917 = 25,31 (écart d’arrondi assumé).\nTransition : « Mini-jeu : tout n’est pas comparable. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": null,
+        "renvoi": "B2-01-A2-06-POINTS-EXERCICE"
       },
       {
         "id": "B2-01-A2-07-JEU-COMPARABLE",
@@ -4995,7 +5361,7 @@
           },
           {
             "questionId": "b2-01-a3-indice-2023",
-            "bonneReponse": "112.681079",
+            "bonneReponse": "112,68",
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -5009,7 +5375,7 @@
           },
           {
             "questionId": "b2-01-a3-hausse-2019-2025",
-            "bonneReponse": "15.969113",
+            "bonneReponse": "15,97",
             "confusions": [
               {
                 "id": "taux-successifs-additionnes",
@@ -5023,7 +5389,7 @@
           },
           {
             "questionId": "b2-01-a3-taux-moyen",
-            "bonneReponse": "2.499966",
+            "bonneReponse": "2,50",
             "confusions": [
               {
                 "id": "taux-moyen-arithmetique",
@@ -6562,7 +6928,7 @@
         "corriges": [
           {
             "questionId": "b2-01-a5-part-marge-marketplace",
-            "bonneReponse": "28.756014",
+            "bonneReponse": "28,8",
             "confusions": [
               {
                 "id": "population-reference-ignoree",
@@ -6580,7 +6946,7 @@
           },
           {
             "questionId": "b2-01-a5-variation-marge-sur-mesure",
-            "bonneReponse": "-30960",
+            "bonneReponse": "−30 960",
             "confusions": [
               {
                 "id": "sens-de-variation",
@@ -8016,7 +8382,7 @@
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 210,
+    "duree": 213,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -8078,26 +8444,11 @@
       },
       {
         "id": "B2-01-A1-03-MISSION",
-        "type": "fp-pro",
+        "type": "ecran-verrouille",
         "titre": "Votre mission chez Atelier Rivage",
-        "duree": 2,
+        "duree": 4,
         "interactif": false,
-        "donnees": {
-          "cas": {
-            "id": "B2-01-A1-03-MISSION",
-            "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 8 h 40. Hélène Garnier, la dirigeante, vous transfère le tableau de bord 2025 préparé par Samir Haddad, responsable commercial : « Samir annonce une excellente année et veut investir dans la marketplace. Est-ce qu’on gagne vraiment plus qu’en 2024 ? Préparez-moi un dossier fiable pour le comité de jeudi. »",
-            "geste": "Avant de recommander un investissement, répondez à trois questions : que mesure chaque chiffre ? Les bases et les périodes sont-elles comparables ? Le recalcul confirme-t-il la recommandation ?",
-            "consequence": "Si le comité décide sur un chiffre mal lu, Atelier Rivage peut investir dans le canal qui dégrade sa rentabilité.",
-            "metadonnees": {
-              "concepts": ["contrat-de-lecture"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
+        "donnees": {}
       },
       {
         "id": "B2-01-A1-04-TABLEAU-DE-BORD",
@@ -8189,6 +8540,14 @@
         "type": "ecran-verrouille",
         "titre": "Que dit chaque chiffre du tableau de bord ?",
         "duree": 8,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B2-01-A1-05-CORRECTION",
+        "type": "ecran-verrouille",
+        "titre": "Correction : ce que dit chaque chiffre du tableau de bord",
+        "duree": 1,
         "interactif": false,
         "donnees": {}
       },
@@ -8447,7 +8806,7 @@
             "titre": "Diapositive de Samir : marge brute et axe réglable",
             "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
-              "libelle": "Année (0 = 2022, 3 = 2025)",
+              "libelle": "Année",
               "min": 0,
               "max": 3
             },
@@ -8460,14 +8819,6 @@
                 "max": 284000,
                 "pas": 4000,
                 "defaut": 284000
-              },
-              {
-                "cle": "maximum",
-                "libelle": "Haut de l’axe vertical (€)",
-                "min": 292000,
-                "max": 600000,
-                "pas": 4000,
-                "defaut": 292000
               }
             ],
             "series": [
@@ -8479,10 +8830,27 @@
               }
             ],
             "bornesOrdonnee": {
-              "minParametre": "origine",
-              "maxParametre": "maximum"
+              "max": 292000,
+              "minParametre": "origine"
             },
-            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
+            "description": "Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.",
+            "forme": "barres",
+            "unite": "euros",
+            "etiquettes": ["2022", "2023", "2024", "2025"],
+            "prereglages": [
+              {
+                "libelle": "Axe de Samir",
+                "valeurs": {
+                  "origine": 284000
+                }
+              },
+              {
+                "libelle": "Axe à zéro",
+                "valeurs": {
+                  "origine": 0
+                }
+              }
+            ],
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
@@ -8518,10 +8886,18 @@
         "donnees": {}
       },
       {
+        "id": "B2-01-A2-06-POINTS-EXERCICE",
+        "type": "ecran-verrouille",
+        "titre": "Points ou pourcentage : à vous de rédiger",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
         "id": "B2-01-A2-06-POINTS",
         "type": "ecran-verrouille",
-        "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 5,
+        "titre": "Correction : points ou pourcentage",
+        "duree": 2,
         "interactif": false,
         "donnees": {}
       },

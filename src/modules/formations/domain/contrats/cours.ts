@@ -63,6 +63,7 @@ export interface ProprietesExposition {
   readonly 'fp-worked': {
     readonly exemple: Omit<WorkedExemple, 'metadonnees'>;
     readonly etayage: number;
+    readonly pilote?: boolean;
   };
   readonly 'fp-concept4': ProprietesActuelles<'fp-concept4'>;
   readonly 'fp-plot': ProprietesActuelles<'fp-plot'> & {
@@ -74,6 +75,13 @@ export interface ProprietesExposition {
     };
     readonly sourceUrl?: string;
     readonly description?: string;
+    readonly forme?: 'courbes' | 'barres';
+    readonly unite?: 'euros';
+    readonly etiquettes?: readonly string[];
+    readonly prereglages?: readonly {
+      readonly libelle: string;
+      readonly valeurs: Readonly<Record<string, number>>;
+    }[];
   };
   readonly 'fp-pulse': {
     readonly sondage: { readonly id: string; readonly invite: string };
@@ -90,6 +98,7 @@ interface EcranCommun {
   readonly modalite?: Modalite;
   readonly question?: QuestionVote;
   readonly guide?: GuideFormateur;
+  readonly renvoi?: string;
 }
 
 type EcranExposition = {

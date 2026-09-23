@@ -278,6 +278,7 @@ interface SocleDEcran {
   readonly notes: string;
   readonly modalite?: Modalite;
   readonly guide?: GuideFormateur;
+  readonly renvoi?: string;
 }
 
 type GuideFormateur = NonNullable<Ecran['guide']>;
@@ -285,9 +286,10 @@ type GuideFormateur = NonNullable<Ecran['guide']>;
 interface Communes {
   readonly guide?: GuideFormateur;
   readonly modalite?: Modalite;
+  readonly renvoi?: string;
 }
 
-const CLES_COMMUNES: readonly string[] = ['guide', 'modalite'];
+const CLES_COMMUNES: readonly string[] = ['guide', 'modalite', 'renvoi'];
 
 type BriqueDExposition =
   | 'fp-quote'
@@ -302,7 +304,7 @@ type BriqueDeProductionUnique = 'fp-cardsort' | 'fp-sheet' | 'fp-table-build';
 function socleDe(
   ecran: EcranStocke,
   contratPublic: boolean,
-  { modalite, guide }: Communes,
+  { modalite, guide, renvoi }: Communes,
 ): SocleDEcran {
   return {
     id: ecran.screenId,
@@ -315,6 +317,7 @@ function socleDe(
     notes: ecran.notes,
     ...(modalite === undefined ? {} : { modalite }),
     ...(guide === undefined ? {} : { guide }),
+    ...(renvoi === undefined ? {} : { renvoi }),
   };
 }
 

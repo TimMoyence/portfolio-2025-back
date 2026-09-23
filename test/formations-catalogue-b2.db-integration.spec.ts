@@ -1,3 +1,4 @@
+import { B2_COURS_ENRICHI } from '../src/migrations/data/b2-enrichi.cours';
 import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
@@ -193,7 +194,7 @@ describeDb('catalogue B2 migré', () => {
     );
 
     expect((await catalogue.trouverCourant(course.slug))?.version).toBe(
-      VERSION_PUBLIEE,
+      B2_COURS_ENRICHI.version,
     );
     expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
     expect(

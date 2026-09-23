@@ -264,6 +264,7 @@ export type ProprietesRecit = Omit<
 const communes = {
   guide: guideFormateur.optional(),
   modalite: modalite.optional(),
+  renvoi: texte.optional(),
 };
 
 const parametreCurseur = z
@@ -286,15 +287,36 @@ const proprietesCitation = z
   })
   .strict();
 
+const questionLibre = z
+  .object({
+    id: identifiantDeQuestion,
+    question: texte,
+    placeholder: texte.optional(),
+  })
+  .strict();
+
 const proprietesCas = z
   .object({
     metier: texte,
     situation: texte,
     geste: texte,
     consequence: texte.nullable(),
+    questionsLibres: auMoinsUn(questionLibre).optional(),
     ...communes,
   })
-  .strict();
+  .strict()
+  .superRefine(({ questionsLibres = [] }, contexte) => {
+    const vus = new Set<string>();
+    for (const [position, { id }] of questionsLibres.entries()) {
+      if (vus.has(id)) {
+        signaleurDe(contexte)(
+          ['questionsLibres', position, 'id'],
+          `question libre ${id} en double`,
+        );
+      }
+      vus.add(id);
+    }
+  });
 
 const proprietesExemple = z
   .object({
@@ -315,6 +337,7 @@ const proprietesExemple = z
       })
       .strict(),
     etayage: rang,
+    pilote: z.boolean().optional(),
     ...communes,
   })
   .strict()
@@ -369,9 +392,31 @@ const proprietesTrace = z
       .optional(),
     sourceUrl: z.url({ protocol: /^https$/ }).optional(),
     description: texte.optional(),
+    forme: z.enum(['courbes', 'barres']).optional(),
+    unite: z.literal('euros').optional(),
+    etiquettes: z.array(texte).optional(),
+    prereglages: z
+      .array(
+        z
+          .object({ libelle: texte, valeurs: z.record(texte, z.number()) })
+          .strict(),
+      )
+      .optional(),
     ...communes,
   })
-  .strict();
+  .strict()
+  .superRefine((trace, contexte) => {
+    const cles = new Set(trace.parametres.map(({ cle }) => cle));
+    trace.prereglages?.forEach(({ valeurs }, rang) => {
+      for (const cle of Object.keys(valeurs).filter((c) => !cles.has(c))) {
+        contexte.addIssue({
+          code: 'custom',
+          path: ['prereglages', rang, 'valeurs', cle],
+          message: `le préréglage règle un paramètre absent du tracé : ${cle}`,
+        });
+      }
+    });
+  });
 
 const proprietesJalon = z.object({ sondage, ...communes }).strict();
 

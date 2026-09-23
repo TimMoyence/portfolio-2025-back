@@ -50,6 +50,9 @@ export function rangDeLaQuestion(cours: Cours, questionId: string): number {
 function activitesDeLEcran(ecran: Ecran): readonly string[] {
   switch (ecran.brique) {
     case 'fp-worked':
+      if (ecran.proprietes.pilote === true) {
+        return [];
+      }
       return ecran.proprietes.exemple.etapes.map(
         (etape) => `${ecran.proprietes.exemple.id}:${etape.id}`,
       );
@@ -59,6 +62,8 @@ function activitesDeLEcran(ecran: Ecran): readonly string[] {
       return [ecran.question.id];
     case 'fp-story':
       return reflexionDuRecit(ecran);
+    case 'fp-pro':
+      return (ecran.proprietes.questionsLibres ?? []).map(({ id }) => id);
     default:
       return [];
   }

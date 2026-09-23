@@ -238,7 +238,10 @@ function enregistrerNumerique(
   ]);
   contexte.corriges.push([
     question.id,
-    corrige(String(Number(tiree.solution.toFixed(6))), tiree.pieges),
+    corrige(
+      question.formePubliee ?? String(Number(tiree.solution.toFixed(6))),
+      tiree.pieges,
+    ),
   ]);
   contexte.enonces.push([question.id, tiree.enonce]);
   return { enonce: tiree.enonce, unite: tiree.unite };
@@ -342,6 +345,7 @@ function donneesDeBrique(
       return {
         exemple: { ...ecran.proprietes.exemple, metadonnees: communes },
         etayage: ecran.proprietes.etayage,
+        ...(ecran.proprietes.pilote === true ? { pilote: true } : {}),
       };
     case 'fp-pulse':
       return {

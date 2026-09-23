@@ -35,7 +35,7 @@ function mapper<T, U>(
   return [transformer(premier), ...suite.map(transformer)];
 }
 
-function notes(
+export function notes(
   action: string,
   observe: string,
   attendu: string,

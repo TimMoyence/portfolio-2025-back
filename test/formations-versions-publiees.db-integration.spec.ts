@@ -1,3 +1,4 @@
+import { B2_COURS_ENRICHI } from '../src/migrations/data/b2-enrichi.cours';
 import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import type { ContenuDeCoursBrut } from '../src/modules/formations/domain/cours/CoursStocke';
 import { describeDb } from './helpers/db-integration-datasource';
@@ -26,7 +27,10 @@ interface EcranPublie {
   readonly proprietes: Record<string, unknown>;
 }
 
-const HORS_HISTORIQUE = [B2_COURS.slug, B2_COURS.version] as const;
+const HORS_HISTORIQUE = [
+  B2_COURS.slug,
+  [B2_COURS.version, B2_COURS_ENRICHI.version],
+] as const;
 
 describeDb('versions publiées du catalogue de formations', () => {
   let contexte: ContexteFormations;
@@ -96,13 +100,13 @@ describeDb('versions publiées du catalogue de formations', () => {
     const ecrans: { nombre: number }[] = await contexte.dataSource.query(
       `SELECT COUNT(*)::int AS "nombre" FROM "formation_screen_contents" AS "ecran"
        JOIN "formation_course_contents" AS "cours" ON "cours"."id" = "ecran"."course_id"
-       WHERE NOT ("cours"."slug" = $1 AND "cours"."version" = $2)
+       WHERE NOT ("cours"."slug" = $1 AND "cours"."version" = ANY($2))
          AND ("ecran"."titre" IS NOT NULL OR "ecran"."diffusion" <> 'catalogue')`,
       [...HORS_HISTORIQUE],
     );
     const cours: { nombre: number }[] = await contexte.dataSource.query(
       `SELECT COUNT(*)::int AS "nombre" FROM "formation_course_contents"
-       WHERE NOT ("slug" = $1 AND "version" = $2)
+       WHERE NOT ("slug" = $1 AND "version" = ANY($2))
          AND ("remediations" <> '{}'::jsonb OR "medias" <> '[]'::jsonb)`,
       [...HORS_HISTORIQUE],
     );
