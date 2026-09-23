@@ -66,7 +66,7 @@ const DELAI_TEST_MS = 900_000;
 const DELAI_FLUX_MS = 20_000;
 const MARGE_DU_DEBIT = 2;
 const FORMULE_HORS_SUJET = '=123456789';
-const INTERVALLE_LIBRE = { premier: 11, dernier: 20 };
+const INTERVALLE_LIBRE = { premier: 8, dernier: 20 };
 const NOM_DU_GROUPE = 'Ilot Rivage renomme';
 const TABLES_HORS_SEANCE = ['formation_mastery'];
 

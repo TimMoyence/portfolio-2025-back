@@ -35,7 +35,6 @@ const TAILLE_MAX_DU_BAREME = 400 * 1024;
 const IDENTIFIANT_D_ECRAN = /^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$/;
 const LONGUEUR_MIN_D_UN_TEXTE_COMPARE = 12;
 const CLES_NON_TEXTUELLES = new Set(['id', 'formuleReference', 'transcript']);
-const RUBRIQUES = ['Action', 'Observé', 'Attendu', 'Contrôle', 'Transition'];
 
 const ECRAN_DU_GRAPHIQUE_TRIMESTRIEL = 'B2-01-A4-04-CA-TRIMESTRIEL';
 
@@ -182,7 +181,7 @@ describe('B2-01 — fichier de données', () => {
     }));
 
     expect(lues).toEqual(vueDEnsemble(DOCUMENT));
-    expect(lues).toHaveLength(55);
+    expect(lues).toHaveLength(75);
   });
 
   it('nomme chaque écran selon la convention et le titre du § 3 (AC-02)', () => {
@@ -193,7 +192,7 @@ describe('B2-01 — fichier de données', () => {
       expect(ecran.titre).toBe(titres.get(ecran.id));
       expect(ecran.titre?.length).toBeLessThanOrEqual(120);
     }
-    expect(new Set(COURS.ecrans.map((ecran) => ecran.id)).size).toBe(55);
+    expect(new Set(COURS.ecrans.map((ecran) => ecran.id)).size).toBe(75);
   });
 
   it('dure 213 min, soit 32, 36, 36, 38, 43 et 28 min par acte (AC-03)', () => {
@@ -233,7 +232,7 @@ describe('B2-01 — fichier de données', () => {
     expect(fuitesDeConfidentialite(COURS)).toEqual([]);
   });
 
-  it('borne l’exposition continue à 5 min pour 164 min interactives et 49 d’exposition (AC-04)', () => {
+  it('borne l’exposition continue à 6 min pour 142 min interactives et 71 d’exposition (AC-04)', () => {
     let bloc = 0;
     let plusLong = 0;
     for (const ecran of COURS.ecrans) {
@@ -245,11 +244,11 @@ describe('B2-01 — fichier de données', () => {
         .filter((ecran) => estInteractif(ecran) === interactif)
         .reduce((total, ecran) => total + ecran.dureeMinutes, 0);
 
-    expect(plusLong).toBe(5);
-    expect([minutes(true), minutes(false)]).toEqual([164, 49]);
+    expect(plusLong).toBe(6);
+    expect([minutes(true), minutes(false)]).toEqual([142, 71]);
   });
 
-  it('porte les questions fermées notées sur neuf ateliers de 8 à 14 min (AC-05)', () => {
+  it('porte les questions fermées notées sur treize écrans d atelier, les longs questionnaires découpés (AC-05)', () => {
     const ateliers = COURS.ecrans
       .slice(1, -1)
       .filter((ecran) => questionsDe(ecran).some(estFermeeNotee))
@@ -257,27 +256,33 @@ describe('B2-01 — fichier de données', () => {
 
     expect(ateliers).toEqual([
       'A1-05 (8)',
-      'A2-03 (14)',
+      'A2-03 (6)',
+      'A2-03 (6)',
       'A2-07 (8)',
       'A3-01 (8)',
-      'A3-07 (10)',
-      'A4-03 (8)',
+      'A3-07 (4)',
+      'A3-07 (4)',
+      'A4-03 (3)',
+      'A4-03 (3)',
       'A5-02 (8)',
-      'A5-06 (9)',
+      'A5-06 (4)',
+      'A5-06 (3)',
       'A5-07 (8)',
     ]);
   });
 
-  it('rédige les notes de chaque écran en cinq rubriques non vides (AC-06)', () => {
-    for (const ecran of COURS.ecrans) {
+  it('rédige chaque note présente en puces « • » non vides, et tolère l’écran sans note (AC-06)', () => {
+    const sansNote = COURS.ecrans.filter((ecran) => ecran.notes === '');
+
+    expect(sansNote.map((ecran) => ecran.id)).toEqual(['B2-01-A1-07-PLAN']);
+    for (const ecran of COURS.ecrans.filter((ecran) => ecran.notes !== '')) {
       const lignes = ecran.notes.split('\n');
 
-      expect(lignes.map((ligne) => ligne.split(' : ')[0])).toEqual(RUBRIQUES);
       expect(
-        lignes.every(
-          (ligne) => ligne.split(' : ').slice(1).join(' : ').length > 2,
+        lignes.filter(
+          (ligne) => !ligne.startsWith('• ') || ligne.slice(2).trim() === '',
         ),
-      ).toBe(true);
+      ).toEqual([]);
     }
   });
 
@@ -374,13 +379,13 @@ describe('B2-01 — fichier de données', () => {
     expect(corriges.get('b2-01-a5-variation-marge-sur-mesure')).toBe('−30 960');
   });
 
-  it('sert au catalogue les 12 écrans catalogue et verrouille les 43 autres (B19)', () => {
+  it('sert au catalogue les 12 écrans catalogue et verrouille les 63 autres (B19)', () => {
     const catalogue = projeterCatalogue(COURS);
     const verrouilles = catalogue.ecrans.filter(
       (ecran) => ecran.type === 'ecran-verrouille',
     );
 
-    expect(verrouilles).toHaveLength(43);
+    expect(verrouilles).toHaveLength(63);
     expect(
       catalogue.ecrans
         .filter((ecran) => ecran.type !== 'ecran-verrouille')
@@ -477,7 +482,7 @@ describe('B2-01 — fichier de données', () => {
     const reference = texteNormalise(DOCUMENT);
     const textes = COURS_B2_01.ecrans.flatMap((ecran) => [
       ecran.titre ?? '',
-      ...ecran.notes.split('\n'),
+      ...ecran.notes.split('\n').map((ligne) => ligne.replace(/^• /, '')),
       ...chainesDe(ecran.proprietes),
     ]);
     const capsule = COURS.ecrans.flatMap((ecran) =>
@@ -511,7 +516,7 @@ describe('B2-01 — fichier de données', () => {
         ? graphiqueBrut.proprietes
         : null;
     const atelierBrut = COURS_B2_01.ecrans.find(
-      (ecran) => ecran.screenId === 'B2-01-A2-03-ATELIER-1',
+      (ecran) => ecran.screenId === 'B2-01-A2-03-ATELIER-1-SUITE',
     );
     const proprietesBrutes =
       atelierBrut !== undefined && 'proprietes' in atelierBrut
@@ -524,7 +529,7 @@ describe('B2-01 — fichier de données', () => {
         ? proprietesGraphique.description
         : null,
     ).toBe(
-      'Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.',
+      'Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de l’axe vertical. Combien de fois la barre 2025 paraît-elle plus haute que celle de 2022 dans chaque cas ? Les montants, eux, ne bougent pas.',
     );
     expect(
       proprietesBrutes !== null && 'consigne' in proprietesBrutes
@@ -772,6 +777,7 @@ describe('B2-01 — retours de QA', () => {
   const ORIGINE_AXE = 'B2-01-A2-02-ORIGINE-AXE';
   const POINTS = 'B2-01-A2-06-POINTS';
   const EXERCICE_POINTS = 'B2-01-A2-06-POINTS-EXERCICE';
+  const CORRECTION_POINTS = 'B2-01-A2-06-CORRECTION';
   const JEU = 'B2-01-A2-07-JEU-COMPARABLE';
   const MACHINE = 'B2-01-A3-02-MACHINE-COEFFICIENTS';
   const RECOMMANDATION = 'B2-01-A5-08-RECOMMANDATION';
@@ -799,7 +805,7 @@ describe('B2-01 — retours de QA', () => {
     ).toEqual([
       'Que mesure chaque chiffre ?',
       'Les bases et les périodes sont-elles comparables ?',
-      'Le recalcul confirme-t-il la recommandation ?',
+      'Que faudrait-il recalculer avant de décider ?',
     ]);
     expect(activitesLibres(COURS).get(MISSION)).toHaveLength(3);
   });
@@ -856,14 +862,16 @@ describe('B2-01 — retours de QA', () => {
     ]);
   });
 
-  it('RET-23 (b) · fait répondre à chaque étape de POINTS sous l exemple lui-même, sans écran d exercice à part', () => {
+  it('RET-23 (b) · fait répondre à chaque étape de POINTS sous l exemple lui-même, corrigé ensuite par l écran piloté', () => {
     const points = ecran(POINTS);
-    if (points.brique !== 'fp-worked') {
+    const correction = ecran(CORRECTION_POINTS);
+    if (points.brique !== 'fp-worked' || correction.brique !== 'fp-worked') {
       throw new Error('POINTS de brique inattendue');
     }
 
     expect(COURS.ecrans.some(({ id }) => id === EXERCICE_POINTS)).toBe(false);
-    expect(points.renvoi).toBeUndefined();
+    expect(points.renvoi).toBe('B2-01-A1-04-TABLEAU-DE-BORD');
+    expect(correction.proprietes.corrigeDe).toBe(POINTS);
     expect(estInteractif(points)).toBe(true);
     expect(activitesLibres(COURS).get(POINTS)).toHaveLength(
       points.proprietes.exemple.etapes.length,

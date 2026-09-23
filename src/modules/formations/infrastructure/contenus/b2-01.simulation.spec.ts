@@ -53,12 +53,12 @@ function optionsParQuestion(
 }
 
 describe('B2-01 — simulation du tirage et de l’ouverture', () => {
-  it('tire les 55 écrans et les 48 solutions pour toute graine', () => {
+  it('tire les 75 écrans et les 48 solutions pour toute graine', () => {
     fc.assert(
       fc.property(graine, (valeur) => {
         const tirage = tirer(COURS, valeur);
 
-        expect(tirage.sujet.ecrans).toHaveLength(55);
+        expect(tirage.sujet.ecrans).toHaveLength(75);
         expect(Object.keys(tirage.solutions)).toHaveLength(19 + 7 + 13);
         expect(Object.keys(tirage.banque)).toHaveLength(13);
       }),
@@ -210,7 +210,7 @@ describe('B2-01 — simulation du tirage et de l’ouverture', () => {
       fc.property(graine, (valeur) => {
         const deroule = deroulePresentateur(COURS, valeur);
 
-        expect(deroule.ecrans).toHaveLength(55);
+        expect(deroule.ecrans).toHaveLength(75);
         expect(deroule.ecrans.flatMap((ecran) => ecran.questions)).toHaveLength(
           48,
         );

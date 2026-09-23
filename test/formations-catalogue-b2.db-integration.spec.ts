@@ -107,10 +107,14 @@ describeDb('catalogue B2 migré', () => {
     expect(
       ecrans.every((ecran) => Object.keys(ecran.proprietes).length > 0),
     ).toBe(true);
-    expect(ecrans.every((ecran) => ecran.notes.trim().length > 0)).toBe(true);
+    expect(
+      ecrans
+        .filter((ecran) => ecran.notes.trim().length === 0)
+        .map((ecran) => [ecran.screenId, ecran.notes]),
+    ).toEqual([['B2-01-A1-07-PLAN', '']]);
     expect(
       ecrans.find((ecran) => ecran.screenId === 'B2-01-A1-03-MISSION')?.notes,
-    ).toContain('Attendu :');
+    ).toMatch(/^• /);
     expect(
       ecrans.filter((ecran) => ecran.proprietes['interaction'] !== undefined),
     ).toHaveLength(0);
@@ -184,10 +188,10 @@ describeDb('catalogue B2 migré', () => {
       .save(nouvelle);
     await expect(
       dataSource.query(
-        `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes") VALUES ($1, 0, 'ECRAN-SANS-NOTE', 'fp-story', 1, '[]'::jsonb, '', '{}'::jsonb)`,
+        `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes") VALUES ($1, 0, 'ECRAN-A-NOTE-BLANCHE', 'fp-story', 1, '[]'::jsonb, E'  \\n ', '{}'::jsonb)`,
         [publiee.id],
       ),
-    ).rejects.toThrow('chk_formation_screen_notes_not_blank');
+    ).rejects.toThrow('chk_formation_screen_notes_absentes_ou_renseignees');
     await dataSource.query(
       `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "titre", "diffusion", "brique", "duree_minutes", "concepts", "notes", "proprietes")
        SELECT $1, "position", "screen_id", "screen_id", 'catalogue', "brique", "duree_minutes", "concepts", "notes", "proprietes"
@@ -261,10 +265,13 @@ describeDb('catalogue B2 migré', () => {
     const deroule = deroulePresentateur(cours, 0);
 
     expect(sujet.ecrans.every((ecran) => !('notes' in ecran))).toBe(true);
-    expect(deroule.ecrans.every((ecran) => ecran.notes.trim().length > 0)).toBe(
-      true,
+    const notes = deroule.ecrans.flatMap((ecran) =>
+      ecran.notes === '' ? [] : ecran.notes.split('\n'),
     );
-    expect(JSON.stringify(sujet)).not.toContain('Attendu :');
+    expect(notes.length).toBeGreaterThan(deroule.ecrans.length);
+    expect(
+      notes.filter((ligne) => JSON.stringify(sujet).includes(ligne.slice(2))),
+    ).toEqual([]);
     expect(JSON.stringify(sujet)).not.toContain('correctIndex');
     expect(JSON.stringify(sujet)).not.toContain('bonneReponse');
     expect(JSON.stringify(sujet)).not.toContain('explanation');

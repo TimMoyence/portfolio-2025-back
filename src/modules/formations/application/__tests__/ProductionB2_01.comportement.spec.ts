@@ -18,7 +18,9 @@ import {
 import { SubmitProductionUseCase } from '../SubmitProduction.useCase';
 
 const COURS = buildCoursB2_01();
-const DERNIER_ECRAN = COURS.ecrans.length - 1;
+const RANG_DU_TABLEAU = COURS.ecrans.findIndex(
+  (ecran) => ecran.id === 'B2-01-A4-05-INDICE-TOILE',
+);
 const FEUILLE = 'b2-01-a4-feuille-canaux';
 const TABLEAU = 'b2-01-a4-indice-toile';
 const CELLULES_ATTENDUES = 17;
@@ -59,7 +61,7 @@ describe('productions du B2-01 corrigées par le cas d’usage (B5, B11)', () =>
       buildSessionRecord({
         courseSlug: COURS.slug,
         courseVersion: 3,
-        ecranCourant: DERNIER_ECRAN,
+        ecranCourant: RANG_DU_TABLEAU,
       }),
     );
     answers = createMockAnswersRepo();
