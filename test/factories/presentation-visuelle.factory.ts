@@ -74,6 +74,16 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
     ctaHref: '/formations/ia-solopreneurs/toolkit',
   },
   guide: { title: 'Méthode', items: [ELEMENT] },
+  'answer-review': {
+    title: 'Correction de l’atelier',
+    source: { screenId: 'B2-01-A2-03-ATELIER-1' },
+    explications: [
+      {
+        reference: 'b2-01-a2-evolution-marge',
+        texte: 'Un écart entre deux taux se lit en points.',
+      },
+    ],
+  },
   'sort-review': {
     title: 'Correction du tri',
     source: { screenId: 'B2-01-A1-05-ANATOMIE', sortId: 'b2-01-a1-anatomie' },
