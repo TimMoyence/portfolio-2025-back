@@ -7,8 +7,8 @@ import {
 } from '../../../../../test/factories/cours.factory';
 import {
   BRIQUES_STOCKEES,
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { solutionFor } from '../Bareme';
 import type { Cours } from '../contrats/cours';
@@ -52,10 +52,12 @@ describe('ouvrirTirages', () => {
         throw new Error('un cours sans questions ne tire aucune graine');
       }),
     ).toEqual({
-      version: 1,
+      version: 2,
       graineReference: 0,
       questions: [],
+      solutionsCommunes: {},
       tirages: [],
+      corriges: {},
     });
   });
 
@@ -91,24 +93,25 @@ describe('ouvrirTirages', () => {
       'Q-TEST-VOTE',
       'Q-TEST-EXIT',
     ]);
-    const parOrdreAlphabetique = (a: string, b: string) => a.localeCompare(b);
-    for (const tirage of bareme.tirages) {
-      expect(Object.keys(tirage.solutions).sort(parOrdreAlphabetique)).toEqual(
-        [...ids].sort(parOrdreAlphabetique),
-      );
-      expect(tirage.solutions).toEqual(tirer(cours, tirage.seed).solutions);
+    for (const { seed } of bareme.tirages) {
+      const attendues = tirer(cours, seed).solutions;
+      expect(Object.keys(attendues)).toHaveLength(ids.length);
+      for (const id of ids) {
+        expect(solutionFor(bareme, seed, id)).toEqual(attendues[id]);
+      }
     }
   });
 
   it('declare le type de correction et la tolerance de chaque question', () => {
     const bareme = ouvrirTirages(cours, tireurSequentiel());
-    expect(bareme.questions[0]).toEqual({
+    expect(bareme.questions[0]).toMatchObject({
       id: 'Q-TEST-RAPPEL',
       type: 'vote',
       concept: 'evolutions-successives',
       noteCompte: false,
     });
-    expect(bareme.questions[1]).toEqual({
+    expect(bareme.questions[0].tolerance).toBeUndefined();
+    expect(bareme.questions[1]).toMatchObject({
       id: 'Q-TEST-NUM',
       type: 'numeric',
       concept: 'taux-evolution',
@@ -156,8 +159,8 @@ describe('ouvrirTirages', () => {
       ],
     });
     const bareme = ouvrirTirages(cours2, tireurSequentiel());
-    for (const tirage of bareme.tirages) {
-      expect(tirage.solutions['Q-PAIRE'].pieges[0].valeur).toBe(20);
+    for (const { seed } of bareme.tirages) {
+      expect(solutionFor(bareme, seed, 'Q-PAIRE')?.pieges[0].valeur).toBe(20);
     }
   });
 
@@ -173,25 +176,15 @@ describe('ouvrirTirages', () => {
   });
 });
 
-describe('ouvrirTirages en barème v2 (version de cours ≥ 3)', () => {
+describe('ouvrirTirages : rattachement des questions et solutions communes', () => {
   const cours = buildCoursDeTest();
   const statique = lireCoursStocke(
-    buildCoursStockeV3(
-      BRIQUES_STOCKEES.map((brique) => buildEcranStockeV3(brique)),
+    buildCoursDeBriques(
+      BRIQUES_STOCKEES.map((brique) => buildEcranDeBrique(brique)),
     ),
   );
-  const ouvrirV2 = (cours: Cours) => {
-    const bareme = ouvrirTirages(cours, tireurSequentiel(500), 3);
-    if (bareme.version !== 2) {
-      throw new Error('barème v2 attendu');
-    }
-    return bareme;
-  };
-
-  it('garde le barème v1 pour les versions 1 et 2', () => {
-    expect(ouvrirTirages(statique, tireurSequentiel(), 2).version).toBe(1);
-    expect(ouvrirTirages(cours, tireurSequentiel()).version).toBe(1);
-  });
+  const ouvrirV2 = (cours: Cours) =>
+    ouvrirTirages(cours, tireurSequentiel(500));
 
   it('rattache chaque question à son écran, son ouverture, son origine et son énigme', () => {
     const { questions } = ouvrirV2(statique);

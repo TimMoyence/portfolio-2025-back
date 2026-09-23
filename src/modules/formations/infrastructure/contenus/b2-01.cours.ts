@@ -1,25 +1,26 @@
 import type { z } from 'zod';
-import type { ConceptId } from '../../modules/formations/domain/cours/banque/concepts';
-import type { ConfusionId } from '../../modules/formations/domain/cours/banque/confusions';
-import type { coursStocke } from '../../modules/formations/domain/cours/CoursStocke';
+import type { ConceptId } from '../../domain/cours/banque/concepts';
+import type { ConfusionId } from '../../domain/cours/banque/confusions';
+import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import {
   slugOption,
   type numeriqueStockee,
   type voteStocke,
-} from '../../modules/formations/domain/cours/QuestionStockee';
+} from '../../domain/cours/QuestionStockee';
 
-type CoursV3 = z.input<typeof coursStocke>;
-type EcranV3 = CoursV3['ecrans'][number];
-type Acte = [EcranV3, ...EcranV3[]];
-type EcranDeRecit = Extract<EcranV3, { readonly brique: 'fp-story' }>;
+type EcranDuCours = ContenuDeCours['ecrans'][number];
+type Acte = [EcranDuCours, ...EcranDuCours[]];
+type EcranDeRecit = Extract<EcranDuCours, { readonly brique: 'fp-story' }>;
 type SocleDEcran = Omit<EcranDeRecit, 'brique' | 'proprietes'>;
 type ReserveDuRecit = Omit<EcranDeRecit['proprietes'], 'presentation'>;
-type ProprietesDeClassement = Extract<
-  EcranV3,
-  { readonly brique: 'fp-cardsort' }
->['proprietes'];
-type VoteV3 = z.input<typeof voteStocke>;
-type NumeriqueV3 = z.input<typeof numeriqueStockee>;
+type EcranDeTri = Extract<EcranDuCours, { readonly brique: 'fp-cardsort' }>;
+type ProprietesDeClassement = EcranDeTri['proprietes'];
+type CorrectionDeTri = Omit<SocleDEcran, 'diffusion'> & {
+  readonly sousTitre: string;
+  readonly intitule?: string;
+};
+type VoteDuCours = z.input<typeof voteStocke>;
+type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
 type AuMoinsUn<T> = [T, ...T[]];
 type Piege = readonly [string, ConfusionId];
 
@@ -63,7 +64,7 @@ function vote(
   bonne: string,
   pieges: AuMoinsUn<Piege>,
   segments: readonly string[] = [],
-): VoteV3 {
+): VoteDuCours {
   const [premier, ...suite] = pieges;
   return {
     type: 'vote',
@@ -86,10 +87,10 @@ function numerique(
   enonce: string,
   unite: string | null,
   solution: number,
-  tolerance: NumeriqueV3['tolerance'],
+  tolerance: NumeriqueDuCours['tolerance'],
   formePubliee: string,
   pieges: AuMoinsUn<readonly [number, ConfusionId]>,
-): NumeriqueV3 {
+): NumeriqueDuCours {
   return {
     type: 'numeric',
     id,
@@ -168,6 +169,37 @@ function classement(
   };
 }
 
+function suiviDeSaCorrection(
+  { sousTitre, intitule = 'Correction du tri', ...socle }: CorrectionDeTri,
+  tri: EcranDeTri,
+): [EcranDeTri, EcranDeRecit] {
+  const {
+    plan,
+    questions: [{ corrige }],
+  } = tri.proprietes;
+  const attendus = new Map(
+    corrige.attendus.map((attendu) => [attendu.carteId, attendu]),
+  );
+  return [
+    tri,
+    ecranV2({ ...socle, diffusion: 'seance' }, 'sort-review', {
+      title: intitule,
+      subtitle: sousTitre,
+      source: { screenId: tri.screenId, sortId: plan.id },
+      categories: plan.categories.map(({ id, libelle }) => ({
+        id,
+        label: libelle,
+      })),
+      cards: plan.cartes.map(({ id, libelle }) => ({
+        id,
+        label: libelle,
+        category: attendus.get(id)?.categorieId,
+        justification: attendus.get(id)?.justification,
+      })),
+    }),
+  ];
+}
+
 function strategie(id: string, libelle: string, fausse = false) {
   return { id, libelle, fausse };
 }
@@ -238,15 +270,15 @@ const ACTE_1: Acte = [
   {
     screenId: 'B2-01-A1-03-MISSION',
     titre: 'Votre mission chez Atelier Rivage',
-    diffusion: 'catalogue',
+    diffusion: 'seance',
     brique: 'fp-pro',
-    dureeMinutes: 2,
+    dureeMinutes: 4,
     concepts: ['contrat-de-lecture'],
     notes: notes(
-      'lecture à voix haute, classe entière, en 90 secondes.',
+      'lecture à voix haute, classe entière, en 90 secondes, puis 2 min d’écriture individuelle : une réponse par question sur son poste.',
       'la demande d’Hélène (« gagner plus ») et la proposition de Samir (investir).',
-      'repérer que « gagner » peut désigner un montant ou un taux.',
-      'faire reformuler l’enjeu par un étudiant en une phrase.',
+      'repérer que « gagner » peut désigner un montant ou un taux, et le noter dès la première question.',
+      'lire au pupitre deux réponses à la première question, l’une sur un montant, l’autre sur un taux.',
       '« Regardons le tableau de bord tel qu’il a été envoyé. »',
     ),
     proprietes: {
@@ -255,9 +287,26 @@ const ACTE_1: Acte = [
       situation:
         'Lundi, 8 h 40. Hélène Garnier, la dirigeante, vous transfère le tableau de bord 2025 préparé par Samir Haddad, responsable commercial : « Samir annonce une excellente année et veut investir dans la marketplace. Est-ce qu’on gagne vraiment plus qu’en 2024 ? Préparez-moi un dossier fiable pour le comité de jeudi. »',
       geste:
-        'Avant de recommander un investissement, répondez à trois questions : que mesure chaque chiffre ? Les bases et les périodes sont-elles comparables ? Le recalcul confirme-t-il la recommandation ?',
+        'Avant de recommander un investissement, répondez par écrit aux trois questions ci-dessous.',
       consequence:
         'Si le comité décide sur un chiffre mal lu, Atelier Rivage peut investir dans le canal qui dégrade sa rentabilité.',
+      questionsLibres: [
+        {
+          id: 'b2-01-a1-mission:mesure',
+          question: 'Que mesure chaque chiffre ?',
+          placeholder: 'Un montant, une part, une évolution…',
+        },
+        {
+          id: 'b2-01-a1-mission:comparable',
+          question: 'Les bases et les périodes sont-elles comparables ?',
+          placeholder: 'Même base de départ, même période ?',
+        },
+        {
+          id: 'b2-01-a1-mission:recalcul',
+          question: 'Le recalcul confirme-t-il la recommandation ?',
+          placeholder: 'Ce qu’il faudrait recalculer avant de décider…',
+        },
+      ],
     },
   },
   ecranV2(
@@ -322,105 +371,121 @@ const ACTE_1: Acte = [
       note: 'Données fictives Atelier Rivage, créées pour ce cours.',
     },
   ),
-  {
-    screenId: 'B2-01-A1-05-ANATOMIE',
-    titre: 'Que dit chaque chiffre du tableau de bord ?',
-    diffusion: 'seance',
-    brique: 'fp-cardsort',
-    dureeMinutes: 8,
-    concepts: ['contrat-de-lecture'],
-    notes: notes(
-      'binômes, 5 min de tri (annoncer « plus qu’une minute » à 4 min), puis 3 min de correction au pupitre sur le taux d’erreur par carte ; rappeler que chacun envoie depuis son poste.',
-      'les cartes « Taux de marge : −2,3 % » et « Inflation : 4,9 » concentrent les erreurs.',
-      '« −2,3 % » est un écart entre deux taux, donc des points, avec un libellé imprécis (il s’agit du taux de marge brute) ; « +1 200 » et « 4,9 » sont ambigus en l’état ; « Entretien : 20 % du CA » et « Taux de marge 2025 : 25,3 % » sont des proportions ; « +9,5 % » et « +4 % » sont des évolutions ; 1 150 000 € est une valeur.',
-      'faire justifier une carte par binôme avec la question « rapporté à quoi ? ».',
-      '« Un taux n’est une information que si l’on connaît sa fiche d’identité. »',
-    ),
-    proprietes: {
-      modalite: 'binome',
-      ...classement(
-        {
-          id: 'b2-01-a1-anatomie',
-          intitule:
-            'Classez chaque chiffre du tableau de bord selon ce qu’il exprime.',
-        },
-        'contrat-de-lecture',
-        [
-          ['valeur', 'Valeur en euros'],
-          ['proportion', 'Proportion : part d’un total'],
-          [
-            'evolution',
-            'Évolution : variation par rapport à une valeur de départ',
-          ],
-          ['points', 'Écart entre deux taux, en points'],
-          ['ambigu', 'Ambigu en l’état : unité, base ou période manquante'],
-        ],
-        [
-          {
-            id: 'ca-2025',
-            libelle: 'CA HT 2025 : 1 150 000 €',
-            categorie: 'valeur',
-            confusion: 'valeur-confondue-avec-taux',
-            justification: 'montant en euros : « combien ? »',
-          },
-          {
-            id: 'evolution-ca',
-            libelle: 'CA : « +9,5 % » par rapport à 2024',
-            categorie: 'evolution',
-            confusion: 'proportion-confondue-avec-evolution',
-            justification: 'variation rapportée à la valeur de 2024',
-          },
-          {
-            id: 'part-entretien',
-            libelle: 'Entretien : 20 % du CA 2025',
-            categorie: 'proportion',
-            confusion: 'proportion-confondue-avec-evolution',
-            justification: '230 000 € rapportés à 1 150 000 €',
-          },
-          {
-            id: 'taux-marge',
-            libelle: 'Taux de marge 2025 : 25,3 %',
-            categorie: 'proportion',
-            confusion: 'proportion-confondue-avec-evolution',
-            justification:
-              'marge brute rapportée au CA HT de la même année : une part',
-          },
-          {
-            id: 'ecart-taux',
-            libelle: 'Taux de marge : « −2,3 % » par rapport à 2024',
-            categorie: 'points',
-            confusion: 'points-confondus-avec-pourcentage',
-            justification:
-              'libellé imprécis (taux de marge brute) et unité fausse : −2,3 points',
-          },
-          {
-            id: 'marge-sans-unite',
-            libelle:
-              'Marge brute : « +1 200 » (colonne « Évolution affichée », dont les autres lignes sont en %)',
-            categorie: 'ambigu',
-            confusion: 'unite-manquante-ignoree',
-            justification:
-              'euros ou pourcentage ? Dans une colonne de %, un nombre sans unité est ambigu',
-          },
-          {
-            id: 'inflation',
-            libelle: 'Inflation : « 4,9 »',
-            categorie: 'ambigu',
-            confusion: 'unite-manquante-ignoree',
-            justification: 'ni unité, ni période, ni source',
-          },
-          {
-            id: 'toile',
-            libelle: 'Prix de la toile : « +4 % » sur l’année',
-            categorie: 'evolution',
-            confusion: 'proportion-confondue-avec-evolution',
-            justification:
-              'variation depuis le 1er janvier (calcul à vérifier à l’acte 4)',
-          },
-        ],
+  ...suiviDeSaCorrection(
+    {
+      screenId: 'B2-01-A1-05-CORRECTION',
+      titre: 'Correction : ce que dit chaque chiffre du tableau de bord',
+      sousTitre: 'Chaque carte à sa place, avec la raison qui l’y range.',
+      dureeMinutes: 1,
+      concepts: ['contrat-de-lecture'],
+      notes: notes(
+        'projeter le plateau corrigé, carte par carte, en partant des deux cartes qui concentrent les erreurs.',
+        'sur chaque poste, les cartes mal placées au tri sont bordées de rouge.',
+        '« −2,3 % » est un écart de deux taux, en points ; « +1 200 » et « 4,9 » restent ambigus sans unité, base ni période.',
+        'faire dire à un binôme pourquoi sa carte bordée de rouge change de colonne.',
+        '« Un taux n’est une information que si l’on connaît sa fiche d’identité. »',
       ),
     },
-  },
+    {
+      screenId: 'B2-01-A1-05-ANATOMIE',
+      titre: 'Que dit chaque chiffre du tableau de bord ?',
+      diffusion: 'seance',
+      brique: 'fp-cardsort',
+      dureeMinutes: 8,
+      concepts: ['contrat-de-lecture'],
+      notes: notes(
+        'binômes, 5 min de tri (annoncer « plus qu’une minute » à 4 min), puis 3 min de correction au pupitre sur le taux d’erreur par carte ; rappeler que chacun envoie depuis son poste.',
+        'les cartes « Taux de marge : −2,3 % » et « Inflation : 4,9 » concentrent les erreurs.',
+        '« −2,3 % » est un écart entre deux taux, donc des points, avec un libellé imprécis (il s’agit du taux de marge brute) ; « +1 200 » et « 4,9 » sont ambigus en l’état ; « Entretien : 20 % du CA » et « Taux de marge 2025 : 25,3 % » sont des proportions ; « +9,5 % » et « +4 % » sont des évolutions ; 1 150 000 € est une valeur.',
+        'faire justifier une carte par binôme avec la question « rapporté à quoi ? ».',
+        '« Un taux n’est une information que si l’on connaît sa fiche d’identité. »',
+      ),
+      proprietes: {
+        modalite: 'binome',
+        ...classement(
+          {
+            id: 'b2-01-a1-anatomie',
+            intitule:
+              'Classez chaque chiffre du tableau de bord selon ce qu’il exprime.',
+          },
+          'contrat-de-lecture',
+          [
+            ['valeur', 'Valeur en euros'],
+            ['proportion', 'Proportion : part d’un total'],
+            [
+              'evolution',
+              'Évolution : variation par rapport à une valeur de départ',
+            ],
+            ['points', 'Écart entre deux taux, en points'],
+            ['ambigu', 'Ambigu en l’état : unité, base ou période manquante'],
+          ],
+          [
+            {
+              id: 'ca-2025',
+              libelle: 'CA HT 2025 : 1 150 000 €',
+              categorie: 'valeur',
+              confusion: 'valeur-confondue-avec-taux',
+              justification: 'montant en euros : « combien ? »',
+            },
+            {
+              id: 'evolution-ca',
+              libelle: 'CA : « +9,5 % » par rapport à 2024',
+              categorie: 'evolution',
+              confusion: 'proportion-confondue-avec-evolution',
+              justification: 'variation rapportée à la valeur de 2024',
+            },
+            {
+              id: 'part-entretien',
+              libelle: 'Entretien : 20 % du CA 2025',
+              categorie: 'proportion',
+              confusion: 'proportion-confondue-avec-evolution',
+              justification: '230 000 € rapportés à 1 150 000 €',
+            },
+            {
+              id: 'taux-marge',
+              libelle: 'Taux de marge 2025 : 25,3 %',
+              categorie: 'proportion',
+              confusion: 'proportion-confondue-avec-evolution',
+              justification:
+                'marge brute rapportée au CA HT de la même année : une part',
+            },
+            {
+              id: 'ecart-taux',
+              libelle: 'Taux de marge : « −2,3 % » par rapport à 2024',
+              categorie: 'points',
+              confusion: 'points-confondus-avec-pourcentage',
+              justification:
+                'libellé imprécis (taux de marge brute) et unité fausse : −2,3 points',
+            },
+            {
+              id: 'marge-sans-unite',
+              libelle:
+                'Marge brute : « +1 200 » (colonne « Évolution affichée », dont les autres lignes sont en %)',
+              categorie: 'ambigu',
+              confusion: 'unite-manquante-ignoree',
+              justification:
+                'euros ou pourcentage ? Dans une colonne de %, un nombre sans unité est ambigu',
+            },
+            {
+              id: 'inflation',
+              libelle: 'Inflation : « 4,9 »',
+              categorie: 'ambigu',
+              confusion: 'unite-manquante-ignoree',
+              justification: 'ni unité, ni période, ni source',
+            },
+            {
+              id: 'toile',
+              libelle: 'Prix de la toile : « +4 % » sur l’année',
+              categorie: 'evolution',
+              confusion: 'proportion-confondue-avec-evolution',
+              justification:
+                'variation depuis le 1er janvier (calcul à vérifier à l’acte 4)',
+            },
+          ],
+        ),
+      },
+    },
+  ),
   ecranV2(
     {
       screenId: 'B2-01-A1-06-FICHE-INDICATEUR',
@@ -480,10 +545,10 @@ const ACTE_1: Acte = [
       screenId: 'B2-01-A1-07-PLAN',
       titre: 'Votre plan de reprise et de transfert',
       diffusion: 'catalogue',
-      dureeMinutes: 2,
+      dureeMinutes: 1,
       concepts: ['contrat-de-lecture'],
       notes: notes(
-        'parcourir les six étapes en 90 secondes.',
+        'parcourir les six étapes en une minute.',
         'la colonne « preuve » annonce ce qui sera demandé à chaque acte.',
         'chacun sait où il en est et ce qui compte pour la note (la participation, § 4.5).',
         'question rapide : « quel acte produit le graphique du comité ? » (l’acte 4).',
@@ -666,6 +731,7 @@ const ACTE_1: Acte = [
           ),
         ],
       },
+      renvoi: 'B2-01-A1-09-DIAPOSITIVE',
     },
   },
   {
@@ -736,19 +802,22 @@ const ACTE_2: Acte = [
     dureeMinutes: 2,
     concepts: ['lecture-graphique'],
     notes: notes(
-      'chaque étudiant fait glisser l’origine de 284 000 € à 0 €, puis le haut de l’axe de 292 000 € à 600 000 €.',
-      'la pente s’écrase, les valeurs ne changent pas ; le premier affichage reproduit la diapositive de A1-09.',
-      '« l’échelle change l’impression, pas la donnée ».',
-      'faire lire la valeur 2025 dans les deux positions (291 000 €).',
+      'chaque étudiant fait glisser l’origine de l’axe de 284 000 € à 0 €, ou bascule d’un préréglage à l’autre.',
+      'les montants ne bougent pas ; seul le rapport des hauteurs change, de ×7 sur l’axe de Samir à presque ×1 sur l’axe à zéro.',
+      '« l’échelle change l’impression, pas la donnée » : l’évolution réelle reste +2,1 %.',
+      'faire lire la barre 2025 dans les deux positions (291 000 €) et comparer le rapport des hauteurs au réel.',
       '« Atelier 1 : lire, rapporter, estimer. »',
     ),
     proprietes: {
       id: 'b2-01-a2-origine-axe',
       titre: 'Diapositive de Samir : marge brute et axe réglable',
       source: 'Service commercial d’Atelier Rivage (données fictives).',
-      abscisse: { libelle: 'Année (0 = 2022, 3 = 2025)', min: 0, max: 3 },
+      forme: 'barres',
+      unite: 'euros',
+      abscisse: { libelle: 'Année', min: 0, max: 3 },
+      etiquettes: ['2022', '2023', '2024', '2025'],
       ordonnee: 'Marge brute (€)',
-      bornesOrdonnee: { minParametre: 'origine', maxParametre: 'maximum' },
+      bornesOrdonnee: { minParametre: 'origine', max: 292000 },
       parametres: [
         {
           cle: 'origine',
@@ -758,14 +827,10 @@ const ACTE_2: Acte = [
           pas: 4000,
           defaut: 284000,
         },
-        {
-          cle: 'maximum',
-          libelle: 'Haut de l’axe vertical (€)',
-          min: 292000,
-          max: 600000,
-          pas: 4000,
-          defaut: 292000,
-        },
+      ],
+      prereglages: [
+        { libelle: 'Axe de Samir', valeurs: { origine: 284000 } },
+        { libelle: 'Axe à zéro', valeurs: { origine: 0 } },
       ],
       series: [
         {
@@ -777,7 +842,7 @@ const ACTE_2: Acte = [
         },
       ],
       description:
-        'Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.',
+        'Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.',
     },
   },
   {
@@ -986,11 +1051,11 @@ const ACTE_2: Acte = [
     titre: 'Points ou pourcentage : la phrase du comité',
     diffusion: 'seance',
     brique: 'fp-worked',
-    dureeMinutes: 5,
+    dureeMinutes: 4,
     concepts: ['point-de-pourcentage'],
     notes: notes(
-      'première étape commentée, les suivantes rédigées par les étudiants ; baisser l’étayage à 2 si la classe a réussi A1-05.',
-      'ceux qui écrivent « −2,3 % » à l’étape 3.',
+      'chaque étudiant répond sous chaque étape sur son poste, puis révéler la correction depuis le pupitre, une étape à la fois (« Montrer une étape de plus »).',
+      'ceux qui écrivent « −2,3 % » à l’étape de l’écart.',
       '−2,30 points ; −8,3 % en relatif ; une phrase qui contient les deux taux.',
       '27,6 × 0,917 = 25,31 (écart d’arrondi assumé).',
       '« Mini-jeu : tout n’est pas comparable. »',
@@ -1007,140 +1072,161 @@ const ACTE_2: Acte = [
             intitule: 'Écart entre les deux taux',
             raisonnement:
               '25,30 − 27,60 = −2,30. Un écart entre deux pourcentages se mesure en points de pourcentage : −2,30 points.',
-            invite: 'Écrivez l’écart avec son unité.',
+            invite:
+              'Quel est l’écart entre les deux taux, et dans quelle unité s’exprime-t-il ?',
           },
           {
             id: 'relatif',
             intitule: 'Évolution relative du taux',
             raisonnement:
               '−2,30 ÷ 27,60 ≈ −0,083, soit −8,3 % : le taux lui-même a perdu 8,3 % de sa valeur.',
-            invite: 'Calculez l’évolution relative en précisant la base.',
+            invite:
+              'De quel pourcentage le taux lui-même a-t-il baissé par rapport à celui de 2024 ?',
           },
           {
             id: 'phrase',
             intitule: 'Phrase pour le comité',
             raisonnement:
               '« Le taux de marge brute recule de 2,3 points (de 27,6 % à 25,3 %), soit une baisse relative de 8,3 %. »',
-            invite: 'Rédigez la phrase sans écrire « −2,3 % ».',
+            invite:
+              'Quelle phrase écrivez-vous pour le comité, sans utiliser « −2,3 % » ?',
           },
           {
             id: 'controle',
             intitule: 'Contrôle',
             raisonnement:
               '27,60 × (1 − 0,083) ≈ 25,31 : l’évolution relative redonne le taux d’arrivée, à l’arrondi près.',
-            invite: 'Faites le contrôle inverse.',
+            invite:
+              'En appliquant cette baisse relative à 27,60 %, retrouvez-vous le taux de 2025 ?',
           },
         ],
       },
-      etayage: 3,
+      etayage: 0,
     },
   },
-  {
-    screenId: 'B2-01-A2-07-JEU-COMPARABLE',
-    titre: 'Mini-jeu : comparable ou pas ?',
-    diffusion: 'seance',
-    brique: 'fp-cardsort',
-    dureeMinutes: 8,
-    concepts: ['contrat-de-lecture'],
-    notes: notes(
-      'lancer le chrono (5 min, annoncer la dernière minute), puis 3 min de débriefing sur les deux cartes les plus ratées.',
-      'le score médian de la classe et les cartes les plus ratées.',
-      'directes : mars/mars, taux 2024/2025, CA par salarié ; après retraitement : HT/TTC, m²/rouleau, périmètre (retirer la marketplace du CA 2025) ; impossibles sans nouvelle donnée : taux sectoriel, inflation de 2023, semestre/année.',
-      'pour chaque retraitement, faire dire l’opération (÷ 1,2 ; ÷ 50 ; − 523 000 €) ; pour le semestre : l’activité est saisonnière, doubler un semestre ne donne pas l’année.',
-      'jalon de confiance, puis acte 3.',
-    ),
-    proprietes: {
-      modalite: 'binome',
-      ...classement(
-        {
-          id: 'b2-01-a2-comparable',
-          intitule:
-            'Mini-jeu : comparable ou pas ? Classez les neuf comparaisons avant la fin du chrono.',
-          dureeJeuMs: 300000,
-        },
-        'contrat-de-lecture',
-        [
-          ['directe', 'Comparable directement'],
-          ['retraitement', 'Comparable après retraitement'],
-          ['impossible', 'Pas comparable sans nouvelle donnée'],
-        ],
-        [
-          {
-            id: 'mars',
-            libelle: 'CA de mars 2025 / CA de mars 2024',
-            categorie: 'directe',
-            confusion: 'bases-incompatibles',
-            justification: 'même mois, même périmètre, même unité',
-          },
-          {
-            id: 'taux',
-            libelle:
-              'Taux de marge brute 2024 / 2025 d’Atelier Rivage (même définition)',
-            categorie: 'directe',
-            confusion: 'bases-incompatibles',
-            justification: 'écart en points',
-          },
-          {
-            id: 'salarie',
-            libelle:
-              'CA par salarié 2025 (14 salariés) / CA par salarié 2024 (12 salariés)',
-            categorie: 'directe',
-            confusion: 'bases-incompatibles',
-            justification: 'ratios rapportés à la même base',
-          },
-          {
-            id: 'ht-ttc',
-            libelle: 'Marge brute HT 2025 / ventes TTC 2025',
-            categorie: 'retraitement',
-            confusion: 'bases-incompatibles',
-            justification: 'ramener les ventes en HT : TTC ÷ 1,2',
-          },
-          {
-            id: 'rouleau',
-            libelle:
-              'Prix de la toile en € par m² / prix en € par rouleau de 50 m²',
-            categorie: 'retraitement',
-            confusion: 'bases-incompatibles',
-            justification: 'diviser le prix du rouleau par 50',
-          },
-          {
-            id: 'perimetre',
-            libelle:
-              'CA 2025 d’Atelier Rivage (trois canaux) / CA 2024 de l’atelier seul, sans la marketplace',
-            categorie: 'retraitement',
-            confusion: 'bases-incompatibles',
-            justification: 'retirer la marketplace du CA 2025 (523 000 €)',
-          },
-          {
-            id: 'secteur',
-            libelle:
-              'Taux de marge brute d’Atelier Rivage / « taux de marge moyen des voileries » lu dans la presse',
-            categorie: 'impossible',
-            confusion: 'bases-incompatibles',
-            justification: 'définition, période et périmètre inconnus',
-          },
-          {
-            id: 'inflation',
-            libelle:
-              'Hausse des tarifs d’Atelier Rivage en 2025 / « Inflation : 4,9 » du tableau de bord',
-            categorie: 'impossible',
-            confusion: 'bases-incompatibles',
-            justification:
-              '« 4,9 » est l’inflation de 2023 : il faut celle de 2025, publiée par l’Insee',
-          },
-          {
-            id: 'semestre',
-            libelle:
-              'CA du 1er semestre 2025 / CA annuel 2024 (le fichier 2024 ne contient que le total annuel)',
-            categorie: 'impossible',
-            confusion: 'bases-incompatibles',
-            justification:
-              'activité saisonnière : doubler un semestre ne donne pas l’année ; il faut le 1er semestre 2024',
-          },
-        ],
+  ...suiviDeSaCorrection(
+    {
+      screenId: 'B2-01-A2-07-CORRECTION',
+      titre: 'Correction : comparable ou pas ?',
+      intitule: 'Correction du mini-jeu',
+      sousTitre: 'Chaque comparaison à sa place, avec la raison qui l’y range.',
+      dureeMinutes: 1,
+      concepts: ['contrat-de-lecture'],
+      notes: notes(
+        'projeter le plateau corrigé, en commençant par les deux cartes les plus ratées de la classe.',
+        'sur chaque poste, les cartes mal placées pendant le jeu sont bordées de rouge.',
+        'directes : mars/mars, taux 2024/2025, CA par salarié ; après retraitement : HT/TTC, m²/rouleau, périmètre ; impossibles sans nouvelle donnée : taux sectoriel, inflation de 2023, semestre/année.',
+        'pour chaque retraitement, faire dire l’opération (÷ 1,2 ; ÷ 50 ; − 523 000 €).',
+        'jalon de confiance, puis acte 3.',
       ),
     },
-  },
+    {
+      screenId: 'B2-01-A2-07-JEU-COMPARABLE',
+      titre: 'Mini-jeu : comparable ou pas ?',
+      diffusion: 'seance',
+      brique: 'fp-cardsort',
+      dureeMinutes: 8,
+      concepts: ['contrat-de-lecture'],
+      notes: notes(
+        'lancer le chrono (5 min, annoncer la dernière minute), puis 3 min de débriefing sur les deux cartes les plus ratées.',
+        'le score médian de la classe et les cartes les plus ratées.',
+        'directes : mars/mars, taux 2024/2025, CA par salarié ; après retraitement : HT/TTC, m²/rouleau, périmètre (retirer la marketplace du CA 2025) ; impossibles sans nouvelle donnée : taux sectoriel, inflation de 2023, semestre/année.',
+        'pour chaque retraitement, faire dire l’opération (÷ 1,2 ; ÷ 50 ; − 523 000 €) ; pour le semestre : l’activité est saisonnière, doubler un semestre ne donne pas l’année.',
+        'projeter le plateau corrigé du mini-jeu.',
+      ),
+      proprietes: {
+        modalite: 'binome',
+        ...classement(
+          {
+            id: 'b2-01-a2-comparable',
+            intitule:
+              'Mini-jeu : comparable ou pas ? Classez les neuf comparaisons avant la fin du chrono.',
+            dureeJeuMs: 300000,
+          },
+          'contrat-de-lecture',
+          [
+            ['directe', 'Comparable directement'],
+            ['retraitement', 'Comparable après retraitement'],
+            ['impossible', 'Pas comparable sans nouvelle donnée'],
+          ],
+          [
+            {
+              id: 'mars',
+              libelle: 'CA de mars 2025 / CA de mars 2024',
+              categorie: 'directe',
+              confusion: 'bases-incompatibles',
+              justification: 'même mois, même périmètre, même unité',
+            },
+            {
+              id: 'taux',
+              libelle:
+                'Taux de marge brute 2024 / 2025 d’Atelier Rivage (même définition)',
+              categorie: 'directe',
+              confusion: 'bases-incompatibles',
+              justification: 'écart en points',
+            },
+            {
+              id: 'salarie',
+              libelle:
+                'CA par salarié 2025 (14 salariés) / CA par salarié 2024 (12 salariés)',
+              categorie: 'directe',
+              confusion: 'bases-incompatibles',
+              justification: 'ratios rapportés à la même base',
+            },
+            {
+              id: 'ht-ttc',
+              libelle: 'Marge brute HT 2025 / ventes TTC 2025',
+              categorie: 'retraitement',
+              confusion: 'bases-incompatibles',
+              justification: 'ramener les ventes en HT : TTC ÷ 1,2',
+            },
+            {
+              id: 'rouleau',
+              libelle:
+                'Prix de la toile en € par m² / prix en € par rouleau de 50 m²',
+              categorie: 'retraitement',
+              confusion: 'bases-incompatibles',
+              justification: 'diviser le prix du rouleau par 50',
+            },
+            {
+              id: 'perimetre',
+              libelle:
+                'CA 2025 d’Atelier Rivage (trois canaux) / CA 2024 de l’atelier seul, sans la marketplace',
+              categorie: 'retraitement',
+              confusion: 'bases-incompatibles',
+              justification: 'retirer la marketplace du CA 2025 (523 000 €)',
+            },
+            {
+              id: 'secteur',
+              libelle:
+                'Taux de marge brute d’Atelier Rivage / « taux de marge moyen des voileries » lu dans la presse',
+              categorie: 'impossible',
+              confusion: 'bases-incompatibles',
+              justification: 'définition, période et périmètre inconnus',
+            },
+            {
+              id: 'inflation',
+              libelle:
+                'Hausse des tarifs d’Atelier Rivage en 2025 / « Inflation : 4,9 » du tableau de bord',
+              categorie: 'impossible',
+              confusion: 'bases-incompatibles',
+              justification:
+                '« 4,9 » est l’inflation de 2023 : il faut celle de 2025, publiée par l’Insee',
+            },
+            {
+              id: 'semestre',
+              libelle:
+                'CA du 1er semestre 2025 / CA annuel 2024 (le fichier 2024 ne contient que le total annuel)',
+              categorie: 'impossible',
+              confusion: 'bases-incompatibles',
+              justification:
+                'activité saisonnière : doubler un semestre ne donne pas l’année ; il faut le 1er semestre 2024',
+            },
+          ],
+        ),
+      },
+    },
+  ),
   {
     screenId: 'B2-01-A2-08-JALON-2',
     titre: 'Jalon 2 : où en êtes-vous ?',
@@ -1265,6 +1351,14 @@ const ACTE_3: Acte = [
       ],
       formuleLatexSimplifie: 'arrivée = départ × (1 + t₁) × (1 + t₂)',
       calcul: 'depart * (1 + tauxUn / 100) * (1 + tauxDeux / 100)',
+      etapes: [
+        { libelle: 'Départ', calcul: 'depart' },
+        { libelle: 'Après t₁', calcul: 'depart * (1 + tauxUn / 100)' },
+        {
+          libelle: 'Arrivée',
+          calcul: 'depart * (1 + tauxUn / 100) * (1 + tauxDeux / 100)',
+        },
+      ],
       phrase:
         'Chaque taux s’applique à la valeur devenue courante : on multiplie les coefficients, on n’additionne pas les taux. Taux d’évolution = (arrivée − départ) ÷ départ.',
     },
@@ -1336,20 +1430,23 @@ const ACTE_3: Acte = [
             id: 'coefficients',
             intitule: 'Traduire les taux',
             raisonnement: '+10 % → × 1,10 ; −8 % → × 0,92.',
-            invite: 'Traduisez chaque taux en coefficient.',
+            invite:
+              'Par quel nombre multiplie-t-on le prix pour appliquer +10 % ? Et pour appliquer −8 % ?',
           },
           {
             id: 'global',
             intitule: 'Évolution globale',
             raisonnement:
               '1,10 × 0,92 = 1,012 : l’évolution globale est de +1,2 %, et non de +2 %.',
-            invite: 'Multipliez les coefficients, puis retirez 1.',
+            invite:
+              'Quelle est l’évolution globale du prix sur l’année, en % ? Le « +2 % » annoncé est-il juste ?',
           },
           {
             id: 'prix',
             intitule: 'Prix final',
             raisonnement: '12,50 × 1,012 = 12,65 € HT la bobine.',
-            invite: 'Calculez le prix final.',
+            invite:
+              'Combien coûte la bobine après les deux changements de prix, en € HT ?',
           },
           {
             id: 'base',
@@ -1357,14 +1454,15 @@ const ACTE_3: Acte = [
             raisonnement:
               'Après la hausse d’avril, la bobine coûte 13,75 €. Prix initial = 13,75 ÷ 1,10 = 12,50 € : on divise par le coefficient, on ne retire pas 10 %.',
             invite:
-              'Retrouvez la valeur de départ à partir de la valeur d’arrivée.',
+              'La bobine coûte 13,75 € après la hausse d’avril : quel était son prix avant cette hausse ?',
           },
           {
             id: 'reciproque',
             intitule: 'Évolution réciproque',
             raisonnement:
               'Pour annuler une hausse de 10 %, il faut multiplier par 1 ÷ 1,10 ≈ 0,909, soit une baisse d’environ 9,1 % ; une baisse de 10 % irait trop loin (13,75 × 0,90 = 12,375 €).',
-            invite: 'Calculez le taux réciproque.',
+            invite:
+              'De quel pourcentage faut-il baisser 13,75 € pour revenir à 12,50 € ?',
           },
           {
             id: 'tva',
@@ -1372,11 +1470,11 @@ const ACTE_3: Acte = [
             raisonnement:
               'Une facture d’entretien affiche 3 600 € TTC (TVA 20 %). HT = 3 600 ÷ 1,20 = 3 000 € : on divise par le coefficient 1,20. Retirer 20 % donnerait 2 880 €, ce qui est faux. Passer du TTC au HT, c’est une baisse de 1 − 1 ÷ 1,20 ≈ 16,67 %. Contrôle inverse : 3 000 × 1,20 = 3 600.',
             invite:
-              'Retrouvez le HT, puis le taux de baisse du TTC vers le HT.',
+              'Une facture affiche 3 600 € TTC (TVA 20 %) : quel est son montant HT, et de quel pourcentage baisse-t-on en passant du TTC au HT ?',
           },
         ],
       },
-      etayage: 3,
+      etayage: 0,
     },
   },
   ecranV2(
@@ -1442,39 +1540,44 @@ const ACTE_3: Acte = [
             intitule: 'Indice base 100 en 2021',
             raisonnement:
               'I = 100 × V ÷ V₀ : 2022 : 100 × 1 060 ÷ 1 000 = 106,00 ; 2023 : 112,36 ; 2024 : 119,10.',
-            invite: 'Calculez l’indice de chaque année.',
+            invite:
+              'Quel est l’indice du loyer en 2022, en 2023 et en 2024, base 100 en 2021 ?',
           },
           {
             id: 'lire',
             intitule: 'Lire un indice',
             raisonnement:
               '119,10 signifie +19,10 % depuis 2021 : taux = I ÷ 100 − 1. Ce n’est ni +119,10 %, ni un loyer de 119,10 €.',
-            invite: 'Traduisez l’indice 2024 en taux d’évolution.',
+            invite:
+              'Que signifie l’indice 119,10 de 2024, traduit en taux d’évolution depuis 2021 ?',
           },
           {
             id: 'chainer',
             intitule: 'Chaîner des coefficients',
             raisonnement:
               'Indice = 100 × produit des coefficients : 100 × 1,06 × 1,06 × 1,06 = 119,10. Additionner les taux (6 + 6 + 6 = 18) sous-estime la hausse.',
-            invite: 'Retrouvez l’indice 2024 à partir des coefficients.',
+            invite:
+              'Comment retrouvez-vous l’indice 2024 à partir des coefficients annuels ?',
           },
           {
             id: 'taux-moyen',
             intitule: 'Taux annuel moyen',
             raisonnement:
               'On cherche x tel que x³ = 1,19102 : x = 1,19102^(1/3) ≈ 1,0600, soit +6,00 % par an. Calculatrice : 1,19102 ^ (1 ÷ 3) ; tableur : =PUISSANCE(1,19102;1/3).',
-            invite: 'Calculez le taux annuel moyen avec la puissance 1/3.',
+            invite:
+              'Quel taux annuel constant, appliqué trois années de suite, donne +19,10 % ?',
           },
           {
             id: 'piege',
             intitule: 'Pourquoi pas 19,10 ÷ 3 ?',
             raisonnement:
               '19,10 ÷ 3 ≈ 6,37 % est faux : 1,0637³ ≈ 1,2035, et non 1,1910. Diviser un taux global par le nombre d’années surestime le taux moyen.',
-            invite: 'Vérifiez en élevant 1,0637 au cube.',
+            invite:
+              'En appliquant +6,37 % trois années de suite, obtient-on bien +19,10 % ?',
           },
         ],
       },
-      etayage: 3,
+      etayage: 0,
     },
   },
   {
@@ -1853,7 +1956,7 @@ const PLAN_TABLEAU = {
     },
   ],
 } as const satisfies Extract<
-  EcranV3,
+  EcranDuCours,
   { readonly brique: 'fp-table-build' }
 >['proprietes']['plan'];
 
@@ -2260,6 +2363,80 @@ const ACTE_5: Acte = [
     },
   ),
   {
+    screenId: 'B2-01-A5-03-MOYENNE-PONDEREE',
+    titre: 'Prouver l’effet de répartition',
+    diffusion: 'seance',
+    brique: 'fp-worked',
+    dureeMinutes: 5,
+    concepts: ['moyenne-ponderee'],
+    notes: notes(
+      'étapes 1 et 2 guidées, 3 à 6 rédigées.',
+      'l’étape 5 (raisonnement contrefactuel) et l’étape 6 (négation d’un « si… alors »).',
+      '27,60 % ; 25,30 % ; 317 400 € ; −26 400 € ; une négation de la forme « il existe… et… ».',
+      'effet volume (+27 600 €) + effet de répartition (−26 400 €) = +1 200 €.',
+      '« Faites varier la part de la marketplace. »',
+    ),
+    proprietes: {
+      modalite: 'solo',
+      exemple: {
+        id: 'b2-01-a5-ponderee',
+        enonce:
+          'Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.',
+        etapes: [
+          {
+            id: 'poids',
+            intitule: 'Poids des canaux',
+            raisonnement:
+              'Poids d’un canal = CA du canal ÷ CA total. 2024 : 529 ÷ 1 150 ; 230 ÷ 1 150 ; 391 ÷ 1 150. 2025 : 397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150.',
+            invite:
+              'Quelle part du CA total représente chaque canal, en 2024 puis en 2025 ?',
+          },
+          {
+            id: 'taux-2024',
+            intitule: 'Taux global 2024',
+            raisonnement:
+              '0,46 × 36 + 0,20 × 28 + 0,34 × 16 = 16,56 + 5,60 + 5,44 = 27,60 %.',
+            invite:
+              'Quel taux global de 2024 obtenez-vous en pondérant le taux de chaque canal par son poids ?',
+          },
+          {
+            id: 'taux-2025',
+            intitule: 'Taux global 2025',
+            raisonnement:
+              '0,345 × 36 + 0,20 × 28 + 0,455 × 16 = 12,42 + 5,60 + 7,28 = 25,30 %. Avec les poids exacts (397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150), on obtient 25,304 %, soit 291 000 ÷ 1 150 000.',
+            invite:
+              'Quel taux global de 2025 obtenez-vous avec les poids de 2025 ?',
+          },
+          {
+            id: 'moyenne-simple',
+            intitule: 'Pourquoi pas la moyenne simple ?',
+            raisonnement:
+              '(36 + 28 + 16) ÷ 3 ≈ 26,7 % : ce nombre ne correspond à aucune année, car il suppose trois canaux de même poids.',
+            invite:
+              'Pourquoi la moyenne simple des trois taux ne donne-t-elle le taux global d’aucune année ?',
+          },
+          {
+            id: 'effet',
+            intitule: 'Chiffrer l’effet de répartition',
+            raisonnement:
+              'Avec la répartition de 2024, le CA 2025 (1 150 000 €) aurait donné 27,6 % de marge, soit 317 400 €. La marge réelle est de 291 000 € : le changement de répartition « coûte » 26 400 € de marge.',
+            invite:
+              'Combien de marge le changement de répartition fait-il perdre en 2025, en euros ?',
+          },
+          {
+            id: 'logique',
+            intitule: 'Réfuter une implication',
+            raisonnement:
+              'L’affirmation « si chaque canal garde son taux, alors le taux global est inchangé » est fausse : Atelier Rivage en est un contre-exemple. Sa négation s’écrit : « il existe une répartition du CA pour laquelle chaque canal garde son taux et le taux global change ».',
+            invite:
+              'Comment s’écrit la négation de « si chaque canal garde son taux, alors le taux global est inchangé », et quel contre-exemple la prouve ?',
+          },
+        ],
+      },
+      etayage: 0,
+    },
+  },
+  {
     screenId: 'B2-01-A5-02-VOTE-PARADOXE',
     titre: 'Vote : le paradoxe du taux global',
     diffusion: 'seance',
@@ -2320,75 +2497,6 @@ const ACTE_5: Acte = [
           'Au lycée, la part des candidats de MCO, moins souvent reçus, a augmenté.',
         ],
       },
-    },
-  },
-  {
-    screenId: 'B2-01-A5-03-MOYENNE-PONDEREE',
-    titre: 'Prouver l’effet de répartition',
-    diffusion: 'seance',
-    brique: 'fp-worked',
-    dureeMinutes: 5,
-    concepts: ['moyenne-ponderee'],
-    notes: notes(
-      'étapes 1 et 2 guidées, 3 à 6 rédigées.',
-      'l’étape 5 (raisonnement contrefactuel) et l’étape 6 (négation d’un « si… alors »).',
-      '27,60 % ; 25,30 % ; 317 400 € ; −26 400 € ; une négation de la forme « il existe… et… ».',
-      'effet volume (+27 600 €) + effet de répartition (−26 400 €) = +1 200 €.',
-      '« Faites varier la part de la marketplace. »',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      exemple: {
-        id: 'b2-01-a5-ponderee',
-        enonce:
-          'Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.',
-        etapes: [
-          {
-            id: 'poids',
-            intitule: 'Poids des canaux',
-            raisonnement:
-              'Poids d’un canal = CA du canal ÷ CA total. 2024 : 529 ÷ 1 150 ; 230 ÷ 1 150 ; 391 ÷ 1 150. 2025 : 397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150.',
-            invite: 'Calculez les poids des deux années.',
-          },
-          {
-            id: 'taux-2024',
-            intitule: 'Taux global 2024',
-            raisonnement:
-              '0,46 × 36 + 0,20 × 28 + 0,34 × 16 = 16,56 + 5,60 + 5,44 = 27,60 %.',
-            invite: 'Pondérez chaque taux par son poids.',
-          },
-          {
-            id: 'taux-2025',
-            intitule: 'Taux global 2025',
-            raisonnement:
-              '0,345 × 36 + 0,20 × 28 + 0,455 × 16 = 12,42 + 5,60 + 7,28 = 25,30 %. Avec les poids exacts (397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150), on obtient 25,304 %, soit 291 000 ÷ 1 150 000.',
-            invite: 'Refaites le calcul avec les poids 2025.',
-          },
-          {
-            id: 'moyenne-simple',
-            intitule: 'Pourquoi pas la moyenne simple ?',
-            raisonnement:
-              '(36 + 28 + 16) ÷ 3 ≈ 26,7 % : ce nombre ne correspond à aucune année, car il suppose trois canaux de même poids.',
-            invite: 'Expliquez pourquoi la moyenne simple ne convient pas.',
-          },
-          {
-            id: 'effet',
-            intitule: 'Chiffrer l’effet de répartition',
-            raisonnement:
-              'Avec la répartition de 2024, le CA 2025 (1 150 000 €) aurait donné 27,6 % de marge, soit 317 400 €. La marge réelle est de 291 000 € : le changement de répartition « coûte » 26 400 € de marge.',
-            invite: 'Chiffrez l’effet du changement de répartition.',
-          },
-          {
-            id: 'logique',
-            intitule: 'Réfuter une implication',
-            raisonnement:
-              'L’affirmation « si chaque canal garde son taux, alors le taux global est inchangé » est fausse : Atelier Rivage en est un contre-exemple. Sa négation s’écrit : « il existe une répartition du CA pour laquelle chaque canal garde son taux et le taux global change ».',
-            invite:
-              'Écrivez la négation de l’affirmation, puis le contre-exemple.',
-          },
-        ],
-      },
-      etayage: 3,
     },
   },
   {
@@ -2616,109 +2724,135 @@ const ACTE_5: Acte = [
       ],
     },
   },
-  {
-    screenId: 'B2-01-A5-07-CONTROLE-DISCRIMINANT',
-    titre: 'Quel contrôle pour chaque anomalie ?',
-    diffusion: 'seance',
-    brique: 'fp-cardsort',
-    dureeMinutes: 8,
-    concepts: ['controle-coherence'],
-    notes: notes(
-      '5 min de tri (annoncer la dernière minute), 3 min de correction.',
-      'les cartes « factures », « compensation » et « détourne nos clients ».',
-      'métadonnées (inflation, +1 200) ; recalcul (−2,3 %, +4 %, moyenne simple) ; représentation (diapositive) ; preuve externe (clients, factures, compensation). À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées avant recalcul, recalcul avant pièce.',
-      'un total qui concorde ne prouve pas que chaque ligne est juste (février : +100 € et −100 € se compensent) ; un indice oriente, une pièce tranche.',
-      '« Rédigez votre recommandation. »',
-    ),
-    proprietes: {
-      modalite: 'binome',
-      ...classement(
-        {
-          id: 'b2-01-a5-controle',
-          intitule:
-            'Pour chaque anomalie du dossier, choisissez le contrôle le plus direct qui permet de trancher.',
-        },
-        'controle-coherence',
-        [
-          ['metadonnees', 'Compléter les métadonnées (unité, période, source)'],
-          ['recalcul', 'Recalculer (coefficients, points, pondération)'],
-          ['representation', 'Refaire la représentation (axe, titre, forme)'],
-          ['preuve', 'Chercher une preuve externe (pièce, donnée détaillée)'],
-        ],
-        [
-          {
-            id: 'inflation',
-            libelle: '« Inflation : 4,9 » dans le tableau de bord',
-            categorie: 'metadonnees',
-            confusion: 'unite-manquante-ignoree',
-            justification: 'Compléter les métadonnées (unité, période, source)',
-          },
-          {
-            id: 'marge',
-            libelle: '« Marge brute : +1 200 »',
-            categorie: 'metadonnees',
-            confusion: 'unite-manquante-ignoree',
-            justification: 'Compléter les métadonnées (unité, période, source)',
-          },
-          {
-            id: 'points',
-            libelle: '« Taux de marge : −2,3 % »',
-            categorie: 'recalcul',
-            confusion: 'points-confondus-avec-pourcentage',
-            justification: 'Recalculer (coefficients, points, pondération)',
-          },
-          {
-            id: 'toile',
-            libelle: '« Prix de la toile : +4 % » (8 − 5 + 4 − 3)',
-            categorie: 'recalcul',
-            confusion: 'taux-successifs-additionnes',
-            justification: 'Recalculer (coefficients, points, pondération)',
-          },
-          {
-            id: 'moyenne',
-            libelle:
-              'Note de Samir : « taux de marge moyen des canaux : 26,7 % »',
-            categorie: 'recalcul',
-            confusion: 'moyenne-simple-des-taux',
-            justification: 'Recalculer (coefficients, points, pondération)',
-          },
-          {
-            id: 'diapo',
-            libelle: 'Diapositive « Marge brute : une croissance continue »',
-            categorie: 'representation',
-            confusion: 'axe-tronque-lu-comme-ecart',
-            justification: 'Refaire la représentation (axe, titre, forme)',
-          },
-          {
-            id: 'clients',
-            libelle: '« La marketplace détourne nos clients du sur-mesure »',
-            categorie: 'preuve',
-            confusion: 'correlation-prise-pour-causalite',
-            justification:
-              'Chercher une preuve externe (pièce, donnée détaillée)',
-          },
-          {
-            id: 'factures',
-            libelle:
-              'Courriel du cabinet comptable : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT',
-            categorie: 'preuve',
-            confusion: 'controle-non-discriminant',
-            justification:
-              'Chercher une preuve externe (pièce, donnée détaillée)',
-          },
-          {
-            id: 'compensation',
-            libelle:
-              'Contrôle de février : total du grand livre égal au total des pièces, mais F002 à +100 € et F003 à −100 €',
-            categorie: 'preuve',
-            confusion: 'total-concordant-vaut-preuve',
-            justification:
-              'Chercher une preuve externe (pièce, donnée détaillée)',
-          },
-        ],
+  ...suiviDeSaCorrection(
+    {
+      screenId: 'B2-01-A5-07-CORRECTION',
+      titre: 'Correction : le contrôle qui tranche chaque anomalie',
+      sousTitre:
+        'À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées, puis recalcul, puis pièce.',
+      dureeMinutes: 1,
+      concepts: ['controle-coherence'],
+      notes: notes(
+        'projeter le plateau corrigé ; commencer par « factures », « compensation » et « détourne nos clients ».',
+        'sur chaque poste, les cartes mal placées au tri sont bordées de rouge, les bien placées de vert.',
+        'métadonnées (inflation, +1 200) ; recalcul (−2,3 %, +4 %, moyenne simple) ; représentation (diapositive) ; preuve externe (clients, factures, compensation).',
+        'un total qui concorde ne prouve pas que chaque ligne est juste (février : +100 € et −100 € se compensent) ; un indice oriente, une pièce tranche.',
+        '« Rédigez votre recommandation. »',
       ),
     },
-  },
+    {
+      screenId: 'B2-01-A5-07-CONTROLE-DISCRIMINANT',
+      titre: 'Quel contrôle pour chaque anomalie ?',
+      diffusion: 'seance',
+      brique: 'fp-cardsort',
+      dureeMinutes: 8,
+      concepts: ['controle-coherence'],
+      notes: notes(
+        'binômes, 5 min de tri (annoncer la dernière minute), puis l’écran suivant pour la correction.',
+        'les cartes « factures », « compensation » et « détourne nos clients ».',
+        'le contrôle le plus direct, et à efficacité égale le moins coûteux, pour trancher chaque anomalie.',
+        'un indice oriente, une pièce tranche.',
+        '« Voyons la correction, carte par carte. »',
+      ),
+      proprietes: {
+        modalite: 'binome',
+        ...classement(
+          {
+            id: 'b2-01-a5-controle',
+            intitule:
+              'Pour chaque anomalie du dossier, choisissez le contrôle le plus direct qui permet de trancher.',
+          },
+          'controle-coherence',
+          [
+            [
+              'metadonnees',
+              'Compléter les métadonnées (unité, période, source)',
+            ],
+            ['recalcul', 'Recalculer (coefficients, points, pondération)'],
+            ['representation', 'Refaire la représentation (axe, titre, forme)'],
+            ['preuve', 'Chercher une preuve externe (pièce, donnée détaillée)'],
+          ],
+          [
+            {
+              id: 'inflation',
+              libelle: '« Inflation : 4,9 » dans le tableau de bord',
+              categorie: 'metadonnees',
+              confusion: 'unite-manquante-ignoree',
+              justification:
+                '« 4,9 » sans unité ni période : taux annuel, indice ou écart ? Compléter la fiche d’identité suffit à trancher.',
+            },
+            {
+              id: 'marge',
+              libelle: '« Marge brute : +1 200 »',
+              categorie: 'metadonnees',
+              confusion: 'unite-manquante-ignoree',
+              justification:
+                '« +1 200 » : des euros, des unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas.',
+            },
+            {
+              id: 'points',
+              libelle: '« Taux de marge : −2,3 % »',
+              categorie: 'recalcul',
+              confusion: 'points-confondus-avec-pourcentage',
+              justification:
+                'L’écart entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative.',
+            },
+            {
+              id: 'toile',
+              libelle: '« Prix de la toile : +4 % » (8 − 5 + 4 − 3)',
+              categorie: 'recalcul',
+              confusion: 'taux-successifs-additionnes',
+              justification:
+                'Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et non +4 %.',
+            },
+            {
+              id: 'moyenne',
+              libelle:
+                'Note de Samir : « taux de marge moyen des canaux : 26,7 % »',
+              categorie: 'recalcul',
+              confusion: 'moyenne-simple-des-taux',
+              justification:
+                'Une moyenne simple ignore le poids de chaque canal : on recalcule une moyenne pondérée par le CA.',
+            },
+            {
+              id: 'diapo',
+              libelle: 'Diapositive « Marge brute : une croissance continue »',
+              categorie: 'representation',
+              confusion: 'axe-tronque-lu-comme-ecart',
+              justification:
+                'L’axe tronqué grossit l’écart : on refait le graphique avec un axe à zéro avant de conclure.',
+            },
+            {
+              id: 'clients',
+              libelle: '« La marketplace détourne nos clients du sur-mesure »',
+              categorie: 'preuve',
+              confusion: 'correlation-prise-pour-causalite',
+              justification:
+                'Deux évolutions simultanées ne prouvent pas une cause : seule une donnée détaillée des clients par canal tranche.',
+            },
+            {
+              id: 'factures',
+              libelle:
+                'Courriel du cabinet comptable : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT',
+              categorie: 'preuve',
+              confusion: 'controle-non-discriminant',
+              justification:
+                '90 € d’écart entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe.',
+            },
+            {
+              id: 'compensation',
+              libelle:
+                'Contrôle de février : total du grand livre égal au total des pièces, mais F002 à +100 € et F003 à −100 €',
+              categorie: 'preuve',
+              confusion: 'total-concordant-vaut-preuve',
+              justification:
+                'Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main.',
+            },
+          ],
+        ),
+      },
+    },
+  ),
   {
     screenId: 'B2-01-A5-08-RECOMMANDATION',
     titre: 'Votre recommandation au comité',
@@ -2741,6 +2875,49 @@ const ACTE_5: Acte = [
           'Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.',
         invite:
           'Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet.',
+        rappel: [
+          {
+            libelle: 'Le dossier',
+            valeur:
+              'Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace), exercices 2024 et 2025, données annuelles.',
+          },
+          {
+            libelle: 'La proposition de Samir',
+            valeur:
+              'Investir 40 000 € pour doubler les ventes de la marketplace.',
+          },
+          {
+            libelle: 'Chiffre d’affaires HT',
+            valeur: '1 050 000 € → 1 150 000 €, soit +9,5 %.',
+          },
+          {
+            libelle: 'Marge brute',
+            valeur: '289 800 € → 291 000 €, soit +1 200 €.',
+          },
+          {
+            libelle: 'Taux de marge brute global',
+            valeur: '27,6 % → 25,3 %, soit −2,3 points.',
+          },
+          {
+            libelle: 'CA HT par canal',
+            valeur:
+              'sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ; marketplace 357 000 € → 523 000 €.',
+          },
+          {
+            libelle:
+              'Taux de marge brute par canal, identiques les deux années',
+            valeur: 'sur-mesure 36 % ; entretien 28 % ; marketplace 16 %.',
+          },
+          {
+            libelle: 'Part de la marketplace dans le CA',
+            valeur: '34 % → 45,5 %.',
+          },
+          {
+            libelle: 'Anomalie relevée au contrôle',
+            valeur:
+              '90 € d’écart entre le grand livre et les factures de vente de mars (pièce F004).',
+          },
+        ],
       },
       corrige: {
         type: 'defi',
@@ -2843,7 +3020,7 @@ function rappel(
   enonce: string,
   bonne: string,
   pieges: AuMoinsUn<Piege>,
-): VoteV3 {
+): VoteDuCours {
   return vote(id, concept, false, enonce, bonne, pieges);
 }
 
@@ -3541,7 +3718,7 @@ const ACTE_6: Acte = [
   },
 ];
 
-const REMEDIATIONS: CoursV3['remediations'] = {
+const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'hausse-baisse-symetriques': 'B2-01-A3-03-PRIX-SAC',
   'taux-successifs-additionnes': 'B2-01-A3-04-FIL-TECHNIQUE',
   'reciproque-meme-taux': 'B2-01-A3-04-FIL-TECHNIQUE',
@@ -3582,7 +3759,7 @@ const REMEDIATIONS: CoursV3['remediations'] = {
   'formule-non-recopiable': 'B2-01-A4-01-CAPSULE',
 };
 
-const MEDIAS: CoursV3['medias'] = [
+const MEDIAS: ContenuDeCours['medias'] = [
   {
     id: 'M1',
     chemins: ['/assets/cours/b2-01/v3/playfair-ecosse-1786.webp'],
@@ -3642,24 +3819,20 @@ const MEDIAS: CoursV3['medias'] = [
   },
 ];
 
-const ECRANS_DU_COURS: CoursV3['ecrans'] = [
+const ECRANS_DU_COURS: ContenuDeCours['ecrans'] = [
   ...ACTE_1,
   ...ACTE_2,
   ...ACTE_3,
   ...ACTE_4,
-  ACTE_5[0],
-  ACTE_5[2],
-  ACTE_5[1],
-  ...ACTE_5.slice(3),
+  ...ACTE_5,
   ...ACTE_6,
 ];
 
-export const B2_COURS: CoursV3 = {
+export const COURS_B2_01: ContenuDeCours = {
   slug: 'b2-01-traitement-information-chiffree',
-  version: 1,
   titre: 'Lire, contrôler et décider avec l’information chiffrée',
   niveau: 'B2',
-  dureeMinutes: 210,
+  dureeMinutes: 213,
   concepts: [
     'proportion',
     'pourcentage',

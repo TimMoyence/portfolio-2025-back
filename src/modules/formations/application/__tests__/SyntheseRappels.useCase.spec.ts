@@ -1,4 +1,4 @@
-import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
+import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
 import { creerCatalogueAVersions } from '../../../../../test/factories/cours.factory';
 import {
   buildActeurFormation,
@@ -10,11 +10,10 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { SessionNotOwnedError } from '../../domain/errors/FormationErrors';
 import { SyntheseRappelsUseCase } from '../SyntheseRappels.useCase';
 
-const COURS = lireCoursStocke(B2_COURS);
+const COURS = buildCoursB2_01();
 
 describe('SyntheseRappelsUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;

@@ -19,6 +19,7 @@ export interface EcranDeroule extends EcranPublic {
   }[];
   readonly corrigeEcran: CorrigeEcranPresentateur | null;
   readonly guide?: NonNullable<EcranActuel['guide']>;
+  readonly renvoi?: string;
 }
 
 export type CorrigeEcranPresentateur =

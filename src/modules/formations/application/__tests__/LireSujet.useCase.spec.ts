@@ -93,6 +93,49 @@ describe('LireSujetUseCase', () => {
     ).toBe(true);
   });
 
+  describe('sur l exemple travaille projete', () => {
+    const RANG_DE_L_EXEMPLE = TIRAGE.sujet.ecrans.findIndex(
+      ({ id }) => id === 'E-REM',
+    );
+    const exempleServi = async () => {
+      const sujet = await demander();
+      return sujet.ecrans[RANG_DE_L_EXEMPLE].donnees as {
+        readonly exemple: {
+          readonly etapes: readonly { readonly raisonnement: string }[];
+        };
+        readonly etayage: number;
+      };
+    };
+    const projeter = (pilotageEcrans: Record<string, { etayage: number }>) =>
+      sessions.findById.mockResolvedValue({
+        ...SESSION,
+        ecranCourant: RANG_DE_L_EXEMPLE,
+        pilotageEcrans,
+      });
+
+    it('RET-23 · tait le raisonnement des etapes que le formateur n a pas revelees', async () => {
+      projeter({});
+
+      const { exemple, etayage } = await exempleServi();
+
+      expect(etayage).toBe(0);
+      expect(exemple.etapes.map(({ raisonnement }) => raisonnement)).toEqual([
+        '',
+      ]);
+    });
+
+    it('RET-23 · sert le raisonnement d une etape une fois revelee', async () => {
+      projeter({ 'E-REM': { etayage: 1 } });
+
+      const { exemple, etayage } = await exempleServi();
+
+      expect(etayage).toBe(1);
+      expect(exemple.etapes.map(({ raisonnement }) => raisonnement)).toEqual([
+        'Arrivée moins départ.',
+      ]);
+    });
+  });
+
   it('lit la version du cours fixée à l ouverture de la séance', async () => {
     const catalogue = creerCatalogueDeTest(COURS);
     const trouver = jest.spyOn(catalogue, 'trouver').mockResolvedValue(COURS);
@@ -178,7 +221,7 @@ describe('LireSujetUseCase', () => {
   });
 
   describe('sur un barème v2', () => {
-    const v2 = ouvrirTirages(COURS, tireurSequentiel(300), 3);
+    const v2 = ouvrirTirages(COURS, tireurSequentiel(300));
     const [{ seed }] = v2.tirages;
 
     beforeEach(() => {

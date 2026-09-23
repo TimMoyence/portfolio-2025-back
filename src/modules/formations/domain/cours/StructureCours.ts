@@ -331,6 +331,14 @@ function referencesEcrans(cours: Cours): readonly CibleReferencee[] {
   });
 }
 
+function referencesRenvois(cours: Cours): readonly CibleReferencee[] {
+  return cours.ecrans.flatMap((ecran, rang) =>
+    ecran.renvoi === undefined
+      ? []
+      : [{ ecran: nomEcran(ecran, rang), cible: ecran.renvoi }],
+  );
+}
+
 function referencesRemediations(cours: Cours): readonly CibleReferencee[] {
   return Object.values(cours.remediations).map((cible) => ({
     ecran: null,
@@ -354,6 +362,7 @@ function controlerReferences({ cours }: Analyse): readonly Manquement[] {
   const connus = identifiantsConnus(cours);
   const references = [
     ...referencesEcrans(cours),
+    ...referencesRenvois(cours),
     ...referencesRemediations(cours),
   ];
   return references

@@ -2,6 +2,11 @@ import {
   buildCoursDeTest,
   EN_CATALOGUE,
 } from '../../../../../test/factories/cours.factory';
+import {
+  buildCasAQuestionsLibres,
+  buildCoursDeBriques,
+} from '../../../../../test/factories/ecrans-stockes.factory';
+import { lireCoursStocke } from './CoursStocke';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import type { Ecran } from '../contrats/cours';
 import { EcranNonServiError } from '../errors/FormationErrors';
@@ -158,5 +163,16 @@ describe('activitesLibres', () => {
     expect(
       activitesLibres({ ...cours, ecrans: [reflexion] }).get('E-REFLEXION'),
     ).toEqual(['reflexion-1']);
+  });
+
+  it('L3 · admet une activite par question libre d un cas professionnel', () => {
+    const cours = lireCoursStocke(
+      buildCoursDeBriques([buildCasAQuestionsLibres()]),
+    );
+
+    expect(activitesLibres(cours).get('B2-01-A1-03-MISSION')).toEqual([
+      'b2-01-a1-mission:mesure',
+      'b2-01-a1-mission:comparable',
+    ]);
   });
 });

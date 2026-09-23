@@ -1,7 +1,5 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { InsertB2CoursV31789893879954 } from '../src/migrations/1789893879954-InsertB2CoursV3';
-import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import type { Cours } from '../src/modules/formations/domain/contrats/cours';
 import type {
   CorrigeFeuille,
@@ -14,78 +12,55 @@ import {
 } from '../src/modules/formations/domain/cours/CorrectionProduction';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
-import { evaluerFeuille } from '../src/modules/formations/domain/cours/Formule';
 import { projeterCatalogue } from '../src/modules/formations/domain/cours/Diffusion';
+import { empreinteCanonique } from '../src/modules/formations/domain/cours/EmpreinteCanonique';
+import { evaluerFeuille } from '../src/modules/formations/domain/cours/Formule';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
+import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
 import { tireurSequentiel } from './factories/cours.factory';
-import { buildBareme } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './helpers/formations-db';
-import { empreinte } from './helpers/portrait-tirages-b2';
 
 const GRAINE_DE_REFERENCE = 0;
-const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
 const INSTANTANE = JSON.parse(
   readFileSync(
-    join(__dirname, 'fixtures/formations/b2-01-v3.instantane.json'),
+    join(__dirname, 'fixtures/formations/b2-01.instantane.json'),
     'utf8',
   ),
 ) as { readonly empreinte: string };
 
-describeDb('contenu V3 du B2-01 en base', () => {
+describeDb('cours B2-01 publié en base', () => {
   let contexte: ContexteFormations;
   let cours: Cours;
 
-  const comptesDeLaV3 = async (): Promise<{
-    cours: number;
-    ecrans: number;
-  }> => {
-    const [{ cours: nombreDeCours, ecrans }]: {
-      cours: number;
-      ecrans: number;
-    }[] = await contexte.dataSource.query(
-      `SELECT COUNT(DISTINCT "cours"."id")::int AS "cours",
-              COUNT("ecran"."id")::int AS "ecrans"
-       FROM "formation_course_contents" AS "cours"
-       LEFT JOIN "formation_screen_contents" AS "ecran" ON "ecran"."course_id" = "cours"."id"
-       WHERE "cours"."slug" = $1 AND "cours"."version" = $2`,
-      [B2_COURS.slug, B2_COURS.version],
-    );
-    return { cours: nombreDeCours, ecrans };
-  };
-
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
-    const lu = await contexte.catalogue.trouver(
-      B2_COURS.slug,
-      B2_COURS.version,
-    );
-    if (lu === null) {
-      throw new Error('la migration de référence n’a pas posé le B2-01');
+    const publie = await contexte.catalogue.trouverCourant(COURS_B2_01.slug);
+    if (publie === null) {
+      throw new Error('la synchronisation n’a pas publié le B2-01');
     }
-    cours = lu;
+    cours = publie.cours;
   }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterAll(async () => contexte.fermer());
 
-  it('relit les 52 écrans avec leur titre public et leur diffusion', () => {
-    expect(cours.ecrans).toHaveLength(52);
-    expect(cours.dureeMinutes).toBe(210);
+  it('relit tous les écrans du fichier, dans l’ordre, avec leur titre public', () => {
+    expect(cours.ecrans.map((ecran) => ecran.id)).toEqual(
+      COURS_B2_01.ecrans.map((ecran) => ecran.screenId),
+    );
+    expect(cours.dureeMinutes).toBe(COURS_B2_01.dureeMinutes);
     expect(cours.ecrans.filter((ecran) => ecran.titre === null)).toEqual([]);
-    expect(
-      cours.ecrans.filter((ecran) => ecran.diffusion === 'catalogue'),
-    ).toHaveLength(13);
   });
 
-  it('relit les 38 remédiations et les 5 médias persistés en jsonb', () => {
-    expect(cours.remediations).toEqual(B2_COURS.remediations);
-    expect(cours.medias).toEqual(B2_COURS.medias);
+  it('relit les remédiations et les médias persistés en jsonb', () => {
+    expect(cours.remediations).toEqual(COURS_B2_01.remediations);
+    expect(cours.medias).toEqual(COURS_B2_01.medias);
   });
 
   it('ne lève aucune violation de structure sur le cours relu de la base', () => {
@@ -93,12 +68,12 @@ describeDb('contenu V3 du B2-01 en base', () => {
   });
 
   it('ouvre un barème v2 et sert le même instantané que le fichier livré', () => {
-    const bareme = ouvrirTirages(cours, tireurSequentiel(1), 3);
+    const bareme = ouvrirTirages(cours, tireurSequentiel(1));
 
     expect(bareme.version).toBe(2);
     expect(bareme.tirages).toHaveLength(60);
     expect(
-      empreinte({
+      empreinteCanonique({
         sujet: tirer(cours, GRAINE_DE_REFERENCE).sujet,
         deroule: deroulePresentateur(cours, GRAINE_DE_REFERENCE),
         catalogue: projeterCatalogue(cours),
@@ -183,8 +158,8 @@ describeDb('contenu V3 du B2-01 en base', () => {
 
   it('refuse en base une diffusion hors catalogue et séance', async () => {
     const [{ id }]: { id: string }[] = await contexte.dataSource.query(
-      `SELECT "id" FROM "formation_course_contents" WHERE "slug" = $1 AND "version" = $2`,
-      [B2_COURS.slug, B2_COURS.version],
+      `SELECT "id" FROM "formation_course_contents" WHERE "slug" = $1`,
+      [COURS_B2_01.slug],
     );
 
     await expect(
@@ -195,41 +170,5 @@ describeDb('contenu V3 du B2-01 en base', () => {
         [id],
       ),
     ).rejects.toThrow('chk_formation_screen_diffusion');
-  });
-
-  it('ne duplique rien quand la migration InsertB2CoursV3 est rejouée', async () => {
-    const runner = contexte.dataSource.createQueryRunner();
-    try {
-      await new InsertB2CoursV31789893879954().up(runner);
-    } finally {
-      await runner.release();
-    }
-
-    expect(await comptesDeLaV3()).toEqual({ cours: 1, ecrans: 52 });
-  });
-
-  it('refuse le retour arrière tant qu’une séance sert la version 3', async () => {
-    const seance = await contexte.sessions.create({
-      courseSlug: B2_COURS.slug,
-      courseVersion: B2_COURS.version,
-      teacherId: FORMATEUR,
-      code: '4821',
-      bareme: buildBareme(),
-    });
-    const runner = contexte.dataSource.createQueryRunner();
-
-    try {
-      await expect(
-        new InsertB2CoursV31789893879954().down(runner),
-      ).rejects.toThrow('utilise par une seance');
-    } finally {
-      await runner.release();
-      await contexte.dataSource.query(
-        'DELETE FROM formation_sessions WHERE id = $1',
-        [seance.id],
-      );
-    }
-
-    expect(await comptesDeLaV3()).toEqual({ cours: 1, ecrans: 52 });
   });
 });

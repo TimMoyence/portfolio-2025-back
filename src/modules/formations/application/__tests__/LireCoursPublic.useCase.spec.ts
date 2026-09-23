@@ -6,8 +6,8 @@ import {
 } from '../../../../../test/factories/cours.factory';
 import { buildCoursStocke } from '../../../../../test/factories/cours-stocke.factory';
 import {
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { tirer } from '../../domain/cours/Tirage';
@@ -76,9 +76,9 @@ describe('LireCoursPublicUseCase', () => {
 
   it('verrouille au catalogue les écrans réservés à la séance (B19)', async () => {
     const v3 = lireCoursStocke(
-      buildCoursStockeV3([
-        buildEcranStockeV3('fp-quote', { diffusion: 'catalogue' }),
-        buildEcranStockeV3('fp-cardsort'),
+      buildCoursDeBriques([
+        buildEcranDeBrique('fp-quote', { diffusion: 'catalogue' }),
+        buildEcranDeBrique('fp-cardsort'),
       ]),
     );
     const sut = new LireCoursPublicUseCase(creerCatalogueDeTest(v3));

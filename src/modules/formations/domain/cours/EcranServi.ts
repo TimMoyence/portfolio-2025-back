@@ -1,6 +1,10 @@
 import type { Cours, Ecran } from '../contrats/cours';
 import { questionsDe } from './Cours';
-import { EcranNonServiError } from '../errors/FormationErrors';
+import type { PilotageEcran } from '../contrats/pilotage';
+import {
+  EcranNonServiError,
+  PhaseFermeeError,
+} from '../errors/FormationErrors';
 import type { FreeRange, PacingMode } from '../PacingMode';
 import type { SessionState } from '../SessionState';
 
@@ -37,6 +41,40 @@ export function assertEcranServi(
   }
 }
 
+function corrigeLEcran(ecran: Ecran, screenId: string): boolean {
+  if (ecran.brique !== 'fp-story') {
+    return false;
+  }
+  const presentation = ecran.proprietes.presentation;
+  return (
+    presentation?.version === 2 &&
+    presentation.renderer === 'sort-review' &&
+    presentation.props.source.screenId === screenId
+  );
+}
+
+export function assertCorrectionNonProjetee(
+  seance: DiffusionDeSeance & {
+    readonly pilotageEcrans: Readonly<Record<string, PilotageEcran>>;
+  },
+  cours: Cours,
+  screenId: string,
+): void {
+  const correction = cours.ecrans.findIndex((ecran) =>
+    corrigeLEcran(ecran, screenId),
+  );
+  const correctionAtteinte =
+    seance.modeRythme === 'pilote' &&
+    correction >= 0 &&
+    correction <= seance.ecranCourant;
+  if (
+    correctionAtteinte ||
+    (seance.pilotageEcrans[screenId]?.etayage ?? 0) > 0
+  ) {
+    throw new PhaseFermeeError(screenId);
+  }
+}
+
 export function rangDeLEcran(cours: Cours, screenId: string): number {
   return cours.ecrans.findIndex((ecran) => ecran.id === screenId);
 }
@@ -50,6 +88,9 @@ export function rangDeLaQuestion(cours: Cours, questionId: string): number {
 function activitesDeLEcran(ecran: Ecran): readonly string[] {
   switch (ecran.brique) {
     case 'fp-worked':
+      if (ecran.proprietes.pilote === true) {
+        return [];
+      }
       return ecran.proprietes.exemple.etapes.map(
         (etape) => `${ecran.proprietes.exemple.id}:${etape.id}`,
       );
@@ -59,6 +100,8 @@ function activitesDeLEcran(ecran: Ecran): readonly string[] {
       return [ecran.question.id];
     case 'fp-story':
       return reflexionDuRecit(ecran);
+    case 'fp-pro':
+      return (ecran.proprietes.questionsLibres ?? []).map(({ id }) => id);
     default:
       return [];
   }

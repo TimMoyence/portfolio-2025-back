@@ -10,8 +10,9 @@ import {
 } from '../../../../../test/factories/cours-stocke.factory';
 import {
   BRIQUES_STOCKEES,
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildCasAQuestionsLibres,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import type { Cours, Ecran } from '../contrats/cours';
 import { creerRng, creerTirage } from './Aleatoire';
@@ -33,7 +34,7 @@ const EXPOSITIONS = [
 ];
 
 function ecranV3(brique: string): Ecran {
-  return lireCoursStocke(buildCoursStockeV3([buildEcranStockeV3(brique)]))
+  return lireCoursStocke(buildCoursDeBriques([buildEcranDeBrique(brique)]))
     .ecrans[0];
 }
 
@@ -134,6 +135,14 @@ describe('estInteractif (§ 2.6.1)', () => {
         }),
       ),
     ).toBe(false);
+  });
+
+  it('L3 · compte un cas professionnel comme interactif quand il pose des questions libres', () => {
+    const ecran = lireCoursStocke(
+      buildCoursDeBriques([buildCasAQuestionsLibres()]),
+    ).ecrans[0];
+
+    expect(estInteractif(ecran)).toBe(true);
   });
 });
 

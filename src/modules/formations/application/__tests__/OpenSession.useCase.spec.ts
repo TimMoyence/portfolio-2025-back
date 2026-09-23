@@ -73,7 +73,7 @@ describe('OpenSessionUseCase', () => {
     );
   });
 
-  it('tire un barème v2 pour une version de cours à partir de la 3', async () => {
+  it('tire un barème v2 quel que soit le numéro de version publiée', async () => {
     sut = new OpenSessionUseCase(
       sessions,
       creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),

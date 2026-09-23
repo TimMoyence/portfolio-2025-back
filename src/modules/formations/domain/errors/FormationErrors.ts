@@ -282,6 +282,12 @@ export class RevisionDeSeanceObsoleteError extends ResourceConflictError {
   }
 }
 
+export class CoursNonConformeError extends DomainValidationError {
+  constructor(slug: string, violations: readonly string[]) {
+    super(`Le cours ${slug} n’est pas publiable : ${violations.join(' ; ')}`);
+  }
+}
+
 export class CoursModifieError extends ResourceConflictError {
   readonly code = 'COURS_MODIFIE';
 

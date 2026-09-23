@@ -1,9 +1,10 @@
-import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import { CloseSessionUseCase } from '../src/modules/formations/application/CloseSession.useCase';
 import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
 import { LireCoursPublicUseCase } from '../src/modules/formations/application/LireCoursPublic.useCase';
-import { ContenuDeCoursInvalideError } from '../src/modules/formations/domain/cours/CoursStocke';
-import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
+import {
+  ContenuDeCoursInvalideError,
+  lireContenuAPublier,
+} from '../src/modules/formations/domain/cours/CoursStocke';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import {
@@ -13,6 +14,7 @@ import {
 } from '../src/modules/formations/domain/errors/FormationErrors';
 import { FormationCourseContentEntity } from '../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
 import { FormationScreenContentEntity } from '../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
+import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
 import {
   buildEcranStockeAvec,
   buildQuizNote,
@@ -29,14 +31,15 @@ import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   inscrireParticipant,
   ouvrirContexteFormations,
+  VERSION_PUBLIEE_SUR_BASE_NEUVE,
   type ContexteFormations,
 } from './helpers/formations-db';
 
-const SLUG_B2 = 'b2-01-traitement-information-chiffree';
+const SLUG_B2 = COURS_B2_01.slug;
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
-const VERSION_PUBLIEE = B2_COURS.version;
-const NOMBRE_ECRANS = B2_COURS.ecrans.length;
-const COURS_DE_REFERENCE = lireCoursStocke(B2_COURS);
+const VERSION_PUBLIEE = VERSION_PUBLIEE_SUR_BASE_NEUVE;
+const NOMBRE_ECRANS = COURS_B2_01.ecrans.length;
+const COURS_DE_REFERENCE = lireContenuAPublier(COURS_B2_01);
 const NOMBRE_QUESTIONS = COURS_DE_REFERENCE.ecrans.filter(
   (ecran) => ecran.question !== undefined,
 ).length;
@@ -91,7 +94,7 @@ describeDb('catalogue B2 migré', () => {
 
   afterAll(async () => contexte.fermer());
 
-  it('installe les 52 écrans dans un ordre stable, sans doublon ni contenu de remplissage', async () => {
+  it('installe tous les écrans dans un ordre stable, sans doublon ni contenu de remplissage', async () => {
     const ecrans = await ecransDeLaVersion(VERSION_PUBLIEE);
 
     expect(ecrans).toHaveLength(NOMBRE_ECRANS);
@@ -139,7 +142,7 @@ describeDb('catalogue B2 migré', () => {
         )?.['props'],
       })),
     ).toEqual(
-      B2_COURS.ecrans.map((ecran, position) => {
+      COURS_B2_01.ecrans.map((ecran, position) => {
         const presentation = (
           ecran.proprietes as { presentation?: Record<string, unknown> }
         ).presentation;
@@ -157,8 +160,8 @@ describeDb('catalogue B2 migré', () => {
     const { dataSource, catalogue, sessions } = contexte;
     const course = await dataSource
       .getRepository(FormationCourseContentEntity)
-      .findOneByOrFail({ slug: SLUG_B2, version: 1 });
-    const session = await ouvrirSeanceB2('5982', 1);
+      .findOneByOrFail({ slug: SLUG_B2, version: VERSION_PUBLIEE });
+    const session = await ouvrirSeanceB2('5982');
     await expect(
       dataSource.query(
         'UPDATE formation_course_contents SET titre = $1 WHERE id = $2',
@@ -195,11 +198,15 @@ describeDb('catalogue B2 migré', () => {
     expect((await catalogue.trouverCourant(course.slug))?.version).toBe(
       VERSION_PUBLIEE,
     );
-    expect((await catalogue.trouver(course.slug, 1))?.titre).toBe(course.titre);
+    expect((await catalogue.trouver(course.slug, VERSION_PUBLIEE))?.titre).toBe(
+      course.titre,
+    );
     expect(
       (await catalogue.trouver(course.slug, VERSION_PUBLIEE + 1))?.titre,
     ).toBe('Nouvelle édition');
-    expect((await sessions.findById(session.id))?.courseVersion).toBe(1);
+    expect((await sessions.findById(session.id))?.courseVersion).toBe(
+      VERSION_PUBLIEE,
+    );
     await expect(
       dataSource.query(
         `UPDATE "formation_screen_contents" SET "notes" = 'modifiée' WHERE "course_id" = $1`,

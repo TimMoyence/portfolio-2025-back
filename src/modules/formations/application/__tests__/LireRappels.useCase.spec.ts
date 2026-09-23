@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
+import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
 import { creerCatalogueAVersions } from '../../../../../test/factories/cours.factory';
 import {
   buildMasteryRecord,
@@ -11,7 +11,6 @@ import {
   createMockRappelsServisRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import {
   EcranNonServiError,
   ParticipantNotFoundError,
@@ -19,7 +18,7 @@ import {
 } from '../../domain/errors/FormationErrors';
 import { LireRappelsUseCase } from '../LireRappels.useCase';
 
-const COURS = lireCoursStocke(B2_COURS);
+const COURS = buildCoursB2_01();
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
 const OBLIGATOIRES = ['b2-01-r-compensation', 'b2-01-r-multiple-neuf'];
 

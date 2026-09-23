@@ -1,6 +1,5 @@
 import request from 'supertest';
 import type { Test } from 'supertest';
-import { B2_COURS } from '../src/migrations/data/b2-v3.cours';
 import type {
   Cours,
   Ecran,
@@ -14,7 +13,10 @@ import type { TirageDuCours } from '../src/modules/formations/domain/cours/Tirag
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { describeDb } from './helpers/db-integration-datasource';
 import { installerEnvFormations } from './helpers/env-formations';
-import { DELAI_OUVERTURE_CONTEXTE_MS } from './helpers/formations-db';
+import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
+  VERSION_PUBLIEE_SUR_BASE_NEUVE,
+} from './helpers/formations-db';
 import {
   clientFormations,
   EN_TETE_IDENTITE,
@@ -26,15 +28,15 @@ import {
   estProduction,
   productionJuste,
   reponseDEnigme,
-} from './helpers/reponses-v3';
+} from './helpers/reponses-b2-01';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';
-const VERSION_COURS = B2_COURS.version;
+const VERSION_COURS = VERSION_PUBLIEE_SUR_BASE_NEUVE;
 const TAILLE_CLASSE = 35;
 const ADMIN = 'c3333333-3333-4333-8333-333333333333';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
-const SYNTHESE_A = 'v3-formateur@example.test';
+const SYNTHESE_A = 'classe-formateur@example.test';
 const OK = 200;
 const CREE = 201;
 const SANS_CONTENU = 204;
@@ -76,7 +78,7 @@ function centile(durees: readonly number[], fraction: number): number {
   return triees[Math.max(0, rang)];
 }
 
-describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
+describeDb('Classe de trente sur le B2-01 (db integration)', () => {
   silenceNestLogger();
 
   let banc: BancFormations;
@@ -292,18 +294,17 @@ describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
 
   afterAll(async () => {
     await banc.fermer();
-    process.stdout.write(`\nMesures V3\n${mesures.join('\n')}\n`);
+    process.stdout.write(`\nMesures classe B2-01\n${mesures.join('\n')}\n`);
   });
 
   it(
-    'ouvre la V3 migree pour trente etudiants et sert le sujet dans le budget (AC-34)',
+    'ouvre le B2-01 publie pour trente etudiants et sert le sujet dans le budget (AC-34)',
     async () => {
       const ouverture = await request(serveur())
         .post(client.chemin('/sessions'))
         .set(EN_TETE_IDENTITE, `${ADMIN}:admin:teacher`)
         .send({
           courseSlug: SLUG,
-          version: VERSION_COURS,
           capacite: TAILLE_CLASSE,
         })
         .expect(CREE);
@@ -320,7 +321,7 @@ describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
             .send({
               prenom: `Prenom-${index}`,
               nom: `Nom-${index}`,
-              email: `v3-${index}@example.test`,
+              email: `classe-${index}@example.test`,
             }),
         ),
       );
@@ -353,7 +354,7 @@ describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
         'utf8',
       );
       mesurer(
-        'taille du sujet V3 servi',
+        'taille du sujet B2-01 servi',
         `${(octets / 1024).toFixed(1)} Ko (budget ${TAILLE_MAX_SUJET_OCTETS / 1024} Ko)`,
       );
       expect(p95).toBeLessThan(BUDGET_SUJET_P95_MS);
@@ -363,7 +364,7 @@ describeDb('Classe de trente sur le B2-01 V3 (db integration)', () => {
   );
 
   it(
-    'joue chaque ecran de la V3 avec trente etudiants simultanes',
+    'joue chaque ecran du B2-01 avec trente etudiants simultanes',
     async () => {
       for (const [rang, ecran] of cours.ecrans.entries()) {
         await piloter({ ecran: rang }).expect(SANS_CONTENU);

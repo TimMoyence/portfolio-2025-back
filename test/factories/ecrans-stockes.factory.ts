@@ -1,4 +1,5 @@
 import type {
+  ContenuAPublier,
   ContenuDeCoursBrut,
   EcranDeCoursBrut,
 } from '../../src/modules/formations/domain/cours/CoursStocke';
@@ -332,7 +333,27 @@ export function buildProprietesStockees(
   return structuredClone(PROPRIETES_PAR_BRIQUE[brique]);
 }
 
-export function buildEcranStockeV3(
+export function buildCasAQuestionsLibres(): EcranDeCoursBrut {
+  return buildEcranDeBrique('fp-pro', {
+    screenId: 'B2-01-A1-03-MISSION',
+    proprietes: {
+      ...buildProprietesStockees('fp-pro'),
+      questionsLibres: [
+        {
+          id: 'b2-01-a1-mission:mesure',
+          question: 'Que mesure chaque chiffre ?',
+          placeholder: 'Un montant, une part, une évolution…',
+        },
+        {
+          id: 'b2-01-a1-mission:comparable',
+          question: 'Les bases et les périodes sont-elles comparables ?',
+        },
+      ],
+    },
+  });
+}
+
+export function buildEcranDeBrique(
   brique: string,
   overrides: Partial<EcranDeCoursBrut> = {},
 ): EcranDeCoursBrut {
@@ -349,13 +370,19 @@ export function buildEcranStockeV3(
   };
 }
 
-export function buildCoursStockeV3(
+export function buildCoursDeBriques(
   ecrans: readonly EcranDeCoursBrut[],
   overrides: Partial<ContenuDeCoursBrut> = {},
 ): ContenuDeCoursBrut {
+  return { version: 3, ...buildContenuPubliable(ecrans), ...overrides };
+}
+
+export function buildContenuPubliable(
+  ecrans: readonly EcranDeCoursBrut[],
+  overrides: Partial<ContenuAPublier> = {},
+): ContenuAPublier {
   return {
     slug: 'b2-01-traitement-information-chiffree',
-    version: 3,
     titre: 'Traitement de l’information chiffrée',
     niveau: 'B2',
     dureeMinutes: ecrans.reduce(

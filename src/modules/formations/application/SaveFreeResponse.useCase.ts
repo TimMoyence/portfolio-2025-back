@@ -5,6 +5,7 @@ import {
   rangDeLEcran,
 } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { assertEtapeNonCorrigee } from '../domain/cours/PilotageEcrans';
 import {
   ActiviteInconnueError,
   CoursInconnuError,
@@ -68,6 +69,11 @@ export class SaveFreeResponseUseCase {
     if (!admises.includes(command.activityId)) {
       throw new ActiviteInconnueError(command.screenId, command.activityId);
     }
+    assertEtapeNonCorrigee(
+      session.pilotageEcrans,
+      cours.ecrans.find((ecran) => ecran.id === command.screenId),
+      command.activityId,
+    );
     await this.freeResponses.save({ ...command, response });
   }
 }

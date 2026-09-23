@@ -1,8 +1,8 @@
 import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
 import {
   BRIQUES_STOCKEES,
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
@@ -67,8 +67,8 @@ describe('deroulePresentateur', () => {
 
 describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
   const cours = lireCoursStocke(
-    buildCoursStockeV3(
-      BRIQUES_STOCKEES.map((brique) => buildEcranStockeV3(brique)),
+    buildCoursDeBriques(
+      BRIQUES_STOCKEES.map((brique) => buildEcranDeBrique(brique)),
     ),
   );
   const deroule = deroulePresentateur(cours, 11);

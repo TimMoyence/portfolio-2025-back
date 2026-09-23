@@ -4,11 +4,13 @@ import {
   IsBoolean,
   IsIn,
   IsInt,
+  isObject,
   IsOptional,
   IsString,
   MaxLength,
   Min,
   MinLength,
+  ValidateBy,
   ValidateNested,
 } from 'class-validator';
 import type {
@@ -17,6 +19,21 @@ import type {
 } from '../../../domain/contrats/pilotage';
 import { PHASES_DE_VOTE } from '../../../domain/contrats/pilotage';
 import { ControlSessionRequestDto as ControlSessionServieRequestDto } from '../control-session.request.dto';
+
+function EstReglageNumerique(): PropertyDecorator {
+  return ValidateBy({
+    name: 'estReglageNumerique',
+    validator: {
+      validate: (valeur: unknown) =>
+        isObject(valeur) &&
+        Object.values(valeur).every(
+          (reglage) => typeof reglage === 'number' && Number.isFinite(reglage),
+        ),
+      defaultMessage: () =>
+        '$property doit associer chaque paramètre de la machine à un nombre fini',
+    },
+  });
+}
 
 export class PilotageEcranRequestDto implements PilotageEcran {
   @ApiProperty({ example: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE' })
@@ -50,6 +67,16 @@ export class PilotageEcranRequestDto implements PilotageEcran {
   @IsInt()
   @Min(0)
   etayage?: number;
+
+  @ApiPropertyOptional({
+    type: 'object',
+    additionalProperties: { type: 'number' },
+    description: 'Réglages des curseurs de la machine, par clé de paramètre',
+    example: { prix: 250, taux: -12.5 },
+  })
+  @IsOptional()
+  @EstReglageNumerique()
+  reglages?: Record<string, number>;
 }
 
 export class ControlSessionRequestDto extends ControlSessionServieRequestDto {

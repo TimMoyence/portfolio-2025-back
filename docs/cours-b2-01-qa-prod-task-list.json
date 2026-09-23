@@ -1,0 +1,526 @@
+{
+  "titre": "QA de mise en production et cours B2-01 V3 servi par le serveur",
+  "branche": "fix/cours-qa-prod",
+  "depots": ["portfolio-2025-back", "portfolio-2025-front"],
+  "conception": "docs/cours-b2-01-conception.md",
+  "remplace": "docs/cours-servi-par-le-serveur-task-list.json (déclarée terminée à tort : critères partiels relevés par l'audit du 2026-09-19)",
+  "regleDeCompletion": "Une tâche passe à « termine » seulement si son code est livré, si chaque niveau de test exigé existe et passe, et si la preuve (commit, fichier de test, sortie de commande) est consignée. Un contrôle statique ne remplace jamais un test de comportement.",
+  "politiqueDeTests": {
+    "principe": "Chaque fonctionnalité et chaque décision tracée ici est couverte par les cinq niveaux ci-dessous ; chaque fonction exportée a au minimum un test unitaire. La matrice de traçabilité est tenue dans la tâche TEST-01 (back) et TEST-02 (front).",
+    "unitaire": "Fonction ou classe isolée, dépendances remplacées par les factories partagées. Back : Jest (*.spec.ts à côté du code). Front : Jasmine/Karma.",
+    "comportement": "Scénario given/when/then observable par l'utilisateur de la couche : cas d'usage appelé comme par le controller (back), composant monté et piloté par le DOM (front), refus et erreurs compris.",
+    "integration": "Composants réels assemblés : back HTTP + base PostgreSQL réelle (test:integration:db, *.db-integration.spec.ts) et HTTP/SSE réel (test:e2e:http) ; front adapter réel contre HttpTestingController, hôte et briques réelles.",
+    "simulation": "Génération aléatoire ou massive et reproductible : tests par propriétés fast-check (back), simulations de classe (trente étudiants, concurrence, réseau coupé, reprise), charge, entrées adverses (moteur de formules).",
+    "e2e": "Navigateur réel via Playwright. Deux bancs : e2e/ avec API simulée (CI front) et banc réel front + back + PostgreSQL (E2E-02) qui rejoue le parcours complet sur le cours migré."
+  },
+  "taches": [
+    {
+      "id": "QA-01",
+      "titre": "Audit de la task list « cours servi par le serveur »",
+      "depot": "back+front",
+      "statut": "termine",
+      "preuves": [
+        "Audit back et front, /code-review high (10 constats), vérification manuelle de chaque constat"
+      ],
+      "reste": "Aucun"
+    },
+    {
+      "id": "QA-02",
+      "titre": "Sécurité : annotations, groupes, participants et réponses libres réservés au formateur propriétaire, lecture ouverte à l'administrateur",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": [
+        "530f5a6",
+        "9b774ab",
+        "test/formations-acces-formateur.http-socket.spec.ts"
+      ],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-01"
+    },
+    {
+      "id": "QA-03",
+      "titre": "Couches : cas d'usage dédiés, plus aucun dépôt appelé par un controller, plus d'@Optional mort",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": ["530f5a6", "9b774ab"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-01"
+    },
+    {
+      "id": "QA-04",
+      "titre": "Scores : lecture des résultats sans écriture, persistance à la clôture",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": ["60e8ddc"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-01"
+    },
+    {
+      "id": "QA-05",
+      "titre": "Upserts atomiques et erreurs métier 400/404/409 au lieu de 500",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": ["63b7ce2"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-01"
+    },
+    {
+      "id": "QA-06",
+      "titre": "Payload public sans `interaction` (fuite de la rubrique « À dire »)",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": ["0f85e4e"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-01"
+    },
+    {
+      "id": "QA-07",
+      "titre": "Règle de notation explicite servie dans /results et /report",
+      "depot": "back+front",
+      "statut": "termine",
+      "preuves": ["4dbaa58", "08565d4"],
+      "reste": "Évolution V3 du contrat `notation` : tâche V3-L2b"
+    },
+    {
+      "id": "QA-08",
+      "titre": "P0 front : verdict serveur des quiz v2 affiché à l'étudiant, énoncés au pupitre et dans la synthèse",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["aa7e173"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-02"
+    },
+    {
+      "id": "QA-09",
+      "titre": "Guide formateur aligné sur le back, réponse attendue masquée derrière la révélation",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["5a1e1cb"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-02"
+    },
+    {
+      "id": "QA-10",
+      "titre": "Panneau pédagogique : découpage, autosave différé, groupes, affectation, export du bilan, synchronisation multi-postes",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["5a1e1cb", "357ccb9", "fb9524c"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-02"
+    },
+    {
+      "id": "QA-11",
+      "titre": "Statistiques formateur complètes et phrase de notation",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["08565d4"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-02"
+    },
+    {
+      "id": "QA-12",
+      "titre": "Réflexion : états réels (réseau, séance terminée, non démarrée), file IndexedDB fermée",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["53c4763"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-02"
+    },
+    {
+      "id": "QA-13",
+      "titre": "Mode aperçu hors séance, projection non interactive, collecte de confiance retirée",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["95672f1", "8350111", "60b8b61"],
+      "reste": "Matrice cinq niveaux à confirmer par TEST-02"
+    },
+    {
+      "id": "QA-14",
+      "titre": "Legacy front retiré (cours-host, fp-quiz, SCSS mort, export build-cours) ; briques runtime prévues restaurées",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["c312ee7", "55a11fa", "9fae79b", "054e57a", "4523801"],
+      "reste": "Aucun"
+    },
+    {
+      "id": "QA-15",
+      "titre": "i18n : cours, 39 traductions périmées, ids dupliqués, 154 textes en dur, garde de synchronisation XLF",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": [
+        "bcc865c",
+        "a77d859",
+        "42ca238",
+        "afbcc54",
+        "a63360a",
+        "af750fd",
+        "0d01e28",
+        "78f00e3",
+        "765911f",
+        "6e567c7",
+        "a9e89df",
+        "16e1b30 + b1278f8 (174 unités non traduites corrigées : pages anglaises de audit-seo-diy et automatiser-avec-ia servaient du français ; 176 cibles identiques justifiées ; garde anti-retour)"
+      ],
+      "reste": "Aucun"
+    },
+    {
+      "id": "QA-16",
+      "titre": "Page B2 rendue à la demande, carte catalogue cohérente, garde AD-4 étendue, perf LCP, mouvement réduit",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["8570303", "f2c163a", "a303c49", "685036c", "3963c71"],
+      "reste": "Aucun"
+    },
+    {
+      "id": "QA-17",
+      "titre": "Schéma : parité entités/migrations formations et projet entier, garde anti-dérive, migration:generate réparé",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": [
+        "28042b3",
+        "a4fee05",
+        "d205485",
+        "8bedea4",
+        "15773f5",
+        "test/schema-entites-migrations.db-integration.spec.ts"
+      ],
+      "reste": "Checklist de déploiement : vérifier l'absence de NULL sur les 10 colonnes passées en NOT NULL (DEPLOY-01)"
+    },
+    {
+      "id": "QA-18",
+      "titre": "Migrations de données B2 déclarées irréversibles, validation stricte du contenu à la lecture",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": ["6b5f204", "28a8cee"],
+      "reste": "Aucun"
+    },
+    {
+      "id": "QA-19",
+      "titre": "Tests : répétition B2 sur le contenu migré, version figée prouvée, catalogue public couvert, test SSE instable stabilisé",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": ["dc0e3c1", "98c020b", "3b15749", "c5f65c5"],
+      "reste": "Scénario complet V3 : E2E-01"
+    },
+    {
+      "id": "QA-20",
+      "titre": "Configuration : exemples d'environnement valides, Redis désactivable explicitement",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": ["5cb303b", "0058360", "395a927"],
+      "reste": "Aucun"
+    },
+    {
+      "id": "QA-21",
+      "titre": "Documentation : docs/formations.md, README et CONTRIBUTING back, README front, CLAUDE.md racine",
+      "depot": "back+front+racine",
+      "statut": "termine",
+      "preuves": [
+        "8ea3f15",
+        "f40e5e3",
+        "d653816",
+        "CLAUDE.md racine (dépôt local non poussé)"
+      ],
+      "reste": "Mise à jour finale après V3 : DOC-01"
+    },
+    {
+      "id": "V3-00",
+      "titre": "Conception figée du B2-01 V3 (52 écrans, 210 min, deux relectures, 94 constats tracés)",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": ["138a450", "docs/cours-b2-01-conception.md"],
+      "reste": "Aucun"
+    },
+    {
+      "id": "V3-L0",
+      "titre": "Lot 0 : contrats figés (types, DTO, OpenAPI, vecteurs signés, port et bouchon)",
+      "depot": "back+front",
+      "statut": "termine",
+      "preuves": [
+        "5af6a66",
+        "f6f7736",
+        "f2f57a2",
+        "2360514",
+        "fe28e04",
+        "99f8a8e",
+        "340464e",
+        "e2e85b7"
+      ],
+      "reste": "Aucun"
+    },
+    {
+      "id": "V3-L1",
+      "titre": "Lot 1 : domaine et stockage back (tests dorés v1/v2, B1-B4, B14-B17, B19, B22, B29, barème v2, données V3, instantané)",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": [
+        "e1e42ac",
+        "7ccbca8",
+        "da6cd0b",
+        "d654c9c",
+        "ce4e58f",
+        "c13af78",
+        "54bbdd6",
+        "619a75e",
+        "6c0c4eb",
+        "3a2ae17",
+        "e9ff6d9",
+        "29d3395",
+        "02f3748",
+        "6ba2370",
+        "instantané test/fixtures/formations/b2-01-v3.instantane.json empreinte ffb9f747451f8ed2dff9e75ed83fb3d7e83b6c70024e7e703e0bee6bd50509e1",
+        "2658 tests unitaires, 79 intégration DB, 112 HTTP"
+      ],
+      "reste": "E2E à couvrir par E2E-01 et E2E-02"
+    },
+    {
+      "id": "V3-L2a",
+      "titre": "Lot 2a : moteur de formules serveur borné (mémoïsation, budget, R1C1, vecteurs, adverses < 50 ms)",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": [
+        "7175bef",
+        "11fb267",
+        "506204c",
+        "6d1cb83",
+        "budget mesuré en Node nu : 0,095 à 3,7 ms sur feuilles adverses (seuil 50 ms)",
+        "quality:parite-formules câblé en CI et pre-push : 12 vecteurs, mêmes résultats back et front",
+        "fuite de titre A4-04 corrigée, garde étendue aux titres verrouillés",
+        "instantané V3 régénéré, empreinte f283ff9bf1ac6a0700a1a2dd7aae4f108a8dadae673ae64bc0481b6dce365af6"
+      ],
+      "reste": "E2E au banc réel ; portage des durcissements du moteur côté front et script de parité front"
+    },
+    {
+      "id": "V3-L2b",
+      "titre": "Lot 2b : routes, persistance et flux (productions, énigmes, jalons, rappels, pilotage, état du participant, écran servi, H1 back, H6)",
+      "depot": "back",
+      "statut": "termine",
+      "preuves": [
+        "1025b81 (B20 garde écran servi)",
+        "c53f85d (B21 pilotage persisté)",
+        "765c4ed (B5, B11 productions)",
+        "afc76b6 (B7 énigmes plafonnées)",
+        "8d8d230 (gardes réelles des routes)",
+        "1bae3fa (B8 jalons anonymisés)",
+        "2d13db7 (B12 défis)",
+        "ba01986 (B23 état participant)",
+        "cfe1a2a (H6 plafond vs panne Redis)",
+        "7c0a15a (B28 capacité et éviction)",
+        "de979cf (B25 publication réversible, H1 version servie)",
+        "eacd186 (B10 résultats détaillés, B26 rapport étendu)",
+        "1056e6b (B9 rappels espacés figés par participant)",
+        "fcd158f (B10 flux resultats complet : jalons, énigmes, barème)",
+        "43136d1 (B24 caches de lecture et bilan partagé, B30 Leitner atomique)",
+        "772ba5d (banc de séance partagé, quality:cpd:tests 1,86 % -> 0,94 %)",
+        "a141e01 (AC-34 : répétition V3 à 35 étudiants, simulations de concurrence)"
+      ],
+      "reste": "Aucun. Commandes de fin vertes une fois chacune : lint, typecheck, format:check, knip, cpd 0,98 %, cpd:tests 0,94 %, parité-formules, test:guards 64, guard:comments 0/0 sur 1208 fichiers, jest 3008 tests, db-integration 159, e2e:http 159, e2e 33, build.",
+      "ecartsAssumes": [
+        "Pas de FK composite formation_course_publications -> formation_course_contents : TypeORM ne peut l'exprimer sans relation et une FK manuelle ferait diverger la garde schema-entites-migrations ; intégrité tenue à l'écriture (trouver(slug, version) avant upsert), avec test.",
+        "Publication validée par ouvrirTirages et non verifierStructure : cette dernière est une règle éditoriale V3 qui refuserait le contenu v2 publié aujourd'hui. Conception mise à jour (VERSION_NON_PUBLIABLE).",
+        "Éviction : 404 PARTICIPANT_INTROUVABLE au lieu du 401 PARTICIPANT_EVINCE du § 9.1 — un jeton évincé ne doit pas révéler qu'il a existé. Conception corrigée.",
+        "Mémo de tirer clé (slug, graine) + garde d'identité de l'objet Cours au lieu de (slug, version, graine) : le Cours du domaine ne porte pas sa version ; la garde couvre strictement plus.",
+        "RAPPEL_NON_SERVI retiré du § 9.5 (aucune classe d'erreur ne le portait) ; la garde réelle est ECRAN_NON_SERVI sur l'écran fp-spaced.",
+        "MiseAJourDeMaitrise supprimée : simple indirection une fois l'écriture Leitner rendue atomique.",
+        "Une partie des éditions du lot est passée par des heredocs Bash avant la reprise, contrairement à la règle Read/Edit/Write ; toutes sont couvertes par typecheck, lint et tests."
+      ]
+    },
+    {
+      "id": "V3-L3",
+      "titre": "Lot 3 : briques et hôte front sur bouchons (F1-F14, F17-F21, F23, H2)",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": [
+        "dbbbc79",
+        "ac2007b",
+        "c7e70f8",
+        "b409c9e",
+        "8e168be",
+        "191b4b6",
+        "1876359",
+        "c5d6586"
+      ],
+      "reste": "Intégration réelle : V3-L3i ; AC-24 sur l'instantané V3 réel"
+    },
+    {
+      "id": "V3-L3i",
+      "titre": "Intégration réelle front ↔ back V3 (routes, SSE, instantané 52 écrans, parité des vecteurs entre dépôts)",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": [
+        "b292dc4, 27e6289, b6720dc, 951cc95, dbfa55d, ae38e10, f6ede0b, 1612bdb, df8ddb4, 797b88f, c01c7a0",
+        "31 méthodes du port branchées sur les routes réelles ; refus reclassés sur les codes réellement servis",
+        "front : 3283 tests Karma, 97 e2e"
+      ],
+      "reste": "Deux routes de rappels non encore exposées par le back (B9) ; jalons, énigmes et barème absents du flux SSE (B10) — signalés au lot 2b"
+    },
+    {
+      "id": "V3-L4",
+      "titre": "Lot 4 : rendus v2 (graduations, axes, étiquettes, contrastes, instantanés visuels)",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["bc1299c", "500a8f0"],
+      "reste": "Aucun"
+    },
+    {
+      "id": "V3-L5",
+      "titre": "Lot 5 : médias (capsule 151,7 s CC BY-SA, voix Piper, 4 images du domaine public)",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": ["4199224", "empreintes SHA-256 identiques au manifeste"],
+      "reste": "Écoute humaine de la narration par l'auteur avant publication (DEPLOY-01)"
+    },
+    {
+      "id": "V3-L5b",
+      "titre": "Kit de production de la capsule versionné et reproductible",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": [
+        "893c109 (kit outils/capsule-b2-01, dans le périmètre des gardes)",
+        "4812175",
+        "production rejouée : 8 médias identiques à l'octet"
+      ],
+      "reste": "Aucun"
+    },
+    {
+      "id": "V3-L6",
+      "titre": "Lot 6 : publication (InsertB2CoursV3 non publiée, bascule réversible, vérification)",
+      "depot": "back",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout. Bloquant pour la production : src/migrations/data/b2-v3.cours.ts est écrit et testé mais aucune migration ne l'insère ; la V3 n'existe aujourd'hui que dans les tests (test/helpers/b2-v3-en-base.ts) et la version publiée en base reste la v2. Sans ce lot, PUT catalogue/:slug/publication n'a rien à basculer en production.",
+      "criteres": [
+        "Migration InsertB2CoursV3 : insère la version 3 du contenu, NON publiée (formation_course_publications reste sur la v2).",
+        "Migration irréversible déclarée comme les autres migrations de données B2, avec validation stricte du contenu à l'insertion.",
+        "Les tests de séance lisent la version migrée au lieu de l'insérer eux-mêmes (retrait ou réduction de test/helpers/b2-v3-en-base.ts) — cf. feedback « tests sur vrai contenu ».",
+        "Bascule v2 -> v3 -> v2 prouvée en base réelle, séance déjà ouverte gardant sa version (AC-36).",
+        "Garde de non-régression : l'instantané de contrat f283ff9b… reste identique après migration."
+      ]
+    },
+    {
+      "id": "V3-L7",
+      "titre": "Lot 7 : annexes H1 (front), H3, H4, H5",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": [
+        "dbbbc79 (H3)",
+        "6280b88 (H4, H5)",
+        "4ebcd06 + b32aea2 (H1 front, cinq niveaux)"
+      ],
+      "reste": "H1 en conditions réelles après le lot 2b (publieLe servi par le back)"
+    },
+    {
+      "id": "E2E-01",
+      "titre": "Scénario complet sur le B2 V3 migré, HTTP + SSE + PostgreSQL réels, rejoué en CI (toutes les fonctionnalités, nettoyage vérifié)",
+      "depot": "back",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout"
+    },
+    {
+      "id": "E2E-02",
+      "titre": "Banc réel Playwright : front SSR + back + PostgreSQL, un formateur et trois étudiants, parcours complet du § 10.2",
+      "depot": "front+back",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout. Dépend de V3-L6 (contenu migré).",
+      "criteres": [
+        "Reprise après rechargement : répondre, recharger, GET /moi restitue réponses, jalons, énigmes, défis et rappels servis ; refus « déjà répondu » sur une seconde soumission.",
+        "Écran non servi : un poste qui devance le formateur reçoit 409 ECRAN_NON_SERVI sur answers, free-responses, productions, escape, pulses, rappels.",
+        "AC-39 bout en bout : Redis coupé -> flux SSE en mode dégradé et journal error ; plafond partagé atteint -> 429 à l'ouverture du flux et journal warn (le back n'a que la couverture unitaire, le harnais HTTP n'injecte pas encore STREAM_CAPACITY).",
+        "AC-36 : V3 insérée non publiée -> les séances s'ouvrent en v2 ; bascule -> V3 ; rebascule -> v2 ; une séance déjà ouverte garde sa version (COURS_MODIFIE sinon).",
+        "AC-37 : éviction en séance — le poste évincé perd l'accès (404), place et graine reprises par le remplaçant, ses réponses restent au bilan.",
+        "Vote jumelé : phase vote -> revote -> revele pilotée par le formateur, deux navigateurs simultanés, vérification de PHASE_FERMEE.",
+        "Cadence du flux : resultats au plus une fois par seconde avec jalons, enigmes et bareme non vides ; deux onglets formateur -> un seul calcul.",
+        "Salle complète : 35 postes derrière une seule adresse publique (débit indexé sur le jeton, pas sur l'IP) et 409 SEANCE_COMPLETE au-delà de la capacité.",
+        "Publication : PUT catalogue/:slug/publication refusé à un formateur (403), accepté à un administrateur, GET /catalogue/:slug changeant de version et publieLe."
+      ]
+    },
+    {
+      "id": "TEST-01",
+      "titre": "Matrice de traçabilité back : chaque fonctionnalité et décision couverte par les cinq niveaux, chaque fonction exportée testée",
+      "depot": "back",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Back : 6 ABSENT, 8 PARTIEL. Priorités : spec du jeton participant (jeton signé pour une AUTRE séance), 401 sur les 12 routes formateur avec le vrai RolesGuard, preuve négative que GetSessionResults n'écrit pas, propriétés fast-check (aucune clé secrète dans un tirage, budget 50 ms du moteur de formules, concurrence à 30 sur les nouveaux upserts), tests unitaires des 29 fonctions exportées listées, correction des tests douteux D-2, D-3, D-5, D-6, D-7.",
+      "entrees": [
+        "scratchpad/matrice-tests.md (audit du 2026-09-20 : 34 niveaux ABSENT/PARTIEL sur 109 applicables, 7 tests douteux, 55 fonctions exportées sans test unitaire)"
+      ]
+    },
+    {
+      "id": "TEST-02",
+      "titre": "Matrice de traçabilité front : idem",
+      "depot": "front",
+      "statut": "termine",
+      "preuves": [
+        "b916bc4 (12 e2e rouges réparés)",
+        "542fab3 (Playwright dans ci:check, pre-push:check et workflow, garde anti-vacuité)",
+        "310fac6, 6dbf959, 93dfac7, 86638da (tests douteux D-1, D-2, D-7, D-4, D-3)",
+        "e1d261b (garde d'intégrité des 8 médias)",
+        "57f8ad9 (20 fonctions exportées couvertes)",
+        "330a324 (e2e pupitre QA-09/10/11)",
+        "14f8fa9 (fast-check installé, 3 suites de simulation)",
+        "front : ABSENT 12→5, PARTIEL 8→6, COUVERT 43→52 ; 3237 tests Karma, 52 e2e",
+        "d3ef07f (moteur front borné, AC-35 tenu : 15,5→4,2 ms ; 1 M de cellules refusé en 160 ms)",
+        "113ffd4, 5741daf, 8a36f23, f014b2f (simulation moteur, e2e médias, simulation QA-10 et QA-11)",
+        "da2bb23 (SSR anglais dans la porte, 32 tests : aucun libellé français sur /en)",
+        "front : aucun niveau ABSENT restant ; 3258 tests Karma, 94 e2e"
+      ],
+      "reste": "Traduction des 20 libellés ia-solo (lot en cours) ; intégration réelle V3-L3i après le lot 2b",
+      "entrees": [
+        "scratchpad/matrice-tests.md (audit du 2026-09-20 : 34 niveaux ABSENT/PARTIEL sur 109 applicables, 7 tests douteux, 55 fonctions exportées sans test unitaire)"
+      ]
+    },
+    {
+      "id": "TL-01",
+      "titre": "Task list d'origine corrigée : critères rouverts et renvoi vers cette liste",
+      "depot": "back",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout"
+    },
+    {
+      "id": "DOC-01",
+      "titre": "Documentation finale alignée sur le code livré (formations.md, README, conception, CLAUDE.md racine)",
+      "depot": "back+front+racine",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout"
+    },
+    {
+      "id": "CR-01",
+      "titre": "/code-review high sur l'intégralité des deux branches, 100 % des constats low et au-delà corrigés, revue relancée jusqu'à zéro constat",
+      "depot": "back+front",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout"
+    },
+    {
+      "id": "CI-01",
+      "titre": "Portes complètes vertes : ci:check des deux dépôts, test:integration:db:local, test:e2e:http, Playwright (simulé et banc réel)",
+      "depot": "back+front",
+      "statut": "a_faire",
+      "preuves": [
+        "542fab3 (Playwright câblé dans ci:check, pre-push:check et workflow, avec garde anti-vacuité)",
+        "da2bb23 (serveur SSR anglais dans la porte)"
+      ],
+      "reste": "Playwright désormais câblé (542fab3). Reste : exécution finale de toutes les portes dans les deux dépôts après les derniers lots."
+    },
+    {
+      "id": "PR-01",
+      "titre": "Push et pull request back vers master",
+      "depot": "back",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout"
+    },
+    {
+      "id": "PR-02",
+      "titre": "Push et pull request front vers master",
+      "depot": "front",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout"
+    },
+    {
+      "id": "DEPLOY-01",
+      "titre": "Checklist de déploiement dans les PR : ordre back puis front, requête NULL avant la migration NOT NULL, V3 insérée non publiée, QA puis bascule, écoute de la capsule",
+      "depot": "back+front",
+      "statut": "a_faire",
+      "preuves": [],
+      "reste": "Tout"
+    }
+  ],
+  "auditDeCouverture": "scratchpad/matrice-tests.md (audit du 2026-09-20 : 34 niveaux ABSENT/PARTIEL sur 109 applicables, 7 tests douteux, 55 fonctions exportées sans test unitaire)",
+  "pointDeSituation": "2026-09-20 05h20 : back 62 commits (lot 2b en cours), front 84 commits (intégration réelle lancée)."
+}
