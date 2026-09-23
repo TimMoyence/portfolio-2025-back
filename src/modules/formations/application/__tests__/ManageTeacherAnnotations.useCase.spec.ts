@@ -19,7 +19,6 @@ const PROPRIETAIRE = 'teacher-uuid';
 const AUTRE_FORMATEUR = 'autre-teacher-uuid';
 const ANNOTATION = {
   screenId: 'B2-01-S11-REFLECTION',
-  groupName: '  Groupe A ',
   note: ' Relancer sur la base. ',
 };
 
@@ -74,14 +73,13 @@ describe('ManageTeacherAnnotationsUseCase', () => {
   });
 
   describe('ecriture', () => {
-    it('enregistre l annotation du proprietaire, groupe et note sans blancs superflus', async () => {
+    it('enregistre l annotation d ecran du proprietaire, note sans blancs superflus', async () => {
       await sut.save(SESSION_ID, PROPRIETAIRE, ANNOTATION);
 
       expect(annotations.save).toHaveBeenCalledWith({
         sessionId: SESSION_ID,
         teacherId: PROPRIETAIRE,
         screenId: 'B2-01-S11-REFLECTION',
-        groupName: 'Groupe A',
         note: 'Relancer sur la base.',
       });
     });

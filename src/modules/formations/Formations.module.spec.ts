@@ -10,7 +10,6 @@ import { LireDerouleUseCase } from './application/LireDeroule.useCase';
 import { LireSujetUseCase } from './application/LireSujet.useCase';
 import { ListFreeResponsesUseCase } from './application/ListFreeResponses.useCase';
 import { ListSessionParticipantsUseCase } from './application/ListSessionParticipants.useCase';
-import { ManageFormationGroupsUseCase } from './application/ManageFormationGroups.useCase';
 import { ManageTeacherAnnotationsUseCase } from './application/ManageTeacherAnnotations.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
@@ -42,7 +41,6 @@ import { FormationPulseEntity } from './infrastructure/entities/FormationPulse.e
 import { FormationRappelServiEntity } from './infrastructure/entities/FormationRappelServi.entity';
 import { FormationIncidentEntity } from './infrastructure/entities/FormationIncident.entity';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
-import { FormationGroupEntity } from './infrastructure/entities/FormationGroup.entity';
 import { FormationScoreEntity } from './infrastructure/entities/FormationScore.entity';
 import { FormationMasteryEntity } from './infrastructure/entities/FormationMastery.entity';
 import { FormationParticipantEntity } from './infrastructure/entities/FormationParticipant.entity';
@@ -62,7 +60,6 @@ const ENTITES = [
   FormationMasteryEntity,
   FormationIncidentEntity,
   FormationTeacherAnnotationEntity,
-  FormationGroupEntity,
   FormationScoreEntity,
   FormationEscapeProgressEntity,
   FormationEscapeAttemptEntity,
@@ -93,7 +90,6 @@ const SERVICES = [
   LireSujetUseCase,
   LireDerouleUseCase,
   ManageTeacherAnnotationsUseCase,
-  ManageFormationGroupsUseCase,
   ListSessionParticipantsUseCase,
   ListFreeResponsesUseCase,
   SaveFreeResponseUseCase,

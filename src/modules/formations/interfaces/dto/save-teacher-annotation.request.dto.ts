@@ -8,12 +8,6 @@ export class SaveTeacherAnnotationRequestDto {
   @MaxLength(120)
   screenId: string;
 
-  @ApiProperty({ example: 'Classe entière' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(120)
-  groupName: string;
-
   @ApiProperty({ example: 'Faire expliciter la base de comparaison.' })
   @IsString()
   @MinLength(1)

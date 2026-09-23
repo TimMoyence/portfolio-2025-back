@@ -12,7 +12,6 @@ export interface ParticipantDeSeance {
   readonly id: string;
   readonly prenom: string;
   readonly nom: string;
-  readonly groupId: string | null;
   readonly evince: boolean;
 }
 
@@ -24,7 +23,6 @@ function presenter(
     id: participant.id,
     prenom: participant.prenom,
     nom: participant.nom,
-    groupId: participant.groupId ?? null,
     evince,
   };
 }

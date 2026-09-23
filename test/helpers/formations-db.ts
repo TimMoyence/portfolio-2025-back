@@ -56,7 +56,6 @@ import { FormationScoreEntity } from '../../src/modules/formations/infrastructur
 import { FormationScreenContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
 import { FormationSessionEntity } from '../../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { FormationTeacherAnnotationEntity } from '../../src/modules/formations/infrastructure/entities/FormationTeacherAnnotation.entity';
-import { FormationGroupsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/FormationGroups.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from '../../src/modules/formations/infrastructure/FreeResponses.repository.typeorm';
 import { IncidentsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Incidents.repository.typeorm';
 import { MasteryRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Mastery.repository.typeorm';
@@ -172,7 +171,6 @@ export interface ContexteFormations {
   incidents: IncidentsRepositoryTypeORM;
   mastery: MasteryRepositoryTypeORM;
   scores: ScoresRepositoryTypeORM;
-  groups: FormationGroupsRepositoryTypeORM;
   freeResponses: FreeResponsesRepositoryTypeORM;
   annotations: TeacherAnnotationsRepositoryTypeORM;
   escape: EscapeRepositoryTypeORM;
@@ -239,10 +237,6 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
     ),
     scores: new ScoresRepositoryTypeORM(
       dataSource.getRepository(FormationScoreEntity),
-    ),
-    groups: new FormationGroupsRepositoryTypeORM(
-      dataSource.getRepository(FormationGroupEntity),
-      dataSource.getRepository(FormationParticipantEntity),
     ),
     freeResponses: new FreeResponsesRepositoryTypeORM(
       dataSource.getRepository(FormationFreeResponseEntity),

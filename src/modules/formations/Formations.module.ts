@@ -10,7 +10,6 @@ import { LireDerouleUseCase } from './application/LireDeroule.useCase';
 import { LireSujetUseCase } from './application/LireSujet.useCase';
 import { ListFreeResponsesUseCase } from './application/ListFreeResponses.useCase';
 import { ListSessionParticipantsUseCase } from './application/ListSessionParticipants.useCase';
-import { ManageFormationGroupsUseCase } from './application/ManageFormationGroups.useCase';
 import { ManageTeacherAnnotationsUseCase } from './application/ManageTeacherAnnotations.useCase';
 import { OpenSessionUseCase } from './application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from './application/RecordIncidents.useCase';
@@ -39,7 +38,6 @@ import {
   FREE_RESPONSES_REPOSITORY,
   PULSES_REPOSITORY,
   RAPPELS_SERVIS_REPOSITORY,
-  FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
   INCIDENTS_REPOSITORY,
   MASTERY_REPOSITORY,
@@ -61,9 +59,7 @@ import { FormationRappelServiEntity } from './infrastructure/entities/FormationR
 import { RappelsServisRepositoryTypeORM } from './infrastructure/RappelsServis.repository.typeorm';
 import { PulsesRepositoryTypeORM } from './infrastructure/Pulses.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from './infrastructure/FreeResponses.repository.typeorm';
-import { FormationGroupsRepositoryTypeORM } from './infrastructure/FormationGroups.repository.typeorm';
 import { FormationFreeResponseEntity } from './infrastructure/entities/FormationFreeResponse.entity';
-import { FormationGroupEntity } from './infrastructure/entities/FormationGroup.entity';
 import { FormationScoreEntity } from './infrastructure/entities/FormationScore.entity';
 import { ScoresRepositoryTypeORM } from './infrastructure/Scores.repository.typeorm';
 import { FormationTeacherAnnotationEntity } from './infrastructure/entities/FormationTeacherAnnotation.entity';
@@ -83,7 +79,7 @@ import { SessionStateCacheService } from './infrastructure/SessionStateCache.ser
 import { StreamCapacityService } from './infrastructure/StreamCapacity.service';
 import { TeacherAnnotationsRepositoryTypeORM } from './infrastructure/TeacherAnnotations.repository.typeorm';
 import { FormationsAnnotationsController } from './interfaces/FormationsAnnotations.controller';
-import { FormationsGroupsController } from './interfaces/FormationsGroups.controller';
+import { FormationsParticipantsController } from './interfaces/FormationsParticipants.controller';
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
 import { FormationsCatalogController } from './interfaces/FormationsCatalog.controller';
@@ -103,7 +99,6 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       FormationCourseContentEntity,
       FormationScreenContentEntity,
       FormationTeacherAnnotationEntity,
-      FormationGroupEntity,
       FormationScoreEntity,
       FormationEscapeProgressEntity,
       FormationEscapeAttemptEntity,
@@ -115,7 +110,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
   controllers: [
     FormationsCatalogController,
     FormationsPresenterController,
-    FormationsGroupsController,
+    FormationsParticipantsController,
     FormationsAnnotationsController,
     FormationsStudentController,
   ],
@@ -146,7 +141,6 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     LireSujetUseCase,
     LireDerouleUseCase,
     ManageTeacherAnnotationsUseCase,
-    ManageFormationGroupsUseCase,
     ListSessionParticipantsUseCase,
     ListFreeResponsesUseCase,
     SaveFreeResponseUseCase,
@@ -172,10 +166,6 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     {
       provide: TEACHER_ANNOTATIONS_REPOSITORY,
       useClass: TeacherAnnotationsRepositoryTypeORM,
-    },
-    {
-      provide: FORMATION_GROUPS_REPOSITORY,
-      useClass: FormationGroupsRepositoryTypeORM,
     },
     {
       provide: SCORES_REPOSITORY,

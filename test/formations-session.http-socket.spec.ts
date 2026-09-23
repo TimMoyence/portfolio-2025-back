@@ -59,7 +59,6 @@ import {
 import { buildCoursStocke } from './factories/cours-stocke.factory';
 import {
   createMockEscapeRepo,
-  createMockFormationGroupsRepo,
   createMockFormationMailer,
   createMockFreeResponsesRepo,
   createMockIncidentsRepo,
@@ -281,7 +280,6 @@ function creerParticipantsRepo(): IParticipantsRepository {
       const participant: ParticipantRecord = {
         ...identite,
         seed,
-        groupId: null,
         id: randomUUID(),
         rejointLe: new Date(),
         dernierPing: new Date(),
@@ -439,7 +437,6 @@ async function creerHarnais(
           scores,
           freeResponses: createMockFreeResponsesRepo(),
           annotations: createMockTeacherAnnotationsRepo(),
-          groups: createMockFormationGroupsRepo(),
           escape: createMockEscapeRepo(),
           pulses: createMockPulsesRepo(),
           rappels: createMockRappelsServisRepo(),

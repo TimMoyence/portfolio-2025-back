@@ -49,7 +49,6 @@ const ROUTES_FORMATEUR: readonly RouteFormateur[] = [
   { methode: 'get', chemin: `sessions/${SESSION_ID}/report` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/deroule` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/free-responses` },
-  { methode: 'get', chemin: `sessions/${SESSION_ID}/groups` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/participants` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/annotations` },
 ];
