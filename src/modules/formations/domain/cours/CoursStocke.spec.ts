@@ -30,7 +30,7 @@ describe('lireCoursStocke', () => {
     expect(ecran).toMatchObject({
       id: 'B2-01-S03-PREDICTION',
       titre: null,
-      diffusion: 'catalogue',
+      diffusion: 'seance',
       brique: 'fp-story',
       notes: 'À dire : vérifier le repère avant la pente.',
       guide: { aDire: 'Avant de commenter la pente, vérifiez le repère.' },

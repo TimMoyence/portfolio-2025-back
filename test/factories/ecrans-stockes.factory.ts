@@ -370,6 +370,57 @@ export function buildEcranDeBrique(
   };
 }
 
+export function buildCorrectionDeReponses(
+  source: string,
+  screenId = `${source}-CORRECTION`,
+  overrides: Partial<EcranDeCoursBrut> = {},
+): EcranDeCoursBrut {
+  return buildEcranDeBrique('fp-story', {
+    screenId,
+    dureeMinutes: 1,
+    proprietes: {
+      presentation: {
+        version: 2,
+        screenId,
+        renderer: 'answer-review',
+        props: {
+          title: 'Correction',
+          source: { screenId: source },
+          explications: [
+            { reference: 'b2-01-a1-diagnostic', texte: 'Réponse expliquée.' },
+          ],
+        },
+      },
+    },
+    ...overrides,
+  });
+}
+
+export function buildCorrectionDExemple(
+  source: string,
+  screenId = `${source}-CORRECTION`,
+  overrides: Partial<EcranDeCoursBrut> = {},
+): EcranDeCoursBrut {
+  return buildEcranDeBrique('fp-worked', {
+    screenId,
+    dureeMinutes: 2,
+    proprietes: {
+      ...buildProprietesStockees('fp-worked'),
+      exemple: {
+        ...(buildProprietesStockees('fp-worked').exemple as Record<
+          string,
+          unknown
+        >),
+        id: `${screenId.toLowerCase()}-corrige`,
+      },
+      pilote: true,
+      etayage: 0,
+      corrigeDe: source,
+    },
+    ...overrides,
+  });
+}
+
 export function buildCoursDeBriques(
   ecrans: readonly EcranDeCoursBrut[],
   overrides: Partial<ContenuDeCoursBrut> = {},

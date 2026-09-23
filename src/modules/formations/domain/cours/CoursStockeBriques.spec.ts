@@ -309,14 +309,14 @@ describe('stockage multi-briques (B1)', () => {
       });
     });
 
-    it('lit un écran stocké sans titre ni diffusion comme un écran du catalogue sans titre', () => {
+    it('SEC-4 · lit un écran stocké sans titre ni diffusion comme un écran de séance sans titre', () => {
       const cours = lireCoursStocke(
         buildCoursStocke({ ecrans: [buildEcranStocke()] }),
       );
 
       expect(cours.ecrans[0]).toMatchObject({
         titre: null,
-        diffusion: 'catalogue',
+        diffusion: 'seance',
       });
     });
 
@@ -497,6 +497,46 @@ describe('stockage multi-briques (B1)', () => {
         etayage: 1,
       });
       expect(ecran.modalite).toBe('solo');
+    });
+
+    it('T13 · porte le renvoi d un récit vers un autre écran', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-story', (proprietes) => {
+          proprietes.renvoi = 'B2-01-A1-04-TABLEAU-DE-BORD';
+        }),
+      );
+
+      expect(ecran.renvoi).toBe('B2-01-A1-04-TABLEAU-DE-BORD');
+      expect(
+        ecran.brique === 'fp-story' && ecran.proprietes,
+      ).not.toHaveProperty('renvoi');
+    });
+
+    it('porte l écran d exercice que corrige un exemple piloté', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-worked', (proprietes) => {
+          proprietes.pilote = true;
+          proprietes.etayage = 0;
+          proprietes.corrigeDe = 'B2-01-A2-06-POINTS';
+        }),
+      );
+
+      expect(ecran.brique === 'fp-worked' && ecran.proprietes).toMatchObject({
+        pilote: true,
+        corrigeDe: 'B2-01-A2-06-POINTS',
+      });
+    });
+
+    it('F02 · porte la consigne du rappel d ouverture', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-recall', (proprietes) => {
+          proprietes.consigne = 'Calculez sans calculatrice.';
+        }),
+      );
+
+      expect(ecran.brique === 'fp-recall' && ecran.consigne).toBe(
+        'Calculez sans calculatrice.',
+      );
     });
 
     it('convertit une question numérique avec sa forme publiée', () => {

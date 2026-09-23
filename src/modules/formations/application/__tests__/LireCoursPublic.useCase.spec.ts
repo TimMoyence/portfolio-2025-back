@@ -4,7 +4,10 @@ import {
   creerCatalogueAVersions,
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
-import { buildCoursStocke } from '../../../../../test/factories/cours-stocke.factory';
+import {
+  buildCoursStocke,
+  buildEcranStocke,
+} from '../../../../../test/factories/cours-stocke.factory';
 import {
   buildCoursDeBriques,
   buildEcranDeBrique,
@@ -14,7 +17,9 @@ import { tirer } from '../../domain/cours/Tirage';
 import { CoursInconnuError } from '../../domain/errors/FormationErrors';
 import { LireCoursPublicUseCase } from '../LireCoursPublic.useCase';
 
-const COURS_STOCKE = lireCoursStocke(buildCoursStocke());
+const COURS_STOCKE = lireCoursStocke(
+  buildCoursStocke({ ecrans: [buildEcranStocke({ diffusion: 'catalogue' })] }),
+);
 const PROPRIETES_DU_FORMATEUR = [
   '"notes"',
   '"guide"',
@@ -33,6 +38,17 @@ describe('LireCoursPublicUseCase', () => {
       version: 1,
       publieLe: expect.any(String),
     });
+  });
+
+  it('SEC-4 · verrouille au catalogue un écran stocké sans diffusion', async () => {
+    const sansDiffusion = lireCoursStocke(buildCoursStocke());
+    const sut = new LireCoursPublicUseCase(creerCatalogueDeTest(sansDiffusion));
+
+    const servi = await sut.execute(sansDiffusion.slug);
+
+    expect(servi.ecrans.map((ecran) => ecran.type)).toEqual([
+      'ecran-verrouille',
+    ]);
   });
 
   it('sert la version publiee et sa date de bascule (H1)', async () => {

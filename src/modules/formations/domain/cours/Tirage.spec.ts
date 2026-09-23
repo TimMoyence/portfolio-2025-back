@@ -5,8 +5,11 @@ import {
 import { buildPlanFeuille } from '../../../../../test/factories/corriges.factory';
 import {
   BRIQUES_STOCKEES,
+  buildCorrectionDeReponses,
+  buildCorrectionDExemple,
   buildCoursDeBriques,
   buildEcranDeBrique,
+  buildProprietesStockees,
   PARCOURS_ENIGMES,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { buildVoteStocke } from '../../../../../test/factories/questions-stockees.factory';
@@ -482,6 +485,46 @@ describe('tirer (briques de la V3)', () => {
       );
     }
     expect(ordres.size).toBe(2);
+  });
+
+  it('T13 · sert le renvoi et la source d une correction à tous les rôles', () => {
+    const exercice = buildEcranDeBrique('fp-worked', {
+      screenId: 'B2-01-A2-06-POINTS',
+      proprietes: {
+        ...buildProprietesStockees('fp-worked'),
+        renvoi: 'B2-01-A1-01-FP-QUOTE',
+      },
+    });
+    const rappel = buildEcranDeBrique('fp-recall', {
+      proprietes: {
+        ...buildProprietesStockees('fp-recall'),
+        consigne: 'Calculez sans calculatrice.',
+      },
+    });
+    const cours = lireCoursStocke(
+      buildCoursDeBriques([
+        rappel,
+        buildEcranDeBrique('fp-quote'),
+        exercice,
+        buildCorrectionDExemple(exercice.screenId),
+        buildCorrectionDeReponses(exercice.screenId, 'B2-01-A2-06-REPONSES'),
+      ]),
+    );
+
+    const [ouverture, , source, corrige, reponses] = tirer(cours, 0).sujet
+      .ecrans;
+
+    expect(ouverture.donnees).toMatchObject({
+      consigne: 'Calculez sans calculatrice.',
+    });
+    expect(source).toMatchObject({ renvoi: 'B2-01-A1-01-FP-QUOTE' });
+    expect(source).not.toHaveProperty('ecranCorrige');
+    expect(corrige).toMatchObject({ ecranCorrige: 'B2-01-A2-06-POINTS' });
+    expect(corrige.donnees).toMatchObject({
+      pilote: true,
+      corrigeDe: 'B2-01-A2-06-POINTS',
+    });
+    expect(reponses).toMatchObject({ ecranCorrige: 'B2-01-A2-06-POINTS' });
   });
 
   it('ne tire ni solution ni corrigé pour une production', () => {

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "f75ea034686e2f7b1fc2e9bb92aab3e4eac28c29505de169bee6387170c6d902",
+  "empreinte": "339b934e3b1721bbe8189d0981a717c6b9a35e58a11d9f2727dd480238bef360",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -399,7 +399,8 @@
               "regime": "ouvert"
             }
           }
-        }
+        },
+        "ecranCorrige": "B2-01-A1-05-ANATOMIE"
       },
       {
         "id": "B2-01-A1-06-FICHE-INDICATEUR",
@@ -634,7 +635,8 @@
               "regime": "ouvert"
             }
           }
-        }
+        },
+        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
       },
       {
         "id": "B2-01-A1-11-JALON-1",
@@ -1227,7 +1229,8 @@
               "regime": "ouvert"
             }
           }
-        }
+        },
+        "ecranCorrige": "B2-01-A2-07-JEU-COMPARABLE"
       },
       {
         "id": "B2-01-A2-08-JALON-2",
@@ -2792,7 +2795,8 @@
               "regime": "ouvert"
             }
           }
-        }
+        },
+        "ecranCorrige": "B2-01-A5-07-CONTROLE-DISCRIMINANT"
       },
       {
         "id": "B2-01-A5-08-RECOMMANDATION",
@@ -3856,6 +3860,7 @@
             }
           }
         },
+        "ecranCorrige": "B2-01-A1-05-ANATOMIE",
         "notes": "Action : projeter le plateau corrigé, carte par carte, en partant des deux cartes qui concentrent les erreurs.\nObservé : sur chaque poste, les cartes mal placées au tri sont bordées de rouge.\nAttendu : « −2,3 % » est un écart de deux taux, en points ; « +1 200 » et « 4,9 » restent ambigus sans unité, base ni période.\nContrôle : faire dire à un binôme pourquoi sa carte bordée de rouge change de colonne.\nTransition : « Un taux n’est une information que si l’on connaît sa fiche d’identité. »",
         "diffusion": "seance",
         "seuil": null,
@@ -4121,6 +4126,7 @@
             }
           }
         },
+        "renvoi": "B2-01-A1-09-DIAPOSITIVE",
         "notes": "Action : 2 min d’écriture individuelle, puis révélation au pupitre et 1 min de mise en commun.\nObservé : les étudiants qui citent l’axe et ceux qui citent seulement la couleur ou le titre.\nAttendu : axe tronqué (284 000 €), évolution réelle à calculer, titre interprétatif, comparaison au CA ; la couleur ne prouve rien.\nContrôle : faire repérer la stratégie fausse avant de la révéler.\nTransition : « Le calcul de l’évolution réelle ouvrira l’atelier de l’acte 2. »",
         "diffusion": "seance",
         "seuil": null,
@@ -4155,8 +4161,7 @@
               "fausse": true
             }
           ]
-        },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
+        }
       },
       {
         "id": "B2-01-A1-11-JALON-1",
@@ -5030,6 +5035,7 @@
             }
           }
         },
+        "ecranCorrige": "B2-01-A2-07-JEU-COMPARABLE",
         "notes": "Action : projeter le plateau corrigé, en commençant par les deux cartes les plus ratées de la classe.\nObservé : sur chaque poste, les cartes mal placées pendant le jeu sont bordées de rouge.\nAttendu : directes : mars/mars, taux 2024/2025, CA par salarié ; après retraitement : HT/TTC, m²/rouleau, périmètre ; impossibles sans nouvelle donnée : taux sectoriel, inflation de 2023, semestre/année.\nContrôle : pour chaque retraitement, faire dire l’opération (÷ 1,2 ; ÷ 50 ; − 523 000 €).\nTransition : jalon de confiance, puis acte 3.",
         "diffusion": "seance",
         "seuil": null,
@@ -7594,6 +7600,7 @@
             }
           }
         },
+        "ecranCorrige": "B2-01-A5-07-CONTROLE-DISCRIMINANT",
         "notes": "Action : projeter le plateau corrigé ; commencer par « factures », « compensation » et « détourne nos clients ».\nObservé : sur chaque poste, les cartes mal placées au tri sont bordées de rouge, les bien placées de vert.\nAttendu : métadonnées (inflation, +1 200) ; recalcul (−2,3 %, +4 %, moyenne simple) ; représentation (diapositive) ; preuve externe (clients, factures, compensation).\nContrôle : un total qui concorde ne prouve pas que chaque ligne est juste (février : +100 € et −100 € se compensent) ; un indice oriente, une pièce tranche.\nTransition : « Rédigez votre recommandation. »",
         "diffusion": "seance",
         "seuil": null,

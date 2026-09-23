@@ -222,6 +222,7 @@ const proprietesRecitStockees = z
     visuel: visuel.optional(),
     video: video.optional(),
     modalite: modalite.optional(),
+    renvoi: texte.optional(),
   })
   .strict()
   .superRefine((proprietes, contexte) => {
@@ -258,7 +259,7 @@ const proprietesRecitStockees = z
 
 export type ProprietesRecit = Omit<
   z.output<typeof proprietesRecitStockees>,
-  'modalite'
+  'modalite' | 'renvoi'
 >;
 
 const communes = {
@@ -338,6 +339,7 @@ const proprietesExemple = z
       .strict(),
     etayage: rang,
     pilote: z.boolean().optional(),
+    corrigeDe: texte.optional(),
     ...communes,
   })
   .strict()
@@ -629,6 +631,7 @@ const proprietesRappelDOuverture = z
   .object({
     questions: z.tuple([voteStocke]),
     delaiMs: z.number().int().nonnegative(),
+    consigne: texte.optional(),
     seuil: seuil.optional(),
     ...communes,
   })

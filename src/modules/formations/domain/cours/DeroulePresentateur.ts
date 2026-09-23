@@ -61,7 +61,6 @@ function versEcranDeroule(
     ),
     corrigeEcran: corrigeDeLEcran(ecran),
     guide: ecran.guide,
-    ...(ecran.renvoi === undefined ? {} : { renvoi: ecran.renvoi }),
   };
 }
 

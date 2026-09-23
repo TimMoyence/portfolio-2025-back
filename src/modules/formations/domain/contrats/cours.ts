@@ -70,6 +70,7 @@ export interface ProprietesExposition {
     readonly exemple: Omit<WorkedExemple, 'metadonnees'>;
     readonly etayage: number;
     readonly pilote?: boolean;
+    readonly corrigeDe?: string;
   };
   readonly 'fp-concept4': ProprietesActuelles<'fp-concept4'>;
   readonly 'fp-plot': ProprietesActuelles<'fp-plot'> & {
@@ -132,6 +133,7 @@ export type Ecran =
       readonly brique: 'fp-recall';
       readonly question: QuestionVote;
       readonly delaiMs: number;
+      readonly consigne?: string;
       readonly seuil?: number;
     })
   | (EcranCommun & {
