@@ -18,12 +18,9 @@ import {
   buildVoteStocke,
 } from './questions-stockees.factory';
 
-export const NOTES_EN_CINQ_RUBRIQUES = [
-  'Action : projeter.',
-  'Observé : la réponse dominante.',
-  'Attendu : la bonne réponse.',
-  'Contrôle : refaire le calcul.',
-  'Transition : écran suivant.',
+export const NOTES_DU_FORMATEUR = [
+  '• Projeter, puis lire la réponse dominante.',
+  '• Contrôle : refaire le calcul.',
 ].join('\n');
 
 export const PLAN_CLASSEMENT = {
@@ -364,7 +361,7 @@ export function buildEcranDeBrique(
     brique,
     dureeMinutes: 8,
     concepts: ['proportion'],
-    notes: NOTES_EN_CINQ_RUBRIQUES,
+    notes: NOTES_DU_FORMATEUR,
     proprietes: buildProprietesStockees(brique),
     ...overrides,
   };

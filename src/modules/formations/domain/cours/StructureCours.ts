@@ -50,13 +50,7 @@ const BRIQUE_OUVERTURE = 'fp-recall';
 const BRIQUE_CLOTURE = 'fp-exit';
 const PREFIXE_REFERENCE = 'ref:';
 const DIACRITIQUES = /\p{M}/gu;
-const RUBRIQUES_DES_NOTES = [
-  'Action',
-  'Observé',
-  'Attendu',
-  'Contrôle',
-  'Transition',
-] as const;
+const PUCE_DES_NOTES = /^\s*•/;
 const DUREE_MINIMALE_D_ATELIER = 8;
 const DUREE_MAXIMALE_D_ATELIER = 15;
 const TYPES_DE_QUESTION_FERMEE: readonly string[] = [
@@ -432,27 +426,25 @@ function controlerCycles({ cours }: Analyse): readonly Manquement[] {
   return cycles;
 }
 
-function rubriquesManquantes(notes: string): readonly string[] {
-  const lignes = notes.split('\n').map((ligne) => ligne.trim());
-  return RUBRIQUES_DES_NOTES.filter((rubrique) => {
-    const entete = `${rubrique} :`;
-    return !lignes.some(
-      (ligne) =>
-        ligne.startsWith(entete) && ligne.slice(entete.length).trim() !== '',
-    );
-  });
+function lignesVides(notes: string): number {
+  return notes
+    .split('\n')
+    .filter((ligne) => ligne.replace(PUCE_DES_NOTES, '').trim() === '').length;
 }
 
 function controlerNotes({ cours }: Analyse): readonly Manquement[] {
   return cours.ecrans.flatMap((ecran, rang) => {
-    const manquantes = rubriquesManquantes(ecran.notes);
-    if (manquantes.length === 0) {
+    if (ecran.notes === '') {
+      return [];
+    }
+    const vides = lignesVides(ecran.notes);
+    if (vides === 0) {
       return [];
     }
     return [
       {
         ecran: nomEcran(ecran, rang),
-        raison: `les notes du formateur n'ont pas de rubrique « ${manquantes.join(' », « ')} » renseignée : chaque écran porte les cinq rubriques Action, Observé, Attendu, Contrôle et Transition.`,
+        raison: `les notes du formateur portent ${vides} ligne(s) vide(s) : une note est facultative, mais une note présente n'a que des lignes renseignées.`,
       },
     ];
   });

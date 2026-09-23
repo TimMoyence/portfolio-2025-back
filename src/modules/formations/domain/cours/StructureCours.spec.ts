@@ -1,7 +1,7 @@
 import {
   buildEcranDeBrique,
   buildProprietesStockees,
-  NOTES_EN_CINQ_RUBRIQUES,
+  NOTES_DU_FORMATEUR,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import {
   buildOptionStockee,
@@ -141,10 +141,10 @@ describe('verifierStructure', () => {
 
   it('ne leve par une derogation ciblee que l ecran vise', () => {
     const cours = recomposer(base, [
-      { ...ouverture, notes: 'Action : projeter.' },
+      { ...ouverture, notes: '•' },
       citation,
       atelier,
-      { ...cloture, notes: 'Action : projeter.' },
+      { ...cloture, notes: '•' },
     ]);
 
     expect(
@@ -223,15 +223,25 @@ describe('verifierStructure', () => {
 
 describe('verifierStructure — notes du formateur', () => {
   it.each([
-    [
-      'sans rubrique Contrôle',
-      NOTES_EN_CINQ_RUBRIQUES.replace(/Contrôle :.*\n/, ''),
-    ],
-    [
-      'avec une Transition vide',
-      NOTES_EN_CINQ_RUBRIQUES.replace(/Transition :.*$/, 'Transition :  '),
-    ],
-  ])('refuse des notes %s', (_, notes) => {
+    ['absentes', ''],
+    ['en puces', NOTES_DU_FORMATEUR],
+    ['en une phrase', 'Relance : « Rapporté à quoi ? »'],
+  ])('G03 · accepte des notes %s', (_, notes) => {
+    const cours = recomposer(base, [
+      ouverture,
+      { ...citation, notes },
+      atelier,
+      cloture,
+    ]);
+
+    expect(regles(cours)).not.toContain('notes-formateur');
+  });
+
+  it.each([
+    ['faites d espaces', '   '],
+    ['avec une ligne blanche', `${NOTES_DU_FORMATEUR}\n  `],
+    ['avec une puce vide', `${NOTES_DU_FORMATEUR}\n•  `],
+  ])('G03 · refuse des notes présentes mais %s', (_, notes) => {
     const cours = recomposer(base, [
       ouverture,
       { ...citation, notes },
