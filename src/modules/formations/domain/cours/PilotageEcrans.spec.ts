@@ -18,6 +18,7 @@ import {
 const COURS = buildCoursDeTest();
 const EXEMPLE = COURS.ecrans[5];
 const NUMERIQUE = COURS.ecrans[2];
+const CITATION = COURS.ecrans[1];
 
 function ecranDuCours(id: string): Ecran {
   const ecran = buildCoursAvecProductions().ecrans.find(
@@ -81,9 +82,18 @@ describe('assertPilotageCompatible', () => {
     }).toThrow(PilotageIncompatibleError);
   });
 
-  it('refuse une revelation sur un ecran sans defi', () => {
+  it('R1 · accepte de révéler la correction d un écran porteur d une question', () => {
     expect(() => {
       assertPilotageCompatible(NUMERIQUE, { screenId: 'E-NUM', revele: true });
+    }).not.toThrow();
+  });
+
+  it('R1 · refuse une révélation sur un écran sans corrigé', () => {
+    expect(() => {
+      assertPilotageCompatible(CITATION, {
+        screenId: 'E-CITATION',
+        revele: true,
+      });
     }).toThrow(PilotageIncompatibleError);
   });
 
@@ -234,6 +244,17 @@ describe('assertPhaseOuverte', () => {
         });
       }).toThrow(PhaseFermeeError);
     }
+  });
+
+  it('ferme toute question d un ecran dont la correction est revelee', () => {
+    const pilotage = { 'E-NUM': { revele: true } };
+
+    expect(() => {
+      assertPhaseOuverte(pilotage, { ecranId: 'E-NUM' });
+    }).toThrow(PhaseFermeeError);
+    expect(() => {
+      assertPhaseOuverte(pilotage, { ecranId: 'E-NUM', ouverture: 'jumelle' });
+    }).toThrow(PhaseFermeeError);
   });
 
   it('porte les codes PHASE_FERMEE et PHASE_NON_MONOTONE', () => {

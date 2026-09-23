@@ -8,8 +8,8 @@ import {
   type EcranDeCoursBrut,
 } from '../../src/modules/formations/domain/cours/CoursStocke';
 import {
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
   buildProprietesStockees,
 } from './ecrans-stockes.factory';
 import {
@@ -32,18 +32,18 @@ export const QUESTION_DU_BILLET = buildVoteStocke({
 
 export function buildEcransStockesConformes(): EcranDeCoursBrut[] {
   return [
-    buildEcranStockeV3('fp-recall', {
+    buildEcranDeBrique('fp-recall', {
       screenId: 'B2-01-A1-01-DIAGNOSTIC',
       titre: 'Diagnostic',
       dureeMinutes: 3,
     }),
-    buildEcranStockeV3('fp-quote', {
+    buildEcranDeBrique('fp-quote', {
       screenId: 'B2-01-A1-02-CITATION',
       titre: 'Un chiffre à lire',
       diffusion: 'catalogue',
       dureeMinutes: 2,
     }),
-    buildEcranStockeV3('questionnaire', {
+    buildEcranDeBrique('questionnaire', {
       screenId: 'B2-01-A1-03-ATELIER',
       titre: 'Atelier',
       proprietes: {
@@ -51,7 +51,7 @@ export function buildEcransStockesConformes(): EcranDeCoursBrut[] {
         questions: [buildNumeriqueStockee()],
       },
     }),
-    buildEcranStockeV3('fp-exit', {
+    buildEcranDeBrique('fp-exit', {
       screenId: 'B2-01-A1-04-BILLET',
       titre: 'Billet de sortie',
       dureeMinutes: 3,
@@ -66,11 +66,11 @@ export function buildEcransStockesConformes(): EcranDeCoursBrut[] {
 export function buildCoursConforme(
   ecrans: readonly EcranDeCoursBrut[] = buildEcransStockesConformes(),
 ): Cours {
-  return lireCoursStocke(buildCoursStockeV3(ecrans));
+  return lireCoursStocke(buildCoursDeBriques(ecrans));
 }
 
 export function lireEcranStocke(ecran: EcranDeCoursBrut): Ecran {
-  return lireCoursStocke(buildCoursStockeV3([ecran])).ecrans[0];
+  return lireCoursStocke(buildCoursDeBriques([ecran])).ecrans[0];
 }
 
 export function recomposer(cours: Cours, ecrans: AuMoinsUn<Ecran>): Cours {
@@ -90,7 +90,7 @@ export function buildEcranDeCitation(
   overrides: Partial<EcranDeCoursBrut> = {},
 ): Ecran {
   const lu = lireEcranStocke(
-    buildEcranStockeV3('fp-quote', {
+    buildEcranDeBrique('fp-quote', {
       titre: `Citation ${id}`,
       dureeMinutes: 1,
       ...overrides,
@@ -104,7 +104,7 @@ export function buildEcranDExemple(id: string, invite: string): Ecran {
   const exemple = proprietes.exemple as { readonly etapes: object[] };
   return {
     ...lireEcranStocke(
-      buildEcranStockeV3('fp-worked', {
+      buildEcranDeBrique('fp-worked', {
         dureeMinutes: 5,
         proprietes: {
           ...proprietes,

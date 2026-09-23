@@ -7,6 +7,7 @@ import {
   assertEcranServi,
 } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   confusionDominante,
   corrigerProduction,
@@ -97,6 +98,7 @@ export class SubmitProductionUseCase {
       );
     }
     assertEcranServi(session, cible.rang, cible.ecran.id, cours.ecrans.length);
+    assertPhaseOuverte(session.pilotageEcrans, { ecranId: cible.ecran.id });
     assertCorrectionNonProjetee(session, cours, cible.ecran.id);
 
     const valeur = normaliserProduction(cible, command.valeur);

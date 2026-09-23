@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { B2_COURS_ENRICHI } from '../../../../migrations/data/b2-enrichi.cours';
-import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
+import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
 import { creerCatalogueAVersions } from '../../../../../test/factories/cours.factory';
 import {
   buildSessionRecord,
@@ -11,7 +10,6 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
-import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ecranDeProduction } from '../../domain/cours/ProductionSoumise';
 import {
   PhaseFermeeError,
@@ -19,7 +17,7 @@ import {
 } from '../../domain/errors/FormationErrors';
 import { SubmitProductionUseCase } from '../SubmitProduction.useCase';
 
-const COURS = lireCoursStocke(B2_COURS);
+const COURS = buildCoursB2_01();
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
 const FEUILLE = 'b2-01-a4-feuille-canaux';
 const TABLEAU = 'b2-01-a4-indice-toile';
@@ -29,7 +27,7 @@ const LIGNES_DU_TABLEAU = 4;
 function corrigeDeLaFeuille(): CorrigeFeuille {
   const cible = ecranDeProduction(COURS, FEUILLE);
   if (cible === null || cible.question.corrige.type !== 'feuille') {
-    throw new Error('la feuille A4-02 est absente de la V3');
+    throw new Error('la feuille A4-02 est absente du B2-01');
   }
   return cible.question.corrige;
 }
@@ -43,7 +41,7 @@ function envoiDeReference(): Record<string, string> {
   );
 }
 
-describe('productions de la V3 corrigées par le cas d’usage (B5, B11)', () => {
+describe('productions du B2-01 corrigées par le cas d’usage (B5, B11)', () => {
   let answers: ReturnType<typeof createMockAnswersRepo>;
   let sut: SubmitProductionUseCase;
 
@@ -148,18 +146,17 @@ describe('productions de la V3 corrigées par le cas d’usage (B5, B11)', () =>
 });
 
 describe('productions fermées une fois leur correction projetée (RET-18, RET-31)', () => {
-  const ENRICHI = lireCoursStocke(B2_COURS_ENRICHI);
   const TRI = 'b2-01-a1-anatomie';
   const rang = (screenId: string): number =>
-    ENRICHI.ecrans.findIndex((ecran) => ecran.id === screenId);
+    COURS.ecrans.findIndex((ecran) => ecran.id === screenId);
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let answers: ReturnType<typeof createMockAnswersRepo>;
   let sut: SubmitProductionUseCase;
 
   function classementDeReference(): Record<string, string> {
-    const cible = ecranDeProduction(ENRICHI, TRI);
+    const cible = ecranDeProduction(COURS, TRI);
     if (cible === null || cible.question.corrige.type !== 'classement') {
-      throw new Error('le tri A1-05 est absent du cours enrichi');
+      throw new Error('le tri A1-05 est absent du B2-01');
     }
     return Object.fromEntries(
       cible.question.corrige.attendus.map((attendu) => [
@@ -175,8 +172,8 @@ describe('productions fermées une fois leur correction projetée (RET-18, RET-3
   ): void {
     sessions.findById.mockResolvedValue(
       buildSessionRecord({
-        courseSlug: ENRICHI.slug,
-        courseVersion: 4,
+        courseSlug: COURS.slug,
+        courseVersion: 3,
         ecranCourant,
         pilotageEcrans,
       }),
@@ -192,7 +189,7 @@ describe('productions fermées une fois leur correction projetée (RET-18, RET-3
       answers,
       createMockMasteryRepo(),
       createMockSessionStateCache(),
-      creerCatalogueAVersions({ [ENRICHI.slug]: { 4: ENRICHI } }),
+      creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
     );
   });
 
@@ -219,8 +216,7 @@ describe('productions fermées une fois leur correction projetée (RET-18, RET-3
   });
 
   it('RET-31 · refuse la feuille dès que sa correction est révélée', async () => {
-    const ecranDeLaFeuille =
-      ecranDeProduction(ENRICHI, FEUILLE)?.ecran.id ?? '';
+    const ecranDeLaFeuille = ecranDeProduction(COURS, FEUILLE)?.ecran.id ?? '';
     seance(rang(ecranDeLaFeuille), { [ecranDeLaFeuille]: { etayage: 1 } });
 
     await expect(

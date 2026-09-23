@@ -265,6 +265,8 @@ export function estInteractif(ecran: EcranDuContrat): boolean {
         ecran.question !== undefined ||
         ecran.proprietes.questionsLibres !== undefined
       );
+    case 'fp-worked':
+      return ecran.proprietes.pilote !== true;
     case 'fp-quote':
     case 'fp-concept4':
     case 'fp-plot':

@@ -6,6 +6,7 @@ import {
   PhaseNonMonotoneError,
   PilotageIncompatibleError,
 } from '../errors/FormationErrors';
+import { questionsDe } from './Cours';
 
 export type PilotageDemande = { readonly screenId: string } & PilotageEcran;
 
@@ -13,11 +14,6 @@ export interface QuestionPilotee {
   readonly ecranId: string;
   readonly ouverture?: 'principale' | 'jumelle';
 }
-
-const BRIQUES_A_REVELATION: ReadonlySet<Ecran['brique']> = new Set([
-  'fp-challenge',
-  'questionnaire',
-]);
 
 const CORRECTIONS_DE_LA_FEUILLE = ['formules', 'valeurs'] as const;
 
@@ -70,8 +66,12 @@ export function assertPilotageCompatible(
   ) {
     refuser('ce vote n’a pas de question jumelle');
   }
-  if (demande.revele !== undefined && !BRIQUES_A_REVELATION.has(ecran.brique)) {
-    refuser('seuls un défi et un questionnaire portent une révélation');
+  if (
+    demande.revele !== undefined &&
+    ecran.brique !== 'fp-challenge' &&
+    questionsDe(ecran).length === 0
+  ) {
+    refuser('seul un écran porteur d’un corrigé se révèle');
   }
   if (demande.reglages !== undefined) {
     assertReglagesDeLaMachine(ecran, demande.reglages, refuser);
@@ -115,6 +115,9 @@ export function assertPhaseOuverte(
   pilotage: Readonly<Record<string, PilotageEcran>>,
   question: QuestionPilotee,
 ): void {
+  if (pilotage[question.ecranId]?.revele === true) {
+    throw new PhaseFermeeError(question.ecranId);
+  }
   if (question.ouverture === undefined) {
     if (pilotage[question.ecranId]?.revele === true) {
       throw new PhaseFermeeError(question.ecranId);

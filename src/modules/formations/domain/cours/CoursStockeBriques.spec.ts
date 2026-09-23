@@ -5,14 +5,19 @@ import {
 import {
   BRIQUES_STOCKEES,
   buildCasAQuestionsLibres,
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildContenuPubliable,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
   buildProprietesStockees,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import type { Ecran } from '../contrats/cours';
 import { creerRng, creerTirage } from './Aleatoire';
 import type { EcranDeCoursBrut } from './CoursStocke';
-import { ContenuDeCoursInvalideError, lireCoursStocke } from './CoursStocke';
+import {
+  ContenuDeCoursInvalideError,
+  lireContenuAPublier,
+  lireCoursStocke,
+} from './CoursStocke';
 
 const TIRAGE = creerTirage(creerRng(5));
 
@@ -36,17 +41,17 @@ function avecProprietes(
 ): EcranDeCoursBrut {
   const proprietes = buildProprietesStockees(brique);
   modifier(proprietes);
-  return buildEcranStockeV3(brique, { proprietes });
+  return buildEcranDeBrique(brique, { proprietes });
 }
 
 function lireEcran(ecran: EcranDeCoursBrut): Ecran {
-  return lireCoursStocke(buildCoursStockeV3([ecran])).ecrans[0];
+  return lireCoursStocke(buildCoursDeBriques([ecran])).ecrans[0];
 }
 
 function ecranDeBrique<B extends Ecran['brique']>(
   brique: B,
 ): Extract<Ecran, { readonly brique: B }> {
-  const ecran = lireEcran(buildEcranStockeV3(brique));
+  const ecran = lireEcran(buildEcranDeBrique(brique));
   if (ecran.brique !== brique) {
     throw new Error(`brique ${ecran.brique} lue au lieu de ${brique}`);
   }
@@ -59,7 +64,7 @@ describe('stockage multi-briques (B1)', () => {
   });
 
   it.each(BRIQUES_STOCKEES)('lit un écran %s de la V3', (brique) => {
-    const ecran = lireEcran(buildEcranStockeV3(brique));
+    const ecran = lireEcran(buildEcranDeBrique(brique));
 
     expect(ecran).toMatchObject({
       brique,
@@ -122,6 +127,13 @@ describe('stockage multi-briques (B1)', () => {
   });
 
   it.each<readonly [string, string, (proprietes: any) => void]>([
+    [
+      'fp-plot',
+      'un préréglage qui règle un paramètre absent du tracé',
+      (p) => {
+        p.prereglages = [{ libelle: 'Axe à zéro', valeurs: { absent: 0 } }];
+      },
+    ],
     [
       'fp-cardsort',
       'un corrigé qui classe une carte absente du plan',
@@ -239,48 +251,67 @@ describe('stockage multi-briques (B1)', () => {
         delete p.corrige;
       },
     ],
+    [
+      'fp-challenge',
+      'un rappel du dossier vide',
+      (p) => {
+        p.probleme.rappel = [];
+      },
+    ],
+    [
+      'fp-challenge',
+      'une ligne du rappel sans valeur',
+      (p) => {
+        p.probleme.rappel = [{ libelle: 'Marge brute' }];
+      },
+    ],
   ])('refuse un écran %s avec %s', (brique, _cas, modifier) => {
     expect(() => lireEcran(avecProprietes(brique, modifier))).toThrow(
       ContenuDeCoursInvalideError,
     );
   });
 
-  describe('champs d écran de la V3', () => {
+  describe('titre, diffusion et description des écrans', () => {
+    const GRAPHIQUE_SANS_DESCRIPTION = buildEcranDeBrique('fp-story', {
+      proprietes: {
+        presentation: {
+          version: 2,
+          screenId: 'B2-01-A1-01-FP-STORY',
+          renderer: 'chart',
+          props: {
+            title: 'Marge brute',
+            labels: ['2024', '2025'],
+            series: [{ label: 'Marge', values: [289800, 291000] }],
+          },
+        },
+      },
+    });
+
     it.each([
-      ['sans titre', { titre: null }],
       ['au titre de plus de 120 caractères', { titre: 'T'.repeat(121) }],
-      ['sans diffusion', { diffusion: undefined }],
       ['à la diffusion inconnue', { diffusion: 'publique' }],
-    ])('refuse un écran de la version 3 %s', (_cas, champs) => {
+    ])('refuse à la lecture un écran %s', (_cas, champs) => {
       expect(() =>
-        lireEcran({ ...buildEcranStockeV3('fp-quote'), ...champs } as never),
+        lireEcran({ ...buildEcranDeBrique('fp-quote'), ...champs } as never),
       ).toThrow(ContenuDeCoursInvalideError);
     });
 
-    it('exige la description textuelle d un graphique à partir de la version 3', () => {
-      const graphique = buildEcranStockeV3('fp-story', {
-        proprietes: {
-          presentation: {
-            version: 2,
-            screenId: 'B2-01-A1-01-FP-STORY',
-            renderer: 'chart',
-            props: {
-              title: 'Marge brute',
-              labels: ['2024', '2025'],
-              series: [{ label: 'Marge', values: [289800, 291000] }],
-            },
-          },
-        },
-      });
-
-      expect(() => lireEcran(graphique)).toThrow(/description/);
-    });
-
-    it('lit les versions 1 et 2 sans titre et en diffusion catalogue, quelle que soit la colonne', () => {
+    it('lit tels quels le titre et la diffusion stockés', () => {
       const cours = lireCoursStocke(
         buildCoursStocke({
           ecrans: [buildEcranStocke({ titre: 'Titre', diffusion: 'seance' })],
         }),
+      );
+
+      expect(cours.ecrans[0]).toMatchObject({
+        titre: 'Titre',
+        diffusion: 'seance',
+      });
+    });
+
+    it('lit un écran stocké sans titre ni diffusion comme un écran du catalogue sans titre', () => {
+      const cours = lireCoursStocke(
+        buildCoursStocke({ ecrans: [buildEcranStocke()] }),
       );
 
       expect(cours.ecrans[0]).toMatchObject({
@@ -289,9 +320,45 @@ describe('stockage multi-briques (B1)', () => {
       });
     });
 
+    it('lit un graphique stocké sans description', () => {
+      expect(lireEcran(GRAPHIQUE_SANS_DESCRIPTION).brique).toBe('fp-story');
+    });
+
+    it('publie un contenu dont chaque écran porte titre, diffusion et description', () => {
+      const cours = lireContenuAPublier(
+        buildContenuPubliable([buildEcranDeBrique('fp-quote')]),
+      );
+
+      expect(cours.ecrans[0]).toMatchObject({
+        titre: 'Écran fp-quote',
+        diffusion: 'seance',
+      });
+    });
+
+    it.each([
+      ['sans titre', { titre: null }],
+      ['sans diffusion', { diffusion: undefined }],
+    ])('refuse de publier un écran %s', (_cas, champs) => {
+      expect(() =>
+        lireContenuAPublier(
+          buildContenuPubliable([
+            { ...buildEcranDeBrique('fp-quote'), ...champs } as never,
+          ]),
+        ),
+      ).toThrow(ContenuDeCoursInvalideError);
+    });
+
+    it('refuse de publier un graphique sans description textuelle', () => {
+      expect(() =>
+        lireContenuAPublier(
+          buildContenuPubliable([GRAPHIQUE_SANS_DESCRIPTION]),
+        ),
+      ).toThrow(/description/);
+    });
+
     it('refuse deux écrans de même identifiant et deux questions de même identifiant', () => {
-      const vote = buildEcranStockeV3('fp-recall');
-      const billet = buildEcranStockeV3('fp-exit', {
+      const vote = buildEcranDeBrique('fp-recall');
+      const billet = buildEcranDeBrique('fp-exit', {
         proprietes: {
           ...buildProprietesStockees('fp-exit'),
           questions: buildProprietesStockees('fp-recall').questions,
@@ -299,16 +366,16 @@ describe('stockage multi-briques (B1)', () => {
       });
 
       expect(() =>
-        lireCoursStocke(buildCoursStockeV3([vote, { ...vote }])),
+        lireCoursStocke(buildCoursDeBriques([vote, { ...vote }])),
       ).toThrow(/B2-01-A1-01-FP-RECALL/);
-      expect(() => lireCoursStocke(buildCoursStockeV3([vote, billet]))).toThrow(
-        /b2-01-a1-diagnostic/,
-      );
+      expect(() =>
+        lireCoursStocke(buildCoursDeBriques([vote, billet])),
+      ).toThrow(/b2-01-a1-diagnostic/);
     });
   });
 
   describe('remédiations et médias persistés (B17)', () => {
-    const ecran = buildEcranStockeV3('fp-quote');
+    const ecran = buildEcranDeBrique('fp-quote');
     const media = {
       id: 'M1',
       chemins: ['/assets/cours/b2-01/v3/playfair-ecosse-1786.webp'],
@@ -321,7 +388,7 @@ describe('stockage multi-briques (B1)', () => {
 
     it('lit les remédiations et le catalogue des médias du cours', () => {
       const cours = lireCoursStocke(
-        buildCoursStockeV3([ecran], {
+        buildCoursDeBriques([ecran], {
           remediations: { 'base-arrivee': ecran.screenId },
           medias: [media],
         }),
@@ -344,7 +411,7 @@ describe('stockage multi-briques (B1)', () => {
       ['un média à la clé inconnue', { medias: [{ ...media, taille: 1 }] }],
     ])('refuse %s', (_cas, champs) => {
       expect(() =>
-        lireCoursStocke(buildCoursStockeV3([ecran], champs as never)),
+        lireCoursStocke(buildCoursDeBriques([ecran], champs as never)),
       ).toThrow(ContenuDeCoursInvalideError);
     });
   });

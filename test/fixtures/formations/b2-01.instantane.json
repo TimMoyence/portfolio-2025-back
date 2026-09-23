@@ -1,12 +1,11 @@
 {
-  "version": 3,
   "graine": 0,
-  "empreinte": "5518566e8956021aae3a39d0d07330698f3cf65015267301edc30dc6d34df79a",
+  "empreinte": "f75ea034686e2f7b1fc2e9bb92aab3e4eac28c29505de169bee6387170c6d902",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 214,
+    "duree": 213,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -53,9 +52,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "taux-evolution"
-              ],
+              "concepts": ["taux-evolution"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -90,9 +87,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -132,9 +127,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -219,9 +212,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -297,9 +288,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
@@ -403,9 +392,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -482,7 +469,7 @@
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
         "titre": "Votre plan de reprise et de transfert",
-        "duree": 2,
+        "duree": 1,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -541,11 +528,9 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -577,9 +562,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -605,33 +588,16 @@
                 "title": "Marge brute : une croissance continue",
                 "caption": "Diapositive 3 du support commercial",
                 "context": "Voici la diapositive que Samir veut projeter jeudi.",
-                "labels": [
-                  "2022",
-                  "2023",
-                  "2024",
-                  "2025"
-                ],
+                "labels": ["2022", "2023", "2024", "2025"],
                 "series": [
                   {
                     "label": "Marge brute",
-                    "values": [
-                      285000,
-                      288000,
-                      289800,
-                      291000
-                    ],
+                    "values": [285000, 288000, 289800, 291000],
                     "tone": "gold"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    284000,
-                    292000
-                  ]
-                ],
-                "axisLabels": [
-                  "284 000 à 292 000 €"
-                ],
+                "axisRanges": [[284000, 292000]],
+                "axisLabels": ["284 000 à 292 000 €"],
                 "unit": "€",
                 "reading": "Lecture proposée par le service commercial : « la marge brute progresse nettement chaque année ».",
                 "source": "Service commercial d’Atelier Rivage (données fictives).",
@@ -639,9 +605,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -663,9 +627,7 @@
             "invite": "Écrivez trois vérifications à faire avant de lui répondre, puis votre réponse en une phrase.",
             "strategies": [],
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -685,9 +647,7 @@
             "id": "b2-01-a1-jalon",
             "invite": "Je sais dire ce que mesure chaque chiffre du tableau de bord : unité, base, période.",
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -719,12 +679,7 @@
                   "Son atlas compte 43 courbes et un seul graphique en barres : pour l’Écosse, faute de série sur plusieurs années, il compare 17 partenaires sur une seule année. La forme suit la donnée disponible.",
                   "Le graphique accélère la comparaison ; il ne remplace ni les valeurs, ni l’axe, ni la source. C’est ce contrat de lecture que vous appliquez à la diapositive de Samir."
                 ],
-                "items": [
-                  "Titre",
-                  "Axes et échelle",
-                  "Séries",
-                  "Source"
-                ],
+                "items": ["Titre", "Axes et échelle", "Séries", "Source"],
                 "sourceLink": {
                   "href": "https://commons.wikimedia.org/wiki/File:Playfair_TimeSeries.png",
                   "label": "Document original · Wikimedia Commons (domaine public)"
@@ -732,9 +687,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -755,7 +708,7 @@
             "titre": "Diapositive de Samir : marge brute et axe réglable",
             "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
-              "libelle": "Année (0 = 2022, 3 = 2025)",
+              "libelle": "Année",
               "min": 0,
               "max": 3
             },
@@ -768,14 +721,6 @@
                 "max": 284000,
                 "pas": 4000,
                 "defaut": 284000
-              },
-              {
-                "cle": "maximum",
-                "libelle": "Haut de l’axe vertical (€)",
-                "min": 292000,
-                "max": 600000,
-                "pas": 4000,
-                "defaut": 292000
               }
             ],
             "series": [
@@ -787,14 +732,29 @@
               }
             ],
             "bornesOrdonnee": {
-              "minParametre": "origine",
-              "maxParametre": "maximum"
+              "max": 292000,
+              "minParametre": "origine"
             },
-            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
+            "description": "Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.",
+            "forme": "barres",
+            "unite": "euros",
+            "etiquettes": ["2022", "2023", "2024", "2025"],
+            "prereglages": [
+              {
+                "libelle": "Axe de Samir",
+                "valeurs": {
+                  "origine": 284000
+                }
+              },
+              {
+                "libelle": "Axe à zéro",
+                "valeurs": {
+                  "origine": 0
+                }
+              }
+            ],
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -970,33 +930,16 @@
               "props": {
                 "title": "Marge brute d’Atelier Rivage, 2022–2025",
                 "caption": "Axe vertical de 0 à 300 000 €",
-                "labels": [
-                  "2022",
-                  "2023",
-                  "2024",
-                  "2025"
-                ],
+                "labels": ["2022", "2023", "2024", "2025"],
                 "series": [
                   {
                     "label": "Marge brute",
-                    "values": [
-                      285000,
-                      288000,
-                      289800,
-                      291000
-                    ],
+                    "values": [285000, 288000, 289800, 291000],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    300000
-                  ]
-                ],
-                "axisLabels": [
-                  "0 à 300 000 €"
-                ],
+                "axisRanges": [[0, 300000]],
+                "axisLabels": ["0 à 300 000 €"],
                 "unit": "€",
                 "formula": "Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021",
                 "reading": "La marge brute augmente sur la période. L’écart reste faible à l’échelle du graphique et le rythme annuel ralentit.",
@@ -1005,10 +948,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique",
-                "taux-evolution"
-              ],
+              "concepts": ["lecture-graphique", "taux-evolution"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1058,10 +998,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "pourcentage",
-                "point-de-pourcentage"
-              ],
+              "concepts": ["pourcentage", "point-de-pourcentage"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1074,7 +1011,7 @@
         "id": "B2-01-A2-06-POINTS",
         "type": "fp-worked",
         "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 5,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -1107,11 +1044,9 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "point-de-pourcentage"
-              ],
+              "concepts": ["point-de-pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1183,9 +1118,7 @@
             ],
             "dureeJeuMs": 300000,
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
@@ -1209,7 +1142,7 @@
               "renderer": "sort-review",
               "props": {
                 "title": "Correction du mini-jeu",
-                "subtitle": "Chaque carte à sa place, avec la raison qui l’y range.",
+                "subtitle": "Chaque comparaison à sa place, avec la raison qui l’y range.",
                 "source": {
                   "screenId": "B2-01-A2-07-JEU-COMPARABLE",
                   "sortId": "b2-01-a2-comparable"
@@ -1287,9 +1220,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1309,9 +1240,7 @@
             "id": "b2-01-a2-jalon",
             "invite": "Je sais choisir la bonne base et repérer une comparaison trompeuse (axe, population de référence, taux de marge ou de marque).",
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1446,46 +1375,25 @@
               "props": {
                 "title": "Prix du sac étanche : +10 %, puis −10 %",
                 "caption": "100 ventes par période ; coût d’achat unitaire : 80 € HT",
-                "labels": [
-                  "Prix initial",
-                  "Après +10 %",
-                  "Après −10 %"
-                ],
+                "labels": ["Prix initial", "Après +10 %", "Après −10 %"],
                 "series": [
                   {
                     "label": "Prix de vente unitaire",
-                    "values": [
-                      100,
-                      110,
-                      99
-                    ],
+                    "values": [100, 110, 99],
                     "tone": "teal"
                   },
                   {
                     "label": "Coût d’achat unitaire",
-                    "values": [
-                      80,
-                      80,
-                      80
-                    ],
+                    "values": [80, 80, 80],
                     "tone": "ink"
                   },
                   {
                     "label": "Marge unitaire",
-                    "values": [
-                      20,
-                      30,
-                      19
-                    ],
+                    "values": [20, 30, 19],
                     "tone": "gold"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    120
-                  ]
-                ],
+                "axisRanges": [[0, 120]],
                 "unit": "€ HT par sac",
                 "formula": "Prix : 100 × 1,10 × 0,90 = 99 € · CA : 10 000 → 11 000 → 9 900 € · marge totale : 2 000 → 3 000 → 1 900 €",
                 "reading": "Après la baisse, le prix (99 €) reste sous le prix initial : −1 %. Avec un coût inchangé, la marge unitaire tombe à 19 € et la marge totale perd 100 €, soit −5 %.",
@@ -1495,9 +1403,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "evolutions-successives"
-              ],
+              "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1555,9 +1461,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "evolutions-successives"
-              ],
+              "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -1595,24 +1499,11 @@
                 "series": [
                   {
                     "label": "Inflation (IPC)",
-                    "values": [
-                      1.1,
-                      0.5,
-                      1.6,
-                      5.2,
-                      4.9,
-                      2,
-                      0.9
-                    ],
+                    "values": [1.1, 0.5, 1.6, 5.2, 4.9, 2, 0.9],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    6
-                  ]
-                ],
+                "axisRanges": [[0, 6]],
                 "unit": "% par an",
                 "reading": "Le taux culmine à 5,2 % en 2022, puis diminue : 2,0 % en 2024 et 0,9 % en 2025.",
                 "source": "Source : Insee, indice des prix à la consommation, « L’essentiel sur… l’inflation », paru le 23 mars 2026.",
@@ -1620,9 +1511,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "indice-base-100"
-              ],
+              "concepts": ["indice-base-100"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -1674,10 +1563,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "indice-base-100",
-                "taux-moyen"
-              ],
+              "concepts": ["indice-base-100", "taux-moyen"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -1843,26 +1729,13 @@
                   {
                     "label": "Indice des prix",
                     "values": [
-                      100,
-                      100.5,
-                      102.11,
-                      107.42,
-                      112.68,
-                      114.93,
-                      115.97
+                      100, 100.5, 102.11, 107.42, 112.68, 114.93, 115.97
                     ],
                     "tone": "gold"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    95,
-                    120
-                  ]
-                ],
-                "axisLabels": [
-                  "95 à 120"
-                ],
+                "axisRanges": [[95, 120]],
+                "axisLabels": ["95 à 120"],
                 "unit": "indice (base 100 en 2019)",
                 "formula": "Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97 ; ce calcul est une reconstitution pédagogique, pas la construction de l’IPC officiel.",
                 "reading": "Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation.",
@@ -1872,9 +1745,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "indice-base-100"
-              ],
+              "concepts": ["indice-base-100"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1908,9 +1779,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "indice-base-100"
-              ],
+              "concepts": ["indice-base-100"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -1974,9 +1843,7 @@
               "preload": "none"
             },
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -2056,9 +1923,7 @@
               "En B7, contrôlez vos formules : les parts doivent faire 100 % : =SI(ARRONDI(SOMME(E2:E4);6)=1;1;0). En C7, contrôlez vos données : votre marge (G5) doit égaler celle du compte de résultat (B6) ; ce second contrôle surveille les données."
             ],
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 13,
               "modalite": "binome",
@@ -2190,53 +2055,26 @@
               "props": {
                 "title": "CA HT 2025 : choisir une représentation temporelle",
                 "caption": "Une courbe par canal : la forme suit la question (une évolution dans le temps)",
-                "labels": [
-                  "T1",
-                  "T2",
-                  "T3",
-                  "T4"
-                ],
+                "labels": ["T1", "T2", "T3", "T4"],
                 "series": [
                   {
                     "label": "Sur-mesure",
-                    "values": [
-                      120,
-                      95,
-                      102,
-                      80
-                    ],
+                    "values": [120, 95, 102, 80],
                     "tone": "ink"
                   },
                   {
                     "label": "Entretien",
-                    "values": [
-                      58,
-                      61,
-                      49,
-                      62
-                    ],
+                    "values": [58, 61, 49, 62],
                     "tone": "gold"
                   },
                   {
                     "label": "Marketplace",
-                    "values": [
-                      98,
-                      131,
-                      167,
-                      127
-                    ],
+                    "values": [98, 131, 167, 127],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    180
-                  ]
-                ],
-                "axisLabels": [
-                  "0 à 180 milliers d’euros"
-                ],
+                "axisRanges": [[0, 180]],
+                "axisLabels": ["0 à 180 milliers d’euros"],
                 "unit": "milliers d’euros HT",
                 "reading": "La marketplace culmine au 3e trimestre (167 000 €) ; le sur-mesure recule de 120 000 € à 80 000 € entre le 1er et le 4e trimestre ; l’entretien reste entre 49 000 € et 62 000 €.",
                 "source": "Comptabilité analytique d’Atelier Rivage, 2025 (données fictives).",
@@ -2245,9 +2083,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -2288,12 +2124,7 @@
                 "intitule": "Taux annoncé (%)",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [
-                  8,
-                  -5,
-                  4,
-                  -3
-                ],
+                "valeurs": [8, -5, 4, -3],
                 "totalise": true
               },
               {
@@ -2343,9 +2174,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "evolutions-successives"
-              ],
+              "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 11,
               "modalite": "solo",
@@ -2365,9 +2194,7 @@
             "id": "b2-01-a4-jalon",
             "invite": "Je sais écrire une formule recopiable et contrôler un tableau.",
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2405,9 +2232,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2465,9 +2290,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee"
-              ],
+              "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -2569,9 +2392,7 @@
             },
             "description": "Droite décroissante du taux global en fonction de la part de la marketplace, et droite horizontale du taux 2024 ; un curseur règle le taux de marge de la marketplace.",
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee"
-              ],
+              "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -2652,10 +2473,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee",
-                "tableur"
-              ],
+              "concepts": ["moyenne-ponderee", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -2861,12 +2679,116 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "controle-coherence"
-              ],
+              "concepts": ["controle-coherence"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-01-A5-07-CORRECTION",
+        "type": "fp-story",
+        "titre": "Correction : le contrôle qui tranche chaque anomalie",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A5-07-CORRECTION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A5-07-CORRECTION",
+              "renderer": "sort-review",
+              "props": {
+                "title": "Correction du tri",
+                "subtitle": "À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées, puis recalcul, puis pièce.",
+                "source": {
+                  "screenId": "B2-01-A5-07-CONTROLE-DISCRIMINANT",
+                  "sortId": "b2-01-a5-controle"
+                },
+                "categories": [
+                  {
+                    "id": "metadonnees",
+                    "label": "Compléter les métadonnées (unité, période, source)"
+                  },
+                  {
+                    "id": "recalcul",
+                    "label": "Recalculer (coefficients, points, pondération)"
+                  },
+                  {
+                    "id": "representation",
+                    "label": "Refaire la représentation (axe, titre, forme)"
+                  },
+                  {
+                    "id": "preuve",
+                    "label": "Chercher une preuve externe (pièce, donnée détaillée)"
+                  }
+                ],
+                "cards": [
+                  {
+                    "id": "inflation",
+                    "label": "« Inflation : 4,9 » dans le tableau de bord",
+                    "category": "metadonnees",
+                    "justification": "« 4,9 » sans unité ni période : taux annuel, indice ou écart ? Compléter la fiche d’identité suffit à trancher."
+                  },
+                  {
+                    "id": "marge",
+                    "label": "« Marge brute : +1 200 »",
+                    "category": "metadonnees",
+                    "justification": "« +1 200 » : des euros, des unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas."
+                  },
+                  {
+                    "id": "points",
+                    "label": "« Taux de marge : −2,3 % »",
+                    "category": "recalcul",
+                    "justification": "L’écart entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative."
+                  },
+                  {
+                    "id": "toile",
+                    "label": "« Prix de la toile : +4 % » (8 − 5 + 4 − 3)",
+                    "category": "recalcul",
+                    "justification": "Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et non +4 %."
+                  },
+                  {
+                    "id": "moyenne",
+                    "label": "Note de Samir : « taux de marge moyen des canaux : 26,7 % »",
+                    "category": "recalcul",
+                    "justification": "Une moyenne simple ignore le poids de chaque canal : on recalcule une moyenne pondérée par le CA."
+                  },
+                  {
+                    "id": "diapo",
+                    "label": "Diapositive « Marge brute : une croissance continue »",
+                    "category": "representation",
+                    "justification": "L’axe tronqué grossit l’écart : on refait le graphique avec un axe à zéro avant de conclure."
+                  },
+                  {
+                    "id": "clients",
+                    "label": "« La marketplace détourne nos clients du sur-mesure »",
+                    "category": "preuve",
+                    "justification": "Deux évolutions simultanées ne prouvent pas une cause : seule une donnée détaillée des clients par canal tranche."
+                  },
+                  {
+                    "id": "factures",
+                    "label": "Courriel du cabinet comptable : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT",
+                    "category": "preuve",
+                    "justification": "90 € d’écart entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe."
+                  },
+                  {
+                    "id": "compensation",
+                    "label": "Contrôle de février : total du grand livre égal au total des pièces, mais F002 à +100 € et F003 à −100 €",
+                    "category": "preuve",
+                    "justification": "Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["controle-coherence"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
               "regime": "ouvert"
             }
           }
@@ -2883,11 +2805,47 @@
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
             "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet.",
+            "rappel": [
+              {
+                "libelle": "Le dossier",
+                "valeur": "Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace), exercices 2024 et 2025, données annuelles."
+              },
+              {
+                "libelle": "La proposition de Samir",
+                "valeur": "Investir 40 000 € pour doubler les ventes de la marketplace."
+              },
+              {
+                "libelle": "Chiffre d’affaires HT",
+                "valeur": "1 050 000 € → 1 150 000 €, soit +9,5 %."
+              },
+              {
+                "libelle": "Marge brute",
+                "valeur": "289 800 € → 291 000 €, soit +1 200 €."
+              },
+              {
+                "libelle": "Taux de marge brute global",
+                "valeur": "27,6 % → 25,3 %, soit −2,3 points."
+              },
+              {
+                "libelle": "CA HT par canal",
+                "valeur": "sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ; marketplace 357 000 € → 523 000 €."
+              },
+              {
+                "libelle": "Taux de marge brute par canal, identiques les deux années",
+                "valeur": "sur-mesure 36 % ; entretien 28 % ; marketplace 16 %."
+              },
+              {
+                "libelle": "Part de la marketplace dans le CA",
+                "valeur": "34 % → 45,5 %."
+              },
+              {
+                "libelle": "Anomalie relevée au contrôle",
+                "valeur": "90 € d’écart entre le grand livre et les factures de vente de mars (pièce F004)."
+              }
+            ],
             "strategies": [],
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee"
-              ],
+              "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -2907,9 +2865,7 @@
             "id": "b2-01-a5-jalon",
             "invite": "Je sais expliquer un écart par un effet de répartition et défendre une recommandation chiffrée.",
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee"
-              ],
+              "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -2948,9 +2904,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "controle-coherence"
-              ],
+              "concepts": ["controle-coherence"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3062,9 +3016,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "controle-coherence"
-              ],
+              "concepts": ["controle-coherence"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3086,9 +3038,7 @@
             "invite": "Trouvez les deux erreurs, corrigez les deux résultats, puis écrivez le contrôle que vous feriez au tableur.",
             "strategies": [],
             "metadonnees": {
-              "concepts": [
-                "taux-moyen"
-              ],
+              "concepts": ["taux-moyen"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -3334,9 +3284,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3375,9 +3323,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -3392,7 +3338,7 @@
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 214,
+    "duree": 213,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -3439,9 +3385,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "taux-evolution"
-              ],
+              "concepts": ["taux-evolution"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -3524,9 +3468,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -3572,9 +3514,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -3665,9 +3605,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -3749,9 +3687,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
@@ -3912,9 +3848,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4003,7 +3937,7 @@
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
         "titre": "Votre plan de reprise et de transfert",
-        "duree": 2,
+        "duree": 1,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -4062,17 +3996,15 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "Action : parcourir les six étapes en 90 secondes.\nObservé : la colonne « preuve » annonce ce qui sera demandé à chaque acte.\nAttendu : chacun sait où il en est et ce qui compte pour la note (la participation, § 4.5).\nContrôle : question rapide : « quel acte produit le graphique du comité ? » (l’acte 4).\nTransition : « Première preuve : transformer la question d’Hélène. »",
+        "notes": "Action : parcourir les six étapes en une minute.\nObservé : la colonne « preuve » annonce ce qui sera demandé à chaque acte.\nAttendu : chacun sait où il en est et ce qui compte pour la note (la participation, § 4.5).\nContrôle : question rapide : « quel acte produit le graphique du comité ? » (l’acte 4).\nTransition : « Première preuve : transformer la question d’Hélène. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4104,9 +4036,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -4138,33 +4068,16 @@
                 "title": "Marge brute : une croissance continue",
                 "caption": "Diapositive 3 du support commercial",
                 "context": "Voici la diapositive que Samir veut projeter jeudi.",
-                "labels": [
-                  "2022",
-                  "2023",
-                  "2024",
-                  "2025"
-                ],
+                "labels": ["2022", "2023", "2024", "2025"],
                 "series": [
                   {
                     "label": "Marge brute",
-                    "values": [
-                      285000,
-                      288000,
-                      289800,
-                      291000
-                    ],
+                    "values": [285000, 288000, 289800, 291000],
                     "tone": "gold"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    284000,
-                    292000
-                  ]
-                ],
-                "axisLabels": [
-                  "284 000 à 292 000 €"
-                ],
+                "axisRanges": [[284000, 292000]],
+                "axisLabels": ["284 000 à 292 000 €"],
                 "unit": "€",
                 "reading": "Lecture proposée par le service commercial : « la marge brute progresse nettement chaque année ».",
                 "source": "Service commercial d’Atelier Rivage (données fictives).",
@@ -4172,9 +4085,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4202,9 +4113,7 @@
             "invite": "Écrivez trois vérifications à faire avant de lui répondre, puis votre réponse en une phrase.",
             "strategies": [],
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -4260,9 +4169,7 @@
             "id": "b2-01-a1-jalon",
             "invite": "Je sais dire ce que mesure chaque chiffre du tableau de bord : unité, base, période.",
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -4300,12 +4207,7 @@
                   "Son atlas compte 43 courbes et un seul graphique en barres : pour l’Écosse, faute de série sur plusieurs années, il compare 17 partenaires sur une seule année. La forme suit la donnée disponible.",
                   "Le graphique accélère la comparaison ; il ne remplace ni les valeurs, ni l’axe, ni la source. C’est ce contrat de lecture que vous appliquez à la diapositive de Samir."
                 ],
-                "items": [
-                  "Titre",
-                  "Axes et échelle",
-                  "Séries",
-                  "Source"
-                ],
+                "items": ["Titre", "Axes et échelle", "Séries", "Source"],
                 "sourceLink": {
                   "href": "https://commons.wikimedia.org/wiki/File:Playfair_TimeSeries.png",
                   "label": "Document original · Wikimedia Commons (domaine public)"
@@ -4313,9 +4215,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4342,7 +4242,7 @@
             "titre": "Diapositive de Samir : marge brute et axe réglable",
             "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
-              "libelle": "Année (0 = 2022, 3 = 2025)",
+              "libelle": "Année",
               "min": 0,
               "max": 3
             },
@@ -4355,14 +4255,6 @@
                 "max": 284000,
                 "pas": 4000,
                 "defaut": 284000
-              },
-              {
-                "cle": "maximum",
-                "libelle": "Haut de l’axe vertical (€)",
-                "min": 292000,
-                "max": 600000,
-                "pas": 4000,
-                "defaut": 292000
               }
             ],
             "series": [
@@ -4374,14 +4266,29 @@
               }
             ],
             "bornesOrdonnee": {
-              "minParametre": "origine",
-              "maxParametre": "maximum"
+              "max": 292000,
+              "minParametre": "origine"
             },
-            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
+            "description": "Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.",
+            "forme": "barres",
+            "unite": "euros",
+            "etiquettes": ["2022", "2023", "2024", "2025"],
+            "prereglages": [
+              {
+                "libelle": "Axe de Samir",
+                "valeurs": {
+                  "origine": 284000
+                }
+              },
+              {
+                "libelle": "Axe à zéro",
+                "valeurs": {
+                  "origine": 0
+                }
+              }
+            ],
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4389,7 +4296,7 @@
             }
           }
         },
-        "notes": "Action : chaque étudiant fait glisser l’origine de 284 000 € à 0 €, puis le haut de l’axe de 292 000 € à 600 000 €.\nObservé : la pente s’écrase, les valeurs ne changent pas ; le premier affichage reproduit la diapositive de A1-09.\nAttendu : « l’échelle change l’impression, pas la donnée ».\nContrôle : faire lire la valeur 2025 dans les deux positions (291 000 €).\nTransition : « Atelier 1 : lire, rapporter, estimer. »",
+        "notes": "Action : chaque étudiant fait glisser l’origine de l’axe de 284 000 € à 0 €, ou bascule d’un préréglage à l’autre.\nObservé : les montants ne bougent pas ; seul le rapport des hauteurs change, de ×7 sur l’axe de Samir à presque ×1 sur l’axe à zéro.\nAttendu : « l’échelle change l’impression, pas la donnée » : l’évolution réelle reste +2,1 %.\nContrôle : faire lire la barre 2025 dans les deux positions (291 000 €) et comparer le rapport des hauteurs au réel.\nTransition : « Atelier 1 : lire, rapporter, estimer. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4745,33 +4652,16 @@
               "props": {
                 "title": "Marge brute d’Atelier Rivage, 2022–2025",
                 "caption": "Axe vertical de 0 à 300 000 €",
-                "labels": [
-                  "2022",
-                  "2023",
-                  "2024",
-                  "2025"
-                ],
+                "labels": ["2022", "2023", "2024", "2025"],
                 "series": [
                   {
                     "label": "Marge brute",
-                    "values": [
-                      285000,
-                      288000,
-                      289800,
-                      291000
-                    ],
+                    "values": [285000, 288000, 289800, 291000],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    300000
-                  ]
-                ],
-                "axisLabels": [
-                  "0 à 300 000 €"
-                ],
+                "axisRanges": [[0, 300000]],
+                "axisLabels": ["0 à 300 000 €"],
                 "unit": "€",
                 "formula": "Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021",
                 "reading": "La marge brute augmente sur la période. L’écart reste faible à l’échelle du graphique et le rythme annuel ralentit.",
@@ -4780,10 +4670,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique",
-                "taux-evolution"
-              ],
+              "concepts": ["lecture-graphique", "taux-evolution"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4839,10 +4726,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "pourcentage",
-                "point-de-pourcentage"
-              ],
+              "concepts": ["pourcentage", "point-de-pourcentage"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -4861,7 +4745,7 @@
         "id": "B2-01-A2-06-POINTS",
         "type": "fp-worked",
         "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 5,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -4894,18 +4778,16 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "point-de-pourcentage"
-              ],
+              "concepts": ["point-de-pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 5,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
           "etayage": 0
         },
-        "notes": "Action : première étape commentée, les suivantes rédigées par les étudiants ; baisser l’étayage à 2 si la classe a réussi A1-05.\nObservé : ceux qui écrivent « −2,3 % » à l’étape 3.\nAttendu : −2,30 points ; −8,3 % en relatif ; une phrase qui contient les deux taux.\nContrôle : 27,6 × 0,917 = 25,31 (écart d’arrondi assumé).\nTransition : « Mini-jeu : tout n’est pas comparable. »",
+        "notes": "Action : chaque étudiant répond sous chaque étape sur son poste, puis révéler la correction depuis le pupitre, une étape à la fois (« Montrer une étape de plus »).\nObservé : ceux qui écrivent « −2,3 % » à l’étape de l’écart.\nAttendu : −2,30 points ; −8,3 % en relatif ; une phrase qui contient les deux taux.\nContrôle : 27,6 × 0,917 = 25,31 (écart d’arrondi assumé).\nTransition : « Mini-jeu : tout n’est pas comparable. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4976,9 +4858,7 @@
             ],
             "dureeJeuMs": 300000,
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
@@ -4986,7 +4866,7 @@
             }
           }
         },
-        "notes": "Action : lancer le chrono (5 min, annoncer la dernière minute), puis 3 min de débriefing sur les deux cartes les plus ratées.\nObservé : le score médian de la classe et les cartes les plus ratées.\nAttendu : directes : mars/mars, taux 2024/2025, CA par salarié ; après retraitement : HT/TTC, m²/rouleau, périmètre (retirer la marketplace du CA 2025) ; impossibles sans nouvelle donnée : taux sectoriel, inflation de 2023, semestre/année.\nContrôle : pour chaque retraitement, faire dire l’opération (÷ 1,2 ; ÷ 50 ; − 523 000 €) ; pour le semestre : l’activité est saisonnière, doubler un semestre ne donne pas l’année.\nTransition : jalon de confiance, puis acte 3.",
+        "notes": "Action : lancer le chrono (5 min, annoncer la dernière minute), puis 3 min de débriefing sur les deux cartes les plus ratées.\nObservé : le score médian de la classe et les cartes les plus ratées.\nAttendu : directes : mars/mars, taux 2024/2025, CA par salarié ; après retraitement : HT/TTC, m²/rouleau, périmètre (retirer la marketplace du CA 2025) ; impossibles sans nouvelle donnée : taux sectoriel, inflation de 2023, semestre/année.\nContrôle : pour chaque retraitement, faire dire l’opération (÷ 1,2 ; ÷ 50 ; − 523 000 €) ; pour le semestre : l’activité est saisonnière, doubler un semestre ne donne pas l’année.\nTransition : projeter le plateau corrigé du mini-jeu.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5064,7 +4944,7 @@
               "renderer": "sort-review",
               "props": {
                 "title": "Correction du mini-jeu",
-                "subtitle": "Chaque carte à sa place, avec la raison qui l’y range.",
+                "subtitle": "Chaque comparaison à sa place, avec la raison qui l’y range.",
                 "source": {
                   "screenId": "B2-01-A2-07-JEU-COMPARABLE",
                   "sortId": "b2-01-a2-comparable"
@@ -5142,9 +5022,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5170,9 +5048,7 @@
             "id": "b2-01-a2-jalon",
             "invite": "Je sais choisir la bonne base et repérer une comparaison trompeuse (axe, population de référence, taux de marge ou de marque).",
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5399,46 +5275,25 @@
               "props": {
                 "title": "Prix du sac étanche : +10 %, puis −10 %",
                 "caption": "100 ventes par période ; coût d’achat unitaire : 80 € HT",
-                "labels": [
-                  "Prix initial",
-                  "Après +10 %",
-                  "Après −10 %"
-                ],
+                "labels": ["Prix initial", "Après +10 %", "Après −10 %"],
                 "series": [
                   {
                     "label": "Prix de vente unitaire",
-                    "values": [
-                      100,
-                      110,
-                      99
-                    ],
+                    "values": [100, 110, 99],
                     "tone": "teal"
                   },
                   {
                     "label": "Coût d’achat unitaire",
-                    "values": [
-                      80,
-                      80,
-                      80
-                    ],
+                    "values": [80, 80, 80],
                     "tone": "ink"
                   },
                   {
                     "label": "Marge unitaire",
-                    "values": [
-                      20,
-                      30,
-                      19
-                    ],
+                    "values": [20, 30, 19],
                     "tone": "gold"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    120
-                  ]
-                ],
+                "axisRanges": [[0, 120]],
                 "unit": "€ HT par sac",
                 "formula": "Prix : 100 × 1,10 × 0,90 = 99 € · CA : 10 000 → 11 000 → 9 900 € · marge totale : 2 000 → 3 000 → 1 900 €",
                 "reading": "Après la baisse, le prix (99 €) reste sous le prix initial : −1 %. Avec un coût inchangé, la marge unitaire tombe à 19 € et la marge totale perd 100 €, soit −5 %.",
@@ -5448,9 +5303,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "evolutions-successives"
-              ],
+              "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5514,9 +5367,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "evolutions-successives"
-              ],
+              "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -5560,24 +5411,11 @@
                 "series": [
                   {
                     "label": "Inflation (IPC)",
-                    "values": [
-                      1.1,
-                      0.5,
-                      1.6,
-                      5.2,
-                      4.9,
-                      2,
-                      0.9
-                    ],
+                    "values": [1.1, 0.5, 1.6, 5.2, 4.9, 2, 0.9],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    6
-                  ]
-                ],
+                "axisRanges": [[0, 6]],
                 "unit": "% par an",
                 "reading": "Le taux culmine à 5,2 % en 2022, puis diminue : 2,0 % en 2024 et 0,9 % en 2025.",
                 "source": "Source : Insee, indice des prix à la consommation, « L’essentiel sur… l’inflation », paru le 23 mars 2026.",
@@ -5585,9 +5423,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "indice-base-100"
-              ],
+              "concepts": ["indice-base-100"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5645,10 +5481,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "indice-base-100",
-                "taux-moyen"
-              ],
+              "concepts": ["indice-base-100", "taux-moyen"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -5949,26 +5782,13 @@
                   {
                     "label": "Indice des prix",
                     "values": [
-                      100,
-                      100.5,
-                      102.11,
-                      107.42,
-                      112.68,
-                      114.93,
-                      115.97
+                      100, 100.5, 102.11, 107.42, 112.68, 114.93, 115.97
                     ],
                     "tone": "gold"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    95,
-                    120
-                  ]
-                ],
-                "axisLabels": [
-                  "95 à 120"
-                ],
+                "axisRanges": [[95, 120]],
+                "axisLabels": ["95 à 120"],
                 "unit": "indice (base 100 en 2019)",
                 "formula": "Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97 ; ce calcul est une reconstitution pédagogique, pas la construction de l’IPC officiel.",
                 "reading": "Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation.",
@@ -5978,9 +5798,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "indice-base-100"
-              ],
+              "concepts": ["indice-base-100"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -6020,9 +5838,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "indice-base-100"
-              ],
+              "concepts": ["indice-base-100"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -6098,9 +5914,7 @@
               "preload": "none"
             },
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -6186,9 +6000,7 @@
               "En B7, contrôlez vos formules : les parts doivent faire 100 % : =SI(ARRONDI(SOMME(E2:E4);6)=1;1;0). En C7, contrôlez vos données : votre marge (G5) doit égaler celle du compte de résultat (B6) ; ce second contrôle surveille les données."
             ],
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 13,
               "modalite": "binome",
@@ -6659,53 +6471,26 @@
               "props": {
                 "title": "CA HT 2025 : choisir une représentation temporelle",
                 "caption": "Une courbe par canal : la forme suit la question (une évolution dans le temps)",
-                "labels": [
-                  "T1",
-                  "T2",
-                  "T3",
-                  "T4"
-                ],
+                "labels": ["T1", "T2", "T3", "T4"],
                 "series": [
                   {
                     "label": "Sur-mesure",
-                    "values": [
-                      120,
-                      95,
-                      102,
-                      80
-                    ],
+                    "values": [120, 95, 102, 80],
                     "tone": "ink"
                   },
                   {
                     "label": "Entretien",
-                    "values": [
-                      58,
-                      61,
-                      49,
-                      62
-                    ],
+                    "values": [58, 61, 49, 62],
                     "tone": "gold"
                   },
                   {
                     "label": "Marketplace",
-                    "values": [
-                      98,
-                      131,
-                      167,
-                      127
-                    ],
+                    "values": [98, 131, 167, 127],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    180
-                  ]
-                ],
-                "axisLabels": [
-                  "0 à 180 milliers d’euros"
-                ],
+                "axisRanges": [[0, 180]],
+                "axisLabels": ["0 à 180 milliers d’euros"],
                 "unit": "milliers d’euros HT",
                 "reading": "La marketplace culmine au 3e trimestre (167 000 €) ; le sur-mesure recule de 120 000 € à 80 000 € entre le 1er et le 4e trimestre ; l’entretien reste entre 49 000 € et 62 000 €.",
                 "source": "Comptabilité analytique d’Atelier Rivage, 2025 (données fictives).",
@@ -6714,9 +6499,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -6763,12 +6546,7 @@
                 "intitule": "Taux annoncé (%)",
                 "role": "donnee",
                 "decimales": 0,
-                "valeurs": [
-                  8,
-                  -5,
-                  4,
-                  -3
-                ],
+                "valeurs": [8, -5, 4, -3],
                 "totalise": true
               },
               {
@@ -6818,9 +6596,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "evolutions-successives"
-              ],
+              "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 11,
               "modalite": "solo",
@@ -6901,9 +6677,7 @@
             "id": "b2-01-a4-jalon",
             "invite": "Je sais écrire une formule recopiable et contrôler un tableau.",
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -6947,9 +6721,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7013,9 +6785,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee"
-              ],
+              "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 5,
               "modalite": "solo",
@@ -7203,9 +6973,7 @@
             },
             "description": "Droite décroissante du taux global en fonction de la part de la marketplace, et droite horizontale du taux 2024 ; un curseur règle le taux de marge de la marketplace.",
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee"
-              ],
+              "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7292,10 +7060,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee",
-                "tableur"
-              ],
+              "concepts": ["moyenne-ponderee", "tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -7653,9 +7418,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "controle-coherence"
-              ],
+              "concepts": ["controle-coherence"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 8,
               "modalite": "binome",
@@ -7663,7 +7426,7 @@
             }
           }
         },
-        "notes": "Action : 5 min de tri (annoncer la dernière minute), 3 min de correction.\nObservé : les cartes « factures », « compensation » et « détourne nos clients ».\nAttendu : métadonnées (inflation, +1 200) ; recalcul (−2,3 %, +4 %, moyenne simple) ; représentation (diapositive) ; preuve externe (clients, factures, compensation). À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées avant recalcul, recalcul avant pièce.\nContrôle : un total qui concorde ne prouve pas que chaque ligne est juste (février : +100 € et −100 € se compensent) ; un indice oriente, une pièce tranche.\nTransition : « Rédigez votre recommandation. »",
+        "notes": "Action : binômes, 5 min de tri (annoncer la dernière minute), puis l’écran suivant pour la correction.\nObservé : les cartes « factures », « compensation » et « détourne nos clients ».\nAttendu : le contrôle le plus direct, et à efficacité égale le moins coûteux, pour trancher chaque anomalie.\nContrôle : un indice oriente, une pièce tranche.\nTransition : « Voyons la correction, carte par carte. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -7680,51 +7443,163 @@
             {
               "carteId": "inflation",
               "categorieId": "metadonnees",
-              "justification": "Compléter les métadonnées (unité, période, source)"
+              "justification": "« 4,9 » sans unité ni période : taux annuel, indice ou écart ? Compléter la fiche d’identité suffit à trancher."
             },
             {
               "carteId": "marge",
               "categorieId": "metadonnees",
-              "justification": "Compléter les métadonnées (unité, période, source)"
+              "justification": "« +1 200 » : des euros, des unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas."
             },
             {
               "carteId": "points",
               "categorieId": "recalcul",
-              "justification": "Recalculer (coefficients, points, pondération)"
+              "justification": "L’écart entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative."
             },
             {
               "carteId": "toile",
               "categorieId": "recalcul",
-              "justification": "Recalculer (coefficients, points, pondération)"
+              "justification": "Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et non +4 %."
             },
             {
               "carteId": "moyenne",
               "categorieId": "recalcul",
-              "justification": "Recalculer (coefficients, points, pondération)"
+              "justification": "Une moyenne simple ignore le poids de chaque canal : on recalcule une moyenne pondérée par le CA."
             },
             {
               "carteId": "diapo",
               "categorieId": "representation",
-              "justification": "Refaire la représentation (axe, titre, forme)"
+              "justification": "L’axe tronqué grossit l’écart : on refait le graphique avec un axe à zéro avant de conclure."
             },
             {
               "carteId": "clients",
               "categorieId": "preuve",
-              "justification": "Chercher une preuve externe (pièce, donnée détaillée)"
+              "justification": "Deux évolutions simultanées ne prouvent pas une cause : seule une donnée détaillée des clients par canal tranche."
             },
             {
               "carteId": "factures",
               "categorieId": "preuve",
-              "justification": "Chercher une preuve externe (pièce, donnée détaillée)"
+              "justification": "90 € d’écart entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe."
             },
             {
               "carteId": "compensation",
               "categorieId": "preuve",
-              "justification": "Chercher une preuve externe (pièce, donnée détaillée)"
+              "justification": "Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main."
             }
           ],
           "seuilReussite": 0.75
         }
+      },
+      {
+        "id": "B2-01-A5-07-CORRECTION",
+        "type": "fp-story",
+        "titre": "Correction : le contrôle qui tranche chaque anomalie",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A5-07-CORRECTION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A5-07-CORRECTION",
+              "renderer": "sort-review",
+              "props": {
+                "title": "Correction du tri",
+                "subtitle": "À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées, puis recalcul, puis pièce.",
+                "source": {
+                  "screenId": "B2-01-A5-07-CONTROLE-DISCRIMINANT",
+                  "sortId": "b2-01-a5-controle"
+                },
+                "categories": [
+                  {
+                    "id": "metadonnees",
+                    "label": "Compléter les métadonnées (unité, période, source)"
+                  },
+                  {
+                    "id": "recalcul",
+                    "label": "Recalculer (coefficients, points, pondération)"
+                  },
+                  {
+                    "id": "representation",
+                    "label": "Refaire la représentation (axe, titre, forme)"
+                  },
+                  {
+                    "id": "preuve",
+                    "label": "Chercher une preuve externe (pièce, donnée détaillée)"
+                  }
+                ],
+                "cards": [
+                  {
+                    "id": "inflation",
+                    "label": "« Inflation : 4,9 » dans le tableau de bord",
+                    "category": "metadonnees",
+                    "justification": "« 4,9 » sans unité ni période : taux annuel, indice ou écart ? Compléter la fiche d’identité suffit à trancher."
+                  },
+                  {
+                    "id": "marge",
+                    "label": "« Marge brute : +1 200 »",
+                    "category": "metadonnees",
+                    "justification": "« +1 200 » : des euros, des unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas."
+                  },
+                  {
+                    "id": "points",
+                    "label": "« Taux de marge : −2,3 % »",
+                    "category": "recalcul",
+                    "justification": "L’écart entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative."
+                  },
+                  {
+                    "id": "toile",
+                    "label": "« Prix de la toile : +4 % » (8 − 5 + 4 − 3)",
+                    "category": "recalcul",
+                    "justification": "Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et non +4 %."
+                  },
+                  {
+                    "id": "moyenne",
+                    "label": "Note de Samir : « taux de marge moyen des canaux : 26,7 % »",
+                    "category": "recalcul",
+                    "justification": "Une moyenne simple ignore le poids de chaque canal : on recalcule une moyenne pondérée par le CA."
+                  },
+                  {
+                    "id": "diapo",
+                    "label": "Diapositive « Marge brute : une croissance continue »",
+                    "category": "representation",
+                    "justification": "L’axe tronqué grossit l’écart : on refait le graphique avec un axe à zéro avant de conclure."
+                  },
+                  {
+                    "id": "clients",
+                    "label": "« La marketplace détourne nos clients du sur-mesure »",
+                    "category": "preuve",
+                    "justification": "Deux évolutions simultanées ne prouvent pas une cause : seule une donnée détaillée des clients par canal tranche."
+                  },
+                  {
+                    "id": "factures",
+                    "label": "Courriel du cabinet comptable : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT",
+                    "category": "preuve",
+                    "justification": "90 € d’écart entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe."
+                  },
+                  {
+                    "id": "compensation",
+                    "label": "Contrôle de février : total du grand livre égal au total des pièces, mais F002 à +100 € et F003 à −100 €",
+                    "category": "preuve",
+                    "justification": "Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["controle-coherence"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "Action : projeter le plateau corrigé ; commencer par « factures », « compensation » et « détourne nos clients ».\nObservé : sur chaque poste, les cartes mal placées au tri sont bordées de rouge, les bien placées de vert.\nAttendu : métadonnées (inflation, +1 200) ; recalcul (−2,3 %, +4 %, moyenne simple) ; représentation (diapositive) ; preuve externe (clients, factures, compensation).\nContrôle : un total qui concorde ne prouve pas que chaque ligne est juste (février : +100 € et −100 € se compensent) ; un indice oriente, une pièce tranche.\nTransition : « Rédigez votre recommandation. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
       },
       {
         "id": "B2-01-A5-08-RECOMMANDATION",
@@ -7737,11 +7612,47 @@
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
             "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet.",
+            "rappel": [
+              {
+                "libelle": "Le dossier",
+                "valeur": "Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace), exercices 2024 et 2025, données annuelles."
+              },
+              {
+                "libelle": "La proposition de Samir",
+                "valeur": "Investir 40 000 € pour doubler les ventes de la marketplace."
+              },
+              {
+                "libelle": "Chiffre d’affaires HT",
+                "valeur": "1 050 000 € → 1 150 000 €, soit +9,5 %."
+              },
+              {
+                "libelle": "Marge brute",
+                "valeur": "289 800 € → 291 000 €, soit +1 200 €."
+              },
+              {
+                "libelle": "Taux de marge brute global",
+                "valeur": "27,6 % → 25,3 %, soit −2,3 points."
+              },
+              {
+                "libelle": "CA HT par canal",
+                "valeur": "sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ; marketplace 357 000 € → 523 000 €."
+              },
+              {
+                "libelle": "Taux de marge brute par canal, identiques les deux années",
+                "valeur": "sur-mesure 36 % ; entretien 28 % ; marketplace 16 %."
+              },
+              {
+                "libelle": "Part de la marketplace dans le CA",
+                "valeur": "34 % → 45,5 %."
+              },
+              {
+                "libelle": "Anomalie relevée au contrôle",
+                "valeur": "90 € d’écart entre le grand livre et les factures de vente de mars (pièce F004)."
+              }
+            ],
             "strategies": [],
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee"
-              ],
+              "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 6,
               "modalite": "solo",
@@ -7806,9 +7717,7 @@
             "id": "b2-01-a5-jalon",
             "invite": "Je sais expliquer un écart par un effet de répartition et défendre une recommandation chiffrée.",
             "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee"
-              ],
+              "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -7853,9 +7762,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "controle-coherence"
-              ],
+              "concepts": ["controle-coherence"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -8025,9 +7932,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "controle-coherence"
-              ],
+              "concepts": ["controle-coherence"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -8055,9 +7960,7 @@
             "invite": "Trouvez les deux erreurs, corrigez les deux résultats, puis écrivez le contrôle que vous feriez au tableur.",
             "strategies": [],
             "metadonnees": {
-              "concepts": [
-                "taux-moyen"
-              ],
+              "concepts": ["taux-moyen"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
               "modalite": "solo",
@@ -8763,9 +8666,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -8810,9 +8711,7 @@
               }
             ],
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -8915,7 +8814,7 @@
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 214,
+    "duree": 213,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -8966,9 +8865,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -9061,9 +8958,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -9156,7 +9051,7 @@
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
         "titre": "Votre plan de reprise et de transfert",
-        "duree": 2,
+        "duree": 1,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -9215,11 +9110,9 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "contrat-de-lecture"
-              ],
+              "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -9251,33 +9144,16 @@
                 "title": "Marge brute : une croissance continue",
                 "caption": "Diapositive 3 du support commercial",
                 "context": "Voici la diapositive que Samir veut projeter jeudi.",
-                "labels": [
-                  "2022",
-                  "2023",
-                  "2024",
-                  "2025"
-                ],
+                "labels": ["2022", "2023", "2024", "2025"],
                 "series": [
                   {
                     "label": "Marge brute",
-                    "values": [
-                      285000,
-                      288000,
-                      289800,
-                      291000
-                    ],
+                    "values": [285000, 288000, 289800, 291000],
                     "tone": "gold"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    284000,
-                    292000
-                  ]
-                ],
-                "axisLabels": [
-                  "284 000 à 292 000 €"
-                ],
+                "axisRanges": [[284000, 292000]],
+                "axisLabels": ["284 000 à 292 000 €"],
                 "unit": "€",
                 "reading": "Lecture proposée par le service commercial : « la marge brute progresse nettement chaque année ».",
                 "source": "Service commercial d’Atelier Rivage (données fictives).",
@@ -9285,9 +9161,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -9335,12 +9209,7 @@
                   "Son atlas compte 43 courbes et un seul graphique en barres : pour l’Écosse, faute de série sur plusieurs années, il compare 17 partenaires sur une seule année. La forme suit la donnée disponible.",
                   "Le graphique accélère la comparaison ; il ne remplace ni les valeurs, ni l’axe, ni la source. C’est ce contrat de lecture que vous appliquez à la diapositive de Samir."
                 ],
-                "items": [
-                  "Titre",
-                  "Axes et échelle",
-                  "Séries",
-                  "Source"
-                ],
+                "items": ["Titre", "Axes et échelle", "Séries", "Source"],
                 "sourceLink": {
                   "href": "https://commons.wikimedia.org/wiki/File:Playfair_TimeSeries.png",
                   "label": "Document original · Wikimedia Commons (domaine public)"
@@ -9348,9 +9217,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -9371,7 +9238,7 @@
             "titre": "Diapositive de Samir : marge brute et axe réglable",
             "source": "Service commercial d’Atelier Rivage (données fictives).",
             "abscisse": {
-              "libelle": "Année (0 = 2022, 3 = 2025)",
+              "libelle": "Année",
               "min": 0,
               "max": 3
             },
@@ -9384,14 +9251,6 @@
                 "max": 284000,
                 "pas": 4000,
                 "defaut": 284000
-              },
-              {
-                "cle": "maximum",
-                "libelle": "Haut de l’axe vertical (€)",
-                "min": 292000,
-                "max": 600000,
-                "pas": 4000,
-                "defaut": 292000
               }
             ],
             "series": [
@@ -9403,14 +9262,29 @@
               }
             ],
             "bornesOrdonnee": {
-              "minParametre": "origine",
-              "maxParametre": "maximum"
+              "max": 292000,
+              "minParametre": "origine"
             },
-            "description": "Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la lecture, sans changer les valeurs.",
+            "description": "Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.",
+            "forme": "barres",
+            "unite": "euros",
+            "etiquettes": ["2022", "2023", "2024", "2025"],
+            "prereglages": [
+              {
+                "libelle": "Axe de Samir",
+                "valeurs": {
+                  "origine": 284000
+                }
+              },
+              {
+                "libelle": "Axe à zéro",
+                "valeurs": {
+                  "origine": 0
+                }
+              }
+            ],
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -9447,7 +9321,7 @@
         "id": "B2-01-A2-06-POINTS",
         "type": "ecran-verrouille",
         "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 5,
+        "duree": 4,
         "interactif": false,
         "donnees": {}
       },
@@ -9535,24 +9409,11 @@
                 "series": [
                   {
                     "label": "Inflation (IPC)",
-                    "values": [
-                      1.1,
-                      0.5,
-                      1.6,
-                      5.2,
-                      4.9,
-                      2,
-                      0.9
-                    ],
+                    "values": [1.1, 0.5, 1.6, 5.2, 4.9, 2, 0.9],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [
-                  [
-                    0,
-                    6
-                  ]
-                ],
+                "axisRanges": [[0, 6]],
                 "unit": "% par an",
                 "reading": "Le taux culmine à 5,2 % en 2022, puis diminue : 2,0 % en 2024 et 0,9 % en 2025.",
                 "source": "Source : Insee, indice des prix à la consommation, « L’essentiel sur… l’inflation », paru le 23 mars 2026.",
@@ -9560,9 +9421,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "indice-base-100"
-              ],
+              "concepts": ["indice-base-100"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -9642,9 +9501,7 @@
               "preload": "none"
             },
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
               "modalite": "solo",
@@ -9722,9 +9579,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "lecture-graphique"
-              ],
+              "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -9778,6 +9633,14 @@
         "type": "ecran-verrouille",
         "titre": "Quel contrôle pour chaque anomalie ?",
         "duree": 8,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B2-01-A5-07-CORRECTION",
+        "type": "ecran-verrouille",
+        "titre": "Correction : le contrôle qui tranche chaque anomalie",
+        "duree": 1,
         "interactif": false,
         "donnees": {}
       },
@@ -9862,9 +9725,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "controle-coherence"
-              ],
+              "concepts": ["controle-coherence"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",
@@ -10005,9 +9866,7 @@
               }
             },
             "metadonnees": {
-              "concepts": [
-                "tableur"
-              ],
+              "concepts": ["tableur"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 2,
               "modalite": "solo",

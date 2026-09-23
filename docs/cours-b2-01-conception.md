@@ -7,15 +7,15 @@
 > et les critères de sortie (§ 7 et § 10). Toute divergence d’implémentation est un défaut de
 > l’implémentation, pas une liberté.
 
-| Rubrique    | Valeur                                                                                                                                    |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Date        | 19 septembre 2026                                                                                                                         |
-| Statut      | **Référence pédagogique** : socle BTS CG 2, extensions bachelor/M1 facultatives, contenu remplaçable avant le prochain cours              |
-| Cours       | `b2-01-traitement-information-chiffree`, contenu unique du cours ; la migration de travail remplace les données existantes                |
-| Titre servi | « Lire, contrôler et décider avec l’information chiffrée »                                                                                |
-| Durée       | **210 minutes exactes** (somme des écrans), 6 actes aux durées du brief (30, 36, 36, 38, 42, 28), plus une pause de 15 minutes hors durée |
-| Écrans      | **52** (option A de la relecture pédagogique : budget rééquilibré acte par acte, § 2.5)                                                   |
-| Remplace    | `docs/formation-b2-01-brief.md` et les textes précédents du cours ; cette fiche devient la source de vérité pédagogique                   |
+| Rubrique    | Valeur                                                                                                                                         |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Date        | 19 septembre 2026                                                                                                                              |
+| Statut      | **Référence pédagogique** : socle BTS CG 2, extensions bachelor/M1 facultatives, contenu remplaçable avant le prochain cours                   |
+| Cours       | `b2-01-traitement-information-chiffree`, contenu unique du cours (`b2-01.cours.ts`), publié au démarrage de l’API dès que son empreinte change |
+| Titre servi | « Lire, contrôler et décider avec l’information chiffrée »                                                                                     |
+| Durée       | **213 minutes exactes** (somme des écrans), 6 actes de 32, 36, 36, 38, 43 et 28 minutes, plus une pause de 15 minutes hors durée               |
+| Écrans      | **55** (option A de la relecture pédagogique, § 2.5, puis trois écrans ajoutés par la QA : deux corrections de tri et l’exercice des points)   |
+| Remplace    | `docs/formation-b2-01-brief.md` et les textes précédents du cours ; cette fiche devient la source de vérité pédagogique                        |
 
 Code lu pour figer les contrats (lecture seule, branche `fix/cours-qa-prod` des deux dépôts) : back
 `Cours.ts`, `CoursStocke.ts`, `CoursPublic.ts`, `Tirage.ts`, `DeroulePresentateur.ts`,
@@ -43,10 +43,11 @@ Code lu pour figer les contrats (lecture seule, branche `fix/cours-qa-prod` des 
    leurs nuances vérifiées : Playfair (1786, précédé par la frise de Priestley, 1765) quand on juge
    une diapositive, Nightingale (1858) quand on défend une décision, Pacioli (1494, qui décrit la
    partie double sans l’avoir inventée) quand on contrôle des pièces.
-2. **52 écrans, 210 minutes, une séance.** Les ajouts de la relecture pédagogique (N1 : indice et
+2. **55 écrans, 213 minutes, une séance.** Les ajouts de la relecture pédagogique (N1 : indice et
    taux moyen avant l’atelier 2 ; N3 : tableau croisé dynamique ; N4 : fiche mémo ; question N2 sur
-   taux de marge et taux de marque dans l’atelier 1) sont financés acte par acte, sans toucher aux
-   durées du brief. Les deux votes par les pairs restent à 8 minutes, pour respecter la règle des
+   taux de marge et taux de marque dans l’atelier 1) sont financés acte par acte. La QA ajoute la
+   correction projetée des deux tris (A1-05, A5-07) et sépare l’exercice des points de sa correction
+   (A2-06) : l’acte 1 passe à 32 minutes, l’acte 5 à 43. Les deux votes par les pairs restent à 8 minutes, pour respecter la règle des
    ateliers de 8 à 15 minutes (§ 2.5).
 3. **Aucune notion utile du deck n’est perdue** : l’inventaire de couverture (§ 3.9) passe les
    52 notions en revue ; toutes sont enseignées, et celles qui sont évaluées le sont après avoir été
@@ -165,8 +166,8 @@ complète d’un TCD sur un fichier professionnel est approfondie par B2-03, les
   par code) et une calculatrice ; vidéoprojecteur pour la projection formateur. Dans les activités
   marquées « binôme », les deux étudiants discutent ensemble, puis **chacun envoie** depuis son poste :
   la note de participation est individuelle (§ 4.5).
-- **Séance** : **une séance unique** de 210 minutes de cours plus une **pause de 15 minutes hors
-  durée** entre l’acte 3 et l’acte 4 (3 h 45 au total). L’horaire hebdomadaire de mathématiques de
+- **Séance** : **une séance unique** de 213 minutes de cours plus une **pause de 15 minutes hors
+  durée** entre l’acte 3 et l’acte 4 (3 h 48 au total). L’horaire hebdomadaire de mathématiques de
   STS étant de 2 heures, le cours se programme sur une demi-journée banalisée (regroupement ou
   semaine de mise en situation). La pause n’est pas un écran : un écran « pause » compterait comme
   exposition. Le rappel A6-05 impose un espacement intra-séance d’au moins 30 minutes ; les concepts
@@ -240,10 +241,10 @@ phrases de synthèse du fil rouge (atelier 4 Q4, billet A6-08) reprennent volont
 clés : elles évaluent la formulation (points ou pourcentage, montant ou taux), pas le calcul. Tout
 visuel qui porte la réponse d’une question est placé après elle (§ 6.1).
 
-### 2.5 Couverture plutôt que décompte : 52 écrans
+### 2.5 Couverture plutôt que décompte : 55 écrans
 
 Le nombre d’écrans n’est pas un objectif ; la couverture l’est. Les ateliers regroupent les questions
-fermées (d’où 52 écrans au lieu des 60 visés par le brief) ; les notions du deck que ces ateliers ne
+fermées (d’où 55 écrans au lieu des 60 visés par le brief) ; les notions du deck que ces ateliers ne
 couvraient pas sont reprises par N1 (A3-06), N2 (atelier 1, Q6), N3 (A5-05) et N4 (A6-06), et par des
 enrichissements d’écrans existants (inventaire au § 3.9). Toutes les exigences quantitatives du brief
 sont tenues : 3 cas récurrents, 2 tâches de tableur, 4 graphiques complets (G1 à G4), 2 mini-jeux,
@@ -292,7 +293,7 @@ côté serveur :
 | `exposition-continue`                    | cumul des minutes d’écrans non interactifs consécutifs, jalons compris                                                                                                                   | ≤ 6 min        | **5 min** au plus (3 blocs à 5 min)                       |
 | `ratio-interaction`                      | minutes interactives ÷ minutes d’exposition                                                                                                                                              | ≥ 0,30         | 161 ÷ 49 = **3,29**                                       |
 | `ouverture-cloture`                      | premier écran `fp-recall`, dernier écran `fp-exit`                                                                                                                                       | —              | A1-01 `fp-recall`, A6-08 `fp-exit`                        |
-| `duree-ecran`                            | chaque durée est un entier strictement positif                                                                                                                                           | > 0            | 52 écrans de 1 à 14 min                                   |
+| `duree-ecran`                            | chaque durée est un entier strictement positif                                                                                                                                           | > 0            | 55 écrans de 1 à 14 min                                   |
 | `duree-cours`                            | somme des écrans **égale** à la durée annoncée (la tolérance de 5 % est supprimée)                                                                                                       | écart = 0      | 210 = 210                                                 |
 | `reference-inconnue`                     | toute cible `ref:` (remédiations, renvois) existe                                                                                                                                        | —              | 38 remédiations, toutes vers des écrans existants (§ 5.9) |
 | `reference-circulaire`                   | aucune boucle de références                                                                                                                                                              | —              | aucune référence entre écrans                             |
@@ -357,56 +358,59 @@ deck, **C** = conservé sur le fond (texte adapté au fil rouge).
 | ---: | --------------------------------- | --: | ----------------------------- | :-: | --: | --------- | ------------------------------ |
 |    1 | B2-01-A1-01-DIAGNOSTIC            |   3 | `fp-recall`                   |  I  |   1 | seance    | N (remplace S03)               |
 |    2 | B2-01-A1-02-ACCROCHE              |   1 | `fp-story` · v2 `hero`        |     |   0 | catalogue | M (S01)                        |
-|    3 | B2-01-A1-03-MISSION               |   2 | `fp-pro`                      |     |   0 | catalogue | N                              |
+|    3 | B2-01-A1-03-MISSION               |   4 | `fp-pro`                      |  I  |   0 | seance    | N                              |
 |    4 | B2-01-A1-04-TABLEAU-DE-BORD       |   2 | `fp-story` · v2 `table`       |     |   0 | catalogue | N                              |
 |    5 | B2-01-A1-05-ANATOMIE              |   8 | `fp-cardsort`                 |  I  |   1 | seance    | N (reprend S08)                |
-|    6 | B2-01-A1-06-FICHE-INDICATEUR      |   3 | `fp-story` · v2 `grid`        |     |   0 | catalogue | M (S05, S06, S13)              |
-|    7 | B2-01-A1-07-PLAN                  |   2 | `fp-story` · v2 `method-path` |     |   0 | catalogue | M (S02, S10)                   |
-|    8 | B2-01-A1-08-QUESTION-DE-GESTION   |   3 | `fp-story` · v2 `reflection`  |  I  |   0 | seance    | N (remplace S11)               |
-|    9 | B2-01-A1-09-DIAPOSITIVE           |   2 | `fp-story` · v2 `chart`       |     |   0 | catalogue | N (reprend S03, S04)           |
-|   10 | B2-01-A1-10-AUDIT-DIAPOSITIVE     |   3 | `fp-challenge`                |  I  |   0 | seance    | N (reprend S37)                |
-|   11 | B2-01-A1-11-JALON-1               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
-|   12 | B2-01-A2-01-PLAYFAIR              |   2 | `fp-story` · v2 `image-left`  |     |   0 | catalogue | M (S30)                        |
-|   13 | B2-01-A2-02-ORIGINE-AXE           |   2 | `fp-plot`                     |     |   0 | catalogue | M (S04, S32)                   |
-|   14 | B2-01-A2-03-ATELIER-1             |  14 | `questionnaire`               |  I  |   6 | seance    | N (reprend S12, S14, S31, S43) |
-|   15 | B2-01-A2-04-MARGE-AXE-ZERO        |   2 | `fp-story` · v2 `chart` (G1)  |     |   0 | seance    | M (S32)                        |
-|   16 | B2-01-A2-05-ECRITURES             |   2 | `fp-story` · v2 `stats`       |     |   0 | seance    | M (S08, S12)                   |
-|   17 | B2-01-A2-06-POINTS                |   5 | `fp-worked`                   |  I  |   0 | seance    | M (S16)                        |
-|   18 | B2-01-A2-07-JEU-COMPARABLE        |   8 | `fp-cardsort` (mini-jeu 1)    |  I  |   1 | seance    | M (S07)                        |
-|   19 | B2-01-A2-08-JALON-2               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
-|   20 | B2-01-A3-01-VOTE-HAUSSE-BAISSE    |   8 | `fp-vote` (pairs)             |  I  |   2 | seance    | M (S17, S21, S22)              |
-|   21 | B2-01-A3-02-MACHINE-COEFFICIENTS  |   2 | `fp-concept4`                 |     |   0 | seance    | M (S13, S18, S19)              |
-|   22 | B2-01-A3-03-PRIX-SAC              |   1 | `fp-story` · v2 `chart`       |     |   0 | seance    | C (S17)                        |
-|   23 | B2-01-A3-04-FIL-TECHNIQUE         |   4 | `fp-worked`                   |  I  |   0 | seance    | M (S15, S19, S56)              |
-|   24 | B2-01-A3-05-INFLATION-RYTHME      |   1 | `fp-story` · v2 `chart` (G2)  |     |   0 | catalogue | M (S24, S26)                   |
-|   25 | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |   5 | `fp-worked`                   |  I  |   0 | seance    | N (N1, reprend S27)            |
-|   26 | B2-01-A3-07-ATELIER-2             |  10 | `questionnaire`               |  I  |   5 | seance    | N (reprend S23, S25, S27)      |
-|   27 | B2-01-A3-08-INDICE-PRIX           |   2 | `fp-story` · v2 `chart` (G3)  |     |   0 | seance    | M (S26, S27)                   |
-|   28 | B2-01-A3-09-NOTE-CONJONCTURE      |   2 | `fp-story` · v2 `reflection`  |  I  |   0 | seance    | M (S28)                        |
-|   29 | B2-01-A3-10-JALON-3               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
-|   30 | B2-01-A4-01-CAPSULE               |   3 | `fp-story` (vidéo)            |     |   0 | catalogue | N (reprend S67, S69)           |
-|   31 | B2-01-A4-02-FEUILLE-CANAUX        |  13 | `fp-sheet` (tableur 1)        |  I  |   0 | seance    | N (reprend S43, S44)           |
-|   32 | B2-01-A4-03-ATELIER-3             |   8 | `questionnaire`               |  I  |   4 | seance    | N (reprend S33, S34, S37)      |
-|   33 | B2-01-A4-04-CA-TRIMESTRIEL        |   2 | `fp-story` · v2 `chart` (G4)  |     |   0 | seance    | N (reprend S20, S33)           |
-|   34 | B2-01-A4-05-INDICE-TOILE          |  11 | `fp-table-build` (tableur 2)  |  I  |   0 | seance    | N                              |
-|   35 | B2-01-A4-06-JALON-4               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
-|   36 | B2-01-A5-01-NIGHTINGALE           |   1 | `fp-story` · v2 `image-right` |     |   0 | catalogue | M (S36)                        |
-|   37 | B2-01-A5-03-MOYENNE-PONDEREE      |   5 | `fp-worked`                   |  I  |   0 | seance    | M (S39, S40, S42)              |
-|   38 | B2-01-A5-02-VOTE-PARADOXE         |   8 | `fp-vote` (pairs)             |  I  |   2 | seance    | M (S38, S46 à S49)             |
-|   39 | B2-01-A5-04-SIMULATEUR-MIX        |   2 | `fp-plot`                     |     |   0 | seance    | M (S41)                        |
-|   40 | B2-01-A5-05-TCD                   |   2 | `fp-story` · v2 `table`       |     |   0 | seance    | N (N3, reprend S68)            |
-|   41 | B2-01-A5-06-ATELIER-4             |   9 | `questionnaire`               |  I  |   5 | seance    | N (reprend S35, S42 à S44)     |
-|   42 | B2-01-A5-07-CONTROLE-DISCRIMINANT |   8 | `fp-cardsort`                 |  I  |   1 | seance    | M (S51, S57, S59 à S61)        |
-|   43 | B2-01-A5-08-RECOMMANDATION        |   6 | `fp-challenge`                |  I  |   0 | seance    | M (S45, S58, S60, S62)         |
-|   44 | B2-01-A5-09-JALON-5               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
-|   45 | B2-01-A6-01-PACIOLI               |   2 | `fp-story` · v2 `image-left`  |     |   0 | seance    | M (S50, S54, S57)              |
-|   46 | B2-01-A6-02-COFFRE                |  10 | `fp-escape` (mini-jeu 2)      |  I  |   0 | seance    | N (reprend S52 à S56)          |
-|   47 | B2-01-A6-03-IA-CADRE              |   2 | `fp-story` · v2 `guide`       |     |   0 | catalogue | M (S67, S70, S71)              |
-|   48 | B2-01-A6-04-IA-ERREUR             |   4 | `fp-challenge`                |  I  |   0 | seance    | N                              |
-|   49 | B2-01-A6-05-RAPPEL                |   3 | `fp-spaced`                   |  I  |   0 | seance    | N (remplace S57, S63 à S65)    |
-|   50 | B2-01-A6-06-FICHE-MEMO            |   2 | `fp-story` · v2 `grid`        |     |   0 | seance    | N (N4, reprend S21, S49, S65)  |
-|   51 | B2-01-A6-07-BOITE-A-OUTILS        |   2 | `fp-story` · v2 `grid`        |     |   0 | catalogue | M (S67 à S69, S72)             |
-|   52 | B2-01-A6-08-BILLET-DE-SORTIE      |   3 | `fp-exit`                     |  I  |   1 | seance    | M (S58, S62, S66)              |
+|    6 | B2-01-A1-05-CORRECTION            |   1 | `fp-story` · v2 `sort-review` |     |   0 | seance    | N                              |
+|    7 | B2-01-A1-06-FICHE-INDICATEUR      |   3 | `fp-story` · v2 `grid`        |     |   0 | catalogue | M (S05, S06, S13)              |
+|    8 | B2-01-A1-07-PLAN                  |   1 | `fp-story` · v2 `method-path` |     |   0 | catalogue | M (S02, S10)                   |
+|    9 | B2-01-A1-08-QUESTION-DE-GESTION   |   3 | `fp-story` · v2 `reflection`  |  I  |   0 | seance    | N (remplace S11)               |
+|   10 | B2-01-A1-09-DIAPOSITIVE           |   2 | `fp-story` · v2 `chart`       |     |   0 | catalogue | N (reprend S03, S04)           |
+|   11 | B2-01-A1-10-AUDIT-DIAPOSITIVE     |   3 | `fp-challenge`                |  I  |   0 | seance    | N (reprend S37)                |
+|   12 | B2-01-A1-11-JALON-1               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
+|   13 | B2-01-A2-01-PLAYFAIR              |   2 | `fp-story` · v2 `image-left`  |     |   0 | catalogue | M (S30)                        |
+|   14 | B2-01-A2-02-ORIGINE-AXE           |   2 | `fp-plot`                     |     |   0 | catalogue | M (S04, S32)                   |
+|   15 | B2-01-A2-03-ATELIER-1             |  14 | `questionnaire`               |  I  |   6 | seance    | N (reprend S12, S14, S31, S43) |
+|   16 | B2-01-A2-04-MARGE-AXE-ZERO        |   2 | `fp-story` · v2 `chart` (G1)  |     |   0 | seance    | M (S32)                        |
+|   17 | B2-01-A2-05-ECRITURES             |   2 | `fp-story` · v2 `stats`       |     |   0 | seance    | M (S08, S12)                   |
+|   18 | B2-01-A2-06-POINTS                |   4 | `fp-worked`                   |  I  |   0 | seance    | M (S16)                        |
+|   19 | B2-01-A2-07-JEU-COMPARABLE        |   8 | `fp-cardsort` (mini-jeu 1)    |  I  |   1 | seance    | M (S07)                        |
+|   20 | B2-01-A2-07-CORRECTION            |   1 | `fp-story` · v2 `sort-review` |     |   0 | seance    | N                              |
+|   21 | B2-01-A2-08-JALON-2               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
+|   22 | B2-01-A3-01-VOTE-HAUSSE-BAISSE    |   8 | `fp-vote` (pairs)             |  I  |   2 | seance    | M (S17, S21, S22)              |
+|   23 | B2-01-A3-02-MACHINE-COEFFICIENTS  |   2 | `fp-concept4`                 |     |   0 | seance    | M (S13, S18, S19)              |
+|   24 | B2-01-A3-03-PRIX-SAC              |   1 | `fp-story` · v2 `chart`       |     |   0 | seance    | C (S17)                        |
+|   25 | B2-01-A3-04-FIL-TECHNIQUE         |   4 | `fp-worked`                   |  I  |   0 | seance    | M (S15, S19, S56)              |
+|   26 | B2-01-A3-05-INFLATION-RYTHME      |   1 | `fp-story` · v2 `chart` (G2)  |     |   0 | catalogue | M (S24, S26)                   |
+|   27 | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |   5 | `fp-worked`                   |  I  |   0 | seance    | N (N1, reprend S27)            |
+|   28 | B2-01-A3-07-ATELIER-2             |  10 | `questionnaire`               |  I  |   5 | seance    | N (reprend S23, S25, S27)      |
+|   29 | B2-01-A3-08-INDICE-PRIX           |   2 | `fp-story` · v2 `chart` (G3)  |     |   0 | seance    | M (S26, S27)                   |
+|   30 | B2-01-A3-09-NOTE-CONJONCTURE      |   2 | `fp-story` · v2 `reflection`  |  I  |   0 | seance    | M (S28)                        |
+|   31 | B2-01-A3-10-JALON-3               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
+|   32 | B2-01-A4-01-CAPSULE               |   3 | `fp-story` (vidéo)            |     |   0 | catalogue | N (reprend S67, S69)           |
+|   33 | B2-01-A4-02-FEUILLE-CANAUX        |  13 | `fp-sheet` (tableur 1)        |  I  |   0 | seance    | N (reprend S43, S44)           |
+|   34 | B2-01-A4-03-ATELIER-3             |   8 | `questionnaire`               |  I  |   4 | seance    | N (reprend S33, S34, S37)      |
+|   35 | B2-01-A4-04-CA-TRIMESTRIEL        |   2 | `fp-story` · v2 `chart` (G4)  |     |   0 | seance    | N (reprend S20, S33)           |
+|   36 | B2-01-A4-05-INDICE-TOILE          |  11 | `fp-table-build` (tableur 2)  |  I  |   0 | seance    | N                              |
+|   37 | B2-01-A4-06-JALON-4               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
+|   38 | B2-01-A5-01-NIGHTINGALE           |   1 | `fp-story` · v2 `image-right` |     |   0 | catalogue | M (S36)                        |
+|   39 | B2-01-A5-03-MOYENNE-PONDEREE      |   5 | `fp-worked`                   |  I  |   0 | seance    | M (S39, S40, S42)              |
+|   40 | B2-01-A5-02-VOTE-PARADOXE         |   8 | `fp-vote` (pairs)             |  I  |   2 | seance    | M (S38, S46 à S49)             |
+|   41 | B2-01-A5-04-SIMULATEUR-MIX        |   2 | `fp-plot`                     |     |   0 | seance    | M (S41)                        |
+|   42 | B2-01-A5-05-TCD                   |   2 | `fp-story` · v2 `table`       |     |   0 | seance    | N (N3, reprend S68)            |
+|   43 | B2-01-A5-06-ATELIER-4             |   9 | `questionnaire`               |  I  |   5 | seance    | N (reprend S35, S42 à S44)     |
+|   44 | B2-01-A5-07-CONTROLE-DISCRIMINANT |   8 | `fp-cardsort`                 |  I  |   1 | seance    | M (S51, S57, S59 à S61)        |
+|   45 | B2-01-A5-07-CORRECTION            |   1 | `fp-story` · v2 `sort-review` |     |   0 | seance    | N                              |
+|   46 | B2-01-A5-08-RECOMMANDATION        |   6 | `fp-challenge`                |  I  |   0 | seance    | M (S45, S58, S60, S62)         |
+|   47 | B2-01-A5-09-JALON-5               |   1 | `fp-pulse`                    |     |   0 | seance    | N                              |
+|   48 | B2-01-A6-01-PACIOLI               |   2 | `fp-story` · v2 `image-left`  |     |   0 | seance    | M (S50, S54, S57)              |
+|   49 | B2-01-A6-02-COFFRE                |  10 | `fp-escape` (mini-jeu 2)      |  I  |   0 | seance    | N (reprend S52 à S56)          |
+|   50 | B2-01-A6-03-IA-CADRE              |   2 | `fp-story` · v2 `guide`       |     |   0 | catalogue | M (S67, S70, S71)              |
+|   51 | B2-01-A6-04-IA-ERREUR             |   4 | `fp-challenge`                |  I  |   0 | seance    | N                              |
+|   52 | B2-01-A6-05-RAPPEL                |   3 | `fp-spaced`                   |  I  |   0 | seance    | N (remplace S57, S63 à S65)    |
+|   53 | B2-01-A6-06-FICHE-MEMO            |   2 | `fp-story` · v2 `grid`        |     |   0 | seance    | N (N4, reprend S21, S49, S65)  |
+|   54 | B2-01-A6-07-BOITE-A-OUTILS        |   2 | `fp-story` · v2 `grid`        |     |   0 | catalogue | M (S67 à S69, S72)             |
+|   55 | B2-01-A6-08-BILLET-DE-SORTIE      |   3 | `fp-exit`                     |  I  |   1 | seance    | M (S58, S62, S66)              |
 
 Conventions des fiches ci-dessous. Le bloc **Contenu (public)** est recopié tel quel dans le fichier
 de données : c’est tout ce que voient l’étudiant et la projection (il inclut le « titre public » servi
@@ -416,7 +420,7 @@ stratégies, à l’étudiant après son envoi). Les **Notes** suivent les cinq 
 projetées. Les options des questions, leurs identifiants stables, les bonnes réponses et les
 confusions sont au § 5.10. Les années des `labels` des graphiques sont des chaînes (`"2022"`).
 
-### 3.2 Acte 1 — Le chiffre qui déclenche l’alerte (30 min)
+### 3.2 Acte 1 — Le chiffre qui déclenche l’alerte (32 min)
 
 #### A1-01 · `B2-01-A1-01-DIAGNOSTIC` — 3 min · `fp-recall` · séance · Nouveau (remplace S03)
 
@@ -467,9 +471,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Contrôle : chaque poste a rejoint la séance (compteur de participants au pupitre).
   - Transition : « Voici le courriel reçu ce matin. »
 
-#### A1-03 · `B2-01-A1-03-MISSION` — 2 min · `fp-pro` · catalogue · Nouveau
+#### A1-03 · `B2-01-A1-03-MISSION` — 4 min · `fp-pro` · séance · Nouveau
 
-- **Intention** : situer la mission professionnelle et la décision en jeu.
+- **Intention** : situer la mission professionnelle et la décision en jeu ; faire écrire à chacun,
+  avant tout calcul, sa première réponse aux trois questions de la mission.
 - **Contenu (public)** :
   - Titre public : « Votre mission chez Atelier Rivage »
   - `metier` « Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La
@@ -478,15 +483,27 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     préparé par Samir Haddad, responsable commercial : « Samir annonce une excellente année et veut
     investir dans la marketplace. Est-ce qu’on gagne vraiment plus qu’en 2024 ? Préparez-moi un
     dossier fiable pour le comité de jeudi. » »
-  - `geste` « Avant de recommander un investissement, répondez à trois questions : que mesure chaque
-    chiffre ? Les bases et les périodes sont-elles comparables ? Le recalcul confirme-t-il la recommandation ? »
+  - `geste` « Avant de recommander un investissement, répondez par écrit aux trois questions
+    ci-dessous. »
   - `consequence` « Si le comité décide sur un chiffre mal lu, Atelier Rivage peut investir dans le
     canal qui dégrade sa rentabilité. »
+  - `questionsLibres` (question · aide de saisie) :
+    - `b2-01-a1-mission:mesure` · « Que mesure chaque chiffre ? » · « Un montant, une part, une
+      évolution… »
+    - `b2-01-a1-mission:comparable` · « Les bases et les périodes sont-elles comparables ? » · « Même
+      base de départ, même période ? »
+    - `b2-01-a1-mission:recalcul` · « Le recalcul confirme-t-il la recommandation ? » · « Ce qu’il
+      faudrait recalculer avant de décider… »
+- **Interaction et correction** : trois réponses libres, non notées, enregistrées sur chaque poste et
+  lisibles au pupitre.
 - **Notes** :
-  - Action : lecture à voix haute, classe entière, en 90 secondes.
+  - Action : lecture à voix haute, classe entière, en 90 secondes, puis 2 min d’écriture
+    individuelle : une réponse par question sur son poste.
   - Observé : la demande d’Hélène (« gagner plus ») et la proposition de Samir (investir).
-  - Attendu : repérer que « gagner » peut désigner un montant ou un taux.
-  - Contrôle : faire reformuler l’enjeu par un étudiant en une phrase.
+  - Attendu : repérer que « gagner » peut désigner un montant ou un taux, et le noter dès la première
+    question.
+  - Contrôle : lire au pupitre deux réponses à la première question, l’une sur un montant, l’autre sur
+    un taux.
   - Transition : « Regardons le tableau de bord tel qu’il a été envoyé. »
 
 #### A1-04 · `B2-01-A1-04-TABLEAU-DE-BORD` — 2 min · v2 `table` · catalogue · Nouveau
@@ -549,6 +566,27 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Contrôle : faire justifier une carte par binôme avec la question « rapporté à quoi ? ».
   - Transition : « Un taux n’est une information que si l’on connaît sa fiche d’identité. »
 
+#### A1-05 · `B2-01-A1-05-CORRECTION` — 1 min · v2 `sort-review` · séance · Nouveau
+
+- **Intention** : corriger le tri à l’écran, carte par carte, et dire à chaque étudiant, sur son
+  poste, quelles cartes il a bien ou mal placées.
+- **Contenu (public)** :
+  - Titre public : « Correction : ce que dit chaque chiffre du tableau de bord »
+  - `title` « Correction du tri » ; `subtitle` « Chaque carte à sa place, avec la raison qui l’y
+    range. »
+  - `source` : l’écran `B2-01-A1-05-ANATOMIE` et son plan `b2-01-a1-anatomie` ; catégories, cartes,
+    catégorie attendue et justification de chaque carte reprises de son corrigé.
+- **Interaction et correction** : aucune saisie ; sur chaque poste, les cartes du tri de l’étudiant
+  sont bordées de vert si elles sont bien placées, de rouge sinon.
+- **Notes** :
+  - Action : projeter le plateau corrigé, carte par carte, en partant des deux cartes qui concentrent
+    les erreurs.
+  - Observé : sur chaque poste, les cartes mal placées au tri sont bordées de rouge.
+  - Attendu : « −2,3 % » est un écart de deux taux, en points ; « +1 200 » et « 4,9 » restent ambigus
+    sans unité, base ni période.
+  - Contrôle : faire dire à un binôme pourquoi sa carte bordée de rouge change de colonne.
+  - Transition : « Un taux n’est une information que si l’on connaît sa fiche d’identité. »
+
 #### A1-06 · `B2-01-A1-06-FICHE-INDICATEUR` — 3 min · v2 `grid` · catalogue · Modifié (S05, S06, S13)
 
 - **Intention** : institutionnaliser le contrat de lecture d’un taux sur l’exemple 27,6 %, définir le
@@ -586,7 +624,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     dénominateur il faudrait écrire à côté de « Taux de marge » dans le tableau de Samir (le CA HT).
   - Transition : « Voici le plan pour que chaque chiffre du dossier ait sa fiche. »
 
-#### A1-07 · `B2-01-A1-07-PLAN` — 2 min · v2 `method-path` · catalogue · Modifié (S02, S10)
+#### A1-07 · `B2-01-A1-07-PLAN` — 1 min · v2 `method-path` · catalogue · Modifié (S02, S10)
 
 - **Intention** : organiser la séance (organisateur préalable) ; chaque étape = un acte.
 - **Contenu (public)** :
@@ -605,7 +643,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     | transferer    | Acte 6 · Transférer    | Saurez-vous le refaire seul·e ?       | Situation nouvelle, erreur d’IA corrigée, rappel adaptatif. | Des réflexes durables et une trace exploitable en CCF.                 |
 
 - **Notes** :
-  - Action : parcourir les six étapes en 90 secondes.
+  - Action : parcourir les six étapes en une minute.
   - Observé : la colonne « preuve » annonce ce qui sera demandé à chaque acte.
   - Attendu : chacun sait où il en est et ce qui compte pour la note (la participation, § 4.5).
   - Contrôle : question rapide : « quel acte produit le graphique du comité ? » (l’acte 4).
@@ -679,7 +717,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   `couleur` (fausse) « Changer la couleur des barres pour rendre le graphique plus neutre. »
 - **Interaction et correction** : tentative envoyée par la route des défis ; la première tentative
   est figée ; les stratégies (sans le drapeau `fausse`) reviennent après l’envoi ; le drapeau est servi
-  quand le formateur déclenche la révélation.
+  quand le formateur déclenche la révélation. `renvoi` `B2-01-A1-09-DIAPOSITIVE` : le pupitre garde
+  sous les yeux la diapositive auditée.
 - **Notes** :
   - Action : 2 min d’écriture individuelle, puis révélation au pupitre et 1 min de mise en commun.
   - Observé : les étudiants qui citent l’axe et ceux qui citent seulement la couleur ou le titre.
@@ -740,22 +779,24 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Contenu (public)** :
   - Titre public : « La diapositive de Samir — axe réglable »
   - `definition` : `id` `b2-01-a2-origine-axe` ; `titre` « Diapositive de Samir : marge brute et axe
-    réglable » ; `source` « Service commercial d’Atelier Rivage (données fictives). » ;
-    `abscisse` { libelle « Année (0 = 2022, 3 = 2025) », min 0, max 3 } ; `ordonnee` « Marge brute
-    (€) » ; `bornesOrdonnee` { minParametre « origine », maxParametre « maximum » } ; `parametres`
-    [{ cle « origine », libelle « Origine de l’axe vertical (€) », min 0, max 284000, pas 4000,
-    defaut 284000 }, { cle « maximum », libelle « Haut de l’axe vertical (€) », min 292000, max 600000,
-    pas 4000, defaut 292000 }] ; `series` [{ id « marge », libelle « Marge brute », trait « plein »,
-    calcul `SI(x<=1;285000+3000*x;SI(x<=2;288000+1800*(x-1);289800+1200*(x-2)))` }]
-  - `description` « Réglez l’origine et le haut de l’axe pour voir comment l’échelle transforme la
-    lecture, sans changer les valeurs. »
+    réglable » ; `source` « Service commercial d’Atelier Rivage (données fictives). » ; `forme`
+    « barres » ; `unite` « euros » ; `abscisse` { libelle « Année », min 0, max 3 } ; `etiquettes`
+    [« 2022 », « 2023 », « 2024 », « 2025 »] ; `ordonnee` « Marge brute (€) » ; `bornesOrdonnee`
+    { minParametre « origine », max 292000 } ; `parametres` [{ cle « origine », libelle « Origine de
+    l’axe vertical (€) », min 0, max 284000, pas 4000, defaut 284000 }] ; `prereglages`
+    [{ libelle « Axe de Samir », origine 284000 }, { libelle « Axe à zéro », origine 0 }] ; `series`
+    [{ id « marge », libelle « Marge brute », trait « plein », calcul
+    `SI(x<=1;285000+3000*x;SI(x<=2;288000+1800*(x-1);289800+1200*(x-2)))` }]
+  - `description` « Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport
+    des hauteurs change. »
 - **Notes** :
-  - Action : chaque étudiant fait glisser l’origine de 284 000 € à 0 €, puis le haut de l’axe de
-    292 000 € à 600 000 €.
-  - Observé : la pente s’écrase, les valeurs ne changent pas ; le premier affichage reproduit la
-    diapositive de A1-09.
-  - Attendu : « l’échelle change l’impression, pas la donnée ».
-  - Contrôle : faire lire la valeur 2025 dans les deux positions (291 000 €).
+  - Action : chaque étudiant fait glisser l’origine de l’axe de 284 000 € à 0 €, ou bascule d’un
+    préréglage à l’autre.
+  - Observé : les montants ne bougent pas ; seul le rapport des hauteurs change, de ×7 sur l’axe de
+    Samir à presque ×1 sur l’axe à zéro.
+  - Attendu : « l’échelle change l’impression, pas la donnée » : l’évolution réelle reste +2,1 %.
+  - Contrôle : faire lire la barre 2025 dans les deux positions (291 000 €) et comparer le rapport
+    des hauteurs au réel.
   - Transition : « Atelier 1 : lire, rapporter, estimer. »
 
 #### A2-03 · `B2-01-A2-03-ATELIER-1` — 14 min · `questionnaire` (régime `focus`, ordre `fixe`) · séance · Nouveau
@@ -838,31 +879,34 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Contrôle : « −2,3 % » du tableau de bord : quelle écriture aurait dû être utilisée ?
   - Transition : « Rédigeons la phrase juste sur le taux de marge brute. »
 
-#### A2-06 · `B2-01-A2-06-POINTS` — 5 min · `fp-worked` · séance · Modifié (S16)
+#### A2-06 · `B2-01-A2-06-POINTS` — 4 min · `fp-worked` · séance · Modifié (S16)
 
 - **Concept · modalité** : `point-de-pourcentage` · solo.
 - **Contenu (public)** :
   - Titre public : « Points ou pourcentage : la phrase du comité »
   - `exemple` : `id` `b2-01-a2-points` ; `enonce` « Le taux de marge brute passe de 27,60 % (2024) à
-    25,30 % (2025). Hélène veut une phrase juste pour le comité. » ; `etayage` initial 3.
+    25,30 % (2025). Hélène veut une phrase juste pour le comité. » ; `etayage` initial 0.
   - `etapes` :
     1. `ecart` · « Écart entre les deux taux » · « 25,30 − 27,60 = −2,30. Un écart entre deux
-       pourcentages se mesure en points de pourcentage : −2,30 points. » · invite « Écrivez l’écart
-       avec son unité. »
+       pourcentages se mesure en points de pourcentage : −2,30 points. » · invite « Quel est l’écart
+       entre les deux taux, et dans quelle unité s’exprime-t-il ? »
     2. `relatif` · « Évolution relative du taux » · « −2,30 ÷ 27,60 ≈ −0,083, soit −8,3 % : le taux
-       lui-même a perdu 8,3 % de sa valeur. » · invite « Calculez l’évolution relative en précisant la
-       base. »
+       lui-même a perdu 8,3 % de sa valeur. » · invite « De quel pourcentage le taux lui-même a-t-il
+       baissé par rapport à celui de 2024 ? »
     3. `phrase` · « Phrase pour le comité » · « « Le taux de marge brute recule de 2,3 points (de
-       27,6 % à 25,3 %), soit une baisse relative de 8,3 %. » » · invite « Rédigez la phrase sans
-       écrire « −2,3 % ». »
+       27,6 % à 25,3 %), soit une baisse relative de 8,3 %. » » · invite « Quelle phrase écrivez-vous
+       pour le comité, sans utiliser « −2,3 % » ? »
     4. `controle` · « Contrôle » · « 27,60 × (1 − 0,083) ≈ 25,31 : l’évolution relative redonne le
-       taux d’arrivée, à l’arrondi près. » · invite « Faites le contrôle inverse. »
-- **Interaction et correction** : étayage dégressif piloté par le formateur (`pilotage.etayage`, de 4
-  à 0) ; une réponse libre par étape rédigée (`activityId: b2-01-a2-points:<etape>`), non notée.
+       taux d’arrivée, à l’arrondi près. » · invite « En appliquant cette baisse relative à 27,60 %,
+       retrouvez-vous le taux de 2025 ? »
+- **Interaction et correction** : l’exemple est l’exercice, sans écran à part : sous chaque étape, une
+  question et un champ de réponse libre, non noté. Le formateur révèle les étapes une à une depuis le
+  pupitre ; la correction d’une étape s’affiche sous la réponse de l’étudiant, dont la saisie est
+  alors figée (sa réponse, ou un blanc), côté poste comme côté serveur.
 - **Notes** :
-  - Action : première étape commentée, les suivantes rédigées par les étudiants ; baisser l’étayage à
-    2 si la classe a réussi A1-05.
-  - Observé : ceux qui écrivent « −2,3 % » à l’étape 3.
+  - Action : chaque étudiant répond sous chaque étape sur son poste, puis révéler la correction depuis
+    le pupitre, une étape à la fois (« Montrer une étape de plus »).
+  - Observé : ceux qui écrivent « −2,3 % » à l’étape de l’écart.
   - Attendu : −2,30 points ; −8,3 % en relatif ; une phrase qui contient les deux taux.
   - Contrôle : 27,6 × 0,917 = 25,31 (écart d’arrondi assumé).
   - Transition : « Mini-jeu : tout n’est pas comparable. »
@@ -898,6 +942,29 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     taux sectoriel, inflation de 2023, semestre/année.
   - Contrôle : pour chaque retraitement, faire dire l’opération (÷ 1,2 ; ÷ 50 ; − 523 000 €) ; pour le
     semestre : l’activité est saisonnière, doubler un semestre ne donne pas l’année.
+  - Transition : projeter le plateau corrigé du mini-jeu.
+
+#### A2-07 · `B2-01-A2-07-CORRECTION` — 1 min · v2 `sort-review` · séance · Nouveau
+
+- **Intention** : corriger le mini-jeu à l’écran, carte par carte, et dire à chaque étudiant, sur son
+  poste, quelles comparaisons il a bien ou mal classées.
+- **Contenu (public)** :
+  - Titre public : « Correction : comparable ou pas ? »
+  - `title` « Correction du mini-jeu » ; `subtitle` « Chaque comparaison à sa place, avec la raison
+    qui l’y range. »
+  - `source` : l’écran `B2-01-A2-07-JEU-COMPARABLE` et son plan `b2-01-a2-comparable` ; catégories,
+    cartes, catégorie attendue et justification de chaque carte reprises de son corrigé.
+- **Interaction et correction** : aucune saisie ; sur chaque poste, les cartes du jeu de l’étudiant
+  sont bordées de vert si elles sont bien placées, de rouge sinon. Une fois ce plateau projeté, le
+  serveur refuse tout nouvel envoi du mini-jeu.
+- **Notes** :
+  - Action : projeter le plateau corrigé, en commençant par les deux cartes les plus ratées de la
+    classe.
+  - Observé : sur chaque poste, les cartes mal placées pendant le jeu sont bordées de rouge.
+  - Attendu : directes : mars/mars, taux 2024/2025, CA par salarié ; après retraitement : HT/TTC,
+    m²/rouleau, périmètre ; impossibles sans nouvelle donnée : taux sectoriel, inflation de 2023,
+    semestre/année.
+  - Contrôle : pour chaque retraitement, faire dire l’opération (÷ 1,2 ; ÷ 50 ; − 523 000 €).
   - Transition : jalon de confiance, puis acte 3.
 
 #### A2-08 · `B2-01-A2-08-JALON-2` — 1 min · `fp-pulse` · séance · Nouveau
@@ -1001,27 +1068,30 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Titre public : « Le fil technique : choisir l’opération inverse »
   - `exemple` : `id` `b2-01-a3-fil` ; `enonce` « Atelier Rivage achète son fil technique 12,50 € HT la
     bobine. Le fournisseur annonce +10 % au 1er avril, puis −8 % au 1er octobre. Le service
-    commercial écrit : « au final, +2 % ». » ; `etayage` initial 3.
+    commercial écrit : « au final, +2 % ». » ; `etayage` initial 0.
   - `etapes` :
     1. `coefficients` · « Traduire les taux » · « +10 % → × 1,10 ; −8 % → × 0,92. » · invite
-       « Traduisez chaque taux en coefficient. »
+       « Par quel nombre multiplie-t-on le prix pour appliquer +10 % ? Et pour appliquer −8 % ? »
     2. `global` · « Évolution globale » · « 1,10 × 0,92 = 1,012 : l’évolution globale est de +1,2 %, et
-       non de +2 %. » · invite « Multipliez les coefficients, puis retirez 1. »
-    3. `prix` · « Prix final » · « 12,50 × 1,012 = 12,65 € HT la bobine. » · invite « Calculez le prix
-       final. »
+       non de +2 %. » · invite « Quelle est l’évolution globale du prix sur l’année, en % ? Le « +2 % »
+       annoncé est-il juste ? »
+    3. `prix` · « Prix final » · « 12,50 × 1,012 = 12,65 € HT la bobine. » · invite « Combien coûte la
+       bobine après les deux changements de prix, en € HT ? »
     4. `base` · « Retrouver la base » · « Après la hausse d’avril, la bobine coûte 13,75 €. Prix
        initial = 13,75 ÷ 1,10 = 12,50 € : on divise par le coefficient, on ne retire pas 10 %. » ·
-       invite « Retrouvez la valeur de départ à partir de la valeur d’arrivée. »
+       invite « La bobine coûte 13,75 € après la hausse d’avril : quel était son prix avant cette
+       hausse ? »
     5. `reciproque` · « Évolution réciproque » · « Pour annuler une hausse de 10 %, il faut multiplier
        par 1 ÷ 1,10 ≈ 0,909, soit une baisse d’environ 9,1 % ; une baisse de 10 % irait trop loin
-       (13,75 × 0,90 = 12,375 €). » · invite « Calculez le taux réciproque. »
+       (13,75 × 0,90 = 12,375 €). » · invite « De quel pourcentage faut-il baisser 13,75 € pour revenir
+       à 12,50 € ? »
     6. `tva` · « Du TTC au HT » · « Une facture d’entretien affiche 3 600 € TTC (TVA 20 %). HT =
        3 600 ÷ 1,20 = 3 000 € : on divise par le coefficient 1,20. Retirer 20 % donnerait 2 880 €, ce
        qui est faux. Passer du TTC au HT, c’est une baisse de 1 − 1 ÷ 1,20 ≈ 16,67 %. Contrôle
-       inverse : 3 000 × 1,20 = 3 600. » · invite « Retrouvez le HT, puis le taux de baisse du TTC vers
-       le HT. »
-- **Interaction et correction** : étayage dégressif piloté ; une réponse libre par étape rédigée,
-  non notée.
+       inverse : 3 000 × 1,20 = 3 600. » · invite « Une facture affiche 3 600 € TTC (TVA 20 %) : quel
+       est son montant HT, et de quel pourcentage baisse-t-on en passant du TTC au HT ? »
+- **Interaction et correction** : sous chaque étape, une question et un champ de réponse libre, non
+  noté ; la correction révélée depuis le pupitre s’affiche sous la réponse et fige la saisie.
 - **Notes** :
   - Action : faire distinguer trois opérations inverses : retrouver une base, annuler une évolution,
     passer du TTC au HT ; les calculs sont ensuite contrôlés par retour au montant connu.
@@ -1063,24 +1133,26 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Titre public : « Le loyer de l’atelier : lire un indice et un rythme »
   - `exemple` : `id` `b2-01-a3-indice-taux-moyen` ; `enonce` « Le loyer de l’atelier d’Atelier Rivage
     passe de 1 000 € (2021) à 1 060 € (2022), 1 123,60 € (2023) et 1 191,02 € (2024). Samir écrit :
-    « +19,10 % en trois ans, donc +6,37 % par an ». » ; `etayage` initial 3.
+    « +19,10 % en trois ans, donc +6,37 % par an ». » ; `etayage` initial 0.
   - `etapes` :
     1. `indice` · « Indice base 100 en 2021 » · « I = 100 × V ÷ V₀ : 2022 : 100 × 1 060 ÷ 1 000 =
-       106,00 ; 2023 : 112,36 ; 2024 : 119,10. » · invite « Calculez l’indice de chaque année. »
+       106,00 ; 2023 : 112,36 ; 2024 : 119,10. » · invite « Quel est l’indice du loyer en 2022, en 2023
+       et en 2024, base 100 en 2021 ? »
     2. `lire` · « Lire un indice » · « 119,10 signifie +19,10 % depuis 2021 : taux = I ÷ 100 − 1. Ce
-       n’est ni +119,10 %, ni un loyer de 119,10 €. » · invite « Traduisez l’indice 2024 en taux
-       d’évolution. »
+       n’est ni +119,10 %, ni un loyer de 119,10 €. » · invite « Que signifie l’indice 119,10 de 2024,
+       traduit en taux d’évolution depuis 2021 ? »
     3. `chainer` · « Chaîner des coefficients » · « Indice = 100 × produit des coefficients : 100 ×
        1,06 × 1,06 × 1,06 = 119,10. Additionner les taux (6 + 6 + 6 = 18) sous-estime la hausse. » ·
-       invite « Retrouvez l’indice 2024 à partir des coefficients. »
+       invite « Comment retrouvez-vous l’indice 2024 à partir des coefficients annuels ? »
     4. `taux-moyen` · « Taux annuel moyen » · « On cherche x tel que x³ = 1,19102 : x = 1,19102^(1/3) ≈
        1,0600, soit +6,00 % par an. Calculatrice : 1,19102 ^ (1 ÷ 3) ; tableur :
-       =PUISSANCE(1,19102;1/3). » · invite « Calculez le taux annuel moyen avec la puissance 1/3. »
+       =PUISSANCE(1,19102;1/3). » · invite « Quel taux annuel constant, appliqué trois années de suite,
+       donne +19,10 % ? »
     5. `piege` · « Pourquoi pas 19,10 ÷ 3 ? » · « 19,10 ÷ 3 ≈ 6,37 % est faux : 1,0637³ ≈ 1,2035, et non
        1,1910. Diviser un taux global par le nombre d’années surestime le taux moyen. » · invite
-       « Vérifiez en élevant 1,0637 au cube. »
-- **Interaction et correction** : étayage dégressif piloté ; une réponse libre par étape rédigée, non
-  notée.
+       « En appliquant +6,37 % trois années de suite, obtient-on bien +19,10 % ? »
+- **Interaction et correction** : sous chaque étape, une question et un champ de réponse libre, non
+  noté ; la correction révélée depuis le pupitre s’affiche sous la réponse et fige la saisie.
 - **Notes** :
   - Action : étapes 1 et 2 commentées ; 3 à 5 rédigées ; distinguer explicitement le niveau atteint,
     le taux global et le rythme annuel moyen.
@@ -1329,7 +1401,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     P06).
   - Transition : « Acte 5 : défendre une décision. Commençons par une infirmière de 1858. »
 
-### 3.6 Acte 5 — Défendre une décision au comité (42 min)
+### 3.6 Acte 5 — Défendre une décision au comité (43 min)
 
 #### A5-01 · `B2-01-A5-01-NIGHTINGALE` — 1 min · v2 `image-right` · catalogue · Modifié (S36)
 
@@ -1393,28 +1465,30 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Contenu (public)** :
   - Titre public : « Prouver l’effet de répartition »
   - `exemple` : `id` `b2-01-a5-ponderee` ; `enonce` « Prouvez au comité que la baisse du taux global
-    vient du changement de répartition du CA. » ; `etayage` initial 3.
+    vient du changement de répartition du CA. » ; `etayage` initial 0.
   - `etapes` :
     1. `poids` · « Poids des canaux » · « Poids d’un canal = CA du canal ÷ CA total. 2024 : 529 ÷ 1 150 ;
        230 ÷ 1 150 ; 391 ÷ 1 150. 2025 : 397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150. » · invite
-       « Calculez les poids des deux années. »
+       « Quelle part du CA total représente chaque canal, en 2024 puis en 2025 ? »
     2. `taux-2024` · « Taux global 2024 » · « 0,46 × 36 + 0,20 × 28 + 0,34 × 16 = 16,56 + 5,60 + 5,44 =
-       27,60 %. » · invite « Pondérez chaque taux par son poids. »
+       27,60 %. » · invite « Quel taux global de 2024 obtenez-vous en pondérant le taux de chaque canal
+       par son poids ? »
     3. `taux-2025` · « Taux global 2025 » · « 0,345 × 36 + 0,20 × 28 + 0,455 × 16 = 12,42 + 5,60 +
        7,28 = 25,30 %. Avec les poids exacts (397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150), on obtient
-       25,304 %, soit 291 000 ÷ 1 150 000. » · invite « Refaites le calcul avec les poids 2025. »
+       25,304 %, soit 291 000 ÷ 1 150 000. » · invite « Quel taux global de 2025 obtenez-vous avec les
+       poids de 2025 ? »
     4. `moyenne-simple` · « Pourquoi pas la moyenne simple ? » · « (36 + 28 + 16) ÷ 3 ≈ 26,7 % : ce
        nombre ne correspond à aucune année, car il suppose trois canaux de même poids. » · invite
-       « Expliquez pourquoi la moyenne simple ne convient pas. »
+       « Pourquoi la moyenne simple des trois taux ne donne-t-elle le taux global d’aucune année ? »
     5. `effet` · « Chiffrer l’effet de répartition » · « Avec la répartition de 2024, le CA 2025
        (1 150 000 €) aurait donné 27,6 % de marge, soit 317 400 €. La marge réelle est de 291 000 € :
-       le changement de répartition « coûte » 26 400 € de marge. » · invite « Chiffrez l’effet du
-       changement de répartition. »
+       le changement de répartition « coûte » 26 400 € de marge. » · invite « Combien de marge le
+       changement de répartition fait-il perdre en 2025, en euros ? »
     6. `logique` · « Réfuter une implication » · « L’affirmation « si chaque canal garde son taux,
        alors le taux global est inchangé » est fausse : Atelier Rivage en est un contre-exemple. Sa
        négation s’écrit : « il existe une répartition du CA pour laquelle chaque canal garde son taux
-       et le taux global change ». » · invite « Écrivez la négation de l’affirmation, puis le
-       contre-exemple. »
+       et le taux global change ». » · invite « Comment s’écrit la négation de « si chaque canal garde
+       son taux, alors le taux global est inchangé », et quel contre-exemple la prouve ? »
 - **Modification** : étape 3 corrigée (0,345 × 36 = 12,42 et non 12,43 ; la somme écrite donnait
   25,31) ; étape 6 ajoutée (calcul des propositions en contexte).
 - **Notes** :
@@ -1526,14 +1600,47 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     continue » » ; « « La marketplace détourne nos clients du sur-mesure » » ; « Courriel du cabinet
     comptable : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT » ; « Contrôle de
     février : total du grand livre égal au total des pièces, mais F002 à +100 € et F003 à −100 € ».
+- **Justifications (corrigé)** : `inflation` « « 4,9 » sans unité ni période : taux annuel, indice ou
+  écart ? Compléter la fiche d’identité suffit à trancher. » ; `marge` « « +1 200 » : des euros, des
+  unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas. » ; `points` « L’écart
+  entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative. » ;
+  `toile` « Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et
+  non +4 %. » ; `moyenne` « Une moyenne simple ignore le poids de chaque canal : on recalcule une
+  moyenne pondérée par le CA. » ; `diapo` « L’axe tronqué grossit l’écart : on refait le graphique
+  avec un axe à zéro avant de conclure. » ; `clients` « Deux évolutions simultanées ne prouvent pas
+  une cause : seule une donnée détaillée des clients par canal tranche. » ; `factures` « 90 € d’écart
+  entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe. » ;
+  `compensation` « Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne,
+  pièce en main. »
 - **Interaction et correction** : classement corrigé serveur ; score x/9 ; réussite si ≥ 7/9 ; taux
-  d’erreur par carte au pupitre.
+  d’erreur par carte au pupitre ; la correction est projetée à l’écran suivant.
 - **Notes** :
-  - Action : 5 min de tri (annoncer la dernière minute), 3 min de correction.
+  - Action : binômes, 5 min de tri (annoncer la dernière minute), puis l’écran suivant pour la
+    correction.
   - Observé : les cartes « factures », « compensation » et « détourne nos clients ».
+  - Attendu : le contrôle le plus direct, et à efficacité égale le moins coûteux, pour trancher chaque
+    anomalie.
+  - Contrôle : un indice oriente, une pièce tranche.
+  - Transition : « Voyons la correction, carte par carte. »
+
+#### A5-07 · `B2-01-A5-07-CORRECTION` — 1 min · v2 `sort-review` · séance · Nouveau
+
+- **Concept** : `controle-coherence`.
+- **Contenu (public)** :
+  - Titre public : « Correction : le contrôle qui tranche chaque anomalie »
+  - `title` « Correction du tri » ; `subtitle` « À efficacité égale, le contrôle le moins coûteux
+    d’abord : métadonnées, puis recalcul, puis pièce. » ; `source` { `screenId`
+    `B2-01-A5-07-CONTROLE-DISCRIMINANT`, `sortId` `b2-01-a5-controle` } ; les quatre catégories et
+    les neuf cartes du tri, chacune avec sa catégorie attendue et sa justification.
+- **Interaction et correction** : projection du plateau corrigé ; sur chaque poste, les cartes
+  placées au tri sont bordées de vert si elles sont à leur place, de rouge sinon.
+- **Notes** :
+  - Action : projeter le plateau corrigé ; commencer par « factures », « compensation » et « détourne
+    nos clients ».
+  - Observé : sur chaque poste, les cartes mal placées au tri sont bordées de rouge, les bien placées
+    de vert.
   - Attendu : métadonnées (inflation, +1 200) ; recalcul (−2,3 %, +4 %, moyenne simple) ;
-    représentation (diapositive) ; preuve externe (clients, factures, compensation). À efficacité
-    égale, le contrôle le moins coûteux d’abord : métadonnées avant recalcul, recalcul avant pièce.
+    représentation (diapositive) ; preuve externe (clients, factures, compensation).
   - Contrôle : un total qui concorde ne prouve pas que chaque ligne est juste (février : +100 € et
     −100 € se compensent) ; un indice oriente, une pièce tranche.
   - Transition : « Rédigez votre recommandation. »
@@ -1545,10 +1652,26 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Titre public : « Votre recommandation au comité »
   - `id` `b2-01-a5-recommandation` ; `enonce` « Mercredi, 17 h. Samir annonce qu’il proposera demain
     d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre
-    recommandation écrite, fondée sur le dossier. » ; `invite` « Rédigez six phrases : 1) le constat
-    chiffré ; 2) le mécanisme qui l’explique ; 3) ce qui reste à prouver ; 4) la décision que vous
-    proposez ; 5) la limite de votre analyse ; 6) les anomalies du dossier, classées de la plus
-    importante à la moins importante pour la décision. » ; `strategies` [] à l’envoi initial.
+    recommandation écrite, fondée sur le dossier. » ; `invite` « Rédigez trois phrases structurées :
+    1. le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui
+       reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez
+       corrigé une anomalie, ajoutez une alerte courte au cabinet. » ; `strategies` [] à l’envoi
+       initial.
+  - `rappel` (les chiffres du dossier, affichés au-dessus de la zone de rédaction) :
+    - « Le dossier » : « Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace),
+      exercices 2024 et 2025, données annuelles. »
+    - « La proposition de Samir » : « Investir 40 000 € pour doubler les ventes de la
+      marketplace. »
+    - « Chiffre d’affaires HT » : « 1 050 000 € → 1 150 000 €, soit +9,5 %. »
+    - « Marge brute » : « 289 800 € → 291 000 €, soit +1 200 €. »
+    - « Taux de marge brute global » : « 27,6 % → 25,3 %, soit −2,3 points. »
+    - « CA HT par canal » : « sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ;
+      marketplace 357 000 € → 523 000 €. »
+    - « Taux de marge brute par canal, identiques les deux années » : « sur-mesure 36 % ;
+      entretien 28 % ; marketplace 16 %. »
+    - « Part de la marketplace dans le CA » : « 34 % → 45,5 %. »
+    - « Anomalie relevée au contrôle » : « 90 € d’écart entre le grand livre et les factures de
+      vente de mars (pièce F004). »
 - **Stratégies de référence (corrigé)** : `constat` « Constat : CA +9,5 %, marge brute +1 200 €, taux
   de marge brute −2,3 points (27,6 % → 25,3 %). » ; `mecanisme` « Mécanisme : taux par canal stables ;
   la marketplace (16 %) passe de 34 % à 45,5 % du CA : effet de répartition d’environ −26 400 € de
@@ -2231,7 +2354,7 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
 | B15 | **`verifierStructure` restauré et adapté**                                                    | § 2.6 et § 6.4 : interactivité, 7 règles d’origine, 6 nouvelles, dérogations justifiées ; test `b2-v3.cours.spec.ts` : `verifierStructure(B2 v3) === []`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `domain/cours/StructureCours.ts` + spec (depuis `c8324cb^`)                                                                                                |
 | B16 | **Concepts et confusions**                                                                    | 7 concepts et 30 confusions ajoutés (§ 5.9), chacun rattaché à un concept ; précède B18                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `banque/concepts.ts`, `banque/confusions.ts`                                                                                                               |
 | B17 | **Remédiations et médias persistés**                                                          | colonnes `remediations jsonb NOT NULL DEFAULT '{}'` et `medias jsonb NOT NULL DEFAULT '[]'` sur `formation_course_contents` ; lues vers `Cours.remediations` et `Cours.medias` (aujourd’hui `{}` en dur, `CoursStocke.ts` l. 342)                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `FormationCourseContent.entity.ts`, `CoursCatalogue.repository.typeorm.ts`                                                                                 |
-| B18 | **Contenu V3**                                                                                | fichier de données typé `src/migrations/data/b2-v3.cours.ts` (`z.input<typeof coursStocke>`, 52 écrans, notes, questions, corrigés, banque, remédiations, médias) ; migration `InsertB2CoursV3` qui valide par `lireCoursStocke` et `verifierStructure`, insère **sans publier** ; `down` refusé si une séance référence la v3                                                                                                                                                                                                                                                                                                                                                                        | nouveau fichier de données + migration                                                                                                                     |
+| B18 | **Contenu V3**                                                                                | fichier de données typé unique `src/modules/formations/infrastructure/contenus/b2-01.cours.ts` (55 écrans, notes, questions, corrigés, banque, remédiations, médias) ; au démarrage, la synchronisation le valide par `lireCoursStocke` et `verifierStructure` et le publie si son empreinte diffère de celle publiée ; le numéro de version reste interne à la base                                                                                                                                                                                                                                                                                                                                  | nouveau fichier de données + migration                                                                                                                     |
 | B19 | **Diffusion au catalogue**                                                                    | `LireCoursPublic` sert les écrans `seance` verrouillés (titre, durée) ; limitation 60 requêtes/min par adresse                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `LireCoursPublic.useCase.ts`, `FormationsCatalog.controller.ts`                                                                                            |
 | B20 | **Garde « écran servi »**                                                                     | `domain/cours/EcranServi.ts` : `dernierEcranServi` (extrait de `LireSujet`), `assertEcranServi` → 409 `ECRAN_NON_SERVI` ; appliquée à toutes les écritures étudiantes (réponses, productions, tentatives, jalons, rappels, réponses libres, défis) ; `activitesLibres(cours)` liste les `activityId` admis par écran                                                                                                                                                                                                                                                                                                                                                                                  | nouveau fichier, tous les use cases d’écriture                                                                                                             |
 | B21 | **Pilotage par écran persisté**                                                               | colonnes `pilotage_ecrans jsonb` et `revision int` sur `formation_sessions` ; `ControlSessionChanges.pilotage` validé (écran du cours, brique compatible, étayage borné, phases monotones) ; `LiveSessionState.pilotage` et `revision` dans l’empreinte ; `SubmitAnswer` applique les phases                                                                                                                                                                                                                                                                                                                                                                                                          | `ControlSession.useCase.ts`, `ISessionStateCache.port.ts`, `SessionStateCache.service.ts`, `StreamSession.useCase.ts`, `FormationSession.entity.ts`        |
@@ -3061,8 +3184,8 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 | #     | Critère                                                                                                                                                                                           | Mesure                                                                     |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | AC-01 | `verifierStructure(B2 v3)` ne renvoie aucune violation, sans dérogation                                                                                                                           | test unitaire back                                                         |
-| AC-02 | 52 écrans ; identifiants uniques conformes à `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$` ; ordre du § 3.1 ; chaque écran V3 porte un titre public (≤ 120 caractères) et une diffusion explicite             | test du fichier de données                                                 |
-| AC-03 | somme des durées = 210 = durée annoncée ; par acte 30, 36, 36, 38, 42, 28                                                                                                                         | test                                                                       |
+| AC-02 | 55 écrans ; identifiants uniques conformes à `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$` ; ordre du § 3.1 ; chaque écran V3 porte un titre public (≤ 120 caractères) et une diffusion explicite             | test du fichier de données                                                 |
+| AC-03 | somme des durées = 213 = durée annoncée ; par acte 32, 36, 36, 38, 43, 28                                                                                                                         | test                                                                       |
 | AC-04 | exposition continue ≤ 6 min (attendu 5) ; ratio interactif ÷ exposition ≥ 0,30 (attendu 3,29)                                                                                                     | règle de structure                                                         |
 | AC-05 | toute question de type vote, numérique ou classement notée est sur un écran de 8 à 15 min, hors `fp-recall` d’ouverture et `fp-exit` de clôture                                                   | règle `atelier-questions-fermees`                                          |
 | AC-06 | chaque `notes` contient les 5 rubriques non vides                                                                                                                                                 | règle `notes-formateur`, contrainte `chk_formation_screen_notes_not_blank` |
@@ -3098,7 +3221,7 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 
 | #     | Critère                                                                                                                                                                                                                                    | Mesure                                                                                                                                             |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AC-24 | chaque écran se rend en `hand`, `board` et `stage` sans `fp-block-error` ni « écran inconnu »                                                                                                                                              | test de montage paramétré sur les 52 écrans, à partir de l’instantané JSON du sujet et du déroulé V3 produit par le test back (avec son empreinte) |
+| AC-24 | chaque écran se rend en `hand`, `board` et `stage` sans `fp-block-error` ni « écran inconnu »                                                                                                                                              | test de montage paramétré sur les 55 écrans, à partir de l’instantané JSON du sujet et du déroulé V3 produit par le test back (avec son empreinte) |
 | AC-25 | les briques reçoivent `data-cours-role` : le solutionnaire de `fp-escape` et la carte de maîtrise de `fp-spaced` n’apparaissent qu’au pupitre                                                                                              | test                                                                                                                                               |
 | AC-26 | G1 à G4 affichent titre, unité, source, phrase de lecture et une échelle graduée (courbes comprises) ; barres proportionnelles depuis 0                                                                                                    | test de rendu et instantanés visuels                                                                                                               |
 | AC-27 | la projection passe en plein écran et reste dans la palette crème et ivoire                                                                                                                                                                | test existant étendu                                                                                                                               |
@@ -3115,7 +3238,7 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 | AC-33 | rechargement pendant une production : brouillon restauré ; après envoi : verdict restauré, bouton désactivé, message « déjà répondu » ; deux séances successives sur le même navigateur : aucune reprise croisée | Playwright                                      |
 | AC-34 | budgets : 35 lectures simultanées du sujet < 1 s au 95e centile ; 35 productions simultanées < 3 s ; poussée de `resultats` < 200 ms, au plus une par seconde ; sujet V3 ≤ 150 Ko                                | `test/formations-charge.db-integration.spec.ts` |
 | AC-35 | moteur de formules : vecteurs adverses (chaîne de 26 doublements, 26 `SOMME` croisées, cycle de 26 maillons) < 50 ms côté back, < 100 ms côté front                                                              | tests unitaires                                 |
-| AC-36 | publication : V3 insérée non publiée → les séances s’ouvrent en v2 ; bascule → V3 ; rebascule → v2 ; les séances ouvertes gardent leur version                                                                   | test base et E2E                                |
+| AC-36 | synchronisation : une empreinte inchangée ne publie rien ; une empreinte changée publie le contenu corrigé ; les séances déjà ouvertes gardent le contenu de leur ouverture                                      | test base et E2E                                |
 | AC-37 | capacité : au-delà de la capacité de la séance → 409 `SEANCE_COMPLETE` ; un participant évincé perd son accès, sa place et sa graine sont libérées                                                               | tests HTTP                                      |
 | AC-38 | chaque libellé runtime a une traduction anglaise ; aucun texte de brique en dur hors `$localize`                                                                                                                 | test et extraction XLF                          |
 | AC-39 | Redis en panne : flux ouverts en mode dégradé et journal `error` ; plafond atteint : 429 et journal `warn`                                                                                                       | tests unitaires et E2E                          |
@@ -4586,7 +4709,7 @@ Le scénario automatisé ne remplace pas une séance jouée dans de vrais naviga
 - **Matériel** : un poste formateur (Chrome) relié à un vidéoprojecteur en 1 280 × 720 et à un écran
   1 920 × 1 080 ; trois postes étudiants (Chrome, Firefox et Safari sur macOS) ; un poste sur Wi-Fi
   bridé (profil « Fast 3G ») ; un lecteur d’écran (NVDA avec Firefox, VoiceOver avec Safari).
-- **Parcours** : les 52 écrans en rythme piloté, chaque activité jouée sur chaque poste (une bonne
+- **Parcours** : les 55 écrans en rythme piloté, chaque activité jouée sur chaque poste (une bonne
   réponse, un piège, un « je ne sais pas ») ; un passage en rythme libre ; une coupure réseau ; un
   rechargement pendant la feuille et pendant le coffre ; deux onglets sur un même poste ; fermeture et
   réouverture du navigateur ; clôture.
@@ -4598,7 +4721,7 @@ Le scénario automatisé ne remplace pas une séance jouée dans de vrais naviga
 - **Mesure** : chaque acte est chronométré ; les écarts avec le § 2.1 sont consignés au rapport ; une
   modification de durée passe par une révision de ce document, jamais par une retouche du fichier de
   données seul.
-- **Livrable** : rapport de QA signé (navigateurs et versions, captures des 52 écrans en `hand`,
+- **Livrable** : rapport de QA signé (navigateurs et versions, captures des 55 écrans en `hand`,
   `board` et `stage`, défauts ouverts et leur correction), archivé avec les preuves du lot 6 ; la
   bascule n’a lieu qu’avec un rapport sans défaut bloquant.
 
@@ -5237,8 +5360,8 @@ Script : `verif-cours-b2-01.mjs` (Node.js 22 ou plus, sans dépendance), conserv
 avec les preuves de la conception ; il sort en code 1 à la première incohérence. Il lit **ce
 document** et contrôle :
 
-1. le tableau du § 3.1 : 52 écrans, rangs 1 à 52, identifiants uniques et conformes à
-   `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$`, somme 210, minutes par acte 30, 36, 36, 38, 42, 28 ; accord de
+1. le tableau du § 3.1 : 55 écrans, rangs 1 à 55, identifiants uniques et conformes à
+   `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$`, somme 213, minutes par acte 32, 36, 36, 38, 43, 28 ; accord de
    chaque ligne avec l’en-tête de sa fiche (identifiant, durée, diffusion) ;
 2. les règles de structure adaptées du § 2.6 : exposition continue ≤ 6 min (jalons comptés comme
    exposition), ratio ≥ 0,30, ouverture `fp-recall` et clôture `fp-exit`, durées entières positives,

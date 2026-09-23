@@ -67,7 +67,7 @@ import { fermerApplication } from './helpers/nest-test-app';
 
 const stub = () => ({ execute: jest.fn() });
 
-const DTO_DU_CONTRAT_V3 = [
+const DTO_DU_CONTRAT = [
   SubmitProductionRequestDto,
   SubmitProductionResponseDto,
   TenterEnigmeRequestDto,
@@ -86,7 +86,7 @@ const DTO_DU_CONTRAT_V3 = [
   CoursPublicCatalogueResponseDto,
 ];
 
-const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
+const ROUTES_ACTIVES_DU_CONTRAT = [
   '/sessions/{id}/productions',
   '/sessions/{id}/escape/{parcoursId}/tentatives',
   '/sessions/{id}/pulses/{sondageId}',
@@ -98,7 +98,7 @@ const ROUTES_ACTIVES_DU_CONTRAT_V3 = [
   '/sessions/{id}/rappels/synthese',
 ];
 
-const ROUTES_A_VENIR_DU_CONTRAT_V3: readonly string[] = [];
+const ROUTES_A_VENIR_DU_CONTRAT: readonly string[] = [];
 
 describe('OpenAPI legacy contract (phase 11)', () => {
   let app: INestApplication;
@@ -255,15 +255,15 @@ describe('OpenAPI core contract', () => {
   });
 });
 
-describe('OpenAPI contrat B2-01 V3', () => {
+describe('OpenAPI contrat B2-01', () => {
   it('fige les schemas des DTO du § 9.5 sans exposer de chemin', async () => {
     const moduleRef = await Test.createTestingModule({}).compile();
     const app = moduleRef.createNestApplication();
     await app.init();
     const document = SwaggerModule.createDocument(
       app,
-      new DocumentBuilder().setTitle('Contrat V3').setVersion('1.0').build(),
-      { extraModels: DTO_DU_CONTRAT_V3 },
+      new DocumentBuilder().setTitle('Contrat B2-01').setVersion('1.0').build(),
+      { extraModels: DTO_DU_CONTRAT },
     );
     await app.close();
 
@@ -280,10 +280,10 @@ describe('OpenAPI contrat B2-01 V3', () => {
     const servie = (route: string): boolean =>
       chemins.some((chemin) => chemin.endsWith(route));
 
-    expect(
-      ROUTES_ACTIVES_DU_CONTRAT_V3.filter((route) => !servie(route)),
-    ).toEqual([]);
-    expect(ROUTES_A_VENIR_DU_CONTRAT_V3.filter(servie)).toEqual([]);
+    expect(ROUTES_ACTIVES_DU_CONTRAT.filter((route) => !servie(route))).toEqual(
+      [],
+    );
+    expect(ROUTES_A_VENIR_DU_CONTRAT.filter(servie)).toEqual([]);
     expect(servie('/sessions/{id}/sujet')).toBe(true);
   });
 });

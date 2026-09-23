@@ -1,21 +1,11 @@
 import { DataSource, type DataSourceOptions } from 'typeorm';
 import { CreateFormations1778900000000 } from '../../src/migrations/1778900000000-CreateFormations';
 import { CreateFormationCourseContent1779100000000 } from '../../src/migrations/1779100000000-CreateFormationCourseContent';
-import { SeedB2StoryboardLots1231779200000 } from '../../src/migrations/1779200000000-SeedB2StoryboardLots123';
-import { AlignB2SessionDeck1779300000000 } from '../../src/migrations/1779300000000-AlignB2SessionDeck';
-import { SeedB2QuizAndPresentationNotes1779400000000 } from '../../src/migrations/1779400000000-SeedB2QuizAndPresentationNotes';
-import { FixB2QuizScreenIds1779500000000 } from '../../src/migrations/1779500000000-FixB2QuizScreenIds';
 import { AddFormationCourseVersion1779550000000 } from '../../src/migrations/1779550000000-AddFormationCourseVersion';
 import { AddFormationContentV3Columns1779560000000 } from '../../src/migrations/1779560000000-AddFormationContentV3Columns';
-import { BackfillB2OpenSessionBaremes1779600000000 } from '../../src/migrations/1779600000000-BackfillB2OpenSessionBaremes';
-import { AlignB2ParticipantSeeds1779700000000 } from '../../src/migrations/1779700000000-AlignB2ParticipantSeeds';
-import { RecheckB2ParticipantSeeds1779800000000 } from '../../src/migrations/1779800000000-RecheckB2ParticipantSeeds';
-import { SeedB2PresentationContent1779900000000 } from '../../src/migrations/1779900000000-SeedB2PresentationContent';
-import { CleanB2PlaceholderContent1780000000000 } from '../../src/migrations/1780000000000-CleanB2PlaceholderContent';
 import { AddFormationSessionCourseVersion1780050000000 } from '../../src/migrations/1780050000000-AddFormationSessionCourseVersion';
 import { SeedB2PresentationNotes1780060000000 } from '../../src/migrations/1780060000000-SeedB2PresentationNotes';
 import { VersionFormationCourseContent1780100000000 } from '../../src/migrations/1780100000000-VersionFormationCourseContent';
-import { PublishB2VisualDeck1780200000000 } from '../../src/migrations/1780200000000-PublishB2VisualDeck';
 import { CreateFormationFreeResponses1780300000000 } from '../../src/migrations/1780300000000-CreateFormationFreeResponses';
 import { CreateFormationTeacherAnnotations1780400000000 } from '../../src/migrations/1780400000000-CreateFormationTeacherAnnotations';
 import { CreateFormationGroups1780500000000 } from '../../src/migrations/1780500000000-CreateFormationGroups';
@@ -30,10 +20,15 @@ import { AddFormationCapaciteEtEviction1789870829038 } from '../../src/migration
 import { CreateFormationCoursePublications1789871582928 } from '../../src/migrations/1789871582928-CreateFormationCoursePublications';
 import { AmorcerPublicationsDeCours1789871600000 } from '../../src/migrations/1789871600000-AmorcerPublicationsDeCours';
 import { CreateFormationRappelsServis1789875476980 } from '../../src/migrations/1789875476980-CreateFormationRappelsServis';
-import { InsertB2CoursV31789893879954 } from '../../src/migrations/1789893879954-InsertB2CoursV3';
-import { ReplaceB2Cours1790000000000 } from '../../src/migrations/1790000000000-ReplaceB2Cours';
-import { PublierB2CoursEnrichi1790100000000 } from '../../src/migrations/1790100000000-PublierB2CoursEnrichi';
 import { CleEtudianteDerivee1789974322913 } from '../../src/migrations/1789974322913-CleEtudianteDerivee';
+import { AddFormationCourseEmpreinte1790178630008 } from '../../src/migrations/1790178630008-AddFormationCourseEmpreinte';
+import {
+  SynchroniserCoursUseCase,
+  type IssueDeSynchronisation,
+} from '../../src/modules/formations/application/SynchroniserCours.useCase';
+import type { ContenuAPublier } from '../../src/modules/formations/domain/cours/CoursStocke';
+import { COURS_B2_01 } from '../../src/modules/formations/infrastructure/contenus/b2-01.cours';
+import { PublicationDesCoursRepositoryTypeORM } from '../../src/modules/formations/infrastructure/PublicationDesCours.repository.typeorm';
 import type {
   IParticipantsRepository,
   ParticipantRecord,
@@ -92,21 +87,11 @@ export const FORMATION_ENTITIES = [
 const FORMATION_MIGRATIONS = [
   CreateFormations1778900000000,
   CreateFormationCourseContent1779100000000,
-  SeedB2StoryboardLots1231779200000,
-  AlignB2SessionDeck1779300000000,
-  SeedB2QuizAndPresentationNotes1779400000000,
-  FixB2QuizScreenIds1779500000000,
   AddFormationCourseVersion1779550000000,
   AddFormationContentV3Columns1779560000000,
-  BackfillB2OpenSessionBaremes1779600000000,
-  AlignB2ParticipantSeeds1779700000000,
-  RecheckB2ParticipantSeeds1779800000000,
-  SeedB2PresentationContent1779900000000,
-  CleanB2PlaceholderContent1780000000000,
   AddFormationSessionCourseVersion1780050000000,
   SeedB2PresentationNotes1780060000000,
   VersionFormationCourseContent1780100000000,
-  PublishB2VisualDeck1780200000000,
   CreateFormationFreeResponses1780300000000,
   CreateFormationTeacherAnnotations1780400000000,
   CreateFormationGroups1780500000000,
@@ -121,10 +106,8 @@ const FORMATION_MIGRATIONS = [
   CreateFormationCoursePublications1789871582928,
   AmorcerPublicationsDeCours1789871600000,
   CreateFormationRappelsServis1789875476980,
-  InsertB2CoursV31789893879954,
-  ReplaceB2Cours1790000000000,
-  PublierB2CoursEnrichi1790100000000,
   CleEtudianteDerivee1789974322913,
+  AddFormationCourseEmpreinte1790178630008,
 ];
 
 export const TABLES_DE_SEANCE = [
@@ -194,6 +177,10 @@ export interface ContexteFormations {
   pulses: PulsesRepositoryTypeORM;
   rappels: RappelsServisRepositoryTypeORM;
   catalogue: CoursCatalogueRepositoryTypeORM;
+  publication: PublicationDesCoursRepositoryTypeORM;
+  synchroniser(
+    contenus: readonly ContenuAPublier[],
+  ): Promise<readonly IssueDeSynchronisation[]>;
   graineDe(participantId: string): Promise<number>;
   nettoyer(): Promise<void>;
   rejouerMigration(): Promise<void>;
@@ -211,6 +198,8 @@ function buildFormationsOptions(): DataSourceOptions {
 
 export const DELAI_OUVERTURE_CONTEXTE_MS = 60_000;
 
+export const VERSION_PUBLIEE_SUR_BASE_NEUVE = 1;
+
 const FONCTIONS_HORS_DU_DROP_SCHEMA = [
   '"reject_formation_course_content_change"()',
 ];
@@ -225,6 +214,11 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
   const participants = new ParticipantsRepositoryTypeORM(
     dataSource.getRepository(FormationParticipantEntity),
   );
+  const publication = new PublicationDesCoursRepositoryTypeORM(
+    dataSource.getRepository(FormationCourseContentEntity),
+  );
+  const synchronisation = new SynchroniserCoursUseCase(publication);
+  await synchronisation.execute([COURS_B2_01]);
 
   return {
     dataSource,
@@ -268,6 +262,10 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
       dataSource.getRepository(FormationCourseContentEntity),
       dataSource.getRepository(FormationCoursePublicationEntity),
     ),
+    publication,
+    async synchroniser(contenus) {
+      return synchronisation.execute(contenus);
+    },
     async graineDe(participantId: string): Promise<number> {
       const participant = await participants.findById(participantId);
       if (participant === null) {

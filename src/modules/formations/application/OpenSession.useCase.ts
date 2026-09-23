@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import type { Bareme } from '../domain/contrats/bareme';
-import type { Cours } from '../domain/contrats/cours';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { ouvrirTirages } from '../domain/cours/OuvertureTirages';
 import {
@@ -31,33 +30,16 @@ export class OpenSessionUseCase {
   ) {}
 
   async execute(command: OpenSessionCommand): Promise<OpenSessionResult> {
-    const { cours, version } = await this.versionAOuvrir(command);
-    const session = await this.createSurUnCodeLibre(
-      command,
-      ouvrirTirages(cours, undefined, version),
-      version,
-    );
-    return { sessionId: session.id, code: session.code };
-  }
-
-  private async versionAOuvrir(
-    command: OpenSessionCommand,
-  ): Promise<{ cours: Cours; version: number }> {
-    if (command.version === undefined) {
-      const courant = await this.catalogue.trouverCourant(command.courseSlug);
-      if (!courant) {
-        throw new CoursInconnuError(command.courseSlug);
-      }
-      return { cours: courant.cours, version: courant.version };
-    }
-    const cours = await this.catalogue.trouver(
-      command.courseSlug,
-      command.version,
-    );
-    if (!cours) {
+    const publie = await this.catalogue.trouverCourant(command.courseSlug);
+    if (!publie) {
       throw new CoursInconnuError(command.courseSlug);
     }
-    return { cours, version: command.version };
+    const session = await this.createSurUnCodeLibre(
+      command,
+      ouvrirTirages(publie.cours),
+      publie.version,
+    );
+    return { sessionId: session.id, code: session.code };
   }
 
   private async createSurUnCodeLibre(

@@ -1,4 +1,8 @@
 import {
+  buildCoursB2_01,
+  VERSION_PUBLIEE_DE_TEST,
+} from '../../../../../test/factories/cours-b2-01.factory';
+import {
   creerCatalogueAVersions,
   tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
@@ -8,16 +12,16 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
-import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { LireCoursPublicUseCase } from '../LireCoursPublic.useCase';
 import { LireSujetUseCase } from '../LireSujet.useCase';
 import { OpenSessionUseCase } from '../OpenSession.useCase';
 
-const COURS = lireCoursStocke(B2_COURS);
-const CATALOGUE = creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } });
-const BAREME = ouvrirTirages(COURS, tireurSequentiel(1), 3);
+const COURS = buildCoursB2_01();
+const CATALOGUE = creerCatalogueAVersions({
+  [COURS.slug]: { [VERSION_PUBLIEE_DE_TEST]: COURS },
+});
+const BAREME = ouvrirTirages(COURS, tireurSequentiel(1));
 const ECRAN_COURANT = 4;
 
 function seance(): {
@@ -27,7 +31,7 @@ function seance(): {
   const graine = BAREME.tirages[0].seed;
   const session = buildSessionRecord({
     courseSlug: COURS.slug,
-    courseVersion: 3,
+    courseVersion: VERSION_PUBLIEE_DE_TEST,
     bareme: BAREME,
     ecranCourant: ECRAN_COURANT,
   });
@@ -45,24 +49,24 @@ function seance(): {
   };
 }
 
-describe('B2-01 V3 — comportement des cas d’usage servis par les contrôleurs', () => {
-  it('sert la page publique du cours avec ses 13 écrans en clair (GET catalogue/:slug)', async () => {
+describe('B2-01 — comportement des cas d’usage servis par les contrôleurs', () => {
+  it('sert la page publique du cours avec ses 12 écrans en clair (GET catalogue/:slug)', async () => {
     const sut = new LireCoursPublicUseCase(CATALOGUE);
 
     const cours = await sut.execute(COURS.slug);
 
     expect(cours.id).toBe(COURS.slug);
-    expect(cours.duree).toBe(210);
-    expect(cours.ecrans).toHaveLength(52);
+    expect(cours.duree).toBe(213);
+    expect(cours.ecrans).toHaveLength(55);
     expect(
       cours.ecrans.filter((ecran) => ecran.type === 'ecran-verrouille'),
-    ).toHaveLength(39);
+    ).toHaveLength(43);
     expect(cours.ecrans.every((ecran) => (ecran.titre ?? '').length > 0)).toBe(
       true,
     );
   });
 
-  it('ouvre une séance sur la V3 avec un barème v2 complet (POST sessions)', async () => {
+  it('ouvre une séance sur le B2-01 avec un barème v2 complet (POST sessions)', async () => {
     const sessions = createMockSessionsRepo();
     const sut = new OpenSessionUseCase(sessions, CATALOGUE);
 
@@ -70,9 +74,9 @@ describe('B2-01 V3 — comportement des cas d’usage servis par les contrôleur
 
     const [depot] = sessions.create.mock.calls[0];
     if (depot.bareme.version !== 2) {
-      throw new Error('une séance V3 ouvre un barème v2');
+      throw new Error('une séance du B2-01 ouvre un barème v2');
     }
-    expect(depot.courseVersion).toBe(3);
+    expect(depot.courseVersion).toBe(VERSION_PUBLIEE_DE_TEST);
     expect(depot.bareme.questions).toHaveLength(48);
     expect(depot.bareme.tirages).toHaveLength(60);
     expect(Object.keys(depot.bareme.corriges)).toEqual([
@@ -99,8 +103,8 @@ describe('B2-01 V3 — comportement des cas d’usage servis par les contrôleur
       (ecran) => ecran.type === 'ecran-verrouille',
     );
 
-    expect(sujet.ecrans).toHaveLength(52);
-    expect(verrouilles).toHaveLength(52 - (ECRAN_COURANT + 1));
+    expect(sujet.ecrans).toHaveLength(55);
+    expect(verrouilles).toHaveLength(55 - (ECRAN_COURANT + 1));
     expect(sujet.ecrans.slice(0, ECRAN_COURANT + 1).map((e) => e.type)).toEqual(
       COURS.ecrans.slice(0, ECRAN_COURANT + 1).map((e) => e.brique),
     );

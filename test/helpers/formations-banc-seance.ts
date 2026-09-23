@@ -88,7 +88,6 @@ export function installerBancDeSeance(options: {
   readonly catalogue?: ICatalogueCours;
   readonly slug: string;
   readonly ecran?: number;
-  readonly version?: number;
 }): BancDeSeance {
   silenceNestLogger(['log', 'warn', 'error']);
 
@@ -96,10 +95,7 @@ export function installerBancDeSeance(options: {
   let app: INestApplication;
   let secretJeton: string | undefined;
   let secretJalon: string | undefined;
-  const identiteParDefaut =
-    options.version === undefined
-      ? `${FORMATEUR_DE_TEST}:teacher`
-      : `${FORMATEUR_DE_TEST}:teacher:admin`;
+  const identiteParDefaut = `${FORMATEUR_DE_TEST}:teacher`;
 
   const serveur = (): Parameters<typeof request>[0] =>
     app.getHttpServer() as Parameters<typeof request>[0];
@@ -147,7 +143,6 @@ export function installerBancDeSeance(options: {
     const reponse = await formateur('post', '/sessions', identite)
       .send({
         courseSlug: options.slug,
-        ...(options.version === undefined ? {} : { version: options.version }),
         ...ouverture.corps,
       })
       .expect(CODE_HTTP.CREE);

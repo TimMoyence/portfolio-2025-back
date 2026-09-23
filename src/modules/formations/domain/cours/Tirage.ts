@@ -345,6 +345,7 @@ function donneesDeBrique(
       return {
         exemple: { ...ecran.proprietes.exemple, metadonnees: communes },
         etayage: ecran.proprietes.etayage,
+        ...(ecran.proprietes.pilote === true ? { pilote: true } : {}),
       };
     case 'fp-pulse':
       return {

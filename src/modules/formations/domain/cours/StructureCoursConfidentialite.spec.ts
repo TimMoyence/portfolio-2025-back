@@ -1,5 +1,5 @@
 import {
-  buildEcranStockeV3,
+  buildEcranDeBrique,
   buildProprietesStockees,
   PARCOURS_ENIGMES,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -40,7 +40,7 @@ function texteDe(
 
 function atelierAvec(numerique: Partial<NumeriqueStockee>): Ecran {
   return lireEcranStocke(
-    buildEcranStockeV3('questionnaire', {
+    buildEcranDeBrique('questionnaire', {
       screenId: atelier.id,
       titre: 'Atelier',
       proprietes: {
@@ -195,7 +195,7 @@ describe('garde confidentialite — volet exact', () => {
 
   it('refuse les valeurs d un graphique arrondies a la precision de la question', () => {
     const graphique = lireEcranStocke(
-      buildEcranStockeV3('fp-story', {
+      buildEcranDeBrique('fp-story', {
         screenId: AVANT,
         dureeMinutes: 1,
         proprietes: {
@@ -261,7 +261,7 @@ describe('garde confidentialite — volet segments', () => {
 describe('garde confidentialite — rappels, productions et enigmes', () => {
   const rappel = (): Ecran =>
     lireEcranStocke(
-      buildEcranStockeV3('fp-spaced', {
+      buildEcranDeBrique('fp-spaced', {
         screenId: 'B2-01-A1-05-RAPPEL',
         dureeMinutes: 3,
         proprietes: {
@@ -313,7 +313,7 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
 
   const production = (brique: 'fp-sheet' | 'fp-table-build'): Ecran =>
     lireEcranStocke(
-      buildEcranStockeV3(brique, {
+      buildEcranDeBrique(brique, {
         screenId: 'B2-01-A1-05-PRODUCTION',
         dureeMinutes: 8,
       }),
@@ -364,7 +364,7 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
 
   const coffre = (indice: string): Ecran =>
     lireEcranStocke(
-      buildEcranStockeV3('fp-escape', {
+      buildEcranDeBrique('fp-escape', {
         screenId: 'B2-01-A1-05-COFFRE',
         proprietes: {
           ...buildProprietesStockees('fp-escape'),

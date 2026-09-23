@@ -337,6 +337,7 @@ const proprietesExemple = z
       })
       .strict(),
     etayage: rang,
+    pilote: z.boolean().optional(),
     ...communes,
   })
   .strict()
@@ -394,9 +395,31 @@ const proprietesTrace = z
       .optional(),
     sourceUrl: z.url({ protocol: /^https$/ }).optional(),
     description: texte.optional(),
+    forme: z.enum(['courbes', 'barres']).optional(),
+    unite: z.literal('euros').optional(),
+    etiquettes: z.array(texte).optional(),
+    prereglages: z
+      .array(
+        z
+          .object({ libelle: texte, valeurs: z.record(texte, z.number()) })
+          .strict(),
+      )
+      .optional(),
     ...communes,
   })
-  .strict();
+  .strict()
+  .superRefine((trace, contexte) => {
+    const cles = new Set(trace.parametres.map(({ cle }) => cle));
+    trace.prereglages?.forEach(({ valeurs }, rang) => {
+      for (const cle of Object.keys(valeurs).filter((c) => !cles.has(c))) {
+        contexte.addIssue({
+          code: 'custom',
+          path: ['prereglages', rang, 'valeurs', cle],
+          message: `le préréglage règle un paramètre absent du tracé : ${cle}`,
+        });
+      }
+    });
+  });
 
 const proprietesJalon = z.object({ sondage, ...communes }).strict();
 

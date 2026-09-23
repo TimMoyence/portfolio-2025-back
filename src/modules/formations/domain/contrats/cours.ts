@@ -41,10 +41,16 @@ export type CardsortPlanStocke = Omit<CardsortPlanPublic, 'metadonnees'>;
 export type TableBuildPlanStocke = Omit<TableBuildPlanPublic, 'metadonnees'>;
 export type EscapeParcoursStocke = Omit<EscapeParcoursPublic, 'metadonnees'>;
 
+interface LigneDuDossier {
+  readonly libelle: string;
+  readonly valeur: string;
+}
+
 export interface ProblemeStocke {
   readonly id: string;
   readonly enonce: string;
   readonly invite: string;
+  readonly rappel?: AuMoinsUn<LigneDuDossier>;
 }
 
 type ProprietesActuelles<B extends EcranActuel['brique']> =
@@ -63,6 +69,7 @@ export interface ProprietesExposition {
   readonly 'fp-worked': {
     readonly exemple: Omit<WorkedExemple, 'metadonnees'>;
     readonly etayage: number;
+    readonly pilote?: boolean;
   };
   readonly 'fp-concept4': ProprietesActuelles<'fp-concept4'>;
   readonly 'fp-plot': ProprietesActuelles<'fp-plot'> & {
@@ -74,6 +81,13 @@ export interface ProprietesExposition {
     };
     readonly sourceUrl?: string;
     readonly description?: string;
+    readonly forme?: 'courbes' | 'barres';
+    readonly unite?: 'euros';
+    readonly etiquettes?: readonly string[];
+    readonly prereglages?: readonly {
+      readonly libelle: string;
+      readonly valeurs: Readonly<Record<string, number>>;
+    }[];
   };
   readonly 'fp-pulse': {
     readonly sondage: { readonly id: string; readonly invite: string };

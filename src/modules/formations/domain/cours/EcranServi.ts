@@ -88,6 +88,9 @@ export function rangDeLaQuestion(cours: Cours, questionId: string): number {
 function activitesDeLEcran(ecran: Ecran): readonly string[] {
   switch (ecran.brique) {
     case 'fp-worked':
+      if (ecran.proprietes.pilote === true) {
+        return [];
+      }
       return ecran.proprietes.exemple.etapes.map(
         (etape) => `${ecran.proprietes.exemple.id}:${etape.id}`,
       );

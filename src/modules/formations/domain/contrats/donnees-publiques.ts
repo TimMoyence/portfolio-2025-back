@@ -199,6 +199,7 @@ export interface DonneesParBrique {
   readonly 'fp-worked': {
     readonly exemple: WorkedExemple;
     readonly etayage: number;
+    readonly pilote?: boolean;
   };
   readonly 'fp-concept4': { readonly definition: Concept4Definition };
   readonly 'fp-plot': { readonly definition: PlotDefinition };

@@ -19,7 +19,6 @@ import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -39,7 +38,6 @@ import type { ResultatsDeSeance } from '../application/GetSessionResults.useCase
 import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
 import { ListFreeResponsesUseCase } from '../application/ListFreeResponses.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
-import { assertAdministrateur } from '../application/SessionAccess';
 import { StreamSessionUseCase } from '../application/StreamSession.useCase';
 import { SyntheseRappelsUseCase } from '../application/SyntheseRappels.useCase';
 import type { DerouleCours } from '../domain/cours/DeroulePresentateur';
@@ -97,21 +95,14 @@ export class FormationsPresenterController {
   @ApiConflictResponse({
     description: 'Le cours ne produit pas assez de tirages non ambigus',
   })
-  @ApiForbiddenResponse({
-    description: 'Le champ version est reserve a l administrateur',
-  })
   async open(
     @Body() dto: OpenSessionRequestDto,
     @Req() request: Request,
   ): Promise<OpenSessionResponseDto> {
-    if (dto.version !== undefined) {
-      assertAdministrateur(acteurDe(request));
-    }
     const result = await this.openSession.execute({
       courseSlug: dto.courseSlug,
       teacherId: request.user!.sub,
       capacite: dto.capacite,
-      version: dto.version,
     });
     return { sessionId: result.sessionId, code: result.code };
   }

@@ -1,4 +1,5 @@
 import type {
+  ContenuAPublier,
   ContenuDeCoursBrut,
   EcranDeCoursBrut,
 } from '../../src/modules/formations/domain/cours/CoursStocke';
@@ -333,7 +334,7 @@ export function buildProprietesStockees(
 }
 
 export function buildCasAQuestionsLibres(): EcranDeCoursBrut {
-  return buildEcranStockeV3('fp-pro', {
+  return buildEcranDeBrique('fp-pro', {
     screenId: 'B2-01-A1-03-MISSION',
     proprietes: {
       ...buildProprietesStockees('fp-pro'),
@@ -352,7 +353,7 @@ export function buildCasAQuestionsLibres(): EcranDeCoursBrut {
   });
 }
 
-export function buildEcranStockeV3(
+export function buildEcranDeBrique(
   brique: string,
   overrides: Partial<EcranDeCoursBrut> = {},
 ): EcranDeCoursBrut {
@@ -369,13 +370,19 @@ export function buildEcranStockeV3(
   };
 }
 
-export function buildCoursStockeV3(
+export function buildCoursDeBriques(
   ecrans: readonly EcranDeCoursBrut[],
   overrides: Partial<ContenuDeCoursBrut> = {},
 ): ContenuDeCoursBrut {
+  return { version: 3, ...buildContenuPubliable(ecrans), ...overrides };
+}
+
+export function buildContenuPubliable(
+  ecrans: readonly EcranDeCoursBrut[],
+  overrides: Partial<ContenuAPublier> = {},
+): ContenuAPublier {
   return {
     slug: 'b2-01-traitement-information-chiffree',
-    version: 3,
     titre: 'Traitement de l’information chiffrée',
     niveau: 'B2',
     dureeMinutes: ecrans.reduce(

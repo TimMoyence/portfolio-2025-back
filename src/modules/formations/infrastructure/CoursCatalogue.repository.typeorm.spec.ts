@@ -1,5 +1,5 @@
 import { buildQuizNote } from '../../../../test/factories/cours-stocke.factory';
-import { buildEcranStockeV3 } from '../../../../test/factories/ecrans-stockes.factory';
+import { buildEcranDeBrique } from '../../../../test/factories/ecrans-stockes.factory';
 import {
   buildCourseContentEntity,
   buildScreenContentEntity,
@@ -72,7 +72,7 @@ describe('CoursCatalogueRepositoryTypeORM', () => {
   });
 
   it('lit le titre, la diffusion, les remédiations et les médias d une version 3', async () => {
-    const ecran = buildEcranStockeV3('fp-quote');
+    const ecran = buildEcranDeBrique('fp-quote');
     const media = {
       id: 'M4',
       chemins: ['/assets/cours/b2-01/v3/pacioli-1495.webp'],

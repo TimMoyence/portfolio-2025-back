@@ -4,15 +4,6 @@ import { OpenSessionRequestDto as OpenSessionServieRequestDto } from '../open-se
 
 export class OpenSessionRequestDto extends OpenSessionServieRequestDto {
   @ApiPropertyOptional({
-    description: 'Version du cours, reservee a l administrateur',
-    example: 3,
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  version?: number;
-
-  @ApiPropertyOptional({
     description: 'Nombre maximal de participants, 40 par defaut',
     minimum: 1,
     maximum: 60,

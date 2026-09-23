@@ -25,7 +25,14 @@ import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
-import { CATALOGUE_COURS } from './domain/token';
+import {
+  CATALOGUE_COURS,
+  CONTENUS_DES_COURS,
+  PUBLICATION_DES_COURS,
+} from './domain/token';
+import { COURS_B2_01 } from './infrastructure/contenus/b2-01.cours';
+import { PublicationDesCoursRepositoryTypeORM } from './infrastructure/PublicationDesCours.repository.typeorm';
+import { SynchronisationAuDemarrageService } from './infrastructure/SynchronisationAuDemarrage.service';
 import { FormationsModule } from './Formations.module';
 import { FormationAnswerEntity } from './infrastructure/entities/FormationAnswer.entity';
 import { FormationEscapeAttemptEntity } from './infrastructure/entities/FormationEscapeAttempt.entity';
@@ -112,6 +119,19 @@ describe('FormationsModule', () => {
     expect(module.get(CATALOGUE_COURS)).toBeInstanceOf(
       CoursCatalogueRepositoryTypeORM,
     );
+  });
+
+  it('publie au démarrage le cours B2-01 du dépôt dans la base', async () => {
+    const module = await monter();
+    expect({
+      contenus: module.get(CONTENUS_DES_COURS),
+      publication: module.get(PUBLICATION_DES_COURS),
+      demarrage: module.get(SynchronisationAuDemarrageService),
+    }).toEqual({
+      contenus: [COURS_B2_01],
+      publication: expect.any(PublicationDesCoursRepositoryTypeORM),
+      demarrage: expect.any(SynchronisationAuDemarrageService),
+    });
   });
 
   for (const service of SERVICES) {

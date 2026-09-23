@@ -1,7 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import type { Test } from 'supertest';
-import { B2_COURS_ENRICHI } from '../src/migrations/data/b2-enrichi.cours';
+import { empreinteCanonique } from '../src/modules/formations/domain/cours/EmpreinteCanonique';
+import { buildContenuAPublierB2_01 } from './factories/cours-b2-01.factory';
 import { createMockFormationMailer } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -17,15 +17,13 @@ import {
 import { fermerApplication } from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
-const SLUG = 'b2-01-traitement-information-chiffree';
-const VERSION_COURS = B2_COURS_ENRICHI.version;
+const CONTENU = buildContenuAPublierB2_01();
+const SLUG = CONTENU.slug;
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
-const ADMIN = 'f6666666-6666-4666-8666-666666666666';
 const OK = 200;
 const CREE = 201;
-const INTERDIT = 403;
 const INTROUVABLE = 404;
-const SLUG_JAMAIS_PUBLIE = 'cours-insere-apres-l-amorcage';
+const SLUG_JAMAIS_PUBLIE = 'cours-insere-sans-publication';
 
 interface CataloguePublic {
   version: number;
@@ -36,7 +34,23 @@ interface ReponseOuverture {
   sessionId: string;
 }
 
-describeDb('Publication du catalogue par la migration (db integration)', () => {
+interface LigneDeVersion {
+  version: number;
+  empreinte: string | null;
+}
+
+function contenuCorrige(): typeof CONTENU {
+  const [premier, ...suivants] = CONTENU.ecrans;
+  return {
+    ...CONTENU,
+    ecrans: [
+      { ...premier, notes: `${premier.notes} Relance ajoutée par la QA.` },
+      ...suivants,
+    ],
+  };
+}
+
+describeDb('Synchronisation du cours publié (db integration)', () => {
   silenceNestLogger(['log', 'warn', 'error']);
 
   let contexte: ContexteFormations;
@@ -48,14 +62,21 @@ describeDb('Publication du catalogue par la migration (db integration)', () => {
   const route = (chemin: string): string =>
     `/${PREFIXE_API}/formations${chemin}`;
 
-  const catalogue = (): Test =>
-    request(serveur()).get(route(`/catalogue/${SLUG}`));
+  const versionsEnBase = async (): Promise<LigneDeVersion[]> =>
+    await contexte.dataSource.query(
+      `SELECT "version", "empreinte" FROM "formation_course_contents"
+       WHERE "slug" = $1 ORDER BY "version"`,
+      [SLUG],
+    );
 
-  const ouvrirSeance = (version?: number): Test =>
-    request(serveur())
+  const ouvrirSeance = async (): Promise<string> => {
+    const ouverture = await request(serveur())
       .post(route('/sessions'))
-      .set(EN_TETE_IDENTITE, `${ADMIN}:admin:teacher`)
-      .send({ courseSlug: SLUG, ...(version ? { version } : {}) });
+      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`)
+      .send({ courseSlug: SLUG })
+      .expect(CREE);
+    return (ouverture.body as ReponseOuverture).sessionId;
+  };
 
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
@@ -70,27 +91,33 @@ describeDb('Publication du catalogue par la migration (db integration)', () => {
     await contexte.fermer();
   });
 
-  it('publie le cours unique dès l installation de la migration', async () => {
-    const lignes: { slug: string; version_publiee: number }[] =
-      await contexte.dataSource.query(
-        'SELECT slug, version_publiee FROM formation_course_publications',
-      );
-
-    expect(lignes).toContainEqual({
-      slug: SLUG,
-      version_publiee: VERSION_COURS,
-    });
+  it('publie le cours du fichier avec son empreinte sur une base neuve', async () => {
+    expect(await versionsEnBase()).toEqual([
+      { version: 1, empreinte: empreinteCanonique(CONTENU) },
+    ]);
+    expect(await contexte.publication.empreintePubliee(SLUG)).toBe(
+      empreinteCanonique(CONTENU),
+    );
   });
 
-  it('sert la version publiee et sa date de bascule au catalogue public', async () => {
-    const reponse = await catalogue().expect(OK);
+  it('ne publie rien quand le fichier du cours n’a pas changé', async () => {
+    const issues = await contexte.synchroniser([CONTENU]);
+
+    expect(issues).toEqual([{ slug: SLUG, statut: 'a-jour' }]);
+    expect(await versionsEnBase()).toHaveLength(1);
+  });
+
+  it('sert le contenu publié et sa date de publication au catalogue public', async () => {
+    const reponse = await request(serveur())
+      .get(route(`/catalogue/${SLUG}`))
+      .expect(OK);
 
     const servi = reponse.body as CataloguePublic;
-    expect(servi.version).toBe(VERSION_COURS);
+    expect(servi.version).toBe(1);
     expect(Date.parse(servi.publieLe)).not.toBeNaN();
   });
 
-  it('ne sert ni au public ni a une seance un slug insere sans ligne de publication', async () => {
+  it('ne sert ni au public ni à une séance un slug inséré sans publication', async () => {
     await contexte.dataSource.query(
       `INSERT INTO "formation_course_contents"
            ("slug", "version", "titre", "niveau", "duree_minutes", "concepts")
@@ -112,34 +139,55 @@ describeDb('Publication du catalogue par la migration (db integration)', () => {
     }).toEqual({ publique: INTROUVABLE, seance: INTROUVABLE });
   });
 
-  it('ouvre les seances du formateur sur la version publiee', async () => {
-    const ouverture = await request(serveur())
-      .post(route('/sessions'))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`)
-      .send({ courseSlug: SLUG })
-      .expect(CREE);
+  it('publie le cours corrigé sans toucher au contenu des séances déjà ouvertes', async () => {
+    const ouverteAvant = await ouvrirSeance();
+    const corrige = contenuCorrige();
 
-    const seance = await contexte.sessions.findById(
-      (ouverture.body as ReponseOuverture).sessionId,
+    const issues = await contexte.synchroniser([corrige]);
+
+    expect(issues).toEqual([{ slug: SLUG, statut: 'publie', version: 2 }]);
+    expect(await versionsEnBase()).toEqual([
+      { version: 1, empreinte: empreinteCanonique(CONTENU) },
+      { version: 2, empreinte: empreinteCanonique(corrige) },
+    ]);
+    const seance = await contexte.sessions.findById(ouverteAvant);
+    const coursDeLaSeance = await contexte.catalogue.trouver(
+      SLUG,
+      seance?.courseVersion,
     );
-    expect(seance?.courseVersion).toBe(VERSION_COURS);
+    expect(coursDeLaSeance?.ecrans[0].notes).toBe(CONTENU.ecrans[0].notes);
   });
 
-  it('laisse l administrateur ouvrir une seance sur une version anterieure', async () => {
-    const ouverture = await ouvrirSeance(1).expect(CREE);
+  it('ouvre les nouvelles séances sur le cours corrigé', async () => {
+    const seance = await contexte.sessions.findById(await ouvrirSeance());
+    const cours = await contexte.catalogue.trouver(SLUG, seance?.courseVersion);
 
-    const seance = await contexte.sessions.findById(
-      (ouverture.body as ReponseOuverture).sessionId,
-    );
-    expect(seance?.courseVersion).toBe(1);
+    expect(cours?.ecrans[0].notes).toBe(contenuCorrige().ecrans[0].notes);
   });
 
-  it('refuse le champ version a un formateur sans role administrateur', async () => {
-    const refus = await request(serveur())
-      .post(route('/sessions'))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`)
-      .send({ courseSlug: SLUG, version: 1 });
+  it('ne publie qu une version quand deux instances synchronisent le même cours en même temps', async () => {
+    const [premier, ...suivants] = CONTENU.ecrans;
+    const recorrige = {
+      ...CONTENU,
+      ecrans: [
+        { ...premier, notes: `${premier.notes} Seconde relance de la QA.` },
+        ...suivants,
+      ],
+    };
 
-    expect(refus.status).toBe(INTERDIT);
+    const issues = await Promise.all([
+      contexte.synchroniser([recorrige]),
+      contexte.synchroniser([recorrige]),
+    ]);
+
+    for (const issue of issues.flat()) {
+      expect([
+        { slug: SLUG, statut: 'a-jour' },
+        { slug: SLUG, statut: 'publie', version: 3 },
+      ]).toContainEqual(issue);
+    }
+    const versions = await versionsEnBase();
+    expect(versions.map(({ version }) => version)).toEqual([1, 2, 3]);
+    expect(versions[2].empreinte).toBe(empreinteCanonique(recorrige));
   });
 });

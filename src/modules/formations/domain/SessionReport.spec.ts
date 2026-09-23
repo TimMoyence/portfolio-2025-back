@@ -416,10 +416,7 @@ describe('buildRapportSession', () => {
         tirages: [
           {
             seed: graine,
-            solutions: {
-              ...tirage.solutions,
-              'Q-TEST-VOTE': { ...vote, valeur: 'o9' },
-            },
+            ecarts: { 'Q-TEST-VOTE': { ...vote, valeur: 'o9' } },
           },
         ],
       };

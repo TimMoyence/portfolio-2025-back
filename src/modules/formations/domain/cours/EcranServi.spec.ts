@@ -4,7 +4,7 @@ import {
 } from '../../../../../test/factories/cours.factory';
 import {
   buildCasAQuestionsLibres,
-  buildCoursStockeV3,
+  buildCoursDeBriques,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from './CoursStocke';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
@@ -167,7 +167,7 @@ describe('activitesLibres', () => {
 
   it('L3 · admet une activite par question libre d un cas professionnel', () => {
     const cours = lireCoursStocke(
-      buildCoursStockeV3([buildCasAQuestionsLibres()]),
+      buildCoursDeBriques([buildCasAQuestionsLibres()]),
     );
 
     expect(activitesLibres(cours).get('B2-01-A1-03-MISSION')).toEqual([

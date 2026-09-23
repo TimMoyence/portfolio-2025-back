@@ -1,4 +1,4 @@
-import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
+import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
 import {
   activitesLibres,
   assertEcranServi,
@@ -6,10 +6,9 @@ import {
   rangDeLEcran,
 } from '../../domain/cours/EcranServi';
 import type { DiffusionDeSeance } from '../../domain/cours/EcranServi';
-import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { EcranNonServiError } from '../../domain/errors/FormationErrors';
 
-const COURS = lireCoursStocke(B2_COURS);
+const COURS = buildCoursB2_01();
 const TOTAL = COURS.ecrans.length;
 
 function seancePilotee(ecranCourant: number): DiffusionDeSeance {
@@ -21,7 +20,7 @@ function seancePilotee(ecranCourant: number): DiffusionDeSeance {
   };
 }
 
-describe('garde « écran servi » sur la V3 (B20, AC-19)', () => {
+describe('garde « écran servi » sur le B2-01 (B20, AC-19)', () => {
   it('refuse toute écriture visant un écran que le formateur n’a pas atteint', () => {
     const rangDuCoffre = rangDeLEcran(COURS, 'B2-01-A6-02-COFFRE');
 
@@ -67,7 +66,7 @@ describe('garde « écran servi » sur la V3 (B20, AC-19)', () => {
     ).toBe(TOTAL - 1);
   });
 
-  it('n’admet que les activités libres déclarées par les écrans de la V3', () => {
+  it('n’admet que les activités libres déclarées par les écrans du B2-01', () => {
     const admises = activitesLibres(COURS);
 
     expect(admises.get('B2-01-A1-01-DIAGNOSTIC')).toEqual([
@@ -81,7 +80,7 @@ describe('garde « écran servi » sur la V3 (B20, AC-19)', () => {
 
   it('admet une activité par étape des exemples travaillés', () => {
     const admises = activitesLibres(COURS);
-    const etapes = admises.get('B2-01-A2-06-POINTS') ?? [];
+    const etapes = admises.get('B2-01-A5-03-MOYENNE-PONDEREE') ?? [];
 
     expect(etapes.length).toBeGreaterThan(0);
     for (const activite of etapes) {

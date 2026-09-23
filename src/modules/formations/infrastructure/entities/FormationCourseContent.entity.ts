@@ -37,10 +37,13 @@ export class FormationCourseContentEntity {
   concepts: readonly string[];
 
   @Column({ type: 'jsonb', default: {} })
-  remediations: Readonly<Record<string, string>>;
+  remediations: Readonly<Record<string, unknown>>;
 
   @Column({ type: 'jsonb', default: [] })
   medias: readonly unknown[];
+
+  @Column({ type: 'char', length: 64, nullable: true })
+  empreinte: string | null;
 
   @OneToMany(() => FormationScreenContentEntity, (screen) => screen.course)
   ecrans: FormationScreenContentEntity[];

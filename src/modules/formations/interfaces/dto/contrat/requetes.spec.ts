@@ -138,19 +138,28 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
   });
 
   describe('POST sessions', () => {
-    it('garde le corps actuel et accepte version et capacité', async () => {
+    it('garde le corps actuel et accepte la capacité', async () => {
       const slug = 'b2-01-traitement-information-chiffree';
       const seul = await validateBody(
         { courseSlug: slug },
         OpenSessionRequestDto,
       );
       const complet = await validateBody(
-        { courseSlug: slug, version: 3, capacite: 40 },
+        { courseSlug: slug, capacite: 40 },
         OpenSessionRequestDto,
       );
 
       expect(seul).toEqual({ courseSlug: slug });
-      expect(complet).toEqual({ courseSlug: slug, version: 3, capacite: 40 });
+      expect(complet).toEqual({ courseSlug: slug, capacite: 40 });
+    });
+
+    it('refuse de choisir une version du cours : la séance ouvre le cours publié', async () => {
+      await expect(
+        validateBody(
+          { courseSlug: 'b2-01-traitement-information-chiffree', version: 1 },
+          OpenSessionRequestDto,
+        ),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it.each([0, 61, 2.5])('refuse la capacité %p', async (capacite) => {

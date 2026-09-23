@@ -16,6 +16,7 @@ import {
   AnswerAlreadySubmittedError,
   EcranNonServiError,
   ParticipantNotFoundError,
+  PhaseFermeeError,
   ProductionVideError,
   SessionClosedError,
   SessionNotStartedError,
@@ -170,6 +171,19 @@ describe('SubmitProductionUseCase', () => {
     );
 
     await expect(sut.execute(commande)).rejects.toThrow(EcranNonServiError);
+    expect(answers.create).not.toHaveBeenCalled();
+  });
+
+  it('refuse une production dont l ecran a deja revele sa correction', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        courseSlug: COURS.slug,
+        ecranCourant: DERNIER_ECRAN,
+        pilotageEcrans: { 'E-FEUILLE': { revele: true } },
+      }),
+    );
+
+    await expect(sut.execute(commande)).rejects.toThrow(PhaseFermeeError);
     expect(answers.create).not.toHaveBeenCalled();
   });
 
