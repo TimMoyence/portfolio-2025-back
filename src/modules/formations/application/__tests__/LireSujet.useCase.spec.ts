@@ -178,7 +178,7 @@ describe('LireSujetUseCase', () => {
   });
 
   describe('sur un barème v2', () => {
-    const v2 = ouvrirTirages(COURS, tireurSequentiel(300), 3);
+    const v2 = ouvrirTirages(COURS, tireurSequentiel(300));
     const [{ seed }] = v2.tirages;
 
     beforeEach(() => {

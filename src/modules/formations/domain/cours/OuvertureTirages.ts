@@ -1,12 +1,8 @@
 import { randomInt } from 'node:crypto';
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
-import type { Bareme, BaremeQuestion, BaremeTirage } from '../Bareme';
+import type { BaremeTirage } from '../Bareme';
 import { solutionsIdentiques } from '../Bareme';
-import type {
-  BaremeQuestionV2,
-  BaremeV2,
-  Bareme as BaremeDeSeance,
-} from '../contrats/bareme';
+import type { BaremeQuestionV2, BaremeV2 } from '../contrats/bareme';
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { Solution } from '../GradingCore';
 import type { CorrigeProduction } from './Corrige';
@@ -17,7 +13,6 @@ export const NOMBRE_TIRAGES_DISTRIBUES = 60;
 const BORNE_GRAINE = 2_147_483_647;
 const GRAINES_A_RETENIR = NOMBRE_TIRAGES_DISTRIBUES + 1;
 const TENTATIVES_PAR_GRAINE = 10;
-const PREMIERE_VERSION_A_BAREME_V2 = 3;
 
 export type TireurDeGraine = (borne: number) => number;
 
@@ -27,37 +22,6 @@ export class TiragesInsuffisantsError extends ResourceConflictError {
       `Le cours ${cours.slug} ne produit pas ${GRAINES_A_RETENIR} tirages non ambigus : il ne peut pas être ouvert tant qu'il n'est pas corrigé.`,
     );
   }
-}
-
-export function ouvrirTirages(cours: Cours, tireur?: TireurDeGraine): Bareme;
-export function ouvrirTirages(
-  cours: Cours,
-  tireur: TireurDeGraine | undefined,
-  version: number,
-): BaremeDeSeance;
-export function ouvrirTirages(
-  cours: Cours,
-  tireur: TireurDeGraine = randomInt,
-  version?: number,
-): BaremeDeSeance {
-  if (version !== undefined && version >= PREMIERE_VERSION_A_BAREME_V2) {
-    return ouvrirBaremeV2(cours, tireur);
-  }
-  if (questionsDuCours(cours).length === 0) {
-    return {
-      version: 1,
-      graineReference: 0,
-      questions: [],
-      tirages: [],
-    };
-  }
-  const [reference, ...tirages] = grainesValides(cours, tireur);
-  return {
-    version: 1,
-    graineReference: reference.seed,
-    questions: questionsBareme(cours),
-    tirages,
-  };
 }
 
 function grainesValides(cours: Cours, tireur: TireurDeGraine): BaremeTirage[] {
@@ -91,35 +55,10 @@ function grainesValides(cours: Cours, tireur: TireurDeGraine): BaremeTirage[] {
   return retenues;
 }
 
-function questionsBareme(cours: Cours): readonly BaremeQuestion[] {
-  return questionsDuCours(cours).flatMap((question): BaremeQuestion[] => {
-    switch (question.type) {
-      case 'numeric':
-        return [
-          {
-            id: question.id,
-            type: question.type,
-            concept: question.concept,
-            noteCompte: question.noteCompte,
-            tolerance: question.tolerance,
-          },
-        ];
-      case 'vote':
-        return [
-          {
-            id: question.id,
-            type: question.type,
-            concept: question.concept,
-            noteCompte: question.noteCompte,
-          },
-        ];
-      default:
-        return [];
-    }
-  });
-}
-
-function ouvrirBaremeV2(cours: Cours, tireur: TireurDeGraine): BaremeV2 {
+export function ouvrirTirages(
+  cours: Cours,
+  tireur: TireurDeGraine = randomInt,
+): BaremeV2 {
   const questions = questionsBaremeV2(cours);
   const corriges = corrigesDesProductions(cours);
   if (questions.length === 0) {

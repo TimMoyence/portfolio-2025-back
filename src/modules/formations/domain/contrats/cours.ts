@@ -41,10 +41,16 @@ export type CardsortPlanStocke = Omit<CardsortPlanPublic, 'metadonnees'>;
 export type TableBuildPlanStocke = Omit<TableBuildPlanPublic, 'metadonnees'>;
 export type EscapeParcoursStocke = Omit<EscapeParcoursPublic, 'metadonnees'>;
 
+interface LigneDuDossier {
+  readonly libelle: string;
+  readonly valeur: string;
+}
+
 export interface ProblemeStocke {
   readonly id: string;
   readonly enonce: string;
   readonly invite: string;
+  readonly rappel?: AuMoinsUn<LigneDuDossier>;
 }
 
 type ProprietesActuelles<B extends EcranActuel['brique']> =

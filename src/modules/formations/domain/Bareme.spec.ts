@@ -1,8 +1,8 @@
+import { buildCoursDeTest } from '../../../../test/factories/cours.factory';
 import {
-  buildCoursDeTest,
-  tireurSequentiel,
-} from '../../../../test/factories/cours.factory';
-import { buildBaremeV2 } from '../../../../test/factories/formation.factory';
+  buildBareme,
+  buildBaremeV2,
+} from '../../../../test/factories/formation.factory';
 import {
   estValeurConnue,
   findQuestion,
@@ -14,7 +14,6 @@ import {
   solutionsIdentiques,
 } from './Bareme';
 import type { Bareme } from './Bareme';
-import { ouvrirTirages } from './cours/OuvertureTirages';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { Solution } from './AnswerGrading';
 
@@ -256,7 +255,17 @@ describe('barème v2 (§ 9.3.4)', () => {
     });
 
     it('dérive du cours l écran d une question d un barème v1', () => {
-      const v1 = ouvrirTirages(cours, tireurSequentiel());
+      const v1 = buildBareme({
+        questions: [
+          {
+            id: 'Q-TEST-VOTE',
+            type: 'vote',
+            concept: 'evolutions-successives',
+            noteCompte: false,
+          },
+        ],
+        tirages: [],
+      });
 
       expect(questionDuBareme(v1, 'Q-TEST-VOTE', cours)).toEqual({
         id: 'Q-TEST-VOTE',

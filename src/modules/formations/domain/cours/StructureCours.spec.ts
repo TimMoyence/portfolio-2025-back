@@ -1,5 +1,5 @@
 import {
-  buildEcranStockeV3,
+  buildEcranDeBrique,
   buildProprietesStockees,
   NOTES_EN_CINQ_RUBRIQUES,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -78,7 +78,7 @@ describe('verifierStructure', () => {
 
   it('compte un jalon comme de l exposition', () => {
     const jalon = lireEcranStocke(
-      buildEcranStockeV3('fp-pulse', { dureeMinutes: 1 }),
+      buildEcranDeBrique('fp-pulse', { dureeMinutes: 1 }),
     );
     const cours = recomposer(base, [
       ouverture,
@@ -270,13 +270,13 @@ describe('verifierStructure — questions fermees en atelier', () => {
 
   it('refuse un classement note sur un ecran court et ignore un vote non note', () => {
     const classement = lireEcranStocke(
-      buildEcranStockeV3('fp-cardsort', {
+      buildEcranDeBrique('fp-cardsort', {
         screenId: 'B2-01-A1-05-CLASSEMENT',
         dureeMinutes: 5,
       }),
     );
     const voteLibre = lireEcranStocke(
-      buildEcranStockeV3('fp-vote', {
+      buildEcranDeBrique('fp-vote', {
         screenId: 'B2-01-A1-06-VOTE-LIBRE',
         dureeMinutes: 3,
         proprietes: {
@@ -326,7 +326,7 @@ describe('verifierStructure — diffusion, medias et options', () => {
 
   const recitIllustre = (src: string): Ecran =>
     lireEcranStocke(
-      buildEcranStockeV3('fp-story', {
+      buildEcranDeBrique('fp-story', {
         screenId: 'B2-01-A1-05-PLAYFAIR',
         dureeMinutes: 2,
         proprietes: {
@@ -366,7 +366,7 @@ describe('verifierStructure — diffusion, medias et options', () => {
 
   it('refuse une option de vote dont l identifiant ne derive pas du libelle', () => {
     const libre = lireEcranStocke(
-      buildEcranStockeV3('fp-recall', {
+      buildEcranDeBrique('fp-recall', {
         screenId: ouverture.id,
         dureeMinutes: 3,
         proprietes: {

@@ -6,6 +6,7 @@ import {
   PhaseNonMonotoneError,
   PilotageIncompatibleError,
 } from '../errors/FormationErrors';
+import { questionsDe } from './Cours';
 
 export type PilotageDemande = { readonly screenId: string } & PilotageEcran;
 
@@ -37,8 +38,12 @@ export function assertPilotageCompatible(
   ) {
     refuser('ce vote n’a pas de question jumelle');
   }
-  if (demande.revele !== undefined && ecran.brique !== 'fp-challenge') {
-    refuser('seul un défi porte une révélation');
+  if (
+    demande.revele !== undefined &&
+    ecran.brique !== 'fp-challenge' &&
+    questionsDe(ecran).length === 0
+  ) {
+    refuser('seul un écran porteur d’un corrigé se révèle');
   }
   if (demande.etayage === undefined) {
     return;
@@ -79,6 +84,9 @@ export function assertPhaseOuverte(
   pilotage: Readonly<Record<string, PilotageEcran>>,
   question: QuestionPilotee,
 ): void {
+  if (pilotage[question.ecranId]?.revele === true) {
+    throw new PhaseFermeeError(question.ecranId);
+  }
   if (question.ouverture === undefined) {
     return;
   }

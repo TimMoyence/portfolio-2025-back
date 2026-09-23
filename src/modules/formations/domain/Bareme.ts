@@ -12,7 +12,7 @@ import { NE_SAIT_PAS } from './GradingCore';
 
 type QuestionType = 'numeric' | 'vote' | 'asn' | 'order';
 
-export interface BaremeQuestion {
+interface BaremeQuestion {
   id: string;
   type: QuestionType;
   concept: string;

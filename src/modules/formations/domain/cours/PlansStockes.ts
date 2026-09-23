@@ -205,7 +205,14 @@ export const parcoursEnigmes = z
   }) satisfies z.ZodType<EscapeParcoursStocke>;
 
 export const probleme = z
-  .object({ id: identifiantDeQuestion, enonce: texte, invite: texte })
+  .object({
+    id: identifiantDeQuestion,
+    enonce: texte,
+    invite: texte,
+    rappel: auMoinsUn(
+      z.object({ libelle: texte, valeur: texte }).strict(),
+    ).optional(),
+  })
   .strict() satisfies z.ZodType<ProblemeStocke>;
 
 export const sondage = z

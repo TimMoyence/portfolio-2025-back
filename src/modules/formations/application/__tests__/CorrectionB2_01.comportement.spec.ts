@@ -1,4 +1,4 @@
-import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
+import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
 import type {
   CorrigeFeuille,
   CorrigeTableau,
@@ -9,10 +9,9 @@ import {
   type SaisiesDeTableau,
 } from '../../domain/cours/CorrectionProduction';
 import { questionsDuCours } from '../../domain/cours/Cours';
-import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { evaluerExpression, evaluerFeuille } from '../../domain/cours/Formule';
 
-const COURS = lireCoursStocke(B2_COURS);
+const COURS = buildCoursB2_01();
 const SANS_FORMULE = 'valeur-saisie-sans-formule';
 const CELLULES_ATTENDUES = 17;
 const JUSTES_DES_CONSTATS = 13;
@@ -25,7 +24,7 @@ function corrigeDe(id: string): CorrigeFeuille | CorrigeTableau {
     question === undefined ||
     (question.type !== 'feuille' && question.type !== 'tableau')
   ) {
-    throw new Error(`production introuvable dans la V3 : ${id}`);
+    throw new Error(`production introuvable dans le B2-01 : ${id}`);
   }
   return question.corrige as CorrigeFeuille | CorrigeTableau;
 }

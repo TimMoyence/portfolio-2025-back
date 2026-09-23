@@ -5,8 +5,8 @@ import {
 import { buildPlanFeuille } from '../../../../../test/factories/corriges.factory';
 import {
   BRIQUES_STOCKEES,
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
   PARCOURS_ENIGMES,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { buildVoteStocke } from '../../../../../test/factories/questions-stockees.factory';
@@ -370,7 +370,7 @@ describe('tirer', () => {
 describe('tirer (briques de la V3)', () => {
   const coursDe = (briques: readonly string[]) =>
     lireCoursStocke(
-      buildCoursStockeV3(briques.map((brique) => buildEcranStockeV3(brique))),
+      buildCoursDeBriques(briques.map((brique) => buildEcranDeBrique(brique))),
     );
   const TOUTES = coursDe(BRIQUES_STOCKEES);
   const donneesDe = (tirage: ReturnType<typeof tirer>, brique: string) => {

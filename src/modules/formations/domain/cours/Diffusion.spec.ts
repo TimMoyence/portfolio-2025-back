@@ -1,7 +1,7 @@
 import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
 import {
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from './CoursStocke';
 import { ecranVerrouille, projeterCatalogue } from './Diffusion';
@@ -25,9 +25,9 @@ describe('ecranVerrouille', () => {
 describe('projeterCatalogue (B19)', () => {
   it('sert en clair les écrans du catalogue et verrouille les écrans de séance', () => {
     const cours = lireCoursStocke(
-      buildCoursStockeV3([
-        buildEcranStockeV3('fp-quote', { diffusion: 'catalogue' }),
-        buildEcranStockeV3('fp-recall'),
+      buildCoursDeBriques([
+        buildEcranDeBrique('fp-quote', { diffusion: 'catalogue' }),
+        buildEcranDeBrique('fp-recall'),
       ]),
     );
     const sujet = tirer(cours, 0).sujet;

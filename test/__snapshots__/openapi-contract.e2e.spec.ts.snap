@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`OpenAPI contrat B2-01 V3 fige les schemas des DTO du § 9.5 sans exposer de chemin 1`] = `
+exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer de chemin 1`] = `
 {
   "AttenduClassementPresentateurResponseDto": {
     "properties": {
@@ -925,11 +925,6 @@ exports[`OpenAPI contrat B2-01 V3 fige les schemas des DTO du § 9.5 sans expose
       "courseSlug": {
         "example": "b2-01-traitement-information-chiffree",
         "type": "string",
-      },
-      "version": {
-        "description": "Version du cours, reservee a l administrateur",
-        "example": 3,
-        "type": "number",
       },
     },
     "required": [

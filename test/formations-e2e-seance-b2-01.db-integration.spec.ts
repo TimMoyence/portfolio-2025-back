@@ -1,6 +1,5 @@
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
-import { B2_COURS_ENRICHI } from '../src/migrations/data/b2-enrichi.cours';
 import {
   GetSessionResultsUseCase,
   type ResultatsDeSeance,
@@ -21,6 +20,7 @@ import {
   type TirageDuCours,
 } from '../src/modules/formations/domain/cours/Tirage';
 import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';
+import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { clesSecretesDans } from './helpers/cles-du-corrige';
 import { describeDb } from './helpers/db-integration-datasource';
@@ -29,6 +29,7 @@ import { CODE_HTTP } from './helpers/formations-banc-seance';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   TABLES_DE_SEANCE,
+  VERSION_PUBLIEE_SUR_BASE_NEUVE,
 } from './helpers/formations-db';
 import {
   abonnerAuFlux,
@@ -45,14 +46,14 @@ import {
   productionJuste,
   reponseDEnigme,
   valeurPiegee,
-} from './helpers/reponses-v3';
+} from './helpers/reponses-b2-01';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
-const SLUG = B2_COURS_ENRICHI.slug;
-const VERSION_COURS = B2_COURS_ENRICHI.version;
-const ECRANS_DU_COURS = B2_COURS_ENRICHI.ecrans.length;
+const SLUG = COURS_B2_01.slug;
+const VERSION_COURS = VERSION_PUBLIEE_SUR_BASE_NEUVE;
+const ECRANS_DU_COURS = COURS_B2_01.ecrans.length;
 const QUESTIONS_NOTEES = 31;
-const BAREME_DE_LA_V3 = 2;
+const VERSION_DU_BAREME = 2;
 const ENIGMES_DU_COURS = 4;
 const JALONS_DU_COURS = 5;
 const TYPES_NOTABLES = 5;
@@ -125,7 +126,7 @@ function noterConflit(reponse: Response): Response {
   return reponse;
 }
 
-describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
+describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
   silenceNestLogger();
 
   let banc: BancFormations;
@@ -224,7 +225,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
   const ecranDe = (brique: Ecran['brique']): Ecran => {
     const trouve = cours.ecrans.find((ecran) => ecran.brique === brique);
     if (trouve === undefined) {
-      throw new Error(`La V3 migree n a aucun ecran ${brique}`);
+      throw new Error(`Le B2-01 publie n a aucun ecran ${brique}`);
     }
     return trouve;
   };
@@ -584,7 +585,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
         cours.ecrans.indexOf(ecran) > INTERVALLE_LIBRE.dernier,
     );
     if (dedans === undefined || dehors === undefined) {
-      throw new Error('La V3 ne permet pas de borner un intervalle libre');
+      throw new Error('Le B2-01 ne permet pas de borner un intervalle libre');
     }
     await piloter({ mode: 'libre', intervalle: INTERVALLE_LIBRE }).expect(
       SANS_CONTENU,
@@ -664,7 +665,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
   });
 
   it(
-    'sert la V3 publiee par la migration et fige sa version a l ouverture de la seance',
+    'sert le cours publie au demarrage et fige sa version a l ouverture de la seance',
     async () => {
       const servi = (
         await request(serveur())
@@ -693,7 +694,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       }).toEqual({
         servi: VERSION_COURS,
         version: VERSION_COURS,
-        bareme: BAREME_DE_LA_V3,
+        bareme: VERSION_DU_BAREME,
         capacite: CAPACITE,
         ecrans: ECRANS_DU_COURS,
         titres: ECRANS_DU_COURS,
@@ -769,7 +770,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
         jalon.brique !== 'fp-pulse' ||
         defi.brique !== 'fp-challenge'
       ) {
-        throw new Error('Ecrans de la V3 mal identifies');
+        throw new Error('Ecrans du B2-01 mal identifies');
       }
       const enAvance = [
         await repondre(postes[1], questionsDe(questionnaire)[0]),
@@ -872,7 +873,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
   );
 
   it(
-    'deroule les cinquante-trois ecrans et joue chaque brique de la V3',
+    'deroule tous les ecrans et joue chaque brique du B2-01',
     async () => {
       fluxFormateurA = await abonnerAuFlux(
         banc.port,
@@ -1178,7 +1179,7 @@ describeDb('E2E-01 seance complete du B2-01 V3 migre (db integration)', () => {
       }).toEqual({
         apresCloture: [CONFLIT, 'SEANCE_TERMINEE'],
         etat: 'terminee',
-        baremeDeLaSeance: BAREME_DE_LA_V3,
+        baremeDeLaSeance: VERSION_DU_BAREME,
         participants: CAPACITE,
         questionsNotees: QUESTIONS_NOTEES,
         notation: TYPES_NOTABLES,

@@ -26,10 +26,16 @@ import { SyntheseRappelsUseCase } from './application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
+import { SynchroniserCoursUseCase } from './application/SynchroniserCours.useCase';
+import { COURS_B2_01 } from './infrastructure/contenus/b2-01.cours';
+import { PublicationDesCoursRepositoryTypeORM } from './infrastructure/PublicationDesCours.repository.typeorm';
+import { SynchronisationAuDemarrageService } from './infrastructure/SynchronisationAuDemarrage.service';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
+  CONTENUS_DES_COURS,
   ESCAPE_REPOSITORY,
+  PUBLICATION_DES_COURS,
   FREE_RESPONSES_REPOSITORY,
   PULSES_REPOSITORY,
   RAPPELS_SERVIS_REPOSITORY,
@@ -207,6 +213,16 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
       provide: CATALOGUE_COURS,
       useClass: CoursCatalogueRepositoryTypeORM,
     },
+    {
+      provide: PUBLICATION_DES_COURS,
+      useClass: PublicationDesCoursRepositoryTypeORM,
+    },
+    {
+      provide: CONTENUS_DES_COURS,
+      useValue: [COURS_B2_01],
+    },
+    SynchroniserCoursUseCase,
+    SynchronisationAuDemarrageService,
   ],
 })
 export class FormationsModule {}

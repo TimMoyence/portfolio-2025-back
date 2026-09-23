@@ -11,8 +11,8 @@ import {
 import {
   BRIQUES_STOCKEES,
   buildCasAQuestionsLibres,
-  buildCoursStockeV3,
-  buildEcranStockeV3,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import type { Cours, Ecran } from '../contrats/cours';
 import { creerRng, creerTirage } from './Aleatoire';
@@ -34,7 +34,7 @@ const EXPOSITIONS = [
 ];
 
 function ecranV3(brique: string): Ecran {
-  return lireCoursStocke(buildCoursStockeV3([buildEcranStockeV3(brique)]))
+  return lireCoursStocke(buildCoursDeBriques([buildEcranDeBrique(brique)]))
     .ecrans[0];
 }
 
@@ -139,7 +139,7 @@ describe('estInteractif (§ 2.6.1)', () => {
 
   it('L3 · compte un cas professionnel comme interactif quand il pose des questions libres', () => {
     const ecran = lireCoursStocke(
-      buildCoursStockeV3([buildCasAQuestionsLibres()]),
+      buildCoursDeBriques([buildCasAQuestionsLibres()]),
     ).ecrans[0];
 
     expect(estInteractif(ecran)).toBe(true);

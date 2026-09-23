@@ -26,13 +26,11 @@ import { auMoinsUn, concepts, confusion, media, texte } from './SchemasCommuns';
 
 const LONGUEUR_MAX_IDENTIFIANT_D_ECRAN = 120;
 const LONGUEUR_MAX_TITRE = 120;
-const PREMIERE_VERSION_TITREE = 3;
-const SLUG_B2_01 = 'b2-01-traitement-information-chiffree';
-const DIFFUSION_HISTORIQUE: Diffusion = 'catalogue';
+export const DIFFUSION_PAR_DEFAUT: Diffusion = 'catalogue';
 
 export class ContenuDeCoursInvalideError extends Error {
-  constructor(slug: string, version: number, detail: string) {
-    super(`Contenu du cours ${slug} v${version} invalide en base :\n${detail}`);
+  constructor(slug: string, origine: string, detail: string) {
+    super(`Contenu du cours ${slug} ${origine} invalide :\n${detail}`);
     this.name = 'ContenuDeCoursInvalideError';
   }
 }
@@ -48,9 +46,8 @@ export interface EcranDeCoursBrut {
   readonly proprietes: Readonly<Record<string, unknown>>;
 }
 
-export interface ContenuDeCoursBrut {
+export interface ContenuAPublier {
   readonly slug: string;
-  readonly version: number;
   readonly titre: string;
   readonly niveau: string;
   readonly dureeMinutes: number;
@@ -58,6 +55,10 @@ export interface ContenuDeCoursBrut {
   readonly remediations?: Readonly<Record<string, unknown>>;
   readonly medias?: readonly unknown[];
   readonly ecrans: readonly EcranDeCoursBrut[];
+}
+
+export interface ContenuDeCoursBrut extends ContenuAPublier {
+  readonly version: number;
 }
 
 type BriqueStockee = keyof typeof PROPRIETES_STOCKEES;
@@ -143,8 +144,8 @@ function estGraphiqueSansDescription(ecran: EcranStocke): boolean {
   );
 }
 
-function controlerChampsDeLaV3(
-  ecrans: readonly EcranStocke[],
+function controlerChampsPublics(
+  { ecrans }: { readonly ecrans: readonly EcranStocke[] },
   contexte: z.RefinementCtx,
 ): void {
   ecrans.forEach((ecran, rang) => {
@@ -156,38 +157,18 @@ function controlerChampsDeLaV3(
       });
     };
     if (ecran.titre === undefined || ecran.titre === null) {
-      signaler(['titre'], 'titre public obligatoire à partir de la version 3');
+      signaler(['titre'], 'titre public obligatoire');
     }
     if (ecran.diffusion === undefined) {
-      signaler(
-        ['diffusion'],
-        'diffusion explicite obligatoire à partir de la version 3',
-      );
+      signaler(['diffusion'], 'diffusion explicite obligatoire');
     }
     if (estGraphiqueSansDescription(ecran)) {
       signaler(
         ['proprietes', 'presentation', 'props', 'description'],
-        'description textuelle obligatoire pour un graphique à partir de la version 3',
+        'description textuelle obligatoire pour un graphique',
       );
     }
   });
-}
-
-function contratPublicActif(
-  slug: string,
-  version: number,
-  ecrans: readonly EcranStocke[],
-): boolean {
-  return (
-    version >= PREMIERE_VERSION_TITREE ||
-    (slug === SLUG_B2_01 &&
-      version === 1 &&
-      ecrans.some(
-        (ecran) =>
-          (ecran.titre !== undefined && ecran.titre !== null) ||
-          ecran.diffusion === 'seance',
-      ))
-  );
 }
 
 function doublonsDe(valeurs: readonly string[]): readonly string[] {
@@ -198,10 +179,9 @@ function doublonsDe(valeurs: readonly string[]): readonly string[] {
   ];
 }
 
-export const coursStocke = z
+const coursStocke = z
   .object({
     slug: texte,
-    version: duree,
     titre: texte,
     niveau: texte,
     dureeMinutes: duree,
@@ -212,9 +192,6 @@ export const coursStocke = z
   })
   .strict()
   .superRefine((cours, contexte) => {
-    if (contratPublicActif(cours.slug, cours.version, cours.ecrans)) {
-      controlerChampsDeLaV3(cours.ecrans, contexte);
-    }
     const doublons = doublonsDe(cours.ecrans.map((ecran) => ecran.screenId));
     if (doublons.length > 0) {
       contexte.addIssue({
@@ -224,6 +201,10 @@ export const coursStocke = z
       });
     }
   });
+
+const coursAPublier = coursStocke.superRefine(controlerChampsPublics);
+
+export type ContenuDeCours = z.input<typeof coursStocke>;
 
 function mapperAuMoinsUn<T, U>(
   liste: AuMoinsUn<T>,
@@ -303,15 +284,12 @@ type BriqueDeProductionUnique = 'fp-cardsort' | 'fp-sheet' | 'fp-table-build';
 
 function socleDe(
   ecran: EcranStocke,
-  contratPublic: boolean,
   { modalite, guide, renvoi }: Communes,
 ): SocleDEcran {
   return {
     id: ecran.screenId,
-    titre: contratPublic ? (ecran.titre ?? null) : null,
-    diffusion: contratPublic
-      ? (ecran.diffusion ?? DIFFUSION_HISTORIQUE)
-      : DIFFUSION_HISTORIQUE,
+    titre: ecran.titre ?? null,
+    diffusion: ecran.diffusion ?? DIFFUSION_PAR_DEFAUT,
     dureeMinutes: ecran.dureeMinutes,
     concepts: ecran.concepts,
     notes: ecran.notes,
@@ -351,12 +329,11 @@ function seuilDe(seuil: number | undefined): { readonly seuil?: number } {
 
 function versEcranDeRecit(
   ecran: Extract<EcranStocke, { readonly brique: 'fp-story' }>,
-  contratPublic: boolean,
 ): Ecran {
   const { modalite, ...proprietes } = ecran.proprietes;
   const { interaction, guide } = proprietes;
   return {
-    ...socleDe(ecran, contratPublic, { modalite }),
+    ...socleDe(ecran, { modalite }),
     brique: ecran.brique,
     proprietes,
     question:
@@ -415,11 +392,11 @@ function versEcranDeRappel(
   };
 }
 
-function versEcran(ecran: EcranStocke, contratPublic: boolean): Ecran {
+function versEcran(ecran: EcranStocke): Ecran {
   if (ecran.brique === 'fp-story') {
-    return versEcranDeRecit(ecran, contratPublic);
+    return versEcranDeRecit(ecran);
   }
-  const socle = socleDe(ecran, contratPublic, ecran.proprietes);
+  const socle = socleDe(ecran, ecran.proprietes);
   switch (ecran.brique) {
     case 'fp-quote':
     case 'fp-pro':
@@ -479,30 +456,27 @@ function versEcran(ecran: EcranStocke, contratPublic: boolean): Ecran {
   }
 }
 
-export function lireCoursStocke(brut: ContenuDeCoursBrut): Cours {
-  const lecture = coursStocke.safeParse(brut);
+function lire(
+  schema: typeof coursStocke,
+  contenu: ContenuAPublier,
+  origine: string,
+): Cours {
+  const lecture = schema.safeParse(contenu);
   if (!lecture.success) {
     throw new ContenuDeCoursInvalideError(
-      brut.slug,
-      brut.version,
+      contenu.slug,
+      origine,
       z.prettifyError(lecture.error),
     );
   }
   const stocke = lecture.data;
-  const contratPublic = contratPublicActif(
-    stocke.slug,
-    stocke.version,
-    stocke.ecrans,
-  );
   const cours: Cours = {
     slug: stocke.slug,
     titre: stocke.titre,
     niveau: stocke.niveau,
     dureeMinutes: stocke.dureeMinutes,
     concepts: stocke.concepts,
-    ecrans: mapperAuMoinsUn(stocke.ecrans, (ecran) =>
-      versEcran(ecran, contratPublic),
-    ),
+    ecrans: mapperAuMoinsUn(stocke.ecrans, versEcran),
     remediations: stocke.remediations ?? {},
     medias: stocke.medias ?? [],
   };
@@ -513,10 +487,21 @@ export function lireCoursStocke(brut: ContenuDeCoursBrut): Cours {
   );
   if (doublons.length > 0) {
     throw new ContenuDeCoursInvalideError(
-      brut.slug,
-      brut.version,
+      contenu.slug,
+      origine,
       `questions en double : ${doublons.join(', ')}`,
     );
   }
   return cours;
+}
+
+export function lireCoursStocke({
+  version,
+  ...contenu
+}: ContenuDeCoursBrut): Cours {
+  return lire(coursStocke, contenu, `v${String(version)} en base`);
+}
+
+export function lireContenuAPublier(contenu: ContenuAPublier): Cours {
+  return lire(coursAPublier, contenu, 'à publier');
 }

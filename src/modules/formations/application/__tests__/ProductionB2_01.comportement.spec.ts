@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { B2_COURS } from '../../../../migrations/data/b2-v3.cours';
+import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
 import { creerCatalogueAVersions } from '../../../../../test/factories/cours.factory';
 import {
   buildSessionRecord,
@@ -10,12 +10,11 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
-import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ecranDeProduction } from '../../domain/cours/ProductionSoumise';
 import { ProductionVideError } from '../../domain/errors/FormationErrors';
 import { SubmitProductionUseCase } from '../SubmitProduction.useCase';
 
-const COURS = lireCoursStocke(B2_COURS);
+const COURS = buildCoursB2_01();
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
 const FEUILLE = 'b2-01-a4-feuille-canaux';
 const TABLEAU = 'b2-01-a4-indice-toile';
@@ -25,7 +24,7 @@ const LIGNES_DU_TABLEAU = 4;
 function corrigeDeLaFeuille(): CorrigeFeuille {
   const cible = ecranDeProduction(COURS, FEUILLE);
   if (cible === null || cible.question.corrige.type !== 'feuille') {
-    throw new Error('la feuille A4-02 est absente de la V3');
+    throw new Error('la feuille A4-02 est absente du B2-01');
   }
   return cible.question.corrige;
 }
@@ -39,7 +38,7 @@ function envoiDeReference(): Record<string, string> {
   );
 }
 
-describe('productions de la V3 corrigées par le cas d’usage (B5, B11)', () => {
+describe('productions du B2-01 corrigées par le cas d’usage (B5, B11)', () => {
   let answers: ReturnType<typeof createMockAnswersRepo>;
   let sut: SubmitProductionUseCase;
 
