@@ -22,6 +22,7 @@ import { AmorcerPublicationsDeCours1789871600000 } from '../../src/migrations/17
 import { CreateFormationRappelsServis1789875476980 } from '../../src/migrations/1789875476980-CreateFormationRappelsServis';
 import { CleEtudianteDerivee1789974322913 } from '../../src/migrations/1789974322913-CleEtudianteDerivee';
 import { AddFormationCourseEmpreinte1790178630008 } from '../../src/migrations/1790178630008-AddFormationCourseEmpreinte';
+import { NotesFormateurFacultatives1790300000000 } from '../../src/migrations/1790300000000-NotesFormateurFacultatives';
 import {
   SynchroniserCoursUseCase,
   type IssueDeSynchronisation,
@@ -108,6 +109,7 @@ const FORMATION_MIGRATIONS = [
   CreateFormationRappelsServis1789875476980,
   CleEtudianteDerivee1789974322913,
   AddFormationCourseEmpreinte1790178630008,
+  NotesFormateurFacultatives1790300000000,
 ];
 
 export const TABLES_DE_SEANCE = [

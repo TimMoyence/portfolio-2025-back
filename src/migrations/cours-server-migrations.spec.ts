@@ -4,6 +4,7 @@ import { AddFormationSessionCourseVersion1780050000000 } from './1780050000000-A
 import { SeedB2PresentationNotes1780060000000 } from './1780060000000-SeedB2PresentationNotes';
 import { VersionFormationCourseContent1780100000000 } from './1780100000000-VersionFormationCourseContent';
 import { AmorcerPublicationsDeCours1789871600000 } from './1789871600000-AmorcerPublicationsDeCours';
+import { NotesFormateurFacultatives1790300000000 } from './1790300000000-NotesFormateurFacultatives';
 
 function runner(
   query: jest.Mock = jest.fn().mockResolvedValue(undefined),
@@ -55,6 +56,29 @@ describe('schéma du contenu de cours servi par le serveur', () => {
       ),
       expect.stringContaining(
         'DROP CONSTRAINT "chk_formation_screen_notes_not_blank"',
+      ),
+    ]);
+  });
+
+  it('admet une note absente mais refuse toujours une note faite de blancs', async () => {
+    const query = jest.fn().mockResolvedValue(undefined);
+    const notes = new NotesFormateurFacultatives1790300000000();
+
+    await notes.up(runner(query));
+    await notes.down(runner(query));
+
+    expect(query.mock.calls.map(([sql]) => String(sql))).toEqual([
+      expect.stringContaining(
+        'DROP CONSTRAINT "chk_formation_screen_notes_not_blank"',
+      ),
+      expect.stringContaining(
+        `ADD CONSTRAINT "chk_formation_screen_notes_absentes_ou_renseignees" CHECK ("notes" = '' OR "notes" ~ '[^[:space:]]')`,
+      ),
+      expect.stringContaining(
+        'DROP CONSTRAINT "chk_formation_screen_notes_absentes_ou_renseignees"',
+      ),
+      expect.stringMatching(
+        /ADD CONSTRAINT "chk_formation_screen_notes_not_blank" CHECK \(length\(btrim\("notes"\)\) > 0\) NOT VALID$/,
       ),
     ]);
   });
