@@ -14,7 +14,8 @@ Séances de cours en classe : le formateur ouvre une séance, les étudiants la 
 - À l'ouverture, `trouverCourant` fournit la dernière version publiée ; la séance la fige dans `formation_sessions.course_version` et toutes ses lectures (sujet, déroulé, pilotage, résultats, clôture) relisent cette version, même après une nouvelle publication.
 - Un cours évalué ouvre avec son barème et soixante tirages non ambigus ; un cours sans question ouvre avec un barème vide et attribue seulement une graine technique unique par participant. Le barème est stocké dans `formation_sessions.bareme` (jsonb) et ne quitte jamais le serveur.
 - Le client n'envoie pas de barème : un champ `bareme` dans le corps d'ouverture est refusé en `400` (`property bareme should not exist`).
-- Réponses libres, annotations formateur, groupes et scores sont persistés par séance (`formation_free_responses`, `formation_teacher_annotations`, `formation_groups`, `formation_scores`).
+- Réponses libres, annotations formateur et scores sont persistés par séance (`formation_free_responses`, `formation_teacher_annotations`, `formation_scores`).
+- Les groupes de suivi ont été retirés du code : aucune route ni cas d'usage ne lit ou n'écrit `formation_groups` ni `formation_participants.group_id`. La table, la colonne et leurs contraintes restent en base, et l'entité `FormationGroupEntity` reste déclarée pour que les entités correspondent aux migrations. Une annotation est portée par l'écran seul : le dépôt écrit `Classe entière` dans `formation_teacher_annotations.group_name`, qui reste dans la clef d'unicité.
 
 ## Routes
 
@@ -24,8 +25,8 @@ Préfixe : `API_PREFIX` puis `/formations`. Swagger (`/docs`) porte le détail d
 
 Rôle `teacher` requis. Sur les routes portant un `:id`, le cas d'usage applique en plus la règle de propriété de la séance (`src/modules/formations/domain/SessionOwnership.ts`) :
 
-- **lectures** (`results`, `report`, `deroule`, `free-responses`, `annotations`, `groups`, `participants` en `GET`) : le formateur propriétaire ou un administrateur (rôle `admin`, avec ou sans `teacher`) ; `403` pour tout autre formateur ;
-- **écritures et pilotage** (`start`, `control`, `close`, `presenter-stream`, `POST annotations`, groupes et affectations) : le seul formateur propriétaire ; `403` pour tout autre appelant, administrateur compris ;
+- **lectures** (`results`, `report`, `deroule`, `free-responses`, `annotations`, `participants` en `GET`) : le formateur propriétaire ou un administrateur (rôle `admin`, avec ou sans `teacher`) ; `403` pour tout autre formateur ;
+- **écritures et pilotage** (`start`, `control`, `close`, `presenter-stream`, `POST annotations`, éviction et réadmission) : le seul formateur propriétaire ; `403` pour tout autre appelant, administrateur compris ;
 - `404` quand la séance n'existe pas.
 
 | Méthode  | Route                                                  | Contrat                                                                                                                                                                                                        |
@@ -39,14 +40,9 @@ Rôle `teacher` requis. Sur les routes portant un `:id`, le cas d'usage applique
 | `GET`    | `sessions/:id/deroule`                                 | Déroulé annoté : écrans avec `notes`, `seuil`, `corriges` et, s'il existe, `guide` (`aDire`, `question`, `reponse`, `calcul`, `relance`, `transition`), puis `remediations`.                                   |
 | `GET`    | `sessions/:id/presenter-stream`                        | Flux SSE du formateur : `etat`, `resultats`, `heartbeat`, `fin`.                                                                                                                                               |
 | `GET`    | `sessions/:id/free-responses`                          | Réponses libres de la séance, sans correction automatique.                                                                                                                                                     |
-| `GET`    | `sessions/:id/participants`                            | Participants de la séance avec leur groupe (`id`, `prenom`, `nom`, `groupId`, `evince`) : les inscrits dans leur ordre d'arrivée, puis les évincés.                                                            |
-| `GET`    | `sessions/:id/annotations`                             | Annotations du formateur propriétaire, par écran et groupe.                                                                                                                                                    |
-| `POST`   | `sessions/:id/annotations`                             | Corps `{ screenId, groupName, note }` ; `201` ; la dernière écriture pour un même écran et groupe remplace la précédente ; `400` si le groupe ou la note est vide une fois les blancs retirés.                 |
-| `GET`    | `sessions/:id/groups`                                  | Groupes de la séance.                                                                                                                                                                                          |
-| `POST`   | `sessions/:id/groups`                                  | Corps `{ name }` ; `201` ; `400` si le nom est vide ; `409` `NOM_DE_GROUPE_DEJA_PRIS` si le nom existe déjà dans la séance.                                                                                    |
-| `PATCH`  | `sessions/:id/groups/:groupId`                         | Corps `{ name }` ; `200` ; `400` si le nom est vide ; `404` si le groupe n'appartient pas à la séance ; `409` `NOM_DE_GROUPE_DEJA_PRIS`.                                                                       |
-| `PATCH`  | `sessions/:id/participants/:participantId/group`       | Corps `{ groupId }` ; `204` ; `404` si le groupe ou le participant n'appartient pas à la séance.                                                                                                               |
-| `DELETE` | `sessions/:id/participants/:participantId/group`       | `204` ; retire l'affectation ; `404` si le participant n'appartient pas à la séance.                                                                                                                           |
+| `GET`    | `sessions/:id/participants`                            | Participants de la séance (`id`, `prenom`, `nom`, `evince`) : les inscrits dans leur ordre d'arrivée, puis les évincés.                                                                                        |
+| `GET`    | `sessions/:id/annotations`                             | Annotations du formateur propriétaire, triées par écran.                                                                                                                                                       |
+| `POST`   | `sessions/:id/annotations`                             | Corps `{ screenId, note }` ; `201` ; la dernière écriture pour un même écran remplace la précédente ; `400` si la note est vide une fois les blancs retirés, ou si le corps porte un champ inconnu.            |
 | `DELETE` | `sessions/:id/participants/:participantId`             | Évince le participant : accès révoqué, place et graine libérées, réponses conservées ; `204` ; `404` si le participant n'appartient pas à la séance ou est déjà évincé.                                        |
 | `POST`   | `sessions/:id/participants/:participantId/readmission` | Réadmet un évincé : il retrouve sa place, sa graine, son jeton et ses réponses ; `204` ; `404` s'il n'appartient pas à la séance ou n'a jamais été évincé ; `409` `SEANCE_COMPLETE` si sa place a été reprise. |
 
@@ -120,7 +116,7 @@ Les exemples sont dans `deploy/backend.env.example` (production) et `.env.exampl
 
 ## Migrations
 
-- Les tables des séances viennent de `1778900000000-CreateFormations`, puis de `1780300000000` à `1780600000000` (réponses libres, annotations, groupes, scores). Les tables du contenu versionné, leurs contraintes et le déclencheur d'immutabilité viennent de `1779100000000` à `1780100000000`. Aucune migration n'insère de contenu de cours. `1789818127042-DropFormationScreenNotesDefault` retire le défaut vide de `formation_screen_contents.notes`, qu'interdit le CHECK `chk_formation_screen_notes_not_blank`.
+- Les tables des séances viennent de `1778900000000-CreateFormations`, puis de `1780300000000` à `1780600000000` (réponses libres, annotations, groupes aujourd'hui inutilisés, scores). Les tables du contenu versionné, leurs contraintes et le déclencheur d'immutabilité viennent de `1779100000000` à `1780100000000`. Aucune migration n'insère de contenu de cours. `1789818127042-DropFormationScreenNotesDefault` retire le défaut vide de `formation_screen_contents.notes`, qu'interdit le CHECK `chk_formation_screen_notes_not_blank`.
 - `1790178630008-AddFormationCourseEmpreinte` ajoute `formation_course_contents.empreinte` (sha256 du contenu publié, nulle pour les versions publiées avant la synchronisation).
 - `1789974322913-CleEtudianteDerivee` passe `formation_participants.student_key` et `formation_mastery.student_key` de `uuid` à `character varying(64)` : la clef n'est plus fournie par le poste mais dérivée du courriel par `CleEtudiantService` (HMAC-SHA256, 64 caractères hexadécimaux).
 - Les entités déclarent les clefs étrangères, CHECK, index et verrous d'unicité de la base sous leurs noms réels ; un test DB compare les deux (`test/formations-repositories.db-integration.spec.ts`).
