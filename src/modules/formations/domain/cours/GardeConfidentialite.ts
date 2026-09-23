@@ -280,6 +280,9 @@ function fuitesDuVote(
 }
 
 function formesDesAttendus(corrige: CorrigeProduction): readonly string[] {
+  if (corrige.type === 'classement') {
+    return corrige.attendus.map((attendu) => attendu.justification);
+  }
   if (corrige.type !== 'tableau' && corrige.type !== 'feuille') {
     return [];
   }

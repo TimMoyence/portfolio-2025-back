@@ -4,14 +4,21 @@ import {
 } from '../../../../../test/factories/cours.factory';
 import {
   buildCasAQuestionsLibres,
+  buildCorrectionDeReponses,
   buildCoursDeBriques,
+  buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { lireCoursStocke } from './CoursStocke';
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import type { Ecran } from '../contrats/cours';
-import { EcranNonServiError } from '../errors/FormationErrors';
+import type { PilotageEcran } from '../contrats/pilotage';
+import {
+  EcranNonServiError,
+  PhaseFermeeError,
+} from '../errors/FormationErrors';
 import {
   activitesLibres,
+  assertCorrectionNonProjetee,
   assertEcranServi,
   dernierEcranServi,
   rangDeLaQuestion,
@@ -174,5 +181,61 @@ describe('activitesLibres', () => {
       'b2-01-a1-mission:mesure',
       'b2-01-a1-mission:comparable',
     ]);
+  });
+});
+
+describe('assertCorrectionNonProjetee (SEC-1)', () => {
+  const ATELIER = buildEcranDeBrique('questionnaire', {
+    screenId: 'B2-01-A2-03-ATELIER-1',
+  });
+  const cours = lireCoursStocke(
+    buildCoursDeBriques([
+      ATELIER,
+      buildCorrectionDeReponses(ATELIER.screenId),
+      buildEcranDeBrique('fp-quote'),
+    ]),
+  );
+  const seance = (
+    diffusion: Partial<DiffusionDeSeance>,
+    pilotageEcrans: Readonly<Record<string, PilotageEcran>> = {},
+  ) => ({ ...PILOTE, ecranCourant: 0, ...diffusion, pilotageEcrans });
+
+  it('laisse produire tant que la correction n est ni atteinte ni révélée', () => {
+    expect(() => {
+      assertCorrectionNonProjetee(seance({}), cours, ATELIER.screenId);
+    }).not.toThrow();
+  });
+
+  it('ferme dès que le pilote atteint une correction de réponses', () => {
+    expect(() => {
+      assertCorrectionNonProjetee(
+        seance({ ecranCourant: 1 }),
+        cours,
+        ATELIER.screenId,
+      );
+    }).toThrow(PhaseFermeeError);
+  });
+
+  it('ferme en rythme libre une source révélée', () => {
+    expect(() => {
+      assertCorrectionNonProjetee(
+        seance(
+          { modeRythme: 'libre' },
+          { [ATELIER.screenId]: { revele: true } },
+        ),
+        cours,
+        ATELIER.screenId,
+      );
+    }).toThrow(PhaseFermeeError);
+  });
+
+  it('SEC-2 · reste fermé après un retour de l étayage à zéro', () => {
+    expect(() => {
+      assertCorrectionNonProjetee(
+        seance({}, { [ATELIER.screenId]: { etayage: 0, etayageAtteint: 1 } }),
+        cours,
+        ATELIER.screenId,
+      );
+    }).toThrow(PhaseFermeeError);
   });
 });

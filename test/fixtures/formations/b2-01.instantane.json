@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "339b934e3b1721bbe8189d0981a717c6b9a35e58a11d9f2727dd480238bef360",
+  "empreinte": "8d85594e7534d4baec0ab125806d6c4037e5a898894f59201b2875ef0e8c3cd6",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -8988,7 +8988,8 @@
         "titre": "Correction : ce que dit chaque chiffre du tableau de bord",
         "duree": 1,
         "interactif": false,
-        "donnees": {}
+        "donnees": {},
+        "ecranCorrige": "B2-01-A1-05-ANATOMIE"
       },
       {
         "id": "B2-01-A1-06-FICHE-INDICATEUR",
@@ -9346,7 +9347,8 @@
         "titre": "Correction : comparable ou pas ?",
         "duree": 1,
         "interactif": false,
-        "donnees": {}
+        "donnees": {},
+        "ecranCorrige": "B2-01-A2-07-JEU-COMPARABLE"
       },
       {
         "id": "B2-01-A2-08-JALON-2",
@@ -9649,7 +9651,8 @@
         "titre": "Correction : le contrôle qui tranche chaque anomalie",
         "duree": 1,
         "interactif": false,
-        "donnees": {}
+        "donnees": {},
+        "ecranCorrige": "B2-01-A5-07-CONTROLE-DISCRIMINANT"
       },
       {
         "id": "B2-01-A5-08-RECOMMANDATION",

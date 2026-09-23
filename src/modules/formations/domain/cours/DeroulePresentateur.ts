@@ -146,7 +146,7 @@ function solutionLisible(corrige: CorrigeEnigme): string {
     : corrige.solution.acceptees[0];
 }
 
-function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
+export function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
   switch (ecran.brique) {
     case 'fp-cardsort':
     case 'fp-sheet':

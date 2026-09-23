@@ -2,7 +2,13 @@ import {
   buildCoursAvecProductions,
   buildCoursDeTest,
 } from '../../../../../test/factories/cours.factory';
+import {
+  buildCasAQuestionsLibres,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
+} from '../../../../../test/factories/ecrans-stockes.factory';
 import type { Ecran } from '../contrats/cours';
+import { lireCoursStocke } from './CoursStocke';
 import type { PilotageEcran } from '../contrats/pilotage';
 import {
   PhaseFermeeError,
@@ -10,6 +16,7 @@ import {
   PilotageIncompatibleError,
 } from '../errors/FormationErrors';
 import {
+  assertEtapeNonCorrigee,
   assertPhaseOuverte,
   assertPilotageCompatible,
   fusionnerPilotage,
@@ -126,6 +133,105 @@ describe('assertPilotageCompatible', () => {
         });
       }).toThrow(PilotageIncompatibleError);
     });
+  });
+});
+
+describe('pilotage des écrans de la QA B2', () => {
+  const cours = lireCoursStocke(
+    buildCoursDeBriques(
+      ['fp-plot', 'fp-table-build', 'fp-quote'].map((brique) =>
+        buildEcranDeBrique(brique),
+      ),
+    ),
+  );
+  const [TRACE, TABLEAU, CITATION_STOCKEE] = cours.ecrans;
+  const CAS = lireCoursStocke(buildCoursDeBriques([buildCasAQuestionsLibres()]))
+    .ecrans[0];
+
+  it('F12 · accepte les réglages d un tracé dans les bornes de ses paramètres', () => {
+    if (TRACE.brique !== 'fp-plot') throw new Error('tracé attendu');
+    const [parametre] = TRACE.proprietes.parametres;
+
+    expect(() => {
+      assertPilotageCompatible(TRACE, {
+        screenId: TRACE.id,
+        reglages: { [parametre.cle]: parametre.max },
+      });
+    }).not.toThrow();
+    expect(() => {
+      assertPilotageCompatible(TRACE, {
+        screenId: TRACE.id,
+        reglages: { [parametre.cle]: parametre.max + 1 },
+      });
+    }).toThrow(PilotageIncompatibleError);
+  });
+
+  it('F17 · étaye la construction de tableau en deux niveaux au plus', () => {
+    expect(() => {
+      assertPilotageCompatible(TABLEAU, { screenId: TABLEAU.id, etayage: 2 });
+    }).not.toThrow();
+    expect(() => {
+      assertPilotageCompatible(TABLEAU, { screenId: TABLEAU.id, etayage: 3 });
+    }).toThrow(PilotageIncompatibleError);
+  });
+
+  it('révèle un écran à réponses libres et refuse un écran sans réponse', () => {
+    expect(() => {
+      assertPilotageCompatible(CAS, { screenId: CAS.id, revele: true });
+    }).not.toThrow();
+    expect(() => {
+      assertPilotageCompatible(CITATION_STOCKEE, {
+        screenId: CITATION_STOCKEE.id,
+        revele: true,
+      });
+    }).toThrow(PilotageIncompatibleError);
+  });
+
+  it('F10 · accepte la projection des résultats sur tout écran', () => {
+    expect(() => {
+      assertPilotageCompatible(CITATION_STOCKEE, {
+        screenId: CITATION_STOCKEE.id,
+        resultatsProjetes: true,
+      });
+    }).not.toThrow();
+  });
+});
+
+describe('étayage atteint (SEC-2)', () => {
+  it('garde le maximum atteint quand l étayage affiché redescend', () => {
+    const avance = fusionnerPilotage({}, { screenId: 'E-REM', etayage: 2 });
+    const masque = fusionnerPilotage(avance, { screenId: 'E-REM', etayage: 0 });
+
+    expect(masque['E-REM']).toEqual({ etayage: 0, etayageAtteint: 2 });
+  });
+
+  it('ne laisse pas le client poser l étayage atteint', () => {
+    const demande = {
+      screenId: 'E-REM',
+      etayage: 0,
+      etayageAtteint: 0,
+    } as unknown as Parameters<typeof fusionnerPilotage>[1];
+
+    expect(
+      fusionnerPilotage(
+        { 'E-REM': { etayage: 1, etayageAtteint: 1 } },
+        demande,
+      )['E-REM'],
+    ).toEqual({ etayage: 0, etayageAtteint: 1 });
+  });
+
+  it('ferme une étape déjà corrigée même après « Masquer »', () => {
+    if (EXEMPLE.brique !== 'fp-worked') throw new Error('exemple attendu');
+    const [premiere] = EXEMPLE.proprietes.exemple.etapes;
+    const activite = `${EXEMPLE.proprietes.exemple.id}:${premiere.id}`;
+
+    expect(() => {
+      assertEtapeNonCorrigee(
+        { [EXEMPLE.id]: { etayage: 0, etayageAtteint: 1 } },
+        EXEMPLE,
+        activite,
+      );
+    }).toThrow(PhaseFermeeError);
   });
 });
 
