@@ -5,7 +5,11 @@ import {
   rangDeLEcran,
 } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import { assertEtapeNonCorrigee } from '../domain/cours/PilotageEcrans';
+import {
+  assertEtapeNonCorrigee,
+  assertPhaseOuverte,
+} from '../domain/cours/PilotageEcrans';
+import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import {
   ActiviteInconnueError,
   CoursInconnuError,
@@ -23,6 +27,7 @@ import {
   CATALOGUE_COURS,
   FREE_RESPONSES_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
+  SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 import { participantActif } from './ParticipantActif';
@@ -38,6 +43,8 @@ export class SaveFreeResponseUseCase {
     private readonly catalogue: ICatalogueCours,
     @Inject(PARTICIPANTS_REPOSITORY)
     private readonly participants: IParticipantsRepository,
+    @Inject(SESSION_STATE_CACHE)
+    private readonly cache: ISessionStateCache,
   ) {}
 
   async execute(command: SaveFreeResponseInput): Promise<void> {
@@ -69,11 +76,13 @@ export class SaveFreeResponseUseCase {
     if (!admises.includes(command.activityId)) {
       throw new ActiviteInconnueError(command.screenId, command.activityId);
     }
+    assertPhaseOuverte(session.pilotageEcrans, { ecranId: command.screenId });
     assertEtapeNonCorrigee(
       session.pilotageEcrans,
       cours.ecrans.find((ecran) => ecran.id === command.screenId),
       command.activityId,
     );
     await this.freeResponses.save({ ...command, response });
+    this.cache.signalerActivite(command.sessionId);
   }
 }

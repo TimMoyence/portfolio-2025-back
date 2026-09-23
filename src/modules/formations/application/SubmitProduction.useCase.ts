@@ -103,9 +103,11 @@ export class SubmitProductionUseCase {
 
     const valeur = normaliserProduction(cible, command.valeur);
 
-    if (
-      await this.answers.existsFor(command.participantId, command.questionId)
-    ) {
+    const reprise = await this.answers.existsFor(
+      command.participantId,
+      command.questionId,
+    );
+    if (reprise && !PRODUCTIONS_REPRENABLES.includes(cible.ecran.brique)) {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
     const participant = await this.participants.findById(command.participantId);
@@ -119,21 +121,27 @@ export class SubmitProductionUseCase {
 
     const verdict = corrigerProduction(cible.question.corrige, valeur, cible);
     const confusion = confusionDominante(verdict.details);
-    await this.enregistrer(command, session.id, participant.seed, {
-      concept: cible.question.concept,
-      correcte: verdict.correcte,
-      score: verdict.score,
-      confusion,
-      details: verdict.details,
-      valeur,
-    });
+    await this.enregistrer(
+      command,
+      { sessionId: session.id, seed: participant.seed, reprise },
+      {
+        concept: cible.question.concept,
+        correcte: verdict.correcte,
+        score: verdict.score,
+        confusion,
+        details: verdict.details,
+        valeur,
+      },
+    );
     this.cache.signalerActivite(command.sessionId);
-    await this.mastery.enregistrerTentative({
-      studentKey: participant.studentKey,
-      concept: cible.question.concept,
-      reussi: verdict.correcte,
-      vueLe: new Date(),
-    });
+    if (!reprise) {
+      await this.mastery.enregistrerTentative({
+        studentKey: participant.studentKey,
+        concept: cible.question.concept,
+        reussi: verdict.correcte,
+        vueLe: new Date(),
+      });
+    }
 
     return {
       correcte: verdict.correcte,
@@ -149,8 +157,7 @@ export class SubmitProductionUseCase {
 
   private async enregistrer(
     command: SubmitProductionCommand,
-    sessionId: string,
-    seed: number,
+    { sessionId, seed, reprise }: EnregistrementDeProduction,
     verdict: {
       concept: string;
       correcte: boolean;
@@ -164,7 +171,7 @@ export class SubmitProductionUseCase {
       valeur: ValeurProduction;
     },
   ): Promise<void> {
-    await this.answers.create({
+    const reponse = {
       sessionId,
       participantId: command.participantId,
       questionId: command.questionId,
@@ -176,9 +183,25 @@ export class SubmitProductionUseCase {
       score: verdict.score,
       details: verdict.details,
       dureeMs: command.dureeMs,
-    });
+    };
+    if (reprise) {
+      await this.answers.remplacer(reponse);
+      return;
+    }
+    await this.answers.create(reponse);
   }
 }
+
+interface EnregistrementDeProduction {
+  readonly sessionId: string;
+  readonly seed: number;
+  readonly reprise: boolean;
+}
+
+const PRODUCTIONS_REPRENABLES: readonly string[] = [
+  'fp-sheet',
+  'fp-table-build',
+];
 
 function libelleDuDetail(confusion: ConfusionId | null): string | null {
   return confusion === null

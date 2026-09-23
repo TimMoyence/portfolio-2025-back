@@ -187,13 +187,52 @@ describe('SubmitProductionUseCase', () => {
     expect(answers.create).not.toHaveBeenCalled();
   });
 
-  it('refuse une seconde production sur la meme question', async () => {
+  it('F16 · remplace une feuille déjà rendue tant que la correction n est pas ouverte', async () => {
     answers.existsFor.mockResolvedValue(true);
 
-    await expect(sut.execute(commande)).rejects.toThrow(
-      AnswerAlreadySubmittedError,
-    );
+    await sut.execute(commande);
+
     expect(answers.create).not.toHaveBeenCalled();
+    expect(answers.remplacer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        questionId: 'Q-TEST-FEUILLE',
+        valeur: commande.valeur,
+        score: 1,
+      }),
+    );
+    expect(mastery.enregistrerTentative).not.toHaveBeenCalled();
+    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
+  });
+
+  it('F16 · refuse la reprise d une feuille dont l étayage a déjà été montré', async () => {
+    answers.existsFor.mockResolvedValue(true);
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        courseSlug: COURS.slug,
+        ecranCourant: DERNIER_ECRAN,
+        pilotageEcrans: { 'E-FEUILLE': { etayage: 0, etayageAtteint: 1 } },
+      }),
+    );
+
+    await expect(sut.execute(commande)).rejects.toThrow(PhaseFermeeError);
+    expect(answers.remplacer).not.toHaveBeenCalled();
+  });
+
+  it('refuse une seconde production sur un même classement', async () => {
+    answers.existsFor.mockResolvedValue(true);
+
+    await expect(
+      sut.execute({
+        ...commande,
+        questionId: 'Q-TEST-CLASSEMENT',
+        valeur: {
+          type: 'classement',
+          classement: { 'ca-2025': 'valeur', inflation: 'ambigu' },
+        },
+      }),
+    ).rejects.toThrow(AnswerAlreadySubmittedError);
+    expect(answers.create).not.toHaveBeenCalled();
+    expect(answers.remplacer).not.toHaveBeenCalled();
   });
 
   it('refuse un participant rattache a une autre seance', async () => {

@@ -11,8 +11,14 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import {
+  buildCorrectionDeReponses,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
+} from '../../../../../test/factories/ecrans-stockes.factory';
 import type { Cours, Ecran } from '../../domain/contrats/cours';
 import { questionNumerique } from '../../domain/cours/Cours';
+import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { tirer } from '../../domain/cours/Tirage';
 import {
@@ -257,5 +263,91 @@ describe('LireSujetUseCase', () => {
 
       await expect(demander()).rejects.toBeInstanceOf(CoursModifieError);
     });
+  });
+});
+
+describe('LireSujetUseCase — écrans de correction (SEC-1)', () => {
+  const ATELIER = buildEcranDeBrique('questionnaire', {
+    screenId: 'B2-01-A2-03-ATELIER-1',
+  });
+  const CORRIGE = lireCoursStocke(
+    buildCoursDeBriques([ATELIER, buildCorrectionDeReponses(ATELIER.screenId)]),
+  );
+  const tirage = tirer(CORRIGE, SEED);
+  const session = (diffusion: Partial<ReturnType<typeof buildSessionRecord>>) =>
+    buildSessionRecord({
+      courseSlug: CORRIGE.slug,
+      bareme: buildBareme({
+        tirages: [{ seed: SEED, solutions: tirage.solutions }],
+      }),
+      ...diffusion,
+    });
+  let sessions: ReturnType<typeof createMockSessionsRepo>;
+  let sut: LireSujetUseCase;
+
+  const correctionServie = async () => {
+    const sujet = await sut.execute({
+      sessionId: SESSION.id,
+      participantId: PARTICIPANT.id,
+    });
+    return sujet.ecrans[1];
+  };
+
+  beforeEach(() => {
+    sessions = createMockSessionsRepo();
+    const participants = createMockParticipantsRepo();
+    participants.findById.mockResolvedValue(PARTICIPANT);
+    sut = new LireSujetUseCase(
+      sessions,
+      participants,
+      creerCatalogueDeTest(CORRIGE),
+    );
+  });
+
+  it('verrouille en rythme libre une correction dont la source n est pas révélée', async () => {
+    sessions.findById.mockResolvedValue(
+      session({ modeRythme: 'libre', intervalleLibre: null }),
+    );
+
+    await expect(correctionServie()).resolves.toEqual({
+      id: `${ATELIER.screenId}-CORRECTION`,
+      type: 'ecran-verrouille',
+      titre: 'Écran fp-story',
+      duree: 1,
+      interactif: false,
+      donnees: {},
+      ecranCorrige: ATELIER.screenId,
+    });
+  });
+
+  it('sert la correction et les réponses du tirage une fois la source révélée', async () => {
+    sessions.findById.mockResolvedValue(
+      session({
+        ecranCourant: 1,
+        pilotageEcrans: { [ATELIER.screenId]: { revele: true } },
+      }),
+    );
+
+    const servi = await correctionServie();
+
+    expect(servi.type).toBe('fp-story');
+    expect(servi.correction).toMatchObject({
+      ecranId: ATELIER.screenId,
+      questions: [
+        {
+          questionId: 'b2-01-a2-evolution-marge',
+          optionId: tirage.solutions['b2-01-a2-evolution-marge'].valeur,
+        },
+        { questionId: 'b2-01-a2-part-marketplace', optionId: null },
+      ],
+    });
+  });
+
+  it('sert la correction après la clôture de la séance', async () => {
+    sessions.findById.mockResolvedValue(session({ etat: 'terminee' }));
+
+    expect((await correctionServie()).correction?.ecranId).toBe(
+      ATELIER.screenId,
+    );
   });
 });

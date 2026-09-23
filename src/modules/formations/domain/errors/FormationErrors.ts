@@ -40,6 +40,14 @@ export class ParticipantNotFoundError extends ResourceNotFoundError {
   }
 }
 
+export class ReponseIntrouvableError extends ResourceNotFoundError {
+  readonly code = 'REPONSE_INTROUVABLE';
+
+  constructor(questionId: string) {
+    super(`Aucune production à reprendre pour la question ${questionId}`);
+  }
+}
+
 export class FormationGroupNotFoundError extends ResourceNotFoundError {
   constructor(groupId: string) {
     super(`Groupe introuvable dans cette séance : ${groupId}`);

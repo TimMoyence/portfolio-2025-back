@@ -27,6 +27,7 @@ import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursSto
 import type { DerouleCours } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import type { ICatalogueCours } from '../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
+  ReponseIntrouvableError,
   RevisionDeSeanceObsoleteError,
   SeanceCompleteError,
   SeedPoolExhaustedError,
@@ -334,6 +335,23 @@ function creerAnswersRepo(): IAnswersRepository {
       };
       reponses.push(reponse);
       return Promise.resolve(reponse);
+    },
+    remplacer: (input) => {
+      const rang = reponses.findIndex(
+        (reponse) =>
+          reponse.participantId === input.participantId &&
+          reponse.questionId === input.questionId,
+      );
+      if (rang < 0) {
+        return Promise.reject(new ReponseIntrouvableError(input.questionId));
+      }
+      reponses[rang] = {
+        ...reponses[rang],
+        ...input,
+        score: input.score ?? null,
+        details: input.details ?? null,
+      };
+      return Promise.resolve();
     },
     listerDuParticipant: (sessionId, participantId) =>
       Promise.resolve(

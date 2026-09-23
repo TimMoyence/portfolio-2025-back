@@ -77,6 +77,14 @@ export class PilotageEcranRequestDto implements PilotageEcran {
   @IsOptional()
   @EstReglageNumerique()
   reglages?: Record<string, number>;
+
+  @ApiPropertyOptional({
+    description:
+      'Projection a la scene des resultats anonymes agreges de cet ecran',
+  })
+  @IsOptional()
+  @IsBoolean()
+  resultatsProjetes?: boolean;
 }
 
 export class ControlSessionRequestDto extends ControlSessionServieRequestDto {

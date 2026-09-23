@@ -103,4 +103,29 @@ describe('AnswersRepositoryTypeORM', () => {
     repo.save.mockRejectedValue(new Error('connexion perdue'));
     await expect(sut.create(input)).rejects.toThrow('connexion perdue');
   });
+
+  it('F16 · remplace la production du participant sur la même question', async () => {
+    const update = jest.fn().mockResolvedValue({ affected: 1 });
+    repo.update = update;
+
+    await sut.remplacer({ ...input, score: 0.5, details: [] });
+
+    expect(update).toHaveBeenCalledWith(
+      { participantId: 'participant-uuid', questionId: 'Q-CAP-03' },
+      {
+        valeur: 1338.23,
+        correcte: true,
+        misconception: null,
+        score: 0.5,
+        details: [],
+        dureeMs: 42000,
+      },
+    );
+  });
+
+  it('F16 · signale une reprise sans production à remplacer', async () => {
+    repo.update = jest.fn().mockResolvedValue({ affected: 0 });
+
+    await expect(sut.remplacer(input)).rejects.toThrow(/Q-CAP-03/);
+  });
 });

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
+import {
+  AnswerAlreadySubmittedError,
+  ReponseIntrouvableError,
+} from '../domain/errors/FormationErrors';
 import type {
   AnswerRecord,
   CreateAnswerInput,
@@ -78,6 +81,23 @@ export class AnswersRepositoryTypeORM
         throw new AnswerAlreadySubmittedError(input.questionId);
       }
       throw error;
+    }
+  }
+
+  async remplacer(input: CreateAnswerInput): Promise<void> {
+    const resultat = await this.repo.update(
+      { participantId: input.participantId, questionId: input.questionId },
+      {
+        valeur: input.valeur,
+        correcte: input.correcte,
+        misconception: input.misconception,
+        score: input.score ?? null,
+        details: input.details ?? null,
+        dureeMs: input.dureeMs,
+      },
+    );
+    if (resultat.affected !== 1) {
+      throw new ReponseIntrouvableError(input.questionId);
     }
   }
 

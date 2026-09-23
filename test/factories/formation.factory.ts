@@ -373,6 +373,7 @@ export function createMockAnswersRepo(): jest.Mocked<IAnswersRepository> {
         Promise.resolve(buildAnswerRecord(input)),
       ),
     existsFor: jest.fn().mockResolvedValue(false),
+    remplacer: jest.fn().mockResolvedValue(undefined),
     listBySession: jest.fn().mockResolvedValue([buildAnswerRecord()]),
     tallyBySession: jest.fn().mockResolvedValue([]),
   };

@@ -1010,6 +1010,10 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         },
         "type": "object",
       },
+      "resultatsProjetes": {
+        "description": "Projection a la scene des resultats anonymes agreges de cet ecran",
+        "type": "boolean",
+      },
       "revele": {
         "description": "Revelation des pistes fausses d un defi, jamais retiree",
         "type": "boolean",

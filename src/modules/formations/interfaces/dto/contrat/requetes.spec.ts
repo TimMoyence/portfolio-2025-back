@@ -193,6 +193,16 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
       expect(dto.pilotage).toEqual(pilotage);
     });
 
+    it('F08 · accepte la projection des résultats d un écran', async () => {
+      const pilotage = {
+        screenId: 'B2-01-A2-03-ATELIER-1',
+        resultatsProjetes: true,
+      };
+      const dto = await validateBody({ pilotage }, ControlSessionRequestDto);
+
+      expect(dto.pilotage).toEqual(pilotage);
+    });
+
     it.each([
       [
         'un réglage non numérique',
@@ -210,6 +220,10 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
       ['une phase inconnue', { screenId: 'B2-01-A3-01', phase: 'fin' }],
       ['un étayage négatif', { screenId: 'B2-01-A3-06', etayage: -1 }],
       ['une révélation non booléenne', { screenId: 'B2-01-A5-08', revele: 1 }],
+      [
+        'une projection non booléenne',
+        { screenId: 'B2-01-A5-08', resultatsProjetes: 'oui' },
+      ],
       ['un écran absent', { phase: 'vote' }],
     ])('refuse %s', async (_cas, pilotage) => {
       await expect(

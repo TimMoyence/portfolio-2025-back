@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import type { Cours } from '../domain/contrats/cours';
 import type { PilotageEcran } from '../domain/contrats/pilotage';
+import { sourcesAReveler } from '../domain/cours/Corrections';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { PilotageDemande } from '../domain/cours/PilotageEcrans';
 import {
@@ -88,6 +89,7 @@ export class ControlSessionUseCase {
   ): Promise<void> {
     if (
       misAJour.ecranCourant === undefined &&
+      misAJour.modeRythme === undefined &&
       !misAJour.intervalleLibre &&
       changements.pilotage === undefined
     ) {
@@ -117,13 +119,34 @@ export class ControlSessionUseCase {
         `Intervalle de rythme libre hors du cours : ${totalEcrans} écrans`,
       );
     }
-    if (changements.pilotage !== undefined) {
-      misAJour.pilotageEcrans = this.pilotageFusionne(
-        cours,
-        session,
-        changements.pilotage,
-      );
+    const pilotage =
+      changements.pilotage === undefined
+        ? session.pilotageEcrans
+        : this.pilotageFusionne(cours, session, changements.pilotage);
+    const revele = this.corrigesProjetes(cours, session, misAJour, pilotage);
+    if (changements.pilotage !== undefined || revele !== pilotage) {
+      misAJour.pilotageEcrans = revele;
     }
+  }
+
+  private corrigesProjetes(
+    cours: Cours,
+    session: SessionRecord,
+    misAJour: UpdateSessionInput,
+    pilotage: Readonly<Record<string, PilotageEcran>>,
+  ): Readonly<Record<string, PilotageEcran>> {
+    if ((misAJour.modeRythme ?? session.modeRythme) !== 'pilote') {
+      return pilotage;
+    }
+    const aReveler = sourcesAReveler(
+      cours,
+      misAJour.ecranCourant ?? session.ecranCourant,
+    ).filter((source) => pilotage[source]?.revele !== true);
+    return aReveler.reduce(
+      (courant, screenId) =>
+        fusionnerPilotage(courant, { screenId, revele: true }),
+      pilotage,
+    );
   }
 
   private pilotageFusionne(

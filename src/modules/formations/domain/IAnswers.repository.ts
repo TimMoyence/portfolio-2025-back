@@ -40,6 +40,7 @@ export interface QuestionTally {
 export interface IAnswersRepository {
   create(input: CreateAnswerInput): Promise<AnswerRecord>;
   existsFor(participantId: string, questionId: string): Promise<boolean>;
+  remplacer(input: CreateAnswerInput): Promise<void>;
   listBySession(sessionId: string): Promise<readonly AnswerRecord[]>;
   listerDuParticipant(
     sessionId: string,
