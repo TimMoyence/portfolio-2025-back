@@ -1,6 +1,7 @@
 import type { Cours, Ecran } from '../contrats/cours';
 import type { TirageDuCours } from '../contrats/tirage';
 import { estInteractif, questionsDe, questionsDuCours } from './Cours';
+import { ecranCorrigePar } from './Corrections';
 import {
   controlerConfidentialite,
   type Manquement,
@@ -16,6 +17,7 @@ export const REGLES_STRUCTURE = [
   'duree-cours',
   'reference-inconnue',
   'reference-circulaire',
+  'correction-apres-source',
   'notes-formateur',
   'atelier-questions-fermees',
   'confidentialite',
@@ -461,27 +463,143 @@ function estExempteDAtelier(
   );
 }
 
-function controlerAteliers({ cours }: Analyse): readonly Manquement[] {
+function fermeesNotees(ecran: Ecran): number {
+  return questionsDe(ecran).filter(
+    (question) =>
+      question.noteCompte && TYPES_DE_QUESTION_FERMEE.includes(question.type),
+  ).length;
+}
+
+interface TempsNote {
+  readonly ecran: string;
+  readonly fermees: number;
+  readonly minutes: number;
+  readonly debut: number;
+  readonly fin: number;
+}
+
+function tempsNoteA(cours: Cours, debut: number): TempsNote {
+  const source = cours.ecrans[debut];
+  let fin = debut;
+  let minutes = minutesDe(source);
+  while (
+    fin + 1 < cours.ecrans.length &&
+    ecranCorrigePar(cours.ecrans[fin + 1]) === source.id
+  ) {
+    fin += 1;
+    minutes += minutesDe(cours.ecrans[fin]);
+  }
+  return {
+    ecran: nomEcran(source, debut),
+    fermees: fermeesNotees(source),
+    minutes,
+    debut,
+    fin,
+  };
+}
+
+function tempsNotes(cours: Cours): readonly TempsNote[] {
   const dernier = cours.ecrans.length - 1;
+  const temps: TempsNote[] = [];
+  let rang = 0;
+  while (rang <= dernier) {
+    const ecran = cours.ecrans[rang];
+    if (fermeesNotees(ecran) > 0 && !estExempteDAtelier(ecran, rang, dernier)) {
+      const temp = tempsNoteA(cours, rang);
+      temps.push(temp);
+      rang = temp.fin + 1;
+    } else {
+      rang += 1;
+    }
+  }
+  return temps;
+}
+
+function suitesDAtelier(
+  temps: readonly TempsNote[],
+): readonly (readonly TempsNote[])[] {
+  return temps.reduce<TempsNote[][]>((suites, temp) => {
+    const courante = suites.at(-1);
+    const precedent = courante?.at(-1);
+    if (courante !== undefined && precedent?.fin === temp.debut - 1) {
+      courante.push(temp);
+    } else {
+      suites.push([temp]);
+    }
+    return suites;
+  }, []);
+}
+
+function tempsTropLong(temp: TempsNote): readonly Manquement[] {
+  if (temp.minutes <= DUREE_MAXIMALE_D_ATELIER) {
+    return [];
+  }
+  return [
+    {
+      ecran: temp.ecran,
+      raison: `${temp.fermees} question(s) fermée(s) notée(s) sur un temps de ${temp.minutes} min, correction comprise : un temps noté dure au plus ${DUREE_MAXIMALE_D_ATELIER} min ; au-delà, le questionnaire se découpe.`,
+    },
+  ];
+}
+
+function suiteTropCourte(suite: readonly TempsNote[]): readonly Manquement[] {
+  const minutes = suite.reduce((total, temp) => total + temp.minutes, 0);
+  if (minutes >= DUREE_MINIMALE_D_ATELIER) {
+    return [];
+  }
+  const nommes = suite.map((temp) => `« ${temp.ecran} »`).join(', ');
+  return [
+    {
+      ecran: suite[0].ecran,
+      raison: `l'atelier noté ${nommes} totalise ${minutes} min, corrections comprises : un atelier noté dure au moins ${DUREE_MINIMALE_D_ATELIER} min, hors rappel d'ouverture et billet de clôture.`,
+    },
+  ];
+}
+
+function controlerAteliers({ cours }: Analyse): readonly Manquement[] {
+  const temps = tempsNotes(cours);
+  return [
+    ...temps.flatMap(tempsTropLong),
+    ...suitesDAtelier(temps).flatMap(suiteTropCourte),
+  ];
+}
+
+function controlerCorrections({ cours }: Analyse): readonly Manquement[] {
+  const rangs = new Map(
+    cours.ecrans.map((ecran, rang) => [nomEcran(ecran, rang), rang]),
+  );
   return cours.ecrans.flatMap((ecran, rang) => {
-    const fermees = questionsDe(ecran).filter(
-      (question) =>
-        question.noteCompte && TYPES_DE_QUESTION_FERMEE.includes(question.type),
-    );
-    const duree = ecran.dureeMinutes;
-    if (
-      fermees.length === 0 ||
-      estExempteDAtelier(ecran, rang, dernier) ||
-      (duree >= DUREE_MINIMALE_D_ATELIER && duree <= DUREE_MAXIMALE_D_ATELIER)
-    ) {
+    const source = ecranCorrigePar(ecran);
+    if (source === null) {
       return [];
     }
-    return [
-      {
-        ecran: nomEcran(ecran, rang),
-        raison: `${fermees.length} question(s) fermée(s) notée(s) sur un écran de ${duree} min : un atelier noté dure de ${DUREE_MINIMALE_D_ATELIER} à ${DUREE_MAXIMALE_D_ATELIER} min, hors rappel d'ouverture et billet de clôture.`,
-      },
-    ];
+    const identifiant = nomEcran(ecran, rang);
+    const rangSource = rangs.get(source);
+    if (rangSource === undefined) {
+      return [
+        {
+          ecran: identifiant,
+          raison: `la correction « ${identifiant} » corrige « ${source} », absent de ce cours.`,
+        },
+      ];
+    }
+    if (rangSource >= rang) {
+      return [
+        {
+          ecran: identifiant,
+          raison: `la correction « ${identifiant} » précède l'écran « ${source} » qu'elle corrige : une correction vient après son exercice.`,
+        },
+      ];
+    }
+    if (ecran.diffusion !== 'seance') {
+      return [
+        {
+          ecran: identifiant,
+          raison: `la correction « ${identifiant} » est en diffusion « ${ecran.diffusion} » : une correction n'est servie qu'en séance, après révélation de son exercice.`,
+        },
+      ];
+    }
+    return [];
   });
 }
 
@@ -561,6 +679,7 @@ const REGLES: readonly Regle[] = [
   { id: 'duree-cours', controler: controlerDureeCours },
   { id: 'reference-inconnue', controler: controlerReferences },
   { id: 'reference-circulaire', controler: controlerCycles },
+  { id: 'correction-apres-source', controler: controlerCorrections },
   { id: 'notes-formateur', controler: controlerNotes },
   { id: 'atelier-questions-fermees', controler: controlerAteliers },
   {

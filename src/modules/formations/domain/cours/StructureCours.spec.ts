@@ -1,4 +1,6 @@
 import {
+  buildCorrectionDeReponses,
+  buildCorrectionDExemple,
   buildEcranDeBrique,
   buildProprietesStockees,
   NOTES_DU_FORMATEUR,
@@ -9,6 +11,7 @@ import {
 } from '../../../../../test/factories/questions-stockees.factory';
 import {
   buildCoursConforme,
+  buildEcranDAtelier,
   buildEcranDeCitation,
   buildEcranDExemple,
   lireEcranStocke,
@@ -31,7 +34,7 @@ const base = buildCoursConforme();
 const [ouverture, citation, atelier, cloture] = base.ecrans;
 
 describe('verifierStructure', () => {
-  it('expose les treize regles de structure dans l ordre applique aux violations', () => {
+  it('expose les quatorze regles de structure dans l ordre applique aux violations', () => {
     expect(REGLES_STRUCTURE).toEqual([
       'exposition-continue',
       'ratio-interaction',
@@ -40,6 +43,7 @@ describe('verifierStructure', () => {
       'duree-cours',
       'reference-inconnue',
       'reference-circulaire',
+      'correction-apres-source',
       'notes-formateur',
       'atelier-questions-fermees',
       'confidentialite',
@@ -309,9 +313,11 @@ describe('verifierStructure — questions fermees en atelier', () => {
   it('n exempte le rappel qu en ouverture et le billet qu en cloture', () => {
     const cours = recomposer(base, [
       { ...atelier, id: 'B2-01-A1-00-ATELIER-0', dureeMinutes: 8 },
-      ouverture,
-      cloture,
       citation,
+      ouverture,
+      buildEcranDeCitation('B2-01-A1-05-ENTRE', 1),
+      cloture,
+      buildEcranDeCitation('B2-01-A1-09-FIN', 1),
     ]);
 
     expect(
@@ -319,6 +325,123 @@ describe('verifierStructure — questions fermees en atelier', () => {
         .filter((violation) => violation.regle === 'atelier-questions-fermees')
         .map((violation) => violation.ecran),
     ).toEqual([ouverture.id, cloture.id]);
+  });
+
+  const ateliersEnSuite = (
+    premier: number,
+    second: number,
+    entre: readonly Ecran[] = [],
+  ): Cours =>
+    recomposer(base, [
+      ouverture,
+      citation,
+      buildEcranDAtelier('B2-01-A2-03-ATELIER', premier, 'b2-01-a2-q1'),
+      lireEcranStocke(buildCorrectionDeReponses('B2-01-A2-03-ATELIER')),
+      ...entre,
+      buildEcranDAtelier('B2-01-A2-04-ATELIER-SUITE', second, 'b2-01-a2-q2'),
+      lireEcranStocke(buildCorrectionDeReponses('B2-01-A2-04-ATELIER-SUITE')),
+      cloture,
+    ]);
+
+  const ateliersFautifs = (cours: Cours): (string | null)[] =>
+    verifierStructure(cours)
+      .filter((violation) => violation.regle === 'atelier-questions-fermees')
+      .map((violation) => violation.ecran);
+
+  it('G01 · accepte un questionnaire decoupe en deux temps suivis de leur correction', () => {
+    expect(ateliersFautifs(ateliersEnSuite(6, 6))).toEqual([]);
+  });
+
+  it('G01 · compte la correction dans la duree d un atelier', () => {
+    const cours = recomposer(base, [
+      ouverture,
+      citation,
+      buildEcranDAtelier('B2-01-A2-03-ATELIER', 7, 'b2-01-a2-q1'),
+      lireEcranStocke(buildCorrectionDeReponses('B2-01-A2-03-ATELIER')),
+      cloture,
+    ]);
+
+    expect(ateliersFautifs(cours)).toEqual([]);
+  });
+
+  it('G01 · refuse un temps note de plus de quinze minutes, correction comprise', () => {
+    expect(ateliersFautifs(ateliersEnSuite(15, 6))).toEqual([
+      'B2-01-A2-03-ATELIER',
+    ]);
+  });
+
+  it('G01 · refuse deux temps trop courts separes par un ecran d exposition', () => {
+    expect(
+      ateliersFautifs(
+        ateliersEnSuite(6, 6, [buildEcranDeCitation('B2-01-A2-03-PAUSE', 1)]),
+      ),
+    ).toEqual(['B2-01-A2-03-ATELIER', 'B2-01-A2-04-ATELIER-SUITE']);
+  });
+});
+
+describe('verifierStructure — ecrans de correction', () => {
+  const avecCorrection = (correction: Ecran, avant = false): Cours =>
+    recomposer(
+      base,
+      avant
+        ? [ouverture, citation, correction, atelier, cloture]
+        : [ouverture, citation, atelier, correction, cloture],
+    );
+
+  const fautifs = (cours: Cours): (string | null)[] =>
+    verifierStructure(cours)
+      .filter((violation) => violation.regle === 'correction-apres-source')
+      .map((violation) => violation.ecran);
+
+  it('accepte une correction de reponses et un corrige d exemple places apres leur source', () => {
+    const exemple = buildEcranDExemple('B2-01-A1-05-EXEMPLE', 'Calculez.');
+    const cours = recomposer(base, [
+      ouverture,
+      citation,
+      atelier,
+      lireEcranStocke(buildCorrectionDeReponses(atelier.id)),
+      exemple,
+      lireEcranStocke(buildCorrectionDExemple(exemple.id)),
+      cloture,
+    ]);
+
+    expect(verifierStructure(cours)).toEqual([]);
+  });
+
+  it('refuse une correction placee avant son ecran source', () => {
+    expect(
+      fautifs(
+        avecCorrection(
+          lireEcranStocke(buildCorrectionDeReponses(atelier.id)),
+          true,
+        ),
+      ),
+    ).toEqual([`${atelier.id}-CORRECTION`]);
+  });
+
+  it('refuse une correction dont la source est absente du cours', () => {
+    expect(
+      fautifs(
+        avecCorrection(
+          lireEcranStocke(
+            buildCorrectionDExemple(
+              'B2-01-A9-99-ABSENT',
+              'B2-01-A1-05-CORRIGE',
+            ),
+          ),
+        ),
+      ),
+    ).toEqual(['B2-01-A1-05-CORRIGE']);
+  });
+
+  it('refuse une correction diffusee au catalogue', () => {
+    const correction = lireEcranStocke(
+      buildCorrectionDeReponses(atelier.id, undefined, {
+        diffusion: 'catalogue',
+      }),
+    );
+
+    expect(fautifs(avecCorrection(correction))).toEqual([correction.id]);
   });
 });
 

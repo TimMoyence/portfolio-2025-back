@@ -99,6 +99,24 @@ export function buildEcranDeCitation(
   return { ...lu, id, dureeMinutes };
 }
 
+export function buildEcranDAtelier(
+  id: string,
+  dureeMinutes: number,
+  questionId: string,
+): Ecran {
+  return lireEcranStocke(
+    buildEcranDeBrique('questionnaire', {
+      screenId: id,
+      titre: `Atelier ${id}`,
+      dureeMinutes,
+      proprietes: {
+        ...buildProprietesStockees('questionnaire'),
+        questions: [buildNumeriqueStockee({ id: questionId })],
+      },
+    }),
+  );
+}
+
 export function buildEcranDExemple(id: string, invite: string): Ecran {
   const proprietes = buildProprietesStockees('fp-worked');
   const exemple = proprietes.exemple as { readonly etapes: object[] };
