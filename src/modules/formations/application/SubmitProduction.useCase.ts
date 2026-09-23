@@ -18,6 +18,7 @@ import {
   AnswerAlreadySubmittedError,
   CoursInconnuError,
   ParticipantNotFoundError,
+  ReprisesEpuiseesError,
   SessionNotFoundError,
   TypeDeQuestionError,
 } from '../domain/errors/FormationErrors';
@@ -184,11 +185,20 @@ export class SubmitProductionUseCase {
       details: verdict.details,
       dureeMs: command.dureeMs,
     };
-    if (reprise) {
-      await this.answers.remplacer(reponse);
+    if (!reprise) {
+      await this.answers.create(reponse);
       return;
     }
-    await this.answers.create(reponse);
+    const remplacee = await this.answers.remplacer(
+      reponse,
+      SOUMISSIONS_MAX_PAR_PRODUCTION,
+    );
+    if (!remplacee) {
+      throw new ReprisesEpuiseesError(
+        command.questionId,
+        SOUMISSIONS_MAX_PAR_PRODUCTION,
+      );
+    }
   }
 }
 
@@ -197,6 +207,8 @@ interface EnregistrementDeProduction {
   readonly seed: number;
   readonly reprise: boolean;
 }
+
+export const SOUMISSIONS_MAX_PAR_PRODUCTION = 3;
 
 const PRODUCTIONS_REPRENABLES: readonly string[] = [
   'fp-sheet',

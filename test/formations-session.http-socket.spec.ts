@@ -322,6 +322,7 @@ function creerParticipantsRepo(): IParticipantsRepository {
 
 function creerAnswersRepo(): IAnswersRepository {
   const reponses: AnswerRecord[] = [];
+  const soumissions = new Map<string, number>();
   return {
     create: (input) => {
       const reponse: AnswerRecord = {
@@ -334,7 +335,7 @@ function creerAnswersRepo(): IAnswersRepository {
       reponses.push(reponse);
       return Promise.resolve(reponse);
     },
-    remplacer: (input) => {
+    remplacer: (input, soumissionsMax) => {
       const rang = reponses.findIndex(
         (reponse) =>
           reponse.participantId === input.participantId &&
@@ -343,13 +344,19 @@ function creerAnswersRepo(): IAnswersRepository {
       if (rang < 0) {
         return Promise.reject(new ReponseIntrouvableError(input.questionId));
       }
+      const cle = `${input.participantId}:${input.questionId}`;
+      const dejaSoumises = soumissions.get(cle) ?? 1;
+      if (dejaSoumises >= soumissionsMax) {
+        return Promise.resolve(false);
+      }
+      soumissions.set(cle, dejaSoumises + 1);
       reponses[rang] = {
         ...reponses[rang],
         ...input,
         score: input.score ?? null,
         details: input.details ?? null,
       };
-      return Promise.resolve();
+      return Promise.resolve(true);
     },
     listerDuParticipant: (sessionId, participantId) =>
       Promise.resolve(

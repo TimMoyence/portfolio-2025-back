@@ -1,4 +1,4 @@
-import type { Repository } from 'typeorm';
+import { LessThan, type Repository } from 'typeorm';
 import {
   mockTypeOrmCreate,
   mockTypeOrmSave,
@@ -108,10 +108,18 @@ describe('AnswersRepositoryTypeORM', () => {
     const update = jest.fn().mockResolvedValue({ affected: 1 });
     repo.update = update;
 
-    await sut.remplacer({ ...input, score: 0.5, details: [] });
+    const remplacee = await sut.remplacer(
+      { ...input, score: 0.5, details: [] },
+      3,
+    );
 
+    expect(remplacee).toBe(true);
     expect(update).toHaveBeenCalledWith(
-      { participantId: 'participant-uuid', questionId: 'Q-CAP-03' },
+      {
+        participantId: 'participant-uuid',
+        questionId: 'Q-CAP-03',
+        soumissions: LessThan(3),
+      },
       {
         valeur: 1338.23,
         correcte: true,
@@ -119,13 +127,22 @@ describe('AnswersRepositoryTypeORM', () => {
         score: 0.5,
         details: [],
         dureeMs: 42000,
+        soumissions: expect.any(Function) as unknown,
       },
     );
   });
 
+  it('SEC-4.1 · refuse la reprise d une production qui a atteint le plafond de soumissions', async () => {
+    repo.update = jest.fn().mockResolvedValue({ affected: 0 });
+    repo.count = jest.fn().mockResolvedValue(1);
+
+    await expect(sut.remplacer(input, 3)).resolves.toBe(false);
+  });
+
   it('F16 · signale une reprise sans production à remplacer', async () => {
     repo.update = jest.fn().mockResolvedValue({ affected: 0 });
+    repo.count = jest.fn().mockResolvedValue(0);
 
-    await expect(sut.remplacer(input)).rejects.toThrow(/Q-CAP-03/);
+    await expect(sut.remplacer(input, 3)).rejects.toThrow(/Q-CAP-03/);
   });
 });

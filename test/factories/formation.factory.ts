@@ -369,7 +369,7 @@ export function createMockAnswersRepo(): jest.Mocked<IAnswersRepository> {
         Promise.resolve(buildAnswerRecord(input)),
       ),
     existsFor: jest.fn().mockResolvedValue(false),
-    remplacer: jest.fn().mockResolvedValue(undefined),
+    remplacer: jest.fn().mockResolvedValue(true),
     listBySession: jest.fn().mockResolvedValue([buildAnswerRecord()]),
     tallyBySession: jest.fn().mockResolvedValue([]),
   };

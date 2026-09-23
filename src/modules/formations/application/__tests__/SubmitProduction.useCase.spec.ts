@@ -18,11 +18,15 @@ import {
   ParticipantNotFoundError,
   PhaseFermeeError,
   ProductionVideError,
+  ReprisesEpuiseesError,
   SessionClosedError,
   SessionNotStartedError,
   TypeDeQuestionError,
 } from '../../domain/errors/FormationErrors';
-import { SubmitProductionUseCase } from '../SubmitProduction.useCase';
+import {
+  SOUMISSIONS_MAX_PAR_PRODUCTION,
+  SubmitProductionUseCase,
+} from '../SubmitProduction.useCase';
 
 const COURS = buildCoursAvecProductions();
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
@@ -199,9 +203,18 @@ describe('SubmitProductionUseCase', () => {
         valeur: commande.valeur,
         score: 1,
       }),
+      SOUMISSIONS_MAX_PAR_PRODUCTION,
     );
     expect(mastery.enregistrerTentative).not.toHaveBeenCalled();
     expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
+  });
+
+  it('SEC-4.1 · refuse une reprise au-delà du plafond de soumissions, sans verdict', async () => {
+    answers.existsFor.mockResolvedValue(true);
+    answers.remplacer.mockResolvedValue(false);
+
+    await expect(sut.execute(commande)).rejects.toThrow(ReprisesEpuiseesError);
+    expect(cache.signalerActivite).not.toHaveBeenCalled();
   });
 
   it('F16 · refuse la reprise d une feuille dont l étayage a déjà été montré', async () => {

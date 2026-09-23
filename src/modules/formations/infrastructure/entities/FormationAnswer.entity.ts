@@ -72,6 +72,9 @@ export class FormationAnswerEntity {
   @Column({ name: 'duree_ms', type: 'int' })
   dureeMs: number;
 
+  @Column({ type: 'int', default: 1 })
+  soumissions: number;
+
   @CreateDateColumn({ name: 'soumis_le', type: 'timestamptz' })
   soumisLe: Date;
 }

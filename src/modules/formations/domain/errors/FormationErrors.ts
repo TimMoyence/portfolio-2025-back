@@ -106,6 +106,16 @@ export class AnswerAlreadySubmittedError extends ResourceConflictError {
   }
 }
 
+export class ReprisesEpuiseesError extends ResourceConflictError {
+  readonly code = 'REPRISES_EPUISEES';
+
+  constructor(questionId: string, soumissionsMax: number) {
+    super(
+      `Votre production ${questionId} a déjà été envoyée ${soumissionsMax} fois : attendez la correction.`,
+    );
+  }
+}
+
 export class ActiviteInconnueError extends DomainValidationError {
   readonly code = 'ACTIVITE_INCONNUE';
 

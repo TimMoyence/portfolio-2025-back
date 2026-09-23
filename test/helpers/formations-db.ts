@@ -23,6 +23,7 @@ import { CreateFormationRappelsServis1789875476980 } from '../../src/migrations/
 import { CleEtudianteDerivee1789974322913 } from '../../src/migrations/1789974322913-CleEtudianteDerivee';
 import { AddFormationCourseEmpreinte1790178630008 } from '../../src/migrations/1790178630008-AddFormationCourseEmpreinte';
 import { NotesFormateurFacultatives1790300000000 } from '../../src/migrations/1790300000000-NotesFormateurFacultatives';
+import { PlafondDesReprisesDeProduction1790400000000 } from '../../src/migrations/1790400000000-PlafondDesReprisesDeProduction';
 import {
   SynchroniserCoursUseCase,
   type IssueDeSynchronisation,
@@ -109,6 +110,7 @@ const FORMATION_MIGRATIONS = [
   CleEtudianteDerivee1789974322913,
   AddFormationCourseEmpreinte1790178630008,
   NotesFormateurFacultatives1790300000000,
+  PlafondDesReprisesDeProduction1790400000000,
 ];
 
 export const TABLES_DE_SEANCE = [

@@ -349,6 +349,31 @@ describeDb('Formations repositories (db integration)', () => {
     ).resolves.toHaveLength(1);
   });
 
+  it('SEC-4.1 · plafonne les reprises concurrentes d une production sans en perdre le compte', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    const premiere = await repondre(
+      seance.id,
+      participant.id,
+      'Q-CAP-03',
+      false,
+    );
+
+    const reprises = await Promise.all(
+      [true, true, true].map((correcte) =>
+        contexte.answers.remplacer({ ...premiere, correcte }, 3),
+      ),
+    );
+
+    expect(reprises.filter(Boolean)).toHaveLength(2);
+    const [{ soumissions }]: Array<{ soumissions: number }> =
+      await contexte.dataSource.query(
+        `SELECT "soumissions" FROM "formation_answers" WHERE "id" = $1`,
+        [premiere.id],
+      );
+    expect(soumissions).toBe(3);
+  });
+
   it('relit des nombres et non des chaines depuis la base', async () => {
     const seance = await ouvrirSeance('4271');
     const ecrit = await inscrire(seance.id, CLE_ETUDIANT, 1001);

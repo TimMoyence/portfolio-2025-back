@@ -263,7 +263,7 @@ export class FormationsStudentController {
   })
   @ApiConflictResponse({
     description:
-      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI ou REPONSE_DEJA_ENREGISTREE',
+      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI, REPONSE_DEJA_ENREGISTREE ou REPRISES_EPUISEES',
   })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async production(
