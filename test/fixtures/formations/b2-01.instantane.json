@@ -1,7 +1,6 @@
 {
-  "version": 3,
   "graine": 0,
-  "empreinte": "461a90dbd1b9f6a9db72dba8a9725d8404af88bcaadf1be84c26577be7a2a5fa",
+  "empreinte": "d52afc532cecf45bb9672039feb05e065def9d03ea806e80c219ed2243869699",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -470,7 +469,7 @@
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
         "titre": "Votre plan de reprise et de transfert",
-        "duree": 2,
+        "duree": 1,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -531,7 +530,7 @@
             "metadonnees": {
               "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -2620,6 +2619,112 @@
         }
       },
       {
+        "id": "B2-01-A5-07-CORRECTION",
+        "type": "fp-story",
+        "titre": "Correction : le contrôle qui tranche chaque anomalie",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A5-07-CORRECTION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A5-07-CORRECTION",
+              "renderer": "sort-review",
+              "props": {
+                "title": "Correction du tri",
+                "subtitle": "À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées, puis recalcul, puis pièce.",
+                "source": {
+                  "screenId": "B2-01-A5-07-CONTROLE-DISCRIMINANT",
+                  "sortId": "b2-01-a5-controle"
+                },
+                "categories": [
+                  {
+                    "id": "metadonnees",
+                    "label": "Compléter les métadonnées (unité, période, source)"
+                  },
+                  {
+                    "id": "recalcul",
+                    "label": "Recalculer (coefficients, points, pondération)"
+                  },
+                  {
+                    "id": "representation",
+                    "label": "Refaire la représentation (axe, titre, forme)"
+                  },
+                  {
+                    "id": "preuve",
+                    "label": "Chercher une preuve externe (pièce, donnée détaillée)"
+                  }
+                ],
+                "cards": [
+                  {
+                    "id": "inflation",
+                    "label": "« Inflation : 4,9 » dans le tableau de bord",
+                    "category": "metadonnees",
+                    "justification": "« 4,9 » sans unité ni période : taux annuel, indice ou écart ? Compléter la fiche d’identité suffit à trancher."
+                  },
+                  {
+                    "id": "marge",
+                    "label": "« Marge brute : +1 200 »",
+                    "category": "metadonnees",
+                    "justification": "« +1 200 » : des euros, des unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas."
+                  },
+                  {
+                    "id": "points",
+                    "label": "« Taux de marge : −2,3 % »",
+                    "category": "recalcul",
+                    "justification": "L’écart entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative."
+                  },
+                  {
+                    "id": "toile",
+                    "label": "« Prix de la toile : +4 % » (8 − 5 + 4 − 3)",
+                    "category": "recalcul",
+                    "justification": "Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et non +4 %."
+                  },
+                  {
+                    "id": "moyenne",
+                    "label": "Note de Samir : « taux de marge moyen des canaux : 26,7 % »",
+                    "category": "recalcul",
+                    "justification": "Une moyenne simple ignore le poids de chaque canal : on recalcule une moyenne pondérée par le CA."
+                  },
+                  {
+                    "id": "diapo",
+                    "label": "Diapositive « Marge brute : une croissance continue »",
+                    "category": "representation",
+                    "justification": "L’axe tronqué grossit l’écart : on refait le graphique avec un axe à zéro avant de conclure."
+                  },
+                  {
+                    "id": "clients",
+                    "label": "« La marketplace détourne nos clients du sur-mesure »",
+                    "category": "preuve",
+                    "justification": "Deux évolutions simultanées ne prouvent pas une cause : seule une donnée détaillée des clients par canal tranche."
+                  },
+                  {
+                    "id": "factures",
+                    "label": "Courriel du cabinet comptable : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT",
+                    "category": "preuve",
+                    "justification": "90 € d’écart entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe."
+                  },
+                  {
+                    "id": "compensation",
+                    "label": "Contrôle de février : total du grand livre égal au total des pièces, mais F002 à +100 € et F003 à −100 €",
+                    "category": "preuve",
+                    "justification": "Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["controle-coherence"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
         "id": "B2-01-A5-08-RECOMMANDATION",
         "type": "fp-challenge",
         "titre": "Votre recommandation au comité",
@@ -2630,6 +2735,44 @@
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
             "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet.",
+            "rappel": [
+              {
+                "libelle": "Le dossier",
+                "valeur": "Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace), exercices 2024 et 2025, données annuelles."
+              },
+              {
+                "libelle": "La proposition de Samir",
+                "valeur": "Investir 40 000 € pour doubler les ventes de la marketplace."
+              },
+              {
+                "libelle": "Chiffre d’affaires HT",
+                "valeur": "1 050 000 € → 1 150 000 €, soit +9,5 %."
+              },
+              {
+                "libelle": "Marge brute",
+                "valeur": "289 800 € → 291 000 €, soit +1 200 €."
+              },
+              {
+                "libelle": "Taux de marge brute global",
+                "valeur": "27,6 % → 25,3 %, soit −2,3 points."
+              },
+              {
+                "libelle": "CA HT par canal",
+                "valeur": "sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ; marketplace 357 000 € → 523 000 €."
+              },
+              {
+                "libelle": "Taux de marge brute par canal, identiques les deux années",
+                "valeur": "sur-mesure 36 % ; entretien 28 % ; marketplace 16 %."
+              },
+              {
+                "libelle": "Part de la marketplace dans le CA",
+                "valeur": "34 % → 45,5 %."
+              },
+              {
+                "libelle": "Anomalie relevée au contrôle",
+                "valeur": "90 € d’écart entre le grand livre et les factures de vente de mars (pièce F004)."
+              }
+            ],
             "strategies": [],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
@@ -3724,7 +3867,7 @@
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
         "titre": "Votre plan de reprise et de transfert",
-        "duree": 2,
+        "duree": 1,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -3785,13 +3928,13 @@
             "metadonnees": {
               "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "Action : parcourir les six étapes en 90 secondes.\nObservé : la colonne « preuve » annonce ce qui sera demandé à chaque acte.\nAttendu : chacun sait où il en est et ce qui compte pour la note (la participation, § 4.5).\nContrôle : question rapide : « quel acte produit le graphique du comité ? » (l’acte 4).\nTransition : « Première preuve : transformer la question d’Hélène. »",
+        "notes": "Action : parcourir les six étapes en une minute.\nObservé : la colonne « preuve » annonce ce qui sera demandé à chaque acte.\nAttendu : chacun sait où il en est et ce qui compte pour la note (la participation, § 4.5).\nContrôle : question rapide : « quel acte produit le graphique du comité ? » (l’acte 4).\nTransition : « Première preuve : transformer la question d’Hélène. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -7144,7 +7287,7 @@
             }
           }
         },
-        "notes": "Action : 5 min de tri (annoncer la dernière minute), 3 min de correction.\nObservé : les cartes « factures », « compensation » et « détourne nos clients ».\nAttendu : métadonnées (inflation, +1 200) ; recalcul (−2,3 %, +4 %, moyenne simple) ; représentation (diapositive) ; preuve externe (clients, factures, compensation). À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées avant recalcul, recalcul avant pièce.\nContrôle : un total qui concorde ne prouve pas que chaque ligne est juste (février : +100 € et −100 € se compensent) ; un indice oriente, une pièce tranche.\nTransition : « Rédigez votre recommandation. »",
+        "notes": "Action : binômes, 5 min de tri (annoncer la dernière minute), puis l’écran suivant pour la correction.\nObservé : les cartes « factures », « compensation » et « détourne nos clients ».\nAttendu : le contrôle le plus direct, et à efficacité égale le moins coûteux, pour trancher chaque anomalie.\nContrôle : un indice oriente, une pièce tranche.\nTransition : « Voyons la correction, carte par carte. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -7161,51 +7304,163 @@
             {
               "carteId": "inflation",
               "categorieId": "metadonnees",
-              "justification": "Compléter les métadonnées (unité, période, source)"
+              "justification": "« 4,9 » sans unité ni période : taux annuel, indice ou écart ? Compléter la fiche d’identité suffit à trancher."
             },
             {
               "carteId": "marge",
               "categorieId": "metadonnees",
-              "justification": "Compléter les métadonnées (unité, période, source)"
+              "justification": "« +1 200 » : des euros, des unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas."
             },
             {
               "carteId": "points",
               "categorieId": "recalcul",
-              "justification": "Recalculer (coefficients, points, pondération)"
+              "justification": "L’écart entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative."
             },
             {
               "carteId": "toile",
               "categorieId": "recalcul",
-              "justification": "Recalculer (coefficients, points, pondération)"
+              "justification": "Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et non +4 %."
             },
             {
               "carteId": "moyenne",
               "categorieId": "recalcul",
-              "justification": "Recalculer (coefficients, points, pondération)"
+              "justification": "Une moyenne simple ignore le poids de chaque canal : on recalcule une moyenne pondérée par le CA."
             },
             {
               "carteId": "diapo",
               "categorieId": "representation",
-              "justification": "Refaire la représentation (axe, titre, forme)"
+              "justification": "L’axe tronqué grossit l’écart : on refait le graphique avec un axe à zéro avant de conclure."
             },
             {
               "carteId": "clients",
               "categorieId": "preuve",
-              "justification": "Chercher une preuve externe (pièce, donnée détaillée)"
+              "justification": "Deux évolutions simultanées ne prouvent pas une cause : seule une donnée détaillée des clients par canal tranche."
             },
             {
               "carteId": "factures",
               "categorieId": "preuve",
-              "justification": "Chercher une preuve externe (pièce, donnée détaillée)"
+              "justification": "90 € d’écart entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe."
             },
             {
               "carteId": "compensation",
               "categorieId": "preuve",
-              "justification": "Chercher une preuve externe (pièce, donnée détaillée)"
+              "justification": "Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main."
             }
           ],
           "seuilReussite": 0.75
         }
+      },
+      {
+        "id": "B2-01-A5-07-CORRECTION",
+        "type": "fp-story",
+        "titre": "Correction : le contrôle qui tranche chaque anomalie",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A5-07-CORRECTION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A5-07-CORRECTION",
+              "renderer": "sort-review",
+              "props": {
+                "title": "Correction du tri",
+                "subtitle": "À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées, puis recalcul, puis pièce.",
+                "source": {
+                  "screenId": "B2-01-A5-07-CONTROLE-DISCRIMINANT",
+                  "sortId": "b2-01-a5-controle"
+                },
+                "categories": [
+                  {
+                    "id": "metadonnees",
+                    "label": "Compléter les métadonnées (unité, période, source)"
+                  },
+                  {
+                    "id": "recalcul",
+                    "label": "Recalculer (coefficients, points, pondération)"
+                  },
+                  {
+                    "id": "representation",
+                    "label": "Refaire la représentation (axe, titre, forme)"
+                  },
+                  {
+                    "id": "preuve",
+                    "label": "Chercher une preuve externe (pièce, donnée détaillée)"
+                  }
+                ],
+                "cards": [
+                  {
+                    "id": "inflation",
+                    "label": "« Inflation : 4,9 » dans le tableau de bord",
+                    "category": "metadonnees",
+                    "justification": "« 4,9 » sans unité ni période : taux annuel, indice ou écart ? Compléter la fiche d’identité suffit à trancher."
+                  },
+                  {
+                    "id": "marge",
+                    "label": "« Marge brute : +1 200 »",
+                    "category": "metadonnees",
+                    "justification": "« +1 200 » : des euros, des unités, sur quelle période ? Sans unité ni base, le chiffre ne se lit pas."
+                  },
+                  {
+                    "id": "points",
+                    "label": "« Taux de marge : −2,3 % »",
+                    "category": "recalcul",
+                    "justification": "L’écart entre deux taux se recalcule en points : −2,3 points, soit −8,3 % en évolution relative."
+                  },
+                  {
+                    "id": "toile",
+                    "label": "« Prix de la toile : +4 % » (8 − 5 + 4 − 3)",
+                    "category": "recalcul",
+                    "justification": "Des taux successifs se multiplient : 1,08 × 0,95 × 1,04 × 0,97 ≈ 1,035, soit +3,5 % et non +4 %."
+                  },
+                  {
+                    "id": "moyenne",
+                    "label": "Note de Samir : « taux de marge moyen des canaux : 26,7 % »",
+                    "category": "recalcul",
+                    "justification": "Une moyenne simple ignore le poids de chaque canal : on recalcule une moyenne pondérée par le CA."
+                  },
+                  {
+                    "id": "diapo",
+                    "label": "Diapositive « Marge brute : une croissance continue »",
+                    "category": "representation",
+                    "justification": "L’axe tronqué grossit l’écart : on refait le graphique avec un axe à zéro avant de conclure."
+                  },
+                  {
+                    "id": "clients",
+                    "label": "« La marketplace détourne nos clients du sur-mesure »",
+                    "category": "preuve",
+                    "justification": "Deux évolutions simultanées ne prouvent pas une cause : seule une donnée détaillée des clients par canal tranche."
+                  },
+                  {
+                    "id": "factures",
+                    "label": "Courriel du cabinet comptable : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT",
+                    "category": "preuve",
+                    "justification": "90 € d’écart entre le grand livre et les pièces : seule la pièce de mars dit laquelle des deux se trompe."
+                  },
+                  {
+                    "id": "compensation",
+                    "label": "Contrôle de février : total du grand livre égal au total des pièces, mais F002 à +100 € et F003 à −100 €",
+                    "category": "preuve",
+                    "justification": "Un total qui concorde peut cacher +100 € et −100 € : on contrôle ligne à ligne, pièce en main."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["controle-coherence"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "Action : projeter le plateau corrigé ; commencer par « factures », « compensation » et « détourne nos clients ».\nObservé : sur chaque poste, les cartes mal placées au tri sont bordées de rouge, les bien placées de vert.\nAttendu : métadonnées (inflation, +1 200) ; recalcul (−2,3 %, +4 %, moyenne simple) ; représentation (diapositive) ; preuve externe (clients, factures, compensation).\nContrôle : un total qui concorde ne prouve pas que chaque ligne est juste (février : +100 € et −100 € se compensent) ; un indice oriente, une pièce tranche.\nTransition : « Rédigez votre recommandation. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
       },
       {
         "id": "B2-01-A5-08-RECOMMANDATION",
@@ -7218,6 +7473,44 @@
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
             "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. Si vous avez corrigé une anomalie, ajoutez une alerte courte au cabinet.",
+            "rappel": [
+              {
+                "libelle": "Le dossier",
+                "valeur": "Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace), exercices 2024 et 2025, données annuelles."
+              },
+              {
+                "libelle": "La proposition de Samir",
+                "valeur": "Investir 40 000 € pour doubler les ventes de la marketplace."
+              },
+              {
+                "libelle": "Chiffre d’affaires HT",
+                "valeur": "1 050 000 € → 1 150 000 €, soit +9,5 %."
+              },
+              {
+                "libelle": "Marge brute",
+                "valeur": "289 800 € → 291 000 €, soit +1 200 €."
+              },
+              {
+                "libelle": "Taux de marge brute global",
+                "valeur": "27,6 % → 25,3 %, soit −2,3 points."
+              },
+              {
+                "libelle": "CA HT par canal",
+                "valeur": "sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ; marketplace 357 000 € → 523 000 €."
+              },
+              {
+                "libelle": "Taux de marge brute par canal, identiques les deux années",
+                "valeur": "sur-mesure 36 % ; entretien 28 % ; marketplace 16 %."
+              },
+              {
+                "libelle": "Part de la marketplace dans le CA",
+                "valeur": "34 % → 45,5 %."
+              },
+              {
+                "libelle": "Anomalie relevée au contrôle",
+                "valeur": "90 € d’écart entre le grand livre et les factures de vente de mars (pièce F004)."
+              }
+            ],
             "strategies": [],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
@@ -8619,7 +8912,7 @@
         "id": "B2-01-A1-07-PLAN",
         "type": "fp-story",
         "titre": "Votre plan de reprise et de transfert",
-        "duree": 2,
+        "duree": 1,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -8680,7 +8973,7 @@
             "metadonnees": {
               "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -9201,6 +9494,14 @@
         "type": "ecran-verrouille",
         "titre": "Quel contrôle pour chaque anomalie ?",
         "duree": 8,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B2-01-A5-07-CORRECTION",
+        "type": "ecran-verrouille",
+        "titre": "Correction : le contrôle qui tranche chaque anomalie",
+        "duree": 1,
         "interactif": false,
         "donnees": {}
       },
