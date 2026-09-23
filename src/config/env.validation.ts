@@ -26,6 +26,47 @@ function findDuplicateCryptographicSecret(
   return null;
 }
 
+function addSmtpIssues(
+  env: {
+    SMTP_HOST?: string;
+    SMTP_USER?: string;
+    SMTP_PASS?: string;
+    SMTP_FROM?: string;
+    ARTICLE_BROADCAST_ENABLED: string;
+  },
+  ctx: z.RefinementCtx,
+): void {
+  // Un transporter SMTP n'est cree que si HOST/USER/PASS sont renseignes
+  // (cf. `createOptionalSmtpTransporter`). Dans ce cas, les mailers
+  // enverront reellement — et sans expediteur, nodemailer recoit
+  // `from: undefined` et echoue a l'envoi, en production, bien apres le
+  // demarrage. On refuse donc de demarrer plutot que de laisser passer
+  // une configuration qui ne peut pas fonctionner.
+  //
+  // Hors de ce cas, les mailers sont no-op : exiger un expediteur
+  // bloquerait inutilement les environnements de dev et de CI.
+  const smtpConfigured = Boolean(
+    env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS,
+  );
+  if (smtpConfigured && !env.SMTP_FROM?.trim()) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['SMTP_FROM'],
+      message:
+        'requis des lors que SMTP_HOST, SMTP_USER et SMTP_PASS sont definis ' +
+        '(sinon les emails partent avec un expediteur vide)',
+    });
+  }
+
+  if (env.ARTICLE_BROADCAST_ENABLED === 'true' && !smtpConfigured) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['ARTICLE_BROADCAST_ENABLED'],
+      message: 'exige SMTP_HOST, SMTP_USER, SMTP_PASS et SMTP_FROM',
+    });
+  }
+}
+
 const envSchema = z
   .object({
     NODE_ENV: z
@@ -172,6 +213,19 @@ const envSchema = z
     MORNING_BRIEF_HMAC_KEYS: z.string().optional(),
     MORNING_BRIEF_HMAC_KEY_ID: z.string().optional(),
     MORNING_BRIEF_HMAC_SECRET: z.string().optional(),
+    ARTICLE_BROADCAST_ENABLED: z.enum(['true', 'false']).default('false'),
+    ARTICLE_BROADCAST_DELAY_MINUTES: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .max(24 * 60)
+      .default(90),
+    ARTICLE_BROADCAST_BATCH_SIZE: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(1000)
+      .default(200),
 
     PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),
@@ -212,27 +266,7 @@ const envSchema = z
       });
     }
 
-    // Un transporter SMTP n'est cree que si HOST/USER/PASS sont renseignes
-    // (cf. `createOptionalSmtpTransporter`). Dans ce cas, les mailers
-    // enverront reellement — et sans expediteur, nodemailer recoit
-    // `from: undefined` et echoue a l'envoi, en production, bien apres le
-    // demarrage. On refuse donc de demarrer plutot que de laisser passer
-    // une configuration qui ne peut pas fonctionner.
-    //
-    // Hors de ce cas, les mailers sont no-op : exiger un expediteur
-    // bloquerait inutilement les environnements de dev et de CI.
-    const smtpConfigured = Boolean(
-      env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS,
-    );
-    if (smtpConfigured && !env.SMTP_FROM?.trim()) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['SMTP_FROM'],
-        message:
-          'requis des lors que SMTP_HOST, SMTP_USER et SMTP_PASS sont definis ' +
-          '(sinon les emails partent avec un expediteur vide)',
-      });
-    }
+    addSmtpIssues(env, ctx);
 
     const hmacRingConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEYS?.trim());
     const hmacKeyIdConfigured = Boolean(env.MORNING_BRIEF_HMAC_KEY_ID?.trim());

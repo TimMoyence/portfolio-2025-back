@@ -49,7 +49,19 @@ Une fois l'API demarree :
 - le flux éditorial Morning-Brief repose sur :
   - `POST /articles/ingest` (HMAC + `Idempotency-Key`, machine-à-machine)
   - `GET /articles` et `GET /articles/:slug` (articles publiés uniquement)
-  - `GET /articles/feed.xml` (RSS)
+  - `GET /articles/feed.xml?locale=fr|en` (RSS 2.0 : `pubDate`, `lastBuildDate`, `atom:link rel="self"`)
+  - modération (JWT, rôle `admin`) : `GET /articles/admin/articles`,
+    `POST /articles/admin/:articleId/withdraw|restore`,
+    `POST /articles/admin/:articleId/broadcast/approve|cancel`
+- chaque édition reçue programme une diffusion email aux abonnés confirmés de
+  la source `veille-ia`, dans la langue de l'article, après
+  `ARTICLE_BROADCAST_DELAY_MINUTES` (fenêtre de modération, 90 min par défaut).
+  Un cron (5 min) l'envoie par lots de `ARTICLE_BROADCAST_BATCH_SIZE` ; chaque
+  destinataire est réservé avant l'envoi, donc jamais servi deux fois, même
+  après un redémarrage. Rien ne part tant que `ARTICLE_BROADCAST_ENABLED=true`
+  et le SMTP ne sont pas configurés ; une diffusion restée plus de 24 h sans
+  envoi expire au lieu de partir en retard. Retirer un article annule sa
+  diffusion.
 - les seances de formation reposent sur un cours servi par le serveur ([details](./docs/formations.md)) :
   - `POST /formations/sessions` avec `{ courseSlug }`, le serveur tirant le bareme
   - `GET /formations/sessions/:id/sujet` (sujet du tirage de l'etudiant, sans corrige)

@@ -10,6 +10,7 @@ import {
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type { INewsletterMailer } from '../domain/INewsletterMailer';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
+import { DAILY_BRIEF_SOURCE } from '../domain/SupportedFormationSlugs';
 
 type Greeting = {
   readonly text: string;
@@ -69,7 +70,11 @@ export class NewsletterMailerService implements INewsletterMailer {
 Merci de vous etre inscrit. Cliquez sur ce lien pour confirmer votre email :
 ${confirmUrl}
 
-Vous recevrez des emails pratiques lies a la formation "${subscriber.sourceFormationSlug}" (outils testes, cas d'usage, retours d'XP). Zero teasing, zero pitch cache : chaque email livre l'integralite du contenu promis dans son sujet.
+${
+  subscriber.sourceFormationSlug === DAILY_BRIEF_SOURCE
+    ? `Vous recevrez la veille IA quotidienne : une edition sourcee chaque matin de semaine, faits verifiables et liens vers les sources.`
+    : `Vous recevrez des emails pratiques lies a la formation "${subscriber.sourceFormationSlug}" (outils testes, cas d'usage, retours d'XP). Zero teasing, zero pitch cache : chaque email livre l'integralite du contenu promis dans son sujet.`
+}
 
 Vous pouvez retirer votre consentement a tout moment :
 ${unsubscribeUrl}
@@ -90,6 +95,25 @@ Tim — asilidesign.fr`,
       token: subscriber.unsubscribeToken,
     });
     const greeting = this.buildGreeting(subscriber.firstName);
+
+    if (subscriber.sourceFormationSlug === DAILY_BRIEF_SOURCE) {
+      await this.transporter.sendMail({
+        from: this.from,
+        to: subscriber.email,
+        replyTo: this.replyTo,
+        headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
+        subject: 'Bienvenue dans la veille IA',
+        text: `${greeting.text},
+
+Votre inscription est confirmee. La veille IA arrive chaque matin de semaine : l'essentiel du jour, des faits sources et les liens pour verifier par vous-meme.
+
+Desabonnement instantane : ${unsubscribeUrl}
+
+Tim`,
+        html: safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Bienvenue dans la veille IA</h2><p>${greeting.html},</p><p>Votre inscription est confirmee. La veille IA arrive chaque matin de semaine : l'essentiel du jour, des faits sources et les liens pour verifier par vous-meme.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${escapeUrl(unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`,
+      });
+      return;
+    }
 
     await this.transporter.sendMail({
       from: this.from,
@@ -203,7 +227,11 @@ Tim`,
     unsubscribeUrl: string;
     sourceFormationSlug: string;
   }): EscapedHtml {
-    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Confirmez votre inscription</h2><p>${options.greeting},</p><p>Merci de vous etre inscrit. Confirmez votre email en cliquant ci-dessous :</p><p style="margin: 20px 0;"><a href="${escapeUrl(options.confirmUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Confirmer mon email</a></p><p style="font-size: 13px; color: #555;">Vous recevrez des emails pratiques lies a la formation <strong>${this.escapeHtml(options.sourceFormationSlug)}</strong>. Zero teasing, chaque email livre sa valeur integralement.</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${escapeUrl(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
+    const promise =
+      options.sourceFormationSlug === DAILY_BRIEF_SOURCE
+        ? safeHtml`Vous recevrez la <strong>veille IA quotidienne</strong> : une edition sourcee chaque matin de semaine.`
+        : safeHtml`Vous recevrez des emails pratiques lies a la formation <strong>${this.escapeHtml(options.sourceFormationSlug)}</strong>. Zero teasing, chaque email livre sa valeur integralement.`;
+    return safeHtml`<div style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; padding: 24px;"><div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px;"><h2 style="margin-top: 0; color: #4fb3a2;">Confirmez votre inscription</h2><p>${options.greeting},</p><p>Merci de vous etre inscrit. Confirmez votre email en cliquant ci-dessous :</p><p style="margin: 20px 0;"><a href="${escapeUrl(options.confirmUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #4fb3a2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Confirmer mon email</a></p><p style="font-size: 13px; color: #555;">${promise}</p><hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" /><p style="font-size: 12px; color: #666;">Desabonnement instantane : <a href="${escapeUrl(options.unsubscribeUrl)}" style="color: #4fb3a2;">retirer mon consentement</a></p></div></div>`;
   }
 
   private buildWelcomeHtml(options: {

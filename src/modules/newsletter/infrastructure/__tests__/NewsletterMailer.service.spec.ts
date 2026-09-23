@@ -114,6 +114,33 @@ describe('NewsletterMailerService', () => {
     });
   });
 
+  describe('source veille-ia', () => {
+    const veille = () =>
+      buildNewsletterSubscriber({ sourceFormationSlug: 'veille-ia' });
+
+    it('présente la veille quotidienne, pas une formation, à la confirmation', async () => {
+      await mailer.sendConfirmation(veille());
+
+      const [call] = mockSendMail.mock.calls as [
+        [{ subject: string; text: string; html: string }],
+      ];
+      expect(call[0].text).toContain('veille IA');
+      expect(call[0].text).not.toContain('formation "veille-ia"');
+      expect(call[0].html).not.toContain('formation <strong>veille-ia');
+    });
+
+    it('n annonce pas la séquence de formation dans l email de bienvenue', async () => {
+      await mailer.sendWelcome(veille());
+
+      const [call] = mockSendMail.mock.calls as [
+        [{ subject: string; text: string; html: string }],
+      ];
+      expect(call[0].text).not.toContain('J+2');
+      expect(call[0].html).not.toContain('J+2');
+      expect(call[0].text).toContain('chaque matin');
+    });
+  });
+
   describe('URL des liens newsletter (routes servies par l’API)', () => {
     it('prefixe l’URL de desabonnement par le prefixe d’API', async () => {
       const subscriber = buildNewsletterSubscriber();

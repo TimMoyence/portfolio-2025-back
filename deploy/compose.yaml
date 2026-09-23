@@ -152,6 +152,7 @@ services:
       NODE_ENV: 'production'
       PORT: '4000'
       SSR_LOCALE: 'fr'
+      PORTFOLIO_ARTICLE_API_URL: 'http://api:3000/api/v1/portfolio25'
     read_only: true
     tmpfs:
       - /tmp
@@ -187,6 +188,7 @@ services:
       NODE_ENV: 'production'
       PORT: '4000'
       SSR_LOCALE: 'en'
+      PORTFOLIO_ARTICLE_API_URL: 'http://api:3000/api/v1/portfolio25'
     read_only: true
     tmpfs:
       - /tmp
