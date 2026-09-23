@@ -14,7 +14,7 @@ import {
   monterApplicationFormations,
   PREFIXE_API,
 } from './formations-harness';
-import { fermerApplication } from './nest-test-app';
+import { ecouterEnBoucleLocale, fermerApplication } from './nest-test-app';
 import { silenceNestLogger } from './silence-nest-logger';
 
 export const CODE_HTTP = {
@@ -174,6 +174,7 @@ export function installerBancDeSeance(options: {
       { ...contexte, mailer: createMockFormationMailer() },
       options.catalogue ?? contexte.catalogue,
     );
+    await ecouterEnBoucleLocale(app);
   }, DELAI_OUVERTURE_CONTEXTE_MS);
 
   afterEach(async () => {
