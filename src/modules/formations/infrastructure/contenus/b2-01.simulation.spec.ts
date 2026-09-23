@@ -1,28 +1,34 @@
 import * as fc from 'fast-check';
+import {
+  buildContenuAPublierB2_01,
+  buildContenuB2_01,
+  buildCoursB2_01,
+} from '../../../../../test/factories/cours-b2-01.factory';
 import type {
   ContenuDeCoursBrut,
   EcranDeCoursBrut,
-} from '../../modules/formations/domain/cours/CoursStocke';
+} from '../../domain/cours/CoursStocke';
 import {
   ContenuDeCoursInvalideError,
+  lireContenuAPublier,
   lireCoursStocke,
-} from '../../modules/formations/domain/cours/CoursStocke';
-import { deroulePresentateur } from '../../modules/formations/domain/cours/DeroulePresentateur';
+} from '../../domain/cours/CoursStocke';
+import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import {
   ouvrirTirages,
   TiragesInsuffisantsError,
-} from '../../modules/formations/domain/cours/OuvertureTirages';
-import { tirer } from '../../modules/formations/domain/cours/Tirage';
-import { B2_COURS } from './b2-v3.cours';
+} from '../../domain/cours/OuvertureTirages';
+import { tirer } from '../../domain/cours/Tirage';
 
-const COURS = lireCoursStocke(B2_COURS);
+const COURS = buildCoursB2_01();
 const REFERENCE = tirer(COURS, 0);
 const BORNE_GRAINE = 2_147_483_647;
 const SEANCES_SIMULEES = 1000;
+const DERNIER_RANG = COURS.ecrans.length - 1;
 const graine = fc.integer({ min: 0, max: BORNE_GRAINE });
 
 function brut(): ContenuDeCoursBrut {
-  return structuredClone(B2_COURS) as ContenuDeCoursBrut;
+  return buildContenuB2_01();
 }
 
 function sansChamp(
@@ -46,13 +52,13 @@ function optionsParQuestion(
   );
 }
 
-describe('B2-01 V3 — simulation du tirage et de l’ouverture', () => {
-  it('tire les 52 écrans et les 48 solutions pour toute graine', () => {
+describe('B2-01 — simulation du tirage et de l’ouverture', () => {
+  it('tire les 55 écrans et les 48 solutions pour toute graine', () => {
     fc.assert(
       fc.property(graine, (valeur) => {
         const tirage = tirer(COURS, valeur);
 
-        expect(tirage.sujet.ecrans).toHaveLength(52);
+        expect(tirage.sujet.ecrans).toHaveLength(55);
         expect(Object.keys(tirage.solutions)).toHaveLength(19 + 7 + 13);
         expect(Object.keys(tirage.banque)).toHaveLength(13);
       }),
@@ -85,11 +91,7 @@ describe('B2-01 V3 — simulation du tirage et de l’ouverture', () => {
           const bareme = ouvrirTirages(
             COURS,
             () => graines[appel++ % graines.length],
-            3,
           );
-          if (bareme.version !== 2) {
-            throw new Error('un cours en version 3 ouvre un barème v2');
-          }
           const seeds = [
             bareme.graineReference,
             ...bareme.tirages.map((tirage) => tirage.seed),
@@ -118,7 +120,7 @@ describe('B2-01 V3 — simulation du tirage et de l’ouverture', () => {
           let appel = 0;
 
           expect(() =>
-            ouvrirTirages(COURS, () => graines[appel++ % graines.length], 3),
+            ouvrirTirages(COURS, () => graines[appel++ % graines.length]),
           ).toThrow(TiragesInsuffisantsError);
         },
       ),
@@ -129,7 +131,7 @@ describe('B2-01 V3 — simulation du tirage et de l’ouverture', () => {
   it('refuse toute clef inconnue ajoutée aux propriétés d’un écran', () => {
     fc.assert(
       fc.property(
-        fc.nat({ max: 51 }),
+        fc.nat({ max: DERNIER_RANG }),
         fc.stringMatching(/^[a-z]{1,8}$/),
         (rang, suffixe) => {
           const contenu = brut();
@@ -148,20 +150,36 @@ describe('B2-01 V3 — simulation du tirage et de l’ouverture', () => {
     );
   });
 
-  it('refuse tout écran privé de ses notes, de son titre ou de sa diffusion', () => {
+  it('refuse de lire tout écran privé de ses notes', () => {
+    fc.assert(
+      fc.property(fc.nat({ max: DERNIER_RANG }), (rang) => {
+        const contenu = brut();
+        const ecrans = contenu.ecrans.map((ecran, position) =>
+          position === rang ? sansChamp(ecran, 'notes') : ecran,
+        );
+
+        expect(() => lireCoursStocke({ ...contenu, ecrans })).toThrow(
+          ContenuDeCoursInvalideError,
+        );
+      }),
+      { numRuns: 30 },
+    );
+  });
+
+  it('refuse de publier tout écran privé de son titre ou de sa diffusion', () => {
     fc.assert(
       fc.property(
-        fc.nat({ max: 51 }),
-        fc.constantFrom('notes', 'titre', 'diffusion'),
+        fc.nat({ max: DERNIER_RANG }),
+        fc.constantFrom('titre', 'diffusion'),
         (rang, champ) => {
-          const contenu = brut();
+          const contenu = buildContenuAPublierB2_01();
           const ecrans = contenu.ecrans.map((ecran, position) =>
             position === rang ? sansChamp(ecran, champ) : ecran,
           );
 
-          expect(() =>
-            lireCoursStocke({ ...contenu, version: 3, ecrans }),
-          ).toThrow(ContenuDeCoursInvalideError);
+          expect(() => lireContenuAPublier({ ...contenu, ecrans })).toThrow(
+            ContenuDeCoursInvalideError,
+          );
         },
       ),
       { numRuns: 60 },
@@ -192,7 +210,7 @@ describe('B2-01 V3 — simulation du tirage et de l’ouverture', () => {
       fc.property(graine, (valeur) => {
         const deroule = deroulePresentateur(COURS, valeur);
 
-        expect(deroule.ecrans).toHaveLength(52);
+        expect(deroule.ecrans).toHaveLength(55);
         expect(deroule.ecrans.flatMap((ecran) => ecran.questions)).toHaveLength(
           48,
         );
