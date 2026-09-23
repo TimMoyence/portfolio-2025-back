@@ -34,7 +34,7 @@ const base = buildCoursConforme();
 const [ouverture, citation, atelier, cloture] = base.ecrans;
 
 describe('verifierStructure', () => {
-  it('expose les quatorze regles de structure dans l ordre applique aux violations', () => {
+  it('expose les quinze regles de structure dans l ordre applique aux violations', () => {
     expect(REGLES_STRUCTURE).toEqual([
       'exposition-continue',
       'ratio-interaction',
@@ -42,6 +42,7 @@ describe('verifierStructure', () => {
       'duree-ecran',
       'duree-cours',
       'reference-inconnue',
+      'renvoi-anterieur',
       'reference-circulaire',
       'correction-apres-source',
       'notes-formateur',
@@ -126,6 +127,17 @@ describe('verifierStructure', () => {
       'reference-inconnue',
     );
     expect(regles(renvoyer(citation.id))).toEqual([]);
+  });
+
+  it('SEC-4.2 · refuse un renvoi vers l écran lui-même ou un écran pas encore projeté', () => {
+    const renvoyer = (renvoi: string): Cours =>
+      recomposer(base, [ouverture, citation, { ...atelier, renvoi }, cloture]);
+
+    expect(regles(renvoyer(cloture.id))).toEqual(['renvoi-anterieur']);
+    expect(regles(renvoyer(atelier.id))).toContain('renvoi-anterieur');
+    expect(regles(renvoyer('B2-01-A9-99-ABSENT'))).not.toContain(
+      'renvoi-anterieur',
+    );
   });
 
   it('leve une violation par une derogation justifiee et signale une derogation vide', () => {

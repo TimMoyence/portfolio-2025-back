@@ -16,6 +16,7 @@ export const REGLES_STRUCTURE = [
   'duree-ecran',
   'duree-cours',
   'reference-inconnue',
+  'renvoi-anterieur',
   'reference-circulaire',
   'correction-apres-source',
   'notes-formateur',
@@ -369,6 +370,24 @@ function controlerReferences({ cours }: Analyse): readonly Manquement[] {
     }));
 }
 
+function controlerRenvoisAnterieurs({ cours }: Analyse): readonly Manquement[] {
+  const rangs = new Map(
+    cours.ecrans.map((ecran, rang) => [nomEcran(ecran, rang), rang]),
+  );
+  return cours.ecrans.flatMap((ecran, rang) => {
+    const cible =
+      ecran.renvoi === undefined ? undefined : rangs.get(ecran.renvoi);
+    return cible === undefined || cible < rang
+      ? []
+      : [
+          {
+            ecran: nomEcran(ecran, rang),
+            raison: `le renvoi vers « ${ecran.renvoi} » vise un écran que la classe n'a pas encore vu`,
+          },
+        ];
+  });
+}
+
 function aretes(
   cours: Cours,
   connus: ReadonlySet<string>,
@@ -678,6 +697,7 @@ const REGLES: readonly Regle[] = [
   { id: 'duree-ecran', controler: controlerDureeEcran },
   { id: 'duree-cours', controler: controlerDureeCours },
   { id: 'reference-inconnue', controler: controlerReferences },
+  { id: 'renvoi-anterieur', controler: controlerRenvoisAnterieurs },
   { id: 'reference-circulaire', controler: controlerCycles },
   { id: 'correction-apres-source', controler: controlerCorrections },
   { id: 'notes-formateur', controler: controlerNotes },
