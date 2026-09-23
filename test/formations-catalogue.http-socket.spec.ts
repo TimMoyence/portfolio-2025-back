@@ -2,6 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import request from 'supertest';
 import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
+import { projeterCatalogue } from '../src/modules/formations/domain/cours/Diffusion';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import { creerCatalogueDeTest } from './factories/cours.factory';
 import { buildCoursStocke } from './factories/cours-stocke.factory';
@@ -47,10 +48,20 @@ describe('Catalogue public des formations (e2e http socket)', () => {
     const reponse = await lire(COURS.slug).expect(200);
 
     expect(reponse.body).toEqual({
-      ...tirer(COURS, 0).sujet,
+      ...projeterCatalogue(COURS),
       version: 1,
       publieLe: expect.any(String),
     });
+  });
+
+  it('verrouille au catalogue l écran stocké sans diffusion, réservé par défaut à la séance (SEC-4)', async () => {
+    const reponse = await lire(COURS.slug).expect(200);
+
+    const servis = (reponse.body as { ecrans: { id: string; type: string }[] })
+      .ecrans;
+    expect(servis.map(({ id, type }) => [id, type])).toEqual(
+      tirer(COURS, 0).sujet.ecrans.map(({ id }) => [id, 'ecran-verrouille']),
+    );
   });
 
   it('sert la version publiee et sa date de bascule au sitemap (H1)', async () => {
