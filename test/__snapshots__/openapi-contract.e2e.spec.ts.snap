@@ -999,6 +999,17 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         ],
         "type": "string",
       },
+      "reglages": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "description": "Réglages des curseurs de la machine, par clé de paramètre",
+        "example": {
+          "prix": 250,
+          "taux": -12.5,
+        },
+        "type": "object",
+      },
       "revele": {
         "description": "Revelation des pistes fausses d un defi, jamais retiree",
         "type": "boolean",
