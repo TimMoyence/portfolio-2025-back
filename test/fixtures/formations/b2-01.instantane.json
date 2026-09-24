@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "10818f13764b84918728390b46e881a877f7fb88e0e848ddb62be8088915fcf4",
+  "empreinte": "03bfd433930cb53cedebafe76e05c8c49144cf9ed657ec34365ec688c7adc750",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -809,6 +809,7 @@
                 }
               }
             ],
+            "reference": "Axe de Samir",
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
@@ -1551,6 +1552,29 @@
               {
                 "libelle": "Arrivée",
                 "calcul": "depart * (1 + tauxUn / 100) * (1 + tauxDeux / 100)"
+              }
+            ],
+            "prereglages": [
+              {
+                "libelle": "+10 % puis −10 %",
+                "valeurs": {
+                  "tauxUn": 10,
+                  "tauxDeux": -10
+                }
+              },
+              {
+                "libelle": "−10 % puis +10 %",
+                "valeurs": {
+                  "tauxUn": -10,
+                  "tauxDeux": 10
+                }
+              },
+              {
+                "libelle": "+20 % puis −20 %",
+                "valeurs": {
+                  "tauxUn": 20,
+                  "tauxDeux": -20
+                }
               }
             ],
             "metadonnees": {
@@ -2799,7 +2823,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-01-a5-ponderee",
-            "enonce": "Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
+            "enonce": "Données par canal, CA HT 2024 → 2025 : sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 € (28 %) ; marketplace 357 000 € → 523 000 € (16 %). Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
             "etapes": [
               {
                 "id": "poids",
@@ -2858,7 +2882,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-01-a5-ponderee-corrige",
-            "enonce": "Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
+            "enonce": "Données par canal, CA HT 2024 → 2025 : sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 € (28 %) ; marketplace 357 000 € → 523 000 € (16 %). Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
             "etapes": [
               {
                 "id": "poids",
@@ -4854,7 +4878,11 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": {
+          "type": "reflexion",
+          "attendu": "Par exemple : la marge brute d’Atelier Rivage (trois canaux) a-t-elle augmenté entre 2024 et 2025, en euros et rapportée au CA HT ? Deux réponses sont attendues : un montant et un taux.",
+          "suite": "Vérifiez que votre question nomme un indicateur, un dénominateur, deux dates et un périmètre."
+        }
       },
       {
         "id": "B2-01-A1-09-DIAPOSITIVE",
@@ -5151,6 +5179,7 @@
                 }
               }
             ],
+            "reference": "Axe de Samir",
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
@@ -6281,6 +6310,29 @@
                 "calcul": "depart * (1 + tauxUn / 100) * (1 + tauxDeux / 100)"
               }
             ],
+            "prereglages": [
+              {
+                "libelle": "+10 % puis −10 %",
+                "valeurs": {
+                  "tauxUn": 10,
+                  "tauxDeux": -10
+                }
+              },
+              {
+                "libelle": "−10 % puis +10 %",
+                "valeurs": {
+                  "tauxUn": -10,
+                  "tauxDeux": 10
+                }
+              },
+              {
+                "libelle": "+20 % puis −20 %",
+                "valeurs": {
+                  "tauxUn": 20,
+                  "tauxDeux": -20
+                }
+              }
+            ],
             "metadonnees": {
               "concepts": [
                 "coefficient-multiplicateur",
@@ -7133,7 +7185,11 @@
         "seuil": null,
         "corriges": [],
         "questions": [],
-        "corrigeEcran": null
+        "corrigeEcran": {
+          "type": "reflexion",
+          "attendu": "L’argument ne tient pas : l’inflation ralentit (désinflation : 0,9 % en 2025 après 2,0 % en 2024), mais le niveau des prix continue de monter. Les prix ayant augmenté de 16,0 % depuis 2019 (Insee, IPC), des tarifs inchangés ont perdu 13,8 % de leur valeur réelle (1 ÷ 1,1597 − 1) : les baisser aggraverait la perte.",
+          "suite": "Citez toujours deux chiffres : le rythme (taux annuel) et le niveau (indice), avec leur source."
+        }
       },
       {
         "id": "B2-01-A3-10-JALON-3",
@@ -8186,7 +8242,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-01-a5-ponderee",
-            "enonce": "Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
+            "enonce": "Données par canal, CA HT 2024 → 2025 : sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 € (28 %) ; marketplace 357 000 € → 523 000 € (16 %). Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
             "etapes": [
               {
                 "id": "poids",
@@ -8251,7 +8307,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-01-a5-ponderee-corrige",
-            "enonce": "Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
+            "enonce": "Données par canal, CA HT 2024 → 2025 : sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 € (28 %) ; marketplace 357 000 € → 523 000 € (16 %). Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
             "etapes": [
               {
                 "id": "poids",
@@ -11024,6 +11080,7 @@
                 }
               }
             ],
+            "reference": "Axe de Samir",
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],

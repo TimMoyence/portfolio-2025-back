@@ -176,6 +176,16 @@ export function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
             titre: ecran.revelation.titre,
             lignes: ecran.revelation.lignes,
           };
+    case 'fp-story': {
+      const correction = ecran.proprietes.correction;
+      return correction === undefined || !('expected' in correction)
+        ? null
+        : {
+            type: 'reflexion',
+            attendu: correction.expected,
+            suite: correction.nextAction,
+          };
+    }
     default:
       return null;
   }

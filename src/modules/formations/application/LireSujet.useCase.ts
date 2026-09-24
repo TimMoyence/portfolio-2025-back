@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
 import {
+  correctionDeLEcranRevele,
   correctionServie,
   ecranVerrouille,
   exempleAuRythmeDuPilotage,
@@ -77,7 +78,7 @@ export class LireSujetUseCase {
       ...tirage.sujet,
       ecrans: tirage.sujet.ecrans.map((ecran, index) => {
         if (terminee) {
-          return this.avecCorrection(cours, index, ecran, tirage);
+          return this.avecCorrection(cours, index, ecran, tirage, true);
         }
         if (
           index > dernier ||
@@ -91,6 +92,7 @@ export class LireSujetUseCase {
           index,
           exempleAuRythmeDuPilotage(ecran, session.pilotageEcrans[ecran.id]),
           tirage,
+          sourceRevelee(ecran.id),
         );
       }),
     };
@@ -101,8 +103,11 @@ export class LireSujetUseCase {
     index: number,
     ecran: EcranPublic,
     tirage: TirageDuCours,
+    revele: boolean,
   ): EcranPublic {
-    const correction = correctionServie(cours, cours.ecrans[index], tirage);
+    const correction =
+      correctionServie(cours, cours.ecrans[index], tirage) ??
+      (revele ? correctionDeLEcranRevele(cours.ecrans[index], tirage) : null);
     return correction === null ? ecran : { ...ecran, correction };
   }
 

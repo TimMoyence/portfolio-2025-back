@@ -50,15 +50,12 @@ export function exempleAuRythmeDuPilotage(
   return { ...ecran, donnees: servi };
 }
 
-function reflexionDe(source: Ecran): CorrectionServie['reflexion'] {
-  if (source.brique !== 'fp-story') {
-    return null;
-  }
-  const correction = source.proprietes.correction;
-  if (correction === undefined || !('expected' in correction)) {
-    return null;
-  }
-  return { attendu: correction.expected, suite: correction.nextAction };
+function reflexionDe(
+  corrige: CorrectionServie['corrige'],
+): CorrectionServie['reflexion'] {
+  return corrige?.type === 'reflexion'
+    ? { attendu: corrige.attendu, suite: corrige.suite }
+    : null;
 }
 
 export function correctionServie(
@@ -71,8 +68,25 @@ export function correctionServie(
   if (ecranId === null || source === undefined) {
     return null;
   }
+  return correctionDe(source, tirage);
+}
+
+export function correctionDeLEcranRevele(
+  ecran: Ecran,
+  tirage: TirageDuCours,
+): CorrectionServie | null {
+  const correction = correctionDe(ecran, tirage);
+  return correction.questions.length === 0 &&
+    correction.corrige === null &&
+    correction.reflexion === null
+    ? null
+    : correction;
+}
+
+function correctionDe(source: Ecran, tirage: TirageDuCours): CorrectionServie {
+  const corrige = corrigeDeLEcran(source);
   return {
-    ecranId,
+    ecranId: source.id,
     questions: questionsDe(source)
       .filter(
         (question) => question.type === 'vote' || question.type === 'numeric',
@@ -85,8 +99,8 @@ export function correctionServie(
             ? String(tirage.solutions[question.id].valeur)
             : null,
       })),
-    corrige: corrigeDeLEcran(source),
-    reflexion: reflexionDe(source),
+    corrige,
+    reflexion: reflexionDe(corrige),
   };
 }
 

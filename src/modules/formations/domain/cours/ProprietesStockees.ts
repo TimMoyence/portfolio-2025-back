@@ -352,6 +352,35 @@ const proprietesExemple = z
     }
   });
 
+const prereglages = z
+  .array(
+    z.object({ libelle: texte, valeurs: z.record(texte, z.number()) }).strict(),
+  )
+  .optional();
+
+function signalerPrereglagesHorsParametres(support: string): (
+  proprietes: {
+    readonly parametres: readonly { readonly cle: string }[];
+    readonly prereglages?: readonly {
+      readonly valeurs: Readonly<Record<string, number>>;
+    }[];
+  },
+  contexte: z.RefinementCtx,
+) => void {
+  return (proprietes, contexte) => {
+    const cles = new Set(proprietes.parametres.map(({ cle }) => cle));
+    proprietes.prereglages?.forEach(({ valeurs }, rang) => {
+      for (const cle of Object.keys(valeurs).filter((c) => !cles.has(c))) {
+        contexte.addIssue({
+          code: 'custom',
+          path: ['prereglages', rang, 'valeurs', cle],
+          message: `le préréglage règle un paramètre absent ${support} : ${cle}`,
+        });
+      }
+    });
+  };
+}
+
 const proprietesMachine = z
   .object({
     id: identifiantDeQuestion.optional(),
@@ -362,9 +391,11 @@ const proprietesMachine = z
     etapes: auMoinsUn(
       z.object({ libelle: texte, calcul: texte }).strict(),
     ).optional(),
+    prereglages,
     ...communes,
   })
-  .strict();
+  .strict()
+  .superRefine(signalerPrereglagesHorsParametres('de la machine'));
 
 const proprietesTrace = z
   .object({
@@ -400,27 +431,25 @@ const proprietesTrace = z
     forme: z.enum(['courbes', 'barres']).optional(),
     unite: z.literal('euros').optional(),
     etiquettes: z.array(texte).optional(),
-    prereglages: z
-      .array(
-        z
-          .object({ libelle: texte, valeurs: z.record(texte, z.number()) })
-          .strict(),
-      )
-      .optional(),
+    prereglages,
+    reference: texte.optional(),
     ...communes,
   })
   .strict()
+  .superRefine(signalerPrereglagesHorsParametres('du tracé'))
   .superRefine((trace, contexte) => {
-    const cles = new Set(trace.parametres.map(({ cle }) => cle));
-    trace.prereglages?.forEach(({ valeurs }, rang) => {
-      for (const cle of Object.keys(valeurs).filter((c) => !cles.has(c))) {
-        contexte.addIssue({
-          code: 'custom',
-          path: ['prereglages', rang, 'valeurs', cle],
-          message: `le préréglage règle un paramètre absent du tracé : ${cle}`,
-        });
-      }
-    });
+    if (
+      trace.reference !== undefined &&
+      !(trace.prereglages ?? []).some(
+        ({ libelle }) => libelle === trace.reference,
+      )
+    ) {
+      contexte.addIssue({
+        code: 'custom',
+        path: ['reference'],
+        message: `la référence ne nomme aucun préréglage du tracé : ${trace.reference}`,
+      });
+    }
   });
 
 const proprietesJalon = z.object({ sondage, ...communes }).strict();

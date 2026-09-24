@@ -139,12 +139,12 @@ describe('assertPilotageCompatible', () => {
 describe('pilotage des écrans de la QA B2', () => {
   const cours = lireCoursStocke(
     buildCoursDeBriques(
-      ['fp-plot', 'fp-table-build', 'fp-quote'].map((brique) =>
+      ['fp-plot', 'fp-table-build', 'fp-quote', 'fp-recall'].map((brique) =>
         buildEcranDeBrique(brique),
       ),
     ),
   );
-  const [TRACE, TABLEAU, CITATION_STOCKEE] = cours.ecrans;
+  const [TRACE, TABLEAU, CITATION_STOCKEE, RAPPEL] = cours.ecrans;
   const CAS = lireCoursStocke(buildCoursDeBriques([buildCasAQuestionsLibres()]))
     .ecrans[0];
 
@@ -194,6 +194,35 @@ describe('pilotage des écrans de la QA B2', () => {
         resultatsProjetes: true,
       });
     }).not.toThrow();
+  });
+
+  it('F02 · affiche tout de suite les options d un rappel et refuse ailleurs', () => {
+    expect(() => {
+      assertPilotageCompatible(RAPPEL, {
+        screenId: RAPPEL.id,
+        optionsAffichees: true,
+      });
+    }).not.toThrow();
+    expect(() => {
+      assertPilotageCompatible(CITATION_STOCKEE, {
+        screenId: CITATION_STOCKEE.id,
+        optionsAffichees: true,
+      });
+    }).toThrow(PilotageIncompatibleError);
+  });
+
+  it('F02 · ne remasque pas des options déjà affichées', () => {
+    const affichees = fusionnerPilotage(
+      {},
+      { screenId: RAPPEL.id, optionsAffichees: true },
+    );
+
+    expect(() =>
+      fusionnerPilotage(affichees, {
+        screenId: RAPPEL.id,
+        optionsAffichees: false,
+      }),
+    ).toThrow(PhaseNonMonotoneError);
   });
 });
 

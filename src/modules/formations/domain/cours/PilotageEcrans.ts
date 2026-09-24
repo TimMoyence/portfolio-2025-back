@@ -93,6 +93,9 @@ export function assertPilotageCompatible(
   if (demande.reglages !== undefined) {
     assertReglagesDeLaMachine(ecran, demande.reglages, refuser);
   }
+  if (demande.optionsAffichees !== undefined && ecran.brique !== 'fp-recall') {
+    refuser('seul un rappel diffère l affichage de ses options');
+  }
   if (demande.etayage === undefined) {
     return;
   }
@@ -137,7 +140,11 @@ export function fusionnerPilotage(
   ) {
     throw new PhaseNonMonotoneError(screenId);
   }
-  if (changements.revele === false && precedent.revele === true) {
+  if (
+    (changements.revele === false && precedent.revele === true) ||
+    (changements.optionsAffichees === false &&
+      precedent.optionsAffichees === true)
+  ) {
     throw new PhaseNonMonotoneError(screenId);
   }
   const suivant = sansClesNonPilotables({ ...precedent, ...changements });

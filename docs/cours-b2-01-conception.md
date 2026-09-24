@@ -802,7 +802,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     [« 2022 », « 2023 », « 2024 », « 2025 »] ; `ordonnee` « Marge brute (€) » ; `bornesOrdonnee`
     { minParametre « origine », max 292000 } ; `parametres` [{ cle « origine », libelle « Origine de
     l’axe vertical (€) », min 0, max 284000, pas 4000, defaut 284000 }] ; `prereglages`
-    [{ libelle « Axe de Samir », origine 284000 }, { libelle « Axe à zéro », origine 0 }] ; `series`
+    [{ libelle « Axe de Samir », origine 284000 }, { libelle « Axe à zéro », origine 0 }] ;
+    `reference` « Axe de Samir » ; `series`
     [{ id « marge », libelle « Marge brute », trait « plein », calcul
     `SI(x<=1;285000+3000*x;SI(x<=2;288000+1800*(x-1);289800+1200*(x-2)))` }]
   - `description` « Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de
@@ -1071,7 +1072,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     defaut −10 }] ; `formuleLatexSimplifie` « arrivée = départ × (1 + t₁) × (1 + t₂) » ; `calcul`
     `depart * (1 + tauxUn / 100) * (1 + tauxDeux / 100)` ; `phrase` « Chaque taux s’applique à la
     valeur devenue courante : on multiplie les coefficients, on n’additionne pas les taux. Taux
-    d’évolution = (arrivée − départ) ÷ départ. »
+    d’évolution = (arrivée − départ) ÷ départ. » ; `prereglages` [« +10 % puis −10 % » (tauxUn 10,
+    tauxDeux −10), « −10 % puis +10 % » (tauxUn −10, tauxDeux 10), « +20 % puis −20 % » (tauxUn 20,
+    tauxDeux −20)] — un clic règle les deux taux, pour comparer les ordres sans manipuler les curseurs
+    (retour de QA F20).
 - **Contrainte d’implémentation** : les noms de variables ne contiennent que des lettres (`tauxUn`, pas
   `t1`, que le moteur lit comme la cellule T1).
 - **Notes** :
@@ -1562,8 +1566,11 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   précède le paradoxe.
 - **Contenu (public)** :
   - Titre public : « Prouver l’effet de répartition »
-  - `exemple` : `id` `b2-01-a5-ponderee` ; `enonce` « Prouvez au comité que la baisse du taux global
-    vient du changement de répartition du CA. » ; `etayage` initial 0.
+  - `exemple` : `id` `b2-01-a5-ponderee` ; `enonce` « Données par canal, CA HT 2024 → 2025 :
+    sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 €
+    (28 %) ; marketplace 357 000 € → 523 000 € (16 %). Prouvez au comité que la baisse du taux global
+    vient du changement de répartition du CA. » ; `etayage` initial 0. Les données de l'atelier 4 sont
+    reposées dans l'énoncé : l'étudiant calcule les poids sans revenir à un écran antérieur (T13).
   - `etapes` :
     1. `poids` · « Poids des canaux » · « Poids d’un canal = CA du canal ÷ CA total. 2024 : 483 ÷ 1 050
        ≈ 0,46 ; 210 ÷ 1 050 = 0,20 ; 357 ÷ 1 050 = 0,34. 2025 : 397 ÷ 1 150 ≈ 0,345 ; 230 ÷ 1 150 =

@@ -74,6 +74,11 @@ export type CorrigeEcranPresentateur =
       readonly type: 'revelation';
       readonly titre: string;
       readonly lignes: readonly string[];
+    }
+  | {
+      readonly type: 'reflexion';
+      readonly attendu: string;
+      readonly suite: string;
     };
 
 export interface DerouleCours extends Omit<CoursPublic, 'ecrans'> {

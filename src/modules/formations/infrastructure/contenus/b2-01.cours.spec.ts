@@ -365,7 +365,37 @@ describe('B2-01 — fichier de données', () => {
     expect(questions).toHaveLength(31 + 4 + 13);
     expect(
       deroule.ecrans.filter((ecran) => ecran.corrigeEcran !== null),
-    ).toHaveLength(11);
+    ).toHaveLength(13);
+    expect(
+      deroule.ecrans
+        .filter((ecran) => ecran.corrigeEcran?.type === 'reflexion')
+        .map((ecran) => ecran.id),
+    ).toEqual([
+      'B2-01-A1-08-QUESTION-DE-GESTION',
+      'B2-01-A3-09-NOTE-CONJONCTURE',
+    ]);
+  });
+
+  it('T13 · pose dans l énoncé de la moyenne pondérée le CA et le taux de chaque canal', () => {
+    const ecran = COURS.ecrans.find(
+      (candidat) => candidat.id === 'B2-01-A5-03-MOYENNE-PONDEREE',
+    );
+    const enonce =
+      ecran?.brique === 'fp-worked' ? ecran.proprietes.exemple.enonce : '';
+
+    for (const donnee of [
+      '483 000',
+      '397 000',
+      '210 000',
+      '230 000',
+      '357 000',
+      '523 000',
+      '36 %',
+      '28 %',
+      '16 %',
+    ]) {
+      expect(enonce).toContain(donnee);
+    }
   });
 
   it('RET-32 · montre au pupitre la bonne réponse numérique sous sa forme publiée', () => {
@@ -862,6 +892,14 @@ describe('B2-01 — retours de QA', () => {
     ]);
   });
 
+  it('F13 · fige la diapositive de Samir à côté de l axe réglable, pour comparer deux graphiques', () => {
+    const origineAxe = ecran(ORIGINE_AXE);
+
+    expect(
+      origineAxe.brique === 'fp-plot' && origineAxe.proprietes.reference,
+    ).toBe('Axe de Samir');
+  });
+
   it('RET-23 (b) · fait répondre à chaque étape de POINTS sous l exemple lui-même, corrigé ensuite par l écran piloté', () => {
     const points = ecran(POINTS);
     const correction = ecran(CORRECTION_POINTS);
@@ -928,6 +966,18 @@ describe('B2-01 — retours de QA', () => {
         libelle: 'Arrivée',
         calcul: 'depart * (1 + tauxUn / 100) * (1 + tauxDeux / 100)',
       },
+    ]);
+  });
+
+  it('F20 · propose sur la machine à coefficients les couples de taux à comparer en un clic', () => {
+    const machine = ecran(MACHINE);
+
+    expect(
+      machine.brique === 'fp-concept4' && machine.proprietes.prereglages,
+    ).toEqual([
+      { libelle: '+10 % puis −10 %', valeurs: { tauxUn: 10, tauxDeux: -10 } },
+      { libelle: '−10 % puis +10 %', valeurs: { tauxUn: -10, tauxDeux: 10 } },
+      { libelle: '+20 % puis −20 %', valeurs: { tauxUn: 20, tauxDeux: -20 } },
     ]);
   });
 

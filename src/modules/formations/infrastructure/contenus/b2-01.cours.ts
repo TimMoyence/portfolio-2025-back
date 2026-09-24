@@ -874,6 +874,7 @@ const ACTE_2: Acte = [
         { libelle: 'Axe de Samir', valeurs: { origine: 284000 } },
         { libelle: 'Axe à zéro', valeurs: { origine: 0 } },
       ],
+      reference: 'Axe de Samir',
       series: [
         {
           id: 'marge',
@@ -1475,6 +1476,11 @@ const ACTE_3: Acte = [
           libelle: 'Arrivée',
           calcul: 'depart * (1 + tauxUn / 100) * (1 + tauxDeux / 100)',
         },
+      ],
+      prereglages: [
+        { libelle: '+10 % puis −10 %', valeurs: { tauxUn: 10, tauxDeux: -10 } },
+        { libelle: '−10 % puis +10 %', valeurs: { tauxUn: -10, tauxDeux: 10 } },
+        { libelle: '+20 % puis −20 %', valeurs: { tauxUn: 20, tauxDeux: -20 } },
       ],
       phrase:
         'Chaque taux s’applique à la valeur devenue courante : on multiplie les coefficients, on n’additionne pas les taux. Taux d’évolution = (arrivée − départ) ÷ départ.',
@@ -2598,8 +2604,10 @@ const ACTE_4: Acte = [
   },
 ];
 
-const CONSIGNE_DE_L_ATELIER_4 =
-  'Données par canal, CA HT 2024 → 2025 : sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 € (28 %) ; marketplace 357 000 € → 523 000 € (16 %). Marge brute totale 2025 : 291 000 €.';
+const DONNEES_PAR_CANAL =
+  'Données par canal, CA HT 2024 → 2025 : sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 € (28 %) ; marketplace 357 000 € → 523 000 € (16 %).';
+
+const CONSIGNE_DE_L_ATELIER_4 = `${DONNEES_PAR_CANAL} Marge brute totale 2025 : 291 000 €.`;
 
 const ACTE_5: Acte = [
   ecranV2(
@@ -2660,8 +2668,7 @@ const ACTE_5: Acte = [
         modalite: 'solo',
         exemple: {
           id: 'b2-01-a5-ponderee',
-          enonce:
-            'Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.',
+          enonce: `${DONNEES_PAR_CANAL} Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.`,
           etapes: [
             {
               id: 'poids',

@@ -14,6 +14,8 @@ const ATELIER = 'B2-01-A2-03-ATELIER-1';
 const CORRECTION_DE_L_ATELIER = 'B2-01-A2-03-CORRECTION-1';
 const POINTS = 'B2-01-A2-06-POINTS';
 const CORRECTION_DES_POINTS = 'B2-01-A2-06-CORRECTION';
+const DIAGNOSTIC = 'B2-01-A1-01-DIAGNOSTIC';
+const FEUILLE = 'B2-01-A4-02-FEUILLE-CANAUX';
 const { OK, CREE, SANS_CONTENU, CONFLIT } = CODE_HTTP;
 
 function rang(id: string): number {
@@ -116,6 +118,31 @@ describeDb(
         CONFLIT,
         'PHASE_FERMEE',
       ]);
+    });
+
+    it('T9 · sert sur le diagnostic et la feuille révélés leur propre corrigé, et rien avant', async () => {
+      const seance = await banc.ouvrirSeance({
+        cle: 'c0000000-0000-4000-8000-000000000003',
+        ecran: rang(FEUILLE),
+      });
+
+      const avant = await lireSujet(seance);
+      await piloter(seance, {
+        pilotage: { screenId: DIAGNOSTIC, revele: true },
+      });
+      await piloter(seance, { pilotage: { screenId: FEUILLE, revele: true } });
+      const apres = await lireSujet(seance);
+
+      expect(ecranDuSujet(avant, DIAGNOSTIC)?.correction).toBeUndefined();
+      expect(ecranDuSujet(avant, FEUILLE)?.correction).toBeUndefined();
+      expect(ecranDuSujet(apres, DIAGNOSTIC)?.correction).toMatchObject({
+        ecranId: DIAGNOSTIC,
+        questions: [{ questionId: expect.any(String) as string }],
+      });
+      expect(ecranDuSujet(apres, FEUILLE)?.correction).toMatchObject({
+        ecranId: FEUILLE,
+        corrige: { type: 'feuille' },
+      });
     });
   },
 );

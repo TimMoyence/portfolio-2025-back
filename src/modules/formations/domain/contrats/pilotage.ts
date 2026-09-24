@@ -22,6 +22,7 @@ export interface PilotageEcran {
   readonly etayageAtteint?: number;
   readonly reglages?: Readonly<Record<string, number>>;
   readonly resultatsProjetes?: boolean;
+  readonly optionsAffichees?: boolean;
 }
 
 export type PilotageDemande = { readonly screenId: string } & Omit<

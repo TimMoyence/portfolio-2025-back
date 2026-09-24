@@ -135,6 +135,23 @@ describe('stockage multi-briques (B1)', () => {
       },
     ],
     [
+      'fp-plot',
+      'une référence qui ne nomme aucun préréglage du tracé',
+      (p) => {
+        p.prereglages = [{ libelle: 'Axe à zéro', valeurs: {} }];
+        p.reference = 'Axe de Samir';
+      },
+    ],
+    [
+      'fp-concept4',
+      'un préréglage qui règle un paramètre absent de la machine',
+      (p) => {
+        p.prereglages = [
+          { libelle: '+10 % puis −10 %', valeurs: { absent: 0 } },
+        ];
+      },
+    ],
+    [
       'fp-cardsort',
       'un corrigé qui classe une carte absente du plan',
       (p) => {

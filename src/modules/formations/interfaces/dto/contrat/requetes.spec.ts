@@ -203,6 +203,16 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
       expect(dto.pilotage).toEqual(pilotage);
     });
 
+    it('F02 · accepte l affichage immédiat des options d un rappel', async () => {
+      const pilotage = {
+        screenId: 'B2-01-A1-01-DIAGNOSTIC',
+        optionsAffichees: true,
+      };
+      const dto = await validateBody({ pilotage }, ControlSessionRequestDto);
+
+      expect(dto.pilotage).toEqual(pilotage);
+    });
+
     it.each([
       [
         'un réglage non numérique',
@@ -223,6 +233,10 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
       [
         'une projection non booléenne',
         { screenId: 'B2-01-A5-08', resultatsProjetes: 'oui' },
+      ],
+      [
+        'un affichage d options non booléen',
+        { screenId: 'B2-01-A1-01', optionsAffichees: 'oui' },
       ],
       ['un écran absent', { phase: 'vote' }],
     ])('refuse %s', async (_cas, pilotage) => {

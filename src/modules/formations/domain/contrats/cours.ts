@@ -62,6 +62,11 @@ type ProprietesActuelles<B extends EcranActuel['brique']> =
 
 type GuideFormateur = NonNullable<EcranActuel['guide']>;
 
+type Prereglages = readonly {
+  readonly libelle: string;
+  readonly valeurs: Readonly<Record<string, number>>;
+}[];
+
 export interface ProprietesExposition {
   readonly 'fp-quote': ProprietesActuelles<'fp-quote'>;
   readonly 'fp-story': ProprietesActuelles<'fp-story'>;
@@ -72,7 +77,9 @@ export interface ProprietesExposition {
     readonly pilote?: boolean;
     readonly corrigeDe?: string;
   };
-  readonly 'fp-concept4': ProprietesActuelles<'fp-concept4'>;
+  readonly 'fp-concept4': ProprietesActuelles<'fp-concept4'> & {
+    readonly prereglages?: Prereglages;
+  };
   readonly 'fp-plot': ProprietesActuelles<'fp-plot'> & {
     readonly bornesOrdonnee?: {
       readonly min?: number;
@@ -85,10 +92,8 @@ export interface ProprietesExposition {
     readonly forme?: 'courbes' | 'barres';
     readonly unite?: 'euros';
     readonly etiquettes?: readonly string[];
-    readonly prereglages?: readonly {
-      readonly libelle: string;
-      readonly valeurs: Readonly<Record<string, number>>;
-    }[];
+    readonly prereglages?: Prereglages;
+    readonly reference?: string;
   };
   readonly 'fp-pulse': {
     readonly sondage: { readonly id: string; readonly invite: string };

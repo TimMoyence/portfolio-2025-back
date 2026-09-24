@@ -169,6 +169,17 @@ class CorrigeRevelationPresentateurResponseDto {
   lignes: string[];
 }
 
+class CorrigeReflexionPresentateurResponseDto {
+  @ApiProperty({ enum: ['reflexion'] })
+  type: 'reflexion';
+
+  @ApiProperty({ example: 'Un montant et un taux, sur deux dates.' })
+  attendu: string;
+
+  @ApiProperty({ example: 'Nommez toujours le dénominateur.' })
+  suite: string;
+}
+
 export class QuestionDerouleResponseDto {
   @ApiProperty({ example: 'b2-01-a3-vote-hausse-baisse' })
   id: string;
@@ -191,6 +202,7 @@ export class QuestionDerouleResponseDto {
   CorrigeEnigmesPresentateurResponseDto,
   CorrigeDefiPresentateurResponseDto,
   CorrigeRevelationPresentateurResponseDto,
+  CorrigeReflexionPresentateurResponseDto,
 )
 export class EcranDerouleResponseDto
   extends EcranPublicResponseDto
@@ -213,7 +225,7 @@ export class EcranDerouleResponseDto
 
   @ApiProperty({
     description:
-      'Corrige de production, de defi ou de revelation, jamais servi au sujet ni au catalogue',
+      'Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue',
     nullable: true,
     oneOf: [
       { $ref: getSchemaPath(CorrigeFeuillePresentateurResponseDto) },
@@ -222,6 +234,7 @@ export class EcranDerouleResponseDto
       { $ref: getSchemaPath(CorrigeEnigmesPresentateurResponseDto) },
       { $ref: getSchemaPath(CorrigeDefiPresentateurResponseDto) },
       { $ref: getSchemaPath(CorrigeRevelationPresentateurResponseDto) },
+      { $ref: getSchemaPath(CorrigeReflexionPresentateurResponseDto) },
     ],
   })
   corrigeEcran: CorrigeEcranPresentateur | null;
