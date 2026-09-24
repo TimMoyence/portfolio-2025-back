@@ -3588,7 +3588,6 @@ instance, code? }`. Les erreurs de validation des DTO restent celles de Nest (40
 | `SEANCE_TERMINEE`          |    409 | écriture après clôture (existant)                                         |
 | `REPONSE_DEJA_ENREGISTREE` |    409 | réponse ou production déjà enregistrée (existant, étendu aux productions) |
 | `REPRISES_EPUISEES`        |    409 | production déjà envoyée trois fois avant la correction (SEC-4.1)          |
-| `NOM_DE_GROUPE_DEJA_PRIS`  |    409 | existant                                                                  |
 | `COURS_MODIFIE`            |    409 | le tirage recalculé diffère du barème (code ajouté à `CoursModifieError`) |
 | `ECRAN_NON_SERVI`          |    409 | l’écran visé n’est pas encore servi au participant (B20)                  |
 | `PHASE_FERMEE`             |    409 | question d’un vote à pairs hors de sa phase (B21)                         |
