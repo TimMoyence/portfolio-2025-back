@@ -65,7 +65,7 @@
       "additionalProperties": false,
       "required": ["id", "kind", "title", "intro", "body", "items"],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,79}$" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$" },
         "kind": { "enum": ["essential", "deep_dive", "rubric", "radar"] },
         "title": { "type": "string", "minLength": 1, "maxLength": 120 },
         "intro": { "type": "string", "maxLength": 4000 },

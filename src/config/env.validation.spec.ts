@@ -280,6 +280,46 @@ describe('validateEnv', () => {
     expect(result.METRICS_TOKEN).toBe('my-prom-token');
   });
 
+  describe('diffusion des articles aux abonnés', () => {
+    const smtp = {
+      SMTP_HOST: 'smtp.example.com',
+      SMTP_USER: 'user',
+      SMTP_PASS: 'pass',
+      SMTP_FROM: 'Veille <veille@example.com>',
+    };
+
+    it.each([
+      ['ARTICLE_BROADCAST_ENABLED', 'yes'],
+      ['ARTICLE_BROADCAST_DELAY_MINUTES', '-1'],
+      ['ARTICLE_BROADCAST_DELAY_MINUTES', '1441'],
+      ['ARTICLE_BROADCAST_BATCH_SIZE', '0'],
+      ['ARTICLE_BROADCAST_BATCH_SIZE', '1001'],
+    ])('refuse %s=%s', (key, value) => {
+      expect(() =>
+        validateEnv(buildValidEnv({ ...smtp, [key]: value })),
+      ).toThrow(key);
+    });
+
+    it('refuse d activer la diffusion sans transport SMTP complet', () => {
+      expect(() =>
+        validateEnv(buildValidEnv({ ARTICLE_BROADCAST_ENABLED: 'true' })),
+      ).toThrow('ARTICLE_BROADCAST_ENABLED');
+    });
+
+    it('accepte une diffusion activée et bornée', () => {
+      expect(() =>
+        validateEnv(
+          buildValidEnv({
+            ...smtp,
+            ARTICLE_BROADCAST_ENABLED: 'true',
+            ARTICLE_BROADCAST_DELAY_MINUTES: '0',
+            ARTICLE_BROADCAST_BATCH_SIZE: '1000',
+          }),
+        ),
+      ).not.toThrow();
+    });
+  });
+
   it('devrait lister toutes les erreurs quand plusieurs variables critiques manquent', () => {
     const env = {};
 

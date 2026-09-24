@@ -10,9 +10,9 @@ describe('SupportedFormationSlugs', () => {
     expect(SUPPORTED_FORMATION_SLUGS.length).toBeGreaterThan(0);
   });
 
-  it('contient les slugs publies en S1 + S2', () => {
+  it('contient les slugs publies en S1 + S2 et la veille IA quotidienne', () => {
     expect([...SUPPORTED_FORMATION_SLUGS].sort(byLocale)).toEqual(
-      ['automatiser-avec-ia', 'ia-solopreneurs'].sort(byLocale),
+      ['automatiser-avec-ia', 'ia-solopreneurs', 'veille-ia'].sort(byLocale),
     );
   });
 

@@ -24,7 +24,7 @@ const itemSchema = z
 
 const sectionSchema = z
   .object({
-    id: z.string().regex(/^[a-z0-9-]{2,80}$/),
+    id: z.string().regex(/^[a-z0-9][a-z0-9-]{1,79}$/),
     kind: z.enum(['essential', 'deep_dive', 'rubric', 'radar']),
     title: z.string().min(1).max(120),
     intro: z.string().max(4000),

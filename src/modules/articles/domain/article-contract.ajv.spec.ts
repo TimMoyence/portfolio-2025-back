@@ -35,4 +35,15 @@ describe('ArticleIngestEnvelopeV1 JSON Schema', () => {
 
     expect(validate(payload)).toBe(true);
   });
+
+  it('refuse un section.id d un seul caractère, comme zod', () => {
+    const ajv = new Ajv2020({ allErrors: true });
+    addFormats(ajv);
+    const validate = ajv.compile(schema);
+    const payload = structuredClone(validArticleIngestEnvelope);
+
+    payload.article.sections[0].id = 'a';
+
+    expect(validate(payload)).toBe(false);
+  });
 });

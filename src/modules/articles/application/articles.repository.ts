@@ -1,11 +1,13 @@
 export const ARTICLES_REPOSITORY = Symbol('ARTICLES_REPOSITORY');
 
+export type ArticleStatus = 'published' | 'withdrawn';
+
 export interface ArticleRecord {
   id: string;
   articleId: string;
   slug: string;
   locale: 'fr' | 'en';
-  status: 'published';
+  status: ArticleStatus;
   title: string;
   excerpt: string;
   contentMarkdown: string;
@@ -47,6 +49,10 @@ export interface ArticleDeliveryWrite {
   processedAt: Date;
 }
 
+export interface ArticleBroadcastSchedule {
+  sendAfter: Date;
+}
+
 export interface ArticlesRepository {
   findDelivery(deliveryId: string): Promise<ArticleDeliveryRecord | null>;
   findDeliveryByDeliveryOrIdempotency(
@@ -58,6 +64,7 @@ export interface ArticlesRepository {
   saveArticleAndDelivery(
     article: ArticleWrite,
     delivery: ArticleDeliveryWrite,
+    broadcast: ArticleBroadcastSchedule,
   ): Promise<void>;
   listPublished(params: {
     locale: 'fr' | 'en';

@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import type { ArticleStatus } from '../../application/articles.repository';
 
 @Entity({ name: 'articles' })
 @Index('uq_articles_locale_slug', ['locale', 'slug'], { unique: true })
@@ -25,7 +26,7 @@ export class ArticleEntity {
   locale: 'fr' | 'en';
 
   @Column({ type: 'varchar', length: 20, default: 'published' })
-  status: 'published';
+  status: ArticleStatus;
 
   @Column({ type: 'varchar', length: 180 })
   title: string;
