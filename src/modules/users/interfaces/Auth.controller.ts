@@ -23,7 +23,10 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
-import { REFRESH_TOKEN_RATE_LIMIT } from '../domain/auth.constants';
+import {
+  limiteDeRafraichissement,
+  suivreParJetonDeRafraichissement,
+} from './refresh-throttling';
 import { AuthAuditLogger } from '../application/services/AuthAuditLogger';
 import type { AuthAuditEntry } from '../application/services/AuthAuditLogger';
 import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogleUser.useCase';
@@ -186,7 +189,13 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(200)
-  @Throttle({ default: { limit: REFRESH_TOKEN_RATE_LIMIT, ttl: 3600000 } })
+  @Throttle({
+    default: {
+      limit: limiteDeRafraichissement,
+      ttl: 3600000,
+      getTracker: suivreParJetonDeRafraichissement,
+    },
+  })
   @ApiOperation({
     summary: 'Rafraichit le couple access + refresh token (rotation)',
   })
