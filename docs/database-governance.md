@@ -8,6 +8,7 @@ Le schema est defini par le code et les migrations. Les bases de staging ou prod
 
 1. Mettre a jour le modele de persistence et le comportement repository.
 2. Generer la migration depuis l'entite (`pnpm run migration:generate --name=...`). Une migration ecrite a la main declare dans l'entite, sous le meme nom, chaque clef etrangere, index, contrainte et defaut qu'elle pose : sur une base ou toutes les migrations sont jouees, la generation ne doit rien produire, ce que verifie `test/schema-entites-migrations.db-integration.spec.ts`.
+   L'horodatage du nom vaut `max(maintenant, derniere migration + 1)` (`scripts/prochain-horodatage-migration.mjs`). Des migrations du depot portent un horodatage choisi a la main et situe dans le futur (jusqu'a `1790900000000`, le 2 octobre 2026) : avec l'horloge seule, une nouvelle migration se classerait avant elles et une base neuve les jouerait dans le desordre. Une migration ecrite a la main prend cet horodatage, et une branche qui rattrape `master` renomme sa migration non deployee si une migration plus recente y est arrivee. TypeORM 0.3 compare les migrations par nom, pas par date : le journal « X is the last executed migration. It was executed on … » affiche la date du nom, pas celle de l'execution.
 3. Ajouter ou mettre a jour la couverture d'integration si requetes, indexes, pagination ou filtres changent.
 4. Documenter toute nouvelle variable d'environnement ou etape operationnelle.
 
