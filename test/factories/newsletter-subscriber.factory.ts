@@ -18,6 +18,15 @@ export function buildNewsletterSubscriber(
   return subscriber;
 }
 
+export function buildAbonnePersiste(
+  preparer: (abonne: NewsletterSubscriber) => void = () => undefined,
+): NewsletterSubscriber {
+  const abonne = buildNewsletterSubscriber();
+  abonne.id = 'existing-id';
+  preparer(abonne);
+  return abonne;
+}
+
 export function createMockNewsletterSubscriberRepo(): jest.Mocked<INewsletterSubscriberRepository> {
   const persisted = buildNewsletterSubscriber();
   persisted.id = 'subscriber-uuid';

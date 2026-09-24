@@ -231,6 +231,11 @@ export function buildEcranDEnigmes(): Ecran {
 
 export const DEFI_DE_TEST = 'defi-test-1';
 
+export const STRATEGIES_REVELEES_DU_DEFI = [
+  { id: 'axe', libelle: expect.any(String), fausse: false },
+  { id: 'couleur', libelle: expect.any(String), fausse: true },
+];
+
 export function buildEcranDeDefi(): Ecran {
   return {
     ...EN_CATALOGUE,

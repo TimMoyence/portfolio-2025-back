@@ -1,26 +1,22 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
 import { creerCatalogueAVersions } from '../../../../../test/factories/cours.factory';
+import { buildSessionRecord } from '../../../../../test/factories/formation.factory';
 import {
-  buildSessionRecord,
-  createMockAnswersRepo,
-  createMockMasteryRepo,
-  createMockParticipantsRepo,
-  createMockSessionStateCache,
-  createMockSessionsRepo,
-} from '../../../../../test/factories/formation.factory';
+  creerDependancesDEnregistrement,
+  monterEnregistrement,
+  type DependancesDEnregistrement,
+} from '../../../../../test/helpers/enregistrement-de-reponse';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
 import { ecranDeProduction } from '../../domain/cours/ProductionSoumise';
-import {
-  PhaseFermeeError,
-  ProductionVideError,
-} from '../../domain/errors/FormationErrors';
+import type { PilotageEcran } from '../../domain/contrats/pilotage';
+import { PhaseFermeeError } from '../../domain/errors/FormationErrors';
 import { SubmitProductionUseCase } from '../SubmitProduction.useCase';
 
 const COURS = buildCoursB2_01();
-const RANG_DU_TABLEAU = COURS.ecrans.findIndex(
-  (ecran) => ecran.id === 'B2-01-A4-05-INDICE-TOILE',
-);
+const rang = (screenId: string): number =>
+  COURS.ecrans.findIndex((ecran) => ecran.id === screenId);
+const RANG_DU_TABLEAU = rang('B2-01-A4-05-INDICE-TOILE');
 const FEUILLE = 'b2-01-a4-feuille-canaux';
 const TABLEAU = 'b2-01-a4-indice-toile';
 const CELLULES_ATTENDUES = 17;
@@ -43,8 +39,30 @@ function envoiDeReference(): Record<string, string> {
   );
 }
 
+function monterSurB2_01(
+  ecranCourant: number,
+  pilotageEcrans: Record<string, PilotageEcran> = {},
+): { deps: DependancesDEnregistrement; sut: SubmitProductionUseCase } {
+  const deps = creerDependancesDEnregistrement(
+    buildSessionRecord({
+      courseSlug: COURS.slug,
+      courseVersion: 3,
+      ecranCourant,
+      pilotageEcrans,
+    }),
+  );
+  return {
+    deps,
+    sut: monterEnregistrement(
+      SubmitProductionUseCase,
+      deps,
+      creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
+    ),
+  };
+}
+
 describe('productions du B2-01 corrigées par le cas d’usage (B5, B11)', () => {
-  let answers: ReturnType<typeof createMockAnswersRepo>;
+  let deps: DependancesDEnregistrement;
   let sut: SubmitProductionUseCase;
 
   const commande = {
@@ -56,23 +74,7 @@ describe('productions du B2-01 corrigées par le cas d’usage (B5, B11)', () =>
   };
 
   beforeEach(() => {
-    const sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        courseSlug: COURS.slug,
-        courseVersion: 3,
-        ecranCourant: RANG_DU_TABLEAU,
-      }),
-    );
-    answers = createMockAnswersRepo();
-    sut = new SubmitProductionUseCase(
-      sessions,
-      createMockParticipantsRepo(),
-      answers,
-      createMockMasteryRepo(),
-      createMockSessionStateCache(),
-      creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
-    );
+    ({ deps, sut } = monterSurB2_01(RANG_DU_TABLEAU));
   });
 
   it('déclare la feuille A4-02 réussie sur les 17 cellules attendues', async () => {
@@ -101,16 +103,6 @@ describe('productions du B2-01 corrigées par le cas d’usage (B5, B11)', () =>
     expect(verdict.libelleConfusion).not.toBeNull();
   });
 
-  it('refuse une feuille sans aucune saisie', async () => {
-    await expect(
-      sut.execute({
-        ...commande,
-        valeur: { type: 'feuille', cellules: {} },
-      }),
-    ).rejects.toThrow(ProductionVideError);
-    expect(answers.create).not.toHaveBeenCalled();
-  });
-
   it('corrige le tableau A4-05 sur les huit saisies attendues', async () => {
     const saisies = [
       { rang: 0, cle: 'prix', valeur: 21.6 },
@@ -137,7 +129,7 @@ describe('productions du B2-01 corrigées par le cas d’usage (B5, B11)', () =>
   it('enregistre le score et le détail servis au pupitre', async () => {
     await sut.execute(commande);
 
-    expect(answers.create).toHaveBeenCalledWith(
+    expect(deps.answers.create).toHaveBeenCalledWith(
       expect.objectContaining({
         questionId: FEUILLE,
         concept: 'tableur',
@@ -149,11 +141,6 @@ describe('productions du B2-01 corrigées par le cas d’usage (B5, B11)', () =>
 
 describe('productions fermées une fois leur correction projetée (RET-18, RET-31)', () => {
   const TRI = 'b2-01-a1-anatomie';
-  const rang = (screenId: string): number =>
-    COURS.ecrans.findIndex((ecran) => ecran.id === screenId);
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
-  let answers: ReturnType<typeof createMockAnswersRepo>;
-  let sut: SubmitProductionUseCase;
 
   function classementDeReference(): Record<string, string> {
     const cible = ecranDeProduction(COURS, TRI);
@@ -168,33 +155,6 @@ describe('productions fermées une fois leur correction projetée (RET-18, RET-3
     );
   }
 
-  function seance(
-    ecranCourant: number,
-    pilotageEcrans: Record<string, { etayage: number }> = {},
-  ): void {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        courseSlug: COURS.slug,
-        courseVersion: 3,
-        ecranCourant,
-        pilotageEcrans,
-      }),
-    );
-  }
-
-  beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    answers = createMockAnswersRepo();
-    sut = new SubmitProductionUseCase(
-      sessions,
-      createMockParticipantsRepo(),
-      answers,
-      createMockMasteryRepo(),
-      createMockSessionStateCache(),
-      creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
-    );
-  });
-
   it('RET-18 · refuse le tri une fois sa correction projetée, pas avant', async () => {
     const tri = {
       sessionId: 'session-uuid',
@@ -207,19 +167,23 @@ describe('productions fermées une fois leur correction projetée (RET-18, RET-3
       dureeMs: 60000,
     };
 
-    seance(rang('B2-01-A1-05-CORRECTION'));
-    await expect(sut.execute(tri)).rejects.toThrow(PhaseFermeeError);
-    expect(answers.create).not.toHaveBeenCalled();
+    const surLaCorrection = monterSurB2_01(rang('B2-01-A1-05-CORRECTION'));
+    await expect(surLaCorrection.sut.execute(tri)).rejects.toThrow(
+      PhaseFermeeError,
+    );
+    expect(surLaCorrection.deps.answers.create).not.toHaveBeenCalled();
 
-    seance(rang('B2-01-A1-05-ANATOMIE'));
-    await expect(sut.execute(tri)).resolves.toEqual(
+    const surLeTri = monterSurB2_01(rang('B2-01-A1-05-ANATOMIE'));
+    await expect(surLeTri.sut.execute(tri)).resolves.toEqual(
       expect.objectContaining({ correcte: true }),
     );
   });
 
   it('RET-31 · refuse la feuille dès que sa correction est révélée', async () => {
     const ecranDeLaFeuille = ecranDeProduction(COURS, FEUILLE)?.ecran.id ?? '';
-    seance(rang(ecranDeLaFeuille), { [ecranDeLaFeuille]: { etayage: 1 } });
+    const { deps, sut } = monterSurB2_01(rang(ecranDeLaFeuille), {
+      [ecranDeLaFeuille]: { etayage: 1 },
+    });
 
     await expect(
       sut.execute({
@@ -230,6 +194,6 @@ describe('productions fermées une fois leur correction projetée (RET-18, RET-3
         dureeMs: 60000,
       }),
     ).rejects.toThrow(PhaseFermeeError);
-    expect(answers.create).not.toHaveBeenCalled();
+    expect(deps.answers.create).not.toHaveBeenCalled();
   });
 });

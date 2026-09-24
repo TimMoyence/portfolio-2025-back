@@ -7,10 +7,12 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
+  PlaceDejaPriseError,
   SeanceCompleteError,
   SessionClosedError,
   SessionNotFoundError,
 } from '../../domain/errors/FormationErrors';
+import { SecretDeReprise } from '../../domain/SecretDeReprise';
 import { JoinSessionUseCase } from '../JoinSession.useCase';
 
 describe('JoinSessionUseCase', () => {
@@ -58,6 +60,50 @@ describe('JoinSessionUseCase', () => {
     expect(choisirGraine([])).toBe(1001);
     expect(choisirGraine([1001])).toBe(1002);
     expect(choisirGraine([1001, 1002])).toBeNull();
+  });
+
+  it('S1 · remet au poste un secret de reprise et ne confie au depot que son empreinte', async () => {
+    const result = await sut.execute(commande);
+
+    const { empreinteDeReprise } = participants.inscrire.mock.calls[0][0];
+
+    expect(result.secretDeReprise).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(empreinteDeReprise).toBe(
+      SecretDeReprise.empreinte(result.secretDeReprise),
+    );
+  });
+
+  it('S1 · ne rend la place d un inscrit qu au poste qui presente son secret de reprise', async () => {
+    const secret = SecretDeReprise.generer();
+    const empreinte = SecretDeReprise.empreinte(secret);
+
+    await sut.execute(commande);
+    await sut.execute({ ...commande, secretDeReprise: secret });
+
+    const sansSecret = participants.inscrire.mock.calls[0][0];
+    const avecSecret = participants.inscrire.mock.calls[1][0];
+
+    expect(sansSecret.repriseAutorisee(empreinte)).toBe(false);
+    expect(avecSecret.repriseAutorisee(empreinte)).toBe(true);
+    expect(sansSecret.repriseAutorisee(null)).toBe(true);
+  });
+
+  it('S1 · rend au poste la generation de jeton courante de sa place', async () => {
+    participants.inscrire.mockResolvedValue({
+      participant: buildParticipantRecord({ generationDeJeton: 2 }),
+      nouveau: false,
+    });
+
+    const result = await sut.execute(commande);
+
+    expect(result.generationDeJeton).toBe(2);
+  });
+
+  it('S1 · laisse remonter le refus du depot quand la place est deja prise', async () => {
+    participants.inscrire.mockRejectedValue(new PlaceDejaPriseError());
+
+    await expect(sut.execute(commande)).rejects.toThrow(PlaceDejaPriseError);
+    expect(participants.touch).not.toHaveBeenCalled();
   });
 
   it('laisse remonter la seance complete refusee par le depot', async () => {

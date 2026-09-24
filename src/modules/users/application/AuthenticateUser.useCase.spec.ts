@@ -7,6 +7,7 @@ import type { LoginCommand } from './dto/Login.command';
 import type { JwtTokenService } from './services/JwtTokenService';
 import type { PasswordService } from './services/PasswordService';
 import {
+  attendreSessionOuverte,
   buildUser,
   createMockUsersRepo,
   createMockPasswordService,
@@ -67,16 +68,10 @@ describe('AuthenticateUserUseCase', () => {
       dto.password,
       user.passwordHash,
     );
-    expect(jwtTokenService.sign).toHaveBeenCalledWith({
-      sub: user.id,
-      email: user.email,
-      roles: [],
+    attendreSessionOuverte(result, user, {
+      signer: jwtTokenService.sign,
+      creerRefreshToken: refreshTokensRepo.create,
     });
-    expect(result.accessToken).toBe('jwt-token');
-    expect(result.expiresIn).toBe(900);
-    expect(result.refreshToken).toBeDefined();
-    expect(result.user).toBe(user);
-    expect(refreshTokensRepo.create).toHaveBeenCalled();
   });
 
   it('throws when credentials are invalid', async () => {

@@ -5,7 +5,7 @@ import {
   solutionsDuTirage,
   solutionsIdentiques,
 } from './Bareme';
-import { libelleDeConfusion } from './cours/banque/confusions';
+import { libelleLisible } from './cours/banque/confusions';
 import type { Cours, TypeQuestion } from './contrats/cours';
 import type { DetailProduction, ValeurReponse } from './contrats/resultats';
 import { tirer } from './cours/Tirage';
@@ -151,11 +151,7 @@ function reponsesDe(
       reponse: reponseLisible(reponse, libelles),
       correcte: reponse.correcte,
       misconception: reponse.misconception,
-      libelleConfusion:
-        reponse.misconception === null
-          ? null
-          : (libelleDeConfusion(reponse.misconception) ??
-            reponse.misconception),
+      libelleConfusion: libelleLisible(reponse.misconception),
       dureeMs: reponse.dureeMs,
     }));
 }

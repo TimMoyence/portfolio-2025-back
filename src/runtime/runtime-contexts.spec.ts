@@ -1,5 +1,4 @@
 import { AuditRequestsModule } from '../modules/audit-requests/AuditRequests.module';
-import { SebastianModule } from '../modules/sebastian/Sebastian.module';
 import { ContactsModule } from '../modules/contacts/Contacts.module';
 import { CookieConsentsModule } from '../modules/cookie-consents/CookieConsents.module';
 import { CoursesModule } from '../modules/courses/Courses.module';
@@ -10,7 +9,6 @@ import { UsersModule } from '../modules/users/Users.module';
 import { LeadMagnetsModule } from '../modules/lead-magnets/LeadMagnets.module';
 import { NewsletterModule } from '../modules/newsletter/Newsletter.module';
 import { PresentationsModule } from '../modules/presentations/Presentations.module';
-import { WeatherModule } from '../modules/weather/Weather.module';
 import { ArticlesModule } from '../modules/articles/Articles.module';
 import { FormationsModule } from '../modules/formations/Formations.module';
 import { resolveRuntimeContexts } from './runtime-contexts';
@@ -25,8 +23,6 @@ describe('resolveRuntimeContexts', () => {
       ContactsModule,
       CookieConsentsModule,
       AuditRequestsModule,
-      WeatherModule,
-      SebastianModule,
       LeadMagnetsModule,
       NewsletterModule,
       PresentationsModule,
@@ -53,8 +49,6 @@ describe('resolveRuntimeContexts', () => {
       ContactsModule,
       CookieConsentsModule,
       AuditRequestsModule,
-      WeatherModule,
-      SebastianModule,
       LeadMagnetsModule,
       NewsletterModule,
       PresentationsModule,

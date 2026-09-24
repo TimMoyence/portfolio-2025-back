@@ -1,3 +1,4 @@
+import { chaineDeDoublements } from '../../../../../test/factories/feuille.factory';
 import type { Feuille, ResultatFormule } from './Formule';
 import {
   evaluerCellule,
@@ -33,14 +34,6 @@ function valeurs(
       resultat.erreur ?? resultat.valeur ?? Number.NaN,
     ]),
   );
-}
-
-function chaineDeDoublements(longueur: number): Feuille {
-  const cellules: Record<string, string> = { A1: '1' };
-  for (let rang = 2; rang <= longueur; rang += 1) {
-    cellules[`A${rang}`] = `=A${rang - 1}+A${rang - 1}`;
-  }
-  return feuille(cellules, longueur, 1);
 }
 
 describe('evaluerFeuille', () => {
@@ -185,6 +178,28 @@ describe('evaluerFeuille', () => {
       FeuilleHorsLimitesError,
     );
   });
+
+  it.each([
+    ['un exposant qui déborde les flottants', '=10^400'],
+    ['une tour de puissances', '=9^9^9^9'],
+    ['un nom de cellule hérité de l’objet', '=__proto__+constructor'],
+    ['une fonction de l’hôte', '=eval(1)'],
+    ['une plage géante', '=SOMME(A1:ZZZZ99999999)'],
+    ['un nombre illisible', '=1e999999'],
+    ['des opérateurs en rafale', `=1${'+-'.repeat(60)}1`],
+    ['un appel sans fermeture', `=SOMME(${'SOMME('.repeat(30)}1`],
+  ])(
+    'T10 · rend une erreur de tableur, sans lever, pour %s',
+    (_cas, formule) => {
+      const b1 = evaluerFeuille(
+        feuille({ A1: '1', B1: formule, ['__proto__']: '=A1' }),
+      ).get('B1');
+
+      expect(
+        typeof b1?.erreur === 'string' || Number.isFinite(b1?.valeur),
+      ).toBe(true);
+    },
+  );
 
   it('refuse une feuille dont la grille n’est pas un couple d’entiers positifs', () => {
     expect(() => evaluerFeuille(feuille({ A1: '1' }, 1.5, 1))).toThrow(

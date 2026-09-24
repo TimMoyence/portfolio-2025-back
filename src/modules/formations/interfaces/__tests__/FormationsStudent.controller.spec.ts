@@ -18,12 +18,16 @@ import type { JoinSessionRequestDto } from '../dto/join-session.request.dto';
 const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
 const PARTICIPANT_ID = '8f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
 const JETON = `${PARTICIPANT_ID}.empreinte`;
+const SECRET_DE_REPRISE = 'secret-remis-a-la-jonction';
 const IP_SALLE = 'sortie-nat-salle-b204';
 
 const requeteEtudiant = { ip: IP_SALLE, socket: {} } as unknown as Request;
 
-function requeteVerifiee(participantId: string): Request {
-  return { ...requeteEtudiant, participantId } as Request;
+function requeteVerifiee(
+  participantId: string,
+  generationDeJeton = 0,
+): Request {
+  return { ...requeteEtudiant, participantId, generationDeJeton } as Request;
 }
 
 const inscription: JoinSessionRequestDto = {
@@ -56,13 +60,15 @@ describe('FormationsStudentController', () => {
     saveFreeResponse.execute.mockResolvedValue(undefined);
     joinSession.execute.mockResolvedValue({
       participantId: PARTICIPANT_ID,
+      generationDeJeton: 2,
       sessionId: SESSION_ID,
+      secretDeReprise: SECRET_DE_REPRISE,
       seed: 7,
       ecranCourant: 0,
       modeRythme: 'pilote',
     });
     tokens.sign.mockReturnValue(JETON);
-    tokens.verify.mockReturnValue(PARTICIPANT_ID);
+    tokens.verify.mockResolvedValue(PARTICIPANT_ID);
   });
 
   it('confie la réponse libre au cas d usage pour le participant porté par le jeton', async () => {
@@ -94,15 +100,25 @@ describe('FormationsStudentController', () => {
       prenom: 'Theo',
       nom: 'Martin',
       email: 'theo@example.com',
+      secretDeReprise: undefined,
     });
-    expect(tokens.sign).toHaveBeenCalledWith(SESSION_ID, PARTICIPANT_ID);
+    expect(tokens.sign).toHaveBeenCalledWith(SESSION_ID, PARTICIPANT_ID, 2);
     expect(reponse).toEqual({
       participantId: PARTICIPANT_ID,
       sessionId: SESSION_ID,
       ecranCourant: 0,
       modeRythme: 'pilote',
       jeton: JETON,
+      secretDeReprise: SECRET_DE_REPRISE,
     });
+  });
+
+  it('S1 · transmet le secret de reprise presente par le poste au cas d usage', async () => {
+    await rejoindre({ ...inscription, secretDeReprise: 'secret-du-poste' });
+
+    expect(joinSession.execute).toHaveBeenCalledWith(
+      expect.objectContaining({ secretDeReprise: 'secret-du-poste' }),
+    );
   });
 
   it('derive la cle etudiante du courriel cote serveur, sans jamais lire celle du corps', async () => {
@@ -196,9 +212,7 @@ describe('FormationsStudentController', () => {
   });
 
   it('ne corrige rien quand le jeton est refuse', async () => {
-    tokens.verify.mockImplementation(() => {
-      throw new UnauthorizedException();
-    });
+    tokens.verify.mockRejectedValue(new UnauthorizedException());
 
     await expect(
       controller.answer(SESSION_ID, undefined, {
@@ -244,9 +258,7 @@ describe('FormationsStudentController', () => {
   });
 
   it('n enregistre aucun incident quand le jeton est refuse', async () => {
-    tokens.verify.mockImplementation(() => {
-      throw new UnauthorizedException();
-    });
+    tokens.verify.mockRejectedValue(new UnauthorizedException());
 
     await expect(
       controller.incidents(SESSION_ID, 'jeton-force', { incidents: [] }),
@@ -259,12 +271,13 @@ describe('FormationsStudentController', () => {
     const flux = of({ data: { etat: 'en_cours' } });
     streamSession.execute.mockReturnValue(flux);
 
-    expect(controller.stream(SESSION_ID, requeteVerifiee(PARTICIPANT_ID))).toBe(
-      flux,
-    );
+    expect(
+      controller.stream(SESSION_ID, requeteVerifiee(PARTICIPANT_ID, 3)),
+    ).toBe(flux);
     expect(streamSession.execute).toHaveBeenCalledWith(
       SESSION_ID,
       PARTICIPANT_ID,
+      3,
     );
     expect(tokens.verify).not.toHaveBeenCalled();
   });
@@ -299,9 +312,7 @@ describe('FormationsStudentController', () => {
   });
 
   it('ne rend aucune question a revoir quand le jeton est refuse', async () => {
-    tokens.verify.mockImplementation(() => {
-      throw new UnauthorizedException();
-    });
+    tokens.verify.mockRejectedValue(new UnauthorizedException());
 
     await expect(
       controller.questionsDues(SESSION_ID, 'jeton-force'),

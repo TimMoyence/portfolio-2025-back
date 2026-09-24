@@ -367,6 +367,32 @@ export function buildEcranDeBrique(
   };
 }
 
+export function buildEcranDeTableau(
+  screenId: string,
+  lignes: readonly Record<string, string>[],
+): EcranDeCoursBrut {
+  return buildEcranDeBrique('fp-story', {
+    screenId,
+    diffusion: 'catalogue',
+    dureeMinutes: 1,
+    proprietes: {
+      presentation: {
+        version: 2,
+        screenId,
+        renderer: 'table',
+        props: {
+          title: 'Tableau de bord',
+          columns: [
+            { key: 'indicateur', label: 'Indicateur' },
+            { key: 'valeur', label: 'Valeur' },
+          ],
+          rows: lignes,
+        },
+      },
+    },
+  });
+}
+
 export function buildCorrectionDeReponses(
   source: string,
   screenId = `${source}-CORRECTION`,

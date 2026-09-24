@@ -4,7 +4,6 @@ import type {
   RapportQuestion as RapportQuestionServie,
   RapportSession,
 } from '../IFormationMailer.port';
-import type { ConfusionComptee } from '../ResultatsSeance';
 import type { StatistiquesSeance } from '../SessionStatistics';
 import type { ConfusionId } from '../cours/banque/confusions';
 import type { TypeQuestion } from './cours';
@@ -51,6 +50,17 @@ export interface RapportQuestion extends RapportQuestionServie {
   score: number | null;
 }
 
+export interface ConfusionComptee {
+  readonly id: string;
+  readonly libelle: string;
+  readonly nombre: number;
+}
+
+export interface JustesParCle {
+  readonly total: number;
+  readonly justes: number;
+}
+
 export interface ResultatQuestion {
   readonly questionId: string;
   readonly ecranId: string;
@@ -62,9 +72,7 @@ export interface ResultatQuestion {
   readonly confusions: readonly ConfusionComptee[];
   readonly parOption: Readonly<Record<string, number>> | null;
   readonly scoreMoyen: number | null;
-  readonly parCle: Readonly<
-    Record<string, { readonly total: number; readonly justes: number }>
-  > | null;
+  readonly parCle: Readonly<Record<string, JustesParCle>> | null;
 }
 
 export interface ResultatsSeance {

@@ -17,8 +17,12 @@ const requete = {
 
 describe('FormationsParticipantsController', () => {
   const dependances = createMockFormationsParticipantsDependances();
-  const { participants, evincerParticipant, readmettreParticipant } =
-    dependances;
+  const {
+    participants,
+    evincerParticipant,
+    readmettreParticipant,
+    libererPoste,
+  } = dependances;
   const controller = buildFormationsParticipantsController(dependances);
 
   beforeEach(() => {
@@ -39,6 +43,16 @@ describe('FormationsParticipantsController', () => {
     await controller.readmettre(SESSION_ID, PARTICIPANT_ID, requete);
 
     expect(readmettreParticipant.execute).toHaveBeenCalledWith(
+      SESSION_ID,
+      TEACHER_ID,
+      PARTICIPANT_ID,
+    );
+  });
+
+  it('S1 · libere le poste d un participant avec l identite du formateur proprietaire', async () => {
+    await controller.libererPoste(SESSION_ID, PARTICIPANT_ID, requete);
+
+    expect(libererPoste.execute).toHaveBeenCalledWith(
       SESSION_ID,
       TEACHER_ID,
       PARTICIPANT_ID,
@@ -67,10 +81,12 @@ describe('FormationsParticipantsController', () => {
       participants: rolesDe('getParticipants'),
       eviction: rolesDe('evincer'),
       readmission: rolesDe('readmettre'),
+      liberation: rolesDe('libererPoste'),
     }).toEqual({
       participants: ['teacher', 'admin'],
       eviction: ['teacher'],
       readmission: ['teacher'],
+      liberation: ['teacher'],
     });
   });
 });

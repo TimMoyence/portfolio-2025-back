@@ -8,6 +8,7 @@ import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from './common/interfaces/filters/DomainExceptionFilter';
+import { bornerLesCorpsDeRequete } from './common/interfaces/http/corps-de-requete';
 
 function logBootstrapStep(message: string): void {
   if (process.env.BOOTSTRAP_DEBUG === 'true') {
@@ -54,8 +55,7 @@ async function bootstrap() {
   // construit, evitant un DoS event-loop (HIGH-2 audit 2026-05-09).
   // API native NestExpressApplication : pas besoin d'importer express
   // directement (NestExpressBodyParserOptions.limit, pnpm 9 isolated).
-  app.useBodyParser('json', { limit: '600kb' });
-  app.useBodyParser('urlencoded', { limit: '600kb', extended: true });
+  bornerLesCorpsDeRequete(app);
 
   app.use(cookieParser());
 

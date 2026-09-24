@@ -493,6 +493,7 @@ describe('tirer (briques de la V3)', () => {
       proprietes: {
         ...buildProprietesStockees('fp-worked'),
         renvoi: 'B2-01-A1-01-FP-QUOTE',
+        cadrageDuRenvoi: { part: 30 },
       },
     });
     const rappel = buildEcranDeBrique('fp-recall', {
@@ -517,8 +518,14 @@ describe('tirer (briques de la V3)', () => {
     expect(ouverture.donnees).toMatchObject({
       consigne: 'Calculez sans calculatrice.',
     });
-    expect(source).toMatchObject({ renvoi: 'B2-01-A1-01-FP-QUOTE' });
+    expect(source).toMatchObject({
+      renvoi: 'B2-01-A1-01-FP-QUOTE',
+      cadrageDuRenvoi: { part: 30 },
+    });
+    expect(ouverture).not.toHaveProperty('cadrageDuRenvoi');
     expect(source).not.toHaveProperty('ecranCorrige');
+    expect(source.resoluPar).toEqual([corrige.id, reponses.id]);
+    expect(ouverture).not.toHaveProperty('resoluPar');
     expect(corrige).toMatchObject({ ecranCorrige: 'B2-01-A2-06-POINTS' });
     expect(corrige.donnees).toMatchObject({
       pilote: true,

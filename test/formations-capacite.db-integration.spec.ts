@@ -27,6 +27,11 @@ interface ReponseInscription {
   jeton: string;
 }
 
+interface LigneDeParticipant {
+  id: string;
+  evince: boolean;
+}
+
 function codeDe(reponse: Response): string | undefined {
   return (reponse.body as { code?: string }).code;
 }
@@ -39,12 +44,21 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
   const contexte = () => banc.contexte();
   const commePro = banc.formateur;
 
-  const inscrire = (code: string, cleEtudiant: string): Test =>
-    banc.anonyme('post', `/sessions/${code}/join`).send({
+  const cle = (rang: number): string =>
+    `99999999-9999-4999-8999-${String(rang).padStart(12, '0')}`;
+
+  const inscrire = (seance: ReponseOuverture, rang: number): Test =>
+    banc.anonyme('post', `/sessions/${seance.code}/join`).send({
       prenom: 'Theo',
       nom: 'Martin',
-      email: `${cleEtudiant}@example.test`,
+      email: `${cle(rang)}@example.test`,
     });
+
+  const inscrit = async (
+    seance: ReponseOuverture,
+    rang: number,
+  ): Promise<ReponseInscription> =>
+    (await inscrire(seance, rang).expect(CREE)).body as ReponseInscription;
 
   const ouvrirSeance = async (capacite?: number): Promise<ReponseOuverture> => {
     const ouverture = await commePro('post', '/sessions')
@@ -57,19 +71,95 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
     return seance;
   };
 
-  const cle = (rang: number): string =>
-    `99999999-9999-4999-8999-${String(rang).padStart(12, '0')}`;
+  const cheminDu = (
+    seance: ReponseOuverture,
+    participant: ReponseInscription,
+  ): string =>
+    `/sessions/${seance.sessionId}/participants/${participant.participantId}`;
+
+  const evincer = (
+    seance: ReponseOuverture,
+    participant: ReponseInscription,
+  ): Test => commePro('delete', cheminDu(seance, participant));
+
+  const readmettre = (
+    seance: ReponseOuverture,
+    participant: ReponseInscription,
+  ): Test => commePro('post', `${cheminDu(seance, participant)}/readmission`);
+
+  const repondre = (
+    seance: ReponseOuverture,
+    participant: ReponseInscription,
+  ) =>
+    banc
+      .avecJeton(
+        'post',
+        `/sessions/${seance.sessionId}/answers`,
+        participant.jeton,
+      )
+      .send({
+        questionId: COURS.ecrans[0].question!.id,
+        valeur: 1,
+        dureeMs: 1000,
+      });
+
+  const lireLeSujet = (
+    seance: ReponseOuverture,
+    participant: ReponseInscription,
+  ): Test =>
+    banc.avecJeton(
+      'get',
+      `/sessions/${seance.sessionId}/sujet`,
+      participant.jeton,
+    );
+
+  const listeDu = async (
+    seance: ReponseOuverture,
+  ): Promise<LigneDeParticipant[]> =>
+    (
+      (
+        await commePro(
+          'get',
+          `/sessions/${seance.sessionId}/participants`,
+        ).expect(OK)
+      ).body as { participants: LigneDeParticipant[] }
+    ).participants;
+
+  const reponsesConserveesDe = async (
+    seance: ReponseOuverture,
+    participant: ReponseInscription,
+  ): Promise<number> =>
+    (await contexte().answers.listBySession(seance.sessionId)).filter(
+      (reponse) => reponse.participantId === participant.participantId,
+    ).length;
+
+  const attendreRefusDesTiers = async (
+    methode: 'post' | 'delete',
+    chemin: string,
+  ): Promise<void> => {
+    const parUnAutre = await commePro(
+      methode,
+      chemin,
+      `${AUTRE_FORMATEUR}:teacher`,
+    );
+    const sansIdentite = await banc.anonyme(methode, chemin);
+
+    expect(parUnAutre.status).toBe(INTERDIT);
+    expect(sansIdentite.status).toBe(NON_AUTORISE);
+  };
+
+  const attendreRefus = (reponse: Response, statut: number, code: string) => {
+    expect(reponse.status).toBe(statut);
+    expect(codeDe(reponse)).toBe(code);
+  };
 
   it('refuse en 409 SEANCE_COMPLETE au-dela de la capacite demandee', async () => {
     const seance = await ouvrirSeance(CAPACITE);
     for (let rang = 0; rang < CAPACITE; rang += 1) {
-      await inscrire(seance.code, cle(rang)).expect(CREE);
+      await inscrit(seance, rang);
     }
 
-    const refus = await inscrire(seance.code, cle(CAPACITE));
-
-    expect(refus.status).toBe(CONFLIT);
-    expect(codeDe(refus)).toBe('SEANCE_COMPLETE');
+    attendreRefus(await inscrire(seance, CAPACITE), CONFLIT, 'SEANCE_COMPLETE');
   });
 
   it('applique la capacite par defaut de quarante quand elle n est pas demandee', async () => {
@@ -82,204 +172,138 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
 
   it('libere la place et la graine du participant evince, et conserve ses reponses', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
-    await inscrire(seance.code, cle(1)).expect(CREE);
-    await banc
-      .avecJeton('post', `/sessions/${seance.sessionId}/answers`, premier.jeton)
-      .send({
-        questionId: COURS.ecrans[0].question!.id,
-        valeur: 1,
-        dureeMs: 1000,
-      });
-
+    const premier = await inscrit(seance, 0);
+    await inscrit(seance, 1);
+    await repondre(seance, premier);
     const graineLiberee = await contexte().graineDe(premier.participantId);
 
-    await commePro(
-      'delete',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}`,
-    ).expect(SANS_CONTENU);
-    const remplacant = (await inscrire(seance.code, cle(2)).expect(CREE))
-      .body as ReponseInscription;
+    await evincer(seance, premier).expect(SANS_CONTENU);
+    const remplacant = await inscrit(seance, 2);
 
     expect(await contexte().graineDe(remplacant.participantId)).toBe(
       graineLiberee,
     );
-    const reponses = await contexte().answers.listBySession(seance.sessionId);
-    expect(
-      reponses.filter(
-        (reponse) => reponse.participantId === premier.participantId,
-      ),
-    ).toHaveLength(1);
+    expect(await reponsesConserveesDe(seance, premier)).toBe(1);
+  });
+
+  it('S2 · refuse a l evince de revenir par une nouvelle inscription sous le meme courriel', async () => {
+    const seance = await ouvrirSeance(CAPACITE);
+    await evincer(seance, await inscrit(seance, 0)).expect(SANS_CONTENU);
+
+    attendreRefus(await inscrire(seance, 0), INTERDIT, 'PARTICIPANT_EVINCE');
+    await expect(
+      contexte().participants.countBySession(seance.sessionId),
+    ).resolves.toBe(0);
+  });
+
+  it('S2 · readmet sans erreur serveur quand la graine de l evince a ete reprise : 409 GRAINE_REPRISE', async () => {
+    const seance = await ouvrirSeance(CAPACITE);
+    const premier = await inscrit(seance, 0);
+    const second = await inscrit(seance, 1);
+    await evincer(seance, premier).expect(SANS_CONTENU);
+    await inscrit(seance, 2);
+    await evincer(seance, second).expect(SANS_CONTENU);
+
+    attendreRefus(await readmettre(seance, premier), CONFLIT, 'GRAINE_REPRISE');
+  });
+
+  it('T2 · refuse d evincer, de readmettre ou de liberer sous sa propre seance le participant d une autre seance', async () => {
+    const seanceDuFormateur = await ouvrirSeance(CAPACITE);
+    const autreSeance = await ouvrirSeance(CAPACITE);
+    const etranger = await inscrit(autreSeance, 0);
+    const chemin = cheminDu(seanceDuFormateur, etranger);
+
+    await commePro('delete', chemin).expect(INTROUVABLE);
+    await commePro('post', `${chemin}/liberation`).expect(INTROUVABLE);
+    await evincer(autreSeance, etranger).expect(SANS_CONTENU);
+    await readmettre(seanceDuFormateur, etranger).expect(INTROUVABLE);
+
+    expect(await listeDu(autreSeance)).toEqual([
+      expect.objectContaining({ id: etranger.participantId, evince: true }),
+    ]);
   });
 
   it('revoque l acces du participant evince', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
+    const premier = await inscrit(seance, 0);
 
-    await commePro(
-      'delete',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}`,
-    ).expect(SANS_CONTENU);
-    const refus = await banc.avecJeton(
-      'get',
-      `/sessions/${seance.sessionId}/sujet`,
-      premier.jeton,
-    );
+    await evincer(seance, premier).expect(SANS_CONTENU);
 
-    expect(refus.status).toBe(INTROUVABLE);
+    expect((await lireLeSujet(seance, premier)).status).toBe(INTROUVABLE);
   });
 
   it('marque evince dans la liste du formateur, pour qu il reste readmissible', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
+    const premier = await inscrit(seance, 0);
 
-    await commePro(
-      'delete',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}`,
-    ).expect(SANS_CONTENU);
-    const liste = await commePro(
-      'get',
-      `/sessions/${seance.sessionId}/participants`,
-    ).expect(OK);
+    await evincer(seance, premier).expect(SANS_CONTENU);
 
-    expect(
-      (liste.body as { participants: { id: string; evince: boolean }[] })
-        .participants,
-    ).toEqual([
+    expect(await listeDu(seance)).toEqual([
       expect.objectContaining({ id: premier.participantId, evince: true }),
     ]);
   });
 
   it('refuse l eviction a un autre formateur et a un anonyme', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
-    const chemin = `/sessions/${seance.sessionId}/participants/${premier.participantId}`;
+    const premier = await inscrit(seance, 0);
 
-    const parUnAutre = await commePro(
-      'delete',
-      chemin,
-      `${AUTRE_FORMATEUR}:teacher`,
-    );
-    const sansIdentite = await banc.anonyme('delete', chemin);
-
-    expect(parUnAutre.status).toBe(INTERDIT);
-    expect(sansIdentite.status).toBe(NON_AUTORISE);
+    await attendreRefusDesTiers('delete', cheminDu(seance, premier));
   });
 
   it('signale un participant deja evince', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
-    const chemin = `/sessions/${seance.sessionId}/participants/${premier.participantId}`;
-    await commePro('delete', chemin).expect(SANS_CONTENU);
+    const premier = await inscrit(seance, 0);
+    await evincer(seance, premier).expect(SANS_CONTENU);
 
-    const refus = await commePro('delete', chemin);
-
-    expect(refus.status).toBe(INTROUVABLE);
+    expect((await evincer(seance, premier)).status).toBe(INTROUVABLE);
   });
 
   it('readmet l evince : il retrouve sa place, sa graine, son jeton et ses reponses', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
-    await banc
-      .avecJeton('post', `/sessions/${seance.sessionId}/answers`, premier.jeton)
-      .send({
-        questionId: COURS.ecrans[0].question!.id,
-        valeur: 1,
-        dureeMs: 1000,
-      });
+    const premier = await inscrit(seance, 0);
+    await repondre(seance, premier);
     const graine = await contexte().graineDe(premier.participantId);
-    await commePro(
-      'delete',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}`,
-    ).expect(SANS_CONTENU);
+    await evincer(seance, premier).expect(SANS_CONTENU);
 
-    await commePro(
-      'post',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}/readmission`,
-    ).expect(SANS_CONTENU);
+    await readmettre(seance, premier).expect(SANS_CONTENU);
 
-    const sujet = await banc.avecJeton(
-      'get',
-      `/sessions/${seance.sessionId}/sujet`,
-      premier.jeton,
-    );
-    expect(sujet.status).toBe(OK);
-    const liste = await commePro(
-      'get',
-      `/sessions/${seance.sessionId}/participants`,
-    ).expect(OK);
-    expect(
-      (liste.body as { participants: { id: string; evince: boolean }[] })
-        .participants,
-    ).toEqual([
+    expect((await lireLeSujet(seance, premier)).status).toBe(OK);
+    expect(await listeDu(seance)).toEqual([
       expect.objectContaining({ id: premier.participantId, evince: false }),
     ]);
     expect(await contexte().graineDe(premier.participantId)).toBe(graine);
-    const reponses = await contexte().answers.listBySession(seance.sessionId);
-    expect(
-      reponses.filter(
-        (reponse) => reponse.participantId === premier.participantId,
-      ),
-    ).toHaveLength(1);
+    expect(await reponsesConserveesDe(seance, premier)).toBe(1);
   });
 
   it('refuse en 409 SEANCE_COMPLETE la readmission quand la place a ete reprise', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
-    await inscrire(seance.code, cle(1)).expect(CREE);
-    await commePro(
-      'delete',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}`,
-    ).expect(SANS_CONTENU);
-    await inscrire(seance.code, cle(2)).expect(CREE);
+    const premier = await inscrit(seance, 0);
+    await inscrit(seance, 1);
+    await evincer(seance, premier).expect(SANS_CONTENU);
+    await inscrit(seance, 2);
 
-    const refus = await commePro(
-      'post',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}/readmission`,
+    attendreRefus(
+      await readmettre(seance, premier),
+      CONFLIT,
+      'SEANCE_COMPLETE',
     );
-
-    expect(refus.status).toBe(CONFLIT);
-    expect(codeDe(refus)).toBe('SEANCE_COMPLETE');
   });
 
   it('refuse la readmission d un participant qui n a jamais ete evince', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
+    const premier = await inscrit(seance, 0);
 
-    const refus = await commePro(
-      'post',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}/readmission`,
-    );
-
-    expect(refus.status).toBe(INTROUVABLE);
+    expect((await readmettre(seance, premier)).status).toBe(INTROUVABLE);
   });
 
   it('refuse la readmission a un autre formateur et a un anonyme', async () => {
     const seance = await ouvrirSeance(CAPACITE);
-    const premier = (await inscrire(seance.code, cle(0)).expect(CREE))
-      .body as ReponseInscription;
-    await commePro(
-      'delete',
-      `/sessions/${seance.sessionId}/participants/${premier.participantId}`,
-    ).expect(SANS_CONTENU);
-    const chemin = `/sessions/${seance.sessionId}/participants/${premier.participantId}/readmission`;
+    const premier = await inscrit(seance, 0);
+    await evincer(seance, premier).expect(SANS_CONTENU);
 
-    const parUnAutre = await commePro(
+    await attendreRefusDesTiers(
       'post',
-      chemin,
-      `${AUTRE_FORMATEUR}:teacher`,
+      `${cheminDu(seance, premier)}/readmission`,
     );
-    const sansIdentite = await banc.anonyme('post', chemin);
-
-    expect(parUnAutre.status).toBe(INTERDIT);
-    expect(sansIdentite.status).toBe(NON_AUTORISE);
   });
 });

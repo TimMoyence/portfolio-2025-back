@@ -1,17 +1,10 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { Roles } from '../../../common/interfaces/auth/roles.decorator';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
-import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
+  CreationAdmin,
+  ListePubliquePaginee,
+  reponsePaginee,
+} from '../../../common/interfaces/http/routes-de-catalogue';
 import { CreateRedirectsUseCase } from '../application/CreateRedirects.useCase';
 import { ListRedirectsUseCase } from '../application/ListRedirects.useCase';
 import { CreateRedirectCommand } from '../application/dto/CreateRedirect.command';
@@ -28,30 +21,16 @@ export class RedirectsController {
     private readonly createUseCase: CreateRedirectsUseCase,
   ) {}
 
-  @Public()
-  @Get()
-  @ApiOperation({ summary: 'Lister les redirections (acces public, pagine)' })
-  @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
-  @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
-  @ApiQuery({
-    name: 'order',
-    required: false,
-    enum: ['ASC', 'DESC'],
-    example: 'DESC',
+  @ListePubliquePaginee({
+    resume: 'Lister les redirections (acces public, pagine)',
+    reponse: RedirectListResponseDto,
+    ordreParDefaut: 'DESC',
+    triables: ['slug', 'clicks', 'createdAt'],
+    triParDefaut: 'createdAt',
+    filtres: [
+      { name: 'enabled', required: false, type: Boolean, example: true },
+    ],
   })
-  @ApiQuery({
-    name: 'sortBy',
-    required: false,
-    enum: ['slug', 'clicks', 'createdAt'],
-    example: 'createdAt',
-  })
-  @ApiQuery({
-    name: 'enabled',
-    required: false,
-    type: Boolean,
-    example: true,
-  })
-  @ApiOkResponse({ type: RedirectListResponseDto })
   async findAll(
     @Query() query: RedirectListQueryDto,
   ): Promise<RedirectListResponseDto> {
@@ -62,28 +41,12 @@ export class RedirectsController {
       enabled: query.enabled,
       order: query.order,
     });
-
-    return {
-      items: result.items.map((redirect) =>
-        RedirectResponseDto.fromDomain(redirect),
-      ),
-      meta: {
-        page: result.page,
-        limit: result.limit,
-        total: result.total,
-        totalPages: result.totalPages,
-      },
-    };
+    return reponsePaginee(result, (redirect) =>
+      RedirectResponseDto.fromDomain(redirect),
+    );
   }
 
-  @Post()
-  @UseGuards(RolesGuard)
-  @Roles('admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Creer une redirection (admin)' })
-  @ApiCreatedResponse({ type: RedirectResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation echouee' })
-  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
+  @CreationAdmin('Creer une redirection (admin)', RedirectResponseDto)
   async create(@Body() dto: RedirectRequestDto): Promise<RedirectResponseDto> {
     const command: CreateRedirectCommand = {
       slug: dto.slug,

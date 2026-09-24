@@ -8,7 +8,13 @@ import {
   createMockTeacherAnnotationsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
+  buildCoursDeTest,
+  creerCatalogueDeTest,
+} from '../../../../../test/factories/cours.factory';
+import {
   BlankFieldError,
+  CoursInconnuError,
+  EcranInconnuError,
   SessionNotFoundError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
@@ -17,8 +23,10 @@ import { ManageTeacherAnnotationsUseCase } from '../ManageTeacherAnnotations.use
 const SESSION_ID = 'session-uuid';
 const PROPRIETAIRE = 'teacher-uuid';
 const AUTRE_FORMATEUR = 'autre-teacher-uuid';
+const COURS = buildCoursDeTest();
+const ECRAN_DU_COURS = COURS.ecrans[0].id;
 const ANNOTATION = {
-  screenId: 'B2-01-S11-REFLECTION',
+  screenId: ECRAN_DU_COURS,
   note: ' Relancer sur la base. ',
 };
 
@@ -30,10 +38,19 @@ describe('ManageTeacherAnnotationsUseCase', () => {
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({ id: SESSION_ID, teacherId: PROPRIETAIRE }),
+      buildSessionRecord({
+        id: SESSION_ID,
+        teacherId: PROPRIETAIRE,
+        courseSlug: COURS.slug,
+        courseVersion: 1,
+      }),
     );
     annotations = createMockTeacherAnnotationsRepo();
-    sut = new ManageTeacherAnnotationsUseCase(sessions, annotations);
+    sut = new ManageTeacherAnnotationsUseCase(
+      sessions,
+      annotations,
+      creerCatalogueDeTest(COURS),
+    );
   });
 
   describe('lecture', () => {
@@ -79,9 +96,34 @@ describe('ManageTeacherAnnotationsUseCase', () => {
       expect(annotations.save).toHaveBeenCalledWith({
         sessionId: SESSION_ID,
         teacherId: PROPRIETAIRE,
-        screenId: 'B2-01-S11-REFLECTION',
+        screenId: ECRAN_DU_COURS,
         note: 'Relancer sur la base.',
       });
+    });
+
+    it('S8 · refuse une annotation sur un ecran que le cours ne contient pas', async () => {
+      await expect(
+        sut.save(SESSION_ID, PROPRIETAIRE, {
+          ...ANNOTATION,
+          screenId: 'ECRAN-INVENTE',
+        }),
+      ).rejects.toThrow(EcranInconnuError);
+      expect(annotations.save).not.toHaveBeenCalled();
+    });
+
+    it('S8 · refuse une annotation quand le cours de la seance a disparu du catalogue', async () => {
+      sessions.findById.mockResolvedValue(
+        buildSessionRecord({
+          id: SESSION_ID,
+          teacherId: PROPRIETAIRE,
+          courseSlug: 'cours-retire',
+        }),
+      );
+
+      await expect(
+        sut.save(SESSION_ID, PROPRIETAIRE, ANNOTATION),
+      ).rejects.toThrow(CoursInconnuError);
+      expect(annotations.save).not.toHaveBeenCalled();
     });
 
     it.each([

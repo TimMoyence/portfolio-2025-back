@@ -1,14 +1,7 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
-import type { IEmailDripScheduler } from '../domain/IEmailDripScheduler';
-import type { INewsletterMailer } from '../domain/INewsletterMailer';
-import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
-import {
-  EMAIL_DRIP_SCHEDULER,
-  NEWSLETTER_MAILER,
-  NEWSLETTER_SUBSCRIBER_REPOSITORY,
-} from '../domain/token';
+import { ActionDAbonne } from './ActionDAbonne';
 
 export interface ConfirmSubscriptionResult {
   readonly status: NewsletterSubscriber['status'];
@@ -16,18 +9,7 @@ export interface ConfirmSubscriptionResult {
 }
 
 @Injectable()
-export class ConfirmSubscriptionUseCase {
-  private readonly logger = new Logger(ConfirmSubscriptionUseCase.name);
-
-  constructor(
-    @Inject(NEWSLETTER_SUBSCRIBER_REPOSITORY)
-    private readonly repo: INewsletterSubscriberRepository,
-    @Inject(NEWSLETTER_MAILER)
-    private readonly mailer: INewsletterMailer,
-    @Inject(EMAIL_DRIP_SCHEDULER)
-    private readonly scheduler: IEmailDripScheduler,
-  ) {}
-
+export class ConfirmSubscriptionUseCase extends ActionDAbonne {
   async execute(confirmToken: string): Promise<ConfirmSubscriptionResult> {
     const subscriber = await this.repo.findByConfirmToken(confirmToken);
     if (!subscriber) {
@@ -47,16 +29,14 @@ export class ConfirmSubscriptionUseCase {
     subscriber.confirm();
     const updated = await this.repo.update(subscriber);
 
-    void this.mailer
-      .sendWelcome(updated)
-      .catch((err: unknown) =>
-        this.logger.warn('Newsletter welcome email failed', err),
-      );
-    void this.scheduler
-      .schedule(updated)
-      .catch((err: unknown) =>
-        this.logger.warn('Newsletter drip schedule failed', err),
-      );
+    this.enArrierePlan(
+      this.mailer.sendWelcome(updated),
+      'Newsletter welcome email failed',
+    );
+    this.enArrierePlan(
+      this.scheduler.schedule(updated),
+      'Newsletter drip schedule failed',
+    );
 
     return { status: updated.status, alreadyConfirmed: false };
   }

@@ -1,15 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { libelleDeConfusion } from '../domain/cours/banque/confusions';
+import { libelleLisible } from '../domain/cours/banque/confusions';
 import type { Cours } from '../domain/contrats/cours';
 import type { EtatParticipant } from '../domain/contrats/pilotage';
 import { cleDeJalon } from '../domain/cours/CleDeJalon';
 import { ecranDeDefi } from '../domain/cours/Defis';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import {
-  CoursInconnuError,
-  ParticipantNotFoundError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
 import type {
   AnswerRecord,
   IAnswersRepository,
@@ -33,6 +28,7 @@ import {
   RAPPELS_SERVIS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { contexteDuParticipant } from './CoursDeLaSeance';
 
 const TENTATIVES_MAX = 10;
 
@@ -61,25 +57,15 @@ export class LireEtatParticipantUseCase {
     sessionId: string,
     participantId: string,
   ): Promise<EtatParticipant> {
-    const session = await this.sessions.findById(sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(sessionId);
-    }
-    const participant = await this.participants.findById(participantId);
-    if (
-      !participant ||
-      participant.sessionId !== sessionId ||
-      participant.evinceLe !== null
-    ) {
-      throw new ParticipantNotFoundError(participantId);
-    }
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
+    const { session, cours } = await contexteDuParticipant(
+      {
+        sessions: this.sessions,
+        participants: this.participants,
+        catalogue: this.catalogue,
+      },
+      sessionId,
+      participantId,
     );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
 
     const [reponses, libres, jalons, progressions, rappels] = await Promise.all(
       [
@@ -168,12 +154,6 @@ export class LireEtatParticipantUseCase {
       ),
     }));
   }
-}
-
-function libelleLisible(confusion: string | null): string | null {
-  return confusion === null
-    ? null
-    : (libelleDeConfusion(confusion) ?? confusion);
 }
 
 function fragmentDe(cours: Cours, enigmeId: string): string {

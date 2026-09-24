@@ -1,6 +1,9 @@
 import { createTransport } from 'nodemailer';
 import {
+  attendreScriptEchappe,
   createMockTransporter,
+  premierMailEnvoye,
+  retirerSmtpEnv,
   setSmtpEnv,
 } from '../../../../test/factories/mailer.factory';
 import type {
@@ -100,14 +103,7 @@ describe('FormationMailerService', () => {
   });
 
   it('ne fait rien quand le SMTP n est pas configure', async () => {
-    cleanupEnv = setSmtpEnv({
-      SMTP_HOST: '',
-      SMTP_USER: '',
-      SMTP_PASS: '',
-    });
-    delete process.env.SMTP_HOST;
-    delete process.env.SMTP_USER;
-    delete process.env.SMTP_PASS;
+    cleanupEnv = retirerSmtpEnv();
 
     const service = new FormationMailerService();
     await service.sendSyntheseFormateur('prof@example.com', buildRapport());
@@ -411,9 +407,7 @@ describe('FormationMailerService', () => {
         }),
       );
 
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.html).not.toContain('<script>');
-      expect(call.html).toContain('&lt;script&gt;');
+      attendreScriptEchappe(premierMailEnvoye(mockTransporter).html);
     });
 
     it('neutralise un lien de revision hors http/https', async () => {

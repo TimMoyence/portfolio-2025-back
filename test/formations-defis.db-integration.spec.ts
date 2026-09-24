@@ -3,6 +3,7 @@ import {
   buildCoursAvecDefi,
   creerCatalogueDeTest,
   DEFI_DE_TEST,
+  STRATEGIES_REVELEES_DU_DEFI,
 } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -77,10 +78,9 @@ describeDb('Defis ouverts (B12, db integration)', () => {
       .expect(SANS_CONTENU);
     const apres = await relire(seance).expect(OK);
 
-    expect((apres.body as Strategies).strategies).toEqual([
-      { id: 'axe', libelle: expect.any(String), fausse: false },
-      { id: 'couleur', libelle: expect.any(String), fausse: true },
-    ]);
+    expect((apres.body as Strategies).strategies).toEqual(
+      STRATEGIES_REVELEES_DU_DEFI,
+    );
   });
 
   it('fige la premiere tentative meme apres une seconde', async () => {

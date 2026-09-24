@@ -1,6 +1,8 @@
 import { buildAuditRequest } from '../../../../../../test/factories/audit-requests.factory';
 import {
+  attendreScriptEchappe,
   createMockTransporter,
+  premierMailEnvoye,
   setSmtpEnv,
   DEFAULT_AUDIT_ENV,
 } from '../../../../../../test/factories/mailer.factory';
@@ -11,29 +13,33 @@ import type { SmtpTransporter } from '../smtp-transporter.provider';
 describe('AuditNotificationMailer', () => {
   let cleanupEnv: () => void;
   let mockTransporter: ReturnType<typeof createMockTransporter>;
+  let mailer: AuditNotificationMailer;
+
+  beforeEach(() => {
+    mockTransporter = createMockTransporter();
+    cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+    mailer = new AuditNotificationMailer(
+      mockTransporter as unknown as SmtpTransporter,
+    );
+  });
 
   afterEach(() => {
-    cleanupEnv?.();
+    cleanupEnv();
     jest.restoreAllMocks();
   });
 
   describe('sendAuditNotification', () => {
     it('devrait envoyer un email de notification avec le bon payload', async () => {
-      mockTransporter = createMockTransporter();
-      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-      const mailer = new AuditNotificationMailer(
-        mockTransporter as unknown as SmtpTransporter,
+      await mailer.sendAuditNotification(
+        buildAuditRequest({
+          id: 'audit-001',
+          websiteName: 'mon-site.fr',
+          contactValue: 'client@example.com',
+        }),
       );
-      const request = buildAuditRequest({
-        id: 'audit-001',
-        websiteName: 'mon-site.fr',
-        contactValue: 'client@example.com',
-      });
-
-      await mailer.sendAuditNotification(request);
 
       expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
+      const call = premierMailEnvoye(mockTransporter);
       expect(call.from).toBe(DEFAULT_AUDIT_ENV.SMTP_FROM);
       expect(call.to).toBe(DEFAULT_AUDIT_ENV.CONTACT_NOTIFICATION_TO);
       expect(call.subject).toContain('audit SEO');
@@ -44,77 +50,54 @@ describe('AuditNotificationMailer', () => {
     });
 
     it('devrait ne rien faire sans transporter', async () => {
-      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-      const mailer = new AuditNotificationMailer(null);
-      const request = buildAuditRequest();
-
       await expect(
-        mailer.sendAuditNotification(request),
+        new AuditNotificationMailer(null).sendAuditNotification(
+          buildAuditRequest(),
+        ),
       ).resolves.toBeUndefined();
     });
 
     it('devrait ne rien faire si CONTACT_NOTIFICATION_TO est absent', async () => {
-      mockTransporter = createMockTransporter();
-      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
       delete process.env.CONTACT_NOTIFICATION_TO;
-      const mailer = new AuditNotificationMailer(
-        mockTransporter as unknown as SmtpTransporter,
-      );
-      const request = buildAuditRequest();
 
-      await mailer.sendAuditNotification(request);
+      await mailer.sendAuditNotification(buildAuditRequest());
 
       expect(mockTransporter.sendMail).not.toHaveBeenCalled();
     });
 
     it('devrait echapper le HTML dans le corps de l email', async () => {
-      mockTransporter = createMockTransporter();
-      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-      const mailer = new AuditNotificationMailer(
-        mockTransporter as unknown as SmtpTransporter,
+      await mailer.sendAuditNotification(
+        buildAuditRequest({
+          websiteName: '<script>alert("xss")</script>',
+          contactValue: 'test@"evil".com',
+        }),
       );
-      const request = buildAuditRequest({
-        websiteName: '<script>alert("xss")</script>',
-        contactValue: 'test@"evil".com',
-      });
 
-      await mailer.sendAuditNotification(request);
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.html).not.toContain('<script>');
-      expect(call.html).toContain('&lt;script&gt;');
+      attendreScriptEchappe(premierMailEnvoye(mockTransporter).html);
     });
 
     it('devrait propager l erreur si sendMail echoue', async () => {
-      mockTransporter = createMockTransporter();
       (mockTransporter.sendMail as jest.Mock).mockRejectedValue(
         new Error('SMTP error'),
       );
-      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-      const mailer = new AuditNotificationMailer(
-        mockTransporter as unknown as SmtpTransporter,
-      );
-      const request = buildAuditRequest();
 
-      await expect(mailer.sendAuditNotification(request)).rejects.toThrow(
-        'SMTP error',
-      );
+      await expect(
+        mailer.sendAuditNotification(buildAuditRequest()),
+      ).rejects.toThrow('SMTP error');
     });
   });
 
   describe('escapeHtml (util pure)', () => {
     it('devrait echapper tous les caracteres HTML dangereux', () => {
-      const result = escapeHtml('<script>alert("xss")</script>');
-
-      expect(result).toBe(
+      expect(escapeHtml('<script>alert("xss")</script>')).toBe(
         '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
       );
     });
 
     it('devrait echapper les esperluettes et les apostrophes', () => {
-      const result = escapeHtml("Tom & Jerry's <adventure>");
-
-      expect(result).toBe('Tom &amp; Jerry&#39;s &lt;adventure&gt;');
+      expect(escapeHtml("Tom & Jerry's <adventure>")).toBe(
+        'Tom &amp; Jerry&#39;s &lt;adventure&gt;',
+      );
     });
   });
 });

@@ -43,7 +43,10 @@ describe('contrat visuel du catalogue', () => {
     ).toThrow();
   });
 
-  it('L4 · refuse une carte corrigée rangée dans une catégorie absente', () => {
+  it.each([
+    ['rangée dans une catégorie absente', { category: 'inconnue' }],
+    ['portant une clé inconnue', { intrus: true }],
+  ])('L4 · refuse une carte corrigée %s', (_cas, alteration) => {
     const correction = PRESENTATIONS_VISUELLES_VALIDES['sort-review'];
     const [premiere, ...suite] = correction.cards as Record<string, unknown>[];
 
@@ -52,22 +55,7 @@ describe('contrat visuel du catalogue', () => {
         renderer: 'sort-review',
         props: {
           ...correction,
-          cards: [{ ...premiere, category: 'inconnue' }, ...suite],
-        },
-      }),
-    ).toThrow();
-  });
-
-  it('L4 · refuse une clé inconnue dans une carte corrigée', () => {
-    const correction = PRESENTATIONS_VISUELLES_VALIDES['sort-review'];
-    const [premiere, ...suite] = correction.cards as Record<string, unknown>[];
-
-    expect(() =>
-      parseVisualPresentation({
-        renderer: 'sort-review',
-        props: {
-          ...correction,
-          cards: [{ ...premiere, intrus: true }, ...suite],
+          cards: [{ ...premiere, ...alteration }, ...suite],
         },
       }),
     ).toThrow();

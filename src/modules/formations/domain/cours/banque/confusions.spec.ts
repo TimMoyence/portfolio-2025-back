@@ -1,5 +1,5 @@
 import { CONCEPTS } from './concepts';
-import { CONFUSIONS, libelleDeConfusion } from './confusions';
+import { CONFUSIONS, libelleDeConfusion, libelleLisible } from './confusions';
 
 const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'proportion-confondue-avec-evolution': {
@@ -203,5 +203,21 @@ describe('libelleDeConfusion', () => {
   it('rend null pour un identifiant inconnu ou herite', () => {
     expect(libelleDeConfusion('inconnue')).toBeNull();
     expect(libelleDeConfusion('toString')).toBeNull();
+  });
+});
+
+describe('libelleLisible', () => {
+  it('rend le libelle d une confusion connue', () => {
+    expect(libelleLisible('hausse-baisse-symetriques')).toBe(
+      CONFUSIONS['hausse-baisse-symetriques'].libelle,
+    );
+  });
+
+  it('rend l identifiant tel quel quand la confusion est inconnue', () => {
+    expect(libelleLisible('inconnue')).toBe('inconnue');
+  });
+
+  it('rend null quand aucune confusion n est reconnue', () => {
+    expect(libelleLisible(null)).toBeNull();
   });
 });

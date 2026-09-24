@@ -1,10 +1,10 @@
+import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
 import {
   PUBLISHABLE_STATUSES,
   type PublishableStatus,
 } from '../../../../common/domain/types/publishable-status';
 import {
   Column,
-  CreateDateColumn,
   Entity,
   Index,
   OneToMany,
@@ -15,7 +15,7 @@ import { ServicesTranslationEntity } from './ServicesTranslation.entity';
 
 @Index('IDX_services_status_order', ['status', 'order'])
 @Entity({ name: 'services' })
-export class ServicesEntity {
+export class ServicesEntity extends ColonnesDeTrace {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -47,22 +47,4 @@ export class ServicesEntity {
     { cascade: true },
   )
   translations: ServicesTranslationEntity[];
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_or_created_by',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  updatedOrCreatedBy: string | null;
 }

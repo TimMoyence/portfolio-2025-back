@@ -17,7 +17,7 @@ import { creerRng, creerTirage, melanger } from './Aleatoire';
 import { creerCacheLRU } from './CacheLRU';
 import type { Rng, Tirage } from './Aleatoire';
 import type { ConfusionId } from './banque/confusions';
-import { ecranCorrigePar } from './Corrections';
+import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
 import { estInteractif } from './Cours';
 import type {
   AuMoinsUn,
@@ -131,7 +131,9 @@ function contexteDe(graine: number): Contexte {
 
 export function tirerEnDetail(cours: Cours, graine: number): TirageDetaille {
   const contexte = contexteDe(graine);
-  const ecrans = cours.ecrans.map((ecran) => projeterEcran(ecran, contexte));
+  const ecrans = cours.ecrans.map((ecran) =>
+    projeterEcran(ecran, ecransCorrigeantDe(cours, ecran.id), contexte),
+  );
   const sujet: CoursPublic = {
     id: cours.slug,
     titre: cours.titre,
@@ -172,7 +174,11 @@ export function tirer(cours: Cours, graine: number): TirageDuCours {
   return tirage;
 }
 
-function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {
+function projeterEcran(
+  ecran: Ecran,
+  resoluPar: readonly string[],
+  contexte: Contexte,
+): EcranPublic {
   const attachee = questionAttachee(ecran);
   if (attachee !== undefined) {
     enregistrerQuestion(attachee, contexte);
@@ -186,7 +192,11 @@ function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {
     interactif: estInteractif(ecran),
     donnees: donneesDe(ecran, contexte),
     ...(ecran.renvoi === undefined ? {} : { renvoi: ecran.renvoi }),
+    ...(ecran.cadrageDuRenvoi === undefined
+      ? {}
+      : { cadrageDuRenvoi: ecran.cadrageDuRenvoi }),
     ...(ecranCorrige === null ? {} : { ecranCorrige }),
+    ...(resoluPar.length === 0 ? {} : { resoluPar: [...resoluPar] }),
   };
 }
 

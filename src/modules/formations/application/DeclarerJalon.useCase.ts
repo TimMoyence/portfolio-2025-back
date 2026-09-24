@@ -5,15 +5,10 @@ import { cleDeJalon } from '../domain/cours/CleDeJalon';
 import { assertEcranServi } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { ecranDeJalon } from '../domain/cours/Jalons';
-import {
-  CoursInconnuError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { IPulsesRepository } from '../domain/IPulses.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { assertReponsesOuvertes } from '../domain/SessionState';
 import {
   CATALOGUE_COURS,
   PARTICIPANTS_REPOSITORY,
@@ -21,6 +16,7 @@ import {
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { coursDeLaSeance, seanceOuverteAuxReponses } from './CoursDeLaSeance';
 import { participantActif } from './ParticipantActif';
 
 export interface DeclarerJalonCommand {
@@ -46,24 +42,17 @@ export class DeclarerJalonUseCase {
   ) {}
 
   async execute(command: DeclarerJalonCommand): Promise<void> {
-    const session = await this.sessions.findById(command.sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(command.sessionId);
-    }
-    assertReponsesOuvertes(session.etat);
+    const session = await seanceOuverteAuxReponses(
+      this.sessions,
+      command.sessionId,
+    );
     await participantActif(
       this.participants,
       command.sessionId,
       command.participantId,
     );
 
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
-    );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const cible = ecranDeJalon(cours, command.sondageId);
     if (cible === null) {
       throw new DomainValidationError(

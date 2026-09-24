@@ -1,13 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { ValeurProduction } from '../domain/contrats/resultats';
-import { libelleDeConfusion } from '../domain/cours/banque/confusions';
+import { libelleLisible } from '../domain/cours/banque/confusions';
 import type { ConfusionId } from '../domain/cours/banque/confusions';
-import {
-  assertCorrectionNonProjetee,
-  assertEcranServi,
-} from '../domain/cours/EcranServi';
-import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   confusionDominante,
   corrigerProduction,
@@ -16,26 +10,16 @@ import {
 } from '../domain/cours/ProductionSoumise';
 import {
   AnswerAlreadySubmittedError,
-  CoursInconnuError,
-  ParticipantNotFoundError,
   ReprisesEpuiseesError,
-  SessionNotFoundError,
   TypeDeQuestionError,
 } from '../domain/errors/FormationErrors';
-import type { IAnswersRepository } from '../domain/IAnswers.repository';
-import type { IMasteryRepository } from '../domain/IMastery.repository';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
-import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { assertReponsesOuvertes } from '../domain/SessionState';
 import {
-  ANSWERS_REPOSITORY,
-  CATALOGUE_COURS,
-  MASTERY_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
-  SESSION_STATE_CACHE,
-  SESSIONS_REPOSITORY,
-} from '../domain/token';
+  assertEcranOuvertAuxProductions,
+  coursDeLaSeance,
+  seanceOuverteAuxReponses,
+} from './CoursDeLaSeance';
+import { EnregistrementDeReponse } from './EnregistrementDeReponse';
+import { participantActif } from './ParticipantActif';
 
 export interface SubmitProductionCommand {
   readonly sessionId: string;
@@ -59,38 +43,15 @@ export interface SubmitProductionResult {
 }
 
 @Injectable()
-export class SubmitProductionUseCase {
-  constructor(
-    @Inject(SESSIONS_REPOSITORY)
-    private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
-    @Inject(ANSWERS_REPOSITORY)
-    private readonly answers: IAnswersRepository,
-    @Inject(MASTERY_REPOSITORY)
-    private readonly mastery: IMasteryRepository,
-    @Inject(SESSION_STATE_CACHE)
-    private readonly cache: ISessionStateCache,
-    @Inject(CATALOGUE_COURS)
-    private readonly catalogue: ICatalogueCours,
-  ) {}
-
+export class SubmitProductionUseCase extends EnregistrementDeReponse {
   async execute(
     command: SubmitProductionCommand,
   ): Promise<SubmitProductionResult> {
-    const session = await this.sessions.findById(command.sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(command.sessionId);
-    }
-    assertReponsesOuvertes(session.etat);
-
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
+    const session = await seanceOuverteAuxReponses(
+      this.sessions,
+      command.sessionId,
     );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const cible = ecranDeProduction(cours, command.questionId);
     if (cible === null) {
       throw new TypeDeQuestionError(
@@ -98,9 +59,7 @@ export class SubmitProductionUseCase {
         'n’est pas une production de ce cours',
       );
     }
-    assertEcranServi(session, cible.rang, cible.ecran.id, cours.ecrans.length);
-    assertPhaseOuverte(session.pilotageEcrans, { ecranId: cible.ecran.id });
-    assertCorrectionNonProjetee(session, cours, cible.ecran.id);
+    assertEcranOuvertAuxProductions(session, cours, cible);
 
     const valeur = normaliserProduction(cible, command.valeur);
 
@@ -111,14 +70,11 @@ export class SubmitProductionUseCase {
     if (reprise && !PRODUCTIONS_REPRENABLES.includes(cible.ecran.brique)) {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
-    const participant = await this.participants.findById(command.participantId);
-    if (
-      !participant ||
-      participant.sessionId !== command.sessionId ||
-      participant.evinceLe !== null
-    ) {
-      throw new ParticipantNotFoundError(command.participantId);
-    }
+    const participant = await participantActif(
+      this.participants,
+      command.sessionId,
+      command.participantId,
+    );
 
     const verdict = corrigerProduction(cible.question.corrige, valeur, cible);
     const confusion = confusionDominante(verdict.details);
@@ -150,9 +106,9 @@ export class SubmitProductionUseCase {
       details: verdict.details.map((detail) => ({
         cle: detail.cle,
         juste: detail.juste,
-        libelleConfusion: libelleDuDetail(detail.confusion),
+        libelleConfusion: libelleLisible(detail.confusion),
       })),
-      libelleConfusion: libelleDuDetail(confusion),
+      libelleConfusion: libelleLisible(confusion),
     };
   }
 
@@ -214,9 +170,3 @@ const PRODUCTIONS_REPRENABLES: readonly string[] = [
   'fp-sheet',
   'fp-table-build',
 ];
-
-function libelleDuDetail(confusion: ConfusionId | null): string | null {
-  return confusion === null
-    ? null
-    : (libelleDeConfusion(confusion) ?? confusion);
-}

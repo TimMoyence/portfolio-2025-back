@@ -36,3 +36,10 @@ export function correctionsDe(
     ecranCorrigePar(ecran) === screenId ? [rang] : [],
   );
 }
+
+export function ecransCorrigeantDe(
+  cours: Cours,
+  screenId: string,
+): readonly string[] {
+  return correctionsDe(cours, screenId).map((rang) => cours.ecrans[rang].id);
+}

@@ -96,6 +96,10 @@ const ATTENDUES: readonly RelationAttendue[] = [
   ),
 ];
 
+const declareePour = (cible: unknown, entite: Entite): boolean =>
+  cible === entite ||
+  (typeof cible === 'function' && entite.prototype instanceof cible);
+
 describe('relations des entites formations', () => {
   const relations = getMetadataArgsStorage().relations;
   const jointures = getMetadataArgsStorage().joinColumns;
@@ -108,7 +112,7 @@ describe('relations des entites formations', () => {
     describe(`${attendue.depuis.name}.${attendue.propriete}`, () => {
       const relation = relations.find(
         (candidate) =>
-          candidate.target === attendue.depuis &&
+          declareePour(candidate.target, attendue.depuis) &&
           candidate.propertyName === attendue.propriete,
       );
 
@@ -124,7 +128,7 @@ describe('relations des entites formations', () => {
       it('porte le nom de contrainte de la migration', () => {
         const jointure = jointures.find(
           (candidate) =>
-            candidate.target === attendue.depuis &&
+            declareePour(candidate.target, attendue.depuis) &&
             candidate.propertyName === attendue.propriete,
         );
         expect(jointure?.foreignKeyConstraintName).toBe(attendue.contrainte);

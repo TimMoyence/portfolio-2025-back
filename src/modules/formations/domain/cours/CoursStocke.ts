@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   DIFFUSIONS,
+  type CadrageDuRenvoi,
   type Cours,
   type Diffusion,
   type Ecran,
@@ -260,6 +261,7 @@ interface SocleDEcran {
   readonly modalite?: Modalite;
   readonly guide?: GuideFormateur;
   readonly renvoi?: string;
+  readonly cadrageDuRenvoi?: CadrageDuRenvoi;
 }
 
 type GuideFormateur = NonNullable<Ecran['guide']>;
@@ -268,9 +270,15 @@ interface Communes {
   readonly guide?: GuideFormateur;
   readonly modalite?: Modalite;
   readonly renvoi?: string;
+  readonly cadrageDuRenvoi?: CadrageDuRenvoi;
 }
 
-const CLES_COMMUNES: readonly string[] = ['guide', 'modalite', 'renvoi'];
+const CLES_COMMUNES: readonly string[] = [
+  'guide',
+  'modalite',
+  'renvoi',
+  'cadrageDuRenvoi',
+];
 
 type BriqueDExposition =
   | 'fp-quote'
@@ -284,7 +292,7 @@ type BriqueDeProductionUnique = 'fp-cardsort' | 'fp-sheet' | 'fp-table-build';
 
 function socleDe(
   ecran: EcranStocke,
-  { modalite, guide, renvoi }: Communes,
+  { modalite, guide, renvoi, cadrageDuRenvoi }: Communes,
 ): SocleDEcran {
   return {
     id: ecran.screenId,
@@ -296,6 +304,7 @@ function socleDe(
     ...(modalite === undefined ? {} : { modalite }),
     ...(guide === undefined ? {} : { guide }),
     ...(renvoi === undefined ? {} : { renvoi }),
+    ...(cadrageDuRenvoi === undefined ? {} : { cadrageDuRenvoi }),
   };
 }
 
@@ -330,10 +339,10 @@ function seuilDe(seuil: number | undefined): { readonly seuil?: number } {
 function versEcranDeRecit(
   ecran: Extract<EcranStocke, { readonly brique: 'fp-story' }>,
 ): Ecran {
-  const { modalite, renvoi, ...proprietes } = ecran.proprietes;
+  const { modalite, renvoi, cadrageDuRenvoi, ...proprietes } = ecran.proprietes;
   const { interaction, guide } = proprietes;
   return {
-    ...socleDe(ecran, { modalite, renvoi }),
+    ...socleDe(ecran, { modalite, renvoi, cadrageDuRenvoi }),
     brique: ecran.brique,
     proprietes,
     question:

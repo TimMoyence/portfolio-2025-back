@@ -9,6 +9,7 @@ declare global {
     interface Request {
       user?: JwtPayload;
       participantId?: string;
+      generationDeJeton?: number;
     }
   }
 }

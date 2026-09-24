@@ -1,23 +1,11 @@
 import {
   createMockTransporter,
+  premierMailEnvoye,
   setSmtpEnv,
   DEFAULT_AUDIT_ENV,
 } from '../../../../../../test/factories/mailer.factory';
 import { AuditClientReportMailer } from '../audit-client-report.mailer';
 import type { SmtpTransporter } from '../smtp-transporter.provider';
-
-interface SentMail {
-  to: string;
-  subject: string;
-  text: string;
-  html: string;
-  replyTo: string;
-  attachments: Array<{
-    filename: string;
-    content: Buffer;
-    contentType: string;
-  }>;
-}
 
 describe('AuditClientReportMailer', () => {
   let cleanupEnv: () => void;
@@ -103,8 +91,7 @@ describe('AuditClientReportMailer', () => {
     );
   }
 
-  const sentMail = (): SentMail =>
-    (mockTransporter.sendMail as jest.Mock).mock.calls[0][0] as SentMail;
+  const sentMail = () => premierMailEnvoye(mockTransporter);
 
   it('devrait envoyer le rapport client sans pdf', async () => {
     const mailer = buildMailer();
@@ -190,11 +177,13 @@ describe('AuditClientReportMailer', () => {
       pdfBuffer: pdf,
     });
 
-    const call = sentMail();
-    expect(call.attachments).toHaveLength(1);
-    expect(call.attachments[0].filename).toContain('mon-site-fr');
-    expect(call.attachments[0].content).toBe(pdf);
-    expect(call.attachments[0].contentType).toBe('application/pdf');
+    expect(sentMail().attachments).toEqual([
+      {
+        filename: expect.stringContaining('mon-site-fr'),
+        content: pdf,
+        contentType: 'application/pdf',
+      },
+    ]);
   });
 
   it('devrait escape les champs LLM contenant du HTML', async () => {

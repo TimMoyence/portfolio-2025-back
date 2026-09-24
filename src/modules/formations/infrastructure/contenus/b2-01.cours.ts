@@ -306,7 +306,7 @@ const ACTE_1: Acte = [
     notes: puces(
       'Lecture à voix haute (90 s), puis 2 min d’écriture individuelle.',
       'Au pupitre, lire deux réponses à « Que mesure chaque chiffre ? » : l’une parle d’un montant, l’autre d’un taux. « Gagner plus » peut vouloir dire les deux : c’est le fil de la séance.',
-      'Transition : « Regardons le tableau de bord tel qu’il a été envoyé. »',
+      'Transition : « Voici le chemin : six actes pour répondre à Hélène, en commençant par le tableau de bord tel qu’il a été envoyé. »',
     ),
     proprietes: {
       metier:
@@ -336,6 +336,66 @@ const ACTE_1: Acte = [
       ],
     },
   },
+  ecranV2(
+    {
+      screenId: 'B2-01-A1-07-PLAN',
+      titre: 'Le plan de la séance',
+      diffusion: 'catalogue',
+      dureeMinutes: 1,
+      concepts: ['contrat-de-lecture'],
+      notes: '',
+    },
+    'method-path',
+    {
+      title: 'Le plan de la séance',
+      steps: [
+        {
+          id: 'lire',
+          title: 'Acte 1 · Diagnostiquer',
+          question: 'Que mesure chaque chiffre ?',
+          proof: 'Unité, base, période, périmètre, source.',
+          result: 'Le tableau de bord annoté : chaque chiffre qualifié.',
+        },
+        {
+          id: 'comparer',
+          title: 'Acte 2 · Auditer',
+          question: 'Compare-t-on la même chose ?',
+          proof: 'Population de référence, axe, ordre de grandeur.',
+          result: 'Des comparaisons justes et défendables.',
+        },
+        {
+          id: 'evoluer',
+          title: 'Acte 3 · Calculer les évolutions',
+          question: 'Quelle base, quel coefficient ?',
+          proof: 'Écart, taux, coefficient, indice.',
+          result:
+            'Des évolutions justes, y compris successives et réciproques.',
+        },
+        {
+          id: 'outiller',
+          title: 'Acte 4 · Outiller au tableur',
+          question: 'La feuille se contrôle-t-elle seule ?',
+          proof: 'Formules, références, contrôles, graphique.',
+          result: 'Un classeur contrôlable qu’un tiers peut reproduire.',
+        },
+        {
+          id: 'defendre',
+          title: 'Acte 5 · Défendre au comité',
+          question: 'Quel mécanisme explique l’écart ?',
+          proof: 'Poids, répartition, preuve, limite.',
+          result:
+            'Une recommandation fondée sur les poids, les scénarios et les limites.',
+        },
+        {
+          id: 'transferer',
+          title: 'Acte 6 · Transférer',
+          question: 'Saurez-vous le refaire seul·e ?',
+          proof: 'Situation nouvelle, réponse d’IA corrigée, rappel.',
+          result: 'Une fiche mémo pour le CCF.',
+        },
+      ],
+    },
+  ),
   ecranV2(
     {
       screenId: 'B2-01-A1-04-TABLEAU-DE-BORD',
@@ -426,6 +486,7 @@ const ACTE_1: Acte = [
       proprietes: {
         modalite: 'binome',
         renvoi: 'B2-01-A1-04-TABLEAU-DE-BORD',
+        cadrageDuRenvoi: { part: 40, extrait: { lignes: [0, 1, 2, 3, 4, 5] } },
         ...classement(
           {
             id: 'b2-01-a1-anatomie',
@@ -565,66 +626,6 @@ const ACTE_1: Acte = [
   ),
   ecranV2(
     {
-      screenId: 'B2-01-A1-07-PLAN',
-      titre: 'Le plan de la séance',
-      diffusion: 'catalogue',
-      dureeMinutes: 1,
-      concepts: ['contrat-de-lecture'],
-      notes: '',
-    },
-    'method-path',
-    {
-      title: 'Le plan de la séance',
-      steps: [
-        {
-          id: 'lire',
-          title: 'Acte 1 · Diagnostiquer',
-          question: 'Que mesure chaque chiffre ?',
-          proof: 'Unité, base, période, périmètre, source.',
-          result: 'Le tableau de bord annoté : chaque chiffre qualifié.',
-        },
-        {
-          id: 'comparer',
-          title: 'Acte 2 · Auditer',
-          question: 'Compare-t-on la même chose ?',
-          proof: 'Population de référence, axe, ordre de grandeur.',
-          result: 'Des comparaisons justes et défendables.',
-        },
-        {
-          id: 'evoluer',
-          title: 'Acte 3 · Calculer les évolutions',
-          question: 'Quelle base, quel coefficient ?',
-          proof: 'Écart, taux, coefficient, indice.',
-          result:
-            'Des évolutions justes, y compris successives et réciproques.',
-        },
-        {
-          id: 'outiller',
-          title: 'Acte 4 · Outiller au tableur',
-          question: 'La feuille se contrôle-t-elle seule ?',
-          proof: 'Formules, références, contrôles, graphique.',
-          result: 'Un classeur contrôlable qu’un tiers peut reproduire.',
-        },
-        {
-          id: 'defendre',
-          title: 'Acte 5 · Défendre au comité',
-          question: 'Quel mécanisme explique l’écart ?',
-          proof: 'Poids, répartition, preuve, limite.',
-          result:
-            'Une recommandation fondée sur les poids, les scénarios et les limites.',
-        },
-        {
-          id: 'transferer',
-          title: 'Acte 6 · Transférer',
-          question: 'Saurez-vous le refaire seul·e ?',
-          proof: 'Situation nouvelle, réponse d’IA corrigée, rappel.',
-          result: 'Une fiche mémo pour le CCF.',
-        },
-      ],
-    },
-  ),
-  ecranV2(
-    {
       screenId: 'B2-01-A1-08-QUESTION-DE-GESTION',
       titre: 'La question d’Hélène, en chiffres',
       diffusion: 'seance',
@@ -656,6 +657,7 @@ const ACTE_1: Acte = [
           'Vérifiez que votre question nomme un indicateur, un dénominateur, deux dates et un périmètre.',
       },
       renvoi: 'B2-01-A1-03-MISSION',
+      cadrageDuRenvoi: { part: 70, extrait: { champs: ['situation'] } },
     },
   ),
   ecranV2(
@@ -741,6 +743,7 @@ const ACTE_1: Acte = [
         ],
       },
       renvoi: 'B2-01-A1-09-DIAPOSITIVE',
+      cadrageDuRenvoi: { part: 60 },
     },
   },
   correctionDesReponses(
@@ -791,7 +794,7 @@ const ACTE_1: Acte = [
     notes: puces(
       '30 s de vote anonyme.',
       'Si plus de 30 % « Perdu » : reprendre la fiche A1-06 en 2 min sur « Inflation : 4,9 ».',
-      'Transition : « Acte 2 : comparer sans tromper. Retour en 1786. »',
+      'Transition : « Acte 2 · Auditer : comparer sans tromper. Retour en 1786. »',
     ),
     proprietes: {
       sondage: {
@@ -850,7 +853,6 @@ const ACTE_2: Acte = [
       'Phrase à faire dire : « L’échelle change l’impression, pas la donnée ».',
     ),
     proprietes: {
-      renvoi: 'B2-01-A1-09-DIAPOSITIVE',
       id: 'b2-01-a2-origine-axe',
       titre: 'Diapositive de Samir : marge brute et axe réglable',
       source: 'Service commercial d’Atelier Rivage (données fictives).',
@@ -902,6 +904,7 @@ const ACTE_2: Acte = [
     ),
     proprietes: {
       renvoi: 'B2-01-A1-09-DIAPOSITIVE',
+      cadrageDuRenvoi: { part: 40 },
       intitule: 'Atelier 1 — Lire, rapporter, estimer (questions 1 à 3)',
       consigne:
         'Calculatrice autorisée. Répondez seul·e, puis comparez avec votre voisin·e avant la correction.',
@@ -1058,7 +1061,8 @@ const ACTE_2: Acte = [
       notes: puces(
         'Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.',
         'Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.',
-        'Transition : « Remettons la diapositive de Samir d’aplomb. »',
+        'Revenir à la diapositive de Samir : de 285 000 € à 291 000 €, la marge brute gagne +6 000 €, soit +2,1 % en trois ans. Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.',
+        'Transition : « Cinq écritures reviennent sans cesse : fixons-les. »',
       ),
     },
     'B2-01-A2-03-ATELIER-1-SUITE',
@@ -1076,44 +1080,6 @@ const ACTE_2: Acte = [
         'Marge : 20 €. Taux de marque = 20 ÷ 100 = 20 % (sur le prix de vente) ; taux de marge = 20 ÷ 80 = 25 % (sur le coût d’achat), la même hausse qu’au diagnostic.',
       ],
     ],
-  ),
-  ecranV2(
-    {
-      screenId: 'B2-01-A2-04-MARGE-AXE-ZERO',
-      titre: 'Marge brute 2022–2025, axe à zéro',
-      diffusion: 'seance',
-      dureeMinutes: 2,
-      concepts: ['lecture-graphique', 'taux-evolution'],
-      notes: puces(
-        'Projeter à côté de la diapositive de Samir si possible.',
-        'Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.',
-        'Transition : « Cinq écritures reviennent sans cesse : fixons-les. »',
-      ),
-    },
-    'chart',
-    {
-      title: 'Marge brute d’Atelier Rivage, 2022–2025',
-      caption: 'Axe vertical de 0 à 300 000 €',
-      labels: ['2022', '2023', '2024', '2025'],
-      series: [
-        {
-          label: 'Marge brute',
-          values: [285000, 288000, 289800, 291000],
-          tone: 'teal',
-        },
-      ],
-      axisRanges: [[0, 300000]],
-      axisLabels: ['0 à 300 000 €'],
-      unit: '€',
-      formula: 'Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021',
-      reading:
-        'De 2022 à 2025, la marge brute passe de 285 000 € à 291 000 € : +6 000 €, soit +2,1 % en trois ans. Les hausses annuelles ralentissent : +1,05 %, +0,63 %, puis +0,41 %.',
-      source:
-        'Comptes de résultat 2022 à 2025 d’Atelier Rivage (données fictives).',
-      description:
-        'Diagramme en barres à partir de zéro : quatre barres presque égales, de 285 000 € en 2022 à 291 000 € en 2025.',
-    },
-    { renvoi: 'B2-01-A1-09-DIAPOSITIVE' },
   ),
   ecranV2(
     {
@@ -1158,7 +1124,7 @@ const ACTE_2: Acte = [
         },
       ],
     },
-    { renvoi: 'B2-01-A1-05-CORRECTION' },
+    { renvoi: 'B2-01-A1-05-CORRECTION', cadrageDuRenvoi: { part: 50 } },
   ),
   ...suiviDeSonCorrige(
     {
@@ -1186,6 +1152,7 @@ const ACTE_2: Acte = [
       proprietes: {
         modalite: 'solo',
         renvoi: 'B2-01-A1-04-TABLEAU-DE-BORD',
+        cadrageDuRenvoi: { part: 30, extrait: { lignes: [3] } },
         exemple: {
           id: 'b2-01-a2-points',
           enonce:
@@ -1483,6 +1450,11 @@ const ACTE_3: Acte = [
         { libelle: '−10 % puis +10 %', valeurs: { tauxUn: -10, tauxDeux: 10 } },
         { libelle: '+20 % puis −20 %', valeurs: { tauxUn: 20, tauxDeux: -20 } },
       ],
+      animation: [
+        { depart: 100, tauxUn: 0, tauxDeux: 0 },
+        { tauxUn: 50 },
+        { tauxDeux: -50 },
+      ],
       phrase:
         'Chaque taux s’applique à la valeur devenue courante : on multiplie les coefficients, on n’additionne pas les taux. Taux d’évolution = (arrivée − départ) ÷ départ.',
     },
@@ -1526,7 +1498,7 @@ const ACTE_3: Acte = [
       description:
         'Trois courbes étiquetées : prix de vente 100, 110 puis 99 € ; coût d’achat constant à 80 € ; marge unitaire 20, 30 puis 19 €.',
     },
-    { renvoi: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE' },
+    { renvoi: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE', cadrageDuRenvoi: { part: 40 } },
   ),
   ...suiviDeSonCorrige(
     {
@@ -1736,6 +1708,7 @@ const ACTE_3: Acte = [
     ),
     proprietes: {
       renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
+      cadrageDuRenvoi: { part: 40 },
       intitule: 'Atelier 2 — Rythme, niveau, indice (questions 1 à 3)',
       consigne: CONSIGNE_DE_L_ATELIER_2,
       regime: 'focus',
@@ -1825,6 +1798,7 @@ const ACTE_3: Acte = [
     ),
     proprietes: {
       renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
+      cadrageDuRenvoi: { part: 40 },
       intitule: 'Atelier 2 — Rythme, niveau, indice (questions 4 et 5)',
       consigne: CONSIGNE_DE_L_ATELIER_2,
       regime: 'focus',
@@ -1918,7 +1892,7 @@ const ACTE_3: Acte = [
       description:
         'Courbe croissante de l’indice : base 100 en 2019, niveau intermédiaire en 2022, niveau final supérieur à 115 en 2025 ; axe gradué de 95 à 120.',
     },
-    { renvoi: 'B2-01-A3-05-INFLATION-RYTHME' },
+    { renvoi: 'B2-01-A3-05-INFLATION-RYTHME', cadrageDuRenvoi: { part: 40 } },
   ),
   ecranV2(
     {
@@ -1956,6 +1930,7 @@ const ACTE_3: Acte = [
           'Citez toujours deux chiffres : le rythme (taux annuel) et le niveau (indice), avec leur source.',
       },
       renvoi: 'B2-01-A3-08-INDICE-PRIX',
+      cadrageDuRenvoi: { part: 60 },
     },
   ),
   {
@@ -2842,6 +2817,13 @@ const ACTE_5: Acte = [
           calcul: '27.6',
         },
       ],
+      animation: [
+        { tauxMarketplace: 16 },
+        { tauxMarketplace: 20 },
+        { tauxMarketplace: 24 },
+        { tauxMarketplace: 28 },
+        { tauxMarketplace: 30 },
+      ],
       description:
         'Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ?',
     },
@@ -3012,6 +2994,7 @@ const ACTE_5: Acte = [
     ),
     proprietes: {
       renvoi: 'B2-01-A5-05-TCD',
+      cadrageDuRenvoi: { part: 40 },
       intitule: 'Atelier 4 — Du constat à la preuve (questions 4 et 5)',
       consigne: CONSIGNE_DE_L_ATELIER_4,
       regime: 'focus',
@@ -3266,6 +3249,7 @@ const ACTE_5: Acte = [
     proprietes: {
       modalite: 'solo',
       renvoi: 'B2-01-A5-08-DOSSIER-COMITE',
+      cadrageDuRenvoi: { part: 50 },
       probleme: {
         id: 'b2-01-a5-recommandation',
         enonce:
@@ -4231,7 +4215,7 @@ export const COURS_B2_01: ContenuDeCours = {
   slug: 'b2-01-traitement-information-chiffree',
   titre: 'Lire, contrôler et décider avec l’information chiffrée',
   niveau: 'B2',
-  dureeMinutes: 213,
+  dureeMinutes: 211,
   concepts: [
     'proportion',
     'pourcentage',

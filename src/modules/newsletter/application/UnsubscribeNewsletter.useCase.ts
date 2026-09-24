@@ -1,14 +1,7 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
-import type { IEmailDripScheduler } from '../domain/IEmailDripScheduler';
-import type { INewsletterMailer } from '../domain/INewsletterMailer';
-import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
-import {
-  EMAIL_DRIP_SCHEDULER,
-  NEWSLETTER_MAILER,
-  NEWSLETTER_SUBSCRIBER_REPOSITORY,
-} from '../domain/token';
+import { ActionDAbonne } from './ActionDAbonne';
 
 export interface UnsubscribeNewsletterResult {
   readonly status: NewsletterSubscriber['status'];
@@ -26,18 +19,7 @@ export interface UnsubscribeNewsletterOptions {
 }
 
 @Injectable()
-export class UnsubscribeNewsletterUseCase {
-  private readonly logger = new Logger(UnsubscribeNewsletterUseCase.name);
-
-  constructor(
-    @Inject(NEWSLETTER_SUBSCRIBER_REPOSITORY)
-    private readonly repo: INewsletterSubscriberRepository,
-    @Inject(NEWSLETTER_MAILER)
-    private readonly mailer: INewsletterMailer,
-    @Inject(EMAIL_DRIP_SCHEDULER)
-    private readonly scheduler: IEmailDripScheduler,
-  ) {}
-
+export class UnsubscribeNewsletterUseCase extends ActionDAbonne {
   async execute(
     unsubscribeToken: string,
     options: UnsubscribeNewsletterOptions = { sendAck: true },
@@ -57,17 +39,15 @@ export class UnsubscribeNewsletterUseCase {
       return { status: 'unsubscribed', alreadyUnsubscribed: true };
     }
 
-    void this.scheduler
-      .cancel(updated)
-      .catch((err: unknown) =>
-        this.logger.warn('Newsletter drip cancel failed', err),
-      );
+    this.enArrierePlan(
+      this.scheduler.cancel(updated),
+      'Newsletter drip cancel failed',
+    );
     if (options.sendAck) {
-      void this.mailer
-        .sendUnsubscribeAck(updated)
-        .catch((err: unknown) =>
-          this.logger.warn('Newsletter unsubscribe ack email failed', err),
-        );
+      this.enArrierePlan(
+        this.mailer.sendUnsubscribeAck(updated),
+        'Newsletter unsubscribe ack email failed',
+      );
     }
 
     return { status: updated.status, alreadyUnsubscribed: false };

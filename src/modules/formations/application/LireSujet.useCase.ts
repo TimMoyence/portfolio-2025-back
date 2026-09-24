@@ -12,12 +12,7 @@ import type { CoursPublic, EcranPublic } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { TirageAmbiguError, tirer } from '../domain/cours/Tirage';
 import type { TirageDuCours } from '../domain/cours/Tirage';
-import {
-  CoursInconnuError,
-  CoursModifieError,
-  ParticipantNotFoundError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
+import { CoursModifieError } from '../domain/errors/FormationErrors';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import {
@@ -25,6 +20,7 @@ import {
   PARTICIPANTS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { contexteDuParticipant } from './CoursDeLaSeance';
 
 export interface LireSujetQuery {
   sessionId: string;
@@ -43,25 +39,15 @@ export class LireSujetUseCase {
   ) {}
 
   async execute(query: LireSujetQuery): Promise<CoursPublic> {
-    const session = await this.sessions.findById(query.sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(query.sessionId);
-    }
-    const participant = await this.participants.findById(query.participantId);
-    if (
-      !participant ||
-      participant.sessionId !== query.sessionId ||
-      participant.evinceLe !== null
-    ) {
-      throw new ParticipantNotFoundError(query.participantId);
-    }
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
+    const { session, participant, cours } = await contexteDuParticipant(
+      {
+        sessions: this.sessions,
+        participants: this.participants,
+        catalogue: this.catalogue,
+      },
+      query.sessionId,
+      query.participantId,
     );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
     const tirage = this.tirerOuLever(cours, participant.seed);
     const stockees = solutionsDuTirage(session.bareme, participant.seed);
     if (

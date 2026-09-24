@@ -7,6 +7,7 @@ import request from 'supertest';
 import { AuthController } from '../src/modules/users/interfaces/Auth.controller';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
+import type { User } from '../src/modules/users/domain/User';
 import {
   authControllerProviders,
   createAuthUseCaseStubs,
@@ -37,6 +38,13 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   } = authStubs;
 
   const getHttpServer = () => httpServerOf(app);
+
+  const signerPour = (user: User) =>
+    jwtTokenService.sign({
+      sub: user.id,
+      email: user.email,
+      roles: user.roles,
+    });
 
   function extractRefreshCookie(res: request.Response): string | undefined {
     const cookies = res.headers['set-cookie'] as unknown as
@@ -91,12 +99,8 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   it('POST /api/auth/login retourne un token JWT valide et le profil', async () => {
-    const user = buildUser({ roles: ['weather'] });
-    const signed = await jwtTokenService.sign({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles,
-    });
+    const user = buildUser({ roles: ['teacher'] });
+    const signed = await signerPour(user);
 
     authenticateUserUseCase.execute.mockResolvedValue(
       buildAuthResult({
@@ -123,12 +127,8 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   it('GET /api/auth/me avec Bearer valide retourne le profil utilisateur', async () => {
-    const user = buildUser({ roles: ['weather'] });
-    const signed = await jwtTokenService.sign({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles,
-    });
+    const user = buildUser({ roles: ['teacher'] });
+    const signed = await signerPour(user);
 
     getCurrentUserUseCase.execute.mockResolvedValue(user);
 
@@ -179,12 +179,8 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   it('POST /api/auth/refresh retourne un nouveau couple de tokens', async () => {
-    const user = buildUser({ roles: ['weather'] });
-    const newSigned = await jwtTokenService.sign({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles,
-    });
+    const user = buildUser({ roles: ['teacher'] });
+    const newSigned = await signerPour(user);
 
     refreshTokensUseCase.execute.mockResolvedValue(
       buildAuthResult({
@@ -236,13 +232,9 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
   });
 
   it('flow complet : login, acces protege, refresh, re-acces, logout', async () => {
-    const user = buildUser({ roles: ['weather'] });
+    const user = buildUser({ roles: ['teacher'] });
 
-    const firstSigned = await jwtTokenService.sign({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles,
-    });
+    const firstSigned = await signerPour(user);
     authenticateUserUseCase.execute.mockResolvedValue(
       buildAuthResult({
         accessToken: firstSigned.token,
@@ -268,11 +260,7 @@ describe('Auth flow complet — sans bypass de guard (e2e)', () => {
       .set('Authorization', `Bearer ${firstToken}`)
       .expect(200);
 
-    const secondSigned = await jwtTokenService.sign({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles,
-    });
+    const secondSigned = await signerPour(user);
     refreshTokensUseCase.execute.mockResolvedValue(
       buildAuthResult({
         accessToken: secondSigned.token,

@@ -7,6 +7,7 @@ import {
 } from '../../../../test/factories/formation-entities.factory';
 import {
   buildBareme,
+  buildSessionRecord,
   mockTypeOrmCreate,
   mockTypeOrmSave,
 } from '../../../../test/factories/formation.factory';
@@ -20,22 +21,11 @@ function ligne(
   overrides: Partial<FormationSessionEntity> = {},
 ): FormationSessionEntity {
   return {
-    id: 'session-ouverte',
-    courseSlug: 'b1-09-interets-composes',
-    courseVersion: 1,
-    teacherId: 'teacher-uuid',
-    code: CODE,
-    etat: 'attente',
-    modeRythme: 'pilote',
-    ecranCourant: 0,
-    intervalleLibre: null,
-    pilotageEcrans: {},
-    revision: 0,
-    capacite: 40,
-    bareme: buildBareme(),
-    ouverteLe: new Date('2026-09-11T08:00:00.000Z'),
-    fermeeLe: null,
-    majLe: new Date('2026-09-11T08:00:00.000Z'),
+    ...buildSessionRecord({
+      id: 'session-ouverte',
+      code: CODE,
+      etat: 'attente',
+    }),
     ...overrides,
   };
 }

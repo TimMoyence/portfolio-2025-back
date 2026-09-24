@@ -11,9 +11,9 @@ import {
   createMockRappelsServisRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { verifierGardesDeParticipant } from '../../../../../test/helpers/gardes-de-seance';
 import {
   EcranNonServiError,
-  ParticipantNotFoundError,
   RappelsIndisponiblesError,
 } from '../../domain/errors/FormationErrors';
 import { LireRappelsUseCase } from '../LireRappels.useCase';
@@ -122,25 +122,11 @@ describe('LireRappelsUseCase', () => {
     ).rejects.toThrow(EcranNonServiError);
   });
 
-  it('refuse un participant rattache a une autre seance', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({ sessionId: 'autre-session' }),
-    );
-
-    await expect(
-      sut.execute('session-uuid', 'participant-uuid'),
-    ).rejects.toThrow(ParticipantNotFoundError);
-  });
-
-  it('refuse un participant evince', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({ evinceLe: new Date() }),
-    );
-
-    await expect(
-      sut.execute('session-uuid', 'participant-uuid'),
-    ).rejects.toThrow(ParticipantNotFoundError);
-  });
+  verifierGardesDeParticipant(() => ({
+    participants,
+    executer: () => sut.execute('session-uuid', 'participant-uuid'),
+    effetsInterdits: () => [rappels.figer],
+  }));
 
   it('signale un cours sans ecran de rappel espace', async () => {
     const [premier, ...suite] = COURS.ecrans.filter(

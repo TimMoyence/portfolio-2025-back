@@ -1,31 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsInt,
   IsOptional,
   IsString,
   MaxLength,
-  Min,
   MinLength,
 } from 'class-validator';
+import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 
-export class JoinSessionRequestDto {
-  @ApiPropertyOptional({
-    description: 'Champ piège anti-robot, doit rester vide',
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  website?: string;
-
-  @ApiPropertyOptional({
-    description: "Timestamp ms d'ouverture du formulaire",
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  formStartedAt?: number;
-
+export class JoinSessionRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'Theo' })
   @IsString()
   @MinLength(1)
@@ -42,4 +25,13 @@ export class JoinSessionRequestDto {
   @IsEmail()
   @MaxLength(180)
   email: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Secret remis par la jonction precedente de ce poste ; exige pour reprendre une place deja prise',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  secretDeReprise?: string;
 }

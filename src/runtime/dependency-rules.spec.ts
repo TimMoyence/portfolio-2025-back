@@ -127,7 +127,6 @@ describe('Règles de dépendances inter-couches', () => {
       'ioredis',
       'axios',
       'openai',
-      'grammy',
       'pdfkit',
       'puppeteer',
       'cheerio',

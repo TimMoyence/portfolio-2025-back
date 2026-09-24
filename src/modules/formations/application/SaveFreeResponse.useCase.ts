@@ -10,18 +10,13 @@ import {
   assertPhaseOuverte,
 } from '../domain/cours/PilotageEcrans';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
-import {
-  ActiviteInconnueError,
-  CoursInconnuError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
+import { ActiviteInconnueError } from '../domain/errors/FormationErrors';
 import type {
   IFreeResponsesRepository,
   SaveFreeResponseInput,
 } from '../domain/IFreeResponses.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { assertReponsesOuvertes } from '../domain/SessionState';
 import { texteRenseigne } from '../domain/TexteRenseigne';
 import {
   CATALOGUE_COURS,
@@ -30,6 +25,7 @@ import {
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { coursDeLaSeance, seanceOuverteAuxReponses } from './CoursDeLaSeance';
 import { participantActif } from './ParticipantActif';
 
 @Injectable()
@@ -49,23 +45,16 @@ export class SaveFreeResponseUseCase {
 
   async execute(command: SaveFreeResponseInput): Promise<void> {
     const response = texteRenseigne(command.response, 'La réponse');
-    const session = await this.sessions.findById(command.sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(command.sessionId);
-    }
-    assertReponsesOuvertes(session.etat);
+    const session = await seanceOuverteAuxReponses(
+      this.sessions,
+      command.sessionId,
+    );
     await participantActif(
       this.participants,
       command.sessionId,
       command.participantId,
     );
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
-    );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
+    const cours = await coursDeLaSeance(this.catalogue, session);
     assertEcranServi(
       session,
       rangDeLEcran(cours, command.screenId),

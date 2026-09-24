@@ -17,6 +17,7 @@ export const REGLES_STRUCTURE = [
   'duree-cours',
   'reference-inconnue',
   'renvoi-anterieur',
+  'cadrage-du-renvoi',
   'reference-circulaire',
   'correction-apres-source',
   'notes-formateur',
@@ -370,10 +371,14 @@ function controlerReferences({ cours }: Analyse): readonly Manquement[] {
     }));
 }
 
-function controlerRenvoisAnterieurs({ cours }: Analyse): readonly Manquement[] {
-  const rangs = new Map(
+function rangsParNom(cours: Cours): ReadonlyMap<string, number> {
+  return new Map(
     cours.ecrans.map((ecran, rang) => [nomEcran(ecran, rang), rang]),
   );
+}
+
+function controlerRenvoisAnterieurs({ cours }: Analyse): readonly Manquement[] {
+  const rangs = rangsParNom(cours);
   return cours.ecrans.flatMap((ecran, rang) => {
     const cible =
       ecran.renvoi === undefined ? undefined : rangs.get(ecran.renvoi);
@@ -385,6 +390,67 @@ function controlerRenvoisAnterieurs({ cours }: Analyse): readonly Manquement[] {
             raison: `le renvoi vers « ${ecran.renvoi} » vise un écran que la classe n'a pas encore vu`,
           },
         ];
+  });
+}
+
+function lignesDuTableau(ecran: Ecran): number | null {
+  if (ecran.brique !== 'fp-story') {
+    return null;
+  }
+  const presentation = ecran.proprietes.presentation;
+  if (presentation?.version !== 2 || presentation.renderer !== 'table') {
+    return null;
+  }
+  const lignes: unknown = presentation.props['rows'];
+  return Array.isArray(lignes) ? lignes.length : null;
+}
+
+function champsDuCas(ecran: Ecran): ReadonlySet<string> | null {
+  if (ecran.brique !== 'fp-pro') {
+    return null;
+  }
+  return new Set(
+    Object.entries(ecran.proprietes)
+      .filter(([, valeur]) => typeof valeur === 'string' && valeur !== '')
+      .map(([champ]) => champ),
+  );
+}
+
+function defautsDuCadrage(ecran: Ecran, cible: Ecran | undefined): string[] {
+  const extrait = ecran.cadrageDuRenvoi?.extrait;
+  if (cible === undefined) {
+    return ['le cadrage vise un renvoi absent'];
+  }
+  const nombreDeLignes = lignesDuTableau(cible);
+  const lignesAbsentes = (extrait?.lignes ?? []).filter(
+    (ligne) => nombreDeLignes === null || ligne >= nombreDeLignes,
+  );
+  const champs = champsDuCas(cible);
+  const champsAbsents = (extrait?.champs ?? []).filter(
+    (champ) => champs === null || !champs.has(champ),
+  );
+  return [
+    ...lignesAbsentes.map(
+      (ligne) => `la ligne ${ligne} n'existe pas dans le tableau renvoyé`,
+    ),
+    ...champsAbsents.map(
+      (champ) => `le champ « ${champ} » est absent du cas renvoyé`,
+    ),
+  ];
+}
+
+function controlerCadrages({ cours }: Analyse): readonly Manquement[] {
+  const parId = new Map(cours.ecrans.map((ecran) => [ecran.id, ecran]));
+  return cours.ecrans.flatMap((ecran, rang) => {
+    if (ecran.cadrageDuRenvoi === undefined) {
+      return [];
+    }
+    const cible =
+      ecran.renvoi === undefined ? undefined : parId.get(ecran.renvoi);
+    return defautsDuCadrage(ecran, cible).map((raison) => ({
+      ecran: nomEcran(ecran, rang),
+      raison,
+    }));
   });
 }
 
@@ -584,9 +650,7 @@ function controlerAteliers({ cours }: Analyse): readonly Manquement[] {
 }
 
 function controlerCorrections({ cours }: Analyse): readonly Manquement[] {
-  const rangs = new Map(
-    cours.ecrans.map((ecran, rang) => [nomEcran(ecran, rang), rang]),
-  );
+  const rangs = rangsParNom(cours);
   return cours.ecrans.flatMap((ecran, rang) => {
     const source = ecranCorrigePar(ecran);
     if (source === null) {
@@ -698,6 +762,7 @@ const REGLES: readonly Regle[] = [
   { id: 'duree-cours', controler: controlerDureeCours },
   { id: 'reference-inconnue', controler: controlerReferences },
   { id: 'renvoi-anterieur', controler: controlerRenvoisAnterieurs },
+  { id: 'cadrage-du-renvoi', controler: controlerCadrages },
   { id: 'reference-circulaire', controler: controlerCycles },
   { id: 'correction-apres-source', controler: controlerCorrections },
   { id: 'notes-formateur', controler: controlerNotes },

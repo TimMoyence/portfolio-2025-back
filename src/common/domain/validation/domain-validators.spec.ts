@@ -3,7 +3,49 @@ import {
   requireText,
   optionalText,
   optionalMetadata,
+  requireHttpUrl,
+  optionalHttpUrl,
 } from './domain-validators';
+
+describe('requireHttpUrl', () => {
+  it('rend l URL http ou https trimmee', () => {
+    expect(requireHttpUrl('  https://example.com/a  ', 'lien')).toBe(
+      'https://example.com/a',
+    );
+    expect(requireHttpUrl('http://example.com', 'lien')).toBe(
+      'http://example.com',
+    );
+  });
+
+  it.each([
+    ['un non-string', 42],
+    ['une chaine vide', '   '],
+    ['une URL de plus de 1000 caracteres', `https://e.com/${'a'.repeat(1000)}`],
+    ['une URL illisible', 'pas une url'],
+    ['un protocole autre que http(s)', 'javascript:alert(1)'],
+  ])('rejette %s', (_cas, valeur) => {
+    expect(() => requireHttpUrl(valeur, 'lien')).toThrow(
+      new DomainValidationError('Invalid lien'),
+    );
+  });
+});
+
+describe('optionalHttpUrl', () => {
+  it('rend undefined quand le lien est absent ou vide', () => {
+    expect(optionalHttpUrl(undefined, 'lien')).toBeUndefined();
+    expect(optionalHttpUrl(null, 'lien')).toBeUndefined();
+    expect(optionalHttpUrl('  ', 'lien')).toBeUndefined();
+  });
+
+  it('valide un lien present comme requireHttpUrl', () => {
+    expect(optionalHttpUrl(' https://example.com ', 'lien')).toBe(
+      'https://example.com',
+    );
+    expect(() => optionalHttpUrl('ftp://example.com', 'lien')).toThrow(
+      DomainValidationError,
+    );
+  });
+});
 
 describe('requireText', () => {
   it('devrait retourner le texte trimme', () => {

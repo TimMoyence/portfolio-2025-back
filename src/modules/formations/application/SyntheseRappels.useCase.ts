@@ -1,10 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ecranDeRappel } from '../domain/cours/ChoixDesRappels';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import {
-  CoursInconnuError,
-  RappelsIndisponiblesError,
-} from '../domain/errors/FormationErrors';
+import { RappelsIndisponiblesError } from '../domain/errors/FormationErrors';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
@@ -15,6 +12,7 @@ import {
   PARTICIPANTS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { coursDeLaSeance } from './CoursDeLaSeance';
 import { seanceLisiblePar } from './SessionAccess';
 
 export interface SyntheseDeConcept {
@@ -44,13 +42,7 @@ export class SyntheseRappelsUseCase {
     acteur: ActeurFormation,
   ): Promise<{ concepts: readonly SyntheseDeConcept[] }> {
     const session = await seanceLisiblePar(this.sessions, sessionId, acteur);
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
-    );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const cible = ecranDeRappel(cours);
     if (cible === null) {
       throw new RappelsIndisponiblesError(session.courseSlug);

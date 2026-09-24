@@ -1,17 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsArray,
   IsBoolean,
   IsEmail,
-  IsIn,
   IsOptional,
   IsString,
-  Matches,
   MaxLength,
-  MinLength,
 } from 'class-validator';
 import type { UpdateUserCommand } from '../../application/dto/UpdateUser.command';
-import { VALID_ROLES } from '../../domain/roles';
+import { MotDePasseRobuste, RolesValides } from './regles-de-saisie';
 
 export class UpdateUserDto implements UpdateUserCommand {
   @ApiPropertyOptional({ example: 'john@example.com' })
@@ -21,14 +17,7 @@ export class UpdateUserDto implements UpdateUserCommand {
 
   @ApiPropertyOptional({ example: 'NewPassword456!' })
   @IsOptional()
-  @IsString()
-  @MinLength(12, {
-    message: 'Le mot de passe doit contenir au moins 12 caracteres.',
-  })
-  @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
-    message:
-      'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',
-  })
+  @MotDePasseRobuste()
   password?: string;
 
   @ApiPropertyOptional({ example: 'John' })
@@ -52,17 +41,11 @@ export class UpdateUserDto implements UpdateUserCommand {
   phone?: string | null;
 
   @ApiPropertyOptional({
-    example: ['sebastian', 'weather'],
+    example: ['admin', 'teacher'],
     type: [String],
     description: 'Liste des roles. Reserve aux administrateurs.',
   })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  @IsIn(VALID_ROLES as unknown as string[], {
-    each: true,
-    message: 'Chaque role doit etre un role valide',
-  })
+  @RolesValides()
   roles?: string[];
 
   @ApiPropertyOptional({ example: true })

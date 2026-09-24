@@ -1,12 +1,8 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
-export class UsersEntity {
+export class UsersEntity extends ColonnesDeTrace {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -36,22 +32,4 @@ export class UsersEntity {
 
   @Column({ name: 'email_verified', type: 'boolean', default: false })
   emailVerified: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_or_created_by',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  updatedOrCreatedBy: string | null;
 }

@@ -1,6 +1,6 @@
+import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
 import {
   Column,
-  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -13,7 +13,7 @@ import { CoursesEntity } from './Courses.entity';
 @Entity({ name: 'courses_translation' })
 @Unique('uq_courses_translation_locale', ['courseId', 'locale'])
 @Unique('uq_courses_translation_locale_slug', ['locale', 'slug'])
-export class CoursesTranslationEntity {
+export class CoursesTranslationEntity extends ColonnesDeTrace {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -38,22 +38,4 @@ export class CoursesTranslationEntity {
 
   @Column('text')
   summary: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_or_created_by',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  updatedOrCreatedBy: string | null;
 }

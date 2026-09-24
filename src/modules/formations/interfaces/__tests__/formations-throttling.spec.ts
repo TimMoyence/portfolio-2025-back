@@ -2,6 +2,7 @@ import {
   suivreParCodeDeSession,
   suivreParParticipant,
 } from '../formations-throttling';
+import { createMockParticipantsRepo } from '../../../../../test/factories/formation.factory';
 import { ParticipantTokenService } from '../ParticipantToken.service';
 
 const IP_SALLE = 'sortie-nat-salle-b204';
@@ -46,7 +47,7 @@ describe('suivreParCodeDeSession', () => {
 });
 
 describe('suivreParParticipant', () => {
-  const tokens = new ParticipantTokenService();
+  const tokens = new ParticipantTokenService(createMockParticipantsRepo());
   let secretInitial: string | undefined;
   let jetonTheo: string;
   let jetonLea: string;
@@ -54,8 +55,8 @@ describe('suivreParParticipant', () => {
   beforeAll(() => {
     secretInitial = process.env.FORMATION_REVIEW_TOKEN_SECRET;
     process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    jetonTheo = tokens.sign(SESSION_ID, THEO);
-    jetonLea = tokens.sign(SESSION_ID, LEA);
+    jetonTheo = tokens.sign(SESSION_ID, THEO, 0);
+    jetonLea = tokens.sign(SESSION_ID, LEA, 0);
   });
 
   afterAll(() => {
@@ -94,6 +95,15 @@ describe('suivreParParticipant', () => {
     expect(premiere).toBe(seconde);
   });
 
+  it('S1 · ne laisse pas le jeton revoque d un poste libere epuiser le compteur de son nouveau titulaire', () => {
+    const revoque = suivreParParticipant(requeteDe(jetonTheo));
+    const courant = suivreParParticipant(
+      requeteDe(tokens.sign(SESSION_ID, THEO, 1)),
+    );
+
+    expect(revoque).not.toBe(courant);
+  });
+
   it('retombe sur l adresse quand le jeton est absent ou illisible', () => {
     expect(suivreParParticipant(requete())).toBe(`ip:${IP_SALLE}`);
     expect(suivreParParticipant(requeteDe('.sans-identifiant'))).toBe(
@@ -102,7 +112,7 @@ describe('suivreParParticipant', () => {
   });
 
   it('refuse un jeton bien forme mais non signe et compte par adresse', () => {
-    const forge = `${THEO}.empreinte-inventee`;
+    const forge = `${THEO}.0.empreinte-inventee`;
 
     expect(suivreParParticipant(requeteDe(forge))).toBe(`ip:${IP_SALLE}`);
   });
@@ -110,7 +120,9 @@ describe('suivreParParticipant', () => {
   it('ne laisse pas un jeton forge fabriquer un seau neuf a chaque requete', () => {
     const cles = new Set(
       Array.from({ length: 5 }, (_, index) =>
-        suivreParParticipant(requeteDe(`${THEO}-${index}.empreinte-inventee`)),
+        suivreParParticipant(
+          requeteDe(`${THEO}-${index}.0.empreinte-inventee`),
+        ),
       ),
     );
 
@@ -118,7 +130,7 @@ describe('suivreParParticipant', () => {
   });
 
   it('refuse un jeton valide emis pour une autre seance', () => {
-    const jetonAilleurs = tokens.sign(AUTRE_SESSION, THEO);
+    const jetonAilleurs = tokens.sign(AUTRE_SESSION, THEO, 0);
 
     expect(suivreParParticipant(requeteDe(jetonAilleurs))).toBe(
       `ip:${IP_SALLE}`,

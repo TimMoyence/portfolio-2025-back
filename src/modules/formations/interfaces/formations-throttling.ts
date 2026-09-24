@@ -1,16 +1,14 @@
-import {
-  EN_TETE_JETON,
-  participantIdVerifie,
-} from './ParticipantToken.service';
+import { EN_TETE_JETON, identiteSignee } from './ParticipantToken.service';
 
 export const FENETRE_THROTTLE_MS = 60_000;
 export const LIMITE_CONTROLE_PAR_MINUTE = 240;
+export const LIMITE_LECTURE_FORMATEUR_PAR_MINUTE = 240;
 export const LIMITE_JOIN_PAR_CODE = 120;
 export const LIMITE_REPONSES_PAR_PARTICIPANT = 60;
 export const LIMITE_INCIDENTS_PAR_PARTICIPANT = 30;
 export const LIMITE_FLUX_PAR_PARTICIPANT = 30;
 export const LIMITE_REVISION_PAR_PARTICIPANT = 30;
-export const LIMITE_SUJET_PAR_PARTICIPANT = 20;
+export const LIMITE_SUJET_PAR_PARTICIPANT = 180;
 export const LIMITE_TENTATIVES_PAR_PARTICIPANT = 20;
 export const LIMITE_JALONS_PAR_PARTICIPANT = 30;
 export const LIMITE_ETAT_PAR_PARTICIPANT = 30;
@@ -49,18 +47,18 @@ export function suivreParParticipant(req: Record<string, unknown>): string {
   if (typeof jeton !== 'string' || typeof sessionId !== 'string') {
     return parAdresse(req);
   }
-  const participantId = participantIdVerifieSansLever(sessionId, jeton);
-  return participantId === null
+  const identite = identiteSigneeSansLever(sessionId, jeton);
+  return identite === null
     ? parAdresse(req)
-    : `participant:${participantId}`;
+    : `participant:${identite.participantId}:${identite.generation}`;
 }
 
-function participantIdVerifieSansLever(
+function identiteSigneeSansLever(
   sessionId: string,
   jeton: string,
-): string | null {
+): ReturnType<typeof identiteSignee> {
   try {
-    return participantIdVerifie(sessionId, jeton);
+    return identiteSignee(sessionId, jeton);
   } catch {
     return null;
   }

@@ -7,6 +7,7 @@ import {
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
+import { SecretDeReprise } from '../domain/SecretDeReprise';
 import { SessionCode } from '../domain/SessionCode';
 import {
   PARTICIPANTS_REPOSITORY,
@@ -39,6 +40,7 @@ export class JoinSessionUseCase {
       throw new SessionClosedError();
     }
 
+    const secretDeReprise = SecretDeReprise.generer();
     const { participant, nouveau } = await this.participants.inscrire({
       sessionId: session.id,
       studentKey: command.studentKey,
@@ -46,6 +48,9 @@ export class JoinSessionUseCase {
       nom: command.nom,
       email: command.email,
       capacite: session.capacite,
+      empreinteDeReprise: SecretDeReprise.empreinte(secretDeReprise),
+      repriseAutorisee: (empreinteStockee) =>
+        SecretDeReprise.autorise(empreinteStockee, command.secretDeReprise),
       choisirGraine: (prises) => pickFreeSeed(session.bareme, prises),
     });
 
@@ -55,22 +60,12 @@ export class JoinSessionUseCase {
       await this.participants.touch(participant.id);
     }
 
-    return this.toResult(participant.id, session, participant.seed);
-  }
-
-  private toResult(
-    participantId: string,
-    session: {
-      id: string;
-      ecranCourant: number;
-      modeRythme: JoinSessionResult['modeRythme'];
-    },
-    seed: number,
-  ): JoinSessionResult {
     return {
-      participantId,
+      participantId: participant.id,
+      generationDeJeton: participant.generationDeJeton,
       sessionId: session.id,
-      seed,
+      secretDeReprise,
+      seed: participant.seed,
       ecranCourant: session.ecranCourant,
       modeRythme: session.modeRythme,
     };

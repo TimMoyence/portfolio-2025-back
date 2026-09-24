@@ -7,6 +7,7 @@ export function createMockFormationsParticipantsDependances() {
     participants: { execute: jest.fn() },
     evincerParticipant: { execute: jest.fn() },
     readmettreParticipant: { execute: jest.fn() },
+    libererPoste: { execute: jest.fn() },
   };
 }
 
@@ -17,6 +18,7 @@ export function buildFormationsParticipantsController(
     dependances.participants as never,
     dependances.evincerParticipant as never,
     dependances.readmettreParticipant as never,
+    dependances.libererPoste as never,
   );
 }
 

@@ -1,3 +1,4 @@
+import type { IRefreshTokensRepository } from '../../src/modules/users/domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../../src/modules/users/domain/IUsers.repository';
 import { User } from '../../src/modules/users/domain/User';
 import type { PasswordService } from '../../src/modules/users/application/services/PasswordService';
@@ -78,6 +79,29 @@ export function buildAuthResult(overrides?: Partial<AuthResult>): AuthResult {
     user: buildUser(),
     ...overrides,
   };
+}
+
+export function attendreSessionOuverte(
+  result: AuthResult,
+  user: User,
+  effets: {
+    signer: JwtTokenService['sign'];
+    creerRefreshToken: IRefreshTokensRepository['create'];
+  },
+): void {
+  expect(effets.signer).toHaveBeenCalledWith({
+    sub: user.id,
+    email: user.email,
+    roles: user.roles,
+  });
+  expect(result).toEqual({
+    accessToken: 'jwt-token',
+    expiresIn: 900,
+    refreshToken: expect.any(String),
+    user,
+  });
+  expect(result.user).toBe(user);
+  expect(effets.creerRefreshToken).toHaveBeenCalled();
 }
 
 export interface MockUsersUseCases {

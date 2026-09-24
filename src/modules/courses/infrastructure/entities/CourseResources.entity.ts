@@ -1,6 +1,6 @@
+import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -10,7 +10,7 @@ import { ResourceKind } from '../enums/ResourceKind.enum';
 import { CoursesEntity } from './Courses.entity';
 
 @Entity('course_resource')
-export class CourseResourceEntity {
+export class CourseResourceEntity extends ColonnesDeTrace {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -32,22 +32,4 @@ export class CourseResourceEntity {
 
   @Column({ type: 'int', default: 0 })
   order: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_or_created_by',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  updatedOrCreatedBy: string | null;
 }

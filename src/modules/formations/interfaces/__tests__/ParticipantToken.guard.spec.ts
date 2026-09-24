@@ -1,4 +1,8 @@
 import { UnauthorizedException, type ExecutionContext } from '@nestjs/common';
+import {
+  buildParticipantRecord,
+  createMockParticipantsRepo,
+} from '../../../../../test/factories/formation.factory';
 import { ParticipantTokenGuard } from '../ParticipantToken.guard';
 import {
   EN_TETE_JETON,
@@ -14,6 +18,7 @@ interface RequeteDeTest {
   params: { id: string | undefined };
   headers: Record<string, string | readonly string[]>;
   participantId?: string;
+  generationDeJeton?: number;
 }
 
 function requeteDe(
@@ -41,79 +46,110 @@ function contexte(
 
 describe('ParticipantTokenGuard', () => {
   const secretInitial = process.env.FORMATION_REVIEW_TOKEN_SECRET;
-  const tokens = new ParticipantTokenService();
+  const participants = createMockParticipantsRepo();
+  const tokens = new ParticipantTokenService(participants);
   const garde = new ParticipantTokenGuard(tokens);
+  const signer = (sessionId = SESSION_ID, generation = 0) =>
+    tokens.sign(sessionId, PARTICIPANT_ID, generation);
 
   beforeAll(() => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET_TEST;
+  });
+
+  beforeEach(() => {
+    participants.findById
+      .mockReset()
+      .mockResolvedValue(
+        buildParticipantRecord({ id: PARTICIPANT_ID, sessionId: SESSION_ID }),
+      );
   });
 
   afterAll(() => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = secretInitial;
   });
 
-  it('laisse passer un jeton signe pour cette seance', () => {
-    const jeton = tokens.sign(SESSION_ID, PARTICIPANT_ID);
-
-    expect(garde.canActivate(contexte(SESSION_ID, jeton))).toBe(true);
+  it('laisse passer un jeton signe pour cette seance', async () => {
+    await expect(
+      garde.canActivate(contexte(SESSION_ID, signer())),
+    ).resolves.toBe(true);
   });
 
-  it('rattache a la requete le participant dont il a verifie le jeton', () => {
-    const requete = requeteDe(
-      SESSION_ID,
-      tokens.sign(SESSION_ID, PARTICIPANT_ID),
-    );
+  it('rattache a la requete le participant dont il a verifie le jeton', async () => {
+    const requete = requeteDe(SESSION_ID, signer());
 
-    garde.canActivate(contexteDe(requete));
+    await garde.canActivate(contexteDe(requete));
 
     expect(requete.participantId).toBe(PARTICIPANT_ID);
   });
 
-  it('ne rattache aucun participant quand le jeton est refuse', () => {
-    const requete = requeteDe(SESSION_ID, `${PARTICIPANT_ID}.abcdef`);
+  it('S1 · rattache a la requete la generation de jeton qu il a verifiee', async () => {
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        id: PARTICIPANT_ID,
+        sessionId: SESSION_ID,
+        generationDeJeton: 2,
+      }),
+    );
+    const requete = requeteDe(SESSION_ID, signer(SESSION_ID, 2));
 
-    expect(() => garde.canActivate(contexteDe(requete))).toThrow(
+    await garde.canActivate(contexteDe(requete));
+
+    expect(requete.generationDeJeton).toBe(2);
+  });
+
+  it('ne rattache aucun participant quand le jeton est refuse', async () => {
+    const requete = requeteDe(SESSION_ID, `${PARTICIPANT_ID}.0.abcdef`);
+
+    await expect(garde.canActivate(contexteDe(requete))).rejects.toThrow(
       UnauthorizedException,
     );
     expect(requete.participantId).toBeUndefined();
   });
 
-  it('retient le premier jeton quand l en-tete arrive en double', () => {
-    const jeton = tokens.sign(SESSION_ID, PARTICIPANT_ID);
-
-    expect(
-      garde.canActivate(contexte(SESSION_ID, [jeton, 'forge.abcdef'])),
-    ).toBe(true);
-    expect(() =>
-      garde.canActivate(contexte(SESSION_ID, ['forge.abcdef', jeton])),
-    ).toThrow(UnauthorizedException);
-  });
-
-  it('refuse une requete dont la route ne porte aucune seance', () => {
-    const jeton = tokens.sign(SESSION_ID, PARTICIPANT_ID);
-
-    expect(() => garde.canActivate(contexte(undefined, jeton))).toThrow(
-      UnauthorizedException,
+  it('S1 · refuse le jeton d un poste libere depuis', async () => {
+    participants.findById.mockResolvedValue(
+      buildParticipantRecord({
+        id: PARTICIPANT_ID,
+        sessionId: SESSION_ID,
+        generationDeJeton: 1,
+      }),
     );
+
+    await expect(
+      garde.canActivate(contexte(SESSION_ID, signer())),
+    ).rejects.toThrow(UnauthorizedException);
   });
 
-  it('refuse une requete sans jeton avant toute ouverture de flux', () => {
-    expect(() => garde.canActivate(contexte(SESSION_ID, undefined))).toThrow(
-      UnauthorizedException,
-    );
+  it('retient le premier jeton quand l en-tete arrive en double', async () => {
+    await expect(
+      garde.canActivate(contexte(SESSION_ID, [signer(), 'forge.0.abcdef'])),
+    ).resolves.toBe(true);
+    await expect(
+      garde.canActivate(contexte(SESSION_ID, ['forge.0.abcdef', signer()])),
+    ).rejects.toThrow(UnauthorizedException);
   });
 
-  it('refuse un jeton forge qui a la forme attendue', () => {
-    expect(() =>
-      garde.canActivate(contexte(SESSION_ID, `${PARTICIPANT_ID}.abcdef`)),
-    ).toThrow(UnauthorizedException);
+  it('refuse une requete dont la route ne porte aucune seance', async () => {
+    await expect(
+      garde.canActivate(contexte(undefined, signer())),
+    ).rejects.toThrow(UnauthorizedException);
   });
 
-  it('refuse un jeton valide emis pour une autre seance', () => {
-    const jeton = tokens.sign(AUTRE_SESSION_ID, PARTICIPANT_ID);
+  it('refuse une requete sans jeton avant toute ouverture de flux', async () => {
+    await expect(
+      garde.canActivate(contexte(SESSION_ID, undefined)),
+    ).rejects.toThrow(UnauthorizedException);
+  });
 
-    expect(() => garde.canActivate(contexte(SESSION_ID, jeton))).toThrow(
-      UnauthorizedException,
-    );
+  it('refuse un jeton forge qui a la forme attendue', async () => {
+    await expect(
+      garde.canActivate(contexte(SESSION_ID, `${PARTICIPANT_ID}.0.abcdef`)),
+    ).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('refuse un jeton valide emis pour une autre seance', async () => {
+    await expect(
+      garde.canActivate(contexte(SESSION_ID, signer(AUTRE_SESSION_ID))),
+    ).rejects.toThrow(UnauthorizedException);
   });
 });

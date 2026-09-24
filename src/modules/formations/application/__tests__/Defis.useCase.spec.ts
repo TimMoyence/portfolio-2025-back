@@ -3,6 +3,7 @@ import {
   buildCoursAvecDefi,
   creerCatalogueDeTest,
   DEFI_DE_TEST,
+  STRATEGIES_REVELEES_DU_DEFI,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildFreeResponseRecord,
@@ -110,10 +111,7 @@ describe('DefisUseCase', () => {
       DEFI_DE_TEST,
     );
 
-    expect(rendu.strategies).toEqual([
-      { id: 'axe', libelle: expect.any(String), fausse: false },
-      { id: 'couleur', libelle: expect.any(String), fausse: true },
-    ]);
+    expect(rendu.strategies).toEqual(STRATEGIES_REVELEES_DU_DEFI);
   });
 
   it('refuse une tentative vide avant toute ecriture', async () => {

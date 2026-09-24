@@ -13,7 +13,7 @@
 | Statut      | **Référence pédagogique** : socle BTS CG 2, extensions bachelor/M1 facultatives, contenu remplaçable avant le prochain cours                   |
 | Cours       | `b2-01-traitement-information-chiffree`, contenu unique du cours (`b2-01.cours.ts`), publié au démarrage de l’API dès que son empreinte change |
 | Titre servi | « Lire, contrôler et décider avec l’information chiffrée »                                                                                     |
-| Durée       | **213 minutes exactes** (somme des écrans), 6 actes de 32, 36, 36, 38, 43 et 28 minutes, plus une pause de 15 minutes hors durée               |
+| Durée       | **211 minutes exactes** (somme des écrans), 6 actes de 32, 34, 36, 38, 43 et 28 minutes, plus une pause de 15 minutes hors durée               |
 | Écrans      | **55** (option A de la relecture pédagogique, § 2.5, puis trois écrans ajoutés par la QA : deux corrections de tri et l’exercice des points)   |
 | Remplace    | `docs/formation-b2-01-brief.md` et les textes précédents du cours ; cette fiche devient la source de vérité pédagogique                        |
 
@@ -43,14 +43,16 @@ Code lu pour figer les contrats (lecture seule, branche `fix/cours-qa-prod` des 
    leurs nuances vérifiées : Playfair (1786, précédé par la frise de Priestley, 1765) quand on juge
    une diapositive, Nightingale (1858) quand on défend une décision, Pacioli (1494, qui décrit la
    partie double sans l’avoir inventée) quand on contrôle des pièces.
-2. **75 écrans, 213 minutes, une séance.** Les ajouts de la relecture pédagogique (N1 : indice et
+2. **74 écrans, 211 minutes, une séance.** Les ajouts de la relecture pédagogique (N1 : indice et
    taux moyen avant l’atelier 2 ; N3 : tableau croisé dynamique ; N4 : fiche mémo ; question N2 sur
    taux de marge et taux de marque dans l’atelier 1) sont financés acte par acte. La QA ajoute la
    correction projetée des deux tris (A1-05, A5-07), sépare chaque exercice de sa correction (audit
    A1-10, points A2-06, exemples travaillés A3-04, A3-06 et A5-03, indice A4-05, coffre A6-02),
    découpe chacun des quatre ateliers en deux questionnaires suivis de leur correction et ajoute le
    dossier du comité (A5-08) : l’acte 1 passe à 32 minutes, l’acte 5 à 43, le total reste à 213.
-   Les deux votes par les pairs restent à 8 minutes (§ 2.5).
+   Les deux votes par les pairs restent à 8 minutes (§ 2.5). Les retours QA du 2026-09-24 retirent
+   le récapitulatif « axe à zéro » (ancien A2-04, 2 minutes) : l’acte 2 passe à 34 minutes, le total
+   à 211, et le plan de la séance remonte juste après la mission.
 3. **Aucune notion utile du deck n’est perdue** : l’inventaire de couverture (§ 3.9) passe les
    52 notions en revue ; toutes sont enseignées, et celles qui sont évaluées le sont après avoir été
    enseignées (TVA, rapprochement ligne à ligne, compensation, multiple de 9, boîte à outils du
@@ -67,7 +69,7 @@ Code lu pour figer les contrats (lecture seule, branche `fix/cours-qa-prod` des 
    (graphiques, tableaux, images, guides) ; les briques runtime portent les activités. La page
    publique monte les deux (R18).
 7. **Diffusion par écran.** Chaque écran déclare `diffusion: 'catalogue' | 'seance'` : le catalogue
-   public ne sert en clair que 12 écrans d’exposition sans réponse ; les 63 autres y sont verrouillés
+   public ne sert en clair que 12 écrans d’exposition sans réponse ; les 62 autres y sont verrouillés
    (titre et durée seulement). La garde de confidentialité s’exécute sur le sujet de séance **et** sur
    le catalogue (§ 6.4).
 8. **Correction et pilotage côté serveur.** Aucune solution n’atteint le poste avant la réponse ;
@@ -163,8 +165,8 @@ complète d’un TCD sur un fichier professionnel est approfondie par B2-03, les
   par code) et une calculatrice ; vidéoprojecteur pour la projection formateur. Dans les activités
   marquées « binôme », les deux étudiants discutent ensemble, puis **chacun envoie** depuis son poste :
   la note de participation est individuelle (§ 4.5).
-- **Séance** : **une séance unique** de 213 minutes de cours plus une **pause de 15 minutes hors
-  durée** entre l’acte 3 et l’acte 4 (3 h 48 au total). L’horaire hebdomadaire de mathématiques de
+- **Séance** : **une séance unique** de 211 minutes de cours plus une **pause de 15 minutes hors
+  durée** entre l’acte 3 et l’acte 4 (3 h 46 au total). L’horaire hebdomadaire de mathématiques de
   STS étant de 2 heures, le cours se programme sur une demi-journée banalisée (regroupement ou
   semaine de mise en situation). La pause n’est pas un écran : un écran « pause » compterait comme
   exposition. Le rappel A6-05 impose un espacement intra-séance d’au moins 30 minutes ; les concepts
@@ -179,12 +181,12 @@ complète d’un TCD sur un fichier professionnel est approfondie par B2-03, les
 | Acte | Titre                      | Minutes | Écrans | Preuve attendue (brief V2)                                 | Où la preuve est recueillie                                   |
 | ---: | -------------------------- | ------: | -----: | ---------------------------------------------------------- | ------------------------------------------------------------- |
 |    1 | Diagnostiquer le chiffre   |      32 |     13 | identifier partie, total, unité et question de gestion     | tri A1-05 (noté), question de gestion A1-08, audit A1-10      |
-|    2 | Auditer une comparaison    |      36 |     13 | proportion, pourcentage, base commune et ordre de grandeur | atelier 1 A2-03 (6 questions notées), mini-jeu A2-07          |
+|    2 | Auditer une comparaison    |      34 |     12 | proportion, pourcentage, base commune et ordre de grandeur | atelier 1 A2-03 (6 questions notées), mini-jeu A2-07          |
 |    3 | Modéliser une évolution    |      36 |     15 | écart, taux, coefficient et interprétation                 | votes A3-01, atelier 2 A3-07, note A3-09                      |
 |    4 | Reproduire avec le tableur |      38 |     10 | formule, contrôles et graphique lisible                    | feuille A4-02, atelier 3 A4-03, tableau A4-05                 |
 |    5 | Expliquer une décision     |      43 |     15 | dossier complet avec comparaison et recommandation         | votes A5-02, atelier 4 A5-06, tri A5-07, recommandation A5-08 |
 |    6 | Transférer et vérifier     |      28 |      9 | résolution autonome, correction d’une erreur et bilan      | coffre A6-02, défi IA A6-04, rappel A6-05, billet A6-08       |
-|      | **Total**                  | **213** | **75** |                                                            |                                                               |
+|      | **Total**                  | **211** | **74** |                                                            |                                                               |
 
 ### 2.2 Le fil rouge « Atelier Rivage »
 
@@ -239,17 +241,19 @@ phrases de synthèse du fil rouge (atelier 4 Q4, billet A6-08) reprennent volont
 clés : elles évaluent la formulation (points ou pourcentage, montant ou taux), pas le calcul. Tout
 visuel qui porte la réponse d’une question est placé après elle (§ 6.1).
 
-### 2.5 Couverture plutôt que décompte : 75 écrans
+### 2.5 Couverture plutôt que décompte : 74 écrans
 
 Le nombre d’écrans n’est pas un objectif ; la couverture l’est. Les ateliers regroupent les questions
 fermées ; les retours de QA les découpent en questionnaires courts et donnent à chaque exercice son
-écran de correction, d’où 75 écrans pour les mêmes 213 minutes (60 visés par le brief) ; les
+écran de correction, d’où 75 écrans pour 213 minutes (60 visés par le brief), puis 74 écrans pour
+211 minutes après le retrait du récapitulatif « axe à zéro » (retours QA du 2026-09-24) ; les
 notions du deck que ces ateliers ne
 couvraient pas sont reprises par N1 (A3-06), N2 (atelier 1, Q6), N3 (A5-05) et N4 (A6-06), et par des
 enrichissements d’écrans existants (inventaire au § 3.9). Toutes les exigences quantitatives du brief
-sont tenues : 3 cas récurrents, 2 tâches de tableur, 4 graphiques complets (G1 à G4), 2 mini-jeux,
-1 billet argumenté, 1 vidéo sous licence libre attribuée, une note formateur en puces sur chaque
-écran qui en a besoin (74 sur 75 ; le plan A1-07 n’en porte pas).
+sont tenues : 3 cas récurrents, 2 tâches de tableur, 4 graphiques complets (l’axe réglable A2-02
+sur son préréglage « Axe à zéro », qui remplace G1, puis G2 à G4), 2 mini-jeux, 1 billet argumenté,
+1 vidéo sous licence libre attribuée, une note formateur en puces sur chaque écran qui en a besoin
+(73 sur 74 ; le plan A1-07 n’en porte pas).
 
 Budget de l’option A (durées du brief inchangées par acte) :
 
@@ -294,15 +298,16 @@ côté serveur :
 | Règle                                    | Définition                                                                                                                                                                                                                                                                  | Seuil                  | Résultat sur la V3                                                              |
 | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------- |
 | `exposition-continue`                    | cumul des minutes d’écrans non interactifs consécutifs, jalons compris                                                                                                                                                                                                      | ≤ 6 min                | **6 min** au plus (A1-10-CORRECTION → A2-02)                                    |
-| `ratio-interaction`                      | minutes interactives ÷ minutes d’exposition                                                                                                                                                                                                                                 | ≥ 0,30                 | 142 ÷ 71 = **2,00**                                                             |
+| `ratio-interaction`                      | minutes interactives ÷ minutes d’exposition                                                                                                                                                                                                                                 | ≥ 0,30                 | 142 ÷ 69 = **2,06**                                                             |
 | `ouverture-cloture`                      | premier écran `fp-recall`, dernier écran `fp-exit`                                                                                                                                                                                                                          | —                      | A1-01 `fp-recall`, A6-08 `fp-exit`                                              |
-| `duree-ecran`                            | chaque durée est un entier strictement positif                                                                                                                                                                                                                              | > 0                    | 75 écrans de 1 à 13 min                                                         |
-| `duree-cours`                            | somme des écrans **égale** à la durée annoncée (la tolérance de 5 % est supprimée)                                                                                                                                                                                          | écart = 0              | 213 = 213                                                                       |
+| `duree-ecran`                            | chaque durée est un entier strictement positif                                                                                                                                                                                                                              | > 0                    | 74 écrans de 1 à 13 min                                                         |
+| `duree-cours`                            | somme des écrans **égale** à la durée annoncée (la tolérance de 5 % est supprimée)                                                                                                                                                                                          | écart = 0              | 211 = 211                                                                       |
 | `reference-inconnue`                     | toute cible `ref:` (remédiations, renvois) existe                                                                                                                                                                                                                           | —                      | 38 remédiations, toutes vers des écrans existants (§ 5.9)                       |
 | `renvoi-anterieur`                       | un renvoi vise un écran déjà projeté, jamais l'écran lui-même ni un écran à venir, qui fuiterait avant sa projection (SEC-4.2)                                                                                                                                              | —                      | tous les renvois pointent vers un écran antérieur                               |
+| **nouvelle** `cadrage-du-renvoi`         | un `cadrageDuRenvoi` exige un `renvoi` ; son extrait sélectionne des lignes existantes d’un tableau v2 `table` (`lignes`) ou des champs renseignés d’un `fp-pro` (`champs`), jamais une copie ; la part vaut 30, 40, 50, 60 ou 70 % (retours QA du 2026-09-24)              | 0 manquement           | 13 renvois cadrés (§ 3.1, « Cadrage des diapositives commentées »)              |
 | `reference-circulaire`                   | aucune boucle de références                                                                                                                                                                                                                                                 | —                      | aucune boucle (les renvois et les corrections pointent vers un écran antérieur) |
 | **nouvelle** `correction-apres-source`   | un écran de correction (`corrigeDe` d’un `fp-worked` piloté, `source` d’un `answer-review` ou d’un `sort-review`) vise un écran du cours placé avant lui, et il est en diffusion `seance`                                                                                   | 0 manquement           | 18 écrans de correction, tous après leur exercice, tous en `seance`             |
-| **nouvelle** `notes-formateur`           | la note est facultative (`notes` vide) ; présente, elle n’a aucune ligne vide : des puces `• ` jointes par `\n`                                                                                                                                                             | 0 ligne vide           | 74 notes en puces ; A1-07 sans note                                             |
+| **nouvelle** `notes-formateur`           | la note est facultative (`notes` vide) ; présente, elle n’a aucune ligne vide : des puces `• ` jointes par `\n`                                                                                                                                                             | 0 ligne vide           | 73 notes en puces ; A1-07 sans note                                             |
 | **nouvelle** `atelier-questions-fermees` | un temps noté (écran portant une question `vote`, `numeric` ou `classement` avec `noteCompte`, suivi de ses écrans de correction) dure au plus 15 min ; une suite de temps notés contigus dure au moins 8 min ; exceptions : `fp-recall` en ouverture, `fp-exit` en clôture | temps ≤ 15 ; suite ≥ 8 | 13 écrans notés en 9 suites, de 8 à 14 min                                      |
 | **nouvelle** `confidentialite`           | trois volets (exact, segments, catalogue), § 6.4                                                                                                                                                                                                                            | 0 fuite                | 0 fuite                                                                         |
 | **nouvelle** `catalogue-sans-question`   | aucun écran interactif n’est en diffusion `catalogue`                                                                                                                                                                                                                       | 0                      | 0                                                                               |
@@ -317,20 +322,20 @@ Les **dérogations** (champ `Cours.derogations`, retiré en `c8324cb`) sont rest
 Sortie du script de vérification (annexe E), rejoué sur le tableau du § 3.1 :
 
 ```
-écrans 75 · total 213 · par acte {1: 32, 2: 36, 3: 36, 4: 38, 5: 43, 6: 28}
-écrans par acte {1: 13, 2: 13, 3: 15, 4: 10, 5: 15, 6: 9}
+écrans 74 · total 211 · par acte {1: 32, 2: 34, 3: 36, 4: 38, 5: 43, 6: 28}
+écrans par acte {1: 13, 2: 12, 3: 15, 4: 10, 5: 15, 6: 9}
 plus longue exposition continue : 6 min (jalons comptés comme exposition)
-interactif 142 min · exposition 71 min · ratio 2,00
+interactif 142 min · exposition 69 min · ratio 2,06
 ouverture fp-recall · clôture fp-exit
 suites d’atelier notées (corrections comprises) : A1-05 (9), A2-03 (6+1+6+1 = 14),
 A2-07 (9), A3-01 (8), A3-07 (4+1+4+1 = 10), A4-03 (3+1+3+1 = 8), A5-02 (8),
 A5-06 (4+1+3+1 = 9), A5-07 (9)
-violations : aucune (14 règles)
+violations : aucune (16 règles)
 ```
 
 Blocs d’exposition continue (écrans non interactifs consécutifs, corrections et jalons compris) :
-A1-02 (1), A1-04 (2), A1-05-CORRECTION→A1-07 (5), A1-09 (2), A1-10-CORRECTION→A2-02 (6),
-A2-03-CORRECTION-1 (1), A2-03-CORRECTION-2→A2-05 (5), A2-06-CORRECTION (2),
+A1-02 (1), A1-07→A1-04 (3), A1-05-CORRECTION→A1-06 (4), A1-09 (2), A1-10-CORRECTION→A2-02 (6),
+A2-03-CORRECTION-1 (1), A2-03-CORRECTION-2→A2-05 (3), A2-06-CORRECTION (2),
 A2-07-CORRECTION→A2-08 (2), A3-02→A3-03 (3), A3-04-CORRECTION→A3-05 (3), A3-06-CORRECTION (2),
 A3-07-CORRECTION-1 (1), A3-07-CORRECTION-2→A3-08 (3), A3-10→A4-01 (4), A4-03-CORRECTION-1 (1),
 A4-03-CORRECTION-2→A4-04 (3), A4-05-CORRECTION→A5-01 (4), A5-03-CORRECTION (2),
@@ -350,8 +355,8 @@ question » ni aucune activité.
   question, toute fiche qui résume des réponses. Servi dans le catalogue sous la forme d’un écran
   verrouillé `{ id, type: 'ecran-verrouille', titre, duree, interactif: false, donnees: {} }`.
 
-Écrans `catalogue` (12) : A1-02, A1-04, A1-06, A1-07, A1-09, A2-01, A2-02, A3-05, A4-01, A5-01,
-A6-03, A6-07 ; les 63 autres sont en `seance`. La garde `confidentialite` vérifie ce choix (volet catalogue, § 6.4) et la règle
+Écrans `catalogue` (12), dans l’ordre du déroulé : A1-02, A1-07, A1-04, A1-06, A1-09, A2-01, A2-02,
+A3-05, A4-01, A5-01, A6-03, A6-07 ; les 62 autres sont en `seance`. La garde `confidentialite` vérifie ce choix (volet catalogue, § 6.4) et la règle
 `catalogue-sans-question` interdit d’y placer une activité. Les versions 1 et 2 du B2 sont lues avec
 `diffusion: 'catalogue'` pour tous leurs écrans (comportement actuel inchangé).
 
@@ -373,11 +378,11 @@ deck, **C** = conservé sur le fond (texte adapté au fil rouge).
 |    1 | B2-01-A1-01-DIAGNOSTIC            |   3 | `fp-recall`                     |  I  |   1 | seance    | N (remplace S03)               |
 |    2 | B2-01-A1-02-ACCROCHE              |   1 | `fp-story` · v2 `hero`          |     |   0 | catalogue | M (S01)                        |
 |    3 | B2-01-A1-03-MISSION               |   4 | `fp-pro`                        |  I  |   0 | seance    | N                              |
-|    4 | B2-01-A1-04-TABLEAU-DE-BORD       |   2 | `fp-story` · v2 `table`         |     |   0 | catalogue | N                              |
-|    5 | B2-01-A1-05-ANATOMIE              |   8 | `fp-cardsort`                   |  I  |   1 | seance    | N (reprend S08)                |
-|    6 | B2-01-A1-05-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    | N                              |
-|    7 | B2-01-A1-06-FICHE-INDICATEUR      |   3 | `fp-story` · v2 `grid`          |     |   0 | catalogue | M (S05, S06, S13)              |
-|    8 | B2-01-A1-07-PLAN                  |   1 | `fp-story` · v2 `method-path`   |     |   0 | catalogue | M (S02, S10)                   |
+|    4 | B2-01-A1-07-PLAN                  |   1 | `fp-story` · v2 `method-path`   |     |   0 | catalogue | M (S02, S10)                   |
+|    5 | B2-01-A1-04-TABLEAU-DE-BORD       |   2 | `fp-story` · v2 `table`         |     |   0 | catalogue | N                              |
+|    6 | B2-01-A1-05-ANATOMIE              |   8 | `fp-cardsort`                   |  I  |   1 | seance    | N (reprend S08)                |
+|    7 | B2-01-A1-05-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    | N                              |
+|    8 | B2-01-A1-06-FICHE-INDICATEUR      |   3 | `fp-story` · v2 `grid`          |     |   0 | catalogue | M (S05, S06, S13)              |
 |    9 | B2-01-A1-08-QUESTION-DE-GESTION   |   3 | `fp-story` · v2 `reflection`    |  I  |   0 | seance    | N (remplace S11)               |
 |   10 | B2-01-A1-09-DIAPOSITIVE           |   2 | `fp-story` · v2 `chart`         |     |   0 | catalogue | N (reprend S03, S04)           |
 |   11 | B2-01-A1-10-AUDIT-DIAPOSITIVE     |   2 | `fp-challenge`                  |  I  |   0 | seance    | N (reprend S37)                |
@@ -389,62 +394,61 @@ deck, **C** = conservé sur le fond (texte adapté au fil rouge).
 |   17 | B2-01-A2-03-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
 |   18 | B2-01-A2-03-ATELIER-1-SUITE       |   6 | `questionnaire` (Q4 à Q6)       |  I  |   3 | seance    | N (retours QA)                 |
 |   19 | B2-01-A2-03-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   20 | B2-01-A2-04-MARGE-AXE-ZERO        |   2 | `fp-story` · v2 `chart` (G1)    |     |   0 | seance    | M (S32)                        |
-|   21 | B2-01-A2-05-ECRITURES             |   2 | `fp-story` · v2 `stats`         |     |   0 | seance    | M (S08, S12)                   |
-|   22 | B2-01-A2-06-POINTS                |   2 | `fp-worked`                     |  I  |   0 | seance    | M (S16)                        |
-|   23 | B2-01-A2-06-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    | N (retours QA)                 |
-|   24 | B2-01-A2-07-JEU-COMPARABLE        |   8 | `fp-cardsort` (mini-jeu 1)      |  I  |   1 | seance    | M (S07)                        |
-|   25 | B2-01-A2-07-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    | N                              |
-|   26 | B2-01-A2-08-JALON-2               |   1 | `fp-pulse`                      |     |   0 | seance    | N                              |
-|   27 | B2-01-A3-01-VOTE-HAUSSE-BAISSE    |   8 | `fp-vote` (pairs)               |  I  |   2 | seance    | M (S17, S21, S22)              |
-|   28 | B2-01-A3-02-MACHINE-COEFFICIENTS  |   2 | `fp-concept4`                   |     |   0 | seance    | M (S13, S18, S19)              |
-|   29 | B2-01-A3-03-PRIX-SAC              |   1 | `fp-story` · v2 `chart`         |     |   0 | seance    | C (S17)                        |
-|   30 | B2-01-A3-04-FIL-TECHNIQUE         |   2 | `fp-worked`                     |  I  |   0 | seance    | M (S15, S19, S56)              |
-|   31 | B2-01-A3-04-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    | N (retours QA)                 |
-|   32 | B2-01-A3-05-INFLATION-RYTHME      |   1 | `fp-story` · v2 `chart` (G2)    |     |   0 | catalogue | M (S24, S26)                   |
-|   33 | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |   3 | `fp-worked`                     |  I  |   0 | seance    | N (N1, reprend S27)            |
-|   34 | B2-01-A3-06-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    | N (retours QA)                 |
-|   35 | B2-01-A3-07-ATELIER-2             |   4 | `questionnaire` (Q1 à Q3)       |  I  |   3 | seance    | N (reprend S23, S25, S27)      |
-|   36 | B2-01-A3-07-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   37 | B2-01-A3-07-ATELIER-2-SUITE       |   4 | `questionnaire` (Q4 et Q5)      |  I  |   2 | seance    | N (retours QA)                 |
-|   38 | B2-01-A3-07-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   39 | B2-01-A3-08-INDICE-PRIX           |   2 | `fp-story` · v2 `chart` (G3)    |     |   0 | seance    | M (S26, S27)                   |
-|   40 | B2-01-A3-09-NOTE-CONJONCTURE      |   2 | `fp-story` · v2 `reflection`    |  I  |   0 | seance    | M (S28)                        |
-|   41 | B2-01-A3-10-JALON-3               |   1 | `fp-pulse`                      |     |   0 | seance    | N                              |
-|   42 | B2-01-A4-01-CAPSULE               |   3 | `fp-story` (vidéo)              |     |   0 | catalogue | N (reprend S67, S69)           |
-|   43 | B2-01-A4-02-FEUILLE-CANAUX        |  13 | `fp-sheet` (tableur 1)          |  I  |   0 | seance    | N (reprend S43, S44)           |
-|   44 | B2-01-A4-03-ATELIER-3             |   3 | `questionnaire` (Q1 et Q2)      |  I  |   2 | seance    | N (reprend S33, S34, S37)      |
-|   45 | B2-01-A4-03-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   46 | B2-01-A4-03-ATELIER-3-SUITE       |   3 | `questionnaire` (Q3 et Q4)      |  I  |   2 | seance    | N (retours QA)                 |
-|   47 | B2-01-A4-03-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   48 | B2-01-A4-04-CA-TRIMESTRIEL        |   2 | `fp-story` · v2 `chart` (G4)    |     |   0 | seance    | N (reprend S20, S33)           |
-|   49 | B2-01-A4-05-INDICE-TOILE          |   9 | `fp-table-build` (tableur 2)    |  I  |   0 | seance    | N                              |
-|   50 | B2-01-A4-05-CORRECTION            |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   51 | B2-01-A4-06-JALON-4               |   1 | `fp-pulse`                      |     |   0 | seance    | N                              |
-|   52 | B2-01-A5-01-NIGHTINGALE           |   1 | `fp-story` · v2 `image-right`   |     |   0 | catalogue | M (S36)                        |
-|   53 | B2-01-A5-03-MOYENNE-PONDEREE      |   3 | `fp-worked`                     |  I  |   0 | seance    | M (S39, S40, S42)              |
-|   54 | B2-01-A5-03-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    | N (retours QA)                 |
-|   55 | B2-01-A5-02-VOTE-PARADOXE         |   8 | `fp-vote` (pairs)               |  I  |   2 | seance    | M (S38, S46 à S49)             |
-|   56 | B2-01-A5-04-SIMULATEUR-MIX        |   2 | `fp-plot`                       |     |   0 | seance    | M (S41)                        |
-|   57 | B2-01-A5-05-TCD                   |   2 | `fp-story` · v2 `table`         |     |   0 | seance    | N (N3, reprend S68)            |
-|   58 | B2-01-A5-06-ATELIER-4             |   4 | `questionnaire` (Q1 à Q3)       |  I  |   3 | seance    | N (reprend S35, S42 à S44)     |
-|   59 | B2-01-A5-06-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   60 | B2-01-A5-06-ATELIER-4-SUITE       |   3 | `questionnaire` (Q4 et Q5)      |  I  |   2 | seance    | N (retours QA)                 |
-|   61 | B2-01-A5-06-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   62 | B2-01-A5-07-CONTROLE-DISCRIMINANT |   8 | `fp-cardsort`                   |  I  |   1 | seance    | M (S51, S57, S59 à S61)        |
-|   63 | B2-01-A5-07-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    | N                              |
-|   64 | B2-01-A5-08-DOSSIER-COMITE        |   2 | `fp-story` · v2 `table`         |     |   0 | seance    | N (retours QA)                 |
-|   65 | B2-01-A5-08-RECOMMANDATION        |   4 | `fp-challenge`                  |  I  |   0 | seance    | M (S45, S58, S60, S62)         |
-|   66 | B2-01-A5-09-JALON-5               |   1 | `fp-pulse`                      |     |   0 | seance    | N                              |
-|   67 | B2-01-A6-01-PACIOLI               |   2 | `fp-story` · v2 `image-left`    |     |   0 | seance    | M (S50, S54, S57)              |
-|   68 | B2-01-A6-02-COFFRE                |   9 | `fp-escape` (mini-jeu 2)        |  I  |   0 | seance    | N (reprend S52 à S56)          |
-|   69 | B2-01-A6-02-CORRECTION            |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
-|   70 | B2-01-A6-03-IA-CADRE              |   2 | `fp-story` · v2 `guide`         |     |   0 | catalogue | M (S67, S70, S71)              |
-|   71 | B2-01-A6-04-IA-ERREUR             |   4 | `fp-challenge`                  |  I  |   0 | seance    | N                              |
-|   72 | B2-01-A6-05-RAPPEL                |   3 | `fp-spaced`                     |  I  |   0 | seance    | N (remplace S57, S63 à S65)    |
-|   73 | B2-01-A6-06-FICHE-MEMO            |   2 | `fp-story` · v2 `grid`          |     |   0 | seance    | N (N4, reprend S21, S49, S65)  |
-|   74 | B2-01-A6-07-BOITE-A-OUTILS        |   2 | `fp-story` · v2 `grid`          |     |   0 | catalogue | M (S67 à S69, S72)             |
-|   75 | B2-01-A6-08-BILLET-DE-SORTIE      |   3 | `fp-exit`                       |  I  |   1 | seance    | M (S58, S62, S66)              |
+|   20 | B2-01-A2-05-ECRITURES             |   2 | `fp-story` · v2 `stats`         |     |   0 | seance    | M (S08, S12)                   |
+|   21 | B2-01-A2-06-POINTS                |   2 | `fp-worked`                     |  I  |   0 | seance    | M (S16)                        |
+|   22 | B2-01-A2-06-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    | N (retours QA)                 |
+|   23 | B2-01-A2-07-JEU-COMPARABLE        |   8 | `fp-cardsort` (mini-jeu 1)      |  I  |   1 | seance    | M (S07)                        |
+|   24 | B2-01-A2-07-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    | N                              |
+|   25 | B2-01-A2-08-JALON-2               |   1 | `fp-pulse`                      |     |   0 | seance    | N                              |
+|   26 | B2-01-A3-01-VOTE-HAUSSE-BAISSE    |   8 | `fp-vote` (pairs)               |  I  |   2 | seance    | M (S17, S21, S22)              |
+|   27 | B2-01-A3-02-MACHINE-COEFFICIENTS  |   2 | `fp-concept4`                   |     |   0 | seance    | M (S13, S18, S19)              |
+|   28 | B2-01-A3-03-PRIX-SAC              |   1 | `fp-story` · v2 `chart`         |     |   0 | seance    | C (S17)                        |
+|   29 | B2-01-A3-04-FIL-TECHNIQUE         |   2 | `fp-worked`                     |  I  |   0 | seance    | M (S15, S19, S56)              |
+|   30 | B2-01-A3-04-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    | N (retours QA)                 |
+|   31 | B2-01-A3-05-INFLATION-RYTHME      |   1 | `fp-story` · v2 `chart` (G2)    |     |   0 | catalogue | M (S24, S26)                   |
+|   32 | B2-01-A3-06-INDICE-ET-TAUX-MOYEN  |   3 | `fp-worked`                     |  I  |   0 | seance    | N (N1, reprend S27)            |
+|   33 | B2-01-A3-06-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    | N (retours QA)                 |
+|   34 | B2-01-A3-07-ATELIER-2             |   4 | `questionnaire` (Q1 à Q3)       |  I  |   3 | seance    | N (reprend S23, S25, S27)      |
+|   35 | B2-01-A3-07-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
+|   36 | B2-01-A3-07-ATELIER-2-SUITE       |   4 | `questionnaire` (Q4 et Q5)      |  I  |   2 | seance    | N (retours QA)                 |
+|   37 | B2-01-A3-07-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
+|   38 | B2-01-A3-08-INDICE-PRIX           |   2 | `fp-story` · v2 `chart` (G3)    |     |   0 | seance    | M (S26, S27)                   |
+|   39 | B2-01-A3-09-NOTE-CONJONCTURE      |   2 | `fp-story` · v2 `reflection`    |  I  |   0 | seance    | M (S28)                        |
+|   40 | B2-01-A3-10-JALON-3               |   1 | `fp-pulse`                      |     |   0 | seance    | N                              |
+|   41 | B2-01-A4-01-CAPSULE               |   3 | `fp-story` (vidéo)              |     |   0 | catalogue | N (reprend S67, S69)           |
+|   42 | B2-01-A4-02-FEUILLE-CANAUX        |  13 | `fp-sheet` (tableur 1)          |  I  |   0 | seance    | N (reprend S43, S44)           |
+|   43 | B2-01-A4-03-ATELIER-3             |   3 | `questionnaire` (Q1 et Q2)      |  I  |   2 | seance    | N (reprend S33, S34, S37)      |
+|   44 | B2-01-A4-03-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
+|   45 | B2-01-A4-03-ATELIER-3-SUITE       |   3 | `questionnaire` (Q3 et Q4)      |  I  |   2 | seance    | N (retours QA)                 |
+|   46 | B2-01-A4-03-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
+|   47 | B2-01-A4-04-CA-TRIMESTRIEL        |   2 | `fp-story` · v2 `chart` (G4)    |     |   0 | seance    | N (reprend S20, S33)           |
+|   48 | B2-01-A4-05-INDICE-TOILE          |   9 | `fp-table-build` (tableur 2)    |  I  |   0 | seance    | N                              |
+|   49 | B2-01-A4-05-CORRECTION            |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
+|   50 | B2-01-A4-06-JALON-4               |   1 | `fp-pulse`                      |     |   0 | seance    | N                              |
+|   51 | B2-01-A5-01-NIGHTINGALE           |   1 | `fp-story` · v2 `image-right`   |     |   0 | catalogue | M (S36)                        |
+|   52 | B2-01-A5-03-MOYENNE-PONDEREE      |   3 | `fp-worked`                     |  I  |   0 | seance    | M (S39, S40, S42)              |
+|   53 | B2-01-A5-03-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    | N (retours QA)                 |
+|   54 | B2-01-A5-02-VOTE-PARADOXE         |   8 | `fp-vote` (pairs)               |  I  |   2 | seance    | M (S38, S46 à S49)             |
+|   55 | B2-01-A5-04-SIMULATEUR-MIX        |   2 | `fp-plot`                       |     |   0 | seance    | M (S41)                        |
+|   56 | B2-01-A5-05-TCD                   |   2 | `fp-story` · v2 `table`         |     |   0 | seance    | N (N3, reprend S68)            |
+|   57 | B2-01-A5-06-ATELIER-4             |   4 | `questionnaire` (Q1 à Q3)       |  I  |   3 | seance    | N (reprend S35, S42 à S44)     |
+|   58 | B2-01-A5-06-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
+|   59 | B2-01-A5-06-ATELIER-4-SUITE       |   3 | `questionnaire` (Q4 et Q5)      |  I  |   2 | seance    | N (retours QA)                 |
+|   60 | B2-01-A5-06-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
+|   61 | B2-01-A5-07-CONTROLE-DISCRIMINANT |   8 | `fp-cardsort`                   |  I  |   1 | seance    | M (S51, S57, S59 à S61)        |
+|   62 | B2-01-A5-07-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    | N                              |
+|   63 | B2-01-A5-08-DOSSIER-COMITE        |   2 | `fp-story` · v2 `table`         |     |   0 | seance    | N (retours QA)                 |
+|   64 | B2-01-A5-08-RECOMMANDATION        |   4 | `fp-challenge`                  |  I  |   0 | seance    | M (S45, S58, S60, S62)         |
+|   65 | B2-01-A5-09-JALON-5               |   1 | `fp-pulse`                      |     |   0 | seance    | N                              |
+|   66 | B2-01-A6-01-PACIOLI               |   2 | `fp-story` · v2 `image-left`    |     |   0 | seance    | M (S50, S54, S57)              |
+|   67 | B2-01-A6-02-COFFRE                |   9 | `fp-escape` (mini-jeu 2)        |  I  |   0 | seance    | N (reprend S52 à S56)          |
+|   68 | B2-01-A6-02-CORRECTION            |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    | N (retours QA)                 |
+|   69 | B2-01-A6-03-IA-CADRE              |   2 | `fp-story` · v2 `guide`         |     |   0 | catalogue | M (S67, S70, S71)              |
+|   70 | B2-01-A6-04-IA-ERREUR             |   4 | `fp-challenge`                  |  I  |   0 | seance    | N                              |
+|   71 | B2-01-A6-05-RAPPEL                |   3 | `fp-spaced`                     |  I  |   0 | seance    | N (remplace S57, S63 à S65)    |
+|   72 | B2-01-A6-06-FICHE-MEMO            |   2 | `fp-story` · v2 `grid`          |     |   0 | seance    | N (N4, reprend S21, S49, S65)  |
+|   73 | B2-01-A6-07-BOITE-A-OUTILS        |   2 | `fp-story` · v2 `grid`          |     |   0 | catalogue | M (S67 à S69, S72)             |
+|   74 | B2-01-A6-08-BILLET-DE-SORTIE      |   3 | `fp-exit`                       |  I  |   1 | seance    | M (S58, S62, S66)              |
 
 Conventions des fiches ci-dessous. Le bloc **Contenu (public)** est recopié tel quel dans le fichier
 de données : c’est tout ce que voient l’étudiant et la projection (il inclut le « titre public » servi
@@ -454,6 +458,32 @@ stratégies, à l’étudiant après son envoi). Les **Notes** reprennent mot po
 fichier de données (chaque ligne commence par `• `, aucune ligne vide ; A1-07 n’en porte pas) et ne
 sont jamais projetées. Les options des questions, leurs identifiants stables, les bonnes réponses et les
 confusions sont au § 5.10. Les années des `labels` des graphiques sont des chaînes (`"2022"`).
+
+**Cadrage des diapositives commentées** (retours QA du 2026-09-24). Un écran à `renvoi` montre, à
+côté de lui, l’écran qu’il commente. Son `cadrageDuRenvoi` fixe la part de la toile donnée à ce
+renvoi et, au besoin, un extrait : une sélection de lignes d’un tableau (`lignes`, rangs à partir
+de 0, sans titre ni note) ou de champs d’un cas `fp-pro` (`champs`). L’extrait sélectionne, il ne
+recopie jamais ; la règle `cadrage-du-renvoi` (§ 2.6.2) le contrôle. Le cadre du renvoi occupe
+toute la hauteur de sa colonne.
+
+| Écran                     | Renvoi                   | Part | Extrait                                |
+| ------------------------- | ------------------------ | ---: | -------------------------------------- |
+| A1-05-ANATOMIE            | A1-04-TABLEAU-DE-BORD    | 40 % | lignes 0 à 5 (le tableau seul)         |
+| A1-08-QUESTION-DE-GESTION | A1-03-MISSION            | 70 % | champ `situation` (« Lundi, 8 h 40… ») |
+| A1-10-AUDIT-DIAPOSITIVE   | A1-09-DIAPOSITIVE        | 60 % | —                                      |
+| A2-03-ATELIER-1           | A1-09-DIAPOSITIVE        | 40 % | —                                      |
+| A2-05-ECRITURES           | A1-05-CORRECTION         | 50 % | —                                      |
+| A2-06-POINTS              | A1-04-TABLEAU-DE-BORD    | 30 % | ligne 3 (« Taux de marge »)            |
+| A3-03-PRIX-SAC            | A3-01-VOTE-HAUSSE-BAISSE | 40 % | —                                      |
+| A3-07-ATELIER-2           | A3-05-INFLATION-RYTHME   | 40 % | —                                      |
+| A3-07-ATELIER-2-SUITE     | A3-05-INFLATION-RYTHME   | 40 % | —                                      |
+| A3-08-INDICE-PRIX         | A3-05-INFLATION-RYTHME   | 40 % | —                                      |
+| A3-09-NOTE-CONJONCTURE    | A3-08-INDICE-PRIX        | 60 % | —                                      |
+| A5-06-ATELIER-4-SUITE     | A5-05-TCD                | 40 % | —                                      |
+| A5-08-RECOMMANDATION      | A5-08-DOSSIER-COMITE     | 50 % | —                                      |
+
+L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de Samir » et s’affiche en plein
+écran.
 
 ### 3.2 Acte 1 — Le chiffre qui déclenche l’alerte (32 min)
 
@@ -528,7 +558,30 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Lecture à voix haute (90 s), puis 2 min d’écriture individuelle.
   - Au pupitre, lire deux réponses à « Que mesure chaque chiffre ? » : l’une parle d’un montant,
     l’autre d’un taux. « Gagner plus » peut vouloir dire les deux : c’est le fil de la séance.
-  - Transition : « Regardons le tableau de bord tel qu’il a été envoyé. »
+  - Transition : « Voici le chemin : six actes pour répondre à Hélène, en commençant par le tableau de
+    bord tel qu’il a été envoyé. »
+
+#### A1-07 · `B2-01-A1-07-PLAN` — 1 min · v2 `method-path` · catalogue · Modifié (S02, S10)
+
+- **Intention** : organiser la séance (organisateur préalable) ; chaque étape = un acte. Le plan
+  suit immédiatement la mission (rang 4, retours QA du 2026-09-24) : la mission pose la question
+  d’Hélène, le plan annonce les six actes qui y répondent, avant tout travail sur les chiffres.
+  L’identifiant `A1-07` est conservé : il sert de clé aux réponses et aux annotations en base.
+- **Contenu (public)** :
+  - Titre public : « Le plan de la séance »
+  - `title` « Le plan de la séance » ; pas de sous-titre.
+  - `steps` :
+
+    | id         | title                            | question                              | proof                                              | result                                                                 |
+    | ---------- | -------------------------------- | ------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
+    | lire       | Acte 1 · Diagnostiquer           | Que mesure chaque chiffre ?           | Unité, base, période, périmètre, source.           | Le tableau de bord annoté : chaque chiffre qualifié.                   |
+    | comparer   | Acte 2 · Auditer                 | Compare-t-on la même chose ?          | Population de référence, axe, ordre de grandeur.   | Des comparaisons justes et défendables.                                |
+    | evoluer    | Acte 3 · Calculer les évolutions | Quelle base, quel coefficient ?       | Écart, taux, coefficient, indice.                  | Des évolutions justes, y compris successives et réciproques.           |
+    | outiller   | Acte 4 · Outiller au tableur     | La feuille se contrôle-t-elle seule ? | Formules, références, contrôles, graphique.        | Un classeur contrôlable qu’un tiers peut reproduire.                   |
+    | defendre   | Acte 5 · Défendre au comité      | Quel mécanisme explique l’écart ?     | Poids, répartition, preuve, limite.                | Une recommandation fondée sur les poids, les scénarios et les limites. |
+    | transferer | Acte 6 · Transférer              | Saurez-vous le refaire seul·e ?       | Situation nouvelle, réponse d’IA corrigée, rappel. | Une fiche mémo pour le CCF.                                            |
+
+- **Notes** : aucune (bloc masqué au pupitre).
 
 #### A1-04 · `B2-01-A1-04-TABLEAU-DE-BORD` — 2 min · v2 `table` · catalogue · Nouveau
 
@@ -637,25 +690,6 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Piège : taux de marge (÷ coût d’achat) ≠ taux de marque (÷ prix de vente) ; il revient en atelier
     1, Q6.
 
-#### A1-07 · `B2-01-A1-07-PLAN` — 1 min · v2 `method-path` · catalogue · Modifié (S02, S10)
-
-- **Intention** : organiser la séance (organisateur préalable) ; chaque étape = un acte.
-- **Contenu (public)** :
-  - Titre public : « Le plan de la séance »
-  - `title` « Le plan de la séance » ; pas de sous-titre.
-  - `steps` :
-
-    | id            | title                            | question                              | proof                                              | result                                                                 |
-    | ------------- | -------------------------------- | ------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
-    | diagnostiquer | Acte 1 · Diagnostiquer           | Que mesure chaque chiffre ?           | Unité, base, période, périmètre, source.           | Le tableau de bord annoté : chaque chiffre qualifié.                   |
-    | auditer       | Acte 2 · Auditer                 | Compare-t-on la même chose ?          | Population de référence, axe, ordre de grandeur.   | Des comparaisons justes et défendables.                                |
-    | modeliser     | Acte 3 · Calculer les évolutions | Quelle base, quel coefficient ?       | Écart, taux, coefficient, indice.                  | Des évolutions justes, y compris successives et réciproques.           |
-    | reproduire    | Acte 4 · Outiller au tableur     | La feuille se contrôle-t-elle seule ? | Formules, références, contrôles, graphique.        | Un classeur contrôlable qu’un tiers peut reproduire.                   |
-    | expliquer     | Acte 5 · Défendre au comité      | Quel mécanisme explique l’écart ?     | Poids, répartition, preuve, limite.                | Une recommandation fondée sur les poids, les scénarios et les limites. |
-    | transferer    | Acte 6 · Transférer              | Saurez-vous le refaire seul·e ?       | Situation nouvelle, réponse d’IA corrigée, rappel. | Une fiche mémo pour le CCF.                                            |
-
-- **Notes** : aucune (bloc masqué au pupitre).
-
 #### A1-08 · `B2-01-A1-08-QUESTION-DE-GESTION` — 3 min · v2 `reflection` · séance · Nouveau (remplace S11)
 
 - **Intention** : transformer une inquiétude en question mesurable (preuve « question de gestion »).
@@ -673,7 +707,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   réponses sont attendues : un montant et un taux. » ; `nextAction` « Vérifiez que votre question
   nomme un indicateur, un dénominateur, deux dates et un périmètre. »
 - **Interaction et correction** : réponse libre enregistrée (file hors ligne partagée), non notée ;
-  lue par le formateur dans le panneau des réponses libres. `renvoi` `B2-01-A1-03-MISSION`.
+  lue par le formateur dans le panneau des réponses libres. `renvoi` `B2-01-A1-03-MISSION`, cadré à
+  70 % sur le seul champ `situation` (« Lundi, 8 h 40… ») : la projection et le pupitre ne montrent
+  que les réponses de cet écran, jamais celles de la mission.
 - **Notes** :
   - 2 min d’écriture individuelle, puis lire trois réponses au pupitre.
   - Refuser toute réponse sans période (2024 → 2025) ou sans dénominateur (CA HT).
@@ -762,9 +798,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Notes** :
   - 30 s de vote anonyme.
   - Si plus de 30 % « Perdu » : reprendre la fiche A1-06 en 2 min sur « Inflation : 4,9 ».
-  - Transition : « Acte 2 : comparer sans tromper. Retour en 1786. »
+  - Transition : « Acte 2 · Auditer : comparer sans tromper. Retour en 1786. »
 
-### 3.3 Acte 2 — Comparer sans tromper (36 min)
+### 3.3 Acte 2 — Comparer sans tromper (34 min)
 
 #### A2-01 · `B2-01-A2-01-PLAYFAIR` — 2 min · v2 `image-left` · catalogue · Modifié (S30)
 
@@ -808,7 +844,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     `SI(x<=1;285000+3000*x;SI(x<=2;288000+1800*(x-1);289800+1200*(x-2)))` }]
   - `description` « Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de
     l’axe vertical. Combien de fois la barre 2025 paraît-elle plus haute que celle de 2022 dans chaque
-    cas ? Les montants, eux, ne bougent pas. » ; `renvoi` `B2-01-A1-09-DIAPOSITIVE`.
+    cas ? Les montants, eux, ne bougent pas. » ; aucun `renvoi` : le préréglage « Axe de Samir » fige
+    déjà la diapositive de Samir, l’écran s’affiche en plein écran (retours QA du 2026-09-24).
 - **Notes** :
   - Chacun passe de « Axe de Samir » à « Axe à zéro ».
   - Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la
@@ -899,27 +936,16 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.
   - Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans
     signe moins.
-  - Transition : « Remettons la diapositive de Samir d’aplomb. »
-
-#### A2-04 · `B2-01-A2-04-MARGE-AXE-ZERO` — 2 min · v2 `chart` (G1) · séance · Modifié (S32)
-
-- **Contenu (public)** :
-  - Titre public : « Marge brute 2022–2025, axe à zéro »
-  - `title` « Marge brute d’Atelier Rivage, 2022–2025 » ; `caption` « Axe vertical de 0 à 300 000 € » ;
-    `labels` ["2022", "2023", "2024", "2025"] ; `series` [{ label « Marge brute », values [285000,
-    288000, 289800, 291000], tone teal }] ; `axisRanges` [[0, 300000]] ; `axisLabels` [« 0 à
-    300 000 € »] ; `unit` « € »
-  - `formula` « Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021 »
-  - `reading` « De 2022 à 2025, la marge brute passe de 285 000 € à 291 000 € : +6 000 €, soit +2,1 %
-    en trois ans. Les hausses annuelles ralentissent : +1,05 %, +0,63 %, puis +0,41 %. »
-  - `source` « Comptes de résultat 2022 à 2025 d’Atelier Rivage (données fictives). »
-  - `description` « Diagramme en barres à partir de zéro : quatre barres presque égales, de 285 000 € en
-    2022 à 291 000 € en 2025. » ; `renvoi` `B2-01-A1-09-DIAPOSITIVE`.
-- **Notes** :
-  - Projeter à côté de la diapositive de Samir si possible.
-  - Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source,
-    phrase de lecture chiffrée.
+  - Revenir à la diapositive de Samir : de 285 000 € à 291 000 €, la marge brute gagne +6 000 €, soit
+    +2,1 % en trois ans. Faire nommer les quatre exigences d’un graphique de référence : titre
+    descriptif, unité, source, phrase de lecture chiffrée.
   - Transition : « Cinq écritures reviennent sans cesse : fixons-les. »
+
+L’ancien écran A2-04 (`B2-01-A2-04-MARGE-AXE-ZERO`, graphique G1 « axe à zéro ») est retiré aux
+retours QA du 2026-09-24 : il répétait l’axe réglable A2-02 et la correction de Q1. Sa lecture
+chiffrée et les quatre exigences d’un graphique de référence passent dans les notes de
+A2-03-CORRECTION-2 ci-dessus. Le rang A2-04 reste libre : les identifiants des écrans suivants ne
+changent pas, puisqu’ils servent de clés en base.
 
 #### A2-05 · `B2-01-A2-05-ECRITURES` — 2 min · v2 `stats` · séance · Modifié (S08, S12)
 
@@ -1079,7 +1105,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     d’évolution = (arrivée − départ) ÷ départ. » ; `prereglages` [« +10 % puis −10 % » (tauxUn 10,
     tauxDeux −10), « −10 % puis +10 % » (tauxUn −10, tauxDeux 10), « +20 % puis −20 % » (tauxUn 20,
     tauxDeux −20)] — un clic règle les deux taux, pour comparer les ordres sans manipuler les curseurs
-    (retour de QA F20).
+    (retour de QA F20) ; `animation` [{ depart 100, tauxUn 0, tauxDeux 0 }, { tauxUn 50 }, { tauxDeux
+    −50 }] — « Animer le calcul » pose une étape toutes les 3 s : 100, puis 150, puis 75 (retour de
+    QA R8).
 - **Contrainte d’implémentation** : les noms de variables ne contiennent que des lettres (`tauxUn`, pas
   `t1`, que le moteur lit comme la cellule T1).
 - **Notes** :
@@ -1673,7 +1701,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     `bornesOrdonnee` { min 0, max 40 } ; `parametres` [{ cle « tauxMarketplace », libelle « Taux de
     marge brute de la marketplace (%) », min 10, max 30, pas 1, defaut 16 }] ; `series` [{ id
     « global », libelle « Taux global », trait plein, calcul `(20*28 + (80 - x)*36 + x*tauxMarketplace)/100`
-    }, { id « reference », libelle « Taux 2024 (27,6 %) », trait tirets, calcul `27.6` }]
+    }, { id « reference », libelle « Taux 2024 (27,6 %) », trait tirets, calcul `27.6` }] ;
+    `animation` [{ tauxMarketplace 16 }, { 20 }, { 24 }, { 28 }, { 30 }] — « Voir l’évolution » pose
+    une valeur toutes les 3 s (retour de QA R9)
   - `description` « Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite
     le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ? »
 - **Modèle** : taux global = 34,4 − 0,2 × part (avec 16 %) ; 27,6 % à 34 % (2024) et 25,30 % à 45,48 %
@@ -2209,140 +2239,140 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 
 ### 3.8 Correspondance des 72 écrans du deck actuel
 
-| Écran actuel             | Sort     | Destination V3                                   | Motif                                                                                     |
-| ------------------------ | -------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| S01 ACCROCHE             | modifié  | A1-02                                            | image du domaine public, « 1re année », fil rouge                                         |
-| S02 CONTRAT              | modifié  | A1-07                                            | six étapes = six actes                                                                    |
-| S03 PREDICTION           | retiré   | A1-09, A1-10, A2-03 Q1                           | quiz isolé ; contexte donnant la réponse (§ 6.2)                                          |
-| S04 AXES                 | modifié  | A2-02, A2-04                                     | manipulation de l’origine et de l’amplitude, puis graphique de référence                  |
-| S05 ANATOMIE             | fusionné | A1-06                                            | avec S06                                                                                  |
-| S06 HABILLER             | modifié  | A1-06                                            | données Atelier Rivage, définition du taux de marge brute                                 |
-| S07 COMPATIBILITE        | modifié  | A2-07                                            | devient le mini-jeu 1, carte de périmètre ajoutée                                         |
-| S08 UNITES               | modifié  | A1-05, A2-05                                     | tri noté puis institutionnalisation                                                       |
-| S09 FONDATIONS           | retiré   | A1-05, A1-06                                     | contexte donnant la réponse                                                               |
-| S10 CONTROLEUR           | fusionné | A1-07, A5-07, A5-08                              | plan de séance, contrôle discriminant, « démontré ou hypothèse »                          |
-| S11 C1                   | modifié  | A1-05 (carte « Inflation : 4,9 »), A1-08         | la question de gestion remplace la question sur « 4,9 »                                   |
-| S12 ABSOLU-RELATIF       | modifié  | A2-03 Q4, A2-04, A2-05                           | affichait la réponse de S14 deux écrans avant ; la phrase de conclusion est portée par G1 |
-| S13 FORMULE              | fusionné | A1-06 (formule avant l’atelier 1), A3-02         |                                                                                           |
-| S14 CALCUL               | modifié  | A2-03 Q4                                         | réponse déjà affichée en S12                                                              |
-| S15 BASE                 | modifié  | A3-04 étape 4 (enseigné), A6-02 E3 (évalué)      |                                                                                           |
-| S16 POINTS               | modifié  | A2-06                                            | exemple travaillé à étayage dégressif                                                     |
-| S17 HAUSSE-BAISSE        | conservé | A3-03                                            | placé après le vote qu’il corrige                                                         |
-| S18 COEFFICIENTS         | modifié  | A3-02                                            | simulateur manipulable                                                                    |
-| S19 SUCCESSIVES          | fusionné | A3-02, A3-04                                     |                                                                                           |
-| S20 HISTOIRE             | fusionné | A2-01, A4-04                                     | « la forme suit la question » portée par Playfair et G4                                   |
-| S21 METHODE              | modifié  | A6-06                                            | « quelle méthode pour quelle question » devient la fiche mémo                             |
-| S22 C2                   | retiré   | A3-01                                            | l’indication de saisie donnait la réponse                                                 |
-| S23 INFLATION            | retiré   | A3-07 Q1                                         | question ambiguë et contexte donnant la réponse                                           |
-| S24 SOURCE-INFLATION     | modifié  | A3-05, A3-07 (consigne)                          | source Insee ; le sous-titre donnait la réponse de S25                                    |
-| S25 DESINFLATION         | modifié  | A3-07 Q1, A3-08                                  | contexte orienté ; le mot « désinflation » revient en A3-08                               |
-| S26 RYTHME               | modifié  | A3-05, A3-08                                     | la formule donnait la conclusion de S28                                                   |
-| S27 INDICE               | modifié  | A3-06 (enseigné), A3-08 (graphique)              | base corrigée, enseigné avant l’atelier                                                   |
-| S28 CONCLUSION-INFLATION | modifié  | A3-09                                            | décision tarifaire en euros de 2019                                                       |
-| S29 PAUSE                | retiré   | pause hors durée après A3-10                     | un écran de pause compte comme exposition                                                 |
-| S30 PLAYFAIR             | modifié  | A2-01                                            | lien aligné sur l’image, Priestley, forme et donnée                                       |
-| S31 RELECTURE            | retiré   | A2-03 Q1                                         | contexte donnant la réponse                                                               |
-| S32 AMPLITUDE            | fusionné | A2-02, A2-04                                     |                                                                                           |
-| S33 FORME                | modifié  | A4-03 Q1, A4-04, A6-06                           | règle de forme institutionnalisée                                                         |
-| S34 TITRE                | modifié  | A4-03 Q2                                         |                                                                                           |
-| S35 CORRELATION          | modifié  | A5-06 Q3                                         | contexte donnant la réponse                                                               |
-| S36 NIGHTINGALE          | modifié  | A5-01                                            | image allégée, texte exact, orienté décision                                              |
-| S37 AUDIT-GRAPHIQUE      | modifié  | A1-10, A4-03, A6-06                              | l’alternative tabulaire revient (« Voir les données », fiche mémo)                        |
-| S38 MIX                  | retiré   | A5-02                                            | contexte éliminant les pièges                                                             |
-| S39 PREVISION-MIX        | retiré   | A5-02, A5-03                                     | donnait la réponse avant le vote                                                          |
-| S40 PONDEREE             | fusionné | A5-03                                            |                                                                                           |
-| S41 SIMULATEUR-MIX       | modifié  | A5-04                                            | le titre donnait la réponse du vote ; données Atelier Rivage                              |
-| S42 VALEUR-TAUX          | retiré   | A5-03, A5-06 Q4                                  | affichait les réponses de S43 et S44                                                      |
-| S43 MARGE-2024           | fusionné | A1-06, A2-03 Q6, A4-02                           |                                                                                           |
-| S44 MARGE-2025           | fusionné | A4-02 (F5), A5-06                                |                                                                                           |
-| S45 RECOMMANDATION       | modifié  | A5-08                                            | stratégies de référence après envoi                                                       |
-| S46 VOTE-1               | modifié  | A5-02 vote 1                                     | contexte donnant la réponse                                                               |
-| S47 PAIRS                | fusionné | A5-02 phase discussion                           |                                                                                           |
-| S48 VOTE-2               | modifié  | A5-02 vote 2 (cas jumeau)                        | même question que S46 et contexte donnant la réponse                                      |
-| S49 DEBRIEF              | fusionné | A5-02 révélation (grille du débat), A5-03, A6-06 |                                                                                           |
-| S50 PACIOLI              | modifié  | A6-01 (sans quiz), R10                           | le paragraphe donnait la réponse du quiz imbriqué                                         |
-| S51 MISSION              | modifié  | A5-07                                            | la bonne réponse était marquée dans l’écran ; coût du contrôle dans les notes             |
-| S52 CONTROLE-GLOBAL      | modifié  | A5-07, A6-02 E4                                  | la colonne « écart » et la note donnaient la réponse                                      |
-| S53 LOCALISER            | modifié  | A6-02 E4                                         | le rapprochement ligne à ligne est fait par l’étudiant                                    |
-| S54 MULTIPLE-NEUF        | modifié  | A6-01 (enseigné à tous), R11 (servi à tous)      | contexte donnant la réponse                                                               |
-| S55 F004                 | fusionné | A6-02 E4                                         |                                                                                           |
-| S56 TVA                  | modifié  | A3-04 étape 6, A6-02 E4, R13                     | HT ↔ TTC et contrôle inverse enseignés                                                    |
-| S57 COMPENSATION         | modifié  | A5-07 (carte), A6-01, R10 (servi à tous)         | contexte donnant la réponse                                                               |
-| S58 ALERTE               | modifié  | A5-08, A6-08 (alerte au cabinet)                 |                                                                                           |
-| S59 DEFI                 | retiré   | A5-07                                            | « Nova Services » remplacé par le fil rouge                                               |
-| S60 PRIORITES            | modifié  | A5-07, A5-08 (sixième phrase)                    | classement objectivable et priorisation argumentée                                        |
-| S61 CONTROLE             | modifié  | A5-07 (catégories)                               |                                                                                           |
-| S62 DECISION             | modifié  | A5-08, A6-08                                     |                                                                                           |
-| S63 FLASH-POINTS         | modifié  | R2                                               | le contexte écartait un piège                                                             |
-| S64 FLASH-PREUVE         | modifié  | R11                                              | contexte donnant la réponse                                                               |
-| S65 MAITRISE             | remplacé | A6-05, A6-06                                     | carte de maîtrise réelle (Leitner) et fiche mémo                                          |
-| S66 SORTIE               | retiré   | A6-08                                            | appel à l’action sans activité                                                            |
-| S67 BOITE-A-OUTILS       | fusionné | A4-01, A6-03, A6-07                              |                                                                                           |
-| S68 TABLEUR-BI           | fusionné | A5-05, A6-07                                     | TCD et chaîne tableur devenus contenus                                                    |
-| S69 FORMULES             | fusionné | A4-01, A4-02 (consignes), A6-07                  | RECHERCHEX, SOMME.SI.ENS, SIERREUR, ARRONDI                                               |
-| S70 IA-CONTROLE          | modifié  | A6-03                                            |                                                                                           |
-| S71 SKILLS-IA            | fusionné | A6-03 (« je ne peux pas conclure »), A6-04       |                                                                                           |
-| S72 RESSOURCES           | modifié  | A6-07                                            | série Insee à jour ; carte UNESCO retirée (retours QA)                                    |
+| Écran actuel             | Sort     | Destination V3                                   | Motif                                                                                                      |
+| ------------------------ | -------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| S01 ACCROCHE             | modifié  | A1-02                                            | image du domaine public, « 1re année », fil rouge                                                          |
+| S02 CONTRAT              | modifié  | A1-07                                            | six étapes = six actes                                                                                     |
+| S03 PREDICTION           | retiré   | A1-09, A1-10, A2-03 Q1                           | quiz isolé ; contexte donnant la réponse (§ 6.2)                                                           |
+| S04 AXES                 | modifié  | A2-02, A2-03-CORRECTION-2 (notes)                | manipulation de l’origine et de l’amplitude, puis exigences d’un graphique de référence                    |
+| S05 ANATOMIE             | fusionné | A1-06                                            | avec S06                                                                                                   |
+| S06 HABILLER             | modifié  | A1-06                                            | données Atelier Rivage, définition du taux de marge brute                                                  |
+| S07 COMPATIBILITE        | modifié  | A2-07                                            | devient le mini-jeu 1, carte de périmètre ajoutée                                                          |
+| S08 UNITES               | modifié  | A1-05, A2-05                                     | tri noté puis institutionnalisation                                                                        |
+| S09 FONDATIONS           | retiré   | A1-05, A1-06                                     | contexte donnant la réponse                                                                                |
+| S10 CONTROLEUR           | fusionné | A1-07, A5-07, A5-08                              | plan de séance, contrôle discriminant, « démontré ou hypothèse »                                           |
+| S11 C1                   | modifié  | A1-05 (carte « Inflation : 4,9 »), A1-08         | la question de gestion remplace la question sur « 4,9 »                                                    |
+| S12 ABSOLU-RELATIF       | modifié  | A2-03 Q4, A2-03-CORRECTION-1, A2-05              | affichait la réponse de S14 deux écrans avant ; la phrase de conclusion est portée par la correction de Q1 |
+| S13 FORMULE              | fusionné | A1-06 (formule avant l’atelier 1), A3-02         |                                                                                                            |
+| S14 CALCUL               | modifié  | A2-03 Q4                                         | réponse déjà affichée en S12                                                                               |
+| S15 BASE                 | modifié  | A3-04 étape 4 (enseigné), A6-02 E3 (évalué)      |                                                                                                            |
+| S16 POINTS               | modifié  | A2-06                                            | exemple travaillé à étayage dégressif                                                                      |
+| S17 HAUSSE-BAISSE        | conservé | A3-03                                            | placé après le vote qu’il corrige                                                                          |
+| S18 COEFFICIENTS         | modifié  | A3-02                                            | simulateur manipulable                                                                                     |
+| S19 SUCCESSIVES          | fusionné | A3-02, A3-04                                     |                                                                                                            |
+| S20 HISTOIRE             | fusionné | A2-01, A4-04                                     | « la forme suit la question » portée par Playfair et G4                                                    |
+| S21 METHODE              | modifié  | A6-06                                            | « quelle méthode pour quelle question » devient la fiche mémo                                              |
+| S22 C2                   | retiré   | A3-01                                            | l’indication de saisie donnait la réponse                                                                  |
+| S23 INFLATION            | retiré   | A3-07 Q1                                         | question ambiguë et contexte donnant la réponse                                                            |
+| S24 SOURCE-INFLATION     | modifié  | A3-05, A3-07 (consigne)                          | source Insee ; le sous-titre donnait la réponse de S25                                                     |
+| S25 DESINFLATION         | modifié  | A3-07 Q1, A3-08                                  | contexte orienté ; le mot « désinflation » revient en A3-08                                                |
+| S26 RYTHME               | modifié  | A3-05, A3-08                                     | la formule donnait la conclusion de S28                                                                    |
+| S27 INDICE               | modifié  | A3-06 (enseigné), A3-08 (graphique)              | base corrigée, enseigné avant l’atelier                                                                    |
+| S28 CONCLUSION-INFLATION | modifié  | A3-09                                            | décision tarifaire en euros de 2019                                                                        |
+| S29 PAUSE                | retiré   | pause hors durée après A3-10                     | un écran de pause compte comme exposition                                                                  |
+| S30 PLAYFAIR             | modifié  | A2-01                                            | lien aligné sur l’image, Priestley, forme et donnée                                                        |
+| S31 RELECTURE            | retiré   | A2-03 Q1                                         | contexte donnant la réponse                                                                                |
+| S32 AMPLITUDE            | fusionné | A2-02                                            |                                                                                                            |
+| S33 FORME                | modifié  | A4-03 Q1, A4-04, A6-06                           | règle de forme institutionnalisée                                                                          |
+| S34 TITRE                | modifié  | A4-03 Q2                                         |                                                                                                            |
+| S35 CORRELATION          | modifié  | A5-06 Q3                                         | contexte donnant la réponse                                                                                |
+| S36 NIGHTINGALE          | modifié  | A5-01                                            | image allégée, texte exact, orienté décision                                                               |
+| S37 AUDIT-GRAPHIQUE      | modifié  | A1-10, A4-03, A6-06                              | l’alternative tabulaire revient (« Voir les données », fiche mémo)                                         |
+| S38 MIX                  | retiré   | A5-02                                            | contexte éliminant les pièges                                                                              |
+| S39 PREVISION-MIX        | retiré   | A5-02, A5-03                                     | donnait la réponse avant le vote                                                                           |
+| S40 PONDEREE             | fusionné | A5-03                                            |                                                                                                            |
+| S41 SIMULATEUR-MIX       | modifié  | A5-04                                            | le titre donnait la réponse du vote ; données Atelier Rivage                                               |
+| S42 VALEUR-TAUX          | retiré   | A5-03, A5-06 Q4                                  | affichait les réponses de S43 et S44                                                                       |
+| S43 MARGE-2024           | fusionné | A1-06, A2-03 Q6, A4-02                           |                                                                                                            |
+| S44 MARGE-2025           | fusionné | A4-02 (F5), A5-06                                |                                                                                                            |
+| S45 RECOMMANDATION       | modifié  | A5-08                                            | stratégies de référence après envoi                                                                        |
+| S46 VOTE-1               | modifié  | A5-02 vote 1                                     | contexte donnant la réponse                                                                                |
+| S47 PAIRS                | fusionné | A5-02 phase discussion                           |                                                                                                            |
+| S48 VOTE-2               | modifié  | A5-02 vote 2 (cas jumeau)                        | même question que S46 et contexte donnant la réponse                                                       |
+| S49 DEBRIEF              | fusionné | A5-02 révélation (grille du débat), A5-03, A6-06 |                                                                                                            |
+| S50 PACIOLI              | modifié  | A6-01 (sans quiz), R10                           | le paragraphe donnait la réponse du quiz imbriqué                                                          |
+| S51 MISSION              | modifié  | A5-07                                            | la bonne réponse était marquée dans l’écran ; coût du contrôle dans les notes                              |
+| S52 CONTROLE-GLOBAL      | modifié  | A5-07, A6-02 E4                                  | la colonne « écart » et la note donnaient la réponse                                                       |
+| S53 LOCALISER            | modifié  | A6-02 E4                                         | le rapprochement ligne à ligne est fait par l’étudiant                                                     |
+| S54 MULTIPLE-NEUF        | modifié  | A6-01 (enseigné à tous), R11 (servi à tous)      | contexte donnant la réponse                                                                                |
+| S55 F004                 | fusionné | A6-02 E4                                         |                                                                                                            |
+| S56 TVA                  | modifié  | A3-04 étape 6, A6-02 E4, R13                     | HT ↔ TTC et contrôle inverse enseignés                                                                     |
+| S57 COMPENSATION         | modifié  | A5-07 (carte), A6-01, R10 (servi à tous)         | contexte donnant la réponse                                                                                |
+| S58 ALERTE               | modifié  | A5-08, A6-08 (alerte au cabinet)                 |                                                                                                            |
+| S59 DEFI                 | retiré   | A5-07                                            | « Nova Services » remplacé par le fil rouge                                                                |
+| S60 PRIORITES            | modifié  | A5-07, A5-08 (sixième phrase)                    | classement objectivable et priorisation argumentée                                                         |
+| S61 CONTROLE             | modifié  | A5-07 (catégories)                               |                                                                                                            |
+| S62 DECISION             | modifié  | A5-08, A6-08                                     |                                                                                                            |
+| S63 FLASH-POINTS         | modifié  | R2                                               | le contexte écartait un piège                                                                              |
+| S64 FLASH-PREUVE         | modifié  | R11                                              | contexte donnant la réponse                                                                                |
+| S65 MAITRISE             | remplacé | A6-05, A6-06                                     | carte de maîtrise réelle (Leitner) et fiche mémo                                                           |
+| S66 SORTIE               | retiré   | A6-08                                            | appel à l’action sans activité                                                                             |
+| S67 BOITE-A-OUTILS       | fusionné | A4-01, A6-03, A6-07                              |                                                                                                            |
+| S68 TABLEUR-BI           | fusionné | A5-05, A6-07                                     | TCD et chaîne tableur devenus contenus                                                                     |
+| S69 FORMULES             | fusionné | A4-01, A4-02 (consignes), A6-07                  | RECHERCHEX, SOMME.SI.ENS, SIERREUR, ARRONDI                                                                |
+| S70 IA-CONTROLE          | modifié  | A6-03                                            |                                                                                                            |
+| S71 SKILLS-IA            | fusionné | A6-03 (« je ne peux pas conclure »), A6-04       |                                                                                                            |
+| S72 RESSOURCES           | modifié  | A6-07                                            | série Insee à jour ; carte UNESCO retirée (retours QA)                                                     |
 
 ### 3.9 Inventaire de couverture du deck (52 notions)
 
 Reprise de l’inventaire de la relecture pédagogique (§ 4.1). Chaque notion est enseignée ; les
 notions évaluées le sont après leur enseignement. Aucune n’est partielle ni perdue.
 
-|   # | Notion ou apport du deck (écrans)                                                                               | Enseignée en                                      | Évaluée en                |
-| --: | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------- |
-|   1 | « Lire un chiffre, ce n’est pas le croire » (S01)                                                               | A1-02                                             | —                         |
-|   2 | Six gestes (S02)                                                                                                | A1-07                                             | —                         |
-|   3 | Pente contre échelle (S03, S31)                                                                                 | A1-09, A1-10                                      | A2-03 Q1                  |
-|   4 | Origine et amplitude de l’axe (S04, S32)                                                                        | A2-02 (deux curseurs), A2-04                      | A4-03 Q3, R9              |
-|   5 | Fiche d’identité en 5 rubriques (S05, S06, S09)                                                                 | A1-06                                             | A1-05                     |
-|   6 | Comparabilité : période, HT/TTC, périmètre, mensuel/annuel (S07)                                                | A2-07 (dont la carte périmètre)                   | A2-07                     |
-|   7 | Écritures valeur / rapport / points / indice (S08)                                                              | A2-05                                             | A1-05                     |
-|   8 | Raisonnement du contrôleur ; « démontré ou hypothèse » (S10)                                                    | A1-07, A5-07                                      | A5-06 Q3, A5-08           |
-|   9 | Première question devant « 4,9 » (S11)                                                                          | A1-06                                             | A1-05, A1-08              |
-|  10 | Écart absolu contre taux ; phrase de conclusion (S12, S14)                                                      | A2-04 (lecture « +6 000 € … soit +2,1 % »), A2-05 | A2-03 Q4, A5-06 Q4        |
-|  11 | t = (y₂ − y₁) / y₁ et y₂ = (1 + t) y₁ (S13)                                                                     | A1-06 (carte Base), A3-02                         | A2-03 Q4                  |
-|  12 | Retrouver la valeur de départ (S15)                                                                             | A3-04 étape 4                                     | A6-02 E3                  |
-|  13 | Points contre évolution relative (S16, S63)                                                                     | A2-06                                             | A5-06 Q4, E2, R2          |
-|  14 | +10 % puis −10 % et effet sur la marge (S17, S22)                                                               | A3-03                                             | A3-01                     |
-|  15 | Machine à coefficients (S18, S19)                                                                               | A3-02, A3-04                                      | A3-01, A4-05              |
-|  16 | La représentation vient après la question (S20)                                                                 | A2-01, A4-04                                      | A4-03                     |
-|  17 | Choisir la méthode selon la question (S21)                                                                      | A6-06                                             | A6-08                     |
-|  18 | Rythme contre niveau (S23, S25, S26, S28)                                                                       | A3-05, A3-08                                      | A3-07 Q1, A3-09           |
-|  19 | « Désinflation » et « déflation » (S26)                                                                         | A3-08                                             | A3-09                     |
-|  20 | Source de l’inflation (S24)                                                                                     | A3-05, A6-07 (série 011814630)                    | A3-09                     |
-|  21 | Indice cumulé base 100 (S27)                                                                                    | A3-06                                             | A3-07 Q2, A4-05, R5       |
-|  22 | Pause de consolidation (S29)                                                                                    | jalons `fp-pulse`                                 | —                         |
-|  23 | Playfair (S30)                                                                                                  | A2-01                                             | —                         |
-|  24 | Choisir une forme : courbe, barres, aire (S33)                                                                  | A4-04, A6-06                                      | A4-03 Q1                  |
-|  25 | Titre descriptif contre titre interprétatif (S34)                                                               | A1-10 (stratégies), A2-04                         | A4-03 Q2                  |
-|  26 | Corrélation n’est pas causalité (S35)                                                                           | A5-02 révélation, A5-08                           | A5-06 Q3                  |
-|  27 | Nightingale (S36)                                                                                               | A5-01                                             | —                         |
-|  28 | Audit express ; « tableau : alternative aux formes » (S37)                                                      | A1-10, bouton « Voir les données », A6-06         | A1-10                     |
-|  29 | Effet de mix, votes, argument entre pairs (S38, S39, S41, S46 à S48)                                            | A5-03, A5-04                                      | A5-02                     |
-|  30 | Grille « argument correct / incomplet / faux » (S49)                                                            | A5-02 révélation                                  | A5-08                     |
-|  31 | Moyenne pondérée et champ calculé du TCD (S40, S68)                                                             | A5-03, A5-05                                      | A5-06 Q5, E1, devoir TCD  |
-|  32 | Valeur contre taux (S42)                                                                                        | A2-05                                             | A5-06 Q4                  |
-|  33 | Calcul de 27,60 % et 25,30 % (S43, S44)                                                                         | A1-06, A5-03                                      | A4-02                     |
-|  34 | Recommandation argumentée (S45, S62)                                                                            | A5-08 (stratégies)                                | A5-08                     |
-|  35 | Pacioli (S50)                                                                                                   | A6-01                                             | —                         |
-|  36 | Choisir le premier contrôle, coût du contrôle (S51)                                                             | A5-07 (correction), A6-06                         | A5-07                     |
-|  37 | Contrôle global puis localisation ligne à ligne (S52, S53)                                                      | A6-01                                             | A6-02 E4                  |
-|  38 | Multiple de 9 : indice, pas preuve (S54, S64)                                                                   | A6-01                                             | R11 (servi à tous)        |
-|  39 | Preuve par la pièce F004 (S55)                                                                                  | A6-01                                             | A6-02 E4                  |
-|  40 | TVA et TTC, contrôle inverse (S56)                                                                              | A3-04 étape 6                                     | A6-02 E4, R13             |
-|  41 | Compensation de deux erreurs (S57)                                                                              | A5-07 (correction), A6-01                         | A5-07, R10 (servi à tous) |
-|  42 | Alerte professionnelle écrite (S58)                                                                             | A5-08 (stratégies)                                | A6-08 (alerte)            |
-|  43 | Prioriser selon l’impact (S59, S60)                                                                             | A5-08 (stratégies)                                | A5-08 (sixième phrase)    |
-|  44 | Contrôle discriminant (S61)                                                                                     | A5-07                                             | A5-07                     |
-|  45 | Carte de maîtrise (S65)                                                                                         | A6-05                                             | A6-05                     |
-|  46 | Transition vers les outils (S66)                                                                                | A6-07                                             | —                         |
-|  47 | Cycle du comptable : qualifier la source, nettoyer sans détruire, base explicite, rapprocher (S67)              | A6-03, A6-07, A1-06, A6-01                        | A6-02 E4                  |
-|  48 | Chaîne tableur/BI : une ligne = une observation, Power Query, TCD, tableau de bord daté (S68)                   | A5-05, A6-07                                      | devoir TCD                |
-|  49 | Formules à savoir expliquer : RECHERCHEX, SOMME.SI.ENS, SIERREUR, ARRONDI à l’affichage, contrôle inverse (S69) | A6-07, A3-04                                      | A4-02 (ARRONDI, SI)       |
-|  50 | Cadre IA : cadrer, anonymiser, challenger, vérifier, tracer (S70)                                               | A6-03                                             | A6-04                     |
-|  51 | Compétences IA ; « je ne peux pas conclure » (S71)                                                              | A6-03                                             | A5-06 Q3, A6-04           |
-|  52 | Ressources (S72) ; le cadre de compétences en IA de l’UNESCO est retiré aux retours de QA                       | A6-07                                             | —                         |
+|   # | Notion ou apport du deck (écrans)                                                                               | Enseignée en                              | Évaluée en                |
+| --: | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------------- |
+|   1 | « Lire un chiffre, ce n’est pas le croire » (S01)                                                               | A1-02                                     | —                         |
+|   2 | Six gestes (S02)                                                                                                | A1-07                                     | —                         |
+|   3 | Pente contre échelle (S03, S31)                                                                                 | A1-09, A1-10                              | A2-03 Q1                  |
+|   4 | Origine et amplitude de l’axe (S04, S32)                                                                        | A2-02 (curseur et deux préréglages)       | A4-03 Q3, R9              |
+|   5 | Fiche d’identité en 5 rubriques (S05, S06, S09)                                                                 | A1-06                                     | A1-05                     |
+|   6 | Comparabilité : période, HT/TTC, périmètre, mensuel/annuel (S07)                                                | A2-07 (dont la carte périmètre)           | A2-07                     |
+|   7 | Écritures valeur / rapport / points / indice (S08)                                                              | A2-05                                     | A1-05                     |
+|   8 | Raisonnement du contrôleur ; « démontré ou hypothèse » (S10)                                                    | A1-07, A5-07                              | A5-06 Q3, A5-08           |
+|   9 | Première question devant « 4,9 » (S11)                                                                          | A1-06                                     | A1-05, A1-08              |
+|  10 | Écart absolu contre taux ; phrase de conclusion (S12, S14)                                                      | A2-03-CORRECTION-1 (Q1), A2-05            | A2-03 Q4, A5-06 Q4        |
+|  11 | t = (y₂ − y₁) / y₁ et y₂ = (1 + t) y₁ (S13)                                                                     | A1-06 (carte Base), A3-02                 | A2-03 Q4                  |
+|  12 | Retrouver la valeur de départ (S15)                                                                             | A3-04 étape 4                             | A6-02 E3                  |
+|  13 | Points contre évolution relative (S16, S63)                                                                     | A2-06                                     | A5-06 Q4, E2, R2          |
+|  14 | +10 % puis −10 % et effet sur la marge (S17, S22)                                                               | A3-03                                     | A3-01                     |
+|  15 | Machine à coefficients (S18, S19)                                                                               | A3-02, A3-04                              | A3-01, A4-05              |
+|  16 | La représentation vient après la question (S20)                                                                 | A2-01, A4-04                              | A4-03                     |
+|  17 | Choisir la méthode selon la question (S21)                                                                      | A6-06                                     | A6-08                     |
+|  18 | Rythme contre niveau (S23, S25, S26, S28)                                                                       | A3-05, A3-08                              | A3-07 Q1, A3-09           |
+|  19 | « Désinflation » et « déflation » (S26)                                                                         | A3-08                                     | A3-09                     |
+|  20 | Source de l’inflation (S24)                                                                                     | A3-05, A6-07 (série 011814630)            | A3-09                     |
+|  21 | Indice cumulé base 100 (S27)                                                                                    | A3-06                                     | A3-07 Q2, A4-05, R5       |
+|  22 | Pause de consolidation (S29)                                                                                    | jalons `fp-pulse`                         | —                         |
+|  23 | Playfair (S30)                                                                                                  | A2-01                                     | —                         |
+|  24 | Choisir une forme : courbe, barres, aire (S33)                                                                  | A4-04, A6-06                              | A4-03 Q1                  |
+|  25 | Titre descriptif contre titre interprétatif (S34)                                                               | A1-10 (stratégies et correction)          | A4-03 Q2                  |
+|  26 | Corrélation n’est pas causalité (S35)                                                                           | A5-02 révélation, A5-08                   | A5-06 Q3                  |
+|  27 | Nightingale (S36)                                                                                               | A5-01                                     | —                         |
+|  28 | Audit express ; « tableau : alternative aux formes » (S37)                                                      | A1-10, bouton « Voir les données », A6-06 | A1-10                     |
+|  29 | Effet de mix, votes, argument entre pairs (S38, S39, S41, S46 à S48)                                            | A5-03, A5-04                              | A5-02                     |
+|  30 | Grille « argument correct / incomplet / faux » (S49)                                                            | A5-02 révélation                          | A5-08                     |
+|  31 | Moyenne pondérée et champ calculé du TCD (S40, S68)                                                             | A5-03, A5-05                              | A5-06 Q5, E1, devoir TCD  |
+|  32 | Valeur contre taux (S42)                                                                                        | A2-05                                     | A5-06 Q4                  |
+|  33 | Calcul de 27,60 % et 25,30 % (S43, S44)                                                                         | A1-06, A5-03                              | A4-02                     |
+|  34 | Recommandation argumentée (S45, S62)                                                                            | A5-08 (stratégies)                        | A5-08                     |
+|  35 | Pacioli (S50)                                                                                                   | A6-01                                     | —                         |
+|  36 | Choisir le premier contrôle, coût du contrôle (S51)                                                             | A5-07 (correction), A6-06                 | A5-07                     |
+|  37 | Contrôle global puis localisation ligne à ligne (S52, S53)                                                      | A6-01                                     | A6-02 E4                  |
+|  38 | Multiple de 9 : indice, pas preuve (S54, S64)                                                                   | A6-01                                     | R11 (servi à tous)        |
+|  39 | Preuve par la pièce F004 (S55)                                                                                  | A6-01                                     | A6-02 E4                  |
+|  40 | TVA et TTC, contrôle inverse (S56)                                                                              | A3-04 étape 6                             | A6-02 E4, R13             |
+|  41 | Compensation de deux erreurs (S57)                                                                              | A5-07 (correction), A6-01                 | A5-07, R10 (servi à tous) |
+|  42 | Alerte professionnelle écrite (S58)                                                                             | A5-08 (stratégies)                        | A6-08 (alerte)            |
+|  43 | Prioriser selon l’impact (S59, S60)                                                                             | A5-08 (stratégies)                        | A5-08 (sixième phrase)    |
+|  44 | Contrôle discriminant (S61)                                                                                     | A5-07                                     | A5-07                     |
+|  45 | Carte de maîtrise (S65)                                                                                         | A6-05                                     | A6-05                     |
+|  46 | Transition vers les outils (S66)                                                                                | A6-07                                     | —                         |
+|  47 | Cycle du comptable : qualifier la source, nettoyer sans détruire, base explicite, rapprocher (S67)              | A6-03, A6-07, A1-06, A6-01                | A6-02 E4                  |
+|  48 | Chaîne tableur/BI : une ligne = une observation, Power Query, TCD, tableau de bord daté (S68)                   | A5-05, A6-07                              | devoir TCD                |
+|  49 | Formules à savoir expliquer : RECHERCHEX, SOMME.SI.ENS, SIERREUR, ARRONDI à l’affichage, contrôle inverse (S69) | A6-07, A3-04                              | A4-02 (ARRONDI, SI)       |
+|  50 | Cadre IA : cadrer, anonymiser, challenger, vérifier, tracer (S70)                                               | A6-03                                     | A6-04                     |
+|  51 | Compétences IA ; « je ne peux pas conclure » (S71)                                                              | A6-03                                     | A5-06 Q3, A6-04           |
+|  52 | Ressources (S72) ; le cadre de compétences en IA de l’UNESCO est retiré aux retours de QA                       | A6-07                                     | —                         |
 
 ---
 
@@ -2506,7 +2536,11 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
 - **Rôle** : faire varier un paramètre et observer la conséquence ; exposition active, sans production
   enregistrée.
 - **Public** : `definition` (expressions en chaînes ; `bornesOrdonnee` avec `minParametre` et
-  `maxParametre` ; `description` pour `fp-plot`). Noms de paramètres en lettres seules.
+  `maxParametre` ; `description` pour `fp-plot`). Noms de paramètres en lettres seules. `animation`
+  facultative : au moins deux étapes, chacune règle au moins un paramètre connu, dans ses bornes et
+  sur son pas (contrôlé au stockage) ; le front pose une étape toutes les 3 s, relaie chaque état au
+  pupitre, s’arrête à la première manipulation et applique directement l’état final quand le poste
+  demande de réduire les animations. Sans `animation`, le front calcule une suite vers le maximum.
 - **Notation** : aucune. **Manques** : B1 (schéma de stockage, dont `bornesOrdonnee` et
   `description`) ; F23 (`description` rendue).
 
@@ -2591,8 +2625,8 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
 | B15 | **`verifierStructure` restauré et adapté**                                                    | § 2.6 et § 6.4 : interactivité, 7 règles d’origine, 7 nouvelles (14 règles), dérogations justifiées ; test `b2-v3.cours.spec.ts` : `verifierStructure(B2 v3) === []`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `domain/cours/StructureCours.ts` + spec (depuis `c8324cb^`)                                                                                                |
 | B16 | **Concepts et confusions**                                                                    | 7 concepts et 30 confusions ajoutés (§ 5.9), chacun rattaché à un concept ; précède B18                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `banque/concepts.ts`, `banque/confusions.ts`                                                                                                               |
 | B17 | **Remédiations et médias persistés**                                                          | colonnes `remediations jsonb NOT NULL DEFAULT '{}'` et `medias jsonb NOT NULL DEFAULT '[]'` sur `formation_course_contents` ; lues vers `Cours.remediations` et `Cours.medias` (aujourd’hui `{}` en dur, `CoursStocke.ts` l. 342)                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `FormationCourseContent.entity.ts`, `CoursCatalogue.repository.typeorm.ts`                                                                                 |
-| B18 | **Contenu V3**                                                                                | fichier de données typé unique `src/modules/formations/infrastructure/contenus/b2-01.cours.ts` (75 écrans, notes, questions, corrigés, banque, remédiations, médias) ; au démarrage, la synchronisation le valide par `lireCoursStocke` et `verifierStructure` et le publie si son empreinte diffère de celle publiée ; le numéro de version reste interne à la base                                                                                                                                                                                                                                                                                                                                  | nouveau fichier de données + migration                                                                                                                     |
-| B19 | **Diffusion au catalogue**                                                                    | `LireCoursPublic` sert les 63 écrans `seance` verrouillés (titre, durée) et les 12 écrans `catalogue` en clair ; limitation 60 requêtes/min par adresse                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `LireCoursPublic.useCase.ts`, `FormationsCatalog.controller.ts`                                                                                            |
+| B18 | **Contenu V3**                                                                                | fichier de données typé unique `src/modules/formations/infrastructure/contenus/b2-01.cours.ts` (74 écrans, notes, questions, corrigés, banque, remédiations, médias) ; au démarrage, la synchronisation le valide par `lireCoursStocke` et `verifierStructure` et le publie si son empreinte diffère de celle publiée ; le numéro de version reste interne à la base                                                                                                                                                                                                                                                                                                                                  | nouveau fichier de données + migration                                                                                                                     |
+| B19 | **Diffusion au catalogue**                                                                    | `LireCoursPublic` sert les 62 écrans `seance` verrouillés (titre, durée) et les 12 écrans `catalogue` en clair ; limitation 60 requêtes/min par adresse                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `LireCoursPublic.useCase.ts`, `FormationsCatalog.controller.ts`                                                                                            |
 | B20 | **Garde « écran servi »**                                                                     | `domain/cours/EcranServi.ts` : `dernierEcranServi` (extrait de `LireSujet`), `assertEcranServi` → 409 `ECRAN_NON_SERVI` ; appliquée à toutes les écritures étudiantes (réponses, productions, tentatives, jalons, rappels, réponses libres, défis) ; `activitesLibres(cours)` liste les `activityId` admis par écran                                                                                                                                                                                                                                                                                                                                                                                  | nouveau fichier, tous les use cases d’écriture                                                                                                             |
 | B21 | **Pilotage par écran persisté**                                                               | colonnes `pilotage_ecrans jsonb` et `revision int` sur `formation_sessions` ; `ControlSessionChanges.pilotage` validé (écran du cours, brique compatible, étayage borné, phases monotones) ; `LiveSessionState.pilotage` et `revision` dans l’empreinte ; `SubmitAnswer` applique les phases                                                                                                                                                                                                                                                                                                                                                                                                          | `ControlSession.useCase.ts`, `ISessionStateCache.port.ts`, `SessionStateCache.service.ts`, `StreamSession.useCase.ts`, `FormationSession.entity.ts`        |
 | B22 | **Corrigés au déroulé**                                                                       | `EcranDeroule.corrigeEcran` (productions, défis, révélation) ; `questionsDeLEcran` couvre les nouvelles questions ; jamais dans le sujet ni le catalogue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `DeroulePresentateur.ts`                                                                                                                                   |
@@ -2971,12 +3005,12 @@ avec prix arrondis (21,34 × 0,97 = 20,6998) redonne 20,70. Les expressions `pri
 
 ### 5.7 Les graphiques
 
-| Graphique | Écran | Titre                                                      | Unité                             | Source                                                                          | Phrase de lecture                                                    |
-| --------- | ----- | ---------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| G1        | A2-04 | Marge brute d’Atelier Rivage, 2022–2025                    | € (axe 0 à 300 000)               | comptes de résultat 2022–2025 (fictifs)                                         | +6 000 € en trois ans, soit +2,1 % ; progression faible qui ralentit |
-| G2        | A3-05 | Inflation annuelle en France, 2019–2025                    | % par an                          | Insee, paru le 23 mars 2026                                                     | le taux culmine à 5,2 % en 2022, puis diminue                        |
-| G3        | A3-08 | Indice des prix à la consommation, base 100 = moyenne 2019 | indice (axe 95 à 120)             | calcul du cours à partir des taux Insee ; indice officiel rebasé 116,04 en 2025 | prix 2025 supérieurs de 16,0 % à 2019 ; désinflation, pas déflation  |
-| G4        | A4-04 | CA HT 2025 : choisir une représentation temporelle         | milliers d’euros HT (axe 0 à 180) | comptabilité analytique 2025 (fictive)                                          | marketplace au plus haut au 3e trimestre ; sur-mesure de 120 à 80 k€ |
+| Graphique | Écran | Titre                                                      | Unité                             | Source                                                                          | Phrase de lecture                                                       |
+| --------- | ----- | ---------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| G1        | A2-02 | Diapositive de Samir : marge brute et axe réglable         | € (préréglage « Axe à zéro »)     | service commercial d’Atelier Rivage (fictif)                                    | +6 000 € en trois ans, soit +2,1 % (lu aux notes de A2-03-CORRECTION-2) |
+| G2        | A3-05 | Inflation annuelle en France, 2019–2025                    | % par an                          | Insee, paru le 23 mars 2026                                                     | le taux culmine à 5,2 % en 2022, puis diminue                           |
+| G3        | A3-08 | Indice des prix à la consommation, base 100 = moyenne 2019 | indice (axe 95 à 120)             | calcul du cours à partir des taux Insee ; indice officiel rebasé 116,04 en 2025 | prix 2025 supérieurs de 16,0 % à 2019 ; désinflation, pas déflation     |
+| G4        | A4-04 | CA HT 2025 : choisir une représentation temporelle         | milliers d’euros HT (axe 0 à 180) | comptabilité analytique 2025 (fictive)                                          | marketplace au plus haut au 3e trimestre ; sur-mesure de 120 à 80 k€    |
 
 Complémentaires : A3-03 (prix du sac, avec titre, unité, source et lecture) ; A1-09 (pièce trompeuse à
 auditer, volontairement non conforme) ; A2-02 et A5-04 (graphiques manipulables `fp-plot`) ; A5-05
@@ -3019,8 +3053,8 @@ arrondies au millionième sauf mention.
 | V25 | écarts de marge 2025 − 2024 : sur-mesure ; entretien ; marketplace                                                             | −30960 ; 5600 ; 26560                                                                 | A5-06 Q2, A5-08               |
 | V26 | 4 200 ÷ 5 000 ; (4 200 − 2 900) ÷ 2 900 ; 1 300 ÷ 4 200                                                                        | 0,84 ; 0,448276 ; 0,309524                                                            | A2-03 Q3, Q5                  |
 | V27 | paniers : 523 000 ÷ 4 200 ; 627 000 ÷ 800 ; 357 000 ÷ 2 900                                                                    | 124,52381 ; 783,75 ; 123,103448                                                       | § 5.2                         |
-| V28 | (291 000 − 285 000) ÷ 285 000                                                                                                  | 0,021053                                                                              | A2-03 Q1, A2-04               |
-| V29 | hausses annuelles de la marge 2023, 2024, 2025                                                                                 | 0,010526 ; 0,00625 ; 0,004141                                                         | A2-04                         |
+| V28 | (291 000 − 285 000) ÷ 285 000                                                                                                  | 0,021053                                                                              | A2-03 Q1, A2-03-CORRECTION-2  |
+| V29 | hausses annuelles de la marge 2023, 2024, 2025                                                                                 | 0,010526 ; 0,00625 ; 0,004141                                                         | annexe (écran A2-04 retiré)   |
 | V30 | hauteurs des barres de A1-09 en % de l’échelle : (v − 284 000) ÷ 8 000 × 100 ; rapport 2025 ÷ 2022                             | 12,5 ; 50 ; 72,5 ; 87,5 ; 7                                                           | A1-09, A1-10                  |
 | V31 | formule de A2-02 pour x = 0 ; 0,5 ; 1 ; 2 ; 3                                                                                  | 285000 ; 286500 ; 288000 ; 289800 ; 291000                                            | A2-02                         |
 | V32 | A2-03 Q2 : solution (%) ; pièges ÷ 100 et base inversée                                                                        | 45,478261 ; 0,454783 ; 219,885277                                                     | A2-03                         |
@@ -3075,7 +3109,7 @@ arrondies au millionième sauf mention.
 | V81 | R12 : 1,06^(1/12) − 1 ; 6 ÷ 12 ; 6 × 12                                                                                        | 0,004868 ; 0,5 ; 72                                                                   | A6-05                         |
 | V82 | R13 : 1 − 1 ÷ 1,2 ; 1 ÷ 1,2                                                                                                    | 0,166667 ; 0,833333                                                                   | A6-05, A6-06                  |
 | V83 | contrastes WCAG sur #FBF7EF : #1F2A30 ; #0F6E6E ; #1F5FBF ; #B4400B ; #B3261E ; #1E6B3A ; #8A5E00                              | 13,72 ; 5,65 ; 5,7 ; 5,34 ; 6,12 ; 6,1 ; 5,34                                         | F13, annexe A                 |
-| V84 | A2-04 : 291 000 − 285 000                                                                                                      | 6000                                                                                  | A2-04                         |
+| V84 | A2-03-CORRECTION-2 (notes) : 291 000 − 285 000                                                                                 | 6000                                                                                  | A2-03-CORRECTION-2            |
 | V85 | TCD du 3e trimestre : marges des trois canaux ; total du CA ; total des marges ; champ calculé (%) ; moyenne des taux (%)      | 36720 ; 13720 ; 26720 ; 318000 ; 77160 ; 24,264151 ; 26,666667                        | A5-05, A5-06 Q5               |
 
 ### 5.9 Concepts, confusions et remédiations
@@ -3313,7 +3347,7 @@ fiches A3-01 et A5-02.
    qui n’affichent que l’énoncé et les options ; les énoncés sont des situations, jamais des rappels de
    cours.
 4. **Correction après question.** Tout visuel qui porte la réponse d’une question est placé après
-   l’écran de cette question (G1 après l’atelier 1, A3-03 après le vote A3-01, G3 après l’atelier 2, G4
+   l’écran de cette question (la correction de Q1 après l’atelier 1, A3-03 après le vote A3-01, G3 après l’atelier 2, G4
    après l’atelier 3, A5-03 après le vote A5-02) ; tout exemple travaillé qui enseigne une méthode
    utilise d’autres nombres que les questions qui évaluent cette méthode (§ 2.4) ; seules les phrases
    de synthèse du fil rouge reprennent ses chiffres clés, pour évaluer la formulation.
@@ -3421,9 +3455,9 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 | #     | Critère                                                                                                                                                                                                                                                                                   | Mesure                                                                                                                                |
 | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | AC-01 | `verifierStructure(B2 v3)` ne renvoie aucune violation, sans dérogation                                                                                                                                                                                                                   | test unitaire back                                                                                                                    |
-| AC-02 | 75 écrans ; identifiants uniques conformes à `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$` ; ordre du § 3.1 ; chaque écran V3 porte un titre public (≤ 120 caractères) et une diffusion explicite                                                                                                     | test du fichier de données                                                                                                            |
-| AC-03 | somme des durées = 213 = durée annoncée ; par acte 32, 36, 36, 38, 43, 28                                                                                                                                                                                                                 | test                                                                                                                                  |
-| AC-04 | exposition continue ≤ 6 min (attendu 6) ; ratio interactif ÷ exposition ≥ 0,30 (attendu 142 ÷ 71 = 2,00)                                                                                                                                                                                  | règle de structure                                                                                                                    |
+| AC-02 | 74 écrans ; identifiants uniques conformes à `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$` ; ordre du § 3.1 ; chaque écran V3 porte un titre public (≤ 120 caractères) et une diffusion explicite                                                                                                     | test du fichier de données                                                                                                            |
+| AC-03 | somme des durées = 211 = durée annoncée ; par acte 32, 34, 36, 38, 43, 28                                                                                                                                                                                                                 | test                                                                                                                                  |
+| AC-04 | exposition continue ≤ 6 min (attendu 6) ; ratio interactif ÷ exposition ≥ 0,30 (attendu 142 ÷ 69 = 2,06)                                                                                                                                                                                  | règle de structure                                                                                                                    |
 | AC-05 | toute question de type vote, numérique ou classement notée appartient à un temps noté (écran et ses corrections) de 15 min au plus, dans une suite d’atelier d’au moins 8 min, hors `fp-recall` d’ouverture et `fp-exit` de clôture ; attendu : 13 écrans notés en 9 suites de 8 à 14 min | règles `atelier-questions-fermees`, `correction-apres-source`                                                                         |
 | AC-06 | `notes` est facultative : vide, ou des puces `• ` jointes par `\n` sans aucune ligne vide ; attendu : 74 notes, A1-07 sans note                                                                                                                                                           | règle `notes-formateur`, contrainte `chk_formation_screen_notes_absentes_ou_renseignees` (`"notes" = '' OR "notes" ~ '[^[:space:]]'`) |
 | AC-07 | 31 questions notées (19 votes, 7 numériques, 3 classements, 1 feuille, 1 tableau), 4 énigmes et 13 rappels non notés ; identifiants de question uniques ≤ 60 caractères                                                                                                                   | test                                                                                                                                  |
@@ -3460,9 +3494,9 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AC-24 | chaque écran se rend en `hand`, `board` et `stage` sans `fp-block-error` ni « écran inconnu »                                                                                                                                              | test de montage paramétré sur les 75 écrans, à partir de l’instantané JSON du sujet et du déroulé V3 produit par le test back (avec son empreinte) |
 | AC-25 | les briques reçoivent `data-cours-role` : le solutionnaire de `fp-escape` et la carte de maîtrise de `fp-spaced` n’apparaissent qu’au pupitre                                                                                              | test                                                                                                                                               |
-| AC-26 | G1 à G4 affichent titre, unité, source, phrase de lecture et une échelle graduée (courbes comprises) ; barres proportionnelles depuis 0                                                                                                    | test de rendu et instantanés visuels                                                                                                               |
+| AC-26 | G2 à G4 affichent titre, unité, source, phrase de lecture et une échelle graduée (courbes comprises) ; barres proportionnelles depuis 0                                                                                                    | test de rendu et instantanés visuels                                                                                                               |
 | AC-27 | la projection passe en plein écran et reste dans la palette crème et ivoire                                                                                                                                                                | test existant étendu                                                                                                                               |
-| AC-28 | page publique : les 12 écrans `catalogue` sont rendus (v2 et runtime en aperçu), les 63 autres verrouillés avec titre et durée ; aucune requête vers `/formations/sessions` ; le HTML rendu côté serveur contient le titre de chaque écran | test de la page                                                                                                                                    |
+| AC-28 | page publique : les 12 écrans `catalogue` sont rendus (v2 et runtime en aperçu), les 62 autres verrouillés avec titre et durée ; aucune requête vers `/formations/sessions` ; le HTML rendu côté serveur contient le titre de chaque écran | test de la page                                                                                                                                    |
 | AC-29 | chaque graphique a une `description` textuelle et un bouton « Voir les données »                                                                                                                                                           | test de rendu                                                                                                                                      |
 | AC-30 | aucune information portée par la seule couleur (étiquettes directes, marqueurs) ; contrastes ≥ 3:1 (traits) et ≥ 4,5:1 (textes), mesurés                                                                                                   | test automatisé des couleurs                                                                                                                       |
 | AC-31 | tri de cartes au clavier (sélection puis catégorie) et en un seul pointeur                                                                                                                                                                 | test                                                                                                                                               |
@@ -4850,7 +4884,7 @@ axe-core et consoles.
 1. **Publication réversible** : F ouvre S2 → v2 (la V3 est insérée, non publiée) ; le catalogue sert
    la v2 ; F demande `version: 3` → 403 ; A ouvre une séance de contrôle en V3 → 201 ; A bascule la
    publication (`PUT catalogue/…/publication`, `{ version: 3 }`) → le catalogue sert la V3 avec
-   `version` et `publieLe`, 12 écrans en clair et 63 verrouillés, sans aucune clef interdite
+   `version` et `publieLe`, 12 écrans en clair et 62 verrouillés, sans aucune clef interdite
    (parcours récursif, AC-13) ; S2 sert toujours la v2 (sujet 200). F ouvre S3 (V3, capacité 4) :
    toute la suite se joue sur S3.
 2. **Page publique** : `/formations/b2-01-traitement-information-chiffree` rendue côté serveur
@@ -4946,7 +4980,7 @@ Le scénario automatisé ne remplace pas une séance jouée dans de vrais naviga
 - **Matériel** : un poste formateur (Chrome) relié à un vidéoprojecteur en 1 280 × 720 et à un écran
   1 920 × 1 080 ; trois postes étudiants (Chrome, Firefox et Safari sur macOS) ; un poste sur Wi-Fi
   bridé (profil « Fast 3G ») ; un lecteur d’écran (NVDA avec Firefox, VoiceOver avec Safari).
-- **Parcours** : les 75 écrans en rythme piloté, chaque activité jouée sur chaque poste (une bonne
+- **Parcours** : les 74 écrans en rythme piloté, chaque activité jouée sur chaque poste (une bonne
   réponse, un piège, un « je ne sais pas ») ; un passage en rythme libre ; une coupure réseau ; un
   rechargement pendant la feuille et pendant le coffre ; deux onglets sur un même poste ; fermeture et
   réouverture du navigateur ; clôture.
@@ -4958,7 +4992,7 @@ Le scénario automatisé ne remplace pas une séance jouée dans de vrais naviga
 - **Mesure** : chaque acte est chronométré ; les écarts avec le § 2.1 sont consignés au rapport ; une
   modification de durée passe par une révision de ce document, jamais par une retouche du fichier de
   données seul.
-- **Livrable** : rapport de QA signé (navigateurs et versions, captures des 75 écrans en `hand`,
+- **Livrable** : rapport de QA signé (navigateurs et versions, captures des 74 écrans en `hand`,
   `board` et `stage`, défauts ouverts et leur correction), archivé avec les preuves du lot 6 ; la
   bascule n’a lieu qu’avec un rapport sans défaut bloquant.
 
@@ -5597,8 +5631,8 @@ Script : `verif-cours-b2-01.mjs` (Node.js 22 ou plus, sans dépendance), conserv
 avec les preuves de la conception ; il sort en code 1 à la première incohérence. Il lit **ce
 document** et contrôle :
 
-1. le tableau du § 3.1 : 75 écrans, rangs 1 à 75, identifiants uniques et conformes à
-   `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$`, somme 213, minutes par acte 32, 36, 36, 38, 43, 28 ; accord de
+1. le tableau du § 3.1 : 74 écrans, rangs 1 à 74, identifiants uniques et conformes à
+   `^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$`, somme 211, minutes par acte 32, 34, 36, 38, 43, 28 ; accord de
    chaque ligne avec l’en-tête de sa fiche (identifiant, durée, diffusion) ;
 2. les règles de structure adaptées du § 2.6 : exposition continue ≤ 6 min (jalons comptés comme
    exposition), ratio ≥ 0,30, ouverture `fp-recall` et clôture `fp-exit`, durées entières positives,
@@ -5619,11 +5653,11 @@ catalogue et une paraphrase du billet dans A2-05, il signale les 11 incohérence
 
 Mesures après les retours de QA (23 septembre 2026), relevées sur le fichier de données par
 `verifierStructure` et par les tests du fichier (`b2-01.cours.spec.ts` : tableau du § 3.1, titres
-publics, textes mot pour mot) : 75 écrans, 213 min (32, 36, 36, 38, 43, 28) ; exposition continue
-maximale 6 min ; 142 min interactives pour 71 min d’exposition (ratio 2,00) ; 13 écrans notés en
+publics, textes mot pour mot) : 74 écrans, 211 min (32, 34, 36, 38, 43, 28) ; exposition continue
+maximale 6 min ; 142 min interactives pour 69 min d’exposition (ratio 2,06) ; 13 écrans notés en
 9 suites d’atelier de 8 à 14 min ; 18 écrans de correction, tous après leur exercice ; 12 écrans
-`catalogue` et 63 `seance` ; 29 questions fermées notées ; 74 notes en puces, A1-07 sans note ;
-aucune violation des 14 règles.
+`catalogue` et 62 `seance` ; 29 questions fermées notées ; 73 notes en puces, A1-07 sans note ;
+aucune violation des 16 règles.
 
 Sortie de la dernière exécution du script (19 septembre 2026), sur la version à 52 écrans, avant
 les retours de QA :

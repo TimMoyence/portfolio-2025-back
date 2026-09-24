@@ -2,6 +2,7 @@ import {
   buildCorrectionDeReponses,
   buildCorrectionDExemple,
   buildEcranDeBrique,
+  buildEcranDeTableau,
   buildProprietesStockees,
   NOTES_DU_FORMATEUR,
 } from '../../../../../test/factories/ecrans-stockes.factory';
@@ -34,7 +35,7 @@ const base = buildCoursConforme();
 const [ouverture, citation, atelier, cloture] = base.ecrans;
 
 describe('verifierStructure', () => {
-  it('expose les quinze regles de structure dans l ordre applique aux violations', () => {
+  it('expose les seize regles de structure dans l ordre applique aux violations', () => {
     expect(REGLES_STRUCTURE).toEqual([
       'exposition-continue',
       'ratio-interaction',
@@ -43,6 +44,7 @@ describe('verifierStructure', () => {
       'duree-cours',
       'reference-inconnue',
       'renvoi-anterieur',
+      'cadrage-du-renvoi',
       'reference-circulaire',
       'correction-apres-source',
       'notes-formateur',
@@ -138,6 +140,76 @@ describe('verifierStructure', () => {
     expect(regles(renvoyer('B2-01-A9-99-ABSENT'))).not.toContain(
       'renvoi-anterieur',
     );
+  });
+
+  describe('R3 · cadrage de la diapositive commentée', () => {
+    const tableau = lireEcranStocke(
+      buildEcranDeTableau('B2-01-A1-02-TABLEAU', [
+        { indicateur: 'CA', valeur: '1 150 000 €' },
+        { indicateur: 'Taux de marge', valeur: '25,3 %' },
+      ]),
+    );
+    const cas = lireEcranStocke(
+      buildEcranDeBrique('fp-pro', {
+        screenId: 'B2-01-A1-03-MISSION',
+        dureeMinutes: 1,
+      }),
+    );
+    const cadrer = (
+      renvoi: string | undefined,
+      cadrageDuRenvoi: NonNullable<Ecran['cadrageDuRenvoi']>,
+    ): Cours =>
+      recomposer(base, [
+        ouverture,
+        tableau,
+        cas,
+        {
+          ...atelier,
+          ...(renvoi === undefined ? {} : { renvoi }),
+          cadrageDuRenvoi,
+        },
+        cloture,
+      ]);
+
+    it('accepte une part seule, des lignes du tableau renvoyé ou des champs du cas renvoyé', () => {
+      expect(regles(cadrer(tableau.id, { part: 30 }))).toEqual([]);
+      expect(
+        regles(cadrer(tableau.id, { part: 40, extrait: { lignes: [1] } })),
+      ).toEqual([]);
+      expect(
+        regles(
+          cadrer(cas.id, { part: 70, extrait: { champs: ['situation'] } }),
+        ),
+      ).toEqual([]);
+    });
+
+    it('refuse un cadrage sans renvoi', () => {
+      expect(regles(cadrer(undefined, { part: 60 }))).toEqual([
+        'cadrage-du-renvoi',
+      ]);
+    });
+
+    it('refuse une ligne absente du tableau ou des lignes sur un écran sans tableau', () => {
+      expect(
+        regles(cadrer(tableau.id, { part: 40, extrait: { lignes: [2] } })),
+      ).toEqual(['cadrage-du-renvoi']);
+      expect(
+        regles(cadrer(cas.id, { part: 40, extrait: { lignes: [0] } })),
+      ).toEqual(['cadrage-du-renvoi']);
+    });
+
+    it('refuse un champ que le cas renvoyé ne porte pas', () => {
+      expect(
+        regles(
+          cadrer(cas.id, { part: 70, extrait: { champs: ['consequence'] } }),
+        ),
+      ).toEqual(['cadrage-du-renvoi']);
+      expect(
+        regles(
+          cadrer(tableau.id, { part: 70, extrait: { champs: ['situation'] } }),
+        ),
+      ).toEqual(['cadrage-du-renvoi']);
+    });
   });
 
   it('leve une violation par une derogation justifiee et signale une derogation vide', () => {

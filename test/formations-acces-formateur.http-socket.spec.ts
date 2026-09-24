@@ -18,6 +18,7 @@ import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
+  serveurHttpDe,
 } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
@@ -64,8 +65,7 @@ describe('Acces formateur aux annotations, participants et reponses libres (e2e 
   const depots = createMockDepotsFormations();
   let app: INestApplication;
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(app);
   const route = (suffixe: string): string =>
     `/${PREFIXE_API}/formations/sessions/${SESSION_ID}/${suffixe}`;
   const appel = (
@@ -238,7 +238,7 @@ describe('Acces formateur aux annotations, participants et reponses libres (e2e 
         .post(route('free-responses'))
         .set(
           EN_TETE_JETON,
-          app.get(ParticipantTokenService).sign(SESSION_ID, PARTICIPANT_ID),
+          app.get(ParticipantTokenService).sign(SESSION_ID, PARTICIPANT_ID, 0),
         )
         .send(corps);
 

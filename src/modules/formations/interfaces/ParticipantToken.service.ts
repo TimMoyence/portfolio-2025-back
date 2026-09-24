@@ -1,28 +1,47 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import type { IParticipantsRepository } from '../domain/IParticipants.repository';
+import { PARTICIPANTS_REPOSITORY } from '../domain/token';
 
 const SECRET_LONGUEUR_MIN = 32;
 const SEPARATEUR = '.';
 const CONTEXTE = 'participant';
+const GENERATION_LISIBLE = /^(0|[1-9]\d{0,8})$/;
 
 export const EN_TETE_JETON = 'x-participant-token';
 
-function participantIdDuJeton(jeton: string): string | null {
-  const separateur = jeton.lastIndexOf(SEPARATEUR);
-  return separateur > 0 ? jeton.slice(0, separateur) : null;
+interface IdentiteSignee {
+  readonly participantId: string;
+  readonly generation: number;
 }
 
-export function participantIdVerifie(
-  sessionId: string,
-  jeton: string | undefined,
-): string | null {
-  const participantId = jeton ? participantIdDuJeton(jeton) : null;
-  if (!jeton || participantId === null) {
+interface JetonLu extends IdentiteSignee {
+  readonly empreinte: string;
+}
+
+function lireLeJeton(jeton: string | undefined): JetonLu | null {
+  const parties = jeton?.split(SEPARATEUR) ?? [];
+  if (parties.length !== 3) {
     return null;
   }
-  const presentee = jeton.slice(participantId.length + 1);
-  return correspond(presentee, empreinte(sessionId, participantId))
-    ? participantId
+  const [participantId, generation, empreinte] = parties;
+  if (participantId === '' || !GENERATION_LISIBLE.test(generation)) {
+    return null;
+  }
+  return { participantId, generation: Number(generation), empreinte };
+}
+
+export function identiteSignee(
+  sessionId: string,
+  jeton: string | undefined,
+): IdentiteSignee | null {
+  const lu = lireLeJeton(jeton);
+  if (lu === null) {
+    return null;
+  }
+  const attendue = empreinte(sessionId, lu.participantId, lu.generation);
+  return correspond(lu.empreinte, attendue)
+    ? { participantId: lu.participantId, generation: lu.generation }
     : null;
 }
 
@@ -32,9 +51,13 @@ function correspond(presentee: string, attendue: string): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-function empreinte(sessionId: string, participantId: string): string {
+function empreinte(
+  sessionId: string,
+  participantId: string,
+  generation: number,
+): string {
   return createHmac('sha256', secret())
-    .update(`${CONTEXTE}:${sessionId}:${participantId}`)
+    .update(`${CONTEXTE}:${sessionId}:${participantId}:${generation}`)
     .digest('hex');
 }
 
@@ -49,7 +72,8 @@ function secret(): string {
 }
 
 /**
- * Jeton de participant : HMAC-SHA256 sur `participant:<sessionId>:<participantId>`.
+ * Jeton de participant : HMAC-SHA256 sur
+ * `participant:<sessionId>:<participantId>:<generation>`.
  *
  * Le secret est celui de CloseSession.useCase.ts
  * (FORMATION_REVIEW_TOKEN_SECRET, valide au demarrage par
@@ -57,27 +81,49 @@ function secret(): string {
  * de contexte : aucun message signe ici ne peut etre rejoue comme lien de
  * revision, ni l inverse. RFC 2104 section 3 impose la longueur minimale
  * de cle, verifiee a chaque signature.
- *
- * Le `sessionId` fait partie du message signe : sans lui, le jeton emis
- * dans une session servirait a repondre dans une autre.
  */
 @Injectable()
 export class ParticipantTokenService {
-  sign(sessionId: string, participantId: string): string {
-    return `${participantId}${SEPARATEUR}${empreinte(sessionId, participantId)}`;
+  constructor(
+    @Inject(PARTICIPANTS_REPOSITORY)
+    private readonly participants: IParticipantsRepository,
+  ) {}
+
+  sign(sessionId: string, participantId: string, generation: number): string {
+    return [
+      participantId,
+      generation,
+      empreinte(sessionId, participantId, generation),
+    ].join(SEPARATEUR);
   }
 
-  verify(sessionId: string, jeton: string | undefined): string {
-    const lisible = jeton ? participantIdDuJeton(jeton) : null;
-    if (lisible === null) {
+  async verify(sessionId: string, jeton: string | undefined): Promise<string> {
+    return (await this.verifierIdentite(sessionId, jeton)).participantId;
+  }
+
+  async verifierIdentite(
+    sessionId: string,
+    jeton: string | undefined,
+  ): Promise<IdentiteSignee> {
+    if (lireLeJeton(jeton) === null) {
       throw new UnauthorizedException(
         'Jeton de participant absent ou illisible',
       );
     }
-    const participantId = participantIdVerifie(sessionId, jeton);
-    if (participantId === null) {
+    const identite = identiteSignee(sessionId, jeton);
+    if (identite === null) {
       throw new UnauthorizedException('Jeton de participant invalide');
     }
-    return participantId;
+    const participant = await this.participants.findById(
+      identite.participantId,
+    );
+    if (
+      participant === null ||
+      participant.sessionId !== sessionId ||
+      participant.generationDeJeton !== identite.generation
+    ) {
+      throw new UnauthorizedException('Jeton de participant revoque');
+    }
+    return identite;
   }
 }

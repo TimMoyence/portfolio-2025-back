@@ -12,7 +12,8 @@ import {
 import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
-  PREFIXE_API,
+  routeFormations,
+  serveurHttpDe,
 } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
@@ -56,11 +57,9 @@ describeDb('Synchronisation du cours publié (db integration)', () => {
   let contexte: ContexteFormations;
   let app: INestApplication;
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(app);
 
-  const route = (chemin: string): string =>
-    `/${PREFIXE_API}/formations${chemin}`;
+  const route = routeFormations;
 
   const versionsEnBase = async (): Promise<LigneDeVersion[]> =>
     await contexte.dataSource.query(

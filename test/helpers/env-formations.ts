@@ -16,3 +16,18 @@ export function installerEnvFormations(env: EnvFormations): void {
     delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
   });
 }
+
+export function installerSecretDeJalons(
+  secret = 'secret-de-test-des-jalons-assez-long-1234',
+): void {
+  let secretInitial: string | undefined;
+
+  beforeAll(() => {
+    secretInitial = process.env.FORMATIONS_PULSE_SECRET;
+    process.env.FORMATIONS_PULSE_SECRET = secret;
+  });
+
+  afterAll(() => {
+    process.env.FORMATIONS_PULSE_SECRET = secretInitial;
+  });
+}
