@@ -15,8 +15,32 @@ describe('contrat visuel du catalogue', () => {
     },
   );
 
-  it('L4 · couvre chacun des quinze rendus du deck, correction de tri comprise', () => {
-    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(15);
+  it('L4 · couvre chacun des seize rendus du deck, corrections de tri et de réponses comprises', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(16);
+  });
+
+  it('refuse une correction de réponses sans explication', () => {
+    expect(() =>
+      parseVisualPresentation({
+        renderer: 'answer-review',
+        props: {
+          ...PRESENTATIONS_VISUELLES_VALIDES['answer-review'],
+          explications: [],
+        },
+      }),
+    ).toThrow();
+  });
+
+  it('refuse une correction de réponses sans écran source', () => {
+    expect(() =>
+      parseVisualPresentation({
+        renderer: 'answer-review',
+        props: {
+          ...PRESENTATIONS_VISUELLES_VALIDES['answer-review'],
+          source: undefined,
+        },
+      }),
+    ).toThrow();
   });
 
   it('L4 · refuse une carte corrigée rangée dans une catégorie absente', () => {

@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { assertEcranServi } from '../domain/cours/EcranServi';
+import {
+  assertCorrectionNonProjetee,
+  assertEcranServi,
+} from '../domain/cours/EcranServi';
 import {
   corrigerEnigme,
   ecranDEnigmes,
@@ -8,6 +11,7 @@ import {
 } from '../domain/cours/Enigmes';
 import type { ProgressionDEnigme } from '../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   AnswerAlreadySubmittedError,
   CoursInconnuError,
@@ -88,6 +92,8 @@ export class TenterEnigmeUseCase {
       throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
     }
     assertEcranServi(session, cible.rang, cible.ecran.id, cours.ecrans.length);
+    assertPhaseOuverte(session.pilotageEcrans, { ecranId: cible.ecran.id });
+    assertCorrectionNonProjetee(session, cours, cible.ecran.id);
 
     const visee = enigmeVisee(cible, command.enigmeId);
     if (visee === null) {

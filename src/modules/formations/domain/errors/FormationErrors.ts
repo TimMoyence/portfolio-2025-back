@@ -40,19 +40,11 @@ export class ParticipantNotFoundError extends ResourceNotFoundError {
   }
 }
 
-export class FormationGroupNotFoundError extends ResourceNotFoundError {
-  constructor(groupId: string) {
-    super(`Groupe introuvable dans cette séance : ${groupId}`);
-  }
-}
+export class ReponseIntrouvableError extends ResourceNotFoundError {
+  readonly code = 'REPONSE_INTROUVABLE';
 
-export class FormationGroupNameTakenError extends ResourceConflictError {
-  readonly code = 'NOM_DE_GROUPE_DEJA_PRIS';
-
-  constructor(name: string) {
-    super(
-      `Le groupe « ${name} » existe déjà dans cette séance : choisissez un autre nom.`,
-    );
+  constructor(questionId: string) {
+    super(`Aucune production à reprendre pour la question ${questionId}`);
   }
 }
 
@@ -110,6 +102,16 @@ export class AnswerAlreadySubmittedError extends ResourceConflictError {
   constructor(questionId: string) {
     super(
       `Votre réponse à la question ${questionId} est déjà enregistrée : passez à la suivante.`,
+    );
+  }
+}
+
+export class ReprisesEpuiseesError extends ResourceConflictError {
+  readonly code = 'REPRISES_EPUISEES';
+
+  constructor(questionId: string, soumissionsMax: number) {
+    super(
+      `Votre production ${questionId} a déjà été envoyée ${soumissionsMax} fois : attendez la correction.`,
     );
   }
 }

@@ -60,11 +60,11 @@ export class FormationsAnnotationsController {
   @PilotageDeSeance()
   @ApiOperation({
     summary:
-      'Enregistre l annotation d un écran et d un groupe, la dernière écriture remplace la précédente',
+      'Enregistre l annotation d un écran, la dernière écriture remplace la précédente',
   })
   @ApiCreatedResponse({ type: TeacherAnnotationResponseDto })
   @ApiBadRequestResponse({
-    description: 'Groupe ou note vide une fois les blancs retirés',
+    description: 'Note vide une fois les blancs retirés',
   })
   async saveAnnotation(
     @Param('id', ParseUUIDPipe) id: string,
@@ -73,7 +73,6 @@ export class FormationsAnnotationsController {
   ): Promise<TeacherAnnotationRecord> {
     return this.annotations.save(id, request.user!.sub, {
       screenId: dto.screenId,
-      groupName: dto.groupName,
       note: dto.note,
     });
   }

@@ -299,6 +299,30 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
     ],
     "type": "object",
   },
+  "CorrigeReflexionPresentateurResponseDto": {
+    "properties": {
+      "attendu": {
+        "example": "Un montant et un taux, sur deux dates.",
+        "type": "string",
+      },
+      "suite": {
+        "example": "Nommez toujours le dénominateur.",
+        "type": "string",
+      },
+      "type": {
+        "enum": [
+          "reflexion",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "type",
+      "attendu",
+      "suite",
+    ],
+    "type": "object",
+  },
   "CorrigeRevelationPresentateurResponseDto": {
     "properties": {
       "lignes": {
@@ -530,7 +554,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
   "EcranDerouleResponseDto": {
     "properties": {
       "corrigeEcran": {
-        "description": "Corrige de production, de defi ou de revelation, jamais servi au sujet ni au catalogue",
+        "description": "Corrige de production, de defi, de revelation ou de reflexion ; servi au sujet seulement une fois l ecran revele, jamais au catalogue",
         "nullable": true,
         "oneOf": [
           {
@@ -550,6 +574,9 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
           },
           {
             "$ref": "#/components/schemas/CorrigeRevelationPresentateurResponseDto",
+          },
+          {
+            "$ref": "#/components/schemas/CorrigeReflexionPresentateurResponseDto",
           },
         ],
       },
@@ -989,6 +1016,10 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "minimum": 0,
         "type": "number",
       },
+      "optionsAffichees": {
+        "description": "Affichage immediat des options d un rappel, sans attendre la fin du decompte, jamais retire",
+        "type": "boolean",
+      },
       "phase": {
         "description": "Phase d un vote a question jumelle, jamais ramenee en arriere",
         "enum": [
@@ -1009,6 +1040,10 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
           "taux": -12.5,
         },
         "type": "object",
+      },
+      "resultatsProjetes": {
+        "description": "Projection a la scene des resultats anonymes agreges de cet ecran",
+        "type": "boolean",
       },
       "revele": {
         "description": "Revelation des pistes fausses d un defi, jamais retiree",

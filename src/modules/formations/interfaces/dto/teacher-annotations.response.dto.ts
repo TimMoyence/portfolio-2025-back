@@ -13,9 +13,6 @@ export class TeacherAnnotationResponseDto {
   @ApiProperty({ example: 'B2-01-S11-REFLECTION' })
   screenId: string;
 
-  @ApiProperty({ example: 'Classe entière' })
-  groupName: string;
-
   @ApiProperty({ example: 'Faire expliciter la base de comparaison.' })
   note: string;
 
@@ -26,7 +23,7 @@ export class TeacherAnnotationResponseDto {
 export class TeacherAnnotationsResponseDto {
   @ApiProperty({
     type: [TeacherAnnotationResponseDto],
-    description: 'Annotations triées par écran puis par groupe',
+    description: 'Annotations triées par écran',
   })
   annotations: TeacherAnnotationResponseDto[];
 }

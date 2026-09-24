@@ -10,10 +10,6 @@ import type {
   IIncidentsRepository,
   IncidentInput,
 } from '../../src/modules/formations/domain/IIncidents.repository';
-import type {
-  FormationGroupRecord,
-  IFormationGroupsRepository,
-} from '../../src/modules/formations/domain/IFormationGroups.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
 import type {
   FreeResponseRecord,
@@ -373,6 +369,7 @@ export function createMockAnswersRepo(): jest.Mocked<IAnswersRepository> {
         Promise.resolve(buildAnswerRecord(input)),
       ),
     existsFor: jest.fn().mockResolvedValue(false),
+    remplacer: jest.fn().mockResolvedValue(true),
     listBySession: jest.fn().mockResolvedValue([buildAnswerRecord()]),
     tallyBySession: jest.fn().mockResolvedValue([]),
   };
@@ -452,7 +449,6 @@ export function buildTeacherAnnotationRecord(
     sessionId: 'session-uuid',
     teacherId: 'teacher-uuid',
     screenId: 'B2-01-S11-REFLECTION',
-    groupName: 'Classe entière',
     note: 'Faire expliciter la base de comparaison.',
     updatedAt: new Date('2026-09-11T08:25:00.000Z'),
     ...overrides,
@@ -469,36 +465,6 @@ export function createMockTeacherAnnotationsRepo(): jest.Mocked<ITeacherAnnotati
     listBySession: jest
       .fn()
       .mockResolvedValue([buildTeacherAnnotationRecord()]),
-  };
-}
-
-export function buildFormationGroupRecord(
-  overrides: Partial<FormationGroupRecord> = {},
-): FormationGroupRecord {
-  return {
-    id: 'group-uuid',
-    sessionId: 'session-uuid',
-    name: 'Groupe A',
-    createdAt: new Date('2026-09-11T08:15:00.000Z'),
-    updatedAt: new Date('2026-09-11T08:15:00.000Z'),
-    ...overrides,
-  };
-}
-
-export function createMockFormationGroupsRepo(): jest.Mocked<IFormationGroupsRepository> {
-  return {
-    create: jest
-      .fn()
-      .mockImplementation((sessionId: string, name: string) =>
-        Promise.resolve(buildFormationGroupRecord({ sessionId, name })),
-      ),
-    rename: jest
-      .fn()
-      .mockImplementation((sessionId: string, id: string, name: string) =>
-        Promise.resolve(buildFormationGroupRecord({ id, sessionId, name })),
-      ),
-    listBySession: jest.fn().mockResolvedValue([buildFormationGroupRecord()]),
-    assignParticipant: jest.fn().mockResolvedValue(undefined),
   };
 }
 
@@ -578,7 +544,6 @@ export function createMockDepotsFormations() {
     scores: createMockScoresRepo(),
     freeResponses: createMockFreeResponsesRepo(),
     annotations: createMockTeacherAnnotationsRepo(),
-    groups: createMockFormationGroupsRepo(),
     escape: createMockEscapeRepo(),
     pulses: createMockPulsesRepo(),
     rappels: createMockRappelsServisRepo(),

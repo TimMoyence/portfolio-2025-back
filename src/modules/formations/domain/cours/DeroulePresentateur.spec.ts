@@ -4,6 +4,7 @@ import {
   buildCoursDeBriques,
   buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
+import { PRESENTATIONS_VISUELLES_VALIDES } from '../../../../../test/factories/presentation-visuelle.factory';
 import { CONFUSIONS } from './banque/confusions';
 import { lireCoursStocke } from './CoursStocke';
 import { deroulePresentateur, SEUIL_PAR_DEFAUT } from './DeroulePresentateur';
@@ -143,6 +144,34 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
       titre: 'Pourquoi le prix ne revient pas à son point de départ',
     });
     expect(ecran('fp-quote').corrigeEcran).toBeNull();
+  });
+
+  it('T9 · donne au formateur le raisonnement attendu d une réflexion, pour le révéler', () => {
+    const reflexion = buildEcranDeBrique('fp-story', {
+      screenId: 'B2-01-A1-08-QUESTION-DE-GESTION',
+      proprietes: {
+        presentation: {
+          version: 2,
+          screenId: 'B2-01-A1-08-QUESTION-DE-GESTION',
+          renderer: 'reflection',
+          props: PRESENTATIONS_VISUELLES_VALIDES.reflection,
+        },
+        correction: {
+          expected: 'Un montant et un taux, sur deux dates.',
+          nextAction: 'Nommez le dénominateur.',
+        },
+      },
+    });
+    const [servi] = deroulePresentateur(
+      lireCoursStocke(buildCoursDeBriques([reflexion])),
+      11,
+    ).ecrans;
+
+    expect(servi.corrigeEcran).toEqual({
+      type: 'reflexion',
+      attendu: 'Un montant et un taux, sur deux dates.',
+      suite: 'Nommez le dénominateur.',
+    });
   });
 
   it('liste chaque question de l écran avec son énoncé et ses options', () => {

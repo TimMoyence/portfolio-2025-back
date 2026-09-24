@@ -11,10 +11,9 @@ import {
 import { FormationSessionEntity } from './FormationSession.entity';
 
 @Entity({ name: 'formation_teacher_annotations' })
-@Unique('UQ_formation_teacher_annotations_session_screen_group', [
+@Unique('UQ_formation_teacher_annotations_session_screen', [
   'sessionId',
   'screenId',
-  'groupName',
 ])
 @Index('idx_formation_teacher_annotations_session_teacher', [
   'sessionId',
@@ -40,14 +39,6 @@ export class FormationTeacherAnnotationEntity {
 
   @Column({ name: 'screen_id', type: 'varchar', length: 120 })
   screenId: string;
-
-  @Column({
-    name: 'group_name',
-    type: 'varchar',
-    length: 120,
-    default: 'Classe entière',
-  })
-  groupName: string;
 
   @Column({ type: 'text' })
   note: string;

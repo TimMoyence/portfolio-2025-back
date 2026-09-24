@@ -12,6 +12,12 @@ import {
   createMockSessionsRepo,
   createMockSessionStateCache,
 } from '../../../../../test/factories/formation.factory';
+import {
+  buildCorrectionDeReponses,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
+} from '../../../../../test/factories/ecrans-stockes.factory';
+import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ControlSessionUseCase } from '../ControlSession.useCase';
 import {
   CoursInconnuError,
@@ -486,5 +492,93 @@ describe('ControlSessionUseCase', () => {
     );
     expect(sessions.update).not.toHaveBeenCalled();
     expect(cache.publish).not.toHaveBeenCalled();
+  });
+});
+
+describe('ControlSessionUseCase — révélation par l écran de correction (SEC-1)', () => {
+  const ATELIER = buildEcranDeBrique('questionnaire', {
+    screenId: 'B2-01-A2-03-ATELIER-1',
+  });
+  const COURS_CORRIGE = lireCoursStocke(
+    buildCoursDeBriques(
+      [
+        buildEcranDeBrique('fp-quote'),
+        ATELIER,
+        buildCorrectionDeReponses(ATELIER.screenId),
+      ],
+      { slug: COURS_SLUG },
+    ),
+  );
+  let sessions: ReturnType<typeof createMockSessionsRepo>;
+  let sut: ControlSessionUseCase;
+
+  beforeEach(() => {
+    sessions = createMockSessionsRepo();
+    sut = new ControlSessionUseCase(
+      sessions,
+      createMockSessionStateCache(),
+      creerCatalogueDeTest(COURS_CORRIGE),
+    );
+  });
+
+  it('révèle la source quand le pilote projette sa correction', async () => {
+    await sut.apply('session-uuid', TEACHER_ID, { ecran: 2 });
+
+    expect(sessions.update).toHaveBeenCalledWith(
+      'session-uuid',
+      {
+        ecranCourant: 2,
+        pilotageEcrans: { [ATELIER.screenId]: { revele: true } },
+      },
+      REVISION_LUE,
+    );
+  });
+
+  it('ne révèle rien tant que la correction n est pas atteinte', async () => {
+    await sut.apply('session-uuid', TEACHER_ID, { ecran: 1 });
+
+    expect(sessions.update).toHaveBeenCalledWith(
+      'session-uuid',
+      { ecranCourant: 1 },
+      REVISION_LUE,
+    );
+  });
+
+  it('révèle au passage en rythme pilote au-delà de la correction', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        modeRythme: 'libre',
+        ecranCourant: 2,
+        intervalleLibre: { premier: 0, dernier: 2 },
+      }),
+    );
+
+    await sut.apply('session-uuid', TEACHER_ID, { mode: 'pilote' });
+
+    expect(sessions.update).toHaveBeenCalledWith(
+      'session-uuid',
+      expect.objectContaining({
+        modeRythme: 'pilote',
+        pilotageEcrans: { [ATELIER.screenId]: { revele: true } },
+      }),
+      REVISION_LUE,
+    );
+  });
+
+  it('ne révèle rien en rythme libre', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        modeRythme: 'libre',
+        intervalleLibre: { premier: 0, dernier: 1 },
+      }),
+    );
+
+    await sut.apply('session-uuid', TEACHER_ID, { ecran: 2 });
+
+    expect(sessions.update).toHaveBeenCalledWith(
+      'session-uuid',
+      { ecranCourant: 2 },
+      REVISION_LUE,
+    );
   });
 });

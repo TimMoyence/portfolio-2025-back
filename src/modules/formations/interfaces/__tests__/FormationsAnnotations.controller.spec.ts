@@ -29,7 +29,6 @@ describe('FormationsAnnotationsController', () => {
   it('confie l ecriture au cas d usage au nom de l appelant', async () => {
     const annotation = {
       screenId: 'B2-01-S11-REFLECTION',
-      groupName: 'Classe entière',
       note: 'Relancer',
     };
     annotations.save.mockResolvedValue(buildTeacherAnnotationRecord());

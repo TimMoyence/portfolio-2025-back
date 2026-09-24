@@ -167,6 +167,63 @@ describeDb('Formations repositories (db integration)', () => {
     );
   });
 
+  it('rabat sur la classe entière les annotations saisies par groupe, sans en perdre le texte', async () => {
+    const seance = await ouvrirSeance('4812');
+    await contexte.dataSource.undoLastMigration({ transaction: 'all' });
+    await contexte.dataSource.query(
+      `INSERT INTO "formation_teacher_annotations" ("session_id", "teacher_id", "screen_id", "group_name", "note")
+       VALUES ($1, $2, 'B2-01-A2-03-CORRECTION-1', 'Classe entière', 'Relancer sur la base.'),
+              ($1, $2, 'B2-01-A2-03-CORRECTION-1', 'Groupe A', 'Revoir le 45,5 %.'),
+              ($1, $2, 'B2-01-A2-06-CORRECTION', 'Groupe B', 'Faire lire les points.')`,
+      [seance.id, FORMATEUR],
+    );
+
+    await contexte.dataSource.runMigrations({ transaction: 'all' });
+
+    await expect(
+      contexte.annotations.listBySession(seance.id, FORMATEUR),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        screenId: 'B2-01-A2-03-CORRECTION-1',
+        note: 'Relancer sur la base.\nGroupe A : Revoir le 45,5 %.',
+      }),
+      expect.objectContaining({
+        screenId: 'B2-01-A2-06-CORRECTION',
+        note: 'Groupe B : Faire lire les points.',
+      }),
+    ]);
+    const restes: Array<{ nom: string }> = await contexte.dataSource.query(
+      `SELECT table_name || '.' || column_name AS nom FROM information_schema.columns
+       WHERE table_schema = 'public' AND (table_name = 'formation_groups' OR column_name IN ('group_id', 'group_name'))`,
+    );
+    expect(restes).toEqual([]);
+    await expect(
+      contexte.annotations.save({
+        sessionId: seance.id,
+        teacherId: FORMATEUR,
+        screenId: 'B2-01-A2-06-CORRECTION',
+        note: 'Faire lire les points, puis les taux.',
+      }),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        note: 'Faire lire les points, puis les taux.',
+      }),
+    );
+    await expect(
+      contexte.annotations.listBySession(seance.id, FORMATEUR),
+    ).resolves.toHaveLength(2);
+  });
+
+  it('diffuse en séance un écran inséré sans diffusion explicite', async () => {
+    const [colonne]: Array<{ defaut: string | null }> =
+      await contexte.dataSource.query(
+        `SELECT column_default AS defaut FROM information_schema.columns
+         WHERE table_name = 'formation_screen_contents' AND column_name = 'diffusion'`,
+      );
+
+    expect(colonne.defaut).toBe(`'seance'::character varying`);
+  });
+
   it('refuse un ecran de cours sans note au lieu de lui donner une note vide par defaut', async () => {
     await contexte.rejouerMigration();
     const [colonne]: Array<{ defaut: string | null }> =
@@ -349,6 +406,31 @@ describeDb('Formations repositories (db integration)', () => {
     ).resolves.toHaveLength(1);
   });
 
+  it('SEC-4.1 · plafonne les reprises concurrentes d une production sans en perdre le compte', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    const premiere = await repondre(
+      seance.id,
+      participant.id,
+      'Q-CAP-03',
+      false,
+    );
+
+    const reprises = await Promise.all(
+      [true, true, true].map((correcte) =>
+        contexte.answers.remplacer({ ...premiere, correcte }, 3),
+      ),
+    );
+
+    expect(reprises.filter(Boolean)).toHaveLength(2);
+    const [{ soumissions }]: Array<{ soumissions: number }> =
+      await contexte.dataSource.query(
+        `SELECT "soumissions" FROM "formation_answers" WHERE "id" = $1`,
+        [premiere.id],
+      );
+    expect(soumissions).toBe(3);
+  });
+
   it('relit des nombres et non des chaines depuis la base', async () => {
     const seance = await ouvrirSeance('4271');
     const ecrit = await inscrire(seance.id, CLE_ETUDIANT, 1001);
@@ -529,7 +611,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(6);
+    expect(enBase).toHaveLength(5);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -556,7 +638,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(19);
+    expect(enBase).toHaveLength(17);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -600,7 +682,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(21);
+    expect(enBase).toHaveLength(19);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 

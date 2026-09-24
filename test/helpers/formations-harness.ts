@@ -31,7 +31,6 @@ import { LireDerouleUseCase } from '../../src/modules/formations/application/Lir
 import { LireSujetUseCase } from '../../src/modules/formations/application/LireSujet.useCase';
 import { ListFreeResponsesUseCase } from '../../src/modules/formations/application/ListFreeResponses.useCase';
 import { ListSessionParticipantsUseCase } from '../../src/modules/formations/application/ListSessionParticipants.useCase';
-import { ManageFormationGroupsUseCase } from '../../src/modules/formations/application/ManageFormationGroups.useCase';
 import { ManageTeacherAnnotationsUseCase } from '../../src/modules/formations/application/ManageTeacherAnnotations.useCase';
 import { OpenSessionUseCase } from '../../src/modules/formations/application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from '../../src/modules/formations/application/RecordIncidents.useCase';
@@ -48,7 +47,6 @@ import { LireEtatParticipantUseCase } from '../../src/modules/formations/applica
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
-import type { IFormationGroupsRepository } from '../../src/modules/formations/domain/IFormationGroups.repository';
 import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
 import type { IPulsesRepository } from '../../src/modules/formations/domain/IPulses.repository';
@@ -65,7 +63,6 @@ import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
-  FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
   FREE_RESPONSES_REPOSITORY,
   INCIDENTS_REPOSITORY,
@@ -84,7 +81,7 @@ import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleE
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsAnnotationsController } from '../../src/modules/formations/interfaces/FormationsAnnotations.controller';
 import { FormationsCatalogController } from '../../src/modules/formations/interfaces/FormationsCatalog.controller';
-import { FormationsGroupsController } from '../../src/modules/formations/interfaces/FormationsGroups.controller';
+import { FormationsParticipantsController } from '../../src/modules/formations/interfaces/FormationsParticipants.controller';
 import { FormationsPresenterController } from '../../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../../src/modules/formations/interfaces/FormationsStudent.controller';
 import {
@@ -157,7 +154,6 @@ export interface DepotsFormations {
   scores: IScoresRepository;
   freeResponses: IFreeResponsesRepository;
   annotations: ITeacherAnnotationsRepository;
-  groups: IFormationGroupsRepository;
   escape: IEscapeRepository;
   pulses: IPulsesRepository;
   rappels: IRappelsServisRepository;
@@ -166,7 +162,7 @@ export interface DepotsFormations {
 
 export const CONTROLEURS_FORMATIONS = [
   FormationsPresenterController,
-  FormationsGroupsController,
+  FormationsParticipantsController,
   FormationsAnnotationsController,
   FormationsStudentController,
   FormationsCatalogController,
@@ -199,7 +195,6 @@ export function fournisseursFormations(
     LireDerouleUseCase,
     LireCoursPublicUseCase,
     ManageTeacherAnnotationsUseCase,
-    ManageFormationGroupsUseCase,
     ListSessionParticipantsUseCase,
     ListFreeResponsesUseCase,
     SaveFreeResponseUseCase,
@@ -214,7 +209,6 @@ export function fournisseursFormations(
     { provide: SCORES_REPOSITORY, useValue: depots.scores },
     { provide: FREE_RESPONSES_REPOSITORY, useValue: depots.freeResponses },
     { provide: TEACHER_ANNOTATIONS_REPOSITORY, useValue: depots.annotations },
-    { provide: FORMATION_GROUPS_REPOSITORY, useValue: depots.groups },
     { provide: ESCAPE_REPOSITORY, useValue: depots.escape },
     { provide: PULSES_REPOSITORY, useValue: depots.pulses },
     { provide: RAPPELS_SERVIS_REPOSITORY, useValue: depots.rappels },

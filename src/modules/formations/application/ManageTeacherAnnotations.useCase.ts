@@ -14,7 +14,6 @@ import { seanceLisiblePar, seancePilotablePar } from './SessionAccess';
 
 export interface AnnotationFormateur {
   readonly screenId: string;
-  readonly groupName: string;
   readonly note: string;
 }
 
@@ -40,14 +39,12 @@ export class ManageTeacherAnnotationsUseCase {
     teacherId: string,
     annotation: AnnotationFormateur,
   ): Promise<TeacherAnnotationRecord> {
-    const groupName = texteRenseigne(annotation.groupName, 'Le groupe');
     const note = texteRenseigne(annotation.note, 'La note');
     await seancePilotablePar(this.sessions, sessionId, teacherId);
     return this.annotations.save({
       sessionId,
       teacherId,
       screenId: annotation.screenId,
-      groupName,
       note,
     });
   }

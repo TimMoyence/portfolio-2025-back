@@ -22,6 +22,10 @@ import { AmorcerPublicationsDeCours1789871600000 } from '../../src/migrations/17
 import { CreateFormationRappelsServis1789875476980 } from '../../src/migrations/1789875476980-CreateFormationRappelsServis';
 import { CleEtudianteDerivee1789974322913 } from '../../src/migrations/1789974322913-CleEtudianteDerivee';
 import { AddFormationCourseEmpreinte1790178630008 } from '../../src/migrations/1790178630008-AddFormationCourseEmpreinte';
+import { NotesFormateurFacultatives1790300000000 } from '../../src/migrations/1790300000000-NotesFormateurFacultatives';
+import { PlafondDesReprisesDeProduction1790400000000 } from '../../src/migrations/1790400000000-PlafondDesReprisesDeProduction';
+import { DiffusionSeanceParDefaut1790500000000 } from '../../src/migrations/1790500000000-DiffusionSeanceParDefaut';
+import { RetireLesGroupesDeSuivi1790600000000 } from '../../src/migrations/1790600000000-RetireLesGroupesDeSuivi';
 import {
   SynchroniserCoursUseCase,
   type IssueDeSynchronisation,
@@ -47,7 +51,6 @@ import { RappelsServisRepositoryTypeORM } from '../../src/modules/formations/inf
 import { FormationCourseContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
 import { FormationCoursePublicationEntity } from '../../src/modules/formations/infrastructure/entities/FormationCoursePublication.entity';
 import { FormationFreeResponseEntity } from '../../src/modules/formations/infrastructure/entities/FormationFreeResponse.entity';
-import { FormationGroupEntity } from '../../src/modules/formations/infrastructure/entities/FormationGroup.entity';
 import { FormationIncidentEntity } from '../../src/modules/formations/infrastructure/entities/FormationIncident.entity';
 import { FormationMasteryEntity } from '../../src/modules/formations/infrastructure/entities/FormationMastery.entity';
 import { FormationParticipantEntity } from '../../src/modules/formations/infrastructure/entities/FormationParticipant.entity';
@@ -55,7 +58,6 @@ import { FormationScoreEntity } from '../../src/modules/formations/infrastructur
 import { FormationScreenContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
 import { FormationSessionEntity } from '../../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { FormationTeacherAnnotationEntity } from '../../src/modules/formations/infrastructure/entities/FormationTeacherAnnotation.entity';
-import { FormationGroupsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/FormationGroups.repository.typeorm';
 import { FreeResponsesRepositoryTypeORM } from '../../src/modules/formations/infrastructure/FreeResponses.repository.typeorm';
 import { IncidentsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Incidents.repository.typeorm';
 import { MasteryRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Mastery.repository.typeorm';
@@ -71,7 +73,6 @@ export const FORMATION_ENTITIES = [
   FormationAnswerEntity,
   FormationIncidentEntity,
   FormationMasteryEntity,
-  FormationGroupEntity,
   FormationScoreEntity,
   FormationFreeResponseEntity,
   FormationTeacherAnnotationEntity,
@@ -108,6 +109,10 @@ const FORMATION_MIGRATIONS = [
   CreateFormationRappelsServis1789875476980,
   CleEtudianteDerivee1789974322913,
   AddFormationCourseEmpreinte1790178630008,
+  NotesFormateurFacultatives1790300000000,
+  PlafondDesReprisesDeProduction1790400000000,
+  DiffusionSeanceParDefaut1790500000000,
+  RetireLesGroupesDeSuivi1790600000000,
 ];
 
 export const TABLES_DE_SEANCE = [
@@ -116,7 +121,6 @@ export const TABLES_DE_SEANCE = [
   'formation_answers',
   'formation_incidents',
   'formation_mastery',
-  'formation_groups',
   'formation_scores',
   'formation_free_responses',
   'formation_teacher_annotations',
@@ -170,7 +174,6 @@ export interface ContexteFormations {
   incidents: IncidentsRepositoryTypeORM;
   mastery: MasteryRepositoryTypeORM;
   scores: ScoresRepositoryTypeORM;
-  groups: FormationGroupsRepositoryTypeORM;
   freeResponses: FreeResponsesRepositoryTypeORM;
   annotations: TeacherAnnotationsRepositoryTypeORM;
   escape: EscapeRepositoryTypeORM;
@@ -237,10 +240,6 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
     ),
     scores: new ScoresRepositoryTypeORM(
       dataSource.getRepository(FormationScoreEntity),
-    ),
-    groups: new FormationGroupsRepositoryTypeORM(
-      dataSource.getRepository(FormationGroupEntity),
-      dataSource.getRepository(FormationParticipantEntity),
     ),
     freeResponses: new FreeResponsesRepositoryTypeORM(
       dataSource.getRepository(FormationFreeResponseEntity),

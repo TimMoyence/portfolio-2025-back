@@ -7,11 +7,6 @@ import {
 } from '../src/modules/formations/domain/cours/CoursStocke';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
-import {
-  FormationGroupNameTakenError,
-  FormationGroupNotFoundError,
-  ParticipantNotFoundError,
-} from '../src/modules/formations/domain/errors/FormationErrors';
 import { FormationCourseContentEntity } from '../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
 import { FormationScreenContentEntity } from '../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
 import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
@@ -107,10 +102,14 @@ describeDb('catalogue B2 migré', () => {
     expect(
       ecrans.every((ecran) => Object.keys(ecran.proprietes).length > 0),
     ).toBe(true);
-    expect(ecrans.every((ecran) => ecran.notes.trim().length > 0)).toBe(true);
+    expect(
+      ecrans
+        .filter((ecran) => ecran.notes.trim().length === 0)
+        .map((ecran) => [ecran.screenId, ecran.notes]),
+    ).toEqual([['B2-01-A1-07-PLAN', '']]);
     expect(
       ecrans.find((ecran) => ecran.screenId === 'B2-01-A1-03-MISSION')?.notes,
-    ).toContain('Attendu :');
+    ).toMatch(/^• /);
     expect(
       ecrans.filter((ecran) => ecran.proprietes['interaction'] !== undefined),
     ).toHaveLength(0);
@@ -184,10 +183,10 @@ describeDb('catalogue B2 migré', () => {
       .save(nouvelle);
     await expect(
       dataSource.query(
-        `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes") VALUES ($1, 0, 'ECRAN-SANS-NOTE', 'fp-story', 1, '[]'::jsonb, '', '{}'::jsonb)`,
+        `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "brique", "duree_minutes", "concepts", "notes", "proprietes") VALUES ($1, 0, 'ECRAN-A-NOTE-BLANCHE', 'fp-story', 1, '[]'::jsonb, E'  \\n ', '{}'::jsonb)`,
         [publiee.id],
       ),
-    ).rejects.toThrow('chk_formation_screen_notes_not_blank');
+    ).rejects.toThrow('chk_formation_screen_notes_absentes_ou_renseignees');
     await dataSource.query(
       `INSERT INTO "formation_screen_contents" ("course_id", "position", "screen_id", "titre", "diffusion", "brique", "duree_minutes", "concepts", "notes", "proprietes")
        SELECT $1, "position", "screen_id", "screen_id", 'catalogue', "brique", "duree_minutes", "concepts", "notes", "proprietes"
@@ -261,10 +260,13 @@ describeDb('catalogue B2 migré', () => {
     const deroule = deroulePresentateur(cours, 0);
 
     expect(sujet.ecrans.every((ecran) => !('notes' in ecran))).toBe(true);
-    expect(deroule.ecrans.every((ecran) => ecran.notes.trim().length > 0)).toBe(
-      true,
+    const notes = deroule.ecrans.flatMap((ecran) =>
+      ecran.notes === '' ? [] : ecran.notes.split('\n'),
     );
-    expect(JSON.stringify(sujet)).not.toContain('Attendu :');
+    expect(notes.length).toBeGreaterThan(deroule.ecrans.length);
+    expect(
+      notes.filter((ligne) => JSON.stringify(sujet).includes(ligne.slice(2))),
+    ).toEqual([]);
     expect(JSON.stringify(sujet)).not.toContain('correctIndex');
     expect(JSON.stringify(sujet)).not.toContain('bonneReponse');
     expect(JSON.stringify(sujet)).not.toContain('explanation');
@@ -373,14 +375,13 @@ describeDb('catalogue B2 migré', () => {
     ]);
   });
 
-  it('synchronise les annotations formateur par écran et groupe', async () => {
+  it('synchronise les annotations formateur par écran', async () => {
     const { annotations } = contexte;
     const session = await ouvrirSeanceB2('9473');
     const annotation = {
       sessionId: session.id,
       teacherId: session.teacherId,
       screenId: 'B2-01-S11-REFLECTION',
-      groupName: 'Groupe A',
     };
     const [pupitre, scene] = await Promise.all([
       annotations.save({
@@ -400,7 +401,6 @@ describeDb('catalogue B2 migré', () => {
     ).resolves.toEqual([
       expect.objectContaining({
         screenId: 'B2-01-S11-REFLECTION',
-        groupName: 'Groupe A',
         note: 'Faire verbaliser la formule.',
       }),
     ]);
@@ -410,44 +410,6 @@ describeDb('catalogue B2 migré', () => {
         'b2222222-2222-4222-8222-222222222222',
       ),
     ).resolves.toEqual([]);
-  });
-
-  it('persiste les groupes et les affectations', async () => {
-    const { participants, groups } = contexte;
-    const session = await ouvrirSeanceB2('1582');
-    const participant = await inscrireParticipant(participants, {
-      sessionId: session.id,
-      studentKey: 'b3111111-1111-4111-8111-111111111111',
-      prenom: 'Grace',
-      nom: 'Hopper',
-      email: 'grace@example.test',
-      seed: 8,
-    });
-    const groupe = await groups.create(session.id, 'Groupe A');
-    await groups.assignParticipant(session.id, participant.id, groupe.id);
-    expect((await participants.findById(participant.id))?.groupId).toBe(
-      groupe.id,
-    );
-    await groups.rename(session.id, groupe.id, 'Groupe B');
-    expect((await groups.listBySession(session.id))[0]?.name).toBe('Groupe B');
-
-    const autre = await groups.create(session.id, 'Groupe C');
-    const inconnu = 'c9999999-9999-4999-8999-999999999999';
-    await expect(groups.create(session.id, 'Groupe B')).rejects.toBeInstanceOf(
-      FormationGroupNameTakenError,
-    );
-    await expect(
-      groups.rename(session.id, autre.id, 'Groupe B'),
-    ).rejects.toBeInstanceOf(FormationGroupNameTakenError);
-    await expect(
-      groups.rename(session.id, inconnu, 'Groupe D'),
-    ).rejects.toBeInstanceOf(FormationGroupNotFoundError);
-    await expect(
-      groups.assignParticipant(session.id, participant.id, inconnu),
-    ).rejects.toBeInstanceOf(FormationGroupNotFoundError);
-    await expect(
-      groups.assignParticipant(session.id, inconnu, groupe.id),
-    ).rejects.toBeInstanceOf(ParticipantNotFoundError);
   });
 
   it('persiste à la clôture la note et la complétion de chaque participant et les statistiques de la séance', async () => {

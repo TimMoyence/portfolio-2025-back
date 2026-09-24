@@ -27,6 +27,7 @@ import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursSto
 import type { DerouleCours } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import type { ICatalogueCours } from '../src/modules/formations/domain/cours/ICatalogueCours.port';
 import {
+  ReponseIntrouvableError,
   RevisionDeSeanceObsoleteError,
   SeanceCompleteError,
   SeedPoolExhaustedError,
@@ -58,7 +59,6 @@ import {
 import { buildCoursStocke } from './factories/cours-stocke.factory';
 import {
   createMockEscapeRepo,
-  createMockFormationGroupsRepo,
   createMockFormationMailer,
   createMockFreeResponsesRepo,
   createMockIncidentsRepo,
@@ -280,7 +280,6 @@ function creerParticipantsRepo(): IParticipantsRepository {
       const participant: ParticipantRecord = {
         ...identite,
         seed,
-        groupId: null,
         id: randomUUID(),
         rejointLe: new Date(),
         dernierPing: new Date(),
@@ -323,6 +322,7 @@ function creerParticipantsRepo(): IParticipantsRepository {
 
 function creerAnswersRepo(): IAnswersRepository {
   const reponses: AnswerRecord[] = [];
+  const soumissions = new Map<string, number>();
   return {
     create: (input) => {
       const reponse: AnswerRecord = {
@@ -334,6 +334,29 @@ function creerAnswersRepo(): IAnswersRepository {
       };
       reponses.push(reponse);
       return Promise.resolve(reponse);
+    },
+    remplacer: (input, soumissionsMax) => {
+      const rang = reponses.findIndex(
+        (reponse) =>
+          reponse.participantId === input.participantId &&
+          reponse.questionId === input.questionId,
+      );
+      if (rang < 0) {
+        return Promise.reject(new ReponseIntrouvableError(input.questionId));
+      }
+      const cle = `${input.participantId}:${input.questionId}`;
+      const dejaSoumises = soumissions.get(cle) ?? 1;
+      if (dejaSoumises >= soumissionsMax) {
+        return Promise.resolve(false);
+      }
+      soumissions.set(cle, dejaSoumises + 1);
+      reponses[rang] = {
+        ...reponses[rang],
+        ...input,
+        score: input.score ?? null,
+        details: input.details ?? null,
+      };
+      return Promise.resolve(true);
     },
     listerDuParticipant: (sessionId, participantId) =>
       Promise.resolve(
@@ -421,7 +444,6 @@ async function creerHarnais(
           scores,
           freeResponses: createMockFreeResponsesRepo(),
           annotations: createMockTeacherAnnotationsRepo(),
-          groups: createMockFormationGroupsRepo(),
           escape: createMockEscapeRepo(),
           pulses: createMockPulsesRepo(),
           rappels: createMockRappelsServisRepo(),

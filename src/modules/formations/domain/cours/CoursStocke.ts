@@ -26,7 +26,7 @@ import { auMoinsUn, concepts, confusion, media, texte } from './SchemasCommuns';
 
 const LONGUEUR_MAX_IDENTIFIANT_D_ECRAN = 120;
 const LONGUEUR_MAX_TITRE = 120;
-export const DIFFUSION_PAR_DEFAUT: Diffusion = 'catalogue';
+export const DIFFUSION_PAR_DEFAUT: Diffusion = 'seance';
 
 export class ContenuDeCoursInvalideError extends Error {
   constructor(slug: string, origine: string, detail: string) {
@@ -330,10 +330,10 @@ function seuilDe(seuil: number | undefined): { readonly seuil?: number } {
 function versEcranDeRecit(
   ecran: Extract<EcranStocke, { readonly brique: 'fp-story' }>,
 ): Ecran {
-  const { modalite, ...proprietes } = ecran.proprietes;
+  const { modalite, renvoi, ...proprietes } = ecran.proprietes;
   const { interaction, guide } = proprietes;
   return {
-    ...socleDe(ecran, { modalite }),
+    ...socleDe(ecran, { modalite, renvoi }),
     brique: ecran.brique,
     proprietes,
     question:
@@ -440,6 +440,9 @@ function versEcran(ecran: EcranStocke): Ecran {
         brique: ecran.brique,
         question: questionDeVote(ecran.proprietes.questions[0]),
         delaiMs: ecran.proprietes.delaiMs,
+        ...(ecran.proprietes.consigne === undefined
+          ? {}
+          : { consigne: ecran.proprietes.consigne }),
         ...seuilDe(ecran.proprietes.seuil),
       };
     case 'fp-exit':

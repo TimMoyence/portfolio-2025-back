@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
+import { LessThan, Repository } from 'typeorm';
+import {
+  AnswerAlreadySubmittedError,
+  ReponseIntrouvableError,
+} from '../domain/errors/FormationErrors';
 import type {
   AnswerRecord,
   CreateAnswerInput,
@@ -79,6 +82,35 @@ export class AnswersRepositoryTypeORM
       }
       throw error;
     }
+  }
+
+  async remplacer(
+    input: CreateAnswerInput,
+    soumissionsMax: number,
+  ): Promise<boolean> {
+    const resultat = await this.repo.update(
+      {
+        participantId: input.participantId,
+        questionId: input.questionId,
+        soumissions: LessThan(soumissionsMax),
+      },
+      {
+        valeur: input.valeur,
+        correcte: input.correcte,
+        misconception: input.misconception,
+        score: input.score ?? null,
+        details: input.details ?? null,
+        dureeMs: input.dureeMs,
+        soumissions: () => 'soumissions + 1',
+      },
+    );
+    if (resultat.affected === 1) {
+      return true;
+    }
+    if (await this.existsFor(input.participantId, input.questionId)) {
+      return false;
+    }
+    throw new ReponseIntrouvableError(input.questionId);
   }
 
   async existsFor(participantId: string, questionId: string): Promise<boolean> {

@@ -11,8 +11,15 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import {
+  buildCorrectionDeReponses,
+  buildCoursDeBriques,
+  buildEcranDeBrique,
+} from '../../../../../test/factories/ecrans-stockes.factory';
 import type { Cours, Ecran } from '../../domain/contrats/cours';
+import type { CoursPublic } from '../../domain/contrats/tirage';
 import { questionNumerique } from '../../domain/cours/Cours';
+import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { tirer } from '../../domain/cours/Tirage';
 import {
@@ -34,6 +41,18 @@ const PARTICIPANT = buildParticipantRecord({
   sessionId: SESSION.id,
   seed: SEED,
 });
+
+function sansCorrection(sujet: CoursPublic): CoursPublic {
+  return {
+    ...sujet,
+    ecrans: sujet.ecrans.map(
+      (ecran) =>
+        Object.fromEntries(
+          Object.entries(ecran).filter(([cle]) => cle !== 'correction'),
+        ) as CoursPublic['ecrans'][number],
+    ),
+  };
+}
 
 function coursAmbigu(): Cours {
   const question = questionNumerique({
@@ -152,7 +171,10 @@ describe('LireSujetUseCase', () => {
       buildSessionRecord({ ...SESSION, etat: 'terminee' }),
     );
 
-    await expect(demander()).resolves.toEqual(TIRAGE.sujet);
+    const sujet = await demander();
+
+    expect(sansCorrection(sujet)).toEqual(TIRAGE.sujet);
+    expect(sujet.ecrans[0].correction?.ecranId).toBe(sujet.ecrans[0].id);
   });
 
   it('refuse une session inconnue', async () => {
@@ -235,7 +257,9 @@ describe('LireSujetUseCase', () => {
         buildSessionRecord({ ...SESSION, etat: 'terminee', bareme: v2 }),
       );
 
-      await expect(demander()).resolves.toEqual(tirer(COURS, seed).sujet);
+      expect(sansCorrection(await demander())).toEqual(
+        tirer(COURS, seed).sujet,
+      );
     });
 
     it('refuse quand une solution commune a changé', async () => {
@@ -257,5 +281,188 @@ describe('LireSujetUseCase', () => {
 
       await expect(demander()).rejects.toBeInstanceOf(CoursModifieError);
     });
+  });
+});
+
+describe('LireSujetUseCase — écrans de correction (SEC-1)', () => {
+  const ATELIER = buildEcranDeBrique('questionnaire', {
+    screenId: 'B2-01-A2-03-ATELIER-1',
+  });
+  const CORRIGE = lireCoursStocke(
+    buildCoursDeBriques([ATELIER, buildCorrectionDeReponses(ATELIER.screenId)]),
+  );
+  const tirage = tirer(CORRIGE, SEED);
+  const session = (diffusion: Partial<ReturnType<typeof buildSessionRecord>>) =>
+    buildSessionRecord({
+      courseSlug: CORRIGE.slug,
+      bareme: buildBareme({
+        tirages: [{ seed: SEED, solutions: tirage.solutions }],
+      }),
+      ...diffusion,
+    });
+  let sessions: ReturnType<typeof createMockSessionsRepo>;
+  let sut: LireSujetUseCase;
+
+  const correctionServie = async () => {
+    const sujet = await sut.execute({
+      sessionId: SESSION.id,
+      participantId: PARTICIPANT.id,
+    });
+    return sujet.ecrans[1];
+  };
+
+  beforeEach(() => {
+    sessions = createMockSessionsRepo();
+    const participants = createMockParticipantsRepo();
+    participants.findById.mockResolvedValue(PARTICIPANT);
+    sut = new LireSujetUseCase(
+      sessions,
+      participants,
+      creerCatalogueDeTest(CORRIGE),
+    );
+  });
+
+  it('verrouille en rythme libre une correction dont la source n est pas révélée', async () => {
+    sessions.findById.mockResolvedValue(
+      session({ modeRythme: 'libre', intervalleLibre: null }),
+    );
+
+    await expect(correctionServie()).resolves.toEqual({
+      id: `${ATELIER.screenId}-CORRECTION`,
+      type: 'ecran-verrouille',
+      titre: 'Écran fp-story',
+      duree: 1,
+      interactif: false,
+      donnees: {},
+      ecranCorrige: ATELIER.screenId,
+    });
+  });
+
+  it('sert la correction et les réponses du tirage une fois la source révélée', async () => {
+    sessions.findById.mockResolvedValue(
+      session({
+        ecranCourant: 1,
+        pilotageEcrans: { [ATELIER.screenId]: { revele: true } },
+      }),
+    );
+
+    const servi = await correctionServie();
+
+    expect(servi.type).toBe('fp-story');
+    expect(servi.correction).toMatchObject({
+      ecranId: ATELIER.screenId,
+      questions: [
+        {
+          questionId: 'b2-01-a2-evolution-marge',
+          optionId: tirage.solutions['b2-01-a2-evolution-marge'].valeur,
+        },
+        { questionId: 'b2-01-a2-part-marketplace', optionId: null },
+      ],
+    });
+  });
+
+  it('sert la correction après la clôture de la séance', async () => {
+    sessions.findById.mockResolvedValue(session({ etat: 'terminee' }));
+
+    expect((await correctionServie()).correction?.ecranId).toBe(
+      ATELIER.screenId,
+    );
+  });
+});
+
+describe('LireSujetUseCase — correction de l écran source révélé (T9)', () => {
+  const RAPPEL = buildEcranDeBrique('fp-recall', {
+    screenId: 'B2-01-A1-01-RAPPEL',
+  });
+  const FEUILLE = buildEcranDeBrique('fp-sheet', {
+    screenId: 'B2-01-A4-02-FEUILLE',
+  });
+  const CITATION = buildEcranDeBrique('fp-quote', {
+    screenId: 'B2-01-A1-02-CITATION',
+  });
+  const SOURCES = lireCoursStocke(
+    buildCoursDeBriques([RAPPEL, FEUILLE, CITATION]),
+  );
+  const tirage = tirer(SOURCES, SEED);
+  let sessions: ReturnType<typeof createMockSessionsRepo>;
+  let sut: LireSujetUseCase;
+
+  const servir = (diffusion: Partial<ReturnType<typeof buildSessionRecord>>) =>
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        courseSlug: SOURCES.slug,
+        ecranCourant: 2,
+        bareme: buildBareme({
+          tirages: [{ seed: SEED, solutions: tirage.solutions }],
+        }),
+        ...diffusion,
+      }),
+    );
+  const ecransServis = async () =>
+    (
+      await sut.execute({
+        sessionId: SESSION.id,
+        participantId: PARTICIPANT.id,
+      })
+    ).ecrans;
+
+  beforeEach(() => {
+    sessions = createMockSessionsRepo();
+    const participants = createMockParticipantsRepo();
+    participants.findById.mockResolvedValue(PARTICIPANT);
+    sut = new LireSujetUseCase(
+      sessions,
+      participants,
+      creerCatalogueDeTest(SOURCES),
+    );
+  });
+
+  it('tait la bonne réponse tant que le formateur n a pas révélé l écran', async () => {
+    servir({});
+
+    const [rappel, feuille] = await ecransServis();
+
+    expect(rappel.correction).toBeUndefined();
+    expect(feuille.correction).toBeUndefined();
+  });
+
+  it('tait la bonne réponse en phase de révélation d un vote, quand la question jumelle reste ouverte', async () => {
+    servir({ pilotageEcrans: { [RAPPEL.screenId]: { phase: 'revele' } } });
+
+    expect((await ecransServis())[0].correction).toBeUndefined();
+  });
+
+  it('sert sur l écran révélé la bonne réponse du tirage de l étudiant', async () => {
+    servir({ pilotageEcrans: { [RAPPEL.screenId]: { revele: true } } });
+
+    const [rappel, feuille] = await ecransServis();
+    const [question] = rappel.correction?.questions ?? [];
+
+    expect(rappel.correction?.ecranId).toBe(RAPPEL.screenId);
+    expect(question.optionId).toBe(
+      tirage.solutions[question.questionId].valeur,
+    );
+    expect(feuille.correction).toBeUndefined();
+  });
+
+  it('sert le corrigé d une feuille révélée', async () => {
+    servir({ pilotageEcrans: { [FEUILLE.screenId]: { revele: true } } });
+
+    const feuille = (await ecransServis())[1];
+
+    expect(feuille.correction).toMatchObject({
+      ecranId: FEUILLE.screenId,
+      corrige: { type: 'feuille' },
+    });
+  });
+
+  it('sert chaque corrigé après la clôture, sans rien poser sur un écran sans corrigé', async () => {
+    servir({ etat: 'terminee' });
+
+    const [rappel, feuille, citation] = await ecransServis();
+
+    expect(rappel.correction?.ecranId).toBe(RAPPEL.screenId);
+    expect(feuille.correction?.ecranId).toBe(FEUILLE.screenId);
+    expect(citation.correction).toBeUndefined();
   });
 });

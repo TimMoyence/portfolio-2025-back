@@ -66,8 +66,7 @@ const DELAI_TEST_MS = 900_000;
 const DELAI_FLUX_MS = 20_000;
 const MARGE_DU_DEBIT = 2;
 const FORMULE_HORS_SUJET = '=123456789';
-const INTERVALLE_LIBRE = { premier: 11, dernier: 20 };
-const NOM_DU_GROUPE = 'Ilot Rivage renomme';
+const INTERVALLE_LIBRE = { premier: 8, dernier: 20 };
 const TABLES_HORS_SEANCE = ['formation_mastery'];
 
 const { OK, CREE, SANS_CONTENU, INVALIDE, INTROUVABLE, CONFLIT } = CODE_HTTP;
@@ -1053,36 +1052,12 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
   );
 
   it(
-    'tient les groupes, les annotations et les reponses libres au pupitre',
+    'tient les annotations et les reponses libres au pupitre',
     async () => {
-      const groupe = await formateur('post', `/sessions/${sessionId}/groups`)
-        .send({ name: 'Ilot Rivage' })
-        .expect(CREE);
-      const { id: groupId } = groupe.body as { id: string };
-      for (const unPoste of postes.slice(0, 2)) {
-        await formateur(
-          'patch',
-          `/sessions/${sessionId}/participants/${unPoste.participantId}/group`,
-        )
-          .send({ groupId })
-          .expect(SANS_CONTENU);
-      }
-      await formateur('patch', `/sessions/${sessionId}/groups/${groupId}`)
-        .send({ name: NOM_DU_GROUPE })
-        .expect(OK);
-      await formateur(
-        'delete',
-        `/sessions/${sessionId}/participants/${postes[1].participantId}/group`,
-      ).expect(SANS_CONTENU);
-      const groupes = await formateur(
-        'get',
-        `/sessions/${sessionId}/groups`,
-      ).expect(OK);
       const feuille = ecranDe('fp-sheet');
       await formateur('post', `/sessions/${sessionId}/annotations`)
         .send({
           screenId: feuille.id,
-          groupName: NOM_DU_GROUPE,
           note: 'Recopie a revoir sur la colonne des taux.',
         })
         .expect(CREE);
@@ -1111,20 +1086,14 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
         `/sessions/${sessionId}/rappels/synthese`,
       ).expect(OK);
 
-      const listeDesGroupes = (groupes.body as { groups: { name: string }[] })
-        .groups;
       const listeDesParticipants = (
         participants.body as {
           participants: {
             id: string;
-            groupId: string | null;
             evince: boolean;
           }[];
         }
       ).participants;
-      const affectations = listeDesParticipants.filter(
-        (inscrit) => inscrit.groupId !== null,
-      );
       expect({
         annotations: (annotations.body as { annotations: unknown[] })
           .annotations.length,
@@ -1135,8 +1104,6 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
         participantsEvinces: listeDesParticipants
           .filter((inscrit) => inscrit.evince)
           .map((inscrit) => inscrit.id),
-        groupes: listeDesGroupes.map((groupe) => groupe.name),
-        affectes: affectations.map((inscrit) => inscrit.id),
         ecransDuDeroule: (deroule.body as { ecrans: unknown[] }).ecrans.length,
         questionsAgregees: (
           resultats.body as ResultatsDeSeance
@@ -1148,8 +1115,6 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
         libres: true,
         participantsActifs: CAPACITE,
         participantsEvinces: [evince.participantId],
-        groupes: [NOM_DU_GROUPE],
-        affectes: [postes[0].participantId],
         ecransDuDeroule: ECRANS_DU_COURS,
         questionsAgregees: expect.any(Number),
         conceptsSuivis: true,

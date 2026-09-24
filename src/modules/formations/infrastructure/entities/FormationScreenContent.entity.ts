@@ -10,7 +10,10 @@ import {
 import { FormationCourseContentEntity } from './FormationCourseContent.entity';
 
 @Entity({ name: 'formation_screen_contents' })
-@Check('chk_formation_screen_notes_not_blank', 'length(btrim("notes")) > 0')
+@Check(
+  'chk_formation_screen_notes_absentes_ou_renseignees',
+  `"notes" = '' OR "notes" ~ '[^[:space:]]'`,
+)
 @Check(
   'chk_formation_screen_diffusion',
   `"diffusion" IN ('catalogue', 'seance')`,
@@ -50,7 +53,7 @@ export class FormationScreenContentEntity {
   @Column({ type: 'varchar', length: 120, nullable: true })
   titre: string | null;
 
-  @Column({ type: 'varchar', length: 10, default: 'catalogue' })
+  @Column({ type: 'varchar', length: 10, default: 'seance' })
   diffusion: string;
 
   @Column({ type: 'varchar', length: 40 })
