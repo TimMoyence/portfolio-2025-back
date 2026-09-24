@@ -22,6 +22,7 @@ import {
   EnigmeInconnueError,
   EnigmeVerrouilleeError,
   ParticipantNotFoundError,
+  PhaseFermeeError,
   SessionClosedError,
   TentativesEpuiseesError,
 } from '../../domain/errors/FormationErrors';
@@ -199,6 +200,31 @@ describe('TenterEnigmeUseCase', () => {
     );
 
     await expect(sut.execute(commande)).rejects.toThrow(SessionClosedError);
+  });
+
+  describe('SEC-4 · coffre dont la correction est servie', () => {
+    const COFFRE = COURS.ecrans.find((ecran) => ecran.brique === 'fp-escape');
+
+    it.each([
+      ['revele', { revele: true }],
+      ['etaye', { etayage: 1 }],
+    ])(
+      'refuse toute tentative une fois le coffre %s, sans rien noter',
+      async (_etat, pilotage) => {
+        sessions.findById.mockResolvedValue(
+          buildSessionRecord({
+            courseSlug: COURS.slug,
+            ecranCourant: DERNIER_ECRAN,
+            pilotageEcrans: { [COFFRE?.id ?? '']: pilotage },
+          }),
+        );
+
+        await expect(sut.execute(commande)).rejects.toThrow(PhaseFermeeError);
+        expect(escape.incrementerTentative).not.toHaveBeenCalled();
+        expect(answers.create).not.toHaveBeenCalled();
+        expect(mastery.enregistrerTentative).not.toHaveBeenCalled();
+      },
+    );
   });
 
   it('refuse un participant rattache a une autre seance', async () => {

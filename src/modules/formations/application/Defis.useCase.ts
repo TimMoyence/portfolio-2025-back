@@ -7,6 +7,7 @@ import {
 } from '../domain/cours/Defis';
 import type { EcranDeDefi, StrategiePubliee } from '../domain/cours/Defis';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   CoursInconnuError,
   DefiInconnuError,
@@ -71,6 +72,7 @@ export class DefisUseCase {
       command.participantId,
     );
     const cible = await this.cibleServie(session, command.defiId);
+    assertPhaseOuverte(session.pilotageEcrans, { ecranId: cible.ecran.id });
 
     await this.freeResponses.enregistrerTentativeDeDefi({
       sessionId: command.sessionId,
@@ -82,14 +84,7 @@ export class DefisUseCase {
     });
     this.cache.signalerActivite(command.sessionId);
 
-    return {
-      strategies: [
-        ...strategiesPubliees(
-          cible,
-          estRevele(session.pilotageEcrans, cible.ecran.id),
-        ),
-      ],
-    };
+    return { strategies: [...strategiesPubliees(cible, false)] };
   }
 
   async strategies(

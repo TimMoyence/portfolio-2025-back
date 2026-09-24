@@ -16,6 +16,10 @@ const POINTS = 'B2-01-A2-06-POINTS';
 const CORRECTION_DES_POINTS = 'B2-01-A2-06-CORRECTION';
 const DIAGNOSTIC = 'B2-01-A1-01-DIAGNOSTIC';
 const FEUILLE = 'B2-01-A4-02-FEUILLE-CANAUX';
+const COFFRE = 'B2-01-A6-02-COFFRE';
+const CORRECTION_DU_COFFRE = 'B2-01-A6-02-CORRECTION';
+const PARCOURS_DU_COFFRE = 'b2-01-a6-coffre';
+const PREMIERE_ENIGME = 'b2-01-a6-e1-mix';
 const { OK, CREE, SANS_CONTENU, CONFLIT } = CODE_HTTP;
 
 function rang(id: string): number {
@@ -114,6 +118,32 @@ describeDb(
 
       expect(projetee?.type).toBe('fp-worked');
       expect(projetee?.correction?.ecranId).toBe(POINTS);
+      expect([refus.status, (refus.body as { code?: string }).code]).toEqual([
+        CONFLIT,
+        'PHASE_FERMEE',
+      ]);
+    });
+
+    it('SEC-4 · ferme le coffre aux tentatives dès que sa correction est projetée en pilote', async () => {
+      const seance = await banc.ouvrirSeance({
+        cle: 'c0000000-0000-4000-8000-000000000004',
+        ecran: rang(COFFRE),
+      });
+
+      await piloter(seance, { ecran: rang(CORRECTION_DU_COFFRE) });
+      const projetee = ecranDuSujet(
+        await lireSujet(seance),
+        CORRECTION_DU_COFFRE,
+      );
+      const refus = await banc
+        .avecJeton(
+          'post',
+          `/sessions/${seance.sessionId}/escape/${PARCOURS_DU_COFFRE}/tentatives`,
+          seance.jeton,
+        )
+        .send({ enigmeId: PREMIERE_ENIGME, reponse: '12', dureeMs: 30000 });
+
+      expect(projetee?.correction?.ecranId).toBe(COFFRE);
       expect([refus.status, (refus.body as { code?: string }).code]).toEqual([
         CONFLIT,
         'PHASE_FERMEE',
