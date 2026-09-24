@@ -7,26 +7,26 @@ import {
   SONDAGE_DE_TEST,
 } from '../../../../../test/factories/cours.factory';
 import {
-  buildParticipantRecord,
   buildSessionRecord,
   createMockParticipantsRepo,
   createMockPulsesRepo,
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
+import {
+  verifierGardesDeParticipant,
+  verifierGardesDeSeance,
+} from '../../../../../test/helpers/gardes-de-seance';
 import { cleDeJalon } from '../../domain/cours/CleDeJalon';
 import {
   CoursInconnuError,
-  EcranNonServiError,
-  ParticipantNotFoundError,
-  SessionClosedError,
   SessionNotFoundError,
 } from '../../domain/errors/FormationErrors';
 import { DeclarerJalonUseCase } from '../DeclarerJalon.useCase';
 
 const COURS = buildCoursAvecJalon();
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
-const SECRET = 'secret-de-test-des-jalons-assez-long-1234';
 
 describe('DeclarerJalonUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -34,7 +34,6 @@ describe('DeclarerJalonUseCase', () => {
   let cache: ReturnType<typeof createMockSessionStateCache>;
   let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: DeclarerJalonUseCase;
-  let secretInitial: string | undefined;
 
   const commande = {
     sessionId: 'session-uuid',
@@ -43,14 +42,7 @@ describe('DeclarerJalonUseCase', () => {
     etat: 'ca-va' as const,
   };
 
-  beforeAll(() => {
-    secretInitial = process.env.FORMATIONS_PULSE_SECRET;
-    process.env.FORMATIONS_PULSE_SECRET = SECRET;
-  });
-
-  afterAll(() => {
-    process.env.FORMATIONS_PULSE_SECRET = secretInitial;
-  });
+  installerSecretDeJalons();
 
   beforeEach(() => {
     sessions = createMockSessionsRepo();
@@ -110,21 +102,12 @@ describe('DeclarerJalonUseCase', () => {
     expect(pulses.declarer).not.toHaveBeenCalled();
   });
 
-  it('refuse un jalon visant un ecran non projete', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, ecranCourant: 0 }),
-    );
-
-    await expect(sut.execute(commande)).rejects.toThrow(EcranNonServiError);
-  });
-
-  it('refuse un jalon apres la cloture', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, etat: 'terminee' }),
-    );
-
-    await expect(sut.execute(commande)).rejects.toThrow(SessionClosedError);
-  });
+  verifierGardesDeSeance(() => ({
+    sessions,
+    courseSlug: COURS.slug,
+    executer: () => sut.execute(commande),
+    effetsInterdits: () => [pulses.declarer],
+  }));
 
   it('signale une seance introuvable', async () => {
     sessions.findById.mockResolvedValue(null);
@@ -155,16 +138,9 @@ describe('DeclarerJalonUseCase', () => {
     process.env.FORMATIONS_PULSE_SECRET = secret;
   });
 
-  it('refuse le jalon d un participant evince', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({
-        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
-      }),
-    );
-
-    await expect(sut.execute(commande)).rejects.toThrow(
-      ParticipantNotFoundError,
-    );
-    expect(pulses.declarer).not.toHaveBeenCalled();
-  });
+  verifierGardesDeParticipant(() => ({
+    participants,
+    executer: () => sut.execute(commande),
+    effetsInterdits: () => [pulses.declarer],
+  }));
 });

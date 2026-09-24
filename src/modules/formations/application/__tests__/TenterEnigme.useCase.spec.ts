@@ -7,7 +7,10 @@ import {
   TENTATIVES_MAX_DE_TEST,
 } from '../../../../../test/factories/cours.factory';
 import {
-  buildParticipantRecord,
+  verifierGardesDeParticipant,
+  verifierGardesDeSeance,
+} from '../../../../../test/helpers/gardes-de-seance';
+import {
   buildSessionRecord,
   createMockAnswersRepo,
   createMockEscapeRepo,
@@ -17,13 +20,10 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
-  EcranNonServiError,
   EnigmeDejaResolueError,
   EnigmeInconnueError,
   EnigmeVerrouilleeError,
-  ParticipantNotFoundError,
   PhaseFermeeError,
-  SessionClosedError,
   TentativesEpuiseesError,
 } from '../../domain/errors/FormationErrors';
 import { TenterEnigmeUseCase } from '../TenterEnigme.useCase';
@@ -186,21 +186,12 @@ describe('TenterEnigmeUseCase', () => {
     ).rejects.toThrow(EnigmeInconnueError);
   });
 
-  it('refuse une tentative visant un ecran non projete', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, ecranCourant: 0 }),
-    );
-
-    await expect(sut.execute(commande)).rejects.toThrow(EcranNonServiError);
-  });
-
-  it('refuse une tentative sur une seance terminee', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, etat: 'terminee' }),
-    );
-
-    await expect(sut.execute(commande)).rejects.toThrow(SessionClosedError);
-  });
+  verifierGardesDeSeance(() => ({
+    sessions,
+    courseSlug: COURS.slug,
+    executer: () => sut.execute(commande),
+    effetsInterdits: () => [escape.incrementerTentative],
+  }));
 
   describe('SEC-4 · coffre dont la correction est servie', () => {
     const COFFRE = COURS.ecrans.find((ecran) => ecran.brique === 'fp-escape');
@@ -227,15 +218,11 @@ describe('TenterEnigmeUseCase', () => {
     );
   });
 
-  it('refuse un participant rattache a une autre seance', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({ sessionId: 'autre-session' }),
-    );
-
-    await expect(sut.execute(commande)).rejects.toThrow(
-      ParticipantNotFoundError,
-    );
-  });
+  verifierGardesDeParticipant(() => ({
+    participants,
+    executer: () => sut.execute(commande),
+    effetsInterdits: () => [escape.incrementerTentative, escape.journaliser],
+  }));
 
   it('journalise chaque tentative avec sa valeur normalisee', async () => {
     await sut.execute({ ...commande, reponse: '23 ,4' });

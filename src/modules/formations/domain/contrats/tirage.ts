@@ -1,4 +1,5 @@
 import type { Solution } from '../GradingCore';
+import type { CadrageDuRenvoi } from './cours';
 import type {
   CoursPublic as CoursPublicActuel,
   EcranPublic as EcranPublicActuel,
@@ -24,7 +25,9 @@ export interface CorrectionServie {
 export interface EcranPublic extends EcranPublicActuel {
   readonly titre: string | null;
   readonly renvoi?: string;
+  readonly cadrageDuRenvoi?: CadrageDuRenvoi;
   readonly ecranCorrige?: string;
+  readonly resoluPar?: readonly string[];
   readonly correction?: CorrectionServie;
 }
 

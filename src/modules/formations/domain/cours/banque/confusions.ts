@@ -198,3 +198,9 @@ export function libelleDeConfusion(id: string): string | null {
     ? CONFUSIONS[id as ConfusionId].libelle
     : null;
 }
+
+export function libelleLisible(confusion: string | null): string | null {
+  return confusion === null
+    ? null
+    : (libelleDeConfusion(confusion) ?? confusion);
+}

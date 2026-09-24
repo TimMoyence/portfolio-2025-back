@@ -243,6 +243,7 @@ export function buildParticipantRecord(
     rejointLe: new Date('2026-09-11T08:05:00.000Z'),
     dernierPing: new Date('2026-09-11T08:05:00.000Z'),
     evinceLe: null,
+    generationDeJeton: 0,
     ...overrides,
   };
 }
@@ -357,6 +358,7 @@ export function createMockParticipantsRepo(): jest.Mocked<IParticipantsRepositor
     touch: jest.fn().mockResolvedValue(undefined),
     evincer: jest.fn().mockResolvedValue(true),
     readmettre: jest.fn().mockResolvedValue(true),
+    libererPoste: jest.fn().mockResolvedValue(true),
   };
 }
 

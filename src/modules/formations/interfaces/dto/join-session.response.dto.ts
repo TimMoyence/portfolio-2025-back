@@ -19,4 +19,10 @@ export class JoinSessionResponseDto {
       'Jeton de participant a renvoyer dans l en-tete x-participant-token',
   })
   jeton: string;
+
+  @ApiProperty({
+    description:
+      'Secret a conserver sur le poste et a presenter pour reprendre la place ; renouvele a chaque jonction',
+  })
+  secretDeReprise: string;
 }

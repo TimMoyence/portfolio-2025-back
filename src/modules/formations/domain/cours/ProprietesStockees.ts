@@ -1,4 +1,9 @@
 import { z } from 'zod';
+import {
+  CHAMPS_EXTRAITS_DU_CAS,
+  PARTS_DU_RENVOI,
+  type CadrageDuRenvoi,
+} from '../contrats/cours';
 import type { CorrigeProduction } from './Corrige';
 import {
   confusionsDuCorrige,
@@ -35,6 +40,26 @@ import { presentationVisuelle } from './VisualPresentation';
 const rang = z.number().int().nonnegative();
 const seuil = z.number().gt(0).lte(1);
 const modalite = z.enum(['solo', 'binome', 'groupe', 'classe']);
+
+const cadrageDuRenvoi = z
+  .object({
+    part: z.custom<CadrageDuRenvoi['part']>(
+      (valeur) =>
+        typeof valeur === 'number' &&
+        PARTS_DU_RENVOI.some((part) => part === valeur),
+      {
+        message: `part du renvoi attendue parmi ${PARTS_DU_RENVOI.join(', ')}`,
+      },
+    ),
+    extrait: z
+      .object({
+        lignes: z.array(rang).min(1).optional(),
+        champs: z.array(z.enum(CHAMPS_EXTRAITS_DU_CAS)).min(1).optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
 
 const quizNote = z
   .object({
@@ -223,6 +248,7 @@ const proprietesRecitStockees = z
     video: video.optional(),
     modalite: modalite.optional(),
     renvoi: texte.optional(),
+    cadrageDuRenvoi: cadrageDuRenvoi.optional(),
   })
   .strict()
   .superRefine((proprietes, contexte) => {
@@ -259,13 +285,14 @@ const proprietesRecitStockees = z
 
 export type ProprietesRecit = Omit<
   z.output<typeof proprietesRecitStockees>,
-  'modalite' | 'renvoi'
+  'modalite' | 'renvoi' | 'cadrageDuRenvoi'
 >;
 
 const communes = {
   guide: guideFormateur.optional(),
   modalite: modalite.optional(),
   renvoi: texte.optional(),
+  cadrageDuRenvoi: cadrageDuRenvoi.optional(),
 };
 
 const parametreCurseur = z
@@ -381,6 +408,56 @@ function signalerPrereglagesHorsParametres(support: string): (
   };
 }
 
+const animation = z
+  .array(
+    z
+      .record(texte, z.number())
+      .refine((etape) => Object.keys(etape).length > 0, {
+        message: 'une étape d’animation règle au moins un paramètre',
+      }),
+  )
+  .min(2)
+  .optional();
+
+type Curseur = z.output<typeof parametreCurseur>;
+
+function defautDeLEtape(
+  curseur: Curseur | undefined,
+  valeur: number,
+  support: string,
+): string | undefined {
+  if (curseur === undefined) {
+    return `l’animation règle un paramètre absent ${support}`;
+  }
+  if (valeur < curseur.min || valeur > curseur.max) {
+    return `l’animation sort des bornes du curseur ${curseur.cle} : ${valeur}`;
+  }
+  if (!Number.isInteger((valeur - curseur.min) / curseur.pas)) {
+    return `l’animation ne tombe pas sur le pas du curseur ${curseur.cle} : ${valeur}`;
+  }
+  return undefined;
+}
+
+function signalerAnimationHorsParametres(support: string): (
+  proprietes: {
+    readonly parametres: readonly Curseur[];
+    readonly animation?: readonly Readonly<Record<string, number>>[];
+  },
+  contexte: z.RefinementCtx,
+) => void {
+  return (proprietes, contexte) => {
+    const curseurs = new Map(proprietes.parametres.map((p) => [p.cle, p]));
+    proprietes.animation?.forEach((etape, rang) => {
+      for (const [cle, valeur] of Object.entries(etape)) {
+        const defaut = defautDeLEtape(curseurs.get(cle), valeur, support);
+        if (defaut !== undefined) {
+          signaleurDe(contexte)(['animation', rang, cle], defaut);
+        }
+      }
+    });
+  };
+}
+
 const proprietesMachine = z
   .object({
     id: identifiantDeQuestion.optional(),
@@ -392,10 +469,12 @@ const proprietesMachine = z
       z.object({ libelle: texte, calcul: texte }).strict(),
     ).optional(),
     prereglages,
+    animation,
     ...communes,
   })
   .strict()
-  .superRefine(signalerPrereglagesHorsParametres('de la machine'));
+  .superRefine(signalerPrereglagesHorsParametres('de la machine'))
+  .superRefine(signalerAnimationHorsParametres('de la machine'));
 
 const proprietesTrace = z
   .object({
@@ -433,10 +512,12 @@ const proprietesTrace = z
     etiquettes: z.array(texte).optional(),
     prereglages,
     reference: texte.optional(),
+    animation,
     ...communes,
   })
   .strict()
   .superRefine(signalerPrereglagesHorsParametres('du tracé'))
+  .superRefine(signalerAnimationHorsParametres('du tracé'))
   .superRefine((trace, contexte) => {
     if (
       trace.reference !== undefined &&

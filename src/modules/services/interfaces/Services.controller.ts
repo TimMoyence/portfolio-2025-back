@@ -1,17 +1,11 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { Roles } from '../../../common/interfaces/auth/roles.decorator';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
-import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
+  CreationAdmin,
+  FILTRE_STATUT_DE_PUBLICATION,
+  ListePubliquePaginee,
+  reponsePaginee,
+} from '../../../common/interfaces/http/routes-de-catalogue';
 import { CreateServicesUseCase } from '../application/CreateServices.useCase';
 import { ListServicesUseCase } from '../application/ListServices.useCase';
 import { CreateServiceCommand } from '../application/dto/CreateService.command';
@@ -28,30 +22,14 @@ export class ServicesController {
     private readonly createUseCase: CreateServicesUseCase,
   ) {}
 
-  @Public()
-  @Get()
-  @ApiOperation({ summary: 'Lister les services (acces public, pagine)' })
-  @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
-  @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
-  @ApiQuery({
-    name: 'order',
-    required: false,
-    enum: ['ASC', 'DESC'],
-    example: 'ASC',
+  @ListePubliquePaginee({
+    resume: 'Lister les services (acces public, pagine)',
+    reponse: ServiceListResponseDto,
+    ordreParDefaut: 'ASC',
+    triables: ['order', 'slug', 'name', 'createdAt'],
+    triParDefaut: 'order',
+    filtres: [FILTRE_STATUT_DE_PUBLICATION],
   })
-  @ApiQuery({
-    name: 'sortBy',
-    required: false,
-    enum: ['order', 'slug', 'name', 'createdAt'],
-    example: 'order',
-  })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
-    example: 'PUBLISHED',
-  })
-  @ApiOkResponse({ type: ServiceListResponseDto })
   async findAll(
     @Query() query: ServiceListQueryDto,
   ): Promise<ServiceListResponseDto> {
@@ -62,28 +40,12 @@ export class ServicesController {
       status: query.status,
       order: query.order,
     });
-
-    return {
-      items: result.items.map((service) =>
-        ServiceResponseDto.fromDomain(service),
-      ),
-      meta: {
-        page: result.page,
-        limit: result.limit,
-        total: result.total,
-        totalPages: result.totalPages,
-      },
-    };
+    return reponsePaginee(result, (service) =>
+      ServiceResponseDto.fromDomain(service),
+    );
   }
 
-  @Post()
-  @UseGuards(RolesGuard)
-  @Roles('admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Creer un service (admin)' })
-  @ApiCreatedResponse({ type: ServiceResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation echouee' })
-  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
+  @CreationAdmin('Creer un service (admin)', ServiceResponseDto)
   async create(@Body() dto: ServiceRequestDto): Promise<ServiceResponseDto> {
     const command: CreateServiceCommand = {
       slug: dto.slug,

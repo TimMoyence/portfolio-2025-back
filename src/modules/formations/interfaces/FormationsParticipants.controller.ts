@@ -1,4 +1,5 @@
 import {
+  applyDecorators,
   Controller,
   Delete,
   Get,
@@ -24,6 +25,7 @@ import type { Request } from 'express';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
 import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { EvincerParticipantUseCase } from '../application/EvincerParticipant.useCase';
+import { LibererPosteUseCase } from '../application/LibererPoste.useCase';
 import { ListSessionParticipantsUseCase } from '../application/ListSessionParticipants.useCase';
 import type { ParticipantDeSeance } from '../application/ListSessionParticipants.useCase';
 import { ReadmettreParticipantUseCase } from '../application/ReadmettreParticipant.useCase';
@@ -39,6 +41,18 @@ import {
   LIMITE_EVICTION_PAR_MINUTE,
 } from './formations-throttling';
 
+const ActionSurUnParticipant = (): MethodDecorator =>
+  applyDecorators(
+    Throttle({
+      default: {
+        limit: LIMITE_EVICTION_PAR_MINUTE,
+        ttl: FENETRE_THROTTLE_MS,
+      },
+    }),
+    HttpCode(HttpStatus.NO_CONTENT),
+    PilotageDeSeance(),
+  );
+
 @ApiTags('formations')
 @ApiBearerAuth()
 @Controller('formations')
@@ -49,6 +63,7 @@ export class FormationsParticipantsController {
     private readonly participants: ListSessionParticipantsUseCase,
     private readonly evincerParticipant: EvincerParticipantUseCase,
     private readonly readmettreParticipant: ReadmettreParticipantUseCase,
+    private readonly liberer: LibererPosteUseCase,
   ) {}
 
   @Get('sessions/:id/participants')
@@ -64,15 +79,8 @@ export class FormationsParticipantsController {
     };
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_EVICTION_PAR_MINUTE,
-      ttl: FENETRE_THROTTLE_MS,
-    },
-  })
   @Delete('sessions/:id/participants/:participantId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @PilotageDeSeance()
+  @ActionSurUnParticipant()
   @ApiOperation({
     summary:
       'Evince un participant : jeton revoque, place et graine liberees, reponses conservees',
@@ -89,15 +97,8 @@ export class FormationsParticipantsController {
     await this.evincerParticipant.execute(id, request.user!.sub, participantId);
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_EVICTION_PAR_MINUTE,
-      ttl: FENETRE_THROTTLE_MS,
-    },
-  })
   @Post('sessions/:id/participants/:participantId/readmission')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @PilotageDeSeance()
+  @ActionSurUnParticipant()
   @ApiOperation({
     summary:
       'Readmet un participant evince : il reprend sa place, sa graine et ses reponses',
@@ -109,7 +110,7 @@ export class FormationsParticipantsController {
   })
   @ApiConflictResponse({
     description:
-      'Seance revenue a sa capacite depuis l eviction : code SEANCE_COMPLETE',
+      'Seance revenue a sa capacite depuis l eviction (SEANCE_COMPLETE), ou graine attribuee a un autre poste (GRAINE_REPRISE)',
   })
   async readmettre(
     @Param('id', ParseUUIDPipe) id: string,
@@ -121,5 +122,23 @@ export class FormationsParticipantsController {
       request.user!.sub,
       participantId,
     );
+  }
+
+  @Post('sessions/:id/participants/:participantId/liberation')
+  @ActionSurUnParticipant()
+  @ApiOperation({
+    summary:
+      'Libere le poste d un participant : sa place revient au prochain poste qui rejoint avec son courriel',
+  })
+  @ApiNoContentResponse({ description: 'Poste libere' })
+  @ApiNotFoundResponse({
+    description: 'Seance introuvable, ou participant absent ou evince',
+  })
+  async libererPoste(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('participantId', ParseUUIDPipe) participantId: string,
+    @Req() request: Request,
+  ): Promise<void> {
+    await this.liberer.execute(id, request.user!.sub, participantId);
   }
 }

@@ -18,7 +18,8 @@ import {
   attendreQue,
   EN_TETE_IDENTITE,
   monterApplicationFormations,
-  PREFIXE_API,
+  routeFormations,
+  serveurHttpDe,
   type FluxEcoute,
 } from './helpers/formations-harness';
 import {
@@ -55,11 +56,9 @@ describeDb('Pilotage par ecran persiste (B21, db integration)', () => {
   let port: number;
   const fluxOuverts: FluxEcoute[] = [];
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(app);
 
-  const route = (chemin: string): string =>
-    `/${PREFIXE_API}/formations${chemin}`;
+  const route = routeFormations;
 
   const formateur = (methode: 'post' | 'patch', chemin: string): Test =>
     request(serveur())

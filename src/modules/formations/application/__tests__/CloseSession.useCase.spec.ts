@@ -132,22 +132,22 @@ describe('CloseSessionUseCase', () => {
     expect(mailer.sendCopieEtudiant).toHaveBeenCalledTimes(2);
   });
 
-  it('construit un lien de revision individualise pour chaque etudiant', async () => {
+  const copieDUnSeulEtudiant = async () => {
     participants.listBySession.mockResolvedValue([
       buildParticipantRecord({ id: 'p1', email: 'a@example.com' }),
     ]);
     await sut.execute('session-uuid', TEACHER_ID);
-    const [copie] = mailer.sendCopieEtudiant.mock.calls[0];
+    return mailer.sendCopieEtudiant.mock.calls[0][0];
+  };
+
+  it('construit un lien de revision individualise pour chaque etudiant', async () => {
+    const copie = await copieDUnSeulEtudiant();
     expect(copie.lienRevision).toContain('p1');
     expect(copie.lienRevision).toContain('session-uuid');
   });
 
   it('ne confie a la copie d un etudiant que ce que sa copie exige', async () => {
-    participants.listBySession.mockResolvedValue([
-      buildParticipantRecord({ id: 'p1', email: 'a@example.com' }),
-    ]);
-    await sut.execute('session-uuid', TEACHER_ID);
-    const [copie] = mailer.sendCopieEtudiant.mock.calls[0];
+    const copie = await copieDUnSeulEtudiant();
     expect(Object.keys(copie).sort((a, b) => a.localeCompare(b))).toEqual([
       'code',
       'courseSlug',

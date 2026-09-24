@@ -1,93 +1,66 @@
 import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MetricsAuthGuard } from './metrics-auth.guard';
-import type { ExecutionContext } from '@nestjs/common';
 import { createHttpExecutionContext } from '../../../../test/factories/execution-context.factory';
 
-function createMockContext(authHeader?: string): ExecutionContext {
-  return createHttpExecutionContext({
+const VALID_TOKEN = 'super-secret-metrics-token';
+
+function verifier(tokenConfigure: string | undefined, authHeader?: string) {
+  const configService = {
+    get: jest.fn().mockReturnValue(tokenConfigure),
+  } as unknown as ConfigService;
+  const guard = new MetricsAuthGuard(configService);
+  const context = createHttpExecutionContext({
     headers: authHeader ? { authorization: authHeader } : {},
   });
+  return () => guard.canActivate(context);
 }
 
-function createMockConfigService(
-  metricsToken?: string,
-): jest.Mocked<ConfigService> {
-  return {
-    get: jest.fn().mockReturnValue(metricsToken),
-  } as unknown as jest.Mocked<ConfigService>;
+function attendreRefus(controle: () => boolean, message: string): void {
+  expect(controle).toThrow(ForbiddenException);
+  expect(controle).toThrow(message);
 }
 
 describe('MetricsAuthGuard', () => {
-  const VALID_TOKEN = 'super-secret-metrics-token';
-
-  it('devrait autoriser l acces avec un token valide', () => {
-    const configService = createMockConfigService(VALID_TOKEN);
-    const guard = new MetricsAuthGuard(configService);
-    const context = createMockContext(`Bearer ${VALID_TOKEN}`);
-
-    expect(guard.canActivate(context)).toBe(true);
+  it('devrait autoriser l acces avec le token exact', () => {
+    expect(verifier(VALID_TOKEN, `Bearer ${VALID_TOKEN}`)()).toBe(true);
   });
 
   it('devrait refuser l acces si METRICS_TOKEN n est pas configure', () => {
-    const configService = createMockConfigService();
-    const guard = new MetricsAuthGuard(configService);
-    const context = createMockContext('Bearer some-token');
-
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-    expect(() => guard.canActivate(context)).toThrow(
+    attendreRefus(
+      verifier(undefined, 'Bearer some-token'),
       'Metrics endpoint not configured',
     );
   });
 
   it('devrait refuser l acces sans header Authorization', () => {
-    const configService = createMockConfigService(VALID_TOKEN);
-    const guard = new MetricsAuthGuard(configService);
-    const context = createMockContext();
-
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-    expect(() => guard.canActivate(context)).toThrow(
+    attendreRefus(
+      verifier(VALID_TOKEN),
       'Missing or invalid Authorization header',
     );
   });
 
   it('devrait refuser l acces avec un header Authorization sans Bearer', () => {
-    const configService = createMockConfigService(VALID_TOKEN);
-    const guard = new MetricsAuthGuard(configService);
-    const context = createMockContext('Basic abc123');
-
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-    expect(() => guard.canActivate(context)).toThrow(
+    attendreRefus(
+      verifier(VALID_TOKEN, 'Basic abc123'),
       'Missing or invalid Authorization header',
     );
   });
 
   it('devrait refuser l acces avec un token invalide', () => {
-    const configService = createMockConfigService(VALID_TOKEN);
-    const guard = new MetricsAuthGuard(configService);
-    const context = createMockContext('Bearer wrong-token');
-
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-    expect(() => guard.canActivate(context)).toThrow('Invalid metrics token');
-  });
-
-  it('devrait accepter le token exact (comparaison constante en temps)', () => {
-    const configService = createMockConfigService(VALID_TOKEN);
-    const guard = new MetricsAuthGuard(configService);
-    const context = createMockContext(`Bearer ${VALID_TOKEN}`);
-
-    expect(guard.canActivate(context)).toBe(true);
+    attendreRefus(
+      verifier(VALID_TOKEN, 'Bearer wrong-token'),
+      'Invalid metrics token',
+    );
   });
 
   it('devrait refuser un token de meme longueur mais 1 octet different', () => {
-    const configService = createMockConfigService(VALID_TOKEN);
-    const guard = new MetricsAuthGuard(configService);
     const almostToken = `${VALID_TOKEN.slice(0, -1)}X`;
     expect(almostToken).toHaveLength(VALID_TOKEN.length);
 
-    const context = createMockContext(`Bearer ${almostToken}`);
-
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-    expect(() => guard.canActivate(context)).toThrow('Invalid metrics token');
+    attendreRefus(
+      verifier(VALID_TOKEN, `Bearer ${almostToken}`),
+      'Invalid metrics token',
+    );
   });
 });

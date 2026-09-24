@@ -6,88 +6,85 @@ import type { JwtPayload } from './JwtPayload';
 describe('JwtTokenService', () => {
   const JWT_SECRET = 'test-secret-key-for-unit-tests-32';
   const JWT_SECRET_PREVIOUS = 'old-secret-key-for-rotation-test!';
+  const CONFIG_COURANTE = { JWT_SECRET, JWT_EXPIRES_IN: '3600s' };
+  const CONFIG_EN_ROTATION = { ...CONFIG_COURANTE, JWT_SECRET_PREVIOUS };
   let configService: jest.Mocked<ConfigService>;
   let service: JwtTokenService;
 
   const encodeSecret = (secret = JWT_SECRET): Uint8Array =>
     new TextEncoder().encode(secret);
 
-  beforeEach(() => {
-    configService = {
-      get: jest.fn((key: string) => {
-        if (key === 'JWT_SECRET') return JWT_SECRET;
-        if (key === 'JWT_EXPIRES_IN') return '3600s';
-        return undefined;
-      }),
-    } as unknown as jest.Mocked<ConfigService>;
+  const configurer = (variables: Readonly<Record<string, string>>): void => {
+    configService.get.mockImplementation((key: string) => variables[key]);
+  };
 
+  const signer = () => service.sign({ sub: 'user-1', email: 'a@b.com' });
+
+  const signRawToken = (
+    secret: Uint8Array,
+    options: {
+      issuer?: string;
+      audience?: string;
+      kid?: string;
+      emisA?: number;
+    } = {},
+  ): Promise<string> => {
+    const jeton = new SignJWT({ sub: 'user-1', email: 'a@b.com', roles: [] })
+      .setProtectedHeader({ alg: 'HS256', kid: options.kid })
+      .setIssuer(options.issuer ?? 'portfolio-2025')
+      .setAudience(options.audience ?? 'portfolio-2025-api');
+    return (
+      options.emisA === undefined
+        ? jeton.setIssuedAt().setExpirationTime('1h')
+        : jeton
+            .setIssuedAt(options.emisA)
+            .setExpirationTime(options.emisA + 3600)
+    ).sign(secret);
+  };
+
+  beforeEach(() => {
+    configService = { get: jest.fn() } as unknown as jest.Mocked<ConfigService>;
+    configurer(CONFIG_COURANTE);
     service = new JwtTokenService(configService);
   });
 
   describe('sign', () => {
     it('devrait retourner un token avec 3 segments', async () => {
-      const result = await service.sign({ sub: 'user-1', email: 'a@b.com' });
+      const result = await signer();
       expect(result.token.split('.')).toHaveLength(3);
       expect(result.expiresIn).toBe(3600);
     });
 
     it('devrait rejeter un secret trop court', async () => {
-      configService.get.mockImplementation((key: string) => {
-        if (key === 'JWT_SECRET') return 'short';
-        return undefined;
-      });
+      configurer({ JWT_SECRET: 'short' });
 
-      await expect(
-        service.sign({ sub: 'u', email: 'a@b.com' }),
-      ).rejects.toThrow('JWT_SECRET must be at least 32 characters');
+      await expect(signer()).rejects.toThrow(
+        'JWT_SECRET must be at least 32 characters',
+      );
     });
   });
 
-  const signRawToken = (
-    secret: Uint8Array,
-    options: { issuer?: string; audience?: string; expiresIn?: string } = {},
-  ): Promise<string> =>
-    new SignJWT({ sub: 'user-1', email: 'a@b.com', roles: [] })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setExpirationTime(options.expiresIn ?? '1h')
-      .setIssuer(options.issuer ?? 'portfolio-2025')
-      .setAudience(options.audience ?? 'portfolio-2025-api')
-      .sign(secret);
-
   describe('verify', () => {
     it('devrait retourner le payload pour un token valide', async () => {
-      const { token } = await service.sign({
-        sub: 'user-1',
-        email: 'a@b.com',
-      });
+      const { token } = await signer();
 
       const payload: JwtPayload = await service.verify(token);
 
-      expect(payload.sub).toBe('user-1');
-      expect(payload.email).toBe('a@b.com');
-      expect(payload.iat).toBeDefined();
-      expect(payload.exp).toBeDefined();
+      expect(payload).toEqual(
+        expect.objectContaining({
+          sub: 'user-1',
+          email: 'a@b.com',
+          iss: 'portfolio-2025',
+          aud: 'portfolio-2025-api',
+        }),
+      );
       expect(payload.exp).toBeGreaterThan(payload.iat);
-      expect(payload.iss).toBe('portfolio-2025');
-      expect(payload.aud).toBe('portfolio-2025-api');
     });
 
     it('devrait lever une erreur pour un token expire', async () => {
-      const pastTime = Math.floor(Date.now() / 1000) - 7200;
-      const secret = encodeSecret();
-
-      const expiredToken = await new SignJWT({
-        sub: 'user-1',
-        email: 'a@b.com',
-        roles: [],
-      })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setIssuedAt(pastTime)
-        .setExpirationTime(pastTime + 3600)
-        .setIssuer('portfolio-2025')
-        .setAudience('portfolio-2025-api')
-        .sign(secret);
+      const expiredToken = await signRawToken(encodeSecret(), {
+        emisA: Math.floor(Date.now() / 1000) - 7200,
+      });
 
       await expect(service.verify(expiredToken)).rejects.toThrow(
         'Token expired',
@@ -95,133 +92,70 @@ describe('JwtTokenService', () => {
     });
 
     it('devrait lever une erreur pour une signature invalide', async () => {
-      const { token } = await service.sign({
-        sub: 'user-1',
-        email: 'a@b.com',
-      });
-      const parts = token.split('.');
-      const tamperedToken = `${parts[0]}.${parts[1]}.invalidsignature`;
+      const [entete, charge] = (await signer()).token.split('.');
 
-      await expect(service.verify(tamperedToken)).rejects.toThrow(
-        'Invalid signature',
-      );
+      await expect(
+        service.verify(`${entete}.${charge}.invalidsignature`),
+      ).rejects.toThrow('Invalid signature');
     });
 
-    it('devrait lever une erreur pour un token malformed', async () => {
-      await expect(service.verify('not-a-jwt')).rejects.toThrow(
-        'Malformed token',
-      );
-      await expect(service.verify('only.two')).rejects.toThrow(
-        'Malformed token',
-      );
-      await expect(service.verify('')).rejects.toThrow('Malformed token');
-    });
+    it.each(['not-a-jwt', 'only.two', ''])(
+      'devrait lever une erreur pour le token malformed "%s"',
+      async (jeton) => {
+        await expect(service.verify(jeton)).rejects.toThrow('Malformed token');
+      },
+    );
 
-    it('devrait lever une erreur pour un issuer invalide', async () => {
-      const secret = encodeSecret();
+    it.each([
+      ['issuer', { issuer: 'wrong-issuer' }, 'Invalid issuer'],
+      ['audience', { audience: 'wrong-audience' }, 'Invalid audience'],
+    ])(
+      'devrait lever une erreur pour une %s invalide',
+      async (_label, options, erreur) => {
+        const token = await signRawToken(encodeSecret(), options);
 
-      const token = await signRawToken(secret, { issuer: 'wrong-issuer' });
-
-      await expect(service.verify(token)).rejects.toThrow('Invalid issuer');
-    });
-
-    it('devrait lever une erreur pour une audience invalide', async () => {
-      const secret = encodeSecret();
-
-      const token = await signRawToken(secret, { audience: 'wrong-audience' });
-
-      await expect(service.verify(token)).rejects.toThrow('Invalid audience');
-    });
+        await expect(service.verify(token)).rejects.toThrow(erreur);
+      },
+    );
   });
 
   describe('rotation de cles (kid)', () => {
     it('devrait inclure kid v1 dans le header JWT sans secret precedent', async () => {
-      const { token } = await service.sign({
-        sub: 'user-1',
-        email: 'a@b.com',
-      });
+      const header = decodeProtectedHeader((await signer()).token);
 
-      const header = decodeProtectedHeader(token);
       expect(header.kid).toBe('v1');
       expect(header.alg).toBe('HS256');
     });
 
     it('devrait inclure kid v2 dans le header JWT avec secret precedent', async () => {
-      configService.get.mockImplementation((key: string) => {
-        if (key === 'JWT_SECRET') return JWT_SECRET;
-        if (key === 'JWT_EXPIRES_IN') return '3600s';
-        if (key === 'JWT_SECRET_PREVIOUS') return JWT_SECRET_PREVIOUS;
-        return undefined;
-      });
+      configurer(CONFIG_EN_ROTATION);
 
-      const { token } = await service.sign({
-        sub: 'user-1',
-        email: 'a@b.com',
-      });
+      const header = decodeProtectedHeader((await signer()).token);
 
-      const header = decodeProtectedHeader(token);
       expect(header.kid).toBe('v2');
     });
 
-    it('devrait verifier un token signe avec la cle courante', async () => {
-      const { token } = await service.sign({
-        sub: 'user-1',
-        email: 'a@b.com',
-      });
-
-      const payload: JwtPayload = await service.verify(token);
-      expect(payload.sub).toBe('user-1');
-      expect(payload.email).toBe('a@b.com');
-    });
-
     it('devrait verifier un token signe avec la cle precedente quand JWT_SECRET_PREVIOUS est configure', async () => {
-      const oldSecret = encodeSecret(JWT_SECRET_PREVIOUS);
-      const token = await new SignJWT({
-        sub: 'user-1',
-        email: 'a@b.com',
-        roles: [],
-      })
-        .setProtectedHeader({ alg: 'HS256', kid: 'v1' })
-        .setIssuedAt()
-        .setExpirationTime('1h')
-        .setIssuer('portfolio-2025')
-        .setAudience('portfolio-2025-api')
-        .sign(oldSecret);
-
-      configService.get.mockImplementation((key: string) => {
-        if (key === 'JWT_SECRET') return JWT_SECRET;
-        if (key === 'JWT_EXPIRES_IN') return '3600s';
-        if (key === 'JWT_SECRET_PREVIOUS') return JWT_SECRET_PREVIOUS;
-        return undefined;
+      const token = await signRawToken(encodeSecret(JWT_SECRET_PREVIOUS), {
+        kid: 'v1',
       });
+      configurer(CONFIG_EN_ROTATION);
 
       const payload: JwtPayload = await service.verify(token);
+
       expect(payload.sub).toBe('user-1');
       expect(payload.email).toBe('a@b.com');
     });
 
     it('devrait rejeter un token signe avec une cle inconnue', async () => {
-      const unknownSecret = encodeSecret('unknown-secret-that-is-long-enough!');
-      const token = await new SignJWT({
-        sub: 'user-1',
-        email: 'a@b.com',
-        roles: [],
-      })
-        .setProtectedHeader({ alg: 'HS256', kid: 'v0' })
-        .setIssuedAt()
-        .setExpirationTime('1h')
-        .setIssuer('portfolio-2025')
-        .setAudience('portfolio-2025-api')
-        .sign(unknownSecret);
+      const token = await signRawToken(
+        encodeSecret('unknown-secret-that-is-long-enough!'),
+        { kid: 'v0' },
+      );
 
       await expect(service.verify(token)).rejects.toThrow('Invalid signature');
 
-      configService.get.mockImplementation((key: string) => {
-        if (key === 'JWT_SECRET') return JWT_SECRET;
-        if (key === 'JWT_EXPIRES_IN') return '3600s';
-        if (key === 'JWT_SECRET_PREVIOUS') return JWT_SECRET_PREVIOUS;
-        return undefined;
-      });
+      configurer(CONFIG_EN_ROTATION);
 
       await expect(service.verify(token)).rejects.toThrow('Invalid signature');
     });

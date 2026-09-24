@@ -70,7 +70,7 @@ L'agent respecte strictement cette stack. Il n'introduit pas de framework, ORM, 
 - Pattern builder avec overrides pour les cas specifiques :
   ```typescript
   // OK
-  const user = buildUser({ email: 'test@example.com', roles: ['budget'] });
+  const user = buildUser({ email: 'test@example.com', roles: ['teacher'] });
   const repo = createMockUsersRepo();
   // INTERDIT
   const repo = { findAll: jest.fn(), create: jest.fn(), ... }; // copie dans chaque spec

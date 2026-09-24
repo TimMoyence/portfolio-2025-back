@@ -5,15 +5,11 @@ import {
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import {
-  ParticipantNotFoundError,
-  SessionNotFoundError,
-  SessionNotOwnedError,
-} from '../../domain/errors/FormationErrors';
+import { verifierGardesDuFormateur } from '../../../../../test/helpers/gardes-de-seance';
+import { ParticipantNotFoundError } from '../../domain/errors/FormationErrors';
 import { EvincerParticipantUseCase } from '../EvincerParticipant.useCase';
 
 const TEACHER_ID = 'teacher-uuid';
-const AUTRE_TEACHER = 'autre-teacher-uuid';
 const PARTICIPANT_ID = 'participant-uuid';
 
 describe('EvincerParticipantUseCase', () => {
@@ -40,20 +36,12 @@ describe('EvincerParticipantUseCase', () => {
     expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
   });
 
-  it('refuse un formateur qui n est pas proprietaire de la seance', async () => {
-    await expect(
-      sut.execute('session-uuid', AUTRE_TEACHER, PARTICIPANT_ID),
-    ).rejects.toThrow(SessionNotOwnedError);
-    expect(participants.evincer).not.toHaveBeenCalled();
-  });
-
-  it('signale une seance introuvable', async () => {
-    sessions.findById.mockResolvedValue(null);
-
-    await expect(
-      sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
-    ).rejects.toThrow(SessionNotFoundError);
-  });
+  verifierGardesDuFormateur(() => ({
+    sessions,
+    executerPar: (teacherId) =>
+      sut.execute('session-uuid', teacherId, PARTICIPANT_ID),
+    effetsInterdits: () => [participants.evincer],
+  }));
 
   it('signale un participant absent ou deja evince', async () => {
     participants.evincer.mockResolvedValue(false);

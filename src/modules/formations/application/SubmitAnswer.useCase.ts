@@ -1,31 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
-import { libelleDeConfusion } from '../domain/cours/banque/confusions';
+import { libelleLisible } from '../domain/cours/banque/confusions';
 import { assertEcranServi, rangDeLaQuestion } from '../domain/cours/EcranServi';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
-import {
-  AnswerAlreadySubmittedError,
-  CoursInconnuError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
+import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
+import { coursDeLaSeance, seanceOuverteAuxReponses } from './CoursDeLaSeance';
+import { EnregistrementDeReponse } from './EnregistrementDeReponse';
 import { participantActif } from './ParticipantActif';
-import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import type { IAnswersRepository } from '../domain/IAnswers.repository';
-import type { IMasteryRepository } from '../domain/IMastery.repository';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
-import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { assertReponsesOuvertes } from '../domain/SessionState';
-import {
-  ANSWERS_REPOSITORY,
-  CATALOGUE_COURS,
-  MASTERY_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
-  SESSION_STATE_CACHE,
-  SESSIONS_REPOSITORY,
-} from '../domain/token';
 import type {
   SubmitAnswerCommand,
   SubmitAnswerResult,
@@ -39,28 +22,12 @@ const TYPES_A_ROUTE_PROPRE: readonly string[] = [
 ];
 
 @Injectable()
-export class SubmitAnswerUseCase {
-  constructor(
-    @Inject(SESSIONS_REPOSITORY)
-    private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
-    @Inject(ANSWERS_REPOSITORY)
-    private readonly answers: IAnswersRepository,
-    @Inject(MASTERY_REPOSITORY)
-    private readonly mastery: IMasteryRepository,
-    @Inject(SESSION_STATE_CACHE)
-    private readonly cache: ISessionStateCache,
-    @Inject(CATALOGUE_COURS)
-    private readonly catalogue: ICatalogueCours,
-  ) {}
-
+export class SubmitAnswerUseCase extends EnregistrementDeReponse {
   async execute(command: SubmitAnswerCommand): Promise<SubmitAnswerResult> {
-    const session = await this.sessions.findById(command.sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(command.sessionId);
-    }
-    assertReponsesOuvertes(session.etat);
+    const session = await seanceOuverteAuxReponses(
+      this.sessions,
+      command.sessionId,
+    );
 
     const deja = await this.answers.existsFor(
       command.participantId,
@@ -87,13 +54,7 @@ export class SubmitAnswerUseCase {
         `La question ${command.questionId} de type ${question.type} passe par sa propre route`,
       );
     }
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
-    );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const rangEcran =
       'rangEcran' in question
         ? question.rangEcran
@@ -152,9 +113,7 @@ export class SubmitAnswerUseCase {
 
     return {
       ...verdict,
-      libelleConfusion: verdict.misconception
-        ? (libelleDeConfusion(verdict.misconception) ?? verdict.misconception)
-        : null,
+      libelleConfusion: libelleLisible(verdict.misconception),
     };
   }
 }

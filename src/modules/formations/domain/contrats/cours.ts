@@ -5,10 +5,10 @@ import type {
   AuMoinsUn,
   Cours as CoursActuel,
   Ecran as EcranActuel,
-  Modalite,
   QuestionNumerique,
   QuestionVote,
   RegimeVerrou,
+  SocleHistorique,
 } from '../cours/Cours';
 import type {
   CorrigeDefi,
@@ -60,12 +60,12 @@ type ProprietesActuelles<B extends EcranActuel['brique']> =
     ? P
     : never;
 
-type GuideFormateur = NonNullable<EcranActuel['guide']>;
-
 type Prereglages = readonly {
   readonly libelle: string;
   readonly valeurs: Readonly<Record<string, number>>;
 }[];
+
+type Animation = readonly Readonly<Record<string, number>>[];
 
 export interface ProprietesExposition {
   readonly 'fp-quote': ProprietesActuelles<'fp-quote'>;
@@ -79,6 +79,7 @@ export interface ProprietesExposition {
   };
   readonly 'fp-concept4': ProprietesActuelles<'fp-concept4'> & {
     readonly prereglages?: Prereglages;
+    readonly animation?: Animation;
   };
   readonly 'fp-plot': ProprietesActuelles<'fp-plot'> & {
     readonly bornesOrdonnee?: {
@@ -94,23 +95,33 @@ export interface ProprietesExposition {
     readonly etiquettes?: readonly string[];
     readonly prereglages?: Prereglages;
     readonly reference?: string;
+    readonly animation?: Animation;
   };
   readonly 'fp-pulse': {
     readonly sondage: { readonly id: string; readonly invite: string };
   };
 }
 
-interface EcranCommun {
-  readonly id: string;
+export const PARTS_DU_RENVOI = [30, 40, 50, 60, 70] as const;
+
+export const CHAMPS_EXTRAITS_DU_CAS = [
+  'metier',
+  'situation',
+  'geste',
+  'consequence',
+] as const;
+
+export interface CadrageDuRenvoi {
+  readonly part: (typeof PARTS_DU_RENVOI)[number];
+  readonly extrait?: {
+    readonly lignes?: readonly number[];
+    readonly champs?: readonly (typeof CHAMPS_EXTRAITS_DU_CAS)[number][];
+  };
+}
+
+interface EcranCommun extends SocleHistorique {
   readonly titre: string | null;
   readonly diffusion: Diffusion;
-  readonly dureeMinutes: number;
-  readonly concepts: AuMoinsUn<ConceptId>;
-  readonly notes: string;
-  readonly modalite?: Modalite;
-  readonly question?: QuestionVote;
-  readonly guide?: GuideFormateur;
-  readonly renvoi?: string;
 }
 
 type EcranExposition = {

@@ -26,6 +26,8 @@ import { NotesFormateurFacultatives1790300000000 } from '../../src/migrations/17
 import { PlafondDesReprisesDeProduction1790400000000 } from '../../src/migrations/1790400000000-PlafondDesReprisesDeProduction';
 import { DiffusionSeanceParDefaut1790500000000 } from '../../src/migrations/1790500000000-DiffusionSeanceParDefaut';
 import { RetireLesGroupesDeSuivi1790600000000 } from '../../src/migrations/1790600000000-RetireLesGroupesDeSuivi';
+import { AjouteEmpreinteDeReprise1790700000000 } from '../../src/migrations/1790700000000-AjouteEmpreinteDeReprise';
+import { AjouteGenerationDeJeton1790900000000 } from '../../src/migrations/1790900000000-AjouteGenerationDeJeton';
 import {
   SynchroniserCoursUseCase,
   type IssueDeSynchronisation,
@@ -61,6 +63,7 @@ import { FormationTeacherAnnotationEntity } from '../../src/modules/formations/i
 import { FreeResponsesRepositoryTypeORM } from '../../src/modules/formations/infrastructure/FreeResponses.repository.typeorm';
 import { IncidentsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Incidents.repository.typeorm';
 import { MasteryRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Mastery.repository.typeorm';
+import { SecretDeReprise } from '../../src/modules/formations/domain/SecretDeReprise';
 import { ParticipantsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Participants.repository.typeorm';
 import { ScoresRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Scores.repository.typeorm';
 import { SessionsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Sessions.repository.typeorm';
@@ -113,6 +116,8 @@ const FORMATION_MIGRATIONS = [
   PlafondDesReprisesDeProduction1790400000000,
   DiffusionSeanceParDefaut1790500000000,
   RetireLesGroupesDeSuivi1790600000000,
+  AjouteEmpreinteDeReprise1790700000000,
+  AjouteGenerationDeJeton1790900000000,
 ];
 
 export const TABLES_DE_SEANCE = [
@@ -161,6 +166,8 @@ export async function inscrireParticipant(
   const { participant } = await participants.inscrire({
     ...identite,
     capacite: CAPACITE_MAXIMALE_DE_SEANCE,
+    empreinteDeReprise: SecretDeReprise.empreinte(identite.studentKey),
+    repriseAutorisee: () => true,
     choisirGraine: () => seed,
   });
   return participant;

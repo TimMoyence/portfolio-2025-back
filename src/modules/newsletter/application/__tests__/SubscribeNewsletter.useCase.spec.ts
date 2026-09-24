@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import {
-  buildNewsletterSubscriber,
+  buildAbonnePersiste,
   createMockNewsletterMailer,
   createMockNewsletterSubscriberRepo,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
+import type { NewsletterSubscriber } from '../../domain/NewsletterSubscriber';
 import { SubscribeNewsletterUseCase } from '../SubscribeNewsletter.useCase';
 import type { SubscribeNewsletterCommand } from '../dto/SubscribeNewsletter.command';
+
+const MINUTE_MS = 60 * 1000;
 
 describe('SubscribeNewsletterUseCase', () => {
   const validCommand: SubscribeNewsletterCommand = {
@@ -23,80 +26,88 @@ describe('SubscribeNewsletterUseCase', () => {
   let mailer: ReturnType<typeof createMockNewsletterMailer>;
   let useCase: SubscribeNewsletterUseCase;
 
+  const souscrire = async () => {
+    const result = await useCase.execute(validCommand);
+    await flushPromises();
+    return result;
+  };
+
+  const souscrireSurUnAbonne = async (
+    preparer?: (abonne: NewsletterSubscriber) => void,
+  ) => {
+    const existing = buildAbonnePersiste(preparer);
+    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
+    return { existing, result: await souscrire() };
+  };
+
   beforeEach(() => {
     repo = createMockNewsletterSubscriberRepo();
     mailer = createMockNewsletterMailer();
     useCase = new SubscribeNewsletterUseCase(repo, mailer);
   });
 
-  it('cree un abonne et envoie l\u2019email de confirmation sur un email nouveau', async () => {
-    const result = await useCase.execute(validCommand);
-    await flushPromises();
+  it('cree un abonne et envoie l’email de confirmation sur un email nouveau', async () => {
+    const result = await souscrire();
 
-    expect(result.created).toBe(true);
-    expect(result.alreadySubscribed).toBe(false);
-    expect(result.status).toBe('pending');
+    expect(result).toEqual({
+      created: true,
+      alreadySubscribed: false,
+      status: 'pending',
+    });
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
   });
 
   it("renvoie un email de confirmation sans recreer quand l'abonne est deja pending", async () => {
-    const existing = buildNewsletterSubscriber();
-    existing.id = 'existing-id';
-    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
+    const { existing, result } = await souscrireSurUnAbonne();
 
-    const result = await useCase.execute(validCommand);
-    await flushPromises();
-
-    expect(result.created).toBe(false);
-    expect(result.alreadySubscribed).toBe(true);
-    expect(result.status).toBe('pending');
+    expect(result).toEqual({
+      created: false,
+      alreadySubscribed: true,
+      status: 'pending',
+    });
     expect(repo.create).not.toHaveBeenCalled();
     expect(mailer.sendConfirmation).toHaveBeenCalledWith(existing);
   });
 
-  it('ne renvoie PAS d\u2019email quand l\u2019abonne est deja confirme', async () => {
-    const existing = buildNewsletterSubscriber();
-    existing.id = 'existing-id';
-    existing.confirm(new Date('2026-04-10T11:00:00Z'));
-    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
+  it.each([
+    [
+      'confirme',
+      'confirmed',
+      (abonne: NewsletterSubscriber) =>
+        abonne.confirm(new Date('2026-04-10T11:00:00Z')),
+    ],
+    [
+      'unsubscribed',
+      'unsubscribed',
+      (abonne: NewsletterSubscriber) => abonne.unsubscribe(),
+    ],
+  ])(
+    'ne renvoie PAS d’email quand l’abonne est deja %s',
+    async (_label, status, preparer) => {
+      const { result } = await souscrireSurUnAbonne(preparer);
 
-    const result = await useCase.execute(validCommand);
-    await flushPromises();
-
-    expect(result.created).toBe(false);
-    expect(result.alreadySubscribed).toBe(true);
-    expect(result.status).toBe('confirmed');
-    expect(mailer.sendConfirmation).not.toHaveBeenCalled();
-  });
-
-  it('ne renvoie PAS d\u2019email quand l\u2019abonne est unsubscribed', async () => {
-    const existing = buildNewsletterSubscriber();
-    existing.id = 'existing-id';
-    existing.unsubscribe();
-    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
-
-    const result = await useCase.execute(validCommand);
-    await flushPromises();
-
-    expect(result.status).toBe('unsubscribed');
-    expect(mailer.sendConfirmation).not.toHaveBeenCalled();
-  });
+      expect(result).toEqual({
+        created: false,
+        alreadySubscribed: true,
+        status,
+      });
+      expect(mailer.sendConfirmation).not.toHaveBeenCalled();
+    },
+  );
 
   it('journalise et ne propage pas un echec SMTP', async () => {
     mailer.sendConfirmation.mockRejectedValueOnce(new Error('SMTP down'));
 
-    await expect(useCase.execute(validCommand)).resolves.toEqual({
+    await expect(souscrire()).resolves.toEqual({
       created: true,
       alreadySubscribed: false,
       status: 'pending',
     });
-    await flushPromises();
   });
 
-  it('absorbe silencieusement une race condition `ResourceConflictError`', async () => {
-    const raced = buildNewsletterSubscriber();
-    raced.id = 'raced-id';
+  it('absorbe une race condition `ResourceConflictError`', async () => {
+    const raced = buildAbonnePersiste();
     repo.findByEmailAndSource
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(raced);
@@ -104,12 +115,13 @@ describe('SubscribeNewsletterUseCase', () => {
       new ResourceConflictError('already exists'),
     );
 
-    const result = await useCase.execute(validCommand);
-    await flushPromises();
+    const result = await souscrire();
 
-    expect(result.created).toBe(false);
-    expect(result.alreadySubscribed).toBe(true);
-    expect(result.status).toBe('pending');
+    expect(result).toEqual({
+      created: false,
+      alreadySubscribed: true,
+      status: 'pending',
+    });
     expect(repo.findByEmailAndSource).toHaveBeenCalledTimes(2);
     expect(mailer.sendConfirmation).toHaveBeenCalledWith(raced);
   });
@@ -119,40 +131,27 @@ describe('SubscribeNewsletterUseCase', () => {
     await expect(useCase.execute(validCommand)).rejects.toThrow('DB down');
   });
 
-  it('applique le cooldown anti mail-bombing (10 min) sur un pending re-souscrit', async () => {
-    const existing = buildNewsletterSubscriber();
-    existing.id = 'existing-id';
-    existing.markConfirmationSent(new Date(Date.now() - 2 * 60 * 1000));
-    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
+  it.each([
+    ['ne renvoie pas', 2, 0],
+    ['renvoie', 15, 1],
+  ])(
+    '%s l’email a un pending re-souscrit %i min apres le dernier envoi (cooldown 10 min)',
+    async (_label, minutes, envois) => {
+      const { result } = await souscrireSurUnAbonne((abonne) =>
+        abonne.markConfirmationSent(new Date(Date.now() - minutes * MINUTE_MS)),
+      );
 
-    const result = await useCase.execute(validCommand);
-    await flushPromises();
-
-    expect(result.alreadySubscribed).toBe(true);
-    expect(mailer.sendConfirmation).not.toHaveBeenCalled();
-  });
-
-  it('renvoie un email apres le cooldown (> 10 min depuis le dernier envoi)', async () => {
-    const existing = buildNewsletterSubscriber();
-    existing.id = 'existing-id';
-    existing.markConfirmationSent(new Date(Date.now() - 15 * 60 * 1000));
-    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
-
-    await useCase.execute(validCommand);
-    await flushPromises();
-
-    expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
-  });
+      expect(result.alreadySubscribed).toBe(true);
+      expect(mailer.sendConfirmation).toHaveBeenCalledTimes(envois);
+    },
+  );
 
   it('fait tourner le confirmToken quand il est expire avant de renvoyer', async () => {
-    const existing = buildNewsletterSubscriber();
-    existing.id = 'existing-id';
-    existing.confirmTokenExpiresAt = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const previousToken = existing.confirmToken;
-    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
-
-    await useCase.execute(validCommand);
-    await flushPromises();
+    let previousToken = '';
+    const { existing } = await souscrireSurUnAbonne((abonne) => {
+      abonne.confirmTokenExpiresAt = new Date(Date.now() - 24 * 60 * MINUTE_MS);
+      previousToken = abonne.confirmToken;
+    });
 
     expect(existing.confirmToken).not.toBe(previousToken);
     expect(existing.confirmTokenExpiresAt.getTime()).toBeGreaterThan(
@@ -162,13 +161,9 @@ describe('SubscribeNewsletterUseCase', () => {
   });
 
   it('persiste `lastConfirmationSentAt` apres un envoi (audit + cooldown)', async () => {
-    const existing = buildNewsletterSubscriber();
-    existing.id = 'existing-id';
-    expect(existing.lastConfirmationSentAt).toBeNull();
-    repo.findByEmailAndSource.mockResolvedValueOnce(existing);
-
-    await useCase.execute(validCommand);
-    await flushPromises();
+    const { existing } = await souscrireSurUnAbonne((abonne) =>
+      expect(abonne.lastConfirmationSentAt).toBeNull(),
+    );
 
     expect(existing.lastConfirmationSentAt).not.toBeNull();
     expect(repo.update).toHaveBeenCalledWith(existing);

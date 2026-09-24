@@ -37,6 +37,7 @@ import {
   EN_TETE_IDENTITE,
   monterBancFormations,
   PREFIXE_API,
+  serveurHttpDe,
   type BancFormations,
   type FluxEcoute,
 } from './helpers/formations-harness';
@@ -148,8 +149,7 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
   ];
   const evince: Poste = posteDe('X', 'juste');
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    banc.app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(banc.app);
 
   const chemin = (suffixe: string): string =>
     `/${PREFIXE_API}/formations${suffixe}`;
@@ -591,6 +591,65 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
       dureeMs: DUREE_MS,
     });
 
+  const ecrituresDesBriques = (
+    auteur: Poste,
+    libre: Ecran,
+    texte: string,
+  ): Record<string, () => Test> => {
+    const feuille = ecranDe('fp-sheet');
+    const coffre = ecranDe('fp-escape');
+    const jalon = ecranDe('fp-pulse');
+    const defi = ecranDe('fp-challenge');
+    if (
+      coffre.brique !== 'fp-escape' ||
+      jalon.brique !== 'fp-pulse' ||
+      defi.brique !== 'fp-challenge'
+    ) {
+      throw new Error('Ecrans du B2-01 mal identifies');
+    }
+    return {
+      production: () =>
+        produire(
+          auteur,
+          productionDe(feuille),
+          productionJuste(productionDe(feuille)),
+        ),
+      enigme: () =>
+        poste(
+          'post',
+          `/sessions/${sessionId}/escape/${coffre.proprietes.parcours.id}/tentatives`,
+          auteur.jeton,
+        ).send({
+          enigmeId: coffre.enigmes[0].id,
+          reponse: '1',
+          dureeMs: DUREE_MS,
+        }),
+      jalon: () =>
+        poste(
+          'put',
+          `/sessions/${sessionId}/pulses/${jalon.proprietes.sondage.id}`,
+          auteur.jeton,
+        ).send({ etat: 'clair' }),
+      reponseLibre: () =>
+        poste(
+          'post',
+          `/sessions/${sessionId}/free-responses`,
+          auteur.jeton,
+        ).send({
+          screenId: libre.id,
+          activityId: (activitesLibres(cours).get(libre.id) ?? [''])[0],
+          response: texte,
+          dureeMs: DUREE_MS,
+        }),
+      defi: () =>
+        poste(
+          'post',
+          `/sessions/${sessionId}/defis/${defi.proprietes.probleme.id}/tentative`,
+          auteur.jeton,
+        ).send({ texte, dureeMs: DUREE_MS }),
+    };
+  };
+
   const jouerRythmeLibre = async (): Promise<void> => {
     const libres = [...activitesLibres(cours).keys()];
     const dedans = cours.ecrans.find(
@@ -776,60 +835,22 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
         await repondre(unPoste, questionsDe(rappel)[0]).expect(CREE);
       }
 
-      const questionnaire = ecranDe('questionnaire');
-      const feuille = ecranDe('fp-sheet');
-      const coffre = ecranDe('fp-escape');
-      const jalon = ecranDe('fp-pulse');
-      const defi = ecranDe('fp-challenge');
       const exercice = cours.ecrans.find(
         ({ id }) => id === 'B2-01-A2-06-POINTS',
       );
-      if (
-        exercice === undefined ||
-        coffre.brique !== 'fp-escape' ||
-        jalon.brique !== 'fp-pulse' ||
-        defi.brique !== 'fp-challenge'
-      ) {
+      if (exercice === undefined) {
         throw new Error('Ecrans du B2-01 mal identifies');
       }
       const enAvance = [
-        await repondre(postes[1], questionsDe(questionnaire)[0]),
-        await produire(
-          postes[1],
-          productionDe(feuille),
-          productionJuste(productionDe(feuille)),
-        ),
-        await poste(
-          'post',
-          `/sessions/${sessionId}/escape/${coffre.proprietes.parcours.id}/tentatives`,
-          postes[1].jeton,
-        ).send({
-          enigmeId: coffre.enigmes[0].id,
-          reponse: '1',
-          dureeMs: DUREE_MS,
-        }),
-        await poste(
-          'put',
-          `/sessions/${sessionId}/pulses/${jalon.proprietes.sondage.id}`,
-          postes[1].jeton,
-        ).send({ etat: 'clair' }),
+        await repondre(postes[1], questionsDe(ecranDe('questionnaire'))[0]),
         await poste('get', `/sessions/${sessionId}/rappels`, postes[1].jeton),
-        await poste(
-          'post',
-          `/sessions/${sessionId}/free-responses`,
-          postes[1].jeton,
-        ).send({
-          screenId: exercice.id,
-          activityId: (activitesLibres(cours).get(exercice.id) ?? [''])[0],
-          response: 'Trop tot.',
-          dureeMs: DUREE_MS,
-        }),
-        await poste(
-          'post',
-          `/sessions/${sessionId}/defis/${defi.proprietes.probleme.id}/tentative`,
-          postes[1].jeton,
-        ).send({ texte: 'Trop tot.', dureeMs: DUREE_MS }),
-      ].map(noterConflit);
+      ];
+      for (const ecrire of Object.values(
+        ecrituresDesBriques(postes[1], exercice, 'Trop tot.'),
+      )) {
+        enAvance.push(await ecrire());
+      }
+      enAvance.forEach(noterConflit);
 
       await formateur(
         'delete',
@@ -1124,6 +1145,21 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
   );
 
   it(
+    'T4 · accepte le billet de sortie de chaque poste tant que la seance est ouverte',
+    async () => {
+      const billet = questionsDe(ecranDe('fp-exit'))[0];
+      const billets: { nombre: number }[] =
+        await banc.contexte.dataSource.query(
+          'SELECT COUNT(DISTINCT participant_id)::int AS "nombre" FROM formation_answers WHERE session_id = $1 AND question_id = $2',
+          [sessionId, billet.id],
+        );
+
+      expect(billets[0].nombre).toBe(CAPACITE);
+    },
+    DELAI_TEST_MS,
+  );
+
+  it(
     'clot la seance, refuse toute ecriture ensuite et rend le rapport etendu',
     async () => {
       await formateur('post', `/sessions/${sessionId}/close`).expect(
@@ -1176,6 +1212,45 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
         copies: CAPACITE,
       });
       expect(JSON.stringify(bilan)).not.toContain('[object Object]');
+    },
+    DELAI_TEST_MS,
+  );
+
+  it(
+    'T4 · refuse en 409 SEANCE_TERMINEE chaque ecriture etudiante apres la cloture',
+    async () => {
+      const auteur = postes[0];
+      const libre = cours.ecrans.find(
+        (ecran) => (activitesLibres(cours).get(ecran.id) ?? []).length > 0,
+      );
+      if (libre === undefined) {
+        throw new Error('Le B2-01 publie ne porte aucune reponse libre');
+      }
+      const ecritures: Record<string, () => Test> = {
+        billet: () => repondre(auteur, questionsDe(ecranDe('fp-exit'))[0]),
+        ...ecrituresDesBriques(auteur, libre, 'Apres la cloture.'),
+        incidents: () =>
+          poste('post', `/sessions/${sessionId}/incidents`, auteur.jeton).send({
+            incidents: [
+              { type: 'tab_hidden', horodatage: new Date().toISOString() },
+            ],
+          }),
+      };
+
+      const verdicts: Record<string, [number, string | undefined]> = {};
+      for (const [nom, ecrire] of Object.entries(ecritures)) {
+        const reponse = await ecrire();
+        verdicts[nom] = [reponse.status, codeDe(reponse)];
+      }
+
+      expect(verdicts).toEqual(
+        Object.fromEntries(
+          Object.keys(ecritures).map((nom) => [
+            nom,
+            [CONFLIT, 'SEANCE_TERMINEE'],
+          ]),
+        ),
+      );
     },
     DELAI_TEST_MS,
   );

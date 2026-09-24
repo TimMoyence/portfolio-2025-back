@@ -17,31 +17,7 @@ import type { Bareme } from './Bareme';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { Solution } from './AnswerGrading';
 
-const bareme: Bareme = {
-  version: 1,
-  graineReference: 9_999_999,
-  questions: [
-    {
-      id: 'Q-CAP-03',
-      type: 'numeric',
-      concept: 'capitalisation',
-      tolerance: { type: 'relative', valeur: 0.005 },
-      noteCompte: true,
-    },
-  ],
-  tirages: [
-    {
-      seed: 1001,
-      solutions: {
-        'Q-CAP-03': {
-          valeur: 1338.23,
-          pieges: [{ valeur: 1300, misconception: 'interet-simple' }],
-        },
-      },
-    },
-    { seed: 1002, solutions: { 'Q-CAP-03': { valeur: 1500, pieges: [] } } },
-  ],
-};
+const bareme: Bareme = buildBareme();
 
 describe('findQuestion', () => {
   it('retrouve une question par son identifiant', () => {

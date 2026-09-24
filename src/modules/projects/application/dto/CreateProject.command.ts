@@ -1,13 +1,3 @@
-import { ProjectStatus, ProjectType } from '../../domain/Projects';
+import type { CreateProjectProps } from '../../domain/Projects';
 
-export interface CreateProjectCommand {
-  slug: string;
-  type?: ProjectType;
-  repoUrl?: string;
-  liveUrl?: string;
-  coverImage?: string;
-  gallery?: string[];
-  stack?: string[];
-  status?: ProjectStatus;
-  order?: number;
-}
+export type CreateProjectCommand = CreateProjectProps;

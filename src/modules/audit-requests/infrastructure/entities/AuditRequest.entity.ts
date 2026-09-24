@@ -1,10 +1,5 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { ColonnesDeProvenance } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
@@ -21,7 +16,7 @@ import type { EngineCoverage } from '../../domain/EngineCoverage';
 @Index('idx_audit_requests_ip_created_at', ['ip', 'createdAt'], {
   where: '"ip" IS NOT NULL',
 })
-export class AuditRequestEntity {
+export class AuditRequestEntity extends ColonnesDeProvenance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -91,33 +86,6 @@ export class AuditRequestEntity {
   @Column({ type: 'timestamp', nullable: true })
   finishedAt?: Date | null;
 
-  @Column({ type: 'inet', nullable: true })
-  ip?: string;
-
-  @Column({ type: 'text', nullable: true })
-  userAgent?: string;
-
-  @Column({ type: 'text', nullable: true })
-  referer?: string;
-
   @Column({ type: 'text', default: 'fr' })
   locale: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_or_created_by',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  updatedOrCreatedBy: string | null;
 }

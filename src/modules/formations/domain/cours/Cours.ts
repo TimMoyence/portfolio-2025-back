@@ -1,5 +1,6 @@
 import type { Tolerance } from '../GradingCore';
 import type {
+  CadrageDuRenvoi,
   Cours as CoursDuContrat,
   Ecran as EcranDuContrat,
   Question as QuestionDuContrat,
@@ -216,7 +217,7 @@ interface GuideFormateur {
   readonly transition?: string;
 }
 
-interface SocleHistorique {
+export interface SocleHistorique {
   readonly id: string;
   readonly dureeMinutes: number;
   readonly concepts: AuMoinsUn<ConceptId>;
@@ -225,6 +226,7 @@ interface SocleHistorique {
   readonly question?: QuestionVote;
   readonly guide?: GuideFormateur;
   readonly renvoi?: string;
+  readonly cadrageDuRenvoi?: CadrageDuRenvoi;
 }
 
 type BriqueDExpositionHistorique = keyof ProprietesDesExpositionsHistoriques;

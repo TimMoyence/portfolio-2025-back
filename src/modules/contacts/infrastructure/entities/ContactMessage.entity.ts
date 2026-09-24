@@ -1,13 +1,8 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { ColonnesDeProvenance } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'contacts' })
-export class ContactMessagesEntity {
+export class ContactMessagesEntity extends ColonnesDeProvenance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -61,31 +56,4 @@ export class ContactMessagesEntity {
     default: 'NEW',
   })
   status: 'NEW' | 'READ' | 'REPLIED' | 'SPAM';
-
-  @Column({ type: 'inet', nullable: true })
-  ip?: string;
-
-  @Column({ type: 'text', nullable: true })
-  userAgent?: string;
-
-  @Column({ type: 'text', nullable: true })
-  referer?: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_or_created_by',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  updatedOrCreatedBy: string | null;
 }

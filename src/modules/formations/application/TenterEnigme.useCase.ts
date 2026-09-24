@@ -1,9 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-  assertCorrectionNonProjetee,
-  assertEcranServi,
-} from '../domain/cours/EcranServi';
-import {
   corrigerEnigme,
   ecranDEnigmes,
   enigmeOuverte,
@@ -11,15 +7,11 @@ import {
 } from '../domain/cours/Enigmes';
 import type { ProgressionDEnigme } from '../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
   AnswerAlreadySubmittedError,
-  CoursInconnuError,
   EnigmeDejaResolueError,
   EnigmeInconnueError,
   EnigmeVerrouilleeError,
-  ParticipantNotFoundError,
-  SessionNotFoundError,
   TentativesEpuiseesError,
 } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
@@ -28,7 +20,6 @@ import type { IMasteryRepository } from '../domain/IMastery.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
-import { assertReponsesOuvertes } from '../domain/SessionState';
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
@@ -38,6 +29,12 @@ import {
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import {
+  assertEcranOuvertAuxProductions,
+  coursDeLaSeance,
+  seanceOuverteAuxReponses,
+} from './CoursDeLaSeance';
+import { participantActif } from './ParticipantActif';
 
 export interface TenterEnigmeCommand {
   readonly sessionId: string;
@@ -74,39 +71,26 @@ export class TenterEnigmeUseCase {
   ) {}
 
   async execute(command: TenterEnigmeCommand): Promise<TenterEnigmeResult> {
-    const session = await this.sessions.findById(command.sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(command.sessionId);
-    }
-    assertReponsesOuvertes(session.etat);
-
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
+    const session = await seanceOuverteAuxReponses(
+      this.sessions,
+      command.sessionId,
     );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const cible = ecranDEnigmes(cours, command.parcoursId);
     if (cible === null) {
       throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
     }
-    assertEcranServi(session, cible.rang, cible.ecran.id, cours.ecrans.length);
-    assertPhaseOuverte(session.pilotageEcrans, { ecranId: cible.ecran.id });
-    assertCorrectionNonProjetee(session, cours, cible.ecran.id);
+    assertEcranOuvertAuxProductions(session, cours, cible);
 
     const visee = enigmeVisee(cible, command.enigmeId);
     if (visee === null) {
       throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
     }
-    const participant = await this.participants.findById(command.participantId);
-    if (
-      !participant ||
-      participant.sessionId !== command.sessionId ||
-      participant.evinceLe !== null
-    ) {
-      throw new ParticipantNotFoundError(command.participantId);
-    }
+    const participant = await participantActif(
+      this.participants,
+      command.sessionId,
+      command.participantId,
+    );
 
     const progression = await this.lireProgression(command);
     if (!enigmeOuverte(cible, progression, visee.rangEnigme)) {

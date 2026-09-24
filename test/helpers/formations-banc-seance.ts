@@ -12,7 +12,8 @@ import {
 import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
-  PREFIXE_API,
+  routeFormations,
+  serveurHttpDe,
 } from './formations-harness';
 import { ecouterEnBoucleLocale, fermerApplication } from './nest-test-app';
 import { silenceNestLogger } from './silence-nest-logger';
@@ -97,11 +98,9 @@ export function installerBancDeSeance(options: {
   let secretJalon: string | undefined;
   const identiteParDefaut = `${FORMATEUR_DE_TEST}:teacher`;
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(app);
 
-  const route = (chemin: string): string =>
-    `/${PREFIXE_API}/formations${chemin}`;
+  const route = routeFormations;
 
   const formateur = (
     methode: MethodeHttp,

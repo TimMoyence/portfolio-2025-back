@@ -8,20 +8,6 @@ import {
   legacyControllerProviders,
 } from './factories/legacy-contract.factory';
 
-import { WeatherController } from '../src/modules/weather/interfaces/Weather.controller';
-import { GetGeocodingUseCase } from '../src/modules/weather/application/GetGeocoding.useCase';
-import { GetForecastUseCase } from '../src/modules/weather/application/GetForecast.useCase';
-import { GetAirQualityUseCase } from '../src/modules/weather/application/GetAirQuality.useCase';
-import { GetEnsembleUseCase } from '../src/modules/weather/application/GetEnsemble.useCase';
-import { GetHistoricalUseCase } from '../src/modules/weather/application/GetHistorical.useCase';
-import { GetUserPreferencesUseCase } from '../src/modules/weather/application/GetUserPreferences.useCase';
-import { UpdateUserPreferencesUseCase } from '../src/modules/weather/application/UpdateUserPreferences.useCase';
-import { RecordUsageUseCase } from '../src/modules/weather/application/RecordUsage.useCase';
-import { GetWeatherAlertsUseCase } from '../src/modules/weather/application/GetWeatherAlerts.useCase';
-import { GetCurrentDetailedWeatherUseCase } from '../src/modules/weather/application/GetCurrentDetailedWeather.useCase';
-import { GetForecastDetailedWeatherUseCase } from '../src/modules/weather/application/GetForecastDetailedWeather.useCase';
-import { OPENWEATHERMAP_PROXY } from '../src/modules/weather/domain/token';
-
 import { UsersController } from '../src/modules/users/interfaces/Users.controller';
 import { ListUsersUseCase } from '../src/modules/users/application/ListUsers.useCase';
 import { ListOneUserUseCase } from '../src/modules/users/application/ListOneUser.useCase';
@@ -174,7 +160,6 @@ describe('OpenAPI core contract', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [
-        WeatherController,
         UsersController,
         AuthController,
         ContactsController,
@@ -183,19 +168,6 @@ describe('OpenAPI core contract', () => {
       ],
       providers: [
         RolesGuard,
-
-        { provide: GetGeocodingUseCase, useValue: stub() },
-        { provide: GetForecastUseCase, useValue: stub() },
-        { provide: GetAirQualityUseCase, useValue: stub() },
-        { provide: GetEnsembleUseCase, useValue: stub() },
-        { provide: GetHistoricalUseCase, useValue: stub() },
-        { provide: GetUserPreferencesUseCase, useValue: stub() },
-        { provide: UpdateUserPreferencesUseCase, useValue: stub() },
-        { provide: RecordUsageUseCase, useValue: stub() },
-        { provide: GetWeatherAlertsUseCase, useValue: stub() },
-        { provide: GetCurrentDetailedWeatherUseCase, useValue: stub() },
-        { provide: GetForecastDetailedWeatherUseCase, useValue: stub() },
-        { provide: OPENWEATHERMAP_PROXY, useValue: {} },
 
         { provide: ListUsersUseCase, useValue: stub() },
         { provide: ListOneUserUseCase, useValue: stub() },
@@ -229,10 +201,6 @@ describe('OpenAPI core contract', () => {
     Object.fromEntries(
       Object.entries(document.paths).filter(([p]) => p.includes(`/${segment}`)),
     );
-
-  it('keeps Weather path contracts stable', () => {
-    expect(pathsContaining('weather')).toMatchSnapshot();
-  });
 
   it('keeps Users path contracts stable', () => {
     expect(pathsContaining('users')).toMatchSnapshot();

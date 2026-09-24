@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "926cef4cb67e6c41e621e233f3f5b1306796bf8ccdc688bcb17bd52bdef770cd",
+  "empreinte": "c56ed8e46763df63facea77e2b7f10595b2a0e8839e74a24b9c8209c997fe175",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 213,
+    "duree": 211,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -131,6 +131,77 @@
               "concepts": ["contrat-de-lecture"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-01-A1-07-PLAN",
+        "type": "fp-story",
+        "titre": "Le plan de la séance",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A1-07-PLAN",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A1-07-PLAN",
+              "renderer": "method-path",
+              "props": {
+                "title": "Le plan de la séance",
+                "steps": [
+                  {
+                    "id": "lire",
+                    "title": "Acte 1 · Diagnostiquer",
+                    "question": "Que mesure chaque chiffre ?",
+                    "proof": "Unité, base, période, périmètre, source.",
+                    "result": "Le tableau de bord annoté : chaque chiffre qualifié."
+                  },
+                  {
+                    "id": "comparer",
+                    "title": "Acte 2 · Auditer",
+                    "question": "Compare-t-on la même chose ?",
+                    "proof": "Population de référence, axe, ordre de grandeur.",
+                    "result": "Des comparaisons justes et défendables."
+                  },
+                  {
+                    "id": "evoluer",
+                    "title": "Acte 3 · Calculer les évolutions",
+                    "question": "Quelle base, quel coefficient ?",
+                    "proof": "Écart, taux, coefficient, indice.",
+                    "result": "Des évolutions justes, y compris successives et réciproques."
+                  },
+                  {
+                    "id": "outiller",
+                    "title": "Acte 4 · Outiller au tableur",
+                    "question": "La feuille se contrôle-t-elle seule ?",
+                    "proof": "Formules, références, contrôles, graphique.",
+                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
+                  },
+                  {
+                    "id": "defendre",
+                    "title": "Acte 5 · Défendre au comité",
+                    "question": "Quel mécanisme explique l’écart ?",
+                    "proof": "Poids, répartition, preuve, limite.",
+                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
+                  },
+                  {
+                    "id": "transferer",
+                    "title": "Acte 6 · Transférer",
+                    "question": "Saurez-vous le refaire seul·e ?",
+                    "proof": "Situation nouvelle, réponse d’IA corrigée, rappel.",
+                    "result": "Une fiche mémo pour le CCF."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["contrat-de-lecture"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -297,7 +368,14 @@
             }
           }
         },
-        "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD"
+        "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD",
+        "cadrageDuRenvoi": {
+          "part": 40,
+          "extrait": {
+            "lignes": [0, 1, 2, 3, 4, 5]
+          }
+        },
+        "resoluPar": ["B2-01-A1-05-CORRECTION"]
       },
       {
         "id": "B2-01-A1-05-CORRECTION",
@@ -469,77 +547,6 @@
         }
       },
       {
-        "id": "B2-01-A1-07-PLAN",
-        "type": "fp-story",
-        "titre": "Le plan de la séance",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A1-07-PLAN",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A1-07-PLAN",
-              "renderer": "method-path",
-              "props": {
-                "title": "Le plan de la séance",
-                "steps": [
-                  {
-                    "id": "lire",
-                    "title": "Acte 1 · Diagnostiquer",
-                    "question": "Que mesure chaque chiffre ?",
-                    "proof": "Unité, base, période, périmètre, source.",
-                    "result": "Le tableau de bord annoté : chaque chiffre qualifié."
-                  },
-                  {
-                    "id": "comparer",
-                    "title": "Acte 2 · Auditer",
-                    "question": "Compare-t-on la même chose ?",
-                    "proof": "Population de référence, axe, ordre de grandeur.",
-                    "result": "Des comparaisons justes et défendables."
-                  },
-                  {
-                    "id": "evoluer",
-                    "title": "Acte 3 · Calculer les évolutions",
-                    "question": "Quelle base, quel coefficient ?",
-                    "proof": "Écart, taux, coefficient, indice.",
-                    "result": "Des évolutions justes, y compris successives et réciproques."
-                  },
-                  {
-                    "id": "outiller",
-                    "title": "Acte 4 · Outiller au tableur",
-                    "question": "La feuille se contrôle-t-elle seule ?",
-                    "proof": "Formules, références, contrôles, graphique.",
-                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
-                  },
-                  {
-                    "id": "defendre",
-                    "title": "Acte 5 · Défendre au comité",
-                    "question": "Quel mécanisme explique l’écart ?",
-                    "proof": "Poids, répartition, preuve, limite.",
-                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
-                  },
-                  {
-                    "id": "transferer",
-                    "title": "Acte 6 · Transférer",
-                    "question": "Saurez-vous le refaire seul·e ?",
-                    "proof": "Situation nouvelle, réponse d’IA corrigée, rappel.",
-                    "result": "Une fiche mémo pour le CCF."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["contrat-de-lecture"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
         "id": "B2-01-A1-08-QUESTION-DE-GESTION",
         "type": "fp-story",
         "titre": "La question d’Hélène, en chiffres",
@@ -571,7 +578,13 @@
             }
           }
         },
-        "renvoi": "B2-01-A1-03-MISSION"
+        "renvoi": "B2-01-A1-03-MISSION",
+        "cadrageDuRenvoi": {
+          "part": 70,
+          "extrait": {
+            "champs": ["situation"]
+          }
+        }
       },
       {
         "id": "B2-01-A1-09-DIAPOSITIVE",
@@ -636,7 +649,11 @@
             }
           }
         },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
+        "renvoi": "B2-01-A1-09-DIAPOSITIVE",
+        "cadrageDuRenvoi": {
+          "part": 60
+        },
+        "resoluPar": ["B2-01-A1-10-CORRECTION"]
       },
       {
         "id": "B2-01-A1-10-CORRECTION",
@@ -818,8 +835,7 @@
               "regime": "ouvert"
             }
           }
-        },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
+        }
       },
       {
         "id": "B2-01-A2-03-ATELIER-1",
@@ -898,7 +914,11 @@
             }
           ]
         },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
+        "renvoi": "B2-01-A1-09-DIAPOSITIVE",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
+        "resoluPar": ["B2-01-A2-03-CORRECTION-1"]
       },
       {
         "id": "B2-01-A2-03-CORRECTION-1",
@@ -1021,7 +1041,8 @@
               }
             }
           ]
-        }
+        },
+        "resoluPar": ["B2-01-A2-03-CORRECTION-2"]
       },
       {
         "id": "B2-01-A2-03-CORRECTION-2",
@@ -1067,50 +1088,6 @@
           }
         },
         "ecranCorrige": "B2-01-A2-03-ATELIER-1-SUITE"
-      },
-      {
-        "id": "B2-01-A2-04-MARGE-AXE-ZERO",
-        "type": "fp-story",
-        "titre": "Marge brute 2022–2025, axe à zéro",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A2-04-MARGE-AXE-ZERO",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A2-04-MARGE-AXE-ZERO",
-              "renderer": "chart",
-              "props": {
-                "title": "Marge brute d’Atelier Rivage, 2022–2025",
-                "caption": "Axe vertical de 0 à 300 000 €",
-                "labels": ["2022", "2023", "2024", "2025"],
-                "series": [
-                  {
-                    "label": "Marge brute",
-                    "values": [285000, 288000, 289800, 291000],
-                    "tone": "teal"
-                  }
-                ],
-                "axisRanges": [[0, 300000]],
-                "axisLabels": ["0 à 300 000 €"],
-                "unit": "€",
-                "formula": "Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021",
-                "reading": "De 2022 à 2025, la marge brute passe de 285 000 € à 291 000 € : +6 000 €, soit +2,1 % en trois ans. Les hausses annuelles ralentissent : +1,05 %, +0,63 %, puis +0,41 %.",
-                "source": "Comptes de résultat 2022 à 2025 d’Atelier Rivage (données fictives).",
-                "description": "Diagramme en barres à partir de zéro : quatre barres presque égales, de 285 000 € en 2022 à 291 000 € en 2025."
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique", "taux-evolution"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
       },
       {
         "id": "B2-01-A2-05-ECRITURES",
@@ -1161,7 +1138,10 @@
             }
           }
         },
-        "renvoi": "B2-01-A1-05-CORRECTION"
+        "renvoi": "B2-01-A1-05-CORRECTION",
+        "cadrageDuRenvoi": {
+          "part": 50
+        }
       },
       {
         "id": "B2-01-A2-06-POINTS",
@@ -1209,7 +1189,14 @@
           },
           "etayage": 0
         },
-        "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD"
+        "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD",
+        "cadrageDuRenvoi": {
+          "part": 30,
+          "extrait": {
+            "lignes": [3]
+          }
+        },
+        "resoluPar": ["B2-01-A2-06-CORRECTION"]
       },
       {
         "id": "B2-01-A2-06-CORRECTION",
@@ -1332,7 +1319,8 @@
               "regime": "ouvert"
             }
           }
-        }
+        },
+        "resoluPar": ["B2-01-A2-07-CORRECTION"]
       },
       {
         "id": "B2-01-A2-07-CORRECTION",
@@ -1577,6 +1565,19 @@
                 }
               }
             ],
+            "animation": [
+              {
+                "depart": 100,
+                "tauxUn": 0,
+                "tauxDeux": 0
+              },
+              {
+                "tauxUn": 50
+              },
+              {
+                "tauxDeux": -50
+              }
+            ],
             "metadonnees": {
               "concepts": [
                 "coefficient-multiplicateur",
@@ -1642,7 +1643,10 @@
             }
           }
         },
-        "renvoi": "B2-01-A3-01-VOTE-HAUSSE-BAISSE"
+        "renvoi": "B2-01-A3-01-VOTE-HAUSSE-BAISSE",
+        "cadrageDuRenvoi": {
+          "part": 40
+        }
       },
       {
         "id": "B2-01-A3-04-FIL-TECHNIQUE",
@@ -1701,7 +1705,8 @@
             }
           },
           "etayage": 0
-        }
+        },
+        "resoluPar": ["B2-01-A3-04-CORRECTION"]
       },
       {
         "id": "B2-01-A3-04-CORRECTION",
@@ -1865,7 +1870,8 @@
             }
           },
           "etayage": 0
-        }
+        },
+        "resoluPar": ["B2-01-A3-06-CORRECTION"]
       },
       {
         "id": "B2-01-A3-06-CORRECTION",
@@ -1994,7 +2000,11 @@
             }
           ]
         },
-        "renvoi": "B2-01-A3-05-INFLATION-RYTHME"
+        "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
+        "resoluPar": ["B2-01-A3-07-CORRECTION-1"]
       },
       {
         "id": "B2-01-A3-07-CORRECTION-1",
@@ -2095,7 +2105,11 @@
             }
           ]
         },
-        "renvoi": "B2-01-A3-05-INFLATION-RYTHME"
+        "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
+        "resoluPar": ["B2-01-A3-07-CORRECTION-2"]
       },
       {
         "id": "B2-01-A3-07-CORRECTION-2",
@@ -2191,7 +2205,10 @@
             }
           }
         },
-        "renvoi": "B2-01-A3-05-INFLATION-RYTHME"
+        "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
+        "cadrageDuRenvoi": {
+          "part": 40
+        }
       },
       {
         "id": "B2-01-A3-09-NOTE-CONJONCTURE",
@@ -2226,7 +2243,10 @@
             }
           }
         },
-        "renvoi": "B2-01-A3-08-INDICE-PRIX"
+        "renvoi": "B2-01-A3-08-INDICE-PRIX",
+        "cadrageDuRenvoi": {
+          "part": 60
+        }
       },
       {
         "id": "B2-01-A3-10-JALON-3",
@@ -2431,7 +2451,8 @@
               }
             }
           ]
-        }
+        },
+        "resoluPar": ["B2-01-A4-03-CORRECTION-1"]
       },
       {
         "id": "B2-01-A4-03-CORRECTION-1",
@@ -2533,7 +2554,8 @@
               }
             }
           ]
-        }
+        },
+        "resoluPar": ["B2-01-A4-03-CORRECTION-2"]
       },
       {
         "id": "B2-01-A4-03-CORRECTION-2",
@@ -2717,7 +2739,8 @@
               "regime": "ouvert"
             }
           }
-        }
+        },
+        "resoluPar": ["B2-01-A4-05-CORRECTION"]
       },
       {
         "id": "B2-01-A4-05-CORRECTION",
@@ -2871,7 +2894,8 @@
             }
           },
           "etayage": 0
-        }
+        },
+        "resoluPar": ["B2-01-A5-03-CORRECTION"]
       },
       {
         "id": "B2-01-A5-03-CORRECTION",
@@ -3026,6 +3050,23 @@
               "max": 40
             },
             "description": "Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ?",
+            "animation": [
+              {
+                "tauxMarketplace": 16
+              },
+              {
+                "tauxMarketplace": 20
+              },
+              {
+                "tauxMarketplace": 24
+              },
+              {
+                "tauxMarketplace": 28
+              },
+              {
+                "tauxMarketplace": 30
+              }
+            ],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
@@ -3195,7 +3236,8 @@
               }
             }
           ]
-        }
+        },
+        "resoluPar": ["B2-01-A5-06-CORRECTION-1"]
       },
       {
         "id": "B2-01-A5-06-CORRECTION-1",
@@ -3302,7 +3344,11 @@
             }
           ]
         },
-        "renvoi": "B2-01-A5-05-TCD"
+        "renvoi": "B2-01-A5-05-TCD",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
+        "resoluPar": ["B2-01-A5-06-CORRECTION-2"]
       },
       {
         "id": "B2-01-A5-06-CORRECTION-2",
@@ -3419,7 +3465,8 @@
               "regime": "ouvert"
             }
           }
-        }
+        },
+        "resoluPar": ["B2-01-A5-07-CORRECTION"]
       },
       {
         "id": "B2-01-A5-07-CORRECTION",
@@ -3643,7 +3690,10 @@
             }
           }
         },
-        "renvoi": "B2-01-A5-08-DOSSIER-COMITE"
+        "renvoi": "B2-01-A5-08-DOSSIER-COMITE",
+        "cadrageDuRenvoi": {
+          "part": 50
+        }
       },
       {
         "id": "B2-01-A5-09-JALON-5",
@@ -3756,7 +3806,8 @@
               "regime": "ouvert"
             }
           }
-        }
+        },
+        "resoluPar": ["B2-01-A6-02-CORRECTION"]
       },
       {
         "id": "B2-01-A6-02-CORRECTION",
@@ -4165,7 +4216,7 @@
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 213,
+    "duree": 211,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -4350,8 +4401,85 @@
             }
           }
         },
-        "notes": "• Lecture à voix haute (90 s), puis 2 min d’écriture individuelle.\n• Au pupitre, lire deux réponses à « Que mesure chaque chiffre ? » : l’une parle d’un montant, l’autre d’un taux. « Gagner plus » peut vouloir dire les deux : c’est le fil de la séance.\n• Transition : « Regardons le tableau de bord tel qu’il a été envoyé. »",
+        "notes": "• Lecture à voix haute (90 s), puis 2 min d’écriture individuelle.\n• Au pupitre, lire deux réponses à « Que mesure chaque chiffre ? » : l’une parle d’un montant, l’autre d’un taux. « Gagner plus » peut vouloir dire les deux : c’est le fil de la séance.\n• Transition : « Voici le chemin : six actes pour répondre à Hélène, en commençant par le tableau de bord tel qu’il a été envoyé. »",
         "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-01-A1-07-PLAN",
+        "type": "fp-story",
+        "titre": "Le plan de la séance",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A1-07-PLAN",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A1-07-PLAN",
+              "renderer": "method-path",
+              "props": {
+                "title": "Le plan de la séance",
+                "steps": [
+                  {
+                    "id": "lire",
+                    "title": "Acte 1 · Diagnostiquer",
+                    "question": "Que mesure chaque chiffre ?",
+                    "proof": "Unité, base, période, périmètre, source.",
+                    "result": "Le tableau de bord annoté : chaque chiffre qualifié."
+                  },
+                  {
+                    "id": "comparer",
+                    "title": "Acte 2 · Auditer",
+                    "question": "Compare-t-on la même chose ?",
+                    "proof": "Population de référence, axe, ordre de grandeur.",
+                    "result": "Des comparaisons justes et défendables."
+                  },
+                  {
+                    "id": "evoluer",
+                    "title": "Acte 3 · Calculer les évolutions",
+                    "question": "Quelle base, quel coefficient ?",
+                    "proof": "Écart, taux, coefficient, indice.",
+                    "result": "Des évolutions justes, y compris successives et réciproques."
+                  },
+                  {
+                    "id": "outiller",
+                    "title": "Acte 4 · Outiller au tableur",
+                    "question": "La feuille se contrôle-t-elle seule ?",
+                    "proof": "Formules, références, contrôles, graphique.",
+                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
+                  },
+                  {
+                    "id": "defendre",
+                    "title": "Acte 5 · Défendre au comité",
+                    "question": "Quel mécanisme explique l’écart ?",
+                    "proof": "Poids, répartition, preuve, limite.",
+                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
+                  },
+                  {
+                    "id": "transferer",
+                    "title": "Acte 6 · Transférer",
+                    "question": "Saurez-vous le refaire seul·e ?",
+                    "proof": "Situation nouvelle, réponse d’IA corrigée, rappel.",
+                    "result": "Une fiche mémo pour le CCF."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["contrat-de-lecture"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "",
+        "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
         "questions": [],
@@ -4524,6 +4652,13 @@
           }
         },
         "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD",
+        "cadrageDuRenvoi": {
+          "part": 40,
+          "extrait": {
+            "lignes": [0, 1, 2, 3, 4, 5]
+          }
+        },
+        "resoluPar": ["B2-01-A1-05-CORRECTION"],
         "notes": "• Binômes, 5 min de tri ; annoncer « plus qu’une minute » à 4 min. Chacun envoie depuis son poste.\n• Cartes les plus ratées : « Taux de marge : −2,3 % » (des points) et « Inflation : 4,9 » (ambigu, pas une évolution).\n• Relance pour toute carte discutée : « Rapporté à quoi ? »\n• Les 3 dernières minutes : débriefing sur l’écran de correction suivant.",
         "diffusion": "seance",
         "seuil": null,
@@ -4764,83 +4899,6 @@
         "corrigeEcran": null
       },
       {
-        "id": "B2-01-A1-07-PLAN",
-        "type": "fp-story",
-        "titre": "Le plan de la séance",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A1-07-PLAN",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A1-07-PLAN",
-              "renderer": "method-path",
-              "props": {
-                "title": "Le plan de la séance",
-                "steps": [
-                  {
-                    "id": "lire",
-                    "title": "Acte 1 · Diagnostiquer",
-                    "question": "Que mesure chaque chiffre ?",
-                    "proof": "Unité, base, période, périmètre, source.",
-                    "result": "Le tableau de bord annoté : chaque chiffre qualifié."
-                  },
-                  {
-                    "id": "comparer",
-                    "title": "Acte 2 · Auditer",
-                    "question": "Compare-t-on la même chose ?",
-                    "proof": "Population de référence, axe, ordre de grandeur.",
-                    "result": "Des comparaisons justes et défendables."
-                  },
-                  {
-                    "id": "evoluer",
-                    "title": "Acte 3 · Calculer les évolutions",
-                    "question": "Quelle base, quel coefficient ?",
-                    "proof": "Écart, taux, coefficient, indice.",
-                    "result": "Des évolutions justes, y compris successives et réciproques."
-                  },
-                  {
-                    "id": "outiller",
-                    "title": "Acte 4 · Outiller au tableur",
-                    "question": "La feuille se contrôle-t-elle seule ?",
-                    "proof": "Formules, références, contrôles, graphique.",
-                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
-                  },
-                  {
-                    "id": "defendre",
-                    "title": "Acte 5 · Défendre au comité",
-                    "question": "Quel mécanisme explique l’écart ?",
-                    "proof": "Poids, répartition, preuve, limite.",
-                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
-                  },
-                  {
-                    "id": "transferer",
-                    "title": "Acte 6 · Transférer",
-                    "question": "Saurez-vous le refaire seul·e ?",
-                    "proof": "Situation nouvelle, réponse d’IA corrigée, rappel.",
-                    "result": "Une fiche mémo pour le CCF."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["contrat-de-lecture"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "",
-        "diffusion": "catalogue",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
-      },
-      {
         "id": "B2-01-A1-08-QUESTION-DE-GESTION",
         "type": "fp-story",
         "titre": "La question d’Hélène, en chiffres",
@@ -4873,6 +4931,12 @@
           }
         },
         "renvoi": "B2-01-A1-03-MISSION",
+        "cadrageDuRenvoi": {
+          "part": 70,
+          "extrait": {
+            "champs": ["situation"]
+          }
+        },
         "notes": "• 2 min d’écriture individuelle, puis lire trois réponses au pupitre.\n• Refuser toute réponse sans période (2024 → 2025) ou sans dénominateur (CA HT).\n• Attendu : deux mesures, un montant (marge brute en €) et un taux (marge ÷ CA HT).\n• Transition : « Samir a déjà répondu à sa façon : avec une diapositive. »",
         "diffusion": "seance",
         "seuil": null,
@@ -4954,6 +5018,10 @@
           }
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
+        "cadrageDuRenvoi": {
+          "part": 60
+        },
+        "resoluPar": ["B2-01-A1-10-CORRECTION"],
         "notes": "• 2 min d’écriture individuelle, puis révélation au pupitre.\n• Repérer ceux qui citent l’axe et ceux qui ne citent que la couleur ou le titre.\n• Avant de révéler, faire trouver la piste fausse : changer la couleur ne corrige rien.",
         "diffusion": "seance",
         "seuil": null,
@@ -5069,7 +5137,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la fiche A1-06 en 2 min sur « Inflation : 4,9 ».\n• Transition : « Acte 2 : comparer sans tromper. Retour en 1786. »",
+        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la fiche A1-06 en 2 min sur « Inflation : 4,9 ».\n• Transition : « Acte 2 · Auditer : comparer sans tromper. Retour en 1786. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5189,7 +5257,6 @@
             }
           }
         },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE",
         "notes": "• Chacun passe de « Axe de Samir » à « Axe à zéro ».\n• Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la barre 2025 vaut toujours 291 000 €.\n• Phrase à faire dire : « L’échelle change l’impression, pas la donnée ».",
         "diffusion": "catalogue",
         "seuil": null,
@@ -5275,6 +5342,10 @@
           ]
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
+        "resoluPar": ["B2-01-A2-03-CORRECTION-1"],
         "notes": "• 5 min de travail sur les questions 1 à 3 (annoncer « plus qu’une minute » à 4 min), puis 1 min de comparaison avec le voisin.\n• Pièges : Q1 « sept fois plus » (axe) ; Q3 « 84 % des commandes, donc 84 % du CA ».\n• Contrôle à faire dire : 1 150 000 × 0,455 ≈ 523 000.",
         "diffusion": "seance",
         "seuil": null,
@@ -5495,6 +5566,7 @@
             }
           ]
         },
+        "resoluPar": ["B2-01-A2-03-CORRECTION-2"],
         "notes": "• 5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).\n• Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.\n• Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.",
         "diffusion": "seance",
         "seuil": null,
@@ -5639,57 +5711,7 @@
           }
         },
         "ecranCorrige": "B2-01-A2-03-ATELIER-1-SUITE",
-        "notes": "• Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.\n• Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.\n• Transition : « Remettons la diapositive de Samir d’aplomb. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A2-04-MARGE-AXE-ZERO",
-        "type": "fp-story",
-        "titre": "Marge brute 2022–2025, axe à zéro",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A2-04-MARGE-AXE-ZERO",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A2-04-MARGE-AXE-ZERO",
-              "renderer": "chart",
-              "props": {
-                "title": "Marge brute d’Atelier Rivage, 2022–2025",
-                "caption": "Axe vertical de 0 à 300 000 €",
-                "labels": ["2022", "2023", "2024", "2025"],
-                "series": [
-                  {
-                    "label": "Marge brute",
-                    "values": [285000, 288000, 289800, 291000],
-                    "tone": "teal"
-                  }
-                ],
-                "axisRanges": [[0, 300000]],
-                "axisLabels": ["0 à 300 000 €"],
-                "unit": "€",
-                "formula": "Évolution 2022–2025 = (291 000 − 285 000) ÷ 285 000 ≈ 0,021",
-                "reading": "De 2022 à 2025, la marge brute passe de 285 000 € à 291 000 € : +6 000 €, soit +2,1 % en trois ans. Les hausses annuelles ralentissent : +1,05 %, +0,63 %, puis +0,41 %.",
-                "source": "Comptes de résultat 2022 à 2025 d’Atelier Rivage (données fictives).",
-                "description": "Diagramme en barres à partir de zéro : quatre barres presque égales, de 285 000 € en 2022 à 291 000 € en 2025."
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique", "taux-evolution"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "notes": "• Projeter à côté de la diapositive de Samir si possible.\n• Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.\n• Transition : « Cinq écritures reviennent sans cesse : fixons-les. »",
+        "notes": "• Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.\n• Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.\n• Revenir à la diapositive de Samir : de 285 000 € à 291 000 €, la marge brute gagne +6 000 €, soit +2,1 % en trois ans. Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.\n• Transition : « Cinq écritures reviennent sans cesse : fixons-les. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5746,6 +5768,9 @@
           }
         },
         "renvoi": "B2-01-A1-05-CORRECTION",
+        "cadrageDuRenvoi": {
+          "part": 50
+        },
         "notes": "• Faire associer chaque écriture à une carte du tri A1-05.\n• Relance : « Quelle écriture aurait dû remplacer \"−2,3 %\" dans le tableau de bord ? » (−2,3 points).\n• Piège : confondre +9,5 % (évolution) et 20 % (proportion) : les deux s’écrivent en %.",
         "diffusion": "seance",
         "seuil": null,
@@ -5800,6 +5825,13 @@
           "etayage": 0
         },
         "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD",
+        "cadrageDuRenvoi": {
+          "part": 30,
+          "extrait": {
+            "lignes": [3]
+          }
+        },
+        "resoluPar": ["B2-01-A2-06-CORRECTION"],
         "notes": "• Chacun répond sous chaque étape ; la correction vient à l’écran suivant.\n• À l’étape 1, guetter « −2,3 % » : exiger « points ».",
         "diffusion": "seance",
         "seuil": null,
@@ -5935,6 +5967,7 @@
             }
           }
         },
+        "resoluPar": ["B2-01-A2-07-CORRECTION"],
         "notes": "• Binômes, chrono de 5 min (annoncer la dernière minute), puis débriefing sur l’écran de correction.\n• Cartes à risque : « semestre / année » (activité saisonnière : doubler un semestre ne donne pas l’année) et « inflation » (4,9 = inflation 2023, pas 2025).",
         "diffusion": "seance",
         "seuil": null,
@@ -6333,6 +6366,19 @@
                 }
               }
             ],
+            "animation": [
+              {
+                "depart": 100,
+                "tauxUn": 0,
+                "tauxDeux": 0
+              },
+              {
+                "tauxUn": 50
+              },
+              {
+                "tauxDeux": -50
+              }
+            ],
             "metadonnees": {
               "concepts": [
                 "coefficient-multiplicateur",
@@ -6405,6 +6451,9 @@
           }
         },
         "renvoi": "B2-01-A3-01-VOTE-HAUSSE-BAISSE",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
         "notes": "• 45 s, sur la seule courbe de marge.\n• Chiffre clé : −1 % sur le prix = −5 % sur la marge ((19 − 20) ÷ 20), car la marge ne fait que 20 % du prix.\n• Transition : « Même raisonnement sur un achat : le fil technique. »",
         "diffusion": "seance",
         "seuil": null,
@@ -6470,6 +6519,7 @@
           },
           "etayage": 0
         },
+        "resoluPar": ["B2-01-A3-04-CORRECTION"],
         "notes": "• Chacun répond sous chaque étape ; la correction vient à l’écran suivant.\n• Pièges : étapes 4-5, retirer 10 % de 13,75 € (12,375 € au lieu de 12,50 €) ; étape 6, retirer 20 % du TTC (2 880 € au lieu de 3 000 €).",
         "diffusion": "seance",
         "seuil": null,
@@ -6652,6 +6702,7 @@
           },
           "etayage": 0
         },
+        "resoluPar": ["B2-01-A3-06-CORRECTION"],
         "notes": "• Chacun répond sous chaque étape ; la correction vient à l’écran suivant.\n• Pièges : lire 119,10 comme +119,10 % ; diviser 19,10 par 3 (6,37 %).\n• Vérifier que chacun sait taper 1,19102 ^ (1 ÷ 3) sur sa calculatrice.",
         "diffusion": "seance",
         "seuil": null,
@@ -6793,6 +6844,10 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
+        "resoluPar": ["B2-01-A3-07-CORRECTION-1"],
         "notes": "• 4 min individuelles sur les questions 1 à 3.\n• Pièges : Q1 « plus bas » (rythme lu comme niveau) ; Q2 112,2 et Q3 15,1 % (taux additionnés).",
         "diffusion": "seance",
         "seuil": null,
@@ -6978,6 +7033,10 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
+        "resoluPar": ["B2-01-A3-07-CORRECTION-2"],
         "notes": "• 3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).\n• La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.",
         "diffusion": "seance",
         "seuil": null,
@@ -7139,6 +7198,9 @@
           }
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
         "notes": "• Faire superposer : les barres de A3-05 baissent depuis 2023, la courbe de l’indice monte toujours.\n• Mot à fixer : désinflation (le rythme ralentit, les prix montent encore) ≠ déflation (les prix baissent).\n• Transition : « Répondez à Samir, qui veut baisser les tarifs. »",
         "diffusion": "seance",
         "seuil": null,
@@ -7180,6 +7242,9 @@
           }
         },
         "renvoi": "B2-01-A3-08-INDICE-PRIX",
+        "cadrageDuRenvoi": {
+          "part": 60
+        },
         "notes": "• 90 s de rédaction, puis lire deux réponses.\n• Écarter les phrases sans source ou qui ne parlent que du rythme.\n• Calcul attendu : 1 ÷ 1,1597 − 1 ≈ −13,8 % de valeur réelle pour des tarifs inchangés depuis 2019.\n• Transition : jalon 3, puis pause de 15 min.",
         "diffusion": "seance",
         "seuil": null,
@@ -7610,6 +7675,7 @@
             }
           ]
         },
+        "resoluPar": ["B2-01-A4-03-CORRECTION-1"],
         "notes": "• 3 min de travail sur la forme et le titre.\n• Piège principal : un titre qui conclut (« La marketplace s’envole… ») ; exiger un titre qui décrit, avec l’unité.",
         "diffusion": "seance",
         "seuil": null,
@@ -7790,6 +7856,7 @@
             }
           ]
         },
+        "resoluPar": ["B2-01-A4-03-CORRECTION-2"],
         "notes": "• 3 min seul.\n• Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).\n• Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).",
         "diffusion": "seance",
         "seuil": null,
@@ -8058,6 +8125,7 @@
             }
           }
         },
+        "resoluPar": ["B2-01-A4-05-CORRECTION"],
         "notes": "• Individuel, 7 min ; la correction de la synthèse vient à l’écran suivant.\n• Piège : recalculer chaque prix depuis 20,00 € (20,60 ; 21,40 ; 20,80 €). Le 20,80 € du tableau de bord de Samir vient de là.\n• Contrôles : 21,60 ; 20,52 ; 21,34 ; 20,70 € ; coefficients 1,08 ; 0,95 ; 1,04 ; 0,97 ; évolution réelle +3,50 % contre « +4 % ».",
         "diffusion": "seance",
         "seuil": null,
@@ -8291,6 +8359,7 @@
           },
           "etayage": 0
         },
+        "resoluPar": ["B2-01-A5-03-CORRECTION"],
         "notes": "• Chacun répond sous chaque étape ; la correction vient à l’écran suivant.\n• Étapes difficiles : 5 (que serait la marge avec la répartition de 2024 ?) et 6 (négation d’un « si… alors » : « il existe… et… »).",
         "diffusion": "seance",
         "seuil": null,
@@ -8537,6 +8606,23 @@
               "max": 40
             },
             "description": "Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ?",
+            "animation": [
+              {
+                "tauxMarketplace": 16
+              },
+              {
+                "tauxMarketplace": 20
+              },
+              {
+                "tauxMarketplace": 24
+              },
+              {
+                "tauxMarketplace": 28
+              },
+              {
+                "tauxMarketplace": 30
+              }
+            ],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
@@ -8719,6 +8805,7 @@
             }
           ]
         },
+        "resoluPar": ["B2-01-A5-06-CORRECTION-1"],
         "notes": "• 3 min de travail sur les questions 1 à 3.\n• Pièges : Q1 45,5 % (part du CA, pas de la marge) ; Q2 −86 000 € (écart de CA, pas de marge) ; Q3 « c’est prouvé ».",
         "diffusion": "seance",
         "seuil": null,
@@ -8914,6 +9001,10 @@
           ]
         },
         "renvoi": "B2-01-A5-05-TCD",
+        "cadrageDuRenvoi": {
+          "part": 40
+        },
+        "resoluPar": ["B2-01-A5-06-CORRECTION-2"],
         "notes": "• 2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).\n• TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.",
         "diffusion": "seance",
         "seuil": null,
@@ -9109,6 +9200,7 @@
             }
           }
         },
+        "resoluPar": ["B2-01-A5-07-CORRECTION"],
         "notes": "• Binômes, 5 min de tri (annoncer la dernière minute), puis écran de correction.\n• Cartes à risque : « factures de mars » et « compensation de février » (preuve par la pièce, pas recalcul) ; « détourne nos clients » (seule une donnée par client tranche).\n• Relance : « Ce contrôle permet-il de trancher, ou seulement de soupçonner ? »",
         "diffusion": "seance",
         "seuil": null,
@@ -9407,6 +9499,9 @@
           }
         },
         "renvoi": "B2-01-A5-08-DOSSIER-COMITE",
+        "cadrageDuRenvoi": {
+          "part": 50
+        },
         "notes": "• 3 min d’écriture, révélation, 1 min d’échange.\n• Piège : recommander d’arrêter la marketplace parce qu’elle fait baisser le taux ; elle apporte +26 560 € de marge.\n• Exiger un chiffre ou une pièce dans chaque phrase ; la décision porte sur la marge en euros, pas sur le CA.\n• Transition : jalon 5.",
         "diffusion": "seance",
         "seuil": null,
@@ -9577,6 +9672,7 @@
             }
           }
         },
+        "resoluPar": ["B2-01-A6-02-CORRECTION"],
         "notes": "• Lancer ; indices disponibles après 60 s. À 7 min, projeter l’énigme la moins résolue.\n• Pièges : E1 26,7 % (moyenne simple) ; E2 −10,7 (en %, pas en points) ; E3 1 032,57 € (÷ 1,02, taux additionnés).\n• E3 : le prix du 1er janvier 2026 est celui du 31 décembre 2025 : 20,70 €/m² × 50 m² = 1 035,00 € ; contrôle 1 035 × 1,06 × 0,96 = 1 053,22.\n• E4 : l’écart de 90 € vient de F004 (12 430 saisi pour 12 340 : inversion, 90 = 9 × 10). TVA = 48 705 × 0,20 = 9 741 €, pas 9 759 € (base du grand livre).",
         "diffusion": "seance",
         "seuil": null,
@@ -10603,7 +10699,7 @@
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
     "niveau": "B2",
-    "duree": 213,
+    "duree": 211,
     "concepts": [
       "proportion",
       "pourcentage",
@@ -10670,6 +10766,77 @@
         "duree": 4,
         "interactif": false,
         "donnees": {}
+      },
+      {
+        "id": "B2-01-A1-07-PLAN",
+        "type": "fp-story",
+        "titre": "Le plan de la séance",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-01-A1-07-PLAN",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-01-A1-07-PLAN",
+              "renderer": "method-path",
+              "props": {
+                "title": "Le plan de la séance",
+                "steps": [
+                  {
+                    "id": "lire",
+                    "title": "Acte 1 · Diagnostiquer",
+                    "question": "Que mesure chaque chiffre ?",
+                    "proof": "Unité, base, période, périmètre, source.",
+                    "result": "Le tableau de bord annoté : chaque chiffre qualifié."
+                  },
+                  {
+                    "id": "comparer",
+                    "title": "Acte 2 · Auditer",
+                    "question": "Compare-t-on la même chose ?",
+                    "proof": "Population de référence, axe, ordre de grandeur.",
+                    "result": "Des comparaisons justes et défendables."
+                  },
+                  {
+                    "id": "evoluer",
+                    "title": "Acte 3 · Calculer les évolutions",
+                    "question": "Quelle base, quel coefficient ?",
+                    "proof": "Écart, taux, coefficient, indice.",
+                    "result": "Des évolutions justes, y compris successives et réciproques."
+                  },
+                  {
+                    "id": "outiller",
+                    "title": "Acte 4 · Outiller au tableur",
+                    "question": "La feuille se contrôle-t-elle seule ?",
+                    "proof": "Formules, références, contrôles, graphique.",
+                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
+                  },
+                  {
+                    "id": "defendre",
+                    "title": "Acte 5 · Défendre au comité",
+                    "question": "Quel mécanisme explique l’écart ?",
+                    "proof": "Poids, répartition, preuve, limite.",
+                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
+                  },
+                  {
+                    "id": "transferer",
+                    "title": "Acte 6 · Transférer",
+                    "question": "Saurez-vous le refaire seul·e ?",
+                    "proof": "Situation nouvelle, réponse d’IA corrigée, rappel.",
+                    "result": "Une fiche mémo pour le CCF."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["contrat-de-lecture"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
       },
       {
         "id": "B2-01-A1-04-TABLEAU-DE-BORD",
@@ -10831,77 +10998,6 @@
               ],
               "misconceptionsCiblees": [],
               "dureeMinutes": 3,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B2-01-A1-07-PLAN",
-        "type": "fp-story",
-        "titre": "Le plan de la séance",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A1-07-PLAN",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A1-07-PLAN",
-              "renderer": "method-path",
-              "props": {
-                "title": "Le plan de la séance",
-                "steps": [
-                  {
-                    "id": "lire",
-                    "title": "Acte 1 · Diagnostiquer",
-                    "question": "Que mesure chaque chiffre ?",
-                    "proof": "Unité, base, période, périmètre, source.",
-                    "result": "Le tableau de bord annoté : chaque chiffre qualifié."
-                  },
-                  {
-                    "id": "comparer",
-                    "title": "Acte 2 · Auditer",
-                    "question": "Compare-t-on la même chose ?",
-                    "proof": "Population de référence, axe, ordre de grandeur.",
-                    "result": "Des comparaisons justes et défendables."
-                  },
-                  {
-                    "id": "evoluer",
-                    "title": "Acte 3 · Calculer les évolutions",
-                    "question": "Quelle base, quel coefficient ?",
-                    "proof": "Écart, taux, coefficient, indice.",
-                    "result": "Des évolutions justes, y compris successives et réciproques."
-                  },
-                  {
-                    "id": "outiller",
-                    "title": "Acte 4 · Outiller au tableur",
-                    "question": "La feuille se contrôle-t-elle seule ?",
-                    "proof": "Formules, références, contrôles, graphique.",
-                    "result": "Un classeur contrôlable qu’un tiers peut reproduire."
-                  },
-                  {
-                    "id": "defendre",
-                    "title": "Acte 5 · Défendre au comité",
-                    "question": "Quel mécanisme explique l’écart ?",
-                    "proof": "Poids, répartition, preuve, limite.",
-                    "result": "Une recommandation fondée sur les poids, les scénarios et les limites."
-                  },
-                  {
-                    "id": "transferer",
-                    "title": "Acte 6 · Transférer",
-                    "question": "Saurez-vous le refaire seul·e ?",
-                    "proof": "Situation nouvelle, réponse d’IA corrigée, rappel.",
-                    "result": "Une fiche mémo pour le CCF."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["contrat-de-lecture"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -11089,8 +11185,7 @@
               "regime": "ouvert"
             }
           }
-        },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
+        }
       },
       {
         "id": "B2-01-A2-03-ATELIER-1",
@@ -11125,14 +11220,6 @@
         "interactif": false,
         "donnees": {},
         "ecranCorrige": "B2-01-A2-03-ATELIER-1-SUITE"
-      },
-      {
-        "id": "B2-01-A2-04-MARGE-AXE-ZERO",
-        "type": "ecran-verrouille",
-        "titre": "Marge brute 2022–2025, axe à zéro",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {}
       },
       {
         "id": "B2-01-A2-05-ECRITURES",

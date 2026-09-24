@@ -16,7 +16,6 @@ import type {
   UpdateSessionInput,
 } from '../domain/ISessions.repository';
 import {
-  CoursInconnuError,
   InvalidStateTransitionError,
   RevisionDeSeanceObsoleteError,
   SessionClosedError,
@@ -31,6 +30,7 @@ import {
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { coursDeLaSeance } from './CoursDeLaSeance';
 
 const TENTATIVES_SUR_REVISION_OBSOLETE = 5;
 
@@ -95,13 +95,7 @@ export class ControlSessionUseCase {
     ) {
       return;
     }
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
-    );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const totalEcrans = cours.ecrans.length;
     if (
       misAJour.ecranCourant !== undefined &&

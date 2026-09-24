@@ -1,6 +1,6 @@
+import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
 import {
   Column,
-  CreateDateColumn,
   Entity,
   Index,
   OneToMany,
@@ -16,7 +16,7 @@ import { ProjectsTranslationsEntity } from './ProjectsTranslations.entity';
 @Index('IDX_projects_type_order', ['type', 'order'])
 @Index('IDX_projects_status_order', ['status', 'order'])
 @Entity({ name: 'projects' })
-export class ProjectsEntity {
+export class ProjectsEntity extends ColonnesDeTrace {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -56,22 +56,4 @@ export class ProjectsEntity {
 
   @Column({ type: 'int', default: 0 })
   'order': number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_or_created_by',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  updatedOrCreatedBy: string | null;
 }

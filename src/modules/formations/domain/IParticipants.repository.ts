@@ -9,6 +9,7 @@ export interface ParticipantRecord {
   rejointLe: Date;
   dernierPing: Date;
   evinceLe: Date | null;
+  generationDeJeton: number;
 }
 
 export interface InscriptionInput {
@@ -18,6 +19,8 @@ export interface InscriptionInput {
   nom: string;
   email: string;
   capacite: number;
+  empreinteDeReprise: string;
+  repriseAutorisee: (empreinteStockee: string | null) => boolean;
   choisirGraine: (grainesPrises: readonly number[]) => number | null;
 }
 
@@ -40,5 +43,10 @@ export interface IParticipantsRepository {
   countBySession(sessionId: string): Promise<number>;
   touch(id: string): Promise<void>;
   evincer(sessionId: string, participantId: string): Promise<boolean>;
-  readmettre(sessionId: string, participantId: string): Promise<boolean>;
+  readmettre(
+    sessionId: string,
+    participantId: string,
+    capacite: number,
+  ): Promise<boolean>;
+  libererPoste(sessionId: string, participantId: string): Promise<boolean>;
 }

@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  PaginatedResult,
-  createPaginatedResult,
-} from '../../../common/domain/pagination.types';
+import { PaginatedResult } from '../../../common/domain/pagination.types';
+import { pageDeRequete } from '../../../common/infrastructure/typeorm/page-de-requete';
 import { IServicesRepository } from '../domain/IServices.repository';
 import { ServiceListQuery, ServiceSortBy } from '../domain/ServiceList.query';
 import { Services } from '../domain/Services';
@@ -18,34 +16,27 @@ export class ServicesRepositoryTypeORM implements IServicesRepository {
   ) {}
 
   async findAll(query: ServiceListQuery): Promise<PaginatedResult<Services>> {
-    const qb = this.repo.createQueryBuilder('service');
-    if (query.status) {
-      qb.andWhere('service.status = :status', { status: query.status });
-    }
-
-    const [entities, total] = await qb
-      .orderBy(this.resolveSortColumn(query.sortBy), query.order)
-      .skip((query.page - 1) * query.limit)
-      .take(query.limit)
-      .getManyAndCount();
-
-    return createPaginatedResult(
-      entities.map((e) => this.toDomain(e)),
-      total,
-      query.page,
-      query.limit,
+    return pageDeRequete(
+      this.repo.createQueryBuilder('service'),
+      {
+        ...query,
+        colonneDeTri: this.resolveSortColumn(query.sortBy),
+        filtres: { status: query.status },
+      },
+      (entity) => this.toDomain(entity),
     );
   }
 
   async create(data: Services): Promise<Services> {
-    const entity = this.repo.create({
-      slug: data.slug,
-      name: data.name,
-      icon: data.icon,
-      status: data.status,
-      order: data.order,
-    });
-    const saved = await this.repo.save(entity);
+    const saved = await this.repo.save(
+      this.repo.create({
+        slug: data.slug,
+        name: data.name,
+        icon: data.icon,
+        status: data.status,
+        order: data.order,
+      }),
+    );
     return this.toDomain(saved);
   }
 

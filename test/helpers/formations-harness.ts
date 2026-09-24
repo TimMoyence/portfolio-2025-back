@@ -1,16 +1,11 @@
 import {
-  CanActivate,
-  ExecutionContext,
   INestApplication,
-  Injectable,
-  UnauthorizedException,
   ValidationPipe,
   type Provider,
 } from '@nestjs/common';
-import { APP_GUARD, Reflector } from '@nestjs/core';
+import { APP_GUARD } from '@nestjs/core';
 import { Test as ModuleDeTest } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import type { Request } from 'express';
 import {
   request as requeteNode,
   type IncomingMessage,
@@ -18,7 +13,6 @@ import {
 } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
-import { IS_PUBLIC_KEY } from '../../src/common/interfaces/auth/public.decorator';
 import { AllExceptionsFilter } from '../../src/common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from '../../src/common/interfaces/filters/DomainExceptionFilter';
 import { CloseSessionUseCase } from '../../src/modules/formations/application/CloseSession.useCase';
@@ -42,6 +36,7 @@ import { DefisUseCase } from '../../src/modules/formations/application/Defis.use
 import { EvincerParticipantUseCase } from '../../src/modules/formations/application/EvincerParticipant.useCase';
 import { LireRappelsUseCase } from '../../src/modules/formations/application/LireRappels.useCase';
 import { ReadmettreParticipantUseCase } from '../../src/modules/formations/application/ReadmettreParticipant.useCase';
+import { LibererPosteUseCase } from '../../src/modules/formations/application/LibererPoste.useCase';
 import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
@@ -98,6 +93,11 @@ import {
   type ContexteFormations,
 } from './formations-db';
 import {
+  authentificationReelle,
+  EN_TETE_IDENTITE,
+  signerLesIdentitesDeTest,
+} from './identite-reelle';
+import {
   ADRESSE_BOUCLE_LOCALE,
   ecouterEnBoucleLocale,
   fermerApplication,
@@ -105,7 +105,15 @@ import {
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
 export const PREFIXE_API = 'api/v1/portfolio25';
-export const EN_TETE_IDENTITE = 'x-test-identite';
+export { EN_TETE_IDENTITE };
+
+export const serveurHttpDe = (
+  app: INestApplication,
+): Parameters<typeof request>[0] =>
+  app.getHttpServer() as Parameters<typeof request>[0];
+
+export const routeFormations = (chemin: string): string =>
+  `/${PREFIXE_API}/formations${chemin}`;
 
 const COURS_FORMATION_TEST = buildCoursDeTest({
   slug: 'b2-01-traitement-information-chiffree',
@@ -121,29 +129,6 @@ export function coursPublie(slug: string): Cours {
 
 const FENETRE_THROTTLE_MS = 60_000;
 const LIMITE_THROTTLE_PAR_DEFAUT = 30;
-
-@Injectable()
-class IdentiteDeTestGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
-
-  canActivate(context: ExecutionContext): boolean {
-    const estPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (estPublic) {
-      return true;
-    }
-    const requete = context.switchToHttp().getRequest<Request>();
-    const entete = requete.headers[EN_TETE_IDENTITE];
-    if (typeof entete !== 'string') {
-      throw new UnauthorizedException();
-    }
-    const [sub, ...roles] = entete.split(':');
-    requete.user = { sub, roles } as Request['user'];
-    return true;
-  }
-}
 
 export interface DepotsFormations {
   sessions: ISessionsRepository;
@@ -186,6 +171,7 @@ export function fournisseursFormations(
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
     ReadmettreParticipantUseCase,
+    LibererPosteUseCase,
     LireRappelsUseCase,
     SyntheseRappelsUseCase,
     RecordIncidentsUseCase,
@@ -231,12 +217,13 @@ export async function monterApplicationFormations(
     controllers: CONTROLEURS_FORMATIONS,
     providers: [
       ...fournisseursFormations(depots, catalogue),
-      { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
+      ...authentificationReelle(),
       { provide: APP_GUARD, useClass: ThrottlerGuard },
     ],
   }).compile();
 
   const app = moduleRef.createNestApplication();
+  signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API);
   app.useGlobalFilters(new AllExceptionsFilter(), new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
@@ -383,10 +370,8 @@ export function clientFormations(
   app: INestApplication,
   formateurId: string,
 ): ClientFormations {
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
-  const chemin = (suffixe: string): string =>
-    `/${PREFIXE_API}/formations${suffixe}`;
+  const serveur = () => serveurHttpDe(app);
+  const chemin = routeFormations;
   const formateur = (
     methode: 'post' | 'patch' | 'get',
     suffixe: string,

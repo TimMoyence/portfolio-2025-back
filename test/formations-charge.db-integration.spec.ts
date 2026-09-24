@@ -21,7 +21,8 @@ import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   patienter,
-  PREFIXE_API,
+  routeFormations,
+  serveurHttpDe,
   type FluxEcoute,
 } from './helpers/formations-harness';
 import {
@@ -175,11 +176,9 @@ describeDb('Formations sous charge de classe (db integration)', () => {
   let mailer: jest.Mocked<IFormationMailer>;
   let port: number;
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(app);
 
-  const route = (chemin: string): string =>
-    `/${PREFIXE_API}/formations${chemin}`;
+  const route = routeFormations;
 
   const rejoindre = (code: string, index: number): Test =>
     request(serveur())

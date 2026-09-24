@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  PaginatedResult,
-  createPaginatedResult,
-} from '../../../common/domain/pagination.types';
+import { PaginatedResult } from '../../../common/domain/pagination.types';
+import { pageDeRequete } from '../../../common/infrastructure/typeorm/page-de-requete';
 import {
   RedirectListQuery,
   RedirectSortBy,
@@ -21,22 +19,14 @@ export class RedirectsRepositoryTypeORM implements IRedirectsRepository {
   ) {}
 
   async findAll(query: RedirectListQuery): Promise<PaginatedResult<Redirects>> {
-    const qb = this.repo.createQueryBuilder('redirect');
-    if (query.enabled !== undefined) {
-      qb.andWhere('redirect.enabled = :enabled', { enabled: query.enabled });
-    }
-
-    const [entities, total] = await qb
-      .orderBy(this.resolveSortColumn(query.sortBy), query.order)
-      .skip((query.page - 1) * query.limit)
-      .take(query.limit)
-      .getManyAndCount();
-
-    return createPaginatedResult(
-      entities.map((e) => this.toDomain(e)),
-      total,
-      query.page,
-      query.limit,
+    return pageDeRequete(
+      this.repo.createQueryBuilder('redirect'),
+      {
+        ...query,
+        colonneDeTri: this.resolveSortColumn(query.sortBy),
+        filtres: { enabled: query.enabled },
+      },
+      (entity) => this.toDomain(entity),
     );
   }
 

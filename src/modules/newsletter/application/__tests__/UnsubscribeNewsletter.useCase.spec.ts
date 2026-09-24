@@ -1,19 +1,32 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import {
-  buildNewsletterSubscriber,
+  buildAbonnePersiste,
   createMockEmailDripScheduler,
   createMockNewsletterMailer,
   createMockNewsletterSubscriberRepo,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
+import type { NewsletterSubscriber } from '../../domain/NewsletterSubscriber';
 import { UnsubscribeNewsletterUseCase } from '../UnsubscribeNewsletter.useCase';
+
+const confirme = (abonne: NewsletterSubscriber) => abonne.confirm();
 
 describe('UnsubscribeNewsletterUseCase', () => {
   let repo: ReturnType<typeof createMockNewsletterSubscriberRepo>;
   let mailer: ReturnType<typeof createMockNewsletterMailer>;
   let scheduler: ReturnType<typeof createMockEmailDripScheduler>;
   let useCase: UnsubscribeNewsletterUseCase;
+
+  const desabonner = async (
+    abonne: NewsletterSubscriber,
+    options?: { sendAck: boolean },
+  ) => {
+    repo.findByUnsubscribeToken.mockResolvedValueOnce(abonne);
+    const result = await useCase.execute(abonne.unsubscribeToken, options);
+    await flushPromises();
+    return result;
+  };
 
   beforeEach(() => {
     repo = createMockNewsletterSubscriberRepo();
@@ -22,79 +35,62 @@ describe('UnsubscribeNewsletterUseCase', () => {
     useCase = new UnsubscribeNewsletterUseCase(repo, mailer, scheduler);
   });
 
-  it('desabonne un abonne confirmed et annule la sequence drip', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.confirm();
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-    repo.markUnsubscribed.mockImplementationOnce((s) => Promise.resolve(s));
+  it.each([
+    ['envoie l’accuse par defaut', undefined, 1],
+    [
+      'n’envoie pas d’accuse quand sendAck vaut false (one-click)',
+      { sendAck: false },
+      0,
+    ],
+  ])(
+    'desabonne un abonne confirme, annule la sequence drip et %s',
+    async (_label, options, accuses) => {
+      const result = await desabonner(buildAbonnePersiste(confirme), options);
 
-    const result = await useCase.execute(subscriber.unsubscribeToken);
-    await flushPromises();
+      expect(result).toEqual(
+        expect.objectContaining({
+          status: 'unsubscribed',
+          alreadyUnsubscribed: false,
+        }),
+      );
+      expect(repo.markUnsubscribed).toHaveBeenCalled();
+      expect(scheduler.cancel).toHaveBeenCalledTimes(1);
+      expect(mailer.sendUnsubscribeAck).toHaveBeenCalledTimes(accuses);
+    },
+  );
 
-    expect(result.status).toBe('unsubscribed');
-    expect(result.alreadyUnsubscribed).toBe(false);
-    expect(repo.markUnsubscribed).toHaveBeenCalled();
-    expect(scheduler.cancel).toHaveBeenCalledTimes(1);
-    expect(mailer.sendUnsubscribeAck).toHaveBeenCalledTimes(1);
-  });
+  it.each([
+    [
+      'si une requete concurrente a gagne',
+      confirme,
+      () => repo.markUnsubscribed.mockResolvedValueOnce(null),
+    ],
+    [
+      'quand l’abonne est deja desabonne',
+      (abonne: NewsletterSubscriber) => abonne.unsubscribe(),
+      () => undefined,
+    ],
+  ])(
+    'ne declenche aucun effet de bord %s',
+    async (_label, preparer, course) => {
+      course();
 
-  it('n’envoie pas d’accuse quand sendAck vaut false (one-click)', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.confirm();
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-    repo.markUnsubscribed.mockImplementationOnce((s) => Promise.resolve(s));
+      const result = await desabonner(buildAbonnePersiste(preparer));
 
-    const result = await useCase.execute(subscriber.unsubscribeToken, {
-      sendAck: false,
-    });
-    await flushPromises();
-
-    expect(result.status).toBe('unsubscribed');
-    expect(scheduler.cancel).toHaveBeenCalledTimes(1);
-    expect(mailer.sendUnsubscribeAck).not.toHaveBeenCalled();
-  });
-
-  it('ne declenche aucun effet de bord si une requete concurrente a gagne', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.confirm();
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-    repo.markUnsubscribed.mockResolvedValueOnce(null);
-
-    const result = await useCase.execute(subscriber.unsubscribeToken);
-    await flushPromises();
-
-    expect(result.alreadyUnsubscribed).toBe(true);
-    expect(result.status).toBe('unsubscribed');
-    expect(scheduler.cancel).not.toHaveBeenCalled();
-    expect(mailer.sendUnsubscribeAck).not.toHaveBeenCalled();
-  });
-
-  it('est idempotent quand deja desabonne', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.unsubscribe();
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-
-    const result = await useCase.execute(subscriber.unsubscribeToken);
-    await flushPromises();
-
-    expect(result.alreadyUnsubscribed).toBe(true);
-    expect(repo.update).not.toHaveBeenCalled();
-    expect(scheduler.cancel).not.toHaveBeenCalled();
-    expect(mailer.sendUnsubscribeAck).not.toHaveBeenCalled();
-  });
+      expect(result).toEqual(
+        expect.objectContaining({
+          status: 'unsubscribed',
+          alreadyUnsubscribed: true,
+        }),
+      );
+      expect(repo.update).not.toHaveBeenCalled();
+      expect(scheduler.cancel).not.toHaveBeenCalled();
+      expect(mailer.sendUnsubscribeAck).not.toHaveBeenCalled();
+    },
+  );
 
   it('accepte un desabonnement avant confirmation', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
-
-    const result = await useCase.execute(subscriber.unsubscribeToken);
-    await flushPromises();
+    const result = await desabonner(buildAbonnePersiste());
 
     expect(result.status).toBe('unsubscribed');
   });
@@ -106,33 +102,18 @@ describe('UnsubscribeNewsletterUseCase', () => {
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
-  it("ne propage pas l'erreur si scheduler.cancel echoue (fire-and-forget)", async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.confirm();
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
-    scheduler.cancel.mockRejectedValueOnce(new Error('BullMQ down'));
+  it.each([
+    ['scheduler.cancel', () => scheduler.cancel],
+    ['sendUnsubscribeAck', () => mailer.sendUnsubscribeAck],
+  ])(
+    "ne propage pas l'erreur si %s echoue (fire-and-forget)",
+    async (_label, effet) => {
+      effet().mockRejectedValueOnce(new Error('panne'));
 
-    await expect(
-      useCase.execute(subscriber.unsubscribeToken),
-    ).resolves.toBeDefined();
-    await flushPromises();
-    expect(scheduler.cancel).toHaveBeenCalledTimes(1);
-  });
-
-  it("ne propage pas l'erreur si sendUnsubscribeAck echoue (fire-and-forget)", async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.confirm();
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(subscriber);
-    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
-    mailer.sendUnsubscribeAck.mockRejectedValueOnce(new Error('SMTP down'));
-
-    await expect(
-      useCase.execute(subscriber.unsubscribeToken),
-    ).resolves.toBeDefined();
-    await flushPromises();
-    expect(mailer.sendUnsubscribeAck).toHaveBeenCalledTimes(1);
-  });
+      await expect(
+        desabonner(buildAbonnePersiste(confirme)),
+      ).resolves.toBeDefined();
+      expect(effet()).toHaveBeenCalledTimes(1);
+    },
+  );
 });

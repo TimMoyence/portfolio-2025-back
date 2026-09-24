@@ -31,31 +31,26 @@ describe('CreateContactsUseCase', () => {
     useCase = new CreateContactsUseCase(repo, notifier);
   });
 
-  it('devrait creer un contact et envoyer la notification', async () => {
-    const expectedResponse: MessageContactResponse = {
-      message: 'Contact cree',
-    };
-    repo.create.mockResolvedValue(expectedResponse);
-    notifier.sendContactNotification.mockResolvedValue(undefined);
+  it.each([
+    ['envoie la notification', () => Promise.resolve()],
+    [
+      'survit a l echec de la notification',
+      () => Promise.reject(new Error('SMTP error')),
+    ],
+  ])(
+    'devrait creer le contact et %s',
+    async (_cas, envoi: () => Promise<void>) => {
+      const expectedResponse: MessageContactResponse = {
+        message: 'Contact cree',
+      };
+      repo.create.mockResolvedValue(expectedResponse);
+      notifier.sendContactNotification.mockImplementation(envoi);
 
-    const result = await useCase.execute(validCommand);
+      const result = await useCase.execute(validCommand);
 
-    expect(result).toEqual(expectedResponse);
-    expect(repo.create).toHaveBeenCalledTimes(1);
-    expect(notifier.sendContactNotification).toHaveBeenCalledTimes(1);
-  });
-
-  it('devrait creer le contact meme si la notification echoue', async () => {
-    const expectedResponse: MessageContactResponse = {
-      message: 'Contact cree',
-    };
-    repo.create.mockResolvedValue(expectedResponse);
-    notifier.sendContactNotification.mockRejectedValue(new Error('SMTP error'));
-
-    const result = await useCase.execute(validCommand);
-
-    expect(result).toEqual(expectedResponse);
-    expect(repo.create).toHaveBeenCalledTimes(1);
-    expect(notifier.sendContactNotification).toHaveBeenCalledTimes(1);
-  });
+      expect(result).toEqual(expectedResponse);
+      expect(repo.create).toHaveBeenCalledTimes(1);
+      expect(notifier.sendContactNotification).toHaveBeenCalledTimes(1);
+    },
+  );
 });

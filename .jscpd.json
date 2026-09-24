@@ -10,12 +10,9 @@
     "**/dist/**",
     "**/coverage/**",
     "src/migrations/**",
-    "**/*.spec.ts",
-    "**/*.entity.ts",
-    "**/*.dto.ts",
-    "**/dto/**"
+    "**/*.spec.ts"
   ],
   "reporters": ["console", "html"],
   "output": "reports/jscpd",
-  "threshold": 1.1
+  "threshold": 0
 }

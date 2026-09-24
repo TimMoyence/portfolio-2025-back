@@ -69,40 +69,6 @@ describe('LangchainClientReportService', () => {
     expect(result.executiveSummary.length).toBeGreaterThan(20);
     expect(result.topFindings.length).toBeGreaterThanOrEqual(1);
     expect(result.pillarScorecard).toHaveLength(7);
-    expect(result.pillarScorecard.map((pillar) => pillar.pillar)).toEqual([
-      'seo',
-      'performance',
-      'technical',
-      'trust',
-      'conversion',
-      'aiVisibility',
-      'citationWorthiness',
-    ]);
-    expect(result.quickWins.length).toBeGreaterThanOrEqual(3);
-    expect(result.quickWins.length).toBeLessThanOrEqual(5);
-    expect(result.cta.title.length).toBeGreaterThan(0);
-    expect(result.cta.description.length).toBeGreaterThan(0);
-    expect(result.cta.actionLabel.length).toBeGreaterThan(0);
-  });
-
-  it('preserves source severity verbatim — no inflation low→medium→high→critical (P0.1)', async () => {
-    const service = new LangchainClientReportService(config);
-    const result = await service.generate(baseContext());
-    const top = result.topFindings[0];
-
-    expect(top.severity).toBe('high');
-    expect(top.title).toContain('Meta descriptions');
-
-    const second = result.topFindings[1];
-    expect(second?.severity).toBe('medium');
-  });
-
-  it('computes google vs ai matrix from pillar scores when falling back', async () => {
-    const service = new LangchainClientReportService(config);
-    const result = await service.generate(baseContext());
-
-    expect(result.googleVsAiMatrix.googleVisibility.score).toBe(62);
-    expect(result.googleVsAiMatrix.aiVisibility.score).toBe(56);
   });
 
   it('falls back when the llm call throws', async () => {

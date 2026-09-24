@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { requireHttpUrl } from '../../../common/domain/validation/domain-validators';
 import { Slug } from '../../../common/domain/value-objects/Slug';
 
 export interface CreateRedirectProps {
@@ -18,37 +19,10 @@ export class Redirects {
   static create(props: CreateRedirectProps): Redirects {
     const redirect = new Redirects();
     redirect.slug = Slug.parse(props.slug, 'redirect slug').toString();
-    redirect.targetUrl = this.requireUrl(
-      props.targetUrl,
-      'redirect target URL',
-    );
+    redirect.targetUrl = requireHttpUrl(props.targetUrl, 'redirect target URL');
     redirect.enabled = this.resolveEnabled(props.enabled);
     redirect.clicks = this.resolveClicks(props.clicks);
     return redirect;
-  }
-
-  private static requireUrl(raw: unknown, field: string): string {
-    if (typeof raw !== 'string') {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    const value = raw.trim();
-    if (value.length === 0 || value.length > 1000) {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    let parsed: URL;
-    try {
-      parsed = new URL(value);
-    } catch {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    return value;
   }
 
   private static resolveEnabled(raw: unknown): boolean {

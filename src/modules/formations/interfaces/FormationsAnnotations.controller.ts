@@ -64,7 +64,8 @@ export class FormationsAnnotationsController {
   })
   @ApiCreatedResponse({ type: TeacherAnnotationResponseDto })
   @ApiBadRequestResponse({
-    description: 'Note vide une fois les blancs retirés',
+    description:
+      'Note vide une fois les blancs retirés, ou ECRAN_INCONNU : écran absent du cours de la séance',
   })
   async saveAnnotation(
     @Param('id', ParseUUIDPipe) id: string,
