@@ -4,9 +4,15 @@ import {
   buildIncidentInput,
   buildParticipantRecord,
   createMockIncidentsRepo,
+  buildSessionRecord,
   createMockParticipantsRepo,
+  createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import { ParticipantNotFoundError } from '../../domain/errors/FormationErrors';
+import {
+  ParticipantNotFoundError,
+  SessionClosedError,
+  SessionNotFoundError,
+} from '../../domain/errors/FormationErrors';
 import { RecordIncidentsUseCase } from '../RecordIncidents.useCase';
 
 const SEANCE = 'session-uuid';
@@ -15,6 +21,7 @@ const POSTE = 'participant-uuid';
 describe('RecordIncidentsUseCase', () => {
   let incidents: ReturnType<typeof createMockIncidentsRepo>;
   let participants: ReturnType<typeof createMockParticipantsRepo>;
+  let sessions: ReturnType<typeof createMockSessionsRepo>;
   let sut: RecordIncidentsUseCase;
 
   const remonter = (lot: ReturnType<typeof buildIncidentInput>[]) =>
@@ -23,7 +30,8 @@ describe('RecordIncidentsUseCase', () => {
   beforeEach(() => {
     incidents = createMockIncidentsRepo();
     participants = createMockParticipantsRepo();
-    sut = new RecordIncidentsUseCase(incidents, participants);
+    sessions = createMockSessionsRepo();
+    sut = new RecordIncidentsUseCase(incidents, participants, sessions);
   });
 
   it('enregistre les incidents de types connus', async () => {
@@ -64,6 +72,37 @@ describe('RecordIncidentsUseCase', () => {
     await expect(
       remonter([buildIncidentInput({ type: 'tab_hidden' })]),
     ).rejects.toThrow(ParticipantNotFoundError);
+    expect(incidents.createMany).not.toHaveBeenCalled();
+  });
+
+  it('S6 · refuse le journal d incidents d une seance close', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ id: SEANCE, etat: 'terminee' }),
+    );
+
+    await expect(
+      remonter([buildIncidentInput({ type: 'tab_hidden' })]),
+    ).rejects.toThrow(SessionClosedError);
+    expect(incidents.createMany).not.toHaveBeenCalled();
+  });
+
+  it('S6 · accepte le journal d une seance ouverte mais pas encore demarree', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({ id: SEANCE, etat: 'attente' }),
+    );
+    const lot = [buildIncidentInput({ type: 'tab_hidden' })];
+
+    await remonter(lot);
+
+    expect(incidents.createMany).toHaveBeenCalledWith(lot);
+  });
+
+  it('S6 · refuse le journal d une seance inconnue', async () => {
+    sessions.findById.mockResolvedValue(null);
+
+    await expect(
+      remonter([buildIncidentInput({ type: 'tab_hidden' })]),
+    ).rejects.toThrow(SessionNotFoundError);
     expect(incidents.createMany).not.toHaveBeenCalled();
   });
 });

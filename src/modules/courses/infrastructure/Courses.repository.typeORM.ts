@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  PaginatedResult,
-  createPaginatedResult,
-} from '../../../common/domain/pagination.types';
+import { PaginatedResult } from '../../../common/domain/pagination.types';
+import { pageDeRequete } from '../../../common/infrastructure/typeorm/page-de-requete';
 import { CourseListQuery, CourseSortBy } from '../domain/CourseList.query';
 import { Courses } from '../domain/Courses';
 import { ICoursesRepository } from '../domain/ICourses.repository';
@@ -18,18 +16,10 @@ export class CoursesRepositoryTypeORM implements ICoursesRepository {
   ) {}
 
   async findAll(query: CourseListQuery): Promise<PaginatedResult<Courses>> {
-    const [entities, total] = await this.repo
-      .createQueryBuilder('course')
-      .orderBy(this.resolveSortColumn(query.sortBy), query.order)
-      .skip((query.page - 1) * query.limit)
-      .take(query.limit)
-      .getManyAndCount();
-
-    return createPaginatedResult(
-      entities.map((e) => this.toDomain(e)),
-      total,
-      query.page,
-      query.limit,
+    return pageDeRequete(
+      this.repo.createQueryBuilder('course'),
+      { ...query, colonneDeTri: this.resolveSortColumn(query.sortBy) },
+      (entity) => this.toDomain(entity),
     );
   }
 

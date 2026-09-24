@@ -1,13 +1,34 @@
 import type { Solution } from '../GradingCore';
+import type { CadrageDuRenvoi } from './cours';
 import type {
   CoursPublic as CoursPublicActuel,
   EcranPublic as EcranPublicActuel,
 } from '../cours/CoursPublic';
 import type { CorrigeTire, LibellesDesOptions } from '../cours/Tirage';
+import type { CorrigeEcranPresentateur } from './deroule';
 import type { VotePublic } from './donnees-publiques';
+
+export interface CorrectionServie {
+  readonly ecranId: string;
+  readonly questions: readonly {
+    readonly questionId: string;
+    readonly bonneReponse: string;
+    readonly optionId: string | null;
+  }[];
+  readonly corrige: CorrigeEcranPresentateur | null;
+  readonly reflexion: {
+    readonly attendu: string;
+    readonly suite: string | null;
+  } | null;
+}
 
 export interface EcranPublic extends EcranPublicActuel {
   readonly titre: string | null;
+  readonly renvoi?: string;
+  readonly cadrageDuRenvoi?: CadrageDuRenvoi;
+  readonly ecranCorrige?: string;
+  readonly resoluPar?: readonly string[];
+  readonly correction?: CorrectionServie;
 }
 
 export interface CoursPublic extends Omit<CoursPublicActuel, 'ecrans'> {

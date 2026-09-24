@@ -362,6 +362,29 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
     },
   );
 
+  it.each([
+    ['Inflation : ni unité, ni période, ni source.', ['B2-01-A1-04-AVANT']],
+    ['Une inflation sans unité ni période.', []],
+  ])(
+    'SEC-3 · cherche les justifications d un classement avant le tri : « %s »',
+    (texte, attendu) => {
+      const cours = recomposer(base, [
+        ouverture,
+        citation,
+        atelier,
+        texteDe('B2-01-A1-04-AVANT', texte),
+        lireEcranStocke(
+          buildEcranDeBrique('fp-cardsort', {
+            screenId: 'B2-01-A1-05-PRODUCTION',
+          }),
+        ),
+        cloture,
+      ]);
+
+      expect(fuites(cours)).toEqual(attendu);
+    },
+  );
+
   const coffre = (indice: string): Ecran =>
     lireEcranStocke(
       buildEcranDeBrique('fp-escape', {

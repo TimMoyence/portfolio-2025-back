@@ -1,6 +1,6 @@
+import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
 import {
   Column,
-  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -13,7 +13,7 @@ import { ServicesEntity } from './Services.entity';
 @Entity({ name: 'services_translation' })
 @Unique('uq_services_translation_locale', ['serviceId', 'locale'])
 @Unique('uq_services_translation_locale_slug', ['locale', 'slug'])
-export class ServicesTranslationEntity {
+export class ServicesTranslationEntity extends ColonnesDeTrace {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -41,22 +41,4 @@ export class ServicesTranslationEntity {
 
   @Column('text')
   content: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_or_created_by',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  updatedOrCreatedBy: string | null;
 }

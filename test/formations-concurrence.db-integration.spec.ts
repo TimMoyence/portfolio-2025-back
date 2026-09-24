@@ -22,7 +22,8 @@ import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   patienter,
-  PREFIXE_API,
+  routeFormations,
+  serveurHttpDe,
 } from './helpers/formations-harness';
 import {
   ecouterEnBoucleLocale,
@@ -92,11 +93,9 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
   let contexte: ContexteFormations;
   let app: INestApplication;
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(app);
 
-  const route = (chemin: string): string =>
-    `/${PREFIXE_API}/formations${chemin}`;
+  const route = routeFormations;
 
   const ouvrir = (): Test =>
     request(serveur())
@@ -161,22 +160,40 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     return lignes.map((ligne) => ligne.code);
   };
 
-  const insertionsBloquees = async (): Promise<number> => {
+  const requetesBloquees = async (debut: string): Promise<number> => {
     const lignes: Array<{ total: string }> = await contexte.dataSource.query(
-      `SELECT count(*)::text AS total FROM pg_stat_activity WHERE wait_event_type = 'Lock' AND query LIKE 'INSERT INTO "formation_sessions"%'`,
+      `SELECT count(*)::text AS total FROM pg_stat_activity WHERE wait_event_type = 'Lock' AND query LIKE $1`,
+      [`${debut}%`],
     );
     return Number(lignes[0].total);
   };
 
-  const attendreInsertionBloquee = async (): Promise<number> => {
+  const attendreRequeteBloquee = async (
+    debut: string,
+    abandonner: () => boolean = () => false,
+  ): Promise<number> => {
     for (let sondage = 0; sondage < MAX_SONDAGES; sondage += 1) {
-      const total = await insertionsBloquees();
+      const total = await requetesBloquees(debut);
       if (total > 0) {
         return total;
+      }
+      if (abandonner()) {
+        return 0;
       }
       await patienter(PAS_SONDAGE_MS);
     }
     return 0;
+  };
+
+  const empreinteDeRepriseDe = async (
+    participantId: string,
+  ): Promise<string | null> => {
+    const lignes: Array<{ empreinte: string | null }> =
+      await contexte.dataSource.query(
+        `SELECT "empreinte_de_reprise" AS "empreinte" FROM "formation_participants" WHERE "id" = $1`,
+        [participantId],
+      );
+    return lignes[0].empreinte;
   };
 
   beforeAll(async () => {
@@ -260,7 +277,9 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     );
 
     const ouverture = ouvrir().then((reponse) => reponse);
-    const bloquees = await attendreInsertionBloquee();
+    const bloquees = await attendreRequeteBloquee(
+      'INSERT INTO "formation_sessions"',
+    );
     await concurrente.commitTransaction();
     await concurrente.release();
     const reponse = await ouverture;
@@ -272,6 +291,43 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     expect(trier(await codesEnBase())).toEqual(
       trier([CODE_DOUBLON, CODE_DE_REPLI]),
     );
+  }, 60_000);
+
+  it('S1 · ne laisse pas une reprise en cours annuler la liberation du poste', async () => {
+    const { sessionId, code } = await ouvrirSeance();
+    const { participantId } = await premierInscrit(code);
+    const reprise = contexte.dataSource.createQueryRunner();
+    await reprise.connect();
+    await reprise.startTransaction();
+    await reprise.query(
+      `SELECT "id" FROM "formation_sessions" WHERE "id" = $1 FOR UPDATE`,
+      [sessionId],
+    );
+
+    let liberee = false;
+    const liberation = contexte.participants
+      .libererPoste(sessionId, participantId)
+      .then((resultat) => {
+        liberee = true;
+        return resultat;
+      });
+    const bloquees = await attendreRequeteBloquee(
+      'SELECT "id" FROM "formation_sessions"',
+      () => liberee,
+    );
+    await reprise.query(
+      `UPDATE "formation_participants" SET "empreinte_de_reprise" = $1 WHERE "id" = $2`,
+      ['empreinte-ecrite-par-la-reprise', participantId],
+    );
+    await reprise.commitTransaction();
+    await reprise.release();
+
+    await expect(liberation).resolves.toBe(true);
+    await expect(empreinteDeRepriseDe(participantId)).resolves.toBeNull();
+    expect(
+      (await contexte.participants.findById(participantId))?.generationDeJeton,
+    ).toBe(1);
+    expect(bloquees).toBe(1);
   }, 60_000);
 
   it('ne perd ni ne double aucune reponse arrivee pendant la cloture', async () => {

@@ -135,6 +135,65 @@ describe('stockage multi-briques (B1)', () => {
       },
     ],
     [
+      'fp-plot',
+      'une référence qui ne nomme aucun préréglage du tracé',
+      (p) => {
+        p.prereglages = [{ libelle: 'Axe à zéro', valeurs: {} }];
+        p.reference = 'Axe de Samir';
+      },
+    ],
+    [
+      'fp-concept4',
+      'un préréglage qui règle un paramètre absent de la machine',
+      (p) => {
+        p.prereglages = [
+          { libelle: '+10 % puis −10 %', valeurs: { absent: 0 } },
+        ];
+      },
+    ],
+    [
+      'fp-concept4',
+      'une animation d une seule étape',
+      (p) => {
+        p.animation = [{ depart: 100 }];
+      },
+    ],
+    [
+      'fp-concept4',
+      'une étape d animation vide',
+      (p) => {
+        p.animation = [{ depart: 100 }, {}];
+      },
+    ],
+    [
+      'fp-concept4',
+      'une animation qui règle un paramètre absent de la machine',
+      (p) => {
+        p.animation = [{ depart: 100 }, { absent: 0 }];
+      },
+    ],
+    [
+      'fp-concept4',
+      'une animation qui sort des bornes du curseur',
+      (p) => {
+        p.animation = [{ depart: 100 }, { depart: 201 }];
+      },
+    ],
+    [
+      'fp-plot',
+      'une animation qui ne tombe pas sur le pas du curseur',
+      (p) => {
+        p.animation = [{ origine: 284000 }, { origine: 1000 }];
+      },
+    ],
+    [
+      'fp-plot',
+      'une animation qui règle un paramètre absent du tracé',
+      (p) => {
+        p.animation = [{ origine: 284000 }, { absent: 0 }];
+      },
+    ],
+    [
       'fp-cardsort',
       'un corrigé qui classe une carte absente du plan',
       (p) => {
@@ -309,14 +368,14 @@ describe('stockage multi-briques (B1)', () => {
       });
     });
 
-    it('lit un écran stocké sans titre ni diffusion comme un écran du catalogue sans titre', () => {
+    it('SEC-4 · lit un écran stocké sans titre ni diffusion comme un écran de séance sans titre', () => {
       const cours = lireCoursStocke(
         buildCoursStocke({ ecrans: [buildEcranStocke()] }),
       );
 
       expect(cours.ecrans[0]).toMatchObject({
         titre: null,
-        diffusion: 'catalogue',
+        diffusion: 'seance',
       });
     });
 
@@ -497,6 +556,88 @@ describe('stockage multi-briques (B1)', () => {
         etayage: 1,
       });
       expect(ecran.modalite).toBe('solo');
+    });
+
+    it('T13 · porte le renvoi d un récit vers un autre écran', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-story', (proprietes) => {
+          proprietes.renvoi = 'B2-01-A1-04-TABLEAU-DE-BORD';
+        }),
+      );
+
+      expect(ecran.renvoi).toBe('B2-01-A1-04-TABLEAU-DE-BORD');
+      expect(
+        ecran.brique === 'fp-story' && ecran.proprietes,
+      ).not.toHaveProperty('renvoi');
+    });
+
+    it('R3 · porte le cadrage du renvoi hors des propriétés de la brique', () => {
+      const cadrage = { part: 70, extrait: { champs: ['situation'] } };
+      const ecran = lireEcran(
+        avecProprietes('fp-worked', (proprietes) => {
+          proprietes.renvoi = 'B2-01-A1-03-MISSION';
+          proprietes.cadrageDuRenvoi = cadrage;
+        }),
+      );
+
+      expect(ecran.cadrageDuRenvoi).toEqual(cadrage);
+      expect(
+        ecran.brique === 'fp-worked' && ecran.proprietes,
+      ).not.toHaveProperty('cadrageDuRenvoi');
+    });
+
+    it.each([20, 45, 80])(
+      'R3 · refuse une part de renvoi de %i %%, hors de 30 à 70 par pas de 10',
+      (part) => {
+        expect(() =>
+          lireEcran(
+            avecProprietes('fp-story', (proprietes) => {
+              proprietes.renvoi = 'B2-01-A1-03-MISSION';
+              proprietes.cadrageDuRenvoi = { part };
+            }),
+          ),
+        ).toThrow();
+      },
+    );
+
+    it.each<readonly [string, readonly Record<string, number>[]]>([
+      ['fp-concept4', [{ depart: 100 }, { depart: 200 }, { depart: 1 }]],
+      ['fp-plot', [{ origine: 284000 }, { origine: 0, maximum: 600000 }]],
+    ])('R8 · R9 · porte l animation de %s', (brique, animation) => {
+      const ecran = lireEcran(
+        avecProprietes(brique, (proprietes) => {
+          proprietes.animation = animation;
+        }),
+      );
+
+      expect(ecran).toMatchObject({ proprietes: { animation } });
+    });
+
+    it('porte l écran d exercice que corrige un exemple piloté', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-worked', (proprietes) => {
+          proprietes.pilote = true;
+          proprietes.etayage = 0;
+          proprietes.corrigeDe = 'B2-01-A2-06-POINTS';
+        }),
+      );
+
+      expect(ecran.brique === 'fp-worked' && ecran.proprietes).toMatchObject({
+        pilote: true,
+        corrigeDe: 'B2-01-A2-06-POINTS',
+      });
+    });
+
+    it('F02 · porte la consigne du rappel d ouverture', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-recall', (proprietes) => {
+          proprietes.consigne = 'Calculez sans calculatrice.';
+        }),
+      );
+
+      expect(ecran.brique === 'fp-recall' && ecran.consigne).toBe(
+        'Calculez sans calculatrice.',
+      );
     });
 
     it('convertit une question numérique avec sa forme publiée', () => {

@@ -1,9 +1,9 @@
+import { LigneDeSeance } from './ligne-de-seance';
 import {
   Column,
   CreateDateColumn,
   Entity,
   Index,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
   Unique,
   Check,
@@ -11,7 +11,6 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
-import { FormationSessionEntity } from './FormationSession.entity';
 
 @Entity({ name: 'formation_scores' })
 @Check('CHK_formation_scores_kind', "\"kind\" IN ('individual', 'session')")
@@ -25,20 +24,7 @@ import { FormationSessionEntity } from './FormationSession.entity';
   where: '"participant_id" IS NULL',
 })
 @Index('idx_formation_scores_session', ['sessionId'])
-export class FormationScoreEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ name: 'session_id', type: 'uuid' })
-  sessionId: string;
-
-  @ManyToOne(() => FormationSessionEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({
-    name: 'session_id',
-    foreignKeyConstraintName: 'FK_formation_scores_session',
-  })
-  session: FormationSessionEntity;
-
+export class FormationScoreEntity extends LigneDeSeance('formation_scores') {
   @Column({ name: 'participant_id', type: 'uuid', nullable: true })
   participantId: string | null;
 

@@ -2,9 +2,14 @@ import { QueryFailedError } from 'typeorm';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import {
   AnswerAlreadySubmittedError,
+  GraineRepriseError,
+  ParticipantEvinceError,
+  PlaceDejaPriseError,
+  SeanceCompleteError,
   SeedAlreadyAssignedError,
   SessionCodeAlreadyActiveError,
 } from '../src/modules/formations/domain/errors/FormationErrors';
+import { SecretDeReprise } from '../src/modules/formations/domain/SecretDeReprise';
 import type { ParticipantRecord } from '../src/modules/formations/domain/IParticipants.repository';
 import { nextBox } from '../src/modules/formations/domain/LeitnerBox';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
@@ -94,6 +99,16 @@ describeDb('Formations repositories (db integration)', () => {
       bareme: buildBareme(),
     });
 
+  const annulerJusquA = async (migration: string): Promise<void> => {
+    const [derniere] = await contexte.dataSource.query<{ name: string }[]>(
+      `SELECT "name" FROM "migrations" ORDER BY "timestamp" DESC LIMIT 1`,
+    );
+    await contexte.dataSource.undoLastMigration({ transaction: 'all' });
+    if (derniere.name !== migration) {
+      await annulerJusquA(migration);
+    }
+  };
+
   const inscrire = (sessionId: string, studentKey: string, seed: number) =>
     inscrireParticipant(contexte.participants, {
       sessionId,
@@ -165,6 +180,63 @@ describeDb('Formations repositories (db integration)', () => {
     expect(tables.map((table) => table.tablename)).toEqual(
       expect.arrayContaining([...FORMATION_TABLES]),
     );
+  });
+
+  it('rabat sur la classe entière les annotations saisies par groupe, sans en perdre le texte', async () => {
+    const seance = await ouvrirSeance('4812');
+    await annulerJusquA('RetireLesGroupesDeSuivi1790600000000');
+    await contexte.dataSource.query(
+      `INSERT INTO "formation_teacher_annotations" ("session_id", "teacher_id", "screen_id", "group_name", "note")
+       VALUES ($1, $2, 'B2-01-A2-03-CORRECTION-1', 'Classe entière', 'Relancer sur la base.'),
+              ($1, $2, 'B2-01-A2-03-CORRECTION-1', 'Groupe A', 'Revoir le 45,5 %.'),
+              ($1, $2, 'B2-01-A2-06-CORRECTION', 'Groupe B', 'Faire lire les points.')`,
+      [seance.id, FORMATEUR],
+    );
+
+    await contexte.dataSource.runMigrations({ transaction: 'all' });
+
+    await expect(
+      contexte.annotations.listBySession(seance.id, FORMATEUR),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        screenId: 'B2-01-A2-03-CORRECTION-1',
+        note: 'Relancer sur la base.\nGroupe A : Revoir le 45,5 %.',
+      }),
+      expect.objectContaining({
+        screenId: 'B2-01-A2-06-CORRECTION',
+        note: 'Groupe B : Faire lire les points.',
+      }),
+    ]);
+    const restes: Array<{ nom: string }> = await contexte.dataSource.query(
+      `SELECT table_name || '.' || column_name AS nom FROM information_schema.columns
+       WHERE table_schema = 'public' AND (table_name = 'formation_groups' OR column_name IN ('group_id', 'group_name'))`,
+    );
+    expect(restes).toEqual([]);
+    await expect(
+      contexte.annotations.save({
+        sessionId: seance.id,
+        teacherId: FORMATEUR,
+        screenId: 'B2-01-A2-06-CORRECTION',
+        note: 'Faire lire les points, puis les taux.',
+      }),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        note: 'Faire lire les points, puis les taux.',
+      }),
+    );
+    await expect(
+      contexte.annotations.listBySession(seance.id, FORMATEUR),
+    ).resolves.toHaveLength(2);
+  });
+
+  it('diffuse en séance un écran inséré sans diffusion explicite', async () => {
+    const [colonne]: Array<{ defaut: string | null }> =
+      await contexte.dataSource.query(
+        `SELECT column_default AS defaut FROM information_schema.columns
+         WHERE table_name = 'formation_screen_contents' AND column_name = 'diffusion'`,
+      );
+
+    expect(colonne.defaut).toBe(`'seance'::character varying`);
   });
 
   it('refuse un ecran de cours sans note au lieu de lui donner une note vide par defaut', async () => {
@@ -318,6 +390,130 @@ describeDb('Formations repositories (db integration)', () => {
     );
   });
 
+  describe('S1 · S2 · reprise, eviction et readmission sous verrou', () => {
+    const secret = SecretDeReprise.generer();
+
+    const inscrireAvecSecret = (
+      sessionId: string,
+      secretPresente: string | undefined,
+    ) =>
+      contexte.participants.inscrire({
+        sessionId,
+        studentKey: CLE_ETUDIANT,
+        prenom: 'Alice',
+        nom: 'Durand',
+        email: 'alice.durand@example.com',
+        capacite: 2,
+        empreinteDeReprise: SecretDeReprise.empreinte(secret),
+        repriseAutorisee: (empreinte) =>
+          SecretDeReprise.autorise(empreinte, secretPresente),
+        choisirGraine: () => 1001,
+      });
+
+    it('ne stocke que l empreinte du secret et refuse la place au poste qui ne le presente pas', async () => {
+      const seance = await ouvrirSeance('4271');
+      const { participant } = await inscrireAvecSecret(seance.id, undefined);
+
+      const [ligne] = await contexte.dataSource.query<
+        { empreinte: string | null }[]
+      >(
+        `SELECT "empreinte_de_reprise" AS "empreinte" FROM "formation_participants" WHERE "id" = $1`,
+        [participant.id],
+      );
+
+      expect(ligne.empreinte).toBe(SecretDeReprise.empreinte(secret));
+      expect(ligne.empreinte).not.toBe(secret);
+      await expect(
+        inscrireAvecSecret(seance.id, undefined),
+      ).rejects.toBeInstanceOf(PlaceDejaPriseError);
+      await expect(
+        inscrireAvecSecret(seance.id, secret),
+      ).resolves.toMatchObject({
+        participant: { id: participant.id },
+        nouveau: false,
+      });
+    });
+
+    it('rend la place liberee par le formateur au premier poste qui la reclame', async () => {
+      const seance = await ouvrirSeance('4271');
+      const { participant } = await inscrireAvecSecret(seance.id, undefined);
+
+      await expect(
+        contexte.participants.libererPoste(seance.id, participant.id),
+      ).resolves.toBe(true);
+
+      await expect(
+        inscrireAvecSecret(seance.id, undefined),
+      ).resolves.toMatchObject({ participant: { id: participant.id } });
+    });
+
+    it('avance a chaque liberation la generation de jeton de la place, et elle seule', async () => {
+      const seance = await ouvrirSeance('4271');
+      const { participant } = await inscrireAvecSecret(seance.id, undefined);
+      expect(participant.generationDeJeton).toBe(0);
+
+      await contexte.participants.libererPoste(seance.id, participant.id);
+      await contexte.participants.libererPoste(seance.id, participant.id);
+
+      await expect(
+        contexte.participants.findById(participant.id),
+      ).resolves.toMatchObject({ generationDeJeton: 2 });
+      await expect(
+        inscrireAvecSecret(seance.id, undefined),
+      ).resolves.toMatchObject({ participant: { generationDeJeton: 2 } });
+    });
+
+    it('refuse a l evince de revenir sous la meme cle, sans lui rendre de place', async () => {
+      const seance = await ouvrirSeance('4271');
+      const { participant } = await inscrireAvecSecret(seance.id, undefined);
+      await contexte.participants.evincer(seance.id, participant.id);
+
+      await expect(
+        inscrireAvecSecret(seance.id, secret),
+      ).rejects.toBeInstanceOf(ParticipantEvinceError);
+      await expect(
+        contexte.participants.countBySession(seance.id),
+      ).resolves.toBe(0);
+    });
+
+    it('traduit la graine reprise par un autre poste en GraineRepriseError, jamais en erreur SQL', async () => {
+      const seance = await ouvrirSeance('4271');
+      const evince = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+      await contexte.participants.evincer(seance.id, evince.id);
+      await inscrire(seance.id, AUTRE_CLE_ETUDIANT, 1001);
+
+      await expect(
+        contexte.participants.readmettre(seance.id, evince.id, 5),
+      ).rejects.toBeInstanceOf(GraineRepriseError);
+    });
+
+    it('ne depasse pas la capacite quand deux readmissions arrivent ensemble', async () => {
+      const seance = await ouvrirSeance('4271');
+      await inscrire(seance.id, cleDeRang(0), 1001);
+      const premier = await inscrire(seance.id, cleDeRang(1), 1002);
+      const second = await inscrire(seance.id, cleDeRang(2), 1003);
+      await contexte.participants.evincer(seance.id, premier.id);
+      await contexte.participants.evincer(seance.id, second.id);
+
+      const resultats = await Promise.allSettled([
+        contexte.participants.readmettre(seance.id, premier.id, 2),
+        contexte.participants.readmettre(seance.id, second.id, 2),
+      ]);
+
+      expect(
+        resultats.filter((resultat) => resultat.status === 'fulfilled'),
+      ).toHaveLength(1);
+      expect(
+        resultats
+          .filter((resultat) => resultat.status === 'rejected')
+          .map((resultat) => resultat.reason),
+      ).toEqual([expect.any(SeanceCompleteError)]);
+      await expect(
+        contexte.participants.countBySession(seance.id),
+      ).resolves.toBe(2);
+    });
+  });
+
   it('traduit un tirage deja attribue en SeedAlreadyAssignedError', async () => {
     const seance = await ouvrirSeance('4271');
     await inscrire(seance.id, CLE_ETUDIANT, 1001);
@@ -347,6 +543,31 @@ describeDb('Formations repositories (db integration)', () => {
     await expect(
       contexte.answers.listBySession(seance.id),
     ).resolves.toHaveLength(1);
+  });
+
+  it('SEC-4.1 · plafonne les reprises concurrentes d une production sans en perdre le compte', async () => {
+    const seance = await ouvrirSeance('4271');
+    const participant = await inscrire(seance.id, CLE_ETUDIANT, 1001);
+    const premiere = await repondre(
+      seance.id,
+      participant.id,
+      'Q-CAP-03',
+      false,
+    );
+
+    const reprises = await Promise.all(
+      [true, true, true].map((correcte) =>
+        contexte.answers.remplacer({ ...premiere, correcte }, 3),
+      ),
+    );
+
+    expect(reprises.filter(Boolean)).toHaveLength(2);
+    const [{ soumissions }]: Array<{ soumissions: number }> =
+      await contexte.dataSource.query(
+        `SELECT "soumissions" FROM "formation_answers" WHERE "id" = $1`,
+        [premiere.id],
+      );
+    expect(soumissions).toBe(3);
   });
 
   it('relit des nombres et non des chaines depuis la base', async () => {
@@ -529,7 +750,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(6);
+    expect(enBase).toHaveLength(5);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -556,7 +777,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(19);
+    expect(enBase).toHaveLength(17);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 
@@ -600,7 +821,7 @@ describeDb('Formations repositories (db integration)', () => {
       })),
     );
 
-    expect(enBase).toHaveLength(21);
+    expect(enBase).toHaveLength(19);
     expect(trierParNom(declarees)).toEqual(trierParNom(enBase));
   });
 

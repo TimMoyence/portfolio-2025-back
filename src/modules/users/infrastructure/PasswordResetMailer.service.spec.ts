@@ -3,9 +3,12 @@ import { createTransport } from 'nodemailer';
 import type { PasswordResetNotificationPayload } from '../domain/IPasswordResetNotifier';
 import { PasswordResetMailerService } from './PasswordResetMailer.service';
 import {
+  attendreScriptEchappe,
   createMockTransporter,
-  setSmtpEnv,
   DEFAULT_SMTP_ENV,
+  premierMailEnvoye,
+  retirerSmtpEnv,
+  setSmtpEnv,
 } from '../../../../test/factories/mailer.factory';
 
 jest.mock('nodemailer', () => ({
@@ -39,7 +42,24 @@ function buildPayload(
 
 describe('PasswordResetMailerService', () => {
   let cleanupEnv: () => void;
-  let mockTransporter: ReturnType<typeof createMockTransporter>;
+  let transporter: ReturnType<typeof createMockTransporter>;
+
+  const monter = (
+    env: Record<string, string> = {},
+  ): TestablePasswordResetMailer => {
+    transporter = createMockTransporter();
+    mockedCreateTransport.mockReturnValue(transporter as never);
+    cleanupEnv = setSmtpEnv(env);
+    return new TestablePasswordResetMailer();
+  };
+
+  const envoyer = async (
+    payload = buildPayload(),
+    env: Record<string, string> = {},
+  ) => {
+    await monter(env).sendPasswordResetEmail(payload);
+    return premierMailEnvoye(transporter);
+  };
 
   afterEach(() => {
     cleanupEnv?.();
@@ -49,12 +69,7 @@ describe('PasswordResetMailerService', () => {
 
   describe('constructor', () => {
     it('devrait creer un transporter quand la config SMTP est complete', async () => {
-      mockTransporter = createMockTransporter();
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv();
-
-      const service = new TestablePasswordResetMailer();
-      await service.sendPasswordResetEmail(buildPayload());
+      await envoyer();
 
       expect(mockedCreateTransport).toHaveBeenCalledWith({
         host: DEFAULT_SMTP_ENV.SMTP_HOST,
@@ -65,176 +80,100 @@ describe('PasswordResetMailerService', () => {
           pass: DEFAULT_SMTP_ENV.SMTP_PASS,
         },
       });
-      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
     });
 
-    it('devrait activer secure quand le port est 465, et envoyer par ce transporter', async () => {
-      mockTransporter = createMockTransporter();
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv({ SMTP_PORT: '465' });
+    it.each([
+      ['le port est 465', { SMTP_PORT: '465' }, 465],
+      [
+        'SMTP_SECURE=true meme hors du port 465',
+        { SMTP_SECURE: 'true' },
+        Number(DEFAULT_SMTP_ENV.SMTP_PORT),
+      ],
+    ])(
+      'devrait activer secure quand %s, et envoyer par ce transporter',
+      async (_label, env, port) => {
+        await envoyer(buildPayload(), env);
 
-      const service = new TestablePasswordResetMailer();
-      await service.sendPasswordResetEmail(buildPayload());
+        expect(mockedCreateTransport).toHaveBeenCalledWith(
+          expect.objectContaining({ port, secure: true }),
+        );
+        expect(transporter.sendMail).toHaveBeenCalledTimes(1);
+      },
+    );
 
-      expect(mockedCreateTransport).toHaveBeenCalledWith(
-        expect.objectContaining({ port: 465, secure: true }),
-      );
-      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
-    });
-
-    it('devrait activer secure sur SMTP_SECURE=true meme hors du port 465', async () => {
-      mockTransporter = createMockTransporter();
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv({ SMTP_SECURE: 'true' });
-
-      const service = new TestablePasswordResetMailer();
-      await service.sendPasswordResetEmail(buildPayload());
-
-      expect(mockedCreateTransport).toHaveBeenCalledWith(
-        expect.objectContaining({
-          port: Number(DEFAULT_SMTP_ENV.SMTP_PORT),
-          secure: true,
-        }),
-      );
-      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
-    });
-
-    it('devrait logger un warn et ne pas creer de transporter sans config SMTP', async () => {
-      cleanupEnv = setSmtpEnv({
-        SMTP_HOST: '',
-        SMTP_PORT: '',
-        SMTP_USER: '',
-        SMTP_PASS: '',
-      });
-      delete process.env.SMTP_HOST;
-      delete process.env.SMTP_PORT;
-      delete process.env.SMTP_USER;
-      delete process.env.SMTP_PASS;
-
+    it('devrait logger un warn et ne rien envoyer sans config SMTP', async () => {
+      cleanupEnv = retirerSmtpEnv();
       const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
 
-      const service = new TestablePasswordResetMailer();
-      await service.sendPasswordResetEmail(buildPayload());
+      await new TestablePasswordResetMailer().sendPasswordResetEmail(
+        buildPayload(),
+      );
 
       expect(mockedCreateTransport).not.toHaveBeenCalled();
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Password reset mailer disabled'),
       );
-      warnSpy.mockRestore();
     });
   });
 
   describe('sendPasswordResetEmail', () => {
     it('devrait envoyer un email avec le bon payload', async () => {
-      mockTransporter = createMockTransporter();
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv();
-      const service = new TestablePasswordResetMailer();
       const payload = buildPayload();
 
-      await service.sendPasswordResetEmail(payload);
+      const mail = await envoyer(payload);
 
-      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.from).toBe(DEFAULT_SMTP_ENV.SMTP_FROM);
-      expect(call.to).toBe(payload.email);
-      expect(call.subject).toBe('Reinitialisation de votre mot de passe');
-      expect(call.text).toContain('Jean Dupont');
-      expect(call.text).toContain('30 minutes');
-      expect(call.text).toContain(payload.resetUrl);
-      expect(call.html).toContain('Jean Dupont');
-      expect(call.html).toContain(payload.resetUrl);
-    });
-
-    it('devrait ne rien faire si le transporter est absent (SMTP non configure)', async () => {
-      cleanupEnv = setSmtpEnv({
-        SMTP_HOST: '',
-        SMTP_PORT: '',
-        SMTP_USER: '',
-        SMTP_PASS: '',
-      });
-      delete process.env.SMTP_HOST;
-      delete process.env.SMTP_PORT;
-      delete process.env.SMTP_USER;
-      delete process.env.SMTP_PASS;
-      const service = new TestablePasswordResetMailer();
-      const payload = buildPayload();
-
-      await service.sendPasswordResetEmail(payload);
-
-      expect(mockedCreateTransport).not.toHaveBeenCalled();
+      expect(transporter.sendMail).toHaveBeenCalledTimes(1);
+      expect(mail.from).toBe(DEFAULT_SMTP_ENV.SMTP_FROM);
+      expect(mail.to).toBe(payload.email);
+      expect(mail.subject).toBe('Reinitialisation de votre mot de passe');
+      expect(mail.text).toContain('Jean Dupont');
+      expect(mail.text).toContain('30 minutes');
+      expect(mail.text).toContain(payload.resetUrl);
+      expect(mail.html).toContain('Jean Dupont');
+      expect(mail.html).toContain(payload.resetUrl);
     });
 
     it('devrait propager l erreur si sendMail echoue', async () => {
-      mockTransporter = createMockTransporter();
-      (mockTransporter.sendMail as jest.Mock).mockRejectedValue(
-        new Error('SMTP timeout'),
-      );
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv();
-      const service = new TestablePasswordResetMailer();
-      const payload = buildPayload();
+      const service = monter();
+      transporter.sendMail.mockRejectedValue(new Error('SMTP timeout'));
 
-      await expect(service.sendPasswordResetEmail(payload)).rejects.toThrow(
-        'SMTP timeout',
-      );
+      await expect(
+        service.sendPasswordResetEmail(buildPayload()),
+      ).rejects.toThrow('SMTP timeout');
     });
 
     it('devrait echapper les caracteres HTML dans le nom et l URL', async () => {
-      mockTransporter = createMockTransporter();
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv();
-      const service = new TestablePasswordResetMailer();
-      const payload = buildPayload({
-        firstName: '<script>',
-        lastName: 'alert("xss")',
-        resetUrl: 'https://evil.com/?q=<img onerror="hack">',
-      });
+      const { html } = await envoyer(
+        buildPayload({
+          firstName: '<script>',
+          lastName: 'alert("xss")',
+          resetUrl: 'https://evil.com/?q=<img onerror="hack">',
+        }),
+      );
 
-      await service.sendPasswordResetEmail(payload);
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.html).not.toContain('<script>');
-      expect(call.html).toContain('&lt;script&gt;');
-      expect(call.html).toContain('&quot;xss&quot;');
-      expect(call.html).not.toContain('<img onerror');
+      attendreScriptEchappe(html);
+      expect(html).toContain('&quot;xss&quot;');
+      expect(html).not.toContain('<img onerror');
     });
 
     it('devrait gerer un fullName avec espaces autour (trim)', async () => {
-      mockTransporter = createMockTransporter();
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv();
-      const service = new TestablePasswordResetMailer();
-      const payload = buildPayload({ firstName: '', lastName: 'Solo' });
+      const { text } = await envoyer(
+        buildPayload({ firstName: '', lastName: 'Solo' }),
+      );
 
-      await service.sendPasswordResetEmail(payload);
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.text).toContain('Bonjour Solo,');
+      expect(text).toContain('Bonjour Solo,');
     });
   });
 
   describe('escapeHtml', () => {
-    it('devrait echapper tous les caracteres HTML dangereux', () => {
-      cleanupEnv = setSmtpEnv();
-      mockedCreateTransport.mockReturnValue(createMockTransporter() as never);
-      const service = new TestablePasswordResetMailer();
-
-      const result = service.testEscapeHtml('<script>alert("xss")</script>');
-
-      expect(result).toBe(
+    it.each([
+      [
+        '<script>alert("xss")</script>',
         '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
-      );
-    });
-
-    it('devrait echapper les esperluettes et les apostrophes', () => {
-      cleanupEnv = setSmtpEnv();
-      mockedCreateTransport.mockReturnValue(createMockTransporter() as never);
-      const service = new TestablePasswordResetMailer();
-
-      const result = service.testEscapeHtml("Tom & Jerry's <adventure>");
-
-      expect(result).toBe('Tom &amp; Jerry&#39;s &lt;adventure&gt;');
+      ],
+      ["Tom & Jerry's <adventure>", 'Tom &amp; Jerry&#39;s &lt;adventure&gt;'],
+    ])('devrait echapper %s', (entree, attendu) => {
+      expect(monter().testEscapeHtml(entree)).toBe(attendu);
     });
   });
 });

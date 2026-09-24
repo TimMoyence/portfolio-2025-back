@@ -3,7 +3,6 @@ export interface TeacherAnnotationRecord {
   sessionId: string;
   teacherId: string;
   screenId: string;
-  groupName: string;
   note: string;
   updatedAt: Date;
 }
@@ -12,7 +11,6 @@ export interface SaveTeacherAnnotationInput {
   sessionId: string;
   teacherId: string;
   screenId: string;
-  groupName: string;
   note: string;
 }
 

@@ -1,4 +1,5 @@
 import * as fc from 'fast-check';
+import { chaineDeDoublements } from '../../../../../test/factories/feuille.factory';
 import type { CodeErreur, Feuille, ResultatFormule } from './Formule';
 import {
   evaluerExpression,
@@ -22,14 +23,6 @@ function feuilleDeNombres(valeurs: readonly number[]): Feuille {
     cellules[`A${rang + 1}`] = String(valeur);
   });
   return { lignes: valeurs.length + 4, colonnes: 3, cellules };
-}
-
-function chaineDeDoublements(longueur: number): Feuille {
-  const cellules: Record<string, string> = { A1: '1' };
-  for (let rang = 2; rang <= longueur; rang += 1) {
-    cellules[`A${rang}`] = `=A${rang - 1}+A${rang - 1}`;
-  }
-  return { lignes: longueur, colonnes: 1, cellules };
 }
 
 function sommesCroisees(cote: number): Feuille {

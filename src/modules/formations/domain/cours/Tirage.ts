@@ -17,6 +17,7 @@ import { creerRng, creerTirage, melanger } from './Aleatoire';
 import { creerCacheLRU } from './CacheLRU';
 import type { Rng, Tirage } from './Aleatoire';
 import type { ConfusionId } from './banque/confusions';
+import { ecranCorrigePar, ecransCorrigeantDe } from './Corrections';
 import { estInteractif } from './Cours';
 import type {
   AuMoinsUn,
@@ -130,7 +131,9 @@ function contexteDe(graine: number): Contexte {
 
 export function tirerEnDetail(cours: Cours, graine: number): TirageDetaille {
   const contexte = contexteDe(graine);
-  const ecrans = cours.ecrans.map((ecran) => projeterEcran(ecran, contexte));
+  const ecrans = cours.ecrans.map((ecran) =>
+    projeterEcran(ecran, ecransCorrigeantDe(cours, ecran.id), contexte),
+  );
   const sujet: CoursPublic = {
     id: cours.slug,
     titre: cours.titre,
@@ -171,11 +174,16 @@ export function tirer(cours: Cours, graine: number): TirageDuCours {
   return tirage;
 }
 
-function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {
+function projeterEcran(
+  ecran: Ecran,
+  resoluPar: readonly string[],
+  contexte: Contexte,
+): EcranPublic {
   const attachee = questionAttachee(ecran);
   if (attachee !== undefined) {
     enregistrerQuestion(attachee, contexte);
   }
+  const ecranCorrige = ecranCorrigePar(ecran);
   return {
     id: ecran.id,
     type: ecran.brique,
@@ -183,6 +191,12 @@ function projeterEcran(ecran: Ecran, contexte: Contexte): EcranPublic {
     duree: ecran.dureeMinutes,
     interactif: estInteractif(ecran),
     donnees: donneesDe(ecran, contexte),
+    ...(ecran.renvoi === undefined ? {} : { renvoi: ecran.renvoi }),
+    ...(ecran.cadrageDuRenvoi === undefined
+      ? {}
+      : { cadrageDuRenvoi: ecran.cadrageDuRenvoi }),
+    ...(ecranCorrige === null ? {} : { ecranCorrige }),
+    ...(resoluPar.length === 0 ? {} : { resoluPar: [...resoluPar] }),
   };
 }
 
@@ -315,6 +329,7 @@ function donneesDe(ecran: Ecran, contexte: Contexte): Donnees {
           metadonnees: metadonnees(ecran),
         },
         delaiMs: ecran.delaiMs,
+        ...(ecran.consigne === undefined ? {} : { consigne: ecran.consigne }),
       };
     case 'fp-exit':
       return { billet: billet(ecran, contexte) };
@@ -346,6 +361,9 @@ function donneesDeBrique(
         exemple: { ...ecran.proprietes.exemple, metadonnees: communes },
         etayage: ecran.proprietes.etayage,
         ...(ecran.proprietes.pilote === true ? { pilote: true } : {}),
+        ...(ecran.proprietes.corrigeDe === undefined
+          ? {}
+          : { corrigeDe: ecran.proprietes.corrigeDe }),
       };
     case 'fp-pulse':
       return {

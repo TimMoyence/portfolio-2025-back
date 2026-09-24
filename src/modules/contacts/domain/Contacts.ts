@@ -4,20 +4,7 @@ import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress'
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 
-export interface CreateContactProps {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string | null;
-  subject: string;
-  message: string;
-  role: string;
-  terms: boolean;
-  termsVersion?: string;
-  termsLocale?: string;
-  termsAcceptedAt?: Date;
-  termsMethod?: string;
-}
+export type CreateContactProps = Omit<Contacts, 'id'>;
 
 export class Contacts {
   id?: string;

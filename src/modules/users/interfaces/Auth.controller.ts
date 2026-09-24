@@ -25,8 +25,10 @@ import type { Request, Response } from 'express';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
 import { REFRESH_TOKEN_RATE_LIMIT } from '../domain/auth.constants';
 import { AuthAuditLogger } from '../application/services/AuthAuditLogger';
+import type { AuthAuditEntry } from '../application/services/AuthAuditLogger';
 import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
+import type { AuthResult } from '../application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
 import { RefreshTokensUseCase } from '../application/RefreshTokens.useCase';
@@ -117,32 +119,11 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthResponseDto> {
-    const ip = this.extractIp(req);
-    const userAgent = this.extractUserAgent(req);
-
-    try {
-      const result = await this.authenticateUserUseCase.execute(dto);
-      this.setRefreshCookie(res, result.refreshToken);
-      this.auditLogger.log({
-        event: 'LOGIN_SUCCESS',
-        email: dto.email,
-        userId: result.user.id,
-        ip,
-        userAgent,
-        timestamp: new Date(),
-      });
-      return AuthResponseDto.fromAuthResult(result);
-    } catch (error) {
-      this.auditLogger.log({
-        event: 'LOGIN_FAILURE',
-        email: dto.email,
-        ip,
-        userAgent,
-        timestamp: new Date(),
-        details: error instanceof Error ? error.message : String(error),
-      });
-      throw error;
-    }
+    return this.ouvrirSession(
+      { req, res },
+      { succes: 'LOGIN_SUCCESS', echec: 'LOGIN_FAILURE', email: dto.email },
+      () => this.authenticateUserUseCase.execute(dto),
+    );
   }
 
   @Public()
@@ -156,17 +137,33 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthResponseDto> {
+    return this.ouvrirSession(
+      { req, res },
+      { succes: 'GOOGLE_AUTH_SUCCESS', echec: 'GOOGLE_AUTH_FAILURE' },
+      () => this.authenticateGoogleUserUseCase.execute(dto.idToken),
+    );
+  }
+
+  private async ouvrirSession(
+    { req, res }: { req: Request; res: Response },
+    journal: {
+      succes: AuthAuditEntry['event'];
+      echec: AuthAuditEntry['event'];
+      email?: string;
+    },
+    authentifier: () => Promise<AuthResult>,
+  ): Promise<AuthResponseDto> {
     const ip = this.extractIp(req);
     const userAgent = this.extractUserAgent(req);
+    const emailSaisi =
+      journal.email === undefined ? {} : { email: journal.email };
 
     try {
-      const result = await this.authenticateGoogleUserUseCase.execute(
-        dto.idToken,
-      );
+      const result = await authentifier();
       this.setRefreshCookie(res, result.refreshToken);
       this.auditLogger.log({
-        event: 'GOOGLE_AUTH_SUCCESS',
-        email: result.user.email,
+        event: journal.succes,
+        email: journal.email ?? result.user.email,
         userId: result.user.id,
         ip,
         userAgent,
@@ -175,7 +172,8 @@ export class AuthController {
       return AuthResponseDto.fromAuthResult(result);
     } catch (error) {
       this.auditLogger.log({
-        event: 'GOOGLE_AUTH_FAILURE',
+        event: journal.echec,
+        ...emailSaisi,
         ip,
         userAgent,
         timestamp: new Date(),

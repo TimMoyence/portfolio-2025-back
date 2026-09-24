@@ -9,7 +9,6 @@ const ANNOTATION = {
   sessionId: 'session-uuid',
   teacherId: 'teacher-uuid',
   screenId: 'B2-01-S11-REFLECTION',
-  groupName: 'Classe entière',
   note: 'Relancer',
 };
 
@@ -32,30 +31,38 @@ describe('TeacherAnnotationsRepositoryTypeORM', () => {
     find.mockReset().mockResolvedValue([ligne]);
   });
 
-  it('ecrit une annotation en un seul upsert sur seance, ecran et groupe puis relit la ligne', async () => {
-    await expect(sut.save(ANNOTATION)).resolves.toMatchObject({
+  it('ecrit une annotation par ecran en un seul upsert, sans portee de groupe, puis relit la ligne', async () => {
+    await expect(sut.save(ANNOTATION)).resolves.toEqual({
       id: 'annotation-uuid',
+      sessionId: 'session-uuid',
       teacherId: 'teacher-uuid',
+      screenId: 'B2-01-S11-REFLECTION',
+      note: 'Relancer',
+      updatedAt: new Date('2026-09-11T08:25:00.000Z'),
     });
-    expect(upsert).toHaveBeenCalledWith(expect.objectContaining(ANNOTATION), [
-      'sessionId',
-      'screenId',
-      'groupName',
-    ]);
+    expect(upsert).toHaveBeenCalledWith(
+      {
+        ...ANNOTATION,
+        updatedAt: expect.any(Date) as unknown,
+      },
+      ['sessionId', 'screenId'],
+    );
     expect(findOneByOrFail).toHaveBeenCalledWith({
       sessionId: ANNOTATION.sessionId,
       screenId: ANNOTATION.screenId,
-      groupName: ANNOTATION.groupName,
     });
   });
 
-  it('ne relit que les annotations du formateur demande', async () => {
+  it('ne relit que les annotations d ecran du formateur demande', async () => {
     await expect(
       sut.listBySession('session-uuid', 'teacher-uuid'),
     ).resolves.toEqual([expect.objectContaining({ note: 'Relancer' })]);
     expect(find).toHaveBeenCalledWith({
-      where: { sessionId: 'session-uuid', teacherId: 'teacher-uuid' },
-      order: { screenId: 'ASC', groupName: 'ASC' },
+      where: {
+        sessionId: 'session-uuid',
+        teacherId: 'teacher-uuid',
+      },
+      order: { screenId: 'ASC' },
     });
   });
 });

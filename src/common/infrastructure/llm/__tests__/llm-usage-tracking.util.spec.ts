@@ -170,18 +170,18 @@ describe('invokeWithLlmTracking', () => {
     expect(result).toBe('resultat');
   });
 
-  it('propage l’erreur d’invocation sans avaler l’exception', async () => {
-    const metrics = createMockMetrics();
-    const invoke = jest.fn().mockRejectedValue(new Error('LLM down'));
+  const invoquerEnEchec = (metrics: ReturnType<typeof createMockMetrics>) =>
+    invokeWithLlmTracking(
+      jest.fn().mockRejectedValue(new Error('LLM down')),
+      ['message'],
+      CONTEXT,
+      metrics as unknown as MetricsService,
+    );
 
-    await expect(
-      invokeWithLlmTracking(
-        invoke,
-        ['message'],
-        CONTEXT,
-        metrics as unknown as MetricsService,
-      ),
-    ).rejects.toThrow('LLM down');
+  it('propage l’erreur d’invocation sans avaler l’exception', async () => {
+    await expect(invoquerEnEchec(createMockMetrics())).rejects.toThrow(
+      'LLM down',
+    );
   });
 
   it('compte l’appel et observe la latence en secondes en erreur', async () => {
@@ -190,16 +190,8 @@ describe('invokeWithLlmTracking', () => {
       .spyOn(Date, 'now')
       .mockReturnValueOnce(1_000)
       .mockReturnValueOnce(3_500);
-    const invoke = jest.fn().mockRejectedValue(new Error('LLM down'));
 
-    await expect(
-      invokeWithLlmTracking(
-        invoke,
-        ['message'],
-        CONTEXT,
-        metrics as unknown as MetricsService,
-      ),
-    ).rejects.toThrow('LLM down');
+    await expect(invoquerEnEchec(metrics)).rejects.toThrow('LLM down');
 
     expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'error' }),

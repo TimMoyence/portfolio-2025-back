@@ -19,8 +19,16 @@ export interface PilotageEcran {
   readonly phase?: VotePhase;
   readonly revele?: boolean;
   readonly etayage?: number;
+  readonly etayageAtteint?: number;
   readonly reglages?: Readonly<Record<string, number>>;
+  readonly resultatsProjetes?: boolean;
+  readonly optionsAffichees?: boolean;
 }
+
+export type PilotageDemande = { readonly screenId: string } & Omit<
+  PilotageEcran,
+  'etayageAtteint'
+>;
 
 export interface LiveSessionState extends LiveSessionStateServi {
   revision: number;
@@ -31,7 +39,7 @@ export interface ControlSessionChanges {
   ecran?: number;
   mode?: PacingMode;
   intervalle?: FreeRange | null;
-  pilotage?: { readonly screenId: string } & PilotageEcran;
+  pilotage?: PilotageDemande;
 }
 
 export interface EtatParticipant {

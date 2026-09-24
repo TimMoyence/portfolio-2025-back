@@ -147,6 +147,7 @@ export class FormationsStudentController {
         prenom: dto.prenom,
         nom: dto.nom,
         email: dto.email,
+        secretDeReprise: dto.secretDeReprise,
       })
       .catch((error: unknown) => {
         if (estCodeSansSeance(error)) {
@@ -159,7 +160,12 @@ export class FormationsStudentController {
       sessionId: result.sessionId,
       ecranCourant: result.ecranCourant,
       modeRythme: result.modeRythme,
-      jeton: this.tokens.sign(result.sessionId, result.participantId),
+      jeton: this.tokens.sign(
+        result.sessionId,
+        result.participantId,
+        result.generationDeJeton,
+      ),
+      secretDeReprise: result.secretDeReprise,
     };
   }
 
@@ -187,7 +193,7 @@ export class FormationsStudentController {
     @Headers(EN_TETE_JETON) jeton: string | undefined,
     @Body() dto: SubmitAnswerRequestDto,
   ): Promise<SubmitAnswerResponseDto> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     const verdict = await this.submitAnswer.execute({
       sessionId,
       participantId,
@@ -233,7 +239,7 @@ export class FormationsStudentController {
     @Headers(EN_TETE_JETON) jeton: string | undefined,
     @Body() dto: SaveFreeResponseRequestDto,
   ): Promise<FreeResponseSavedResponseDto> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     await this.saveFreeResponse.execute({
       sessionId,
       participantId,
@@ -263,7 +269,7 @@ export class FormationsStudentController {
   })
   @ApiConflictResponse({
     description:
-      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI ou REPONSE_DEJA_ENREGISTREE',
+      'Production refusee, cause dans le champ code du corps : SEANCE_NON_DEMARREE, SEANCE_TERMINEE, ECRAN_NON_SERVI, REPONSE_DEJA_ENREGISTREE ou REPRISES_EPUISEES',
   })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
   async production(
@@ -271,7 +277,7 @@ export class FormationsStudentController {
     @Headers(EN_TETE_JETON) jeton: string | undefined,
     @Body() dto: SubmitProductionRequestDto,
   ): Promise<SubmitProductionResponseDto> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     return this.submitProduction.execute({
       sessionId,
       participantId,
@@ -305,7 +311,7 @@ export class FormationsStudentController {
     @Headers(EN_TETE_JETON) jeton: string | undefined,
     @Body() dto: TenterEnigmeRequestDto,
   ): Promise<TentativeEnigmeResponseDto> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     return this.tenterEnigme.execute({
       sessionId,
       participantId,
@@ -341,7 +347,7 @@ export class FormationsStudentController {
     @Headers(EN_TETE_JETON) jeton: string | undefined,
     @Body() dto: DeclarerJalonRequestDto,
   ): Promise<void> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     await this.declarerJalon.execute({
       sessionId,
       participantId,
@@ -372,7 +378,7 @@ export class FormationsStudentController {
     @Headers(EN_TETE_JETON) jeton: string | undefined,
     @Body() dto: SubmitDefiRequestDto,
   ): Promise<StrategiesDefiResponseDto> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     return this.defis.tenter({
       sessionId,
       participantId,
@@ -404,7 +410,7 @@ export class FormationsStudentController {
     @Param('defiId') defiId: string,
     @Headers(EN_TETE_JETON) jeton: string | undefined,
   ): Promise<StrategiesDefiResponseDto> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     return this.defis.strategies(sessionId, participantId, defiId);
   }
 
@@ -475,12 +481,15 @@ export class FormationsStudentController {
   @ApiOperation({ summary: 'Remonte le journal d incidents du poste etudiant' })
   @ApiNoContentResponse({ description: 'Incidents enregistres' })
   @ApiUnauthorizedResponse({ description: 'Jeton de participant invalide' })
+  @ApiConflictResponse({
+    description: 'SEANCE_TERMINEE : la seance est close',
+  })
   async incidents(
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Headers(EN_TETE_JETON) jeton: string | undefined,
     @Body() dto: ReportIncidentsRequestDto,
   ): Promise<void> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     await this.recordIncidents.execute(
       sessionId,
       participantId,
@@ -513,7 +522,7 @@ export class FormationsStudentController {
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Headers(EN_TETE_JETON) jeton: string | undefined,
   ): Promise<{ questions: readonly DueQuestion[] }> {
-    const participantId = this.tokens.verify(sessionId, jeton);
+    const participantId = await this.tokens.verify(sessionId, jeton);
     return {
       questions: await this.dueQuestions.execute({ sessionId, participantId }),
     };
@@ -568,7 +577,11 @@ export class FormationsStudentController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Observable<MessageEvent> {
-    return this.streamSession.execute(id, request.participantId!);
+    return this.streamSession.execute(
+      id,
+      request.participantId!,
+      request.generationDeJeton!,
+    );
   }
 }
 

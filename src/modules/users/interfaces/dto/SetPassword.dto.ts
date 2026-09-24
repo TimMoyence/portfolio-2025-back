@@ -1,16 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
+import { MotDePasseRobuste } from './regles-de-saisie';
 
 export class SetPasswordDto {
   @ApiProperty({ example: 'NewPassword456!' })
-  @IsString()
+  @MotDePasseRobuste()
   @IsNotEmpty()
-  @MinLength(12, {
-    message: 'Le mot de passe doit contenir au moins 12 caracteres.',
-  })
-  @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
-    message:
-      'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',
-  })
   newPassword: string;
 }

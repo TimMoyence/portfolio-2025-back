@@ -1,14 +1,12 @@
 import type { ObjectLiteral, Repository } from 'typeorm';
 import { FormationCourseContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
 import { FormationFreeResponseEntity } from '../../src/modules/formations/infrastructure/entities/FormationFreeResponse.entity';
-import { FormationGroupEntity } from '../../src/modules/formations/infrastructure/entities/FormationGroup.entity';
 import { FormationIncidentEntity } from '../../src/modules/formations/infrastructure/entities/FormationIncident.entity';
 import { FormationParticipantEntity } from '../../src/modules/formations/infrastructure/entities/FormationParticipant.entity';
 import { FormationScreenContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
 import { FormationTeacherAnnotationEntity } from '../../src/modules/formations/infrastructure/entities/FormationTeacherAnnotation.entity';
 import { buildCoursStocke, buildEcranStocke } from './cours-stocke.factory';
 import {
-  buildFormationGroupRecord,
   buildFreeResponseRecord,
   buildIncidentInput,
   buildParticipantRecord,
@@ -171,22 +169,12 @@ export function buildTeacherAnnotationEntity(
   );
 }
 
-export function buildFormationGroupEntity(
-  overrides: Partial<FormationGroupEntity> = {},
-): FormationGroupEntity {
-  return Object.assign(
-    new FormationGroupEntity(),
-    buildFormationGroupRecord(),
-    overrides,
-  );
-}
-
 export function buildParticipantEntity(
   overrides: Partial<FormationParticipantEntity> = {},
 ): FormationParticipantEntity {
   return Object.assign(
     new FormationParticipantEntity(),
-    buildParticipantRecord({ groupId: null }),
+    buildParticipantRecord(),
     overrides,
   );
 }

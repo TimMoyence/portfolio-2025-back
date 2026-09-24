@@ -1,6 +1,9 @@
-import { IsNull } from 'typeorm';
+import { IsNull, Not } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
 import {
+  GraineRepriseError,
+  ParticipantEvinceError,
+  PlaceDejaPriseError,
   SeanceCompleteError,
   SeedAlreadyAssignedError,
   SeedPoolExhaustedError,
@@ -27,11 +30,13 @@ describe('ParticipantsRepositoryTypeORM', () => {
   const managerCount = jest.fn();
   const managerFindOne = jest.fn();
   const managerFind = jest.fn();
+  const managerUpdate = jest.fn();
   const manager = mockTypeOrmManager({
     query,
     count: managerCount,
     findOne: managerFindOne,
     find: managerFind,
+    update: managerUpdate,
     create: mockTypeOrmCreate(),
     save,
   });
@@ -49,6 +54,8 @@ describe('ParticipantsRepositoryTypeORM', () => {
     nom: 'Martin',
     email: 'theo.martin@example.com',
     capacite: 35,
+    empreinteDeReprise: 'empreinte-neuve',
+    repriseAutorisee: () => true,
     choisirGraine: (prises: readonly number[]) =>
       prises.includes(1001) ? 1002 : 1001,
   };
@@ -69,6 +76,7 @@ describe('ParticipantsRepositoryTypeORM', () => {
     managerCount.mockReset().mockResolvedValue(0);
     managerFindOne.mockReset().mockResolvedValue(null);
     managerFind.mockReset().mockResolvedValue([]);
+    managerUpdate.mockReset().mockResolvedValue({ affected: 1 });
   });
 
   it('inscrit un participant sur une graine libre, apres avoir verrouille la seance', async () => {
@@ -100,6 +108,68 @@ describe('ParticipantsRepositoryTypeORM', () => {
 
     expect(nouveau).toBe(false);
     expect(participant.seed).toBe(1002);
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it('S1 · enregistre l empreinte du secret de reprise du nouveau participant', async () => {
+    await sut.inscrire(input);
+
+    expect(save).toHaveBeenCalledWith(
+      expect.objectContaining({ empreinteDeReprise: 'empreinte-neuve' }),
+    );
+  });
+
+  it('S1 · refuse en PLACE_DEJA_PRISE la place d un inscrit au poste sans son secret', async () => {
+    managerFindOne.mockResolvedValue(
+      buildParticipantEntity({ empreinteDeReprise: 'empreinte-du-poste' }),
+    );
+
+    await expect(
+      sut.inscrire({ ...input, repriseAutorisee: () => false }),
+    ).rejects.toThrow(PlaceDejaPriseError);
+    expect(managerUpdate).not.toHaveBeenCalled();
+  });
+
+  it('S1 · confronte le secret presente a l empreinte stockee, puis la renouvelle', async () => {
+    managerFindOne.mockResolvedValue(
+      buildParticipantEntity({ empreinteDeReprise: 'empreinte-du-poste' }),
+    );
+    const repriseAutorisee = jest.fn().mockReturnValue(true);
+
+    await sut.inscrire({ ...input, repriseAutorisee });
+
+    expect(repriseAutorisee).toHaveBeenCalledWith('empreinte-du-poste');
+    expect(managerUpdate).toHaveBeenCalledWith(
+      expect.anything(),
+      { id: 'participant-uuid', evinceLe: IsNull() },
+      { empreinteDeReprise: 'empreinte-neuve' },
+    );
+  });
+
+  it('S2 · refuse en PARTICIPANT_EVINCE la reprise d une place evincee pendant qu elle se reprenait', async () => {
+    managerFindOne.mockResolvedValue(
+      buildParticipantEntity({ empreinteDeReprise: 'empreinte-du-poste' }),
+    );
+    managerUpdate.mockResolvedValue({ affected: 0 });
+
+    await expect(sut.inscrire(input)).rejects.toThrow(ParticipantEvinceError);
+  });
+
+  it('S2 · refuse en PARTICIPANT_EVINCE le retour de l evince sous la meme cle', async () => {
+    managerFindOne
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(
+        buildParticipantEntity({ evinceLe: new Date('2026-09-24T08:00:00Z') }),
+      );
+
+    await expect(sut.inscrire(input)).rejects.toThrow(ParticipantEvinceError);
+    expect(managerFindOne).toHaveBeenLastCalledWith(expect.anything(), {
+      where: {
+        sessionId: 'session-uuid',
+        studentKey: 'student-uuid',
+        evinceLe: Not(IsNull()),
+      },
+    });
     expect(save).not.toHaveBeenCalled();
   });
 
@@ -211,5 +281,119 @@ describe('ParticipantsRepositoryTypeORM', () => {
       'participant-uuid',
       expect.objectContaining({ dernierPing: expect.any(Date) }),
     );
+  });
+
+  describe('S2 · readmission', () => {
+    it('verrouille la seance, puis compte ses places avant de readmettre', async () => {
+      managerUpdate.mockResolvedValue({ affected: 1 });
+
+      await expect(
+        sut.readmettre('session-uuid', 'participant-uuid', 35),
+      ).resolves.toBe(true);
+
+      expect(query).toHaveBeenCalledWith(
+        expect.stringContaining('FOR UPDATE'),
+        ['session-uuid'],
+      );
+      expect(query.mock.invocationCallOrder[0]).toBeLessThan(
+        managerCount.mock.invocationCallOrder[0],
+      );
+      expect(managerCount.mock.invocationCallOrder[0]).toBeLessThan(
+        managerUpdate.mock.invocationCallOrder[0],
+      );
+      expect(managerUpdate).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          id: 'participant-uuid',
+          sessionId: 'session-uuid',
+          evinceLe: Not(IsNull()),
+        },
+        { evinceLe: null },
+      );
+    });
+
+    it('refuse sous verrou la readmission au-dela de la capacite', async () => {
+      managerCount.mockResolvedValue(35);
+
+      await expect(
+        sut.readmettre('session-uuid', 'participant-uuid', 35),
+      ).rejects.toThrow(SeanceCompleteError);
+      expect(managerUpdate).not.toHaveBeenCalled();
+    });
+
+    it('traduit la graine reprise par un autre poste en GRAINE_REPRISE, jamais en erreur serveur', async () => {
+      managerUpdate.mockRejectedValue({
+        code: '23505',
+        constraint: 'uq_formation_participants_session_seed',
+      });
+
+      await expect(
+        sut.readmettre('session-uuid', 'participant-uuid', 35),
+      ).rejects.toBeInstanceOf(GraineRepriseError);
+    });
+
+    it('traduit une cle deja active en conflit, jamais en erreur serveur', async () => {
+      managerUpdate.mockRejectedValue({
+        code: '23505',
+        constraint: 'uq_formation_participants_session_key',
+      });
+
+      await expect(
+        sut.readmettre('session-uuid', 'participant-uuid', 35),
+      ).rejects.toBeInstanceOf(ResourceConflictError);
+    });
+  });
+
+  it('S1 · libere le poste d un participant actif en oubliant son empreinte de reprise', async () => {
+    await expect(
+      sut.libererPoste('session-uuid', 'participant-uuid'),
+    ).resolves.toBe(true);
+
+    expect(managerUpdate).toHaveBeenCalledWith(
+      expect.anything(),
+      { id: 'participant-uuid', sessionId: 'session-uuid', evinceLe: IsNull() },
+      expect.objectContaining({ empreinteDeReprise: null }),
+    );
+  });
+
+  it('S1 · verrouille la seance avant de liberer le poste, comme une reprise', async () => {
+    await sut.libererPoste('session-uuid', 'participant-uuid');
+
+    expect(query).toHaveBeenCalledWith(expect.stringContaining('FOR UPDATE'), [
+      'session-uuid',
+    ]);
+    expect(query.mock.invocationCallOrder[0]).toBeLessThan(
+      managerUpdate.mock.invocationCallOrder[0],
+    );
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it('S1 · rend faux quand aucun poste actif ne correspond', async () => {
+    managerUpdate.mockResolvedValue({ affected: 0 });
+
+    await expect(
+      sut.libererPoste('session-uuid', 'participant-uuid'),
+    ).resolves.toBe(false);
+  });
+
+  it('S1 · revoque a la liberation les jetons deja emis en avancant la generation', async () => {
+    await sut.libererPoste('session-uuid', 'participant-uuid');
+
+    const [, , valeurs] = managerUpdate.mock.calls[0] as [
+      unknown,
+      unknown,
+      { generationDeJeton: () => string },
+    ];
+    expect(valeurs.generationDeJeton()).toBe('"generation_de_jeton" + 1');
+  });
+
+  it('S1 · rend la generation de jeton de la place reprise', async () => {
+    managerFindOne.mockResolvedValue(
+      buildParticipantEntity({ generationDeJeton: 3 }),
+    );
+
+    const { participant } = await sut.inscrire(input);
+
+    expect(participant.generationDeJeton).toBe(3);
   });
 });

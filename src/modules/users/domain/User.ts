@@ -1,4 +1,5 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
+import { optionalMetadata } from '../../../common/domain/validation/domain-validators';
 import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
 
@@ -15,18 +16,7 @@ export interface CreateUserProps {
   emailVerified?: boolean;
 }
 
-export interface UpdateUserProps {
-  email?: string;
-  passwordHash?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string | null;
-  isActive?: boolean;
-  roles?: string[];
-  updatedOrCreatedBy?: string | null;
-  googleId?: string | null;
-  emailVerified?: boolean;
-}
+export type UpdateUserProps = Partial<CreateUserProps>;
 
 export class User {
   id?: string;
@@ -66,7 +56,7 @@ export class User {
     user.emailVerified = props.emailVerified ?? false;
     user.createdAt = new Date();
     user.updatedAt = new Date();
-    user.updatedOrCreatedBy = this.optionalActor(props.updatedOrCreatedBy);
+    user.updatedOrCreatedBy = optionalMetadata(props.updatedOrCreatedBy);
 
     return user;
   }
@@ -106,7 +96,7 @@ export class User {
     }
 
     if (props.updatedOrCreatedBy !== undefined) {
-      partial.updatedOrCreatedBy = this.optionalActor(props.updatedOrCreatedBy);
+      partial.updatedOrCreatedBy = optionalMetadata(props.updatedOrCreatedBy);
     }
 
     if (props.emailVerified !== undefined) {
@@ -168,12 +158,5 @@ export class User {
       throw new DomainValidationError(`Invalid user ${field}`);
     }
     return trimmed;
-  }
-
-  private static optionalActor(raw: unknown): string | null {
-    if (raw === null || raw === undefined) return null;
-    if (typeof raw !== 'string') return null;
-    const trimmed = raw.trim();
-    return trimmed.length > 0 ? trimmed : null;
   }
 }

@@ -9,12 +9,13 @@ import {
   buildParticipantRecord,
   buildSessionRecord,
   buildVoteBareme,
-  createMockAnswersRepo,
-  createMockMasteryRepo,
-  createMockParticipantsRepo,
-  createMockSessionStateCache,
-  createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import {
+  creerDependancesDEnregistrement,
+  monterEnregistrement,
+  verifierContratDEnregistrement,
+  type DependancesDEnregistrement,
+} from '../../../../../test/helpers/enregistrement-de-reponse';
 import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
 import { NE_SAIT_PAS } from '../../domain/GradingCore';
 import {
@@ -22,7 +23,6 @@ import {
   EcranNonServiError,
   ParticipantNotFoundError,
   PhaseFermeeError,
-  SessionClosedError,
   SessionNotStartedError,
 } from '../../domain/errors/FormationErrors';
 import { SubmitAnswerUseCase } from '../SubmitAnswer.useCase';
@@ -33,11 +33,7 @@ const EN_RYTHME_LIBRE = {
 } as const;
 
 describe('SubmitAnswerUseCase', () => {
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
-  let participants: ReturnType<typeof createMockParticipantsRepo>;
-  let answers: ReturnType<typeof createMockAnswersRepo>;
-  let mastery: ReturnType<typeof createMockMasteryRepo>;
-  let cache: ReturnType<typeof createMockSessionStateCache>;
+  let deps: DependancesDEnregistrement;
   let sut: SubmitAnswerUseCase;
 
   const commande = {
@@ -49,45 +45,26 @@ describe('SubmitAnswerUseCase', () => {
   };
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    participants = createMockParticipantsRepo();
-    answers = createMockAnswersRepo();
-    mastery = createMockMasteryRepo();
-    cache = createMockSessionStateCache();
-    sessions.findById.mockResolvedValue(buildSessionRecord(EN_RYTHME_LIBRE));
-    sut = new SubmitAnswerUseCase(
-      sessions,
-      participants,
-      answers,
-      mastery,
-      cache,
+    deps = creerDependancesDEnregistrement(buildSessionRecord(EN_RYTHME_LIBRE));
+    sut = monterEnregistrement(
+      SubmitAnswerUseCase,
+      deps,
       creerCatalogueDeTest(buildCoursDuBaremeV1()),
     );
   });
 
-  it('refuse une reponse dont l ecran n a pas encore ete projete, meme quand le bareme ne porte pas son rang', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ ecranCourant: 0 }),
-    );
-
-    await expect(sut.execute(commande)).rejects.toThrow(EcranNonServiError);
-    expect(answers.create).not.toHaveBeenCalled();
-  });
-
-  it('signale une activite sur la session une fois la reponse enregistree', async () => {
-    await sut.execute(commande);
-    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
-    expect(answers.create.mock.invocationCallOrder[0]).toBeLessThan(
-      cache.signalerActivite.mock.invocationCallOrder[0],
-    );
-  });
+  verifierContratDEnregistrement(() => ({
+    dependances: deps,
+    courseSlug: buildCoursDuBaremeV1().slug,
+    executer: () => sut.execute(commande),
+  }));
 
   it('ne signale aucune activite quand la reponse est refusee', async () => {
-    answers.existsFor.mockResolvedValue(true);
+    deps.answers.existsFor.mockResolvedValue(true);
     await expect(sut.execute(commande)).rejects.toThrow(
       AnswerAlreadySubmittedError,
     );
-    expect(cache.signalerActivite).not.toHaveBeenCalled();
+    expect(deps.cache.signalerActivite).not.toHaveBeenCalled();
   });
 
   it('accepte une reponse juste', async () => {
@@ -114,7 +91,7 @@ describe('SubmitAnswerUseCase', () => {
   });
 
   it('corrige selon le seed du participant', async () => {
-    participants.findById.mockResolvedValue(
+    deps.participants.findById.mockResolvedValue(
       buildParticipantRecord({ seed: 1002 }),
     );
     const result = await sut.execute({ ...commande, valeur: 1500 });
@@ -122,7 +99,7 @@ describe('SubmitAnswerUseCase', () => {
   });
 
   it('refuse une seconde soumission sur la meme question', async () => {
-    answers.existsFor.mockResolvedValue(true);
+    deps.answers.existsFor.mockResolvedValue(true);
     await expect(sut.execute(commande)).rejects.toThrow(
       AnswerAlreadySubmittedError,
     );
@@ -136,7 +113,7 @@ describe('SubmitAnswerUseCase', () => {
 
   it('refuse sans rendre la graine un participant dont le tirage manque au bareme', async () => {
     const graineAbsente = 7_654_321;
-    participants.findById.mockResolvedValue(
+    deps.participants.findById.mockResolvedValue(
       buildParticipantRecord({ seed: graineAbsente }),
     );
 
@@ -148,34 +125,27 @@ describe('SubmitAnswerUseCase', () => {
     expect((refus as DomainValidationError).message).not.toContain(
       String(graineAbsente),
     );
-    expect(answers.create).not.toHaveBeenCalled();
-  });
-
-  it('refuse une soumission sur une session terminee', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ etat: 'terminee' }),
-    );
-    await expect(sut.execute(commande)).rejects.toThrow(SessionClosedError);
+    expect(deps.answers.create).not.toHaveBeenCalled();
   });
 
   it('refuse une soumission sur une session que le formateur n a pas demarree', async () => {
-    sessions.findById.mockResolvedValue(
+    deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'attente' }),
     );
     await expect(sut.execute(commande)).rejects.toThrow(SessionNotStartedError);
-    expect(answers.create).not.toHaveBeenCalled();
-    expect(mastery.enregistrerTentative).not.toHaveBeenCalled();
+    expect(deps.answers.create).not.toHaveBeenCalled();
+    expect(deps.mastery.enregistrerTentative).not.toHaveBeenCalled();
   });
 
   it('dit a l etudiant que la seance n a pas commence plutot que de refuser sans raison', async () => {
-    sessions.findById.mockResolvedValue(
+    deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'attente' }),
     );
     await expect(sut.execute(commande)).rejects.toThrow(/pas encore commencé/);
   });
 
   it('refuse une soumission d un participant introuvable', async () => {
-    participants.findById.mockResolvedValue(null);
+    deps.participants.findById.mockResolvedValue(null);
     await expect(sut.execute(commande)).rejects.toThrow(
       ParticipantNotFoundError,
     );
@@ -183,7 +153,7 @@ describe('SubmitAnswerUseCase', () => {
 
   it('enregistre une tentative reussie sur le concept de la question', async () => {
     await sut.execute(commande);
-    expect(mastery.enregistrerTentative).toHaveBeenCalledWith(
+    expect(deps.mastery.enregistrerTentative).toHaveBeenCalledWith(
       expect.objectContaining({
         studentKey: '11111111-1111-4111-8111-111111111111',
         concept: 'capitalisation',
@@ -194,21 +164,21 @@ describe('SubmitAnswerUseCase', () => {
 
   it('enregistre une tentative ratee sans relire la maitrise existante', async () => {
     await sut.execute({ ...commande, valeur: 1300 });
-    expect(mastery.enregistrerTentative).toHaveBeenCalledWith(
+    expect(deps.mastery.enregistrerTentative).toHaveBeenCalledWith(
       expect.objectContaining({ concept: 'capitalisation', reussi: false }),
     );
-    expect(mastery.findByStudentKey).not.toHaveBeenCalled();
+    expect(deps.mastery.findByStudentKey).not.toHaveBeenCalled();
   });
 
   it('enregistre la duree de reponse', async () => {
     await sut.execute(commande);
-    expect(answers.create).toHaveBeenCalledWith(
+    expect(deps.answers.create).toHaveBeenCalledWith(
       expect.objectContaining({ dureeMs: 42000 }),
     );
   });
 
   it('refuse une valeur hors des options connues sur une question de vote', async () => {
-    sessions.findById.mockResolvedValue(
+    deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({
         ...EN_RYTHME_LIBRE,
         bareme: buildVoteBareme([
@@ -219,11 +189,11 @@ describe('SubmitAnswerUseCase', () => {
     await expect(
       sut.execute({ ...commande, valeur: '<img src=x onerror=alert(1)>' }),
     ).rejects.toThrow(DomainValidationError);
-    expect(answers.create).not.toHaveBeenCalled();
+    expect(deps.answers.create).not.toHaveBeenCalled();
   });
 
   it('accepte je ne sais pas sur une question de vote', async () => {
-    sessions.findById.mockResolvedValue(
+    deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({ ...EN_RYTHME_LIBRE, bareme: buildVoteBareme() }),
     );
     const result = await sut.execute({ ...commande, valeur: NE_SAIT_PAS });
@@ -231,7 +201,7 @@ describe('SubmitAnswerUseCase', () => {
   });
 
   it('traduit une misconception connue de la banque par son libelle humain', async () => {
-    sessions.findById.mockResolvedValue(
+    deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({
         ...EN_RYTHME_LIBRE,
         bareme: buildVoteBareme([
@@ -245,10 +215,10 @@ describe('SubmitAnswerUseCase', () => {
 
   describe('sur un barème v2', () => {
     beforeEach(() => {
-      sessions.findById.mockResolvedValue(
+      deps.sessions.findById.mockResolvedValue(
         buildSessionRecord({ bareme: buildBaremeV2() }),
       );
-      participants.findById.mockResolvedValue(
+      deps.participants.findById.mockResolvedValue(
         buildParticipantRecord({ seed: 11 }),
       );
     });
@@ -261,11 +231,11 @@ describe('SubmitAnswerUseCase', () => {
           valeur: 45.478261,
         }),
       ).rejects.toThrow(EcranNonServiError);
-      expect(answers.create).not.toHaveBeenCalled();
+      expect(deps.answers.create).not.toHaveBeenCalled();
     });
 
     it('accepte la reponse une fois l ecran projete', async () => {
-      sessions.findById.mockResolvedValue(
+      deps.sessions.findById.mockResolvedValue(
         buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
       );
 
@@ -289,10 +259,10 @@ describe('SubmitAnswerUseCase', () => {
     });
 
     it('corrige une question numérique par l écart de la graine du participant', async () => {
-      sessions.findById.mockResolvedValue(
+      deps.sessions.findById.mockResolvedValue(
         buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
       );
-      participants.findById.mockResolvedValue(
+      deps.participants.findById.mockResolvedValue(
         buildParticipantRecord({ seed: 12 }),
       );
 
@@ -313,7 +283,7 @@ describe('SubmitAnswerUseCase', () => {
           valeur: 1,
         }),
       ).rejects.toThrow(DomainValidationError);
-      expect(answers.create).not.toHaveBeenCalled();
+      expect(deps.answers.create).not.toHaveBeenCalled();
     });
   });
 
@@ -353,7 +323,7 @@ describe('SubmitAnswerUseCase', () => {
       });
 
     it('accepte la principale avant toute phase pilotée', async () => {
-      sessions.findById.mockResolvedValue(seanceEnPhase());
+      deps.sessions.findById.mockResolvedValue(seanceEnPhase());
 
       const result = await sut.execute({
         ...commande,
@@ -365,16 +335,16 @@ describe('SubmitAnswerUseCase', () => {
     });
 
     it('refuse la jumelle avant le revote', async () => {
-      sessions.findById.mockResolvedValue(seanceEnPhase());
+      deps.sessions.findById.mockResolvedValue(seanceEnPhase());
 
       await expect(
         sut.execute({ ...commande, questionId: 'Q-JUMELLE', valeur: 'b' }),
       ).rejects.toThrow(PhaseFermeeError);
-      expect(answers.create).not.toHaveBeenCalled();
+      expect(deps.answers.create).not.toHaveBeenCalled();
     });
 
     it('ferme les deux questions pendant la discussion', async () => {
-      sessions.findById.mockResolvedValue(seanceEnPhase('discussion'));
+      deps.sessions.findById.mockResolvedValue(seanceEnPhase('discussion'));
 
       await expect(
         sut.execute({ ...commande, questionId: 'Q-PRINCIPALE', valeur: 'a' }),
@@ -382,7 +352,7 @@ describe('SubmitAnswerUseCase', () => {
     });
 
     it('ouvre la jumelle seule au revote', async () => {
-      sessions.findById.mockResolvedValue(seanceEnPhase('revote'));
+      deps.sessions.findById.mockResolvedValue(seanceEnPhase('revote'));
 
       const result = await sut.execute({
         ...commande,

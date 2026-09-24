@@ -200,6 +200,7 @@ export interface DonneesParBrique {
     readonly exemple: WorkedExemple;
     readonly etayage: number;
     readonly pilote?: boolean;
+    readonly corrigeDe?: string;
   };
   readonly 'fp-concept4': { readonly definition: Concept4Definition };
   readonly 'fp-plot': { readonly definition: PlotDefinition };
@@ -232,6 +233,7 @@ export interface DonneesParBrique {
   readonly 'fp-recall': {
     readonly question: VotePublic & { readonly metadonnees: MetadonneesBrique };
     readonly delaiMs: number;
+    readonly consigne?: string;
   };
   readonly 'fp-exit': { readonly billet: ExitBilletPublic };
   readonly questionnaire: {

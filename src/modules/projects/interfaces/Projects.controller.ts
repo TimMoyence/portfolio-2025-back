@@ -1,17 +1,11 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { Roles } from '../../../common/interfaces/auth/roles.decorator';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
-import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
+  CreationAdmin,
+  FILTRE_STATUT_DE_PUBLICATION,
+  ListePubliquePaginee,
+  reponsePaginee,
+} from '../../../common/interfaces/http/routes-de-catalogue';
 import { CreateProjectsUseCase } from '../application/CreateProjects.useCase';
 import { ListProjectsUseCase } from '../application/ListProjects.useCase';
 import { CreateProjectCommand } from '../application/dto/CreateProject.command';
@@ -28,36 +22,22 @@ export class ProjectsController {
     private readonly createUseCase: CreateProjectsUseCase,
   ) {}
 
-  @Public()
-  @Get()
-  @ApiOperation({ summary: 'Lister les projets (acces public, pagine)' })
-  @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
-  @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
-  @ApiQuery({
-    name: 'order',
-    required: false,
-    enum: ['ASC', 'DESC'],
-    example: 'ASC',
+  @ListePubliquePaginee({
+    resume: 'Lister les projets (acces public, pagine)',
+    reponse: ProjectListResponseDto,
+    ordreParDefaut: 'ASC',
+    triables: ['order', 'slug', 'type', 'createdAt'],
+    triParDefaut: 'order',
+    filtres: [
+      {
+        name: 'type',
+        required: false,
+        enum: ['CLIENT', 'SIDE'],
+        example: 'SIDE',
+      },
+      FILTRE_STATUT_DE_PUBLICATION,
+    ],
   })
-  @ApiQuery({
-    name: 'sortBy',
-    required: false,
-    enum: ['order', 'slug', 'type', 'createdAt'],
-    example: 'order',
-  })
-  @ApiQuery({
-    name: 'type',
-    required: false,
-    enum: ['CLIENT', 'SIDE'],
-    example: 'SIDE',
-  })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
-    example: 'PUBLISHED',
-  })
-  @ApiOkResponse({ type: ProjectListResponseDto })
   async findAll(
     @Query() query: ProjectListQueryDto,
   ): Promise<ProjectListResponseDto> {
@@ -69,28 +49,12 @@ export class ProjectsController {
       status: query.status,
       order: query.order,
     });
-
-    return {
-      items: result.items.map((project) =>
-        ProjectResponseDto.fromDomain(project),
-      ),
-      meta: {
-        page: result.page,
-        limit: result.limit,
-        total: result.total,
-        totalPages: result.totalPages,
-      },
-    };
+    return reponsePaginee(result, (project) =>
+      ProjectResponseDto.fromDomain(project),
+    );
   }
 
-  @Post()
-  @UseGuards(RolesGuard)
-  @Roles('admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Creer un projet (admin)' })
-  @ApiCreatedResponse({ type: ProjectResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation echouee' })
-  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
+  @CreationAdmin('Creer un projet (admin)', ProjectResponseDto)
   async create(@Body() dto: ProjectRequestDto): Promise<ProjectResponseDto> {
     const command: CreateProjectCommand = {
       slug: dto.slug,

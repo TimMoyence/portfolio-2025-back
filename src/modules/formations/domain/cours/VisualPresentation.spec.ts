@@ -15,26 +15,38 @@ describe('contrat visuel du catalogue', () => {
     },
   );
 
-  it('L4 · couvre chacun des quinze rendus du deck, correction de tri comprise', () => {
-    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(15);
+  it('L4 · couvre chacun des seize rendus du deck, corrections de tri et de réponses comprises', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(16);
   });
 
-  it('L4 · refuse une carte corrigée rangée dans une catégorie absente', () => {
-    const correction = PRESENTATIONS_VISUELLES_VALIDES['sort-review'];
-    const [premiere, ...suite] = correction.cards as Record<string, unknown>[];
-
+  it('refuse une correction de réponses sans explication', () => {
     expect(() =>
       parseVisualPresentation({
-        renderer: 'sort-review',
+        renderer: 'answer-review',
         props: {
-          ...correction,
-          cards: [{ ...premiere, category: 'inconnue' }, ...suite],
+          ...PRESENTATIONS_VISUELLES_VALIDES['answer-review'],
+          explications: [],
         },
       }),
     ).toThrow();
   });
 
-  it('L4 · refuse une clé inconnue dans une carte corrigée', () => {
+  it('refuse une correction de réponses sans écran source', () => {
+    expect(() =>
+      parseVisualPresentation({
+        renderer: 'answer-review',
+        props: {
+          ...PRESENTATIONS_VISUELLES_VALIDES['answer-review'],
+          source: undefined,
+        },
+      }),
+    ).toThrow();
+  });
+
+  it.each([
+    ['rangée dans une catégorie absente', { category: 'inconnue' }],
+    ['portant une clé inconnue', { intrus: true }],
+  ])('L4 · refuse une carte corrigée %s', (_cas, alteration) => {
     const correction = PRESENTATIONS_VISUELLES_VALIDES['sort-review'];
     const [premiere, ...suite] = correction.cards as Record<string, unknown>[];
 
@@ -43,7 +55,7 @@ describe('contrat visuel du catalogue', () => {
         renderer: 'sort-review',
         props: {
           ...correction,
-          cards: [{ ...premiere, intrus: true }, ...suite],
+          cards: [{ ...premiere, ...alteration }, ...suite],
         },
       }),
     ).toThrow();

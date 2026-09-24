@@ -1,18 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsArray,
   IsBoolean,
   IsEmail,
-  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
-  Matches,
   MaxLength,
-  MinLength,
 } from 'class-validator';
 import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
-import { VALID_ROLES } from '../../domain/roles';
+import { MotDePasseRobuste, RolesValides } from './regles-de-saisie';
 
 export class CreateUserDto implements CreateUserCommand {
   @ApiProperty({ example: 'john@example.com' })
@@ -20,15 +16,8 @@ export class CreateUserDto implements CreateUserCommand {
   email: string;
 
   @ApiProperty({ example: 'StrongPassword123!' })
-  @IsString()
+  @MotDePasseRobuste()
   @IsNotEmpty()
-  @MinLength(12, {
-    message: 'Le mot de passe doit contenir au moins 12 caracteres.',
-  })
-  @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/, {
-    message:
-      'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',
-  })
   password: string;
 
   @ApiProperty({ example: 'John' })
@@ -57,17 +46,11 @@ export class CreateUserDto implements CreateUserCommand {
   isActive?: boolean;
 
   @ApiPropertyOptional({
-    example: ['weather'],
+    example: ['teacher'],
     default: [],
     type: [String],
   })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  @IsIn(VALID_ROLES as unknown as string[], {
-    each: true,
-    message: 'Chaque role doit etre un role valide',
-  })
+  @RolesValides()
   roles?: string[];
 
   @ApiPropertyOptional({ example: 'system', nullable: true })

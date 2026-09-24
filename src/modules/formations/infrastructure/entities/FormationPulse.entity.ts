@@ -1,15 +1,6 @@
-import {
-  Check,
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { LigneDeSeance } from './ligne-de-seance';
+import { Check, Column, Entity, Index, Unique } from 'typeorm';
 import type { EtatPulse } from '../../domain/contrats/pilotage';
-import { FormationSessionEntity } from './FormationSession.entity';
 
 @Entity({ name: 'formation_pulses' })
 @Unique('UQ_formation_pulses_participant_sondage', [
@@ -19,20 +10,7 @@ import { FormationSessionEntity } from './FormationSession.entity';
 ])
 @Index('idx_formation_pulses_session_sondage', ['sessionId', 'sondageId'])
 @Check('CHK_formation_pulses_etat', `"etat" IN ('perdu', 'ca-va', 'clair')`)
-export class FormationPulseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ name: 'session_id', type: 'uuid' })
-  sessionId: string;
-
-  @ManyToOne(() => FormationSessionEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({
-    name: 'session_id',
-    foreignKeyConstraintName: 'FK_formation_pulses_session',
-  })
-  session: FormationSessionEntity;
-
+export class FormationPulseEntity extends LigneDeSeance('formation_pulses') {
   @Column({ name: 'cle_participant', type: 'char', length: 64 })
   cleParticipant: string;
 

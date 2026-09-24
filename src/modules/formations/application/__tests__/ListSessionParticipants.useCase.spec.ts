@@ -26,32 +26,15 @@ describe('ListSessionParticipantsUseCase', () => {
     participants = createMockParticipantsRepo();
     participants.listBySession.mockResolvedValue([
       buildParticipantRecord({ id: 'p1', prenom: 'Ada', nom: 'Lovelace' }),
-      buildParticipantRecord({
-        id: 'p2',
-        prenom: 'Grace',
-        nom: 'Hopper',
-        groupId: 'group-uuid',
-      }),
+      buildParticipantRecord({ id: 'p2', prenom: 'Grace', nom: 'Hopper' }),
     ]);
     sut = new ListSessionParticipantsUseCase(sessions, participants);
   });
 
-  it('rend au formateur chaque participant avec son groupe, sans son adresse', async () => {
+  it('rend au formateur chaque participant, sans son adresse', async () => {
     await expect(sut.execute(SESSION_ID, PROPRIETAIRE)).resolves.toEqual([
-      {
-        id: 'p1',
-        prenom: 'Ada',
-        nom: 'Lovelace',
-        groupId: null,
-        evince: false,
-      },
-      {
-        id: 'p2',
-        prenom: 'Grace',
-        nom: 'Hopper',
-        groupId: 'group-uuid',
-        evince: false,
-      },
+      { id: 'p1', prenom: 'Ada', nom: 'Lovelace', evince: false },
+      { id: 'p2', prenom: 'Grace', nom: 'Hopper', evince: false },
     ]);
     expect(participants.listBySession).toHaveBeenCalledWith(SESSION_ID);
   });
@@ -67,27 +50,9 @@ describe('ListSessionParticipantsUseCase', () => {
     ]);
 
     await expect(sut.execute(SESSION_ID, PROPRIETAIRE)).resolves.toEqual([
-      {
-        id: 'p1',
-        prenom: 'Ada',
-        nom: 'Lovelace',
-        groupId: null,
-        evince: false,
-      },
-      {
-        id: 'p2',
-        prenom: 'Grace',
-        nom: 'Hopper',
-        groupId: 'group-uuid',
-        evince: false,
-      },
-      {
-        id: 'p3',
-        prenom: 'Katherine',
-        nom: 'Johnson',
-        groupId: null,
-        evince: true,
-      },
+      { id: 'p1', prenom: 'Ada', nom: 'Lovelace', evince: false },
+      { id: 'p2', prenom: 'Grace', nom: 'Hopper', evince: false },
+      { id: 'p3', prenom: 'Katherine', nom: 'Johnson', evince: true },
     ]);
     expect(participants.listEvincesBySession).toHaveBeenCalledWith(SESSION_ID);
   });

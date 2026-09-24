@@ -3,36 +3,31 @@ import {
   buildCoursAvecProductions,
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
+import { buildSessionRecord } from '../../../../../test/factories/formation.factory';
 import {
-  buildParticipantRecord,
-  buildSessionRecord,
-  createMockAnswersRepo,
-  createMockMasteryRepo,
-  createMockParticipantsRepo,
-  createMockSessionStateCache,
-  createMockSessionsRepo,
-} from '../../../../../test/factories/formation.factory';
+  creerDependancesDEnregistrement,
+  monterEnregistrement,
+  verifierContratDEnregistrement,
+  type DependancesDEnregistrement,
+} from '../../../../../test/helpers/enregistrement-de-reponse';
 import {
   AnswerAlreadySubmittedError,
-  EcranNonServiError,
-  ParticipantNotFoundError,
   PhaseFermeeError,
   ProductionVideError,
-  SessionClosedError,
+  ReprisesEpuiseesError,
   SessionNotStartedError,
   TypeDeQuestionError,
 } from '../../domain/errors/FormationErrors';
-import { SubmitProductionUseCase } from '../SubmitProduction.useCase';
+import {
+  SOUMISSIONS_MAX_PAR_PRODUCTION,
+  SubmitProductionUseCase,
+} from '../SubmitProduction.useCase';
 
 const COURS = buildCoursAvecProductions();
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
 
 describe('SubmitProductionUseCase', () => {
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
-  let participants: ReturnType<typeof createMockParticipantsRepo>;
-  let answers: ReturnType<typeof createMockAnswersRepo>;
-  let mastery: ReturnType<typeof createMockMasteryRepo>;
-  let cache: ReturnType<typeof createMockSessionStateCache>;
+  let deps: DependancesDEnregistrement;
   let sut: SubmitProductionUseCase;
 
   const commande = {
@@ -47,33 +42,31 @@ describe('SubmitProductionUseCase', () => {
   };
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
+    deps = creerDependancesDEnregistrement(
       buildSessionRecord({
         courseSlug: COURS.slug,
         ecranCourant: DERNIER_ECRAN,
       }),
     );
-    participants = createMockParticipantsRepo();
-    answers = createMockAnswersRepo();
-    mastery = createMockMasteryRepo();
-    cache = createMockSessionStateCache();
-    sut = new SubmitProductionUseCase(
-      sessions,
-      participants,
-      answers,
-      mastery,
-      cache,
+    sut = monterEnregistrement(
+      SubmitProductionUseCase,
+      deps,
       creerCatalogueDeTest(COURS),
     );
   });
+
+  verifierContratDEnregistrement(() => ({
+    dependances: deps,
+    courseSlug: COURS.slug,
+    executer: () => sut.execute(commande),
+  }));
 
   it('corrige la feuille et enregistre le score et le detail', async () => {
     const verdict = await sut.execute(commande);
 
     expect(verdict.correcte).toBe(true);
     expect(verdict.score).toBe(1);
-    expect(answers.create).toHaveBeenCalledWith(
+    expect(deps.answers.create).toHaveBeenCalledWith(
       expect.objectContaining({
         questionId: 'Q-TEST-FEUILLE',
         concept: 'tableur',
@@ -95,24 +88,15 @@ describe('SubmitProductionUseCase', () => {
       },
     });
 
-    expect(answers.create).toHaveBeenCalledWith(
+    expect(deps.answers.create).toHaveBeenCalledWith(
       expect.objectContaining({ valeur: commande.valeur }),
-    );
-  });
-
-  it('signale l activite apres l ecriture de la reponse', async () => {
-    await sut.execute(commande);
-
-    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
-    expect(answers.create.mock.invocationCallOrder[0]).toBeLessThan(
-      cache.signalerActivite.mock.invocationCallOrder[0],
     );
   });
 
   it('met la maitrise du concept a jour', async () => {
     await sut.execute(commande);
 
-    expect(mastery.enregistrerTentative).toHaveBeenCalledWith(
+    expect(deps.mastery.enregistrerTentative).toHaveBeenCalledWith(
       expect.objectContaining({ concept: 'tableur', reussi: true }),
     );
   });
@@ -145,14 +129,14 @@ describe('SubmitProductionUseCase', () => {
       details: [],
       libelleConfusion: null,
     });
-    expect(answers.create).toHaveBeenCalled();
+    expect(deps.answers.create).toHaveBeenCalled();
   });
 
   it('refuse une question qui n est pas une production du cours', async () => {
     await expect(
       sut.execute({ ...commande, questionId: 'Q-TEST-NUM' }),
     ).rejects.toThrow(TypeDeQuestionError);
-    expect(answers.create).not.toHaveBeenCalled();
+    expect(deps.answers.create).not.toHaveBeenCalled();
   });
 
   it('refuse une production sans aucune saisie', async () => {
@@ -162,20 +146,11 @@ describe('SubmitProductionUseCase', () => {
         valeur: { type: 'feuille', cellules: {} },
       }),
     ).rejects.toThrow(ProductionVideError);
-    expect(answers.create).not.toHaveBeenCalled();
-  });
-
-  it('refuse une production visant un ecran non projete', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, ecranCourant: 0 }),
-    );
-
-    await expect(sut.execute(commande)).rejects.toThrow(EcranNonServiError);
-    expect(answers.create).not.toHaveBeenCalled();
+    expect(deps.answers.create).not.toHaveBeenCalled();
   });
 
   it('refuse une production dont l ecran a deja revele sa correction', async () => {
-    sessions.findById.mockResolvedValue(
+    deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({
         courseSlug: COURS.slug,
         ecranCourant: DERNIER_ECRAN,
@@ -184,38 +159,73 @@ describe('SubmitProductionUseCase', () => {
     );
 
     await expect(sut.execute(commande)).rejects.toThrow(PhaseFermeeError);
-    expect(answers.create).not.toHaveBeenCalled();
+    expect(deps.answers.create).not.toHaveBeenCalled();
   });
 
-  it('refuse une seconde production sur la meme question', async () => {
-    answers.existsFor.mockResolvedValue(true);
+  it('F16 · remplace une feuille déjà rendue tant que la correction n est pas ouverte', async () => {
+    deps.answers.existsFor.mockResolvedValue(true);
 
-    await expect(sut.execute(commande)).rejects.toThrow(
-      AnswerAlreadySubmittedError,
+    await sut.execute(commande);
+
+    expect(deps.answers.create).not.toHaveBeenCalled();
+    expect(deps.answers.remplacer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        questionId: 'Q-TEST-FEUILLE',
+        valeur: commande.valeur,
+        score: 1,
+      }),
+      SOUMISSIONS_MAX_PAR_PRODUCTION,
     );
-    expect(answers.create).not.toHaveBeenCalled();
+    expect(deps.mastery.enregistrerTentative).not.toHaveBeenCalled();
+    expect(deps.cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
   });
 
-  it('refuse un participant rattache a une autre seance', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({ sessionId: 'autre-session' }),
-    );
+  it('SEC-4.1 · refuse une reprise au-delà du plafond de soumissions, sans verdict', async () => {
+    deps.answers.existsFor.mockResolvedValue(true);
+    deps.answers.remplacer.mockResolvedValue(false);
 
-    await expect(sut.execute(commande)).rejects.toThrow(
-      ParticipantNotFoundError,
-    );
+    await expect(sut.execute(commande)).rejects.toThrow(ReprisesEpuiseesError);
+    expect(deps.cache.signalerActivite).not.toHaveBeenCalled();
   });
 
-  it.each([
-    ['avant le demarrage', 'attente', SessionNotStartedError],
-    ['apres la cloture', 'terminee', SessionClosedError],
-  ] as const)('refuse la production %s', async (_cas, etat, erreur) => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, etat }),
+  it('F16 · refuse la reprise d une feuille dont l étayage a déjà été montré', async () => {
+    deps.answers.existsFor.mockResolvedValue(true);
+    deps.sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        courseSlug: COURS.slug,
+        ecranCourant: DERNIER_ECRAN,
+        pilotageEcrans: { 'E-FEUILLE': { etayage: 0, etayageAtteint: 1 } },
+      }),
     );
 
-    await expect(sut.execute(commande)).rejects.toThrow(erreur);
-    expect(answers.create).not.toHaveBeenCalled();
+    await expect(sut.execute(commande)).rejects.toThrow(PhaseFermeeError);
+    expect(deps.answers.remplacer).not.toHaveBeenCalled();
+  });
+
+  it('refuse une seconde production sur un même classement', async () => {
+    deps.answers.existsFor.mockResolvedValue(true);
+
+    await expect(
+      sut.execute({
+        ...commande,
+        questionId: 'Q-TEST-CLASSEMENT',
+        valeur: {
+          type: 'classement',
+          classement: { 'ca-2025': 'valeur', inflation: 'ambigu' },
+        },
+      }),
+    ).rejects.toThrow(AnswerAlreadySubmittedError);
+    expect(deps.answers.create).not.toHaveBeenCalled();
+    expect(deps.answers.remplacer).not.toHaveBeenCalled();
+  });
+
+  it('refuse la production avant le demarrage', async () => {
+    deps.sessions.findById.mockResolvedValue(
+      buildSessionRecord({ courseSlug: COURS.slug, etat: 'attente' }),
+    );
+
+    await expect(sut.execute(commande)).rejects.toThrow(SessionNotStartedError);
+    expect(deps.answers.create).not.toHaveBeenCalled();
   });
 
   it('corrige un classement et rend un verdict par carte', async () => {

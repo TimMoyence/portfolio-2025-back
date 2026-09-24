@@ -1,5 +1,9 @@
 import type { Ecran } from '../contrats/cours';
-import type { PilotageEcran, VotePhase } from '../contrats/pilotage';
+import type {
+  PilotageDemande,
+  PilotageEcran,
+  VotePhase,
+} from '../contrats/pilotage';
 import { PHASES_DE_VOTE } from '../contrats/pilotage';
 import {
   PhaseFermeeError,
@@ -7,23 +11,36 @@ import {
   PilotageIncompatibleError,
 } from '../errors/FormationErrors';
 import { questionsDe } from './Cours';
+import { activitesDeLEcran, etayageAtteint } from './EcranServi';
 
-export type PilotageDemande = { readonly screenId: string } & PilotageEcran;
+export type { PilotageDemande } from '../contrats/pilotage';
 
 export interface QuestionPilotee {
   readonly ecranId: string;
   readonly ouverture?: 'principale' | 'jumelle';
 }
 
-const CORRECTIONS_DE_LA_FEUILLE = ['formules', 'valeurs'] as const;
+const NIVEAUX_DE_CORRECTION_D_UNE_PRODUCTION = ['formules', 'valeurs'] as const;
 
 function etapesDeLEcran(ecran: Ecran): number | null {
-  if (ecran.brique === 'fp-sheet') {
-    return CORRECTIONS_DE_LA_FEUILLE.length;
+  switch (ecran.brique) {
+    case 'fp-sheet':
+    case 'fp-table-build':
+      return NIVEAUX_DE_CORRECTION_D_UNE_PRODUCTION.length;
+    case 'fp-worked':
+      return ecran.proprietes.exemple.etapes.length;
+    default:
+      return null;
   }
-  return ecran.brique === 'fp-worked'
-    ? ecran.proprietes.exemple.etapes.length
-    : null;
+}
+
+function parametresReglables(
+  ecran: Ecran,
+): readonly { cle: string; min: number; max: number }[] | null {
+  if (ecran.brique === 'fp-concept4' || ecran.brique === 'fp-plot') {
+    return ecran.proprietes.parametres;
+  }
+  return null;
 }
 
 function assertReglagesDeLaMachine(
@@ -31,16 +48,15 @@ function assertReglagesDeLaMachine(
   reglages: Readonly<Record<string, number>>,
   refuser: (raison: string) => never,
 ): void {
-  if (ecran.brique !== 'fp-concept4') {
-    refuser('seule une machine porte des réglages');
+  const parametres = parametresReglables(ecran);
+  if (parametres === null) {
+    refuser('seuls une machine et un tracé portent des réglages');
     return;
   }
   for (const [cle, valeur] of Object.entries(reglages)) {
-    const parametre = ecran.proprietes.parametres.find(
-      (candidat) => candidat.cle === cle,
-    );
+    const parametre = parametres.find((candidat) => candidat.cle === cle);
     if (parametre === undefined) {
-      refuser(`paramètre ${cle} absent de la machine`);
+      refuser(`paramètre ${cle} absent de l’écran`);
       return;
     }
     if (valeur < parametre.min || valeur > parametre.max) {
@@ -69,24 +85,42 @@ export function assertPilotageCompatible(
   if (
     demande.revele !== undefined &&
     ecran.brique !== 'fp-challenge' &&
-    questionsDe(ecran).length === 0
+    questionsDe(ecran).length === 0 &&
+    activitesDeLEcran(ecran).length === 0
   ) {
     refuser('seul un écran porteur d’un corrigé se révèle');
   }
   if (demande.reglages !== undefined) {
     assertReglagesDeLaMachine(ecran, demande.reglages, refuser);
   }
+  if (demande.optionsAffichees !== undefined && ecran.brique !== 'fp-recall') {
+    refuser('seul un rappel diffère l affichage de ses options');
+  }
   if (demande.etayage === undefined) {
     return;
   }
   const etapes = etapesDeLEcran(ecran);
   if (etapes === null) {
-    refuser('seuls un exemple travaillé et une feuille portent un étayage');
+    refuser(
+      'seuls un exemple travaillé, une feuille et un tableau portent un étayage',
+    );
     return;
   }
   if (demande.etayage > etapes) {
     refuser(`étayage ${demande.etayage} au-delà des ${etapes} étapes`);
   }
+}
+
+const CLES_NON_PILOTABLES: readonly string[] = ['screenId', 'etayageAtteint'];
+
+function sansClesNonPilotables(
+  pilotage: PilotageEcran | PilotageDemande,
+): Omit<PilotageEcran, 'etayageAtteint'> {
+  return Object.fromEntries(
+    Object.entries(pilotage).filter(
+      ([cle]) => !CLES_NON_PILOTABLES.includes(cle),
+    ),
+  );
 }
 
 function rangDePhase(phase: VotePhase | undefined): number {
@@ -97,7 +131,8 @@ export function fusionnerPilotage(
   courant: Readonly<Record<string, PilotageEcran>>,
   demande: PilotageDemande,
 ): Readonly<Record<string, PilotageEcran>> {
-  const { screenId, ...changements } = demande;
+  const { screenId } = demande;
+  const changements = sansClesNonPilotables(demande);
   const precedent: PilotageEcran = courant[screenId] ?? {};
   if (
     changements.phase !== undefined &&
@@ -105,10 +140,22 @@ export function fusionnerPilotage(
   ) {
     throw new PhaseNonMonotoneError(screenId);
   }
-  if (changements.revele === false && precedent.revele === true) {
+  if (
+    (changements.revele === false && precedent.revele === true) ||
+    (changements.optionsAffichees === false &&
+      precedent.optionsAffichees === true)
+  ) {
     throw new PhaseNonMonotoneError(screenId);
   }
-  return { ...courant, [screenId]: { ...precedent, ...changements } };
+  const suivant = sansClesNonPilotables({ ...precedent, ...changements });
+  const atteint = Math.max(etayageAtteint(precedent), suivant.etayage ?? 0);
+  return {
+    ...courant,
+    [screenId]:
+      atteint > (suivant.etayage ?? 0)
+        ? { ...suivant, etayageAtteint: atteint }
+        : suivant,
+  };
 }
 
 export function assertPhaseOuverte(
@@ -119,9 +166,6 @@ export function assertPhaseOuverte(
     throw new PhaseFermeeError(question.ecranId);
   }
   if (question.ouverture === undefined) {
-    if (pilotage[question.ecranId]?.revele === true) {
-      throw new PhaseFermeeError(question.ecranId);
-    }
     return;
   }
   const phase = pilotage[question.ecranId]?.phase ?? 'vote';
@@ -146,7 +190,7 @@ export function assertEtapeNonCorrigee(
   const rang = exemple.etapes.findIndex(
     (etape) => `${exemple.id}:${etape.id}` === activiteId,
   );
-  if (rang >= 0 && rang < (pilotage[ecran.id]?.etayage ?? 0)) {
+  if (rang >= 0 && rang < etayageAtteint(pilotage[ecran.id])) {
     throw new PhaseFermeeError(ecran.id);
   }
 }

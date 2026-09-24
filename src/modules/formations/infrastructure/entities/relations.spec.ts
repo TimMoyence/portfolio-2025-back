@@ -2,7 +2,6 @@ import { getMetadataArgsStorage } from 'typeorm';
 import { FormationAnswerEntity } from './FormationAnswer.entity';
 import { FormationCourseContentEntity } from './FormationCourseContent.entity';
 import { FormationFreeResponseEntity } from './FormationFreeResponse.entity';
-import { FormationGroupEntity } from './FormationGroup.entity';
 import { FormationIncidentEntity } from './FormationIncident.entity';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
 import { FormationScoreEntity } from './FormationScore.entity';
@@ -18,7 +17,7 @@ interface RelationAttendue {
   readonly propriete: string;
   readonly vers: Entite;
   readonly contrainte: string;
-  readonly suppression: 'CASCADE' | 'SET NULL';
+  readonly suppression: 'CASCADE';
 }
 
 const cascade = (
@@ -41,13 +40,6 @@ const ATTENDUES: readonly RelationAttendue[] = [
     FormationSessionEntity,
     'FK_formation_participants_session',
   ),
-  {
-    depuis: FormationParticipantEntity,
-    propriete: 'group',
-    vers: FormationGroupEntity,
-    contrainte: 'FK_formation_participants_group',
-    suppression: 'SET NULL',
-  },
   cascade(
     FormationAnswerEntity,
     'session',
@@ -65,12 +57,6 @@ const ATTENDUES: readonly RelationAttendue[] = [
     'participant',
     FormationParticipantEntity,
     'FK_formation_incidents_participant',
-  ),
-  cascade(
-    FormationGroupEntity,
-    'session',
-    FormationSessionEntity,
-    'FK_formation_groups_session',
   ),
   cascade(
     FormationScoreEntity,
@@ -110,19 +96,23 @@ const ATTENDUES: readonly RelationAttendue[] = [
   ),
 ];
 
+const declareePour = (cible: unknown, entite: Entite): boolean =>
+  cible === entite ||
+  (typeof cible === 'function' && entite.prototype instanceof cible);
+
 describe('relations des entites formations', () => {
   const relations = getMetadataArgsStorage().relations;
   const jointures = getMetadataArgsStorage().joinColumns;
 
-  it('declare les douze clefs etrangeres des migrations', () => {
-    expect(ATTENDUES).toHaveLength(12);
+  it('declare les dix clefs etrangeres des migrations', () => {
+    expect(ATTENDUES).toHaveLength(10);
   });
 
   for (const attendue of ATTENDUES) {
     describe(`${attendue.depuis.name}.${attendue.propriete}`, () => {
       const relation = relations.find(
         (candidate) =>
-          candidate.target === attendue.depuis &&
+          declareePour(candidate.target, attendue.depuis) &&
           candidate.propertyName === attendue.propriete,
       );
 
@@ -138,7 +128,7 @@ describe('relations des entites formations', () => {
       it('porte le nom de contrainte de la migration', () => {
         const jointure = jointures.find(
           (candidate) =>
-            candidate.target === attendue.depuis &&
+            declareePour(candidate.target, attendue.depuis) &&
             candidate.propertyName === attendue.propriete,
         );
         expect(jointure?.foreignKeyConstraintName).toBe(attendue.contrainte);

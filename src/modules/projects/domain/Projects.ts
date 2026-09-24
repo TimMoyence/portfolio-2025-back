@@ -1,6 +1,9 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { PublishableStatus } from '../../../common/domain/types/publishable-status';
-import { optionalText } from '../../../common/domain/validation/domain-validators';
+import {
+  optionalHttpUrl,
+  optionalText,
+} from '../../../common/domain/validation/domain-validators';
 import {
   resolvePublishableStatus,
   resolveOrder,
@@ -10,17 +13,8 @@ import { Slug } from '../../../common/domain/value-objects/Slug';
 export type ProjectType = 'CLIENT' | 'SIDE';
 export type ProjectStatus = PublishableStatus;
 
-export interface CreateProjectProps {
-  slug: string;
-  type?: ProjectType;
-  repoUrl?: string;
-  liveUrl?: string;
-  coverImage?: string;
-  gallery?: string[];
-  stack?: string[];
-  status?: ProjectStatus;
-  order?: number;
-}
+export type CreateProjectProps = Pick<Projects, 'slug'> &
+  Partial<Omit<Projects, 'id' | 'slug'>>;
 
 export class Projects {
   id?: string;
@@ -38,8 +32,8 @@ export class Projects {
     const project = new Projects();
     project.slug = Slug.parse(props.slug, 'project slug').toString();
     project.type = this.resolveType(props.type);
-    project.repoUrl = this.optionalUrl(props.repoUrl, 'project repo URL');
-    project.liveUrl = this.optionalUrl(props.liveUrl, 'project live URL');
+    project.repoUrl = optionalHttpUrl(props.repoUrl, 'project repo URL');
+    project.liveUrl = optionalHttpUrl(props.liveUrl, 'project live URL');
     project.coverImage = optionalText(
       props.coverImage,
       'project cover image',
@@ -60,38 +54,6 @@ export class Projects {
     project.status = resolvePublishableStatus(props.status, 'project status');
     project.order = resolveOrder(props.order, 'project order');
     return project;
-  }
-
-  private static optionalUrl(raw: unknown, field: string): string | undefined {
-    if (raw === undefined || raw === null) {
-      return undefined;
-    }
-
-    if (typeof raw !== 'string') {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    const value = raw.trim();
-    if (value.length === 0) {
-      return undefined;
-    }
-
-    if (value.length > 1000) {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    let parsed: URL;
-    try {
-      parsed = new URL(value);
-    } catch {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      throw new DomainValidationError(`Invalid ${field}`);
-    }
-
-    return value;
   }
 
   private static optionalStringArray(

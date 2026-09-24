@@ -142,7 +142,7 @@ describe('CreateUsersUseCase', () => {
       password: ATTACKER_CREDENTIAL,
       firstName: 'Evil',
       lastName: 'User',
-      roles: ['admin', 'weather'],
+      roles: ['admin', 'teacher'],
     };
 
     const savedUser = buildUser({
@@ -167,20 +167,20 @@ describe('CreateUsersUseCase', () => {
       password: PLAIN_CREDENTIAL,
       firstName: 'New',
       lastName: 'User',
-      roles: ['sebastian', 'weather'],
+      roles: ['admin', 'teacher'],
       updatedOrCreatedBy: 'admin-user-id',
     };
 
     const savedUser = buildUser({
       email: dto.email,
-      roles: ['sebastian', 'weather'],
+      roles: ['admin', 'teacher'],
     });
     repo.create.mockResolvedValue(savedUser);
 
     await useCase.execute(dto);
 
     expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ roles: ['sebastian', 'weather'] }),
+      expect.objectContaining({ roles: ['admin', 'teacher'] }),
     );
     expect(
       emailVerificationNotifier.sendVerificationEmail,

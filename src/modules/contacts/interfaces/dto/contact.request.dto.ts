@@ -1,34 +1,17 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
   IsEmail,
-  IsInt,
   IsOptional,
   IsString,
-  Min,
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 
-export class ContactRequestDto {
-  @ApiPropertyOptional({
-    description: 'Champ piège anti-robot, doit rester vide',
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  website?: string;
-
-  @ApiPropertyOptional({
-    description: "Timestamp ms d'ouverture du formulaire",
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  formStartedAt?: number;
-
+export class ContactRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'John' })
   @IsString()
   @MinLength(1)

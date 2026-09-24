@@ -1,12 +1,5 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ForeignKey,
-  Index,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { UsersEntity } from './Users.entity';
+import { Column, CreateDateColumn, Entity, Index } from 'typeorm';
+import { JetonDUtilisateur } from './jeton-d-utilisateur';
 
 @Entity({ name: 'password_reset_tokens' })
 @Index('IDX_password_reset_tokens_user_id', ['userId'])
@@ -14,23 +7,9 @@ import { UsersEntity } from './Users.entity';
 @Index('IDX_password_reset_tokens_used_at_null', ['usedAt'], {
   where: '"used_at" IS NULL',
 })
-export class PasswordResetTokenEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @ForeignKey(() => UsersEntity, {
-    name: 'password_reset_tokens_user_id_fkey',
-    onDelete: 'CASCADE',
-  })
-  @Column({ name: 'user_id', type: 'uuid' })
-  userId: string;
-
-  @Column({ name: 'token_hash', type: 'varchar', length: 64, unique: true })
-  tokenHash: string;
-
-  @Column({ name: 'expires_at', type: 'timestamp' })
-  expiresAt: Date;
-
+export class PasswordResetTokenEntity extends JetonDUtilisateur(
+  'password_reset_tokens',
+) {
   @Column({ name: 'used_at', type: 'timestamp', nullable: true })
   usedAt: Date | null;
 

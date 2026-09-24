@@ -5,11 +5,20 @@ import type {
   IncidentInput,
 } from '../domain/IIncidents.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
+import type { ISessionsRepository } from '../domain/ISessions.repository';
 import {
   envoiDansLaLimite,
   filtrerIncidentsConnus,
 } from '../domain/IncidentType';
-import { INCIDENTS_REPOSITORY, PARTICIPANTS_REPOSITORY } from '../domain/token';
+import {
+  SessionClosedError,
+  SessionNotFoundError,
+} from '../domain/errors/FormationErrors';
+import {
+  INCIDENTS_REPOSITORY,
+  PARTICIPANTS_REPOSITORY,
+  SESSIONS_REPOSITORY,
+} from '../domain/token';
 import { participantActif } from './ParticipantActif';
 
 @Injectable()
@@ -19,6 +28,8 @@ export class RecordIncidentsUseCase {
     private readonly incidents: IIncidentsRepository,
     @Inject(PARTICIPANTS_REPOSITORY)
     private readonly participants: IParticipantsRepository,
+    @Inject(SESSIONS_REPOSITORY)
+    private readonly sessions: ISessionsRepository,
   ) {}
 
   async execute(
@@ -28,6 +39,13 @@ export class RecordIncidentsUseCase {
   ): Promise<void> {
     if (!envoiDansLaLimite(inputs.length)) {
       throw new DomainValidationError('Trop d incidents dans un seul envoi');
+    }
+    const session = await this.sessions.findById(sessionId);
+    if (session === null) {
+      throw new SessionNotFoundError(sessionId);
+    }
+    if (session.etat === 'terminee') {
+      throw new SessionClosedError();
     }
     await participantActif(this.participants, sessionId, participantId);
     const valides = filtrerIncidentsConnus(inputs);

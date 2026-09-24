@@ -40,19 +40,11 @@ export class ParticipantNotFoundError extends ResourceNotFoundError {
   }
 }
 
-export class FormationGroupNotFoundError extends ResourceNotFoundError {
-  constructor(groupId: string) {
-    super(`Groupe introuvable dans cette séance : ${groupId}`);
-  }
-}
+export class ReponseIntrouvableError extends ResourceNotFoundError {
+  readonly code = 'REPONSE_INTROUVABLE';
 
-export class FormationGroupNameTakenError extends ResourceConflictError {
-  readonly code = 'NOM_DE_GROUPE_DEJA_PRIS';
-
-  constructor(name: string) {
-    super(
-      `Le groupe « ${name} » existe déjà dans cette séance : choisissez un autre nom.`,
-    );
+  constructor(questionId: string) {
+    super(`Aucune production à reprendre pour la question ${questionId}`);
   }
 }
 
@@ -98,6 +90,36 @@ export class SeanceCompleteError extends ResourceConflictError {
   }
 }
 
+export class PlaceDejaPriseError extends ResourceConflictError {
+  readonly code = 'PLACE_DEJA_PRISE';
+
+  constructor() {
+    super(
+      'Cette adresse a déjà rejoint la séance depuis un autre poste : demandez au formateur de libérer votre poste pour reprendre votre place ici.',
+    );
+  }
+}
+
+export class ParticipantEvinceError extends InsufficientPermissionsError {
+  readonly code = 'PARTICIPANT_EVINCE';
+
+  constructor() {
+    super(
+      'Le formateur vous a retiré de cette séance : vous ne pouvez la rejoindre que s’il vous réadmet.',
+    );
+  }
+}
+
+export class GraineRepriseError extends ResourceConflictError {
+  readonly code = 'GRAINE_REPRISE';
+
+  constructor() {
+    super(
+      'Le sujet de ce participant a été attribué à un autre poste depuis son éviction : la réadmission est impossible.',
+    );
+  }
+}
+
 export class SeedPoolExhaustedError extends ResourceConflictError {
   constructor() {
     super('Plus aucun tirage disponible pour cette session');
@@ -114,6 +136,16 @@ export class AnswerAlreadySubmittedError extends ResourceConflictError {
   }
 }
 
+export class ReprisesEpuiseesError extends ResourceConflictError {
+  readonly code = 'REPRISES_EPUISEES';
+
+  constructor(questionId: string, soumissionsMax: number) {
+    super(
+      `Votre production ${questionId} a déjà été envoyée ${soumissionsMax} fois : attendez la correction.`,
+    );
+  }
+}
+
 export class ActiviteInconnueError extends DomainValidationError {
   readonly code = 'ACTIVITE_INCONNUE';
 
@@ -121,6 +153,14 @@ export class ActiviteInconnueError extends DomainValidationError {
     super(
       `L’activité ${activityId} n’existe pas sur l’écran ${screenId} de ce cours.`,
     );
+  }
+}
+
+export class EcranInconnuError extends DomainValidationError {
+  readonly code = 'ECRAN_INCONNU';
+
+  constructor(screenId: string) {
+    super(`L’écran ${screenId} n’existe pas dans le cours de cette séance.`);
   }
 }
 

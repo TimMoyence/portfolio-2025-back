@@ -13,7 +13,7 @@ const recipient = {
   subscriberId: 'subscriber-1',
   email: 'lecteur@example.com',
   firstName: 'Anne & <Marie>',
-  unsubscribeToken: '8f14e45f-ceea-467a-9575-8d5a3f1c0b2e',
+  unsubscribeToken: 'jeton-de-desabonnement',
 };
 
 function article(overrides: Partial<ArticleRecord> = {}): ArticleRecord {
@@ -89,7 +89,7 @@ describe('ArticleBroadcastMailerService', () => {
 
     const mail = mockSendMail.mock.calls[0][0];
     const unsubscribeUrl =
-      'https://asilidesign.fr/api/v1/portfolio25/newsletter/unsubscribe?token=8f14e45f-ceea-467a-9575-8d5a3f1c0b2e';
+      'https://asilidesign.fr/api/v1/portfolio25/newsletter/unsubscribe?token=jeton-de-desabonnement';
     expect(mail).toMatchObject({
       from: "'Asili Design' <veille@asilidesign.fr>",
       to: 'lecteur@example.com',

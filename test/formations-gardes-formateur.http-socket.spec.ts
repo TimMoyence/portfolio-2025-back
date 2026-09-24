@@ -1,11 +1,13 @@
 import type { INestApplication } from '@nestjs/common';
-import { ValidationPipe } from '@nestjs/common';
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
+import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { APP_GUARD } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { ThrottlerModule } from '@nestjs/throttler';
 import request from 'supertest';
 import type { Test as RequeteTest } from 'supertest';
 import { JwtAuthGuard } from '../src/common/interfaces/auth/jwt-auth.guard';
+import { ROLES_KEY } from '../src/common/interfaces/auth/roles.decorator';
 import { AllExceptionsFilter } from '../src/common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from '../src/common/interfaces/filters/DomainExceptionFilter';
 import { JwtTokenService } from '../src/modules/users/application/services/JwtTokenService';
@@ -21,6 +23,7 @@ import {
   CONTROLEURS_FORMATIONS,
   fournisseursFormations,
   PREFIXE_API,
+  serveurHttpDe,
 } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './helpers/validation-pipe';
@@ -36,22 +39,29 @@ const INTERDIT = 403;
 const REFUS_DE_ROLE = 'Insufficient permissions';
 
 interface RouteFormateur {
-  readonly methode: 'get' | 'post' | 'patch';
+  readonly methode: 'get' | 'post' | 'patch' | 'delete';
   readonly chemin: string;
 }
+
+const PARTICIPANT_DE_LA_SEANCE = `sessions/${SESSION_ID}/participants/${PARTICIPANT_ID}`;
 
 const ROUTES_FORMATEUR: readonly RouteFormateur[] = [
   { methode: 'post', chemin: 'sessions' },
   { methode: 'post', chemin: `sessions/${SESSION_ID}/start` },
   { methode: 'patch', chemin: `sessions/${SESSION_ID}/control` },
   { methode: 'post', chemin: `sessions/${SESSION_ID}/close` },
+  { methode: 'get', chemin: `sessions/${SESSION_ID}/presenter-stream` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/results` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/report` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/deroule` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/free-responses` },
-  { methode: 'get', chemin: `sessions/${SESSION_ID}/groups` },
+  { methode: 'get', chemin: `sessions/${SESSION_ID}/rappels/synthese` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/participants` },
+  { methode: 'delete', chemin: PARTICIPANT_DE_LA_SEANCE },
+  { methode: 'post', chemin: `${PARTICIPANT_DE_LA_SEANCE}/readmission` },
+  { methode: 'post', chemin: `${PARTICIPANT_DE_LA_SEANCE}/liberation` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/annotations` },
+  { methode: 'post', chemin: `sessions/${SESSION_ID}/annotations` },
 ];
 
 function payload(roles: readonly string[]): JwtPayload {
@@ -69,8 +79,7 @@ function payload(roles: readonly string[]): JwtPayload {
 describe('Gardes reelles des routes formateur (e2e http socket)', () => {
   let app: INestApplication;
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(app);
 
   const appel = (route: RouteFormateur): RequeteTest =>
     request(serveur())[route.methode](
@@ -146,6 +155,30 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
   );
 
   it.each(ROUTES_FORMATEUR)(
+    'T1 · refuse en 401 $methode $chemin a un jeton formateur porte par cookie seul',
+    async (route) => {
+      const reponse = await appel(route).set(
+        'Cookie',
+        `access_token=${JETON_FORMATEUR}; Authorization=Bearer%20${JETON_FORMATEUR}`,
+      );
+
+      expect(reponse.status).toBe(NON_AUTORISE);
+    },
+  );
+
+  it.each(ROUTES_FORMATEUR)(
+    'T1 · refuse en 401 $methode $chemin a un schema d autorisation autre que Bearer',
+    async (route) => {
+      const reponse = await appel(route).set(
+        'Authorization',
+        `Basic ${JETON_FORMATEUR}`,
+      );
+
+      expect(reponse.status).toBe(NON_AUTORISE);
+    },
+  );
+
+  it.each(ROUTES_FORMATEUR)(
     'refuse en 403 $methode $chemin a un compte sans role formateur',
     async (route) => {
       const reponse = await appel(route).set(
@@ -171,6 +204,45 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
       );
     },
   );
+
+  it('T1 · la matrice couvre chaque route des controleurs reserves au formateur', () => {
+    const declarees = CONTROLEURS_FORMATIONS.filter(
+      (controleur) => Reflect.getMetadata(ROLES_KEY, controleur) !== undefined,
+    ).flatMap((controleur) => {
+      const prototype: object = controleur.prototype;
+      return Object.getOwnPropertyNames(prototype)
+        .filter((nom) => nom !== 'constructor')
+        .map(
+          (nom): unknown =>
+            Object.getOwnPropertyDescriptor(prototype, nom)?.value,
+        )
+        .filter(
+          (handler): handler is object =>
+            typeof handler === 'function' &&
+            Reflect.getMetadata(PATH_METADATA, handler) !== undefined,
+        )
+        .map((handler) => {
+          const methode =
+            RequestMethod[
+              Reflect.getMetadata(METHOD_METADATA, handler) as RequestMethod
+            ].toLowerCase();
+          const chemin = (Reflect.getMetadata(PATH_METADATA, handler) as string)
+            .replace(':participantId', PARTICIPANT_ID)
+            .replace(':id', SESSION_ID);
+          return `${methode} ${chemin}`;
+        });
+    });
+    const couvertes = ROUTES_FORMATEUR.map(
+      (route) => `${route.methode} ${route.chemin}`,
+    );
+
+    const parOrdreAlphabetique = (a: string, b: string): number =>
+      a.localeCompare(b);
+
+    expect([...couvertes].sort(parOrdreAlphabetique)).toEqual(
+      [...declarees].sort(parOrdreAlphabetique),
+    );
+  });
 
   it('laisse les routes etudiantes publiques hors de la garde de jeton applicatif', async () => {
     const reponse = await request(serveur())

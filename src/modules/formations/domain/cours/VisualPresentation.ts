@@ -73,6 +73,15 @@ const correctionDeTri = z
       }
     }
   });
+const correctionDeReponses = z
+  .object({
+    ...titled,
+    source: z.object({ screenId: texte }).strict(),
+    explications: z
+      .array(z.object({ reference: texte, texte }).strict())
+      .min(1),
+  })
+  .strict();
 const image = {
   ...titled,
   image: media,
@@ -272,6 +281,12 @@ export const presentationVisuelle = z.discriminatedUnion('renderer', [
     .object({
       renderer: z.literal('sort-review'),
       props: correctionDeTri,
+    })
+    .strict(),
+  z
+    .object({
+      renderer: z.literal('answer-review'),
+      props: correctionDeReponses,
     })
     .strict(),
 ]);

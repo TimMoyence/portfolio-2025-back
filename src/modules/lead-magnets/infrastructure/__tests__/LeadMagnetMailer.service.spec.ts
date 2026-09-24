@@ -1,12 +1,11 @@
 import { buildLeadMagnetRequest } from '../../../../../test/factories/lead-magnet-request.factory';
+import {
+  mailSimule,
+  moduleSmtpSimule,
+} from '../../../../../test/factories/mailer.factory';
 
-const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
-
-jest.mock(
-  '../../../../common/infrastructure/mail/smtp-transporter.util',
-  () => ({
-    createOptionalSmtpTransporter: jest.fn(() => ({ sendMail: mockSendMail })),
-  }),
+jest.mock('../../../../common/infrastructure/mail/smtp-transporter.util', () =>
+  moduleSmtpSimule(),
 );
 
 import { LeadMagnetMailerService } from '../LeadMagnetMailer.service';
@@ -15,9 +14,16 @@ describe('LeadMagnetMailerService', () => {
   const PDF = Buffer.from('fake-pdf');
   let originalReplyTo: string | undefined;
 
+  const envoyerLeGuide = (email?: string) =>
+    new LeadMagnetMailerService().sendToolkitEmail(
+      buildLeadMagnetRequest(email === undefined ? {} : { email }),
+      PDF,
+    );
+
   beforeEach(() => {
     jest.clearAllMocks();
     originalReplyTo = process.env.SMTP_REPLY_TO;
+    delete process.env.SMTP_REPLY_TO;
   });
 
   afterEach(() => {
@@ -28,41 +34,27 @@ describe('LeadMagnetMailerService', () => {
     }
   });
 
-  describe('reply-to par defaut', () => {
-    it('utilise un reply-to @asilidesign.fr (jamais gmail) quand SMTP_REPLY_TO est absent', async () => {
-      delete process.env.SMTP_REPLY_TO;
-      const mailer = new LeadMagnetMailerService();
+  it('utilise un reply-to @asilidesign.fr (jamais gmail) quand SMTP_REPLY_TO est absent', async () => {
+    await envoyerLeGuide();
 
-      await mailer.sendToolkitEmail(buildLeadMagnetRequest(), PDF);
+    expect(mailSimule().replyTo).toMatch(/@asilidesign\.fr$/);
+  });
 
-      expect(mockSendMail).toHaveBeenCalledTimes(1);
-      const [call] = mockSendMail.mock.calls as [[{ replyTo: string }]];
-      expect(call[0].replyTo).toMatch(/@asilidesign\.fr$/);
-      expect(call[0].replyTo).not.toContain('gmail.com');
-    });
+  it('privilegie SMTP_REPLY_TO quand la variable est definie', async () => {
+    process.env.SMTP_REPLY_TO = 'override@example.org';
 
-    it('privilegie SMTP_REPLY_TO quand la variable est definie', async () => {
-      process.env.SMTP_REPLY_TO = 'override@example.org';
-      const mailer = new LeadMagnetMailerService();
+    await envoyerLeGuide();
 
-      await mailer.sendToolkitEmail(buildLeadMagnetRequest(), PDF);
-
-      const [call] = mockSendMail.mock.calls as [[{ replyTo: string }]];
-      expect(call[0].replyTo).toBe('override@example.org');
-    });
+    expect(mailSimule().replyTo).toBe('override@example.org');
   });
 
   it('joint le PDF et adresse l email au participant', async () => {
-    delete process.env.SMTP_REPLY_TO;
-    const mailer = new LeadMagnetMailerService();
-    const request = buildLeadMagnetRequest({ email: 'marie@example.com' });
+    await envoyerLeGuide('marie@example.com');
 
-    await mailer.sendToolkitEmail(request, PDF);
-
-    const [call] = mockSendMail.mock.calls as [
-      [{ to: string; attachments: Array<{ filename: string }> }],
-    ];
-    expect(call[0].to).toBe('marie@example.com');
-    expect(call[0].attachments[0].filename).toBe('guide-ia-solopreneurs.pdf');
+    const mail = mailSimule();
+    expect(mail.to).toBe('marie@example.com');
+    expect(mail.attachments?.map((piece) => piece.filename)).toEqual([
+      'guide-ia-solopreneurs.pdf',
+    ]);
   });
 });

@@ -1,45 +1,27 @@
 import type { TypeQuestion } from './contrats/cours';
+import type {
+  ConfusionComptee,
+  JustesParCle,
+  ResultatQuestion,
+  ResultatsSeance,
+} from './contrats/resultats';
 import { libelleDeConfusion } from './cours/banque/confusions';
 import { NE_SAIT_PAS } from './GradingCore';
 import type { AnswerRecord } from './IAnswers.repository';
 
+export type {
+  ConfusionComptee,
+  ResultatQuestion,
+  ResultatsSeance,
+} from './contrats/resultats';
+
 const CLE_NE_SAIT_PAS = '__je_ne_sais_pas__';
-
-export interface ConfusionComptee {
-  readonly id: string;
-  readonly libelle: string;
-  readonly nombre: number;
-}
-
-interface JustesParCle {
-  readonly total: number;
-  readonly justes: number;
-}
 
 export interface QuestionAAgreger {
   readonly id: string;
   readonly type: TypeQuestion;
   readonly noteCompte: boolean;
   readonly ecranId: string;
-}
-
-export interface ResultatQuestion {
-  readonly questionId: string;
-  readonly ecranId: string;
-  readonly type: TypeQuestion;
-  readonly noteCompte: boolean;
-  readonly total: number;
-  readonly correctes: number;
-  readonly neSaitPas: number;
-  readonly confusions: readonly ConfusionComptee[];
-  readonly parOption: Readonly<Record<string, number>> | null;
-  readonly scoreMoyen: number | null;
-  readonly parCle: Readonly<Record<string, JustesParCle>> | null;
-}
-
-export interface ResultatsSeance {
-  readonly participants: number;
-  readonly questions: readonly ResultatQuestion[];
 }
 
 export interface AgregerResultatsInput {

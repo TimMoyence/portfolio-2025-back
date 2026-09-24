@@ -5,7 +5,7 @@
   "minTokens": 50,
   "absolute": true,
   "gitignore": true,
-  "pattern": "**/*.spec.ts",
+  "pattern": "{src/**/*.spec.ts,test/**/*.ts}",
   "ignore": [
     "**/node_modules/**",
     "**/dist/**",
@@ -14,5 +14,5 @@
   ],
   "reporters": ["console", "html"],
   "output": "reports/jscpd-tests",
-  "threshold": 1.2
+  "threshold": 0
 }

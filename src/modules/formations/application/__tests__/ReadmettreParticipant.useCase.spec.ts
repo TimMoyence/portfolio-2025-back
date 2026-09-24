@@ -5,16 +5,15 @@ import {
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { verifierGardesDuFormateur } from '../../../../../test/helpers/gardes-de-seance';
 import {
+  GraineRepriseError,
   ParticipantNotFoundError,
   SeanceCompleteError,
-  SessionNotFoundError,
-  SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
 import { ReadmettreParticipantUseCase } from '../ReadmettreParticipant.useCase';
 
 const TEACHER_ID = 'teacher-uuid';
-const AUTRE_TEACHER = 'autre-teacher-uuid';
 const PARTICIPANT_ID = 'participant-uuid';
 
 describe('ReadmettreParticipantUseCase', () => {
@@ -39,24 +38,35 @@ describe('ReadmettreParticipantUseCase', () => {
     expect(participants.readmettre).toHaveBeenCalledWith(
       'session-uuid',
       PARTICIPANT_ID,
+      30,
     );
     expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
   });
 
-  it('refuse un formateur qui n est pas proprietaire de la seance', async () => {
-    await expect(
-      sut.execute('session-uuid', AUTRE_TEACHER, PARTICIPANT_ID),
-    ).rejects.toThrow(SessionNotOwnedError);
-    expect(participants.readmettre).not.toHaveBeenCalled();
-  });
-
-  it('signale une seance introuvable', async () => {
-    sessions.findById.mockResolvedValue(null);
+  it('S2 · laisse le depot verifier la capacite sous verrou, sans compter avant lui', async () => {
+    participants.readmettre.mockRejectedValue(new SeanceCompleteError(30));
 
     await expect(
       sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
-    ).rejects.toThrow(SessionNotFoundError);
+    ).rejects.toThrow(SeanceCompleteError);
+    expect(participants.countBySession).not.toHaveBeenCalled();
+    expect(cache.signalerActivite).not.toHaveBeenCalled();
   });
+
+  it('S2 · laisse remonter en conflit la graine reprise entre-temps par un autre poste', async () => {
+    participants.readmettre.mockRejectedValue(new GraineRepriseError());
+
+    await expect(
+      sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
+    ).rejects.toThrow(GraineRepriseError);
+  });
+
+  verifierGardesDuFormateur(() => ({
+    sessions,
+    executerPar: (teacherId) =>
+      sut.execute('session-uuid', teacherId, PARTICIPANT_ID),
+    effetsInterdits: () => [participants.readmettre],
+  }));
 
   it('signale un participant absent ou qui n etait pas evince', async () => {
     participants.readmettre.mockResolvedValue(false);
@@ -65,14 +75,5 @@ describe('ReadmettreParticipantUseCase', () => {
       sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
     ).rejects.toThrow(ParticipantNotFoundError);
     expect(cache.signalerActivite).not.toHaveBeenCalled();
-  });
-
-  it('refuse de readmettre au dela de la capacite de la seance', async () => {
-    participants.countBySession.mockResolvedValue(30);
-
-    await expect(
-      sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
-    ).rejects.toThrow(SeanceCompleteError);
-    expect(participants.readmettre).not.toHaveBeenCalled();
   });
 });

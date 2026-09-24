@@ -18,12 +18,9 @@ import {
   buildVoteStocke,
 } from './questions-stockees.factory';
 
-export const NOTES_EN_CINQ_RUBRIQUES = [
-  'Action : projeter.',
-  'Observé : la réponse dominante.',
-  'Attendu : la bonne réponse.',
-  'Contrôle : refaire le calcul.',
-  'Transition : écran suivant.',
+export const NOTES_DU_FORMATEUR = [
+  '• Projeter, puis lire la réponse dominante.',
+  '• Contrôle : refaire le calcul.',
 ].join('\n');
 
 export const PLAN_CLASSEMENT = {
@@ -364,10 +361,87 @@ export function buildEcranDeBrique(
     brique,
     dureeMinutes: 8,
     concepts: ['proportion'],
-    notes: NOTES_EN_CINQ_RUBRIQUES,
+    notes: NOTES_DU_FORMATEUR,
     proprietes: buildProprietesStockees(brique),
     ...overrides,
   };
+}
+
+export function buildEcranDeTableau(
+  screenId: string,
+  lignes: readonly Record<string, string>[],
+): EcranDeCoursBrut {
+  return buildEcranDeBrique('fp-story', {
+    screenId,
+    diffusion: 'catalogue',
+    dureeMinutes: 1,
+    proprietes: {
+      presentation: {
+        version: 2,
+        screenId,
+        renderer: 'table',
+        props: {
+          title: 'Tableau de bord',
+          columns: [
+            { key: 'indicateur', label: 'Indicateur' },
+            { key: 'valeur', label: 'Valeur' },
+          ],
+          rows: lignes,
+        },
+      },
+    },
+  });
+}
+
+export function buildCorrectionDeReponses(
+  source: string,
+  screenId = `${source}-CORRECTION`,
+  overrides: Partial<EcranDeCoursBrut> = {},
+): EcranDeCoursBrut {
+  return buildEcranDeBrique('fp-story', {
+    screenId,
+    dureeMinutes: 1,
+    proprietes: {
+      presentation: {
+        version: 2,
+        screenId,
+        renderer: 'answer-review',
+        props: {
+          title: 'Correction',
+          source: { screenId: source },
+          explications: [
+            { reference: 'b2-01-a1-diagnostic', texte: 'Réponse expliquée.' },
+          ],
+        },
+      },
+    },
+    ...overrides,
+  });
+}
+
+export function buildCorrectionDExemple(
+  source: string,
+  screenId = `${source}-CORRECTION`,
+  overrides: Partial<EcranDeCoursBrut> = {},
+): EcranDeCoursBrut {
+  return buildEcranDeBrique('fp-worked', {
+    screenId,
+    dureeMinutes: 2,
+    proprietes: {
+      ...buildProprietesStockees('fp-worked'),
+      exemple: {
+        ...(buildProprietesStockees('fp-worked').exemple as Record<
+          string,
+          unknown
+        >),
+        id: `${screenId.toLowerCase()}-corrige`,
+      },
+      pilote: true,
+      etayage: 0,
+      corrigeDe: source,
+    },
+    ...overrides,
+  });
 }
 
 export function buildCoursDeBriques(

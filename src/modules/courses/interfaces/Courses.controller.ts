@@ -1,17 +1,10 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { Roles } from '../../../common/interfaces/auth/roles.decorator';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
-import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
+  CreationAdmin,
+  ListePubliquePaginee,
+  reponsePaginee,
+} from '../../../common/interfaces/http/routes-de-catalogue';
 import { CreateCoursesUseCase } from '../application/CreateCourses.useCase';
 import { ListCoursesUseCase } from '../application/ListCourses.useCase';
 import { CreateCourseCommand } from '../application/dto/CreateCourse.command';
@@ -28,24 +21,13 @@ export class CoursesController {
     private readonly createUseCase: CreateCoursesUseCase,
   ) {}
 
-  @Public()
-  @Get()
-  @ApiOperation({ summary: 'Lister les formations (acces public, pagine)' })
-  @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
-  @ApiQuery({ name: 'limit', required: false, example: 20, type: Number })
-  @ApiQuery({
-    name: 'order',
-    required: false,
-    enum: ['ASC', 'DESC'],
-    example: 'DESC',
+  @ListePubliquePaginee({
+    resume: 'Lister les formations (acces public, pagine)',
+    reponse: CourseListResponseDto,
+    ordreParDefaut: 'DESC',
+    triables: ['slug', 'title', 'createdAt'],
+    triParDefaut: 'createdAt',
   })
-  @ApiQuery({
-    name: 'sortBy',
-    required: false,
-    enum: ['slug', 'title', 'createdAt'],
-    example: 'createdAt',
-  })
-  @ApiOkResponse({ type: CourseListResponseDto })
   async findAll(
     @Query() query: CourseListQueryDto,
   ): Promise<CourseListResponseDto> {
@@ -55,26 +37,12 @@ export class CoursesController {
       sortBy: query.sortBy,
       order: query.order,
     });
-
-    return {
-      items: result.items.map((course) => CourseResponseDto.fromDomain(course)),
-      meta: {
-        page: result.page,
-        limit: result.limit,
-        total: result.total,
-        totalPages: result.totalPages,
-      },
-    };
+    return reponsePaginee(result, (course) =>
+      CourseResponseDto.fromDomain(course),
+    );
   }
 
-  @Post()
-  @UseGuards(RolesGuard)
-  @Roles('admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Creer une formation (admin)' })
-  @ApiCreatedResponse({ type: CourseResponseDto })
-  @ApiBadRequestResponse({ description: 'Validation echouee' })
-  @ApiUnauthorizedResponse({ description: 'Token JWT invalide ou absent' })
+  @CreationAdmin('Creer une formation (admin)', CourseResponseDto)
   async create(@Body() dto: CourseRequestDto): Promise<CourseResponseDto> {
     const command: CreateCourseCommand = {
       slug: dto.slug,

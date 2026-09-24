@@ -11,7 +11,6 @@ import {
 import {
   buildAnswerRecord,
   buildFreeResponseRecord,
-  buildParticipantRecord,
   buildSessionRecord,
   createMockAnswersRepo,
   createMockEscapeRepo,
@@ -21,11 +20,10 @@ import {
   createMockRappelsServisRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
+import { verifierGardesDeParticipant } from '../../../../../test/helpers/gardes-de-seance';
 import { cleDeJalon } from '../../domain/cours/CleDeJalon';
-import {
-  ParticipantNotFoundError,
-  SessionNotFoundError,
-} from '../../domain/errors/FormationErrors';
+import { SessionNotFoundError } from '../../domain/errors/FormationErrors';
 import { LireEtatParticipantUseCase } from '../LireEtatParticipant.useCase';
 
 const SOCLE = buildCoursAvecDefi();
@@ -33,7 +31,6 @@ const COURS = {
   ...SOCLE,
   ecrans: [...SOCLE.ecrans, buildEcranDEnigmes()] as typeof SOCLE.ecrans,
 };
-const SECRET = 'secret-de-test-des-jalons-assez-long-1234';
 const TENTATIVES_MAX = 10;
 
 describe('LireEtatParticipantUseCase', () => {
@@ -45,16 +42,8 @@ describe('LireEtatParticipantUseCase', () => {
   let escape: ReturnType<typeof createMockEscapeRepo>;
   let rappels: ReturnType<typeof createMockRappelsServisRepo>;
   let sut: LireEtatParticipantUseCase;
-  let secretInitial: string | undefined;
 
-  beforeAll(() => {
-    secretInitial = process.env.FORMATIONS_PULSE_SECRET;
-    process.env.FORMATIONS_PULSE_SECRET = SECRET;
-  });
-
-  afterAll(() => {
-    process.env.FORMATIONS_PULSE_SECRET = secretInitial;
-  });
+  installerSecretDeJalons();
 
   beforeEach(() => {
     sessions = createMockSessionsRepo();
@@ -194,14 +183,31 @@ describe('LireEtatParticipantUseCase', () => {
     expect(etat.jalons).toEqual([{ sondageId: 'jalon-test-1', etat: 'ca-va' }]);
   });
 
-  it('refuse un participant rattache a une autre seance', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({ sessionId: 'autre-session' }),
+  verifierGardesDeParticipant(() => ({
+    participants,
+    executer: () => sut.execute('session-uuid', 'participant-uuid'),
+    effetsInterdits: () => [answers.listerDuParticipant],
+  }));
+
+  it('T10 · ne livre avant revelation ni corrige, ni fragment d une enigme encore ouverte', async () => {
+    answers.listerDuParticipant.mockResolvedValue([
+      buildAnswerRecord({ questionId: 'Q-TEST-NUM', correcte: false }),
+    ]);
+    escape.listerProgressionDuParticipant.mockResolvedValue([
+      {
+        participantId: 'participant-uuid',
+        parcoursId: PARCOURS_DE_TEST,
+        enigmeId: ENIGMES_DE_TEST[1],
+        tentatives: 1,
+        resolueLe: null,
+      },
+    ]);
+
+    const serialise = JSON.stringify(
+      await sut.execute('session-uuid', 'participant-uuid'),
     );
 
-    await expect(
-      sut.execute('session-uuid', 'participant-uuid'),
-    ).rejects.toThrow(ParticipantNotFoundError);
+    expect(serialise).not.toMatch(/solution|corrige|fragment|tolerance/);
   });
 
   it('signale une seance introuvable', async () => {

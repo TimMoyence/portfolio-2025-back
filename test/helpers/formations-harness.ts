@@ -1,16 +1,11 @@
 import {
-  CanActivate,
-  ExecutionContext,
   INestApplication,
-  Injectable,
-  UnauthorizedException,
   ValidationPipe,
   type Provider,
 } from '@nestjs/common';
-import { APP_GUARD, Reflector } from '@nestjs/core';
+import { APP_GUARD } from '@nestjs/core';
 import { Test as ModuleDeTest } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import type { Request } from 'express';
 import {
   request as requeteNode,
   type IncomingMessage,
@@ -18,7 +13,6 @@ import {
 } from 'node:http';
 import request from 'supertest';
 import type { Test } from 'supertest';
-import { IS_PUBLIC_KEY } from '../../src/common/interfaces/auth/public.decorator';
 import { AllExceptionsFilter } from '../../src/common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from '../../src/common/interfaces/filters/DomainExceptionFilter';
 import { CloseSessionUseCase } from '../../src/modules/formations/application/CloseSession.useCase';
@@ -31,7 +25,6 @@ import { LireDerouleUseCase } from '../../src/modules/formations/application/Lir
 import { LireSujetUseCase } from '../../src/modules/formations/application/LireSujet.useCase';
 import { ListFreeResponsesUseCase } from '../../src/modules/formations/application/ListFreeResponses.useCase';
 import { ListSessionParticipantsUseCase } from '../../src/modules/formations/application/ListSessionParticipants.useCase';
-import { ManageFormationGroupsUseCase } from '../../src/modules/formations/application/ManageFormationGroups.useCase';
 import { ManageTeacherAnnotationsUseCase } from '../../src/modules/formations/application/ManageTeacherAnnotations.useCase';
 import { OpenSessionUseCase } from '../../src/modules/formations/application/OpenSession.useCase';
 import { RecordIncidentsUseCase } from '../../src/modules/formations/application/RecordIncidents.useCase';
@@ -43,12 +36,12 @@ import { DefisUseCase } from '../../src/modules/formations/application/Defis.use
 import { EvincerParticipantUseCase } from '../../src/modules/formations/application/EvincerParticipant.useCase';
 import { LireRappelsUseCase } from '../../src/modules/formations/application/LireRappels.useCase';
 import { ReadmettreParticipantUseCase } from '../../src/modules/formations/application/ReadmettreParticipant.useCase';
+import { LibererPosteUseCase } from '../../src/modules/formations/application/LibererPoste.useCase';
 import { SyntheseRappelsUseCase } from '../../src/modules/formations/application/SyntheseRappels.useCase';
 import { LireEtatParticipantUseCase } from '../../src/modules/formations/application/LireEtatParticipant.useCase';
 import { SubmitProductionUseCase } from '../../src/modules/formations/application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from '../../src/modules/formations/application/TenterEnigme.useCase';
 import type { IAnswersRepository } from '../../src/modules/formations/domain/IAnswers.repository';
-import type { IFormationGroupsRepository } from '../../src/modules/formations/domain/IFormationGroups.repository';
 import type { IEscapeRepository } from '../../src/modules/formations/domain/IEscape.repository';
 import type { IFormationMailer } from '../../src/modules/formations/domain/IFormationMailer.port';
 import type { IPulsesRepository } from '../../src/modules/formations/domain/IPulses.repository';
@@ -65,7 +58,6 @@ import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/
 import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
-  FORMATION_GROUPS_REPOSITORY,
   FORMATION_MAILER,
   FREE_RESPONSES_REPOSITORY,
   INCIDENTS_REPOSITORY,
@@ -84,7 +76,7 @@ import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleE
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsAnnotationsController } from '../../src/modules/formations/interfaces/FormationsAnnotations.controller';
 import { FormationsCatalogController } from '../../src/modules/formations/interfaces/FormationsCatalog.controller';
-import { FormationsGroupsController } from '../../src/modules/formations/interfaces/FormationsGroups.controller';
+import { FormationsParticipantsController } from '../../src/modules/formations/interfaces/FormationsParticipants.controller';
 import { FormationsPresenterController } from '../../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../../src/modules/formations/interfaces/FormationsStudent.controller';
 import {
@@ -101,6 +93,11 @@ import {
   type ContexteFormations,
 } from './formations-db';
 import {
+  authentificationReelle,
+  EN_TETE_IDENTITE,
+  signerLesIdentitesDeTest,
+} from './identite-reelle';
+import {
   ADRESSE_BOUCLE_LOCALE,
   ecouterEnBoucleLocale,
   fermerApplication,
@@ -108,7 +105,15 @@ import {
 import { GLOBAL_VALIDATION_PIPE_OPTIONS } from './validation-pipe';
 
 export const PREFIXE_API = 'api/v1/portfolio25';
-export const EN_TETE_IDENTITE = 'x-test-identite';
+export { EN_TETE_IDENTITE };
+
+export const serveurHttpDe = (
+  app: INestApplication,
+): Parameters<typeof request>[0] =>
+  app.getHttpServer() as Parameters<typeof request>[0];
+
+export const routeFormations = (chemin: string): string =>
+  `/${PREFIXE_API}/formations${chemin}`;
 
 const COURS_FORMATION_TEST = buildCoursDeTest({
   slug: 'b2-01-traitement-information-chiffree',
@@ -125,29 +130,6 @@ export function coursPublie(slug: string): Cours {
 const FENETRE_THROTTLE_MS = 60_000;
 const LIMITE_THROTTLE_PAR_DEFAUT = 30;
 
-@Injectable()
-class IdentiteDeTestGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
-
-  canActivate(context: ExecutionContext): boolean {
-    const estPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (estPublic) {
-      return true;
-    }
-    const requete = context.switchToHttp().getRequest<Request>();
-    const entete = requete.headers[EN_TETE_IDENTITE];
-    if (typeof entete !== 'string') {
-      throw new UnauthorizedException();
-    }
-    const [sub, ...roles] = entete.split(':');
-    requete.user = { sub, roles } as Request['user'];
-    return true;
-  }
-}
-
 export interface DepotsFormations {
   sessions: ISessionsRepository;
   participants: IParticipantsRepository;
@@ -157,7 +139,6 @@ export interface DepotsFormations {
   scores: IScoresRepository;
   freeResponses: IFreeResponsesRepository;
   annotations: ITeacherAnnotationsRepository;
-  groups: IFormationGroupsRepository;
   escape: IEscapeRepository;
   pulses: IPulsesRepository;
   rappels: IRappelsServisRepository;
@@ -166,7 +147,7 @@ export interface DepotsFormations {
 
 export const CONTROLEURS_FORMATIONS = [
   FormationsPresenterController,
-  FormationsGroupsController,
+  FormationsParticipantsController,
   FormationsAnnotationsController,
   FormationsStudentController,
   FormationsCatalogController,
@@ -190,6 +171,7 @@ export function fournisseursFormations(
     LireEtatParticipantUseCase,
     EvincerParticipantUseCase,
     ReadmettreParticipantUseCase,
+    LibererPosteUseCase,
     LireRappelsUseCase,
     SyntheseRappelsUseCase,
     RecordIncidentsUseCase,
@@ -199,7 +181,6 @@ export function fournisseursFormations(
     LireDerouleUseCase,
     LireCoursPublicUseCase,
     ManageTeacherAnnotationsUseCase,
-    ManageFormationGroupsUseCase,
     ListSessionParticipantsUseCase,
     ListFreeResponsesUseCase,
     SaveFreeResponseUseCase,
@@ -214,7 +195,6 @@ export function fournisseursFormations(
     { provide: SCORES_REPOSITORY, useValue: depots.scores },
     { provide: FREE_RESPONSES_REPOSITORY, useValue: depots.freeResponses },
     { provide: TEACHER_ANNOTATIONS_REPOSITORY, useValue: depots.annotations },
-    { provide: FORMATION_GROUPS_REPOSITORY, useValue: depots.groups },
     { provide: ESCAPE_REPOSITORY, useValue: depots.escape },
     { provide: PULSES_REPOSITORY, useValue: depots.pulses },
     { provide: RAPPELS_SERVIS_REPOSITORY, useValue: depots.rappels },
@@ -237,12 +217,13 @@ export async function monterApplicationFormations(
     controllers: CONTROLEURS_FORMATIONS,
     providers: [
       ...fournisseursFormations(depots, catalogue),
-      { provide: APP_GUARD, useClass: IdentiteDeTestGuard },
+      ...authentificationReelle(),
       { provide: APP_GUARD, useClass: ThrottlerGuard },
     ],
   }).compile();
 
   const app = moduleRef.createNestApplication();
+  signerLesIdentitesDeTest(app);
   app.setGlobalPrefix(PREFIXE_API);
   app.useGlobalFilters(new AllExceptionsFilter(), new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
@@ -389,10 +370,8 @@ export function clientFormations(
   app: INestApplication,
   formateurId: string,
 ): ClientFormations {
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
-  const chemin = (suffixe: string): string =>
-    `/${PREFIXE_API}/formations${suffixe}`;
+  const serveur = () => serveurHttpDe(app);
+  const chemin = routeFormations;
   const formateur = (
     methode: 'post' | 'patch' | 'get',
     suffixe: string,

@@ -107,7 +107,7 @@ export const SET_PASSWORD_RESULT = {
   lastName: 'Doe',
   phone: null,
   isActive: true,
-  roles: ['weather'],
+  roles: ['teacher'],
   passwordHash: 'new-hash',
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),

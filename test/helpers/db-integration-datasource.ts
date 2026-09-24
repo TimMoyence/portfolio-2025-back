@@ -52,6 +52,27 @@ export async function initDbIntegrationDataSource(
   return dataSource;
 }
 
+const FONCTIONS_HORS_DU_DROP_SCHEMA = [
+  '"reject_formation_course_content_change"()',
+];
+
+export async function initBaseMigree(
+  entities: PostgresEntities,
+  migrations: string[],
+): Promise<DataSource> {
+  const dataSource = new DataSource({
+    ...buildDbIntegrationOptions(entities),
+    synchronize: false,
+    migrations,
+  });
+  await dataSource.initialize();
+  for (const fonction of FONCTIONS_HORS_DU_DROP_SCHEMA) {
+    await dataSource.query(`DROP FUNCTION IF EXISTS ${fonction} CASCADE`);
+  }
+  await dataSource.runMigrations({ transaction: 'all' });
+  return dataSource;
+}
+
 export async function destroyDbIntegrationDataSource(
   dataSource: DataSource | undefined,
 ): Promise<void> {

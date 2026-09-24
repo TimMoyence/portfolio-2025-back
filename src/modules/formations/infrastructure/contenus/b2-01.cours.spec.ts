@@ -31,11 +31,18 @@ import { COURS_B2_01 } from './b2-01.cours';
 
 const DOCUMENT = lireConception();
 const COURS = buildCoursB2_01();
+
+function ecranDuCours(screenId: string): Ecran {
+  const trouve = COURS.ecrans.find((candidat) => candidat.id === screenId);
+  if (trouve === undefined) {
+    throw new Error(`écran absent du cours : ${screenId}`);
+  }
+  return trouve;
+}
 const TAILLE_MAX_DU_BAREME = 400 * 1024;
 const IDENTIFIANT_D_ECRAN = /^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$/;
 const LONGUEUR_MIN_D_UN_TEXTE_COMPARE = 12;
 const CLES_NON_TEXTUELLES = new Set(['id', 'formuleReference', 'transcript']);
-const RUBRIQUES = ['Action', 'Observé', 'Attendu', 'Contrôle', 'Transition'];
 
 const ECRAN_DU_GRAPHIQUE_TRIMESTRIEL = 'B2-01-A4-04-CA-TRIMESTRIEL';
 
@@ -182,7 +189,7 @@ describe('B2-01 — fichier de données', () => {
     }));
 
     expect(lues).toEqual(vueDEnsemble(DOCUMENT));
-    expect(lues).toHaveLength(55);
+    expect(lues).toHaveLength(74);
   });
 
   it('nomme chaque écran selon la convention et le titre du § 3 (AC-02)', () => {
@@ -193,18 +200,18 @@ describe('B2-01 — fichier de données', () => {
       expect(ecran.titre).toBe(titres.get(ecran.id));
       expect(ecran.titre?.length).toBeLessThanOrEqual(120);
     }
-    expect(new Set(COURS.ecrans.map((ecran) => ecran.id)).size).toBe(55);
+    expect(new Set(COURS.ecrans.map((ecran) => ecran.id)).size).toBe(74);
   });
 
-  it('dure 213 min, soit 32, 36, 36, 38, 43 et 28 min par acte (AC-03)', () => {
+  it('dure 211 min, soit 32, 34, 36, 38, 43 et 28 min par acte (AC-03)', () => {
     const parActe = [1, 2, 3, 4, 5, 6].map((acte) =>
       COURS.ecrans
         .filter((ecran) => acteDe(ecran) === acte)
         .reduce((total, ecran) => total + ecran.dureeMinutes, 0),
     );
 
-    expect(COURS.dureeMinutes).toBe(213);
-    expect(parActe).toEqual([32, 36, 36, 38, 43, 28]);
+    expect(COURS.dureeMinutes).toBe(211);
+    expect(parActe).toEqual([32, 34, 36, 38, 43, 28]);
   });
 
   it('ne lève aucune violation de structure, sans dérogation (AC-01, AC-14)', () => {
@@ -233,7 +240,7 @@ describe('B2-01 — fichier de données', () => {
     expect(fuitesDeConfidentialite(COURS)).toEqual([]);
   });
 
-  it('borne l’exposition continue à 5 min pour 164 min interactives et 49 d’exposition (AC-04)', () => {
+  it('borne l’exposition continue à 6 min pour 142 min interactives et 69 d’exposition (AC-04)', () => {
     let bloc = 0;
     let plusLong = 0;
     for (const ecran of COURS.ecrans) {
@@ -245,11 +252,11 @@ describe('B2-01 — fichier de données', () => {
         .filter((ecran) => estInteractif(ecran) === interactif)
         .reduce((total, ecran) => total + ecran.dureeMinutes, 0);
 
-    expect(plusLong).toBe(5);
-    expect([minutes(true), minutes(false)]).toEqual([164, 49]);
+    expect(plusLong).toBe(6);
+    expect([minutes(true), minutes(false)]).toEqual([142, 69]);
   });
 
-  it('porte les questions fermées notées sur neuf ateliers de 8 à 14 min (AC-05)', () => {
+  it('porte les questions fermées notées sur treize écrans d atelier, les longs questionnaires découpés (AC-05)', () => {
     const ateliers = COURS.ecrans
       .slice(1, -1)
       .filter((ecran) => questionsDe(ecran).some(estFermeeNotee))
@@ -257,27 +264,33 @@ describe('B2-01 — fichier de données', () => {
 
     expect(ateliers).toEqual([
       'A1-05 (8)',
-      'A2-03 (14)',
+      'A2-03 (6)',
+      'A2-03 (6)',
       'A2-07 (8)',
       'A3-01 (8)',
-      'A3-07 (10)',
-      'A4-03 (8)',
+      'A3-07 (4)',
+      'A3-07 (4)',
+      'A4-03 (3)',
+      'A4-03 (3)',
       'A5-02 (8)',
-      'A5-06 (9)',
+      'A5-06 (4)',
+      'A5-06 (3)',
       'A5-07 (8)',
     ]);
   });
 
-  it('rédige les notes de chaque écran en cinq rubriques non vides (AC-06)', () => {
-    for (const ecran of COURS.ecrans) {
+  it('rédige chaque note présente en puces « • » non vides, et tolère l’écran sans note (AC-06)', () => {
+    const sansNote = COURS.ecrans.filter((ecran) => ecran.notes === '');
+
+    expect(sansNote.map((ecran) => ecran.id)).toEqual(['B2-01-A1-07-PLAN']);
+    for (const ecran of COURS.ecrans.filter((ecran) => ecran.notes !== '')) {
       const lignes = ecran.notes.split('\n');
 
-      expect(lignes.map((ligne) => ligne.split(' : ')[0])).toEqual(RUBRIQUES);
       expect(
-        lignes.every(
-          (ligne) => ligne.split(' : ').slice(1).join(' : ').length > 2,
+        lignes.filter(
+          (ligne) => !ligne.startsWith('• ') || ligne.slice(2).trim() === '',
         ),
-      ).toBe(true);
+      ).toEqual([]);
     }
   });
 
@@ -360,7 +373,37 @@ describe('B2-01 — fichier de données', () => {
     expect(questions).toHaveLength(31 + 4 + 13);
     expect(
       deroule.ecrans.filter((ecran) => ecran.corrigeEcran !== null),
-    ).toHaveLength(11);
+    ).toHaveLength(13);
+    expect(
+      deroule.ecrans
+        .filter((ecran) => ecran.corrigeEcran?.type === 'reflexion')
+        .map((ecran) => ecran.id),
+    ).toEqual([
+      'B2-01-A1-08-QUESTION-DE-GESTION',
+      'B2-01-A3-09-NOTE-CONJONCTURE',
+    ]);
+  });
+
+  it('T13 · pose dans l énoncé de la moyenne pondérée le CA et le taux de chaque canal', () => {
+    const ecran = COURS.ecrans.find(
+      (candidat) => candidat.id === 'B2-01-A5-03-MOYENNE-PONDEREE',
+    );
+    const enonce =
+      ecran?.brique === 'fp-worked' ? ecran.proprietes.exemple.enonce : '';
+
+    for (const donnee of [
+      '483 000',
+      '397 000',
+      '210 000',
+      '230 000',
+      '357 000',
+      '523 000',
+      '36 %',
+      '28 %',
+      '16 %',
+    ]) {
+      expect(enonce).toContain(donnee);
+    }
   });
 
   it('RET-32 · montre au pupitre la bonne réponse numérique sous sa forme publiée', () => {
@@ -374,22 +417,22 @@ describe('B2-01 — fichier de données', () => {
     expect(corriges.get('b2-01-a5-variation-marge-sur-mesure')).toBe('−30 960');
   });
 
-  it('sert au catalogue les 12 écrans catalogue et verrouille les 43 autres (B19)', () => {
+  it('sert au catalogue les 12 écrans catalogue et verrouille les 62 autres (B19)', () => {
     const catalogue = projeterCatalogue(COURS);
     const verrouilles = catalogue.ecrans.filter(
       (ecran) => ecran.type === 'ecran-verrouille',
     );
 
-    expect(verrouilles).toHaveLength(43);
+    expect(verrouilles).toHaveLength(62);
     expect(
       catalogue.ecrans
         .filter((ecran) => ecran.type !== 'ecran-verrouille')
         .map((ecran) => ecran.id.slice(6, 11)),
     ).toEqual([
       'A1-02',
+      'A1-07',
       'A1-04',
       'A1-06',
-      'A1-07',
       'A1-09',
       'A2-01',
       'A2-02',
@@ -477,7 +520,7 @@ describe('B2-01 — fichier de données', () => {
     const reference = texteNormalise(DOCUMENT);
     const textes = COURS_B2_01.ecrans.flatMap((ecran) => [
       ecran.titre ?? '',
-      ...ecran.notes.split('\n'),
+      ...ecran.notes.split('\n').map((ligne) => ligne.replace(/^• /, '')),
       ...chainesDe(ecran.proprietes),
     ]);
     const capsule = COURS.ecrans.flatMap((ecran) =>
@@ -511,7 +554,7 @@ describe('B2-01 — fichier de données', () => {
         ? graphiqueBrut.proprietes
         : null;
     const atelierBrut = COURS_B2_01.ecrans.find(
-      (ecran) => ecran.screenId === 'B2-01-A2-03-ATELIER-1',
+      (ecran) => ecran.screenId === 'B2-01-A2-03-ATELIER-1-SUITE',
     );
     const proprietesBrutes =
       atelierBrut !== undefined && 'proprietes' in atelierBrut
@@ -524,7 +567,7 @@ describe('B2-01 — fichier de données', () => {
         ? proprietesGraphique.description
         : null,
     ).toBe(
-      'Faites glisser l’origine de l’axe : les montants restent les mêmes, le rapport des hauteurs change.',
+      'Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de l’axe vertical. Combien de fois la barre 2025 paraît-elle plus haute que celle de 2022 dans chaque cas ? Les montants, eux, ne bougent pas.',
     );
     expect(
       proprietesBrutes !== null && 'consigne' in proprietesBrutes
@@ -772,17 +815,11 @@ describe('B2-01 — retours de QA', () => {
   const ORIGINE_AXE = 'B2-01-A2-02-ORIGINE-AXE';
   const POINTS = 'B2-01-A2-06-POINTS';
   const EXERCICE_POINTS = 'B2-01-A2-06-POINTS-EXERCICE';
+  const CORRECTION_POINTS = 'B2-01-A2-06-CORRECTION';
   const JEU = 'B2-01-A2-07-JEU-COMPARABLE';
   const MACHINE = 'B2-01-A3-02-MACHINE-COEFFICIENTS';
   const RECOMMANDATION = 'B2-01-A5-08-RECOMMANDATION';
-
-  function ecran(screenId: string): Ecran {
-    const trouve = COURS.ecrans.find((candidat) => candidat.id === screenId);
-    if (trouve === undefined) {
-      throw new Error(`écran absent du cours : ${screenId}`);
-    }
-    return trouve;
-  }
+  const ecran = ecranDuCours;
 
   it('titre chacun de ses écrans', () => {
     expect(COURS.ecrans.every(({ titre }) => titre !== null)).toBe(true);
@@ -799,7 +836,7 @@ describe('B2-01 — retours de QA', () => {
     ).toEqual([
       'Que mesure chaque chiffre ?',
       'Les bases et les périodes sont-elles comparables ?',
-      'Le recalcul confirme-t-il la recommandation ?',
+      'Que faudrait-il recalculer avant de décider ?',
     ]);
     expect(activitesLibres(COURS).get(MISSION)).toHaveLength(3);
   });
@@ -856,14 +893,24 @@ describe('B2-01 — retours de QA', () => {
     ]);
   });
 
-  it('RET-23 (b) · fait répondre à chaque étape de POINTS sous l exemple lui-même, sans écran d exercice à part', () => {
+  it('F13 · fige la diapositive de Samir à côté de l axe réglable, pour comparer deux graphiques', () => {
+    const origineAxe = ecran(ORIGINE_AXE);
+
+    expect(
+      origineAxe.brique === 'fp-plot' && origineAxe.proprietes.reference,
+    ).toBe('Axe de Samir');
+  });
+
+  it('RET-23 (b) · fait répondre à chaque étape de POINTS sous l exemple lui-même, corrigé ensuite par l écran piloté', () => {
     const points = ecran(POINTS);
-    if (points.brique !== 'fp-worked') {
+    const correction = ecran(CORRECTION_POINTS);
+    if (points.brique !== 'fp-worked' || correction.brique !== 'fp-worked') {
       throw new Error('POINTS de brique inattendue');
     }
 
     expect(COURS.ecrans.some(({ id }) => id === EXERCICE_POINTS)).toBe(false);
-    expect(points.renvoi).toBeUndefined();
+    expect(points.renvoi).toBe('B2-01-A1-04-TABLEAU-DE-BORD');
+    expect(correction.proprietes.corrigeDe).toBe(POINTS);
     expect(estInteractif(points)).toBe(true);
     expect(activitesLibres(COURS).get(POINTS)).toHaveLength(
       points.proprietes.exemple.etapes.length,
@@ -920,6 +967,18 @@ describe('B2-01 — retours de QA', () => {
         libelle: 'Arrivée',
         calcul: 'depart * (1 + tauxUn / 100) * (1 + tauxDeux / 100)',
       },
+    ]);
+  });
+
+  it('F20 · propose sur la machine à coefficients les couples de taux à comparer en un clic', () => {
+    const machine = ecran(MACHINE);
+
+    expect(
+      machine.brique === 'fp-concept4' && machine.proprietes.prereglages,
+    ).toEqual([
+      { libelle: '+10 % puis −10 %', valeurs: { tauxUn: 10, tauxDeux: -10 } },
+      { libelle: '−10 % puis +10 %', valeurs: { tauxUn: -10, tauxDeux: 10 } },
+      { libelle: '+20 % puis −20 %', valeurs: { tauxUn: 20, tauxDeux: -20 } },
     ]);
   });
 
@@ -1029,4 +1088,127 @@ describe('B2-01 — retours de QA', () => {
       );
     },
   );
+});
+
+describe('B2-01 — retours de QA du 2026-09-24', () => {
+  const MISSION = 'B2-01-A1-03-MISSION';
+  const PLAN = 'B2-01-A1-07-PLAN';
+  const JALON_1 = 'B2-01-A1-11-JALON-1';
+  const CORRECTION_ATELIER_1 = 'B2-01-A2-03-CORRECTION-2';
+
+  function titresDuPlan(): string[] {
+    const plan = ecranDuCours(PLAN);
+    const presentation =
+      plan.brique === 'fp-story' ? plan.proprietes.presentation : undefined;
+    if (
+      presentation?.version !== 2 ||
+      presentation.renderer !== 'method-path'
+    ) {
+      throw new Error('le plan n est pas un rendu method-path');
+    }
+    return presentation.props.steps.map(({ title }) => title);
+  }
+
+  it('R2 · annonce le plan juste après la mission, avant tout travail sur les chiffres', () => {
+    const rangs = COURS.ecrans.map(({ id }) => id);
+
+    expect(rangs.indexOf(PLAN)).toBe(3);
+    expect(rangs.indexOf(PLAN)).toBe(rangs.indexOf(MISSION) + 1);
+    expect(ecranDuCours(MISSION).notes).toContain('six actes');
+  });
+
+  it('R2 · nomme au jalon 1 l acte 2 comme le plan le nomme', () => {
+    const acte2 = titresDuPlan()[1];
+
+    expect(acte2).toBe('Acte 2 · Auditer');
+    expect(ecranDuCours(JALON_1).notes).toContain('« Acte 2 · Auditer :');
+  });
+
+  it('R5 · laisse l axe réglable en plein écran, sans diapositive commentée', () => {
+    expect(ecranDuCours('B2-01-A2-02-ORIGINE-AXE').renvoi).toBeUndefined();
+  });
+
+  it('R6 · retire le récapitulatif de l axe à zéro et reloge sa lecture chiffrée dans les notes', () => {
+    const notes = ecranDuCours(CORRECTION_ATELIER_1).notes;
+
+    expect(COURS.ecrans.some(({ id }) => id.startsWith('B2-01-A2-04'))).toBe(
+      false,
+    );
+    expect(notes).toContain('+6 000 €, soit +2,1 % en trois ans');
+    expect(notes).toContain(
+      'titre descriptif, unité, source, phrase de lecture chiffrée',
+    );
+    expect(notes).toContain(
+      'Transition : « Cinq écritures reviennent sans cesse : fixons-les. »',
+    );
+  });
+
+  it('R3 · R7 · cadre chaque diapositive commentée écran par écran', () => {
+    const cadrages = Object.fromEntries(
+      COURS.ecrans
+        .filter(({ renvoi }) => renvoi !== undefined)
+        .map(({ id, cadrageDuRenvoi }) => [id, cadrageDuRenvoi]),
+    );
+
+    expect(cadrages).toEqual({
+      'B2-01-A1-05-ANATOMIE': {
+        part: 40,
+        extrait: { lignes: [0, 1, 2, 3, 4, 5] },
+      },
+      'B2-01-A1-08-QUESTION-DE-GESTION': {
+        part: 70,
+        extrait: { champs: ['situation'] },
+      },
+      'B2-01-A1-10-AUDIT-DIAPOSITIVE': { part: 60 },
+      'B2-01-A2-03-ATELIER-1': { part: 40 },
+      'B2-01-A2-05-ECRITURES': { part: 50 },
+      'B2-01-A2-06-POINTS': { part: 30, extrait: { lignes: [3] } },
+      'B2-01-A3-03-PRIX-SAC': { part: 40 },
+      'B2-01-A3-07-ATELIER-2': { part: 40 },
+      'B2-01-A3-07-ATELIER-2-SUITE': { part: 40 },
+      'B2-01-A3-08-INDICE-PRIX': { part: 40 },
+      'B2-01-A3-09-NOTE-CONJONCTURE': { part: 60 },
+      'B2-01-A5-06-ATELIER-4-SUITE': { part: 40 },
+      'B2-01-A5-08-RECOMMANDATION': { part: 50 },
+    });
+  });
+
+  it('R7 · ne garde du tableau de bord, à l écran des points, que la ligne du taux de marge', () => {
+    const tableau = ecranDuCours('B2-01-A1-04-TABLEAU-DE-BORD');
+    const presentation =
+      tableau.brique === 'fp-story'
+        ? tableau.proprietes.presentation
+        : undefined;
+    const lignes =
+      presentation?.version === 2 && presentation.renderer === 'table'
+        ? presentation.props.rows
+        : [];
+
+    expect(lignes[3]).toMatchObject({ indicateur: 'Taux de marge' });
+  });
+
+  it.each([
+    [
+      'R8 · rejoue à l écran 28 la hausse de 50 % puis la baisse de 50 %',
+      'B2-01-A3-02-MACHINE-COEFFICIENTS',
+      [
+        { depart: 100, tauxUn: 0, tauxDeux: 0 },
+        { tauxUn: 50 },
+        { tauxDeux: -50 },
+      ],
+    ],
+    [
+      'R9 · fait monter à l écran 56 la part marketplace de 16 % à 30 %',
+      'B2-01-A5-04-SIMULATEUR-MIX',
+      [
+        { tauxMarketplace: 16 },
+        { tauxMarketplace: 20 },
+        { tauxMarketplace: 24 },
+        { tauxMarketplace: 28 },
+        { tauxMarketplace: 30 },
+      ],
+    ],
+  ])('%s', (_, id, animation) => {
+    expect(ecranDuCours(id)).toMatchObject({ proprietes: { animation } });
+  });
 });

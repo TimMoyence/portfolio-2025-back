@@ -7,11 +7,10 @@ import {
 } from '../domain/cours/Defis';
 import type { EcranDeDefi, StrategiePubliee } from '../domain/cours/Defis';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import {
-  CoursInconnuError,
   DefiInconnuError,
   DefiSansTentativeError,
-  SessionNotFoundError,
 } from '../domain/errors/FormationErrors';
 import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
@@ -20,7 +19,6 @@ import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
-import { assertReponsesOuvertes } from '../domain/SessionState';
 import { texteRenseigne } from '../domain/TexteRenseigne';
 import {
   CATALOGUE_COURS,
@@ -29,6 +27,11 @@ import {
   SESSION_STATE_CACHE,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import {
+  coursDeLaSeance,
+  seanceExistante,
+  seanceOuverteAuxReponses,
+} from './CoursDeLaSeance';
 import { participantActif } from './ParticipantActif';
 
 export interface TentativeDeDefiCommand {
@@ -60,17 +63,17 @@ export class DefisUseCase {
 
   async tenter(command: TentativeDeDefiCommand): Promise<StrategiesDeDefi> {
     const texte = texteRenseigne(command.texte, 'La tentative');
-    const session = await this.sessions.findById(command.sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(command.sessionId);
-    }
-    assertReponsesOuvertes(session.etat);
+    const session = await seanceOuverteAuxReponses(
+      this.sessions,
+      command.sessionId,
+    );
     await participantActif(
       this.participants,
       command.sessionId,
       command.participantId,
     );
     const cible = await this.cibleServie(session, command.defiId);
+    assertPhaseOuverte(session.pilotageEcrans, { ecranId: cible.ecran.id });
 
     await this.freeResponses.enregistrerTentativeDeDefi({
       sessionId: command.sessionId,
@@ -82,14 +85,7 @@ export class DefisUseCase {
     });
     this.cache.signalerActivite(command.sessionId);
 
-    return {
-      strategies: [
-        ...strategiesPubliees(
-          cible,
-          estRevele(session.pilotageEcrans, cible.ecran.id),
-        ),
-      ],
-    };
+    return { strategies: [...strategiesPubliees(cible, false)] };
   }
 
   async strategies(
@@ -97,10 +93,7 @@ export class DefisUseCase {
     participantId: string,
     defiId: string,
   ): Promise<StrategiesDeDefi> {
-    const session = await this.sessions.findById(sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(sessionId);
-    }
+    const session = await seanceExistante(this.sessions, sessionId);
     await participantActif(this.participants, sessionId, participantId);
     const cible = await this.cibleServie(session, defiId);
     const tentative = await this.freeResponses.trouverParActivite(
@@ -124,13 +117,7 @@ export class DefisUseCase {
     session: SessionRecord,
     defiId: string,
   ): Promise<EcranDeDefi> {
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
-    );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
+    const cours = await coursDeLaSeance(this.catalogue, session);
     const cible = ecranDeDefi(cours, defiId);
     if (cible === null) {
       throw new DefiInconnuError(defiId);

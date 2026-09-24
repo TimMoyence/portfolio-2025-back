@@ -4,33 +4,16 @@ import {
   IsDate,
   IsEmail,
   IsIn,
-  IsInt,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
-  Min,
   MinLength,
 } from 'class-validator';
+import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 import { SUPPORTED_FORMATION_SLUGS } from '../../domain/SupportedFormationSlugs';
 
-export class SubscribeNewsletterRequestDto {
-  @ApiPropertyOptional({
-    description: 'Champ piège anti-robot, doit rester vide',
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  website?: string;
-
-  @ApiPropertyOptional({
-    description: "Timestamp ms d'ouverture du formulaire",
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  formStartedAt?: number;
-
+export class SubscribeNewsletterRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'marie@example.com' })
   @IsEmail()
   email: string;

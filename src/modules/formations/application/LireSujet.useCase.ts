@@ -1,21 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
 import {
+  correctionDeLEcranRevele,
+  correctionServie,
   ecranVerrouille,
   exempleAuRythmeDuPilotage,
 } from '../domain/cours/Diffusion';
 import { dernierEcranServi } from '../domain/cours/EcranServi';
 import type { Cours } from '../domain/contrats/cours';
-import type { CoursPublic } from '../domain/contrats/tirage';
+import type { CoursPublic, EcranPublic } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { TirageAmbiguError, tirer } from '../domain/cours/Tirage';
 import type { TirageDuCours } from '../domain/cours/Tirage';
-import {
-  CoursInconnuError,
-  CoursModifieError,
-  ParticipantNotFoundError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
+import { CoursModifieError } from '../domain/errors/FormationErrors';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import {
@@ -23,6 +20,7 @@ import {
   PARTICIPANTS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { contexteDuParticipant } from './CoursDeLaSeance';
 
 export interface LireSujetQuery {
   sessionId: string;
@@ -41,25 +39,15 @@ export class LireSujetUseCase {
   ) {}
 
   async execute(query: LireSujetQuery): Promise<CoursPublic> {
-    const session = await this.sessions.findById(query.sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(query.sessionId);
-    }
-    const participant = await this.participants.findById(query.participantId);
-    if (
-      !participant ||
-      participant.sessionId !== query.sessionId ||
-      participant.evinceLe !== null
-    ) {
-      throw new ParticipantNotFoundError(query.participantId);
-    }
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
+    const { session, participant, cours } = await contexteDuParticipant(
+      {
+        sessions: this.sessions,
+        participants: this.participants,
+        catalogue: this.catalogue,
+      },
+      query.sessionId,
+      query.participantId,
     );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
     const tirage = this.tirerOuLever(cours, participant.seed);
     const stockees = solutionsDuTirage(session.bareme, participant.seed);
     if (
@@ -68,18 +56,45 @@ export class LireSujetUseCase {
     ) {
       throw new CoursModifieError();
     }
-    if (session.etat === 'terminee') {
-      return tirage.sujet;
-    }
+    const terminee = session.etat === 'terminee';
     const dernier = dernierEcranServi(session, tirage.sujet.ecrans.length);
+    const sourceRevelee = (source: string): boolean =>
+      terminee || session.pilotageEcrans[source]?.revele === true;
     return {
       ...tirage.sujet,
-      ecrans: tirage.sujet.ecrans.map((ecran, index) =>
-        index <= dernier
-          ? exempleAuRythmeDuPilotage(ecran, session.pilotageEcrans[ecran.id])
-          : ecranVerrouille(ecran),
-      ),
+      ecrans: tirage.sujet.ecrans.map((ecran, index) => {
+        if (terminee) {
+          return this.avecCorrection(cours, index, ecran, tirage, true);
+        }
+        if (
+          index > dernier ||
+          (ecran.ecranCorrige !== undefined &&
+            !sourceRevelee(ecran.ecranCorrige))
+        ) {
+          return ecranVerrouille(ecran);
+        }
+        return this.avecCorrection(
+          cours,
+          index,
+          exempleAuRythmeDuPilotage(ecran, session.pilotageEcrans[ecran.id]),
+          tirage,
+          sourceRevelee(ecran.id),
+        );
+      }),
     };
+  }
+
+  private avecCorrection(
+    cours: Cours,
+    index: number,
+    ecran: EcranPublic,
+    tirage: TirageDuCours,
+    revele: boolean,
+  ): EcranPublic {
+    const correction =
+      correctionServie(cours, cours.ecrans[index], tirage) ??
+      (revele ? correctionDeLEcranRevele(cours.ecrans[index], tirage) : null);
+    return correction === null ? ecran : { ...ecran, correction };
   }
 
   private tirerOuLever(cours: Cours, seed: number): TirageDuCours {

@@ -20,6 +20,10 @@ const FEUILLE_JUSTE: ValeurProduction = {
   type: 'feuille',
   cellules: { D2: '=(C2-B2)/B2', D3: '=(C3-B3)/B3' },
 };
+const CLASSEMENT_JUSTE: ValeurProduction = {
+  type: 'classement',
+  classement: { 'ca-2025': 'valeur', inflation: 'ambigu' },
+};
 const { CREE, SANS_CONTENU, INVALIDE, NON_AUTORISE, CONFLIT, INTROUVABLE } =
   CODE_HTTP;
 const MAUVAISE_REQUETE = INVALIDE;
@@ -53,6 +57,15 @@ describeDb('Route des productions (B5, B11, db integration)', () => {
   const ouvrirSeance = (cle: string): Promise<SeanceDeTest> =>
     banc.ouvrirSeance({ cle });
 
+  const seuleProductionReussie = async (seance: SeanceDeTest) => {
+    const enregistrees = await contexte().answers.listBySession(
+      seance.sessionId,
+    );
+    expect(enregistrees).toHaveLength(1);
+    expect(enregistrees[0].score).toBe(1);
+    return enregistrees[0];
+  };
+
   it('corrige la feuille du participant et persiste le score et le detail', async () => {
     const seance = await ouvrirSeance('44444444-4444-4444-8444-000000000001');
 
@@ -67,12 +80,8 @@ describeDb('Route des productions (B5, B11, db integration)', () => {
     expect(verdict.score).toBe(1);
     expect(verdict.details.map((detail) => detail.cle)).toEqual(['D2', 'D3']);
 
-    const enregistrees = await contexte().answers.listBySession(
-      seance.sessionId,
-    );
-    expect(enregistrees).toHaveLength(1);
-    expect(enregistrees[0].score).toBe(1);
-    expect(enregistrees[0].details).toEqual([
+    const enregistree = await seuleProductionReussie(seance);
+    expect(enregistree.details).toEqual([
       { cle: 'D2', juste: true, confusion: null },
       { cle: 'D3', juste: true, confusion: null },
     ]);
@@ -175,17 +184,17 @@ describeDb('Route des productions (B5, B11, db integration)', () => {
     expect(codeDe(refus)).toBe('ECRAN_NON_SERVI');
   });
 
-  it('refuse une seconde production sur la meme question', async () => {
+  it('refuse un second classement sur le meme tri', async () => {
     const seance = await ouvrirSeance('44444444-4444-4444-8444-000000000010');
     await produire(seance.sessionId, seance.jeton, {
-      questionId: 'Q-TEST-FEUILLE',
-      valeur: FEUILLE_JUSTE,
+      questionId: 'Q-TEST-CLASSEMENT',
+      valeur: CLASSEMENT_JUSTE,
       dureeMs: 1000,
     }).expect(CREE);
 
     const refus = await produire(seance.sessionId, seance.jeton, {
-      questionId: 'Q-TEST-FEUILLE',
-      valeur: FEUILLE_JUSTE,
+      questionId: 'Q-TEST-CLASSEMENT',
+      valeur: CLASSEMENT_JUSTE,
       dureeMs: 1000,
     });
 
@@ -193,14 +202,32 @@ describeDb('Route des productions (B5, B11, db integration)', () => {
     expect(codeDe(refus)).toBe('REPONSE_DEJA_ENREGISTREE');
   });
 
-  it('n enregistre qu une seule production quand le poste en envoie plusieurs en parallele', async () => {
+  it('remplace la feuille reprise avant toute correction, sans doubler l enregistrement', async () => {
+    const seance = await ouvrirSeance('44444444-4444-4444-8444-000000000012');
+    await produire(seance.sessionId, seance.jeton, {
+      questionId: 'Q-TEST-FEUILLE',
+      valeur: { type: 'feuille', cellules: { D2: '=(C2-B2)/C2' } },
+      dureeMs: 1000,
+    }).expect(CREE);
+
+    await produire(seance.sessionId, seance.jeton, {
+      questionId: 'Q-TEST-FEUILLE',
+      valeur: FEUILLE_JUSTE,
+      dureeMs: 2000,
+    }).expect(CREE);
+
+    const enregistree = await seuleProductionReussie(seance);
+    expect(enregistree.valeur).toEqual(FEUILLE_JUSTE);
+  });
+
+  it('n enregistre qu un seul classement quand le poste en envoie plusieurs en parallele', async () => {
     const seance = await ouvrirSeance('44444444-4444-4444-8444-000000000011');
 
     const reponses = await Promise.all(
       Array.from({ length: PRODUCTIONS_SIMULTANEES }, () =>
         produire(seance.sessionId, seance.jeton, {
-          questionId: 'Q-TEST-FEUILLE',
-          valeur: FEUILLE_JUSTE,
+          questionId: 'Q-TEST-CLASSEMENT',
+          valeur: CLASSEMENT_JUSTE,
           dureeMs: 1000,
         }),
       ),

@@ -13,14 +13,16 @@ import {
 export class ParticipantTokenGuard implements CanActivate {
   constructor(private readonly tokens: ParticipantTokenService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requete = context.switchToHttp().getRequest<Request>();
     const brut = requete.headers[EN_TETE_JETON];
     const jeton = Array.isArray(brut) ? brut[0] : brut;
-    requete.participantId = this.tokens.verify(
+    const identite = await this.tokens.verifierIdentite(
       String(requete.params['id'] ?? ''),
       jeton,
     );
+    requete.participantId = identite.participantId;
+    requete.generationDeJeton = identite.generation;
     return true;
   }
 }

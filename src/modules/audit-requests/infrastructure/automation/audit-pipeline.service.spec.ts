@@ -12,7 +12,12 @@ import type {
   LlmSynthesisProgressEvent,
 } from './langchain-audit-report.service';
 import type { LlmsTxtAnalyzerService } from './llms-txt-analyzer.service';
-import type { PageAiRecapService } from './page-ai-recap.service';
+import type { EngineScore } from '../../domain/EngineCoverage';
+import type {
+  AnalyzePageRecapsOptions,
+  PageAiRecap,
+  PageAiRecapService,
+} from './page-ai-recap.service';
 import type { SafeFetchService } from './safe-fetch.service';
 import type { ScoringService } from './scoring.service';
 import type { SitemapDiscoveryService } from './sitemap-discovery.service';
@@ -425,134 +430,60 @@ describe('AuditPipelineService', () => {
       ),
     } as unknown as jest.Mocked<LangchainAuditReportService>;
     const pageAiRecap = {
-      analyzePages: jest.fn().mockImplementation(
-        async (
-          _input,
-          options?: {
-            onRecapReady?: (
-              recap: {
-                url: string;
-                finalUrl: string;
-                priority: 'high' | 'medium' | 'low';
-                language: 'fr' | 'en' | 'mixed' | 'unknown';
-                wordingScore: number;
-                trustScore: number;
-                ctaScore: number;
-                seoCopyScore: number;
-                summary: string;
-                topIssues: string[];
-                recommendations: string[];
-                source: 'llm' | 'fallback';
+      analyzePages: jest
+        .fn()
+        .mockImplementation(
+          async (_input, options?: AnalyzePageRecapsOptions) => {
+            const scoreMoteur = (
+              engine: EngineScore['engine'],
+              score: number,
+            ): EngineScore => ({
+              engine,
+              score,
+              indexable: true,
+              strengths: [],
+              blockers: [],
+              opportunities: [],
+            });
+            const recaps: PageAiRecap[] = [
+              {
+                url: 'https://example.com/',
+                finalUrl: 'https://example.com/',
+                priority: 'medium',
+                language: 'fr',
+                wordingScore: 70,
+                trustScore: 68,
+                ctaScore: 72,
+                seoCopyScore: 74,
+                summary: 'Recap',
+                topIssues: ['Meta'],
+                recommendations: ['Improve meta'],
+                source: 'fallback',
                 engineScores: {
-                  google: unknown;
-                  bingChatGpt: unknown;
-                  perplexity: unknown;
-                  geminiOverviews: unknown;
-                };
+                  google: scoreMoteur('google', 60),
+                  bingChatGpt: scoreMoteur('bing_chatgpt', 55),
+                  perplexity: scoreMoteur('perplexity', 50),
+                  geminiOverviews: scoreMoteur('gemini_overviews', 55),
+                },
               },
-              done: number,
-              total: number,
-            ) => void | Promise<void>;
-          },
-        ) => {
-          type EngineScoreStub = {
-            engine:
-              | 'google'
-              | 'bing_chatgpt'
-              | 'perplexity'
-              | 'gemini_overviews';
-            score: number;
-            indexable: boolean;
-            strengths: string[];
-            blockers: string[];
-            opportunities: string[];
-          };
-          const recaps: Array<{
-            url: string;
-            finalUrl: string;
-            priority: 'high' | 'medium' | 'low';
-            language: 'fr' | 'en' | 'mixed' | 'unknown';
-            wordingScore: number;
-            trustScore: number;
-            ctaScore: number;
-            seoCopyScore: number;
-            summary: string;
-            topIssues: string[];
-            recommendations: string[];
-            source: 'llm' | 'fallback';
-            engineScores: {
-              google: EngineScoreStub;
-              bingChatGpt: EngineScoreStub;
-              perplexity: EngineScoreStub;
-              geminiOverviews: EngineScoreStub;
+            ];
+            if (options?.onRecapReady) {
+              await options.onRecapReady(recaps[0], 1, 1);
+            }
+            return {
+              recaps,
+              summary: {
+                totalPages: 1,
+                llmRecaps: 0,
+                fallbackRecaps: 1,
+                priorityCounts: { high: 0, medium: 1, low: 0 },
+                averageScores: { wording: 70, trust: 68, cta: 72, seoCopy: 74 },
+                topRecurringIssues: ['meta'],
+              },
+              warnings: [],
             };
-          }> = [
-            {
-              url: 'https://example.com/',
-              finalUrl: 'https://example.com/',
-              priority: 'medium',
-              language: 'fr',
-              wordingScore: 70,
-              trustScore: 68,
-              ctaScore: 72,
-              seoCopyScore: 74,
-              summary: 'Recap',
-              topIssues: ['Meta'],
-              recommendations: ['Improve meta'],
-              source: 'fallback',
-              engineScores: {
-                google: {
-                  engine: 'google' as const,
-                  score: 60,
-                  indexable: true,
-                  strengths: [],
-                  blockers: [],
-                  opportunities: [],
-                },
-                bingChatGpt: {
-                  engine: 'bing_chatgpt' as const,
-                  score: 55,
-                  indexable: true,
-                  strengths: [],
-                  blockers: [],
-                  opportunities: [],
-                },
-                perplexity: {
-                  engine: 'perplexity' as const,
-                  score: 50,
-                  indexable: true,
-                  strengths: [],
-                  blockers: [],
-                  opportunities: [],
-                },
-                geminiOverviews: {
-                  engine: 'gemini_overviews' as const,
-                  score: 55,
-                  indexable: true,
-                  strengths: [],
-                  blockers: [],
-                  opportunities: [],
-                },
-              },
-            },
-          ];
-          if (options?.onRecapReady) {
-            await options.onRecapReady(recaps[0], 1, 1);
-          }
-          return {
-            recaps,
-            summary: {
-              totalPages: 1,
-              llmRecaps: 0,
-              fallbackRecaps: 1,
-              priorityCounts: { high: 0, medium: 1, low: 0 },
-              averageScores: { wording: 70, trust: 68, cta: 72, seoCopy: 74 },
-              topRecurringIssues: ['meta'],
-            },
-            warnings: [],
-          };
-        },
-      ),
+          },
+        ),
     } as unknown as jest.Mocked<PageAiRecapService>;
     const llmsTxtAnalyzer = {
       analyze: jest.fn().mockResolvedValue({

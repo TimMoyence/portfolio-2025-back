@@ -3,11 +3,6 @@ import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import request from 'supertest';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
-import {
-  FormationGroupNameTakenError,
-  FormationGroupNotFoundError,
-  ParticipantNotFoundError,
-} from '../src/modules/formations/domain/errors/FormationErrors';
 import type { SessionState } from '../src/modules/formations/domain/SessionState';
 import {
   EN_TETE_JETON,
@@ -23,6 +18,7 @@ import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
   PREFIXE_API,
+  serveurHttpDe,
 } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
 import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
@@ -30,7 +26,6 @@ import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const PROPRIETAIRE_ID = 'a1111111-1111-4111-8111-111111111111';
 const SESSION_ID = 'c3333333-3333-4333-8333-333333333333';
-const GROUPE_ID = 'd4444444-4444-4444-8444-444444444444';
 const PARTICIPANT_ID = 'e5555555-5555-4555-8555-555555555555';
 
 const PROPRIETAIRE = `${PROPRIETAIRE_ID}:teacher`;
@@ -48,50 +43,12 @@ const LECTURES = [
   'deroule',
   'free-responses',
   'annotations',
-  'groups',
   'participants',
 ];
 
 type Methode = 'post' | 'patch' | 'delete';
 
-interface Ecriture {
-  readonly methode: Methode;
-  readonly chemin: string;
-  readonly corps?: object;
-  readonly succes: number;
-}
-
-const ECRITURES: readonly Ecriture[] = [
-  {
-    methode: 'post',
-    chemin: 'groups',
-    corps: { name: 'Groupe A' },
-    succes: 201,
-  },
-  {
-    methode: 'patch',
-    chemin: `groups/${GROUPE_ID}`,
-    corps: { name: 'Groupe B' },
-    succes: 200,
-  },
-  {
-    methode: 'patch',
-    chemin: `participants/${PARTICIPANT_ID}/group`,
-    corps: { groupId: GROUPE_ID },
-    succes: 204,
-  },
-  {
-    methode: 'delete',
-    chemin: `participants/${PARTICIPANT_ID}/group`,
-    succes: 204,
-  },
-  {
-    methode: 'post',
-    chemin: 'annotations',
-    corps: { screenId: 'E-OUV', groupName: 'Classe entière', note: 'Relancer' },
-    succes: 201,
-  },
-];
+const ANNOTATION = { screenId: 'E-OUV', note: 'Relancer' };
 
 function seance(etat: SessionState = 'en_cours') {
   return buildSessionRecord({
@@ -104,12 +61,11 @@ function seance(etat: SessionState = 'en_cours') {
   });
 }
 
-describe('Acces formateur aux annotations, groupes, participants et reponses libres (e2e http socket)', () => {
+describe('Acces formateur aux annotations, participants et reponses libres (e2e http socket)', () => {
   const depots = createMockDepotsFormations();
   let app: INestApplication;
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(app);
   const route = (suffixe: string): string =>
     `/${PREFIXE_API}/formations/sessions/${SESSION_ID}/${suffixe}`;
   const appel = (
@@ -119,12 +75,7 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
   ): request.Test =>
     request(serveur())[methode](route(suffixe)).set(EN_TETE_IDENTITE, identite);
   const ecrituresEnregistrees = (): number =>
-    [
-      depots.groups.create,
-      depots.groups.rename,
-      depots.groups.assignParticipant,
-      depots.annotations.save,
-    ].reduce((total, ecriture) => total + ecriture.mock.calls.length, 0);
+    depots.annotations.save.mock.calls.length;
 
   beforeAll(async () => {
     process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
@@ -160,7 +111,7 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
       },
     );
 
-    it('rend les participants avec leur groupe mais sans leur adresse', async () => {
+    it('rend les participants sans leur adresse ni groupe', async () => {
       const reponse = await appel('get', 'participants', PROPRIETAIRE).expect(
         200,
       );
@@ -171,8 +122,26 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
             id: 'participant-uuid',
             prenom: 'Theo',
             nom: 'Martin',
-            groupId: null,
             evince: false,
+          },
+        ],
+      });
+    });
+
+    it('rend les annotations par ecran, sans groupe', async () => {
+      const reponse = await appel('get', 'annotations', PROPRIETAIRE).expect(
+        200,
+      );
+
+      expect(reponse.body).toEqual({
+        annotations: [
+          {
+            id: 'annotation-uuid',
+            sessionId: 'session-uuid',
+            teacherId: 'teacher-uuid',
+            screenId: 'B2-01-S11-REFLECTION',
+            note: 'Faire expliciter la base de comparaison.',
+            updatedAt: '2026-09-11T08:25:00.000Z',
           },
         ],
       });
@@ -184,12 +153,7 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
         new DocumentBuilder().setTitle('formations').build(),
       );
       const ecarts: string[] = [];
-      for (const suffixe of [
-        'participants',
-        'groups',
-        'annotations',
-        'free-responses',
-      ]) {
+      for (const suffixe of ['participants', 'annotations', 'free-responses']) {
         const reponse = await appel('get', suffixe, PROPRIETAIRE).expect(200);
         ecarts.push(
           ...ecartsAuSchemaDeReponse(
@@ -205,94 +169,60 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
   });
 
   describe('ecritures reservees au proprietaire', () => {
-    it.each(ECRITURES)(
-      '$methode $chemin : 403 sans ecriture pour un autre formateur et pour un administrateur',
-      async ({ methode, chemin, corps }) => {
-        const statuts: number[] = [];
-        for (const identite of [
-          AUTRE_FORMATEUR,
-          ADMINISTRATEUR,
-          ADMINISTRATEUR_FORMATEUR,
-        ]) {
-          statuts.push(
-            (await appel(methode, chemin, identite).send(corps)).status,
-          );
-        }
+    it('POST annotations : 403 sans ecriture pour un autre formateur et pour un administrateur', async () => {
+      const statuts: number[] = [];
+      for (const identite of [
+        AUTRE_FORMATEUR,
+        ADMINISTRATEUR,
+        ADMINISTRATEUR_FORMATEUR,
+      ]) {
+        statuts.push(
+          (await appel('post', 'annotations', identite).send(ANNOTATION))
+            .status,
+        );
+      }
 
-        expect(statuts).toEqual([403, 403, 403]);
-        expect(ecrituresEnregistrees()).toBe(0);
-      },
-    );
-
-    it.each(ECRITURES)(
-      '$methode $chemin : $succes pour le proprietaire',
-      async ({ methode, chemin, corps, succes }) => {
-        await appel(methode, chemin, PROPRIETAIRE).send(corps).expect(succes);
-
-        expect(ecrituresEnregistrees()).toBe(1);
-      },
-    );
-
-    it('refuse en 409 un nom de groupe deja pris dans la seance', async () => {
-      depots.groups.create.mockRejectedValueOnce(
-        new FormationGroupNameTakenError('Groupe A'),
-      );
-
-      const reponse = await appel('post', 'groups', PROPRIETAIRE)
-        .send({ name: 'Groupe A' })
-        .expect(409);
-
-      expect(reponse.body).toMatchObject({ code: 'NOM_DE_GROUPE_DEJA_PRIS' });
-    });
-
-    it('rend 404 pour un groupe ou un participant inconnu de la seance', async () => {
-      depots.groups.rename.mockRejectedValueOnce(
-        new FormationGroupNotFoundError(GROUPE_ID),
-      );
-      depots.groups.assignParticipant
-        .mockRejectedValueOnce(new FormationGroupNotFoundError(GROUPE_ID))
-        .mockRejectedValueOnce(new ParticipantNotFoundError(PARTICIPANT_ID));
-      const affectation = {
-        chemin: `participants/${PARTICIPANT_ID}/group`,
-        corps: { groupId: GROUPE_ID },
-      };
-
-      const statuts = [
-        (
-          await appel('patch', `groups/${GROUPE_ID}`, PROPRIETAIRE).send({
-            name: 'Groupe B',
-          })
-        ).status,
-        (
-          await appel('patch', affectation.chemin, PROPRIETAIRE).send(
-            affectation.corps,
-          )
-        ).status,
-        (
-          await appel('patch', affectation.chemin, PROPRIETAIRE).send(
-            affectation.corps,
-          )
-        ).status,
-      ];
-
-      expect(statuts).toEqual([404, 404, 404]);
-    });
-
-    it('refuse en 400 un nom de groupe ou une note faits de blancs', async () => {
-      const statuts = [
-        (await appel('post', 'groups', PROPRIETAIRE).send({ name: '   ' }))
-          .status,
-        (
-          await appel('post', 'annotations', PROPRIETAIRE).send({
-            screenId: 'E-OUV',
-            groupName: 'Classe entière',
-            note: '  ',
-          })
-        ).status,
-      ];
-
-      expect(statuts).toEqual([400, 400]);
+      expect(statuts).toEqual([403, 403, 403]);
       expect(ecrituresEnregistrees()).toBe(0);
+    });
+
+    it('POST annotations : 201 pour le proprietaire, annotation portee par l ecran', async () => {
+      await appel('post', 'annotations', PROPRIETAIRE)
+        .send(ANNOTATION)
+        .expect(201);
+
+      expect(depots.annotations.save).toHaveBeenCalledWith({
+        sessionId: SESSION_ID,
+        teacherId: PROPRIETAIRE_ID,
+        screenId: 'E-OUV',
+        note: 'Relancer',
+      });
+    });
+
+    it('refuse en 400 une note faite de blancs', async () => {
+      await appel('post', 'annotations', PROPRIETAIRE)
+        .send({ ...ANNOTATION, note: '  ' })
+        .expect(400);
+
+      expect(ecrituresEnregistrees()).toBe(0);
+    });
+
+    it('refuse en 400 une annotation qui porte encore un groupe', async () => {
+      await appel('post', 'annotations', PROPRIETAIRE)
+        .send({ ...ANNOTATION, groupName: 'Classe entière' })
+        .expect(400);
+
+      expect(ecrituresEnregistrees()).toBe(0);
+    });
+
+    it.each<[Methode | 'get', string]>([
+      ['get', 'groups'],
+      ['post', 'groups'],
+      ['patch', 'groups/d4444444-4444-4444-8444-444444444444'],
+      ['patch', `participants/${PARTICIPANT_ID}/group`],
+      ['delete', `participants/${PARTICIPANT_ID}/group`],
+    ])('%s %s : route de groupes retiree, 404', async (methode, chemin) => {
+      await appel(methode, chemin, PROPRIETAIRE).send({}).expect(404);
     });
   });
 
@@ -308,7 +238,7 @@ describe('Acces formateur aux annotations, groupes, participants et reponses lib
         .post(route('free-responses'))
         .set(
           EN_TETE_JETON,
-          app.get(ParticipantTokenService).sign(SESSION_ID, PARTICIPANT_ID),
+          app.get(ParticipantTokenService).sign(SESSION_ID, PARTICIPANT_ID, 0),
         )
         .send(corps);
 

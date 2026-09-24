@@ -7,12 +7,7 @@ import { choisirRappels, ecranDeRappel } from '../domain/cours/ChoixDesRappels';
 import { assertEcranServi } from '../domain/cours/EcranServi';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { tirer } from '../domain/cours/Tirage';
-import {
-  CoursInconnuError,
-  ParticipantNotFoundError,
-  RappelsIndisponiblesError,
-  SessionNotFoundError,
-} from '../domain/errors/FormationErrors';
+import { RappelsIndisponiblesError } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
@@ -27,6 +22,7 @@ import {
   RAPPELS_SERVIS_REPOSITORY,
   SESSIONS_REPOSITORY,
 } from '../domain/token';
+import { contexteDuParticipant } from './CoursDeLaSeance';
 
 const BOITE_PAR_DEFAUT: Boite = 1;
 
@@ -73,25 +69,15 @@ export class LireRappelsUseCase {
     sessionId: string,
     participantId: string,
   ): Promise<{ questions: readonly SpacedQuestionPublique[] }> {
-    const session = await this.sessions.findById(sessionId);
-    if (!session) {
-      throw new SessionNotFoundError(sessionId);
-    }
-    const participant = await this.participants.findById(participantId);
-    if (
-      !participant ||
-      participant.sessionId !== sessionId ||
-      participant.evinceLe !== null
-    ) {
-      throw new ParticipantNotFoundError(participantId);
-    }
-    const cours = await this.catalogue.trouver(
-      session.courseSlug,
-      session.courseVersion,
+    const { session, participant, cours } = await contexteDuParticipant(
+      {
+        sessions: this.sessions,
+        participants: this.participants,
+        catalogue: this.catalogue,
+      },
+      sessionId,
+      participantId,
     );
-    if (!cours) {
-      throw new CoursInconnuError(session.courseSlug);
-    }
     const cible = ecranDeRappel(cours);
     if (cible === null) {
       throw new RappelsIndisponiblesError(session.courseSlug);

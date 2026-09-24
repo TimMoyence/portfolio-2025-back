@@ -5,6 +5,7 @@ import type { IUsersRepository } from '../domain/IUsers.repository';
 import { AuthenticateGoogleUserUseCase } from './AuthenticateGoogleUser.useCase';
 import type { JwtTokenService } from './services/JwtTokenService';
 import {
+  attendreSessionOuverte,
   buildUser,
   createMockUsersRepo,
   createMockJwtService,
@@ -65,16 +66,10 @@ describe('AuthenticateGoogleUserUseCase', () => {
     const result = await useCase.execute('valid-id-token');
 
     expect(repo.findByGoogleId).toHaveBeenCalledWith('google-sub-123');
-    expect(jwtTokenService.sign).toHaveBeenCalledWith({
-      sub: user.id,
-      email: user.email,
-      roles: user.roles,
+    attendreSessionOuverte(result, user, {
+      signer: jwtTokenService.sign,
+      creerRefreshToken: refreshTokensRepo.create,
     });
-    expect(result.accessToken).toBe('jwt-token');
-    expect(result.expiresIn).toBe(900);
-    expect(result.refreshToken).toBeDefined();
-    expect(result.user).toBe(user);
-    expect(refreshTokensRepo.create).toHaveBeenCalled();
   });
 
   it('lie le googleId et retourne AuthResult quand le user est trouve par email', async () => {

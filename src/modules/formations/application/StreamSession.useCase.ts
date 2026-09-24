@@ -76,6 +76,13 @@ interface PlacesDuFlux {
   readonly seance?: Place;
 }
 
+type RaisonDExclusion = 'evince' | 'revoque';
+
+interface PorteurEtudiant {
+  readonly participantId: string;
+  readonly generationDeJeton: number;
+}
+
 type ResultatsEnDirect = ResultatsSeance & {
   readonly statistiques: StatistiquesSeance;
   readonly jalons: Readonly<Record<string, ComptesJalon>>;
@@ -154,7 +161,11 @@ export class StreamSessionUseCase {
     );
   }
 
-  execute(sessionId: string, participantId: string): Observable<MessageEvent> {
+  execute(
+    sessionId: string,
+    participantId: string,
+    generationDeJeton: number,
+  ): Observable<MessageEvent> {
     return this.ouvrirFlux(
       sessionId,
       {
@@ -172,27 +183,29 @@ export class StreamSessionUseCase {
         },
       },
       undefined,
-      participantId,
+      { participantId, generationDeJeton },
     );
   }
 
-  private async participantAdmis(
+  private async exclusionDu(
     sessionId: string,
-    participantId: string,
-  ): Promise<boolean> {
-    const participant = await this.participants.findById(participantId);
-    return (
-      participant !== null &&
-      participant.sessionId === sessionId &&
-      participant.evinceLe === null
-    );
+    porteur: PorteurEtudiant,
+  ): Promise<RaisonDExclusion | null> {
+    const participant = await this.participants.findById(porteur.participantId);
+    if (participant === null || participant.sessionId !== sessionId) {
+      return 'evince';
+    }
+    if (participant.generationDeJeton !== porteur.generationDeJeton) {
+      return 'revoque';
+    }
+    return participant.evinceLe === null ? null : 'evince';
   }
 
   private ouvrirFlux(
     sessionId: string,
     places: PlacesDuFlux,
     sessionDuFormateur?: SessionRecord,
-    participantId?: string,
+    porteurEtudiant?: PorteurEtudiant,
   ): Observable<MessageEvent> {
     assertSeanceDisponible(places);
     return new Observable<MessageEvent>((subscriber) => {
@@ -275,12 +288,13 @@ export class StreamSessionUseCase {
         }
         occupe = true;
         try {
-          if (
-            participantId !== undefined &&
-            passagesDepuisLeControle % PASSAGES_ENTRE_CONTROLES === 0 &&
-            !(await this.participantAdmis(sessionId, participantId))
-          ) {
-            subscriber.next({ type: 'fin', data: { raison: 'evince' } });
+          const exclusion =
+            porteurEtudiant !== undefined &&
+            passagesDepuisLeControle % PASSAGES_ENTRE_CONTROLES === 0
+              ? await this.exclusionDu(sessionId, porteurEtudiant)
+              : null;
+          if (exclusion !== null) {
+            subscriber.next({ type: 'fin', data: { raison: exclusion } });
             subscriber.complete();
             arreter();
             return;

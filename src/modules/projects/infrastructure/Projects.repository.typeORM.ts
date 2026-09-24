@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  PaginatedResult,
-  createPaginatedResult,
-} from '../../../common/domain/pagination.types';
+import { PaginatedResult } from '../../../common/domain/pagination.types';
+import { pageDeRequete } from '../../../common/infrastructure/typeorm/page-de-requete';
 import { IProjectsRepository } from '../domain/IProjects.repository';
 import { ProjectListQuery, ProjectSortBy } from '../domain/ProjectList.query';
 import { ProjectType, Projects } from '../domain/Projects';
@@ -19,25 +17,14 @@ export class ProjectsRepositoryTypeORM implements IProjectsRepository {
   ) {}
 
   async findAll(query: ProjectListQuery): Promise<PaginatedResult<Projects>> {
-    const qb = this.repo.createQueryBuilder('project');
-    if (query.type) {
-      qb.andWhere('project.type = :type', { type: query.type });
-    }
-    if (query.status) {
-      qb.andWhere('project.status = :status', { status: query.status });
-    }
-
-    const [entities, total] = await qb
-      .orderBy(this.resolveSortColumn(query.sortBy), query.order)
-      .skip((query.page - 1) * query.limit)
-      .take(query.limit)
-      .getManyAndCount();
-
-    return createPaginatedResult(
-      entities.map((e) => this.toDomain(e)),
-      total,
-      query.page,
-      query.limit,
+    return pageDeRequete(
+      this.repo.createQueryBuilder('project'),
+      {
+        ...query,
+        colonneDeTri: this.resolveSortColumn(query.sortBy),
+        filtres: { type: query.type, status: query.status },
+      },
+      (entity) => this.toDomain(entity),
     );
   }
 

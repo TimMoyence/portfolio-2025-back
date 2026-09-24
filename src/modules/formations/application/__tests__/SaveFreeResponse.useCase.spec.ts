@@ -10,6 +10,7 @@ import {
   createMockFreeResponsesRepo,
   createMockParticipantsRepo,
   createMockSessionsRepo,
+  createMockSessionStateCache,
 } from '../../../../../test/factories/formation.factory';
 import {
   ActiviteInconnueError,
@@ -40,6 +41,7 @@ describe('SaveFreeResponseUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let freeResponses: ReturnType<typeof createMockFreeResponsesRepo>;
   let participants: ReturnType<typeof createMockParticipantsRepo>;
+  let cache: ReturnType<typeof createMockSessionStateCache>;
   let sut: SaveFreeResponseUseCase;
 
   beforeEach(() => {
@@ -53,11 +55,13 @@ describe('SaveFreeResponseUseCase', () => {
     );
     freeResponses = createMockFreeResponsesRepo();
     participants = createMockParticipantsRepo();
+    cache = createMockSessionStateCache();
     sut = new SaveFreeResponseUseCase(
       sessions,
       freeResponses,
       creerCatalogueDeTest(COURS),
       participants,
+      cache,
     );
   });
 
@@ -68,6 +72,40 @@ describe('SaveFreeResponseUseCase', () => {
       ...REPONSE,
       response: 'Je vérifie la base.',
     });
+  });
+
+  it('F06 · signale l activité au pupitre après l enregistrement', async () => {
+    await sut.execute(REPONSE);
+
+    expect(cache.signalerActivite).toHaveBeenCalledWith(REPONSE.sessionId);
+  });
+
+  it('ferme les réponses libres d un écran révélé et ne signale rien', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        etat: 'en_cours',
+        courseSlug: COURS.slug,
+        ecranCourant: RANG_DE_L_EXEMPLE,
+        pilotageEcrans: { 'E-REM': { revele: true } },
+      }),
+    );
+
+    await expect(sut.execute(REPONSE)).rejects.toThrow(PhaseFermeeError);
+    expect(freeResponses.save).not.toHaveBeenCalled();
+    expect(cache.signalerActivite).not.toHaveBeenCalled();
+  });
+
+  it('SEC-2 · reste fermé sur une étape corrigée puis masquée', async () => {
+    sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        etat: 'en_cours',
+        courseSlug: COURS.slug,
+        ecranCourant: RANG_DE_L_EXEMPLE,
+        pilotageEcrans: { 'E-REM': { etayage: 0, etayageAtteint: 1 } },
+      }),
+    );
+
+    await expect(sut.execute(REPONSE)).rejects.toThrow(PhaseFermeeError);
   });
 
   it('RET-23 · refuse la redaction d une etape dont la correction est revelee', async () => {
@@ -116,6 +154,7 @@ describe('SaveFreeResponseUseCase', () => {
       freeResponses,
       creerCatalogueAVersions({}),
       participants,
+      cache,
     );
 
     await expect(sut.execute(REPONSE)).rejects.toThrow(CoursInconnuError);

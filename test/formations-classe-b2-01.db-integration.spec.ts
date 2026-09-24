@@ -21,6 +21,7 @@ import {
   clientFormations,
   EN_TETE_IDENTITE,
   monterBancFormations,
+  serveurHttpDe,
   type BancFormations,
   type ClientFormations,
 } from './helpers/formations-harness';
@@ -87,8 +88,7 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
   let sessionId: string;
   let etudiants: Etudiant[] = [];
 
-  const serveur = (): Parameters<typeof request>[0] =>
-    banc.app.getHttpServer() as Parameters<typeof request>[0];
+  const serveur = () => serveurHttpDe(banc.app);
 
   const participant = (
     methode: 'get' | 'post' | 'put',

@@ -4,33 +4,16 @@ import {
   IsDate,
   IsEmail,
   IsIn,
-  IsInt,
   IsOptional,
   IsString,
   MaxLength,
-  Min,
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 import { InteractionProfileDto } from './interaction-profile.dto';
 
-export class RequestToolkitRequestDto {
-  @ApiPropertyOptional({
-    description: 'Champ piège anti-robot, doit rester vide',
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  website?: string;
-
-  @ApiPropertyOptional({
-    description: "Timestamp ms d'ouverture du formulaire",
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  formStartedAt?: number;
-
+export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @ApiProperty({ example: 'Marie' })
   @IsString()
   @MinLength(1)

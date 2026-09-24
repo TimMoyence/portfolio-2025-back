@@ -27,7 +27,8 @@ import {
 import {
   EN_TETE_IDENTITE,
   monterApplicationFormations,
-  PREFIXE_API,
+  routeFormations,
+  serveurHttpDe,
 } from './helpers/formations-harness';
 import {
   ecouterEnBoucleLocale,
@@ -336,11 +337,9 @@ describeDb(
     const courriels: CourrielEnvoye[] = [];
     const corpsHttp: string[] = [];
 
-    const serveur = (): Parameters<typeof request>[0] =>
-      app.getHttpServer() as Parameters<typeof request>[0];
+    const serveur = () => serveurHttpDe(app);
 
-    const route = (chemin: string): string =>
-      `/${PREFIXE_API}/formations${chemin}`;
+    const route = routeFormations;
 
     const noter = (reponse: Response): Response => {
       corpsHttp.push(reponse.text);

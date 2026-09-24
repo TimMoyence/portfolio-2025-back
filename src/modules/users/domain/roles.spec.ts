@@ -1,27 +1,11 @@
 import { VALID_ROLES, DEFAULT_SELF_REGISTRATION_ROLES } from './roles';
 
 describe('roles', () => {
-  it('devrait contenir tous les roles attendus', () => {
-    expect(VALID_ROLES).toContain('weather');
-    expect(VALID_ROLES).toContain('sebastian');
-    expect(VALID_ROLES).toContain('admin');
+  it('ne declare que les roles encore servis par l API', () => {
+    expect([...VALID_ROLES]).toEqual(['admin', 'teacher']);
   });
 
-  it('les roles par defaut doivent etre un sous-ensemble des roles valides', () => {
-    for (const role of DEFAULT_SELF_REGISTRATION_ROLES) {
-      expect(VALID_ROLES).toContain(role);
-    }
-  });
-
-  it('les roles par defaut ne doivent pas inclure admin', () => {
-    expect(DEFAULT_SELF_REGISTRATION_ROLES).not.toContain('admin');
-  });
-
-  it('declare le role teacher', () => {
-    expect(VALID_ROLES).toContain('teacher');
-  });
-
-  it('n attribue pas teacher a l inscription libre', () => {
-    expect(DEFAULT_SELF_REGISTRATION_ROLES).not.toContain('teacher');
+  it('n attribue aucun role a l inscription libre', () => {
+    expect(DEFAULT_SELF_REGISTRATION_ROLES).toEqual([]);
   });
 });

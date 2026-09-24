@@ -1,14 +1,5 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { FormationSessionEntity } from './FormationSession.entity';
-import { FormationGroupEntity } from './FormationGroup.entity';
+import { LigneDeSeance } from './ligne-de-seance';
+import { Column, CreateDateColumn, Entity, Index } from 'typeorm';
 
 @Entity({ name: 'formation_participants' })
 @Index('uq_formation_participants_session_key', ['sessionId', 'studentKey'], {
@@ -20,21 +11,9 @@ import { FormationGroupEntity } from './FormationGroup.entity';
   where: '"evince_le" IS NULL',
 })
 @Index('idx_formation_participants_student_key', ['studentKey'])
-@Index('idx_formation_participants_group', ['groupId'])
-export class FormationParticipantEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ name: 'session_id', type: 'uuid' })
-  sessionId: string;
-
-  @ManyToOne(() => FormationSessionEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({
-    name: 'session_id',
-    foreignKeyConstraintName: 'FK_formation_participants_session',
-  })
-  session: FormationSessionEntity;
-
+export class FormationParticipantEntity extends LigneDeSeance(
+  'formation_participants',
+) {
   @Column({ name: 'student_key', type: 'varchar', length: 64 })
   studentKey: string;
 
@@ -47,19 +26,6 @@ export class FormationParticipantEntity {
   @Column({ type: 'varchar', length: 180 })
   email: string;
 
-  @Column({ name: 'group_id', type: 'uuid', nullable: true })
-  groupId: string | null;
-
-  @ManyToOne(() => FormationGroupEntity, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn({
-    name: 'group_id',
-    foreignKeyConstraintName: 'FK_formation_participants_group',
-  })
-  group: FormationGroupEntity | null;
-
   @Column({ type: 'int' })
   seed: number;
 
@@ -71,4 +37,15 @@ export class FormationParticipantEntity {
 
   @Column({ name: 'evince_le', type: 'timestamptz', nullable: true })
   evinceLe: Date | null;
+
+  @Column({
+    name: 'empreinte_de_reprise',
+    type: 'varchar',
+    length: 64,
+    nullable: true,
+  })
+  empreinteDeReprise: string | null;
+
+  @Column({ name: 'generation_de_jeton', type: 'int', default: 0 })
+  generationDeJeton: number;
 }

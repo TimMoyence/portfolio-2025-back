@@ -61,7 +61,6 @@ function versEcranDeroule(
     ),
     corrigeEcran: corrigeDeLEcran(ecran),
     guide: ecran.guide,
-    ...(ecran.renvoi === undefined ? {} : { renvoi: ecran.renvoi }),
   };
 }
 
@@ -147,7 +146,7 @@ function solutionLisible(corrige: CorrigeEnigme): string {
     : corrige.solution.acceptees[0];
 }
 
-function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
+export function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
   switch (ecran.brique) {
     case 'fp-cardsort':
     case 'fp-sheet':
@@ -177,6 +176,16 @@ function corrigeDeLEcran(ecran: Ecran): CorrigeEcranPresentateur | null {
             titre: ecran.revelation.titre,
             lignes: ecran.revelation.lignes,
           };
+    case 'fp-story': {
+      const correction = ecran.proprietes.correction;
+      return correction === undefined || !('expected' in correction)
+        ? null
+        : {
+            type: 'reflexion',
+            attendu: correction.expected,
+            suite: correction.nextAction,
+          };
+    }
     default:
       return null;
   }

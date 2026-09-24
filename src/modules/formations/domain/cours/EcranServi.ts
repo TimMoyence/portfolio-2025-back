@@ -1,4 +1,5 @@
 import type { Cours, Ecran } from '../contrats/cours';
+import { correctionsDe } from './Corrections';
 import { questionsDe } from './Cours';
 import type { PilotageEcran } from '../contrats/pilotage';
 import {
@@ -41,16 +42,8 @@ export function assertEcranServi(
   }
 }
 
-function corrigeLEcran(ecran: Ecran, screenId: string): boolean {
-  if (ecran.brique !== 'fp-story') {
-    return false;
-  }
-  const presentation = ecran.proprietes.presentation;
-  return (
-    presentation?.version === 2 &&
-    presentation.renderer === 'sort-review' &&
-    presentation.props.source.screenId === screenId
-  );
+export function etayageAtteint(pilotage: PilotageEcran | undefined): number {
+  return Math.max(pilotage?.etayageAtteint ?? 0, pilotage?.etayage ?? 0);
 }
 
 export function assertCorrectionNonProjetee(
@@ -60,16 +53,14 @@ export function assertCorrectionNonProjetee(
   cours: Cours,
   screenId: string,
 ): void {
-  const correction = cours.ecrans.findIndex((ecran) =>
-    corrigeLEcran(ecran, screenId),
-  );
   const correctionAtteinte =
     seance.modeRythme === 'pilote' &&
-    correction >= 0 &&
-    correction <= seance.ecranCourant;
+    correctionsDe(cours, screenId).some((rang) => rang <= seance.ecranCourant);
+  const pilotage = seance.pilotageEcrans[screenId];
   if (
     correctionAtteinte ||
-    (seance.pilotageEcrans[screenId]?.etayage ?? 0) > 0
+    pilotage?.revele === true ||
+    etayageAtteint(pilotage) > 0
   ) {
     throw new PhaseFermeeError(screenId);
   }
@@ -85,7 +76,7 @@ export function rangDeLaQuestion(cours: Cours, questionId: string): number {
   );
 }
 
-function activitesDeLEcran(ecran: Ecran): readonly string[] {
+export function activitesDeLEcran(ecran: Ecran): readonly string[] {
   switch (ecran.brique) {
     case 'fp-worked':
       if (ecran.proprietes.pilote === true) {

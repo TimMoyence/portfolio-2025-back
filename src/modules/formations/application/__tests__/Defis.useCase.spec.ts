@@ -3,6 +3,7 @@ import {
   buildCoursAvecDefi,
   creerCatalogueDeTest,
   DEFI_DE_TEST,
+  STRATEGIES_REVELEES_DU_DEFI,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildFreeResponseRecord,
@@ -19,6 +20,7 @@ import {
   DefiSansTentativeError,
   EcranNonServiError,
   ParticipantNotFoundError,
+  PhaseFermeeError,
   SessionClosedError,
 } from '../../domain/errors/FormationErrors';
 import { DefisUseCase } from '../Defis.useCase';
@@ -86,17 +88,30 @@ describe('DefisUseCase', () => {
     ]);
   });
 
-  it('ajoute la justesse une fois la revelation pilotee', async () => {
+  it('SEC-4 · refuse une tentative une fois le defi revele, sans rien ecrire', async () => {
     sessions.findById.mockResolvedValue(
       seance({ [ECRAN_DU_DEFI]: { revele: true } }),
     );
 
-    const rendu = await sut.tenter(commande);
+    await expect(sut.tenter(commande)).rejects.toThrow(PhaseFermeeError);
+    expect(freeResponses.enregistrerTentativeDeDefi).not.toHaveBeenCalled();
+  });
 
-    expect(rendu.strategies).toEqual([
-      { id: 'axe', libelle: expect.any(String), fausse: false },
-      { id: 'couleur', libelle: expect.any(String), fausse: true },
-    ]);
+  it('ajoute la justesse une fois la revelation pilotee', async () => {
+    sessions.findById.mockResolvedValue(
+      seance({ [ECRAN_DU_DEFI]: { revele: true } }),
+    );
+    freeResponses.trouverParActivite.mockResolvedValue(
+      buildFreeResponseRecord({ activityId: DEFI_DE_TEST }),
+    );
+
+    const rendu = await sut.strategies(
+      'session-uuid',
+      'participant-uuid',
+      DEFI_DE_TEST,
+    );
+
+    expect(rendu.strategies).toEqual(STRATEGIES_REVELEES_DU_DEFI);
   });
 
   it('refuse une tentative vide avant toute ecriture', async () => {

@@ -1,3 +1,4 @@
+import { LigneDeSeance } from './ligne-de-seance';
 import {
   Column,
   CreateDateColumn,
@@ -5,7 +6,6 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 import type {
@@ -13,7 +13,6 @@ import type {
   ValeurReponse,
 } from '../../domain/contrats/resultats';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
-import { FormationSessionEntity } from './FormationSession.entity';
 
 @Entity({ name: 'formation_answers' })
 @Unique('UQ_formation_answers_participant_question', [
@@ -21,20 +20,7 @@ import { FormationSessionEntity } from './FormationSession.entity';
   'questionId',
 ])
 @Index('idx_formation_answers_session_question', ['sessionId', 'questionId'])
-export class FormationAnswerEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ name: 'session_id', type: 'uuid' })
-  sessionId: string;
-
-  @ManyToOne(() => FormationSessionEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({
-    name: 'session_id',
-    foreignKeyConstraintName: 'FK_formation_answers_session',
-  })
-  session: FormationSessionEntity;
-
+export class FormationAnswerEntity extends LigneDeSeance('formation_answers') {
   @Column({ name: 'participant_id', type: 'uuid' })
   participantId: string;
 
@@ -71,6 +57,9 @@ export class FormationAnswerEntity {
 
   @Column({ name: 'duree_ms', type: 'int' })
   dureeMs: number;
+
+  @Column({ type: 'int', default: 1 })
+  soumissions: number;
 
   @CreateDateColumn({ name: 'soumis_le', type: 'timestamptz' })
   soumisLe: Date;

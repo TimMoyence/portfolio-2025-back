@@ -15,6 +15,45 @@ export function createMockTransporter(): jest.Mocked<
   };
 }
 
+export interface MailEnvoye {
+  readonly from?: string;
+  readonly to: string;
+  readonly subject: string;
+  readonly text: string;
+  readonly html: string;
+  readonly replyTo?: string;
+  readonly headers?: Readonly<Record<string, string>>;
+  readonly attachments?: ReadonlyArray<{
+    readonly filename: string;
+    readonly content: Buffer;
+    readonly contentType: string;
+  }>;
+}
+
+export function premierMailEnvoye(
+  transporter: Pick<Transporter, 'sendMail'>,
+): MailEnvoye {
+  return (transporter.sendMail as jest.Mock).mock.calls[0][0] as MailEnvoye;
+}
+
+export const envoiSmtpSimule = jest
+  .fn()
+  .mockResolvedValue({ messageId: 'test-id' });
+
+export const moduleSmtpSimule = () => ({
+  createOptionalSmtpTransporter: jest.fn(() => ({ sendMail: envoiSmtpSimule })),
+});
+
+export function mailSimule(): MailEnvoye {
+  expect(envoiSmtpSimule).toHaveBeenCalledTimes(1);
+  return premierMailEnvoye({ sendMail: envoiSmtpSimule });
+}
+
+export function attendreScriptEchappe(html: string): void {
+  expect(html).not.toContain('<script>');
+  expect(html).toContain('&lt;script&gt;');
+}
+
 export const DEFAULT_SMTP_ENV = {
   SMTP_HOST: 'smtp.test.local',
   SMTP_PORT: '587',
@@ -54,6 +93,14 @@ export function setSmtpEnv(overrides: Record<string, string> = {}): () => void {
       }
     }
   };
+}
+
+export function retirerSmtpEnv(): () => void {
+  const restaurer = setSmtpEnv();
+  for (const cle of ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS']) {
+    delete process.env[cle];
+  }
+  return restaurer;
 }
 
 const DKIM_ENV_KEYS = [

@@ -1,4 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { rangDeLEcran } from '../domain/cours/EcranServi';
+import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { EcranInconnuError } from '../domain/errors/FormationErrors';
 import type { ISessionsRepository } from '../domain/ISessions.repository';
 import type {
   ITeacherAnnotationsRepository,
@@ -7,14 +10,15 @@ import type {
 import type { ActeurFormation } from '../domain/SessionOwnership';
 import { texteRenseigne } from '../domain/TexteRenseigne';
 import {
+  CATALOGUE_COURS,
   SESSIONS_REPOSITORY,
   TEACHER_ANNOTATIONS_REPOSITORY,
 } from '../domain/token';
+import { coursDeLaSeance } from './CoursDeLaSeance';
 import { seanceLisiblePar, seancePilotablePar } from './SessionAccess';
 
 export interface AnnotationFormateur {
   readonly screenId: string;
-  readonly groupName: string;
   readonly note: string;
 }
 
@@ -25,6 +29,8 @@ export class ManageTeacherAnnotationsUseCase {
     private readonly sessions: ISessionsRepository,
     @Inject(TEACHER_ANNOTATIONS_REPOSITORY)
     private readonly annotations: ITeacherAnnotationsRepository,
+    @Inject(CATALOGUE_COURS)
+    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async list(
@@ -40,14 +46,20 @@ export class ManageTeacherAnnotationsUseCase {
     teacherId: string,
     annotation: AnnotationFormateur,
   ): Promise<TeacherAnnotationRecord> {
-    const groupName = texteRenseigne(annotation.groupName, 'Le groupe');
     const note = texteRenseigne(annotation.note, 'La note');
-    await seancePilotablePar(this.sessions, sessionId, teacherId);
+    const session = await seancePilotablePar(
+      this.sessions,
+      sessionId,
+      teacherId,
+    );
+    const cours = await coursDeLaSeance(this.catalogue, session);
+    if (rangDeLEcran(cours, annotation.screenId) < 0) {
+      throw new EcranInconnuError(annotation.screenId);
+    }
     return this.annotations.save({
       sessionId,
       teacherId,
       screenId: annotation.screenId,
-      groupName,
       note,
     });
   }

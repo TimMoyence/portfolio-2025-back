@@ -44,14 +44,14 @@ describe('User aggregate', () => {
       firstName: 'Google',
       lastName: 'User',
       googleId: 'google-sub-123',
-      roles: ['weather'],
+      roles: ['teacher'],
       updatedOrCreatedBy: 'google-oauth',
     });
 
     expect(user.email).toBe('google@example.com');
     expect(user.googleId).toBe('google-sub-123');
     expect(user.passwordHash).toBeNull();
-    expect(user.roles).toEqual(['weather']);
+    expect(user.roles).toEqual(['teacher']);
   });
 
   it('throws without googleId and without passwordHash', () => {

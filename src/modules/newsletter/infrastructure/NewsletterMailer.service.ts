@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { Transporter } from 'nodemailer';
+import type { SendMailOptions, Transporter } from 'nodemailer';
 import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import {
   escapeHtml,
@@ -48,19 +48,13 @@ export class NewsletterMailerService implements INewsletterMailer {
   }
 
   async sendConfirmation(subscriber: NewsletterSubscriber): Promise<void> {
-    if (!this.transporter) return;
     const confirmUrl = this.buildApiUrl('/newsletter/confirm', {
       token: subscriber.confirmToken,
     });
-    const unsubscribeUrl = this.buildApiUrl('/newsletter/unsubscribe', {
-      token: subscriber.unsubscribeToken,
-    });
+    const unsubscribeUrl = this.lienDeDesabonnement(subscriber);
     const greeting = this.buildGreeting(subscriber.firstName);
 
-    await this.transporter.sendMail({
-      from: this.from,
-      to: subscriber.email,
-      replyTo: this.replyTo,
+    await this.envoyer(subscriber, {
       // `List-Unsubscribe` (RFC 8058) ne couvre que les envois de liste :
       // un retrait en un clic depuis ce message transactionnel laisserait
       // l'abonne bloque en `pending`.
@@ -90,17 +84,11 @@ Tim — asilidesign.fr`,
   }
 
   async sendWelcome(subscriber: NewsletterSubscriber): Promise<void> {
-    if (!this.transporter) return;
-    const unsubscribeUrl = this.buildApiUrl('/newsletter/unsubscribe', {
-      token: subscriber.unsubscribeToken,
-    });
+    const unsubscribeUrl = this.lienDeDesabonnement(subscriber);
     const greeting = this.buildGreeting(subscriber.firstName);
 
     if (subscriber.sourceFormationSlug === DAILY_BRIEF_SOURCE) {
-      await this.transporter.sendMail({
-        from: this.from,
-        to: subscriber.email,
-        replyTo: this.replyTo,
+      await this.envoyer(subscriber, {
         headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
         subject: 'Bienvenue dans la veille IA',
         text: `${greeting.text},
@@ -115,10 +103,7 @@ Tim`,
       return;
     }
 
-    await this.transporter.sendMail({
-      from: this.from,
-      to: subscriber.email,
-      replyTo: this.replyTo,
+    await this.envoyer(subscriber, {
       headers: this.buildListUnsubscribeHeaders(unsubscribeUrl),
       subject: 'Bienvenue — ce qui arrive dans votre boite mail',
       text: `${greeting.text},
@@ -140,12 +125,8 @@ Tim`,
   }
 
   async sendUnsubscribeAck(subscriber: NewsletterSubscriber): Promise<void> {
-    if (!this.transporter) return;
     const greeting = this.buildGreeting(subscriber.firstName);
-    await this.transporter.sendMail({
-      from: this.from,
-      to: subscriber.email,
-      replyTo: this.replyTo,
+    await this.envoyer(subscriber, {
       subject: 'Desabonnement confirme',
       text: `${greeting.text},
 
@@ -155,6 +136,25 @@ Si c'etait une erreur, repondez simplement a cet email.
 
 Tim`,
       html: this.buildUnsubscribeAckHtml({ greeting: greeting.html }),
+    });
+  }
+
+  private async envoyer(
+    subscriber: NewsletterSubscriber,
+    message: Omit<SendMailOptions, 'from' | 'to' | 'replyTo'>,
+  ): Promise<void> {
+    if (!this.transporter) return;
+    await this.transporter.sendMail({
+      from: this.from,
+      to: subscriber.email,
+      replyTo: this.replyTo,
+      ...message,
+    });
+  }
+
+  private lienDeDesabonnement(subscriber: NewsletterSubscriber): string {
+    return this.buildApiUrl('/newsletter/unsubscribe', {
+      token: subscriber.unsubscribeToken,
     });
   }
 

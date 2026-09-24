@@ -1,3 +1,4 @@
+import { ParticipantNotFoundError } from '../domain/errors/FormationErrors';
 import type {
   ISessionsRepository,
   SessionRecord,
@@ -30,4 +31,19 @@ export async function seancePilotablePar(
     sessionId,
     teacherId,
   );
+}
+
+export async function agirSurUnParticipant(
+  sessions: ISessionsRepository,
+  acces: { sessionId: string; teacherId: string; participantId: string },
+  action: (session: SessionRecord) => Promise<boolean>,
+): Promise<void> {
+  const session = await seancePilotablePar(
+    sessions,
+    acces.sessionId,
+    acces.teacherId,
+  );
+  if (!(await action(session))) {
+    throw new ParticipantNotFoundError(acces.participantId);
+  }
 }
