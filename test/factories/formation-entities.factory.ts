@@ -165,7 +165,6 @@ export function buildTeacherAnnotationEntity(
   return Object.assign(
     new FormationTeacherAnnotationEntity(),
     buildTeacherAnnotationRecord(),
-    { groupName: 'Classe entière' },
     overrides,
   );
 }

@@ -34,6 +34,15 @@ export class RetireLesGroupesDeSuivi1790600000000 implements MigrationInterface 
     `);
     await queryRunner.query(`DROP TABLE "annotations_rabattues"`);
     await queryRunner.query(
+      `ALTER TABLE "formation_teacher_annotations" DROP CONSTRAINT "UQ_formation_teacher_annotations_session_screen_group"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "formation_teacher_annotations" DROP COLUMN "group_name"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "formation_teacher_annotations" ADD CONSTRAINT "UQ_formation_teacher_annotations_session_screen" UNIQUE ("session_id", "screen_id")`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "formation_participants" DROP CONSTRAINT "FK_formation_participants_group"`,
     );
     await queryRunner.query(
@@ -74,6 +83,15 @@ export class RetireLesGroupesDeSuivi1790600000000 implements MigrationInterface 
     `);
     await queryRunner.query(
       `CREATE INDEX "idx_formation_participants_group" ON "formation_participants" ("group_id")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "formation_teacher_annotations" DROP CONSTRAINT "UQ_formation_teacher_annotations_session_screen"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "formation_teacher_annotations" ADD "group_name" character varying(120) NOT NULL DEFAULT ${CLASSE_ENTIERE}`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "formation_teacher_annotations" ADD CONSTRAINT "UQ_formation_teacher_annotations_session_screen_group" UNIQUE ("session_id", "screen_id", "group_name")`,
     );
   }
 }

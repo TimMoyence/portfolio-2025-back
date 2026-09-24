@@ -4841,7 +4841,7 @@ Acteurs : **F** formateur propriétaire ; **F2** autre formateur ; **A** adminis
 navigateur — est rejouée par `test/formations-e2e-seance-v3.db-integration.spec.ts`, porte
 `pnpm run test:integration:db:local` : publication et rebascule (points 1 et 25), capacité et
 éviction (point 3), garde d’écran servi (point 4), les seize briques du cours (points 5 à 20),
-rythme libre (point 11), groupes et annotations (point 21), flux `resultats` et cloisonnement du
+rythme libre (point 11), annotations (point 21), flux `resultats` et cloisonnement du
 flux étudiant (point 22), clôture et rapport (points 23 et 24), purge des tables du module
 (point 26, moitié base). Restent au banc Playwright (F22) : tout ce qui suppose un navigateur —
 page publique rendue côté serveur (point 2), rendus `hand`, `board` et `stage`, horloge pilotée,
@@ -4917,8 +4917,8 @@ strategies` renvoie `fausse` ; la projection ne signale la piste fausse qu’apr
     maîtrise par concept au pupitre.
 20. **Fiche mémo A6-06** : le bouton d’impression produit un aperçu qui contient les 11 cartes, recto
     et verso.
-21. **Groupes et annotations** : F crée deux groupes, affecte E1 à E3, annote A4-02 par groupe ; après
-    rechargement, le pupitre retrouve le déroulé, le flux, le pilotage et les annotations.
+21. **Annotations** : F annote A4-02 pour la classe entière (les groupes de suivi sont retirés) ;
+    après rechargement, le pupitre retrouve le déroulé, le flux, le pilotage et les annotations.
 22. **Flux** : coupure du flux étudiant → reconnexion ; un troisième flux d’un même participant ferme
     le plus ancien ; `resultats` au plus une fois par seconde ; aucun `resultats` sur un flux étudiant ;
     Redis arrêté → nouveaux flux ouverts en mode dégradé et journal `error` ; Redis relancé → plafonds
@@ -4935,7 +4935,7 @@ strategies` renvoie `fausse` ; la projection ne signale la piste fausse qu’apr
 26. **Nettoyage vérifié** : cache d’état vidé (`activite` = 0) ; clés locales `fp.<S3>.*` purgées sur
     chaque poste ; suppression de S3 → 0 ligne restante dans `formation_answers`,
     `formation_escape_progress`, `formation_escape_attempts`, `formation_pulses`,
-    `formation_rappels_servis`, `formation_free_responses`, annotations, groupes, participants et
+    `formation_rappels_servis`, `formation_free_responses`, annotations, participants et
     scores ; S2 intacte ; console sans erreur ; axe-core : 0 violation `serious` ou `critical` sur
     A1-04, A2-03, A4-02, A5-04, A6-02 et sur la page publique.
 

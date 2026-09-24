@@ -11,7 +11,6 @@ const ANNOTATION = {
   screenId: 'B2-01-S11-REFLECTION',
   note: 'Relancer',
 };
-const PORTEE_CLASSE_ENTIERE = 'Classe entière';
 
 describe('TeacherAnnotationsRepositoryTypeORM', () => {
   const upsert = jest.fn();
@@ -32,7 +31,7 @@ describe('TeacherAnnotationsRepositoryTypeORM', () => {
     find.mockReset().mockResolvedValue([ligne]);
   });
 
-  it('ecrit une annotation par ecran en un seul upsert, portee classe entiere, puis relit la ligne', async () => {
+  it('ecrit une annotation par ecran en un seul upsert, sans portee de groupe, puis relit la ligne', async () => {
     await expect(sut.save(ANNOTATION)).resolves.toEqual({
       id: 'annotation-uuid',
       sessionId: 'session-uuid',
@@ -42,16 +41,15 @@ describe('TeacherAnnotationsRepositoryTypeORM', () => {
       updatedAt: new Date('2026-09-11T08:25:00.000Z'),
     });
     expect(upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
+      {
         ...ANNOTATION,
-        groupName: PORTEE_CLASSE_ENTIERE,
-      }),
-      ['sessionId', 'screenId', 'groupName'],
+        updatedAt: expect.any(Date) as unknown,
+      },
+      ['sessionId', 'screenId'],
     );
     expect(findOneByOrFail).toHaveBeenCalledWith({
       sessionId: ANNOTATION.sessionId,
       screenId: ANNOTATION.screenId,
-      groupName: PORTEE_CLASSE_ENTIERE,
     });
   });
 
@@ -63,7 +61,6 @@ describe('TeacherAnnotationsRepositoryTypeORM', () => {
       where: {
         sessionId: 'session-uuid',
         teacherId: 'teacher-uuid',
-        groupName: PORTEE_CLASSE_ENTIERE,
       },
       order: { screenId: 'ASC' },
     });

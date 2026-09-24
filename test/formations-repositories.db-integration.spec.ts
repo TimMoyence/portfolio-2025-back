@@ -194,9 +194,24 @@ describeDb('Formations repositories (db integration)', () => {
     ]);
     const restes: Array<{ nom: string }> = await contexte.dataSource.query(
       `SELECT table_name || '.' || column_name AS nom FROM information_schema.columns
-       WHERE table_schema = 'public' AND (table_name = 'formation_groups' OR column_name = 'group_id')`,
+       WHERE table_schema = 'public' AND (table_name = 'formation_groups' OR column_name IN ('group_id', 'group_name'))`,
     );
     expect(restes).toEqual([]);
+    await expect(
+      contexte.annotations.save({
+        sessionId: seance.id,
+        teacherId: FORMATEUR,
+        screenId: 'B2-01-A2-06-CORRECTION',
+        note: 'Faire lire les points, puis les taux.',
+      }),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        note: 'Faire lire les points, puis les taux.',
+      }),
+    );
+    await expect(
+      contexte.annotations.listBySession(seance.id, FORMATEUR),
+    ).resolves.toHaveLength(2);
   });
 
   it('diffuse en séance un écran inséré sans diffusion explicite', async () => {

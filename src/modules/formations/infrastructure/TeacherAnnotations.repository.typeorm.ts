@@ -8,8 +8,7 @@ import type {
 } from '../domain/ITeacherAnnotations.repository';
 import { FormationTeacherAnnotationEntity } from './entities/FormationTeacherAnnotation.entity';
 
-const CLE_ANNOTATION = ['sessionId', 'screenId', 'groupName'];
-const PORTEE_CLASSE_ENTIERE = 'Classe entière';
+const CLE_ANNOTATION = ['sessionId', 'screenId'];
 
 @Injectable()
 export class TeacherAnnotationsRepositoryTypeORM implements ITeacherAnnotationsRepository {
@@ -26,7 +25,6 @@ export class TeacherAnnotationsRepositoryTypeORM implements ITeacherAnnotationsR
         sessionId: input.sessionId,
         teacherId: input.teacherId,
         screenId: input.screenId,
-        groupName: PORTEE_CLASSE_ENTIERE,
         note: input.note,
         updatedAt: new Date(),
       },
@@ -36,7 +34,6 @@ export class TeacherAnnotationsRepositoryTypeORM implements ITeacherAnnotationsR
       await this.repo.findOneByOrFail({
         sessionId: input.sessionId,
         screenId: input.screenId,
-        groupName: PORTEE_CLASSE_ENTIERE,
       }),
     );
   }
@@ -46,7 +43,7 @@ export class TeacherAnnotationsRepositoryTypeORM implements ITeacherAnnotationsR
     teacherId: string,
   ): Promise<readonly TeacherAnnotationRecord[]> {
     const rows = await this.repo.find({
-      where: { sessionId, teacherId, groupName: PORTEE_CLASSE_ENTIERE },
+      where: { sessionId, teacherId },
       order: { screenId: 'ASC' },
     });
     return rows.map((row) => this.toDomain(row));
