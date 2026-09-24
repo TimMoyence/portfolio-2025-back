@@ -847,7 +847,7 @@ const ACTE_2: Acte = [
     notes: puces(
       'Chacun passe de « Axe de Samir » à « Axe à zéro ».',
       'Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la barre 2025 vaut toujours 291 000 €.',
-      'Phrase à faire dire : « L’échelle change l’impression, pas la donnée » (+2,1 % réel).',
+      'Phrase à faire dire : « L’échelle change l’impression, pas la donnée ».',
     ),
     proprietes: {
       renvoi: 'B2-01-A1-09-DIAPOSITIVE',
@@ -964,9 +964,10 @@ const ACTE_2: Acte = [
       dureeMinutes: 1,
       concepts: ['lecture-graphique', 'proportion'],
       notes: puces(
-        'Corriger question par question, en partant de la plus ratée (taux de réussite au pupitre).',
-        'Q2 et Q3 : une part se calcule sur le CA, pas sur les commandes ; nommer la population de référence.',
-        'Transition : « Trois questions de plus, sur les évolutions. »',
+        'Commencer par la question la moins réussie (score affiché sous chaque correction).',
+        'Rapprocher Q2 et Q3 : la marketplace fait 84 % des commandes mais 45,5 % du CA ; même canal, deux populations de référence.',
+        'Q1 : si « +6 000 € : une forte croissance » domine, faire rapporter l’écart à 285 000 € : +2,1 %.',
+        'Transition : « Trois questions de plus : deux évolutions, puis marge et marque. »',
       ),
     },
     'B2-01-A2-03-ATELIER-1',
@@ -993,9 +994,9 @@ const ACTE_2: Acte = [
     dureeMinutes: 6,
     concepts: ['taux-evolution', 'pourcentage'],
     notes: puces(
-      '5 min de travail sur les questions 4 à 6, sans calculatrice pour la question 5, puis 1 min de comparaison avec le voisin.',
-      'Pièges : Q4 −21,66 % (÷ 397 000) ; Q5 ≈ +31 % (÷ 4 200) ; Q6 marque et marge inversées.',
-      'Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 2 900 × 1,45 ≈ 4 200 ; 80 × 1,25 = 100.',
+      '5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).',
+      'Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.',
+      'Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.',
     ),
     proprietes: {
       intitule: 'Atelier 1 — Lire, rapporter, estimer (questions 4 à 6)',
@@ -1055,8 +1056,8 @@ const ACTE_2: Acte = [
       dureeMinutes: 1,
       concepts: ['taux-evolution', 'pourcentage'],
       notes: puces(
-        'Corriger question par question, en partant de la plus ratée.',
-        'Q6 reprend le diagnostic (80 € → 100 €) : +25 % sur le coût, 20 % du prix de vente.',
+        'Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.',
+        'Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.',
         'Transition : « Remettons la diapositive de Samir d’aplomb. »',
       ),
     },
@@ -1166,8 +1167,8 @@ const ACTE_2: Acte = [
       dureeMinutes: 2,
       concepts: ['point-de-pourcentage'],
       notes: puces(
-        'Révéler une étape à la fois (« Montrer une étape de plus »).',
-        'Contrôle : 27,6 × 0,917 ≈ 25,31 (écart d’arrondi normal).',
+        'Révéler une étape à la fois (« Corriger une étape de plus »), après avoir lu une réponse d’élève à l’étape.',
+        'S’arrêter sur l’étape 3 : la phrase du comité donne les points et l’évolution relative, jamais « −2,3 % ».',
         'Transition : « Mini-jeu : tout n’est pas comparable. »',
       ),
     },
@@ -1534,7 +1535,9 @@ const ACTE_3: Acte = [
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
       notes: puces(
-        'Faire vérifier chaque résultat par retour au montant connu : 12,50 × 1,10 = 13,75 ; 3 000 × 1,20 = 3 600.',
+        '« Corriger une étape de plus » : passer vite sur les étapes 1 à 3, s’arrêter sur 4 à 6 (l’opération inverse).',
+        'Réflexe à faire dire : retour au montant connu, 12,50 × 1,10 = 13,75.',
+        'L’étape 5 prépare la question « retour de 100 € à 80 € » de l’atelier 2.',
         'Transition : « Et quand tous les prix montent ? L’inflation. »',
       ),
     },
@@ -1650,8 +1653,9 @@ const ACTE_3: Acte = [
       dureeMinutes: 2,
       concepts: ['indice-base-100', 'taux-moyen'],
       notes: puces(
-        'Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (6 % par an).',
-        'Contrôle : 1,06³ = 1,191016 ; 1,0637³ ≈ 1,2035 ≠ 1,1910.',
+        '« Corriger une étape de plus » : 5 étapes en 2 min ; s’arrêter sur la 5ᵉ (19,10 ÷ 3).',
+        'Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (+6 % par an).',
+        'Transition : « Même méthode sur les prix en France depuis 2019 : atelier 2. »',
       ),
     },
     {
@@ -1785,8 +1789,10 @@ const ACTE_3: Acte = [
       dureeMinutes: 1,
       concepts: ['indice-base-100', 'evolutions-successives'],
       notes: puces(
-        'Corriger en partant de la question la plus ratée.',
-        'Contrôle : 1,025⁶ ≈ 1,1597.',
+        'Commencer par la question la moins réussie.',
+        'Ne pas citer le taux moyen ni 1,025⁶ : c’est la question suivante. Laisser 1,1597 en vue, elle en part.',
+        'Niveau des prix : si « plus bas » domine, faire dire que 0,9 % reste une hausse (le mot « désinflation » viendra en A3-08).',
+        'Transition : « Deux questions de plus : le rythme moyen, puis le retour en arrière. »',
       ),
     },
     'B2-01-A3-07-ATELIER-2',
@@ -1813,8 +1819,9 @@ const ACTE_3: Acte = [
     dureeMinutes: 4,
     concepts: ['taux-moyen', 'evolution-reciproque'],
     notes: puces(
-      '3 min individuelles sur les questions 4 et 5.',
-      'Pièges : Q4 2,66 % (15,97 ÷ 6) ; Q5 −25 % (même taux à l’envers).',
+      '3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).',
+      'Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).',
+      'La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.',
     ),
     proprietes: {
       renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
@@ -1857,8 +1864,7 @@ const ACTE_3: Acte = [
       dureeMinutes: 1,
       concepts: ['taux-moyen', 'evolution-reciproque'],
       notes: puces(
-        'Q4 : la moyenne des taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % contre 32,6 %).',
-        'Contrôle : 100 × 0,80 = 80.',
+        'Taux moyen : la moyenne des six taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % au lieu de 32,6 %).',
         'Transition : « Voici la courbe que vous venez de calculer. »',
       ),
     },
@@ -2425,8 +2431,9 @@ const ACTE_4: Acte = [
     dureeMinutes: 3,
     concepts: ['lecture-graphique'],
     notes: puces(
-      '3 min de travail sur l’axe et la phrase de lecture.',
-      'Contrôle : les quatre trimestres redonnent les CA annuels (397, 230 et 523 k€).',
+      '3 min seul.',
+      'Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).',
+      'Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).',
     ),
     proprietes: {
       intitule:
@@ -2481,7 +2488,8 @@ const ACTE_4: Acte = [
       dureeMinutes: 1,
       concepts: ['lecture-graphique'],
       notes: puces(
-        'Rappeler la diapositive de Samir : un axe tronqué grossit les écarts.',
+        '« Le sur-mesure s’effondre » est même faux au 3e trimestre : il remonte de 95 à 102 k€.',
+        'Relance sur « 167 % du CA » : quelle est la vraie part ? 167 ÷ 318 ≈ 52,5 % (on la retrouvera dans le TCD).',
         'Transition : « Voici le graphique retenu pour le dossier. »',
       ),
     },
@@ -2569,7 +2577,7 @@ const ACTE_4: Acte = [
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
       notes: puces(
-        'Corriger sur la ligne de synthèse : somme des taux annoncés contre évolution réelle.',
+        'Boucler avec la carte « toile » du tri A1-05, laissée « à vérifier à l’acte 4 » : +3,50 %, et non +4 %.',
         'Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈ +0,8 %), pas la moyenne annuelle de 0,9 %.',
         'Transition : jalon 4, puis l’acte 5.',
       ),
@@ -2648,8 +2656,8 @@ const ACTE_5: Acte = [
       dureeMinutes: 2,
       concepts: ['moyenne-ponderee'],
       notes: puces(
+        '« Corriger une étape de plus » : vite sur les étapes 1 à 4, s’arrêter sur 5 (effet de répartition) et 6 (négation).',
         'Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition −26 400 € = +1 200 € de marge.',
-        'Piège : la moyenne simple (26,7 %) ne correspond à aucune année.',
         'Transition : « Vérifions que la classe sait l’expliquer : vote. »',
       ),
     },
@@ -2969,7 +2977,8 @@ const ACTE_5: Acte = [
       dureeMinutes: 1,
       concepts: ['proportion', 'taux-evolution', 'lecture-graphique'],
       notes: puces(
-        'Chiffre à faire ressortir : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; elle pèse 45,5 % du CA mais 28,8 % de la marge.',
+        'Chiffre absent de l’écran : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; c’est l’argument contre « arrêter la marketplace ».',
+        'Contrôle par canal : −30 960 + 5 600 + 26 560 = +1 200 €, la hausse de marge du tableau de bord.',
         'Transition : « Deux questions de plus, pour rédiger le dossier. »',
       ),
     },
@@ -2997,8 +3006,9 @@ const ACTE_5: Acte = [
     dureeMinutes: 3,
     concepts: ['contrat-de-lecture', 'moyenne-ponderee'],
     notes: puces(
-      '2 min de travail sur les questions 4 et 5.',
-      'Piège : Q4 « −2,3 % » au lieu de « 2,3 points ».',
+      '2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).',
+      'Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).',
+      'TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.',
     ),
     proprietes: {
       renvoi: 'B2-01-A5-05-TCD',
@@ -3202,9 +3212,10 @@ const ACTE_5: Acte = [
       dureeMinutes: 2,
       concepts: ['moyenne-ponderee'],
       notes: puces(
-        'Laisser 1 min de lecture silencieuse : tout ce qui sert à décider est ici.',
-        'Faire situer chaque chiffre : constat, mécanisme ou preuve manquante.',
-        'Transition : « À vous de recommander. »',
+        '1 min de lecture silencieuse, sans commentaire.',
+        'Relance : « Si la marketplace double à taux constant, combien de marge en plus ? » (+83 680 €, face à 40 000 € investis).',
+        '« Et le taux global ? » (≈ 22,4 % : le taux baisse encore, la marge en euros monte).',
+        'Transition : « À vous de recommander, en trois phrases. »',
       ),
     },
     'table',
@@ -3571,8 +3582,9 @@ const ACTE_6: Acte = [
         'controle-coherence',
       ],
       notes: puces(
-        'Projeter les quatre énigmes corrigées ; s’attarder sur la moins résolue (pupitre).',
-        'Transition : « Dernier piège : une réponse d’IA. »',
+        'S’attarder sur l’énigme la moins résolue (pupitre).',
+        'Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3 le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).',
+        'Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce qu’elle ne peut pas faire. »',
       ),
     },
     'B2-01-A6-02-COFFRE',

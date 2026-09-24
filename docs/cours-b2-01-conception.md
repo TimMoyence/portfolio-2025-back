@@ -813,7 +813,7 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Chacun passe de « Axe de Samir » à « Axe à zéro ».
   - Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la
     barre 2025 vaut toujours 291 000 €.
-  - Phrase à faire dire : « L’échelle change l’impression, pas la donnée » (+2,1 % réel).
+  - Phrase à faire dire : « L’échelle change l’impression, pas la donnée ».
 
 #### A2-03 · `B2-01-A2-03-ATELIER-1` — 6 min · `questionnaire` (régime `focus`, ordre `fixe`) · séance · Nouveau
 
@@ -857,10 +857,11 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Interaction et correction** : aucune saisie ; chaque poste voit sa réponse face à la bonne
   réponse.
 - **Notes** :
-  - Corriger question par question, en partant de la plus ratée (taux de réussite au pupitre).
-  - Q2 et Q3 : une part se calcule sur le CA, pas sur les commandes ; nommer la population de
-    référence.
-  - Transition : « Trois questions de plus, sur les évolutions. »
+  - Commencer par la question la moins réussie (score affiché sous chaque correction).
+  - Rapprocher Q2 et Q3 : la marketplace fait 84 % des commandes mais 45,5 % du CA ; même canal, deux
+    populations de référence.
+  - Q1 : si « +6 000 € : une forte croissance » domine, faire rapporter l’écart à 285 000 € : +2,1 %.
+  - Transition : « Trois questions de plus : deux évolutions, puis marge et marque. »
 
 #### A2-03 · `B2-01-A2-03-ATELIER-1-SUITE` — 6 min · `questionnaire` (régime `focus`, ordre `fixe`) · séance · Nouveau (retours QA)
 
@@ -875,10 +876,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     marketplace passe de 2 900 (2024) à 4 200 (2025). La hausse est d’environ… » 6. `b2-01-a2-marge-marque` (vote) « Atelier Rivage achète un sac étanche 80 € HT à son atelier
     partenaire et le revend 100 € HT. Quelle affirmation est exacte ? »
 - **Notes** :
-  - 5 min de travail sur les questions 4 à 6, sans calculatrice pour la question 5, puis 1 min de
-    comparaison avec le voisin.
-  - Pièges : Q4 −21,66 % (÷ 397 000) ; Q5 ≈ +31 % (÷ 4 200) ; Q6 marque et marge inversées.
-  - Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 2 900 × 1,45 ≈ 4 200 ; 80 × 1,25 = 100.
+  - 5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).
+  - Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 %
+    (÷ 4 200) ; marque et marge (Q6) inversées.
+  - Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.
 
 #### A2-03 · `B2-01-A2-03-CORRECTION-2` — 1 min · v2 `answer-review` · séance · Nouveau (retours QA)
 
@@ -895,8 +896,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Remarque** : l’explication de Q4 arrondit au dixième (−17,8 %) : la valeur à quatre chiffres
   significatifs de la feuille A4-02 ne doit pas apparaître avant elle (garde `confidentialite`).
 - **Notes** :
-  - Corriger question par question, en partant de la plus ratée.
-  - Q6 reprend le diagnostic (80 € → 100 €) : +25 % sur le coût, 20 % du prix de vente.
+  - Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.
+  - Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans
+    signe moins.
   - Transition : « Remettons la diapositive de Samir d’aplomb. »
 
 #### A2-04 · `B2-01-A2-04-MARGE-AXE-ZERO` — 2 min · v2 `chart` (G1) · séance · Modifié (S32)
@@ -971,8 +973,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Interaction et correction** : écran non interactif ; la révélation pilotée affiche la correction
   de chaque étape sous la réponse que l’étudiant a laissée à l’écran précédent.
 - **Notes** :
-  - Révéler une étape à la fois (« Montrer une étape de plus »).
-  - Contrôle : 27,6 × 0,917 ≈ 25,31 (écart d’arrondi normal).
+  - Révéler une étape à la fois (« Corriger une étape de plus »), après avoir lu une réponse d’élève
+    à l’étape.
+  - S’arrêter sur l’étape 3 : la phrase du comité donne les points et l’évolution relative, jamais
+    « −2,3 % ».
   - Transition : « Mini-jeu : tout n’est pas comparable. »
 
 #### A2-07 · `B2-01-A2-07-JEU-COMPARABLE` — 8 min · `fp-cardsort` · séance · Mini-jeu 1 · Modifié (S07)
@@ -1151,8 +1155,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Même exemple et mêmes étapes que `B2-01-A3-04-FIL-TECHNIQUE` (`corrigeDe`), en mode `pilote` :
     aucune saisie, le formateur révèle les étapes une à une depuis le pupitre.
 - **Notes** :
-  - Faire vérifier chaque résultat par retour au montant connu : 12,50 × 1,10 = 13,75 ; 3 000 × 1,20 =
-    3 600.
+  - « Corriger une étape de plus » : passer vite sur les étapes 1 à 3, s’arrêter sur 4 à 6
+    (l’opération inverse).
+  - Réflexe à faire dire : retour au montant connu, 12,50 × 1,10 = 13,75.
+  - L’étape 5 prépare la question « retour de 100 € à 80 € » de l’atelier 2.
   - Transition : « Et quand tous les prix montent ? L’inflation. »
 
 #### A3-05 · `B2-01-A3-05-INFLATION-RYTHME` — 1 min · v2 `chart` (G2) · catalogue · Modifié (S24, S26)
@@ -1218,9 +1224,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
   - Même exemple et mêmes étapes que `B2-01-A3-06-INDICE-ET-TAUX-MOYEN` (`corrigeDe`), en mode
     `pilote` : aucune saisie, le formateur révèle les étapes une à une depuis le pupitre.
 - **Notes** :
-  - Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (6 % par
-    an).
-  - Contrôle : 1,06³ = 1,191016 ; 1,0637³ ≈ 1,2035 ≠ 1,1910.
+  - « Corriger une étape de plus » : 5 étapes en 2 min ; s’arrêter sur la 5ᵉ (19,10 ÷ 3).
+  - Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (+6 %
+    par an).
+  - Transition : « Même méthode sur les prix en France depuis 2019 : atelier 2. »
 
 #### A3-07 · `B2-01-A3-07-ATELIER-2` — 4 min · `questionnaire` (régime `focus`, ordre `fixe`) · séance · Nouveau (reprend S23, S25, S27)
 
@@ -1256,8 +1263,12 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     - `b2-01-a3-hausse-2019-2025` « Coefficient global : 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009
       ≈ 1,1597, soit +15,97 % ; la somme des taux (15,1 %) sous-estime la hausse. »
 - **Notes** :
-  - Corriger en partant de la question la plus ratée.
-  - Contrôle : 1,025⁶ ≈ 1,1597.
+  - Commencer par la question la moins réussie.
+  - Ne pas citer le taux moyen ni 1,025⁶ : c’est la question suivante. Laisser 1,1597 en vue, elle en
+    part.
+  - Niveau des prix : si « plus bas » domine, faire dire que 0,9 % reste une hausse (le mot
+    « désinflation » viendra en A3-08).
+  - Transition : « Deux questions de plus : le rythme moyen, puis le retour en arrière. »
 
 #### A3-07 · `B2-01-A3-07-ATELIER-2-SUITE` — 4 min · `questionnaire` (régime `focus`, ordre `fixe`) · séance · Nouveau (retours QA)
 
@@ -1270,8 +1281,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     centième. » 5. `b2-01-a3-reciproque` (vote) « Le prix d’une réparation est passé de 80 € à 100 €. Pour revenir
     à 80 €, de quel pourcentage faut-il le baisser ? »
 - **Notes** :
-  - 3 min individuelles sur les questions 4 et 5.
-  - Pièges : Q4 2,66 % (15,97 ÷ 6) ; Q5 −25 % (même taux à l’envers).
+  - 3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).
+  - Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à
+    l’envers).
+  - La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.
 
 #### A3-07 · `B2-01-A3-07-CORRECTION-2` — 1 min · v2 `answer-review` · séance · Nouveau (retours QA)
 
@@ -1284,9 +1297,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     - `b2-01-a3-reciproque` « Coefficient de retour : 80 ÷ 100 = 0,80, soit −20 %. Reprendre le même
       taux à l’envers (−25 %) mènerait à 75 €. »
 - **Notes** :
-  - Q4 : la moyenne des taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la
-    méthode reste fausse (A6-04 : 33,25 % contre 32,6 %).
-  - Contrôle : 100 × 0,80 = 80.
+  - Taux moyen : la moyenne des six taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont
+    petits ; la méthode reste fausse (A6-04 : 33,25 % au lieu de 32,6 %).
   - Transition : « Voici la courbe que vous venez de calculer. »
 
 #### A3-08 · `B2-01-A3-08-INDICE-PRIX` — 2 min · v2 `chart` (G3) · séance · Modifié (S26, S27)
@@ -1444,8 +1456,11 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     que la première partie.
   - Questions (ordre fixe) : 3. `b2-01-a4-axe` (vote) « Où placez-vous l’origine de l’axe vertical ? » 4. `b2-01-a4-lecture` (vote) « Quelle phrase de lecture placez-vous sous le graphique ? »
 - **Notes** :
-  - 3 min de travail sur l’axe et la phrase de lecture.
-  - Contrôle : les quatre trimestres redonnent les CA annuels (397, 230 et 523 k€).
+  - 3 min seul.
+  - Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers
+    d’euros lus comme un pourcentage).
+  - Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et
+    523 k€ : oui).
 
 #### A4-03 · `B2-01-A4-03-CORRECTION-2` — 1 min · v2 `answer-review` · séance · Nouveau (retours QA)
 
@@ -1458,7 +1473,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     - `b2-01-a4-lecture` « La phrase décrit deux valeurs avec leur unité ; elle ne conclut pas
       (« s’effondre ») et ne confond pas un montant avec un pourcentage. »
 - **Notes** :
-  - Rappeler la diapositive de Samir : un axe tronqué grossit les écarts.
+  - « Le sur-mesure s’effondre » est même faux au 3e trimestre : il remonte de 95 à 102 k€.
+  - Relance sur « 167 % du CA » : quelle est la vraie part ? 167 ÷ 318 ≈ 52,5 % (on la retrouvera
+    dans le TCD).
   - Transition : « Voici le graphique retenu pour le dossier. »
 
 #### A4-04 · `B2-01-A4-04-CA-TRIMESTRIEL` — 2 min · v2 `chart` (G4) · séance · Nouveau (reprend S20, S33)
@@ -1516,7 +1533,8 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     l’année, et non la somme des taux annoncés (+4 %). Recalculer chaque prix depuis 20,00 € mène au
     20,80 € du tableau de bord. »
 - **Notes** :
-  - Corriger sur la ligne de synthèse : somme des taux annoncés contre évolution réelle.
+  - Boucler avec la carte « toile » du tri A1-05, laissée « à vérifier à l’acte 4 » : +3,50 %, et
+    non +4 %.
   - Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈
     +0,8 %), pas la moyenne annuelle de 0,9 %.
   - Transition : jalon 4, puis l’acte 5.
@@ -1613,9 +1631,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
 - **Interaction et correction** : le formateur révèle les étapes une à une (`pilote`) ; écran non
   interactif.
 - **Notes** :
+  - « Corriger une étape de plus » : vite sur les étapes 1 à 4, s’arrêter sur 5 (effet de répartition)
+    et 6 (négation).
   - Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition
     −26 400 € = +1 200 € de marge.
-  - Piège : la moyenne simple (26,7 %) ne correspond à aucune année.
   - Transition : « Vérifions que la classe sait l’expliquer : vote. »
 
 #### A5-02 · `B2-01-A5-02-VOTE-PARADOXE` — 8 min · `fp-vote` (instruction par les pairs) · séance · Modifié (S38, S46 à S49)
@@ -1738,8 +1757,9 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     - `b2-01-a5-causalite` « Deux évolutions simultanées ne prouvent pas une cause : l’hypothèse de
       Samir reste à vérifier, client par client. »
 - **Notes** :
-  - Chiffre à faire ressortir : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; elle
-    pèse 45,5 % du CA mais 28,8 % de la marge.
+  - Chiffre absent de l’écran : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; c’est
+    l’argument contre « arrêter la marketplace ».
+  - Contrôle par canal : −30 960 + 5 600 + 26 560 = +1 200 €, la hausse de marge du tableau de bord.
   - Transition : « Deux questions de plus, pour rédiger le dossier. »
 
 #### A5-06 · `B2-01-A5-06-ATELIER-4-SUITE` — 3 min · `questionnaire` (régime `focus`, ordre `fixe`) · séance · Nouveau (retours QA)
@@ -1756,8 +1776,10 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     pondère chaque canal par son CA » (juste) ; « 26,7 % : il traite les trois canaux à égalité » ;
     « L’un ou l’autre : ils mesurent le même taux ».
 - **Notes** :
-  - 2 min de travail sur les questions 4 et 5.
-  - Piège : Q4 « −2,3 % » au lieu de « 2,3 points ».
+  - 2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).
+  - Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse »
+    (un montant ne dit rien d’un taux).
+  - TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.
 
 #### A5-06 · `B2-01-A5-06-CORRECTION-2` — 1 min · v2 `answer-review` · séance · Nouveau (retours QA)
 
@@ -1846,9 +1868,11 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
     | Proposition de Samir | Investir 40 000 € pour doubler les ventes de la marketplace.                                                                                                                                                                                                                                                                                                                                                                                    |
 
 - **Notes** :
-  - Laisser 1 min de lecture silencieuse : tout ce qui sert à décider est ici.
-  - Faire situer chaque chiffre : constat, mécanisme ou preuve manquante.
-  - Transition : « À vous de recommander. »
+  - 1 min de lecture silencieuse, sans commentaire.
+  - Relance : « Si la marketplace double à taux constant, combien de marge en plus ? » (+83 680 €,
+    face à 40 000 € investis).
+  - « Et le taux global ? » (≈ 22,4 % : le taux baisse encore, la marge en euros monte).
+  - Transition : « À vous de recommander, en trois phrases. »
 
 #### A5-08 · `B2-01-A5-08-RECOMMANDATION` — 4 min · `fp-challenge` · séance · Modifié (S45, S58, S60, S62 ; retours QA)
 
@@ -2003,8 +2027,11 @@ confusions sont au § 5.10. Les années des `labels` des graphiques sont des cha
       9 × 10). La pièce fait foi : TVA = 48 705 × 0,20 = 9 741 €, et non 9 759 € (base du grand
       livre). »
 - **Notes** :
-  - Projeter les quatre énigmes corrigées ; s’attarder sur la moins résolue (pupitre).
-  - Transition : « Dernier piège : une réponse d’IA. »
+  - S’attarder sur l’énigme la moins résolue (pupitre).
+  - Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3
+    le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).
+  - Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce
+    qu’elle ne peut pas faire. »
 
 #### A6-03 · `B2-01-A6-03-IA-CADRE` — 2 min · v2 `guide` · catalogue · Modifié (S67, S70, S71)
 

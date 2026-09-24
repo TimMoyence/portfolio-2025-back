@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "03bfd433930cb53cedebafe76e05c8c49144cf9ed657ec34365ec688c7adc750",
+  "empreinte": "926cef4cb67e6c41e621e233f3f5b1306796bf8ccdc688bcb17bd52bdef770cd",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -5190,7 +5190,7 @@
           }
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "notes": "• Chacun passe de « Axe de Samir » à « Axe à zéro ».\n• Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la barre 2025 vaut toujours 291 000 €.\n• Phrase à faire dire : « L’échelle change l’impression, pas la donnée » (+2,1 % réel).",
+        "notes": "• Chacun passe de « Axe de Samir » à « Axe à zéro ».\n• Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la barre 2025 vaut toujours 291 000 €.\n• Phrase à faire dire : « L’échelle change l’impression, pas la donnée ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5411,7 +5411,7 @@
           }
         },
         "ecranCorrige": "B2-01-A2-03-ATELIER-1",
-        "notes": "• Corriger question par question, en partant de la plus ratée (taux de réussite au pupitre).\n• Q2 et Q3 : une part se calcule sur le CA, pas sur les commandes ; nommer la population de référence.\n• Transition : « Trois questions de plus, sur les évolutions. »",
+        "notes": "• Commencer par la question la moins réussie (score affiché sous chaque correction).\n• Rapprocher Q2 et Q3 : la marketplace fait 84 % des commandes mais 45,5 % du CA ; même canal, deux populations de référence.\n• Q1 : si « +6 000 € : une forte croissance » domine, faire rapporter l’écart à 285 000 € : +2,1 %.\n• Transition : « Trois questions de plus : deux évolutions, puis marge et marque. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5495,7 +5495,7 @@
             }
           ]
         },
-        "notes": "• 5 min de travail sur les questions 4 à 6, sans calculatrice pour la question 5, puis 1 min de comparaison avec le voisin.\n• Pièges : Q4 −21,66 % (÷ 397 000) ; Q5 ≈ +31 % (÷ 4 200) ; Q6 marque et marge inversées.\n• Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 2 900 × 1,45 ≈ 4 200 ; 80 × 1,25 = 100.",
+        "notes": "• 5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).\n• Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.\n• Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -5639,7 +5639,7 @@
           }
         },
         "ecranCorrige": "B2-01-A2-03-ATELIER-1-SUITE",
-        "notes": "• Corriger question par question, en partant de la plus ratée.\n• Q6 reprend le diagnostic (80 € → 100 €) : +25 % sur le coût, 20 % du prix de vente.\n• Transition : « Remettons la diapositive de Samir d’aplomb. »",
+        "notes": "• Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.\n• Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.\n• Transition : « Remettons la diapositive de Samir d’aplomb. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5856,7 +5856,7 @@
           "corrigeDe": "B2-01-A2-06-POINTS"
         },
         "ecranCorrige": "B2-01-A2-06-POINTS",
-        "notes": "• Révéler une étape à la fois (« Montrer une étape de plus »).\n• Contrôle : 27,6 × 0,917 ≈ 25,31 (écart d’arrondi normal).\n• Transition : « Mini-jeu : tout n’est pas comparable. »",
+        "notes": "• Révéler une étape à la fois (« Corriger une étape de plus »), après avoir lu une réponse d’élève à l’étape.\n• S’arrêter sur l’étape 3 : la phrase du comité donne les points et l’évolution relative, jamais « −2,3 % ».\n• Transition : « Mini-jeu : tout n’est pas comparable. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6538,7 +6538,7 @@
           "corrigeDe": "B2-01-A3-04-FIL-TECHNIQUE"
         },
         "ecranCorrige": "B2-01-A3-04-FIL-TECHNIQUE",
-        "notes": "• Faire vérifier chaque résultat par retour au montant connu : 12,50 × 1,10 = 13,75 ; 3 000 × 1,20 = 3 600.\n• Transition : « Et quand tous les prix montent ? L’inflation. »",
+        "notes": "• « Corriger une étape de plus » : passer vite sur les étapes 1 à 3, s’arrêter sur 4 à 6 (l’opération inverse).\n• Réflexe à faire dire : retour au montant connu, 12,50 × 1,10 = 13,75.\n• L’étape 5 prépare la question « retour de 100 € à 80 € » de l’atelier 2.\n• Transition : « Et quand tous les prix montent ? L’inflation. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6714,7 +6714,7 @@
           "corrigeDe": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN"
         },
         "ecranCorrige": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN",
-        "notes": "• Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (6 % par an).\n• Contrôle : 1,06³ = 1,191016 ; 1,0637³ ≈ 1,2035 ≠ 1,1910.",
+        "notes": "• « Corriger une étape de plus » : 5 étapes en 2 min ; s’arrêter sur la 5ᵉ (19,10 ÷ 3).\n• Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (+6 % par an).\n• Transition : « Même méthode sur les prix en France depuis 2019 : atelier 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6916,7 +6916,7 @@
           }
         },
         "ecranCorrige": "B2-01-A3-07-ATELIER-2",
-        "notes": "• Corriger en partant de la question la plus ratée.\n• Contrôle : 1,025⁶ ≈ 1,1597.",
+        "notes": "• Commencer par la question la moins réussie.\n• Ne pas citer le taux moyen ni 1,025⁶ : c’est la question suivante. Laisser 1,1597 en vue, elle en part.\n• Niveau des prix : si « plus bas » domine, faire dire que 0,9 % reste une hausse (le mot « désinflation » viendra en A3-08).\n• Transition : « Deux questions de plus : le rythme moyen, puis le retour en arrière. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6978,7 +6978,7 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "notes": "• 3 min individuelles sur les questions 4 et 5.\n• Pièges : Q4 2,66 % (15,97 ÷ 6) ; Q5 −25 % (même taux à l’envers).",
+        "notes": "• 3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).\n• La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -7078,7 +7078,7 @@
           }
         },
         "ecranCorrige": "B2-01-A3-07-ATELIER-2-SUITE",
-        "notes": "• Q4 : la moyenne des taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % contre 32,6 %).\n• Contrôle : 100 × 0,80 = 80.\n• Transition : « Voici la courbe que vous venez de calculer. »",
+        "notes": "• Taux moyen : la moyenne des six taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % au lieu de 32,6 %).\n• Transition : « Voici la courbe que vous venez de calculer. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -7790,7 +7790,7 @@
             }
           ]
         },
-        "notes": "• 3 min de travail sur l’axe et la phrase de lecture.\n• Contrôle : les quatre trimestres redonnent les CA annuels (397, 230 et 523 k€).",
+        "notes": "• 3 min seul.\n• Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).\n• Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -7903,7 +7903,7 @@
           }
         },
         "ecranCorrige": "B2-01-A4-03-ATELIER-3-SUITE",
-        "notes": "• Rappeler la diapositive de Samir : un axe tronqué grossit les écarts.\n• Transition : « Voici le graphique retenu pour le dossier. »",
+        "notes": "• « Le sur-mesure s’effondre » est même faux au 3e trimestre : il remonte de 95 à 102 k€.\n• Relance sur « 167 % du CA » : quelle est la vraie part ? 167 ÷ 318 ≈ 52,5 % (on la retrouvera dans le TCD).\n• Transition : « Voici le graphique retenu pour le dossier. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -8156,7 +8156,7 @@
           }
         },
         "ecranCorrige": "B2-01-A4-05-INDICE-TOILE",
-        "notes": "• Corriger sur la ligne de synthèse : somme des taux annoncés contre évolution réelle.\n• Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈ +0,8 %), pas la moyenne annuelle de 0,9 %.\n• Transition : jalon 4, puis l’acte 5.",
+        "notes": "• Boucler avec la carte « toile » du tri A1-05, laissée « à vérifier à l’acte 4 » : +3,50 %, et non +4 %.\n• Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈ +0,8 %), pas la moyenne annuelle de 0,9 %.\n• Transition : jalon 4, puis l’acte 5.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -8359,7 +8359,7 @@
           "corrigeDe": "B2-01-A5-03-MOYENNE-PONDEREE"
         },
         "ecranCorrige": "B2-01-A5-03-MOYENNE-PONDEREE",
-        "notes": "• Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition −26 400 € = +1 200 € de marge.\n• Piège : la moyenne simple (26,7 %) ne correspond à aucune année.\n• Transition : « Vérifions que la classe sait l’expliquer : vote. »",
+        "notes": "• « Corriger une étape de plus » : vite sur les étapes 1 à 4, s’arrêter sur 5 (effet de répartition) et 6 (négation).\n• Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition −26 400 € = +1 200 € de marge.\n• Transition : « Vérifions que la classe sait l’expliquer : vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -8846,7 +8846,7 @@
           }
         },
         "ecranCorrige": "B2-01-A5-06-ATELIER-4",
-        "notes": "• Chiffre à faire ressortir : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; elle pèse 45,5 % du CA mais 28,8 % de la marge.\n• Transition : « Deux questions de plus, pour rédiger le dossier. »",
+        "notes": "• Chiffre absent de l’écran : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; c’est l’argument contre « arrêter la marketplace ».\n• Contrôle par canal : −30 960 + 5 600 + 26 560 = +1 200 €, la hausse de marge du tableau de bord.\n• Transition : « Deux questions de plus, pour rédiger le dossier. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -8914,7 +8914,7 @@
           ]
         },
         "renvoi": "B2-01-A5-05-TCD",
-        "notes": "• 2 min de travail sur les questions 4 et 5.\n• Piège : Q4 « −2,3 % » au lieu de « 2,3 points ».",
+        "notes": "• 2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).\n• TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -9340,7 +9340,7 @@
             }
           }
         },
-        "notes": "• Laisser 1 min de lecture silencieuse : tout ce qui sert à décider est ici.\n• Faire situer chaque chiffre : constat, mécanisme ou preuve manquante.\n• Transition : « À vous de recommander. »",
+        "notes": "• 1 min de lecture silencieuse, sans commentaire.\n• Relance : « Si la marketplace double à taux constant, combien de marge en plus ? » (+83 680 €, face à 40 000 € investis).\n• « Et le taux global ? » (≈ 22,4 % : le taux baisse encore, la marge en euros monte).\n• Transition : « À vous de recommander, en trois phrases. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -9683,7 +9683,7 @@
           }
         },
         "ecranCorrige": "B2-01-A6-02-COFFRE",
-        "notes": "• Projeter les quatre énigmes corrigées ; s’attarder sur la moins résolue (pupitre).\n• Transition : « Dernier piège : une réponse d’IA. »",
+        "notes": "• S’attarder sur l’énigme la moins résolue (pupitre).\n• Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3 le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).\n• Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce qu’elle ne peut pas faire. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
