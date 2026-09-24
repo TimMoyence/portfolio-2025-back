@@ -24,6 +24,8 @@ import { CleEtudianteDerivee1789974322913 } from '../../src/migrations/178997432
 import { AddFormationCourseEmpreinte1790178630008 } from '../../src/migrations/1790178630008-AddFormationCourseEmpreinte';
 import { NotesFormateurFacultatives1790300000000 } from '../../src/migrations/1790300000000-NotesFormateurFacultatives';
 import { PlafondDesReprisesDeProduction1790400000000 } from '../../src/migrations/1790400000000-PlafondDesReprisesDeProduction';
+import { DiffusionSeanceParDefaut1790500000000 } from '../../src/migrations/1790500000000-DiffusionSeanceParDefaut';
+import { RetireLesGroupesDeSuivi1790600000000 } from '../../src/migrations/1790600000000-RetireLesGroupesDeSuivi';
 import {
   SynchroniserCoursUseCase,
   type IssueDeSynchronisation,
@@ -49,7 +51,6 @@ import { RappelsServisRepositoryTypeORM } from '../../src/modules/formations/inf
 import { FormationCourseContentEntity } from '../../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
 import { FormationCoursePublicationEntity } from '../../src/modules/formations/infrastructure/entities/FormationCoursePublication.entity';
 import { FormationFreeResponseEntity } from '../../src/modules/formations/infrastructure/entities/FormationFreeResponse.entity';
-import { FormationGroupEntity } from '../../src/modules/formations/infrastructure/entities/FormationGroup.entity';
 import { FormationIncidentEntity } from '../../src/modules/formations/infrastructure/entities/FormationIncident.entity';
 import { FormationMasteryEntity } from '../../src/modules/formations/infrastructure/entities/FormationMastery.entity';
 import { FormationParticipantEntity } from '../../src/modules/formations/infrastructure/entities/FormationParticipant.entity';
@@ -72,7 +73,6 @@ export const FORMATION_ENTITIES = [
   FormationAnswerEntity,
   FormationIncidentEntity,
   FormationMasteryEntity,
-  FormationGroupEntity,
   FormationScoreEntity,
   FormationFreeResponseEntity,
   FormationTeacherAnnotationEntity,
@@ -111,6 +111,8 @@ const FORMATION_MIGRATIONS = [
   AddFormationCourseEmpreinte1790178630008,
   NotesFormateurFacultatives1790300000000,
   PlafondDesReprisesDeProduction1790400000000,
+  DiffusionSeanceParDefaut1790500000000,
+  RetireLesGroupesDeSuivi1790600000000,
 ];
 
 export const TABLES_DE_SEANCE = [
@@ -119,7 +121,6 @@ export const TABLES_DE_SEANCE = [
   'formation_answers',
   'formation_incidents',
   'formation_mastery',
-  'formation_groups',
   'formation_scores',
   'formation_free_responses',
   'formation_teacher_annotations',

@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { FormationSessionEntity } from './FormationSession.entity';
-import { FormationGroupEntity } from './FormationGroup.entity';
 
 @Entity({ name: 'formation_participants' })
 @Index('uq_formation_participants_session_key', ['sessionId', 'studentKey'], {
@@ -20,7 +19,6 @@ import { FormationGroupEntity } from './FormationGroup.entity';
   where: '"evince_le" IS NULL',
 })
 @Index('idx_formation_participants_student_key', ['studentKey'])
-@Index('idx_formation_participants_group', ['groupId'])
 export class FormationParticipantEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -46,19 +44,6 @@ export class FormationParticipantEntity {
 
   @Column({ type: 'varchar', length: 180 })
   email: string;
-
-  @Column({ name: 'group_id', type: 'uuid', nullable: true })
-  groupId: string | null;
-
-  @ManyToOne(() => FormationGroupEntity, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn({
-    name: 'group_id',
-    foreignKeyConstraintName: 'FK_formation_participants_group',
-  })
-  group: FormationGroupEntity | null;
 
   @Column({ type: 'int' })
   seed: number;

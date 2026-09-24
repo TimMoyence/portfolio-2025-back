@@ -53,7 +53,7 @@ export class FormationScreenContentEntity {
   @Column({ type: 'varchar', length: 120, nullable: true })
   titre: string | null;
 
-  @Column({ type: 'varchar', length: 10, default: 'catalogue' })
+  @Column({ type: 'varchar', length: 10, default: 'seance' })
   diffusion: string;
 
   @Column({ type: 'varchar', length: 40 })

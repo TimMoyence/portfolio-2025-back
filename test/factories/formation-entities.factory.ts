@@ -176,7 +176,6 @@ export function buildParticipantEntity(
   return Object.assign(
     new FormationParticipantEntity(),
     buildParticipantRecord(),
-    { groupId: null },
     overrides,
   );
 }
