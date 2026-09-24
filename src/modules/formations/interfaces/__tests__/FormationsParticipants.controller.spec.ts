@@ -1,5 +1,9 @@
 import type { Request } from 'express';
 import { buildParticipantRecord } from '../../../../../test/factories/formation.factory';
+import {
+  buildFormationsParticipantsController,
+  createMockFormationsParticipantsDependances,
+} from '../../../../../test/factories/formations-controllers.factory';
 import { ROLES_KEY } from '../../../../common/interfaces/auth/roles.decorator';
 import { FormationsParticipantsController } from '../FormationsParticipants.controller';
 
@@ -12,14 +16,10 @@ const requete = {
 } as unknown as Request;
 
 describe('FormationsParticipantsController', () => {
-  const participants = { execute: jest.fn() };
-  const evincerParticipant = { execute: jest.fn() };
-  const readmettreParticipant = { execute: jest.fn() };
-  const controller = new FormationsParticipantsController(
-    participants as never,
-    evincerParticipant as never,
-    readmettreParticipant as never,
-  );
+  const dependances = createMockFormationsParticipantsDependances();
+  const { participants, evincerParticipant, readmettreParticipant } =
+    dependances;
+  const controller = buildFormationsParticipantsController(dependances);
 
   beforeEach(() => {
     jest.clearAllMocks();

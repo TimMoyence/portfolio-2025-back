@@ -1,5 +1,24 @@
 import { PublicFormProtectionService } from '../../src/common/interfaces/security/public-form-protection.service';
+import { FormationsParticipantsController } from '../../src/modules/formations/interfaces/FormationsParticipants.controller';
 import { FormationsStudentController } from '../../src/modules/formations/interfaces/FormationsStudent.controller';
+
+export function createMockFormationsParticipantsDependances() {
+  return {
+    participants: { execute: jest.fn() },
+    evincerParticipant: { execute: jest.fn() },
+    readmettreParticipant: { execute: jest.fn() },
+  };
+}
+
+export function buildFormationsParticipantsController(
+  dependances: ReturnType<typeof createMockFormationsParticipantsDependances>,
+): FormationsParticipantsController {
+  return new FormationsParticipantsController(
+    dependances.participants as never,
+    dependances.evincerParticipant as never,
+    dependances.readmettreParticipant as never,
+  );
+}
 
 export function createMockFormationsStudentDependances() {
   return {
