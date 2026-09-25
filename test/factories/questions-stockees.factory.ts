@@ -33,6 +33,24 @@ export function buildVoteStocke(
   };
 }
 
+export function buildRappelDeCompensation(
+  juste = 'Non : deux erreurs se compensent',
+  piege = 'Oui : le total concorde',
+  overrides: Partial<VoteStockee> = {},
+): VoteStockee {
+  return buildVoteStocke({
+    id: 'b2-01-r-compensation',
+    concept: 'controle-coherence',
+    noteCompte: false,
+    enonce: 'Peut-on valider chaque écriture ?',
+    options: [
+      buildOptionStockee(juste, null),
+      buildOptionStockee(piege, 'total-concordant-vaut-preuve'),
+    ],
+    ...overrides,
+  });
+}
+
 export function buildNumeriqueStockee(
   overrides: Partial<NumeriqueStockee> = {},
 ): NumeriqueStockee {

@@ -1,4 +1,7 @@
+import type { BaremeV2 } from '../../src/modules/formations/domain/contrats/bareme';
 import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
+import { ouvrirTirages } from '../../src/modules/formations/domain/cours/OuvertureTirages';
+import { tireurSequentiel } from './cours.factory';
 import {
   type ContenuDeCours,
   type ContenuDeCoursBrut,
@@ -28,4 +31,12 @@ export function buildContenuB2_01(
 
 export function buildCoursB2_01(version = VERSION_PUBLIEE_DE_TEST): Cours {
   return lireCoursStocke(buildContenuB2_01(version));
+}
+
+export function ouvrirLeBaremeV2DuB2_01(cours: Cours): BaremeV2 {
+  const bareme = ouvrirTirages(cours, tireurSequentiel(1));
+
+  expect(bareme.version).toBe(2);
+  expect(bareme.tirages).toHaveLength(60);
+  return bareme;
 }

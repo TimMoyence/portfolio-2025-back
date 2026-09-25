@@ -4,8 +4,13 @@ import type {
 } from '../../src/modules/formations/domain/contrats/cours';
 import {
   questionNumerique,
+  questionsDuCours,
   questionVote,
+  type AuMoinsUn,
+  type QuestionNumerique,
+  type QuestionVote,
 } from '../../src/modules/formations/domain/cours/Cours';
+import type { Tolerance } from '../../src/modules/formations/domain/GradingCore';
 import type {
   CoursPublie,
   ICatalogueCours,
@@ -13,8 +18,18 @@ import type {
 import { ouvrirTirages } from '../../src/modules/formations/domain/cours/OuvertureTirages';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import type { AnswerRecord } from '../../src/modules/formations/domain/IAnswers.repository';
-import type { ParticipantRecord } from '../../src/modules/formations/domain/IParticipants.repository';
-import type { SessionRecord } from '../../src/modules/formations/domain/ISessions.repository';
+import type { ProgressionEnigmeRecord } from '../../src/modules/formations/domain/IEscape.repository';
+import { LireSujetUseCase } from '../../src/modules/formations/application/LireSujet.useCase';
+import { ParticipationEnSeance } from '../../src/modules/formations/application/ParticipationEnSeance';
+import type {
+  IParticipantsRepository,
+  ParticipantRecord,
+} from '../../src/modules/formations/domain/IParticipants.repository';
+import type { ISessionStateCache } from '../../src/modules/formations/domain/ISessionStateCache.port';
+import type {
+  ISessionsRepository,
+  SessionRecord,
+} from '../../src/modules/formations/domain/ISessions.repository';
 import {
   buildCorrigeClassement,
   buildCorrigeDefi,
@@ -27,6 +42,9 @@ import {
   buildAnswerRecord,
   buildParticipantRecord,
   buildSessionRecord,
+  createMockParticipantsRepo,
+  createMockSessionStateCache,
+  createMockSessionsRepo,
 } from './formation.factory';
 
 export const EN_CATALOGUE = { titre: null, diffusion: 'catalogue' } as const;
@@ -112,14 +130,61 @@ export function buildEcranDeVoteJumele(): Ecran {
   };
 }
 
+export const SOCLE_DE_QUESTION_FIGEE = {
+  noteCompte: false,
+  donnees: () => ({}),
+  enonce: () => 'e',
+  unite: null,
+} as const;
+
+export function buildQuestionNumeriqueFigee(
+  solution: number,
+  pieges: AuMoinsUn<number>,
+  tolerance: Tolerance,
+): QuestionNumerique {
+  const [premier, ...suite] = pieges.map((valeur) => ({
+    confusion: 'base-arrivee' as const,
+    valeur: () => valeur,
+  }));
+  return questionNumerique({
+    ...SOCLE_DE_QUESTION_FIGEE,
+    id: 'Q-FIGEE',
+    concept: 'proportion',
+    solution: () => solution,
+    tolerance,
+    pieges: [premier, ...suite],
+  });
+}
+
+export function buildCoursAUneQuestion(
+  question: QuestionNumerique | QuestionVote,
+): Cours {
+  const commun = {
+    ...EN_CATALOGUE,
+    id: 'E',
+    dureeMinutes: 1,
+    concepts: ['proportion'] as const,
+    notes: '',
+  };
+  const ecran: Ecran =
+    question.type === 'numeric'
+      ? { ...commun, brique: 'fp-numeric', question }
+      : { ...commun, brique: 'fp-vote', question };
+  return buildCoursDeTest({ ecrans: [ecran] });
+}
+
+function coursDeTestSuiviDe(
+  overrides: Partial<Cours>,
+  ...ajouts: readonly Ecran[]
+): Cours {
+  const socle = buildCoursDeTest(overrides);
+  return { ...socle, ecrans: [...socle.ecrans, ...ajouts] };
+}
+
 export function buildCoursAvecVoteJumele(
   overrides: Partial<Cours> = {},
 ): Cours {
-  const socle = buildCoursDeTest(overrides);
-  return {
-    ...socle,
-    ecrans: [...socle.ecrans, buildEcranDeVoteJumele()],
-  };
+  return coursDeTestSuiviDe(overrides, buildEcranDeVoteJumele());
 }
 
 function planDeFeuilleTest() {
@@ -174,6 +239,19 @@ const PLAN_DE_TABLEAU_TEST = {
 
 export const PARCOURS_DE_TEST = 'P-TEST-COFFRE';
 export const ENIGMES_DE_TEST = ['E1-MIX', 'E2-IND', 'E3-TVA'] as const;
+
+export function buildProgressionEnigme(
+  overrides: Partial<ProgressionEnigmeRecord> = {},
+): ProgressionEnigmeRecord {
+  return {
+    participantId: 'participant-uuid',
+    parcoursId: PARCOURS_DE_TEST,
+    enigmeId: ENIGMES_DE_TEST[0],
+    tentatives: 1,
+    resolueLe: new Date('2026-09-11T09:00:00.000Z'),
+    ...overrides,
+  };
+}
 export const TENTATIVES_MAX_DE_TEST = 10;
 
 function enigmeDeTest(rang: number) {
@@ -256,8 +334,7 @@ export function buildEcranDeDefi(): Ecran {
 }
 
 export function buildCoursAvecDefi(overrides: Partial<Cours> = {}): Cours {
-  const socle = buildCoursDeTest(overrides);
-  return { ...socle, ecrans: [...socle.ecrans, buildEcranDeDefi()] };
+  return coursDeTestSuiviDe(overrides, buildEcranDeDefi());
 }
 
 export const SONDAGE_DE_TEST = 'jalon-test-1';
@@ -277,76 +354,70 @@ export function buildEcranDeJalon(): Ecran {
 }
 
 export function buildCoursAvecJalon(overrides: Partial<Cours> = {}): Cours {
-  const socle = buildCoursDeTest(overrides);
-  return { ...socle, ecrans: [...socle.ecrans, buildEcranDeJalon()] };
+  return coursDeTestSuiviDe(overrides, buildEcranDeJalon());
 }
 
 export function buildCoursAvecEnigmes(overrides: Partial<Cours> = {}): Cours {
-  const socle = buildCoursDeTest(overrides);
-  return { ...socle, ecrans: [...socle.ecrans, buildEcranDEnigmes()] };
+  return coursDeTestSuiviDe(overrides, buildEcranDEnigmes());
 }
 
 export function buildCoursAvecProductions(
   overrides: Partial<Cours> = {},
 ): Cours {
-  const socle = buildCoursDeTest(overrides);
-  return {
-    ...socle,
-    ecrans: [
-      ...socle.ecrans,
-      {
-        ...EN_CATALOGUE,
-        id: 'E-FEUILLE',
-        brique: 'fp-sheet',
-        dureeMinutes: 12,
-        concepts: ['tableur'],
-        notes: 'Tâche de tableur',
-        proprietes: { plan: planDeFeuilleTest() },
-        production: {
-          id: 'Q-TEST-FEUILLE',
-          type: 'feuille',
-          concept: 'tableur',
-          noteCompte: true,
-          confusions: ['taux-valeur-facteur-cent'],
-          corrige: buildCorrigeFeuille({ plan: planDeFeuilleTest() }),
-        },
+  return coursDeTestSuiviDe(
+    overrides,
+    {
+      ...EN_CATALOGUE,
+      id: 'E-FEUILLE',
+      brique: 'fp-sheet',
+      dureeMinutes: 12,
+      concepts: ['tableur'],
+      notes: 'Tâche de tableur',
+      proprietes: { plan: planDeFeuilleTest() },
+      production: {
+        id: 'Q-TEST-FEUILLE',
+        type: 'feuille',
+        concept: 'tableur',
+        noteCompte: true,
+        confusions: ['taux-valeur-facteur-cent'],
+        corrige: buildCorrigeFeuille({ plan: planDeFeuilleTest() }),
       },
-      {
-        ...EN_CATALOGUE,
-        id: 'E-CARTES',
-        brique: 'fp-cardsort',
-        dureeMinutes: 10,
-        concepts: ['lecture-graphique'],
-        notes: 'Tri de cartes',
-        proprietes: { plan: PLAN_DE_CLASSEMENT_TEST },
-        production: {
-          id: 'Q-TEST-CLASSEMENT',
-          type: 'classement',
-          concept: 'lecture-graphique',
-          noteCompte: true,
-          confusions: ['valeur-confondue-avec-taux'],
-          corrige: buildCorrigeClassement(),
-        },
+    },
+    {
+      ...EN_CATALOGUE,
+      id: 'E-CARTES',
+      brique: 'fp-cardsort',
+      dureeMinutes: 10,
+      concepts: ['lecture-graphique'],
+      notes: 'Tri de cartes',
+      proprietes: { plan: PLAN_DE_CLASSEMENT_TEST },
+      production: {
+        id: 'Q-TEST-CLASSEMENT',
+        type: 'classement',
+        concept: 'lecture-graphique',
+        noteCompte: true,
+        confusions: ['valeur-confondue-avec-taux'],
+        corrige: buildCorrigeClassement(),
       },
-      {
-        ...EN_CATALOGUE,
-        id: 'E-TABLEAU',
-        brique: 'fp-table-build',
-        dureeMinutes: 12,
-        concepts: ['evolutions-successives'],
-        notes: 'Construction de tableau',
-        proprietes: { plan: PLAN_DE_TABLEAU_TEST },
-        production: {
-          id: 'Q-TEST-TABLEAU',
-          type: 'tableau',
-          concept: 'evolutions-successives',
-          noteCompte: true,
-          confusions: ['taux-successifs-additionnes'],
-          corrige: buildCorrigeTableau(),
-        },
+    },
+    {
+      ...EN_CATALOGUE,
+      id: 'E-TABLEAU',
+      brique: 'fp-table-build',
+      dureeMinutes: 12,
+      concepts: ['evolutions-successives'],
+      notes: 'Construction de tableau',
+      proprietes: { plan: PLAN_DE_TABLEAU_TEST },
+      production: {
+        id: 'Q-TEST-TABLEAU',
+        type: 'tableau',
+        concept: 'evolutions-successives',
+        noteCompte: true,
+        confusions: ['taux-successifs-additionnes'],
+        corrige: buildCorrigeTableau(),
       },
-    ],
-  };
+    },
+  );
 }
 
 export function buildCoursDuBaremeV1(): Cours {
@@ -519,6 +590,17 @@ export function buildCoursDeTest(overrides: Partial<Cours> = {}): Cours {
   };
 }
 
+export function reponseDeClasse(
+  cours: Cours,
+  question: number,
+): { questionId: string; valeur: number; dureeMs: number } {
+  return {
+    questionId: questionsDuCours(cours)[question].id,
+    valeur: 1,
+    dureeMs: 12000,
+  };
+}
+
 export function buildCoursDeClasse(nombreQuestions: number): Cours {
   const ecrans: Ecran[] = Array.from(
     { length: nombreQuestions },
@@ -684,4 +766,59 @@ export function creerCatalogueDeTest(...cours: Cours[]): ICatalogueCours {
     versionsParSlug[unCours.slug] = { 1: unCours };
   }
   return creerCatalogueAVersions(versionsParSlug);
+}
+
+export function creerParticipationEnSeance(
+  depots: {
+    readonly sessions?: ISessionsRepository;
+    readonly participants?: IParticipantsRepository;
+    readonly catalogue?: ICatalogueCours;
+    readonly cache?: ISessionStateCache;
+  } = {},
+): ParticipationEnSeance {
+  return new ParticipationEnSeance(
+    depots.sessions ?? createMockSessionsRepo(),
+    depots.participants ?? createMockParticipantsRepo(),
+    depots.catalogue ?? creerCatalogueDeTest(),
+    depots.cache ?? createMockSessionStateCache(),
+  );
+}
+
+export function monterDepotsDeParticipation(
+  seance: SessionRecord,
+  catalogue: ICatalogueCours = creerCatalogueDeTest(),
+) {
+  const depots = {
+    sessions: createMockSessionsRepo(),
+    participants: createMockParticipantsRepo(),
+    cache: createMockSessionStateCache(),
+  };
+  depots.sessions.findById.mockResolvedValue(seance);
+  return {
+    ...depots,
+    participation: creerParticipationEnSeance({ ...depots, catalogue }),
+  };
+}
+
+export function monterParticipationSurLeDernierEcran(cours: Cours) {
+  return {
+    courseSlug: cours.slug,
+    ...monterDepotsDeParticipation(
+      buildSessionRecord({
+        courseSlug: cours.slug,
+        ecranCourant: cours.ecrans.length - 1,
+      }),
+      creerCatalogueDeTest(cours),
+    ),
+  };
+}
+
+export function lireSujetSur(
+  sessions: ISessionsRepository,
+  participants: IParticipantsRepository,
+  catalogue: ICatalogueCours,
+): LireSujetUseCase {
+  return new LireSujetUseCase(
+    creerParticipationEnSeance({ sessions, participants, catalogue }),
+  );
 }

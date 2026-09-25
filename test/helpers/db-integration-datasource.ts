@@ -65,12 +65,26 @@ export async function initBaseMigree(
     synchronize: false,
     migrations,
   });
+  await initialiserEtMigrer(dataSource);
+  return dataSource;
+}
+
+export async function initialiserEtMigrer(
+  dataSource: DataSource,
+): Promise<void> {
   await dataSource.initialize();
   for (const fonction of FONCTIONS_HORS_DU_DROP_SCHEMA) {
     await dataSource.query(`DROP FUNCTION IF EXISTS ${fonction} CASCADE`);
   }
   await dataSource.runMigrations({ transaction: 'all' });
-  return dataSource;
+}
+
+export async function attendreSchemaAligneSurLesEntites(
+  dataSource: DataSource,
+): Promise<void> {
+  const derive = await dataSource.driver.createSchemaBuilder().log();
+
+  expect(derive.upQueries.map((requete) => requete.query)).toEqual([]);
 }
 
 export async function destroyDbIntegrationDataSource(

@@ -65,25 +65,26 @@ export function buildCorrigeFeuille(
   };
 }
 
+export const ATTENDU_PRIX_INITIAL = {
+  rang: 0,
+  cle: 'prix',
+  valeur: 21.6,
+  pieges: [],
+} as const satisfies CorrigeTableau['attendus'][number];
+
+export const ATTENDU_PRIX_REVISE = {
+  rang: 1,
+  cle: 'prix',
+  valeur: 20.52,
+  pieges: [{ valeur: 20.6, confusion: 'taux-successifs-additionnes' }],
+} as const satisfies CorrigeTableau['attendus'][number];
+
 export function buildCorrigeTableau(
   overrides: Partial<CorrigeTableau> = {},
 ): CorrigeTableau {
   return {
     type: 'tableau',
-    attendus: [
-      {
-        rang: 0,
-        cle: 'prix',
-        valeur: 21.6,
-        pieges: [],
-      },
-      {
-        rang: 1,
-        cle: 'prix',
-        valeur: 20.52,
-        pieges: [{ valeur: 20.6, confusion: 'taux-successifs-additionnes' }],
-      },
-    ],
+    attendus: [ATTENDU_PRIX_INITIAL, ATTENDU_PRIX_REVISE],
     tolerance: { type: 'absolue', valeur: 0.01 },
     seuilReussite: 0.75,
     ...overrides,

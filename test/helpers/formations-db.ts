@@ -68,7 +68,10 @@ import { ParticipantsRepositoryTypeORM } from '../../src/modules/formations/infr
 import { ScoresRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Scores.repository.typeorm';
 import { SessionsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/Sessions.repository.typeorm';
 import { TeacherAnnotationsRepositoryTypeORM } from '../../src/modules/formations/infrastructure/TeacherAnnotations.repository.typeorm';
-import { buildDbIntegrationOptions } from './db-integration-datasource';
+import {
+  buildDbIntegrationOptions,
+  initialiserEtMigrer,
+} from './db-integration-datasource';
 
 export const FORMATION_ENTITIES = [
   FormationSessionEntity,
@@ -210,17 +213,9 @@ export const DELAI_OUVERTURE_CONTEXTE_MS = 60_000;
 
 export const VERSION_PUBLIEE_SUR_BASE_NEUVE = 1;
 
-const FONCTIONS_HORS_DU_DROP_SCHEMA = [
-  '"reject_formation_course_content_change"()',
-];
-
 export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
   const dataSource = new DataSource(buildFormationsOptions());
-  await dataSource.initialize();
-  for (const fonction of FONCTIONS_HORS_DU_DROP_SCHEMA) {
-    await dataSource.query(`DROP FUNCTION IF EXISTS ${fonction} CASCADE`);
-  }
-  await dataSource.runMigrations({ transaction: 'all' });
+  await initialiserEtMigrer(dataSource);
   const participants = new ParticipantsRepositoryTypeORM(
     dataSource.getRepository(FormationParticipantEntity),
   );

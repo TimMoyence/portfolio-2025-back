@@ -4,7 +4,7 @@ import {
   type Provider,
 } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { Test as ModuleDeTest } from '@nestjs/testing';
+import { Test as ModuleDeTest, type TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import {
   request as requeteNode,
@@ -33,6 +33,8 @@ import { StreamSessionUseCase } from '../../src/modules/formations/application/S
 import { SubmitAnswerUseCase } from '../../src/modules/formations/application/SubmitAnswer.useCase';
 import { DeclarerJalonUseCase } from '../../src/modules/formations/application/DeclarerJalon.useCase';
 import { DefisUseCase } from '../../src/modules/formations/application/Defis.useCase';
+import { LectureDeSeance } from '../../src/modules/formations/application/LectureDeSeance';
+import { ParticipationEnSeance } from '../../src/modules/formations/application/ParticipationEnSeance';
 import { EvincerParticipantUseCase } from '../../src/modules/formations/application/EvincerParticipant.useCase';
 import { LireRappelsUseCase } from '../../src/modules/formations/application/LireRappels.useCase';
 import { ReadmettreParticipantUseCase } from '../../src/modules/formations/application/ReadmettreParticipant.useCase';
@@ -88,7 +90,9 @@ import {
   buildCoursDeTest,
   creerCatalogueDeTest,
 } from '../factories/cours.factory';
+import { installerEnvFormations, type EnvFormations } from './env-formations';
 import {
+  DELAI_OUVERTURE_CONTEXTE_MS,
   ouvrirContexteFormations,
   type ContexteFormations,
 } from './formations-db';
@@ -166,6 +170,8 @@ export function fournisseursFormations(
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
     TenterEnigmeUseCase,
+    ParticipationEnSeance,
+    LectureDeSeance,
     DeclarerJalonUseCase,
     DefisUseCase,
     LireEtatParticipantUseCase,
@@ -204,11 +210,11 @@ export function fournisseursFormations(
   ];
 }
 
-export async function monterApplicationFormations(
+export function compilerModuleFormations(
   depots: DepotsFormations,
-  catalogue: ICatalogueCours = CATALOGUE_FORMATIONS_TEST,
-): Promise<INestApplication> {
-  const moduleRef = await ModuleDeTest.createTestingModule({
+  catalogue: ICatalogueCours,
+): Promise<TestingModule> {
+  return ModuleDeTest.createTestingModule({
     imports: [
       ThrottlerModule.forRoot([
         { ttl: FENETRE_THROTTLE_MS, limit: LIMITE_THROTTLE_PAR_DEFAUT },
@@ -221,6 +227,13 @@ export async function monterApplicationFormations(
       { provide: APP_GUARD, useClass: ThrottlerGuard },
     ],
   }).compile();
+}
+
+export async function monterApplicationFormations(
+  depots: DepotsFormations,
+  catalogue: ICatalogueCours = CATALOGUE_FORMATIONS_TEST,
+): Promise<INestApplication> {
+  const moduleRef = await compilerModuleFormations(depots, catalogue);
 
   const app = moduleRef.createNestApplication();
   signerLesIdentitesDeTest(app);
@@ -364,6 +377,25 @@ export async function monterBancFormations(
       await contexte.fermer();
     },
   };
+}
+
+export function installerBancFormationsVierge(
+  env: EnvFormations,
+  apresMontage: (banc: BancFormations) => void | Promise<void>,
+): void {
+  let banc: BancFormations | undefined;
+
+  installerEnvFormations(env);
+
+  beforeAll(async () => {
+    banc = await monterBancFormations();
+    await banc.contexte.nettoyer();
+    await apresMontage(banc);
+  }, DELAI_OUVERTURE_CONTEXTE_MS);
+
+  afterAll(async () => {
+    await banc?.fermer();
+  });
 }
 
 export function clientFormations(

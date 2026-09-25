@@ -1,4 +1,4 @@
-import type { Transporter } from 'nodemailer';
+import type { createTransport, Transporter } from 'nodemailer';
 import type { IPasswordResetNotifier } from '../../src/modules/users/domain/IPasswordResetNotifier';
 
 export function createMockPasswordResetNotifier(): jest.Mocked<IPasswordResetNotifier> {
@@ -34,6 +34,16 @@ export function premierMailEnvoye(
   transporter: Pick<Transporter, 'sendMail'>,
 ): MailEnvoye {
   return (transporter.sendMail as jest.Mock).mock.calls[0][0] as MailEnvoye;
+}
+
+export const nodemailerSimule = () => ({ createTransport: jest.fn() });
+
+export function creationDeTransportSimulee(): jest.MockedFunction<
+  typeof createTransport
+> {
+  return jest.requireMock<{
+    createTransport: jest.MockedFunction<typeof createTransport>;
+  }>('nodemailer').createTransport;
 }
 
 export const envoiSmtpSimule = jest
@@ -101,6 +111,38 @@ export function retirerSmtpEnv(): () => void {
     delete process.env[cle];
   }
   return restaurer;
+}
+
+interface CreationDeTransportSimulee {
+  mockReset(): unknown;
+  mockReturnValue(transporteur: never): unknown;
+}
+
+export function smtpSimule(creerTransport?: CreationDeTransportSimulee) {
+  const etat = {
+    transporteur: createMockTransporter(),
+    restaurer: (): void => undefined,
+  };
+
+  afterEach(() => {
+    etat.restaurer();
+    etat.restaurer = () => undefined;
+    creerTransport?.mockReset();
+  });
+
+  return {
+    brancher(env: Record<string, string> = {}) {
+      etat.transporteur = createMockTransporter();
+      creerTransport?.mockReturnValue(etat.transporteur as never);
+      etat.restaurer = setSmtpEnv(env);
+      return etat.transporteur;
+    },
+    retirer() {
+      etat.restaurer = retirerSmtpEnv();
+    },
+    transporteur: () => etat.transporteur,
+    premierMail: () => premierMailEnvoye(etat.transporteur),
+  };
 }
 
 const DKIM_ENV_KEYS = [

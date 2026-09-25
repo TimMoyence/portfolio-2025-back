@@ -15,6 +15,7 @@ import {
 import {
   buildNumeriqueStockee,
   buildOptionStockee,
+  buildRappelDeCompensation,
   buildVoteStocke,
 } from './questions-stockees.factory';
 
@@ -254,19 +255,7 @@ const PROPRIETES_PAR_BRIQUE: Readonly<Record<string, Record<string, unknown>>> =
       rappel: { id: 'b2-01-a6-rappel', intitule: 'Rappel de mémoire' },
       banque: {
         questions: [
-          buildVoteStocke({
-            id: 'b2-01-r-compensation',
-            concept: 'controle-coherence',
-            noteCompte: false,
-            enonce: 'Peut-on valider chaque écriture ?',
-            options: [
-              buildOptionStockee('Non : deux erreurs se compensent', null),
-              buildOptionStockee(
-                'Oui : le total concorde',
-                'total-concordant-vaut-preuve',
-              ),
-            ],
-          }),
+          buildRappelDeCompensation(),
           buildVoteStocke({
             id: 'b2-01-r-points',
             concept: 'point-de-pourcentage',
@@ -330,22 +319,24 @@ export function buildProprietesStockees(
   return structuredClone(PROPRIETES_PAR_BRIQUE[brique]);
 }
 
+export const QUESTIONS_LIBRES_DE_MISSION = [
+  {
+    id: 'b2-01-a1-mission:mesure',
+    question: 'Que mesure chaque chiffre ?',
+    placeholder: 'Un montant, une part, une évolution…',
+  },
+  {
+    id: 'b2-01-a1-mission:comparable',
+    question: 'Les bases et les périodes sont-elles comparables ?',
+  },
+] as const;
+
 export function buildCasAQuestionsLibres(): EcranDeCoursBrut {
   return buildEcranDeBrique('fp-pro', {
     screenId: 'B2-01-A1-03-MISSION',
     proprietes: {
       ...buildProprietesStockees('fp-pro'),
-      questionsLibres: [
-        {
-          id: 'b2-01-a1-mission:mesure',
-          question: 'Que mesure chaque chiffre ?',
-          placeholder: 'Un montant, une part, une évolution…',
-        },
-        {
-          id: 'b2-01-a1-mission:comparable',
-          question: 'Les bases et les périodes sont-elles comparables ?',
-        },
-      ],
+      questionsLibres: structuredClone(QUESTIONS_LIBRES_DE_MISSION),
     },
   });
 }
@@ -393,56 +384,65 @@ export function buildEcranDeTableau(
   });
 }
 
-export function buildCorrectionDeReponses(
+type FabriqueDeCorrection = (
   source: string,
-  screenId = `${source}-CORRECTION`,
-  overrides: Partial<EcranDeCoursBrut> = {},
-): EcranDeCoursBrut {
-  return buildEcranDeBrique('fp-story', {
-    screenId,
-    dureeMinutes: 1,
-    proprietes: {
-      presentation: {
-        version: 2,
-        screenId,
-        renderer: 'answer-review',
-        props: {
-          title: 'Correction',
-          source: { screenId: source },
-          explications: [
-            { reference: 'b2-01-a1-diagnostic', texte: 'Réponse expliquée.' },
-          ],
-        },
-      },
-    },
-    ...overrides,
-  });
+  screenId?: string,
+  overrides?: Partial<EcranDeCoursBrut>,
+) => EcranDeCoursBrut;
+
+function fabriqueDeCorrection(
+  brique: string,
+  dureeMinutes: number,
+  proprietes: (
+    source: string,
+    screenId: string,
+  ) => EcranDeCoursBrut['proprietes'],
+): FabriqueDeCorrection {
+  return (source, screenId = `${source}-CORRECTION`, overrides = {}) =>
+    buildEcranDeBrique(brique, {
+      screenId,
+      dureeMinutes,
+      proprietes: proprietes(source, screenId),
+      ...overrides,
+    });
 }
 
-export function buildCorrectionDExemple(
-  source: string,
-  screenId = `${source}-CORRECTION`,
-  overrides: Partial<EcranDeCoursBrut> = {},
-): EcranDeCoursBrut {
-  return buildEcranDeBrique('fp-worked', {
-    screenId,
-    dureeMinutes: 2,
-    proprietes: {
-      ...buildProprietesStockees('fp-worked'),
-      exemple: {
-        ...(buildProprietesStockees('fp-worked').exemple as Record<
-          string,
-          unknown
-        >),
-        id: `${screenId.toLowerCase()}-corrige`,
+export const buildCorrectionDeReponses = fabriqueDeCorrection(
+  'fp-story',
+  1,
+  (source, screenId) => ({
+    presentation: {
+      version: 2,
+      screenId,
+      renderer: 'answer-review',
+      props: {
+        title: 'Correction',
+        source: { screenId: source },
+        explications: [
+          { reference: 'b2-01-a1-diagnostic', texte: 'Réponse expliquée.' },
+        ],
       },
-      pilote: true,
-      etayage: 0,
-      corrigeDe: source,
     },
-    ...overrides,
-  });
-}
+  }),
+);
+
+export const buildCorrectionDExemple = fabriqueDeCorrection(
+  'fp-worked',
+  2,
+  (source, screenId) => ({
+    ...buildProprietesStockees('fp-worked'),
+    exemple: {
+      ...(buildProprietesStockees('fp-worked').exemple as Record<
+        string,
+        unknown
+      >),
+      id: `${screenId.toLowerCase()}-corrige`,
+    },
+    pilote: true,
+    etayage: 0,
+    corrigeDe: source,
+  }),
+);
 
 export function buildCoursDeBriques(
   ecrans: readonly EcranDeCoursBrut[],

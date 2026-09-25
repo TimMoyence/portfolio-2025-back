@@ -7,6 +7,7 @@ import {
   lireCoursStocke,
   type EcranDeCoursBrut,
 } from '../../src/modules/formations/domain/cours/CoursStocke';
+import { verifierStructure } from '../../src/modules/formations/domain/cours/StructureCours';
 import {
   buildCoursDeBriques,
   buildEcranDeBrique,
@@ -71,6 +72,14 @@ export function buildCoursConforme(
 
 export function lireEcranStocke(ecran: EcranDeCoursBrut): Ecran {
   return lireCoursStocke(buildCoursDeBriques([ecran])).ecrans[0];
+}
+
+export function fuitesDeConfidentialite(
+  cours: Cours,
+): readonly (string | null)[] {
+  return verifierStructure(cours)
+    .filter((violation) => violation.regle === 'confidentialite')
+    .map((violation) => violation.ecran);
 }
 
 export function recomposer(cours: Cours, ecrans: AuMoinsUn<Ecran>): Cours {

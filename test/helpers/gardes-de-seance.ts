@@ -1,4 +1,5 @@
 import {
+  CoursInconnuError,
   EcranNonServiError,
   ParticipantNotFoundError,
   SessionClosedError,
@@ -66,20 +67,153 @@ export function verifierGardesDuFormateur(
     attendreSansEffet(effetsInterdits);
   });
 
-  it('signale une seance introuvable', async () => {
+  verifierSeanceIntrouvable(() => {
     const { sessions, executerPar, effetsInterdits } = contexte();
-    sessions.findById.mockResolvedValue(null);
+    return {
+      sessions,
+      executer: () => executerPar('teacher-uuid'),
+      effetsInterdits,
+    };
+  });
+}
+
+export interface ContexteDeSeanceIntrouvable {
+  readonly sessions: ReturnType<typeof createMockSessionsRepo>;
+  readonly executer: () => Promise<unknown>;
+  readonly effetsInterdits?: () => ReadonlyArray<EffetInterdit>;
+}
+
+export interface ContexteDActionSurParticipant extends ContexteDeGardeFormateur {
+  readonly cache?: ContexteDActivite['cache'];
+  readonly action: EffetInterdit & {
+    mockResolvedValue(valeur: boolean): unknown;
+  };
+}
+
+export function verifierActionSurParticipant(
+  titreDuRefus: string,
+  contexte: () => ContexteDActionSurParticipant,
+): void {
+  verifierGardesDuFormateur(() => ({
+    ...contexte(),
+    effetsInterdits: () => [contexte().action],
+  }));
+
+  it(titreDuRefus, async () => {
+    const { action, executerPar, cache } = contexte();
+    action.mockResolvedValue(false);
 
     await expect(executerPar('teacher-uuid')).rejects.toThrow(
-      SessionNotFoundError,
+      ParticipantNotFoundError,
     );
+    attendreSansEffet(() => (cache ? [cache.signalerActivite] : []));
+  });
+}
+
+export function verifierSeanceIntrouvable(
+  contexte: () => ContexteDeSeanceIntrouvable,
+): void {
+  it('signale une seance introuvable', async () => {
+    const { sessions, executer, effetsInterdits } = contexte();
+    sessions.findById.mockResolvedValue(null);
+
+    await expect(executer()).rejects.toThrow(SessionNotFoundError);
     attendreSansEffet(effetsInterdits);
   });
+}
+
+export interface ContexteDIntrouvables extends ContexteDeSeanceIntrouvable {
+  readonly participants: ReturnType<typeof createMockParticipantsRepo>;
+}
+
+export function verifierIntrouvables(
+  contexte: () => ContexteDIntrouvables,
+): void {
+  verifierSeanceIntrouvable(contexte);
+
+  it('signale un participant introuvable', async () => {
+    const { participants, executer, effetsInterdits } = contexte();
+    participants.findById.mockResolvedValue(null);
+
+    await expect(executer()).rejects.toThrow(ParticipantNotFoundError);
+    attendreSansEffet(effetsInterdits);
+  });
+}
+
+export interface ContexteDActivite {
+  readonly cache: { signalerActivite: EffetInterdit };
+  readonly executer: () => Promise<unknown>;
+}
+
+export function verifierSignalementDActivite(
+  contexte: () => ContexteDActivite,
+  titre = 'signale l activite de la seance',
+): void {
+  it(titre, async () => {
+    const { cache, executer } = contexte();
+
+    await executer();
+
+    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
+  });
+}
+
+export interface ContexteDeLecture {
+  readonly sessions: ReturnType<typeof createMockSessionsRepo>;
+  readonly courseSlug: string;
+  readonly lire: () => Promise<{
+    session: { id: string };
+    cours: { slug: string };
+  }>;
+}
+
+export function verifierLectureDeSeanceEtCours(
+  titre: string,
+  contexte: () => ContexteDeLecture,
+): void {
+  it(titre, async () => {
+    const { courseSlug, lire } = contexte();
+
+    const lue = await lire();
+
+    expect(lue.session.id).toBe('session-uuid');
+    expect(lue.cours.slug).toBe(courseSlug);
+  });
+
+  it.each([
+    ['inconnue', null, SessionNotFoundError],
+    [
+      'dont le cours a disparu du catalogue',
+      buildSessionRecord({ courseSlug: 'cours-absent' }),
+      CoursInconnuError,
+    ],
+  ])('refuse une séance %s', async (_cas, seance, erreur) => {
+    const { sessions, lire } = contexte();
+    sessions.findById.mockResolvedValue(seance);
+
+    await expect(lire()).rejects.toBeInstanceOf(erreur);
+  });
+}
+
+export interface ContexteDeParticipation
+  extends
+    ContexteDeGardeSeance,
+    ContexteDeGardeParticipant,
+    ContexteDActivite {}
+
+export function verifierContratDeParticipation(
+  contexte: () => ContexteDeParticipation,
+): void {
+  verifierGardesDeSeance(contexte);
+  verifierGardesDeParticipant(contexte);
+  verifierSignalementDActivite(contexte);
 }
 
 export function verifierGardesDeSeance(
   contexte: () => ContexteDeGardeSeance,
 ): void {
+  verifierSeanceIntrouvable(contexte);
+
   it.each([
     ['visant un ecran non projete', { ecranCourant: 0 }, EcranNonServiError],
     [
