@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Test } from '@nestjs/testing';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { randomUUID } from 'node:crypto';
 import { request as requeteNode } from 'node:http';
 import request from 'supertest';
@@ -56,31 +52,25 @@ import {
 } from './factories/cours.factory';
 import { buildCoursStocke } from './factories/cours-stocke.factory';
 import {
-  createMockEscapeRepo,
-  createMockFormationMailer,
-  createMockFreeResponsesRepo,
-  createMockIncidentsRepo,
-  createMockMasteryRepo,
-  createMockPulsesRepo,
-  createMockRappelsServisRepo,
-  createMockScoresRepo,
-  createMockTeacherAnnotationsRepo,
+  createMockDepotsFormations,
+  etatDeSeance,
 } from './factories/formation.factory';
 import {
   abonnerAuFlux,
   attendreQue,
-  CONTROLEURS_FORMATIONS,
+  compilerModuleFormations,
   fermetureCoteServeur,
-  fournisseursFormations,
   routeFormations,
   serveurHttpDe,
 } from './helpers/formations-harness';
 import {
-  authentificationReelle,
   EN_TETE_IDENTITE,
   signerLesIdentitesDeTest,
 } from './helpers/identite-reelle';
-import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
+import {
+  documentOpenApiFormations,
+  ecartsAuSchemaDeReponse,
+} from './helpers/schema-openapi';
 import {
   ADRESSE_BOUCLE_LOCALE,
   ecouterEnBoucleLocale,
@@ -144,12 +134,18 @@ const COURS_GUIDE = lireCoursStocke(
   buildCoursStocke({ slug: 'cours-stocke-avec-guide' }),
 );
 
-const CORRIGE_EN_CLAIR = [
+const BAREME_EN_CLAIR = [
   String(TEMOIN.solution),
   String(TEMOIN.piege),
   TEMOIN.misconception,
-  TEMOIN.concept,
 ];
+const CORRIGE_EN_CLAIR = [...BAREME_EN_CLAIR, TEMOIN.concept];
+
+function attendreSansCorrige(texte: string, temoins = CORRIGE_EN_CLAIR) {
+  temoins.forEach((temoin) => {
+    expect(texte).not.toContain(temoin);
+  });
+}
 
 const TAILLE_CLASSE = 30;
 const DELAI_FERMETURE_FLUX_MS = 2000;
@@ -210,17 +206,7 @@ function creerSessionsRepo(): ISessionsRepository {
     lireEtat: (id) => {
       const session = sessions.get(id);
       return Promise.resolve(
-        session === undefined
-          ? null
-          : {
-              etat: session.etat,
-              modeRythme: session.modeRythme,
-              ecranCourant: session.ecranCourant,
-              intervalleLibre: session.intervalleLibre,
-              pilotageEcrans: session.pilotageEcrans,
-              revision: session.revision,
-              majLe: session.majLe,
-            },
+        session === undefined ? null : etatDeSeance(session),
       );
     },
     findActiveByCode: (code) =>
@@ -266,6 +252,22 @@ function creerParticipantsRepo(): IParticipantsRepository {
       (participant) =>
         participant.sessionId === sessionId && participant.evinceLe !== null,
     );
+  const modifierDansLaSession = (
+    sessionId: string,
+    participantId: string,
+    evince: boolean,
+    modification: (cible: ParticipantRecord) => Partial<ParticipantRecord>,
+  ): Promise<boolean> => {
+    const cible = participants.get(participantId);
+    if (
+      cible?.sessionId !== sessionId ||
+      (cible.evinceLe !== null) !== evince
+    ) {
+      return Promise.resolve(false);
+    }
+    participants.set(participantId, { ...cible, ...modification(cible) });
+    return Promise.resolve(true);
+  };
   const empreintes = new Map<string, string | null>();
   return {
     inscrire: ({
@@ -326,37 +328,23 @@ function creerParticipantsRepo(): IParticipantsRepository {
     countBySession: (sessionId) =>
       Promise.resolve(deLaSession(sessionId).length),
     touch: () => Promise.resolve(),
-    evincer: (sessionId, participantId) => {
-      const cible = participants.get(participantId);
-      if (!cible || cible.sessionId !== sessionId || cible.evinceLe !== null) {
-        return Promise.resolve(false);
-      }
-      participants.set(participantId, { ...cible, evinceLe: new Date() });
-      return Promise.resolve(true);
-    },
+    evincer: (sessionId, participantId) =>
+      modifierDansLaSession(sessionId, participantId, false, () => ({
+        evinceLe: new Date(),
+      })),
     readmettre: (sessionId, participantId, capacite) => {
       if (deLaSession(sessionId).length >= capacite) {
         return Promise.reject(new SeanceCompleteError(capacite));
       }
-      const cible = participants.get(participantId);
-      if (!cible || cible.sessionId !== sessionId || cible.evinceLe === null) {
-        return Promise.resolve(false);
-      }
-      participants.set(participantId, { ...cible, evinceLe: null });
-      return Promise.resolve(true);
+      return modifierDansLaSession(sessionId, participantId, true, () => ({
+        evinceLe: null,
+      }));
     },
-    libererPoste: (sessionId, participantId) => {
-      const cible = participants.get(participantId);
-      if (!cible || cible.sessionId !== sessionId || cible.evinceLe !== null) {
-        return Promise.resolve(false);
-      }
-      empreintes.set(participantId, null);
-      participants.set(participantId, {
-        ...cible,
-        generationDeJeton: cible.generationDeJeton + 1,
-      });
-      return Promise.resolve(true);
-    },
+    libererPoste: (sessionId, participantId) =>
+      modifierDansLaSession(sessionId, participantId, false, (cible) => {
+        empreintes.set(participantId, null);
+        return { generationDeJeton: cible.generationDeJeton + 1 };
+      }),
   };
 }
 
@@ -424,8 +412,8 @@ function creerAnswersRepo(): IAnswersRepository {
 
 interface HarnaisFormations {
   app: INestApplication;
-  mailer: ReturnType<typeof createMockFormationMailer>;
-  scores: ReturnType<typeof createMockScoresRepo>;
+  mailer: ReturnType<typeof createMockDepotsFormations>['mailer'];
+  scores: ReturnType<typeof createMockDepotsFormations>['scores'];
   port: number;
 }
 
@@ -445,34 +433,15 @@ async function creerHarnais(
 ): Promise<HarnaisFormations> {
   process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
   process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
-  const mailer = createMockFormationMailer();
-  const scores = createMockScoresRepo();
+  const depots = {
+    ...createMockDepotsFormations(),
+    sessions: creerSessionsRepo(),
+    participants: creerParticipantsRepo(),
+    answers: creerAnswersRepo(),
+  };
+  const { mailer, scores } = depots;
 
-  const moduleRef = await Test.createTestingModule({
-    imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 30 }])],
-    controllers: CONTROLEURS_FORMATIONS,
-    providers: [
-      ...fournisseursFormations(
-        {
-          sessions: creerSessionsRepo(),
-          participants: creerParticipantsRepo(),
-          answers: creerAnswersRepo(),
-          incidents: createMockIncidentsRepo(),
-          mastery: createMockMasteryRepo(),
-          scores,
-          freeResponses: createMockFreeResponsesRepo(),
-          annotations: createMockTeacherAnnotationsRepo(),
-          escape: createMockEscapeRepo(),
-          pulses: createMockPulsesRepo(),
-          rappels: createMockRappelsServisRepo(),
-          mailer,
-        },
-        catalogueHttp,
-      ),
-      ...authentificationReelle(),
-      { provide: APP_GUARD, useClass: ThrottlerGuard },
-    ],
-  }).compile();
+  const moduleRef = await compilerModuleFormations(depots, catalogueHttp);
 
   const app = moduleRef.createNestApplication<NestExpressApplication>();
   bornerLesCorpsDeRequete(app);
@@ -484,48 +453,100 @@ async function creerHarnais(
   return { app, mailer, scores, port };
 }
 
+interface SeanceOuverte {
+  sessionId: string;
+  code: string;
+}
+
+interface PosteInscrit {
+  jeton: string;
+  participantId: string;
+  secretDeReprise: string;
+}
+
+function clientFormations(application: () => INestApplication) {
+  const appel = () => request(serveurHttpDe(application()));
+  const get = (chemin: string) => appel().get(routeFormations(chemin));
+  const post = (chemin: string) => appel().post(routeFormations(chemin));
+  const patch = (chemin: string) => appel().patch(routeFormations(chemin));
+  const identite = (formateur: string, role = 'teacher') =>
+    `${formateur}:${role}`;
+  const client = {
+    get,
+    post,
+    patch,
+    delete: (chemin: string) => appel().delete(routeFormations(chemin)),
+    enFormateur: (chemin: string, formateur = FORMATEUR_A, role?: string) =>
+      get(chemin).set(EN_TETE_IDENTITE, identite(formateur, role)),
+    lireEnFormateur: (sessionId: string, lecture: string, formateur?: string) =>
+      client.enFormateur(`/sessions/${sessionId}/${lecture}`, formateur),
+    postEnFormateur: (chemin: string, formateur = FORMATEUR_A, role?: string) =>
+      post(chemin).set(EN_TETE_IDENTITE, identite(formateur, role)),
+    piloter: (
+      sessionId: string,
+      corps: object,
+      formateur = FORMATEUR_A,
+      role?: string,
+    ) =>
+      patch(`/sessions/${sessionId}/control`)
+        .set(EN_TETE_IDENTITE, identite(formateur, role))
+        .send(corps),
+    demarrer: (sessionId: string, formateur = FORMATEUR_A) =>
+      client.postEnFormateur(`/sessions/${sessionId}/start`, formateur),
+    ouvrir: (corps: object, formateur = FORMATEUR_A) =>
+      client.postEnFormateur('/sessions', formateur).send(corps),
+    ouvrirSession: async (
+      courseSlug = COURS_SENTINELLE.slug,
+      formateur = FORMATEUR_A,
+    ): Promise<SeanceOuverte> =>
+      (await client.ouvrir({ courseSlug }, formateur).expect(201))
+        .body as SeanceOuverte,
+    rejoindre: (code: string, studentKey: string) =>
+      post(`/sessions/${code}/join`).send(inscription(studentKey)),
+    inscrire: async (code: string, studentKey: string): Promise<PosteInscrit> =>
+      (await client.rejoindre(code, studentKey).expect(201))
+        .body as PosteInscrit,
+    parJeton: (chemin: string, jeton: string) =>
+      get(chemin).set(EN_TETE_JETON, jeton),
+    sujet: (sessionId: string, jeton: string) =>
+      client.parJeton(`/sessions/${sessionId}/sujet`, jeton),
+    flux: (sessionId: string, jeton: string) =>
+      client.parJeton(`/sessions/${sessionId}/stream`, jeton),
+    repondre: (
+      sessionId: string,
+      jeton: string,
+      valeur: unknown,
+      dureeMs = 1000,
+    ) =>
+      post(`/sessions/${sessionId}/answers`)
+        .set(EN_TETE_JETON, jeton)
+        .send({ questionId: TEMOIN.question, valeur, dureeMs }),
+  };
+  return client;
+}
+
 describe('Session de formation (e2e http socket)', () => {
   let app: INestApplication;
   let mailer: HarnaisFormations['mailer'];
   let scores: HarnaisFormations['scores'];
   let port: number;
 
-  const serveur = () => serveurHttpDe(app);
-
+  const http = clientFormations(() => app);
   const route = routeFormations;
 
-  const demanderOuverture = (formateur: string, corps: object) =>
-    request(serveur())
-      .post(route('/sessions'))
-      .set(EN_TETE_IDENTITE, `${formateur}:teacher`)
-      .send(corps);
-
-  const ouvrirSession = async (
-    formateur: string,
-  ): Promise<{ sessionId: string; code: string }> => {
-    const reponse = await demanderOuverture(formateur, {
-      courseSlug: COURS_SENTINELLE.slug,
-    }).expect(201);
-    return reponse.body as { sessionId: string; code: string };
+  const servirLaSentinelle = async (sessionId: string) => {
+    await http.demarrer(sessionId).expect(204);
+    await http.piloter(sessionId, { ecran: RANG_DE_LA_SENTINELLE }).expect(204);
   };
 
-  const demarrerSession = (sessionId: string, formateur: string) =>
-    request(serveur())
-      .post(route(`/sessions/${sessionId}/start`))
-      .set(EN_TETE_IDENTITE, `${formateur}:teacher`)
-      .expect(204);
-
-  const servirLaSentinelle = (sessionId: string, formateur: string) =>
-    request(serveur())
-      .patch(route(`/sessions/${sessionId}/control`))
-      .set(EN_TETE_IDENTITE, `${formateur}:teacher`)
-      .send({ ecran: RANG_DE_LA_SENTINELLE })
-      .expect(204);
-
-  const rejoindre = (code: string, studentKey: string) =>
-    request(serveur())
-      .post(route(`/sessions/${code}/join`))
-      .send(inscription(studentKey));
+  const seanceSurLaSentinelle = async (
+    studentKey: string,
+  ): Promise<SeanceOuverte & PosteInscrit> => {
+    const seance = await http.ouvrirSession();
+    const poste = await http.inscrire(seance.code, studentKey);
+    await servirLaSentinelle(seance.sessionId);
+    return { ...seance, ...poste };
+  };
 
   beforeAll(async () => {
     ({ app, mailer, scores, port } = await creerHarnais());
@@ -542,12 +563,11 @@ describe('Session de formation (e2e http socket)', () => {
       });
 
     it('ferme le plus ancien flux du participant a l ouverture de son troisieme et garde au formateur sa place', async () => {
-      const { sessionId, code } = await ouvrirSession(FORMATEUR_A);
-      const inscrit = await rejoindre(
+      const { sessionId, code } = await http.ouvrirSession();
+      const { jeton } = await http.inscrire(
         code,
         '11111111-1111-4111-8111-111111111120',
-      ).expect(201);
-      const { jeton } = inscrit.body as { jeton: string };
+      );
 
       const siens = [
         await ouvrirFluxEtudiant(sessionId, jeton),
@@ -573,7 +593,7 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('ne prend aucune place pour un flux formateur abandonne pendant la lecture de la seance', async () => {
-      const { sessionId } = await ouvrirSession(FORMATEUR_A);
+      const { sessionId } = await http.ouvrirSession();
       const sessions = app.get<ISessionsRepository>(SESSIONS_REPOSITORY);
       const cache = app.get<SessionStateCacheService>(SESSION_STATE_CACHE);
       const lireSession = sessions.findById;
@@ -628,40 +648,18 @@ describe('Session de formation (e2e http socket)', () => {
 
   describe('contrat OpenAPI des lectures de la seance', () => {
     it('documente exactement la forme rendue du sujet, du deroule et des resultats', async () => {
-      const { sessionId, code } = await ouvrirSession(FORMATEUR_A);
-      const inscrit = await rejoindre(
-        code,
+      const { sessionId, jeton } = await seanceSurLaSentinelle(
         '11111111-1111-4111-8111-111111111121',
-      ).expect(201);
-      const { jeton } = inscrit.body as { jeton: string };
-      await demarrerSession(sessionId, FORMATEUR_A);
-      await servirLaSentinelle(sessionId, FORMATEUR_A);
-      await request(serveur())
-        .post(route(`/sessions/${sessionId}/answers`))
-        .set(EN_TETE_JETON, jeton)
-        .send({
-          questionId: TEMOIN.question,
-          valeur: TEMOIN.piege,
-          dureeMs: 1000,
-        })
-        .expect(201);
-      const lireEnFormateur = (suffixe: string) =>
-        request(serveur())
-          .get(route(`/sessions/${sessionId}/${suffixe}`))
-          .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-          .expect(200);
+      );
+      await http.repondre(sessionId, jeton, TEMOIN.piege).expect(201);
+      const lireEnFormateur = (lecture: string) =>
+        http.lireEnFormateur(sessionId, lecture).expect(200);
 
-      const sujet = await request(serveur())
-        .get(route(`/sessions/${sessionId}/sujet`))
-        .set(EN_TETE_JETON, jeton)
-        .expect(200);
+      const sujet = await http.sujet(sessionId, jeton).expect(200);
       const deroule = await lireEnFormateur('deroule');
       const resultats = await lireEnFormateur('results');
       const exportBilan = await lireEnFormateur('report');
-      const document = SwaggerModule.createDocument(
-        app,
-        new DocumentBuilder().setTitle('formations').build(),
-      );
+      const document = documentOpenApiFormations(app);
 
       expect([
         ...ecartsAuSchemaDeReponse(document, '/{id}/sujet', sujet.body),
@@ -675,19 +673,12 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('documente le guide formateur que le deroule rend avec chaque ecran', async () => {
-      const ouverture = await demanderOuverture(FORMATEUR_A, {
-        courseSlug: COURS_GUIDE.slug,
-      }).expect(201);
-      const { sessionId } = ouverture.body as { sessionId: string };
+      const { sessionId } = await http.ouvrirSession(COURS_GUIDE.slug);
 
-      const deroule = await request(serveur())
-        .get(route(`/sessions/${sessionId}/deroule`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
+      const deroule = await http
+        .lireEnFormateur(sessionId, 'deroule')
         .expect(200);
-      const document = SwaggerModule.createDocument(
-        app,
-        new DocumentBuilder().setTitle('formations').build(),
-      );
+      const document = documentOpenApiFormations(app);
 
       expect((deroule.body as DerouleCours).ecrans[0].guide).toEqual(
         COURS_GUIDE.ecrans[0].guide,
@@ -700,9 +691,7 @@ describe('Session de formation (e2e http socket)', () => {
 
   describe('ouverture d une seance par le slug du cours', () => {
     it('refuse un cours absent du catalogue', async () => {
-      const reponse = await demanderOuverture(FORMATEUR_A, {
-        courseSlug: 'inconnu',
-      });
+      const reponse = await http.ouvrir({ courseSlug: 'inconnu' });
 
       expect(reponse.status).toBe(404);
       expect((reponse.body as { detail: string }).detail).toBe(
@@ -711,9 +700,7 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('rend un conflit explicite, et non une erreur serveur, pour un cours qui ne produit pas assez de tirages', async () => {
-      const reponse = await demanderOuverture(FORMATEUR_A, {
-        courseSlug: COURS_SANS_TIRAGE.slug,
-      });
+      const reponse = await http.ouvrir({ courseSlug: COURS_SANS_TIRAGE.slug });
 
       expect(reponse.status).toBe(409);
       expect((reponse.body as { detail: string }).detail).toContain(
@@ -722,7 +709,7 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('refuse un bareme envoye par le client, meme pour un cours connu', async () => {
-      const reponse = await demanderOuverture(FORMATEUR_A, {
+      const reponse = await http.ouvrir({
         courseSlug: COURS_SENTINELLE.slug,
         bareme: {
           version: 1,
@@ -740,31 +727,24 @@ describe('Session de formation (e2e http socket)', () => {
   });
 
   describe('inscription de l etudiant', () => {
-    it('refuse de rejoindre avec un code invalide', async () => {
-      const reponse = await rejoindre(
-        '42a1',
+    it.each([
+      ['avec un code invalide', '42a1', 400],
+      ['un code inconnu', '9999', 404],
+    ])('refuse de rejoindre %s', async (_cas, code, statut) => {
+      const reponse = await http.rejoindre(
+        code,
         '11111111-1111-4111-8111-111111111111',
       );
 
-      expect(reponse.status).toBe(400);
-    });
-
-    it('refuse de rejoindre un code inconnu', async () => {
-      const reponse = await rejoindre(
-        '9999',
-        '11111111-1111-4111-8111-111111111112',
-      );
-
-      expect(reponse.status).toBe(404);
+      expect(reponse.status).toBe(statut);
     });
 
     it('ne renvoie a l etudiant ni le bareme ni la graine de son tirage', async () => {
-      const { code, sessionId } = await ouvrirSession(FORMATEUR_A);
+      const { code, sessionId } = await http.ouvrirSession();
 
-      const reponse = await rejoindre(
-        code,
-        '11111111-1111-4111-8111-111111111113',
-      ).expect(201);
+      const reponse = await http
+        .rejoindre(code, '11111111-1111-4111-8111-111111111113')
+        .expect(201);
 
       const cles = Object.keys(reponse.body as object).sort((a, b) =>
         a.localeCompare(b),
@@ -784,9 +764,7 @@ describe('Session de formation (e2e http socket)', () => {
         ecranCourant: 0,
         modeRythme: 'pilote',
       });
-      CORRIGE_EN_CLAIR.forEach((temoin) => {
-        expect(reponse.text).not.toContain(temoin);
-      });
+      attendreSansCorrige(reponse.text);
     });
   });
 
@@ -794,131 +772,132 @@ describe('Session de formation (e2e http socket)', () => {
     const ETUDIANTE = 'alice.durand';
 
     const rejoindreDepuis = (code: string, secretDeReprise?: string) =>
-      request(serveur())
-        .post(route(`/sessions/${code}/join`))
+      http
+        .post(`/sessions/${code}/join`)
         .send({ ...inscription(ETUDIANTE), secretDeReprise });
 
+    const seanceAvecUnPoste = async (): Promise<
+      SeanceOuverte & PosteInscrit
+    > => {
+      const seance = await http.ouvrirSession();
+      const poste = await rejoindreDepuis(seance.code).expect(201);
+      return { ...seance, ...(poste.body as PosteInscrit) };
+    };
+
     const agirSurLeParticipant = (
-      sessionId: string,
-      participantId: string,
+      { sessionId, participantId }: SeanceOuverte & PosteInscrit,
       action: 'liberation' | 'eviction',
+      formateur = FORMATEUR_A,
     ) => {
       const chemin = `/sessions/${sessionId}/participants/${participantId}`;
       const requete =
         action === 'eviction'
-          ? request(serveur()).delete(route(chemin))
-          : request(serveur()).post(route(`${chemin}/liberation`));
-      return requete.set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`);
+          ? http.delete(chemin)
+          : http.post(`${chemin}/liberation`);
+      return requete.set(EN_TETE_IDENTITE, `${formateur}:teacher`);
     };
 
-    it('refuse en 409 PLACE_DEJA_PRISE le poste qui ne presente que le courriel d un inscrit, sans lui remettre de jeton', async () => {
-      const { code } = await ouvrirSession(FORMATEUR_A);
-      await rejoindreDepuis(code).expect(201);
+    it.each([
+      ['ne presente que le courriel d un inscrit', undefined],
+      ['presente un secret de reprise forge', 'A'.repeat(43)],
+    ])(
+      'refuse en 409 PLACE_DEJA_PRISE le poste qui %s, sans lui remettre de jeton',
+      async (_cas, secret) => {
+        const { code } = await seanceAvecUnPoste();
 
-      const usurpation = await rejoindreDepuis(code).expect(409);
+        const usurpation = await rejoindreDepuis(code, secret).expect(409);
 
-      expect(usurpation.body).toMatchObject({ code: 'PLACE_DEJA_PRISE' });
-      expect(usurpation.body).not.toHaveProperty('jeton');
-      expect(usurpation.body).not.toHaveProperty('secretDeReprise');
-    });
-
-    it('refuse en 409 un secret de reprise forge', async () => {
-      const { code } = await ouvrirSession(FORMATEUR_A);
-      await rejoindreDepuis(code).expect(201);
-
-      const forge = await rejoindreDepuis(code, 'A'.repeat(43)).expect(409);
-
-      expect(forge.body).toMatchObject({ code: 'PLACE_DEJA_PRISE' });
-      expect(forge.body).not.toHaveProperty('jeton');
-    });
+        expect(usurpation.body).toMatchObject({ code: 'PLACE_DEJA_PRISE' });
+        expect(usurpation.body).not.toHaveProperty('jeton');
+        expect(usurpation.body).not.toHaveProperty('secretDeReprise');
+      },
+    );
 
     it('rend sa place au poste qui presente son secret, et renouvelle le secret a chaque reprise', async () => {
-      const { code } = await ouvrirSession(FORMATEUR_A);
-      const premiere = await rejoindreDepuis(code).expect(201);
-      const { participantId, secretDeReprise } = premiere.body as {
-        participantId: string;
-        secretDeReprise: string;
-      };
+      const { code, participantId, secretDeReprise } =
+        await seanceAvecUnPoste();
 
       const reprise = await rejoindreDepuis(code, secretDeReprise).expect(201);
 
       expect(reprise.body).toMatchObject({ participantId });
-      expect(
-        (reprise.body as { secretDeReprise: string }).secretDeReprise,
-      ).not.toBe(secretDeReprise);
+      expect((reprise.body as PosteInscrit).secretDeReprise).not.toBe(
+        secretDeReprise,
+      );
       await rejoindreDepuis(code, secretDeReprise).expect(409);
     });
 
     it('laisse le formateur liberer le poste : la place revient au poste suivant, avec son secret', async () => {
-      const { code, sessionId } = await ouvrirSession(FORMATEUR_A);
-      const premiere = await rejoindreDepuis(code).expect(201);
-      const { participantId } = premiere.body as { participantId: string };
+      const seance = await seanceAvecUnPoste();
 
-      await agirSurLeParticipant(sessionId, participantId, 'liberation').expect(
-        204,
-      );
-      const nouveauPoste = await rejoindreDepuis(code).expect(201);
+      await agirSurLeParticipant(seance, 'liberation').expect(204);
+      const nouveauPoste = await rejoindreDepuis(seance.code).expect(201);
 
-      expect(nouveauPoste.body).toMatchObject({ participantId });
-      await rejoindreDepuis(code).expect(409);
+      expect(nouveauPoste.body).toMatchObject({
+        participantId: seance.participantId,
+      });
+      await rejoindreDepuis(seance.code).expect(409);
     });
 
     it('revoque a la liberation le jeton du poste qui tenait la place', async () => {
-      const { code, sessionId } = await ouvrirSession(FORMATEUR_A);
-      const usurpateur = await rejoindreDepuis(code).expect(201);
-      const { participantId, jeton: jetonRevoque } = usurpateur.body as {
-        participantId: string;
-        jeton: string;
-      };
-      await demarrerSession(sessionId, FORMATEUR_A);
-      const lireLeSujet = (jeton: string) =>
-        request(serveur())
-          .get(route(`/sessions/${sessionId}/sujet`))
-          .set(EN_TETE_JETON, jeton);
+      const seance = await seanceAvecUnPoste();
+      await http.demarrer(seance.sessionId).expect(204);
 
-      await agirSurLeParticipant(sessionId, participantId, 'liberation').expect(
-        204,
+      await agirSurLeParticipant(seance, 'liberation').expect(204);
+      const titulaire = await rejoindreDepuis(seance.code).expect(201);
+
+      const refus = await http.sujet(seance.sessionId, seance.jeton);
+      const acces = await http.sujet(
+        seance.sessionId,
+        (titulaire.body as PosteInscrit).jeton,
       );
-      const titulaire = await rejoindreDepuis(code).expect(201);
-      const { jeton: jetonDuTitulaire } = titulaire.body as { jeton: string };
-
-      const refus = await lireLeSujet(jetonRevoque);
-      const acces = await lireLeSujet(jetonDuTitulaire);
 
       expect(refus.status).toBe(401);
       expect(acces.status).toBe(200);
     });
 
     it('refuse la liberation d un poste a un autre formateur', async () => {
-      const { code, sessionId } = await ouvrirSession(FORMATEUR_A);
-      const premiere = await rejoindreDepuis(code).expect(201);
-      const { participantId } = premiere.body as { participantId: string };
+      const seance = await seanceAvecUnPoste();
 
-      await request(serveur())
-        .post(
-          route(
-            `/sessions/${sessionId}/participants/${participantId}/liberation`,
-          ),
-        )
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_B}:teacher`)
-        .expect(403);
-      const place = await rejoindreDepuis(code).expect(409);
+      await agirSurLeParticipant(seance, 'liberation', FORMATEUR_B).expect(403);
+      const place = await rejoindreDepuis(seance.code).expect(409);
 
       expect(place.body).toMatchObject({ code: 'PLACE_DEJA_PRISE' });
     });
 
-    it('refuse en 403 PARTICIPANT_EVINCE l evince qui revient sous le meme courriel', async () => {
-      const { code, sessionId } = await ouvrirSession(FORMATEUR_A);
-      const premiere = await rejoindreDepuis(code).expect(201);
-      const { participantId, secretDeReprise } = premiere.body as {
-        participantId: string;
-        secretDeReprise: string;
-      };
+    it('refuse en 400 un participant qui n est pas un uuid, avec le message de ParseUUIDPipe', async () => {
+      const seance = await seanceAvecUnPoste();
 
-      await agirSurLeParticipant(sessionId, participantId, 'eviction').expect(
-        204,
-      );
-      const retour = await rejoindreDepuis(code, secretDeReprise).expect(403);
+      const refus = await agirSurLeParticipant(
+        { ...seance, participantId: 'pas-un-uuid' },
+        'eviction',
+      ).expect(400);
+
+      expect(refus.body).toMatchObject({
+        message: 'Validation failed (uuid is expected)',
+      });
+    });
+
+    it('laisse passer au cas d usage un uuid bien forme hors version RFC', async () => {
+      const seance = await seanceAvecUnPoste();
+
+      const absent = await agirSurLeParticipant(
+        { ...seance, participantId: '11111111-1111-1111-1111-111111111111' },
+        'eviction',
+      ).expect(404);
+
+      expect(absent.body).not.toMatchObject({
+        message: 'Validation failed (uuid is expected)',
+      });
+    });
+
+    it('refuse en 403 PARTICIPANT_EVINCE l evince qui revient sous le meme courriel', async () => {
+      const seance = await seanceAvecUnPoste();
+
+      await agirSurLeParticipant(seance, 'eviction').expect(204);
+      const retour = await rejoindreDepuis(
+        seance.code,
+        seance.secretDeReprise,
+      ).expect(403);
 
       expect(retour.body).toMatchObject({ code: 'PARTICIPANT_EVINCE' });
       expect(retour.body).not.toHaveProperty('jeton');
@@ -930,32 +909,23 @@ describe('Session de formation (e2e http socket)', () => {
     let jeton: string;
 
     beforeAll(async () => {
-      const session = await ouvrirSession(FORMATEUR_A);
-      sessionId = session.sessionId;
-      const inscrit = await rejoindre(
-        session.code,
+      ({ sessionId, jeton } = await seanceSurLaSentinelle(
         '11111111-1111-4111-8111-111111111114',
-      ).expect(201);
-      jeton = (inscrit.body as { jeton: string }).jeton;
-      await demarrerSession(sessionId, FORMATEUR_A);
-      await servirLaSentinelle(sessionId, FORMATEUR_A);
+      ));
     });
 
     it('refuse une reponse avant que le formateur ait demarre la seance', async () => {
-      const session = await ouvrirSession(FORMATEUR_A);
-      const inscrit = await rejoindre(
+      const session = await http.ouvrirSession();
+      const poste = await http.inscrire(
         session.code,
         '11111111-1111-4111-8111-111111111118',
-      ).expect(201);
+      );
 
-      const reponse = await request(serveur())
-        .post(route(`/sessions/${session.sessionId}/answers`))
-        .set('x-participant-token', (inscrit.body as { jeton: string }).jeton)
-        .send({
-          questionId: TEMOIN.question,
-          valeur: TEMOIN.solution,
-          dureeMs: 1000,
-        });
+      const reponse = await http.repondre(
+        session.sessionId,
+        poste.jeton,
+        TEMOIN.solution,
+      );
 
       expect(reponse.status).toBe(409);
       expect(reponse.body).toMatchObject({ code: 'SEANCE_NON_DEMARREE' });
@@ -965,23 +935,11 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('distingue par son code la seconde reponse a une meme question', async () => {
-      const session = await ouvrirSession(FORMATEUR_A);
-      const inscrit = await rejoindre(
-        session.code,
+      const seance = await seanceSurLaSentinelle(
         '11111111-1111-4111-8111-111111111122',
-      ).expect(201);
-      const { jeton: jetonDuSecond } = inscrit.body as { jeton: string };
-      await demarrerSession(session.sessionId, FORMATEUR_A);
-      await servirLaSentinelle(session.sessionId, FORMATEUR_A);
+      );
       const envoyer = () =>
-        request(serveur())
-          .post(route(`/sessions/${session.sessionId}/answers`))
-          .set(EN_TETE_JETON, jetonDuSecond)
-          .send({
-            questionId: TEMOIN.question,
-            valeur: TEMOIN.solution,
-            dureeMs: 1000,
-          });
+        http.repondre(seance.sessionId, seance.jeton, TEMOIN.solution);
       await envoyer().expect(201);
 
       const seconde = await envoyer();
@@ -991,33 +949,24 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('refuse une reponse sans jeton de participant', async () => {
-      const reponse = await request(serveur())
-        .post(route(`/sessions/${sessionId}/answers`))
+      const reponse = await http
+        .post(`/sessions/${sessionId}/answers`)
         .send({ questionId: TEMOIN.question, valeur: 1, dureeMs: 1000 });
 
       expect(reponse.status).toBe(401);
     });
 
     it('refuse un jeton emis pour une autre session', async () => {
-      const autre = await ouvrirSession(FORMATEUR_A);
+      const autre = await http.ouvrirSession();
 
-      const reponse = await request(serveur())
-        .post(route(`/sessions/${autre.sessionId}/answers`))
-        .set('x-participant-token', jeton)
-        .send({ questionId: TEMOIN.question, valeur: 1, dureeMs: 1000 });
+      const reponse = await http.repondre(autre.sessionId, jeton, 1);
 
       expect(reponse.status).toBe(401);
     });
 
     it('ne renvoie pas la solution avec le verdict de correction', async () => {
-      const reponse = await request(serveur())
-        .post(route(`/sessions/${sessionId}/answers`))
-        .set('x-participant-token', jeton)
-        .send({
-          questionId: TEMOIN.question,
-          valeur: TEMOIN.piege,
-          dureeMs: 42000,
-        })
+      const reponse = await http
+        .repondre(sessionId, jeton, TEMOIN.piege, 42000)
         .expect(201);
 
       expect(reponse.body).toEqual({
@@ -1034,37 +983,36 @@ describe('Session de formation (e2e http socket)', () => {
     let sessionId: string;
     let code: string;
 
+    const constaterEnRejoignant = (studentKey: string) =>
+      http.inscrire(code, studentKey);
+
     beforeAll(async () => {
-      const session = await ouvrirSession(FORMATEUR_A);
-      sessionId = session.sessionId;
-      code = session.code;
+      ({ sessionId, code } = await http.ouvrirSession());
     });
 
     it('refuse a un utilisateur sans role formateur', async () => {
-      const reponse = await request(serveur())
-        .patch(route(`/sessions/${sessionId}/control`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_B}:student`)
-        .send({ ecran: 1 });
+      const reponse = await http.piloter(
+        sessionId,
+        { ecran: 1 },
+        FORMATEUR_B,
+        'student',
+      );
 
       expect(reponse.status).toBe(403);
     });
 
     it('refuse a un autre formateur de piloter, de clore et de lire', async () => {
-      const entete = `${FORMATEUR_B}:teacher`;
-
-      const pilotage = await request(serveur())
-        .patch(route(`/sessions/${sessionId}/control`))
-        .set(EN_TETE_IDENTITE, entete)
-        .send({ ecran: 1 });
-      const demarrage = await request(serveur())
-        .post(route(`/sessions/${sessionId}/start`))
-        .set(EN_TETE_IDENTITE, entete);
-      const cloture = await request(serveur())
-        .post(route(`/sessions/${sessionId}/close`))
-        .set(EN_TETE_IDENTITE, entete);
-      const lecture = await request(serveur())
-        .get(route(`/sessions/${sessionId}/results`))
-        .set(EN_TETE_IDENTITE, entete);
+      const pilotage = await http.piloter(sessionId, { ecran: 1 }, FORMATEUR_B);
+      const demarrage = await http.demarrer(sessionId, FORMATEUR_B);
+      const cloture = await http.postEnFormateur(
+        `/sessions/${sessionId}/close`,
+        FORMATEUR_B,
+      );
+      const lecture = await http.lireEnFormateur(
+        sessionId,
+        'results',
+        FORMATEUR_B,
+      );
 
       expect([
         pilotage.status,
@@ -1075,65 +1023,51 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('laisse la session intacte apres les tentatives du second formateur', async () => {
-      const reponse = await rejoindre(
-        code,
+      const constat = await constaterEnRejoignant(
         '11111111-1111-4111-8111-111111111115',
-      ).expect(201);
+      );
 
-      expect(reponse.body).toMatchObject({ sessionId, ecranCourant: 0 });
+      expect(constat).toMatchObject({ sessionId, ecranCourant: 0 });
     });
 
     it('accepte le pilotage du formateur proprietaire', async () => {
-      await request(serveur())
-        .patch(route(`/sessions/${sessionId}/control`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-        .send({ ecran: 4 })
-        .expect(204);
+      await http.piloter(sessionId, { ecran: 4 }).expect(204);
 
-      const reponse = await rejoindre(
-        code,
+      const constat = await constaterEnRejoignant(
         '11111111-1111-4111-8111-111111111116',
-      ).expect(201);
-      expect(reponse.body).toMatchObject({ ecranCourant: 4 });
+      );
+      expect(constat).toMatchObject({ ecranCourant: 4 });
     });
 
     it('refuse un ecran hors du cours pour le formateur proprietaire', async () => {
-      const reponse = await request(serveur())
-        .patch(route(`/sessions/${sessionId}/control`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-        .send({ ecran: 99 });
+      const reponse = await http.piloter(sessionId, { ecran: 99 });
 
       expect(reponse.status).toBe(400);
 
-      const constat = await rejoindre(
-        code,
+      const constat = await constaterEnRejoignant(
         '11111111-1111-4111-8111-111111111119',
-      ).expect(201);
-      expect(constat.body).toMatchObject({ ecranCourant: 4 });
+      );
+      expect(constat).toMatchObject({ ecranCourant: 4 });
     });
 
     it('refuse un pilotage vide', async () => {
-      const reponse = await request(serveur())
-        .patch(route(`/sessions/${sessionId}/control`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-        .send({});
+      const reponse = await http.piloter(sessionId, {});
 
       expect(reponse.status).toBe(400);
     });
 
     it('ne bascule ni l ecran ni le rythme quand le rythme libre arrive sans intervalle', async () => {
-      const reponse = await request(serveur())
-        .patch(route(`/sessions/${sessionId}/control`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-        .send({ ecran: 7, mode: 'libre' });
+      const reponse = await http.piloter(sessionId, {
+        ecran: 7,
+        mode: 'libre',
+      });
 
       expect(reponse.status).toBe(400);
 
-      const constat = await rejoindre(
-        code,
+      const constat = await constaterEnRejoignant(
         '11111111-1111-4111-8111-11111111111a',
-      ).expect(201);
-      expect(constat.body).toMatchObject({
+      );
+      expect(constat).toMatchObject({
         ecranCourant: 4,
         modeRythme: 'pilote',
       });
@@ -1144,31 +1078,25 @@ describe('Session de formation (e2e http socket)', () => {
     let sessionId: string;
 
     beforeAll(async () => {
-      const session = await ouvrirSession(FORMATEUR_A);
-      sessionId = session.sessionId;
+      ({ sessionId } = await http.ouvrirSession());
     });
 
     it('sert le deroule annote au formateur proprietaire', async () => {
-      const reponse = await request(serveur())
-        .get(route(`/sessions/${sessionId}/deroule`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`);
+      const reponse = await http.lireEnFormateur(sessionId, 'deroule');
 
       expect(reponse.status).toBe(200);
       expect((reponse.body as { id: string }).id).toBe(COURS_SENTINELLE.slug);
     });
 
-    it('refuse le deroule a un autre formateur', async () => {
-      const reponse = await request(serveur())
-        .get(route(`/sessions/${sessionId}/deroule`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_B}:teacher`);
-
-      expect(reponse.status).toBe(403);
-    });
-
-    it('refuse le deroule a un role autre que formateur', async () => {
-      const reponse = await request(serveur())
-        .get(route(`/sessions/${sessionId}/deroule`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:student`);
+    it.each([
+      ['a un autre formateur', FORMATEUR_B, 'teacher'],
+      ['a un role autre que formateur', FORMATEUR_A, 'student'],
+    ])('refuse le deroule %s', async (_cas, formateur, role) => {
+      const reponse = await http.enFormateur(
+        `/sessions/${sessionId}/deroule`,
+        formateur,
+        role,
+      );
 
       expect(reponse.status).toBe(403);
     });
@@ -1184,13 +1112,7 @@ describe('Session de formation (e2e http socket)', () => {
           appel < relecturesPeriodiques + COURS_B2_01.ecrans.length;
           appel += 1
         ) {
-          statuts.push(
-            (
-              await request(serveur())
-                .get(route(`/sessions/${sessionId}/${lecture}`))
-                .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-            ).status,
-          );
+          statuts.push((await http.lireEnFormateur(sessionId, lecture)).status);
         }
 
         expect(statuts.filter((statut) => statut !== 200)).toEqual([]);
@@ -1204,8 +1126,8 @@ describe('Session de formation (e2e http socket)', () => {
     let jetonDuVoisin: string;
 
     const ecrire = (chemin: string, jetonDuPoste: string, corps: object) =>
-      request(serveur())
-        .post(route(`/sessions/${sessionId}/${chemin}`))
+      http
+        .post(`/sessions/${sessionId}/${chemin}`)
         .set(EN_TETE_JETON, jetonDuPoste)
         .send(corps);
 
@@ -1218,18 +1140,15 @@ describe('Session de formation (e2e http socket)', () => {
       });
 
     beforeAll(async () => {
-      const session = await ouvrirSession(FORMATEUR_A);
+      const session = await http.ouvrirSession();
       sessionId = session.sessionId;
-      const [bavard, voisin] = await Promise.all(
+      [{ jeton: jetonDuBavard }, { jeton: jetonDuVoisin }] = await Promise.all(
         [
           '11111111-1111-4111-8111-111111111141',
           '11111111-1111-4111-8111-111111111142',
-        ].map((cle) => rejoindre(session.code, cle).expect(201)),
+        ].map((cle) => http.inscrire(session.code, cle)),
       );
-      jetonDuBavard = (bavard.body as { jeton: string }).jeton;
-      jetonDuVoisin = (voisin.body as { jeton: string }).jeton;
-      await demarrerSession(sessionId, FORMATEUR_A);
-      await servirLaSentinelle(sessionId, FORMATEUR_A);
+      await servirLaSentinelle(sessionId);
     });
 
     it.each([
@@ -1285,9 +1204,7 @@ describe('Session de formation (e2e http socket)', () => {
 
     it('T7 · rend 429 au poste qui depasse sa limite sans penaliser son voisin de la meme adresse', async () => {
       const lireLeSujet = (jetonDuPoste: string) =>
-        request(serveur())
-          .get(route(`/sessions/${sessionId}/sujet`))
-          .set(EN_TETE_JETON, jetonDuPoste);
+        http.sujet(sessionId, jetonDuPoste);
       const statutsDuBavard: number[] = [];
       for (let appel = 0; appel <= LIMITE_SUJET_PAR_PARTICIPANT; appel += 1) {
         statutsDuBavard.push((await lireLeSujet(jetonDuBavard)).status);
@@ -1306,13 +1223,12 @@ describe('Session de formation (e2e http socket)', () => {
     let jeton: string;
 
     beforeAll(async () => {
-      const session = await ouvrirSession(FORMATEUR_A);
+      const session = await http.ouvrirSession();
       sessionId = session.sessionId;
-      const inscrit = await rejoindre(
+      ({ jeton } = await http.inscrire(
         session.code,
         '11111111-1111-4111-8111-111111111117',
-      ).expect(201);
-      jeton = (inscrit.body as { jeton: string }).jeton;
+      ));
       mailer.sendSyntheseFormateur.mockClear();
       scores.saveIndividuals.mockClear();
       scores.saveSession.mockClear();
@@ -1320,10 +1236,7 @@ describe('Session de formation (e2e http socket)', () => {
 
     it('ne persiste aucun score a la lecture des resultats ni du bilan', async () => {
       for (const lecture of ['results', 'report']) {
-        await request(serveur())
-          .get(route(`/sessions/${sessionId}/${lecture}`))
-          .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-          .expect(200);
+        await http.lireEnFormateur(sessionId, lecture).expect(200);
       }
 
       expect(scores.saveIndividuals).not.toHaveBeenCalled();
@@ -1331,10 +1244,7 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('cloture et adresse la synthese a la boite configuree, jamais au teacherId', async () => {
-      await request(serveur())
-        .post(route(`/sessions/${sessionId}/close`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-        .expect(204);
+      await http.postEnFormateur(`/sessions/${sessionId}/close`).expect(204);
 
       expect(scores.saveIndividuals).toHaveBeenCalledWith([
         expect.objectContaining({ sessionId, note: 0, completion: 0 }),
@@ -1353,56 +1263,38 @@ describe('Session de formation (e2e http socket)', () => {
     });
 
     it('sert le flux SSE de la session close sans laisser filtrer le bareme', async () => {
-      const reponse = await request(serveur())
-        .get(route(`/sessions/${sessionId}/stream`))
-        .set('x-participant-token', jeton)
-        .expect(200);
+      const reponse = await http.flux(sessionId, jeton).expect(200);
 
       expect(reponse.headers['content-type']).toContain('text/event-stream');
       expect(reponse.text).toContain('event: fin');
-      CORRIGE_EN_CLAIR.forEach((temoin) => {
-        expect(reponse.text).not.toContain(temoin);
-      });
+      attendreSansCorrige(reponse.text);
     });
 
     it('retourne un code metier quand un participant repond apres la cloture', async () => {
-      const reponse = await request(serveur())
-        .post(route(`/sessions/${sessionId}/answers`))
-        .set('x-participant-token', jeton)
-        .send({
-          questionId: TEMOIN.question,
-          valeur: TEMOIN.solution,
-          dureeMs: 1000,
-        });
+      const reponse = await http.repondre(sessionId, jeton, TEMOIN.solution);
 
       expect(reponse.status).toBe(409);
       expect(reponse.body).toMatchObject({ code: 'SEANCE_TERMINEE' });
     });
 
     it('n ouvre pas le flux a qui connait le sessionId sans etre inscrit', async () => {
-      const sansJeton = await request(serveur()).get(
-        route(`/sessions/${sessionId}/stream`),
+      const sansJeton = await http.get(`/sessions/${sessionId}/stream`);
+      const jetonDAilleurs = await http.flux(
+        sessionId,
+        `${randomUUID()}.empreinte-forgee`,
       );
-      const jetonDAilleurs = await request(serveur())
-        .get(route(`/sessions/${sessionId}/stream`))
-        .set('x-participant-token', `${randomUUID()}.empreinte-forgee`);
 
       expect([sansJeton.status, jetonDAilleurs.status]).toEqual([401, 401]);
     });
 
     it('T3 · refuse le flux de la seance au jeton authentique d une autre seance', async () => {
-      const autre = await ouvrirSession(FORMATEUR_A);
-      const inscritAilleurs = await rejoindre(
+      const autre = await http.ouvrirSession();
+      const { jeton: jetonAuthentique } = await http.inscrire(
         autre.code,
         '11111111-1111-4111-8111-111111111131',
-      ).expect(201);
-      const { jeton: jetonAuthentique } = inscritAilleurs.body as {
-        jeton: string;
-      };
+      );
 
-      const reponse = await request(serveur())
-        .get(route(`/sessions/${sessionId}/stream`))
-        .set(EN_TETE_JETON, jetonAuthentique);
+      const reponse = await http.flux(sessionId, jetonAuthentique);
 
       expect(reponse.status).toBe(401);
       expect(reponse.headers['content-type']).not.toContain(
@@ -1414,40 +1306,35 @@ describe('Session de formation (e2e http socket)', () => {
       const dernier = jeton.at(-1);
       const altere = `${jeton.slice(0, -1)}${dernier === 'a' ? 'b' : 'a'}`;
 
-      const reponse = await request(serveur())
-        .get(route(`/sessions/${sessionId}/stream`))
-        .set(EN_TETE_JETON, altere);
+      const reponse = await http.flux(sessionId, altere);
 
       expect(reponse.status).toBe(401);
     });
 
     it('sert le flux presentateur au formateur proprietaire et a lui seul', async () => {
-      const proprietaire = await request(serveur())
-        .get(route(`/sessions/${sessionId}/presenter-stream`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`);
-      const intrus = await request(serveur())
-        .get(route(`/sessions/${sessionId}/presenter-stream`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_B}:teacher`);
+      const proprietaire = await http.lireEnFormateur(
+        sessionId,
+        'presenter-stream',
+      );
+      const intrus = await http.lireEnFormateur(
+        sessionId,
+        'presenter-stream',
+        FORMATEUR_B,
+      );
 
       expect(proprietaire.status).toBe(200);
       expect(proprietaire.headers['content-type']).toContain(
         'text/event-stream',
       );
       expect(intrus.status).toBe(403);
-      CORRIGE_EN_CLAIR.forEach((temoin) => {
-        expect(proprietaire.text).not.toContain(temoin);
-      });
+      attendreSansCorrige(proprietaire.text);
     });
 
     it('pousse les resultats agreges au seul flux du formateur', async () => {
-      const presentateur = await request(serveur())
-        .get(route(`/sessions/${sessionId}/presenter-stream`))
-        .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
+      const presentateur = await http
+        .lireEnFormateur(sessionId, 'presenter-stream')
         .expect(200);
-      const etudiant = await request(serveur())
-        .get(route(`/sessions/${sessionId}/stream`))
-        .set('x-participant-token', jeton)
-        .expect(200);
+      const etudiant = await http.flux(sessionId, jeton).expect(200);
 
       expect(presentateur.text).toContain('event: resultats');
       expect(etudiant.text).not.toContain('event: resultats');
@@ -1460,25 +1347,16 @@ describe('Une salle informatique derriere une seule adresse publique', () => {
   let codeDeLaSeance = '';
   const codesOuverts: string[] = [];
 
-  const serveur = () => serveurHttpDe(app);
-
-  const route = routeFormations;
+  const http = clientFormations(() => app);
 
   const ouvrirSeanceDeClasse = async (): Promise<string> => {
-    const reponse = await request(serveur())
-      .post(route('/sessions'))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-      .send({ courseSlug: COURS_DE_CLASSE.slug })
-      .expect(201);
-    const { code } = reponse.body as { code: string };
+    const { code } = await http.ouvrirSession(COURS_DE_CLASSE.slug);
     codesOuverts.push(code);
     return code;
   };
 
   const rejoindre = (code: string, index: number) =>
-    request(serveur())
-      .post(route(`/sessions/${code}/join`))
-      .send(inscription(cleEtudiant(index)));
+    http.rejoindre(code, cleEtudiant(index));
 
   beforeAll(async () => {
     ({ app } = await creerHarnais());
@@ -1536,31 +1414,13 @@ describe('sujet du participant (lecture par jeton)', () => {
   let app: INestApplication;
   let remplacerCatalogue: (nouveau: ICatalogueCours) => void;
 
-  const serveur = () => serveurHttpDe(app);
+  const http = clientFormations(() => app);
 
-  const route = routeFormations;
-
-  const ouvrirSession = async (): Promise<{
-    sessionId: string;
-    code: string;
-  }> => {
-    const reponse = await request(serveur())
-      .post(route('/sessions'))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-      .send({ courseSlug: COURS_SENTINELLE.slug })
-      .expect(201);
-    return reponse.body as { sessionId: string; code: string };
-  };
-
-  const rejoindreEtObtenirJeton = async (
-    code: string,
+  const seanceAvecUnInscrit = async (
     studentKey: string,
-  ): Promise<string> => {
-    const reponse = await request(serveur())
-      .post(route(`/sessions/${code}/join`))
-      .send(inscription(studentKey))
-      .expect(201);
-    return (reponse.body as { jeton: string }).jeton;
+  ): Promise<SeanceOuverte & PosteInscrit> => {
+    const seance = await http.ouvrirSession();
+    return { ...seance, ...(await http.inscrire(seance.code, studentKey)) };
   };
 
   beforeAll(async () => {
@@ -1576,57 +1436,38 @@ describe('sujet du participant (lecture par jeton)', () => {
   });
 
   it('refuse de lire le sujet sans jeton de participant', async () => {
-    const { sessionId } = await ouvrirSession();
+    const { sessionId } = await http.ouvrirSession();
 
-    const reponse = await request(serveur()).get(
-      route(`/sessions/${sessionId}/sujet`),
-    );
+    const reponse = await http.get(`/sessions/${sessionId}/sujet`);
 
     expect(reponse.status).toBe(401);
   });
 
   it('refuse le sujet d une seance au jeton emis pour une autre seance', async () => {
-    const seanceA = await ouvrirSession();
-    const seanceB = await ouvrirSession();
-    const jetonDeA = await rejoindreEtObtenirJeton(
-      seanceA.code,
+    const seanceA = await seanceAvecUnInscrit(
       '33333333-3333-4333-8333-333333333335',
     );
+    const seanceB = await http.ouvrirSession();
 
-    const reponse = await request(serveur())
-      .get(route(`/sessions/${seanceB.sessionId}/sujet`))
-      .set('x-participant-token', jetonDeA);
+    const reponse = await http.sujet(seanceB.sessionId, seanceA.jeton);
 
     expect(reponse.status).toBe(401);
     expect(reponse.text).not.toContain(COURS_SENTINELLE.titre);
   });
 
   it('sert le sujet du tirage du participant sans jamais livrer le corrige', async () => {
-    const { sessionId, code } = await ouvrirSession();
-    const jeton = await rejoindreEtObtenirJeton(
-      code,
+    const { sessionId, jeton } = await seanceAvecUnInscrit(
       '33333333-3333-4333-8333-333333333331',
     );
 
-    const reponse = await request(serveur())
-      .get(route(`/sessions/${sessionId}/sujet`))
-      .set('x-participant-token', jeton)
-      .expect(200);
+    const reponse = await http.sujet(sessionId, jeton).expect(200);
 
     expect((reponse.body as { id: string }).id).toBe(COURS_SENTINELLE.slug);
-    [
-      String(TEMOIN.solution),
-      String(TEMOIN.piege),
-      TEMOIN.misconception,
-    ].forEach((temoin) => {
-      expect(reponse.text).not.toContain(temoin);
-    });
+    attendreSansCorrige(reponse.text, BAREME_EN_CLAIR);
   });
 
   it('laisse un poste relire son sujet a l arrivee et a la revelation de chaque ecran du B2-01 servi en une minute', async () => {
-    const { sessionId, code } = await ouvrirSession();
-    const jeton = await rejoindreEtObtenirJeton(
-      code,
+    const { sessionId, jeton } = await seanceAvecUnInscrit(
       '33333333-3333-4333-8333-333333333337',
     );
     const relecturesParEcran = 2;
@@ -1637,29 +1478,18 @@ describe('sujet du participant (lecture par jeton)', () => {
       lecture < COURS_B2_01.ecrans.length * relecturesParEcran;
       lecture += 1
     ) {
-      statuts.push(
-        (
-          await request(serveur())
-            .get(route(`/sessions/${sessionId}/sujet`))
-            .set(EN_TETE_JETON, jeton)
-        ).status,
-      );
+      statuts.push((await http.sujet(sessionId, jeton)).status);
     }
 
     expect(statuts.filter((statut) => statut !== 200)).toEqual([]);
   });
 
   it('ne livre pas le contenu des ecrans que le formateur n a pas encore reveles', async () => {
-    const { sessionId, code } = await ouvrirSession();
-    const jeton = await rejoindreEtObtenirJeton(
-      code,
+    const { sessionId, jeton } = await seanceAvecUnInscrit(
       '33333333-3333-4333-8333-333333333336',
     );
 
-    const reponse = await request(serveur())
-      .get(route(`/sessions/${sessionId}/sujet`))
-      .set('x-participant-token', jeton)
-      .expect(200);
+    const reponse = await http.sujet(sessionId, jeton).expect(200);
     const ecrans = reponse.body as {
       ecrans: readonly { type: string; donnees: Record<string, unknown> }[];
     };
@@ -1677,41 +1507,26 @@ describe('sujet du participant (lecture par jeton)', () => {
   });
 
   it('sert a chaque participant le sujet de son propre tirage', async () => {
-    const { sessionId, code } = await ouvrirSession();
-    const jetonA = await rejoindreEtObtenirJeton(
+    const {
+      sessionId,
       code,
-      '33333333-3333-4333-8333-333333333332',
-    );
-    const jetonB = await rejoindreEtObtenirJeton(
+      jeton: jetonA,
+    } = await seanceAvecUnInscrit('33333333-3333-4333-8333-333333333332');
+    const { jeton: jetonB } = await http.inscrire(
       code,
       '33333333-3333-4333-8333-333333333333',
     );
-    await request(serveur())
-      .post(route(`/sessions/${sessionId}/start`))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-      .expect(204);
-    await request(serveur())
-      .patch(route(`/sessions/${sessionId}/control`))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR_A}:teacher`)
-      .send({ ecran: 4 })
-      .expect(204);
+    await http.demarrer(sessionId).expect(204);
+    await http.piloter(sessionId, { ecran: 4 }).expect(204);
 
-    const sujetA = await request(serveur())
-      .get(route(`/sessions/${sessionId}/sujet`))
-      .set('x-participant-token', jetonA)
-      .expect(200);
-    const sujetB = await request(serveur())
-      .get(route(`/sessions/${sessionId}/sujet`))
-      .set('x-participant-token', jetonB)
-      .expect(200);
+    const sujetA = await http.sujet(sessionId, jetonA).expect(200);
+    const sujetB = await http.sujet(sessionId, jetonB).expect(200);
 
     expect(sujetA.text).not.toEqual(sujetB.text);
   });
 
   it('refuse de servir un sujet quand le cours a change depuis l ouverture de la seance', async () => {
-    const { sessionId, code } = await ouvrirSession();
-    const jeton = await rejoindreEtObtenirJeton(
-      code,
+    const { sessionId, jeton } = await seanceAvecUnInscrit(
       '33333333-3333-4333-8333-333333333334',
     );
 
@@ -1722,9 +1537,7 @@ describe('sujet du participant (lecture par jeton)', () => {
       ),
     );
 
-    const reponse = await request(serveur())
-      .get(route(`/sessions/${sessionId}/sujet`))
-      .set('x-participant-token', jeton);
+    const reponse = await http.sujet(sessionId, jeton);
 
     expect(reponse.status).toBe(409);
     expect((reponse.body as { detail: string }).detail).toContain(

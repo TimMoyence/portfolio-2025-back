@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import type { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import request from 'supertest';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import type { SessionState } from '../src/modules/formations/domain/SessionState';
@@ -20,8 +18,11 @@ import {
   PREFIXE_API,
   serveurHttpDe,
 } from './helpers/formations-harness';
-import { fermerApplication } from './helpers/nest-test-app';
-import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
+import { applicationDeLaSuite } from './helpers/nest-test-app';
+import {
+  documentOpenApiFormations,
+  ecartsAuSchemaDeReponse,
+} from './helpers/schema-openapi';
 
 const SECRET = 'secret-de-test-formations-assez-long-1234';
 const PROPRIETAIRE_ID = 'a1111111-1111-4111-8111-111111111111';
@@ -63,9 +64,12 @@ function seance(etat: SessionState = 'en_cours') {
 
 describe('Acces formateur aux annotations, participants et reponses libres (e2e http socket)', () => {
   const depots = createMockDepotsFormations();
-  let app: INestApplication;
+  const app = applicationDeLaSuite(() => {
+    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
+    return monterApplicationFormations(depots);
+  });
 
-  const serveur = () => serveurHttpDe(app);
+  const serveur = () => serveurHttpDe(app());
   const route = (suffixe: string): string =>
     `/${PREFIXE_API}/formations/sessions/${SESSION_ID}/${suffixe}`;
   const appel = (
@@ -76,15 +80,6 @@ describe('Acces formateur aux annotations, participants et reponses libres (e2e 
     request(serveur())[methode](route(suffixe)).set(EN_TETE_IDENTITE, identite);
   const ecrituresEnregistrees = (): number =>
     depots.annotations.save.mock.calls.length;
-
-  beforeAll(async () => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    app = await monterApplicationFormations(depots);
-  });
-
-  afterAll(async () => {
-    await fermerApplication(app);
-  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -148,10 +143,7 @@ describe('Acces formateur aux annotations, participants et reponses libres (e2e 
     });
 
     it('documente exactement la forme rendue des nouvelles lectures', async () => {
-      const document = SwaggerModule.createDocument(
-        app,
-        new DocumentBuilder().setTitle('formations').build(),
-      );
+      const document = documentOpenApiFormations(app());
       const ecarts: string[] = [];
       for (const suffixe of ['participants', 'annotations', 'free-responses']) {
         const reponse = await appel('get', suffixe, PROPRIETAIRE).expect(200);
@@ -238,7 +230,9 @@ describe('Acces formateur aux annotations, participants et reponses libres (e2e 
         .post(route('free-responses'))
         .set(
           EN_TETE_JETON,
-          app.get(ParticipantTokenService).sign(SESSION_ID, PARTICIPANT_ID, 0),
+          app()
+            .get(ParticipantTokenService)
+            .sign(SESSION_ID, PARTICIPANT_ID, 0),
         )
         .send(corps);
 

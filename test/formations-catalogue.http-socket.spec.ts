@@ -1,5 +1,4 @@
 import type { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import request from 'supertest';
 import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
 import { projeterCatalogue } from '../src/modules/formations/domain/cours/Diffusion';
@@ -13,7 +12,11 @@ import {
   PREFIXE_API,
 } from './helpers/formations-harness';
 import { fermerApplication } from './helpers/nest-test-app';
-import { ecartsAuSchemaDeReponse } from './helpers/schema-openapi';
+import {
+  attendreVersionServie,
+  documentOpenApiFormations,
+  ecartsAuSchemaDeReponse,
+} from './helpers/schema-openapi';
 
 const COURS = lireCoursStocke(buildCoursStocke());
 const DONNEES_DU_FORMATEUR = [
@@ -67,9 +70,7 @@ describe('Catalogue public des formations (e2e http socket)', () => {
   it('sert la version publiee et sa date de bascule au sitemap (H1)', async () => {
     const reponse = await lire(COURS.slug).expect(200);
 
-    const servi = reponse.body as { version: number; publieLe: string };
-    expect(servi.version).toBe(1);
-    expect(Date.parse(servi.publieLe)).not.toBeNaN();
+    attendreVersionServie(reponse.body, 1);
   });
 
   it('ne livre ni donnee du formateur, ni quiz note, ni corrige', async () => {
@@ -93,10 +94,7 @@ describe('Catalogue public des formations (e2e http socket)', () => {
   });
 
   it('documente exactement la forme rendue', async () => {
-    const document = SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder().setTitle('formations').build(),
-    );
+    const document = documentOpenApiFormations(app);
     const reponse = await lire(COURS.slug).expect(200);
 
     expect(

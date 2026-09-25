@@ -1,19 +1,17 @@
-import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ArticleModerationService } from '../src/modules/articles/application/article-moderation.service';
 import { ArticleModerationController } from '../src/modules/articles/interfaces/article-moderation.controller';
 import {
-  ecouterEnBoucleLocale,
-  fermerApplication,
+  applicationDeLaSuite,
   httpServerOf,
+  ouvrirApplication,
 } from './helpers/nest-test-app';
 
 const ARTICLE_ID = 'morning-brief-2026-09-23-fr';
 
 describe('Modération des articles (admin)', () => {
-  let app: INestApplication;
   const moderation = {
     list: jest.fn().mockResolvedValue([]),
     withdraw: jest.fn().mockResolvedValue({ article_id: ARTICLE_ID }),
@@ -22,32 +20,30 @@ describe('Modération des articles (admin)', () => {
     cancelBroadcast: jest.fn().mockResolvedValue({ article_id: ARTICLE_ID }),
   };
 
-  beforeAll(async () => {
+  const app = applicationDeLaSuite(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [ArticleModerationController],
       providers: [{ provide: ArticleModerationService, useValue: moderation }],
     }).compile();
 
-    app = moduleRef.createNestApplication();
-    app.use((req: Request, _res: Response, next: NextFunction) => {
-      const role = req.header('x-test-role');
-      if (role) {
-        (req as unknown as { user: unknown }).user = { roles: [role] };
-      }
-      next();
+    return ouvrirApplication(moduleRef, (application) => {
+      application.use((req: Request, _res: Response, next: NextFunction) => {
+        const role = req.header('x-test-role');
+        if (role) {
+          (req as unknown as { user: unknown }).user = { roles: [role] };
+        }
+        next();
+      });
+      application.setGlobalPrefix('api/v1/portfolio25');
     });
-    app.setGlobalPrefix('api/v1/portfolio25');
-    await ecouterEnBoucleLocale(app);
   });
 
-  afterAll(async () => {
-    await fermerApplication(app);
-  });
+  const serveur = () => httpServerOf(app());
 
   beforeEach(() => jest.clearAllMocks());
 
   it('refuse un utilisateur sans rôle admin', async () => {
-    await request(httpServerOf(app))
+    await request(serveur())
       .get('/api/v1/portfolio25/articles/admin/articles')
       .set('x-test-role', 'user')
       .expect(403);
@@ -56,7 +52,7 @@ describe('Modération des articles (admin)', () => {
   });
 
   it('liste les articles pour un admin', async () => {
-    const response = await request(httpServerOf(app))
+    const response = await request(serveur())
       .get('/api/v1/portfolio25/articles/admin/articles')
       .set('x-test-role', 'admin');
 
@@ -71,7 +67,7 @@ describe('Modération des articles (admin)', () => {
     ['broadcast/approve', 'approveBroadcast'],
     ['broadcast/cancel', 'cancelBroadcast'],
   ] as const)('route POST %s vers le service', async (path, method) => {
-    await request(httpServerOf(app))
+    await request(serveur())
       .post(`/api/v1/portfolio25/articles/admin/${ARTICLE_ID}/${path}`)
       .set('x-test-role', 'admin')
       .expect(200)
@@ -81,7 +77,7 @@ describe('Modération des articles (admin)', () => {
   });
 
   it('répond 404 sans appeler le service pour un identifiant hors contrat', async () => {
-    await request(httpServerOf(app))
+    await request(serveur())
       .post('/api/v1/portfolio25/articles/admin/..%2Fetc/withdraw')
       .set('x-test-role', 'admin')
       .expect(404);
