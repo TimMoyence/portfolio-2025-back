@@ -1,31 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PaginatedResult } from '../../../common/domain/pagination.types';
-import { pageDeRequete } from '../../../common/infrastructure/typeorm/page-de-requete';
+import { DepotPagine } from '../../../common/infrastructure/typeorm/page-de-requete';
 import { IProjectsRepository } from '../domain/IProjects.repository';
-import { ProjectListQuery, ProjectSortBy } from '../domain/ProjectList.query';
+import { ProjectListQuery } from '../domain/ProjectList.query';
 import { ProjectType, Projects } from '../domain/Projects';
 import { ProjectsEntity } from './entities/Projects.entity';
 import { ProjectType as ProjectTypeEnum } from './enums/ProjectType.enum';
 
 @Injectable()
-export class ProjectsRepositoryTypeORM implements IProjectsRepository {
+export class ProjectsRepositoryTypeORM
+  extends DepotPagine<ProjectsEntity, Projects, ProjectListQuery>
+  implements IProjectsRepository
+{
   constructor(
     @InjectRepository(ProjectsEntity)
-    private readonly repo: Repository<ProjectsEntity>,
-  ) {}
-
-  async findAll(query: ProjectListQuery): Promise<PaginatedResult<Projects>> {
-    return pageDeRequete(
-      this.repo.createQueryBuilder('project'),
-      {
-        ...query,
-        colonneDeTri: this.resolveSortColumn(query.sortBy),
-        filtres: { type: query.type, status: query.status },
-      },
-      (entity) => this.toDomain(entity),
-    );
+    repo: Repository<ProjectsEntity>,
+  ) {
+    super(repo, {
+      alias: 'project',
+      colonnes: ['order', 'slug', 'type', 'createdAt'],
+      parDefaut: 'order',
+      filtres: (query) => ({ type: query.type, status: query.status }),
+    });
   }
 
   async create(data: Projects): Promise<Projects> {
@@ -44,7 +41,7 @@ export class ProjectsRepositoryTypeORM implements IProjectsRepository {
     return this.toDomain(saved);
   }
 
-  private toDomain(entity: ProjectsEntity): Projects {
+  protected toDomain(entity: ProjectsEntity): Projects {
     const project = new Projects();
     project.id = entity.id;
     project.slug = entity.slug;
@@ -57,19 +54,5 @@ export class ProjectsRepositoryTypeORM implements IProjectsRepository {
     project.status = entity.status;
     project.order = entity.order;
     return project;
-  }
-
-  private resolveSortColumn(sortBy: ProjectSortBy): string {
-    switch (sortBy) {
-      case 'slug':
-        return 'project.slug';
-      case 'type':
-        return 'project.type';
-      case 'createdAt':
-        return 'project.createdAt';
-      case 'order':
-      default:
-        return 'project.order';
-    }
   }
 }

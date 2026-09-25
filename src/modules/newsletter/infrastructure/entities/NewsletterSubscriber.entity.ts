@@ -1,4 +1,8 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  ColonneAcceptationDesConditions,
+  ColonneVersionDesConditions,
+} from '../../../../common/infrastructure/typeorm/ColonnesDeConsentement';
 import type { SubscriptionStatus } from '../../domain/SubscriptionStatus';
 
 @Entity({ name: 'newsletter_subscribers' })
@@ -31,10 +35,10 @@ export class NewsletterSubscriberEntity {
   @Column({ name: 'unsubscribe_token', type: 'uuid' })
   unsubscribeToken: string;
 
-  @Column({ name: 'terms_version', type: 'varchar', length: 50 })
+  @ColonneVersionDesConditions()
   termsVersion: string;
 
-  @Column({ name: 'terms_accepted_at', type: 'timestamptz' })
+  @ColonneAcceptationDesConditions()
   termsAcceptedAt: Date;
 
   @Index('idx_newsletter_confirm_token_expires_at')

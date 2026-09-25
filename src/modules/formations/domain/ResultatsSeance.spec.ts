@@ -2,6 +2,8 @@ import {
   buildAnswerRecord,
   buildQuestionAAgreger,
   buildResultatQuestion,
+  detailsDeFeuilleAMoitieJuste,
+  detailsDeFeuilleJuste,
 } from '../../../../test/factories/formation.factory';
 import { NE_SAIT_PAS } from './GradingCore';
 import { agregerResultats } from './ResultatsSeance';
@@ -93,19 +95,13 @@ describe('agregerResultats', () => {
           questionId: 'Q-FEUILLE',
           valeur: { type: 'feuille', cellules: { D2: '=1' } },
           score: 1,
-          details: [
-            { cle: 'D2', juste: true, confusion: null },
-            { cle: 'D3', juste: true, confusion: null },
-          ],
+          details: detailsDeFeuilleJuste(),
         }),
         buildAnswerRecord({
           questionId: 'Q-FEUILLE',
           valeur: { type: 'feuille', cellules: { D2: '=2' } },
           score: 0.5,
-          details: [
-            { cle: 'D2', juste: false, confusion: 'base-arrivee' },
-            { cle: 'D3', juste: true, confusion: null },
-          ],
+          details: detailsDeFeuilleAMoitieJuste(),
         }),
       ],
     }).questions;

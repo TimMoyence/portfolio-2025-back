@@ -1,5 +1,6 @@
 import type { Cours, Ecran } from '../contrats/cours';
 import type { TirageDuCours } from '../contrats/tirage';
+import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
 import { estInteractif, questionsDe, questionsDuCours } from './Cours';
 import { ecranCorrigePar } from './Corrections';
 import {
@@ -283,14 +284,6 @@ function raisonIntrouvable(
     return `${sujet} « ${identifiant} » qui n'est déclaré par aucun écran ni aucune question de ce cours.`;
   }
   return `${sujet} « ${identifiant} » est un identifiant distinct de « ${voisin} » : la casse et les accents ne sont jamais rapprochés en silence.`;
-}
-
-function estObjet(
-  valeur: unknown,
-): valeur is Readonly<Record<string, unknown>> {
-  return (
-    typeof valeur === 'object' && valeur !== null && !Array.isArray(valeur)
-  );
 }
 
 function referencesDansValeur(valeur: unknown): readonly string[] {
@@ -700,16 +693,10 @@ function controlerCatalogue({ cours }: Analyse): readonly Manquement[] {
 }
 
 function mediasDe(valeur: unknown): readonly string[] {
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => mediasDe(element));
-  }
-  if (!estObjet(valeur)) {
-    return [];
-  }
-  return Object.entries(valeur).flatMap(([cle, element]) =>
+  return cueillirDansArbre(valeur, (cle, element) =>
     CLES_DE_MEDIA.includes(cle) && typeof element === 'string'
       ? [element]
-      : mediasDe(element),
+      : null,
   );
 }
 

@@ -11,6 +11,10 @@ import type { CreateUsersUseCase } from '../../src/modules/users/application/Cre
 import type { UpdateUsersUseCase } from '../../src/modules/users/application/UpdateUsers.useCase';
 import type { DeleteUsersUseCase } from '../../src/modules/users/application/DeleteUsers.useCase';
 import type { AuthAuditLogger } from '../../src/modules/users/application/services/AuthAuditLogger';
+import {
+  buildRefreshToken,
+  createMockRefreshTokensRepo,
+} from './refresh-token.factory';
 
 export function buildUser(overrides?: Partial<User>): User {
   const user = new User();
@@ -142,4 +146,14 @@ export function buildSignedToken(overrides?: {
   expiresAt?: number;
 }): { token: string; expiresIn: number; expiresAt: number } {
   return { token: 'jwt-token', expiresIn: 900, expiresAt: 0, ...overrides };
+}
+
+export function createMockSessionDependances() {
+  const refreshTokensRepo = createMockRefreshTokensRepo();
+  refreshTokensRepo.create.mockResolvedValue(
+    buildRefreshToken({ tokenHash: 'hashed', expiresAt: new Date() }),
+  );
+  const jwtTokenService = createMockJwtService();
+  jwtTokenService.sign.mockResolvedValue(buildSignedToken());
+  return { repo: createMockUsersRepo(), refreshTokensRepo, jwtTokenService };
 }

@@ -1,12 +1,15 @@
 import {
   Column,
   Entity,
-  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import {
+  ColonneLocale,
+  SlugDeTraduction,
+} from '../../../../common/infrastructure/typeorm/ColonnesDeContenu';
 import { ProjectsEntity } from './Projects.entity';
 
 @Entity({ name: 'project_translation' })
@@ -25,11 +28,10 @@ export class ProjectsTranslationsEntity {
   @Column('uuid')
   projectId: string;
 
-  @Column({ type: 'text' })
+  @ColonneLocale()
   locale: string;
 
-  @Index()
-  @Column({ type: 'text' })
+  @SlugDeTraduction()
   slug: string;
 
   @Column({ type: 'text' })

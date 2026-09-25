@@ -3,6 +3,7 @@ import {
   EN_CATALOGUE,
   QUESTION_NUMERIQUE_TEST,
   QUESTION_VOTE_TEST,
+  SOCLE_DE_QUESTION_FIGEE,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildEcranStocke,
@@ -183,14 +184,7 @@ describe('questionsDuCours', () => {
 
 describe('contraintes portees par le type', () => {
   it('refuse a la compilation un concept, une confusion, une tolerance ou une brique hors contrat', () => {
-    const base = {
-      id: 'Q',
-      noteCompte: false,
-      donnees: () => ({}),
-      enonce: () => 'e',
-      unite: null,
-      solution: () => 1,
-    };
+    const base = { ...SOCLE_DE_QUESTION_FIGEE, id: 'Q', solution: () => 1 };
     questionNumerique({
       ...base,
       // @ts-expect-error concept absent de la banque

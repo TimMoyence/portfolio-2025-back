@@ -1,5 +1,6 @@
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
+import cookieParser from 'cookie-parser';
 import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type request from 'supertest';
@@ -19,16 +20,52 @@ export async function fermerApplication(app: INestApplication): Promise<void> {
   await app.close();
 }
 
-export async function bootstrapTestApp(
+export async function ouvrirApplication(
+  moduleRef: TestingModule,
+  configurer?: (app: INestApplication) => void,
+): Promise<INestApplication> {
+  const app = moduleRef.createNestApplication();
+  configurer?.(app);
+  await ecouterEnBoucleLocale(app);
+  return app;
+}
+
+export function applicationDeLaSuite(
+  monter: () => Promise<INestApplication>,
+): () => INestApplication {
+  let app: INestApplication | undefined;
+
+  beforeAll(async () => {
+    app = await monter();
+  });
+
+  afterAll(async () => {
+    if (app) await fermerApplication(app);
+  });
+
+  return () => {
+    if (!app) throw new Error('Application de test non montée');
+    return app;
+  };
+}
+
+export function bootstrapTestApp(
   moduleRef: TestingModule,
   configure?: (app: INestApplication) => void,
 ): Promise<INestApplication> {
-  const app = moduleRef.createNestApplication();
-  configure?.(app);
-  app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
-  app.setGlobalPrefix('api');
-  await ecouterEnBoucleLocale(app);
-  return app;
+  return ouvrirApplication(moduleRef, (app) => {
+    configure?.(app);
+    app.useGlobalPipes(new ValidationPipe(GLOBAL_VALIDATION_PIPE_OPTIONS));
+    app.setGlobalPrefix('api');
+  });
+}
+
+export function bootstrapTestAppAvecCookies(
+  moduleRef: TestingModule,
+): Promise<INestApplication> {
+  return bootstrapTestApp(moduleRef, (app) => {
+    app.use(cookieParser());
+  });
 }
 
 export function httpServerOf(

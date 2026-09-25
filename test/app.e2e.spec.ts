@@ -29,6 +29,7 @@ import {
   primeCoreUseCaseStubs,
   primePasswordUseCaseStubs,
 } from './factories/core-api.factory';
+import { buildChoixDeConsentement } from './factories/cookie-consents.factory';
 import { buildAuthResult, buildUser } from './factories/user.factory';
 import { validateBody } from './helpers/validation-pipe';
 
@@ -144,19 +145,7 @@ describe('API coherence and connectivity (e2e transportless)', () => {
 
   it('creates cookie consent and forwards request metadata to the use case', async () => {
     const dto = await validateBody(
-      {
-        policyVersion: '2026-02-11',
-        locale: 'en',
-        region: 'EU_UK',
-        source: 'banner',
-        action: 'accept_all',
-        preferences: {
-          essential: true,
-          preferences: true,
-          analytics: false,
-          marketing: false,
-        },
-      },
+      buildChoixDeConsentement({ locale: 'en' }),
       CookieConsentRequestDto,
     );
     const req = makeRequestMock(
@@ -256,9 +245,9 @@ describe('API coherence and connectivity (e2e transportless)', () => {
 
     const req = makeRequestMock({ 'user-agent': 'test-agent' });
     const res = makeResponseMock();
-    await expect(authController.login(dto, req, res)).rejects.toBeInstanceOf(
-      UnauthorizedException,
-    );
+    await expect(
+      authController.login(dto, { req, res }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
   it('returns generic message for forgot password flow', async () => {

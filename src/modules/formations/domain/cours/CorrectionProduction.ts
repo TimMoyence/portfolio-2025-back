@@ -30,23 +30,15 @@ interface VerdictDeCarte {
   readonly confusion: ConfusionId | null;
 }
 
-export interface CorrectionDeClassement {
-  readonly verdicts: readonly VerdictDeCarte[];
+interface Correction<V> {
+  readonly verdicts: readonly V[];
   readonly score: number;
   readonly correcte: boolean;
 }
 
-export interface CorrectionDeFeuille {
-  readonly verdicts: readonly VerdictDeCellule[];
-  readonly score: number;
-  readonly correcte: boolean;
-}
-
-export interface CorrectionDeTableau {
-  readonly verdicts: readonly VerdictDeLigne[];
-  readonly score: number;
-  readonly correcte: boolean;
-}
+export type CorrectionDeClassement = Correction<VerdictDeCarte>;
+export type CorrectionDeFeuille = Correction<VerdictDeCellule>;
+export type CorrectionDeTableau = Correction<VerdictDeLigne>;
 
 export type SaisiesDeTableau = readonly Readonly<
   Record<string, number | undefined>
@@ -138,8 +130,13 @@ function confusionDeLaCellule(
   return trahitLaRecopie(attendu, feuille) ? NON_RECOPIABLE : undefined;
 }
 
-function proportionJuste(verdicts: readonly { juste: boolean }[]): number {
-  return verdicts.filter((verdict) => verdict.juste).length / verdicts.length;
+function bilan<V extends { readonly juste: boolean }>(
+  verdicts: readonly V[],
+  seuilReussite: number,
+): Correction<V> {
+  const score =
+    verdicts.filter((verdict) => verdict.juste).length / verdicts.length;
+  return { verdicts, score, correcte: score >= seuilReussite };
 }
 
 export function corrigerFeuille(
@@ -160,8 +157,7 @@ export function corrigerFeuille(
       confusion: confusion ?? null,
     };
   });
-  const score = proportionJuste(verdicts);
-  return { verdicts, score, correcte: score >= corrige.seuilReussite };
+  return bilan(verdicts, corrige.seuilReussite);
 }
 
 export function corrigerClassement(
@@ -176,8 +172,7 @@ export function corrigerClassement(
       confusion: juste ? null : attendu.confusionSiErreur,
     };
   });
-  const score = proportionJuste(verdicts);
-  return { verdicts, score, correcte: score >= corrige.seuilReussite };
+  return bilan(verdicts, corrige.seuilReussite);
 }
 
 export function corrigerTableau(
@@ -195,6 +190,5 @@ export function corrigerTableau(
         : confusionDuPiege(valeur, attendu.pieges, corrige.tolerance);
     return { rang: attendu.rang, cle: attendu.cle, juste, confusion };
   });
-  const score = proportionJuste(verdicts);
-  return { verdicts, score, correcte: score >= corrige.seuilReussite };
+  return bilan(verdicts, corrige.seuilReussite);
 }

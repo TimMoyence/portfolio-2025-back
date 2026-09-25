@@ -1,4 +1,9 @@
-import type { OpenAPIObject } from '@nestjs/swagger';
+import type { INestApplication } from '@nestjs/common';
+import {
+  DocumentBuilder,
+  SwaggerModule,
+  type OpenAPIObject,
+} from '@nestjs/swagger';
 
 interface SchemaOpenApi {
   $ref?: string;
@@ -86,6 +91,21 @@ function ecartsAuSchema(
     );
   }
   return [];
+}
+
+export function documentOpenApiFormations(
+  app: INestApplication,
+): OpenAPIObject {
+  return SwaggerModule.createDocument(
+    app,
+    new DocumentBuilder().setTitle('formations').build(),
+  );
+}
+
+export function attendreVersionServie(corps: unknown, version: number): void {
+  const servi = corps as { version: number; publieLe: string };
+  expect(servi.version).toBe(version);
+  expect(Date.parse(servi.publieLe)).not.toBeNaN();
 }
 
 export function ecartsAuSchemaDeReponse(

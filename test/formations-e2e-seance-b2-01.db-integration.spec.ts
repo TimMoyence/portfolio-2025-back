@@ -1,9 +1,7 @@
 import request from 'supertest';
 import type { Response, Test } from 'supertest';
-import {
-  GetSessionResultsUseCase,
-  type ResultatsDeSeance,
-} from '../src/modules/formations/application/GetSessionResults.useCase';
+import { GetSessionResultsUseCase } from '../src/modules/formations/application/GetSessionResults.useCase';
+import type { ResultatsDeSeance } from '../src/modules/formations/domain/contrats/resultats';
 import { DELAI_MIN_BILAN_MS } from '../src/modules/formations/application/StreamSession.useCase';
 import type {
   Cours,
@@ -24,10 +22,8 @@ import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { clesSecretesDans } from './helpers/cles-du-corrige';
 import { describeDb } from './helpers/db-integration-datasource';
-import { installerEnvFormations } from './helpers/env-formations';
-import { CODE_HTTP } from './helpers/formations-banc-seance';
+import { CODE_HTTP, codeDe } from './helpers/formations-banc-seance';
 import {
-  DELAI_OUVERTURE_CONTEXTE_MS,
   TABLES_DE_SEANCE,
   VERSION_PUBLIEE_SUR_BASE_NEUVE,
 } from './helpers/formations-db';
@@ -35,7 +31,7 @@ import {
   abonnerAuFlux,
   attendreQue,
   EN_TETE_IDENTITE,
-  monterBancFormations,
+  installerBancFormationsVierge,
   PREFIXE_API,
   serveurHttpDe,
   type BancFormations,
@@ -114,10 +110,6 @@ const mesures: string[] = [];
 const briquesJouees = new Set<string>();
 const conflitsObserves = new Set<string>();
 
-function codeDe(reponse: Response): string | undefined {
-  return (reponse.body as { code?: string }).code;
-}
-
 function noterConflit(reponse: Response): Response {
   const code = codeDe(reponse);
   if (code !== undefined) {
@@ -192,6 +184,27 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
       dureeMs: DUREE_MS,
     });
 
+  const signaler = (unPoste: Poste): Test =>
+    poste('post', `/sessions/${sessionId}/incidents`, unPoste.jeton).send({
+      incidents: [{ type: 'tab_hidden', horodatage: new Date().toISOString() }],
+    });
+
+  const ecrireLibrement = (
+    unPoste: Poste,
+    corps: { screenId: string; activityId?: string; response: string },
+  ): Test =>
+    poste('post', `/sessions/${sessionId}/free-responses`, unPoste.jeton).send({
+      ...corps,
+      dureeMs: DUREE_MS,
+    });
+
+  const catalogueServi = async <T>(): Promise<T> =>
+    (
+      await request(serveur())
+        .get(chemin(`/catalogue/${SLUG}`))
+        .expect(OK)
+    ).body as T;
+
   const produire = (
     unPoste: Poste,
     question: QuestionProduction,
@@ -246,13 +259,7 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
   };
 
   const signalerUnIncident = async (): Promise<void> => {
-    await poste('post', `/sessions/${sessionId}/incidents`, postes[1].jeton)
-      .send({
-        incidents: [
-          { type: 'tab_hidden', horodatage: new Date().toISOString() },
-        ],
-      })
-      .expect(SANS_CONTENU);
+    await signaler(postes[1]).expect(SANS_CONTENU);
   };
 
   const jouerVote = async (ecran: Ecran): Promise<void> => {
@@ -542,15 +549,10 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
       return;
     }
     const apresCorrection = noterConflit(
-      await poste(
-        'post',
-        `/sessions/${sessionId}/free-responses`,
-        postes[0].jeton,
-      ).send({
+      await ecrireLibrement(postes[0], {
         screenId: ecran.id,
         activityId: premiereActivite,
         response: 'Apres la correction de l etape.',
-        dureeMs: DUREE_MS,
       }),
     );
     expect([apresCorrection.status, codeDe(apresCorrection)]).toEqual([
@@ -563,32 +565,20 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
     const activites = activitesLibres(cours).get(ecran.id) ?? [];
     for (const activite of activites) {
       for (const unPoste of postes.slice(0, 2)) {
-        await poste(
-          'post',
-          `/sessions/${sessionId}/free-responses`,
-          unPoste.jeton,
-        )
-          .send({
-            screenId: ecran.id,
-            activityId: activite,
-            response: `Note de ${unPoste.nom} sur ${activite}.`,
-            dureeMs: DUREE_MS,
-          })
-          .expect(CREE);
+        await ecrireLibrement(unPoste, {
+          screenId: ecran.id,
+          activityId: activite,
+          response: `Note de ${unPoste.nom} sur ${activite}.`,
+        }).expect(CREE);
       }
     }
   };
 
   const reponseLibreSur = (ecran: Ecran, texte: string): Test =>
-    poste(
-      'post',
-      `/sessions/${sessionId}/free-responses`,
-      postes[0].jeton,
-    ).send({
+    ecrireLibrement(postes[0], {
       screenId: ecran.id,
       activityId: (activitesLibres(cours).get(ecran.id) ?? ['']).at(-1),
       response: texte,
-      dureeMs: DUREE_MS,
     });
 
   const ecrituresDesBriques = (
@@ -631,15 +621,10 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
           auteur.jeton,
         ).send({ etat: 'clair' }),
       reponseLibre: () =>
-        poste(
-          'post',
-          `/sessions/${sessionId}/free-responses`,
-          auteur.jeton,
-        ).send({
+        ecrireLibrement(auteur, {
           screenId: libre.id,
           activityId: (activitesLibres(cours).get(libre.id) ?? [''])[0],
           response: texte,
-          dureeMs: DUREE_MS,
         }),
       defi: () =>
         poste(
@@ -724,33 +709,34 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
     await jouerReponsesLibres(ecran);
   };
 
-  installerEnvFormations({ secret: SECRET, syntheseA: SYNTHESE_A });
-
-  beforeAll(async () => {
-    banc = await monterBancFormations();
-    await banc.contexte.nettoyer();
-    bilanEspionne = jest.spyOn(
-      banc.app.get(GetSessionResultsUseCase),
-      'bilanDe',
-    );
-  }, DELAI_OUVERTURE_CONTEXTE_MS);
-
-  afterAll(async () => {
+  afterAll(() => {
     for (const flux of [fluxFormateurA, fluxFormateurB, fluxEtudiant]) {
       flux?.fermer();
     }
-    await banc.fermer();
+  });
+
+  installerBancFormationsVierge(
+    { secret: SECRET, syntheseA: SYNTHESE_A },
+    (monte) => {
+      banc = monte;
+      bilanEspionne = jest.spyOn(
+        banc.app.get(GetSessionResultsUseCase),
+        'bilanDe',
+      );
+    },
+  );
+
+  afterAll(() => {
     process.stdout.write(`\nMesures E2E-01\n${mesures.join('\n')}\n`);
   });
 
   it(
     'sert le cours publie au demarrage et fige sa version a l ouverture de la seance',
     async () => {
-      const servi = (
-        await request(serveur())
-          .get(chemin(`/catalogue/${SLUG}`))
-          .expect(OK)
-      ).body as { version: number; ecrans: { titre: string }[] };
+      const servi = await catalogueServi<{
+        version: number;
+        ecrans: { titre: string }[];
+      }>();
 
       const ouverture = await formateur('post', '/sessions')
         .send({ courseSlug: SLUG, capacite: CAPACITE })
@@ -861,15 +847,10 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
         `/sessions/${sessionId}/sujet`,
         evince.jeton,
       );
-      const ecritureDeLEvince = await poste(
-        'post',
-        `/sessions/${sessionId}/free-responses`,
-        evince.jeton,
-      ).send({
+      const ecritureDeLEvince = await ecrireLibrement(evince, {
         screenId: rappel.id,
         activityId: (activitesLibres(cours).get(rappel.id) ?? [''])[0],
         response: 'Encore la, malgre l eviction.',
-        dureeMs: DUREE_MS,
       });
       const lectureDeLEvince = await poste(
         'get',
@@ -1229,12 +1210,7 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
       const ecritures: Record<string, () => Test> = {
         billet: () => repondre(auteur, questionsDe(ecranDe('fp-exit'))[0]),
         ...ecrituresDesBriques(auteur, libre, 'Apres la cloture.'),
-        incidents: () =>
-          poste('post', `/sessions/${sessionId}/incidents`, auteur.jeton).send({
-            incidents: [
-              { type: 'tab_hidden', horodatage: new Date().toISOString() },
-            ],
-          }),
+        incidents: () => signaler(auteur),
       };
 
       const verdicts: Record<string, [number, string | undefined]> = {};
@@ -1258,11 +1234,7 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
   it(
     'conserve le cours unique sans toucher a la seance deja ouverte',
     async () => {
-      const servi = (
-        await request(serveur())
-          .get(chemin(`/catalogue/${SLUG}`))
-          .expect(OK)
-      ).body as { version: number };
+      const servi = await catalogueServi<{ version: number }>();
       const suivante = await formateur('post', '/sessions')
         .send({ courseSlug: SLUG })
         .expect(CREE);

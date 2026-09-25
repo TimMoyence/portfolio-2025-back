@@ -28,6 +28,13 @@ export function optionalText(
   return value;
 }
 
+export function requireValidDate(raw: unknown, field: string): Date {
+  if (!(raw instanceof Date) || Number.isNaN(raw.getTime())) {
+    throw new DomainValidationError(`Invalid ${field} date`);
+  }
+  return raw;
+}
+
 const LONGUEUR_MAX_URL = 1000;
 
 export function requireHttpUrl(raw: unknown, field: string): string {

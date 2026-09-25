@@ -282,19 +282,6 @@ describe('FormationsStudentController', () => {
     expect(tokens.verify).not.toHaveBeenCalled();
   });
 
-  it('confie le controle du jeton a une garde, seule a pouvoir refuser avant l ouverture du flux', () => {
-    const descripteur = Object.getOwnPropertyDescriptor(
-      FormationsStudentController.prototype,
-      'stream',
-    );
-    const gardes = Reflect.getMetadata(
-      GUARDS_METADATA,
-      descripteur?.value as object,
-    ) as unknown[];
-
-    expect(gardes).toContain(ParticipantTokenGuard);
-  });
-
   it('demande les questions a revoir pour le porteur du jeton, jamais pour un autre', async () => {
     const dues = [
       { questionId: 'Q-CAP-03', concept: 'capitalisation', boite: 1 },
@@ -338,10 +325,13 @@ describe('FormationsStudentController', () => {
     expect(reponse).toBe(sujet);
   });
 
-  it('confie le controle du jeton a une garde avant de servir le sujet', () => {
+  it.each([
+    ['seule a pouvoir refuser avant l ouverture du flux', 'stream'],
+    ['avant de servir le sujet', 'sujet'],
+  ] as const)('confie le controle du jeton a une garde, %s', (_cas, route) => {
     const descripteur = Object.getOwnPropertyDescriptor(
       FormationsStudentController.prototype,
-      'sujet',
+      route,
     );
     const gardes = Reflect.getMetadata(
       GUARDS_METADATA,

@@ -1,16 +1,9 @@
-import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { ContenuASlugUnique } from '../../../../common/infrastructure/typeorm/ColonnesDeContenu';
+import { Column, Entity, Index } from 'typeorm';
 
 @Index('IDX_redirects_enabled_created_at', ['enabled', 'createdAt'])
 @Entity({ name: 'redirects' })
-export class RedirectsEntity extends ColonnesDeTrace {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Index({ unique: true })
-  @Column('text')
-  slug: string;
-
+export class RedirectsEntity extends ContenuASlugUnique {
   @Column('text')
   targetUrl: string;
 

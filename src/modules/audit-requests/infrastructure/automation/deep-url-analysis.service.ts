@@ -89,6 +89,31 @@ const SLOW_RESPONSE_MS = 2200;
 const THIN_CONTENT_WORDS = 180;
 const WEAK_INTERNAL_LINKS = 2;
 
+function compteursCommunsAZero(): Pick<
+  UrlMetricsCollector,
+  | 'badH1Count'
+  | 'missingLang'
+  | 'languageMismatch'
+  | 'canonicalIssues'
+  | 'canonicalSelfReferenceMismatch'
+  | 'noindexConflicts'
+  | 'urlPatternIssues'
+  | 'contentDepthBuckets'
+  | 'internalLinkDistribution'
+> {
+  return {
+    badH1Count: 0,
+    missingLang: 0,
+    languageMismatch: 0,
+    canonicalIssues: 0,
+    canonicalSelfReferenceMismatch: 0,
+    noindexConflicts: 0,
+    urlPatternIssues: 0,
+    contentDepthBuckets: { veryThin: 0, thin: 0, normal: 0, rich: 0 },
+    internalLinkDistribution: { none: 0, weak: 0, strong: 0 },
+  };
+}
+
 function createMetricsCollector(): UrlMetricsCollector {
   return {
     titleMap: new Map<string, string[]>(),
@@ -97,13 +122,7 @@ function createMetricsCollector(): UrlMetricsCollector {
     missingMeta: 0,
     badTitleLength: 0,
     badMetaLength: 0,
-    badH1Count: 0,
-    missingLang: 0,
-    languageMismatch: 0,
-    canonicalIssues: 0,
-    canonicalSelfReferenceMismatch: 0,
-    noindexConflicts: 0,
-    urlPatternIssues: 0,
+    ...compteursCommunsAZero(),
     errorUrls: [],
     slowUrls: [],
     canonicalIssueUrls: [],
@@ -115,8 +134,6 @@ function createMetricsCollector(): UrlMetricsCollector {
     missingOpenGraphUrls: [],
     languageMismatchUrls: [],
     urlPatternIssueUrls: [],
-    contentDepthBuckets: { veryThin: 0, thin: 0, normal: 0, rich: 0 },
-    internalLinkDistribution: { none: 0, weak: 0, strong: 0 },
     templatePatternCount: new Map<string, string[]>(),
   };
 }
@@ -142,26 +159,9 @@ export class DeepUrlAnalysisService {
           duplicateMetaDescriptions: 0,
           missingTitle: 0,
           missingMetaDescription: 0,
-          badH1Count: 0,
-          missingLang: 0,
-          languageMismatch: 0,
-          canonicalIssues: 0,
-          canonicalSelfReferenceMismatch: 0,
-          noindexConflicts: 0,
-          urlPatternIssues: 0,
+          ...compteursCommunsAZero(),
           thinContentPages: 0,
-          contentDepthBuckets: {
-            veryThin: 0,
-            thin: 0,
-            normal: 0,
-            rich: 0,
-          },
           weakInternalLinking: 0,
-          internalLinkDistribution: {
-            none: 0,
-            weak: 0,
-            strong: 0,
-          },
           templateDuplicatePatterns: 0,
           missingStructuredDataPages: 0,
           missingOpenGraphPages: 0,

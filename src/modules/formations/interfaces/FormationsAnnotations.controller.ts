@@ -1,24 +1,11 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Get, Param, ParseUUIDPipe, Post, Req } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
-import { Roles } from '../../../common/interfaces/auth/roles.decorator';
-import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { ManageTeacherAnnotationsUseCase } from '../application/ManageTeacherAnnotations.useCase';
 import type { TeacherAnnotationRecord } from '../domain/ITeacherAnnotations.repository';
 import { SaveTeacherAnnotationRequestDto } from './dto/save-teacher-annotation.request.dto';
@@ -28,16 +15,12 @@ import {
 } from './dto/teacher-annotations.response.dto';
 import {
   acteurDe,
+  ControleurFormateur,
   LectureDeSeance,
   PilotageDeSeance,
-  ROLE_FORMATEUR,
 } from './formations-acces';
 
-@ApiTags('formations')
-@ApiBearerAuth()
-@Controller('formations')
-@UseGuards(RolesGuard)
-@Roles(ROLE_FORMATEUR)
+@ControleurFormateur()
 export class FormationsAnnotationsController {
   constructor(private readonly annotations: ManageTeacherAnnotationsUseCase) {}
 

@@ -1,6 +1,6 @@
 import { SortOrder } from '../../../common/domain/pagination.types';
 
-export type CourseSortBy = 'slug' | 'title' | 'createdAt';
+type CourseSortBy = 'slug' | 'title' | 'createdAt';
 
 export interface CourseListQuery {
   page: number;

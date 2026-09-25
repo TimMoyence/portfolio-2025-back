@@ -111,33 +111,25 @@ describe('normaliserProduction', () => {
     ).toEqual({ type: 'classement', classement });
   });
 
-  it('refuse une saisie de tableau hors du plan', () => {
+  it.each([
+    [
+      'une saisie de tableau hors du plan',
+      [{ rang: 9, cle: 'prix', valeur: 21.6 }],
+    ],
+    [
+      'une saisie de tableau sur une colonne qui n est pas une saisie',
+      [{ rang: 0, cle: 'taux', valeur: 8 }],
+    ],
+    [
+      'deux saisies pour la meme case',
+      [
+        { rang: 0, cle: 'prix', valeur: 21.6 },
+        { rang: 0, cle: 'prix', valeur: 22 },
+      ],
+    ],
+  ])('refuse %s', (_cas, saisies) => {
     expect(() => {
-      normaliserProduction(TABLEAU, {
-        type: 'tableau',
-        saisies: [{ rang: 9, cle: 'prix', valeur: 21.6 }],
-      });
-    }).toThrow(ProductionInvalideError);
-  });
-
-  it('refuse une saisie de tableau sur une colonne qui n est pas une saisie', () => {
-    expect(() => {
-      normaliserProduction(TABLEAU, {
-        type: 'tableau',
-        saisies: [{ rang: 0, cle: 'taux', valeur: 8 }],
-      });
-    }).toThrow(ProductionInvalideError);
-  });
-
-  it('refuse deux saisies pour la meme case', () => {
-    expect(() => {
-      normaliserProduction(TABLEAU, {
-        type: 'tableau',
-        saisies: [
-          { rang: 0, cle: 'prix', valeur: 21.6 },
-          { rang: 0, cle: 'prix', valeur: 22 },
-        ],
-      });
+      normaliserProduction(TABLEAU, { type: 'tableau', saisies });
     }).toThrow(ProductionInvalideError);
   });
 

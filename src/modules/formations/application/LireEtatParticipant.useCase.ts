@@ -1,10 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { libelleLisible } from '../domain/cours/banque/confusions';
+import {
+  detailsLisibles,
+  libelleLisible,
+} from '../domain/cours/banque/confusions';
 import type { Cours } from '../domain/contrats/cours';
 import type { EtatParticipant } from '../domain/contrats/pilotage';
 import { cleDeJalon } from '../domain/cours/CleDeJalon';
 import { ecranDeDefi } from '../domain/cours/Defis';
-import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type {
   AnswerRecord,
   IAnswersRepository,
@@ -14,31 +16,24 @@ import type {
   ProgressionEnigmeRecord,
 } from '../domain/IEscape.repository';
 import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { IPulsesRepository } from '../domain/IPulses.repository';
 import type { IRappelsServisRepository } from '../domain/IRappelsServis.repository';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
 import {
   ANSWERS_REPOSITORY,
-  CATALOGUE_COURS,
   ESCAPE_REPOSITORY,
   FREE_RESPONSES_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
   PULSES_REPOSITORY,
   RAPPELS_SERVIS_REPOSITORY,
-  SESSIONS_REPOSITORY,
 } from '../domain/token';
-import { contexteDuParticipant } from './CoursDeLaSeance';
+import { ParticipationEnSeance } from './ParticipationEnSeance';
+import type { CibleDuParticipant } from './ParticipationEnSeance';
 
 const TENTATIVES_MAX = 10;
 
 @Injectable()
 export class LireEtatParticipantUseCase {
   constructor(
-    @Inject(SESSIONS_REPOSITORY)
-    private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
+    private readonly participation: ParticipationEnSeance,
     @Inject(ANSWERS_REPOSITORY)
     private readonly answers: IAnswersRepository,
     @Inject(FREE_RESPONSES_REPOSITORY)
@@ -49,23 +44,11 @@ export class LireEtatParticipantUseCase {
     private readonly escape: IEscapeRepository,
     @Inject(RAPPELS_SERVIS_REPOSITORY)
     private readonly rappels: IRappelsServisRepository,
-    @Inject(CATALOGUE_COURS)
-    private readonly catalogue: ICatalogueCours,
   ) {}
 
-  async execute(
-    sessionId: string,
-    participantId: string,
-  ): Promise<EtatParticipant> {
-    const { session, cours } = await contexteDuParticipant(
-      {
-        sessions: this.sessions,
-        participants: this.participants,
-        catalogue: this.catalogue,
-      },
-      sessionId,
-      participantId,
-    );
+  async execute(demande: CibleDuParticipant): Promise<EtatParticipant> {
+    const { sessionId, participantId } = demande;
+    const { session, cours } = await this.participation.contexte(demande);
 
     const [reponses, libres, jalons, progressions, rappels] = await Promise.all(
       [
@@ -114,13 +97,7 @@ export class LireEtatParticipantUseCase {
       correcte: reponse.correcte,
       score: reponse.score,
       details:
-        reponse.details === null
-          ? null
-          : reponse.details.map((detail) => ({
-              cle: detail.cle,
-              juste: detail.juste,
-              libelleConfusion: libelleLisible(detail.confusion),
-            })),
+        reponse.details === null ? null : detailsLisibles(reponse.details),
       libelleConfusion: libelleLisible(reponse.misconception),
     };
   }

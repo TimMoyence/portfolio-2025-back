@@ -8,6 +8,7 @@ import { ArticleBroadcastEntity } from '../src/modules/articles/infrastructure/e
 import { ArticleDeliveryEntity } from '../src/modules/articles/infrastructure/entities/article-delivery.entity';
 import { ArticleEntity } from '../src/modules/articles/infrastructure/entities/article.entity';
 import { NewsletterSubscriberEntity } from '../src/modules/newsletter/infrastructure/entities/NewsletterSubscriber.entity';
+import { buildArticleWrite } from './factories/article.factory';
 import {
   describeDb,
   destroyDbIntegrationDataSource,
@@ -18,24 +19,15 @@ const NOW = new Date('2026-09-23T07:45:00.000Z');
 const DELAI_MS = 60_000;
 
 function article(date: string, locale: 'fr' | 'en' = 'fr'): ArticleWrite {
-  return {
+  const publication = new Date(`${date}T04:15:00.000Z`);
+  return buildArticleWrite({
     articleId: `morning-brief-${date}-${locale}`,
     slug: `morning-brief-${date}`,
     locale,
-    status: 'published',
     title: `Veille IA ${date}`,
-    excerpt: 'Les faits IA du jour.',
-    contentMarkdown: '# Veille',
-    readingTimeMinutes: 5,
-    tags: [],
-    sections: [],
-    sources: [],
-    provenance: {},
-    seo: {},
-    publishedAt: new Date(`${date}T04:15:00.000Z`),
-    updatedAt: new Date(`${date}T04:15:00.000Z`),
-    contentSha256: 'a'.repeat(64),
-  };
+    publishedAt: publication,
+    updatedAt: publication,
+  });
 }
 
 describeDb('diffusion des articles aux abonnés (Postgres)', () => {
@@ -162,12 +154,13 @@ describeDb('diffusion des articles aux abonnés (Postgres)', () => {
     });
     await subscriber('pending@example.com', { status: 'pending' });
 
-    const pending = await broadcasts.findPendingRecipients(
-      id,
-      'veille-ia',
-      'fr',
-      10,
-    );
+    const recherche = {
+      broadcastId: id,
+      source: 'veille-ia',
+      locale: 'fr',
+      limit: 10,
+    } as const;
+    const pending = await broadcasts.findPendingRecipients(recherche);
     expect(pending.map((recipient) => recipient.subscriberId)).toHaveLength(2);
     expect(pending.map((recipient) => recipient.subscriberId)).toEqual(
       expect.arrayContaining([fr, frFr]),
@@ -177,12 +170,7 @@ describeDb('diffusion des articles aux abonnés (Postgres)', () => {
     await expect(broadcasts.reserveRecipient(id, fr)).resolves.toBe(false);
     await broadcasts.markRecipient(id, fr, 'failed', '550 [redacted]');
 
-    const remaining = await broadcasts.findPendingRecipients(
-      id,
-      'veille-ia',
-      'fr',
-      10,
-    );
+    const remaining = await broadcasts.findPendingRecipients(recherche);
     expect(remaining.map((recipient) => recipient.subscriberId)).toEqual([
       frFr,
     ]);

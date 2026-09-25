@@ -8,6 +8,6 @@ export class EvincerParticipantUseCase extends ActionSurUnParticipant {
     session: SessionRecord,
     participantId: string,
   ): Promise<boolean> {
-    return this.participants.evincer(session.id, participantId);
+    return this.participation.participants.evincer(session.id, participantId);
   }
 }

@@ -1,7 +1,6 @@
 import {
   CanActivate,
   ExecutionContext,
-  INestApplication,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -16,8 +15,9 @@ import { UnsubscribeNewsletterUseCase } from '../src/modules/newsletter/applicat
 import { NewsletterController } from '../src/modules/newsletter/interfaces/Newsletter.controller';
 import { buildNewsletterSubscriber } from './factories/newsletter-subscriber.factory';
 import {
-  ecouterEnBoucleLocale,
-  fermerApplication,
+  applicationDeLaSuite,
+  httpServerOf,
+  ouvrirApplication,
 } from './helpers/nest-test-app';
 
 const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
@@ -55,16 +55,11 @@ class PublicOnlyGuard implements CanActivate {
  * vraie application HTTP pour fermer cet angle mort.
  */
 describe('Desabonnement newsletter (e2e http socket)', () => {
-  let app: INestApplication;
-
   const unsubscribeUseCase = { execute: jest.fn() };
   const subscribeUseCase = { execute: jest.fn() };
   const confirmUseCase = { execute: jest.fn() };
 
-  const getHttpServer = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
-
-  beforeAll(async () => {
+  const app = applicationDeLaSuite(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [NewsletterController],
       providers: [
@@ -75,14 +70,20 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
       ],
     }).compile();
 
-    app = moduleRef.createNestApplication();
-    app.setGlobalPrefix(API_PREFIX);
-    await ecouterEnBoucleLocale(app);
+    return ouvrirApplication(moduleRef, (application) =>
+      application.setGlobalPrefix(API_PREFIX),
+    );
   });
 
-  afterAll(async () => {
-    await fermerApplication(app);
-  });
+  const getHttpServer = () => httpServerOf(app());
+
+  const desabonner = (
+    methode: 'get' | 'post' = 'post',
+    token: string = VALID_TOKEN,
+  ) =>
+    request(getHttpServer())
+      [methode](`/${API_PREFIX}/newsletter/unsubscribe`)
+      .query({ token });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -93,18 +94,13 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
   });
 
   it('expose POST /newsletter/unsubscribe derriere le prefixe d’API', async () => {
-    const response = await request(getHttpServer())
-      .post(`/${API_PREFIX}/newsletter/unsubscribe`)
-      .query({ token: VALID_TOKEN })
-      .expect(200);
+    const response = await desabonner().expect(200);
 
     expect(response.body).toEqual({ status: 'unsubscribed' });
   });
 
   it('accepte le POST tel que Gmail l’emet (form-urlencoded, sans authentification)', async () => {
-    await request(getHttpServer())
-      .post(`/${API_PREFIX}/newsletter/unsubscribe`)
-      .query({ token: VALID_TOKEN })
+    await desabonner()
       .type('form')
       .send('List-Unsubscribe=One-Click')
       .expect(200);
@@ -115,27 +111,19 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
   });
 
   it('ne demande jamais d’authentification sur le desabonnement', async () => {
-    const response = await request(getHttpServer())
-      .post(`/${API_PREFIX}/newsletter/unsubscribe`)
-      .query({ token: VALID_TOKEN });
+    const response = await desabonner();
 
     expect(response.status).not.toBe(401);
   });
 
   it('repond 404 sur un token malforme, sans appeler le use case', async () => {
-    await request(getHttpServer())
-      .post(`/${API_PREFIX}/newsletter/unsubscribe`)
-      .query({ token: 'pas-un-uuid' })
-      .expect(404);
+    await desabonner('post', 'pas-un-uuid').expect(404);
 
     expect(unsubscribeUseCase.execute).not.toHaveBeenCalled();
   });
 
   it('conserve le desabonnement par lien en GET', async () => {
-    await request(getHttpServer())
-      .get(`/${API_PREFIX}/newsletter/unsubscribe`)
-      .query({ token: VALID_TOKEN })
-      .expect(200);
+    await desabonner('get').expect(200);
 
     expect(unsubscribeUseCase.execute).toHaveBeenCalledWith(VALID_TOKEN, {
       sendAck: true,
@@ -143,20 +131,14 @@ describe('Desabonnement newsletter (e2e http socket)', () => {
   });
 
   it('reste idempotent sur un rejeu du POST', async () => {
-    await request(getHttpServer())
-      .post(`/${API_PREFIX}/newsletter/unsubscribe`)
-      .query({ token: VALID_TOKEN })
-      .expect(200);
+    await desabonner().expect(200);
 
     unsubscribeUseCase.execute.mockResolvedValue({
       status: 'unsubscribed',
       alreadyUnsubscribed: true,
     });
 
-    const replay = await request(getHttpServer())
-      .post(`/${API_PREFIX}/newsletter/unsubscribe`)
-      .query({ token: VALID_TOKEN })
-      .expect(200);
+    const replay = await desabonner().expect(200);
 
     expect(replay.body).toEqual({ status: 'unsubscribed' });
     expect(unsubscribeUseCase.execute).toHaveBeenCalledTimes(2);

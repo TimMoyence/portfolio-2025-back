@@ -1,78 +1,37 @@
-import { Injectable, Logger } from '@nestjs/common';
-import type { Transporter } from 'nodemailer';
-import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
-import {
-  escapeHtml,
-  escapeUrl,
-  safeHtml,
-} from '../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import { Injectable } from '@nestjs/common';
+import { safeHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type {
   IEmailVerificationNotifier,
   EmailVerificationNotificationPayload,
 } from '../domain/IEmailVerificationNotifier';
+import { MailerDeLienTemporaire } from './MailerDeLienTemporaire';
 
 @Injectable()
-export class VerificationMailerService implements IEmailVerificationNotifier {
-  private readonly logger = new Logger(VerificationMailerService.name);
-  private readonly transporter: Transporter | null;
-  private readonly from = process.env.SMTP_FROM;
-
+export class VerificationMailerService
+  extends MailerDeLienTemporaire
+  implements IEmailVerificationNotifier
+{
   constructor() {
-    this.transporter = createOptionalSmtpTransporter(
-      this.logger,
-      'Verification mailer',
-    );
+    super(VerificationMailerService.name, 'Verification mailer');
   }
 
-  async sendVerificationEmail(
+  sendVerificationEmail(
     payload: EmailVerificationNotificationPayload,
   ): Promise<void> {
-    if (!this.transporter) {
-      return;
-    }
-
-    const fullName = `${payload.firstName} ${payload.lastName}`.trim();
-    const subject = 'Verifiez votre adresse email';
-
-    await this.transporter.sendMail({
-      from: this.from,
-      to: payload.email,
-      subject,
-      text: [
-        `Bonjour ${fullName},`,
-        '',
+    return this.envoyerLien({
+      destinataire: payload,
+      sujet: 'Verifiez votre adresse email',
+      titre: safeHtml`Verification de votre email`,
+      introTexte:
         'Merci pour votre inscription ! Veuillez verifier votre adresse email en cliquant sur le lien ci-dessous.',
-        `Ce lien est valide ${payload.expiresInMinutes} minutes :`,
-        payload.verificationUrl,
-        '',
+      introHtml: safeHtml`Merci pour votre inscription ! Veuillez verifier votre adresse email en cliquant
+              sur le bouton ci-dessous.`,
+      lien: payload.verificationUrl,
+      expireEnMinutes: payload.expiresInMinutes,
+      libelleBouton: safeHtml`Verifier mon email`,
+      avertissementTexte:
         "Si vous n'etes pas a l'origine de cette inscription, vous pouvez ignorer cet email.",
-      ].join('\n'),
-      html: safeHtml`
-        <div style="font-family:Arial,Helvetica,sans-serif; background:#f7f7f7; padding:24px;">
-          <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:8px; padding:24px;">
-            <h2 style="margin-top:0; color:#111;">Verification de votre email</h2>
-            <p>Bonjour ${this.escapeHtml(fullName)},</p>
-            <p>
-              Merci pour votre inscription ! Veuillez verifier votre adresse email en cliquant
-              sur le bouton ci-dessous. Ce lien est valide <strong>${payload.expiresInMinutes} minutes</strong>.
-            </p>
-            <p style="margin:24px 0;">
-              <a href="${escapeUrl(payload.verificationUrl)}" style="display:inline-block; background:#0f172a; color:#fff; text-decoration:none; padding:12px 18px; border-radius:8px;">
-                Verifier mon email
-              </a>
-            </p>
-            <p style="word-break:break-all; color:#334155;">${this.escapeHtml(payload.verificationUrl)}</p>
-            <p style="font-size:12px; color:#64748b; margin-top:24px;">
-              Si vous n'etes pas a l'origine de cette inscription, ignorez cet email.
-            </p>
-          </div>
-        </div>
-      `,
+      avertissementHtml: safeHtml`Si vous n'etes pas a l'origine de cette inscription, ignorez cet email.`,
     });
-  }
-
-  private escapeHtml(input: string): EscapedHtml {
-    return escapeHtml(input);
   }
 }

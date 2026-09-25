@@ -1,37 +1,31 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import {
-  buildAbonnePersiste,
-  createMockEmailDripScheduler,
-  createMockNewsletterMailer,
-  createMockNewsletterSubscriberRepo,
+  createNewsletterDependances,
+  type PreparationDAbonne,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
-import { flushPromises } from '../../../../../test/helpers/flush-promises';
-import type { NewsletterSubscriber } from '../../domain/NewsletterSubscriber';
+import {
+  attendreTokenInconnuRefuse,
+  executerSurAbonneTrouve,
+} from '../../../../../test/helpers/token-newsletter';
 import { UnsubscribeNewsletterUseCase } from '../UnsubscribeNewsletter.useCase';
 
-const confirme = (abonne: NewsletterSubscriber) => abonne.confirm();
+const confirme: PreparationDAbonne = (abonne) => abonne.confirm();
+const dejaDesabonne: PreparationDAbonne = (abonne) => abonne.unsubscribe();
 
 describe('UnsubscribeNewsletterUseCase', () => {
-  let repo: ReturnType<typeof createMockNewsletterSubscriberRepo>;
-  let mailer: ReturnType<typeof createMockNewsletterMailer>;
-  let scheduler: ReturnType<typeof createMockEmailDripScheduler>;
+  let { repo, mailer, scheduler } = createNewsletterDependances();
   let useCase: UnsubscribeNewsletterUseCase;
 
-  const desabonner = async (
-    abonne: NewsletterSubscriber,
+  const desabonner = (
+    preparer?: PreparationDAbonne,
     options?: { sendAck: boolean },
-  ) => {
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(abonne);
-    const result = await useCase.execute(abonne.unsubscribeToken, options);
-    await flushPromises();
-    return result;
-  };
+  ) =>
+    executerSurAbonneTrouve(repo.findByUnsubscribeToken, preparer, (abonne) =>
+      useCase.execute(abonne.unsubscribeToken, options),
+    );
 
   beforeEach(() => {
-    repo = createMockNewsletterSubscriberRepo();
-    mailer = createMockNewsletterMailer();
-    scheduler = createMockEmailDripScheduler();
+    ({ repo, mailer, scheduler } = createNewsletterDependances());
     useCase = new UnsubscribeNewsletterUseCase(repo, mailer, scheduler);
   });
 
@@ -45,7 +39,7 @@ describe('UnsubscribeNewsletterUseCase', () => {
   ])(
     'desabonne un abonne confirme, annule la sequence drip et %s',
     async (_label, options, accuses) => {
-      const result = await desabonner(buildAbonnePersiste(confirme), options);
+      const result = await desabonner(confirme, options);
 
       expect(result).toEqual(
         expect.objectContaining({
@@ -65,17 +59,13 @@ describe('UnsubscribeNewsletterUseCase', () => {
       confirme,
       () => repo.markUnsubscribed.mockResolvedValueOnce(null),
     ],
-    [
-      'quand l’abonne est deja desabonne',
-      (abonne: NewsletterSubscriber) => abonne.unsubscribe(),
-      () => undefined,
-    ],
+    ['quand l’abonne est deja desabonne', dejaDesabonne, () => undefined],
   ])(
     'ne declenche aucun effet de bord %s',
     async (_label, preparer, course) => {
       course();
 
-      const result = await desabonner(buildAbonnePersiste(preparer));
+      const result = await desabonner(preparer);
 
       expect(result).toEqual(
         expect.objectContaining({
@@ -90,16 +80,15 @@ describe('UnsubscribeNewsletterUseCase', () => {
   );
 
   it('accepte un desabonnement avant confirmation', async () => {
-    const result = await desabonner(buildAbonnePersiste());
+    const result = await desabonner();
 
     expect(result.status).toBe('unsubscribed');
   });
 
   it('leve ResourceNotFoundError pour un token inconnu', async () => {
-    repo.findByUnsubscribeToken.mockResolvedValueOnce(null);
-    await expect(
-      useCase.execute('00000000-0000-0000-0000-000000000000'),
-    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    await attendreTokenInconnuRefuse(repo.findByUnsubscribeToken, (token) =>
+      useCase.execute(token),
+    );
   });
 
   it.each([
@@ -110,9 +99,7 @@ describe('UnsubscribeNewsletterUseCase', () => {
     async (_label, effet) => {
       effet().mockRejectedValueOnce(new Error('panne'));
 
-      await expect(
-        desabonner(buildAbonnePersiste(confirme)),
-      ).resolves.toBeDefined();
+      await expect(desabonner(confirme)).resolves.toBeDefined();
       expect(effet()).toHaveBeenCalledTimes(1);
     },
   );

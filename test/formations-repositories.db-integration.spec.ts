@@ -15,7 +15,10 @@ import { nextBox } from '../src/modules/formations/domain/LeitnerBox';
 import { FormationSessionEntity } from '../src/modules/formations/infrastructure/entities/FormationSession.entity';
 import { buildCoursDeClasse } from './factories/cours.factory';
 import { buildBareme } from './factories/formation.factory';
-import { describeDb } from './helpers/db-integration-datasource';
+import {
+  attendreSchemaAligneSurLesEntites,
+  describeDb,
+} from './helpers/db-integration-datasource';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
   FORMATION_ENTITIES,
@@ -727,9 +730,7 @@ describeDb('Formations repositories (db integration)', () => {
   });
 
   it('decrit dans les entites le schema exact que produit la migration', async () => {
-    const derive = await contexte.dataSource.driver.createSchemaBuilder().log();
-
-    expect(derive.upQueries.map((requete) => requete.query)).toEqual([]);
+    await attendreSchemaAligneSurLesEntites(contexte.dataSource);
   });
 
   it('declare les verrous d unicite sur les memes colonnes qu en base', async () => {

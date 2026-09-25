@@ -2,6 +2,7 @@
 import { ResourceConflictError } from '../../../../common/domain/errors/ResourceConflictError';
 import {
   buildAbonnePersiste,
+  buildSubscribeNewsletterCommand,
   createMockNewsletterMailer,
   createMockNewsletterSubscriberRepo,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
@@ -13,13 +14,19 @@ import type { SubscribeNewsletterCommand } from '../dto/SubscribeNewsletter.comm
 const MINUTE_MS = 60 * 1000;
 
 describe('SubscribeNewsletterUseCase', () => {
-  const validCommand: SubscribeNewsletterCommand = {
-    email: 'marie@example.com',
-    firstName: 'Marie',
-    locale: 'fr',
-    sourceFormationSlug: 'ia-solopreneurs',
-    termsVersion: '2026-04-10',
-    termsAcceptedAt: new Date('2026-04-10T10:00:00Z'),
+  const validCommand: SubscribeNewsletterCommand =
+    buildSubscribeNewsletterCommand();
+
+  const CREE_EN_ATTENTE = {
+    created: true,
+    alreadySubscribed: false,
+    status: 'pending',
+  };
+
+  const DEJA_EN_ATTENTE = {
+    created: false,
+    alreadySubscribed: true,
+    status: 'pending',
   };
 
   let repo: ReturnType<typeof createMockNewsletterSubscriberRepo>;
@@ -49,11 +56,7 @@ describe('SubscribeNewsletterUseCase', () => {
   it('cree un abonne et envoie l’email de confirmation sur un email nouveau', async () => {
     const result = await souscrire();
 
-    expect(result).toEqual({
-      created: true,
-      alreadySubscribed: false,
-      status: 'pending',
-    });
+    expect(result).toEqual(CREE_EN_ATTENTE);
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(mailer.sendConfirmation).toHaveBeenCalledTimes(1);
   });
@@ -61,11 +64,7 @@ describe('SubscribeNewsletterUseCase', () => {
   it("renvoie un email de confirmation sans recreer quand l'abonne est deja pending", async () => {
     const { existing, result } = await souscrireSurUnAbonne();
 
-    expect(result).toEqual({
-      created: false,
-      alreadySubscribed: true,
-      status: 'pending',
-    });
+    expect(result).toEqual(DEJA_EN_ATTENTE);
     expect(repo.create).not.toHaveBeenCalled();
     expect(mailer.sendConfirmation).toHaveBeenCalledWith(existing);
   });
@@ -87,11 +86,7 @@ describe('SubscribeNewsletterUseCase', () => {
     async (_label, status, preparer) => {
       const { result } = await souscrireSurUnAbonne(preparer);
 
-      expect(result).toEqual({
-        created: false,
-        alreadySubscribed: true,
-        status,
-      });
+      expect(result).toEqual({ ...DEJA_EN_ATTENTE, status });
       expect(mailer.sendConfirmation).not.toHaveBeenCalled();
     },
   );
@@ -99,11 +94,7 @@ describe('SubscribeNewsletterUseCase', () => {
   it('journalise et ne propage pas un echec SMTP', async () => {
     mailer.sendConfirmation.mockRejectedValueOnce(new Error('SMTP down'));
 
-    await expect(souscrire()).resolves.toEqual({
-      created: true,
-      alreadySubscribed: false,
-      status: 'pending',
-    });
+    await expect(souscrire()).resolves.toEqual(CREE_EN_ATTENTE);
   });
 
   it('absorbe une race condition `ResourceConflictError`', async () => {
@@ -117,11 +108,7 @@ describe('SubscribeNewsletterUseCase', () => {
 
     const result = await souscrire();
 
-    expect(result).toEqual({
-      created: false,
-      alreadySubscribed: true,
-      status: 'pending',
-    });
+    expect(result).toEqual(DEJA_EN_ATTENTE);
     expect(repo.findByEmailAndSource).toHaveBeenCalledTimes(2);
     expect(mailer.sendConfirmation).toHaveBeenCalledWith(raced);
   });

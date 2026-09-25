@@ -1,7 +1,9 @@
 import {
+  buildCoursAUneQuestion,
   buildCoursDeTest,
+  buildQuestionNumeriqueFigee,
   creerCatalogueDeTest,
-  EN_CATALOGUE,
+  lireSujetSur,
   tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
 import {
@@ -16,9 +18,9 @@ import {
   buildCoursDeBriques,
   buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
-import type { Cours, Ecran } from '../../domain/contrats/cours';
+import { verifierIntrouvables } from '../../../../../test/helpers/gardes-de-seance';
+import type { Cours } from '../../domain/contrats/cours';
 import type { CoursPublic } from '../../domain/contrats/tirage';
-import { questionNumerique } from '../../domain/cours/Cours';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { tirer } from '../../domain/cours/Tirage';
@@ -26,9 +28,9 @@ import {
   CoursInconnuError,
   CoursModifieError,
   ParticipantNotFoundError,
-  SessionNotFoundError,
 } from '../../domain/errors/FormationErrors';
-import { LireSujetUseCase } from '../LireSujet.useCase';
+import type { SessionRecord } from '../../domain/ISessions.repository';
+import type { LireSujetUseCase } from '../LireSujet.useCase';
 
 const SEED = 4242;
 const COURS = buildCoursDeTest();
@@ -55,27 +57,38 @@ function sansCorrection(sujet: CoursPublic): CoursPublic {
 }
 
 function coursAmbigu(): Cours {
-  const question = questionNumerique({
-    id: 'Q-FIGEE',
-    concept: 'proportion',
-    noteCompte: false,
-    donnees: () => ({}),
-    enonce: () => 'e',
-    unite: null,
-    solution: () => 100,
-    tolerance: { type: 'relative', valeur: 0.01 },
-    pieges: [{ confusion: 'base-arrivee', valeur: () => 100.5 }],
+  return buildCoursAUneQuestion(
+    buildQuestionNumeriqueFigee(100, [100.5], {
+      type: 'relative',
+      valeur: 0.01,
+    }),
+  );
+}
+
+function sujetDuParticipant(sut: LireSujetUseCase): Promise<CoursPublic> {
+  return sut.execute({ sessionId: SESSION.id, participantId: PARTICIPANT.id });
+}
+
+function seanceDuCours(
+  cours: Cours,
+  diffusion: Partial<SessionRecord>,
+): SessionRecord {
+  return buildSessionRecord({
+    courseSlug: cours.slug,
+    bareme: buildBareme({
+      tirages: [{ seed: SEED, solutions: tirer(cours, SEED).solutions }],
+    }),
+    ...diffusion,
   });
-  const ecran: Ecran = {
-    ...EN_CATALOGUE,
-    id: 'E',
-    dureeMinutes: 1,
-    concepts: ['proportion'],
-    notes: '',
-    brique: 'fp-numeric',
-    question,
-  };
-  return buildCoursDeTest({ ecrans: [ecran] });
+}
+
+function lecteurDuParticipant(
+  sessions: ReturnType<typeof createMockSessionsRepo>,
+  cours: Cours,
+): LireSujetUseCase {
+  const participants = createMockParticipantsRepo();
+  participants.findById.mockResolvedValue(PARTICIPANT);
+  return lireSujetSur(sessions, participants, creerCatalogueDeTest(cours));
 }
 
 describe('LireSujetUseCase', () => {
@@ -83,19 +96,14 @@ describe('LireSujetUseCase', () => {
   let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: LireSujetUseCase;
 
-  const demander = () =>
-    sut.execute({ sessionId: SESSION.id, participantId: PARTICIPANT.id });
+  const demander = () => sujetDuParticipant(sut);
 
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     participants = createMockParticipantsRepo();
     sessions.findById.mockResolvedValue(SESSION);
     participants.findById.mockResolvedValue(PARTICIPANT);
-    sut = new LireSujetUseCase(
-      sessions,
-      participants,
-      creerCatalogueDeTest(COURS),
-    );
+    sut = lireSujetSur(sessions, participants, creerCatalogueDeTest(COURS));
   });
 
   it('rend le sujet du tirage attribue au participant', async () => {
@@ -159,7 +167,7 @@ describe('LireSujetUseCase', () => {
     const catalogue = creerCatalogueDeTest(COURS);
     const trouver = jest.spyOn(catalogue, 'trouver').mockResolvedValue(COURS);
     sessions.findById.mockResolvedValue({ ...SESSION, courseVersion: 2 });
-    sut = new LireSujetUseCase(sessions, participants, catalogue);
+    sut = lireSujetSur(sessions, participants, catalogue);
 
     await demander();
 
@@ -177,17 +185,11 @@ describe('LireSujetUseCase', () => {
     expect(sujet.ecrans[0].correction?.ecranId).toBe(sujet.ecrans[0].id);
   });
 
-  it('refuse une session inconnue', async () => {
-    sessions.findById.mockResolvedValue(null);
-
-    await expect(demander()).rejects.toBeInstanceOf(SessionNotFoundError);
-  });
-
-  it('refuse un participant introuvable', async () => {
-    participants.findById.mockResolvedValue(null);
-
-    await expect(demander()).rejects.toBeInstanceOf(ParticipantNotFoundError);
-  });
+  verifierIntrouvables(() => ({
+    sessions,
+    participants,
+    executer: demander,
+  }));
 
   it('refuse un participant inscrit dans une autre session', async () => {
     participants.findById.mockResolvedValue(
@@ -202,7 +204,7 @@ describe('LireSujetUseCase', () => {
   });
 
   it('refuse un cours absent du catalogue', async () => {
-    sut = new LireSujetUseCase(
+    sut = lireSujetSur(
       sessions,
       participants,
       creerCatalogueDeTest(buildCoursDeTest({ slug: 'un-autre-slug' })),
@@ -212,7 +214,7 @@ describe('LireSujetUseCase', () => {
   });
 
   it('refuse quand le cours a change au point de rendre le tirage ambigu', async () => {
-    sut = new LireSujetUseCase(
+    sut = lireSujetSur(
       sessions,
       participants,
       creerCatalogueDeTest(coursAmbigu()),
@@ -292,34 +294,17 @@ describe('LireSujetUseCase — écrans de correction (SEC-1)', () => {
     buildCoursDeBriques([ATELIER, buildCorrectionDeReponses(ATELIER.screenId)]),
   );
   const tirage = tirer(CORRIGE, SEED);
-  const session = (diffusion: Partial<ReturnType<typeof buildSessionRecord>>) =>
-    buildSessionRecord({
-      courseSlug: CORRIGE.slug,
-      bareme: buildBareme({
-        tirages: [{ seed: SEED, solutions: tirage.solutions }],
-      }),
-      ...diffusion,
-    });
+  const session = (diffusion: Partial<SessionRecord>) =>
+    seanceDuCours(CORRIGE, diffusion);
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let sut: LireSujetUseCase;
 
-  const correctionServie = async () => {
-    const sujet = await sut.execute({
-      sessionId: SESSION.id,
-      participantId: PARTICIPANT.id,
-    });
-    return sujet.ecrans[1];
-  };
+  const correctionServie = async () =>
+    (await sujetDuParticipant(sut)).ecrans[1];
 
   beforeEach(() => {
     sessions = createMockSessionsRepo();
-    const participants = createMockParticipantsRepo();
-    participants.findById.mockResolvedValue(PARTICIPANT);
-    sut = new LireSujetUseCase(
-      sessions,
-      participants,
-      creerCatalogueDeTest(CORRIGE),
-    );
+    sut = lecteurDuParticipant(sessions, CORRIGE);
   });
 
   it('verrouille en rythme libre une correction dont la source n est pas révélée', async () => {
@@ -387,34 +372,15 @@ describe('LireSujetUseCase — correction de l écran source révélé (T9)', ()
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let sut: LireSujetUseCase;
 
-  const servir = (diffusion: Partial<ReturnType<typeof buildSessionRecord>>) =>
+  const servir = (diffusion: Partial<SessionRecord>) =>
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        courseSlug: SOURCES.slug,
-        ecranCourant: 2,
-        bareme: buildBareme({
-          tirages: [{ seed: SEED, solutions: tirage.solutions }],
-        }),
-        ...diffusion,
-      }),
+      seanceDuCours(SOURCES, { ecranCourant: 2, ...diffusion }),
     );
-  const ecransServis = async () =>
-    (
-      await sut.execute({
-        sessionId: SESSION.id,
-        participantId: PARTICIPANT.id,
-      })
-    ).ecrans;
+  const ecransServis = async () => (await sujetDuParticipant(sut)).ecrans;
 
   beforeEach(() => {
     sessions = createMockSessionsRepo();
-    const participants = createMockParticipantsRepo();
-    participants.findById.mockResolvedValue(PARTICIPANT);
-    sut = new LireSujetUseCase(
-      sessions,
-      participants,
-      creerCatalogueDeTest(SOURCES),
-    );
+    sut = lecteurDuParticipant(sessions, SOURCES);
   });
 
   it('tait la bonne réponse tant que le formateur n a pas révélé l écran', async () => {

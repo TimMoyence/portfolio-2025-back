@@ -9,6 +9,7 @@ import {
   buildCoursDeBriques,
   buildEcranDeBrique,
   buildProprietesStockees,
+  QUESTIONS_LIBRES_DE_MISSION,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import type { Ecran } from '../contrats/cours';
 import { creerRng, creerTirage } from './Aleatoire';
@@ -657,17 +658,7 @@ describe('stockage multi-briques (B1)', () => {
       const ecran = lireEcran(buildCasAQuestionsLibres());
 
       expect(ecran.brique === 'fp-pro' && ecran.proprietes).toMatchObject({
-        questionsLibres: [
-          {
-            id: 'b2-01-a1-mission:mesure',
-            question: 'Que mesure chaque chiffre ?',
-            placeholder: 'Un montant, une part, une évolution…',
-          },
-          {
-            id: 'b2-01-a1-mission:comparable',
-            question: 'Les bases et les périodes sont-elles comparables ?',
-          },
-        ],
+        questionsLibres: QUESTIONS_LIBRES_DE_MISSION,
       });
     });
 

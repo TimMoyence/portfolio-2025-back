@@ -1,20 +1,18 @@
-import { createTransport } from 'nodemailer';
+import {
+  createMockTransporter,
+  creationDeTransportSimulee,
+  nodemailerSimule,
+  setSmtpEnv,
+} from '../../../../../test/factories/mailer.factory';
+
+jest.mock('nodemailer', () => nodemailerSimule());
+
 import {
   SmtpTransporterProvider,
   type SmtpTransporter,
 } from './smtp-transporter.provider';
-import {
-  createMockTransporter,
-  setSmtpEnv,
-} from '../../../../../test/factories/mailer.factory';
 
-jest.mock('nodemailer', () => ({
-  createTransport: jest.fn(),
-}));
-
-const mockedCreateTransport = createTransport as jest.MockedFunction<
-  typeof createTransport
->;
+const mockedCreateTransport = creationDeTransportSimulee();
 
 function resolveProvider(): SmtpTransporter {
   const factory = (
@@ -36,18 +34,17 @@ describe('SmtpTransporterProvider', () => {
     mockedCreateTransport.mockReset();
   });
 
-  it('honore SMTP_SECURE=true meme sur un port non-465', () => {
-    cleanupEnv = setSmtpEnv({ SMTP_PORT: '587', SMTP_SECURE: 'true' });
-
-    resolveProvider();
-
-    expect(mockedCreateTransport).toHaveBeenCalledWith(
-      expect.objectContaining({ secure: true }),
-    );
-  });
-
-  it('active secure quand le port vaut 465 sans SMTP_SECURE (non-regression)', () => {
-    cleanupEnv = setSmtpEnv({ SMTP_PORT: '465', SMTP_SECURE: '' });
+  it.each([
+    [
+      'honore SMTP_SECURE=true meme sur un port non-465',
+      { SMTP_PORT: '587', SMTP_SECURE: 'true' },
+    ],
+    [
+      'active secure quand le port vaut 465 sans SMTP_SECURE (non-regression)',
+      { SMTP_PORT: '465', SMTP_SECURE: '' },
+    ],
+  ])('%s', (_titre, variables) => {
+    cleanupEnv = setSmtpEnv(variables);
 
     resolveProvider();
 

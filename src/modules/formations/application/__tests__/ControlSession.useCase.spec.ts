@@ -17,6 +17,7 @@ import {
   buildCoursDeBriques,
   buildEcranDeBrique,
 } from '../../../../../test/factories/ecrans-stockes.factory';
+import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { ControlSessionUseCase } from '../ControlSession.useCase';
 import {
@@ -28,78 +29,97 @@ import {
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
 
+type Commande = Parameters<ControlSessionUseCase['apply']>[2];
+type ErreurAttendue = Parameters<ReturnType<typeof expect>['toThrow']>[0];
+
+const SESSION = 'session-uuid';
 const TEACHER_ID = 'teacher-uuid';
 const AUTRE_TEACHER_ID = 'autre-teacher-uuid';
 const COURS_SLUG = buildSessionRecord().courseSlug;
 const COURS = buildCoursDeTest({ slug: COURS_SLUG });
 const NOMBRE_ECRANS = COURS.ecrans.length;
 const REVISION_LUE = buildSessionRecord().revision;
+const COURS_ABSENT = { courseSlug: 'un-cours-absent-du-catalogue' };
+const RYTHME_LIBRE_3_6: Commande = {
+  mode: 'libre',
+  intervalle: { premier: 3, dernier: 6 },
+};
+const ETAYAGE_REM: Commande = { pilotage: { screenId: 'E-REM', etayage: 1 } };
+const AUTRE_ECRAN_PILOTE = { 'E-AUTRE': { etayage: 2 } };
+
+function banc(catalogue: ICatalogueCours) {
+  const sessions = createMockSessionsRepo();
+  const cache = createMockSessionStateCache();
+  const outils = {
+    sessions,
+    cache,
+    sut: new ControlSessionUseCase(sessions, cache, catalogue),
+    piloter: (commande: Commande, teacherId = TEACHER_ID) =>
+      outils.sut.apply(SESSION, teacherId, commande),
+    seanceLue: (surcharges: Parameters<typeof buildSessionRecord>[0]) =>
+      sessions.findById.mockResolvedValue(buildSessionRecord(surcharges)),
+    changerDeCatalogue: (autre: ICatalogueCours) => {
+      outils.sut = new ControlSessionUseCase(sessions, cache, autre);
+    },
+    attendreEcriture: (champs: object, revision = REVISION_LUE) =>
+      expect(sessions.update).toHaveBeenCalledWith(SESSION, champs, revision),
+    attendreEcranEcrit: async (ecran: number) => {
+      await outils.piloter({ ecran });
+      outils.attendreEcriture({ ecranCourant: ecran });
+    },
+    attendrePublication: (champs: object) =>
+      expect(cache.publish).toHaveBeenCalledWith(
+        SESSION,
+        expect.objectContaining(champs),
+      ),
+    attendreSansEffet: () => {
+      expect(sessions.update).not.toHaveBeenCalled();
+      expect(cache.publish).not.toHaveBeenCalled();
+    },
+    refuseSansEffet: async (
+      action: Promise<unknown>,
+      erreur?: ErreurAttendue,
+    ) => {
+      await expect(action).rejects.toThrow(erreur);
+      outils.attendreSansEffet();
+    },
+  };
+  return outils;
+}
 
 describe('ControlSessionUseCase', () => {
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
-  let cache: ReturnType<typeof createMockSessionStateCache>;
-  let sut: ControlSessionUseCase;
+  let b: ReturnType<typeof banc>;
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    cache = createMockSessionStateCache();
-    sut = new ControlSessionUseCase(
-      sessions,
-      cache,
-      creerCatalogueDeTest(COURS),
-    );
+    b = banc(creerCatalogueDeTest(COURS));
   });
 
   it('change l ecran courant', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, { ecran: 4 });
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      { ecranCourant: 4 },
-      REVISION_LUE,
-    );
+    await b.attendreEcranEcrit(4);
   });
 
   it('publie l etat dans le cache apres avoir change l ecran', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, { ecran: 4 });
-    expect(cache.publish).toHaveBeenCalledWith(
-      'session-uuid',
-      expect.objectContaining({ ecranCourant: 4 }),
-    );
+    await b.piloter({ ecran: 4 });
+    b.attendrePublication({ ecranCourant: 4 });
   });
 
   it('reprend le nombre de participants deja en cache lors de la publication', async () => {
-    cache.read.mockReturnValue(buildLiveSessionState({ participants: 9 }));
-    await sut.apply('session-uuid', TEACHER_ID, { ecran: 4 });
-    expect(cache.publish).toHaveBeenCalledWith(
-      'session-uuid',
-      expect.objectContaining({ participants: 9 }),
-    );
+    b.cache.read.mockReturnValue(buildLiveSessionState({ participants: 9 }));
+    await b.piloter({ ecran: 4 });
+    b.attendrePublication({ participants: 9 });
   });
 
   it('refuse un ecran negatif', async () => {
-    await expect(
-      sut.apply('session-uuid', TEACHER_ID, { ecran: -1 }),
-    ).rejects.toThrow();
+    await expect(b.piloter({ ecran: -1 })).rejects.toThrow();
   });
 
   it('accepte l ecran de la derniere position du cours', async () => {
-    const dernierEcran = NOMBRE_ECRANS - 1;
-    await sut.apply('session-uuid', TEACHER_ID, { ecran: dernierEcran });
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      { ecranCourant: dernierEcran },
-      REVISION_LUE,
-    );
+    await b.attendreEcranEcrit(NOMBRE_ECRANS - 1);
   });
 
   it('borne l ecran par la version du cours figee a l ouverture, pas par la derniere publiee', async () => {
-    const dernierEcran = NOMBRE_ECRANS - 1;
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ teacherId: TEACHER_ID, courseVersion: 2 }),
-    );
-    sut = new ControlSessionUseCase(
-      sessions,
-      cache,
+    b.seanceLue({ teacherId: TEACHER_ID, courseVersion: 2 });
+    b.changerDeCatalogue(
       creerCatalogueAVersions({
         [COURS_SLUG]: {
           2: COURS,
@@ -108,94 +128,57 @@ describe('ControlSessionUseCase', () => {
       }),
     );
 
-    await sut.apply('session-uuid', TEACHER_ID, { ecran: dernierEcran });
-
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      { ecranCourant: dernierEcran },
-      REVISION_LUE,
-    );
+    await b.attendreEcranEcrit(NOMBRE_ECRANS - 1);
   });
 
   it('refuse un ecran hors du cours sans ecrire ni publier', async () => {
-    await expect(
-      sut.apply('session-uuid', TEACHER_ID, { ecran: NOMBRE_ECRANS }),
-    ).rejects.toThrow(
+    await b.refuseSansEffet(
+      b.piloter({ ecran: NOMBRE_ECRANS }),
       `Écran ${NOMBRE_ECRANS} hors du cours : ${NOMBRE_ECRANS} écrans`,
     );
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
   });
 
   it('refuse de piloter un ecran quand le cours est absent du catalogue', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: 'un-cours-absent-du-catalogue' }),
-    );
-    await expect(
-      sut.apply('session-uuid', TEACHER_ID, { ecran: 2 }),
-    ).rejects.toBeInstanceOf(CoursInconnuError);
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
+    b.seanceLue(COURS_ABSENT);
+    await b.refuseSansEffet(b.piloter({ ecran: 2 }), CoursInconnuError);
   });
 
   it('refuse de piloter une session terminee', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ etat: 'terminee' }),
-    );
-    await expect(
-      sut.apply('session-uuid', TEACHER_ID, { ecran: 2 }),
-    ).rejects.toThrow();
+    b.seanceLue({ etat: 'terminee' });
+    await expect(b.piloter({ ecran: 2 })).rejects.toThrow();
   });
 
   it('refuse de changer l ecran sans etre le formateur de la session', async () => {
-    await expect(
-      sut.apply('session-uuid', AUTRE_TEACHER_ID, { ecran: 2 }),
-    ).rejects.toThrow(SessionNotOwnedError);
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
+    await b.refuseSansEffet(
+      b.piloter({ ecran: 2 }, AUTRE_TEACHER_ID),
+      SessionNotOwnedError,
+    );
   });
 
   it('bascule en rythme libre avec un intervalle', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, {
-      mode: 'libre',
-      intervalle: { premier: 3, dernier: 6 },
+    await b.piloter(RYTHME_LIBRE_3_6);
+    b.attendreEcriture({
+      modeRythme: 'libre',
+      intervalleLibre: { premier: 3, dernier: 6 },
     });
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      { modeRythme: 'libre', intervalleLibre: { premier: 3, dernier: 6 } },
-      REVISION_LUE,
-    );
   });
 
   it('publie l etat dans le cache apres avoir change le rythme', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, {
-      mode: 'libre',
-      intervalle: { premier: 3, dernier: 6 },
+    await b.piloter(RYTHME_LIBRE_3_6);
+    b.attendrePublication({
+      modeRythme: 'libre',
+      intervalleLibre: { premier: 3, dernier: 6 },
     });
-    expect(cache.publish).toHaveBeenCalledWith(
-      'session-uuid',
-      expect.objectContaining({
-        modeRythme: 'libre',
-        intervalleLibre: { premier: 3, dernier: 6 },
-      }),
-    );
   });
 
   it('efface l intervalle en repassant en rythme pilote', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, { mode: 'pilote' });
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      { modeRythme: 'pilote', intervalleLibre: null },
-      REVISION_LUE,
-    );
+    await b.piloter({ mode: 'pilote' });
+    b.attendreEcriture({ modeRythme: 'pilote', intervalleLibre: null });
   });
 
   it('refuse un intervalle libre inverse en nommant la forme attendue', async () => {
     await expect(
-      sut.apply('session-uuid', TEACHER_ID, {
-        mode: 'libre',
-        intervalle: { premier: 7, dernier: 3 },
-      }),
+      b.piloter({ mode: 'libre', intervalle: { premier: 7, dernier: 3 } }),
     ).rejects.toThrow(
       new DomainValidationError(
         'Intervalle de rythme libre invalide : premier et dernier écrans entiers, positifs, le premier avant le dernier',
@@ -204,294 +187,199 @@ describe('ControlSessionUseCase', () => {
   });
 
   it('accepte un intervalle libre dans les bornes du cours', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, {
-      mode: 'libre',
-      intervalle: { premier: 2, dernier: 6 },
+    await b.piloter({ mode: 'libre', intervalle: { premier: 2, dernier: 6 } });
+    b.attendreEcriture({
+      modeRythme: 'libre',
+      intervalleLibre: { premier: 2, dernier: 6 },
     });
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      { modeRythme: 'libre', intervalleLibre: { premier: 2, dernier: 6 } },
-      REVISION_LUE,
-    );
   });
 
   it('refuse un intervalle libre dont la borne haute deborde le cours', async () => {
-    await expect(
-      sut.apply('session-uuid', TEACHER_ID, {
-        mode: 'libre',
-        intervalle: { premier: 2, dernier: 7 },
-      }),
-    ).rejects.toThrow(
+    await b.refuseSansEffet(
+      b.piloter({ mode: 'libre', intervalle: { premier: 2, dernier: 7 } }),
       new DomainValidationError(
         `Intervalle de rythme libre hors du cours : ${NOMBRE_ECRANS} écrans`,
       ),
     );
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
   });
 
   it('refuse de piloter un intervalle libre quand le cours est absent du catalogue', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: 'un-cours-absent-du-catalogue' }),
-    );
-    await expect(
-      sut.apply('session-uuid', TEACHER_ID, {
-        mode: 'libre',
-        intervalle: { premier: 2, dernier: 6 },
-      }),
-    ).rejects.toBeInstanceOf(CoursInconnuError);
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
+    b.seanceLue(COURS_ABSENT);
+    await b.refuseSansEffet(b.piloter(RYTHME_LIBRE_3_6), CoursInconnuError);
   });
 
   it('refuse de changer le rythme sans etre le formateur de la session', async () => {
-    await expect(
-      sut.apply('session-uuid', AUTRE_TEACHER_ID, { mode: 'pilote' }),
-    ).rejects.toThrow(SessionNotOwnedError);
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
+    await b.refuseSansEffet(
+      b.piloter({ mode: 'pilote' }, AUTRE_TEACHER_ID),
+      SessionNotOwnedError,
+    );
   });
 
   it('change l ecran et le rythme en une seule ecriture et une seule publication', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, {
-      ecran: 4,
-      mode: 'libre',
-      intervalle: { premier: 3, dernier: 6 },
+    await b.piloter({ ecran: 4, ...RYTHME_LIBRE_3_6 });
+    expect(b.sessions.update).toHaveBeenCalledTimes(1);
+    b.attendreEcriture({
+      ecranCourant: 4,
+      modeRythme: 'libre',
+      intervalleLibre: { premier: 3, dernier: 6 },
     });
-    expect(sessions.update).toHaveBeenCalledTimes(1);
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      {
-        ecranCourant: 4,
-        modeRythme: 'libre',
-        intervalleLibre: { premier: 3, dernier: 6 },
-      },
-      REVISION_LUE,
-    );
-    expect(cache.publish).toHaveBeenCalledTimes(1);
+    expect(b.cache.publish).toHaveBeenCalledTimes(1);
   });
 
   it('ne bascule pas les ecrans de la classe quand le rythme demande est invalide', async () => {
-    await expect(
-      sut.apply('session-uuid', TEACHER_ID, { ecran: 4, mode: 'libre' }),
-    ).rejects.toThrow(DomainValidationError);
-    expect(sessions.findById).not.toHaveBeenCalled();
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
+    await b.refuseSansEffet(
+      b.piloter({ ecran: 4, mode: 'libre' }),
+      DomainValidationError,
+    );
+    expect(b.sessions.findById).not.toHaveBeenCalled();
   });
 
   it('ne change pas le rythme quand l ecran demande est invalide', async () => {
-    await expect(
-      sut.apply('session-uuid', TEACHER_ID, { ecran: -1, mode: 'pilote' }),
-    ).rejects.toThrow(DomainValidationError);
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
+    await b.refuseSansEffet(
+      b.piloter({ ecran: -1, mode: 'pilote' }),
+      DomainValidationError,
+    );
   });
 
   describe('pilotage par ecran', () => {
-    it('inscrit l etayage d un exemple travaille', async () => {
-      await sut.apply('session-uuid', TEACHER_ID, {
-        pilotage: { screenId: 'E-REM', etayage: 1 },
-      });
-
-      expect(sessions.update).toHaveBeenCalledWith(
-        'session-uuid',
-        { pilotageEcrans: { 'E-REM': { etayage: 1 } } },
-        REVISION_LUE,
+    const avecVoteJumele = () =>
+      b.changerDeCatalogue(
+        creerCatalogueDeTest(buildCoursAvecVoteJumele({ slug: COURS_SLUG })),
       );
+
+    it('inscrit l etayage d un exemple travaille', async () => {
+      await b.piloter(ETAYAGE_REM);
+
+      b.attendreEcriture({ pilotageEcrans: { 'E-REM': { etayage: 1 } } });
     });
 
     it('conserve le pilotage deja enregistre des autres ecrans', async () => {
-      sessions.findById.mockResolvedValue(
-        buildSessionRecord({
-          pilotageEcrans: { 'E-AUTRE': { etayage: 2 } },
-        }),
-      );
+      b.seanceLue({ pilotageEcrans: AUTRE_ECRAN_PILOTE });
 
-      await sut.apply('session-uuid', TEACHER_ID, {
-        pilotage: { screenId: 'E-REM', etayage: 1 },
+      await b.piloter(ETAYAGE_REM);
+
+      b.attendreEcriture({
+        pilotageEcrans: { ...AUTRE_ECRAN_PILOTE, 'E-REM': { etayage: 1 } },
       });
-
-      expect(sessions.update).toHaveBeenCalledWith(
-        'session-uuid',
-        {
-          pilotageEcrans: {
-            'E-AUTRE': { etayage: 2 },
-            'E-REM': { etayage: 1 },
-          },
-        },
-        REVISION_LUE,
-      );
     });
 
     it('refuse un ecran absent du cours sans ecrire ni publier', async () => {
-      await expect(
-        sut.apply('session-uuid', TEACHER_ID, {
-          pilotage: { screenId: 'E-INVENTE', etayage: 1 },
-        }),
-      ).rejects.toThrow(DomainValidationError);
-      expect(sessions.update).not.toHaveBeenCalled();
-      expect(cache.publish).not.toHaveBeenCalled();
+      await b.refuseSansEffet(
+        b.piloter({ pilotage: { screenId: 'E-INVENTE', etayage: 1 } }),
+        DomainValidationError,
+      );
     });
 
     it('refuse un pilotage incompatible avec la brique de l ecran', async () => {
       await expect(
-        sut.apply('session-uuid', TEACHER_ID, {
-          pilotage: { screenId: 'E-NUM', etayage: 1 },
-        }),
+        b.piloter({ pilotage: { screenId: 'E-NUM', etayage: 1 } }),
       ).rejects.toThrow(PilotageIncompatibleError);
-      expect(sessions.update).not.toHaveBeenCalled();
+      expect(b.sessions.update).not.toHaveBeenCalled();
     });
 
     it('avance la phase d un vote a question jumelle', async () => {
-      sut = new ControlSessionUseCase(
-        sessions,
-        cache,
-        creerCatalogueDeTest(buildCoursAvecVoteJumele({ slug: COURS_SLUG })),
-      );
+      avecVoteJumele();
 
-      await sut.apply('session-uuid', TEACHER_ID, {
-        pilotage: { screenId: 'E-VOTE', phase: 'revote' },
-      });
+      await b.piloter({ pilotage: { screenId: 'E-VOTE', phase: 'revote' } });
 
-      expect(sessions.update).toHaveBeenCalledWith(
-        'session-uuid',
-        { pilotageEcrans: { 'E-VOTE': { phase: 'revote' } } },
-        REVISION_LUE,
-      );
+      b.attendreEcriture({ pilotageEcrans: { 'E-VOTE': { phase: 'revote' } } });
     });
 
     it('refuse de ramener une phase en arriere', async () => {
-      sessions.findById.mockResolvedValue(
-        buildSessionRecord({
-          pilotageEcrans: { 'E-VOTE': { phase: 'revele' } },
-        }),
-      );
-      sut = new ControlSessionUseCase(
-        sessions,
-        cache,
-        creerCatalogueDeTest(buildCoursAvecVoteJumele({ slug: COURS_SLUG })),
-      );
+      b.seanceLue({ pilotageEcrans: { 'E-VOTE': { phase: 'revele' } } });
+      avecVoteJumele();
 
       await expect(
-        sut.apply('session-uuid', TEACHER_ID, {
-          pilotage: { screenId: 'E-VOTE', phase: 'vote' },
-        }),
+        b.piloter({ pilotage: { screenId: 'E-VOTE', phase: 'vote' } }),
       ).rejects.toThrow(PhaseNonMonotoneError);
-      expect(sessions.update).not.toHaveBeenCalled();
+      expect(b.sessions.update).not.toHaveBeenCalled();
     });
 
     it('publie la revision et le pilotage relus en base', async () => {
-      sessions.update.mockResolvedValue(
+      b.sessions.update.mockResolvedValue(
         buildSessionRecord({
           revision: 12,
           pilotageEcrans: { 'E-REM': { etayage: 1 } },
         }),
       );
 
-      await sut.apply('session-uuid', TEACHER_ID, {
-        pilotage: { screenId: 'E-REM', etayage: 1 },
-      });
+      await b.piloter(ETAYAGE_REM);
 
-      expect(cache.publish).toHaveBeenCalledWith(
-        'session-uuid',
-        expect.objectContaining({
-          revision: 12,
-          pilotage: { 'E-REM': { etayage: 1 } },
-        }),
-      );
+      b.attendrePublication({
+        revision: 12,
+        pilotage: { 'E-REM': { etayage: 1 } },
+      });
     });
 
     it('rejoue la commande sur l etat a jour quand une autre a gagne la course', async () => {
-      sessions.findById
+      b.sessions.findById
         .mockResolvedValueOnce(buildSessionRecord({ revision: 4 }))
         .mockResolvedValue(
           buildSessionRecord({
             revision: 5,
-            pilotageEcrans: { 'E-AUTRE': { etayage: 2 } },
+            pilotageEcrans: AUTRE_ECRAN_PILOTE,
           }),
         );
-      sessions.update.mockRejectedValueOnce(
-        new RevisionDeSeanceObsoleteError('session-uuid'),
+      b.sessions.update.mockRejectedValueOnce(
+        new RevisionDeSeanceObsoleteError(SESSION),
       );
 
-      await sut.apply('session-uuid', TEACHER_ID, {
-        pilotage: { screenId: 'E-REM', etayage: 1 },
-      });
+      await b.piloter(ETAYAGE_REM);
 
-      expect(sessions.update).toHaveBeenNthCalledWith(
+      expect(b.sessions.update).toHaveBeenNthCalledWith(
         1,
-        'session-uuid',
+        SESSION,
         { pilotageEcrans: { 'E-REM': { etayage: 1 } } },
         4,
       );
-      expect(sessions.update).toHaveBeenNthCalledWith(
+      expect(b.sessions.update).toHaveBeenNthCalledWith(
         2,
-        'session-uuid',
-        {
-          pilotageEcrans: {
-            'E-AUTRE': { etayage: 2 },
-            'E-REM': { etayage: 1 },
-          },
-        },
+        SESSION,
+        { pilotageEcrans: { ...AUTRE_ECRAN_PILOTE, 'E-REM': { etayage: 1 } } },
         5,
       );
-      expect(cache.publish).toHaveBeenCalledTimes(1);
+      expect(b.cache.publish).toHaveBeenCalledTimes(1);
     });
 
     it('abandonne apres cinq courses perdues plutot que d ecraser un etat qu il n a pas lu', async () => {
-      sessions.update.mockRejectedValue(
-        new RevisionDeSeanceObsoleteError('session-uuid'),
+      b.sessions.update.mockRejectedValue(
+        new RevisionDeSeanceObsoleteError(SESSION),
       );
 
-      await expect(
-        sut.apply('session-uuid', TEACHER_ID, {
-          pilotage: { screenId: 'E-REM', etayage: 1 },
-        }),
-      ).rejects.toThrow(RevisionDeSeanceObsoleteError);
-      expect(sessions.update).toHaveBeenCalledTimes(5);
-      expect(cache.publish).not.toHaveBeenCalled();
+      await expect(b.piloter(ETAYAGE_REM)).rejects.toThrow(
+        RevisionDeSeanceObsoleteError,
+      );
+      expect(b.sessions.update).toHaveBeenCalledTimes(5);
+      expect(b.cache.publish).not.toHaveBeenCalled();
     });
   });
 
-  it('demarre une session en attente', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ etat: 'attente' }),
-    );
-    await sut.start('session-uuid', TEACHER_ID);
-    expect(sessions.update).toHaveBeenCalledWith('session-uuid', {
-      etat: 'en_cours',
+  describe('demarrage', () => {
+    const demarrer = (teacherId = TEACHER_ID) =>
+      b.sut.start(SESSION, teacherId);
+
+    it('demarre une session en attente', async () => {
+      b.seanceLue({ etat: 'attente' });
+      await demarrer();
+      expect(b.sessions.update).toHaveBeenCalledWith(SESSION, {
+        etat: 'en_cours',
+      });
     });
-  });
 
-  it('publie l etat dans le cache apres avoir demarre la session', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ etat: 'attente' }),
-    );
-    await sut.start('session-uuid', TEACHER_ID);
-    expect(cache.publish).toHaveBeenCalledWith(
-      'session-uuid',
-      expect.objectContaining({ etat: 'en_cours' }),
-    );
-  });
+    it('publie l etat dans le cache apres avoir demarre la session', async () => {
+      b.seanceLue({ etat: 'attente' });
+      await demarrer();
+      b.attendrePublication({ etat: 'en_cours' });
+    });
 
-  it('refuse de demarrer une session sans en etre le formateur', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ etat: 'attente' }),
-    );
-    await expect(sut.start('session-uuid', AUTRE_TEACHER_ID)).rejects.toThrow(
-      SessionNotOwnedError,
-    );
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
-  });
+    it('refuse de demarrer une session sans en etre le formateur', async () => {
+      b.seanceLue({ etat: 'attente' });
+      await b.refuseSansEffet(demarrer(AUTRE_TEACHER_ID), SessionNotOwnedError);
+    });
 
-  it('refuse de redemarrer une session deja en cours', async () => {
-    await expect(sut.start('session-uuid', TEACHER_ID)).rejects.toThrow(
-      InvalidStateTransitionError,
-    );
-    expect(sessions.update).not.toHaveBeenCalled();
-    expect(cache.publish).not.toHaveBeenCalled();
+    it('refuse de redemarrer une session deja en cours', async () => {
+      await b.refuseSansEffet(demarrer(), InvalidStateTransitionError);
+    });
   });
 });
 
@@ -509,76 +397,46 @@ describe('ControlSessionUseCase — révélation par l écran de correction (SEC
       { slug: COURS_SLUG },
     ),
   );
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
-  let sut: ControlSessionUseCase;
+  const REVELATION = { [ATELIER.screenId]: { revele: true } };
+  let b: ReturnType<typeof banc>;
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sut = new ControlSessionUseCase(
-      sessions,
-      createMockSessionStateCache(),
-      creerCatalogueDeTest(COURS_CORRIGE),
-    );
+    b = banc(creerCatalogueDeTest(COURS_CORRIGE));
   });
 
   it('révèle la source quand le pilote projette sa correction', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, { ecran: 2 });
+    await b.piloter({ ecran: 2 });
 
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      {
-        ecranCourant: 2,
-        pilotageEcrans: { [ATELIER.screenId]: { revele: true } },
-      },
-      REVISION_LUE,
-    );
+    b.attendreEcriture({ ecranCourant: 2, pilotageEcrans: REVELATION });
   });
 
   it('ne révèle rien tant que la correction n est pas atteinte', async () => {
-    await sut.apply('session-uuid', TEACHER_ID, { ecran: 1 });
-
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      { ecranCourant: 1 },
-      REVISION_LUE,
-    );
+    await b.attendreEcranEcrit(1);
   });
 
   it('révèle au passage en rythme pilote au-delà de la correction', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        modeRythme: 'libre',
-        ecranCourant: 2,
-        intervalleLibre: { premier: 0, dernier: 2 },
-      }),
-    );
+    b.seanceLue({
+      modeRythme: 'libre',
+      ecranCourant: 2,
+      intervalleLibre: { premier: 0, dernier: 2 },
+    });
 
-    await sut.apply('session-uuid', TEACHER_ID, { mode: 'pilote' });
+    await b.piloter({ mode: 'pilote' });
 
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
+    b.attendreEcriture(
       expect.objectContaining({
         modeRythme: 'pilote',
-        pilotageEcrans: { [ATELIER.screenId]: { revele: true } },
-      }),
-      REVISION_LUE,
+        pilotageEcrans: REVELATION,
+      }) as object,
     );
   });
 
   it('ne révèle rien en rythme libre', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        modeRythme: 'libre',
-        intervalleLibre: { premier: 0, dernier: 1 },
-      }),
-    );
+    b.seanceLue({
+      modeRythme: 'libre',
+      intervalleLibre: { premier: 0, dernier: 1 },
+    });
 
-    await sut.apply('session-uuid', TEACHER_ID, { ecran: 2 });
-
-    expect(sessions.update).toHaveBeenCalledWith(
-      'session-uuid',
-      { ecranCourant: 2 },
-      REVISION_LUE,
-    );
+    await b.attendreEcranEcrit(2);
   });
 });

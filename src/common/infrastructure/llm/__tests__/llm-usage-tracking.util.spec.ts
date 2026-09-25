@@ -68,6 +68,11 @@ async function runTracked(
   return { result, invoke };
 }
 
+function figerLHorloge(...instantsMs: number[]): void {
+  const horloge = jest.spyOn(Date, 'now');
+  for (const instant of instantsMs) horloge.mockReturnValueOnce(instant);
+}
+
 describe('invokeWithLlmTracking', () => {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -83,12 +88,7 @@ describe('invokeWithLlmTracking', () => {
 
   it('compte l’appel et observe la latence en succes', async () => {
     const metrics = createMockMetrics();
-    jest
-      .spyOn(Date, 'now')
-      .mockReturnValueOnce(1_000)
-      .mockReturnValueOnce(1_000)
-      .mockReturnValueOnce(3_500)
-      .mockReturnValueOnce(3_500);
+    figerLHorloge(1_000, 1_000, 3_500, 3_500);
 
     await runTracked(buildUsageMetadataOutput(), metrics);
 
@@ -186,10 +186,7 @@ describe('invokeWithLlmTracking', () => {
 
   it('compte l’appel et observe la latence en secondes en erreur', async () => {
     const metrics = createMockMetrics();
-    jest
-      .spyOn(Date, 'now')
-      .mockReturnValueOnce(1_000)
-      .mockReturnValueOnce(3_500);
+    figerLHorloge(1_000, 3_500);
 
     await expect(invoquerEnEchec(metrics)).rejects.toThrow('LLM down');
 

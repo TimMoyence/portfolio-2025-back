@@ -34,6 +34,17 @@ function regles(
 const base = buildCoursConforme();
 const [ouverture, citation, atelier, cloture] = base.ecrans;
 
+const avecNotesDeCitation = (notes: string): Cours =>
+  recomposer(base, [ouverture, { ...citation, notes }, atelier, cloture]);
+
+const avecAtelierDe = (dureeMinutes: number): Cours =>
+  recomposer(base, [
+    ouverture,
+    citation,
+    { ...atelier, dureeMinutes },
+    cloture,
+  ]);
+
 describe('verifierStructure', () => {
   it('expose les seize regles de structure dans l ordre applique aux violations', () => {
     expect(REGLES_STRUCTURE).toEqual([
@@ -315,14 +326,7 @@ describe('verifierStructure — notes du formateur', () => {
     ['en puces', NOTES_DU_FORMATEUR],
     ['en une phrase', 'Relance : « Rapporté à quoi ? »'],
   ])('G03 · accepte des notes %s', (_, notes) => {
-    const cours = recomposer(base, [
-      ouverture,
-      { ...citation, notes },
-      atelier,
-      cloture,
-    ]);
-
-    expect(regles(cours)).not.toContain('notes-formateur');
+    expect(regles(avecNotesDeCitation(notes))).not.toContain('notes-formateur');
   });
 
   it.each([
@@ -330,14 +334,7 @@ describe('verifierStructure — notes du formateur', () => {
     ['avec une ligne blanche', `${NOTES_DU_FORMATEUR}\n  `],
     ['avec une puce vide', `${NOTES_DU_FORMATEUR}\n•  `],
   ])('G03 · refuse des notes présentes mais %s', (_, notes) => {
-    const cours = recomposer(base, [
-      ouverture,
-      { ...citation, notes },
-      atelier,
-      cloture,
-    ]);
-
-    expect(verifierStructure(cours)).toEqual([
+    expect(verifierStructure(avecNotesDeCitation(notes))).toEqual([
       expect.objectContaining({ regle: 'notes-formateur', ecran: citation.id }),
     ]);
   });
@@ -345,25 +342,13 @@ describe('verifierStructure — notes du formateur', () => {
 
 describe('verifierStructure — questions fermees en atelier', () => {
   it.each([7, 16])('refuse un atelier note de %i minutes', (duree) => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      { ...atelier, dureeMinutes: duree },
-      cloture,
-    ]);
-
-    expect(regles(cours)).toContain('atelier-questions-fermees');
+    expect(regles(avecAtelierDe(duree))).toContain('atelier-questions-fermees');
   });
 
   it.each([8, 15])('accepte un atelier note de %i minutes', (duree) => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      { ...atelier, dureeMinutes: duree },
-      cloture,
-    ]);
-
-    expect(regles(cours)).not.toContain('atelier-questions-fermees');
+    expect(regles(avecAtelierDe(duree))).not.toContain(
+      'atelier-questions-fermees',
+    );
   });
 
   it('refuse un classement note sur un ecran court et ignore un vote non note', () => {

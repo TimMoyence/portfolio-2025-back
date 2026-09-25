@@ -51,19 +51,19 @@ import type {
 } from '../../src/modules/formations/domain/ResultatsSeance';
 import type { ActeurFormation } from '../../src/modules/formations/domain/SessionOwnership';
 
+export const QUESTION_DE_CAPITALISATION = {
+  id: 'Q-CAP-03',
+  type: 'numeric',
+  concept: 'capitalisation',
+  tolerance: { type: 'relative', valeur: 0.005 },
+  noteCompte: true,
+} as const satisfies Bareme['questions'][number];
+
 export function buildBareme(overrides: Partial<Bareme> = {}): Bareme {
   return {
     version: 1,
     graineReference: 9_999_999,
-    questions: [
-      {
-        id: 'Q-CAP-03',
-        type: 'numeric',
-        concept: 'capitalisation',
-        tolerance: { type: 'relative', valeur: 0.005 },
-        noteCompte: true,
-      },
-    ],
+    questions: [QUESTION_DE_CAPITALISATION],
     tirages: [
       {
         seed: 1001,
@@ -179,6 +179,11 @@ export function buildVoteBareme(pieges: readonly Piege[] = []): Bareme {
   });
 }
 
+export const PARTICIPANT_DE_TEST = {
+  sessionId: 'session-uuid',
+  participantId: 'participant-uuid',
+} as const;
+
 export function buildSessionRecord(
   overrides: Partial<SessionRecord> = {},
 ): SessionRecord {
@@ -248,11 +253,10 @@ export function buildParticipantRecord(
   };
 }
 
-export function buildAnswerRecord(
-  overrides: Partial<AnswerRecord> = {},
-): AnswerRecord {
+export function buildCreateAnswerInput(
+  overrides: Partial<CreateAnswerInput> = {},
+): CreateAnswerInput {
   return {
-    id: 'answer-uuid',
     sessionId: 'session-uuid',
     participantId: 'participant-uuid',
     questionId: 'Q-CAP-03',
@@ -261,12 +265,38 @@ export function buildAnswerRecord(
     seed: 1001,
     correcte: true,
     misconception: null,
+    dureeMs: 42000,
+    ...overrides,
+  };
+}
+
+export function buildAnswerRecord(
+  overrides: Partial<AnswerRecord> = {},
+): AnswerRecord {
+  return {
+    id: 'answer-uuid',
+    ...buildCreateAnswerInput(),
     score: null,
     details: null,
-    dureeMs: 42000,
     soumisLe: new Date('2026-09-11T08:10:00.000Z'),
     ...overrides,
   };
+}
+
+export function detailsDeFeuilleJuste(): NonNullable<AnswerRecord['details']> {
+  return [
+    { cle: 'D2', juste: true, confusion: null },
+    { cle: 'D3', juste: true, confusion: null },
+  ];
+}
+
+export function detailsDeFeuilleAMoitieJuste(): NonNullable<
+  AnswerRecord['details']
+> {
+  return [
+    { cle: 'D2', juste: false, confusion: 'base-arrivee' },
+    { cle: 'D3', juste: true, confusion: null },
+  ];
 }
 
 export function buildQuestionAAgreger(
@@ -313,7 +343,7 @@ export function buildIncidentInput(
   };
 }
 
-function etatDeSeance(session: SessionRecord): EtatDeSeanceRecord {
+export function etatDeSeance(session: SessionRecord): EtatDeSeanceRecord {
   return {
     etat: session.etat,
     modeRythme: session.modeRythme,
@@ -325,8 +355,10 @@ function etatDeSeance(session: SessionRecord): EtatDeSeanceRecord {
   };
 }
 
-export function createMockSessionsRepo(): jest.Mocked<ISessionsRepository> {
-  const session = buildSessionRecord();
+export function createMockSessionsRepo(
+  overrides: Partial<SessionRecord> = {},
+): jest.Mocked<ISessionsRepository> {
+  const session = buildSessionRecord(overrides);
   const findById = jest.fn().mockResolvedValue(session);
   return {
     create: jest.fn().mockResolvedValue(session),

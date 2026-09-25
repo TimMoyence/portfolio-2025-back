@@ -6,6 +6,8 @@ import type {
   ClientCommsSection,
   ExecutiveSection,
   ExecutionSection,
+  FanoutSection,
+  FanoutSectionName,
   PrioritySection,
 } from '../schemas/audit-report.schemas';
 import {
@@ -49,7 +51,11 @@ export interface CacheableSectionArgs {
   signal?: AbortSignal;
 }
 
-function buildOpenAiMessages(
+export type ArgsDeGeneration = Omit<CacheableSectionArgs, 'retryMode'> & {
+  retryMode?: boolean;
+};
+
+export function buildOpenAiMessages(
   systemBlocks: string[],
   payload: Record<string, unknown>,
 ): Array<{ role: 'system' | 'user'; content: string }> {
@@ -162,3 +168,16 @@ export function generateClientCommsSection(
     },
   });
 }
+
+export const GENERATEURS_DE_SECTION: Record<
+  FanoutSectionName,
+  (
+    deps: CacheableSectionDeps,
+    args: CacheableSectionArgs,
+  ) => Promise<FanoutSection>
+> = {
+  executiveSection: generateExecutiveSection,
+  prioritySection: generatePrioritySection,
+  executionSection: generateExecutionSection,
+  clientCommsSection: generateClientCommsSection,
+};

@@ -117,12 +117,12 @@ export class ArticleBroadcastService {
     now: Date,
   ): Promise<BroadcastRunResult> {
     const batchSize = broadcastBatchSize();
-    const recipients = await this.broadcasts.findPendingRecipients(
-      broadcast.id,
-      ARTICLE_NEWSLETTER_SOURCE,
-      article.locale,
-      batchSize,
-    );
+    const recipients = await this.broadcasts.findPendingRecipients({
+      broadcastId: broadcast.id,
+      source: ARTICLE_NEWSLETTER_SOURCE,
+      locale: article.locale,
+      limit: batchSize,
+    });
     let sent = 0;
     let failed = 0;
     for (const recipient of recipients) {

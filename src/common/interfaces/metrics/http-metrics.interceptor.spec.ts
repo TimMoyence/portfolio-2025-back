@@ -38,23 +38,28 @@ describe('HttpMetricsInterceptor', () => {
     } as jest.Mocked<CallHandler>;
   });
 
-  it('devrait incrementer le compteur http_requests_total apres une requete reussie', async () => {
-    const result$ = interceptor.intercept(mockContext, mockCallHandler);
-    await firstValueFrom(result$);
+  const LIBELLES_DE_LA_REQUETE = {
+    method: 'GET',
+    route: '/api/test',
+    status_code: '200',
+  };
 
-    expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledWith({
-      method: 'GET',
-      route: '/api/test',
-      status_code: '200',
-    });
+  const intercepter = () =>
+    firstValueFrom(interceptor.intercept(mockContext, mockCallHandler));
+
+  it('devrait incrementer le compteur http_requests_total apres une requete reussie', async () => {
+    await intercepter();
+
+    expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledWith(
+      LIBELLES_DE_LA_REQUETE,
+    );
   });
 
   it('devrait observer la duree dans l histogramme apres une requete reussie', async () => {
-    const result$ = interceptor.intercept(mockContext, mockCallHandler);
-    await firstValueFrom(result$);
+    await intercepter();
 
     expect(metricsService.httpRequestDuration.observe).toHaveBeenCalledWith(
-      { method: 'GET', route: '/api/test', status_code: '200' },
+      LIBELLES_DE_LA_REQUETE,
       expect.any(Number),
     );
   });
@@ -62,37 +67,36 @@ describe('HttpMetricsInterceptor', () => {
   it('devrait enregistrer les metriques meme en cas d erreur', async () => {
     mockCallHandler.handle.mockReturnValue(throwError(() => new Error('boom')));
 
-    const result$ = interceptor.intercept(mockContext, mockCallHandler);
-
-    await expect(firstValueFrom(result$)).rejects.toThrow('boom');
-
-    expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledWith({
-      method: 'GET',
-      route: '/api/test',
-      status_code: '200',
-    });
-  });
-
-  it('devrait utiliser req.path si req.route est absent', async () => {
-    mockRequest.route = undefined;
-    mockRequest.path = '/fallback';
-
-    const result$ = interceptor.intercept(mockContext, mockCallHandler);
-    await firstValueFrom(result$);
+    await expect(intercepter()).rejects.toThrow('boom');
 
     expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledWith(
-      expect.objectContaining({ route: '/fallback' }),
+      LIBELLES_DE_LA_REQUETE,
     );
   });
 
-  it('devrait convertir le status_code en string', async () => {
-    mockResponse.statusCode = 404;
+  it.each([
+    [
+      'devrait utiliser req.path si req.route est absent',
+      () => {
+        mockRequest.route = undefined;
+        mockRequest.path = '/fallback';
+      },
+      { route: '/fallback' },
+    ],
+    [
+      'devrait convertir le status_code en string',
+      () => {
+        mockResponse.statusCode = 404;
+      },
+      { status_code: '404' },
+    ],
+  ])('%s', async (_titre, preparer, libellesAttendus) => {
+    preparer();
 
-    const result$ = interceptor.intercept(mockContext, mockCallHandler);
-    await firstValueFrom(result$);
+    await intercepter();
 
     expect(metricsService.httpRequestsTotal.inc).toHaveBeenCalledWith(
-      expect.objectContaining({ status_code: '404' }),
+      expect.objectContaining(libellesAttendus),
     );
   });
 });

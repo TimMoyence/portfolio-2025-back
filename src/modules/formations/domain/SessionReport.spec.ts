@@ -14,6 +14,7 @@ import { libelleDeConfusion } from './cours/banque/confusions';
 import { ouvrirTirages } from './cours/OuvertureTirages';
 import { tirer } from './cours/Tirage';
 import { NE_SAIT_PAS } from './GradingCore';
+import type { AnswerRecord } from './IAnswers.repository';
 import type { IncidentRecord } from './IIncidents.repository';
 import { buildRapportSession } from './SessionReport';
 import type { SessionReportInput } from './SessionReport';
@@ -34,6 +35,13 @@ function rapportDe(overrides: Partial<SessionReportInput> = {}) {
     avertir: () => undefined,
     ...overrides,
   });
+}
+
+function deuxParticipants() {
+  return [
+    buildParticipantRecord({ id: 'p1' }),
+    buildParticipantRecord({ id: 'p2', email: 'b@example.com' }),
+  ];
 }
 
 describe('buildRapportSession', () => {
@@ -148,10 +156,7 @@ describe('buildRapportSession', () => {
 
   it('compte les incidents par participant', () => {
     const rapport = rapportDe({
-      participants: [
-        buildParticipantRecord({ id: 'p1' }),
-        buildParticipantRecord({ id: 'p2', email: 'b@example.com' }),
-      ],
+      participants: deuxParticipants(),
       incidents: [
         buildIncidentRecord({ participantId: 'p1' }),
         buildIncidentRecord({ participantId: 'p1' }),
@@ -167,10 +172,7 @@ describe('buildRapportSession', () => {
 
   it('classe les participants sous le seuil via computeCohortScore', () => {
     const rapport = rapportDe({
-      participants: [
-        buildParticipantRecord({ id: 'p1' }),
-        buildParticipantRecord({ id: 'p2', email: 'b@example.com' }),
-      ],
+      participants: deuxParticipants(),
       answers: [buildAnswerRecord({ participantId: 'p1' })],
     });
 
@@ -226,42 +228,46 @@ describe('buildRapportSession', () => {
     const optionJuste = String(rappel.valeur);
     const participant = buildParticipantRecord({ id: 'p1', seed: graine });
 
-    const reponsesLues = (overrides: Partial<SessionReportInput> = {}) =>
+    const ecriteAuTirage = (overrides: Partial<AnswerRecord>) =>
+      buildAnswerRecord({ participantId: 'p1', seed: graine, ...overrides });
+
+    const rapportDuTirage = (
+      answers: AnswerRecord[],
+      overrides: Partial<SessionReportInput> = {},
+    ) =>
       rapportDe({
         session: buildSessionRecord({ courseSlug: cours.slug, bareme }),
         cours,
         participants: [participant],
-        answers: [
-          buildAnswerRecord({
-            participantId: 'p1',
-            questionId: 'Q-TEST-RAPPEL',
-            valeur: optionJuste,
-            seed: graine,
-          }),
-          buildAnswerRecord({
-            participantId: 'p1',
+        answers,
+        ...overrides,
+      });
+
+    const premiereReponseDe = (overrides: Partial<AnswerRecord>) =>
+      rapportDe({
+        participants: [buildParticipantRecord({ id: 'p1' })],
+        answers: [buildAnswerRecord({ participantId: 'p1', ...overrides })],
+      }).participants[0].reponses[0];
+
+    const reponsesLues = (overrides: Partial<SessionReportInput> = {}) =>
+      rapportDuTirage(
+        [
+          ecriteAuTirage({ questionId: 'Q-TEST-RAPPEL', valeur: optionJuste }),
+          ecriteAuTirage({
             questionId: 'Q-TEST-VOTE',
             valeur: optionPiegee,
-            seed: graine,
             correcte: false,
             misconception: CONFUSION,
           }),
-          buildAnswerRecord({
-            participantId: 'p1',
-            questionId: 'Q-TEST-NUM',
-            valeur: 412.5,
-            seed: graine,
-          }),
-          buildAnswerRecord({
-            participantId: 'p1',
+          ecriteAuTirage({ questionId: 'Q-TEST-NUM', valeur: 412.5 }),
+          ecriteAuTirage({
             questionId: 'Q-TEST-NUM-2',
             valeur: NE_SAIT_PAS,
-            seed: graine,
             correcte: false,
           }),
         ],
-        ...overrides,
-      }).participants[0].reponses.map((reponse) => ({
+        overrides,
+      ).participants[0].reponses.map((reponse) => ({
         questionId: reponse.questionId,
         reponse: reponse.reponse,
         libelleConfusion: reponse.libelleConfusion,
@@ -302,57 +308,35 @@ describe('buildRapportSession', () => {
     });
 
     it('lit une production par la part de ses attendus justes', () => {
-      const [lue] = rapportDe({
-        participants: [buildParticipantRecord({ id: 'p1' })],
-        answers: [
-          buildAnswerRecord({
-            participantId: 'p1',
-            questionId: 'Q-TEST-FEUILLE',
-            valeur: { type: 'feuille', cellules: { D2: '=(C2-B2)/B2' } },
-            score: 0.5,
-            details: [
-              { cle: 'D2', juste: true, confusion: null },
-              { cle: 'D3', juste: false, confusion: 'base-arrivee' },
-            ],
-          }),
+      const lue = premiereReponseDe({
+        questionId: 'Q-TEST-FEUILLE',
+        valeur: { type: 'feuille', cellules: { D2: '=(C2-B2)/B2' } },
+        score: 0.5,
+        details: [
+          { cle: 'D2', juste: true, confusion: null },
+          { cle: 'D3', juste: false, confusion: 'base-arrivee' },
         ],
-      }).participants[0].reponses;
+      });
 
       expect(lue.reponse).toBe('Feuille : 1/2 cellules justes');
       expect(lue.valeur).toBe('feuille');
     });
 
     it('lit une production declaree « je ne sais pas » sans compter d attendu', () => {
-      const [lue] = rapportDe({
-        participants: [buildParticipantRecord({ id: 'p1' })],
-        answers: [
-          buildAnswerRecord({
-            participantId: 'p1',
-            questionId: 'Q-TEST-CLASSEMENT',
-            valeur: { type: 'classement', neSaitPas: true },
-            score: 0,
-            details: [],
-          }),
-        ],
-      }).participants[0].reponses;
+      const lue = premiereReponseDe({
+        questionId: 'Q-TEST-CLASSEMENT',
+        valeur: { type: 'classement', neSaitPas: true },
+        score: 0,
+        details: [],
+      });
 
       expect(lue.reponse).toBe('Classement : je ne sais pas');
     });
 
     it('ne lit jamais une propriete heritee comme libelle d option', () => {
-      const [lue] = rapportDe({
-        session: buildSessionRecord({ courseSlug: cours.slug, bareme }),
-        cours,
-        participants: [participant],
-        answers: [
-          buildAnswerRecord({
-            participantId: 'p1',
-            questionId: 'constructor',
-            valeur: 'name',
-            seed: graine,
-          }),
-        ],
-      }).participants[0].reponses;
+      const [lue] = rapportDuTirage([
+        ecriteAuTirage({ questionId: 'constructor', valeur: 'name' }),
+      ]).participants[0].reponses;
 
       expect(lue.reponse).toBe('name');
     });

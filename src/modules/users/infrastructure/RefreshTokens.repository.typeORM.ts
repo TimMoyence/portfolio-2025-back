@@ -4,6 +4,7 @@ import { LessThan, Repository } from 'typeorm';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { RefreshToken } from '../domain/RefreshToken';
 import { RefreshTokenEntity } from './entities/RefreshToken.entity';
+import { champsDuJeton } from './jetons.typeorm';
 
 @Injectable()
 export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository {
@@ -14,9 +15,7 @@ export class RefreshTokensRepositoryTypeORM implements IRefreshTokensRepository 
 
   async create(token: RefreshToken): Promise<RefreshToken> {
     const entity = this.repo.create({
-      userId: token.userId,
-      tokenHash: token.tokenHash,
-      expiresAt: token.expiresAt,
+      ...champsDuJeton(token),
       revoked: token.revoked,
       rotationGraceUntil: token.rotationGraceUntil ?? null,
     });

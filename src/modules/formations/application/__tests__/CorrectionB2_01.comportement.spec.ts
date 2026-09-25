@@ -1,4 +1,5 @@
 import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
+import { attendreProductionReussie } from '../../../../../test/helpers/corrections';
 import type {
   CorrigeFeuille,
   CorrigeTableau,
@@ -94,61 +95,52 @@ describe('A4-02 — correction serveur de la tâche de tableur 1 (AC-11)', () =>
   });
 
   it('déclare la feuille réussie quand l’étudiant envoie les formules attendues', () => {
-    const correction = corrigerFeuille(FEUILLE, envoiDeReference());
-
-    expect(correction.verdicts.filter((cellule) => !cellule.juste)).toEqual([]);
-    expect(correction.score).toBe(1);
-    expect(correction.correcte).toBe(true);
+    attendreProductionReussie(
+      corrigerFeuille(FEUILLE, envoiDeReference()),
+      FEUILLE.attendus.length,
+    );
   });
 
   it('accepte une formule équivalente à la formule de référence', () => {
-    const correction = corrigerFeuille(FEUILLE, {
-      ...envoiDeReference(),
-      D2: '=C2/B2-1',
-      D3: '=C3/B3-1',
-      D4: '=C4/B4-1',
-      D5: '=C5/B5-1',
-    });
-
-    expect(correction.correcte).toBe(true);
-    expect(correction.score).toBe(1);
-  });
-
-  it('constate la référence non figée : #DIV/0! en E3, 523 000 en E4, #REF! en E5, B7 en erreur', () => {
-    const envoi = {
-      ...envoiDeReference(),
-      E2: '=C2/C5',
-      E3: '=C3/C6',
-      E4: '=C4/C7',
-      E5: '=C5/C8',
-    };
-
-    const correction = corrigerFeuille(FEUILLE, envoi);
-
-    expect(Object.keys(confusionsDe(envoi))).toEqual(['E3', 'E4', 'E5', 'B7']);
-    expect(correction.verdicts.filter((cellule) => cellule.juste)).toHaveLength(
-      JUSTES_DES_CONSTATS,
+    attendreProductionReussie(
+      corrigerFeuille(FEUILLE, {
+        ...envoiDeReference(),
+        D2: '=C2/B2-1',
+        D3: '=C3/B3-1',
+        D4: '=C4/B4-1',
+        D5: '=C5/B5-1',
+      }),
+      FEUILLE.attendus.length,
     );
-    expect(correction.correcte).toBe(false);
   });
 
-  it('constate les résultats tapés sans formule : quatre cellules à revoir, B7 juste', () => {
-    const envoi = {
-      ...envoiDeReference(),
-      E2: '0,345217',
-      E3: '0,2',
-      E4: '0,454783',
-      E5: '1',
-    };
+  it.each([
+    [
+      'la référence non figée : #DIV/0! en E3, 523 000 en E4, #REF! en E5, B7 en erreur',
+      { E2: '=C2/C5', E3: '=C3/C6', E4: '=C4/C7', E5: '=C5/C8' },
+      {
+        E3: expect.any(String) as unknown,
+        E4: expect.any(String) as unknown,
+        E5: expect.any(String) as unknown,
+        B7: expect.any(String) as unknown,
+      },
+    ],
+    [
+      'les résultats tapés sans formule : quatre cellules à revoir, B7 juste',
+      { E2: '0,345217', E3: '0,2', E4: '0,454783', E5: '1' },
+      {
+        E2: SANS_FORMULE,
+        E3: SANS_FORMULE,
+        E4: SANS_FORMULE,
+        E5: SANS_FORMULE,
+      },
+    ],
+  ])('constate %s', (_constat, saisies, confusions) => {
+    const envoi = { ...envoiDeReference(), ...saisies };
 
     const correction = corrigerFeuille(FEUILLE, envoi);
 
-    expect(confusionsDe(envoi)).toEqual({
-      E2: SANS_FORMULE,
-      E3: SANS_FORMULE,
-      E4: SANS_FORMULE,
-      E5: SANS_FORMULE,
-    });
+    expect(confusionsDe(envoi)).toEqual(confusions);
     expect(correction.verdicts.filter((cellule) => cellule.juste)).toHaveLength(
       JUSTES_DES_CONSTATS,
     );
@@ -179,11 +171,7 @@ describe('A4-05 — correction serveur de la tâche de tableur 2', () => {
   ];
 
   it('accepte les huit saisies attendues du § 5.6', () => {
-    const correction = corrigerTableau(TABLEAU, attendues);
-
-    expect(correction.verdicts).toHaveLength(8);
-    expect(correction.score).toBe(1);
-    expect(correction.correcte).toBe(true);
+    attendreProductionReussie(corrigerTableau(TABLEAU, attendues), 8);
   });
 
   it('reconnaît les taux additionnés ligne par ligne', () => {

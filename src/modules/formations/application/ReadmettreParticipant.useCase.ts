@@ -8,7 +8,7 @@ export class ReadmettreParticipantUseCase extends ActionSurUnParticipant {
     session: SessionRecord,
     participantId: string,
   ): Promise<boolean> {
-    return this.participants.readmettre(
+    return this.participation.participants.readmettre(
       session.id,
       participantId,
       session.capacite,

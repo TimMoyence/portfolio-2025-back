@@ -1,13 +1,11 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { questionsAAgreger, resumeDuBareme } from '../domain/Bareme';
-import type { ComptesJalon, ResumeBareme } from '../domain/contrats/resultats';
+import type { ResultatsDeSeance } from '../domain/contrats/resultats';
 import { agregerEnigmes } from '../domain/cours/Enigmes';
-import type { ProgressionAgregee } from '../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IEscapeRepository } from '../domain/IEscape.repository';
 import type { IPulsesRepository } from '../domain/IPulses.repository';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
-import type { RapportSession } from '../domain/IFormationMailer.port';
 import type { IIncidentsRepository } from '../domain/IIncidents.repository';
 import type {
   IParticipantsRepository,
@@ -18,11 +16,8 @@ import type {
   SessionRecord,
 } from '../domain/ISessions.repository';
 import { REGLE_DE_NOTATION } from '../domain/RegleDeNotation';
-import type { RegleDeNotation } from '../domain/RegleDeNotation';
 import { agregerResultats } from '../domain/ResultatsSeance';
-import type { ResultatsSeance } from '../domain/ResultatsSeance';
 import { calculerStatistiquesSeance } from '../domain/SessionStatistics';
-import type { StatistiquesSeance } from '../domain/SessionStatistics';
 import type { ActeurFormation } from '../domain/SessionOwnership';
 import { buildRapportSession } from '../domain/SessionReport';
 import {
@@ -35,15 +30,6 @@ import {
   SESSIONS_REPOSITORY,
 } from '../domain/token';
 import { seanceLisiblePar } from './SessionAccess';
-
-export type ResultatsDeSeance = RapportSession & {
-  readonly resultats: ResultatsSeance;
-  readonly statistiques: StatistiquesSeance;
-  readonly notation: RegleDeNotation;
-  readonly bareme: ResumeBareme;
-  readonly jalons: Readonly<Record<string, ComptesJalon>>;
-  readonly enigmes: readonly ProgressionAgregee[];
-};
 
 export interface BilanDeSeance {
   readonly participants: readonly ParticipantRecord[];

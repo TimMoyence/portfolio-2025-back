@@ -140,29 +140,22 @@ describe('FormationsPresenterController', () => {
     );
   });
 
-  it('confie au cas d usage la lecture du rapport avec l identite et les roles de l appelant', async () => {
+  it.each([
+    [
+      'confie au cas d usage la lecture du rapport avec l identite et les roles de l appelant',
+      'getResults',
+    ],
+    ['exporte le bilan JSON en reutilisant le rapport protege', 'exportReport'],
+  ] as const)('%s', async (_titre, route) => {
     const rapport = {
       code: '4271',
       participants: [],
     } as unknown as RapportSession;
     results.execute.mockResolvedValue(rapport);
 
-    await expect(
-      controller.getResults(SESSION_ID, requeteFormateur),
-    ).resolves.toBe(rapport);
-    expect(results.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
-  });
-
-  it('exporte le bilan JSON en reutilisant le rapport protege', async () => {
-    const rapport = {
-      code: '4271',
-      participants: [],
-    } as unknown as RapportSession;
-    results.execute.mockResolvedValue(rapport);
-
-    await expect(
-      controller.exportReport(SESSION_ID, requeteFormateur),
-    ).resolves.toBe(rapport);
+    await expect(controller[route](SESSION_ID, requeteFormateur)).resolves.toBe(
+      rapport,
+    );
     expect(results.execute).toHaveBeenCalledWith(SESSION_ID, ACTEUR);
   });
 

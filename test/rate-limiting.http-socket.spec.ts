@@ -1,11 +1,12 @@
-import { Controller, Get, INestApplication, Post } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Throttle, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import {
-  ecouterEnBoucleLocale,
-  fermerApplication,
+  applicationDeLaSuite,
+  httpServerOf,
+  ouvrirApplication,
 } from './helpers/nest-test-app';
 
 @Controller('test-throttle')
@@ -23,12 +24,7 @@ class ThrottleTestController {
 }
 
 describe('Rate-limiting (ThrottlerGuard) — integration HTTP', () => {
-  let app: INestApplication;
-
-  const getHttpServer = (): Parameters<typeof request>[0] =>
-    app.getHttpServer() as Parameters<typeof request>[0];
-
-  beforeAll(async () => {
+  const app = applicationDeLaSuite(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 3 }])],
       controllers: [ThrottleTestController],
@@ -40,13 +36,10 @@ describe('Rate-limiting (ThrottlerGuard) — integration HTTP', () => {
       ],
     }).compile();
 
-    app = moduleRef.createNestApplication();
-    await ecouterEnBoucleLocale(app);
+    return ouvrirApplication(moduleRef);
   });
 
-  afterAll(async () => {
-    await fermerApplication(app);
-  });
+  const getHttpServer = () => httpServerOf(app());
 
   it('devrait accepter les requetes en dessous de la limite globale', async () => {
     for (let i = 0; i < 3; i++) {

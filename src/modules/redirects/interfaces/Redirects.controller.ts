@@ -1,8 +1,9 @@
-import { Body, Controller, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Query } from '@nestjs/common';
 import {
+  ControleurDeCatalogue,
   CreationAdmin,
   ListePubliquePaginee,
+  pageDemandee,
   reponsePaginee,
 } from '../../../common/interfaces/http/routes-de-catalogue';
 import { CreateRedirectsUseCase } from '../application/CreateRedirects.useCase';
@@ -13,8 +14,7 @@ import { RedirectListResponseDto } from './dto/redirect-list.response.dto';
 import { RedirectRequestDto } from './dto/redirect.request.dto';
 import { RedirectResponseDto } from './dto/redirect.response.dto';
 
-@ApiTags('redirects')
-@Controller('redirects')
+@ControleurDeCatalogue('redirects')
 export class RedirectsController {
   constructor(
     private readonly listUseCase: ListRedirectsUseCase,
@@ -35,11 +35,8 @@ export class RedirectsController {
     @Query() query: RedirectListQueryDto,
   ): Promise<RedirectListResponseDto> {
     const result = await this.listUseCase.execute({
-      page: query.page,
-      limit: query.limit,
-      sortBy: query.sortBy,
+      ...pageDemandee(query),
       enabled: query.enabled,
-      order: query.order,
     });
     return reponsePaginee(result, (redirect) =>
       RedirectResponseDto.fromDomain(redirect),

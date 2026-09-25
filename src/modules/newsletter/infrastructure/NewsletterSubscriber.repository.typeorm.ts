@@ -1,20 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, QueryFailedError, Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { ResourceConflictError } from '../../../common/domain/errors/ResourceConflictError';
+import { PostgresErrorClassifier } from '../../../common/infrastructure/typeorm/PostgresErrorClassifier';
 import { isSubscriptionStatus } from '../domain/SubscriptionStatus';
 import type { INewsletterSubscriberRepository } from '../domain/INewsletterSubscriberRepository';
 import { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { NewsletterSubscriberEntity } from './entities/NewsletterSubscriber.entity';
 
-const POSTGRES_UNIQUE_VIOLATION = '23505';
-
 @Injectable()
-export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscriberRepository {
+export class NewsletterSubscriberRepositoryTypeORM
+  extends PostgresErrorClassifier
+  implements INewsletterSubscriberRepository
+{
   constructor(
     @InjectRepository(NewsletterSubscriberEntity)
     private readonly repo: Repository<NewsletterSubscriberEntity>,
-  ) {}
+  ) {
+    super();
+  }
 
   async create(
     subscriber: NewsletterSubscriber,
@@ -34,32 +38,15 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
       confirmedAt: subscriber.confirmedAt,
       unsubscribedAt: subscriber.unsubscribedAt,
     });
-    try {
-      const saved = await this.repo.save(entity);
-      return this.toDomain(saved);
-    } catch (error) {
-      if (this.isUniqueViolation(error)) {
-        throw new ResourceConflictError(
+    const saved = await this.enregistrerSansDoublon(
+      this.repo,
+      entity,
+      () =>
+        new ResourceConflictError(
           'Newsletter subscription already exists for this email and source',
-        );
-      }
-      throw error;
-    }
-  }
-
-  private isUniqueViolation(error: unknown): boolean {
-    const driverCode =
-      error instanceof QueryFailedError
-        ? (error.driverError as { code?: string })?.code
-        : undefined;
-    if (driverCode === POSTGRES_UNIQUE_VIOLATION) return true;
-
-    return (
-      error !== null &&
-      typeof error === 'object' &&
-      'code' in error &&
-      (error as { code?: string }).code === POSTGRES_UNIQUE_VIOLATION
+        ),
     );
+    return this.toDomain(saved);
   }
 
   async findByEmailAndSource(
@@ -91,11 +78,9 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
   async update(
     subscriber: NewsletterSubscriber,
   ): Promise<NewsletterSubscriber> {
-    if (!subscriber.id) {
-      throw new Error('Cannot update a subscriber without an id');
-    }
+    const id = this.idPersiste(subscriber);
     await this.repo.update(
-      { id: subscriber.id },
+      { id },
       {
         status: subscriber.status,
         confirmToken: subscriber.confirmToken,
@@ -105,20 +90,15 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
         unsubscribedAt: subscriber.unsubscribedAt,
       },
     );
-    const reloaded = await this.repo.findOneOrFail({
-      where: { id: subscriber.id },
-    });
-    return this.toDomain(reloaded);
+    return this.recharger(id);
   }
 
   async markUnsubscribed(
     subscriber: NewsletterSubscriber,
   ): Promise<NewsletterSubscriber | null> {
-    if (!subscriber.id) {
-      throw new Error('Cannot update a subscriber without an id');
-    }
+    const id = this.idPersiste(subscriber);
     const result = await this.repo.update(
-      { id: subscriber.id, status: Not('unsubscribed') },
+      { id, status: Not('unsubscribed') },
       {
         status: subscriber.status,
         unsubscribedAt: subscriber.unsubscribedAt,
@@ -126,10 +106,18 @@ export class NewsletterSubscriberRepositoryTypeORM implements INewsletterSubscri
     );
     if (result.affected === 0) return null;
 
-    const reloaded = await this.repo.findOneOrFail({
-      where: { id: subscriber.id },
-    });
-    return this.toDomain(reloaded);
+    return this.recharger(id);
+  }
+
+  private idPersiste(subscriber: NewsletterSubscriber): string {
+    if (!subscriber.id) {
+      throw new Error('Cannot update a subscriber without an id');
+    }
+    return subscriber.id;
+  }
+
+  private async recharger(id: string): Promise<NewsletterSubscriber> {
+    return this.toDomain(await this.repo.findOneOrFail({ where: { id } }));
   }
 
   private toDomain(entity: NewsletterSubscriberEntity): NewsletterSubscriber {

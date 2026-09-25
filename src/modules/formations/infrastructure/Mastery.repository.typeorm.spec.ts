@@ -24,6 +24,14 @@ describe('MasteryRepositoryTypeORM', () => {
     return repo.query.mock.calls[appel][1] as unknown[];
   }
 
+  const tenter = (reussi: boolean) =>
+    sut.enregistrerTentative({
+      studentKey: 'student-uuid',
+      concept: 'capitalisation',
+      reussi,
+      vueLe: record.derniereVue,
+    });
+
   beforeEach(() => {
     repo = {
       find: jest.fn().mockResolvedValue([record]),
@@ -33,12 +41,7 @@ describe('MasteryRepositoryTypeORM', () => {
   });
 
   it('incremente les compteurs en base au lieu de reecrire un total lu avant', async () => {
-    await sut.enregistrerTentative({
-      studentKey: 'student-uuid',
-      concept: 'capitalisation',
-      reussi: true,
-      vueLe: record.derniereVue,
-    });
+    await tenter(true);
 
     expect(requeteEmise()).toContain(
       'succes = formation_mastery.succes + EXCLUDED.succes',
@@ -49,29 +52,14 @@ describe('MasteryRepositoryTypeORM', () => {
   });
 
   it('resout le conflit sur la cle composite studentKey plus concept', async () => {
-    await sut.enregistrerTentative({
-      studentKey: 'student-uuid',
-      concept: 'capitalisation',
-      reussi: false,
-      vueLe: record.derniereVue,
-    });
+    await tenter(false);
 
     expect(requeteEmise()).toContain('ON CONFLICT (student_key, concept)');
   });
 
   it('compte un succes ou un echec selon le verdict', async () => {
-    await sut.enregistrerTentative({
-      studentKey: 'student-uuid',
-      concept: 'capitalisation',
-      reussi: true,
-      vueLe: record.derniereVue,
-    });
-    await sut.enregistrerTentative({
-      studentKey: 'student-uuid',
-      concept: 'capitalisation',
-      reussi: false,
-      vueLe: record.derniereVue,
-    });
+    await tenter(true);
+    await tenter(false);
 
     const [, , , , succesReussi, echecsReussi] = parametresDe(0);
     const [, , , , succesEchoue, echecsEchoue] = parametresDe(1);

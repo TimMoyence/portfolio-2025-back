@@ -12,18 +12,23 @@ export interface LlmExecutor {
   execute<T>(fn: () => Promise<T>): Promise<T>;
 }
 
-@Injectable()
-export class SharedLlmExecutor implements LlmExecutor {
-  private readonly limiter: LlmInFlightLimiter;
+export abstract class LlmLimiteParLaConfig {
+  protected readonly llmLimiter: LlmInFlightLimiter;
 
   constructor(
     @Inject(AUDIT_AUTOMATION_CONFIG)
-    config: AuditAutomationConfig,
+    protected readonly config: AuditAutomationConfig,
   ) {
-    this.limiter = getSharedLlmInFlightLimiter(config.llmInflightMax);
+    this.llmLimiter = getSharedLlmInFlightLimiter(config.llmInflightMax);
   }
+}
 
+@Injectable()
+export class SharedLlmExecutor
+  extends LlmLimiteParLaConfig
+  implements LlmExecutor
+{
   execute<T>(fn: () => Promise<T>): Promise<T> {
-    return this.limiter.run(fn);
+    return this.llmLimiter.run(fn);
   }
 }

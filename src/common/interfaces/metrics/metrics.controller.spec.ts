@@ -69,26 +69,18 @@ describe('MetricsController', () => {
 
     it('expose les IPs deja enregistrees par le store', async () => {
       const now = Date.now();
-      await securityStore.recordEvent({
-        ip: '203.0.113.41',
-        userAgent: 'HeadlessChrome/145',
-        method: 'POST',
-        path: '/cookie-consents',
-        statusCode: 201,
-        score: 45,
-        reasons: ['ua:headless-chrome', 'http:aborted'],
-        occurredAtMs: now,
-      });
-      await securityStore.recordEvent({
-        ip: '203.0.113.41',
-        userAgent: 'HeadlessChrome/145',
-        method: 'POST',
-        path: '/cookie-consents',
-        statusCode: 201,
-        score: 45,
-        reasons: ['ua:headless-chrome', 'http:aborted'],
-        occurredAtMs: now + 10,
-      });
+      for (const occurredAtMs of [now, now + 10]) {
+        await securityStore.recordEvent({
+          ip: '203.0.113.41',
+          userAgent: 'HeadlessChrome/145',
+          method: 'POST',
+          path: '/cookie-consents',
+          statusCode: 201,
+          score: 45,
+          reasons: ['ua:headless-chrome', 'http:aborted'],
+          occurredAtMs,
+        });
+      }
 
       const result = await controller.getSecuritySummary();
 

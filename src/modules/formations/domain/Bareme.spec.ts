@@ -123,25 +123,19 @@ describe('solutionsIdentiques', () => {
     expect(solutionsIdentiques(attendues, stockees)).toBe(false);
   });
 
-  it('refuse un piege qui ne correspond plus', () => {
+  it.each([
+    [
+      'refuse un piege qui ne correspond plus',
+      { valeur: 1300, misconception: 'autre-confusion' },
+    ],
+    [
+      'refuse un piege de meme confusion dont seule la valeur a change',
+      { valeur: 1299, misconception: 'interet-simple' },
+    ],
+  ])('%s', (_titre, piege) => {
     const stockees: Readonly<Record<string, Solution>> = {
       ...attendues,
-      'Q-CAP-03': {
-        valeur: attendues['Q-CAP-03'].valeur,
-        pieges: [{ valeur: 1300, misconception: 'autre-confusion' }],
-      },
-    };
-
-    expect(solutionsIdentiques(attendues, stockees)).toBe(false);
-  });
-
-  it('refuse un piege de meme confusion dont seule la valeur a change', () => {
-    const stockees: Readonly<Record<string, Solution>> = {
-      ...attendues,
-      'Q-CAP-03': {
-        valeur: attendues['Q-CAP-03'].valeur,
-        pieges: [{ valeur: 1299, misconception: 'interet-simple' }],
-      },
+      'Q-CAP-03': { valeur: attendues['Q-CAP-03'].valeur, pieges: [piege] },
     };
 
     expect(solutionsIdentiques(attendues, stockees)).toBe(false);

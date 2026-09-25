@@ -1,10 +1,9 @@
-import { createTransport } from 'nodemailer';
 import {
   attendreScriptEchappe,
-  createMockTransporter,
-  premierMailEnvoye,
-  retirerSmtpEnv,
-  setSmtpEnv,
+  creationDeTransportSimulee,
+  nodemailerSimule,
+  smtpSimule,
+  type MailEnvoye,
 } from '../../../../test/factories/mailer.factory';
 import type {
   CopieEtudiant,
@@ -14,15 +13,11 @@ import type {
 } from '../domain/IFormationMailer.port';
 import { FormationMailerService } from './FormationMailer.service';
 
-jest.mock('nodemailer', () => ({
-  createTransport: jest.fn(),
-}));
+jest.mock('nodemailer', () => nodemailerSimule());
 
 const LIBELLE_CONFUSION = 'Croire que la hausse et la baisse s annulent.';
 
-const mockedCreateTransport = createTransport as jest.MockedFunction<
-  typeof createTransport
->;
+const mockedCreateTransport = creationDeTransportSimulee();
 
 function buildParticipant(
   overrides: Partial<RapportParticipant> = {},
@@ -84,6 +79,15 @@ function buildReponse(
   };
 }
 
+const VOTE_CONFONDU = buildReponse({
+  questionId: 'Q-VOTE',
+  valeur: 'o3',
+  reponse: 'revenu au prix de départ',
+  correcte: false,
+  misconception: 'hausse-baisse-symetriques',
+  libelleConfusion: LIBELLE_CONFUSION,
+});
+
 function buildRapportAvecReponses(
   reponses: readonly RapportQuestion[],
   participantOverrides: Partial<RapportParticipant> = {},
@@ -94,16 +98,10 @@ function buildRapportAvecReponses(
 }
 
 describe('FormationMailerService', () => {
-  let cleanupEnv: () => void;
-  let mockTransporter: ReturnType<typeof createMockTransporter>;
-
-  afterEach(() => {
-    cleanupEnv?.();
-    mockedCreateTransport.mockReset();
-  });
+  const smtp = smtpSimule(mockedCreateTransport);
 
   it('ne fait rien quand le SMTP n est pas configure', async () => {
-    cleanupEnv = retirerSmtpEnv();
+    smtp.retirer();
 
     const service = new FormationMailerService();
     await service.sendSyntheseFormateur('prof@example.com', buildRapport());
@@ -118,35 +116,35 @@ describe('FormationMailerService', () => {
 
   describe('sendSyntheseFormateur', () => {
     beforeEach(() => {
-      mockTransporter = createMockTransporter();
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv();
+      smtp.brancher();
     });
+
+    async function synthese(rapport: RapportSession): Promise<MailEnvoye> {
+      await new FormationMailerService().sendSyntheseFormateur(
+        'prof@example.com',
+        rapport,
+      );
+      return smtp.premierMail();
+    }
 
     async function envoyerEtObtenirCsv(
       rapport: RapportSession,
     ): Promise<string> {
-      const service = new FormationMailerService();
-      await service.sendSyntheseFormateur('prof@example.com', rapport);
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      return call.attachments[0].content;
+      const mail = await synthese(rapport);
+      return String(mail.attachments?.[0].content);
     }
 
     it('envoie un mail au destinataire avec un texte et un csv joint', async () => {
-      const service = new FormationMailerService();
-      const rapport = buildRapport();
+      const mail = await synthese(buildRapport());
 
-      await service.sendSyntheseFormateur('prof@example.com', rapport);
-
-      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.to).toBe('prof@example.com');
-      expect(call.subject).toContain('4271');
-      expect(call.text).toContain('4271');
-      expect(call.html).toContain('4271');
-      expect(call.attachments).toHaveLength(1);
-      expect(call.attachments[0].filename).toBe('session-4271.csv');
-      expect(call.attachments[0].contentType).toBe('text/csv; charset=utf-8');
+      expect(smtp.transporteur().sendMail).toHaveBeenCalledTimes(1);
+      expect(mail.to).toBe('prof@example.com');
+      expect(mail.subject).toContain('4271');
+      expect(mail.text).toContain('4271');
+      expect(mail.html).toContain('4271');
+      expect(mail.attachments).toHaveLength(1);
+      expect(mail.attachments?.[0].filename).toBe('session-4271.csv');
+      expect(mail.attachments?.[0].contentType).toBe('text/csv; charset=utf-8');
     });
 
     it('produit un csv au format Excel francais : BOM, point-virgule, CRLF', async () => {
@@ -171,18 +169,9 @@ describe('FormationMailerService', () => {
     });
 
     it('ecrit dans le csv le libelle de l option choisie et celui de la confusion, jamais leurs identifiants', async () => {
-      const rapport = buildRapportAvecReponses([
-        buildReponse({
-          questionId: 'Q-VOTE',
-          valeur: 'o3',
-          reponse: 'revenu au prix de départ',
-          correcte: false,
-          misconception: 'hausse-baisse-symetriques',
-          libelleConfusion: LIBELLE_CONFUSION,
-        }),
-      ]);
-
-      const csv = await envoyerEtObtenirCsv(rapport);
+      const csv = await envoyerEtObtenirCsv(
+        buildRapportAvecReponses([VOTE_CONFONDU]),
+      );
       const cellules = csv.slice(1).split('\r\n')[1].split(';');
 
       expect({ reponse: cellules[5], confusion: cellules[7] }).toEqual({
@@ -214,107 +203,101 @@ describe('FormationMailerService', () => {
       expect(csv).not.toContain('"\'-1500"');
     });
 
-    it('neutralise une reponse commencant par un signe plus ou une arobase', async () => {
-      const rapport = buildRapportAvecReponses([
-        buildReponse({ questionId: 'Q-1', reponse: '+1+1', correcte: false }),
-        buildReponse({
-          questionId: 'Q-2',
-          reponse: '@SUM(A1)',
-          correcte: false,
-        }),
-      ]);
+    it.each([
+      ['un signe plus ou une arobase', '+1+1', '@SUM(A1)'],
+      ['un signe moins qui n est pas un nombre valide', '-=1+1', '--cmd'],
+    ])(
+      'neutralise une reponse commencant par %s',
+      async (_cas, premiere, seconde) => {
+        const rapport = buildRapportAvecReponses([
+          buildReponse({
+            questionId: 'Q-1',
+            reponse: premiere,
+            correcte: false,
+          }),
+          buildReponse({
+            questionId: 'Q-2',
+            reponse: seconde,
+            correcte: false,
+          }),
+        ]);
 
-      const csv = await envoyerEtObtenirCsv(rapport);
+        const csv = await envoyerEtObtenirCsv(rapport);
 
-      expect(csv).toContain('"\'+1+1"');
-      expect(csv).toContain('"\'@SUM(A1)"');
-    });
-
-    it('neutralise une reponse commencant par un signe moins qui n est pas un nombre valide', async () => {
-      const rapport = buildRapportAvecReponses([
-        buildReponse({ questionId: 'Q-1', reponse: '-=1+1', correcte: false }),
-        buildReponse({ questionId: 'Q-2', reponse: '--cmd', correcte: false }),
-      ]);
-
-      const csv = await envoyerEtObtenirCsv(rapport);
-
-      expect(csv).toContain('"\'-=1+1"');
-      expect(csv).toContain('"\'--cmd"');
-    });
+        expect(csv).toContain(`"'${premiere}"`);
+        expect(csv).toContain(`"'${seconde}"`);
+      },
+    );
 
     it('echappe une apostrophe dans le nom de famille d un etudiant', async () => {
-      const service = new FormationMailerService();
-      const rapport = buildRapport({
-        participants: [buildParticipant({ nom: "O'Brien" })],
-      });
+      const mail = await synthese(
+        buildRapportAvecReponses([], { nom: "O'Brien" }),
+      );
 
-      await service.sendSyntheseFormateur('prof@example.com', rapport);
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.html).not.toContain("O'Brien");
-      expect(call.html).toContain('O&#39;Brien');
+      expect(mail.html).not.toContain("O'Brien");
+      expect(mail.html).toContain('O&#39;Brien');
     });
 
     it('remonte les concepts fragiles dans le texte et le html', async () => {
-      const service = new FormationMailerService();
-      const rapport = buildRapport({ conceptsFragiles: ['interet-simple'] });
+      const mail = await synthese(
+        buildRapport({ conceptsFragiles: ['interet-simple'] }),
+      );
 
-      await service.sendSyntheseFormateur('prof@example.com', rapport);
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.text).toContain('interet-simple');
-      expect(call.html).toContain('interet-simple');
+      expect(mail.text).toContain('interet-simple');
+      expect(mail.html).toContain('interet-simple');
     });
   });
 
   describe('sendCopieEtudiant', () => {
     beforeEach(() => {
-      mockTransporter = createMockTransporter();
-      mockedCreateTransport.mockReturnValue(mockTransporter as never);
-      cleanupEnv = setSmtpEnv();
+      smtp.brancher();
     });
 
+    async function copie(
+      overrides: Partial<CopieEtudiant> = {},
+    ): Promise<MailEnvoye> {
+      await new FormationMailerService().sendCopieEtudiant(
+        buildCopie(overrides),
+      );
+      return smtp.premierMail();
+    }
+
+    const copieAvec = (participant: Partial<RapportParticipant>) =>
+      copie({ participant: buildParticipant(participant) });
+
     it('envoie la copie au participant avec un lien de revision', async () => {
-      const service = new FormationMailerService();
-      const copie = buildCopie();
+      const attendue = buildCopie();
 
-      await service.sendCopieEtudiant(copie);
+      const mail = await copie();
 
-      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.to).toBe(copie.participant.email);
-      expect(call.text).toContain(copie.lienRevision);
-      expect(call.html).toContain(copie.lienRevision);
-      expect(call.subject).toContain(copie.courseSlug);
+      expect(smtp.transporteur().sendMail).toHaveBeenCalledTimes(1);
+      expect(mail.to).toBe(attendue.participant.email);
+      expect(mail.text).toContain(attendue.lienRevision);
+      expect(mail.html).toContain(attendue.lienRevision);
+      expect(mail.subject).toContain(attendue.courseSlug);
     });
 
     it('detaille chaque reponse avec son verdict, comme le promet le message', async () => {
-      const service = new FormationMailerService();
-      const copie = buildCopie({
-        participant: buildParticipant({
-          reponses: [
-            buildReponse({
-              questionId: 'Q-CAP-03',
-              concept: 'capitalisation',
-              reponse: '1 400',
-              correcte: false,
-              misconception: 'interet-simple',
-              libelleConfusion: 'Confondre interet simple et interet compose',
-            }),
-            buildReponse({
-              questionId: 'Q-CAP-07',
-              concept: 'actualisation',
-              reponse: '1 480,24',
-              correcte: true,
-            }),
-          ],
-        }),
+      const mail = await copieAvec({
+        reponses: [
+          buildReponse({
+            questionId: 'Q-CAP-03',
+            concept: 'capitalisation',
+            reponse: '1 400',
+            correcte: false,
+            misconception: 'interet-simple',
+            libelleConfusion: 'Confondre interet simple et interet compose',
+          }),
+          buildReponse({
+            questionId: 'Q-CAP-07',
+            concept: 'actualisation',
+            reponse: '1 480,24',
+            correcte: true,
+          }),
+        ],
       });
 
-      await service.sendCopieEtudiant(copie);
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      for (const rendu of [call.text, call.html]) {
+      for (const rendu of [mail.text, mail.html]) {
         expect(rendu).toContain('Q-CAP-03');
         expect(rendu).toContain('1 400');
         expect(rendu).toContain('Confondre interet simple et interet compose');
@@ -324,30 +307,9 @@ describe('FormationMailerService', () => {
     });
 
     it('montre a l etudiant l option qu il a choisie et sa confusion par leurs libelles, jamais par leurs identifiants', async () => {
-      const service = new FormationMailerService();
+      const mail = await copieAvec({ reponses: [VOTE_CONFONDU] });
 
-      await service.sendCopieEtudiant(
-        buildCopie({
-          participant: buildParticipant({
-            reponses: [
-              buildReponse({
-                questionId: 'Q-VOTE',
-                valeur: 'o3',
-                reponse: 'revenu au prix de départ',
-                correcte: false,
-                misconception: 'hausse-baisse-symetriques',
-                libelleConfusion: LIBELLE_CONFUSION,
-              }),
-            ],
-          }),
-        }),
-      );
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0] as {
-        text: string;
-        html: string;
-      };
-      for (const rendu of [call.text, call.html]) {
+      for (const rendu of [mail.text, mail.html]) {
         expect(rendu).toContain('revenu au prix de départ');
         expect(rendu).toContain(LIBELLE_CONFUSION);
         expect(rendu).not.toContain('« o3 »');
@@ -356,24 +318,15 @@ describe('FormationMailerService', () => {
     });
 
     it('distingue une reponse juste d une reponse fausse autrement que par leur ordre', async () => {
-      const service = new FormationMailerService();
+      const mail = await copieAvec({
+        reponses: [
+          buildReponse({ questionId: 'Q-JUSTE', correcte: true }),
+          buildReponse({ questionId: 'Q-FAUSSE', correcte: false }),
+        ],
+      });
 
-      await service.sendCopieEtudiant(
-        buildCopie({
-          participant: buildParticipant({
-            reponses: [
-              buildReponse({ questionId: 'Q-JUSTE', correcte: true }),
-              buildReponse({ questionId: 'Q-FAUSSE', correcte: false }),
-            ],
-          }),
-        }),
-      );
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0] as {
-        text: string;
-      };
-      const ligneJuste = lignePortant(call.text, 'Q-JUSTE');
-      const ligneFausse = lignePortant(call.text, 'Q-FAUSSE');
+      const ligneJuste = lignePortant(mail.text, 'Q-JUSTE');
+      const ligneFausse = lignePortant(mail.text, 'Q-FAUSSE');
       expect(ligneJuste).not.toBe(ligneFausse);
       expect(ligneJuste.replace('Q-JUSTE', '')).not.toBe(
         ligneFausse.replace('Q-FAUSSE', ''),
@@ -381,45 +334,25 @@ describe('FormationMailerService', () => {
     });
 
     it('echappe une reponse d etudiant qui porte du balisage', async () => {
-      const service = new FormationMailerService();
+      const mail = await copieAvec({
+        reponses: [buildReponse({ reponse: '<img src=x onerror=alert(1)>' })],
+      });
 
-      await service.sendCopieEtudiant(
-        buildCopie({
-          participant: buildParticipant({
-            reponses: [
-              buildReponse({ reponse: '<img src=x onerror=alert(1)>' }),
-            ],
-          }),
-        }),
-      );
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.html).not.toContain('<img src=x');
-      expect(call.html).toContain('&lt;img');
+      expect(mail.html).not.toContain('<img src=x');
+      expect(mail.html).toContain('&lt;img');
     });
 
     it('echappe le prenom de l etudiant dans la copie', async () => {
-      const service = new FormationMailerService();
+      const mail = await copieAvec({ prenom: 'Bri<script>an' });
 
-      await service.sendCopieEtudiant(
-        buildCopie({
-          participant: buildParticipant({ prenom: 'Bri<script>an' }),
-        }),
-      );
-
-      attendreScriptEchappe(premierMailEnvoye(mockTransporter).html);
+      attendreScriptEchappe(mail.html);
     });
 
     it('neutralise un lien de revision hors http/https', async () => {
-      const service = new FormationMailerService();
+      const mail = await copie({ lienRevision: 'javascript:alert(1)' });
 
-      await service.sendCopieEtudiant(
-        buildCopie({ lienRevision: 'javascript:alert(1)' }),
-      );
-
-      const call = (mockTransporter.sendMail as jest.Mock).mock.calls[0][0];
-      expect(call.html).not.toContain('javascript:alert');
-      expect(call.html).toContain('href="#"');
+      expect(mail.html).not.toContain('javascript:alert');
+      expect(mail.html).toContain('href="#"');
     });
   });
 });

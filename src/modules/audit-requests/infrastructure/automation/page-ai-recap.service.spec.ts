@@ -1,7 +1,13 @@
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
+import {
+  buildAiBotsAccess,
+  buildCitationWorthiness,
+  buildPageExploree,
+  buildStructuredDataQuality,
+} from '../../../../../test/factories/audit-requests.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import { PageAiRecapService } from './page-ai-recap.service';
-import { UrlIndexabilityResult } from './url-indexability.service';
+import type { UrlIndexabilityResult } from './url-indexability.service';
 
 describe('PageAiRecapService', () => {
   const config: AuditAutomationConfig = buildAuditAutomationConfig({
@@ -11,54 +17,39 @@ describe('PageAiRecapService', () => {
     openAiApiKey: undefined,
   });
 
-  const page: UrlIndexabilityResult = {
-    url: 'https://example.com/about',
-    finalUrl: 'https://example.com/about',
-    statusCode: 200,
-    https: true,
-    redirectChain: [],
+  const page = buildPageExploree('/about', {
     ttfbMs: 120,
     totalResponseMs: 560,
     contentLength: 32000,
-    indexable: true,
     title: 'About us',
     metaDescription: 'Learn more about our services.',
-    h1Count: 1,
     h1Texts: ['About us'],
     htmlLang: 'en',
-    robotsMeta: 'index,follow',
-    xRobotsTag: null,
-    canonical: 'https://example.com/about',
-    canonicalUrls: ['https://example.com/about'],
-    canonicalCount: 1,
     responseTimeMs: 560,
     wordCount: 210,
     hasStructuredData: false,
-    openGraphTags: ['og:title'],
     openGraphTagCount: 1,
     twitterTags: ['twitter:title'],
-    detectedCmsHints: [],
-    hasAnalytics: true,
-    hasTagManager: false,
-    hasPixel: false,
-    hasCookieBanner: true,
     hasForms: false,
     ctaHints: [],
     textExcerpt:
       'We help businesses grow through technical SEO and conversion design.',
-    internalLinks: ['https://example.com/contact'],
     internalLinkCount: 1,
-    error: null,
-  };
+  });
 
-  it('returns deterministic fallback when llm is unavailable', async () => {
-    const service = new PageAiRecapService(config);
-    const result = await service.analyzePages({
-      locale: 'en',
+  const analyserSansLlm = (
+    locale: 'fr' | 'en',
+    pages: UrlIndexabilityResult[],
+  ) =>
+    new PageAiRecapService(config).analyzePages({
+      locale,
       websiteName: 'example.com',
       normalizedUrl: 'https://example.com',
-      pages: [page],
+      pages,
     });
+
+  it('returns deterministic fallback when llm is unavailable', async () => {
+    const result = await analyserSansLlm('en', [page]);
 
     expect(result.recaps).toHaveLength(1);
     expect(result.recaps[0].source).toBe('fallback');
@@ -68,45 +59,19 @@ describe('PageAiRecapService', () => {
   });
 
   it('produces a deterministic engineScores coverage in fallback mode', async () => {
-    const service = new PageAiRecapService(config);
-    const result = await service.analyzePages({
-      locale: 'en',
-      websiteName: 'example.com',
-      normalizedUrl: 'https://example.com',
-      pages: [
-        {
-          ...page,
-          aiSignals: {
-            llmsTxt: null,
-            aiBotsAccess: {
-              gptBot: 'allowed',
-              chatGptUser: 'allowed',
-              perplexityBot: 'allowed',
-              claudeBot: 'allowed',
-              googleExtended: 'allowed',
-              xRobotsNoAi: false,
-              xRobotsNoImageAi: false,
-            },
-            citationWorthiness: {
-              score: 72,
-              hasFacts: true,
-              hasSources: true,
-              hasDates: true,
-              hasAuthor: true,
-              contentDensity: 'high',
-            },
-            structuredDataQuality: {
-              score: 80,
-              total: 2,
-              types: ['Organization', 'FAQPage'],
-              googleRichResultsEligible: true,
-              aiFriendly: true,
-              invalidBlocks: [],
-            },
-          },
+    const result = await analyserSansLlm('en', [
+      {
+        ...page,
+        aiSignals: {
+          llmsTxt: null,
+          aiBotsAccess: buildAiBotsAccess(),
+          citationWorthiness: buildCitationWorthiness({ score: 72 }),
+          structuredDataQuality: buildStructuredDataQuality({
+            types: ['Organization', 'FAQPage'],
+          }),
         },
-      ],
-    });
+      },
+    ]);
 
     const recap = result.recaps[0];
     expect(recap.engineScores).toBeDefined();
@@ -123,46 +88,38 @@ describe('PageAiRecapService', () => {
   });
 
   it('flags blocked bots and non-indexable pages in the engineScores fallback', async () => {
-    const service = new PageAiRecapService(config);
-    const result = await service.analyzePages({
-      locale: 'fr',
-      websiteName: 'example.com',
-      normalizedUrl: 'https://example.com',
-      pages: [
-        {
-          ...page,
-          indexable: false,
-          aiSignals: {
-            llmsTxt: null,
-            aiBotsAccess: {
-              gptBot: 'disallowed',
-              chatGptUser: 'disallowed',
-              perplexityBot: 'disallowed',
-              claudeBot: 'disallowed',
-              googleExtended: 'disallowed',
-              xRobotsNoAi: true,
-              xRobotsNoImageAi: false,
-            },
-            citationWorthiness: {
-              score: 20,
-              hasFacts: false,
-              hasSources: false,
-              hasDates: false,
-              hasAuthor: false,
-              contentDensity: 'low',
-            },
-            structuredDataQuality: {
-              score: 10,
-              total: 0,
-              types: [],
-              googleRichResultsEligible: false,
-              aiFriendly: false,
-              invalidBlocks: [],
-            },
-          },
+    const result = await analyserSansLlm('fr', [
+      {
+        ...page,
+        indexable: false,
+        aiSignals: {
+          llmsTxt: null,
+          aiBotsAccess: buildAiBotsAccess({
+            gptBot: 'disallowed',
+            chatGptUser: 'disallowed',
+            perplexityBot: 'disallowed',
+            claudeBot: 'disallowed',
+            googleExtended: 'disallowed',
+            xRobotsNoAi: true,
+          }),
+          citationWorthiness: buildCitationWorthiness({
+            score: 20,
+            hasFacts: false,
+            hasSources: false,
+            hasDates: false,
+            hasAuthor: false,
+            contentDensity: 'low',
+          }),
+          structuredDataQuality: buildStructuredDataQuality({
+            score: 10,
+            total: 0,
+            types: [],
+            googleRichResultsEligible: false,
+            aiFriendly: false,
+          }),
         },
-      ],
-    });
+      },
+    ]);
 
     const coverage = result.recaps[0].engineScores;
     expect(coverage.google.indexable).toBe(false);

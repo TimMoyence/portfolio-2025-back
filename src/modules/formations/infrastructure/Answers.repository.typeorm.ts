@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository } from 'typeorm';
+import { LessThan, Repository, type FindOptionsOrder } from 'typeorm';
 import {
   AnswerAlreadySubmittedError,
   ReponseIntrouvableError,
@@ -11,8 +11,24 @@ import type {
   IAnswersRepository,
   QuestionTally,
 } from '../domain/IAnswers.repository';
-import { PostgresErrorClassifier } from './PostgresErrorClassifier';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationAnswerEntity } from './entities/FormationAnswer.entity';
+
+const ORDRE_DE_SOUMISSION: FindOptionsOrder<FormationAnswerEntity> = {
+  soumisLe: 'ASC',
+  id: 'ASC',
+};
+
+function correctionDe(input: CreateAnswerInput) {
+  return {
+    valeur: input.valeur,
+    correcte: input.correcte,
+    misconception: input.misconception,
+    score: input.score ?? null,
+    details: input.details ?? null,
+    dureeMs: input.dureeMs,
+  };
+}
 
 export interface TallyRow {
   questionId: string;
@@ -49,14 +65,14 @@ export function regrouperParQuestion(
 
 @Injectable()
 export class AnswersRepositoryTypeORM
-  extends PostgresErrorClassifier
+  extends DepotEnDomaine<FormationAnswerEntity, AnswerRecord>
   implements IAnswersRepository
 {
   constructor(
     @InjectRepository(FormationAnswerEntity)
-    private readonly repo: Repository<FormationAnswerEntity>,
+    repo: Repository<FormationAnswerEntity>,
   ) {
-    super();
+    super(repo);
   }
 
   async create(input: CreateAnswerInput): Promise<AnswerRecord> {
@@ -65,23 +81,15 @@ export class AnswersRepositoryTypeORM
       participantId: input.participantId,
       questionId: input.questionId,
       concept: input.concept,
-      valeur: input.valeur,
       seed: input.seed,
-      correcte: input.correcte,
-      misconception: input.misconception,
-      score: input.score ?? null,
-      details: input.details ?? null,
-      dureeMs: input.dureeMs,
+      ...correctionDe(input),
     });
-    try {
-      const saved = await this.repo.save(entity);
-      return this.toDomain(saved);
-    } catch (error) {
-      if (this.isUniqueViolation(error)) {
-        throw new AnswerAlreadySubmittedError(input.questionId);
-      }
-      throw error;
-    }
+    const saved = await this.enregistrerSansDoublon(
+      this.repo,
+      entity,
+      () => new AnswerAlreadySubmittedError(input.questionId),
+    );
+    return this.toDomain(saved);
   }
 
   async remplacer(
@@ -94,15 +102,7 @@ export class AnswersRepositoryTypeORM
         questionId: input.questionId,
         soumissions: LessThan(soumissionsMax),
       },
-      {
-        valeur: input.valeur,
-        correcte: input.correcte,
-        misconception: input.misconception,
-        score: input.score ?? null,
-        details: input.details ?? null,
-        dureeMs: input.dureeMs,
-        soumissions: () => 'soumissions + 1',
-      },
+      { ...correctionDe(input), soumissions: () => 'soumissions + 1' },
     );
     if (resultat.affected === 1) {
       return true;
@@ -120,23 +120,18 @@ export class AnswersRepositoryTypeORM
     return total > 0;
   }
 
-  async listBySession(sessionId: string): Promise<readonly AnswerRecord[]> {
-    const entities = await this.repo.find({
-      where: { sessionId },
-      order: { soumisLe: 'ASC', id: 'ASC' },
-    });
-    return entities.map((entity) => this.toDomain(entity));
+  listBySession(sessionId: string): Promise<readonly AnswerRecord[]> {
+    return this.lister({ where: { sessionId }, order: ORDRE_DE_SOUMISSION });
   }
 
-  async listerDuParticipant(
+  listerDuParticipant(
     sessionId: string,
     participantId: string,
   ): Promise<readonly AnswerRecord[]> {
-    const entities = await this.repo.find({
+    return this.lister({
       where: { sessionId, participantId },
-      order: { soumisLe: 'ASC', id: 'ASC' },
+      order: ORDRE_DE_SOUMISSION,
     });
-    return entities.map((entity) => this.toDomain(entity));
   }
 
   async tallyBySession(sessionId: string): Promise<readonly QuestionTally[]> {
@@ -156,7 +151,7 @@ export class AnswersRepositoryTypeORM
     return regrouperParQuestion(lignes);
   }
 
-  private toDomain(entity: FormationAnswerEntity): AnswerRecord {
+  protected toDomain(entity: FormationAnswerEntity): AnswerRecord {
     return {
       id: entity.id,
       sessionId: entity.sessionId,

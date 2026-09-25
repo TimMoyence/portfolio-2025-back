@@ -2,6 +2,7 @@
 import type { EnregistrementDeReponse } from '../../src/modules/formations/application/EnregistrementDeReponse';
 import type { ICatalogueCours } from '../../src/modules/formations/domain/cours/ICatalogueCours.port';
 import type { SessionRecord } from '../../src/modules/formations/domain/ISessions.repository';
+import { creerParticipationEnSeance } from '../factories/cours.factory';
 import {
   createMockAnswersRepo,
   createMockMasteryRepo,
@@ -38,12 +39,9 @@ export function monterEnregistrement<U extends EnregistrementDeReponse>(
   catalogue: ICatalogueCours,
 ): U {
   return new UseCase(
-    dependances.sessions,
-    dependances.participants,
+    creerParticipationEnSeance({ ...dependances, catalogue }),
     dependances.answers,
     dependances.mastery,
-    dependances.cache,
-    catalogue,
   );
 }
 

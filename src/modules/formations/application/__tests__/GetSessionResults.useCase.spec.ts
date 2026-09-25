@@ -11,13 +11,9 @@ import {
   buildAdministrateur,
   buildAnswerRecord,
   buildResultatQuestion,
-  createMockAnswersRepo,
-  createMockEscapeRepo,
-  createMockIncidentsRepo,
-  createMockParticipantsRepo,
-  createMockPulsesRepo,
-  createMockSessionsRepo,
+  createMockDepotsFormations,
 } from '../../../../../test/factories/formation.factory';
+import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
 import {
   SessionNotFoundError,
   SessionNotOwnedError,
@@ -35,30 +31,27 @@ const AUTRE_TEACHER_ID = 'autre-teacher-uuid';
 const PROPRIETAIRE = buildActeurFormation({ id: TEACHER_ID });
 
 describe('GetSessionResultsUseCase', () => {
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
-  let participants: ReturnType<typeof createMockParticipantsRepo>;
-  let answers: ReturnType<typeof createMockAnswersRepo>;
-  let incidents: ReturnType<typeof createMockIncidentsRepo>;
+  let depots: ReturnType<typeof createMockDepotsFormations>;
   let sut: GetSessionResultsUseCase;
 
-  beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    participants = createMockParticipantsRepo();
-    answers = createMockAnswersRepo();
-    incidents = createMockIncidentsRepo();
-    sut = new GetSessionResultsUseCase(
-      sessions,
-      participants,
-      answers,
-      incidents,
-      creerCatalogueDeTest(),
-      createMockPulsesRepo(),
-      createMockEscapeRepo(),
+  const monter = (catalogue: ICatalogueCours) =>
+    new GetSessionResultsUseCase(
+      depots.sessions,
+      depots.participants,
+      depots.answers,
+      depots.incidents,
+      catalogue,
+      depots.pulses,
+      depots.escape,
     );
+
+  beforeEach(() => {
+    depots = createMockDepotsFormations();
+    sut = monter(creerCatalogueDeTest());
   });
 
   it('rend la valeur envoyee telle quelle quand le cours de la seance est absent du catalogue', async () => {
-    answers.listBySession.mockResolvedValue([
+    depots.answers.listBySession.mockResolvedValue([
       buildAnswerRecord({ valeur: 'o2', correcte: false }),
     ]);
 
@@ -72,22 +65,16 @@ describe('GetSessionResultsUseCase', () => {
   it('lit les libelles dans la version figee a l ouverture, pas dans la derniere publiee', async () => {
     const cours = buildCoursDeTest();
     const seance = buildSeanceRepondueAuRappel({ courseVersion: 2 }, cours);
-    sessions.findById.mockResolvedValue(seance.session);
-    participants.listBySession.mockResolvedValue([seance.participant]);
-    answers.listBySession.mockResolvedValue([seance.reponse]);
-    sut = new GetSessionResultsUseCase(
-      sessions,
-      participants,
-      answers,
-      incidents,
+    depots.sessions.findById.mockResolvedValue(seance.session);
+    depots.participants.listBySession.mockResolvedValue([seance.participant]);
+    depots.answers.listBySession.mockResolvedValue([seance.reponse]);
+    sut = monter(
       creerCatalogueAVersions({
         [cours.slug]: {
           2: cours,
           3: { ...buildCoursDeClasse(2), slug: cours.slug },
         },
       }),
-      createMockPulsesRepo(),
-      createMockEscapeRepo(),
     );
 
     const rapport = await sut.execute(seance.session.id, PROPRIETAIRE);
@@ -104,11 +91,11 @@ describe('GetSessionResultsUseCase', () => {
   });
 
   it('leve une erreur si la session est introuvable', async () => {
-    sessions.findById.mockResolvedValue(null);
+    depots.sessions.findById.mockResolvedValue(null);
     await expect(sut.execute('session-uuid', PROPRIETAIRE)).rejects.toThrow(
       SessionNotFoundError,
     );
-    expect(participants.listBySession).not.toHaveBeenCalled();
+    expect(depots.participants.listBySession).not.toHaveBeenCalled();
   });
 
   it('laisse un administrateur lire les resultats d une seance qui n est pas la sienne', async () => {
@@ -124,9 +111,9 @@ describe('GetSessionResultsUseCase', () => {
         buildActeurFormation({ id: AUTRE_TEACHER_ID }),
       ),
     ).rejects.toThrow(SessionNotOwnedError);
-    expect(participants.listBySession).not.toHaveBeenCalled();
-    expect(answers.listBySession).not.toHaveBeenCalled();
-    expect(incidents.listBySession).not.toHaveBeenCalled();
+    expect(depots.participants.listBySession).not.toHaveBeenCalled();
+    expect(depots.answers.listBySession).not.toHaveBeenCalled();
+    expect(depots.incidents.listBySession).not.toHaveBeenCalled();
   });
 
   it('annonce la regle de notation appliquee aux notes du rapport', async () => {

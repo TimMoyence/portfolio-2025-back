@@ -83,6 +83,14 @@ describeDb('catalogue B2 migré', () => {
     return cours;
   };
 
+  const vuesDeLaVersionPubliee = async () => {
+    const cours = await coursDeLaVersion(VERSION_PUBLIEE);
+    return {
+      sujet: tirer(cours, 0).sujet,
+      deroule: deroulePresentateur(cours, 0),
+    };
+  };
+
   beforeAll(async () => {
     contexte = await ouvrirContexteFormations();
   }, DELAI_OUVERTURE_CONTEXTE_MS);
@@ -254,10 +262,7 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('réserve les notes au déroulé formateur', async () => {
-    const cours = await coursDeLaVersion(VERSION_PUBLIEE);
-
-    const sujet = tirer(cours, 0).sujet;
-    const deroule = deroulePresentateur(cours, 0);
+    const { sujet, deroule } = await vuesDeLaVersionPubliee();
 
     expect(sujet.ecrans.every((ecran) => !('notes' in ecran))).toBe(true);
     const notes = deroule.ecrans.flatMap((ecran) =>
@@ -275,10 +280,7 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('sert la version visuelle sans réponse attendue ni correction au poste étudiant', async () => {
-    const cours = await coursDeLaVersion(VERSION_PUBLIEE);
-
-    const sujet = tirer(cours, 0).sujet;
-    const deroule = deroulePresentateur(cours, 0);
+    const { sujet, deroule } = await vuesDeLaVersionPubliee();
     const contenuEtudiant = JSON.stringify(sujet);
     expect(sujet.ecrans).toHaveLength(NOMBRE_ECRANS);
     expect(contenuEtudiant).toContain('axisRanges');

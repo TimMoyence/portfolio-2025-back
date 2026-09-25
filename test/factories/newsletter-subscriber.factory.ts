@@ -2,6 +2,18 @@ import { NewsletterSubscriber } from '../../src/modules/newsletter/domain/Newsle
 import type { IEmailDripScheduler } from '../../src/modules/newsletter/domain/IEmailDripScheduler';
 import type { INewsletterMailer } from '../../src/modules/newsletter/domain/INewsletterMailer';
 import type { INewsletterSubscriberRepository } from '../../src/modules/newsletter/domain/INewsletterSubscriberRepository';
+import type { SubscribeNewsletterCommand } from '../../src/modules/newsletter/application/dto/SubscribeNewsletter.command';
+
+export function buildSubscribeNewsletterCommand(): SubscribeNewsletterCommand {
+  return {
+    email: 'marie@example.com',
+    firstName: 'Marie',
+    locale: 'fr',
+    sourceFormationSlug: 'ia-solopreneurs',
+    termsVersion: '2026-04-10',
+    termsAcceptedAt: new Date('2026-04-10T10:00:00Z'),
+  };
+}
 
 export function buildNewsletterSubscriber(
   overrides?: Partial<NewsletterSubscriber>,
@@ -18,11 +30,12 @@ export function buildNewsletterSubscriber(
   return subscriber;
 }
 
+export type PreparationDAbonne = (abonne: NewsletterSubscriber) => void;
+
 export function buildAbonnePersiste(
-  preparer: (abonne: NewsletterSubscriber) => void = () => undefined,
+  preparer: PreparationDAbonne = () => undefined,
 ): NewsletterSubscriber {
-  const abonne = buildNewsletterSubscriber();
-  abonne.id = 'existing-id';
+  const abonne = buildNewsletterSubscriber({ id: 'existing-id' });
   preparer(abonne);
   return abonne;
 }
@@ -52,9 +65,17 @@ export function createMockNewsletterMailer(): jest.Mocked<INewsletterMailer> {
   };
 }
 
-export function createMockEmailDripScheduler(): jest.Mocked<IEmailDripScheduler> {
+function createMockEmailDripScheduler(): jest.Mocked<IEmailDripScheduler> {
   return {
     schedule: jest.fn().mockResolvedValue(undefined),
     cancel: jest.fn().mockResolvedValue(undefined),
+  };
+}
+
+export function createNewsletterDependances() {
+  return {
+    repo: createMockNewsletterSubscriberRepo(),
+    mailer: createMockNewsletterMailer(),
+    scheduler: createMockEmailDripScheduler(),
   };
 }

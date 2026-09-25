@@ -1,30 +1,24 @@
-import { Injectable, Logger } from '@nestjs/common';
-import type { Transporter } from 'nodemailer';
-import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
+import { Injectable } from '@nestjs/common';
+import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
 import {
-  escapeHtml,
   escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
-import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
 import type { ILeadMagnetNotifier } from '../domain/ILeadMagnetNotifier';
 import type { LeadMagnetRequest } from '../domain/LeadMagnetRequest';
 
 @Injectable()
-export class LeadMagnetMailerService implements ILeadMagnetNotifier {
-  private readonly logger = new Logger(LeadMagnetMailerService.name);
-  private readonly transporter: Transporter | null;
-  private readonly from = process.env.SMTP_FROM;
+export class LeadMagnetMailerService
+  extends ExpediteurSmtp
+  implements ILeadMagnetNotifier
+{
   private readonly replyTo =
     process.env.SMTP_REPLY_TO ?? 'contact@asilidesign.fr';
   private readonly frontendUrl =
     process.env.FRONTEND_URL ?? 'https://asilidesign.fr';
 
   constructor() {
-    this.transporter = createOptionalSmtpTransporter(
-      this.logger,
-      'Lead magnet mailer',
-    );
+    super(LeadMagnetMailerService.name, 'Lead magnet mailer');
   }
 
   async sendToolkitEmail(
@@ -59,9 +53,5 @@ export class LeadMagnetMailerService implements ILeadMagnetNotifier {
         },
       ],
     });
-  }
-
-  private escapeHtml(input: string): EscapedHtml {
-    return escapeHtml(input);
   }
 }

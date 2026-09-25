@@ -1,16 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsInt,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-  ValidateIf,
-} from 'class-validator';
+import { IsString, MaxLength, MinLength, ValidateIf } from 'class-validator';
 import type { AnswerValue } from '../../domain/AnswerGrading';
-
-const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
+import { DureeDeReponse } from './duree-de-reponse.decorator';
 
 export class SubmitAnswerRequestDto {
   @ApiProperty({ example: 'Q-CAP-03' })
@@ -29,9 +20,6 @@ export class SubmitAnswerRequestDto {
   @MaxLength(200)
   valeur: AnswerValue;
 
-  @ApiProperty({ example: 42000 })
-  @IsInt()
-  @Min(0)
-  @Max(DUREE_MAX_MS)
+  @DureeDeReponse(42000)
   dureeMs: number;
 }

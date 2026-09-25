@@ -64,6 +64,24 @@ const ROUTES_FORMATEUR: readonly RouteFormateur[] = [
   { methode: 'post', chemin: `sessions/${SESSION_ID}/annotations` },
 ];
 
+const EN_TETES_REFUSES = [
+  {
+    cas: 'avec un jeton invalide',
+    enTete: 'Authorization',
+    valeur: 'Bearer jeton-forge',
+  },
+  {
+    cas: 'T1 · a un jeton formateur porte par cookie seul',
+    enTete: 'Cookie',
+    valeur: `access_token=${JETON_FORMATEUR}; Authorization=Bearer%20${JETON_FORMATEUR}`,
+  },
+  {
+    cas: 'T1 · a un schema d autorisation autre que Bearer',
+    enTete: 'Authorization',
+    valeur: `Basic ${JETON_FORMATEUR}`,
+  },
+] as const;
+
 function payload(roles: readonly string[]): JwtPayload {
   return {
     sub: FORMATEUR_ID,
@@ -142,41 +160,15 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
     },
   );
 
-  it.each(ROUTES_FORMATEUR)(
-    'refuse en 401 $methode $chemin avec un jeton invalide',
-    async (route) => {
-      const reponse = await appel(route).set(
-        'Authorization',
-        'Bearer jeton-forge',
-      );
+  it.each(
+    ROUTES_FORMATEUR.flatMap((route) =>
+      EN_TETES_REFUSES.map((refus) => ({ ...route, ...refus })),
+    ),
+  )('refuse en 401 $methode $chemin $cas', async (cas) => {
+    const reponse = await appel(cas).set(cas.enTete, cas.valeur);
 
-      expect(reponse.status).toBe(NON_AUTORISE);
-    },
-  );
-
-  it.each(ROUTES_FORMATEUR)(
-    'T1 · refuse en 401 $methode $chemin a un jeton formateur porte par cookie seul',
-    async (route) => {
-      const reponse = await appel(route).set(
-        'Cookie',
-        `access_token=${JETON_FORMATEUR}; Authorization=Bearer%20${JETON_FORMATEUR}`,
-      );
-
-      expect(reponse.status).toBe(NON_AUTORISE);
-    },
-  );
-
-  it.each(ROUTES_FORMATEUR)(
-    'T1 · refuse en 401 $methode $chemin a un schema d autorisation autre que Bearer',
-    async (route) => {
-      const reponse = await appel(route).set(
-        'Authorization',
-        `Basic ${JETON_FORMATEUR}`,
-      );
-
-      expect(reponse.status).toBe(NON_AUTORISE);
-    },
-  );
+    expect(reponse.status).toBe(NON_AUTORISE);
+  });
 
   it.each(ROUTES_FORMATEUR)(
     'refuse en 403 $methode $chemin a un compte sans role formateur',

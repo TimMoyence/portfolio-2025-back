@@ -1,22 +1,14 @@
 import { performance } from 'node:perf_hooks';
-import type { DataSource } from 'typeorm';
-import { ProjectsRepositoryTypeORM } from '../src/modules/projects/infrastructure/Projects.repository.typeORM';
 import { ProjectsEntity } from '../src/modules/projects/infrastructure/entities/Projects.entity';
-import { ProjectsTranslationsEntity } from '../src/modules/projects/infrastructure/entities/ProjectsTranslations.entity';
 import { ProjectType } from '../src/modules/projects/infrastructure/enums/ProjectType.enum';
 import type { PublishableStatus } from '../src/common/domain/types/publishable-status';
-import { RedirectsRepositoryTypeORM } from '../src/modules/redirects/infrastructure/Redirects.repository.typeORM';
 import { RedirectsEntity } from '../src/modules/redirects/infrastructure/entities/Redirects.entity';
-import { ServicesRepositoryTypeORM } from '../src/modules/services/infrastructure/Services.repository.typeORM';
 import { ServicesEntity } from '../src/modules/services/infrastructure/entities/Services.entity';
-import { ServicesFaqEntity } from '../src/modules/services/infrastructure/entities/ServicesFaq.entity';
-import { ServicesFaqTranslationEntity } from '../src/modules/services/infrastructure/entities/ServicesFaqTranslation.entity';
-import { ServicesTranslationEntity } from '../src/modules/services/infrastructure/entities/ServicesTranslation.entity';
 import {
   describeDb,
   destroyDbIntegrationDataSource,
-  initDbIntegrationDataSource,
 } from './helpers/db-integration-datasource';
+import { ouvrirBaseLegacy, type BaseLegacy } from './helpers/legacy-db';
 
 jest.setTimeout(120_000);
 
@@ -82,47 +74,28 @@ function expectLatencyBudget(latencies: number[]): void {
 }
 
 describeDb('Legacy listing performance budgets (db integration)', () => {
-  let dataSource: DataSource;
-  let servicesRepository: ServicesRepositoryTypeORM;
-  let projectsRepository: ProjectsRepositoryTypeORM;
-  let redirectsRepository: RedirectsRepositoryTypeORM;
+  let base: BaseLegacy;
 
   beforeAll(async () => {
-    dataSource = await initDbIntegrationDataSource([
-      ServicesEntity,
-      ServicesTranslationEntity,
-      ServicesFaqEntity,
-      ServicesFaqTranslationEntity,
-      ProjectsEntity,
-      ProjectsTranslationsEntity,
-      RedirectsEntity,
-    ]);
-
-    servicesRepository = new ServicesRepositoryTypeORM(
-      dataSource.getRepository(ServicesEntity),
-    );
-    projectsRepository = new ProjectsRepositoryTypeORM(
-      dataSource.getRepository(ProjectsEntity),
-    );
-    redirectsRepository = new RedirectsRepositoryTypeORM(
-      dataSource.getRepository(RedirectsEntity),
-    );
+    base = await ouvrirBaseLegacy();
+    const { dataSource } = base;
 
     const serviceRows: Array<Partial<ServicesEntity>> = [];
     const projectRows: Array<Partial<ProjectsEntity>> = [];
     const redirectRows: Array<Partial<RedirectsEntity>> = [];
 
     for (let i = 0; i < PERF_DATASET_SIZE; i += 1) {
+      const publication = {
+        status: (i % 3 === 0 ? 'DRAFT' : 'PUBLISHED') as PublishableStatus,
+        order: i,
+        updatedOrCreatedBy: null,
+      };
+
       serviceRows.push({
         slug: `perf-service-${i}`,
         name: `Perf Service ${i}`,
         icon: undefined,
-        status:
-          i % 3 === 0
-            ? ('DRAFT' as PublishableStatus)
-            : ('PUBLISHED' as PublishableStatus),
-        order: i,
-        updatedOrCreatedBy: null,
+        ...publication,
       });
 
       projectRows.push({
@@ -133,12 +106,7 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
         coverImage: `/images/perf-project-${i}.webp`,
         gallery: [`/images/perf-project-${i}-1.webp`],
         stack: ['nestjs', 'postgres'],
-        status:
-          i % 3 === 0
-            ? ('DRAFT' as PublishableStatus)
-            : ('PUBLISHED' as PublishableStatus),
-        order: i,
-        updatedOrCreatedBy: null,
+        ...publication,
       });
 
       redirectRows.push({
@@ -162,12 +130,12 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
   });
 
   afterAll(async () => {
-    await destroyDbIntegrationDataSource(dataSource);
+    await destroyDbIntegrationDataSource(base?.dataSource);
   });
 
   it('keeps services list pagination/filter/sort within p95/p99 budget', async () => {
     const latencies = await measureLatencies(PERF_SAMPLE_SIZE, (iteration) =>
-      servicesRepository.findAll({
+      base.services.findAll({
         page: (iteration % 5) + 1,
         limit: 20,
         sortBy: iteration % 2 === 0 ? 'order' : 'createdAt',
@@ -181,7 +149,7 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
 
   it('keeps projects list pagination/filter/sort within p95/p99 budget', async () => {
     const latencies = await measureLatencies(PERF_SAMPLE_SIZE, (iteration) =>
-      projectsRepository.findAll({
+      base.projects.findAll({
         page: (iteration % 5) + 1,
         limit: 20,
         sortBy: iteration % 2 === 0 ? 'type' : 'order',
@@ -196,7 +164,7 @@ describeDb('Legacy listing performance budgets (db integration)', () => {
 
   it('keeps redirects list pagination/filter/sort within p95/p99 budget', async () => {
     const latencies = await measureLatencies(PERF_SAMPLE_SIZE, (iteration) =>
-      redirectsRepository.findAll({
+      base.redirects.findAll({
         page: (iteration % 5) + 1,
         limit: 20,
         sortBy: iteration % 2 === 0 ? 'createdAt' : 'clicks',

@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { randomUUID } from 'crypto';
-import { Repository } from 'typeorm';
+import { DepotDeRequetes } from '../../../common/infrastructure/typeorm/DepotDeRequetes';
 import {
   AuditSnapshot,
   AuditSummarySnapshot,
@@ -35,33 +33,28 @@ const UPDATABLE_STATE_KEYS = [
 ] as const satisfies ReadonlyArray<keyof UpdateAuditStateInput>;
 
 @Injectable()
-export class AuditRequestsRepositoryTypeORM implements IAuditRequestsRepository {
-  constructor(
-    @InjectRepository(AuditRequestEntity)
-    private readonly repo: Repository<AuditRequestEntity>,
-  ) {}
-
+export class AuditRequestsRepositoryTypeORM
+  extends DepotDeRequetes(AuditRequestEntity)
+  implements IAuditRequestsRepository
+{
   async create(data: AuditRequest): Promise<AuditRequestResponse> {
-    const entity = this.repo.create({
-      websiteName: data.websiteName,
-      contactMethod: data.contactMethod,
-      contactValue: data.contactValue,
-      done: false,
-      processingStatus: 'PENDING',
-      progress: 0,
-      step: 'Queued',
-      locale: resolveAuditLocale(data.locale),
-      ip: data.ip ?? undefined,
-      userAgent: data.userAgent ?? undefined,
-      referer: data.referer ?? undefined,
-      requestId: randomUUID(),
-      redirectChain: [],
-      keyChecks: {},
-      quickWins: [],
-      pillarScores: {},
-    });
-
-    await this.repo.save(entity);
+    const entity = await this.consigner(
+      {
+        websiteName: data.websiteName,
+        contactMethod: data.contactMethod,
+        contactValue: data.contactValue,
+        done: false,
+        processingStatus: 'PENDING',
+        progress: 0,
+        step: 'Queued',
+        locale: resolveAuditLocale(data.locale),
+        redirectChain: [],
+        keyChecks: {},
+        quickWins: [],
+        pillarScores: {},
+      },
+      data,
+    );
 
     return {
       message: 'Audit request created successfully.',

@@ -1,4 +1,4 @@
-import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
 import type {
   EtatParticipant,
   EtatPulse,
@@ -6,19 +6,13 @@ import type {
 import { ETATS_PULSE } from '../../../domain/contrats/pilotage';
 import type { ValeurReponse } from '../../../domain/contrats/resultats';
 import {
-  ProductionClassementDto,
-  ProductionFeuilleDto,
-  ProductionNeSaitPasDto,
-  ProductionTableauDto,
+  MODELES_DE_PRODUCTION,
+  SCHEMAS_DE_PRODUCTION,
 } from './submit-production.request.dto';
+import { ParticipantDeSeanceResponseDto } from '../participant-de-seance.response.dto';
 import { DetailVerdictResponseDto } from './verdict-production.response.dto';
 
-@ApiExtraModels(
-  ProductionFeuilleDto,
-  ProductionTableauDto,
-  ProductionClassementDto,
-  ProductionNeSaitPasDto,
-)
+@ApiExtraModels(...MODELES_DE_PRODUCTION)
 export class ReponseParticipantResponseDto {
   @ApiProperty({ example: 'b2-01-a4-feuille-canaux' })
   questionId: string;
@@ -26,14 +20,7 @@ export class ReponseParticipantResponseDto {
   @ApiProperty({
     description:
       'Valeur enregistree : nombre, texte ou identifiant d option, « je ne sais pas » ou production',
-    oneOf: [
-      { type: 'number' },
-      { type: 'string' },
-      { $ref: getSchemaPath(ProductionFeuilleDto) },
-      { $ref: getSchemaPath(ProductionTableauDto) },
-      { $ref: getSchemaPath(ProductionClassementDto) },
-      { $ref: getSchemaPath(ProductionNeSaitPasDto) },
-    ],
+    oneOf: [{ type: 'number' }, { type: 'string' }, ...SCHEMAS_DE_PRODUCTION],
   })
   valeur: ValeurReponse;
 
@@ -108,13 +95,10 @@ export class RappelsServisResponseDto {
   questionIds: string[];
 }
 
-export class EtatParticipantResponseDto implements EtatParticipant {
-  @ApiProperty({ format: 'uuid' })
-  sessionId: string;
-
-  @ApiProperty({ format: 'uuid' })
-  participantId: string;
-
+export class EtatParticipantResponseDto
+  extends ParticipantDeSeanceResponseDto
+  implements EtatParticipant
+{
   @ApiProperty({ example: 7 })
   revision: number;
 

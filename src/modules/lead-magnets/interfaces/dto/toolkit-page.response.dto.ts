@@ -3,23 +3,10 @@ import type { ToolkitContent } from '../../domain/ToolkitContent';
 
 export class ToolkitPageResponseDto {
   @ApiProperty()
-  recap: {
-    firstName: string;
-    aiLevel: string | null;
-    sector: string | null;
-    budgetTier: string | null;
-  };
+  recap: ToolkitContent['recap'];
 
-  @ApiProperty()
-  cheatsheet: Array<{
-    tool: string;
-    category: string;
-    price: string;
-    url: string;
-    tip: string;
-    decision: string;
-    alreadyUsed: boolean;
-  }>;
+  @ApiProperty({ type: Array })
+  cheatsheet: ToolkitContent['cheatsheet'];
 
   @ApiProperty()
   prompts: Array<{
@@ -30,29 +17,11 @@ export class ToolkitPageResponseDto {
     tool: string;
   }>;
 
-  @ApiProperty()
-  workflows: Array<{
-    title: string;
-    description: string;
-    setupTime: string;
-    monthlyCost: number;
-    steps: Array<{
-      step: number;
-      action: string;
-      tool: string;
-      detail: string;
-    }>;
-    tools: string[];
-  }>;
+  @ApiProperty({ type: Array })
+  workflows: ToolkitContent['workflows'];
 
-  @ApiProperty()
-  templates: Array<{
-    name: string;
-    platform: string;
-    url: string;
-    description: string;
-    minBudget: number;
-  }>;
+  @ApiProperty({ type: Array })
+  templates: ToolkitContent['templates'];
 
   @ApiPropertyOptional()
   generatedPrompt: string | null;

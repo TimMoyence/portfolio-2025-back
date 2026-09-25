@@ -1,6 +1,7 @@
 import { join } from 'path';
 import type { DataSource } from 'typeorm';
 import {
+  attendreSchemaAligneSurLesEntites,
   describeDb,
   destroyDbIntegrationDataSource,
   initBaseMigree,
@@ -25,8 +26,6 @@ describeDb('Schema de la base migree face aux entites', () => {
   });
 
   it('ne laisse a migration:generate aucune requete a proposer', async () => {
-    const derive = await dataSource.driver.createSchemaBuilder().log();
-
-    expect(derive.upQueries.map((requete) => requete.query)).toEqual([]);
+    await attendreSchemaAligneSurLesEntites(dataSource);
   });
 });

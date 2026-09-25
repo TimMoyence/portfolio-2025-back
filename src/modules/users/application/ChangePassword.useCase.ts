@@ -1,26 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
-import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
-import type { IUsersRepository } from '../domain/IUsers.repository';
-import { USERS_REPOSITORY } from '../domain/token';
 import { User } from '../domain/User';
+import { CasDUsageMotDePasse } from './CasDUsageUtilisateurs';
 import type { ChangePasswordCommand } from './dto/ChangePassword.command';
-import { PasswordService } from './services/PasswordService';
 
 @Injectable()
-export class ChangePasswordUseCase {
-  constructor(
-    @Inject(USERS_REPOSITORY)
-    private readonly repo: IUsersRepository,
-    private readonly passwordService: PasswordService,
-  ) {}
-
+export class ChangePasswordUseCase extends CasDUsageMotDePasse {
   async execute(dto: ChangePasswordCommand): Promise<User> {
-    const user = await this.repo.findById(dto.userId);
-
-    if (!user) {
-      throw new UserNotFoundError(`User with id ${dto.userId} was not found`);
-    }
+    const user = await this.utilisateurExistant(dto.userId);
 
     if (!user.isActive) {
       throw new InvalidCredentialsError('Inactive user cannot change password');

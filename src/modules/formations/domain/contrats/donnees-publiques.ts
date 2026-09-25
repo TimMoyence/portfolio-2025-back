@@ -1,9 +1,4 @@
-import type {
-  AuMoinsUn,
-  Modalite,
-  QuestionLibre,
-  RegimeVerrou,
-} from '../cours/Cours';
+import type { CasProfessionnel, Modalite, RegimeVerrou } from '../cours/Cours';
 import type { OrdreQuestions, ProprietesExposition } from './cours';
 
 export interface MetadonneesBrique {
@@ -186,13 +181,8 @@ type QuestionDeQuestionnaire =
 export interface DonneesParBrique {
   readonly 'fp-story': { readonly recit: StoryRecit };
   readonly 'fp-pro': {
-    readonly cas: {
+    readonly cas: CasProfessionnel & {
       readonly id: string;
-      readonly metier: string;
-      readonly situation: string;
-      readonly geste: string;
-      readonly consequence: string | null;
-      readonly questionsLibres?: AuMoinsUn<QuestionLibre>;
       readonly metadonnees: MetadonneesBrique;
     };
   };

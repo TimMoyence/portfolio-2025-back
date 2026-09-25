@@ -14,6 +14,7 @@ import {
 } from 'class-validator';
 import type { ValidatorConstraintInterface } from 'class-validator';
 import { MAX_INCIDENTS_PAR_ENVOI } from '../../domain/IncidentType';
+import { entreesBornees } from './objet-plat';
 
 const ENTREES_MAX_DU_CONTEXTE = 10;
 const LONGUEUR_MAX_CLE_DU_CONTEXTE = 40;
@@ -32,22 +33,13 @@ function valeurScalaireBornee(valeur: unknown): boolean {
 @ValidatorConstraint({ name: 'contexteDIncidentBorne', async: false })
 class ContexteDIncidentBorne implements ValidatorConstraintInterface {
   validate(valeur: unknown): boolean {
-    if (
-      typeof valeur !== 'object' ||
-      valeur === null ||
-      Array.isArray(valeur)
-    ) {
-      return false;
-    }
-    const entrees = Object.entries(valeur);
     return (
-      entrees.length <= ENTREES_MAX_DU_CONTEXTE &&
-      entrees.every(
+      entreesBornees(valeur, ENTREES_MAX_DU_CONTEXTE)?.every(
         ([cle, contenu]) =>
           cle.length > 0 &&
           cle.length <= LONGUEUR_MAX_CLE_DU_CONTEXTE &&
           valeurScalaireBornee(contenu),
-      )
+      ) ?? false
     );
   }
 

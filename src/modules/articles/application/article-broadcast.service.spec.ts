@@ -1,6 +1,6 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import { buildArticleRecord } from '../../../../test/factories/article.factory';
 import type { ArticlesRepository } from './articles.repository';
-import type { ArticleRecord } from './articles.repository';
 import { ArticleBroadcastService } from './article-broadcast.service';
 import { ArticleModerationService } from './article-moderation.service';
 import {
@@ -10,33 +10,10 @@ import {
 
 const NOW = new Date('2026-09-23T07:45:00.000Z');
 
-function article(overrides: Partial<ArticleRecord> = {}): ArticleRecord {
-  return {
-    id: 'record-1',
-    articleId: 'morning-brief-2026-09-23-fr',
-    slug: 'morning-brief-2026-09-23',
-    locale: 'fr',
-    status: 'published',
-    title: 'Veille IA du 23 septembre',
-    excerpt: 'Les faits IA du jour, sourcés.',
-    contentMarkdown: '# Veille',
-    readingTimeMinutes: 6,
-    tags: [],
-    sections: [],
-    sources: [],
-    provenance: {},
-    seo: {},
-    publishedAt: new Date('2026-09-23T04:15:00.000Z'),
-    updatedAt: new Date('2026-09-23T04:15:00.000Z'),
-    contentSha256: 'a'.repeat(64),
-    ...overrides,
-  };
-}
-
 function setup(options: { sendAfter?: Date } = {}) {
   const store = new InMemoryArticleBroadcasts();
   const mailer = new RecordingBroadcastMailer();
-  store.articles.set('record-1', article());
+  store.articles.set('record-1', buildArticleRecord());
   store.broadcasts.set('broadcast-1', {
     id: 'broadcast-1',
     articleRecordId: 'record-1',
@@ -71,10 +48,10 @@ function setup(options: { sendAfter?: Date } = {}) {
   return { store, mailer, subscribe, service, moderation };
 }
 
-const withEnv = async (
+const withEnv = async <T>(
   values: Record<string, string | undefined>,
-  run: () => Promise<void>,
-) => {
+  run: () => Promise<T>,
+): Promise<T> => {
   const previous = Object.fromEntries(
     Object.keys(values).map((key) => [key, process.env[key]]),
   );
@@ -83,7 +60,7 @@ const withEnv = async (
     if (value === undefined) delete process.env[key];
   }
   try {
-    await run();
+    return await run();
   } finally {
     for (const [key, value] of Object.entries(previous)) {
       if (value === undefined) delete process.env[key];
@@ -92,22 +69,24 @@ const withEnv = async (
   }
 };
 
-const enabled = (run: () => Promise<void>) =>
-  withEnv(
-    { ARTICLE_BROADCAST_ENABLED: 'true', ARTICLE_BROADCAST_BATCH_SIZE: '50' },
-    run,
-  );
+const DIFFUSION_ACTIVE = {
+  ARTICLE_BROADCAST_ENABLED: 'true',
+  ARTICLE_BROADCAST_BATCH_SIZE: '50',
+};
+
+const executer = (
+  service: ArticleBroadcastService,
+  env: Record<string, string | undefined> = DIFFUSION_ACTIVE,
+) => withEnv(env, () => service.runDue(NOW));
 
 describe('ArticleBroadcastService.runDue', () => {
   it('ne réclame rien tant que la diffusion n est pas activée', async () => {
     const { store, subscribe, service, mailer } = setup();
     subscribe('s1', 'a@example.com');
 
-    await withEnv({ ARTICLE_BROADCAST_ENABLED: undefined }, async () => {
-      await expect(service.runDue(NOW)).resolves.toEqual({
-        status: 'disabled',
-      });
-    });
+    await expect(
+      executer(service, { ARTICLE_BROADCAST_ENABLED: undefined }),
+    ).resolves.toEqual({ status: 'disabled' });
 
     expect(mailer.sent).toEqual([]);
     expect(store.broadcasts.get('broadcast-1')?.status).toBe('scheduled');
@@ -117,11 +96,7 @@ describe('ArticleBroadcastService.runDue', () => {
     const { store, service, mailer } = setup();
     mailer.enabled = false;
 
-    await enabled(async () => {
-      await expect(service.runDue(NOW)).resolves.toEqual({
-        status: 'disabled',
-      });
-    });
+    await expect(executer(service)).resolves.toEqual({ status: 'disabled' });
 
     expect(store.broadcasts.get('broadcast-1')?.status).toBe('scheduled');
   });
@@ -132,9 +107,7 @@ describe('ArticleBroadcastService.runDue', () => {
     });
     subscribe('s1', 'a@example.com');
 
-    await enabled(async () => {
-      await expect(service.runDue(NOW)).resolves.toEqual({ status: 'idle' });
-    });
+    await expect(executer(service)).resolves.toEqual({ status: 'idle' });
 
     expect(mailer.sent).toEqual([]);
   });
@@ -148,13 +121,11 @@ describe('ArticleBroadcastService.runDue', () => {
     subscribe('s5', 'pending@example.com', { status: 'pending' });
     subscribe('s6', 'gone@example.com', { status: 'unsubscribed' });
 
-    await enabled(async () => {
-      await expect(service.runDue(NOW)).resolves.toEqual({
-        status: 'sent',
-        broadcastId: 'broadcast-1',
-        sent: 2,
-        failed: 0,
-      });
+    await expect(executer(service)).resolves.toEqual({
+      status: 'sent',
+      broadcastId: 'broadcast-1',
+      sent: 2,
+      failed: 0,
     });
 
     expect(mailer.sent).toEqual(['fr@example.com', 'frfr@example.com']);
@@ -182,9 +153,7 @@ describe('ArticleBroadcastService.runDue', () => {
       return pending;
     };
 
-    await enabled(async () => {
-      await service.runDue(NOW);
-    });
+    await executer(service);
 
     expect(mailer.sent).toEqual(['b@example.com']);
   });
@@ -195,12 +164,10 @@ describe('ArticleBroadcastService.runDue', () => {
     subscribe('s2', 'ok@example.com');
     mailer.failingEmails.add('bounce@example.com');
 
-    await enabled(async () => {
-      await expect(service.runDue(NOW)).resolves.toMatchObject({
-        status: 'sent',
-        sent: 1,
-        failed: 1,
-      });
+    await expect(executer(service)).resolves.toMatchObject({
+      status: 'sent',
+      sent: 1,
+      failed: 1,
     });
 
     expect(mailer.sent).toEqual(['ok@example.com']);
@@ -216,58 +183,53 @@ describe('ArticleBroadcastService.runDue', () => {
       subscribe(`s${index}`, `user${index}@example.com`);
     }
 
-    await withEnv(
-      { ARTICLE_BROADCAST_ENABLED: 'true', ARTICLE_BROADCAST_BATCH_SIZE: '2' },
-      async () => {
-        await expect(service.runDue(NOW)).resolves.toMatchObject({
-          status: 'partial',
-          sent: 2,
-        });
-        expect(store.broadcasts.get('broadcast-1')).toMatchObject({
-          status: 'sending',
-          lockedUntil: NOW,
-          sentCount: 2,
-        });
-        await expect(service.runDue(NOW)).resolves.toMatchObject({
-          status: 'sent',
-          sent: 1,
-        });
-      },
-    );
+    const lotDeDeux = {
+      ...DIFFUSION_ACTIVE,
+      ARTICLE_BROADCAST_BATCH_SIZE: '2',
+    };
+
+    await expect(executer(service, lotDeDeux)).resolves.toMatchObject({
+      status: 'partial',
+      sent: 2,
+    });
+    expect(store.broadcasts.get('broadcast-1')).toMatchObject({
+      status: 'sending',
+      lockedUntil: NOW,
+      sentCount: 2,
+    });
+    await expect(executer(service, lotDeDeux)).resolves.toMatchObject({
+      status: 'sent',
+      sent: 1,
+    });
 
     expect(mailer.sent).toHaveLength(3);
     expect(store.broadcasts.get('broadcast-1')?.sentCount).toBe(3);
   });
 
-  it('annule la diffusion d un article retiré entre-temps', async () => {
-    const { store, subscribe, service, mailer } = setup();
-    subscribe('s1', 'a@example.com');
-    store.articles.get('record-1')!.status = 'withdrawn';
-
-    await enabled(async () => {
-      await expect(service.runDue(NOW)).resolves.toMatchObject({
-        status: 'cancelled',
-      });
-    });
-
-    expect(mailer.sent).toEqual([]);
-    expect(store.broadcasts.get('broadcast-1')?.status).toBe('cancelled');
-  });
-
-  it('expire une diffusion jamais commencée restée en attente plus de 24 h', async () => {
-    const { store, subscribe, service, mailer } = setup({
+  it.each([
+    {
+      cas: 'annule la diffusion d un article retiré entre-temps',
+      statut: 'cancelled',
+      sendAfter: undefined,
+      retirer: true,
+    },
+    {
+      cas: 'expire une diffusion jamais commencée restée en attente plus de 24 h',
+      statut: 'expired',
       sendAfter: new Date(NOW.getTime() - 25 * 3_600_000),
-    });
+      retirer: false,
+    },
+  ])('$cas', async ({ statut, sendAfter, retirer }) => {
+    const { store, subscribe, service, mailer } = setup({ sendAfter });
     subscribe('s1', 'a@example.com');
+    if (retirer) {
+      store.articles.get('record-1')!.status = 'withdrawn';
+    }
 
-    await enabled(async () => {
-      await expect(service.runDue(NOW)).resolves.toMatchObject({
-        status: 'expired',
-      });
-    });
+    await expect(executer(service)).resolves.toMatchObject({ status: statut });
 
     expect(mailer.sent).toEqual([]);
-    expect(store.broadcasts.get('broadcast-1')?.status).toBe('expired');
+    expect(store.broadcasts.get('broadcast-1')?.status).toBe(statut);
   });
 });
 

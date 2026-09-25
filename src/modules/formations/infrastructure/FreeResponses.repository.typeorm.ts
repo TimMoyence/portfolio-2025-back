@@ -6,30 +6,37 @@ import type {
   IFreeResponsesRepository,
   SaveFreeResponseInput,
 } from '../domain/IFreeResponses.repository';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationFreeResponseEntity } from './entities/FormationFreeResponse.entity';
 
 const CLE_REPONSE_LIBRE = ['sessionId', 'participantId', 'activityId'];
 
+function ligneEnregistree(input: SaveFreeResponseInput) {
+  return {
+    sessionId: input.sessionId,
+    participantId: input.participantId,
+    screenId: input.screenId,
+    activityId: input.activityId,
+    response: input.response,
+    dureeMs: input.dureeMs,
+    status: 'enregistre' as const,
+  };
+}
+
 @Injectable()
-export class FreeResponsesRepositoryTypeORM implements IFreeResponsesRepository {
+export class FreeResponsesRepositoryTypeORM
+  extends DepotEnDomaine<FormationFreeResponseEntity, FreeResponseRecord>
+  implements IFreeResponsesRepository
+{
   constructor(
     @InjectRepository(FormationFreeResponseEntity)
-    private readonly repo: Repository<FormationFreeResponseEntity>,
-  ) {}
+    repo: Repository<FormationFreeResponseEntity>,
+  ) {
+    super(repo);
+  }
 
   async save(input: SaveFreeResponseInput): Promise<void> {
-    await this.repo.upsert(
-      {
-        sessionId: input.sessionId,
-        participantId: input.participantId,
-        screenId: input.screenId,
-        activityId: input.activityId,
-        response: input.response,
-        dureeMs: input.dureeMs,
-        status: 'enregistre',
-      },
-      CLE_REPONSE_LIBRE,
-    );
+    await this.repo.upsert(ligneEnregistree(input), CLE_REPONSE_LIBRE);
   }
 
   async enregistrerTentativeDeDefi(
@@ -39,67 +46,46 @@ export class FreeResponsesRepositoryTypeORM implements IFreeResponsesRepository 
       .createQueryBuilder()
       .insert()
       .into(FormationFreeResponseEntity)
-      .values({
-        sessionId: input.sessionId,
-        participantId: input.participantId,
-        screenId: input.screenId,
-        activityId: input.activityId,
-        response: input.response,
-        premiereReponse: input.response,
-        dureeMs: input.dureeMs,
-        status: 'enregistre',
-      })
+      .values({ ...ligneEnregistree(input), premiereReponse: input.response })
       .orUpdate(
         ['response', 'duree_ms'],
         ['session_id', 'participant_id', 'activity_id'],
       )
       .execute();
-    const ligne = await this.repo.findOne({
-      where: {
-        participantId: input.participantId,
-        activityId: input.activityId,
-      },
-    });
+    const ligne = await this.trouverParActivite(
+      input.participantId,
+      input.activityId,
+    );
     if (!ligne) {
       throw new Error(
         `Tentative de défi introuvable apres ecriture: ${input.activityId}`,
       );
     }
-    return this.toDomain(ligne);
+    return ligne;
   }
 
-  async trouverParActivite(
+  trouverParActivite(
     participantId: string,
     activityId: string,
   ): Promise<FreeResponseRecord | null> {
-    const ligne = await this.repo.findOne({
-      where: { participantId, activityId },
-    });
-    return ligne ? this.toDomain(ligne) : null;
+    return this.trouver({ participantId, activityId });
   }
 
-  async listerDuParticipant(
+  listerDuParticipant(
     sessionId: string,
     participantId: string,
   ): Promise<readonly FreeResponseRecord[]> {
-    const rows = await this.repo.find({
+    return this.lister({
       where: { sessionId, participantId },
       order: { submittedAt: 'ASC' },
     });
-    return rows.map((row) => this.toDomain(row));
   }
 
-  async listBySession(
-    sessionId: string,
-  ): Promise<readonly FreeResponseRecord[]> {
-    const rows = await this.repo.find({
-      where: { sessionId },
-      order: { submittedAt: 'ASC' },
-    });
-    return rows.map((row) => this.toDomain(row));
+  listBySession(sessionId: string): Promise<readonly FreeResponseRecord[]> {
+    return this.lister({ where: { sessionId }, order: { submittedAt: 'ASC' } });
   }
 
-  private toDomain(row: FormationFreeResponseEntity): FreeResponseRecord {
+  protected toDomain(row: FormationFreeResponseEntity): FreeResponseRecord {
     return {
       id: row.id,
       sessionId: row.sessionId,

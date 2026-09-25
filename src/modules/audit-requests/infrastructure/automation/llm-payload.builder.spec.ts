@@ -92,14 +92,13 @@ describe('compactText', () => {
 });
 
 describe('payloadBytes', () => {
-  it('retourne la taille en octets du payload JSON', () => {
-    const payload = { key: 'value' };
-    const expected = Buffer.byteLength(JSON.stringify(payload), 'utf8');
-    expect(payloadBytes(payload)).toBe(expected);
-  });
-
-  it('gere correctement les caracteres multi-octets (UTF-8)', () => {
-    const payload = { text: 'cafe\u0301' };
+  it.each([
+    ['retourne la taille en octets du payload JSON', { key: 'value' }],
+    [
+      'gere correctement les caracteres multi-octets (UTF-8)',
+      { text: 'cafe\u0301' },
+    ],
+  ])('%s', (_titre, payload) => {
     const expected = Buffer.byteLength(JSON.stringify(payload), 'utf8');
     expect(payloadBytes(payload)).toBe(expected);
   });

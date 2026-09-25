@@ -1,3 +1,5 @@
+import { installerVariables } from './environnement';
+
 export interface EnvFormations {
   readonly secret: string;
   readonly syntheseA: string;
@@ -20,14 +22,5 @@ export function installerEnvFormations(env: EnvFormations): void {
 export function installerSecretDeJalons(
   secret = 'secret-de-test-des-jalons-assez-long-1234',
 ): void {
-  let secretInitial: string | undefined;
-
-  beforeAll(() => {
-    secretInitial = process.env.FORMATIONS_PULSE_SECRET;
-    process.env.FORMATIONS_PULSE_SECRET = secret;
-  });
-
-  afterAll(() => {
-    process.env.FORMATIONS_PULSE_SECRET = secretInitial;
-  });
+  installerVariables({ FORMATIONS_PULSE_SECRET: secret });
 }

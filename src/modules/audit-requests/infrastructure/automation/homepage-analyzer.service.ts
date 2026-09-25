@@ -5,6 +5,7 @@ import {
   CACHE_HEADER_KEYS,
   SECURITY_HEADER_KEYS,
   detectCmsHints,
+  detecterLesTraceurs,
   extractCanonicalUrls,
   extractInternalLinks,
   extractOpenGraphProperties,
@@ -91,17 +92,7 @@ export class HomepageAnalyzerService {
       openGraphTags,
       twitterTags,
       detectedCmsHints,
-      hasAnalytics: /gtag\(|google-analytics|ga\(|matomo|plausible|umami/.test(
-        lowerHtml,
-      ),
-      hasTagManager: /googletagmanager|gtm\.js|datalayer/.test(lowerHtml),
-      hasPixel: /fbq\(|facebook pixel|tiktok pixel|linkedin insight/.test(
-        lowerHtml,
-      ),
-      hasCookieBanner: /cookie|consent|onetrust|didomi|tarteaucitron/.test(
-        lowerHtml,
-      ),
-      hasForms: $('form').length > 0,
+      ...detecterLesTraceurs(lowerHtml, $),
       internalLinks,
     };
   }

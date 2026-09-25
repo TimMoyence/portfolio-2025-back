@@ -9,12 +9,7 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/interfaces/filters/all-exceptions.filter';
 import { DomainExceptionFilter } from './common/interfaces/filters/DomainExceptionFilter';
 import { bornerLesCorpsDeRequete } from './common/interfaces/http/corps-de-requete';
-
-function logBootstrapStep(message: string): void {
-  if (process.env.BOOTSTRAP_DEBUG === 'true') {
-    console.log(`[bootstrap] ${message}`);
-  }
-}
+import { logBootstrapStep } from './runtime/log-bootstrap-step';
 
 async function bootstrap() {
   logBootstrapStep('starting bootstrap');

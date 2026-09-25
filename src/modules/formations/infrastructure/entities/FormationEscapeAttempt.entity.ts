@@ -1,32 +1,14 @@
-import { LigneDeSeance } from './ligne-de-seance';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-} from 'typeorm';
-import { FormationParticipantEntity } from './FormationParticipant.entity';
+import { Column, CreateDateColumn, Entity, Index } from 'typeorm';
+import { LigneDeParticipant } from './ligne-de-participant';
 
 @Entity({ name: 'formation_escape_attempts' })
 @Index('idx_formation_escape_attempts_participant', [
   'participantId',
   'enigmeId',
 ])
-export class FormationEscapeAttemptEntity extends LigneDeSeance(
+export class FormationEscapeAttemptEntity extends LigneDeParticipant(
   'formation_escape_attempts',
 ) {
-  @Column({ name: 'participant_id', type: 'uuid' })
-  participantId: string;
-
-  @ManyToOne(() => FormationParticipantEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({
-    name: 'participant_id',
-    foreignKeyConstraintName: 'FK_formation_escape_attempts_participant',
-  })
-  participant: FormationParticipantEntity;
-
   @Column({ name: 'enigme_id', type: 'varchar', length: 60 })
   enigmeId: string;
 

@@ -1,5 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
-import { createTransport } from 'nodemailer';
+import type { createTransport } from 'nodemailer';
 import request from 'supertest';
 import type { Response } from 'supertest';
 import { solutionsDuTirage } from '../src/modules/formations/domain/Bareme';
@@ -11,12 +11,15 @@ import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { Solution } from '../src/modules/formations/domain/GradingCore';
 import type { AnswerRecord } from '../src/modules/formations/domain/IAnswers.repository';
 import type { RapportSession } from '../src/modules/formations/domain/IFormationMailer.port';
-import { FormationMailerService } from '../src/modules/formations/infrastructure/FormationMailer.service';
 import {
   buildCoursDeClasse,
   creerCatalogueDeTest,
 } from './factories/cours.factory';
-import { setSmtpEnv } from './factories/mailer.factory';
+import {
+  creationDeTransportSimulee,
+  nodemailerSimule,
+  setSmtpEnv,
+} from './factories/mailer.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   cleEtudianteDe,
@@ -35,11 +38,11 @@ import {
   fermerApplication,
 } from './helpers/nest-test-app';
 
-jest.mock('nodemailer', () => ({ createTransport: jest.fn() }));
+jest.mock('nodemailer', () => nodemailerSimule());
 
-const createTransportMock = createTransport as jest.MockedFunction<
-  typeof createTransport
->;
+import { FormationMailerService } from '../src/modules/formations/infrastructure/FormationMailer.service';
+
+const createTransportMock = creationDeTransportSimulee();
 
 const TAILLE_CLASSE = 30;
 const NB_QUESTIONS = 12;

@@ -1,14 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsInt,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
-
-const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
+import { IsString, MaxLength, MinLength } from 'class-validator';
+import { DureeDeReponse } from '../duree-de-reponse.decorator';
 
 export class TenterEnigmeRequestDto {
   @ApiProperty({ example: 'enigme-1' })
@@ -27,9 +19,6 @@ export class TenterEnigmeRequestDto {
   @MaxLength(40)
   reponse: string;
 
-  @ApiProperty({ example: 42000 })
-  @IsInt()
-  @Min(0)
-  @Max(DUREE_MAX_MS)
+  @DureeDeReponse(42000)
   dureeMs: number;
 }

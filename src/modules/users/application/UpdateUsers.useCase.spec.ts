@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import type { IUsersRepository } from '../domain/IUsers.repository';
+import type { User } from '../domain/User';
 import type { UpdateUserCommand } from './dto/UpdateUser.command';
 import type { PasswordService } from './services/PasswordService';
 import { UpdateUsersUseCase } from './UpdateUsers.useCase';
@@ -9,6 +9,10 @@ import {
   createMockPasswordService,
   buildUser,
 } from '../../../../test/factories/user.factory';
+import {
+  attendreMiseAJourDeLUtilisateur,
+  attendreUtilisateurIntrouvable,
+} from '../../../../test/helpers/utilisateurs';
 
 describe('UpdateUsersUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
@@ -22,67 +26,44 @@ describe('UpdateUsersUseCase', () => {
     useCase = new UpdateUsersUseCase(repo, passwordService);
   });
 
-  it('devrait mettre a jour l utilisateur quand il existe', async () => {
-    const user = buildUser({ id: 'user-1', email: 'john@example.com' });
-    repo.findById.mockResolvedValue(user);
-
-    const dto: UpdateUserCommand = {
-      firstName: 'Johnny',
-      phone: '123456789',
-    };
-
-    const updatedUser = buildUser({
-      id: 'user-1',
-      email: 'john@example.com',
-      firstName: 'Johnny',
-      phone: '123456789',
-    });
+  const mettreAJour = async (
+    existant: Partial<User>,
+    dto: UpdateUserCommand,
+  ) => {
+    repo.findById.mockResolvedValue(buildUser({ id: 'user-1', ...existant }));
+    const updatedUser = buildUser({ id: 'user-1', ...existant, ...dto });
     repo.update.mockResolvedValue(updatedUser);
 
     const result = await useCase.execute('user-1', dto);
 
-    expect(repo.findById).toHaveBeenCalledWith('user-1');
-    expect(repo.update).toHaveBeenCalledWith(
-      'user-1',
-      expect.objectContaining({
-        firstName: dto.firstName,
-        phone: dto.phone,
-        updatedAt: expect.any(Date),
-      }),
+    attendreMiseAJourDeLUtilisateur(repo.update, { ...dto });
+    return { result, updatedUser };
+  };
+
+  it('devrait mettre a jour l utilisateur quand il existe', async () => {
+    const { result, updatedUser } = await mettreAJour(
+      { email: 'john@example.com' },
+      { firstName: 'Johnny', phone: '123456789' },
     );
+
+    expect(repo.findById).toHaveBeenCalledWith('user-1');
     expect(result).toBe(updatedUser);
   });
 
   it('devrait mettre a jour les roles de l utilisateur', async () => {
-    const user = buildUser({ id: 'user-1', roles: [] });
-    repo.findById.mockResolvedValue(user);
-
-    const dto: UpdateUserCommand = { roles: ['admin', 'teacher'] };
-
-    const updatedUser = buildUser({
-      id: 'user-1',
-      roles: ['admin', 'teacher'],
-    });
-    repo.update.mockResolvedValue(updatedUser);
-
-    const result = await useCase.execute('user-1', dto);
-
-    expect(repo.update).toHaveBeenCalledWith(
-      'user-1',
-      expect.objectContaining({
-        roles: ['admin', 'teacher'],
-        updatedAt: expect.any(Date),
-      }),
+    const { result } = await mettreAJour(
+      { roles: [] },
+      { roles: ['admin', 'teacher'] },
     );
+
     expect(result.roles).toEqual(['admin', 'teacher']);
   });
 
   it('devrait lever une exception quand l utilisateur n existe pas', async () => {
-    repo.findById.mockResolvedValue(null);
-
-    await expect(
-      useCase.execute('missing', {} as UpdateUserCommand),
-    ).rejects.toBeInstanceOf(UserNotFoundError);
-    expect(repo.update).not.toHaveBeenCalled();
+    await attendreUtilisateurIntrouvable(
+      repo,
+      () => useCase.execute('missing', {} as UpdateUserCommand),
+      repo.update,
+    );
   });
 });

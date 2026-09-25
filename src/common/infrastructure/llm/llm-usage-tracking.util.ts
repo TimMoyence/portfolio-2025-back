@@ -115,24 +115,8 @@ export async function invokeWithLlmTracking<TResult>(
       callbacks: [callback] as unknown as Callbacks,
     });
 
-    const latencyMs = Date.now() - startedAt;
-
     if (metrics) {
-      metrics.llmCallsTotal.inc({
-        model: context.model,
-        section: context.section,
-        locale: context.locale,
-        status: 'success',
-      });
-      metrics.llmLatencySeconds.observe(
-        {
-          model: context.model,
-          section: context.section,
-          locale: context.locale,
-          status: 'success',
-        },
-        latencyMs / 1000,
-      );
+      compterLAppel(metrics, context, 'success', startedAt);
       if (usage) {
         const typedUsage = usage as LlmTokenUsage;
         metrics.llmTokensTotal.inc(
@@ -169,24 +153,26 @@ export async function invokeWithLlmTracking<TResult>(
 
     return result;
   } catch (error) {
-    const latencyMs = Date.now() - startedAt;
     if (metrics) {
-      metrics.llmCallsTotal.inc({
-        model: context.model,
-        section: context.section,
-        locale: context.locale,
-        status: 'error',
-      });
-      metrics.llmLatencySeconds.observe(
-        {
-          model: context.model,
-          section: context.section,
-          locale: context.locale,
-          status: 'error',
-        },
-        latencyMs / 1000,
-      );
+      compterLAppel(metrics, context, 'error', startedAt);
     }
     throw error;
   }
+}
+
+function compterLAppel(
+  metrics: MetricsService,
+  context: LlmInvocationContext,
+  status: 'success' | 'error',
+  startedAt: number,
+): void {
+  const latencyMs = Date.now() - startedAt;
+  const labels = {
+    model: context.model,
+    section: context.section,
+    locale: context.locale,
+    status,
+  };
+  metrics.llmCallsTotal.inc(labels);
+  metrics.llmLatencySeconds.observe(labels, latencyMs / 1000);
 }

@@ -80,6 +80,24 @@ describe('createOptionalSmtpTransporter', () => {
     return mockCreateTransport.mock.calls[0][0] as TransportOptions;
   }
 
+  function dkimRetenu(
+    overrides: Record<string, string> = {},
+  ): TransportOptions['dkim'] {
+    configureSmtp();
+    enableDkim(overrides);
+    createOptionalSmtpTransporter(logger, 'Test');
+    return lastOptions().dkim;
+  }
+
+  function enTetesSignes(): string[] {
+    return (dkimRetenu()?.headerFieldNames ?? '').split(':');
+  }
+
+  function attendreSignatureRefusee(dkim: TransportOptions['dkim']): void {
+    expect(dkim).toBeUndefined();
+    expect(logger.error).toHaveBeenCalled();
+  }
+
   describe('configuration incomplete', () => {
     it('retourne null et loggue quand SMTP n’est pas configure', () => {
       const transporter = createOptionalSmtpTransporter(logger, 'Test mailer');
@@ -138,23 +156,14 @@ describe('createOptionalSmtpTransporter', () => {
     });
 
     it('signe avec la cle fournie quand les trois variables sont presentes', () => {
-      configureSmtp();
-      enableDkim();
+      const dkim = dkimRetenu();
 
-      createOptionalSmtpTransporter(logger, 'Test');
-
-      const { dkim } = lastOptions();
       expect(dkim?.domainName).toBe('asilidesign.fr');
       expect(dkim?.keySelector).toBe('default');
       expect(dkim?.privateKey).toBe(VALID_KEY);
     });
 
     it('couvre List-Unsubscribe et List-Unsubscribe-Post par la signature', () => {
-      configureSmtp();
-      enableDkim();
-
-      createOptionalSmtpTransporter(logger, 'Test');
-
       // La RFC 8058 §4 impose que ces deux en-tetes figurent dans le tag
       // `h=` de la signature, faute de quoi Gmail ignore le bouton natif
       // de desabonnement.
@@ -163,7 +172,7 @@ describe('createOptionalSmtpTransporter', () => {
       // `toContain('List-Unsubscribe')` sur une chaine est satisfait par
       // la seule presence de `List-Unsubscribe-Post`, ce qui laisserait
       // passer le retrait de l'en-tete central.
-      const names = (lastOptions().dkim?.headerFieldNames ?? '').split(':');
+      const names = enTetesSignes();
       expect(names).toContain('List-Unsubscribe');
       expect(names).toContain('List-Unsubscribe-Post');
       expect(names).toContain('From');
@@ -171,12 +180,7 @@ describe('createOptionalSmtpTransporter', () => {
     });
 
     it('conserve la couverture par defaut de nodemailer (RFC 4871 §5.5)', () => {
-      configureSmtp();
-      enableDkim();
-
-      createOptionalSmtpTransporter(logger, 'Test');
-
-      const names = (lastOptions().dkim?.headerFieldNames ?? '').split(':');
+      const names = enTetesSignes();
       for (const field of [
         'Cc',
         'Content-Transfer-Encoding',
@@ -189,16 +193,12 @@ describe('createOptionalSmtpTransporter', () => {
     });
 
     it('desactive la signature si la cle privee est inexploitable', () => {
-      configureSmtp();
-      enableDkim({ SMTP_DKIM_PRIVATE_KEY: 'pas-une-cle-pem' });
-
-      createOptionalSmtpTransporter(logger, 'Test');
+      const dkim = dkimRetenu({ SMTP_DKIM_PRIVATE_KEY: 'pas-une-cle-pem' });
 
       // nodemailer avale l'exception de signature et envoie le message
       // SANS en-tete DKIM : sans ce controle, le deploiement se croirait
       // conforme RFC 8058 sans que rien ne le signale.
-      expect(lastOptions().dkim).toBeUndefined();
-      expect(logger.error).toHaveBeenCalled();
+      attendreSignatureRefusee(dkim);
     });
 
     it('accepte une cle RSA au format PKCS#1', () => {
@@ -210,12 +210,9 @@ describe('createOptionalSmtpTransporter', () => {
         privateKeyEncoding: { type: 'pkcs1', format: 'pem' },
         publicKeyEncoding: { type: 'pkcs1', format: 'pem' },
       }).privateKey;
-      configureSmtp();
-      enableDkim({ SMTP_DKIM_PRIVATE_KEY: pkcs1 });
-
-      createOptionalSmtpTransporter(logger, 'Test');
-
-      expect(lastOptions().dkim?.privateKey).toBe(pkcs1);
+      expect(dkimRetenu({ SMTP_DKIM_PRIVATE_KEY: pkcs1 })?.privateKey).toBe(
+        pkcs1,
+      );
       expect(logger.error).not.toHaveBeenCalled();
     });
 
@@ -228,25 +225,16 @@ describe('createOptionalSmtpTransporter', () => {
         privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
         publicKeyEncoding: { type: 'spki', format: 'pem' },
       }).privateKey;
-      configureSmtp();
-      enableDkim({ SMTP_DKIM_PRIVATE_KEY: ecKey });
-
-      createOptionalSmtpTransporter(logger, 'Test');
-
-      expect(lastOptions().dkim).toBeUndefined();
-      expect(logger.error).toHaveBeenCalled();
+      attendreSignatureRefusee(dkimRetenu({ SMTP_DKIM_PRIVATE_KEY: ecKey }));
     });
 
     it('retablit une cle PEM collee avec des \\n litteraux', () => {
       // Les `env_file` de compose.yaml ne portent pas de valeur multiligne.
-      configureSmtp();
-      enableDkim({
+      const dkim = dkimRetenu({
         SMTP_DKIM_PRIVATE_KEY: VALID_KEY.replace(/\n/g, '\\n'),
       });
 
-      createOptionalSmtpTransporter(logger, 'Test');
-
-      expect(lastOptions().dkim?.privateKey).toBe(VALID_KEY);
+      expect(dkim?.privateKey).toBe(VALID_KEY);
     });
 
     it.each([
@@ -260,13 +248,7 @@ describe('createOptionalSmtpTransporter', () => {
       // Concatenees telles quelles dans l'en-tete `DKIM-Signature`
       // (RFC 6376 section 3.5), ces valeurs y injecteraient un en-tete
       // arbitraire des qu'elles portent un saut de ligne.
-      configureSmtp();
-      enableDkim(overrides);
-
-      createOptionalSmtpTransporter(logger, 'Test');
-
-      expect(lastOptions().dkim).toBeUndefined();
-      expect(logger.error).toHaveBeenCalled();
+      attendreSignatureRefusee(dkimRetenu(overrides));
     });
 
     it('ignore une configuration DKIM partielle et le signale', () => {
@@ -275,8 +257,7 @@ describe('createOptionalSmtpTransporter', () => {
 
       createOptionalSmtpTransporter(logger, 'Test');
 
-      expect(lastOptions().dkim).toBeUndefined();
-      expect(logger.error).toHaveBeenCalled();
+      attendreSignatureRefusee(lastOptions().dkim);
     });
   });
 });

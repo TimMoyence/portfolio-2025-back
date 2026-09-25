@@ -1,4 +1,5 @@
 import {
+  ATTENDU_PRIX_INITIAL,
   buildCorrigeClassement,
   buildCorrigeDefi,
   buildCorrigeEnigme,
@@ -108,8 +109,8 @@ describe('schémas zod des corrigés (§ 9.3.3)', () => {
         'deux attendus pour le même rang et la même clé',
         buildCorrigeTableau({
           attendus: [
-            { rang: 0, cle: 'prix', valeur: 21.6, pieges: [] },
-            { rang: 0, cle: 'prix', valeur: 22, pieges: [] },
+            ATTENDU_PRIX_INITIAL,
+            { ...ATTENDU_PRIX_INITIAL, valeur: 22 },
           ],
         }),
       ],

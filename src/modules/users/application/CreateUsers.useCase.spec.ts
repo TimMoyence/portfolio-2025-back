@@ -3,9 +3,11 @@ import type { ConfigService } from '@nestjs/config';
 import type { IEmailVerificationNotifier } from '../domain/IEmailVerificationNotifier';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
+import type { User } from '../domain/User';
 import { CreateUsersUseCase } from './CreateUsers.useCase';
 import type { CreateUserCommand } from './dto/CreateUser.command';
 import type { PasswordService } from './services/PasswordService';
+import { EnvoiDeVerificationEmail } from './services/email-verification-dispatch';
 import {
   buildUser,
   createMockUsersRepo,
@@ -53,12 +55,30 @@ describe('CreateUsersUseCase', () => {
 
     useCase = new CreateUsersUseCase(
       repo,
-      emailVerificationTokensRepo,
-      emailVerificationNotifier,
+      new EnvoiDeVerificationEmail(
+        emailVerificationTokensRepo,
+        emailVerificationNotifier,
+        configService,
+      ),
       passwordService,
-      configService,
     );
   });
+
+  const creerEtAttendreLesRoles = async (
+    dto: CreateUserCommand,
+    roles: User['roles'],
+    persiste: Partial<User> = {},
+  ) => {
+    repo.create.mockResolvedValue(
+      buildUser({ email: dto.email, roles, ...persiste }),
+    );
+
+    await useCase.execute(dto);
+
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ roles }),
+    );
+  };
 
   it('maps the DTO and persists the user', async () => {
     const dto: CreateUserCommand = {
@@ -145,20 +165,7 @@ describe('CreateUsersUseCase', () => {
       roles: ['admin', 'teacher'],
     };
 
-    const savedUser = buildUser({
-      email: dto.email,
-      roles: [],
-      emailVerified: false,
-    });
-    repo.create.mockResolvedValue(savedUser);
-
-    await useCase.execute(dto);
-
-    expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        roles: [],
-      }),
-    );
+    await creerEtAttendreLesRoles(dto, [], { emailVerified: false });
   });
 
   it('devrait conserver les roles quand cree par un admin', async () => {
@@ -171,17 +178,7 @@ describe('CreateUsersUseCase', () => {
       updatedOrCreatedBy: 'admin-user-id',
     };
 
-    const savedUser = buildUser({
-      email: dto.email,
-      roles: ['admin', 'teacher'],
-    });
-    repo.create.mockResolvedValue(savedUser);
-
-    await useCase.execute(dto);
-
-    expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ roles: ['admin', 'teacher'] }),
-    );
+    await creerEtAttendreLesRoles(dto, ['admin', 'teacher']);
     expect(
       emailVerificationNotifier.sendVerificationEmail,
     ).not.toHaveBeenCalled();

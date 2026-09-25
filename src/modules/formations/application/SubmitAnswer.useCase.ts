@@ -8,7 +8,6 @@ import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
 import { coursDeLaSeance, seanceOuverteAuxReponses } from './CoursDeLaSeance';
 import { EnregistrementDeReponse } from './EnregistrementDeReponse';
-import { participantActif } from './ParticipantActif';
 import type {
   SubmitAnswerCommand,
   SubmitAnswerResult,
@@ -25,7 +24,7 @@ const TYPES_A_ROUTE_PROPRE: readonly string[] = [
 export class SubmitAnswerUseCase extends EnregistrementDeReponse {
   async execute(command: SubmitAnswerCommand): Promise<SubmitAnswerResult> {
     const session = await seanceOuverteAuxReponses(
-      this.sessions,
+      this.participation.sessions,
       command.sessionId,
     );
 
@@ -37,11 +36,7 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
 
-    const participant = await participantActif(
-      this.participants,
-      command.sessionId,
-      command.participantId,
-    );
+    const participant = await this.participation.participantActif(command);
 
     const question = findQuestion(session.bareme, command.questionId);
     if (!question) {
@@ -54,7 +49,7 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
         `La question ${command.questionId} de type ${question.type} passe par sa propre route`,
       );
     }
-    const cours = await coursDeLaSeance(this.catalogue, session);
+    const cours = await coursDeLaSeance(this.participation.catalogue, session);
     const rangEcran =
       'rangEcran' in question
         ? question.rangEcran
@@ -102,7 +97,7 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       misconception: verdict.misconception,
       dureeMs: command.dureeMs,
     });
-    this.cache.signalerActivite(command.sessionId);
+    this.participation.signalerActivite(command.sessionId);
 
     await this.mastery.enregistrerTentative({
       studentKey: participant.studentKey,

@@ -15,11 +15,10 @@ import { deroulePresentateur } from '../src/modules/formations/domain/cours/Dero
 import { projeterCatalogue } from '../src/modules/formations/domain/cours/Diffusion';
 import { empreinteCanonique } from '../src/modules/formations/domain/cours/EmpreinteCanonique';
 import { evaluerFeuille } from '../src/modules/formations/domain/cours/Formule';
-import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
-import { tireurSequentiel } from './factories/cours.factory';
+import { ouvrirLeBaremeV2DuB2_01 } from './factories/cours-b2-01.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   DELAI_OUVERTURE_CONTEXTE_MS,
@@ -68,10 +67,7 @@ describeDb('cours B2-01 publié en base', () => {
   });
 
   it('ouvre un barème v2 et sert le même instantané que le fichier livré', () => {
-    const bareme = ouvrirTirages(cours, tireurSequentiel(1));
-
-    expect(bareme.version).toBe(2);
-    expect(bareme.tirages).toHaveLength(60);
+    ouvrirLeBaremeV2DuB2_01(cours);
     expect(
       empreinteCanonique({
         sujet: tirer(cours, GRAINE_DE_REFERENCE).sujet,

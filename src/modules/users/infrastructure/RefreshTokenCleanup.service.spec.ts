@@ -35,25 +35,18 @@ describe('RefreshTokenCleanupService', () => {
       expect(repo.purgeExpired).toHaveBeenCalledTimes(1);
     });
 
-    it('devrait logger le nombre de tokens purges', async () => {
-      repo.purgeExpired.mockResolvedValue(12);
+    it.each([
+      ['devrait logger le nombre de tokens purges', 12],
+      ['devrait logger zero quand aucun token n est purge', 0],
+    ])('%s', async (_titre, purges) => {
+      repo.purgeExpired.mockResolvedValue(purges);
       const logSpy = jest.spyOn(service['logger'], 'log').mockImplementation();
 
       await service.purgeExpiredTokens();
 
       expect(logSpy).toHaveBeenCalledWith(
-        'Purgé 12 refresh token(s) expiré(s)',
+        `Purgé ${purges} refresh token(s) expiré(s)`,
       );
-      logSpy.mockRestore();
-    });
-
-    it('devrait logger zero quand aucun token n est purge', async () => {
-      repo.purgeExpired.mockResolvedValue(0);
-      const logSpy = jest.spyOn(service['logger'], 'log').mockImplementation();
-
-      await service.purgeExpiredTokens();
-
-      expect(logSpy).toHaveBeenCalledWith('Purgé 0 refresh token(s) expiré(s)');
       logSpy.mockRestore();
     });
 

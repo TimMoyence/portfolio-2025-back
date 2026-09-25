@@ -115,7 +115,7 @@ export class AuditQueueService implements OnModuleDestroy, IAuditQueuePort {
     });
   }
 
-  private runWithTimeout(auditId: string): Promise<void> {
+  runWithTimeout(auditId: string): Promise<void> {
     return runAuditPipelineWithTimeout(
       this.pipeline,
       auditId,

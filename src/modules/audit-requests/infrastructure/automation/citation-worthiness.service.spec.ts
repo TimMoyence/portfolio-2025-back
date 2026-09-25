@@ -50,69 +50,66 @@ describe('CitationWorthinessService', () => {
     expect(result.contentDensity).toBe('medium');
   });
 
-  it('ignore les liens vers le même domaine pour les sources', () => {
-    const html = `<html><body>
-      <a href="https://example.com/another">interne</a>
-    </body></html>`;
+  it.each([
+    [
+      'ignore les liens vers le même domaine pour les sources',
+      '<a href="https://example.com/another">interne</a>',
+      'hasSources',
+      false,
+    ],
+    [
+      'détecte les faits via nombres à 2+ chiffres',
+      '<article><p>En 2025, plus de 1200 utilisateurs ont...</p></article>',
+      'hasFacts',
+      true,
+    ],
+    [
+      'détecte une source externe vers un domaine d autorité',
+      '<a href="https://www.reuters.com/story">Reuters</a>',
+      'hasSources',
+      true,
+    ],
+    [
+      'détecte un auteur via rel="author"',
+      '<a rel="author" href="/team">Jane</a>',
+      'hasAuthor',
+      true,
+    ],
+    [
+      'détecte un auteur via itemprop="author"',
+      '<span itemprop="author">Jane</span>',
+      'hasAuthor',
+      true,
+    ],
+    [
+      'ignore les liens avec URL invalide (relative sans base)',
+      '<a href="not-a-valid-url">x</a>',
+      'hasSources',
+      false,
+    ],
+    [
+      'arrête la détection après la première source trouvée (short-circuit)',
+      `<a href="https://www.nature.com/a">first</a>
+      <a href="https://www.reuters.com/b">second</a>
+      <a href="https://www.bbc.com/c">third</a>`,
+      'hasSources',
+      true,
+    ],
+    [
+      'ignore les liens vers un domaine non autoritaire',
+      '<a href="https://random-blog.xyz/x">random</a>',
+      'hasSources',
+      false,
+    ],
+  ] as const)('%s', (_titre, corps, signal, attendu) => {
+    const html = `<html><body>${corps}</body></html>`;
     const result = service.analyze(html, 'https://example.com');
-    expect(result.hasSources).toBe(false);
-  });
-
-  it('détecte les faits via nombres à 2+ chiffres', () => {
-    const html =
-      '<html><body><article><p>En 2025, plus de 1200 utilisateurs ont...</p></article></body></html>';
-    const result = service.analyze(html, 'https://example.com');
-    expect(result.hasFacts).toBe(true);
-  });
-
-  it('détecte une source externe vers un domaine d autorité', () => {
-    const html = `<html><body>
-      <a href="https://www.reuters.com/story">Reuters</a>
-    </body></html>`;
-    const result = service.analyze(html, 'https://example.com');
-    expect(result.hasSources).toBe(true);
+    expect(result[signal]).toBe(attendu);
   });
 
   it('gère une URL de page mal formée en retournant score bas', () => {
     const result = service.analyze('<html><body></body></html>', 'not a url');
     expect(result.score).toBeLessThan(20);
-  });
-
-  it('détecte un auteur via rel="author"', () => {
-    const html =
-      '<html><body><a rel="author" href="/team">Jane</a></body></html>';
-    const result = service.analyze(html, 'https://example.com');
-    expect(result.hasAuthor).toBe(true);
-  });
-
-  it('détecte un auteur via itemprop="author"', () => {
-    const html =
-      '<html><body><span itemprop="author">Jane</span></body></html>';
-    const result = service.analyze(html, 'https://example.com');
-    expect(result.hasAuthor).toBe(true);
-  });
-
-  it('ignore les liens avec URL invalide (relative sans base)', () => {
-    const html = '<html><body><a href="not-a-valid-url">x</a></body></html>';
-    const result = service.analyze(html, 'https://example.com');
-    expect(result.hasSources).toBe(false);
-  });
-
-  it('arrête la détection après la première source trouvée (short-circuit)', () => {
-    const html = `<html><body>
-      <a href="https://www.nature.com/a">first</a>
-      <a href="https://www.reuters.com/b">second</a>
-      <a href="https://www.bbc.com/c">third</a>
-    </body></html>`;
-    const result = service.analyze(html, 'https://example.com');
-    expect(result.hasSources).toBe(true);
-  });
-
-  it('ignore les liens vers un domaine non autoritaire', () => {
-    const html =
-      '<html><body><a href="https://random-blog.xyz/x">random</a></body></html>';
-    const result = service.analyze(html, 'https://example.com');
-    expect(result.hasSources).toBe(false);
   });
 
   it('score plafonné entre 0 et 100', () => {

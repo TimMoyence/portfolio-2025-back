@@ -5,7 +5,6 @@ import {
   Param,
   ParseUUIDPipe,
   Optional,
-  Post,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -16,8 +15,6 @@ import {
   ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { RequestToolkitUseCase } from '../application/RequestToolkit.useCase';
 import type { RequestToolkitCommand } from '../application/dto/RequestToolkit.command';
 import { GetToolkitByTokenUseCase } from '../application/queries/GetToolkitByToken.useCase';
@@ -25,6 +22,10 @@ import type { InteractionProfile } from '../domain/InteractionProfile';
 import { LeadMagnetResponseDto } from './dto/lead-magnet.response.dto';
 import { RequestToolkitRequestDto } from './dto/request-toolkit.request.dto';
 import { ToolkitPageResponseDto } from './dto/toolkit-page.response.dto';
+import {
+  FormulairePublic,
+  LienPublic,
+} from '../../../common/interfaces/security/formulaire-public.decorator';
 import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
 
 @ApiTags('lead-magnets')
@@ -37,9 +38,7 @@ export class LeadMagnetsController {
     private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
-  @Public()
-  @Throttle({ default: { limit: 3, ttl: 3600000 } })
-  @Post('formations-toolkit')
+  @FormulairePublic(3, 'formations-toolkit')
   @ApiOperation({
     summary: 'Demander la boite a outils IA par email (acces public, 3 req/h)',
   })
@@ -79,8 +78,7 @@ export class LeadMagnetsController {
     return responseDto;
   }
 
-  @Public()
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @LienPublic()
   @Get('toolkit/:token')
   @ApiOperation({
     summary:

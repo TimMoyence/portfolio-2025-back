@@ -11,6 +11,7 @@ import {
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import { solutionsDuTirage } from '../../domain/Bareme';
+import type { Cours } from '../../domain/contrats/cours';
 import { questionsDuCours } from '../../domain/cours/Cours';
 import { NOMBRE_TIRAGES_DISTRIBUES } from '../../domain/cours/OuvertureTirages';
 import {
@@ -31,6 +32,18 @@ describe('OpenSessionUseCase', () => {
     sessions = createMockSessionsRepo();
     sut = new OpenSessionUseCase(sessions, creerCatalogueDeTest());
   });
+
+  const ouvrirSurLesVersions = async (
+    versions: Readonly<Record<number, Cours>>,
+  ) => {
+    sut = new OpenSessionUseCase(
+      sessions,
+      creerCatalogueAVersions({ [COURS.slug]: versions }),
+    );
+    await sut.execute(COMMANDE);
+    const [depot] = sessions.create.mock.calls[0];
+    return depot;
+  };
 
   it('refuse un cours absent du catalogue sans ouvrir de session', async () => {
     const ouverture = sut.execute({ ...COMMANDE, courseSlug: 'inconnu' });
@@ -57,16 +70,9 @@ describe('OpenSessionUseCase', () => {
 
   it('fige dans la seance la version courante du catalogue et en tire le bareme', async () => {
     const versionCourante = { ...buildCoursDeClasse(3), slug: COURS.slug };
-    sut = new OpenSessionUseCase(
-      sessions,
-      creerCatalogueAVersions({
-        [COURS.slug]: { 1: COURS, 2: versionCourante },
-      }),
-    );
 
-    await sut.execute(COMMANDE);
+    const depot = await ouvrirSurLesVersions({ 1: COURS, 2: versionCourante });
 
-    const [depot] = sessions.create.mock.calls[0];
     expect(depot.courseVersion).toBe(2);
     expect(depot.bareme.questions.map((question) => question.id)).toEqual(
       questionsDuCours(versionCourante).map((question) => question.id),
@@ -74,14 +80,8 @@ describe('OpenSessionUseCase', () => {
   });
 
   it('tire un barème v2 quel que soit le numéro de version publiée', async () => {
-    sut = new OpenSessionUseCase(
-      sessions,
-      creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
-    );
+    const depot = await ouvrirSurLesVersions({ 3: COURS });
 
-    await sut.execute(COMMANDE);
-
-    const [depot] = sessions.create.mock.calls[0];
     expect(depot.courseVersion).toBe(3);
     expect(depot.bareme.version).toBe(2);
     expect(depot.bareme.tirages).toHaveLength(NOMBRE_TIRAGES_DISTRIBUES);

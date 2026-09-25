@@ -11,6 +11,8 @@ const SESSION_ID = '4d0f2a9e-0d7f-4d2f-9a3c-1f6b2a7c8d90';
 const TEACHER_ID = 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff';
 const PARTICIPANT_ID = 'a0b1c2d3-e4f5-4678-9012-abcdefabcdef';
 
+const CIBLE = { id: SESSION_ID, participantId: PARTICIPANT_ID };
+
 const requete = {
   user: { sub: TEACHER_ID, roles: ['teacher', 'admin'] },
 } as unknown as Request;
@@ -30,7 +32,7 @@ describe('FormationsParticipantsController', () => {
   });
 
   it('evince un participant avec l identite du formateur proprietaire', async () => {
-    await controller.evincer(SESSION_ID, PARTICIPANT_ID, requete);
+    await controller.evincer(CIBLE, requete);
 
     expect(evincerParticipant.execute).toHaveBeenCalledWith(
       SESSION_ID,
@@ -40,7 +42,7 @@ describe('FormationsParticipantsController', () => {
   });
 
   it('readmet un participant avec l identite du formateur proprietaire', async () => {
-    await controller.readmettre(SESSION_ID, PARTICIPANT_ID, requete);
+    await controller.readmettre(CIBLE, requete);
 
     expect(readmettreParticipant.execute).toHaveBeenCalledWith(
       SESSION_ID,
@@ -50,7 +52,7 @@ describe('FormationsParticipantsController', () => {
   });
 
   it('S1 · libere le poste d un participant avec l identite du formateur proprietaire', async () => {
-    await controller.libererPoste(SESSION_ID, PARTICIPANT_ID, requete);
+    await controller.libererPoste(CIBLE, requete);
 
     expect(libererPoste.execute).toHaveBeenCalledWith(
       SESSION_ID,

@@ -1,4 +1,4 @@
-import type { Response, Test } from 'supertest';
+import type { Test } from 'supertest';
 import {
   buildCoursDeClasse,
   creerCatalogueDeTest,
@@ -6,6 +6,7 @@ import {
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   AUTRE_FORMATEUR_DE_TEST,
+  attendreRefus,
   CODE_HTTP,
   installerBancDeSeance,
 } from './helpers/formations-banc-seance';
@@ -30,10 +31,6 @@ interface ReponseInscription {
 interface LigneDeParticipant {
   id: string;
   evince: boolean;
-}
-
-function codeDe(reponse: Response): string | undefined {
-  return (reponse.body as { code?: string }).code;
 }
 
 describeDb('Capacite et eviction (B28, db integration)', () => {
@@ -148,9 +145,13 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
     expect(sansIdentite.status).toBe(NON_AUTORISE);
   };
 
-  const attendreRefus = (reponse: Response, statut: number, code: string) => {
-    expect(reponse.status).toBe(statut);
-    expect(codeDe(reponse)).toBe(code);
+  const seanceAvecUnInscrit = async (evince = false) => {
+    const seance = await ouvrirSeance(CAPACITE);
+    const premier = await inscrit(seance, 0);
+    if (evince) {
+      await evincer(seance, premier).expect(SANS_CONTENU);
+    }
+    return { seance, premier };
   };
 
   it('refuse en 409 SEANCE_COMPLETE au-dela de la capacite demandee', async () => {
@@ -224,19 +225,13 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
   });
 
   it('revoque l acces du participant evince', async () => {
-    const seance = await ouvrirSeance(CAPACITE);
-    const premier = await inscrit(seance, 0);
-
-    await evincer(seance, premier).expect(SANS_CONTENU);
+    const { seance, premier } = await seanceAvecUnInscrit(true);
 
     expect((await lireLeSujet(seance, premier)).status).toBe(INTROUVABLE);
   });
 
   it('marque evince dans la liste du formateur, pour qu il reste readmissible', async () => {
-    const seance = await ouvrirSeance(CAPACITE);
-    const premier = await inscrit(seance, 0);
-
-    await evincer(seance, premier).expect(SANS_CONTENU);
+    const { seance, premier } = await seanceAvecUnInscrit(true);
 
     expect(await listeDu(seance)).toEqual([
       expect.objectContaining({ id: premier.participantId, evince: true }),
@@ -244,16 +239,13 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
   });
 
   it('refuse l eviction a un autre formateur et a un anonyme', async () => {
-    const seance = await ouvrirSeance(CAPACITE);
-    const premier = await inscrit(seance, 0);
+    const { seance, premier } = await seanceAvecUnInscrit();
 
     await attendreRefusDesTiers('delete', cheminDu(seance, premier));
   });
 
   it('signale un participant deja evince', async () => {
-    const seance = await ouvrirSeance(CAPACITE);
-    const premier = await inscrit(seance, 0);
-    await evincer(seance, premier).expect(SANS_CONTENU);
+    const { seance, premier } = await seanceAvecUnInscrit(true);
 
     expect((await evincer(seance, premier)).status).toBe(INTROUVABLE);
   });
@@ -290,16 +282,13 @@ describeDb('Capacite et eviction (B28, db integration)', () => {
   });
 
   it('refuse la readmission d un participant qui n a jamais ete evince', async () => {
-    const seance = await ouvrirSeance(CAPACITE);
-    const premier = await inscrit(seance, 0);
+    const { seance, premier } = await seanceAvecUnInscrit();
 
     expect((await readmettre(seance, premier)).status).toBe(INTROUVABLE);
   });
 
   it('refuse la readmission a un autre formateur et a un anonyme', async () => {
-    const seance = await ouvrirSeance(CAPACITE);
-    const premier = await inscrit(seance, 0);
-    await evincer(seance, premier).expect(SANS_CONTENU);
+    const { seance, premier } = await seanceAvecUnInscrit(true);
 
     await attendreRefusDesTiers(
       'post',

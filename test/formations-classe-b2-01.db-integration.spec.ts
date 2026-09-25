@@ -1,5 +1,5 @@
 import request from 'supertest';
-import type { Test } from 'supertest';
+import type { Response, Test } from 'supertest';
 import type {
   Cours,
   Ecran,
@@ -12,15 +12,12 @@ import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { TirageDuCours } from '../src/modules/formations/domain/cours/Tirage';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { describeDb } from './helpers/db-integration-datasource';
-import { installerEnvFormations } from './helpers/env-formations';
-import {
-  DELAI_OUVERTURE_CONTEXTE_MS,
-  VERSION_PUBLIEE_SUR_BASE_NEUVE,
-} from './helpers/formations-db';
+import { statutsEnEchec } from './helpers/formations-banc-seance';
+import { VERSION_PUBLIEE_SUR_BASE_NEUVE } from './helpers/formations-db';
 import {
   clientFormations,
   EN_TETE_IDENTITE,
-  monterBancFormations,
+  installerBancFormationsVierge,
   serveurHttpDe,
   type BancFormations,
   type ClientFormations,
@@ -123,6 +120,26 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
       dureeMs: DUREE_REPONSE_MS,
     });
 
+  const parChaquePoste = async (
+    methode: 'get' | 'post' | 'put',
+    cheminDeSeance: string,
+    attendu: number,
+    corps?: (etudiant: Etudiant) => object,
+  ): Promise<Response[]> => {
+    const envois = await Promise.all(
+      etudiants.map((etudiant) => {
+        const envoi = participant(
+          methode,
+          `/sessions/${sessionId}${cheminDeSeance}`,
+          etudiant.jeton,
+        );
+        return corps === undefined ? envoi : envoi.send(corps(etudiant));
+      }),
+    );
+    expect(statutsEnEchec(envois, attendu)).toEqual([]);
+    return envois;
+  };
+
   const jouerQuestionsFermees = async (ecran: Ecran): Promise<void> => {
     const fermees = questionsDe(ecran).filter(
       (question) => question.type === 'numeric' || question.type === 'vote',
@@ -171,20 +188,16 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
     }
     const parcoursId = ecran.proprietes.parcours.id;
     for (const enigme of ecran.enigmes) {
-      const envois = await Promise.all(
-        etudiants.map((etudiant) =>
-          participant(
-            'post',
-            `/sessions/${sessionId}/escape/${parcoursId}/tentatives`,
-            etudiant.jeton,
-          ).send({
-            enigmeId: enigme.id,
-            reponse: reponseDEnigme(enigme),
-            dureeMs: DUREE_REPONSE_MS,
-          }),
-        ),
+      await parChaquePoste(
+        'post',
+        `/escape/${parcoursId}/tentatives`,
+        CREE,
+        () => ({
+          enigmeId: enigme.id,
+          reponse: reponseDEnigme(enigme),
+          dureeMs: DUREE_REPONSE_MS,
+        }),
       );
-      expect(envois.filter((envoi) => envoi.status !== CREE)).toEqual([]);
     }
   };
 
@@ -192,17 +205,12 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
     if (ecran.brique !== 'fp-pulse') {
       return;
     }
-    const sondageId = ecran.proprietes.sondage.id;
-    const envois = await Promise.all(
-      etudiants.map((etudiant) =>
-        participant(
-          'put',
-          `/sessions/${sessionId}/pulses/${sondageId}`,
-          etudiant.jeton,
-        ).send({ etat: etudiant.index % 3 === 0 ? 'perdu' : 'clair' }),
-      ),
+    await parChaquePoste(
+      'put',
+      `/pulses/${ecran.proprietes.sondage.id}`,
+      SANS_CONTENU,
+      (etudiant) => ({ etat: etudiant.index % 3 === 0 ? 'perdu' : 'clair' }),
     );
-    expect(envois.filter((envoi) => envoi.status !== SANS_CONTENU)).toEqual([]);
   };
 
   const jouerDefi = async (ecran: Ecran): Promise<void> => {
@@ -210,44 +218,26 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
       return;
     }
     const defiId = ecran.proprietes.probleme.id;
-    const envois = await Promise.all(
-      etudiants.map((etudiant) =>
-        participant(
-          'post',
-          `/sessions/${sessionId}/defis/${defiId}/tentative`,
-          etudiant.jeton,
-        ).send({
-          texte: `Strategie de l etudiant ${etudiant.index}.`,
-          dureeMs: DUREE_REPONSE_MS,
-        }),
-      ),
+    await parChaquePoste(
+      'post',
+      `/defis/${defiId}/tentative`,
+      CREE,
+      (etudiant) => ({
+        texte: `Strategie de l etudiant ${etudiant.index}.`,
+        dureeMs: DUREE_REPONSE_MS,
+      }),
     );
-    expect(envois.filter((envoi) => envoi.status !== CREE)).toEqual([]);
     await piloter({
       pilotage: { screenId: ecran.id, revele: true },
     }).expect(SANS_CONTENU);
-    const strategies = await Promise.all(
-      etudiants.map((etudiant) =>
-        participant(
-          'get',
-          `/sessions/${sessionId}/defis/${defiId}/strategies`,
-          etudiant.jeton,
-        ),
-      ),
-    );
-    expect(strategies.filter((lecture) => lecture.status !== OK)).toEqual([]);
+    await parChaquePoste('get', `/defis/${defiId}/strategies`, OK);
   };
 
   const jouerRappels = async (ecran: Ecran): Promise<void> => {
     if (ecran.brique !== 'fp-spaced') {
       return;
     }
-    const lectures = await Promise.all(
-      etudiants.map((etudiant) =>
-        participant('get', `/sessions/${sessionId}/rappels`, etudiant.jeton),
-      ),
-    );
-    expect(lectures.filter((lecture) => lecture.status !== OK)).toEqual([]);
+    const lectures = await parChaquePoste('get', '/rappels', OK);
     expect(
       lectures.every(
         (lecture) =>
@@ -261,39 +251,28 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
     if (activites.length === 0) {
       return;
     }
-    const premiere = activites[0];
-    const envois = await Promise.all(
-      etudiants.map((etudiant) =>
-        participant(
-          'post',
-          `/sessions/${sessionId}/free-responses`,
-          etudiant.jeton,
-        ).send({
-          screenId: ecran.id,
-          activityId: premiere,
-          response: `Note libre de l etudiant ${etudiant.index}.`,
-          dureeMs: DUREE_REPONSE_MS,
-        }),
-      ),
-    );
-    expect(envois.filter((envoi) => envoi.status !== CREE)).toEqual([]);
+    await parChaquePoste('post', '/free-responses', CREE, (etudiant) => ({
+      screenId: ecran.id,
+      activityId: activites[0],
+      response: `Note libre de l etudiant ${etudiant.index}.`,
+      dureeMs: DUREE_REPONSE_MS,
+    }));
   };
 
-  installerEnvFormations({ secret: SECRET, syntheseA: SYNTHESE_A });
+  installerBancFormationsVierge(
+    { secret: SECRET, syntheseA: SYNTHESE_A },
+    async (monte) => {
+      banc = monte;
+      client = clientFormations(banc.app, ADMIN);
+      const lu = await banc.contexte.catalogue.trouver(SLUG, VERSION_COURS);
+      if (lu === null) {
+        throw new Error(`Le cours ${SLUG} manque a la base migree`);
+      }
+      cours = lu;
+    },
+  );
 
-  beforeAll(async () => {
-    banc = await monterBancFormations();
-    await banc.contexte.nettoyer();
-    client = clientFormations(banc.app, ADMIN);
-    const lu = await banc.contexte.catalogue.trouver(SLUG, VERSION_COURS);
-    if (lu === null) {
-      throw new Error(`Le cours ${SLUG} manque a la base migree`);
-    }
-    cours = lu;
-  }, DELAI_OUVERTURE_CONTEXTE_MS);
-
-  afterAll(async () => {
-    await banc.fermer();
+  afterAll(() => {
     process.stdout.write(`\nMesures classe B2-01\n${mesures.join('\n')}\n`);
   });
 

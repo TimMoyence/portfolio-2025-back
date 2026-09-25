@@ -1,23 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsInt,
-  IsOptional,
-  IsString,
-  IsUrl,
-  Matches,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsUrl, Max, Min } from 'class-validator';
+import { SlugDeContenu } from '../../../../common/interfaces/dto/champs-de-contenu.decorator';
 
 export class RedirectRequestDto {
-  @ApiProperty({ example: 'promo-offer' })
-  @IsString()
-  @MinLength(2)
-  @MaxLength(120)
-  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+  @SlugDeContenu('promo-offer')
   slug: string;
 
   @ApiProperty({ example: 'https://example.com/promo' })

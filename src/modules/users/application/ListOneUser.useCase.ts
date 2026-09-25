@@ -1,15 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
-import type { IUsersRepository } from '../domain/IUsers.repository';
-import { USERS_REPOSITORY } from '../domain/token';
+import { Injectable } from '@nestjs/common';
 import { User } from '../domain/User';
+import { CasDUsageUtilisateurs } from './CasDUsageUtilisateurs';
 
 @Injectable()
-export class ListOneUserUseCase {
-  constructor(
-    @Inject(USERS_REPOSITORY)
-    private readonly repo: IUsersRepository,
-  ) {}
-
+export class ListOneUserUseCase extends CasDUsageUtilisateurs {
   execute(id: string): Promise<User | null> {
     return this.repo.findById(id);
   }

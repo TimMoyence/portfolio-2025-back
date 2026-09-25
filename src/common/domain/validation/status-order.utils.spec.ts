@@ -1,5 +1,9 @@
 import { DomainValidationError } from '../errors/DomainValidationError';
-import { resolvePublishableStatus, resolveOrder } from './status-order.utils';
+import {
+  resolveCompteurBorne,
+  resolvePublishableStatus,
+  resolveOrder,
+} from './status-order.utils';
 
 describe('resolvePublishableStatus', () => {
   it('devrait retourner PUBLISHED par defaut si null ou undefined', () => {
@@ -72,6 +76,32 @@ describe('resolveOrder', () => {
   it('devrait inclure le nom du champ dans le message d erreur', () => {
     expect(() => resolveOrder(-1, 'project order')).toThrow(
       'Invalid project order',
+    );
+  });
+});
+
+describe('resolveCompteurBorne', () => {
+  it('devrait retourner 0 par defaut si null ou undefined', () => {
+    expect(resolveCompteurBorne(null, 'clicks', 5)).toBe(0);
+    expect(resolveCompteurBorne(undefined, 'clicks', 5)).toBe(0);
+  });
+
+  it('devrait accepter un entier jusqu a la borne incluse', () => {
+    expect(resolveCompteurBorne(5, 'clicks', 5)).toBe(5);
+  });
+
+  it('devrait rejeter un entier au dela de la borne', () => {
+    expect(() => resolveCompteurBorne(6, 'clicks', 5)).toThrow(
+      'Invalid clicks',
+    );
+  });
+
+  it('devrait rejeter un entier negatif ou un non entier', () => {
+    expect(() => resolveCompteurBorne(-1, 'clicks', 5)).toThrow(
+      DomainValidationError,
+    );
+    expect(() => resolveCompteurBorne(1.5, 'clicks', 5)).toThrow(
+      DomainValidationError,
     );
   });
 });

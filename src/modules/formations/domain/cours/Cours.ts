@@ -15,7 +15,7 @@ export type AuMoinsUn<T> = readonly [T, ...T[]];
 export type Modalite = 'solo' | 'binome' | 'groupe' | 'classe';
 export type RegimeVerrou = 'ouvert' | 'focus' | 'examen';
 
-export interface QuestionLibre {
+interface QuestionLibre {
   readonly id: string;
   readonly question: string;
   readonly placeholder?: string;
@@ -104,53 +104,54 @@ function confusionsDe<P extends { readonly confusion: ConfusionId }>(
   ) as unknown as AuMoinsUn<ConfusionId>;
 }
 
+function questionTiree<D, T>(
+  definition: DefinitionCommune<D> & {
+    readonly pieges: AuMoinsUn<{ readonly confusion: ConfusionId }>;
+  },
+  tirer: (donnees: D) => T,
+): QuestionCommune & { readonly generer: (tirage: Tirage) => T } {
+  return {
+    id: definition.id,
+    concept: definition.concept,
+    noteCompte: definition.noteCompte,
+    confusions: confusionsDe(definition.pieges),
+    generer: (tirage) => tirer(definition.donnees(tirage)),
+  };
+}
+
 export function questionNumerique<D>(
   definition: DefinitionNumerique<D>,
 ): QuestionNumerique {
   return {
-    id: definition.id,
+    ...questionTiree<D, QuestionNumeriqueTiree>(definition, (donnees) => ({
+      type: 'numeric',
+      enonce: definition.enonce(donnees),
+      unite: definition.unite,
+      solution: definition.solution(donnees),
+      pieges: definition.pieges.map((piege) => ({
+        confusion: piege.confusion,
+        valeur: piege.valeur(donnees),
+      })),
+    })),
     type: 'numeric',
-    concept: definition.concept,
-    noteCompte: definition.noteCompte,
     tolerance: definition.tolerance,
-    confusions: confusionsDe(definition.pieges),
-    generer: (tirage) => {
-      const donnees = definition.donnees(tirage);
-      return {
-        type: 'numeric',
-        enonce: definition.enonce(donnees),
-        unite: definition.unite,
-        solution: definition.solution(donnees),
-        pieges: definition.pieges.map((piege) => ({
-          confusion: piege.confusion,
-          valeur: piege.valeur(donnees),
-        })),
-      };
-    },
   };
 }
 
 export function questionVote<D>(definition: DefinitionVote<D>): QuestionVote {
   return {
-    id: definition.id,
+    ...questionTiree<D, QuestionVoteTiree>(definition, (donnees) => ({
+      type: 'vote',
+      enonce: definition.enonce(donnees),
+      bonne: definition.bonne(donnees),
+      bonneLibelle: definition.bonneLibelle?.(donnees),
+      pieges: definition.pieges.map((piege) => ({
+        confusion: piege.confusion,
+        libelle: piege.libelle(donnees),
+        optionId: piege.optionId?.(donnees),
+      })),
+    })),
     type: 'vote',
-    concept: definition.concept,
-    noteCompte: definition.noteCompte,
-    confusions: confusionsDe(definition.pieges),
-    generer: (tirage) => {
-      const donnees = definition.donnees(tirage);
-      return {
-        type: 'vote',
-        enonce: definition.enonce(donnees),
-        bonne: definition.bonne(donnees),
-        bonneLibelle: definition.bonneLibelle?.(donnees),
-        pieges: definition.pieges.map((piege) => ({
-          confusion: piege.confusion,
-          libelle: piege.libelle(donnees),
-          optionId: piege.optionId?.(donnees),
-        })),
-      };
-    },
   };
 }
 
@@ -168,6 +169,14 @@ interface EtapeDeMachine {
   readonly calcul: string;
 }
 
+export type CasProfessionnel = {
+  readonly metier: string;
+  readonly situation: string;
+  readonly geste: string;
+  readonly consequence: string | null;
+  readonly questionsLibres?: AuMoinsUn<QuestionLibre>;
+};
+
 interface ProprietesDesExpositionsHistoriques {
   readonly 'fp-quote': {
     readonly texte: string;
@@ -175,13 +184,7 @@ interface ProprietesDesExpositionsHistoriques {
     readonly source: string | null;
   };
   readonly 'fp-story': ProprietesRecit;
-  readonly 'fp-pro': {
-    readonly metier: string;
-    readonly situation: string;
-    readonly geste: string;
-    readonly consequence: string | null;
-    readonly questionsLibres?: AuMoinsUn<QuestionLibre>;
-  };
+  readonly 'fp-pro': CasProfessionnel;
   readonly 'fp-concept4': {
     readonly parametres: AuMoinsUn<ParametreCurseur>;
     readonly formuleLatexSimplifie: string;

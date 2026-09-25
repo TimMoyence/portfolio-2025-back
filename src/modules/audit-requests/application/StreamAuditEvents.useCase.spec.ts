@@ -59,37 +59,48 @@ describe('StreamAuditEventsUseCase', () => {
     );
   });
 
-  it('devrait completer le stream quand le statut est COMPLETED', async () => {
-    const audit = buildAuditSnapshot({
-      processingStatus: 'COMPLETED',
-      progress: 100,
-      done: true,
-      summaryText: 'Rapport final',
-    });
-    const events = await collectEvents(audit);
+  async function uniqueEvenementTermine(
+    overrides: Partial<AuditSnapshot> = {},
+  ): Promise<Record<string, unknown>> {
+    const events = await collectEvents(
+      buildAuditSnapshot({
+        processingStatus: 'COMPLETED',
+        progress: 100,
+        done: true,
+        summaryText: 'Rapport final',
+        ...overrides,
+      }),
+    );
     expect(events).toHaveLength(1);
     expect(events[0].type).toBe('completed');
-    expect((events[0].data as Record<string, unknown>)['summaryText']).toBe(
-      'Rapport final',
-    );
-    expect(
-      (events[0].data as Record<string, unknown>)['clientReport'],
-    ).toBeNull();
+    return events[0].data as Record<string, unknown>;
+  }
+
+  async function suivreLeFluxApresLeSnapshotInitial() {
+    repo.findById.mockResolvedValue(buildAuditSnapshot());
+    const suivi = { collected: [] as MessageEvent[], completed: false };
+    const subscription = useCase.execute('audit-1').subscribe({
+      next: (event) => suivi.collected.push(event),
+      complete: () => {
+        suivi.completed = true;
+      },
+    });
+    await jest.advanceTimersByTimeAsync(0);
+    expect(suivi.collected).toHaveLength(1);
+    return { suivi, subscription };
+  }
+
+  it('devrait completer le stream quand le statut est COMPLETED', async () => {
+    const data = await uniqueEvenementTermine();
+    expect(data['summaryText']).toBe('Rapport final');
+    expect(data['clientReport']).toBeNull();
   });
 
   it('devrait inclure le clientReport dans l event completed quand il est persiste', async () => {
     const clientReport = buildClientReportSynthesis();
-    const audit = buildAuditSnapshot({
-      processingStatus: 'COMPLETED',
-      progress: 100,
-      done: true,
-      summaryText: 'Rapport final',
+    const data = await uniqueEvenementTermine({
       clientReport: clientReport as never,
     });
-    const events = await collectEvents(audit);
-    expect(events).toHaveLength(1);
-    expect(events[0].type).toBe('completed');
-    const data = events[0].data as Record<string, unknown>;
     expect(data['clientReport']).toEqual(clientReport);
     expect(data['summaryText']).toBe('Rapport final');
     expect(data['keyChecks']).toBeDefined();
@@ -112,47 +123,25 @@ describe('StreamAuditEventsUseCase', () => {
   });
 
   it('devrait ne pas re-emettre si le fingerprint n a pas change', async () => {
-    const audit = buildAuditSnapshot();
-    repo.findById.mockResolvedValue(audit);
-
-    const collected: MessageEvent[] = [];
-    const subscription = useCase.execute('audit-1').subscribe((event) => {
-      collected.push(event);
-    });
-
-    await jest.advanceTimersByTimeAsync(0);
-    expect(collected).toHaveLength(1);
+    const { suivi, subscription } = await suivreLeFluxApresLeSnapshotInitial();
 
     await jest.advanceTimersByTimeAsync(2000);
-    expect(collected).toHaveLength(1);
+    expect(suivi.collected).toHaveLength(1);
 
     subscription.unsubscribe();
   });
 
   it('devrait fermer le stream apres le timeout global de 30 minutes', async () => {
-    const audit = buildAuditSnapshot();
-    repo.findById.mockResolvedValue(audit);
-
-    const collected: MessageEvent[] = [];
-    let completed = false;
-    const subscription = useCase.execute('audit-1').subscribe({
-      next: (event) => collected.push(event),
-      complete: () => {
-        completed = true;
-      },
-    });
-
-    await jest.advanceTimersByTimeAsync(0);
-    expect(collected).toHaveLength(1);
+    const { suivi, subscription } = await suivreLeFluxApresLeSnapshotInitial();
 
     await jest.advanceTimersByTimeAsync(30 * 60 * 1000);
 
-    const timeoutEvent = collected.find((e) => e.type === 'timeout');
+    const timeoutEvent = suivi.collected.find((e) => e.type === 'timeout');
     expect(timeoutEvent).toBeDefined();
     expect((timeoutEvent!.data as Record<string, unknown>)['status']).toBe(
       'TIMEOUT',
     );
-    expect(completed).toBe(true);
+    expect(suivi.completed).toBe(true);
 
     subscription.unsubscribe();
   });

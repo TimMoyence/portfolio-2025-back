@@ -11,6 +11,8 @@ import {
   CACHE_HEADER_KEYS,
   SECURITY_HEADER_KEYS,
   detectCmsHints,
+  detecterLesTraceurs,
+  type EnTetesTechniques,
   extractCanonicalUrls,
   extractInternalLinks,
   extractOpenGraphProperties,
@@ -19,8 +21,9 @@ import {
   hasJsonLdStructuredData,
   pickHeaders,
 } from './shared/html-signals.util';
+import { traiterEnParallele } from './shared/traitement-concurrent.util';
 
-export interface UrlIndexabilityResult {
+export interface UrlIndexabilityResult extends EnTetesTechniques {
   aiSignals?: AiIndexabilitySignals | null;
   url: string;
   finalUrl: string | null;
@@ -30,11 +33,6 @@ export interface UrlIndexabilityResult {
   ttfbMs?: number | null;
   totalResponseMs?: number | null;
   contentLength?: number | null;
-  server?: string | null;
-  xPoweredBy?: string | null;
-  setCookiePatterns?: string[];
-  cacheHeaders?: Record<string, string>;
-  securityHeaders?: Record<string, string>;
   indexable: boolean;
   title?: string | null;
   metaDescription?: string | null;
@@ -91,33 +89,14 @@ export class UrlIndexabilityService {
   ): Promise<UrlIndexabilityResult[]> {
     if (urls.length === 0) return [];
 
-    const concurrency = Math.min(
+    return traiterEnParallele(
+      urls,
       this.config.urlAnalyzeConcurrency,
-      Math.max(1, urls.length),
+      (url) => this.analyzeSingleUrl(url, options.robotsTxt ?? ''),
+      async (result, done, total) => {
+        await options.onUrlAnalyzed?.(result, done, total);
+      },
     );
-    const results = Array<UrlIndexabilityResult>(urls.length);
-    let cursor = 0;
-    let done = 0;
-
-    const worker = async (): Promise<void> => {
-      while (true) {
-        const index = cursor;
-        cursor += 1;
-        if (index >= urls.length) return;
-        const result = await this.analyzeSingleUrl(
-          urls[index],
-          options.robotsTxt ?? '',
-        );
-        results[index] = result;
-        done += 1;
-        if (options.onUrlAnalyzed) {
-          await options.onUrlAnalyzed(result, done, urls.length);
-        }
-      }
-    };
-
-    await Promise.all(Array.from({ length: concurrency }, () => worker()));
-    return results;
   }
 
   private async analyzeSingleUrl(
@@ -215,16 +194,7 @@ export class UrlIndexabilityService {
         openGraphTagCount,
         twitterTags,
         detectedCmsHints: detectCmsHints(lowerHtml),
-        hasAnalytics:
-          /gtag\(|google-analytics|ga\(|matomo|plausible|umami/.test(lowerHtml),
-        hasTagManager: /googletagmanager|gtm\.js|datalayer/.test(lowerHtml),
-        hasPixel: /fbq\(|facebook pixel|tiktok pixel|linkedin insight/.test(
-          lowerHtml,
-        ),
-        hasCookieBanner: /cookie|consent|onetrust|didomi|tarteaucitron/.test(
-          lowerHtml,
-        ),
-        hasForms: $('form').length > 0,
+        ...detecterLesTraceurs(lowerHtml, $),
         ctaHints,
         textExcerpt,
         internalLinks,

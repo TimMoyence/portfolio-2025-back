@@ -2,9 +2,8 @@
 import { NotFoundException } from '@nestjs/common';
 import {
   buildNewsletterSubscriber,
-  createMockEmailDripScheduler,
-  createMockNewsletterMailer,
-  createMockNewsletterSubscriberRepo,
+  buildSubscribeNewsletterCommand,
+  createNewsletterDependances,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
 import { ConfirmSubscriptionUseCase } from '../../application/ConfirmSubscription.useCase';
 import { SubscribeNewsletterUseCase } from '../../application/SubscribeNewsletter.useCase';
@@ -13,19 +12,11 @@ import { NewsletterController } from '../Newsletter.controller';
 import type { SubscribeNewsletterRequestDto } from '../dto/subscribe-newsletter.request.dto';
 
 const VALID_TOKEN = '550e8400-e29b-41d4-a716-446655440000';
-const VALID_DTO: SubscribeNewsletterRequestDto = {
-  email: 'marie@example.com',
-  firstName: 'Marie',
-  locale: 'fr',
-  sourceFormationSlug: 'ia-solopreneurs',
-  termsVersion: '2026-04-10',
-  termsAcceptedAt: new Date('2026-04-10T10:00:00Z'),
-};
+const VALID_DTO: SubscribeNewsletterRequestDto =
+  buildSubscribeNewsletterCommand();
 
 function buildMockUseCases() {
-  const repo = createMockNewsletterSubscriberRepo();
-  const mailer = createMockNewsletterMailer();
-  const scheduler = createMockEmailDripScheduler();
+  const { repo, mailer, scheduler } = createNewsletterDependances();
 
   const subscribeUC = new SubscribeNewsletterUseCase(repo, mailer);
   const confirmUC = new ConfirmSubscriptionUseCase(repo, mailer, scheduler);
@@ -67,6 +58,23 @@ describe('NewsletterController', () => {
     );
   });
 
+  const attendreTokenRefuse = async (
+    reponse: Promise<unknown>,
+    useCase: { execute: unknown },
+  ) => {
+    await expect(reponse).rejects.toThrow(NotFoundException);
+    expect(useCase.execute).not.toHaveBeenCalled();
+  };
+
+  const attendreDesabonnementAvecAccuse = async () => {
+    const result = await controller.unsubscribeEndpoint(VALID_TOKEN);
+
+    expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN, {
+      sendAck: true,
+    });
+    return result;
+  };
+
   describe('POST /newsletter/subscribe', () => {
     it('retourne un message generique 202 sans reveler le statut', async () => {
       const result = await controller.subscribeEndpoint(VALID_DTO);
@@ -97,40 +105,31 @@ describe('NewsletterController', () => {
       expect(result.status).toBeDefined();
     });
 
-    it('leve NotFoundException (404) pour un token malformed', async () => {
-      await expect(controller.confirmEndpoint('not-a-uuid')).rejects.toThrow(
-        NotFoundException,
+    it.each([
+      ['un token malformed', 'not-a-uuid'],
+      ['un token absent', undefined as unknown as string],
+    ])('leve NotFoundException (404) pour %s', async (_cas, token) => {
+      await attendreTokenRefuse(
+        controller.confirmEndpoint(token),
+        mocks.confirmUC,
       );
-      expect(mocks.confirmUC.execute).not.toHaveBeenCalled();
-    });
-
-    it('leve NotFoundException (404) pour un token absent', async () => {
-      await expect(
-        controller.confirmEndpoint(undefined as unknown as string),
-      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('GET /newsletter/unsubscribe', () => {
     it('retourne le statut pour un token UUID v4 valide', async () => {
-      const result = await controller.unsubscribeEndpoint(VALID_TOKEN);
+      const result = await attendreDesabonnementAvecAccuse();
 
-      expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN, {
-        sendAck: true,
-      });
       expect(result.status).toBeDefined();
     });
 
-    it('leve NotFoundException (404) pour un token malformed', async () => {
-      await expect(
-        controller.unsubscribeEndpoint('invalid-token'),
-      ).rejects.toThrow(NotFoundException);
-      expect(mocks.unsubscribeUC.execute).not.toHaveBeenCalled();
-    });
-
-    it('leve NotFoundException (404) pour une chaine vide', async () => {
-      await expect(controller.unsubscribeEndpoint('')).rejects.toThrow(
-        NotFoundException,
+    it.each([
+      ['un token malformed', 'invalid-token'],
+      ['une chaine vide', ''],
+    ])('leve NotFoundException (404) pour %s', async (_cas, token) => {
+      await attendreTokenRefuse(
+        controller.unsubscribeEndpoint(token),
+        mocks.unsubscribeUC,
       );
     });
   });
@@ -154,18 +153,14 @@ describe('NewsletterController', () => {
     });
 
     it('conserve l’accuse de reception sur le lien GET', async () => {
-      await controller.unsubscribeEndpoint(VALID_TOKEN);
-
-      expect(mocks.unsubscribeUC.execute).toHaveBeenCalledWith(VALID_TOKEN, {
-        sendAck: true,
-      });
+      await attendreDesabonnementAvecAccuse();
     });
 
     it('leve NotFoundException (404) pour un token malformed', async () => {
-      await expect(
+      await attendreTokenRefuse(
         controller.unsubscribeOneClickEndpoint('invalid-token'),
-      ).rejects.toThrow(NotFoundException);
-      expect(mocks.unsubscribeUC.execute).not.toHaveBeenCalled();
+        mocks.unsubscribeUC,
+      );
     });
   });
 });

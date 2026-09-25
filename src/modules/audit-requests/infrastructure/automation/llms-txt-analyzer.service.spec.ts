@@ -1,6 +1,14 @@
 import { LlmsTxtAnalyzerService } from './llms-txt-analyzer.service';
 import type { SafeFetchResult, SafeFetchService } from './safe-fetch.service';
 
+type ReponseSimulee = { status: number; body: string } | Error;
+
+const ABSENT: ReponseSimulee = { status: 404, body: '' };
+const LLMS_MINIMAL: ReponseSimulee = {
+  status: 200,
+  body: '# X\n> desc\n## Docs\n- [x](https://x)',
+};
+
 describe('LlmsTxtAnalyzerService', () => {
   const buildResult = (
     url: string,
@@ -19,7 +27,7 @@ describe('LlmsTxtAnalyzerService', () => {
   });
 
   const buildSafeFetch = (
-    responses: Record<string, { status: number; body: string } | Error>,
+    responses: Record<string, ReponseSimulee>,
   ): SafeFetchService =>
     ({
       fetchText: jest.fn((url: string) => {
@@ -34,28 +42,30 @@ describe('LlmsTxtAnalyzerService', () => {
       }),
     }) as unknown as SafeFetchService;
 
-  it('retourne present=false quand llms.txt absent (404)', async () => {
-    const svc = new LlmsTxtAnalyzerService(
+  const analyser = (
+    llms: ReponseSimulee,
+    llmsFull: ReponseSimulee = ABSENT,
+    origine = 'https://example.com',
+  ) =>
+    new LlmsTxtAnalyzerService(
       buildSafeFetch({
-        'https://example.com/llms.txt': { status: 404, body: '' },
+        'https://example.com/llms.txt': llms,
+        'https://example.com/llms-full.txt': llmsFull,
       }),
-    );
-    const result = await svc.analyze('https://example.com');
+    ).analyze(origine);
+
+  it('retourne present=false quand llms.txt absent (404)', async () => {
+    const result = await analyser(ABSENT);
     expect(result.present).toBe(false);
     expect(result.complianceScore).toBe(0);
     expect(result.issues).toContain('Fichier llms.txt absent');
   });
 
   it('parse un llms.txt minimal valide et score > 0', async () => {
-    const body =
-      '# Example\n\n> Short description\n\n## Docs\n\n- [Home](https://example.com): main\n';
-    const svc = new LlmsTxtAnalyzerService(
-      buildSafeFetch({
-        'https://example.com/llms.txt': { status: 200, body },
-        'https://example.com/llms-full.txt': { status: 404, body: '' },
-      }),
-    );
-    const result = await svc.analyze('https://example.com');
+    const result = await analyser({
+      status: 200,
+      body: '# Example\n\n> Short description\n\n## Docs\n\n- [Home](https://example.com): main\n',
+    });
     expect(result.present).toBe(true);
     expect(result.sections.length).toBeGreaterThan(0);
     expect(result.sections[0]).toEqual({ title: 'Docs', links: 1 });
@@ -64,66 +74,36 @@ describe('LlmsTxtAnalyzerService', () => {
   });
 
   it('détecte la présence de llms-full.txt', async () => {
-    const svc = new LlmsTxtAnalyzerService(
-      buildSafeFetch({
-        'https://example.com/llms.txt': {
-          status: 200,
-          body: '# X\n> desc\n## Docs\n- [x](https://x)',
-        },
-        'https://example.com/llms-full.txt': {
-          status: 200,
-          body: 'full content',
-        },
-      }),
-    );
-    const result = await svc.analyze('https://example.com');
+    const result = await analyser(LLMS_MINIMAL, {
+      status: 200,
+      body: 'full content',
+    });
     expect(result.hasFullVariant).toBe(true);
   });
 
   it('signale les problèmes quand aucune section H2 ou blockquote', async () => {
-    const svc = new LlmsTxtAnalyzerService(
-      buildSafeFetch({
-        'https://example.com/llms.txt': {
-          status: 200,
-          body: '# Titre uniquement\n',
-        },
-        'https://example.com/llms-full.txt': { status: 404, body: '' },
-      }),
-    );
-    const result = await svc.analyze('https://example.com');
+    const result = await analyser({
+      status: 200,
+      body: '# Titre uniquement\n',
+    });
     expect(result.present).toBe(true);
     expect(result.issues).toContain('Aucune section H2 détectée');
     expect(result.issues).toContain('Pas de blockquote de description');
   });
 
   it('traite correctement une origine avec slash de fin', async () => {
-    const svc = new LlmsTxtAnalyzerService(
-      buildSafeFetch({
-        'https://example.com/llms.txt': { status: 404, body: '' },
-      }),
-    );
-    const result = await svc.analyze('https://example.com/');
+    const result = await analyser(ABSENT, ABSENT, 'https://example.com/');
     expect(result.url).toBe('https://example.com/llms.txt');
   });
 
   it('retourne absent quand le fetch échoue', async () => {
-    const svc = new LlmsTxtAnalyzerService(
-      buildSafeFetch({
-        'https://example.com/llms.txt': new Error('network down'),
-      }),
-    );
-    const result = await svc.analyze('https://example.com');
+    const result = await analyser(new Error('network down'));
     expect(result.present).toBe(false);
     expect(result.complianceScore).toBe(0);
   });
 
   it('retourne absent quand le body est vide même avec status 200', async () => {
-    const svc = new LlmsTxtAnalyzerService(
-      buildSafeFetch({
-        'https://example.com/llms.txt': { status: 200, body: '' },
-      }),
-    );
-    const result = await svc.analyze('https://example.com');
+    const result = await analyser({ status: 200, body: '' });
     expect(result.present).toBe(false);
   });
 
@@ -141,16 +121,10 @@ describe('LlmsTxtAnalyzerService', () => {
       '- [Quickstart](https://example.com/qs): start',
       'Some filler text to grow size above threshold '.repeat(10),
     ].join('\n');
-    const svc = new LlmsTxtAnalyzerService(
-      buildSafeFetch({
-        'https://example.com/llms.txt': { status: 200, body },
-        'https://example.com/llms-full.txt': {
-          status: 200,
-          body: 'full',
-        },
-      }),
+    const result = await analyser(
+      { status: 200, body },
+      { status: 200, body: 'full' },
     );
-    const result = await svc.analyze('https://example.com');
     expect(result.sections).toHaveLength(2);
     expect(result.sections[0].links).toBe(2);
     expect(result.sections[1].links).toBe(1);
@@ -159,16 +133,7 @@ describe('LlmsTxtAnalyzerService', () => {
   });
 
   it('gère l échec du check llms-full.txt en silence', async () => {
-    const svc = new LlmsTxtAnalyzerService(
-      buildSafeFetch({
-        'https://example.com/llms.txt': {
-          status: 200,
-          body: '# X\n> desc\n## Docs\n- [x](https://x)',
-        },
-        'https://example.com/llms-full.txt': new Error('boom'),
-      }),
-    );
-    const result = await svc.analyze('https://example.com');
+    const result = await analyser(LLMS_MINIMAL, new Error('boom'));
     expect(result.present).toBe(true);
     expect(result.hasFullVariant).toBe(false);
   });

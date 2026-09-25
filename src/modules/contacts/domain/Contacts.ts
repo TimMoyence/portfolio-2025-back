@@ -1,5 +1,8 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import { requireText } from '../../../common/domain/validation/domain-validators';
+import {
+  requireText,
+  requireValidDate,
+} from '../../../common/domain/validation/domain-validators';
 import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import { LocaleCode } from '../../../common/domain/value-objects/LocaleCode';
 import { PhoneNumber } from '../../../common/domain/value-objects/PhoneNumber';
@@ -53,12 +56,7 @@ export class Contacts {
     }
 
     if (props.termsAcceptedAt !== undefined) {
-      if (
-        !(props.termsAcceptedAt instanceof Date) ||
-        Number.isNaN(props.termsAcceptedAt.getTime())
-      ) {
-        throw new DomainValidationError('Invalid terms accepted date');
-      }
+      requireValidDate(props.termsAcceptedAt, 'terms accepted');
     }
 
     const contact = new Contacts();

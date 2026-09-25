@@ -4,10 +4,7 @@ import {
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
-import {
-  ParticipantNotFoundError,
-  SessionNotOwnedError,
-} from '../../domain/errors/FormationErrors';
+import { verifierActionSurParticipant } from '../../../../../test/helpers/gardes-de-seance';
 import { LibererPosteUseCase } from '../LibererPoste.useCase';
 
 const TEACHER_ID = 'teacher-uuid';
@@ -18,6 +15,9 @@ describe('LibererPosteUseCase', () => {
   let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: LibererPosteUseCase;
 
+  const libererPar = (teacherId: string) =>
+    sut.execute('session-uuid', teacherId, PARTICIPANT_ID);
+
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     sessions.findById.mockResolvedValue(buildSessionRecord());
@@ -26,7 +26,7 @@ describe('LibererPosteUseCase', () => {
   });
 
   it('S1 · oublie le secret de reprise pour que l etudiant reprenne sa place depuis un autre poste', async () => {
-    await sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID);
+    await libererPar(TEACHER_ID);
 
     expect(participants.libererPoste).toHaveBeenCalledWith(
       'session-uuid',
@@ -34,18 +34,12 @@ describe('LibererPosteUseCase', () => {
     );
   });
 
-  it('S1 · refuse un formateur qui n est pas proprietaire de la seance', async () => {
-    await expect(
-      sut.execute('session-uuid', 'autre-teacher-uuid', PARTICIPANT_ID),
-    ).rejects.toThrow(SessionNotOwnedError);
-    expect(participants.libererPoste).not.toHaveBeenCalled();
-  });
-
-  it('S1 · signale un participant absent de la seance ou evince', async () => {
-    participants.libererPoste.mockResolvedValue(false);
-
-    await expect(
-      sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
-    ).rejects.toThrow(ParticipantNotFoundError);
-  });
+  verifierActionSurParticipant(
+    'S1 · signale un participant absent de la seance ou evince',
+    () => ({
+      sessions,
+      executerPar: libererPar,
+      action: participants.libererPoste,
+    }),
+  );
 });

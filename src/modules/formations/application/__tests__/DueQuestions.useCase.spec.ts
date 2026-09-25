@@ -6,11 +6,10 @@ import {
   createMockMasteryRepo,
   createMockParticipantsRepo,
   createMockSessionsRepo,
+  QUESTION_DE_CAPITALISATION,
 } from '../../../../../test/factories/formation.factory';
-import {
-  ParticipantNotFoundError,
-  SessionNotFoundError,
-} from '../../domain/errors/FormationErrors';
+import { verifierIntrouvables } from '../../../../../test/helpers/gardes-de-seance';
+import { ParticipantNotFoundError } from '../../domain/errors/FormationErrors';
 import type { MasteryRecord } from '../../domain/IMastery.repository';
 import type { Boite } from '../../domain/LeitnerBox';
 import { DueQuestionsUseCase } from '../DueQuestions.useCase';
@@ -31,13 +30,7 @@ const BAREME = buildBareme({
       concept: 'amortissement',
       noteCompte: true,
     },
-    {
-      id: 'Q-CAP-03',
-      type: 'numeric',
-      concept: 'capitalisation',
-      tolerance: { type: 'relative', valeur: 0.005 },
-      noteCompte: true,
-    },
+    QUESTION_DE_CAPITALISATION,
     {
       id: 'Q-TEG-02',
       type: 'numeric',
@@ -147,28 +140,25 @@ describe('DueQuestionsUseCase', () => {
     );
   });
 
-  it('ne rend aucune question d un autre etudiant', async () => {
-    const reponse = await demander();
-
+  const attendreRienDeLea = (reponse: Awaited<ReturnType<typeof demander>>) => {
     expect(reponse.map((question) => question.questionId)).not.toContain(
       QUESTION_DE_LEA,
     );
     expect(reponse.map((question) => question.concept)).not.toContain(
       CONCEPT_DE_LEA,
     );
-    expect(mastery.findByStudentKey).toHaveBeenCalledWith(THEO);
     expect(reponse).toEqual(ATTENDU_DE_THEO);
+  };
+
+  it('ne rend aucune question d un autre etudiant', async () => {
+    attendreRienDeLea(await demander());
+    expect(mastery.findByStudentKey).toHaveBeenCalledWith(THEO);
   });
 
   it('ecarte une maitrise que le depot rend sans porter la cle demandee', async () => {
     mastery.findByStudentKey.mockResolvedValue(BASE);
 
-    const reponse = await demander();
-
-    expect(reponse.map((question) => question.questionId)).not.toContain(
-      QUESTION_DE_LEA,
-    );
-    expect(reponse).toEqual(ATTENDU_DE_THEO);
+    attendreRienDeLea(await demander());
   });
 
   it('refuse de servir un participant inscrit dans une autre seance', async () => {
@@ -206,15 +196,10 @@ describe('DueQuestionsUseCase', () => {
     await expect(demander()).resolves.toEqual([]);
   });
 
-  it('refuse une seance inconnue', async () => {
-    sessions.findById.mockResolvedValue(null);
-
-    await expect(demander()).rejects.toThrow(SessionNotFoundError);
-  });
-
-  it('refuse un participant introuvable', async () => {
-    participants.findById.mockResolvedValue(null);
-
-    await expect(demander()).rejects.toThrow(ParticipantNotFoundError);
-  });
+  verifierIntrouvables(() => ({
+    sessions,
+    participants,
+    executer: demander,
+    effetsInterdits: () => [mastery.findByStudentKey],
+  }));
 });

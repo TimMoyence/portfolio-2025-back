@@ -1,6 +1,10 @@
-import { INestApplication } from '@nestjs/common';
+import type { ModuleMetadata } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  DocumentBuilder,
+  type SwaggerDocumentOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 
 import {
   createLegacyUseCaseStubs,
@@ -86,30 +90,38 @@ const ROUTES_ACTIVES_DU_CONTRAT = [
 
 const ROUTES_A_VENIR_DU_CONTRAT: readonly string[] = [];
 
+type DocumentOpenApi = ReturnType<typeof SwaggerModule.createDocument>;
+
+async function documenterLeModule(
+  metadonnees: ModuleMetadata,
+  constructeur: DocumentBuilder,
+  options?: SwaggerDocumentOptions,
+): Promise<DocumentOpenApi> {
+  const moduleRef = await Test.createTestingModule(metadonnees).compile();
+  const app = moduleRef.createNestApplication();
+  app.setGlobalPrefix('api');
+  await app.init();
+  try {
+    return SwaggerModule.createDocument(app, constructeur.build(), options);
+  } finally {
+    await app.close();
+  }
+}
+
 describe('OpenAPI legacy contract (phase 11)', () => {
-  let app: INestApplication;
+  let document: DocumentOpenApi;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: LEGACY_CONTROLLERS,
-      providers: legacyControllerProviders(createLegacyUseCaseStubs()),
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-    app.setGlobalPrefix('api');
-    await app.init();
-  });
-
-  afterAll(async () => {
-    await app.close();
+    document = await documenterLeModule(
+      {
+        controllers: LEGACY_CONTROLLERS,
+        providers: legacyControllerProviders(createLegacyUseCaseStubs()),
+      },
+      new DocumentBuilder().setTitle('Contract Test').setVersion('1.0'),
+    );
   });
 
   it('keeps legacy path contracts stable', () => {
-    const document = SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder().setTitle('Contract Test').setVersion('1.0').build(),
-    );
-
     const pathBySuffix = (suffix: string) => {
       const path = Object.keys(document.paths).find((candidate) =>
         candidate.endsWith(suffix),
@@ -129,10 +141,6 @@ describe('OpenAPI legacy contract (phase 11)', () => {
   });
 
   it('keeps legacy DTO schemas stable', () => {
-    const document = SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder().setTitle('Contract Test').setVersion('1.0').build(),
-    );
     const schemas = document.components?.schemas ?? {};
 
     expect({
@@ -154,47 +162,35 @@ describe('OpenAPI legacy contract (phase 11)', () => {
 });
 
 describe('OpenAPI core contract', () => {
-  let app: INestApplication;
-  let document: ReturnType<typeof SwaggerModule.createDocument>;
+  let document: DocumentOpenApi;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [
-        UsersController,
-        AuthController,
-        ContactsController,
-        CookieConsentsController,
-        AuditsController,
-      ],
-      providers: [
-        RolesGuard,
+    document = await documenterLeModule(
+      {
+        controllers: [
+          UsersController,
+          AuthController,
+          ContactsController,
+          CookieConsentsController,
+          AuditsController,
+        ],
+        providers: [
+          RolesGuard,
 
-        { provide: ListUsersUseCase, useValue: stub() },
-        { provide: ListOneUserUseCase, useValue: stub() },
-        { provide: UpdateUsersUseCase, useValue: stub() },
-        { provide: DeleteUsersUseCase, useValue: stub() },
+          { provide: ListUsersUseCase, useValue: stub() },
+          { provide: ListOneUserUseCase, useValue: stub() },
+          { provide: UpdateUsersUseCase, useValue: stub() },
+          { provide: DeleteUsersUseCase, useValue: stub() },
 
-        ...authControllerProviders(createAuthUseCaseStubs()),
-        ...coreControllerProviders(createCoreUseCaseStubs()),
-      ],
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-    app.setGlobalPrefix('api');
-    await app.init();
-
-    document = SwaggerModule.createDocument(
-      app,
+          ...authControllerProviders(createAuthUseCaseStubs()),
+          ...coreControllerProviders(createCoreUseCaseStubs()),
+        ],
+      },
       new DocumentBuilder()
         .setTitle('Core Contract Test')
         .setVersion('1.0')
-        .addBearerAuth()
-        .build(),
+        .addBearerAuth(),
     );
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   const pathsContaining = (segment: string) =>
@@ -225,15 +221,11 @@ describe('OpenAPI core contract', () => {
 
 describe('OpenAPI contrat B2-01', () => {
   it('fige les schemas des DTO du § 9.5 sans exposer de chemin', async () => {
-    const moduleRef = await Test.createTestingModule({}).compile();
-    const app = moduleRef.createNestApplication();
-    await app.init();
-    const document = SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder().setTitle('Contrat B2-01').setVersion('1.0').build(),
+    const document = await documenterLeModule(
+      {},
+      new DocumentBuilder().setTitle('Contrat B2-01').setVersion('1.0'),
       { extraModels: DTO_DU_CONTRAT },
     );
-    await app.close();
 
     expect(document.paths).toEqual({});
     expect(document.components?.schemas).toMatchSnapshot();

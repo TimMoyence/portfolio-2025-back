@@ -8,6 +8,7 @@ import {
   createMockContactsRepo,
   createMockContactNotifier,
 } from '../../../../test/factories/contacts.factory';
+import { attendreResultatEtEffetsUniques } from '../../../../test/helpers/effets-uniques';
 
 describe('CreateContactsUseCase', () => {
   let useCase: CreateContactsUseCase;
@@ -48,9 +49,12 @@ describe('CreateContactsUseCase', () => {
 
       const result = await useCase.execute(validCommand);
 
-      expect(result).toEqual(expectedResponse);
-      expect(repo.create).toHaveBeenCalledTimes(1);
-      expect(notifier.sendContactNotification).toHaveBeenCalledTimes(1);
+      attendreResultatEtEffetsUniques(
+        result,
+        expectedResponse,
+        repo.create,
+        notifier.sendContactNotification,
+      );
     },
   );
 });

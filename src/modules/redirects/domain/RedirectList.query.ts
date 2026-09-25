@@ -1,6 +1,6 @@
 import { SortOrder } from '../../../common/domain/pagination.types';
 
-export type RedirectSortBy = 'slug' | 'clicks' | 'createdAt';
+type RedirectSortBy = 'slug' | 'clicks' | 'createdAt';
 
 export interface RedirectListQuery {
   page: number;

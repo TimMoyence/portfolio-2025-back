@@ -1,5 +1,6 @@
 import type { Cours, Ecran, Question } from '../contrats/cours';
 import type { EcranPublic, TirageDuCours } from '../contrats/tirage';
+import { cueillirDansArbre, estObjet } from './ArbreDeValeurs';
 import type { CorrigeProduction } from './Corrige';
 import { questionsDe } from './Cours';
 import { projeterCatalogue } from './Diffusion';
@@ -110,14 +111,6 @@ function chiffresSignificatifs(valeur: number): number {
   return fin - debut;
 }
 
-function estObjet(
-  valeur: unknown,
-): valeur is Readonly<Record<string, unknown>> {
-  return (
-    typeof valeur === 'object' && valeur !== null && !Array.isArray(valeur)
-  );
-}
-
 function chainesDe(valeur: unknown, exclue: string | null): string[] {
   if (typeof valeur === 'string') {
     return [valeur];
@@ -135,16 +128,10 @@ function chainesDe(valeur: unknown, exclue: string | null): string[] {
 }
 
 function valeursDesGraphiques(valeur: unknown): number[] {
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => valeursDesGraphiques(element));
-  }
-  if (!estObjet(valeur)) {
-    return [];
-  }
-  return Object.entries(valeur).flatMap(([cle, element]) =>
+  return cueillirDansArbre(valeur, (cle, element) =>
     cle === 'values' && Array.isArray(element)
       ? element.filter((nombre): nombre is number => typeof nombre === 'number')
-      : valeursDesGraphiques(element),
+      : null,
   );
 }
 

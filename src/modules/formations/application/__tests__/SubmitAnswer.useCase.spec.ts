@@ -25,6 +25,7 @@ import {
   PhaseFermeeError,
   SessionNotStartedError,
 } from '../../domain/errors/FormationErrors';
+import type { SubmitAnswerCommand } from '../dto/SubmitAnswer.command';
 import { SubmitAnswerUseCase } from '../SubmitAnswer.useCase';
 
 const EN_RYTHME_LIBRE = {
@@ -53,22 +54,40 @@ describe('SubmitAnswerUseCase', () => {
     );
   });
 
+  const soumettre = () => sut.execute(commande);
+
   verifierContratDEnregistrement(() => ({
     dependances: deps,
     courseSlug: buildCoursDuBaremeV1().slug,
-    executer: () => sut.execute(commande),
+    executer: soumettre,
   }));
 
-  it('ne signale aucune activite quand la reponse est refusee', async () => {
+  const repondreA = (
+    questionId: string,
+    valeur: SubmitAnswerCommand['valeur'],
+  ) => sut.execute({ ...commande, questionId, valeur });
+
+  const soumettreEnDouble = async () => {
     deps.answers.existsFor.mockResolvedValue(true);
-    await expect(sut.execute(commande)).rejects.toThrow(
-      AnswerAlreadySubmittedError,
+    await expect(soumettre()).rejects.toThrow(AnswerAlreadySubmittedError);
+  };
+
+  const sessionDeVote = (pieges?: Parameters<typeof buildVoteBareme>[0]) => {
+    deps.sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        ...EN_RYTHME_LIBRE,
+        bareme: buildVoteBareme(pieges),
+      }),
     );
+  };
+
+  it('ne signale aucune activite quand la reponse est refusee', async () => {
+    await soumettreEnDouble();
     expect(deps.cache.signalerActivite).not.toHaveBeenCalled();
   });
 
   it('accepte une reponse juste', async () => {
-    const result = await sut.execute(commande);
+    const result = await soumettre();
     expect(result).toEqual({
       correcte: true,
       misconception: null,
@@ -99,10 +118,7 @@ describe('SubmitAnswerUseCase', () => {
   });
 
   it('refuse une seconde soumission sur la meme question', async () => {
-    deps.answers.existsFor.mockResolvedValue(true);
-    await expect(sut.execute(commande)).rejects.toThrow(
-      AnswerAlreadySubmittedError,
-    );
+    await soumettreEnDouble();
   });
 
   it('refuse une question absente du bareme', async () => {
@@ -132,7 +148,7 @@ describe('SubmitAnswerUseCase', () => {
     deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'attente' }),
     );
-    await expect(sut.execute(commande)).rejects.toThrow(SessionNotStartedError);
+    await expect(soumettre()).rejects.toThrow(SessionNotStartedError);
     expect(deps.answers.create).not.toHaveBeenCalled();
     expect(deps.mastery.enregistrerTentative).not.toHaveBeenCalled();
   });
@@ -141,18 +157,16 @@ describe('SubmitAnswerUseCase', () => {
     deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({ etat: 'attente' }),
     );
-    await expect(sut.execute(commande)).rejects.toThrow(/pas encore commencé/);
+    await expect(soumettre()).rejects.toThrow(/pas encore commencé/);
   });
 
   it('refuse une soumission d un participant introuvable', async () => {
     deps.participants.findById.mockResolvedValue(null);
-    await expect(sut.execute(commande)).rejects.toThrow(
-      ParticipantNotFoundError,
-    );
+    await expect(soumettre()).rejects.toThrow(ParticipantNotFoundError);
   });
 
   it('enregistre une tentative reussie sur le concept de la question', async () => {
-    await sut.execute(commande);
+    await soumettre();
     expect(deps.mastery.enregistrerTentative).toHaveBeenCalledWith(
       expect.objectContaining({
         studentKey: '11111111-1111-4111-8111-111111111111',
@@ -171,21 +185,14 @@ describe('SubmitAnswerUseCase', () => {
   });
 
   it('enregistre la duree de reponse', async () => {
-    await sut.execute(commande);
+    await soumettre();
     expect(deps.answers.create).toHaveBeenCalledWith(
       expect.objectContaining({ dureeMs: 42000 }),
     );
   });
 
   it('refuse une valeur hors des options connues sur une question de vote', async () => {
-    deps.sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        ...EN_RYTHME_LIBRE,
-        bareme: buildVoteBareme([
-          { valeur: 'a', misconception: 'interet-simple' },
-        ]),
-      }),
-    );
+    sessionDeVote([{ valeur: 'a', misconception: 'interet-simple' }]);
     await expect(
       sut.execute({ ...commande, valeur: '<img src=x onerror=alert(1)>' }),
     ).rejects.toThrow(DomainValidationError);
@@ -193,22 +200,13 @@ describe('SubmitAnswerUseCase', () => {
   });
 
   it('accepte je ne sais pas sur une question de vote', async () => {
-    deps.sessions.findById.mockResolvedValue(
-      buildSessionRecord({ ...EN_RYTHME_LIBRE, bareme: buildVoteBareme() }),
-    );
+    sessionDeVote();
     const result = await sut.execute({ ...commande, valeur: NE_SAIT_PAS });
     expect(result.correcte).toBe(false);
   });
 
   it('traduit une misconception connue de la banque par son libelle humain', async () => {
-    deps.sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        ...EN_RYTHME_LIBRE,
-        bareme: buildVoteBareme([
-          { valeur: 'a', misconception: 'base-arrivee' },
-        ]),
-      }),
-    );
+    sessionDeVote([{ valeur: 'a', misconception: 'base-arrivee' }]);
     const result = await sut.execute({ ...commande, valeur: 'a' });
     expect(result.libelleConfusion).toBe(libelleDeConfusion('base-arrivee'));
   });
@@ -223,66 +221,53 @@ describe('SubmitAnswerUseCase', () => {
       );
     });
 
+    const PART_MARKETPLACE = 'b2-01-a2-part-marketplace';
+
+    const projeterLEcranDeLaPart = () => {
+      deps.sessions.findById.mockResolvedValue(
+        buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
+      );
+    };
+
     it('refuse une reponse visant un ecran que le formateur n a pas projete', async () => {
-      await expect(
-        sut.execute({
-          ...commande,
-          questionId: 'b2-01-a2-part-marketplace',
-          valeur: 45.478261,
-        }),
-      ).rejects.toThrow(EcranNonServiError);
+      await expect(repondreA(PART_MARKETPLACE, 45.478261)).rejects.toThrow(
+        EcranNonServiError,
+      );
       expect(deps.answers.create).not.toHaveBeenCalled();
     });
 
     it('accepte la reponse une fois l ecran projete', async () => {
-      deps.sessions.findById.mockResolvedValue(
-        buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
-      );
+      projeterLEcranDeLaPart();
 
-      const result = await sut.execute({
-        ...commande,
-        questionId: 'b2-01-a2-part-marketplace',
-        valeur: 45.478261,
-      });
+      const result = await repondreA(PART_MARKETPLACE, 45.478261);
 
       expect(result.correcte).toBe(true);
     });
 
     it('corrige un vote par son identifiant stable, dans les solutions communes', async () => {
-      const result = await sut.execute({
-        ...commande,
-        questionId: 'b2-01-a1-diagnostic',
-        valeur: 'plus-25-pct-ecd953a1',
-      });
+      const result = await repondreA(
+        'b2-01-a1-diagnostic',
+        'plus-25-pct-ecd953a1',
+      );
 
       expect(result.correcte).toBe(true);
     });
 
     it('corrige une question numérique par l écart de la graine du participant', async () => {
-      deps.sessions.findById.mockResolvedValue(
-        buildSessionRecord({ bareme: buildBaremeV2(), ecranCourant: 13 }),
-      );
+      projeterLEcranDeLaPart();
       deps.participants.findById.mockResolvedValue(
         buildParticipantRecord({ seed: 12 }),
       );
 
-      const result = await sut.execute({
-        ...commande,
-        questionId: 'b2-01-a2-part-marketplace',
-        valeur: 12.5,
-      });
+      const result = await repondreA(PART_MARKETPLACE, 12.5);
 
       expect(result.correcte).toBe(true);
     });
 
     it('refuse une production, qui a sa propre route', async () => {
-      await expect(
-        sut.execute({
-          ...commande,
-          questionId: 'b2-01-a4-feuille-canaux',
-          valeur: 1,
-        }),
-      ).rejects.toThrow(DomainValidationError);
+      await expect(repondreA('b2-01-a4-feuille-canaux', 1)).rejects.toThrow(
+        DomainValidationError,
+      );
       expect(deps.answers.create).not.toHaveBeenCalled();
     });
   });
@@ -325,11 +310,7 @@ describe('SubmitAnswerUseCase', () => {
     it('accepte la principale avant toute phase pilotée', async () => {
       deps.sessions.findById.mockResolvedValue(seanceEnPhase());
 
-      const result = await sut.execute({
-        ...commande,
-        questionId: 'Q-PRINCIPALE',
-        valeur: 'a',
-      });
+      const result = await repondreA('Q-PRINCIPALE', 'a');
 
       expect(result.correcte).toBe(true);
     });
@@ -337,33 +318,29 @@ describe('SubmitAnswerUseCase', () => {
     it('refuse la jumelle avant le revote', async () => {
       deps.sessions.findById.mockResolvedValue(seanceEnPhase());
 
-      await expect(
-        sut.execute({ ...commande, questionId: 'Q-JUMELLE', valeur: 'b' }),
-      ).rejects.toThrow(PhaseFermeeError);
+      await expect(repondreA('Q-JUMELLE', 'b')).rejects.toThrow(
+        PhaseFermeeError,
+      );
       expect(deps.answers.create).not.toHaveBeenCalled();
     });
 
     it('ferme les deux questions pendant la discussion', async () => {
       deps.sessions.findById.mockResolvedValue(seanceEnPhase('discussion'));
 
-      await expect(
-        sut.execute({ ...commande, questionId: 'Q-PRINCIPALE', valeur: 'a' }),
-      ).rejects.toThrow(PhaseFermeeError);
+      await expect(repondreA('Q-PRINCIPALE', 'a')).rejects.toThrow(
+        PhaseFermeeError,
+      );
     });
 
     it('ouvre la jumelle seule au revote', async () => {
       deps.sessions.findById.mockResolvedValue(seanceEnPhase('revote'));
 
-      const result = await sut.execute({
-        ...commande,
-        questionId: 'Q-JUMELLE',
-        valeur: 'b',
-      });
+      const result = await repondreA('Q-JUMELLE', 'b');
 
       expect(result.correcte).toBe(true);
-      await expect(
-        sut.execute({ ...commande, questionId: 'Q-PRINCIPALE', valeur: 'a' }),
-      ).rejects.toThrow(PhaseFermeeError);
+      await expect(repondreA('Q-PRINCIPALE', 'a')).rejects.toThrow(
+        PhaseFermeeError,
+      );
     });
   });
 });

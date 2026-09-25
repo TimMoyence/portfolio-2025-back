@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Body,
-  Controller,
   Get,
   Header,
   HttpCode,
@@ -13,28 +12,22 @@ import {
   Post,
   Req,
   Sse,
-  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { EMPTY, Observable } from 'rxjs';
-import { Roles } from '../../../common/interfaces/auth/roles.decorator';
-import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { CloseSessionUseCase } from '../application/CloseSession.useCase';
 import { ControlSessionUseCase } from '../application/ControlSession.useCase';
 import { GetSessionResultsUseCase } from '../application/GetSessionResults.useCase';
-import type { ResultatsDeSeance } from '../application/GetSessionResults.useCase';
+import type { ResultatsDeSeance } from '../domain/contrats/resultats';
 import { LireDerouleUseCase } from '../application/LireDeroule.useCase';
 import { ListFreeResponsesUseCase } from '../application/ListFreeResponses.useCase';
 import { OpenSessionUseCase } from '../application/OpenSession.useCase';
@@ -51,14 +44,14 @@ import { OpenSessionResponseDto } from './dto/open-session.response.dto';
 import { SessionResultsResponseDto } from './dto/contrat/session-results.response.dto';
 import {
   acteurDe,
+  ControleurFormateur,
   LectureDeSeance,
   PilotageDeSeance,
-  ROLE_FORMATEUR,
 } from './formations-acces';
 import {
-  FENETRE_THROTTLE_MS,
   LIMITE_CONTROLE_PAR_MINUTE,
   LIMITE_SYNTHESE_PAR_MINUTE,
+  LimiteParMinute,
 } from './formations-throttling';
 
 /**
@@ -71,11 +64,7 @@ import {
  * cas d usage, qui applique la regle de SessionOwnership.ts : le proprietaire
  * seul pilote, le proprietaire ou un administrateur lit.
  */
-@ApiTags('formations')
-@ApiBearerAuth()
-@Controller('formations')
-@UseGuards(RolesGuard)
-@Roles(ROLE_FORMATEUR)
+@ControleurFormateur()
 export class FormationsPresenterController {
   constructor(
     private readonly openSession: OpenSessionUseCase,
@@ -120,12 +109,7 @@ export class FormationsPresenterController {
   }
 
   @Patch('sessions/:id/control')
-  @Throttle({
-    default: {
-      limit: LIMITE_CONTROLE_PAR_MINUTE,
-      ttl: FENETRE_THROTTLE_MS,
-    },
-  })
+  @LimiteParMinute(LIMITE_CONTROLE_PAR_MINUTE)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Change l ecran courant ou le rythme de la session',
@@ -220,7 +204,7 @@ export class FormationsPresenterController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() request: Request,
   ): Promise<ResultatsDeSeance> {
-    return this.results.execute(id, acteurDe(request));
+    return this.getResults(id, request);
   }
 
   @Get('sessions/:id/deroule')
@@ -259,12 +243,7 @@ export class FormationsPresenterController {
     };
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_SYNTHESE_PAR_MINUTE,
-      ttl: FENETRE_THROTTLE_MS,
-    },
-  })
+  @LimiteParMinute(LIMITE_SYNTHESE_PAR_MINUTE)
   @Get('sessions/:id/rappels/synthese')
   @LectureDeSeance()
   @ApiOperation({

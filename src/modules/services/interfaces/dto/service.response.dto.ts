@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { PublishableStatus } from '../../../../common/domain/types/publishable-status';
+import { StatutPublie } from '../../../../common/interfaces/dto/champs-de-contenu.decorator';
 import { Services } from '../../domain/Services';
 
 export class ServiceResponseDto {
@@ -14,11 +16,8 @@ export class ServiceResponseDto {
   @ApiProperty({ example: '/icons/seo.svg', required: false })
   icon?: string;
 
-  @ApiProperty({
-    example: 'PUBLISHED',
-    enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
-  })
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  @StatutPublie()
+  status: PublishableStatus;
 
   @ApiProperty({ example: 0 })
   order: number;

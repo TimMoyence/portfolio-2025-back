@@ -22,66 +22,63 @@ describe('RolesGuard', () => {
     return createHttpExecutionContext(user ? { user } : {});
   }
 
-  it('devrait autoriser si aucun role n est requis (@Roles non defini)', () => {
-    reflector.getAllAndOverride.mockReturnValue(undefined);
-    const context = createMockContext();
+  function contexteExigeant(
+    rolesRequis: string[] | undefined,
+    rolesPortes?: string[],
+  ): ExecutionContext {
+    reflector.getAllAndOverride.mockReturnValue(rolesRequis);
+    return createMockContext(
+      rolesPortes === undefined
+        ? undefined
+        : buildJwtPayload({ roles: rolesPortes }),
+    );
+  }
 
-    expect(guard.canActivate(context)).toBe(true);
+  it.each<[string, string[] | undefined, string[] | undefined]>([
+    [
+      'devrait autoriser si aucun role n est requis (@Roles non defini)',
+      undefined,
+      undefined,
+    ],
+    [
+      'devrait autoriser si @Roles est defini avec un tableau vide',
+      [],
+      undefined,
+    ],
+    [
+      'devrait autoriser si l utilisateur possede un des roles requis',
+      ['admin', 'teacher'],
+      ['teacher'],
+    ],
+    [
+      'devrait autoriser si l utilisateur possede tous les roles requis',
+      ['admin', 'teacher'],
+      ['admin', 'teacher'],
+    ],
+  ])('%s', (_titre, rolesRequis, rolesPortes) => {
+    expect(guard.canActivate(contexteExigeant(rolesRequis, rolesPortes))).toBe(
+      true,
+    );
   });
 
-  it('devrait autoriser si @Roles est defini avec un tableau vide', () => {
-    reflector.getAllAndOverride.mockReturnValue([]);
-    const context = createMockContext();
-
-    expect(guard.canActivate(context)).toBe(true);
-  });
-
-  it('devrait autoriser si l utilisateur possede un des roles requis', () => {
-    reflector.getAllAndOverride.mockReturnValue(['admin', 'teacher']);
-    const payload = buildJwtPayload({ roles: ['teacher'] });
-    const context = createMockContext(payload);
-
-    expect(guard.canActivate(context)).toBe(true);
-  });
-
-  it('devrait autoriser si l utilisateur possede tous les roles requis', () => {
-    reflector.getAllAndOverride.mockReturnValue(['admin', 'teacher']);
-    const payload = buildJwtPayload({
-      roles: ['admin', 'teacher'],
-    });
-    const context = createMockContext(payload);
-
-    expect(guard.canActivate(context)).toBe(true);
-  });
-
-  it('devrait rejeter avec ForbiddenException si l utilisateur n a aucun role requis', () => {
-    reflector.getAllAndOverride.mockReturnValue(['admin']);
-    const payload = buildJwtPayload({ roles: ['teacher'] });
-    const context = createMockContext(payload);
-
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-  });
-
-  it('devrait rejeter avec ForbiddenException si aucun user sur la requete', () => {
-    reflector.getAllAndOverride.mockReturnValue(['admin']);
-    const context = createMockContext();
-
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-  });
-
-  it('devrait rejeter si user.roles est un tableau vide', () => {
-    reflector.getAllAndOverride.mockReturnValue(['admin']);
-    const payload = buildJwtPayload({ roles: [] });
-    const context = createMockContext(payload);
+  it.each<[string, string[] | undefined]>([
+    [
+      'devrait rejeter avec ForbiddenException si l utilisateur n a aucun role requis',
+      ['teacher'],
+    ],
+    [
+      'devrait rejeter avec ForbiddenException si aucun user sur la requete',
+      undefined,
+    ],
+    ['devrait rejeter si user.roles est un tableau vide', []],
+  ])('%s', (_titre, rolesPortes) => {
+    const context = contexteExigeant(['admin'], rolesPortes);
 
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
   });
 
   it('devrait verifier les roles avec getAllAndOverride sur handler et classe', () => {
-    reflector.getAllAndOverride.mockReturnValue(undefined);
-    const context = createMockContext();
-
-    guard.canActivate(context);
+    guard.canActivate(contexteExigeant(undefined));
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(reflector.getAllAndOverride).toHaveBeenCalledWith(

@@ -3,9 +3,9 @@ import {
   buildCoursDeTest,
   creerCatalogueAVersions,
   creerCatalogueDeTest,
+  creerParticipationEnSeance,
 } from '../../../../../test/factories/cours.factory';
 import {
-  buildParticipantRecord,
   buildSessionRecord,
   createMockFreeResponsesRepo,
   createMockParticipantsRepo,
@@ -13,14 +13,19 @@ import {
   createMockSessionStateCache,
 } from '../../../../../test/factories/formation.factory';
 import {
+  verifierGardesDeParticipant,
+  verifierSeanceIntrouvable,
+  verifierSignalementDActivite,
+} from '../../../../../test/helpers/gardes-de-seance';
+import type { PilotageEcran } from '../../domain/contrats/pilotage';
+import type { SessionRecord } from '../../domain/ISessions.repository';
+import {
   ActiviteInconnueError,
   BlankFieldError,
   CoursInconnuError,
   EcranNonServiError,
-  ParticipantNotFoundError,
   PhaseFermeeError,
   SessionClosedError,
-  SessionNotFoundError,
   SessionNotStartedError,
 } from '../../domain/errors/FormationErrors';
 import { SaveFreeResponseUseCase } from '../SaveFreeResponse.useCase';
@@ -37,6 +42,15 @@ const REPONSE = {
 const COURS = buildCoursDeTest();
 const RANG_DE_L_EXEMPLE = 5;
 
+function seanceEnCours(overrides: Partial<SessionRecord> = {}): SessionRecord {
+  return buildSessionRecord({
+    etat: 'en_cours',
+    courseSlug: COURS.slug,
+    ecranCourant: RANG_DE_L_EXEMPLE,
+    ...overrides,
+  });
+}
+
 describe('SaveFreeResponseUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
   let freeResponses: ReturnType<typeof createMockFreeResponsesRepo>;
@@ -44,25 +58,19 @@ describe('SaveFreeResponseUseCase', () => {
   let cache: ReturnType<typeof createMockSessionStateCache>;
   let sut: SaveFreeResponseUseCase;
 
+  const monter = (catalogue = creerCatalogueDeTest(COURS)) =>
+    new SaveFreeResponseUseCase(
+      creerParticipationEnSeance({ sessions, participants, catalogue, cache }),
+      freeResponses,
+    );
+
   beforeEach(() => {
     sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        etat: 'en_cours',
-        courseSlug: COURS.slug,
-        ecranCourant: RANG_DE_L_EXEMPLE,
-      }),
-    );
+    sessions.findById.mockResolvedValue(seanceEnCours());
     freeResponses = createMockFreeResponsesRepo();
     participants = createMockParticipantsRepo();
     cache = createMockSessionStateCache();
-    sut = new SaveFreeResponseUseCase(
-      sessions,
-      freeResponses,
-      creerCatalogueDeTest(COURS),
-      participants,
-      cache,
-    );
+    sut = monter();
   });
 
   it('enregistre la reponse du participant d une seance en cours, sans blancs superflus', async () => {
@@ -74,52 +82,32 @@ describe('SaveFreeResponseUseCase', () => {
     });
   });
 
-  it('F06 · signale l activité au pupitre après l enregistrement', async () => {
-    await sut.execute(REPONSE);
+  verifierSignalementDActivite(
+    () => ({ cache, executer: () => sut.execute(REPONSE) }),
+    'F06 · signale l activité au pupitre après l enregistrement',
+  );
 
-    expect(cache.signalerActivite).toHaveBeenCalledWith(REPONSE.sessionId);
-  });
-
-  it('ferme les réponses libres d un écran révélé et ne signale rien', async () => {
+  it.each<[string, PilotageEcran]>([
+    [
+      'ferme les réponses libres d un écran révélé et ne signale rien',
+      { revele: true },
+    ],
+    [
+      'SEC-2 · reste fermé sur une étape corrigée puis masquée',
+      { etayage: 0, etayageAtteint: 1 },
+    ],
+    [
+      'RET-23 · refuse la redaction d une etape dont la correction est revelee',
+      { etayage: 1 },
+    ],
+  ])('%s', async (_cas, pilotage) => {
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        etat: 'en_cours',
-        courseSlug: COURS.slug,
-        ecranCourant: RANG_DE_L_EXEMPLE,
-        pilotageEcrans: { 'E-REM': { revele: true } },
-      }),
+      seanceEnCours({ pilotageEcrans: { 'E-REM': pilotage } }),
     );
 
     await expect(sut.execute(REPONSE)).rejects.toThrow(PhaseFermeeError);
     expect(freeResponses.save).not.toHaveBeenCalled();
     expect(cache.signalerActivite).not.toHaveBeenCalled();
-  });
-
-  it('SEC-2 · reste fermé sur une étape corrigée puis masquée', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        etat: 'en_cours',
-        courseSlug: COURS.slug,
-        ecranCourant: RANG_DE_L_EXEMPLE,
-        pilotageEcrans: { 'E-REM': { etayage: 0, etayageAtteint: 1 } },
-      }),
-    );
-
-    await expect(sut.execute(REPONSE)).rejects.toThrow(PhaseFermeeError);
-  });
-
-  it('RET-23 · refuse la redaction d une etape dont la correction est revelee', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        etat: 'en_cours',
-        courseSlug: COURS.slug,
-        ecranCourant: RANG_DE_L_EXEMPLE,
-        pilotageEcrans: { 'E-REM': { etayage: 1 } },
-      }),
-    );
-
-    await expect(sut.execute(REPONSE)).rejects.toThrow(PhaseFermeeError);
-    expect(freeResponses.save).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -142,20 +130,14 @@ describe('SaveFreeResponseUseCase', () => {
     expect(freeResponses.save).not.toHaveBeenCalled();
   });
 
-  it('signale une seance introuvable', async () => {
-    sessions.findById.mockResolvedValue(null);
-
-    await expect(sut.execute(REPONSE)).rejects.toThrow(SessionNotFoundError);
-  });
+  verifierSeanceIntrouvable(() => ({
+    sessions,
+    executer: () => sut.execute(REPONSE),
+    effetsInterdits: () => [freeResponses.save],
+  }));
 
   it('signale un cours introuvable', async () => {
-    sut = new SaveFreeResponseUseCase(
-      sessions,
-      freeResponses,
-      creerCatalogueAVersions({}),
-      participants,
-      cache,
-    );
+    sut = monter(creerCatalogueAVersions({}));
 
     await expect(sut.execute(REPONSE)).rejects.toThrow(CoursInconnuError);
   });
@@ -169,11 +151,7 @@ describe('SaveFreeResponseUseCase', () => {
 
   it('refuse une reponse visant un ecran que le formateur n a pas projete', async () => {
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        etat: 'en_cours',
-        courseSlug: COURS.slug,
-        ecranCourant: RANG_DE_L_EXEMPLE - 1,
-      }),
+      seanceEnCours({ ecranCourant: RANG_DE_L_EXEMPLE - 1 }),
     );
 
     await expect(sut.execute(REPONSE)).rejects.toThrow(EcranNonServiError);
@@ -209,16 +187,9 @@ describe('SaveFreeResponseUseCase', () => {
     expect(freeResponses.save).toHaveBeenCalled();
   });
 
-  it('refuse la reponse libre d un participant evince', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({
-        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
-      }),
-    );
-
-    await expect(sut.execute(REPONSE)).rejects.toThrow(
-      ParticipantNotFoundError,
-    );
-    expect(freeResponses.save).not.toHaveBeenCalled();
-  });
+  verifierGardesDeParticipant(() => ({
+    participants,
+    executer: () => sut.execute(REPONSE),
+    effetsInterdits: () => [freeResponses.save],
+  }));
 });

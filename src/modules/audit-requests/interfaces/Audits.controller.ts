@@ -7,7 +7,6 @@ import {
   Param,
   ParseUUIDPipe,
   Optional,
-  Post,
   Req,
   Sse,
 } from '@nestjs/common';
@@ -18,11 +17,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
-import { resolveClientIp } from '../../../common/interfaces/security/client-ip.util';
+import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
+import { FormulairePublic } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { CreateAuditRequestCommand } from '../application/dto/CreateAuditRequest.command';
 import {
   AuditLocale,
@@ -48,9 +48,7 @@ export class AuditsController {
     private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
-  @Public()
-  @Throttle({ default: { limit: 3, ttl: 3600000 } })
-  @Post()
+  @FormulairePublic(3)
   @ApiOperation({
     summary: "Soumettre une demande d'audit de site web (acces public)",
   })
@@ -64,16 +62,12 @@ export class AuditsController {
       honeypot: dto.website,
       formStartedAt: dto.formStartedAt,
     });
-    const ip = resolveClientIp(req);
-
     const command: CreateAuditRequestCommand = {
       websiteName: dto.websiteName,
       contactMethod: dto.contactMethod,
       contactValue: dto.contactValue,
       locale: this.resolveLocale(dto.locale, req),
-      ip,
-      userAgent: req.headers['user-agent'] ?? null,
-      referer: req.headers['referer'] ?? null,
+      ...provenanceDeLaRequete(req),
     };
 
     const response = await this.createUseCase.execute(command);

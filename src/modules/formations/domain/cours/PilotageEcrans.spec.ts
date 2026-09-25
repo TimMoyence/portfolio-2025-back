@@ -20,6 +20,8 @@ import {
   assertPhaseOuverte,
   assertPilotageCompatible,
   fusionnerPilotage,
+  type PilotageDemande,
+  type QuestionPilotee,
 } from './PilotageEcrans';
 
 const COURS = buildCoursDeTest();
@@ -37,102 +39,122 @@ function ecranDuCours(id: string): Ecran {
   return ecran;
 }
 
+function refusePar(
+  refus: new (...args: never[]) => Error,
+  garde: () => void,
+): boolean {
+  try {
+    garde();
+    return false;
+  } catch (erreur) {
+    if (erreur instanceof refus) {
+      return true;
+    }
+    throw erreur;
+  }
+}
+
+function accepte(ecran: Ecran, demande: PilotageDemande): boolean {
+  return !refusePar(PilotageIncompatibleError, () => {
+    assertPilotageCompatible(ecran, demande);
+  });
+}
+
+function ouverte(
+  pilotage: Readonly<Record<string, PilotageEcran>>,
+  question: QuestionPilotee,
+): boolean {
+  return !refusePar(PhaseFermeeError, () => {
+    assertPhaseOuverte(pilotage, question);
+  });
+}
+
 const QUESTIONNAIRE = ecranDuCours('E-PRATIQUE');
 const FEUILLE = ecranDuCours('E-FEUILLE');
+const MACHINE = COURS.ecrans.find(({ id }) => id === 'E-CONCEPT') as Ecran;
 
 describe('assertPilotageCompatible', () => {
-  it('accepte un etayage sur un exemple travaille', () => {
-    expect(() => {
-      assertPilotageCompatible(EXEMPLE, { screenId: 'E-REM', etayage: 1 });
-    }).not.toThrow();
-  });
-
-  it('refuse un etayage au-dela des etapes de l exemple', () => {
-    expect(() => {
-      assertPilotageCompatible(EXEMPLE, { screenId: 'E-REM', etayage: 2 });
-    }).toThrow(PilotageIncompatibleError);
-  });
-
-  it('refuse un etayage sur un ecran qui n est pas un exemple travaille', () => {
-    expect(() => {
-      assertPilotageCompatible(NUMERIQUE, { screenId: 'E-NUM', etayage: 1 });
-    }).toThrow(PilotageIncompatibleError);
-  });
-
-  it('refuse une phase de vote sur un ecran sans question jumelle', () => {
-    expect(() => {
-      assertPilotageCompatible(NUMERIQUE, {
-        screenId: 'E-NUM',
-        phase: 'revote',
-      });
-    }).toThrow(PilotageIncompatibleError);
-  });
-
-  it('RET-32 · accepte la revelation de la correction d un questionnaire', () => {
-    expect(() => {
-      assertPilotageCompatible(QUESTIONNAIRE, {
-        screenId: 'E-PRATIQUE',
-        revele: true,
-      });
-    }).not.toThrow();
-  });
-
-  it('RET-31 · accepte sur la feuille la correction par formules puis par valeurs', () => {
-    expect(() => {
-      assertPilotageCompatible(FEUILLE, { screenId: 'E-FEUILLE', etayage: 2 });
-    }).not.toThrow();
-  });
-
-  it('RET-31 · refuse sur la feuille un troisieme niveau de correction', () => {
-    expect(() => {
-      assertPilotageCompatible(FEUILLE, { screenId: 'E-FEUILLE', etayage: 3 });
-    }).toThrow(PilotageIncompatibleError);
-  });
-
-  it('R1 · accepte de révéler la correction d un écran porteur d une question', () => {
-    expect(() => {
-      assertPilotageCompatible(NUMERIQUE, { screenId: 'E-NUM', revele: true });
-    }).not.toThrow();
-  });
-
-  it('R1 · refuse une révélation sur un écran sans corrigé', () => {
-    expect(() => {
-      assertPilotageCompatible(CITATION, {
-        screenId: 'E-CITATION',
-        revele: true,
-      });
-    }).toThrow(PilotageIncompatibleError);
-  });
-
-  describe('reglages de la machine', () => {
-    const MACHINE = COURS.ecrans.find(({ id }) => id === 'E-CONCEPT') as Ecran;
-
-    it('RET-21 · accepte les reglages de la machine sur ses parametres, dans leurs bornes', () => {
-      expect(() => {
-        assertPilotageCompatible(MACHINE, {
-          screenId: 'E-CONCEPT',
-          reglages: { prix: 250, taux: -20 },
-        });
-      }).not.toThrow();
-    });
-
-    it.each([
-      ['un parametre inconnu', { cout: 5 }],
-      ['une valeur hors bornes', { prix: 5000 }],
-    ])('RET-21 · refuse %s', (_cas, reglages) => {
-      expect(() => {
-        assertPilotageCompatible(MACHINE, { screenId: 'E-CONCEPT', reglages });
-      }).toThrow(PilotageIncompatibleError);
-    });
-
-    it('RET-21 · refuse des reglages sur un ecran qui n est pas une machine', () => {
-      expect(() => {
-        assertPilotageCompatible(NUMERIQUE, {
-          screenId: 'E-NUM',
-          reglages: { prix: 250 },
-        });
-      }).toThrow(PilotageIncompatibleError);
-    });
+  it.each<[string, Ecran, PilotageDemande, boolean]>([
+    [
+      'accepte un etayage sur un exemple travaille',
+      EXEMPLE,
+      { screenId: 'E-REM', etayage: 1 },
+      true,
+    ],
+    [
+      'refuse un etayage au-dela des etapes de l exemple',
+      EXEMPLE,
+      { screenId: 'E-REM', etayage: 2 },
+      false,
+    ],
+    [
+      'refuse un etayage sur un ecran qui n est pas un exemple travaille',
+      NUMERIQUE,
+      { screenId: 'E-NUM', etayage: 1 },
+      false,
+    ],
+    [
+      'refuse une phase de vote sur un ecran sans question jumelle',
+      NUMERIQUE,
+      { screenId: 'E-NUM', phase: 'revote' },
+      false,
+    ],
+    [
+      'RET-32 · accepte la revelation de la correction d un questionnaire',
+      QUESTIONNAIRE,
+      { screenId: 'E-PRATIQUE', revele: true },
+      true,
+    ],
+    [
+      'RET-31 · accepte sur la feuille la correction par formules puis par valeurs',
+      FEUILLE,
+      { screenId: 'E-FEUILLE', etayage: 2 },
+      true,
+    ],
+    [
+      'RET-31 · refuse sur la feuille un troisieme niveau de correction',
+      FEUILLE,
+      { screenId: 'E-FEUILLE', etayage: 3 },
+      false,
+    ],
+    [
+      'R1 · accepte de révéler la correction d un écran porteur d une question',
+      NUMERIQUE,
+      { screenId: 'E-NUM', revele: true },
+      true,
+    ],
+    [
+      'R1 · refuse une révélation sur un écran sans corrigé',
+      CITATION,
+      { screenId: 'E-CITATION', revele: true },
+      false,
+    ],
+    [
+      'RET-21 · accepte les reglages de la machine sur ses parametres, dans leurs bornes',
+      MACHINE,
+      { screenId: 'E-CONCEPT', reglages: { prix: 250, taux: -20 } },
+      true,
+    ],
+    [
+      'RET-21 · refuse un parametre inconnu',
+      MACHINE,
+      { screenId: 'E-CONCEPT', reglages: { cout: 5 } },
+      false,
+    ],
+    [
+      'RET-21 · refuse une valeur hors bornes',
+      MACHINE,
+      { screenId: 'E-CONCEPT', reglages: { prix: 5000 } },
+      false,
+    ],
+    [
+      'RET-21 · refuse des reglages sur un ecran qui n est pas une machine',
+      NUMERIQUE,
+      { screenId: 'E-NUM', reglages: { prix: 250 } },
+      false,
+    ],
+  ])('%s', (_titre, ecran, demande, attendu) => {
+    expect(accepte(ecran, demande)).toBe(attendu);
   });
 });
 
@@ -151,64 +173,50 @@ describe('pilotage des écrans de la QA B2', () => {
   it('F12 · accepte les réglages d un tracé dans les bornes de ses paramètres', () => {
     if (TRACE.brique !== 'fp-plot') throw new Error('tracé attendu');
     const [parametre] = TRACE.proprietes.parametres;
+    const regler = (valeur: number) =>
+      accepte(TRACE, {
+        screenId: TRACE.id,
+        reglages: { [parametre.cle]: valeur },
+      });
 
-    expect(() => {
-      assertPilotageCompatible(TRACE, {
-        screenId: TRACE.id,
-        reglages: { [parametre.cle]: parametre.max },
-      });
-    }).not.toThrow();
-    expect(() => {
-      assertPilotageCompatible(TRACE, {
-        screenId: TRACE.id,
-        reglages: { [parametre.cle]: parametre.max + 1 },
-      });
-    }).toThrow(PilotageIncompatibleError);
+    expect([regler(parametre.max), regler(parametre.max + 1)]).toEqual([
+      true,
+      false,
+    ]);
   });
 
   it('F17 · étaye la construction de tableau en deux niveaux au plus', () => {
-    expect(() => {
-      assertPilotageCompatible(TABLEAU, { screenId: TABLEAU.id, etayage: 2 });
-    }).not.toThrow();
-    expect(() => {
-      assertPilotageCompatible(TABLEAU, { screenId: TABLEAU.id, etayage: 3 });
-    }).toThrow(PilotageIncompatibleError);
+    expect([
+      accepte(TABLEAU, { screenId: TABLEAU.id, etayage: 2 }),
+      accepte(TABLEAU, { screenId: TABLEAU.id, etayage: 3 }),
+    ]).toEqual([true, false]);
   });
 
   it('révèle un écran à réponses libres et refuse un écran sans réponse', () => {
-    expect(() => {
-      assertPilotageCompatible(CAS, { screenId: CAS.id, revele: true });
-    }).not.toThrow();
-    expect(() => {
-      assertPilotageCompatible(CITATION_STOCKEE, {
+    expect([
+      accepte(CAS, { screenId: CAS.id, revele: true }),
+      accepte(CITATION_STOCKEE, {
         screenId: CITATION_STOCKEE.id,
         revele: true,
-      });
-    }).toThrow(PilotageIncompatibleError);
+      }),
+    ]).toEqual([true, false]);
   });
 
   it('F10 · accepte la projection des résultats sur tout écran', () => {
-    expect(() => {
-      assertPilotageCompatible(CITATION_STOCKEE, {
+    expect(
+      accepte(CITATION_STOCKEE, {
         screenId: CITATION_STOCKEE.id,
         resultatsProjetes: true,
-      });
-    }).not.toThrow();
+      }),
+    ).toBe(true);
   });
 
   it('F02 · affiche tout de suite les options d un rappel et refuse ailleurs', () => {
-    expect(() => {
-      assertPilotageCompatible(RAPPEL, {
-        screenId: RAPPEL.id,
-        optionsAffichees: true,
-      });
-    }).not.toThrow();
-    expect(() => {
-      assertPilotageCompatible(CITATION_STOCKEE, {
-        screenId: CITATION_STOCKEE.id,
-        optionsAffichees: true,
-      });
-    }).toThrow(PilotageIncompatibleError);
+    expect(
+      [RAPPEL, CITATION_STOCKEE].map((ecran) =>
+        accepte(ecran, { screenId: ecran.id, optionsAffichees: true }),
+      ),
+    ).toEqual([true, false]);
   });
 
   it('F02 · ne remasque pas des options déjà affichées', () => {
@@ -338,76 +346,56 @@ describe('fusionnerPilotage', () => {
 
 describe('assertPhaseOuverte', () => {
   it('laisse passer une question sans ouverture declaree', () => {
-    expect(() => {
-      assertPhaseOuverte({}, { ecranId: 'E-NUM' });
-    }).not.toThrow();
+    expect(ouverte({}, { ecranId: 'E-NUM' })).toBe(true);
   });
 
   it('RET-32 · ferme aux reponses un questionnaire dont la correction est revelee', () => {
-    expect(() => {
-      assertPhaseOuverte(
-        { 'E-PRATIQUE': { revele: true } },
-        { ecranId: 'E-PRATIQUE' },
-      );
-    }).toThrow(PhaseFermeeError);
-    expect(() => {
-      assertPhaseOuverte({ 'E-PRATIQUE': {} }, { ecranId: 'E-PRATIQUE' });
-    }).not.toThrow();
-  });
-
-  it('accepte la principale avant toute phase pilotee', () => {
-    expect(() => {
-      assertPhaseOuverte({}, { ecranId: 'E-VOTE', ouverture: 'principale' });
-    }).not.toThrow();
-  });
-
-  it('refuse la jumelle avant le revote', () => {
-    expect(() => {
-      assertPhaseOuverte({}, { ecranId: 'E-VOTE', ouverture: 'jumelle' });
-    }).toThrow(PhaseFermeeError);
-  });
-
-  it('ferme les deux questions pendant la discussion', () => {
-    const pilotage = { 'E-VOTE': { phase: 'discussion' as const } };
-
-    expect(() => {
-      assertPhaseOuverte(pilotage, {
-        ecranId: 'E-VOTE',
-        ouverture: 'principale',
-      });
-    }).toThrow(PhaseFermeeError);
-    expect(() => {
-      assertPhaseOuverte(pilotage, { ecranId: 'E-VOTE', ouverture: 'jumelle' });
-    }).toThrow(PhaseFermeeError);
-  });
-
-  it('ouvre la jumelle seule au revote puis a la revelation', () => {
-    for (const phase of ['revote', 'revele'] as const) {
-      const pilotage = { 'E-VOTE': { phase } };
-      expect(() => {
-        assertPhaseOuverte(pilotage, {
-          ecranId: 'E-VOTE',
-          ouverture: 'jumelle',
-        });
-      }).not.toThrow();
-      expect(() => {
-        assertPhaseOuverte(pilotage, {
-          ecranId: 'E-VOTE',
-          ouverture: 'principale',
-        });
-      }).toThrow(PhaseFermeeError);
-    }
+    expect([
+      ouverte({ 'E-PRATIQUE': { revele: true } }, { ecranId: 'E-PRATIQUE' }),
+      ouverte({ 'E-PRATIQUE': {} }, { ecranId: 'E-PRATIQUE' }),
+    ]).toEqual([false, true]);
   });
 
   it('ferme toute question d un ecran dont la correction est revelee', () => {
     const pilotage = { 'E-NUM': { revele: true } };
 
-    expect(() => {
-      assertPhaseOuverte(pilotage, { ecranId: 'E-NUM' });
-    }).toThrow(PhaseFermeeError);
-    expect(() => {
-      assertPhaseOuverte(pilotage, { ecranId: 'E-NUM', ouverture: 'jumelle' });
-    }).toThrow(PhaseFermeeError);
+    expect([
+      ouverte(pilotage, { ecranId: 'E-NUM' }),
+      ouverte(pilotage, { ecranId: 'E-NUM', ouverture: 'jumelle' }),
+    ]).toEqual([false, false]);
+  });
+
+  it.each<[string, PilotageEcran | undefined, boolean, boolean]>([
+    [
+      'accepte la principale et refuse la jumelle avant toute phase pilotee',
+      undefined,
+      true,
+      false,
+    ],
+    [
+      'ferme les deux questions pendant la discussion',
+      { phase: 'discussion' },
+      false,
+      false,
+    ],
+    ['ouvre la jumelle seule au revote', { phase: 'revote' }, false, true],
+    [
+      'ouvre la jumelle seule a la revelation',
+      { phase: 'revele' },
+      false,
+      true,
+    ],
+  ])('%s', (_titre, pilotageDuVote, principale, jumelle) => {
+    const pilotage: Record<string, PilotageEcran> =
+      pilotageDuVote === undefined ? {} : { 'E-VOTE': pilotageDuVote };
+
+    expect({
+      principale: ouverte(pilotage, {
+        ecranId: 'E-VOTE',
+        ouverture: 'principale',
+      }),
+      jumelle: ouverte(pilotage, { ecranId: 'E-VOTE', ouverture: 'jumelle' }),
+    }).toEqual({ principale, jumelle });
   });
 
   it('porte les codes PHASE_FERMEE et PHASE_NON_MONOTONE', () => {

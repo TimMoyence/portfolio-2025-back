@@ -16,19 +16,11 @@ export interface AnswerRecord {
   soumisLe: Date;
 }
 
-export interface CreateAnswerInput {
-  sessionId: string;
-  participantId: string;
-  questionId: string;
-  concept: string;
-  valeur: ValeurReponse;
-  seed: number;
-  correcte: boolean;
-  misconception: string | null;
-  score?: number | null;
-  details?: readonly DetailProduction[] | null;
-  dureeMs: number;
-}
+export type CreateAnswerInput = Omit<
+  AnswerRecord,
+  'id' | 'soumisLe' | 'score' | 'details'
+> &
+  Partial<Pick<AnswerRecord, 'score' | 'details'>>;
 
 export interface QuestionTally {
   questionId: string;

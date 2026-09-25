@@ -7,150 +7,119 @@ describe('CachingSectionRunner', () => {
   const schema = z.object({ ok: z.boolean() });
   const config = buildAuditAutomationConfig();
 
-  function buildRunner(factory?: AnthropicChatFactory): CachingSectionRunner {
-    return new CachingSectionRunner(config, undefined, factory);
+  function fabrique(
+    isEnabled: boolean,
+    create: jest.Mock = jest.fn(),
+  ): AnthropicChatFactory {
+    return {
+      isEnabled: () => isEnabled,
+      model: () => 'claude-sonnet-4-6',
+      create,
+    };
+  }
+
+  function fabriqueDeClient(messagesCreate: jest.Mock) {
+    const create = jest
+      .fn()
+      .mockReturnValue({ messages: { create: messagesCreate } });
+    return { create, factory: fabrique(true, create) };
+  }
+
+  function executer(
+    factory: AnthropicChatFactory | undefined,
+    options: {
+      section?: 'executive' | 'priority';
+      payload?: Record<string, unknown>;
+      signal?: AbortSignal;
+      openAiFallback?: jest.Mock;
+    } = {},
+  ) {
+    const openAiFallback =
+      options.openAiFallback ?? jest.fn().mockResolvedValue({ ok: true });
+    const resultat = new CachingSectionRunner(config, undefined, factory).run({
+      section: options.section ?? 'executive',
+      schema,
+      systemBlocks: ['main'],
+      payload: options.payload ?? {},
+      locale: 'fr',
+      signal: options.signal,
+      openAiFallback,
+    });
+    return { resultat, openAi: openAiFallback };
   }
 
   it('takes the OpenAI path when the anthropic factory is absent', async () => {
-    const runner = buildRunner();
-    const openAi = jest.fn().mockResolvedValue({ ok: true });
+    const { resultat, openAi } = executer(undefined, { payload: { dummy: 1 } });
 
-    const result = await runner.run({
-      section: 'executive',
-      schema,
-      systemBlocks: ['main'],
-      payload: { dummy: 1 },
-      locale: 'fr',
-      openAiFallback: openAi,
-    });
-
-    expect(result).toEqual({ ok: true });
+    expect(await resultat).toEqual({ ok: true });
     expect(openAi).toHaveBeenCalledTimes(1);
   });
 
   it('takes the OpenAI path when the factory reports disabled', async () => {
     const createSpy = jest.fn();
-    const factory: AnthropicChatFactory = {
-      isEnabled: () => false,
-      model: () => 'claude-sonnet-4-6',
-      create: createSpy,
-    };
-    const runner = buildRunner(factory);
-    const openAi = jest.fn().mockResolvedValue({ ok: true });
+    const { resultat, openAi } = executer(fabrique(false, createSpy));
 
-    await runner.run({
-      section: 'executive',
-      schema,
-      systemBlocks: ['main'],
-      payload: {},
-      locale: 'fr',
-      openAiFallback: openAi,
-    });
+    await resultat;
 
     expect(createSpy).not.toHaveBeenCalled();
     expect(openAi).toHaveBeenCalledTimes(1);
   });
 
   it('falls back to OpenAI when the anthropic client throws a non-abort error', async () => {
-    const failingClient = {
-      messages: {
-        create: jest
-          .fn()
-          .mockRejectedValue(new Error('Anthropic 503 Service Unavailable')),
-      },
-    };
-    const createSpy = jest.fn().mockReturnValue(failingClient);
-    const factory: AnthropicChatFactory = {
-      isEnabled: () => true,
-      model: () => 'claude-sonnet-4-6',
-      create: createSpy,
-    };
-    const runner = buildRunner(factory);
-    const openAi = jest.fn().mockResolvedValue({ ok: true });
+    const { create, factory } = fabriqueDeClient(
+      jest
+        .fn()
+        .mockRejectedValue(new Error('Anthropic 503 Service Unavailable')),
+    );
+    const { resultat, openAi } = executer(factory, { section: 'priority' });
 
-    const result = await runner.run({
-      section: 'priority',
-      schema,
-      systemBlocks: ['main'],
-      payload: {},
-      locale: 'fr',
-      openAiFallback: openAi,
-    });
-
-    expect(result).toEqual({ ok: true });
-    expect(createSpy).toHaveBeenCalledTimes(1);
+    expect(await resultat).toEqual({ ok: true });
+    expect(create).toHaveBeenCalledTimes(1);
     expect(openAi).toHaveBeenCalledTimes(1);
   });
 
   it('propagates AbortError without falling back when the signal is aborted', async () => {
     const abortError = new Error('AbortError');
-    const abortedClient = {
-      messages: { create: jest.fn().mockRejectedValue(abortError) },
-    };
-    const factory: AnthropicChatFactory = {
-      isEnabled: () => true,
-      model: () => 'claude-sonnet-4-6',
-      create: jest.fn().mockReturnValue(abortedClient),
-    };
-    const runner = buildRunner(factory);
-    const openAi = jest.fn().mockResolvedValue({ ok: true });
+    const { factory } = fabriqueDeClient(
+      jest.fn().mockRejectedValue(abortError),
+    );
     const controller = new AbortController();
     controller.abort();
 
-    await expect(
-      runner.run({
-        section: 'priority',
-        schema,
-        systemBlocks: ['main'],
-        payload: {},
-        locale: 'fr',
-        signal: controller.signal,
-        openAiFallback: openAi,
-      }),
-    ).rejects.toBe(abortError);
+    const { resultat, openAi } = executer(factory, {
+      section: 'priority',
+      signal: controller.signal,
+    });
 
+    await expect(resultat).rejects.toBe(abortError);
     expect(openAi).not.toHaveBeenCalled();
   });
 
   it('returns the Anthropic payload without calling OpenAI on success', async () => {
-    const anthropicClient = {
-      messages: {
-        create: jest.fn().mockResolvedValue({
-          content: [
-            {
-              type: 'tool_use',
-              id: 'toolu_1',
-              name: 'emit_executive',
-              input: { ok: true },
-            },
-          ],
-          usage: {
-            input_tokens: 10,
-            output_tokens: 5,
-            cache_creation_input_tokens: 0,
-            cache_read_input_tokens: 0,
+    const { factory } = fabriqueDeClient(
+      jest.fn().mockResolvedValue({
+        content: [
+          {
+            type: 'tool_use',
+            id: 'toolu_1',
+            name: 'emit_executive',
+            input: { ok: true },
           },
-        }),
-      },
-    };
-    const factory: AnthropicChatFactory = {
-      isEnabled: () => true,
-      model: () => 'claude-sonnet-4-6',
-      create: jest.fn().mockReturnValue(anthropicClient),
-    };
-    const runner = buildRunner(factory);
-    const openAi = jest.fn();
+        ],
+        usage: {
+          input_tokens: 10,
+          output_tokens: 5,
+          cache_creation_input_tokens: 0,
+          cache_read_input_tokens: 0,
+        },
+      }),
+    );
 
-    const result = await runner.run({
-      section: 'executive',
-      schema,
-      systemBlocks: ['main'],
-      payload: {},
-      locale: 'fr',
-      openAiFallback: openAi,
+    const { resultat, openAi } = executer(factory, {
+      openAiFallback: jest.fn(),
     });
 
-    expect(result).toEqual({ ok: true });
+    expect(await resultat).toEqual({ ok: true });
     expect(openAi).not.toHaveBeenCalled();
   });
 });

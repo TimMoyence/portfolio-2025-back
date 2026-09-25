@@ -8,8 +8,6 @@ import {
 import { Worker } from 'bullmq';
 import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
 import type { AuditAutomationConfig } from './audit.config';
-import { AuditPipelineService } from './audit-pipeline.service';
-import { runAuditPipelineWithTimeout } from './audit-pipeline-timeout.util';
 import { AuditQueueJob, AuditQueueService } from './audit-queue.service';
 
 @Injectable()
@@ -23,7 +21,6 @@ export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
     @Inject(AUDIT_AUTOMATION_CONFIG)
     private readonly config: AuditAutomationConfig,
     private readonly queueService: AuditQueueService,
-    private readonly pipeline: AuditPipelineService,
   ) {}
 
   onModuleInit(): void {
@@ -34,7 +31,7 @@ export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
     this.worker = new Worker<AuditQueueJob>(
       this.queueService.queueName,
       async (job) => {
-        await this.runWithTimeout(job.data.auditId);
+        await this.queueService.runWithTimeout(job.data.auditId);
       },
       {
         connection: this.queueService.connection,
@@ -65,13 +62,5 @@ export class AuditWorkerService implements OnModuleInit, OnModuleDestroy {
     if (this.worker) {
       await this.worker.close();
     }
-  }
-
-  private runWithTimeout(auditId: string): Promise<void> {
-    return runAuditPipelineWithTimeout(
-      this.pipeline,
-      auditId,
-      this.config.jobTimeoutMs,
-    );
   }
 }

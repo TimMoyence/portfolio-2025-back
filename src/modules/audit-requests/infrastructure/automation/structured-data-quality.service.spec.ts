@@ -1,5 +1,30 @@
 import { StructuredDataQualityService } from './structured-data-quality.service';
 
+const ARTICLE_MINIMAL = {
+  '@type': 'Article',
+  headline: 'x',
+  author: 'j',
+  datePublished: '2026-01-01',
+};
+
+const FAQ = {
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'q',
+      acceptedAnswer: { '@type': 'Answer', text: 'a' },
+    },
+  ],
+};
+
+const FIL_D_ARIANE = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://x' },
+  ],
+};
+
 describe('StructuredDataQualityService', () => {
   const service = new StructuredDataQualityService();
 
@@ -30,18 +55,7 @@ describe('StructuredDataQualityService', () => {
   });
 
   it('boost quand FAQPage présent (AI-friendly)', () => {
-    const result = service.analyze([
-      {
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'q',
-            acceptedAnswer: { '@type': 'Answer', text: 'a' },
-          },
-        ],
-      },
-    ]);
+    const result = service.analyze([FAQ]);
     expect(result.aiFriendly).toBe(true);
     expect(result.googleRichResultsEligible).toBe(true);
     expect(result.score).toBeGreaterThan(50);
@@ -82,12 +96,7 @@ describe('StructuredDataQualityService', () => {
 
   it('supporte @type sous forme de tableau', () => {
     const result = service.analyze([
-      {
-        '@type': ['Article', 'NewsArticle'],
-        headline: 'x',
-        author: 'j',
-        datePublished: '2026-01-01',
-      },
+      { ...ARTICLE_MINIMAL, '@type': ['Article', 'NewsArticle'] },
     ]);
     expect(result.types).toEqual(
       expect.arrayContaining(['Article', 'NewsArticle']),
@@ -99,39 +108,25 @@ describe('StructuredDataQualityService', () => {
     const result = service.analyze([
       null as unknown as Record<string, unknown>,
       'string' as unknown as Record<string, unknown>,
-      {
-        '@type': 'Article',
-        headline: 'x',
-        author: 'j',
-        datePublished: '2026-01-01',
-      },
+      ARTICLE_MINIMAL,
     ]);
     expect(result.total).toBe(1);
     expect(result.types).toEqual(['Article']);
   });
 
-  it('valide un Product complet', () => {
-    const result = service.analyze([
+  it.each([
+    [
+      'valide un Product complet',
       {
         '@type': 'Product',
         name: 'Chaussure',
         image: 'https://x/y.jpg',
         offers: { '@type': 'Offer', price: 49.99, priceCurrency: 'EUR' },
       },
-    ]);
-    expect(result.googleRichResultsEligible).toBe(true);
-    expect(result.invalidBlocks).toHaveLength(0);
-  });
-
-  it('accepte BreadcrumbList sans author (rules spécifiques)', () => {
-    const result = service.analyze([
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://x' },
-        ],
-      },
-    ]);
+    ],
+    ['accepte BreadcrumbList sans author (rules spécifiques)', FIL_D_ARIANE],
+  ])('%s', (_titre, bloc) => {
+    const result = service.analyze([bloc]);
     expect(result.googleRichResultsEligible).toBe(true);
     expect(result.invalidBlocks).toHaveLength(0);
   });
@@ -164,30 +159,7 @@ describe('StructuredDataQualityService', () => {
   });
 
   it('score plafonné à 100 même avec plusieurs blocs parfaits', () => {
-    const result = service.analyze([
-      {
-        '@type': 'Article',
-        headline: 'x',
-        author: 'j',
-        datePublished: '2026-01-01',
-      },
-      {
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'q',
-            acceptedAnswer: { '@type': 'Answer', text: 'a' },
-          },
-        ],
-      },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://x' },
-        ],
-      },
-    ]);
+    const result = service.analyze([ARTICLE_MINIMAL, FAQ, FIL_D_ARIANE]);
     expect(result.score).toBeLessThanOrEqual(100);
     expect(result.score).toBeGreaterThanOrEqual(0);
   });

@@ -1,113 +1,86 @@
-import { ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 import { MESSAGE_DEPENDANCE_INJOIGNABLE } from './dependency-outage';
+import {
+  createHttpResponseHost,
+  type HoteDeReponseHttp,
+} from '../../../../test/factories/execution-context.factory';
+import { sousEnvironnement } from '../../../../test/helpers/environnement';
+import { attendreProbleme } from '../../../../test/helpers/reponse-probleme';
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter;
-  let jsonFn: jest.Mock;
-  let statusFn: jest.Mock;
-  let host: ArgumentsHost;
+  let hote: HoteDeReponseHttp;
 
   const requestUrl = '/api/test';
 
   beforeEach(() => {
     filter = new AllExceptionsFilter();
-
-    jsonFn = jest.fn();
-    statusFn = jest.fn().mockReturnValue({ json: jsonFn });
-
-    host = {
-      switchToHttp: () => ({
-        getResponse: () => ({ status: statusFn }),
-        getRequest: () => ({ url: requestUrl }),
-      }),
-    } as unknown as ArgumentsHost;
+    hote = createHttpResponseHost(requestUrl);
   });
+
+  const intercepter = (exception: unknown) =>
+    filter.catch(exception, hote.host);
+
+  const intercepterSous = (nodeEnv: string, exception: unknown) =>
+    sousEnvironnement({ NODE_ENV: nodeEnv }, () =>
+      Promise.resolve(intercepter(exception)),
+    );
+
+  const espionnerLeLogger = () =>
+    jest.spyOn(filter['logger'], 'error').mockImplementation();
 
   it('devrait retourner le status et le message pour une HttpException', () => {
-    const exception = new HttpException(
-      'Ressource introuvable',
-      HttpStatus.NOT_FOUND,
+    intercepter(
+      new HttpException('Ressource introuvable', HttpStatus.NOT_FOUND),
     );
 
-    filter.catch(exception, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: HttpStatus.NOT_FOUND,
-        detail: 'Ressource introuvable',
-      }),
-    );
+    attendreProbleme(hote, HttpStatus.NOT_FOUND, {
+      detail: 'Ressource introuvable',
+    });
   });
 
-  it('devrait retourner 500 avec message generique pour une erreur inconnue en production', () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+  it.each([
+    [
+      'devrait retourner 500 avec message generique pour une erreur inconnue en production',
+      'production',
+      'Database connection failed',
+      'Une erreur interne est survenue.',
+    ],
+    [
+      'devrait inclure le stack trace en mode developpement',
+      'development',
+      'Null pointer exception',
+      'Null pointer exception',
+    ],
+  ])('%s', async (_titre, nodeEnv, message, detailAttendu) => {
+    await intercepterSous(nodeEnv, new Error(message));
 
-    const exception = new Error('Database connection failed');
-
-    filter.catch(exception, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        detail: 'Une erreur interne est survenue.',
-      }),
-    );
-
-    process.env.NODE_ENV = originalEnv;
-  });
-
-  it('devrait inclure le stack trace en mode developpement', () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
-
-    const exception = new Error('Null pointer exception');
-
-    filter.catch(exception, host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        detail: 'Null pointer exception',
-      }),
-    );
-
-    process.env.NODE_ENV = originalEnv;
+    attendreProbleme(hote, HttpStatus.INTERNAL_SERVER_ERROR, {
+      detail: detailAttendu,
+    });
   });
 
   it('devrait rendre 503 et une consigne quand la base est injoignable', () => {
-    const loggerSpy = jest
-      .spyOn(filter['logger'], 'error')
-      .mockImplementation();
+    const loggerSpy = espionnerLeLogger();
 
-    filter.catch(
+    intercepter(
       Object.assign(new Error('connect ECONNREFUSED 127.0.0.1:5432'), {
         code: 'ECONNREFUSED',
       }),
-      host,
     );
 
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.SERVICE_UNAVAILABLE);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: HttpStatus.SERVICE_UNAVAILABLE,
-        detail: MESSAGE_DEPENDANCE_INJOIGNABLE,
-      }),
-    );
+    attendreProbleme(hote, HttpStatus.SERVICE_UNAVAILABLE, {
+      detail: MESSAGE_DEPENDANCE_INJOIGNABLE,
+    });
     expect(loggerSpy).toHaveBeenCalled();
     loggerSpy.mockRestore();
   });
 
   it('devrait formater la reponse en RFC 7807 (type, title, status, detail, instance)', () => {
-    const exception = new HttpException('Interdit', HttpStatus.FORBIDDEN);
+    intercepter(new HttpException('Interdit', HttpStatus.FORBIDDEN));
 
-    filter.catch(exception, host);
-
-    expect(jsonFn).toHaveBeenCalledWith({
+    expect(hote.jsonFn).toHaveBeenCalledWith({
       type: 'https://httpstatuses.com/403',
       title: 'FORBIDDEN',
       status: HttpStatus.FORBIDDEN,
@@ -116,84 +89,56 @@ describe('AllExceptionsFilter', () => {
     });
   });
 
-  it('devrait logger l erreur pour les status >= 500', () => {
-    const loggerSpy = jest
-      .spyOn(filter['logger'], 'error')
-      .mockImplementation();
+  it.each([
+    [
+      'devrait logger l erreur pour les status >= 500',
+      new Error('Unexpected failure'),
+      true,
+    ],
+    [
+      'ne devrait pas logger pour les erreurs client (status < 500)',
+      new HttpException('Bad request', HttpStatus.BAD_REQUEST),
+      false,
+    ],
+  ])('%s', (_titre, exception, journalise) => {
+    const loggerSpy = espionnerLeLogger();
 
-    const exception = new Error('Unexpected failure');
+    intercepter(exception);
 
-    filter.catch(exception, host);
-
-    expect(loggerSpy).toHaveBeenCalled();
+    expect(loggerSpy.mock.calls.length > 0).toBe(journalise);
     loggerSpy.mockRestore();
   });
 
-  it('ne devrait pas logger pour les erreurs client (status < 500)', () => {
-    const loggerSpy = jest
-      .spyOn(filter['logger'], 'error')
-      .mockImplementation();
-
-    const exception = new HttpException('Bad request', HttpStatus.BAD_REQUEST);
-
-    filter.catch(exception, host);
-
-    expect(loggerSpy).not.toHaveBeenCalled();
-    loggerSpy.mockRestore();
-  });
-
-  it('devrait extraire le message depuis un objet de reponse HttpException', () => {
-    const exception = new HttpException(
-      { message: 'Validation echouee', error: 'Bad Request' },
-      HttpStatus.BAD_REQUEST,
+  it.each([
+    [
+      'devrait extraire le message depuis un objet de reponse HttpException',
+      'Validation echouee',
+    ],
+    [
+      'devrait gerer un tableau de messages depuis le ValidationPipe',
+      ['property injected should not exist', 'email must be an email'],
+    ],
+  ])('%s', (_titre, message) => {
+    intercepter(
+      new HttpException(
+        { message, error: 'Bad Request' },
+        HttpStatus.BAD_REQUEST,
+      ),
     );
 
-    filter.catch(exception, host);
-
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: 'Validation echouee',
-      }),
+    expect(hote.jsonFn).toHaveBeenCalledWith(
+      expect.objectContaining({ detail: message }),
     );
   });
 
-  it('devrait gerer un tableau de messages depuis le ValidationPipe', () => {
-    const exception = new HttpException(
-      {
-        message: [
-          'property injected should not exist',
-          'email must be an email',
-        ],
-        error: 'Bad Request',
-      },
-      HttpStatus.BAD_REQUEST,
+  it('devrait gerer une exception non-Error (string)', async () => {
+    await intercepterSous('development', 'something went wrong');
+
+    expect(hote.statusFn).toHaveBeenCalledWith(
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
-
-    filter.catch(exception, host);
-
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: [
-          'property injected should not exist',
-          'email must be an email',
-        ],
-      }),
+    expect(hote.jsonFn).toHaveBeenCalledWith(
+      expect.objectContaining({ detail: 'something went wrong' }),
     );
-  });
-
-  it('devrait gerer une exception non-Error (string)', () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
-
-    filter.catch('something went wrong', host);
-
-    expect(statusFn).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(jsonFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: 'something went wrong',
-      }),
-    );
-
-    process.env.NODE_ENV = originalEnv;
   });
 });

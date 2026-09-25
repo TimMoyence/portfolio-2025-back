@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { ActionDAbonne } from './ActionDAbonne';
 
@@ -26,7 +25,7 @@ export class UnsubscribeNewsletterUseCase extends ActionDAbonne {
   ): Promise<UnsubscribeNewsletterResult> {
     const subscriber = await this.repo.findByUnsubscribeToken(unsubscribeToken);
     if (!subscriber) {
-      throw new ResourceNotFoundError('Invalid or expired unsubscribe token');
+      throw this.jetonInvalide('unsubscribe');
     }
 
     if (subscriber.status === 'unsubscribed') {

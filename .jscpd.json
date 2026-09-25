@@ -2,7 +2,9 @@
   "path": ["src"],
   "format": ["typescript"],
   "minLines": 5,
-  "minTokens": 50,
+  "minTokens": 30,
+  "maxLines": 100000,
+  "maxSize": "10mb",
   "absolute": true,
   "gitignore": true,
   "ignore": [

@@ -11,6 +11,7 @@ import {
   mockTypeOrmCreate,
   mockTypeOrmSave,
 } from '../../../../test/factories/formation.factory';
+import { verifierPanneDEcritureTransmise } from '../../../../test/helpers/pannes-d-ecriture';
 import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
 import type { FormationSessionEntity } from './entities/FormationSession.entity';
 import { SessionsRepositoryTypeORM } from './Sessions.repository.typeorm';
@@ -128,10 +129,10 @@ describe('SessionsRepositoryTypeORM', () => {
     );
   });
 
-  it('laisse passer une erreur qui ne vient pas d une violation de contrainte unique', async () => {
-    repo.save.mockRejectedValue(new Error('connexion perdue'));
-    await expect(creerSession()).rejects.toThrow('connexion perdue');
-  });
+  verifierPanneDEcritureTransmise(() => ({
+    save: repo.save,
+    ecrire: creerSession,
+  }));
 
   it('retourne la session encore ouverte quand le code a deja servi', async () => {
     table = [

@@ -24,11 +24,8 @@ import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
-import type { ComptesJalon, ResumeBareme } from '../domain/contrats/resultats';
-import type { ProgressionAgregee } from '../domain/cours/Enigmes';
-import type { ResultatsSeance } from '../domain/ResultatsSeance';
+import type { ResultatsEnDirect } from '../domain/contrats/resultats';
 import { assertSessionOwnedBy } from '../domain/SessionOwnership';
-import type { StatistiquesSeance } from '../domain/SessionStatistics';
 import {
   PARTICIPANTS_REPOSITORY,
   SESSION_STATE_CACHE,
@@ -82,13 +79,6 @@ interface PorteurEtudiant {
   readonly participantId: string;
   readonly generationDeJeton: number;
 }
-
-type ResultatsEnDirect = ResultatsSeance & {
-  readonly statistiques: StatistiquesSeance;
-  readonly jalons: Readonly<Record<string, ComptesJalon>>;
-  readonly enigmes: readonly ProgressionAgregee[];
-  readonly bareme: ResumeBareme;
-};
 
 interface BilanPartage {
   readonly activite: number;

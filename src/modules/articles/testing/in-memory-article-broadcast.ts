@@ -5,6 +5,7 @@ import type {
   ArticleBroadcastRepository,
   BroadcastRecipient,
   ModeratedArticle,
+  RechercheDeDestinataires,
 } from '../application/article-broadcast.repository';
 import type {
   ArticleRecord,
@@ -42,12 +43,12 @@ export class InMemoryArticleBroadcasts implements ArticleBroadcastRepository {
     return Promise.resolve({ ...due });
   }
 
-  findPendingRecipients(
-    broadcastId: string,
-    source: string,
-    locale: 'fr' | 'en',
-    limit: number,
-  ): Promise<BroadcastRecipient[]> {
+  findPendingRecipients({
+    broadcastId,
+    source,
+    locale,
+    limit,
+  }: RechercheDeDestinataires): Promise<BroadcastRecipient[]> {
     return Promise.resolve(
       this.subscribers
         .filter(

@@ -5,6 +5,7 @@ import {
   createMockToolkitPdfGenerator,
   createMockToolkitContentAssembler,
 } from '../../../../../test/factories/lead-magnet-request.factory';
+import { flushPromises } from '../../../../../test/helpers/flush-promises';
 import { RequestToolkitUseCase } from '../RequestToolkit.useCase';
 import type { RequestToolkitCommand } from '../dto/RequestToolkit.command';
 
@@ -37,39 +38,40 @@ describe('RequestToolkitUseCase', () => {
     );
   });
 
-  it('should persist the request and send the email', async () => {
+  const demanderLeToolkit = async () => {
     const result = await useCase.execute(validCommand);
+    await flushPromises();
 
-    await new Promise((resolve) => setImmediate(resolve));
+    expect(result.message).toContain('marie@example.com');
+    return result;
+  };
+
+  it('should persist the request and send the email', async () => {
+    const result = await demanderLeToolkit();
 
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(assembler.assemble).toHaveBeenCalledTimes(1);
     expect(pdfGenerator.generate).toHaveBeenCalledTimes(1);
     expect(notifier.sendToolkitEmail).toHaveBeenCalledTimes(1);
-    expect(result.message).toContain('marie@example.com');
     expect(result.accessToken).toBeDefined();
   });
 
   it('should skip if recent duplicate exists (< 24h)', async () => {
     repo.existsRecentByEmail.mockResolvedValue(true);
-    const result = await useCase.execute(validCommand);
 
-    await new Promise((resolve) => setImmediate(resolve));
+    await demanderLeToolkit();
 
     expect(repo.create).not.toHaveBeenCalled();
     expect(pdfGenerator.generate).not.toHaveBeenCalled();
     expect(notifier.sendToolkitEmail).not.toHaveBeenCalled();
-    expect(result.message).toContain('marie@example.com');
   });
 
   it('should not block on email failure', async () => {
     notifier.sendToolkitEmail.mockRejectedValue(new Error('SMTP down'));
-    const result = await useCase.execute(validCommand);
 
-    await new Promise((resolve) => setImmediate(resolve));
+    await demanderLeToolkit();
 
     expect(repo.create).toHaveBeenCalledTimes(1);
-    expect(result.message).toContain('marie@example.com');
   });
 
   it('should reject invalid email', async () => {

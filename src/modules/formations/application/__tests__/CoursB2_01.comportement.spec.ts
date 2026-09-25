@@ -4,6 +4,7 @@ import {
 } from '../../../../../test/factories/cours-b2-01.factory';
 import {
   creerCatalogueAVersions,
+  lireSujetSur,
   tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
 import {
@@ -14,7 +15,7 @@ import {
 } from '../../../../../test/factories/formation.factory';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { LireCoursPublicUseCase } from '../LireCoursPublic.useCase';
-import { LireSujetUseCase } from '../LireSujet.useCase';
+import type { LireSujetUseCase } from '../LireSujet.useCase';
 import { OpenSessionUseCase } from '../OpenSession.useCase';
 
 const COURS = buildCoursB2_01();
@@ -44,7 +45,7 @@ function seance(): {
   sessions.findById.mockResolvedValue(session);
   participants.findById.mockResolvedValue(participant);
   return {
-    sut: new LireSujetUseCase(sessions, participants, CATALOGUE),
+    sut: lireSujetSur(sessions, participants, CATALOGUE),
     graine,
   };
 }

@@ -198,86 +198,62 @@ describe('validateEnv', () => {
     expect(() => validateEnv(env)).toThrow('DB_NAME');
   });
 
-  it('devrait resoudre DATABASE_HOST comme alias de DB_HOST', () => {
-    const env = buildValidEnv({
-      DB_HOST: undefined,
-      DATABASE_HOST: 'db.example.com',
-    });
-    const result = validateEnv(env);
-
-    expect(result.DB_HOST).toBe('db.example.com');
-  });
-
-  it('devrait resoudre PGHOST comme alias de DB_HOST', () => {
-    const env = buildValidEnv({ DB_HOST: undefined, PGHOST: 'pg.example.com' });
-    const result = validateEnv(env);
-
-    expect(result.DB_HOST).toBe('pg.example.com');
-  });
-
-  it('devrait resoudre DATABASE_NAME comme alias de DB_NAME', () => {
-    const env = buildValidEnv({
-      DB_NAME: undefined,
-      DATABASE_NAME: 'other_db',
-    });
-    const result = validateEnv(env);
-
-    expect(result.DB_NAME).toBe('other_db');
-  });
-
-  it('devrait resoudre POSTGRES_DB comme alias de DB_NAME', () => {
-    const env = buildValidEnv({ DB_NAME: undefined, POSTGRES_DB: 'pg_db' });
-    const result = validateEnv(env);
-
-    expect(result.DB_NAME).toBe('pg_db');
-  });
-
-  it('devrait extraire DB_NAME depuis DATABASE_URL si aucun alias direct', () => {
-    const env = buildValidEnv({
-      DB_NAME: undefined,
-      DATABASE_URL: 'postgresql://user:pass@host:5432/my_database',
-    });
-    const result = validateEnv(env);
-
-    expect(result.DB_NAME).toBe('my_database');
-  });
-
-  it('devrait resoudre DATABASE_PORT comme alias de DB_PORT', () => {
-    const env = buildValidEnv({ DB_PORT: undefined, DATABASE_PORT: '5433' });
-    const result = validateEnv(env);
-
-    expect(result.DB_PORT).toBe(5433);
-  });
-
-  it('devrait privilegier DB_HOST sur DATABASE_HOST', () => {
-    const env = buildValidEnv({
-      DB_HOST: 'primary.host',
-      DATABASE_HOST: 'secondary.host',
-    });
-    const result = validateEnv(env);
-
-    expect(result.DB_HOST).toBe('primary.host');
-  });
-
-  it('devrait coercer DB_PORT en number', () => {
-    const env = buildValidEnv({ DB_PORT: '5433' });
-    const result = validateEnv(env);
-
-    expect(result.DB_PORT).toBe(5433);
-  });
-
-  it('devrait coercer PORT en number', () => {
-    const env = buildValidEnv({ PORT: '8080' });
-    const result = validateEnv(env);
-
-    expect(result.PORT).toBe(8080);
-  });
-
-  it('devrait accepter METRICS_TOKEN comme variable optionnelle', () => {
-    const env = buildValidEnv({ METRICS_TOKEN: 'my-prom-token' });
-    const result = validateEnv(env);
-
-    expect(result.METRICS_TOKEN).toBe('my-prom-token');
+  it.each([
+    [
+      'devrait resoudre DATABASE_HOST comme alias de DB_HOST',
+      { DB_HOST: undefined, DATABASE_HOST: 'db.example.com' },
+      'DB_HOST',
+      'db.example.com',
+    ],
+    [
+      'devrait resoudre PGHOST comme alias de DB_HOST',
+      { DB_HOST: undefined, PGHOST: 'pg.example.com' },
+      'DB_HOST',
+      'pg.example.com',
+    ],
+    [
+      'devrait resoudre DATABASE_NAME comme alias de DB_NAME',
+      { DB_NAME: undefined, DATABASE_NAME: 'other_db' },
+      'DB_NAME',
+      'other_db',
+    ],
+    [
+      'devrait resoudre POSTGRES_DB comme alias de DB_NAME',
+      { DB_NAME: undefined, POSTGRES_DB: 'pg_db' },
+      'DB_NAME',
+      'pg_db',
+    ],
+    [
+      'devrait extraire DB_NAME depuis DATABASE_URL si aucun alias direct',
+      {
+        DB_NAME: undefined,
+        DATABASE_URL: 'postgresql://user:pass@host:5432/my_database',
+      },
+      'DB_NAME',
+      'my_database',
+    ],
+    [
+      'devrait resoudre DATABASE_PORT comme alias de DB_PORT',
+      { DB_PORT: undefined, DATABASE_PORT: '5433' },
+      'DB_PORT',
+      5433,
+    ],
+    [
+      'devrait privilegier DB_HOST sur DATABASE_HOST',
+      { DB_HOST: 'primary.host', DATABASE_HOST: 'secondary.host' },
+      'DB_HOST',
+      'primary.host',
+    ],
+    ['devrait coercer DB_PORT en number', { DB_PORT: '5433' }, 'DB_PORT', 5433],
+    ['devrait coercer PORT en number', { PORT: '8080' }, 'PORT', 8080],
+    [
+      'devrait accepter METRICS_TOKEN comme variable optionnelle',
+      { METRICS_TOKEN: 'my-prom-token' },
+      'METRICS_TOKEN',
+      'my-prom-token',
+    ],
+  ] as const)('%s', (_titre, overrides, cle, attendu) => {
+    expect(validateEnv(buildValidEnv(overrides))[cle]).toBe(attendu);
   });
 
   describe('diffusion des articles aux abonnés', () => {

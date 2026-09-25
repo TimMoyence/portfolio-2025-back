@@ -3,13 +3,17 @@ import {
   buildCoursAvecProductions,
   creerCatalogueDeTest,
 } from '../../../../../test/factories/cours.factory';
-import { buildSessionRecord } from '../../../../../test/factories/formation.factory';
+import {
+  buildSessionRecord,
+  detailsDeFeuilleJuste,
+} from '../../../../../test/factories/formation.factory';
 import {
   creerDependancesDEnregistrement,
   monterEnregistrement,
   verifierContratDEnregistrement,
   type DependancesDEnregistrement,
 } from '../../../../../test/helpers/enregistrement-de-reponse';
+import type { PilotageEcran } from '../../domain/contrats/pilotage';
 import {
   AnswerAlreadySubmittedError,
   PhaseFermeeError,
@@ -71,10 +75,7 @@ describe('SubmitProductionUseCase', () => {
         questionId: 'Q-TEST-FEUILLE',
         concept: 'tableur',
         score: 1,
-        details: [
-          { cle: 'D2', juste: true, confusion: null },
-          { cle: 'D3', juste: true, confusion: null },
-        ],
+        details: detailsDeFeuilleJuste(),
       }),
     );
   });
@@ -149,14 +150,27 @@ describe('SubmitProductionUseCase', () => {
     expect(deps.answers.create).not.toHaveBeenCalled();
   });
 
-  it('refuse une production dont l ecran a deja revele sa correction', async () => {
+  const piloterLaFeuille = (pilotage: PilotageEcran) => {
     deps.sessions.findById.mockResolvedValue(
       buildSessionRecord({
         courseSlug: COURS.slug,
         ecranCourant: DERNIER_ECRAN,
-        pilotageEcrans: { 'E-FEUILLE': { revele: true } },
+        pilotageEcrans: { 'E-FEUILLE': pilotage },
       }),
     );
+  };
+
+  const CLASSEMENT_JUSTE = {
+    ...commande,
+    questionId: 'Q-TEST-CLASSEMENT',
+    valeur: {
+      type: 'classement' as const,
+      classement: { 'ca-2025': 'valeur', inflation: 'ambigu' } as const,
+    },
+  };
+
+  it('refuse une production dont l ecran a deja revele sa correction', async () => {
+    piloterLaFeuille({ revele: true });
 
     await expect(sut.execute(commande)).rejects.toThrow(PhaseFermeeError);
     expect(deps.answers.create).not.toHaveBeenCalled();
@@ -190,13 +204,7 @@ describe('SubmitProductionUseCase', () => {
 
   it('F16 · refuse la reprise d une feuille dont l étayage a déjà été montré', async () => {
     deps.answers.existsFor.mockResolvedValue(true);
-    deps.sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        courseSlug: COURS.slug,
-        ecranCourant: DERNIER_ECRAN,
-        pilotageEcrans: { 'E-FEUILLE': { etayage: 0, etayageAtteint: 1 } },
-      }),
-    );
+    piloterLaFeuille({ etayage: 0, etayageAtteint: 1 });
 
     await expect(sut.execute(commande)).rejects.toThrow(PhaseFermeeError);
     expect(deps.answers.remplacer).not.toHaveBeenCalled();
@@ -205,16 +213,9 @@ describe('SubmitProductionUseCase', () => {
   it('refuse une seconde production sur un même classement', async () => {
     deps.answers.existsFor.mockResolvedValue(true);
 
-    await expect(
-      sut.execute({
-        ...commande,
-        questionId: 'Q-TEST-CLASSEMENT',
-        valeur: {
-          type: 'classement',
-          classement: { 'ca-2025': 'valeur', inflation: 'ambigu' },
-        },
-      }),
-    ).rejects.toThrow(AnswerAlreadySubmittedError);
+    await expect(sut.execute(CLASSEMENT_JUSTE)).rejects.toThrow(
+      AnswerAlreadySubmittedError,
+    );
     expect(deps.answers.create).not.toHaveBeenCalled();
     expect(deps.answers.remplacer).not.toHaveBeenCalled();
   });
@@ -229,14 +230,7 @@ describe('SubmitProductionUseCase', () => {
   });
 
   it('corrige un classement et rend un verdict par carte', async () => {
-    const verdict = await sut.execute({
-      ...commande,
-      questionId: 'Q-TEST-CLASSEMENT',
-      valeur: {
-        type: 'classement',
-        classement: { 'ca-2025': 'valeur', inflation: 'ambigu' },
-      },
-    });
+    const verdict = await sut.execute(CLASSEMENT_JUSTE);
 
     expect(verdict.score).toBe(1);
     expect(verdict.details).toHaveLength(2);

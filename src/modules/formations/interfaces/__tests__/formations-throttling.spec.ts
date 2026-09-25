@@ -1,8 +1,16 @@
 import {
+  FENETRE_THROTTLE_MS,
+  LimiteParMinute,
+  LimiteParParticipant,
   suivreParCodeDeSession,
   suivreParParticipant,
 } from '../formations-throttling';
 import { createMockParticipantsRepo } from '../../../../../test/factories/formation.factory';
+import { installerVariables } from '../../../../../test/helpers/environnement';
+import {
+  limiteDeThrottle,
+  methodeDe,
+} from '../../../../../test/helpers/metadonnees-de-route';
 import { ParticipantTokenService } from '../ParticipantToken.service';
 
 const IP_SALLE = 'sortie-nat-salle-b204';
@@ -13,6 +21,37 @@ const SESSION_ID = '3f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
 const AUTRE_SESSION = '4f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2d';
 const THEO = '8f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
 const LEA = '1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d';
+
+class ControleurTemoin {
+  @LimiteParParticipant(7)
+  parParticipant(): void {}
+
+  @LimiteParMinute(9)
+  parMinute(): void {}
+}
+
+const limiteDe = (nom: keyof ControleurTemoin) =>
+  limiteDeThrottle(methodeDe(ControleurTemoin, nom));
+
+describe('LimiteParParticipant', () => {
+  it('limite la route par minute et compte par participant', () => {
+    expect(limiteDe('parParticipant')).toEqual({
+      limite: 7,
+      fenetre: FENETRE_THROTTLE_MS,
+      suivi: suivreParParticipant,
+    });
+  });
+});
+
+describe('LimiteParMinute', () => {
+  it('limite la route par minute en gardant le suivi par defaut', () => {
+    expect(limiteDe('parMinute')).toEqual({
+      limite: 9,
+      fenetre: FENETRE_THROTTLE_MS,
+      suivi: undefined,
+    });
+  });
+});
 
 function requete(
   overrides: Record<string, unknown> = {},
@@ -48,23 +87,14 @@ describe('suivreParCodeDeSession', () => {
 
 describe('suivreParParticipant', () => {
   const tokens = new ParticipantTokenService(createMockParticipantsRepo());
-  let secretInitial: string | undefined;
   let jetonTheo: string;
   let jetonLea: string;
 
+  installerVariables({ FORMATION_REVIEW_TOKEN_SECRET: SECRET });
+
   beforeAll(() => {
-    secretInitial = process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
     jetonTheo = tokens.sign(SESSION_ID, THEO, 0);
     jetonLea = tokens.sign(SESSION_ID, LEA, 0);
-  });
-
-  afterAll(() => {
-    if (secretInitial === undefined) {
-      delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    } else {
-      process.env.FORMATION_REVIEW_TOKEN_SECRET = secretInitial;
-    }
   });
 
   function requeteDe(

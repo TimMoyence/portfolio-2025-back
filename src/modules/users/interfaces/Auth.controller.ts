@@ -7,7 +7,6 @@ import {
   Post,
   Query,
   Req,
-  Res,
   UnauthorizedException,
 } from '@nestjs/common';
 import {
@@ -23,6 +22,7 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { resolveClientIpOrUnknown } from '../../../common/interfaces/security/client-ip.util';
+import { EchangeCourant, type EchangeHttp } from './echange-http.decorator';
 import {
   limiteDeRafraichissement,
   suivreParJetonDeRafraichissement,
@@ -32,6 +32,7 @@ import type { AuthAuditEntry } from '../application/services/AuthAuditLogger';
 import { AuthenticateGoogleUserUseCase } from '../application/AuthenticateGoogleUser.useCase';
 import { AuthenticateUserUseCase } from '../application/AuthenticateUser.useCase';
 import type { AuthResult } from '../application/AuthenticateUser.useCase';
+import type { User } from '../domain/User';
 import { ChangePasswordUseCase } from '../application/ChangePassword.useCase';
 import { CreateUsersUseCase } from '../application/CreateUsers.useCase';
 import { RefreshTokensUseCase } from '../application/RefreshTokens.useCase';
@@ -119,11 +120,10 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Identifiants invalides' })
   async login(
     @Body() dto: LoginDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+    @EchangeCourant() echange: EchangeHttp,
   ): Promise<AuthResponseDto> {
     return this.ouvrirSession(
-      { req, res },
+      echange,
       { succes: 'LOGIN_SUCCESS', echec: 'LOGIN_FAILURE', email: dto.email },
       () => this.authenticateUserUseCase.execute(dto),
     );
@@ -137,18 +137,17 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Invalid Google token' })
   async googleAuth(
     @Body() dto: GoogleAuthDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+    @EchangeCourant() echange: EchangeHttp,
   ): Promise<AuthResponseDto> {
     return this.ouvrirSession(
-      { req, res },
+      echange,
       { succes: 'GOOGLE_AUTH_SUCCESS', echec: 'GOOGLE_AUTH_FAILURE' },
       () => this.authenticateGoogleUserUseCase.execute(dto.idToken),
     );
   }
 
   private async ouvrirSession(
-    { req, res }: { req: Request; res: Response },
+    { req, res }: EchangeHttp,
     journal: {
       succes: AuthAuditEntry['event'];
       echec: AuthAuditEntry['event'];
@@ -202,41 +201,24 @@ export class AuthController {
   @ApiOkResponse({ type: AuthResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid or expired refresh token' })
   async refresh(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+    @EchangeCourant() echange: EchangeHttp,
   ): Promise<AuthResponseDto> {
-    const ip = this.extractIp(req);
-    const userAgent = this.extractUserAgent(req);
-
-    const rawRefreshToken = (
-      req.cookies as Record<string, string | undefined>
-    )?.[REFRESH_TOKEN_COOKIE_NAME];
+    const rawRefreshToken = this.jetonDuCookie(echange.req);
     if (!rawRefreshToken) {
       throw new UnauthorizedException('Missing refresh token cookie');
     }
 
-    try {
-      const result = await this.refreshTokensUseCase.execute(rawRefreshToken);
-      this.setRefreshCookie(res, result.refreshToken);
-      this.auditLogger.log({
-        event: 'TOKEN_REFRESH',
-        userId: result.user.id,
-        email: result.user.email,
-        ip,
-        userAgent,
-        timestamp: new Date(),
-      });
-      return AuthResponseDto.fromAuthResult(result);
-    } catch (error) {
-      this.auditLogger.log({
-        event: 'TOKEN_REFRESH_FAILURE',
-        ip,
-        userAgent,
-        timestamp: new Date(),
-        details: error instanceof Error ? error.message : String(error),
-      });
-      throw error;
-    }
+    return this.ouvrirSession(
+      echange,
+      { succes: 'TOKEN_REFRESH', echec: 'TOKEN_REFRESH_FAILURE' },
+      () => this.refreshTokensUseCase.execute(rawRefreshToken),
+    );
+  }
+
+  private jetonDuCookie(req: Request): string | undefined {
+    return (req.cookies as Record<string, string | undefined>)?.[
+      REFRESH_TOKEN_COOKIE_NAME
+    ];
   }
 
   @Public()
@@ -247,15 +229,11 @@ export class AuthController {
   @ApiOkResponse({ type: AuthMessageResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid refresh token' })
   async logout(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+    @EchangeCourant() { req, res }: EchangeHttp,
   ): Promise<AuthMessageResponseDto> {
     const ip = this.extractIp(req);
     const userAgent = this.extractUserAgent(req);
-
-    const rawRefreshToken = (
-      req.cookies as Record<string, string | undefined>
-    )?.[REFRESH_TOKEN_COOKIE_NAME];
+    const rawRefreshToken = this.jetonDuCookie(req);
 
     if (rawRefreshToken) {
       await this.revokeTokenUseCase.execute(rawRefreshToken);
@@ -283,12 +261,9 @@ export class AuthController {
     @Body() dto: ChangePasswordDto,
     @Req() req: Request,
   ): Promise<UserResponseDto> {
-    const user = req.user!;
-    const updatedUser = await this.changePasswordUseCase.execute({
-      ...dto,
-      userId: user.sub,
-    });
-    return UserResponseDto.fromDomain(updatedUser);
+    return this.pourLeCompteConnecte(req, (userId) =>
+      this.changePasswordUseCase.execute({ ...dto, userId }),
+    );
   }
 
   @Public()
@@ -340,12 +315,16 @@ export class AuthController {
     @Body() dto: SetPasswordDto,
     @Req() req: Request,
   ): Promise<UserResponseDto> {
-    const user = req.user!;
-    const updatedUser = await this.setPasswordUseCase.execute({
-      ...dto,
-      userId: user.sub,
-    });
-    return UserResponseDto.fromDomain(updatedUser);
+    return this.pourLeCompteConnecte(req, (userId) =>
+      this.setPasswordUseCase.execute({ ...dto, userId }),
+    );
+  }
+
+  private async pourLeCompteConnecte(
+    req: Request,
+    modifier: (userId: string) => Promise<User>,
+  ): Promise<UserResponseDto> {
+    return UserResponseDto.fromDomain(await modifier(req.user!.sub));
   }
 
   @Public()

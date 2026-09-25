@@ -1,20 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
-import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
-import type { IUsersRepository } from '../domain/IUsers.repository';
 import { AuthenticateGoogleUserUseCase } from './AuthenticateGoogleUser.useCase';
-import type { JwtTokenService } from './services/JwtTokenService';
 import {
   attendreSessionOuverte,
   buildUser,
-  createMockUsersRepo,
-  createMockJwtService,
-  buildSignedToken,
+  createMockSessionDependances,
 } from '../../../../test/factories/user.factory';
-import {
-  buildRefreshToken,
-  createMockRefreshTokensRepo,
-} from '../../../../test/factories/refresh-token.factory';
 
 const mockVerifyIdToken = jest.fn();
 jest.mock('google-auth-library', () => ({
@@ -32,19 +23,13 @@ const GOOGLE_PAYLOAD = {
 };
 
 describe('AuthenticateGoogleUserUseCase', () => {
-  let repo: jest.Mocked<IUsersRepository>;
-  let refreshTokensRepo: jest.Mocked<IRefreshTokensRepository>;
-  let jwtTokenService: jest.Mocked<JwtTokenService>;
+  let { repo, refreshTokensRepo, jwtTokenService } =
+    createMockSessionDependances();
   let useCase: AuthenticateGoogleUserUseCase;
 
   beforeEach(() => {
-    repo = createMockUsersRepo();
-    refreshTokensRepo = createMockRefreshTokensRepo();
-    jwtTokenService = createMockJwtService();
-    jwtTokenService.sign.mockResolvedValue(buildSignedToken());
-    refreshTokensRepo.create.mockResolvedValue(
-      buildRefreshToken({ tokenHash: 'hashed', expiresAt: new Date() }),
-    );
+    ({ repo, refreshTokensRepo, jwtTokenService } =
+      createMockSessionDependances());
 
     mockVerifyIdToken.mockReset();
     mockVerifyIdToken.mockResolvedValue({

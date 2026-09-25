@@ -3,36 +3,22 @@ import { DomainValidationError } from '../../../../common/domain/errors/DomainVa
 import {
   buildCoursAvecJalon,
   creerCatalogueAVersions,
-  creerCatalogueDeTest,
+  creerParticipationEnSeance,
+  monterParticipationSurLeDernierEcran,
   SONDAGE_DE_TEST,
 } from '../../../../../test/factories/cours.factory';
-import {
-  buildSessionRecord,
-  createMockParticipantsRepo,
-  createMockPulsesRepo,
-  createMockSessionStateCache,
-  createMockSessionsRepo,
-} from '../../../../../test/factories/formation.factory';
+import { createMockPulsesRepo } from '../../../../../test/factories/formation.factory';
 import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
-import {
-  verifierGardesDeParticipant,
-  verifierGardesDeSeance,
-} from '../../../../../test/helpers/gardes-de-seance';
+import { verifierContratDeParticipation } from '../../../../../test/helpers/gardes-de-seance';
 import { cleDeJalon } from '../../domain/cours/CleDeJalon';
-import {
-  CoursInconnuError,
-  SessionNotFoundError,
-} from '../../domain/errors/FormationErrors';
+import { CoursInconnuError } from '../../domain/errors/FormationErrors';
 import { DeclarerJalonUseCase } from '../DeclarerJalon.useCase';
 
 const COURS = buildCoursAvecJalon();
-const DERNIER_ECRAN = COURS.ecrans.length - 1;
 
 describe('DeclarerJalonUseCase', () => {
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
+  let depots: ReturnType<typeof monterParticipationSurLeDernierEcran>;
   let pulses: ReturnType<typeof createMockPulsesRepo>;
-  let cache: ReturnType<typeof createMockSessionStateCache>;
-  let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: DeclarerJalonUseCase;
 
   const commande = {
@@ -42,30 +28,18 @@ describe('DeclarerJalonUseCase', () => {
     etat: 'ca-va' as const,
   };
 
+  const declarer = () => sut.execute(commande);
+
   installerSecretDeJalons();
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        courseSlug: COURS.slug,
-        ecranCourant: DERNIER_ECRAN,
-      }),
-    );
+    depots = monterParticipationSurLeDernierEcran(COURS);
     pulses = createMockPulsesRepo();
-    cache = createMockSessionStateCache();
-    participants = createMockParticipantsRepo();
-    sut = new DeclarerJalonUseCase(
-      sessions,
-      pulses,
-      cache,
-      creerCatalogueDeTest(COURS),
-      participants,
-    );
+    sut = new DeclarerJalonUseCase(depots.participation, pulses);
   });
 
   it('enregistre le jalon sous la cle HMAC du participant', async () => {
-    await sut.execute(commande);
+    await declarer();
 
     expect(pulses.declarer).toHaveBeenCalledWith({
       sessionId: 'session-uuid',
@@ -76,7 +50,7 @@ describe('DeclarerJalonUseCase', () => {
   });
 
   it('ne laisse jamais fuiter l identifiant du participant dans la cle', async () => {
-    await sut.execute(commande);
+    await declarer();
 
     const [envoi] = pulses.declarer.mock.calls[0];
     expect(envoi.cleParticipant).toHaveLength(64);
@@ -89,12 +63,6 @@ describe('DeclarerJalonUseCase', () => {
     );
   });
 
-  it('signale l activite de la seance', async () => {
-    await sut.execute(commande);
-
-    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
-  });
-
   it('refuse un sondage absent du cours', async () => {
     await expect(
       sut.execute({ ...commande, sondageId: 'jalon-invente' }),
@@ -102,29 +70,22 @@ describe('DeclarerJalonUseCase', () => {
     expect(pulses.declarer).not.toHaveBeenCalled();
   });
 
-  verifierGardesDeSeance(() => ({
-    sessions,
-    courseSlug: COURS.slug,
-    executer: () => sut.execute(commande),
+  verifierContratDeParticipation(() => ({
+    ...depots,
+    executer: declarer,
     effetsInterdits: () => [pulses.declarer],
   }));
 
-  it('signale une seance introuvable', async () => {
-    sessions.findById.mockResolvedValue(null);
-
-    await expect(sut.execute(commande)).rejects.toThrow(SessionNotFoundError);
-  });
-
   it('signale un cours introuvable', async () => {
     sut = new DeclarerJalonUseCase(
-      sessions,
+      creerParticipationEnSeance({
+        ...depots,
+        catalogue: creerCatalogueAVersions({}),
+      }),
       pulses,
-      cache,
-      creerCatalogueAVersions({}),
-      participants,
     );
 
-    await expect(sut.execute(commande)).rejects.toThrow(CoursInconnuError);
+    await expect(declarer()).rejects.toThrow(CoursInconnuError);
   });
 
   it('refuse de signer sans secret de jalon configure', () => {
@@ -137,10 +98,4 @@ describe('DeclarerJalonUseCase', () => {
 
     process.env.FORMATIONS_PULSE_SECRET = secret;
   });
-
-  verifierGardesDeParticipant(() => ({
-    participants,
-    executer: () => sut.execute(commande),
-    effetsInterdits: () => [pulses.declarer],
-  }));
 });

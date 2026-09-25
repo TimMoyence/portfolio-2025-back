@@ -1,4 +1,8 @@
-import { Column, CreateDateColumn, Entity, Index } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
+import {
+  ColonneDeCreation,
+  ColonneDeMiseAJour,
+} from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
 import { JetonDUtilisateur } from './jeton-d-utilisateur';
 
 @Entity({ name: 'password_reset_tokens' })
@@ -13,13 +17,9 @@ export class PasswordResetTokenEntity extends JetonDUtilisateur(
   @Column({ name: 'used_at', type: 'timestamp', nullable: true })
   usedAt: Date | null;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @ColonneDeCreation()
   createdAt: Date;
 
-  @Column({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @ColonneDeMiseAJour()
   updatedAt: Date;
 }

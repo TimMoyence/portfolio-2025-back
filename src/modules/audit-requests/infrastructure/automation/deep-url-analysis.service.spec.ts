@@ -1,6 +1,9 @@
+import {
+  buildHomepageSnapshot,
+  buildUrlIndexabilityResult,
+} from '../../../../../test/factories/audit-requests.factory';
 import { DeepUrlAnalysisService } from './deep-url-analysis.service';
-import { HomepageAuditSnapshot } from './homepage-analyzer.service';
-import { UrlIndexabilityResult } from './url-indexability.service';
+import type { HomepageAuditSnapshot } from './homepage-analyzer.service';
 
 describe('DeepUrlAnalysisService', () => {
   let service: DeepUrlAnalysisService;
@@ -9,43 +12,45 @@ describe('DeepUrlAnalysisService', () => {
     service = new DeepUrlAnalysisService();
   });
 
+  const accueil = (
+    overrides: Partial<HomepageAuditSnapshot>,
+  ): HomepageAuditSnapshot =>
+    buildHomepageSnapshot({
+      finalUrl: 'https://example.com',
+      ttfbMs: 120,
+      totalResponseMs: 420,
+      contentLength: 20000,
+      metaDescription: 'Example',
+      robotsMeta: 'index,follow',
+      canonicalUrls: ['https://example.com'],
+      htmlLang: 'en',
+      twitterTags: ['twitter:card'],
+      internalLinks: ['https://example.com/about'],
+      ...overrides,
+    });
+
   it('detects duplicate titles and missing metadata issues', () => {
-    const input: UrlIndexabilityResult[] = [
-      {
-        url: 'https://example.com/a',
-        finalUrl: 'https://example.com/a',
-        statusCode: 200,
-        indexable: true,
+    const result = service.analyze([
+      buildUrlIndexabilityResult({
         title: 'Same Title',
         metaDescription: '',
         h1Count: 2,
         htmlLang: null,
-        robotsMeta: null,
-        xRobotsTag: null,
         canonical: null,
         canonicalCount: 0,
         responseTimeMs: 3000,
-        error: null,
-      },
-      {
+      }),
+      buildUrlIndexabilityResult({
         url: 'https://example.com/b',
         finalUrl: 'https://example.com/b',
-        statusCode: 200,
         indexable: false,
         title: 'Same Title',
         metaDescription: 'Meta',
-        h1Count: 1,
-        htmlLang: 'fr',
         robotsMeta: 'noindex',
-        xRobotsTag: null,
         canonical: 'https://example.com/b',
-        canonicalCount: 1,
         responseTimeMs: 500,
-        error: null,
-      },
-    ];
-
-    const result = service.analyze(input);
+      }),
+    ]);
     const codes = result.findings.map((finding) => finding.code);
 
     expect(codes).toContain('duplicate_titles');
@@ -58,50 +63,23 @@ describe('DeepUrlAnalysisService', () => {
   });
 
   it('infers WordPress stack from deterministic CMS and cookie signatures', () => {
-    const homepage: HomepageAuditSnapshot = {
-      finalUrl: 'https://example.com',
-      statusCode: 200,
-      https: true,
-      redirectChain: [],
-      ttfbMs: 120,
-      totalResponseMs: 420,
-      contentLength: 20000,
+    const homepage = accueil({
       server: 'nginx',
       xPoweredBy: 'PHP/8.2',
       setCookiePatterns: ['wordpress_logged_in', 'phpsessid'],
       cacheHeaders: { 'cache-control': 'max-age=0' },
       securityHeaders: { 'x-frame-options': 'SAMEORIGIN' },
-      title: 'Example',
-      metaDescription: 'Example',
-      robotsMeta: 'index,follow',
-      canonicalUrls: ['https://example.com'],
-      h1Count: 1,
-      htmlLang: 'en',
-      hasStructuredData: true,
-      openGraphTags: ['og:title'],
-      twitterTags: ['twitter:card'],
       detectedCmsHints: ['WordPress'],
-      hasAnalytics: true,
-      hasTagManager: true,
-      hasPixel: false,
-      hasCookieBanner: true,
-      hasForms: true,
-      internalLinks: ['https://example.com/about'],
-    };
-    const pages: UrlIndexabilityResult[] = [
-      {
+    });
+    const pages = [
+      buildUrlIndexabilityResult({
         url: 'https://example.com/about',
         finalUrl: 'https://example.com/about',
-        statusCode: 200,
-        indexable: true,
         title: 'About',
         metaDescription: 'About',
-        h1Count: 1,
         htmlLang: 'en',
         robotsMeta: 'index,follow',
-        xRobotsTag: null,
         canonical: 'https://example.com/about',
-        canonicalCount: 1,
         responseTimeMs: 500,
         detectedCmsHints: ['WordPress'],
         server: 'nginx',
@@ -109,8 +87,7 @@ describe('DeepUrlAnalysisService', () => {
         setCookiePatterns: ['wordpress_test_cookie'],
         cacheHeaders: {},
         securityHeaders: {},
-        error: null,
-      },
+      }),
     ];
 
     const fingerprint = service.inferTechFingerprint(homepage, pages, 'en');
@@ -121,36 +98,14 @@ describe('DeepUrlAnalysisService', () => {
   });
 
   it('returns Not verifiable when deterministic evidence is weak', () => {
-    const homepage: HomepageAuditSnapshot = {
-      finalUrl: 'https://example.com',
-      statusCode: 200,
-      https: true,
-      redirectChain: [],
-      ttfbMs: 120,
-      totalResponseMs: 420,
-      contentLength: 20000,
+    const homepage = accueil({
       server: null,
       xPoweredBy: null,
       setCookiePatterns: [],
       cacheHeaders: {},
       securityHeaders: {},
-      title: 'Example',
-      metaDescription: 'Example',
-      robotsMeta: 'index,follow',
-      canonicalUrls: ['https://example.com'],
-      h1Count: 1,
-      htmlLang: 'en',
-      hasStructuredData: true,
-      openGraphTags: ['og:title'],
-      twitterTags: ['twitter:card'],
       detectedCmsHints: [],
-      hasAnalytics: true,
-      hasTagManager: true,
-      hasPixel: false,
-      hasCookieBanner: true,
-      hasForms: true,
-      internalLinks: ['https://example.com/about'],
-    };
+    });
 
     const fingerprint = service.inferTechFingerprint(homepage, [], 'en');
 

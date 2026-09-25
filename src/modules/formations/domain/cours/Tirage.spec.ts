@@ -1,6 +1,7 @@
 import {
+  buildCoursAUneQuestion,
   buildCoursDeTest,
-  EN_CATALOGUE,
+  buildQuestionNumeriqueFigee,
 } from '../../../../../test/factories/cours.factory';
 import { buildPlanFeuille } from '../../../../../test/factories/corriges.factory';
 import {
@@ -17,10 +18,10 @@ import {
   clesDuCorrigeDans,
   clesSecretesDans,
 } from '../../../../../test/helpers/cles-du-corrige';
-import type { Cours, Ecran } from '../contrats/cours';
+import type { Ecran } from '../contrats/cours';
 import type { Tolerance } from '../GradingCore';
-import { questionNumerique, questionVote } from './Cours';
-import type { AuMoinsUn, QuestionNumerique, QuestionVote } from './Cours';
+import { questionVote } from './Cours';
+import type { AuMoinsUn } from './Cours';
 import { lireCoursStocke } from './CoursStocke';
 import { questionDeVote, slugOption } from './QuestionStockee';
 import {
@@ -62,47 +63,18 @@ const CAS_NUMERIQUES_AMBIGUS: readonly {
   },
 ];
 
-function questionNumeriqueFigee(
-  solution: number,
-  pieges: AuMoinsUn<number>,
-  tolerance: Tolerance,
-): QuestionNumerique {
-  const [premier, ...suite] = pieges.map((valeur) => ({
-    confusion: 'base-arrivee' as const,
-    valeur: () => valeur,
-  }));
-  return questionNumerique({
-    id: 'Q-FIGEE',
-    concept: 'proportion',
-    noteCompte: false,
-    donnees: () => ({}),
-    enonce: () => 'e',
-    unite: null,
-    solution: () => solution,
-    tolerance,
-    pieges: [premier, ...suite],
-  });
-}
-
-function coursAUneQuestion(question: QuestionNumerique | QuestionVote): Cours {
-  const commun = {
-    ...EN_CATALOGUE,
-    id: 'E',
-    dureeMinutes: 1,
-    concepts: ['proportion'] as const,
-    notes: '',
-  };
-  const ecran: Ecran =
-    question.type === 'numeric'
-      ? { ...commun, brique: 'fp-numeric', question }
-      : { ...commun, brique: 'fp-vote', question };
-  return buildCoursDeTest({ ecrans: [ecran] });
-}
-
 function ecranDe(tirage: ReturnType<typeof tirer>, id: string) {
   const ecran = tirage.sujet.ecrans.find((candidat) => candidat.id === id);
   if (!ecran) throw new Error(`ecran ${id} absent`);
   return ecran;
+}
+
+function optionsDe(tirage: ReturnType<typeof tirer>, id: string) {
+  return (
+    ecranDe(tirage, id).donnees as {
+      question: { options: { id: string; libelle: string }[] };
+    }
+  ).question.options;
 }
 
 describe('tirer', () => {
@@ -161,23 +133,14 @@ describe('tirer', () => {
 
   it('designe la bonne option de vote par son identifiant anonyme', () => {
     const tirage = tirer(cours, 3);
-    const question = (
-      ecranDe(tirage, 'E-OUV').donnees as {
-        question: { options: { id: string; libelle: string }[] };
-      }
-    ).question;
+    const options = optionsDe(tirage, 'E-OUV');
     const solution = tirage.solutions['Q-TEST-RAPPEL'];
-    expect(question.options.map((option) => option.id)).toEqual([
-      'o1',
-      'o2',
-      'o3',
-    ]);
+    expect(options.map((option) => option.id)).toEqual(['o1', 'o2', 'o3']);
     expect(
-      question.options.find((option) => option.id === solution.valeur)?.libelle,
+      options.find((option) => option.id === solution.valeur)?.libelle,
     ).toBe('plus bas qu’au départ');
     const libellesPieges = solution.pieges.map(
-      (piege) =>
-        question.options.find((option) => option.id === piege.valeur)?.libelle,
+      (piege) => options.find((option) => option.id === piege.valeur)?.libelle,
     );
     expect(libellesPieges).toHaveLength(2);
     expect(libellesPieges).toEqual(
@@ -190,11 +153,7 @@ describe('tirer', () => {
 
   it('associe a chaque option de vote du tirage le libelle affiche a l etudiant', () => {
     const tirage = tirer(cours, 3);
-    const { options } = (
-      ecranDe(tirage, 'E-OUV').donnees as {
-        question: { options: { id: string; libelle: string }[] };
-      }
-    ).question;
+    const options = optionsDe(tirage, 'E-OUV');
 
     expect(tirage.libellesOptions['Q-TEST-RAPPEL']).toEqual(
       Object.fromEntries(options.map((option) => [option.id, option.libelle])),
@@ -296,18 +255,14 @@ describe('tirer', () => {
 
   it('garde les identifiants stables d un vote stocke et n en melange que l ordre selon la graine', () => {
     const stocke = buildVoteStocke();
-    const cours = coursAUneQuestion(questionDeVote(stocke));
+    const cours = buildCoursAUneQuestion(questionDeVote(stocke));
     const identifiants = stocke.options.map((option) => option.id);
     const [bonne, ...pieges] = stocke.options;
     const ordres = new Set<string>();
 
     for (let graine = 0; graine < 30; graine += 1) {
       const tirage = tirer(cours, graine);
-      const { options } = (
-        ecranDe(tirage, 'E').donnees as {
-          question: { options: { id: string; libelle: string }[] };
-        }
-      ).question;
+      const options = optionsDe(tirage, 'E');
       ordres.add(options.map((option) => option.id).join(','));
       expect([...options].sort(parIdentifiant)).toEqual(
         stocke.options
@@ -341,8 +296,8 @@ describe('tirer', () => {
   it.each(CAS_NUMERIQUES_AMBIGUS)(
     'rejette une graine dont $cas',
     ({ solution, pieges, tolerance }) => {
-      const question = questionNumeriqueFigee(solution, pieges, tolerance);
-      expect(() => tirer(coursAUneQuestion(question), 1)).toThrow(
+      const question = buildQuestionNumeriqueFigee(solution, pieges, tolerance);
+      expect(() => tirer(buildCoursAUneQuestion(question), 1)).toThrow(
         TirageAmbiguError,
       );
     },
@@ -358,12 +313,12 @@ describe('tirer', () => {
       bonne: () => 'même',
       pieges: [{ confusion: 'base-arrivee', libelle: () => ' même ' }],
     });
-    const infinie = questionNumeriqueFigee(Number.POSITIVE_INFINITY, [1], {
+    const infinie = buildQuestionNumeriqueFigee(Number.POSITIVE_INFINITY, [1], {
       type: 'absolue',
       valeur: 0,
     });
     for (const question of [doublon, infinie]) {
-      expect(() => tirer(coursAUneQuestion(question), 1)).toThrow(
+      expect(() => tirer(buildCoursAUneQuestion(question), 1)).toThrow(
         TirageAmbiguError,
       );
     }

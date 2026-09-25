@@ -1,5 +1,8 @@
 import * as fc from 'fast-check';
-import { nonStringArbitrary } from '../../../../test/helpers/fast-check-arbitraries';
+import {
+  attendreNullPourChaqueValeur,
+  nonStringArbitrary,
+} from '../../../../test/helpers/fast-check-arbitraries';
 import { EmailAddress } from './EmailAddress';
 
 describe('EmailAddress (property-based)', () => {
@@ -13,27 +16,19 @@ describe('EmailAddress (property-based)', () => {
     );
   });
 
-  it('devrait rejeter toute chaîne sans @', () => {
-    fc.assert(
-      fc.property(
-        fc.string().filter((s) => !s.includes('@')),
-        (input) => {
-          const result = EmailAddress.parse(input);
-          expect(result).toBeNull();
-        },
-      ),
-    );
-  });
-
-  it("devrait rejeter toute chaîne vide ou composée uniquement d'espaces", () => {
-    fc.assert(
-      fc.property(
-        fc.nat({ max: 320 }).map((n) => ' '.repeat(n)),
-        (input) => {
-          const result = EmailAddress.parse(input);
-          expect(result).toBeNull();
-        },
-      ),
+  it.each<[string, fc.Arbitrary<unknown>]>([
+    [
+      'devrait rejeter toute chaîne sans @',
+      fc.string().filter((s) => !s.includes('@')),
+    ],
+    [
+      "devrait rejeter toute chaîne vide ou composée uniquement d'espaces",
+      fc.nat({ max: 320 }).map((n) => ' '.repeat(n)),
+    ],
+    ['devrait retourner null pour les non-string', nonStringArbitrary],
+  ])('%s', (_titre, arbitraire) => {
+    attendreNullPourChaqueValeur(arbitraire, (valeur) =>
+      EmailAddress.parse(valeur),
     );
   });
 
@@ -44,15 +39,6 @@ describe('EmailAddress (property-based)', () => {
         if (result !== null) {
           expect(result.value).toBe(result.value.toLowerCase());
         }
-      }),
-    );
-  });
-
-  it('devrait retourner null pour les non-string', () => {
-    fc.assert(
-      fc.property(nonStringArbitrary, (input) => {
-        const result = EmailAddress.parse(input);
-        expect(result).toBeNull();
       }),
     );
   });

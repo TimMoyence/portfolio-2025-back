@@ -3,7 +3,6 @@ import {
   buildActeurFormation,
   buildAdministrateur,
   buildParticipantRecord,
-  buildSessionRecord,
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
@@ -19,10 +18,10 @@ describe('ListSessionParticipantsUseCase', () => {
   let sut: ListSessionParticipantsUseCase;
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ id: SESSION_ID, teacherId: PROPRIETAIRE.id }),
-    );
+    sessions = createMockSessionsRepo({
+      id: SESSION_ID,
+      teacherId: PROPRIETAIRE.id,
+    });
     participants = createMockParticipantsRepo();
     participants.listBySession.mockResolvedValue([
       buildParticipantRecord({ id: 'p1', prenom: 'Ada', nom: 'Lovelace' }),

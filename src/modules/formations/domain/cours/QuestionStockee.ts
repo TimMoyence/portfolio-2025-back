@@ -115,6 +115,16 @@ function estPiege(
   return option.confusion !== null;
 }
 
+function definitionFixe(stockee: VoteStockee | NumeriqueStockee) {
+  return {
+    id: stockee.id,
+    concept: stockee.concept,
+    noteCompte: stockee.noteCompte,
+    donnees: () => undefined,
+    enonce: () => stockee.enonce,
+  };
+}
+
 export function questionDeVote(stockee: VoteStockee): QuestionVote {
   const bonne = stockee.options.find((option) => option.confusion === null);
   const pieges = stockee.options.filter(estPiege);
@@ -131,11 +141,7 @@ export function questionDeVote(stockee: VoteStockee): QuestionVote {
   });
   return {
     ...questionVote({
-      id: stockee.id,
-      concept: stockee.concept,
-      noteCompte: stockee.noteCompte,
-      donnees: () => undefined,
-      enonce: () => stockee.enonce,
+      ...definitionFixe(stockee),
       bonne: () => bonne.id,
       bonneLibelle: () => bonne.libelle,
       pieges: [versPiege(premier), ...suite.map(versPiege)],
@@ -150,11 +156,7 @@ export function questionDeNumerique(
   const [premier, ...suite] = stockee.pieges;
   return {
     ...questionNumerique({
-      id: stockee.id,
-      concept: stockee.concept,
-      noteCompte: stockee.noteCompte,
-      donnees: () => undefined,
-      enonce: () => stockee.enonce,
+      ...definitionFixe(stockee),
       unite: stockee.unite,
       solution: () => stockee.solution,
       tolerance: stockee.tolerance,

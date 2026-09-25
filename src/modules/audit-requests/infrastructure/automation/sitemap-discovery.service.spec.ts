@@ -14,37 +14,28 @@ describe('SitemapDiscoveryService', () => {
     return {
       fetchText: jest.fn().mockImplementation((url: string) => {
         const item = map[url];
-        if (!item) {
-          return Promise.resolve({
-            requestedUrl: url,
-            finalUrl: url,
-            redirectChain: [],
-            statusCode: 404,
-            headers: {},
-            body: '',
-            ttfbMs: 10,
-            totalMs: 10,
-            contentLength: null,
-          });
-        }
-
         return Promise.resolve({
           requestedUrl: url,
           finalUrl: url,
           redirectChain: [],
-          statusCode: item.status,
+          statusCode: item ? item.status : 404,
           headers: {},
-          body: item.body,
+          body: item ? item.body : '',
           ttfbMs: 10,
           totalMs: 10,
-          contentLength: item.body.length,
+          contentLength: item ? item.body.length : null,
         });
       }),
     } as unknown as SafeFetchService;
   }
 
+  const decouvrir = (map: Record<string, { status: number; body: string }>) =>
+    new SitemapDiscoveryService(config, createSafeFetchMock(map)).discover(
+      'https://example.com',
+    );
+
   it('falls back to common sitemap paths when robots has no sitemap', async () => {
-    const safeFetch = createSafeFetchMock({
+    const result = await decouvrir({
       'https://example.com/robots.txt': {
         status: 200,
         body: 'User-agent: *\nDisallow: /admin',
@@ -61,9 +52,6 @@ describe('SitemapDiscoveryService', () => {
       },
     });
 
-    const service = new SitemapDiscoveryService(config, safeFetch);
-    const result = await service.discover('https://example.com');
-
     expect(result.urls).toEqual([
       'https://example.com/a',
       'https://example.com/b',
@@ -75,7 +63,7 @@ describe('SitemapDiscoveryService', () => {
   });
 
   it('discovers nested sitemaps from robots-declared sitemap index', async () => {
-    const safeFetch = createSafeFetchMock({
+    const result = await decouvrir({
       'https://example.com/robots.txt': {
         status: 200,
         body: 'Sitemap: https://example.com/custom-index.xml',
@@ -97,9 +85,6 @@ describe('SitemapDiscoveryService', () => {
         `,
       },
     });
-
-    const service = new SitemapDiscoveryService(config, safeFetch);
-    const result = await service.discover('https://example.com');
 
     expect(result.urls).toContain('https://example.com/blog/post-1');
     expect(result.sitemapUrls).toContain(

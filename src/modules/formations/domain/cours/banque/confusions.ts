@@ -204,3 +204,23 @@ export function libelleLisible(confusion: string | null): string | null {
     ? null
     : (libelleDeConfusion(confusion) ?? confusion);
 }
+
+export interface DetailLisible {
+  cle: string;
+  juste: boolean;
+  libelleConfusion: string | null;
+}
+
+export function detailsLisibles(
+  details: readonly {
+    readonly cle: string;
+    readonly juste: boolean;
+    readonly confusion: string | null;
+  }[],
+): DetailLisible[] {
+  return details.map((detail) => ({
+    cle: detail.cle,
+    juste: detail.juste,
+    libelleConfusion: libelleLisible(detail.confusion),
+  }));
+}

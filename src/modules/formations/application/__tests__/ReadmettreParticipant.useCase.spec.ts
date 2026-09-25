@@ -1,14 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import {
-  buildSessionRecord,
-  createMockParticipantsRepo,
-  createMockSessionStateCache,
-  createMockSessionsRepo,
-} from '../../../../../test/factories/formation.factory';
-import { verifierGardesDuFormateur } from '../../../../../test/helpers/gardes-de-seance';
+import { monterDepotsDeParticipation } from '../../../../../test/factories/cours.factory';
+import { buildSessionRecord } from '../../../../../test/factories/formation.factory';
+import { verifierActionSurParticipant } from '../../../../../test/helpers/gardes-de-seance';
 import {
   GraineRepriseError,
-  ParticipantNotFoundError,
   SeanceCompleteError,
 } from '../../domain/errors/FormationErrors';
 import { ReadmettreParticipantUseCase } from '../ReadmettreParticipant.useCase';
@@ -17,63 +12,54 @@ const TEACHER_ID = 'teacher-uuid';
 const PARTICIPANT_ID = 'participant-uuid';
 
 describe('ReadmettreParticipantUseCase', () => {
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
-  let participants: ReturnType<typeof createMockParticipantsRepo>;
-  let cache: ReturnType<typeof createMockSessionStateCache>;
+  let depots: ReturnType<typeof monterDepotsDeParticipation>;
   let sut: ReadmettreParticipantUseCase;
 
+  const readmettrePar = (teacherId: string) =>
+    sut.execute('session-uuid', teacherId, PARTICIPANT_ID);
+
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(buildSessionRecord({ capacite: 30 }));
-    participants = createMockParticipantsRepo();
-    participants.countBySession.mockResolvedValue(12);
-    participants.readmettre.mockResolvedValue(true);
-    cache = createMockSessionStateCache();
-    sut = new ReadmettreParticipantUseCase(sessions, participants, cache);
+    depots = monterDepotsDeParticipation(buildSessionRecord({ capacite: 30 }));
+    depots.participants.countBySession.mockResolvedValue(12);
+    depots.participants.readmettre.mockResolvedValue(true);
+    sut = new ReadmettreParticipantUseCase(depots.participation);
   });
 
   it('readmet le participant de la seance du formateur proprietaire', async () => {
-    await sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID);
+    await readmettrePar(TEACHER_ID);
 
-    expect(participants.readmettre).toHaveBeenCalledWith(
+    expect(depots.participants.readmettre).toHaveBeenCalledWith(
       'session-uuid',
       PARTICIPANT_ID,
       30,
     );
-    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
+    expect(depots.cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
   });
 
   it('S2 · laisse le depot verifier la capacite sous verrou, sans compter avant lui', async () => {
-    participants.readmettre.mockRejectedValue(new SeanceCompleteError(30));
+    depots.participants.readmettre.mockRejectedValue(
+      new SeanceCompleteError(30),
+    );
 
-    await expect(
-      sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
-    ).rejects.toThrow(SeanceCompleteError);
-    expect(participants.countBySession).not.toHaveBeenCalled();
-    expect(cache.signalerActivite).not.toHaveBeenCalled();
+    await expect(readmettrePar(TEACHER_ID)).rejects.toThrow(
+      SeanceCompleteError,
+    );
+    expect(depots.participants.countBySession).not.toHaveBeenCalled();
+    expect(depots.cache.signalerActivite).not.toHaveBeenCalled();
   });
 
   it('S2 · laisse remonter en conflit la graine reprise entre-temps par un autre poste', async () => {
-    participants.readmettre.mockRejectedValue(new GraineRepriseError());
+    depots.participants.readmettre.mockRejectedValue(new GraineRepriseError());
 
-    await expect(
-      sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
-    ).rejects.toThrow(GraineRepriseError);
+    await expect(readmettrePar(TEACHER_ID)).rejects.toThrow(GraineRepriseError);
   });
 
-  verifierGardesDuFormateur(() => ({
-    sessions,
-    executerPar: (teacherId) =>
-      sut.execute('session-uuid', teacherId, PARTICIPANT_ID),
-    effetsInterdits: () => [participants.readmettre],
-  }));
-
-  it('signale un participant absent ou qui n etait pas evince', async () => {
-    participants.readmettre.mockResolvedValue(false);
-
-    await expect(
-      sut.execute('session-uuid', TEACHER_ID, PARTICIPANT_ID),
-    ).rejects.toThrow(ParticipantNotFoundError);
-    expect(cache.signalerActivite).not.toHaveBeenCalled();
-  });
+  verifierActionSurParticipant(
+    'signale un participant absent ou qui n etait pas evince',
+    () => ({
+      ...depots,
+      executerPar: readmettrePar,
+      action: depots.participants.readmettre,
+    }),
+  );
 });

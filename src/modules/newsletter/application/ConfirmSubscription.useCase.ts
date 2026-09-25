@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ResourceNotFoundError } from '../../../common/domain/errors/ResourceNotFoundError';
 import type { NewsletterSubscriber } from '../domain/NewsletterSubscriber';
 import { ActionDAbonne } from './ActionDAbonne';
 
@@ -13,7 +12,7 @@ export class ConfirmSubscriptionUseCase extends ActionDAbonne {
   async execute(confirmToken: string): Promise<ConfirmSubscriptionResult> {
     const subscriber = await this.repo.findByConfirmToken(confirmToken);
     if (!subscriber) {
-      throw new ResourceNotFoundError('Invalid or expired confirm token');
+      throw this.jetonInvalide('confirm');
     }
 
     if (subscriber.status === 'confirmed') {
@@ -23,7 +22,7 @@ export class ConfirmSubscriptionUseCase extends ActionDAbonne {
     // Meme erreur qu'un token inconnu : opposer 404 et 410 (RFC 9110)
     // revelerait qu'un token a existe pour cette souscription.
     if (subscriber.isConfirmTokenExpired()) {
-      throw new ResourceNotFoundError('Invalid or expired confirm token');
+      throw this.jetonInvalide('confirm');
     }
 
     subscriber.confirm();

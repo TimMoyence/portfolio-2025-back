@@ -1,19 +1,8 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import { CookieConsent, type CreateCookieConsentProps } from './CookieConsent';
+import { buildChoixDeConsentement } from '../../../../test/factories/cookie-consents.factory';
+import { CookieConsent } from './CookieConsent';
 
-const VALID_PROPS: CreateCookieConsentProps = {
-  policyVersion: '2026-02-11',
-  locale: 'fr',
-  region: 'EU_UK',
-  source: 'banner',
-  action: 'accept_all',
-  preferences: {
-    essential: true,
-    preferences: false,
-    analytics: false,
-    marketing: false,
-  },
-};
+const VALID_PROPS = buildChoixDeConsentement();
 
 describe('CookieConsent aggregate', () => {
   it('creates consent with normalized locale', () => {

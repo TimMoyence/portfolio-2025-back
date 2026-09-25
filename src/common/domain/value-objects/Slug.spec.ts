@@ -1,5 +1,8 @@
 import * as fc from 'fast-check';
-import { nonStringArbitrary } from '../../../../test/helpers/fast-check-arbitraries';
+import {
+  attendreRejetDeChaqueValeur,
+  nonStringArbitrary,
+} from '../../../../test/helpers/fast-check-arbitraries';
 import { DomainValidationError } from '../errors/DomainValidationError';
 import { Slug } from './Slug';
 
@@ -73,51 +76,26 @@ describe('Slug', () => {
       );
     });
 
-    it('devrait rejeter les chaines avec des caracteres speciaux', () => {
-      const specialCharArb = fc
-        .string({ minLength: 2, maxLength: 50 })
-        .filter((s) => /[^a-zA-Z0-9\-\s]/.test(s));
-
-      fc.assert(
-        fc.property(specialCharArb, (input) => {
-          expect(() => Slug.parse(input, 'test')).toThrow(
-            DomainValidationError,
-          );
-        }),
-      );
-    });
-
-    it('devrait rejeter les slugs trop courts (< 2 caracteres)', () => {
-      fc.assert(
-        fc.property(fc.stringMatching(/^[a-z0-9]?$/), (input) => {
-          expect(() => Slug.parse(input, 'test')).toThrow(
-            DomainValidationError,
-          );
-        }),
-      );
-    });
-
-    it('devrait rejeter les slugs trop longs (> 120 caracteres)', () => {
-      fc.assert(
-        fc.property(
-          fc.integer({ min: 121, max: 200 }).map((len) => 'a'.repeat(len)),
-          (input) => {
-            expect(() => Slug.parse(input, 'test')).toThrow(
-              DomainValidationError,
-            );
-          },
-        ),
-      );
-    });
-
-    it('devrait rejeter les valeurs non-string', () => {
-      fc.assert(
-        fc.property(nonStringArbitrary, (input) => {
-          expect(() => Slug.parse(input, 'test')).toThrow(
-            DomainValidationError,
-          );
-        }),
-      );
+    it.each<[string, fc.Arbitrary<unknown>]>([
+      [
+        'devrait rejeter les chaines avec des caracteres speciaux',
+        fc
+          .string({ minLength: 2, maxLength: 50 })
+          .filter((s) => /[^a-zA-Z0-9\-\s]/.test(s)),
+      ],
+      [
+        'devrait rejeter les slugs trop courts (< 2 caracteres)',
+        fc.stringMatching(/^[a-z0-9]?$/),
+      ],
+      [
+        'devrait rejeter les slugs trop longs (> 120 caracteres)',
+        fc.integer({ min: 121, max: 200 }).map((len) => 'a'.repeat(len)),
+      ],
+      ['devrait rejeter les valeurs non-string', nonStringArbitrary],
+    ])('%s', (_titre, arbitraire) => {
+      attendreRejetDeChaqueValeur(arbitraire, (valeur) => {
+        expect(() => Slug.parse(valeur, 'test')).toThrow(DomainValidationError);
+      });
     });
   });
 });

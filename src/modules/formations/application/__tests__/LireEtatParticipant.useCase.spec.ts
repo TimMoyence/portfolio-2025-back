@@ -2,7 +2,9 @@
 import {
   buildCoursAvecDefi,
   buildCoursDeTest,
+  buildProgressionEnigme,
   creerCatalogueDeTest,
+  creerParticipationEnSeance,
   DEFI_DE_TEST,
   ENIGMES_DE_TEST,
   PARCOURS_DE_TEST,
@@ -19,11 +21,16 @@ import {
   createMockPulsesRepo,
   createMockRappelsServisRepo,
   createMockSessionsRepo,
+  detailsDeFeuilleAMoitieJuste,
+  PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
 import { installerSecretDeJalons } from '../../../../../test/helpers/env-formations';
-import { verifierGardesDeParticipant } from '../../../../../test/helpers/gardes-de-seance';
+import {
+  verifierGardesDeParticipant,
+  verifierSeanceIntrouvable,
+} from '../../../../../test/helpers/gardes-de-seance';
+import type { Cours } from '../../domain/contrats/cours';
 import { cleDeJalon } from '../../domain/cours/CleDeJalon';
-import { SessionNotFoundError } from '../../domain/errors/FormationErrors';
 import { LireEtatParticipantUseCase } from '../LireEtatParticipant.useCase';
 
 const SOCLE = buildCoursAvecDefi();
@@ -56,20 +63,25 @@ describe('LireEtatParticipantUseCase', () => {
     pulses = createMockPulsesRepo();
     escape = createMockEscapeRepo();
     rappels = createMockRappelsServisRepo();
-    sut = new LireEtatParticipantUseCase(
-      sessions,
-      participants,
+    sut = monter(COURS);
+  });
+
+  const monter = (cours: Cours): LireEtatParticipantUseCase =>
+    new LireEtatParticipantUseCase(
+      creerParticipationEnSeance({
+        sessions,
+        participants,
+        catalogue: creerCatalogueDeTest(cours),
+      }),
       answers,
       freeResponses,
       pulses,
       escape,
       rappels,
-      creerCatalogueDeTest(COURS),
     );
-  });
 
   it('rend la revision courante de la seance pour la reprise', async () => {
-    const etat = await sut.execute('session-uuid', 'participant-uuid');
+    const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
     expect(etat.revision).toBe(7);
     expect(etat.sessionId).toBe('session-uuid');
@@ -77,7 +89,7 @@ describe('LireEtatParticipantUseCase', () => {
   });
 
   it('ne lit que les donnees du participant porte par le jeton', async () => {
-    await sut.execute('session-uuid', 'participant-uuid');
+    await sut.execute(PARTICIPANT_DE_TEST);
 
     expect(answers.listerDuParticipant).toHaveBeenCalledWith(
       'session-uuid',
@@ -104,14 +116,11 @@ describe('LireEtatParticipantUseCase', () => {
         correcte: false,
         misconception: 'base-arrivee',
         score: 0.5,
-        details: [
-          { cle: 'D2', juste: false, confusion: 'base-arrivee' },
-          { cle: 'D3', juste: true, confusion: null },
-        ],
+        details: detailsDeFeuilleAMoitieJuste(),
       }),
     ]);
 
-    const etat = await sut.execute('session-uuid', 'participant-uuid');
+    const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
     expect(etat.reponses[0].score).toBe(0.5);
     expect(etat.reponses[0].details).toEqual([
@@ -134,7 +143,7 @@ describe('LireEtatParticipantUseCase', () => {
       }),
     ]);
 
-    const etat = await sut.execute('session-uuid', 'participant-uuid');
+    const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
     expect(etat.defis).toEqual([
       { defiId: DEFI_DE_TEST, premiereTentative: 'Première idée.' },
@@ -146,23 +155,15 @@ describe('LireEtatParticipantUseCase', () => {
 
   it('rend le fragment des seules enigmes resolues et le reste des tentatives', async () => {
     escape.listerProgressionDuParticipant.mockResolvedValue([
-      {
-        participantId: 'participant-uuid',
-        parcoursId: PARCOURS_DE_TEST,
-        enigmeId: ENIGMES_DE_TEST[0],
-        tentatives: 2,
-        resolueLe: new Date('2026-09-11T09:00:00.000Z'),
-      },
-      {
-        participantId: 'participant-uuid',
-        parcoursId: PARCOURS_DE_TEST,
+      buildProgressionEnigme({ tentatives: 2 }),
+      buildProgressionEnigme({
         enigmeId: ENIGMES_DE_TEST[1],
         tentatives: 3,
         resolueLe: null,
-      },
+      }),
     ]);
 
-    const etat = await sut.execute('session-uuid', 'participant-uuid');
+    const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
     expect(etat.enigmes).toEqual([
       {
@@ -178,14 +179,14 @@ describe('LireEtatParticipantUseCase', () => {
       { sondageId: 'jalon-test-1', etat: 'ca-va' },
     ]);
 
-    const etat = await sut.execute('session-uuid', 'participant-uuid');
+    const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
     expect(etat.jalons).toEqual([{ sondageId: 'jalon-test-1', etat: 'ca-va' }]);
   });
 
   verifierGardesDeParticipant(() => ({
     participants,
-    executer: () => sut.execute('session-uuid', 'participant-uuid'),
+    executer: () => sut.execute(PARTICIPANT_DE_TEST),
     effetsInterdits: () => [answers.listerDuParticipant],
   }));
 
@@ -194,29 +195,18 @@ describe('LireEtatParticipantUseCase', () => {
       buildAnswerRecord({ questionId: 'Q-TEST-NUM', correcte: false }),
     ]);
     escape.listerProgressionDuParticipant.mockResolvedValue([
-      {
-        participantId: 'participant-uuid',
-        parcoursId: PARCOURS_DE_TEST,
-        enigmeId: ENIGMES_DE_TEST[1],
-        tentatives: 1,
-        resolueLe: null,
-      },
+      buildProgressionEnigme({ enigmeId: ENIGMES_DE_TEST[1], resolueLe: null }),
     ]);
 
-    const serialise = JSON.stringify(
-      await sut.execute('session-uuid', 'participant-uuid'),
-    );
+    const serialise = JSON.stringify(await sut.execute(PARTICIPANT_DE_TEST));
 
     expect(serialise).not.toMatch(/solution|corrige|fragment|tolerance/);
   });
 
-  it('signale une seance introuvable', async () => {
-    sessions.findById.mockResolvedValue(null);
-
-    await expect(
-      sut.execute('session-uuid', 'participant-uuid'),
-    ).rejects.toThrow(SessionNotFoundError);
-  });
+  verifierSeanceIntrouvable(() => ({
+    sessions,
+    executer: () => sut.execute(PARTICIPANT_DE_TEST),
+  }));
 
   it('rend la liste figee des rappels deja servis', async () => {
     await rappels.figer({
@@ -225,7 +215,7 @@ describe('LireEtatParticipantUseCase', () => {
       questionIds: ['R-COMPENSATION', 'R-MULTIPLE-NEUF'],
     });
 
-    const etat = await sut.execute('session-uuid', 'participant-uuid');
+    const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
     expect(etat.rappels.questionIds).toEqual([
       'R-COMPENSATION',
@@ -234,18 +224,9 @@ describe('LireEtatParticipantUseCase', () => {
   });
 
   it('rend un etat vide quand le participant n a encore rien envoye', async () => {
-    sut = new LireEtatParticipantUseCase(
-      sessions,
-      participants,
-      answers,
-      freeResponses,
-      pulses,
-      escape,
-      rappels,
-      creerCatalogueDeTest(buildCoursDeTest({ slug: COURS.slug })),
-    );
+    sut = monter(buildCoursDeTest({ slug: COURS.slug }));
 
-    const etat = await sut.execute('session-uuid', 'participant-uuid');
+    const etat = await sut.execute(PARTICIPANT_DE_TEST);
 
     expect(etat.reponses).toEqual([]);
     expect(etat.reponsesLibres).toEqual([]);

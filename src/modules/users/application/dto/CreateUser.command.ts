@@ -1,14 +1,10 @@
-export interface CreateUserCommand {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phone?: string | null;
-  isActive?: boolean;
-  roles?: string[];
-  updatedOrCreatedBy?: string | null;
-}
+import type { CreateUserProps, User } from '../../domain/User';
+
+export type CreateUserCommand = Omit<
+  CreateUserProps,
+  'passwordHash' | 'googleId' | 'emailVerified'
+> & { password: string };
 
 export interface CreateUserResult {
-  user: import('../../domain/User').User;
+  user: User;
 }

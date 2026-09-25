@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type {
   IEscapeRepository,
+  IncrementDeTentative,
   ProgressionEnigmeRecord,
   TentativeEnigmeInput,
 } from '../domain/IEscape.repository';
@@ -46,13 +47,9 @@ export class EscapeRepositoryTypeORM implements IEscapeRepository {
     return lignes.map((ligne) => this.toDomain(ligne));
   }
 
-  async incrementerTentative(input: {
-    readonly sessionId: string;
-    readonly participantId: string;
-    readonly parcoursId: string;
-    readonly enigmeId: string;
-    readonly plafond: number;
-  }): Promise<number | null> {
+  async incrementerTentative(
+    input: IncrementDeTentative,
+  ): Promise<number | null> {
     const lignes: LigneDeTentative[] = await this.progression.query(
       `INSERT INTO formation_escape_progress
          (participant_id, enigme_id, session_id, parcours_id, tentatives)

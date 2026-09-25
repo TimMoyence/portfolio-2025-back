@@ -7,6 +7,10 @@ import {
 import { AuditClientReportMailer } from '../audit-client-report.mailer';
 import type { SmtpTransporter } from '../smtp-transporter.provider';
 
+type RapportClientEnvoye = Parameters<
+  AuditClientReportMailer['sendClientReport']
+>[0];
+
 describe('AuditClientReportMailer', () => {
   let cleanupEnv: () => void;
   let mockTransporter: ReturnType<typeof createMockTransporter>;
@@ -93,16 +97,21 @@ describe('AuditClientReportMailer', () => {
 
   const sentMail = () => premierMailEnvoye(mockTransporter);
 
-  it('devrait envoyer le rapport client sans pdf', async () => {
-    const mailer = buildMailer();
-
-    await mailer.sendClientReport({
+  const envoyerRapport = (
+    mailer: AuditClientReportMailer,
+    parametres: Partial<RapportClientEnvoye> = {},
+  ) =>
+    mailer.sendClientReport({
       to: 'client@example.com',
-      firstName: 'Alice',
+      firstName: null,
       websiteName: 'mon-site.fr',
       clientReport: buildClientReport(),
       pdfBuffer: null,
+      ...parametres,
     });
+
+  it('devrait envoyer le rapport client sans pdf', async () => {
+    await envoyerRapport(buildMailer(), { firstName: 'Alice' });
 
     expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
     const call = sentMail();
@@ -118,14 +127,8 @@ describe('AuditClientReportMailer', () => {
 
   describe('P0.5 — CTA email cliquable', () => {
     it('rend le CTA comme un <a href> pointant vers bookingUrl quand fourni', async () => {
-      const mailer = buildMailer();
-
-      await mailer.sendClientReport({
-        to: 'client@example.com',
+      await envoyerRapport(buildMailer(), {
         firstName: 'Alice',
-        websiteName: 'mon-site.fr',
-        clientReport: buildClientReport(),
-        pdfBuffer: null,
         bookingUrl: 'https://cal.com/asili/audit-call',
       });
 
@@ -137,23 +140,12 @@ describe('AuditClientReportMailer', () => {
     });
 
     it('fallback sur /fr/contact Asili quand aucune URL booking configuree', async () => {
-      mockTransporter = createMockTransporter();
-      cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
+      const mailer = buildMailer();
       const originalBookingUrl = process.env.AUDIT_BOOKING_URL;
       delete process.env.AUDIT_BOOKING_URL;
 
       try {
-        const mailer = new AuditClientReportMailer(
-          mockTransporter as unknown as SmtpTransporter,
-        );
-
-        await mailer.sendClientReport({
-          to: 'client@example.com',
-          firstName: null,
-          websiteName: 'mon-site.fr',
-          clientReport: buildClientReport(),
-          pdfBuffer: null,
-        });
+        await envoyerRapport(mailer);
 
         const call = sentMail();
         expect(call.html).toContain('href="https://asilidesign.fr/fr/contact"');
@@ -166,16 +158,9 @@ describe('AuditClientReportMailer', () => {
   });
 
   it('devrait attacher le PDF quand pdfBuffer est fourni', async () => {
-    const mailer = buildMailer();
     const pdf = Buffer.from('%PDF-1.4 fake');
 
-    await mailer.sendClientReport({
-      to: 'client@example.com',
-      firstName: null,
-      websiteName: 'mon-site.fr',
-      clientReport: buildClientReport(),
-      pdfBuffer: pdf,
-    });
+    await envoyerRapport(buildMailer(), { pdfBuffer: pdf });
 
     expect(sentMail().attachments).toEqual([
       {
@@ -187,19 +172,11 @@ describe('AuditClientReportMailer', () => {
   });
 
   it('devrait escape les champs LLM contenant du HTML', async () => {
-    const mailer = buildMailer();
-    const report = buildClientReport();
-    const dangerousReport = {
-      ...report,
-      executiveSummary: '<script>alert(1)</script>',
-    };
-
-    await mailer.sendClientReport({
-      to: 'client@example.com',
-      firstName: null,
-      websiteName: 'mon-site.fr',
-      clientReport: dangerousReport,
-      pdfBuffer: null,
+    await envoyerRapport(buildMailer(), {
+      clientReport: {
+        ...buildClientReport(),
+        executiveSummary: '<script>alert(1)</script>',
+      },
     });
 
     const call = sentMail();
@@ -209,29 +186,13 @@ describe('AuditClientReportMailer', () => {
 
   it('devrait ne rien faire si le transporter est absent', async () => {
     cleanupEnv = setSmtpEnv(DEFAULT_AUDIT_ENV);
-    const mailer = new AuditClientReportMailer(null);
-
     await expect(
-      mailer.sendClientReport({
-        to: 'client@example.com',
-        firstName: null,
-        websiteName: 'mon-site.fr',
-        clientReport: buildClientReport(),
-        pdfBuffer: null,
-      }),
+      envoyerRapport(new AuditClientReportMailer(null)),
     ).resolves.toBeUndefined();
   });
 
   it('devrait ne rien faire si le destinataire est vide', async () => {
-    const mailer = buildMailer();
-
-    await mailer.sendClientReport({
-      to: '',
-      firstName: null,
-      websiteName: 'mon-site.fr',
-      clientReport: buildClientReport(),
-      pdfBuffer: null,
-    });
+    await envoyerRapport(buildMailer(), { to: '' });
 
     expect(mockTransporter.sendMail).not.toHaveBeenCalled();
   });

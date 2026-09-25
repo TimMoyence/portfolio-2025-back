@@ -32,6 +32,7 @@ import { EmailVerificationTokensRepositoryTypeORM } from './infrastructure/Email
 import { UsersController } from './interfaces/Users.controller';
 import { AuthAuditLogger } from './application/services/AuthAuditLogger';
 import { PasswordService } from './application/services/PasswordService';
+import { EnvoiDeVerificationEmail } from './application/services/email-verification-dispatch';
 import { JwtTokenService } from './application/services/JwtTokenService';
 import { AuthenticateUserUseCase } from './application/AuthenticateUser.useCase';
 import { ChangePasswordUseCase } from './application/ChangePassword.useCase';
@@ -80,6 +81,7 @@ const USERS_USE_CASES = [
     ...USERS_USE_CASES,
     AuthAuditLogger,
     PasswordService,
+    EnvoiDeVerificationEmail,
     JwtTokenService,
     {
       provide: USERS_REPOSITORY,

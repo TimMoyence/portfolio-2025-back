@@ -82,6 +82,9 @@ import type {
   EcranPublic,
   TirageDuCours,
 } from './tirage';
+import { ATTENDU_PRIX_REVISE } from '../../../../../test/factories/corriges.factory';
+import { PLAN_TABLEAU } from '../../../../../test/factories/ecrans-stockes.factory';
+import { REGLE_DE_NOTATION } from '../RegleDeNotation';
 
 const METADONNEES = {
   concepts: ['evolutions-successives'],
@@ -115,10 +118,10 @@ const PLAN_FEUILLE = {
   consignes: ['En B5 et C5, calculez les totaux avec SOMME.'],
 } satisfies SheetPlanStocke;
 
-const PLAN_TABLEAU = {
-  id: 'b2-01-a4-indice-toile',
-  intitule: 'Tâche de tableur 2 — Prix et indice de la toile en 2025',
-  consignes: ['Arrondissez chaque prix au centime.'],
+const [COLONNE_TAUX, , COLONNE_COEF] = PLAN_TABLEAU.colonnes;
+
+const PLAN_TABLEAU_ANNUEL = {
+  ...PLAN_TABLEAU,
   echeances: 4,
   libellesLignes: [
     '1er mars : +8 %',
@@ -126,26 +129,7 @@ const PLAN_TABLEAU = {
     '1er septembre : +4 %',
     '1er décembre : −3 %',
   ],
-  parametres: { prixInitial: 20 },
-  colonnes: [
-    {
-      cle: 'taux',
-      intitule: 'Taux annoncé (%)',
-      role: 'donnee',
-      valeurs: [8, -5, 4, -3],
-      decimales: 0,
-      totalise: true,
-    },
-    {
-      cle: 'coef',
-      intitule: 'Coefficient appliqué',
-      role: 'deduite',
-      formuleInitiale: 'prix / prixInitial',
-      formule: 'prix / avantPrix',
-      decimales: 4,
-      totalise: false,
-    },
-  ],
+  colonnes: [{ ...COLONNE_TAUX, valeurs: [8, -5, 4, -3] }, COLONNE_COEF],
   synthese: [
     {
       libelle: 'Évolution réelle sur l’année',
@@ -208,14 +192,7 @@ const CORRIGE_FEUILLE = {
 
 const CORRIGE_TABLEAU = {
   type: 'tableau',
-  attendus: [
-    {
-      rang: 1,
-      cle: 'prix',
-      valeur: 20.52,
-      pieges: [{ valeur: 20.6, confusion: 'taux-successifs-additionnes' }],
-    },
-  ],
+  attendus: [ATTENDU_PRIX_REVISE],
   tolerance: TOLERANCE_ABSOLUE,
   seuilReussite: 0.75,
 } satisfies CorrigeTableau;
@@ -391,20 +368,7 @@ const STATISTIQUES = {
   questionsProblemes: [],
 };
 
-const NOTATION = {
-  noteMax: 20,
-  base: 'participation-relative-cohorte',
-  partCohorteReference: 0.2,
-  ratioSeuilValidation: 0.4,
-  neSaitPasCompteCommeReponse: true,
-  pointsNonReponse: 0,
-  reponsesLibresNotees: false,
-  seuilQuestionProbleme: 0.7,
-  decimalesStatistiques: 2,
-  typesNotables: ['vote', 'numeric', 'classement', 'feuille', 'tableau'],
-  productionCompteSi: 'au-moins-une-saisie',
-  statistiquesSurQuestionsNotees: true,
-} satisfies RegleDeNotation;
+const NOTATION = { ...REGLE_DE_NOTATION } satisfies RegleDeNotation;
 
 const PRODUCTION_FEUILLE = {
   type: 'feuille',
@@ -533,7 +497,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
           ...ECRAN_COMMUN,
           id: 'B2-01-A4-05-INDICE-TOILE',
           brique: 'fp-table-build',
-          proprietes: { plan: PLAN_TABLEAU },
+          proprietes: { plan: PLAN_TABLEAU_ANNUEL },
           production: {
             ...QUESTION_FEUILLE,
             id: 'b2-01-a4-indice-toile',
@@ -1087,7 +1051,7 @@ describe('Contrats figés du cours B2-01 V3 (§ 9, lot 0)', () => {
         metadonnees: METADONNEES,
       } satisfies StoryRecit;
       const plan = {
-        ...PLAN_TABLEAU,
+        ...PLAN_TABLEAU_ANNUEL,
         metadonnees: METADONNEES,
       } satisfies TableBuildPlanPublic;
       const colonne = plan.colonnes[1] satisfies TableColonneServie;

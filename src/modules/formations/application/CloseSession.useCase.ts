@@ -1,5 +1,4 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { createHmac } from 'node:crypto';
 import { SessionClosedError } from '../domain/errors/FormationErrors';
 import type {
   IFormationMailer,
@@ -18,9 +17,9 @@ import {
 } from '../domain/token';
 import { GetSessionResultsUseCase } from './GetSessionResults.useCase';
 import type { BilanDeSeance } from './GetSessionResults.useCase';
+import { secretDeSignature, signer } from './SignatureFormations';
 
 const REVIEW_BASE_URL_PAR_DEFAUT = 'https://asilidesign.fr/cours/revision';
-const REVIEW_TOKEN_SECRET_LONGUEUR_MIN = 32;
 
 @Injectable()
 export class CloseSessionUseCase {
@@ -118,9 +117,8 @@ export class CloseSessionUseCase {
     participantsListe: readonly ParticipantRecord[],
     rapport: RapportSession,
   ): void {
-    let secret: string;
     try {
-      secret = this.resolveReviewTokenSecret();
+      secretDeSignature();
     } catch (error) {
       this.logger.error(
         `Envoi des copies etudiantes annule, aucun jeton ne peut etre produit: ${describe(error)}`,
@@ -133,7 +131,7 @@ export class CloseSessionUseCase {
       if (!rapportParticipant) {
         return;
       }
-      const lien = this.lienRevisionPour(sessionId, participant, secret);
+      const lien = this.lienRevisionPour(sessionId, participant);
       this.mailer
         .sendCopieEtudiant({
           courseSlug: rapport.courseSlug,
@@ -149,34 +147,14 @@ export class CloseSessionUseCase {
     });
   }
 
-  /**
-   * RFC 2104 section 3 recommande une cle HMAC au moins aussi longue que le
-   * digest (32 octets pour SHA-256) : une cle vide ou trop courte affaiblit
-   * la protection, ici sur une entree deja publique (le `sessionId` figure
-   * dans l'URL du flux temps reel, le `participantId` est connu de
-   * l'etudiant). Refuser de produire un jeton est donc la seule option sure.
-   */
-  private resolveReviewTokenSecret(): string {
-    const secret = process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    if (!secret || secret.length < REVIEW_TOKEN_SECRET_LONGUEUR_MIN) {
-      throw new Error(
-        `FORMATION_REVIEW_TOKEN_SECRET doit etre configure avec au moins ${REVIEW_TOKEN_SECRET_LONGUEUR_MIN} caracteres`,
-      );
-    }
-    return secret;
-  }
-
   private lienRevisionPour(
     sessionId: string,
     participant: ParticipantRecord,
-    secret: string,
   ): string {
     const base =
       process.env.FORMATION_REVIEW_BASE_URL?.trim() ||
       REVIEW_BASE_URL_PAR_DEFAUT;
-    const jeton = createHmac('sha256', secret)
-      .update(`${sessionId}:${participant.id}`)
-      .digest('hex');
+    const jeton = signer(`${sessionId}:${participant.id}`);
     try {
       const url = new URL(base);
       url.searchParams.set('session', sessionId);

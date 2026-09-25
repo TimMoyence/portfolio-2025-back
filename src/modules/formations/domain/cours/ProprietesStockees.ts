@@ -591,6 +591,25 @@ function controlerProductionDuPlan(
   return signaler;
 }
 
+function controleDeProduction<
+  Plan extends { readonly id: string },
+  Question extends { readonly id: string; readonly corrige: CorrigeProduction },
+>(controler: (plan: Plan, question: Question, signaler: Signaleur) => void) {
+  return (
+    {
+      plan,
+      questions: [question],
+    }: { readonly plan: Plan; readonly questions: readonly [Question] },
+    contexte: z.RefinementCtx,
+  ): void => {
+    controler(
+      plan,
+      question,
+      controlerProductionDuPlan(plan, question, contexte),
+    );
+  };
+}
+
 const proprietesClassement = z
   .object({
     plan: planClassement,
@@ -598,30 +617,31 @@ const proprietesClassement = z
     ...communes,
   })
   .strict()
-  .superRefine(({ plan, questions: [question] }, contexte) => {
-    const signaler = controlerProductionDuPlan(plan, question, contexte);
-    const cartes = plan.cartes.map((carte) => carte.id);
-    const categories = plan.categories.map((categorie) => categorie.id);
-    const classees = question.corrige.attendus.map(
-      (attendu) => attendu.carteId,
-    );
-    const chemin = ['questions', 0, 'corrige', 'attendus'];
-    for (const attendu of question.corrige.attendus) {
-      if (!cartes.includes(attendu.carteId)) {
-        signaler(chemin, `la carte ${attendu.carteId} n'est pas au plan`);
+  .superRefine(
+    controleDeProduction((plan, question, signaler) => {
+      const cartes = plan.cartes.map((carte) => carte.id);
+      const categories = plan.categories.map((categorie) => categorie.id);
+      const classees = question.corrige.attendus.map(
+        (attendu) => attendu.carteId,
+      );
+      const chemin = ['questions', 0, 'corrige', 'attendus'];
+      for (const attendu of question.corrige.attendus) {
+        if (!cartes.includes(attendu.carteId)) {
+          signaler(chemin, `la carte ${attendu.carteId} n'est pas au plan`);
+        }
+        if (!categories.includes(attendu.categorieId)) {
+          signaler(
+            chemin,
+            `la catégorie ${attendu.categorieId} n'est pas au plan`,
+          );
+        }
       }
-      if (!categories.includes(attendu.categorieId)) {
-        signaler(
-          chemin,
-          `la catégorie ${attendu.categorieId} n'est pas au plan`,
-        );
+      const sansAttendu = cartes.filter((carte) => !classees.includes(carte));
+      if (sansAttendu.length > 0) {
+        signaler(chemin, `cartes sans attendu : ${sansAttendu.join(', ')}`);
       }
-    }
-    const sansAttendu = cartes.filter((carte) => !classees.includes(carte));
-    if (sansAttendu.length > 0) {
-      signaler(chemin, `cartes sans attendu : ${sansAttendu.join(', ')}`);
-    }
-  });
+    }),
+  );
 
 const proprietesFeuille = z
   .object({
@@ -630,15 +650,16 @@ const proprietesFeuille = z
     ...communes,
   })
   .strict()
-  .superRefine(({ plan, questions: [question] }, contexte) => {
-    const signaler = controlerProductionDuPlan(plan, question, contexte);
-    if (JSON.stringify(question.corrige.plan) !== JSON.stringify(plan)) {
-      signaler(
-        ['questions', 0, 'corrige', 'plan'],
-        'le corrigé doit recopier le plan de l écran',
-      );
-    }
-  });
+  .superRefine(
+    controleDeProduction((plan, question, signaler) => {
+      if (JSON.stringify(question.corrige.plan) !== JSON.stringify(plan)) {
+        signaler(
+          ['questions', 0, 'corrige', 'plan'],
+          'le corrigé doit recopier le plan de l écran',
+        );
+      }
+    }),
+  );
 
 const proprietesTableau = z
   .object({
@@ -647,20 +668,21 @@ const proprietesTableau = z
     ...communes,
   })
   .strict()
-  .superRefine(({ plan, questions: [question] }, contexte) => {
-    const signaler = controlerProductionDuPlan(plan, question, contexte);
-    const saisies = plan.colonnes
-      .filter((colonne) => colonne.role === 'saisie')
-      .map((colonne) => colonne.cle);
-    question.corrige.attendus.forEach((attendu, position) => {
-      if (!saisies.includes(attendu.cle) || attendu.rang >= plan.echeances) {
-        signaler(
-          ['questions', 0, 'corrige', 'attendus', position],
-          `l'attendu ${attendu.rang}:${attendu.cle} ne vise pas une saisie du plan`,
-        );
-      }
-    });
-  });
+  .superRefine(
+    controleDeProduction((plan, question, signaler) => {
+      const saisies = plan.colonnes
+        .filter((colonne) => colonne.role === 'saisie')
+        .map((colonne) => colonne.cle);
+      question.corrige.attendus.forEach((attendu, position) => {
+        if (!saisies.includes(attendu.cle) || attendu.rang >= plan.echeances) {
+          signaler(
+            ['questions', 0, 'corrige', 'attendus', position],
+            `l'attendu ${attendu.rang}:${attendu.cle} ne vise pas une saisie du plan`,
+          );
+        }
+      });
+    }),
+  );
 
 const proprietesEnigmes = z
   .object({
