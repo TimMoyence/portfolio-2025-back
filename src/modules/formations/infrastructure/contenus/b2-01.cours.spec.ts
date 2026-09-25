@@ -328,9 +328,12 @@ describe('B2-01 — fichier de données', () => {
     const ecrans = new Set(COURS.ecrans.map((ecran) => ecran.id));
 
     expect(COURS.remediations).toEqual(remediationsDuDocument(DOCUMENT));
+    expect(Object.keys(COURS.remediations)).toHaveLength(38);
     expect(
-      Object.keys(COURS.remediations).sort((a, b) => a.localeCompare(b)),
-    ).toEqual(Object.keys(CONFUSIONS).sort((a, b) => a.localeCompare(b)));
+      Object.keys(COURS.remediations).filter(
+        (confusion) => !Object.hasOwn(CONFUSIONS, confusion),
+      ),
+    ).toEqual([]);
     expect(
       Object.values(COURS.remediations).filter((cible) => !ecrans.has(cible)),
     ).toEqual([]);

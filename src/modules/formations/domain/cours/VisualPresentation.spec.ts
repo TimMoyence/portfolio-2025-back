@@ -15,8 +15,49 @@ describe('contrat visuel du catalogue', () => {
     },
   );
 
-  it('L4 · couvre chacun des seize rendus du deck, corrections de tri et de réponses comprises', () => {
-    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(16);
+  it('L4 · couvre chacun des dix-sept rendus du deck, corrections de tri et de réponses comprises', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(17);
+  });
+
+  describe('boîte à moustaches (B2-02)', () => {
+    const boite = PRESENTATIONS_VISUELLES_VALIDES.boxplot;
+    const [premiere] = boite.series as Record<string, unknown>[];
+    const avecSerie = (alteration: Record<string, unknown>) => ({
+      renderer: 'boxplot',
+      props: { ...boite, series: [{ ...premiere, ...alteration }] },
+    });
+
+    it.each([
+      ['un premier quartile sous le minimum', { q1: 20 }],
+      ['une médiane au-delà du troisième quartile', { median: 60 }],
+      ['un maximum sous le troisième quartile', { max: 50 }],
+      ['un maximum hors de l axe', { max: 200 }],
+      ['un minimum hors de l axe', { min: -5 }],
+    ])('refuse %s', (_cas, alteration) => {
+      expect(() => parseVisualPresentation(avecSerie(alteration))).toThrow();
+    });
+
+    it('refuse une moyenne hors de l étendue', () => {
+      expect(() => parseVisualPresentation(avecSerie({ mean: 90 }))).toThrow();
+    });
+
+    it('exige une description pour les lecteurs d écran', () => {
+      expect(() =>
+        parseVisualPresentation({
+          renderer: 'boxplot',
+          props: { ...boite, description: undefined },
+        }),
+      ).toThrow();
+    });
+
+    it('refuse un axe inversé', () => {
+      expect(() =>
+        parseVisualPresentation({
+          renderer: 'boxplot',
+          props: { ...boite, axisRange: [160, 0] },
+        }),
+      ).toThrow();
+    });
   });
 
   it('refuse une correction de réponses sans explication', () => {

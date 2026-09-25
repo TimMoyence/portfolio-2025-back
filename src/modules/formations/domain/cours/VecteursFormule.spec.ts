@@ -6,7 +6,7 @@ import type { FichierVecteursFormule, VecteurFormule } from './VecteursFormule';
 import { empreinteDesVecteurs, serialiserCanonique } from './VecteursFormule';
 
 const EMPREINTE_PARTAGEE_AVEC_LE_FRONT =
-  'd95119feb3e14213f2c0675a4977b1e18cc15a4333540214ba7f79fa4f8fed66';
+  'a043e692d2a51961d08dbc53be36a5d0656715dbdb18bb62a846ba8231b3fab9';
 
 const TYPES_DE_VECTEUR: readonly VecteurFormule['type'][] = [
   'feuille',
@@ -153,8 +153,8 @@ function executerVecteur(vecteur: VecteurFormule): unknown {
 describe('parité du moteur de formules avec les vecteurs signés', () => {
   const fichier = lireFichier();
 
-  it('exécute les douze vecteurs du fichier partagé', () => {
-    expect(fichier.vecteurs).toHaveLength(12);
+  it('exécute les dix-neuf vecteurs du fichier partagé', () => {
+    expect(fichier.vecteurs).toHaveLength(19);
   });
 
   for (const vecteur of lireFichier().vecteurs) {
