@@ -1,5 +1,5 @@
 {
-  "path": ["src"],
+  "path": ["src", "test"],
   "format": ["typescript"],
   "minLines": 5,
   "minTokens": 30,
@@ -12,9 +12,9 @@
     "**/dist/**",
     "**/coverage/**",
     "src/migrations/**",
-    "**/*.spec.ts"
+    "src/**/!(*.spec).ts"
   ],
   "reporters": ["console", "html"],
-  "output": "reports/jscpd",
+  "output": "reports/jscpd4-tests",
   "threshold": 0
 }
