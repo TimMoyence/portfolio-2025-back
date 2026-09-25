@@ -27,7 +27,11 @@ export function resolvePublishableStatus(
   return normalized as PublishableStatus;
 }
 
-export function resolveOrder(raw: unknown, field: string): number {
+export function resolveCompteurBorne(
+  raw: unknown,
+  field: string,
+  maximum: number,
+): number {
   if (raw === undefined || raw === null) {
     return 0;
   }
@@ -37,9 +41,13 @@ export function resolveOrder(raw: unknown, field: string): number {
   }
 
   const value = Number(raw);
-  if (value < 0 || value > 10000) {
+  if (value < 0 || value > maximum) {
     throw new DomainValidationError(`Invalid ${field}`);
   }
 
   return value;
+}
+
+export function resolveOrder(raw: unknown, field: string): number {
+  return resolveCompteurBorne(raw, field, 10000);
 }

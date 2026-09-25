@@ -1,4 +1,11 @@
-import { applyDecorators, Get, Post, Type, UseGuards } from '@nestjs/common';
+import {
+  applyDecorators,
+  Controller,
+  Get,
+  Post,
+  Type,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -6,6 +13,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { ApiQueryOptions } from '@nestjs/swagger';
@@ -21,6 +29,24 @@ export const FILTRE_STATUT_DE_PUBLICATION: ApiQueryOptions = {
   enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
   example: 'PUBLISHED',
 };
+
+export function ControleurDeCatalogue(chemin: string): ClassDecorator {
+  return applyDecorators(ApiTags(chemin), Controller(chemin));
+}
+
+export function pageDemandee<Q extends RequeteDePage>(
+  requete: Q,
+): Pick<Q, keyof RequeteDePage> {
+  const { page, limit, sortBy, order } = requete;
+  return { page, limit, sortBy, order };
+}
+
+interface RequeteDePage {
+  readonly page: number;
+  readonly limit: number;
+  readonly sortBy: string;
+  readonly order: SortOrder;
+}
 
 export interface ListePubliquePagineeOptions {
   readonly resume: string;

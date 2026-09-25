@@ -13,6 +13,7 @@ const RENDERERS = [
   'src/modules/lead-magnets/infrastructure/toolkit-html/toolkit-html.css.ts',
   'src/modules/lead-magnets/infrastructure/toolkit-html/toolkit-html.utils.ts',
   'src/modules/newsletter/infrastructure/NewsletterMailer.service.ts',
+  'src/modules/users/infrastructure/MailerDeLienTemporaire.ts',
   'src/modules/users/infrastructure/PasswordResetMailer.service.ts',
   'src/modules/users/infrastructure/VerificationMailer.service.ts',
 ];

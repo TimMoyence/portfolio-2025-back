@@ -4,6 +4,7 @@ import {
   optionalText,
   optionalMetadata,
   requireHttpUrl,
+  requireValidDate,
   optionalHttpUrl,
 } from './domain-validators';
 
@@ -122,5 +123,22 @@ describe('optionalMetadata', () => {
 
   it('devrait retourner le texte trimme', () => {
     expect(optionalMetadata('  203.0.113.7  ')).toBe('203.0.113.7');
+  });
+});
+
+describe('requireValidDate', () => {
+  it('devrait rendre une date valide telle quelle', () => {
+    const date = new Date('2026-09-25T10:00:00Z');
+    expect(requireValidDate(date, 'terms accepted')).toBe(date);
+  });
+
+  it.each([
+    ['une date invalide', new Date('pas une date')],
+    ['une chaine', '2026-09-25'],
+    ['undefined', undefined],
+  ])('devrait refuser %s en nommant le champ', (_label, valeur) => {
+    expect(() => requireValidDate(valeur, 'terms accepted')).toThrow(
+      new DomainValidationError('Invalid terms accepted date'),
+    );
   });
 });

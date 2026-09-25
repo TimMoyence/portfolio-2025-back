@@ -1,5 +1,9 @@
 import type { Request } from 'express';
-import { resolveClientIp, resolveClientIpOrUnknown } from '../client-ip.util';
+import {
+  provenanceDeLaRequete,
+  resolveClientIp,
+  resolveClientIpOrUnknown,
+} from '../client-ip.util';
 
 const EXPRESS_IP = '192.0.2.10';
 const FORGED_IP = '198.51.100.99';
@@ -70,5 +74,28 @@ describe('resolveClientIp', () => {
     expect(resolveClientIpOrUnknown(buildRequest({ ip: EXPRESS_IP }))).toBe(
       EXPRESS_IP,
     );
+  });
+});
+
+describe('provenanceDeLaRequete', () => {
+  it('rassemble l IP, l agent et le referer de la requete', () => {
+    const req = buildRequest({
+      ip: EXPRESS_IP,
+      headers: { 'user-agent': 'Navigateur/1.0', referer: 'https://a.fr/' },
+    });
+
+    expect(provenanceDeLaRequete(req)).toEqual({
+      ip: EXPRESS_IP,
+      userAgent: 'Navigateur/1.0',
+      referer: 'https://a.fr/',
+    });
+  });
+
+  it('rend null pour chaque information absente', () => {
+    expect(provenanceDeLaRequete(buildRequest({}))).toEqual({
+      ip: null,
+      userAgent: null,
+      referer: null,
+    });
   });
 });

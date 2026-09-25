@@ -1,4 +1,4 @@
-import type { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
+import type { ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import {
   createPaginatedResult,
   type PaginatedResult,
@@ -36,4 +36,47 @@ export async function pageDeRequete<E extends ObjectLiteral, D>(
     demande.page,
     demande.limit,
   );
+}
+
+export interface RequeteDePageTriee {
+  readonly page: number;
+  readonly limit: number;
+  readonly order: SortOrder;
+  readonly sortBy: string;
+}
+
+export interface ReglesDePagination<Q extends RequeteDePageTriee> {
+  readonly alias: string;
+  readonly colonnes: readonly Q['sortBy'][];
+  readonly parDefaut: Q['sortBy'];
+  readonly filtres?: (requete: Q) => Readonly<Record<string, unknown>>;
+}
+
+export abstract class DepotPagine<
+  E extends ObjectLiteral,
+  D,
+  Q extends RequeteDePageTriee,
+> {
+  protected constructor(
+    protected readonly repo: Repository<E>,
+    private readonly regles: ReglesDePagination<Q>,
+  ) {}
+
+  findAll(requete: Q): Promise<PaginatedResult<D>> {
+    const { alias, colonnes, parDefaut, filtres } = this.regles;
+    const colonne = colonnes.includes(requete.sortBy)
+      ? requete.sortBy
+      : parDefaut;
+    return pageDeRequete(
+      this.repo.createQueryBuilder(alias),
+      {
+        ...requete,
+        colonneDeTri: `${alias}.${colonne}`,
+        filtres: filtres?.(requete),
+      },
+      (entite) => this.toDomain(entite),
+    );
+  }
+
+  protected abstract toDomain(entite: E): D;
 }

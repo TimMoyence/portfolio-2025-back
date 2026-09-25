@@ -1,14 +1,20 @@
 import { Column, CreateDateColumn } from 'typeorm';
 
-export abstract class ColonnesDeTrace {
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+export const ColonneDeCreation = (): PropertyDecorator =>
+  CreateDateColumn({ name: 'created_at' });
 
-  @Column({
+export const ColonneDeMiseAJour = (): PropertyDecorator =>
+  Column({
     name: 'updated_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
-  })
+  });
+
+export abstract class ColonnesDeTrace {
+  @ColonneDeCreation()
+  createdAt: Date;
+
+  @ColonneDeMiseAJour()
   updatedAt: Date;
 
   @Column({

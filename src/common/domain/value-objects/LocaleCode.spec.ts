@@ -1,5 +1,8 @@
 import * as fc from 'fast-check';
-import { nonStringArbitrary } from '../../../../test/helpers/fast-check-arbitraries';
+import {
+  attendreNullPourChaqueValeur,
+  nonStringArbitrary,
+} from '../../../../test/helpers/fast-check-arbitraries';
 import { LocaleCode } from './LocaleCode';
 
 describe('LocaleCode', () => {
@@ -65,23 +68,17 @@ describe('LocaleCode', () => {
       );
     });
 
-    it('devrait rejeter les codes de langues non supportees', () => {
-      const unsupportedArb = fc
-        .stringMatching(/^[a-z]{2,5}$/)
-        .filter((s) => !s.startsWith('fr') && !s.startsWith('en'));
-
-      fc.assert(
-        fc.property(unsupportedArb, (locale) => {
-          expect(LocaleCode.parse(locale)).toBeNull();
-        }),
-      );
-    });
-
-    it('devrait rejeter les valeurs non-string', () => {
-      fc.assert(
-        fc.property(nonStringArbitrary, (input) => {
-          expect(LocaleCode.parse(input)).toBeNull();
-        }),
+    it.each<[string, fc.Arbitrary<unknown>]>([
+      [
+        'devrait rejeter les codes de langues non supportees',
+        fc
+          .stringMatching(/^[a-z]{2,5}$/)
+          .filter((s) => !s.startsWith('fr') && !s.startsWith('en')),
+      ],
+      ['devrait rejeter les valeurs non-string', nonStringArbitrary],
+    ])('%s', (_titre, arbitraire) => {
+      attendreNullPourChaqueValeur(arbitraire, (valeur) =>
+        LocaleCode.parse(valeur),
       );
     });
 

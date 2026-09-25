@@ -84,6 +84,33 @@ describe('SuspiciousRequestInterceptor', () => {
     return store.getTopIPs(10, 60_000);
   }
 
+  async function attendreRienDePersiste(req: FakeRequest): Promise<void> {
+    await intercept(req, 200, { handle: () => of({ ok: true }) });
+
+    expect(await topIPs()).toHaveLength(0);
+  }
+
+  function postHeadless(
+    identite: Pick<FakeRequest, 'ip' | 'socket'>,
+    xForwardedFor?: string,
+  ): FakeRequest {
+    return {
+      ...COOKIE_CONSENT_POST,
+      headers: {
+        ...HEADLESS_CHROME_HEADERS,
+        ...(xForwardedFor === undefined
+          ? {}
+          : { 'x-forwarded-for': xForwardedFor }),
+      },
+      ...identite,
+    };
+  }
+
+  async function ipsTraceesApresCreation(req: FakeRequest) {
+    await intercept(req, 201);
+    return topIPs();
+  }
+
   it('ignore les contextes non-HTTP', async () => {
     const handler: CallHandler = { handle: () => of('rpc-result') };
     const ctx = buildContext({} as FakeRequest, {} as FakeResponse, 'rpc');
@@ -93,7 +120,7 @@ describe('SuspiciousRequestInterceptor', () => {
   });
 
   it('ne persiste rien pour une requete Safari legitime', async () => {
-    const req: FakeRequest = {
+    await attendreRienDePersiste({
       method: 'GET',
       url: '/api/v1/portfolio25/auth/me',
       headers: {
@@ -101,28 +128,16 @@ describe('SuspiciousRequestInterceptor', () => {
         'accept-language': 'fr-FR,fr;q=0.9',
       },
       ip: '203.0.113.10',
-    };
-
-    await intercept(req, 200, { handle: () => of({ ok: true }) });
-
-    expect(await topIPs()).toHaveLength(0);
+    });
   });
 
   it('persiste une requete HeadlessChrome suspecte', async () => {
-    const req: FakeRequest = {
-      ...COOKIE_CONSENT_POST,
-      headers: {
-        ...HEADLESS_CHROME_HEADERS,
-        'x-forwarded-for': '203.0.113.41',
-      },
+    const top = await ipsTraceesApresCreation(
       // Valeur qu'Express calcule sous `trust proxy` quand le
       // reverse-proxy renseigne `X-Forwarded-For`.
-      ip: '203.0.113.41',
-    };
+      postHeadless({ ip: '203.0.113.41' }, '203.0.113.41'),
+    );
 
-    await intercept(req, 201);
-
-    const top = await topIPs();
     expect(top).toHaveLength(1);
     expect(top[0].ip).toBe('203.0.113.41');
     expect(top[0].lastReasons).toContain('ua:headless-chrome');
@@ -177,49 +192,36 @@ describe('SuspiciousRequestInterceptor', () => {
   it.each([LOOPBACK_IPV4, mappedIpv6(LOOPBACK_IPV4), '::1'])(
     'bypass le scoring pour les IPs loopback via req.ip (%s)',
     async (loopbackIp) => {
-      const req: FakeRequest = {
+      await attendreRienDePersiste({
         method: 'GET',
         url: '/api/v1/portfolio25',
         headers: { 'user-agent': undefined, 'accept-language': undefined },
         ip: loopbackIp,
-      };
-
-      await intercept(req, 200, { handle: () => of({ ok: true }) });
-
-      expect(await topIPs()).toHaveLength(0);
+      });
     },
   );
 
   it('bypass le scoring via socket.remoteAddress si req.ip est absent', async () => {
-    const req: FakeRequest = {
+    await attendreRienDePersiste({
       method: 'GET',
       url: '/api/v1/portfolio25/health',
       headers: { 'user-agent': undefined, 'accept-language': undefined },
       ip: undefined,
       socket: { remoteAddress: LOOPBACK_IPV4 },
-    };
-
-    await intercept(req, 200, { handle: () => of({ ok: true }) });
-
-    expect(await topIPs()).toHaveLength(0);
+    });
   });
 
   it('ne bypasse pas le scoring sur un X-Forwarded-For loopback forge', async () => {
     // Sous `trust proxy`, le `req.ip` calcule par Express derive de
     // `X-Forwarded-For` : seule l'adresse du socket fait foi ici.
-    const req: FakeRequest = {
-      ...COOKIE_CONSENT_POST,
-      headers: {
-        ...HEADLESS_CHROME_HEADERS,
-        'x-forwarded-for': LOOPBACK_IPV4,
-      },
-      ip: LOOPBACK_IPV4,
-      socket: { remoteAddress: '203.0.113.41' },
-    };
+    const top = await ipsTraceesApresCreation(
+      postHeadless(
+        { ip: LOOPBACK_IPV4, socket: { remoteAddress: '203.0.113.41' } },
+        LOOPBACK_IPV4,
+      ),
+    );
 
-    await intercept(req, 201);
-
-    expect(await topIPs()).toHaveLength(1);
+    expect(top).toHaveLength(1);
   });
 
   it('attribue l’evenement a l’IP resolue par Express, pas au X-Forwarded-For brut', async () => {
@@ -227,37 +229,28 @@ describe('SuspiciousRequestInterceptor', () => {
     // `req.ip` en ne faisant confiance qu'au dernier bond. Reparser
     // `X-Forwarded-For` a la main contournerait ce calcul et laisserait
     // un attaquant choisir l'IP sous laquelle son activite est tracee.
-    const req: FakeRequest = {
-      ...COOKIE_CONSENT_POST,
-      headers: {
-        ...HEADLESS_CHROME_HEADERS,
-        'x-forwarded-for': '192.0.2.4, 203.0.113.7',
-      },
-      ip: '203.0.113.7',
-      socket: { remoteAddress: mappedIpv6('192.0.2.18') },
-    };
+    const top = await ipsTraceesApresCreation(
+      postHeadless(
+        {
+          ip: '203.0.113.7',
+          socket: { remoteAddress: mappedIpv6('192.0.2.18') },
+        },
+        '192.0.2.4, 203.0.113.7',
+      ),
+    );
 
-    await intercept(req, 201);
-
-    const top = await topIPs();
     expect(top).toHaveLength(1);
     expect(top[0].ip).toBe('203.0.113.7');
   });
 
   it('retombe sur l’adresse du socket quand req.ip est absent', async () => {
-    const req: FakeRequest = {
-      ...COOKIE_CONSENT_POST,
-      headers: {
-        ...HEADLESS_CHROME_HEADERS,
-        'x-forwarded-for': '192.0.2.4',
-      },
-      ip: undefined,
-      socket: { remoteAddress: '198.51.100.9' },
-    };
+    const top = await ipsTraceesApresCreation(
+      postHeadless(
+        { ip: undefined, socket: { remoteAddress: '198.51.100.9' } },
+        '192.0.2.4',
+      ),
+    );
 
-    await intercept(req, 201);
-
-    const top = await topIPs();
     expect(top[0].ip).toBe('198.51.100.9');
   });
 
@@ -266,15 +259,10 @@ describe('SuspiciousRequestInterceptor', () => {
     // normalisation, elle compte comme un client distinct dans les
     // agregats.
     const clientIp = '203.0.113.7';
-    const req: FakeRequest = {
-      ...COOKIE_CONSENT_POST,
-      headers: { ...HEADLESS_CHROME_HEADERS },
-      ip: mappedIpv6(clientIp),
-    };
+    const top = await ipsTraceesApresCreation(
+      postHeadless({ ip: mappedIpv6(clientIp) }),
+    );
 
-    await intercept(req, 201);
-
-    const top = await topIPs();
     expect(top[0].ip).toBe(clientIp);
   });
 

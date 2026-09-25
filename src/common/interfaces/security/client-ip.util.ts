@@ -20,6 +20,18 @@ export function resolveClientIp(req: Request): string | null {
   return normalizeIp(raw);
 }
 
+export function provenanceDeLaRequete(req: Request): {
+  ip: string | null;
+  userAgent: string | null;
+  referer: string | null;
+} {
+  return {
+    ip: resolveClientIp(req),
+    userAgent: req.headers['user-agent'] ?? null,
+    referer: req.headers['referer'] ?? null,
+  };
+}
+
 export function resolveClientIpOrUnknown(req: Request): string {
   return resolveClientIp(req) ?? 'unknown';
 }

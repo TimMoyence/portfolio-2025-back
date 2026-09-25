@@ -16,15 +16,10 @@ import { validateEnv } from './config/env.validation';
 import { optionsJournalHttp } from './config/journal-http';
 
 import { ensureDatabaseExists } from './database/ensure-database';
+import { logBootstrapStep } from './runtime/log-bootstrap-step';
 import { resolveRuntimeContexts } from './runtime/runtime-contexts';
 
 const runtimeContexts = resolveRuntimeContexts();
-
-function logBootstrapStep(message: string): void {
-  if (process.env.BOOTSTRAP_DEBUG === 'true') {
-    console.log(`[bootstrap] ${message}`);
-  }
-}
 
 function firstEnv(...names: string[]): string | undefined {
   return names

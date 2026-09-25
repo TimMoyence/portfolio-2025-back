@@ -1,5 +1,8 @@
 import * as fc from 'fast-check';
-import { nonStringArbitrary } from '../../../../test/helpers/fast-check-arbitraries';
+import {
+  attendreNullPourChaqueValeur,
+  nonStringArbitrary,
+} from '../../../../test/helpers/fast-check-arbitraries';
 import { PhoneNumber } from './PhoneNumber';
 
 describe('PhoneNumber', () => {
@@ -37,42 +40,23 @@ describe('PhoneNumber', () => {
       );
     });
 
-    it('devrait rejeter tout numero trop court (< 6 chiffres)', () => {
-      const shortArb = fc.stringMatching(/^\+\d{1,5}$/);
-
-      fc.assert(
-        fc.property(shortArb, (phone) => {
-          expect(PhoneNumber.parse(phone)).toBeNull();
-        }),
-      );
-    });
-
-    it('devrait rejeter tout numero trop long (> 15 chiffres)', () => {
-      const longArb = fc.stringMatching(/^\+\d{16,25}$/);
-
-      fc.assert(
-        fc.property(longArb, (phone) => {
-          expect(PhoneNumber.parse(phone)).toBeNull();
-        }),
-      );
-    });
-
-    it('devrait rejeter les valeurs non-string', () => {
-      fc.assert(
-        fc.property(nonStringArbitrary, (input) => {
-          expect(PhoneNumber.parse(input)).toBeNull();
-        }),
-      );
-    });
-
-    it('devrait rejeter les chaines contenant des lettres', () => {
-      fc.assert(
-        fc.property(
-          fc.string({ minLength: 1 }).filter((s) => /[a-zA-Z]/.test(s)),
-          (input) => {
-            expect(PhoneNumber.parse(input)).toBeNull();
-          },
-        ),
+    it.each<[string, fc.Arbitrary<unknown>]>([
+      [
+        'devrait rejeter tout numero trop court (< 6 chiffres)',
+        fc.stringMatching(/^\+\d{1,5}$/),
+      ],
+      [
+        'devrait rejeter tout numero trop long (> 15 chiffres)',
+        fc.stringMatching(/^\+\d{16,25}$/),
+      ],
+      ['devrait rejeter les valeurs non-string', nonStringArbitrary],
+      [
+        'devrait rejeter les chaines contenant des lettres',
+        fc.string({ minLength: 1 }).filter((s) => /[a-zA-Z]/.test(s)),
+      ],
+    ])('%s', (_titre, arbitraire) => {
+      attendreNullPourChaqueValeur(arbitraire, (valeur) =>
+        PhoneNumber.parse(valeur),
       );
     });
   });

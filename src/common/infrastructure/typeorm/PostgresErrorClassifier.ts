@@ -1,4 +1,4 @@
-import { QueryFailedError } from 'typeorm';
+import { QueryFailedError, type ObjectLiteral, type Repository } from 'typeorm';
 
 const POSTGRES_UNIQUE_VIOLATION = '23505';
 
@@ -8,6 +8,21 @@ interface PostgresDriverError {
 }
 
 export abstract class PostgresErrorClassifier {
+  protected async enregistrerSansDoublon<E extends ObjectLiteral>(
+    repo: Repository<E>,
+    entite: E,
+    erreurSiDoublon: () => Error,
+  ): Promise<E> {
+    try {
+      return await repo.save(entite);
+    } catch (error) {
+      if (this.isUniqueViolation(error)) {
+        throw erreurSiDoublon();
+      }
+      throw error;
+    }
+  }
+
   protected isUniqueViolation(error: unknown): boolean {
     return this.driverErrorOf(error)?.code === POSTGRES_UNIQUE_VIOLATION;
   }
