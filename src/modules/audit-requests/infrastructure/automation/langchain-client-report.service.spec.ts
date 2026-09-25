@@ -1,5 +1,6 @@
 import { silenceNestLogger } from '../../../../../test/helpers/silence-nest-logger';
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
+import { buildClientReportContext } from '../../../../../test/factories/audit-requests.factory';
 import type { AuditAutomationConfig } from './audit.config';
 import {
   ClientReportContext,
@@ -26,41 +27,28 @@ describe('LangchainClientReportService', () => {
     rateHourlyMax: 130,
   });
 
-  const baseContext = (): ClientReportContext => ({
-    locale: 'fr',
-    websiteName: 'example.com',
-    normalizedUrl: 'https://example.com',
-    pillarScores: {
-      seo: 62,
-      performance: 55,
-      technical: 70,
-      trust: 68,
-      conversion: 60,
-      aiVisibility: 48,
-      citationWorthiness: 52,
-    },
-    findings: [
-      {
-        title: 'Meta descriptions manquantes',
-        description: 'Plusieurs pages commerciales sans meta description.',
-        severity: 'high',
-        impact: 'traffic',
-      },
-      {
-        title: 'CTA peu visible',
-        description:
-          'CTA principal difficile a reperer au-dessus de la ligne de flottaison.',
-        severity: 'medium',
-        impact: 'conversion',
-      },
-    ],
-    quickWins: [
-      'Ajouter des meta descriptions orientees intention',
-      'Deplacer le CTA principal au-dessus de la ligne de flottaison',
-    ],
-    aggregateAiSignals: null,
-    engineCoverage: null,
-  });
+  const baseContext = (): ClientReportContext =>
+    buildClientReportContext({
+      findings: [
+        {
+          title: 'Meta descriptions manquantes',
+          description: 'Plusieurs pages commerciales sans meta description.',
+          severity: 'high',
+          impact: 'traffic',
+        },
+        {
+          title: 'CTA peu visible',
+          description:
+            'CTA principal difficile a reperer au-dessus de la ligne de flottaison.',
+          severity: 'medium',
+          impact: 'conversion',
+        },
+      ],
+      quickWins: [
+        'Ajouter des meta descriptions orientees intention',
+        'Deplacer le CTA principal au-dessus de la ligne de flottaison',
+      ],
+    });
 
   it('returns a deterministic fallback when the api key is missing', async () => {
     const service = new LangchainClientReportService(config);

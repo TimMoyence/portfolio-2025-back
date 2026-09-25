@@ -34,6 +34,14 @@ function createService(
   );
 }
 
+type ChargesDeSection = Record<
+  | 'executiveSection'
+  | 'prioritySection'
+  | 'executionSection'
+  | 'clientCommsSection',
+  Record<string, unknown>
+>;
+
 interface LangchainServiceTestable {
   generate: LangchainAuditReportService['generate'];
   generateUserSummary: (...args: unknown[]) => Promise<string>;
@@ -42,12 +50,7 @@ interface LangchainServiceTestable {
     inputValue: LangchainAuditInput,
     reason: string,
   ) => ExpertReport;
-  buildSectionPayloads: (inputValue: LangchainAuditInput) => {
-    executiveSection: Record<string, unknown>;
-    prioritySection: Record<string, unknown>;
-    executionSection: Record<string, unknown>;
-    clientCommsSection: Record<string, unknown>;
-  };
+  buildSectionPayloads: (inputValue: LangchainAuditInput) => ChargesDeSection;
   generateSectionOnce: (
     llm: unknown,
     section: string,
@@ -59,12 +62,7 @@ interface LangchainServiceTestable {
   ) => Promise<unknown>;
   generateFanoutSectionsWithDeadline: (
     llm: unknown,
-    payloads: {
-      executiveSection: Record<string, unknown>;
-      prioritySection: Record<string, unknown>;
-      executionSection: Record<string, unknown>;
-      clientCommsSection: Record<string, unknown>;
-    },
+    payloads: ChargesDeSection,
     locale: 'fr' | 'en',
     inputValue: LangchainAuditInput,
     budget: DeadlineBudget,
@@ -106,9 +104,11 @@ describe('LangchainAuditReportService', () => {
     return service as unknown as LangchainServiceTestable;
   }
 
+  const genererEnRepli = () =>
+    createService(config, new ReportQualityGateService()).generate(input);
+
   it('returns deterministic fallback with cost estimate when api key is missing', async () => {
-    const service = createService(config, new ReportQualityGateService());
-    const result = await service.generate(input);
+    const result = await genererEnRepli();
     const admin = result.adminReport;
     const cost = admin['costEstimate'] as Record<string, unknown>;
 
@@ -126,8 +126,7 @@ describe('LangchainAuditReportService', () => {
   });
 
   it('projects an ExpertReportSynthesis with the 3 new fields in fallback mode', async () => {
-    const service = createService(config, new ReportQualityGateService());
-    const result = await service.generate(input);
+    const result = await genererEnRepli();
 
     expect(result.expertSynthesis).toBeDefined();
     expect(result.expertSynthesis.perPageAnalysis.length).toBeGreaterThan(0);
@@ -143,8 +142,7 @@ describe('LangchainAuditReportService', () => {
   });
 
   it('includes perPageAnalysis and clientEmailDraft in the adminReport fallback', async () => {
-    const service = createService(config, new ReportQualityGateService());
-    const result = await service.generate(input);
+    const result = await genererEnRepli();
     const admin = result.adminReport;
 
     expect(admin['perPageAnalysis']).toBeInstanceOf(Array);

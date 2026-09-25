@@ -1,15 +1,9 @@
-import { ColonnesDeProvenance } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
+import { Column, Entity } from 'typeorm';
 import type { CookieConsentPreferences } from '../../domain/CookieConsent';
 
 @Entity({ name: 'cookie_consents' })
-export class CookieConsentEntity extends ColonnesDeProvenance {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ type: 'uuid' })
-  requestId: string;
-
+export class CookieConsentEntity extends ColonnesDeRequete {
   @Column({ type: 'varchar', length: 50 })
   policyVersion: string;
 

@@ -311,45 +311,64 @@ export class AuditPipelineService {
     stepForProgress: (done: number, total: number) => string;
     robotsTxt: string;
   }): Promise<UrlIndexabilityResult[]> {
-    let writeQueue = Promise.resolve();
-    let lastDone = 0;
-    const recentCompletedUrls: string[] = [];
-    const enqueueUpdate = (
-      done: number,
-      total: number,
-      currentUrl: string,
-    ): Promise<void> => {
-      writeQueue = writeQueue.then(async () => {
-        if (done <= lastDone) return;
-        lastDone = done;
-        this.pushRecentUrl(recentCompletedUrls, currentUrl, 5);
-        await this.repo.updateState(input.auditId, {
-          progress: this.interpolateProgress(done, total, 20, 60),
-          step: input.stepForProgress(done, total),
-          keyChecks: {
-            ...input.baseKeyChecks,
-            progressDetails: {
-              phase: 'technical_pages',
-              iaTask: 'technical_scan',
-              iaSubTask: 'headers_indexability_signals',
-              done,
-              total,
-              currentUrl,
-              recentCompletedUrls: [...recentCompletedUrls],
-            },
-          },
-        });
-      });
-      return writeQueue;
-    };
-
+    const progression = this.suivreLaProgressionParPage(input, [20, 60], {
+      phase: 'technical_pages',
+      iaTask: 'technical_scan',
+      iaSubTask: 'headers_indexability_signals',
+    });
     const pageSnapshots = await this.urlIndexability.analyzeUrls(input.urls, {
       robotsTxt: input.robotsTxt,
       onUrlAnalyzed: async (result, done, total) =>
-        enqueueUpdate(done, total, result.url),
+        progression.signaler(done, total, result.url),
     });
-    await writeQueue;
+    await progression.vider();
     return pageSnapshots;
+  }
+
+  private suivreLaProgressionParPage(
+    suivi: {
+      auditId: string;
+      baseKeyChecks: Record<string, unknown>;
+      stepForProgress: (done: number, total: number) => string;
+    },
+    bornes: readonly [number, number],
+    etape: { phase: string; iaTask: string; iaSubTask: string },
+  ): {
+    signaler: (
+      done: number,
+      total: number,
+      currentUrl: string,
+    ) => Promise<void>;
+    vider: () => Promise<void>;
+  } {
+    let writeQueue = Promise.resolve();
+    let lastDone = 0;
+    const recentCompletedUrls: string[] = [];
+    return {
+      signaler: (done, total, currentUrl) => {
+        writeQueue = writeQueue.then(async () => {
+          if (done <= lastDone) return;
+          lastDone = done;
+          this.pushRecentUrl(recentCompletedUrls, currentUrl, 5);
+          await this.repo.updateState(suivi.auditId, {
+            progress: this.interpolateProgress(done, total, ...bornes),
+            step: suivi.stepForProgress(done, total),
+            keyChecks: {
+              ...suivi.baseKeyChecks,
+              progressDetails: {
+                ...etape,
+                done,
+                total,
+                currentUrl,
+                recentCompletedUrls: [...recentCompletedUrls],
+              },
+            },
+          });
+        });
+        return writeQueue;
+      },
+      vider: () => writeQueue,
+    };
   }
 
   private async runLlmsTxtAnalysis(
@@ -420,38 +439,11 @@ export class AuditPipelineService {
     summary: PageAiRecapSummary;
     warnings: string[];
   }> {
-    let writeQueue = Promise.resolve();
-    let lastDone = 0;
-    const recentCompletedUrls: string[] = [];
-    const enqueueUpdate = (
-      done: number,
-      total: number,
-      recap: PageAiRecap,
-    ): Promise<void> => {
-      writeQueue = writeQueue.then(async () => {
-        if (done <= lastDone) return;
-        lastDone = done;
-        this.pushRecentUrl(recentCompletedUrls, recap.url, 5);
-        await this.repo.updateState(input.auditId, {
-          progress: this.interpolateProgress(done, total, 60, 85),
-          step: input.stepForProgress(done, total),
-          keyChecks: {
-            ...input.baseKeyChecks,
-            progressDetails: {
-              phase: 'page_ai_recaps',
-              iaTask: 'page_ai_recap',
-              iaSubTask: 'conversion_seo_micro_audit',
-              done,
-              total,
-              currentUrl: recap.url,
-              recentCompletedUrls: [...recentCompletedUrls],
-            },
-          },
-        });
-      });
-      return writeQueue;
-    };
-
+    const progression = this.suivreLaProgressionParPage(input, [60, 85], {
+      phase: 'page_ai_recaps',
+      iaTask: 'page_ai_recap',
+      iaSubTask: 'conversion_seo_micro_audit',
+    });
     const pageAi = await this.pageAiRecap.analyzePages(
       {
         locale: input.locale,
@@ -461,10 +453,10 @@ export class AuditPipelineService {
       },
       {
         onRecapReady: async (recap, done, total) =>
-          enqueueUpdate(done, total, recap),
+          progression.signaler(done, total, recap.url),
       },
     );
-    await writeQueue;
+    await progression.vider();
     return pageAi;
   }
 

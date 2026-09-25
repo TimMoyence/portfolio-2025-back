@@ -1,4 +1,5 @@
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
+import { attendreRapportAccepte } from '../../../../../test/helpers/validation-de-rapport';
 import {
   ExpertReportShape,
   ReportQualityGateContext,
@@ -175,75 +176,68 @@ describe('ReportQualityGateService', () => {
 
   describe('validateClientReport', () => {
     it('accepts a valid client synthesis with 7 pillars and 3 quick wins', () => {
-      const result = service.validateClientReport(baseClientReport());
-      expect(result.valid).toBe(true);
-      expect(result.issues).toEqual([]);
-      expect(result.shouldFallback).toBe(false);
+      attendreRapportAccepte(service.validateClientReport(baseClientReport()));
     });
+
+    const signaleLeMotif = (issues: readonly string[], motif: string) =>
+      issues.some((issue) => issue.includes(motif));
 
     it('flags a scorecard that is not exactly 7 entries', () => {
       const bad = baseClientReport();
-      const mutable = {
+      const result = service.validateClientReport({
         ...bad,
         pillarScorecard: bad.pillarScorecard.slice(0, 5),
-      };
-      const result = service.validateClientReport(mutable);
+      });
       expect(result.valid).toBe(false);
-      expect(
-        result.issues.some((issue) => issue.includes('pillar_scorecard')),
-      ).toBe(true);
+      expect(signaleLeMotif(result.issues, 'pillar_scorecard')).toBe(true);
       expect(result.shouldFallback).toBe(true);
     });
 
-    it('flags quickWins when too few or too many', () => {
-      const few = baseClientReport();
-      const mutable = { ...few, quickWins: few.quickWins.slice(0, 1) };
-      const result = service.validateClientReport(mutable);
-      expect(result.valid).toBe(false);
-      expect(result.issues.some((issue) => issue.includes('quick_wins'))).toBe(
-        true,
-      );
-    });
-
-    it('flags an incomplete CTA', () => {
+    it.each([
+      [
+        'flags quickWins when too few or too many',
+        (report: ClientReportSynthesis) => ({
+          quickWins: report.quickWins.slice(0, 1),
+        }),
+        'quick_wins',
+      ],
+      [
+        'flags an incomplete CTA',
+        (report: ClientReportSynthesis) => ({
+          cta: { ...report.cta, actionLabel: '' },
+        }),
+        'cta_incomplete',
+      ],
+      [
+        'flags markdown leakage in executive summary',
+        () => ({
+          executiveSummary: '**Executive summary** with markdown bold.',
+        }),
+        'markdown',
+      ],
+    ])('%s', (_titre, alteration, motif) => {
       const report = baseClientReport();
-      const mutable = {
+      const result = service.validateClientReport({
         ...report,
-        cta: { ...report.cta, actionLabel: '' },
-      };
-      const result = service.validateClientReport(mutable);
+        ...alteration(report),
+      });
       expect(result.valid).toBe(false);
-      expect(
-        result.issues.some((issue) => issue.includes('cta_incomplete')),
-      ).toBe(true);
-    });
-
-    it('flags markdown leakage in executive summary', () => {
-      const report = baseClientReport();
-      const mutable = {
-        ...report,
-        executiveSummary: '**Executive summary** with markdown bold.',
-      };
-      const result = service.validateClientReport(mutable);
-      expect(result.valid).toBe(false);
-      expect(result.issues.some((issue) => issue.includes('markdown'))).toBe(
-        true,
-      );
+      expect(signaleLeMotif(result.issues, motif)).toBe(true);
     });
   });
 
   describe('validateExpertReport', () => {
     it('accepts a valid expert report with perPageAnalysis, draft and notes', () => {
-      const result = service.validateExpertReport({
-        perPageAnalysis: [{ url: 'https://example.com/' }],
-        clientEmailDraft: {
-          subject: 'Audit example.com: quick wins',
-          body: 'Hello,\n\n'.repeat(50),
-        },
-        internalNotes: 'Internal notes ready for the call.',
-      });
-      expect(result.valid).toBe(true);
-      expect(result.shouldFallback).toBe(false);
+      attendreRapportAccepte(
+        service.validateExpertReport({
+          perPageAnalysis: [{ url: 'https://example.com/' }],
+          clientEmailDraft: {
+            subject: 'Audit example.com: quick wins',
+            body: 'Hello,\n\n'.repeat(50),
+          },
+          internalNotes: 'Internal notes ready for the call.',
+        }),
+      );
     });
 
     it('flags empty perPageAnalysis and short body', () => {

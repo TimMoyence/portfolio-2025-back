@@ -150,17 +150,7 @@ export class StreamAuditEventsUseCase {
   }
 
   private buildNotFoundEvent(auditId: string): MessageEvent {
-    return {
-      type: 'failed',
-      data: {
-        auditId,
-        status: 'FAILED',
-        progress: 100,
-        done: false,
-        error: 'Audit not found.',
-        updatedAt: new Date().toISOString(),
-      },
-    };
+    return this.buildErrorEvent(auditId, 'Audit not found.');
   }
 
   private buildErrorEvent(auditId: string, error: string): MessageEvent {

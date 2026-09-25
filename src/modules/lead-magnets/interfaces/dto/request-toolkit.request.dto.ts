@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsDate,
   IsEmail,
   IsIn,
   IsOptional,
@@ -10,6 +9,10 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import {
+  AcceptationDesConditions,
+  VersionDesConditions,
+} from '../../../../common/interfaces/dto/conditions-acceptees.decorator';
 import { ChampsAntiRobotDto } from '../../../../common/interfaces/security/champs-anti-robot.dto';
 import { InteractionProfileDto } from './interaction-profile.dto';
 
@@ -29,9 +32,7 @@ export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @IsIn(['ia-solopreneurs'])
   formationSlug: string;
 
-  @ApiProperty({ example: '2026-04-10' })
-  @IsString()
-  @MaxLength(50)
+  @VersionDesConditions()
   termsVersion: string;
 
   @ApiProperty({ example: 'fr' })
@@ -39,9 +40,7 @@ export class RequestToolkitRequestDto extends ChampsAntiRobotDto {
   @MaxLength(10)
   termsLocale: string;
 
-  @ApiProperty({ example: '2026-04-10T10:00:00.000Z' })
-  @Type(() => Date)
-  @IsDate()
+  @AcceptationDesConditions()
   termsAcceptedAt: Date;
 
   @ApiPropertyOptional({ type: InteractionProfileDto })

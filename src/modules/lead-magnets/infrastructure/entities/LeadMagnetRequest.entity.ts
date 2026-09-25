@@ -1,4 +1,8 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  ColonneAcceptationDesConditions,
+  ColonneVersionDesConditions,
+} from '../../../../common/infrastructure/typeorm/ColonnesDeConsentement';
 import type { InteractionProfile } from '../../domain/InteractionProfile';
 
 @Entity({ name: 'lead_magnet_requests' })
@@ -16,13 +20,13 @@ export class LeadMagnetRequestEntity {
   @Column({ name: 'formation_slug', type: 'varchar', length: 100 })
   formationSlug: string;
 
-  @Column({ name: 'terms_version', type: 'varchar', length: 50 })
+  @ColonneVersionDesConditions()
   termsVersion: string;
 
   @Column({ name: 'terms_locale', type: 'varchar', length: 10 })
   termsLocale: string;
 
-  @Column({ name: 'terms_accepted_at', type: 'timestamptz' })
+  @ColonneAcceptationDesConditions()
   termsAcceptedAt: Date;
 
   @Index('idx_lead_magnet_requests_access_token', { unique: true })

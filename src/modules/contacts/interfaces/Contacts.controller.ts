@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Optional, Post } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Optional } from '@nestjs/common';
 import { CreateContactsUseCase } from '../application/CreateContacts.useCase';
 import {
   ApiBadRequestResponse,
@@ -6,8 +6,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
+import { FormulairePublic } from '../../../common/interfaces/security/formulaire-public.decorator';
 import { CreateContactCommand } from '../application/dto/CreateContact.command';
 import { ContactResponseDto } from './dto/contact.response.dto';
 import { ContactRequestDto } from './dto/contact.request.dto';
@@ -22,9 +21,7 @@ export class ContactsController {
     private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
-  @Public()
-  @Throttle({ default: { limit: 5, ttl: 3600000 } })
-  @Post()
+  @FormulairePublic(5)
   @ApiOperation({ summary: 'Envoyer un message de contact (acces public)' })
   @ApiCreatedResponse({ type: ContactResponseDto })
   @ApiBadRequestResponse({ description: 'Validation echouee' })

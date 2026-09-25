@@ -15,37 +15,21 @@ export class ContactsRepositoryTypeORM implements IContactsRepository {
 
   async findAll(): Promise<Contacts[]> {
     const contacts = await this.repo.find();
-    return contacts.map(
-      ({
-        id,
-        email,
-        firstName,
-        lastName,
-        phone,
-        subject,
-        message,
-        role,
-        terms,
-        termsVersion,
-        termsLocale,
-        termsAcceptedAt,
-        termsMethod,
-      }) => ({
-        id,
-        email,
-        firstName,
-        lastName,
-        phone,
-        subject,
-        message,
-        role,
-        terms,
-        termsVersion,
-        termsLocale,
-        termsAcceptedAt,
-        termsMethod,
-      }),
-    );
+    return contacts.map((contact) => ({
+      id: contact.id,
+      email: contact.email,
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      phone: contact.phone,
+      subject: contact.subject,
+      message: contact.message,
+      role: contact.role,
+      terms: contact.terms,
+      termsVersion: contact.termsVersion,
+      termsLocale: contact.termsLocale,
+      termsAcceptedAt: contact.termsAcceptedAt,
+      termsMethod: contact.termsMethod,
+    }));
   }
 
   public async create(data: Contacts): Promise<MessageContactResponse> {

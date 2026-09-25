@@ -1,5 +1,5 @@
 import { ChatOpenAI } from '@langchain/openai';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import type { AiIndexabilitySignals } from '../../domain/AiIndexability';
 import type { ClientReportSynthesis } from '../../domain/AuditReportTiers';
@@ -10,13 +10,9 @@ import {
   AuditLocale,
   resolveAuditLocale,
 } from '../../domain/audit-locale.util';
-import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
-import type { AuditAutomationConfig } from './audit.config';
-import {
-  LlmInFlightLimiter,
-  getSharedLlmInFlightLimiter,
-  withHardTimeout,
-} from './llm-execution.guardrails';
+import { withHardTimeout } from './llm-execution.guardrails';
+import { LlmLimiteParLaConfig } from './llm-executor.port';
+import { impactLocalise } from './shared/finding-priority.util';
 import { localizedText } from './shared/locale-text.util';
 
 const severitySchema = z.enum(['high', 'medium', 'low']);
@@ -118,16 +114,8 @@ const PILLAR_ORDER: ReadonlyArray<string> = [
 ];
 
 @Injectable()
-export class LangchainClientReportService {
+export class LangchainClientReportService extends LlmLimiteParLaConfig {
   private readonly logger = new Logger(LangchainClientReportService.name);
-  private readonly llmLimiter: LlmInFlightLimiter;
-
-  constructor(
-    @Inject(AUDIT_AUTOMATION_CONFIG)
-    private readonly config: AuditAutomationConfig,
-  ) {
-    this.llmLimiter = getSharedLlmInFlightLimiter(this.config.llmInflightMax);
-  }
 
   async generate(context: ClientReportContext): Promise<ClientReportSynthesis> {
     const locale = resolveAuditLocale(
@@ -329,14 +317,21 @@ export class LangchainClientReportService {
           status: existing.status,
         };
       }
-      const score = this.extractPillarScore(context.pillarScores, pillar);
-      return {
-        pillar,
-        score,
-        target: 85,
-        status: this.statusFromScore(score),
-      };
+      return this.pilierMesure(context, pillar);
     });
+  }
+
+  private pilierMesure(
+    context: ClientReportContext,
+    pillar: string,
+  ): ClientReportSynthesis['pillarScorecard'][number] {
+    const score = this.extractPillarScore(context.pillarScores, pillar);
+    return {
+      pillar,
+      score,
+      target: 85,
+      status: this.statusFromScore(score),
+    };
   }
 
   private buildFallback(
@@ -352,11 +347,7 @@ export class LangchainClientReportService {
 
     const topFindings = sortedFindings.slice(0, 5).map((finding) => ({
       title: finding.title,
-      impact: localizedText(
-        locale,
-        `Impact ${finding.impact}: ${finding.description}`,
-        `${finding.impact} impact: ${finding.description}`,
-      ),
+      impact: impactLocalise(finding, locale),
       severity: finding.severity,
     }));
 
@@ -379,15 +370,9 @@ export class LangchainClientReportService {
 
     const quickWins = this.buildFallbackQuickWins(context, locale);
 
-    const pillarScorecard = PILLAR_ORDER.map((pillar) => {
-      const score = this.extractPillarScore(context.pillarScores, pillar);
-      return {
-        pillar,
-        score,
-        target: 85,
-        status: this.statusFromScore(score),
-      };
-    });
+    const pillarScorecard = PILLAR_ORDER.map((pillar) =>
+      this.pilierMesure(context, pillar),
+    );
 
     const { googleScore, aiScore } = this.buildVisibilityScores(context);
 

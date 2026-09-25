@@ -17,6 +17,17 @@ interface PriorityFromFinding {
   estimatedHours: number;
 }
 
+export function impactLocalise(
+  finding: Pick<FindingLike, 'impact' | 'description'>,
+  locale: AuditLocale,
+): string {
+  return localizedText(
+    locale,
+    `Impact ${finding.impact}: ${finding.description}`,
+    `${finding.impact} impact: ${finding.description}`,
+  );
+}
+
 export function priorityFromFinding(
   finding: FindingLike,
   locale: AuditLocale,
@@ -24,11 +35,7 @@ export function priorityFromFinding(
   return {
     title: finding.title,
     severity: finding.severity,
-    whyItMatters: localizedText(
-      locale,
-      `Impact ${finding.impact}: ${finding.description}`,
-      `${finding.impact} impact: ${finding.description}`,
-    ),
+    whyItMatters: impactLocalise(finding, locale),
     recommendedFix: finding.recommendation,
     estimatedHours: finding.severity === 'high' ? 6 : 4,
   };

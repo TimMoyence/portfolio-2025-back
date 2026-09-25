@@ -1,5 +1,12 @@
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
-import { createMockAuditRequestsRepo } from '../../../../../test/factories/audit-requests.factory';
+import {
+  buildAuditSnapshot,
+  buildEngineCoverage,
+  buildHomepageSnapshot,
+  buildPageAiRecap,
+  buildPageExploree,
+  createMockAuditRequestsRepo,
+} from '../../../../../test/factories/audit-requests.factory';
 import { AuditSnapshot } from '../../domain/AuditProcessing';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import type { AuditDeliveryOrchestrator } from './audit-delivery.orchestrator';
@@ -12,7 +19,6 @@ import type {
   LlmSynthesisProgressEvent,
 } from './langchain-audit-report.service';
 import type { LlmsTxtAnalyzerService } from './llms-txt-analyzer.service';
-import type { EngineScore } from '../../domain/EngineCoverage';
 import type {
   AnalyzePageRecapsOptions,
   PageAiRecap,
@@ -21,7 +27,10 @@ import type {
 import type { SafeFetchService } from './safe-fetch.service';
 import type { ScoringService } from './scoring.service';
 import type { SitemapDiscoveryService } from './sitemap-discovery.service';
-import type { UrlIndexabilityService } from './url-indexability.service';
+import type {
+  UrlIndexabilityResult,
+  UrlIndexabilityService,
+} from './url-indexability.service';
 import { normalizeAuditUrl } from './url-normalizer.util';
 
 jest.mock('./url-normalizer.util', () => ({
@@ -108,36 +117,19 @@ describe('AuditPipelineService', () => {
     urlAnalyzeConcurrency: 4,
   });
 
-  const audit: AuditSnapshot = {
+  const audit: AuditSnapshot = buildAuditSnapshot({
     id: 'audit-1',
-    requestId: 'req-1',
-    websiteName: 'example.com',
-    contactMethod: 'EMAIL',
-    contactValue: 'test@example.com',
-    locale: 'fr',
-    done: false,
     processingStatus: 'PENDING',
     progress: 0,
     step: 'Queued',
-    error: null,
     normalizedUrl: null,
     finalUrl: null,
-    redirectChain: [],
-    keyChecks: {},
-    quickWins: [],
-    pillarScores: {},
-    summaryText: null,
-    fullReport: null,
     createdAt: new Date('2026-01-01T10:00:00.000Z'),
     updatedAt: new Date('2026-01-01T10:00:00.000Z'),
     startedAt: null,
-    finishedAt: null,
-  };
+  });
 
-  const homepageSnapshot = {
-    finalUrl: 'https://example.com/',
-    statusCode: 200,
-    https: true,
+  const homepageSnapshot = buildHomepageSnapshot({
     redirectChain: ['https://example.com'],
     ttfbMs: 320,
     totalResponseMs: 980,
@@ -145,124 +137,75 @@ describe('AuditPipelineService', () => {
     title: 'Accueil Example',
     metaDescription: 'Description Example',
     robotsMeta: 'index,follow',
-    canonicalUrls: ['https://example.com/'],
-    h1Count: 1,
-    htmlLang: 'fr',
-    hasStructuredData: true,
-    openGraphTags: ['og:title'],
     twitterTags: ['twitter:card'],
     detectedCmsHints: ['WordPress'],
-    hasAnalytics: true,
-    hasTagManager: true,
-    hasPixel: false,
-    hasCookieBanner: true,
-    hasForms: true,
     internalLinks: ['https://example.com/contact'],
-  };
+  });
+
+  const pageDuSite = (
+    chemin: string,
+    intitule: string,
+    mesures: Pick<
+      UrlIndexabilityResult,
+      'ttfbMs' | 'totalResponseMs' | 'contentLength' | 'hasForms'
+    >,
+    overrides: Partial<UrlIndexabilityResult>,
+  ) =>
+    buildPageExploree(chemin, {
+      title: `${intitule} Example`,
+      h1Texts: [intitule],
+      responseTimeMs: mesures.totalResponseMs,
+      ...mesures,
+      ...overrides,
+    });
 
   const indexabilityResults = [
-    {
-      url: 'https://example.com/',
-      finalUrl: 'https://example.com/',
-      statusCode: 200,
-      indexable: true,
-      title: 'Accueil Example',
-      metaDescription: 'Description Example',
-      h1Count: 1,
-      htmlLang: 'fr',
-      robotsMeta: 'index,follow',
-      xRobotsTag: null,
-      canonical: 'https://example.com/',
-      canonicalUrls: ['https://example.com/'],
-      canonicalCount: 1,
-      https: true,
-      redirectChain: [],
-      ttfbMs: 220,
-      totalResponseMs: 800,
-      contentLength: 15000,
-      responseTimeMs: 800,
-      h1Texts: ['Accueil'],
-      openGraphTags: ['og:title'],
-      twitterTags: ['twitter:card'],
-      detectedCmsHints: [],
-      hasAnalytics: true,
-      hasTagManager: false,
-      hasPixel: false,
-      hasCookieBanner: true,
-      hasForms: true,
-      ctaHints: ['Contact'],
-      textExcerpt: 'Bienvenue',
-      internalLinks: ['https://example.com/contact'],
-      error: null,
-    },
-    {
-      url: 'https://example.com/about',
-      finalUrl: 'https://example.com/about',
-      statusCode: 200,
-      indexable: true,
-      title: 'About Example',
-      metaDescription: 'About Description',
-      h1Count: 1,
-      htmlLang: 'fr',
-      robotsMeta: 'index,follow',
-      xRobotsTag: null,
-      canonical: 'https://example.com/about',
-      canonicalUrls: ['https://example.com/about'],
-      canonicalCount: 1,
-      https: true,
-      redirectChain: [],
-      ttfbMs: 210,
-      totalResponseMs: 700,
-      contentLength: 14000,
-      responseTimeMs: 700,
-      h1Texts: ['About'],
-      openGraphTags: ['og:title'],
-      twitterTags: ['twitter:card'],
-      detectedCmsHints: [],
-      hasAnalytics: true,
-      hasTagManager: false,
-      hasPixel: false,
-      hasCookieBanner: true,
-      hasForms: false,
-      ctaHints: [],
-      textExcerpt: 'About us',
-      internalLinks: ['https://example.com/contact'],
-      error: null,
-    },
-    {
-      url: 'https://example.com/contact',
-      finalUrl: 'https://example.com/contact',
-      statusCode: 200,
-      indexable: true,
-      title: 'Contact Example',
-      metaDescription: 'Contact Description',
-      h1Count: 1,
-      htmlLang: 'fr',
-      robotsMeta: 'index,follow',
-      xRobotsTag: null,
-      canonical: 'https://example.com/contact',
-      canonicalUrls: ['https://example.com/contact'],
-      canonicalCount: 1,
-      https: true,
-      redirectChain: [],
-      ttfbMs: 205,
-      totalResponseMs: 650,
-      contentLength: 12000,
-      responseTimeMs: 650,
-      h1Texts: ['Contact'],
-      openGraphTags: ['og:title'],
-      twitterTags: ['twitter:card'],
-      detectedCmsHints: [],
-      hasAnalytics: true,
-      hasTagManager: false,
-      hasPixel: false,
-      hasCookieBanner: true,
-      hasForms: true,
-      ctaHints: ['Send'],
-      textExcerpt: 'Contact page',
-      internalLinks: ['https://example.com/'],
-      error: null,
-    },
+    pageDuSite(
+      '/',
+      'Accueil',
+      {
+        ttfbMs: 220,
+        totalResponseMs: 800,
+        contentLength: 15000,
+        hasForms: true,
+      },
+      {
+        metaDescription: 'Description Example',
+        ctaHints: ['Contact'],
+        textExcerpt: 'Bienvenue',
+      },
+    ),
+    pageDuSite(
+      '/about',
+      'About',
+      {
+        ttfbMs: 210,
+        totalResponseMs: 700,
+        contentLength: 14000,
+        hasForms: false,
+      },
+      {
+        metaDescription: 'About Description',
+        ctaHints: [],
+        textExcerpt: 'About us',
+      },
+    ),
+    pageDuSite(
+      '/contact',
+      'Contact',
+      {
+        ttfbMs: 205,
+        totalResponseMs: 650,
+        contentLength: 12000,
+        hasForms: true,
+      },
+      {
+        metaDescription: 'Contact Description',
+        ctaHints: ['Send'],
+        textExcerpt: 'Contact page',
+        internalLinks: ['https://example.com/'],
+      },
+    ),
   ];
 
   beforeEach(() => {
@@ -434,38 +377,18 @@ describe('AuditPipelineService', () => {
         .fn()
         .mockImplementation(
           async (_input, options?: AnalyzePageRecapsOptions) => {
-            const scoreMoteur = (
-              engine: EngineScore['engine'],
-              score: number,
-            ): EngineScore => ({
-              engine,
-              score,
-              indexable: true,
-              strengths: [],
-              blockers: [],
-              opportunities: [],
-            });
             const recaps: PageAiRecap[] = [
-              {
-                url: 'https://example.com/',
-                finalUrl: 'https://example.com/',
-                priority: 'medium',
-                language: 'fr',
-                wordingScore: 70,
+              buildPageAiRecap({
                 trustScore: 68,
                 ctaScore: 72,
                 seoCopyScore: 74,
-                summary: 'Recap',
-                topIssues: ['Meta'],
-                recommendations: ['Improve meta'],
-                source: 'fallback',
-                engineScores: {
-                  google: scoreMoteur('google', 60),
-                  bingChatGpt: scoreMoteur('bing_chatgpt', 55),
-                  perplexity: scoreMoteur('perplexity', 50),
-                  geminiOverviews: scoreMoteur('gemini_overviews', 55),
-                },
-              },
+                engineScores: buildEngineCoverage({
+                  google: 60,
+                  bingChatGpt: 55,
+                  perplexity: 50,
+                  geminiOverviews: 55,
+                }),
+              }),
             ];
             if (options?.onRecapReady) {
               await options.onRecapReady(recaps[0], 1, 1);

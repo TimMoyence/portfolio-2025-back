@@ -161,6 +161,12 @@ export type PrioritySection = z.infer<typeof prioritySectionSchema>;
 export type ExecutionSection = z.infer<typeof executionSectionSchema>;
 export type ClientCommsSection = z.infer<typeof clientCommsSectionSchema>;
 
+export type FanoutSection =
+  | ExecutiveSection
+  | PrioritySection
+  | ExecutionSection
+  | ClientCommsSection;
+
 export type FanoutSectionName =
   | 'executiveSection'
   | 'prioritySection'

@@ -1,5 +1,4 @@
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base';
-import type { RunnableConfig } from '@langchain/core/runnables';
 import { ChatOpenAI } from '@langchain/openai';
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { MetricsService } from '../../../../common/interfaces/metrics/metrics.service';
@@ -36,14 +35,13 @@ import {
 } from './langchain-fallback-report.builder';
 import { DeadlineBudget, withHardTimeout } from './llm-execution.guardrails';
 import { PROMPT_VERSION } from './prompts/v1/audit-system-prompts';
-import type { InvokeTrackedFn } from './section-generators/cacheable-section.generators';
+import {
+  GENERATEURS_DE_SECTION,
+  type InvokeTrackedFn,
+} from './section-generators/cacheable-section.generators';
 import {
   CachingSectionRunner,
-  generateClientCommsSection as runClientCommsGenerator,
-  generateExecutionSection as runExecutionGenerator,
-  generateExecutiveSection as runExecutiveGenerator,
   generateExpertReport as runExpertReportGenerator,
-  generatePrioritySection as runPriorityGenerator,
   generateUserSummary as runUserSummaryGenerator,
 } from './section-generators';
 import { LLM_EXECUTOR, type LlmExecutor } from './llm-executor.port';
@@ -56,6 +54,7 @@ import {
   buildPayload as buildLlmPayload,
   buildSectionPayloads as buildLlmSectionPayloads,
   payloadBytes as payloadBytesUtil,
+  type SectionPayloads,
 } from './llm-payload.builder';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
@@ -72,6 +71,7 @@ import type {
   ExecutiveSection,
   ExecutionSection,
   ExpertReport,
+  FanoutSection,
   FanoutSectionName,
   PrioritySection,
 } from './schemas/audit-report.schemas';
@@ -102,19 +102,14 @@ export class LangchainAuditReportService {
     return { section, locale, model: this.config.llmModel };
   }
 
-  private invokeTracked<T>(
-    chain: {
-      invoke: (
-        messages: BaseLanguageModelInput,
-        options?: Partial<RunnableConfig>,
-      ) => Promise<T>;
-    },
-    messages: unknown,
-    section: string,
-    locale: AuditLocale,
-    signal?: AbortSignal,
-  ): Promise<T> {
-    return invokeWithLlmTracking<T>(
+  private readonly invokeTracked: InvokeTrackedFn = (
+    chain,
+    messages,
+    section,
+    locale,
+    signal,
+  ) =>
+    invokeWithLlmTracking(
       (m: unknown, o: LlmInvocationOptions) =>
         chain.invoke(m as BaseLanguageModelInput, o),
       messages,
@@ -122,7 +117,6 @@ export class LangchainAuditReportService {
       this.metricsService ?? null,
       signal,
     );
-  }
 
   async generate(
     input: LangchainAuditInput,
@@ -449,12 +443,7 @@ export class LangchainAuditReportService {
 
   private async generateFanoutSectionsWithDeadline(
     llm: ChatOpenAI,
-    payloads: {
-      executiveSection: Record<string, unknown>;
-      prioritySection: Record<string, unknown>;
-      executionSection: Record<string, unknown>;
-      clientCommsSection: Record<string, unknown>;
-    },
+    payloads: SectionPayloads,
     locale: AuditLocale,
     input: LangchainAuditInput,
     budget: DeadlineBudget,
@@ -466,10 +455,7 @@ export class LangchainAuditReportService {
     usedFallback: boolean;
     warnings: Array<{ type: 'summary' | 'expert'; message: string }>;
   }> {
-    const resolved = new Map<
-      FanoutSectionName,
-      ExecutiveSection | PrioritySection | ExecutionSection | ClientCommsSection
-    >();
+    const resolved = new Map<FanoutSectionName, FanoutSection>();
     const errors = new Map<FanoutSectionName, string>();
     const warnings: Array<{ type: 'summary' | 'expert'; message: string }> = [];
 
@@ -638,9 +624,7 @@ export class LangchainAuditReportService {
     retryMode: boolean,
     budget: DeadlineBudget,
     options: LangchainAuditGenerateOptions,
-  ): Promise<
-    ExecutiveSection | PrioritySection | ExecutionSection | ClientCommsSection
-  > {
+  ): Promise<FanoutSection> {
     const start = Date.now();
     const payloadBytes = payloadBytesUtil(payload);
     let succeeded = false;
@@ -654,97 +638,27 @@ export class LangchainAuditReportService {
     });
 
     try {
-      switch (section) {
-        case 'executiveSection': {
-          const result = await this.runLlmCallWithDeadline(
-            section,
-            this.config.llmSectionTimeoutMs,
-            budget,
-            (signal) =>
-              this.generateExecutiveSection(
-                llm,
-                payload,
-                locale,
-                retryMode,
-                signal,
-              ),
-          );
-          succeeded = true;
-          await this.emitProgress(options, {
-            section,
-            sectionStatus: 'completed',
-            iaSubTask: section,
-          });
-          return result;
-        }
-        case 'prioritySection': {
-          const result = await this.runLlmCallWithDeadline(
-            section,
-            this.config.llmSectionTimeoutMs,
-            budget,
-            (signal) =>
-              this.generatePrioritySection(
-                llm,
-                payload,
-                locale,
-                retryMode,
-                signal,
-              ),
-          );
-          succeeded = true;
-          await this.emitProgress(options, {
-            section,
-            sectionStatus: 'completed',
-            iaSubTask: section,
-          });
-          return result;
-        }
-        case 'executionSection': {
-          const result = await this.runLlmCallWithDeadline(
-            section,
-            this.config.llmSectionTimeoutMs,
-            budget,
-            (signal) =>
-              this.generateExecutionSection(
-                llm,
-                payload,
-                locale,
-                retryMode,
-                signal,
-              ),
-          );
-          succeeded = true;
-          await this.emitProgress(options, {
-            section,
-            sectionStatus: 'completed',
-            iaSubTask: section,
-          });
-          return result;
-        }
-        case 'clientCommsSection': {
-          const result = await this.runLlmCallWithDeadline(
-            section,
-            this.config.llmSectionTimeoutMs,
-            budget,
-            (signal) =>
-              this.generateClientCommsSection(
-                llm,
-                payload,
-                locale,
-                retryMode,
-                signal,
-              ),
-          );
-          succeeded = true;
-          await this.emitProgress(options, {
-            section,
-            sectionStatus: 'completed',
-            iaSubTask: section,
-          });
-          return result;
-        }
-      }
-      throw new Error(`Unsupported fanout section: ${section as string}`);
+      const generer = GENERATEURS_DE_SECTION[section];
+      const result = await this.runLlmCallWithDeadline(
+        section,
+        this.config.llmSectionTimeoutMs,
+        budget,
+        (signal) =>
+          generer(
+            {
+              cachingRunner: this.cachingRunner,
+              invokeTracked: this.invokeTracked,
+            },
+            { llm, payload, locale, retryMode, signal },
+          ),
+      );
+      succeeded = true;
+      await this.emitProgress(options, {
+        section,
+        sectionStatus: 'completed',
+        iaSubTask: section,
+      });
+      return result;
     } catch (error) {
       this.logger.warn(`LLM ${section} failed: ${String(error)}`);
       await this.emitProgress(options, {
@@ -759,74 +673,6 @@ export class LangchainAuditReportService {
         `LLM ${section} ${succeeded ? 'completed' : 'stopped'} in ${durationMs}ms.`,
       );
     }
-  }
-
-  private readonly invokeTrackedBound = this.invokeTracked.bind(
-    this,
-  ) as InvokeTrackedFn;
-
-  private generateExecutiveSection(
-    llm: ChatOpenAI,
-    payload: Record<string, unknown>,
-    locale: AuditLocale,
-    retryMode: boolean,
-    signal?: AbortSignal,
-  ): Promise<ExecutiveSection> {
-    return runExecutiveGenerator(
-      {
-        cachingRunner: this.cachingRunner,
-        invokeTracked: this.invokeTrackedBound,
-      },
-      { llm, payload, locale, retryMode, signal },
-    );
-  }
-
-  private generatePrioritySection(
-    llm: ChatOpenAI,
-    payload: Record<string, unknown>,
-    locale: AuditLocale,
-    retryMode: boolean,
-    signal?: AbortSignal,
-  ): Promise<PrioritySection> {
-    return runPriorityGenerator(
-      {
-        cachingRunner: this.cachingRunner,
-        invokeTracked: this.invokeTrackedBound,
-      },
-      { llm, payload, locale, retryMode, signal },
-    );
-  }
-
-  private generateExecutionSection(
-    llm: ChatOpenAI,
-    payload: Record<string, unknown>,
-    locale: AuditLocale,
-    retryMode: boolean,
-    signal?: AbortSignal,
-  ): Promise<ExecutionSection> {
-    return runExecutionGenerator(
-      {
-        cachingRunner: this.cachingRunner,
-        invokeTracked: this.invokeTrackedBound,
-      },
-      { llm, payload, locale, retryMode, signal },
-    );
-  }
-
-  private generateClientCommsSection(
-    llm: ChatOpenAI,
-    payload: Record<string, unknown>,
-    locale: AuditLocale,
-    retryMode: boolean,
-    signal?: AbortSignal,
-  ): Promise<ClientCommsSection> {
-    return runClientCommsGenerator(
-      {
-        cachingRunner: this.cachingRunner,
-        invokeTracked: this.invokeTrackedBound,
-      },
-      { llm, payload, locale, retryMode, signal },
-    );
   }
 
   private async runLlmCallWithDeadline<T>(
@@ -848,7 +694,7 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<string> {
     return runUserSummaryGenerator(
-      { invokeTracked: this.invokeTrackedBound },
+      { invokeTracked: this.invokeTracked },
       { llm, payload, locale, retryMode, signal },
     );
   }
@@ -862,7 +708,7 @@ export class LangchainAuditReportService {
     signal?: AbortSignal,
   ): Promise<ExpertReport> {
     return runExpertReportGenerator(
-      { invokeTracked: this.invokeTrackedBound },
+      { invokeTracked: this.invokeTracked },
       { llm, payload, locale, retryMode, compactMode, signal },
     );
   }
@@ -1005,12 +851,7 @@ export class LangchainAuditReportService {
     return buildFallbackExpertReport(input, reason);
   }
 
-  private buildSectionPayloads(input: LangchainAuditInput): {
-    executiveSection: Record<string, unknown>;
-    prioritySection: Record<string, unknown>;
-    executionSection: Record<string, unknown>;
-    clientCommsSection: Record<string, unknown>;
-  } {
+  private buildSectionPayloads(input: LangchainAuditInput): SectionPayloads {
     return buildLlmSectionPayloads(input);
   }
 

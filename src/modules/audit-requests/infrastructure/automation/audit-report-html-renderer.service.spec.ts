@@ -3,31 +3,11 @@ import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
 } from '../../domain/AuditReportTiers';
-import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
+import { buildEngineCoverage } from '../../../../../test/factories/audit-requests.factory';
 import { AuditReportHtmlRendererService } from './audit-report-html-renderer.service';
 
 describe('AuditReportHtmlRendererService', () => {
   let service: AuditReportHtmlRendererService;
-
-  const buildEngineScore = (
-    engine: EngineScore['engine'],
-    overrides: Partial<EngineScore> = {},
-  ): EngineScore => ({
-    engine,
-    score: 72,
-    indexable: true,
-    strengths: ['clear titles'],
-    blockers: [],
-    opportunities: ['add FAQ schema'],
-    ...overrides,
-  });
-
-  const buildEngineCoverage = (): EngineCoverage => ({
-    google: buildEngineScore('google'),
-    bingChatGpt: buildEngineScore('bing_chatgpt'),
-    perplexity: buildEngineScore('perplexity'),
-    geminiOverviews: buildEngineScore('gemini_overviews'),
-  });
 
   const buildAudit = (overrides: Partial<AuditSnapshot> = {}): AuditSnapshot =>
     ({
@@ -134,12 +114,11 @@ describe('AuditReportHtmlRendererService', () => {
     service = new AuditReportHtmlRendererService();
   });
 
+  const rendre = (expert: ExpertReportSynthesis = buildExpertReport()) =>
+    service.render(buildAudit(), buildClientReport(), expert);
+
   it('produit un document HTML complet avec toutes les sections principales', () => {
-    const html = service.render(
-      buildAudit(),
-      buildClientReport(),
-      buildExpertReport(),
-    );
+    const html = rendre();
 
     expect(html).toContain('<!DOCTYPE html>');
     expect(html).toContain('<html');
@@ -169,7 +148,7 @@ describe('AuditReportHtmlRendererService', () => {
       internalNotes: '<img src=x onerror=alert(1)>',
     });
 
-    const html = service.render(buildAudit(), buildClientReport(), expert);
+    const html = rendre(expert);
 
     expect(html).not.toContain('<script>alert(1)</script>');
     expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
@@ -178,11 +157,7 @@ describe('AuditReportHtmlRendererService', () => {
   });
 
   it('utilise des page-break-before CSS pour separer les sections', () => {
-    const html = service.render(
-      buildAudit(),
-      buildClientReport(),
-      buildExpertReport(),
-    );
+    const html = rendre();
 
     expect(html).toContain('page-break-before');
     expect(html).toContain('page-break-after');
@@ -196,11 +171,9 @@ describe('AuditReportHtmlRendererService', () => {
       internalNotes: '',
     });
 
-    expect(() =>
-      service.render(buildAudit(), buildClientReport(), expert),
-    ).not.toThrow();
+    expect(() => rendre(expert)).not.toThrow();
 
-    const html = service.render(buildAudit(), buildClientReport(), expert);
+    const html = rendre(expert);
     expect(html).toContain('<!DOCTYPE html>');
     expect(html).toContain('Analyse expert');
   });
@@ -219,7 +192,7 @@ describe('AuditReportHtmlRendererService', () => {
       ],
     });
 
-    const html = service.render(buildAudit(), buildClientReport(), expert);
+    const html = rendre(expert);
 
     expect(html).toContain('https://acme.com/search?q=a&amp;lang=fr');
     expect(html).not.toContain('https://acme.com/search?q=a&lang=fr');

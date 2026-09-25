@@ -1,6 +1,5 @@
 import { buildAuditAutomationConfig } from '../../../../../test/factories/audit-config.factory';
 import type { AuditAutomationConfig } from './audit.config';
-import type { AuditPipelineService } from './audit-pipeline.service';
 import type { AuditQueueService } from './audit-queue.service';
 
 const mockWorkerOn = jest.fn();
@@ -24,39 +23,28 @@ describe('AuditWorkerService', () => {
     jobTimeoutMs: 5_000,
   });
 
-  const mockPipeline: jest.Mocked<Pick<AuditPipelineService, 'run'>> = {
-    run: jest.fn().mockResolvedValue(undefined),
-  };
-
-  function buildQueueService(
-    overrides: Partial<
-      Pick<AuditQueueService, 'isQueueEnabled' | 'connection' | 'queueName'>
-    > = {},
-  ): jest.Mocked<
+  let queueService: jest.Mocked<
     Pick<
       AuditQueueService,
-      'isQueueEnabled' | 'connection' | 'queueName' | 'enqueue'
+      'isQueueEnabled' | 'connection' | 'queueName' | 'runWithTimeout'
     >
-  > {
-    return {
-      isQueueEnabled: true,
-      connection: { host: 'localhost', port: 6379 },
-      queueName: 'audit_requests',
-      enqueue: jest.fn(),
-      ...overrides,
-    };
-  }
+  >;
 
   function createService(
     queueOverrides: Partial<
       Pick<AuditQueueService, 'isQueueEnabled' | 'connection' | 'queueName'>
     > = {},
   ): AuditWorkerService {
-    const queueService = buildQueueService(queueOverrides);
+    queueService = {
+      isQueueEnabled: true,
+      connection: { host: 'localhost', port: 6379 },
+      queueName: 'audit_requests',
+      runWithTimeout: jest.fn().mockResolvedValue(undefined),
+      ...queueOverrides,
+    };
     return new AuditWorkerService(
       config,
-      queueService as jest.Mocked<AuditQueueService>,
-      mockPipeline as jest.Mocked<AuditPipelineService>,
+      queueService as unknown as AuditQueueService,
     );
   }
 
@@ -117,26 +105,15 @@ describe('AuditWorkerService', () => {
     expect(mockWorkerClose).not.toHaveBeenCalled();
   });
 
-  it('runWithTimeout lance une erreur si le pipeline depasse le timeout', async () => {
-    jest.useFakeTimers();
-
-    const neverResolves = new Promise<void>(() => {});
-    mockPipeline.run.mockReturnValue(neverResolves);
-
+  it('le processeur confie l audit du job a l execution bornee de la file', async () => {
     const service = createService();
     service.onModuleInit();
 
     const processorFn = Worker.mock.calls[0][1] as (job: {
       data: { auditId: string };
     }) => Promise<void>;
-    const jobPromise = processorFn({ data: { auditId: 'audit-123' } });
+    await processorFn({ data: { auditId: 'audit-123' } });
 
-    jest.advanceTimersByTime(config.jobTimeoutMs);
-
-    await expect(jobPromise).rejects.toThrow(
-      `Audit pipeline timeout after ${config.jobTimeoutMs}ms (auditId=audit-123)`,
-    );
-
-    jest.useRealTimers();
+    expect(queueService.runWithTimeout).toHaveBeenCalledWith('audit-123');
   });
 });

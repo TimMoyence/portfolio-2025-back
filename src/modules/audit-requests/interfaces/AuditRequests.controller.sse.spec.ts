@@ -4,6 +4,8 @@ import type { GetAuditSummaryUseCase } from '../application/GetAuditSummary.useC
 import type { StreamAuditEventsUseCase } from '../application/StreamAuditEvents.useCase';
 import { AuditsController } from './Audits.controller';
 
+type EvenementDeFlux = ReturnType<StreamAuditEventsUseCase['execute']>;
+
 function buildUseCaseMocks(): {
   createUseCase: jest.Mocked<Pick<CreateAuditRequestsUseCase, 'execute'>>;
   summaryUseCase: jest.Mocked<Pick<GetAuditSummaryUseCase, 'execute'>>;
@@ -28,10 +30,29 @@ function buildUseCaseMocks(): {
   return { createUseCase, summaryUseCase, streamUseCase, controller };
 }
 
+function verifierTypesRelayes(
+  auditId: string,
+  flux: EvenementDeFlux,
+  typesAttendus: string[],
+  done: jest.DoneCallback,
+): void {
+  const { streamUseCase, controller } = buildUseCaseMocks();
+  streamUseCase.execute.mockReturnValue(flux);
+
+  const events: Array<{ type: string }> = [];
+  controller.stream(auditId).subscribe({
+    next: (event) => events.push({ type: event.type ?? 'unknown' }),
+    complete: () => {
+      expect(events).toEqual(typesAttendus.map((type) => ({ type })));
+      done();
+    },
+  });
+}
+
 describe('AuditsController SSE', () => {
   it('returns progress and completed events from stream use case', (done) => {
-    const { streamUseCase, controller } = buildUseCaseMocks();
-    streamUseCase.execute.mockReturnValue(
+    verifierTypesRelayes(
+      'audit-1',
       of(
         {
           type: 'progress',
@@ -60,21 +81,14 @@ describe('AuditsController SSE', () => {
           },
         },
       ),
+      ['progress', 'completed'],
+      done,
     );
-
-    const events: Array<{ type: string }> = [];
-    controller.stream('audit-1').subscribe({
-      next: (event) => events.push({ type: event.type ?? 'unknown' }),
-      complete: () => {
-        expect(events).toEqual([{ type: 'progress' }, { type: 'completed' }]);
-        done();
-      },
-    });
   });
 
   it('returns progress then failed events from stream use case', (done) => {
-    const { streamUseCase, controller } = buildUseCaseMocks();
-    streamUseCase.execute.mockReturnValue(
+    verifierTypesRelayes(
+      'audit-2',
       of(
         {
           type: 'progress',
@@ -99,15 +113,8 @@ describe('AuditsController SSE', () => {
           },
         },
       ),
+      ['progress', 'failed'],
+      done,
     );
-
-    const events: Array<{ type: string }> = [];
-    controller.stream('audit-2').subscribe({
-      next: (event) => events.push({ type: event.type ?? 'unknown' }),
-      complete: () => {
-        expect(events).toEqual([{ type: 'progress' }, { type: 'failed' }]);
-        done();
-      },
-    });
   });
 });

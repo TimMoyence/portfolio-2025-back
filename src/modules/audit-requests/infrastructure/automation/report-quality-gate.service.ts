@@ -664,39 +664,41 @@ export class ReportQualityGateService {
   private normalizeUrlLevelImprovements(
     entries: ExpertReportShape['urlLevelImprovements'],
   ): ExpertReportShape['urlLevelImprovements'] {
-    if (!Array.isArray(entries)) return [];
-    return entries
-      .map((entry) => ({
+    return this.normaliserLesEntrees(
+      entries,
+      (entry) => ({
         url: this.cleanText(entry?.url),
         issue: this.cleanText(entry?.issue),
         recommendation: this.cleanText(entry?.recommendation),
         impact: this.normalizeSeverity(entry?.impact),
-      }))
-      .filter((entry) => entry.url && entry.issue && entry.recommendation);
+      }),
+      (entry) => entry.url && entry.issue && entry.recommendation,
+    );
   }
 
   private normalizeImplementationTodo(
     entries: ExpertReportShape['implementationTodo'],
   ): ExpertReportShape['implementationTodo'] {
-    if (!Array.isArray(entries)) return [];
-    return entries
-      .map((entry, index) => ({
+    return this.normaliserLesEntrees(
+      entries,
+      (entry, index) => ({
         phase: this.cleanText(entry?.phase) || `Phase ${index + 1}`,
         objective: this.cleanText(entry?.objective),
         deliverable: this.cleanText(entry?.deliverable),
         estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
         dependencies: this.normalizeStringArray(entry?.dependencies),
-      }))
-      .filter((entry) => entry.objective && entry.deliverable);
+      }),
+      (entry) => entry.objective && entry.deliverable,
+    );
   }
 
   private normalizePlan(
     entries: ExpertReportShape['whatToFixThisWeek'],
     locale: AuditLocale,
   ): ExpertReportShape['whatToFixThisWeek'] {
-    if (!Array.isArray(entries)) return [];
-    return entries
-      .map((entry) => ({
+    return this.normaliserLesEntrees(
+      entries,
+      (entry) => ({
         task: this.cleanText(entry?.task),
         goal:
           this.cleanText(entry?.goal) ||
@@ -710,16 +712,17 @@ export class ReportQualityGateService {
           this.cleanText(entry?.risk) ||
           localizedText(locale, 'Risque modere', 'Moderate risk'),
         dependencies: this.normalizeStringArray(entry?.dependencies),
-      }))
-      .filter((entry) => entry.task);
+      }),
+      (entry) => entry.task,
+    );
   }
 
   private normalizeFastPlan(
     entries: ExpertReportShape['fastImplementationPlan'],
   ): ExpertReportShape['fastImplementationPlan'] {
-    if (!Array.isArray(entries)) return [];
-    return entries
-      .map((entry) => ({
+    return this.normaliserLesEntrees(
+      entries,
+      (entry) => ({
         task: this.cleanText(entry?.task),
         whyItMatters: this.cleanText(entry?.whyItMatters),
         implementationSteps: this.normalizeStringArray(
@@ -728,18 +731,17 @@ export class ReportQualityGateService {
         estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
         expectedImpact: this.cleanText(entry?.expectedImpact),
         priority: this.normalizeSeverity(entry?.priority),
-      }))
-      .filter(
-        (entry) => entry.task && entry.whyItMatters && entry.expectedImpact,
-      );
+      }),
+      (entry) => entry.task && entry.whyItMatters && entry.expectedImpact,
+    );
   }
 
   private normalizeBacklog(
     entries: ExpertReportShape['implementationBacklog'],
   ): ExpertReportShape['implementationBacklog'] {
-    if (!Array.isArray(entries)) return [];
-    return entries
-      .map((entry) => ({
+    return this.normaliserLesEntrees(
+      entries,
+      (entry) => ({
         task: this.cleanText(entry?.task),
         priority: this.normalizeSeverity(entry?.priority),
         details: this.cleanText(entry?.details),
@@ -748,21 +750,34 @@ export class ReportQualityGateService {
         acceptanceCriteria: this.normalizeStringArray(
           entry?.acceptanceCriteria,
         ),
-      }))
-      .filter((entry) => entry.task && entry.details);
+      }),
+      (entry) => entry.task && entry.details,
+    );
   }
 
   private normalizeInvoiceScope(
     entries: ExpertReportShape['invoiceScope'],
   ): ExpertReportShape['invoiceScope'] {
-    if (!Array.isArray(entries)) return [];
-    return entries
-      .map((entry, index) => ({
+    return this.normaliserLesEntrees(
+      entries,
+      (entry, index) => ({
         item: this.cleanText(entry?.item) || `Lot ${index + 1}`,
         description: this.cleanText(entry?.description),
         estimatedHours: this.normalizeHours(entry?.estimatedHours, 3),
-      }))
-      .filter((entry) => entry.description);
+      }),
+      (entry) => entry.description,
+    );
+  }
+
+  private normaliserLesEntrees<E, S>(
+    entries: readonly E[],
+    normaliser: (entry: E, index: number) => S,
+    estComplete: (entry: S) => unknown,
+  ): S[] {
+    if (!Array.isArray(entries)) return [];
+    return entries
+      .map(normaliser)
+      .filter((entry) => Boolean(estComplete(entry)));
   }
 
   private normalizeStringArray(value: unknown): string[] {
@@ -807,11 +822,9 @@ export class ReportQualityGateService {
     return runClientTierValidation(report);
   }
 
-  validateExpertReport(report: {
-    perPageAnalysis?: ReadonlyArray<unknown>;
-    clientEmailDraft?: { subject?: string; body?: string } | null;
-    internalNotes?: string;
-  }): TierValidationResult {
+  validateExpertReport(
+    report: Parameters<typeof runExpertTierValidation>[0],
+  ): TierValidationResult {
     return runExpertTierValidation(report);
   }
 }

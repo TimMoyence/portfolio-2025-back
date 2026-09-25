@@ -62,10 +62,13 @@ describe('UrlIndexabilityService (Phase 3 — aiSignals)', () => {
     );
   };
 
-  it('retourne toujours les champs existants (backward compatible)', async () => {
-    const service = buildService();
+  const analyserLAccueil = async () => {
+    const [result] = await buildService().analyzeUrls(['https://example.com/']);
+    return result;
+  };
 
-    const [result] = await service.analyzeUrls(['https://example.com/']);
+  it('retourne toujours les champs existants (backward compatible)', async () => {
+    const result = await analyserLAccueil();
 
     expect(result.url).toBe('https://example.com/');
     expect(result.statusCode).toBe(200);
@@ -101,9 +104,7 @@ describe('UrlIndexabilityService (Phase 3 — aiSignals)', () => {
   });
 
   it('par défaut (robotsTxt absent), considère les bots connus en unknown', async () => {
-    const service = buildService();
-
-    const [result] = await service.analyzeUrls(['https://example.com/']);
+    const result = await analyserLAccueil();
 
     expect(result.aiSignals?.aiBotsAccess.gptBot).toBe('unknown');
   });

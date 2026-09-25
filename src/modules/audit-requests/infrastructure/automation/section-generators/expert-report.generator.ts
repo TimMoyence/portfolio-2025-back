@@ -1,23 +1,17 @@
-import type { ChatOpenAI } from '@langchain/openai';
-import type { AuditLocale } from '../../../domain/audit-locale.util';
 import {
   expertReportSchema,
   type ExpertReport,
 } from '../schemas/audit-report.schemas';
-import { wrapUntrustedUserPayload } from '../shared/prompt-sanitize.util';
 import { buildExpertReportSystemBlocks } from './section-prompts.builder';
-import type { InvokeTrackedFn } from './cacheable-section.generators';
+import {
+  buildOpenAiMessages,
+  type ArgsDeGeneration,
+  type InvokeTrackedFn,
+} from './cacheable-section.generators';
 
 export function generateExpertReport(
   deps: { invokeTracked: InvokeTrackedFn },
-  args: {
-    llm: ChatOpenAI;
-    payload: Record<string, unknown>;
-    locale: AuditLocale;
-    retryMode?: boolean;
-    compactMode?: boolean;
-    signal?: AbortSignal;
-  },
+  args: ArgsDeGeneration & { compactMode?: boolean },
 ): Promise<ExpertReport> {
   const {
     llm,
@@ -35,10 +29,7 @@ export function generateExpertReport(
   const chain = llm.withStructuredOutput(expertReportSchema);
   return deps.invokeTracked(
     chain,
-    [
-      ...systemBlocks.map((content) => ({ role: 'system' as const, content })),
-      { role: 'user' as const, content: wrapUntrustedUserPayload(payload) },
-    ],
+    buildOpenAiMessages(systemBlocks, payload),
     'expert_report',
     locale,
     signal,

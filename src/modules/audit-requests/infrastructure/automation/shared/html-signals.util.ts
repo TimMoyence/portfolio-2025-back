@@ -133,3 +133,38 @@ export function extractSetCookiePatterns(raw: string | undefined): string[] {
   }
   return Array.from(new Set(names)).slice(0, 12);
 }
+
+export interface EnTetesTechniques {
+  server?: string | null;
+  xPoweredBy?: string | null;
+  setCookiePatterns?: string[];
+  cacheHeaders?: Record<string, string>;
+  securityHeaders?: Record<string, string>;
+}
+
+export interface TraceursDetectes {
+  hasAnalytics: boolean;
+  hasTagManager: boolean;
+  hasPixel: boolean;
+  hasCookieBanner: boolean;
+  hasForms: boolean;
+}
+
+export function detecterLesTraceurs(
+  lowerHtml: string,
+  $: CheerioAPI,
+): TraceursDetectes {
+  return {
+    hasAnalytics: /gtag\(|google-analytics|ga\(|matomo|plausible|umami/.test(
+      lowerHtml,
+    ),
+    hasTagManager: /googletagmanager|gtm\.js|datalayer/.test(lowerHtml),
+    hasPixel: /fbq\(|facebook pixel|tiktok pixel|linkedin insight/.test(
+      lowerHtml,
+    ),
+    hasCookieBanner: /cookie|consent|onetrust|didomi|tarteaucitron/.test(
+      lowerHtml,
+    ),
+    hasForms: $('form').length > 0,
+  };
+}

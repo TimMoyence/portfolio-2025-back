@@ -153,44 +153,41 @@ describe('invokeAnthropicStructuredSection', () => {
     );
   });
 
-  it('throws and records error status when tool_use is missing', async () => {
-    const { client } = buildClient({
-      content: [
-        {
-          type: 'text',
-          text: 'no tool call here',
-          citations: [],
-        } as Anthropic.TextBlock,
-      ] as Anthropic.ContentBlock[],
-    } as Partial<Anthropic.Message>);
-    const metrics = buildMetrics();
-
-    await expect(invokeSection(client, { metrics })).rejects.toThrow(
+  it.each([
+    [
+      'tool_use is missing',
+      {
+        type: 'text',
+        text: 'no tool call here',
+        citations: [],
+      } as Anthropic.TextBlock,
       /missing tool_use/,
-    );
+    ],
+    [
+      'Zod validation fails',
+      {
+        type: 'tool_use',
+        id: 'toolu_1',
+        name: 'emit_executive',
+        input: { summary: '', priority: 'not-a-number' },
+      } as Anthropic.ToolUseBlock,
+      undefined,
+    ],
+  ])(
+    'throws and records error status when %s',
+    async (_cas, bloc: Anthropic.ContentBlock, erreurAttendue) => {
+      const { client } = buildClient({
+        content: [bloc],
+      } as Partial<Anthropic.Message>);
+      const metrics = buildMetrics();
 
-    expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
-      expect.objectContaining({ status: 'error' }),
-    );
-  });
+      await expect(invokeSection(client, { metrics })).rejects.toThrow(
+        erreurAttendue,
+      );
 
-  it('throws and records error status when Zod validation fails', async () => {
-    const { client } = buildClient({
-      content: [
-        {
-          type: 'tool_use',
-          id: 'toolu_1',
-          name: 'emit_executive',
-          input: { summary: '', priority: 'not-a-number' },
-        } as Anthropic.ToolUseBlock,
-      ] as Anthropic.ContentBlock[],
-    } as Partial<Anthropic.Message>);
-    const metrics = buildMetrics();
-
-    await expect(invokeSection(client, { metrics })).rejects.toThrow();
-
-    expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
-      expect.objectContaining({ status: 'error' }),
-    );
-  });
+      expect(metrics.llmCallsTotal.inc).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'error' }),
+      );
+    },
+  );
 });

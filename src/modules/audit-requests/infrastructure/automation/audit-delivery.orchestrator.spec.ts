@@ -4,13 +4,15 @@ import type {
   ClientReportSynthesis,
   ExpertReportSynthesis,
 } from '../../domain/AuditReportTiers';
-import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
+import type { EngineCoverage } from '../../domain/EngineCoverage';
 import type { IAuditNotifierPort } from '../../domain/IAuditNotifier.port';
 import type { IAuditPdfGenerator } from '../../domain/IAuditPdfGenerator';
 import type { IAuditRequestsRepository } from '../../domain/IAuditRequests.repository';
 import {
   buildAuditSnapshot,
   buildClientReportSynthesis,
+  buildEngineCoverage,
+  buildPageAiRecap,
   createMockAuditNotifier,
   createMockAuditRequestsRepo,
 } from '../../../../../test/factories/audit-requests.factory';
@@ -19,46 +21,7 @@ import {
   type RunDeliveryInput,
 } from './audit-delivery.orchestrator';
 import type { LangchainClientReportService } from './langchain-client-report.service';
-import type { PageAiRecap } from './page-ai-recap.service';
 import { flushPromises } from '../../../../../test/helpers/flush-promises';
-
-function buildEngineScore(
-  engine: EngineScore['engine'],
-  score: number,
-): EngineScore {
-  return {
-    engine,
-    score,
-    indexable: true,
-    strengths: [`${engine}-strength`],
-    blockers: [],
-    opportunities: [`${engine}-opportunity`],
-  };
-}
-
-function buildPageRecap(overrides: Partial<PageAiRecap> = {}): PageAiRecap {
-  return {
-    url: 'https://example.com/',
-    finalUrl: 'https://example.com/',
-    priority: 'medium',
-    language: 'fr',
-    wordingScore: 70,
-    trustScore: 70,
-    ctaScore: 70,
-    seoCopyScore: 70,
-    summary: 'Recap',
-    topIssues: ['Meta'],
-    recommendations: ['Improve meta'],
-    source: 'fallback',
-    engineScores: {
-      google: buildEngineScore('google', 70),
-      bingChatGpt: buildEngineScore('bing_chatgpt', 60),
-      perplexity: buildEngineScore('perplexity', 50),
-      geminiOverviews: buildEngineScore('gemini_overviews', 55),
-    },
-    ...overrides,
-  } as PageAiRecap;
-}
 
 function buildClientReport(): ClientReportSynthesis {
   return {
@@ -123,7 +86,7 @@ describe('AuditDeliveryOrchestrator', () => {
       normalizedUrl: 'https://example.com/',
       pillarScores: {},
       quickWins: [],
-      pageRecaps: [buildPageRecap()],
+      pageRecaps: [buildPageAiRecap()],
       expertReport: buildExpertReport(),
       deepFindings: [],
       ...overrides,
@@ -279,21 +242,21 @@ describe('AuditDeliveryOrchestrator', () => {
 
       await runForAudit({
         pageRecaps: [
-          buildPageRecap({
-            engineScores: {
-              google: buildEngineScore('google', 80),
-              bingChatGpt: buildEngineScore('bing_chatgpt', 60),
-              perplexity: buildEngineScore('perplexity', 40),
-              geminiOverviews: buildEngineScore('gemini_overviews', 50),
-            },
+          buildPageAiRecap({
+            engineScores: buildEngineCoverage({
+              google: 80,
+              bingChatGpt: 60,
+              perplexity: 40,
+              geminiOverviews: 50,
+            }),
           }),
-          buildPageRecap({
-            engineScores: {
-              google: buildEngineScore('google', 60),
-              bingChatGpt: buildEngineScore('bing_chatgpt', 40),
-              perplexity: buildEngineScore('perplexity', 60),
-              geminiOverviews: buildEngineScore('gemini_overviews', 30),
-            },
+          buildPageAiRecap({
+            engineScores: buildEngineCoverage({
+              google: 60,
+              bingChatGpt: 40,
+              perplexity: 60,
+              geminiOverviews: 30,
+            }),
           }),
         ],
       });

@@ -1,18 +1,16 @@
 import { ChatOpenAI } from '@langchain/openai';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import type { EngineCoverage, EngineScore } from '../../domain/EngineCoverage';
 import { AuditLocale } from '../../domain/audit-locale.util';
-import { AUDIT_AUTOMATION_CONFIG } from '../../domain/token';
-import type { AuditAutomationConfig } from './audit.config';
 import {
   DeadlineExceededError,
-  LlmInFlightLimiter,
-  getSharedLlmInFlightLimiter,
   withHardTimeout,
 } from './llm-execution.guardrails';
+import { LlmLimiteParLaConfig } from './llm-executor.port';
 import { isTimeoutError } from './shared/error.util';
 import { localizedText } from './shared/locale-text.util';
+import { traiterEnParallele } from './shared/traitement-concurrent.util';
 import {
   engineCoverageSchema,
   engineScoreSchema,
@@ -90,17 +88,17 @@ export interface AnalyzePageRecapsOptions {
   ) => void | Promise<void>;
 }
 
-@Injectable()
-export class PageAiRecapService {
-  private readonly logger = new Logger(PageAiRecapService.name);
-  private readonly llmLimiter: LlmInFlightLimiter;
+function constatsVides(): {
+  strengths: string[];
+  blockers: string[];
+  opportunities: string[];
+} {
+  return { strengths: [], blockers: [], opportunities: [] };
+}
 
-  constructor(
-    @Inject(AUDIT_AUTOMATION_CONFIG)
-    private readonly config: AuditAutomationConfig,
-  ) {
-    this.llmLimiter = getSharedLlmInFlightLimiter(this.config.llmInflightMax);
-  }
+@Injectable()
+export class PageAiRecapService extends LlmLimiteParLaConfig {
+  private readonly logger = new Logger(PageAiRecapService.name);
 
   async analyzePages(
     input: AnalyzePageRecapsInput,
@@ -130,15 +128,7 @@ export class PageAiRecapService {
       };
     }
 
-    const recaps = Array<PageAiRecap>(input.pages.length);
     const warnings: string[] = [];
-    const total = input.pages.length;
-    const concurrency = Math.min(
-      Math.max(1, this.config.pageAiConcurrency),
-      Math.max(1, total),
-    );
-    let cursor = 0;
-    let done = 0;
     let llmAttempts = 0;
     let llmFailures = 0;
     let breakerOpen = false;
@@ -181,28 +171,17 @@ export class PageAiRecapService {
       return analyzed.recap;
     };
 
-    const worker = async (): Promise<void> => {
-      while (true) {
-        const index = cursor;
-        cursor += 1;
-        if (index >= total) return;
-
-        const page = input.pages[index];
-        const recap = await recapForPage(page);
-
-        recaps[index] = recap;
-        done += 1;
-
+    const recaps = await traiterEnParallele(
+      input.pages,
+      this.config.pageAiConcurrency,
+      recapForPage,
+      async (recap, done, total, page) => {
         if (recap.source === 'fallback') {
           warnings.push(`Fallback recap used for ${page.url}`);
         }
-        if (options.onRecapReady) {
-          await options.onRecapReady(recap, done, total);
-        }
-      }
-    };
-
-    await Promise.all(Array.from({ length: concurrency }, () => worker()));
+        await options.onRecapReady?.(recap, done, total);
+      },
+    );
     return {
       recaps,
       summary: this.buildSummary(recaps),
@@ -575,9 +554,7 @@ export class PageAiRecapService {
     const indexable = Boolean(page.indexable);
     const richResults =
       page.aiSignals?.structuredDataQuality.googleRichResultsEligible;
-    const strengths: string[] = [];
-    const blockers: string[] = [];
-    const opportunities: string[] = [];
+    const { strengths, blockers, opportunities } = constatsVides();
     let score = 55;
 
     if (indexable) {
@@ -633,9 +610,7 @@ export class PageAiRecapService {
   ): EngineScore {
     const indexable = Boolean(page.indexable);
     const chatGptUser = page.aiSignals?.aiBotsAccess?.chatGptUser;
-    const strengths: string[] = [];
-    const blockers: string[] = [];
-    const opportunities: string[] = [];
+    const { strengths, blockers, opportunities } = constatsVides();
     let score = 50;
 
     if (page.hasStructuredData) {
@@ -699,9 +674,7 @@ export class PageAiRecapService {
     const signals = page.aiSignals ?? null;
     const citation = signals?.citationWorthiness;
     const perplexityBot = signals?.aiBotsAccess?.perplexityBot;
-    const strengths: string[] = [];
-    const blockers: string[] = [];
-    const opportunities: string[] = [];
+    const { strengths, blockers, opportunities } = constatsVides();
     let score = 50;
 
     if (citation) {
@@ -767,9 +740,7 @@ export class PageAiRecapService {
     const aiFriendly =
       page.aiSignals?.structuredDataQuality.aiFriendly ?? false;
     const wordCount = page.wordCount ?? 0;
-    const strengths: string[] = [];
-    const blockers: string[] = [];
-    const opportunities: string[] = [];
+    const { strengths, blockers, opportunities } = constatsVides();
     let score = 50;
 
     if (aiFriendly) {

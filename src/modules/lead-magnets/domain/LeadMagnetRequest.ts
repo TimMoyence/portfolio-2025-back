@@ -1,5 +1,8 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import { requireText } from '../../../common/domain/validation/domain-validators';
+import {
+  requireText,
+  requireValidDate,
+} from '../../../common/domain/validation/domain-validators';
 import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import type { InteractionProfile } from './InteractionProfile';
 
@@ -49,12 +52,7 @@ export class LeadMagnetRequest {
       50,
     );
     const termsLocale = requireText(props.termsLocale, 'terms locale', 1, 10);
-    if (
-      !(props.termsAcceptedAt instanceof Date) ||
-      Number.isNaN(props.termsAcceptedAt.getTime())
-    ) {
-      throw new DomainValidationError('Invalid terms accepted date');
-    }
+    requireValidDate(props.termsAcceptedAt, 'terms accepted');
     const request = new LeadMagnetRequest();
     request.firstName = firstName;
     request.email = email.value;

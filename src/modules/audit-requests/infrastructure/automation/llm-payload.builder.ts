@@ -1,4 +1,5 @@
 import type { LangchainAuditInput } from './langchain-audit-report.service';
+import type { FanoutSectionName } from './schemas/audit-report.schemas';
 import { sanitizePromptInput } from './shared/prompt-sanitize.util';
 
 export type LlmPayloadProfile = 'summary' | 'expert' | 'expert_compact';
@@ -129,12 +130,14 @@ export function buildPayload(
   };
 }
 
-export function buildSectionPayloads(input: LangchainAuditInput): {
-  executiveSection: Record<string, unknown>;
-  prioritySection: Record<string, unknown>;
-  executionSection: Record<string, unknown>;
-  clientCommsSection: Record<string, unknown>;
-} {
+export type SectionPayloads = Record<
+  FanoutSectionName,
+  Record<string, unknown>
+>;
+
+export function buildSectionPayloads(
+  input: LangchainAuditInput,
+): SectionPayloads {
   const compactedFindings = input.deepFindings.slice(0, 10).map((finding) => ({
     code: finding.code,
     title: compactText(finding.title, 140),

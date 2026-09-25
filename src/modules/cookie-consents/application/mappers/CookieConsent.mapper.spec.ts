@@ -1,19 +1,10 @@
+import { buildChoixDeConsentement } from '../../../../../test/factories/cookie-consents.factory';
 import { CreateCookieConsentCommand } from '../dto/CreateCookieConsent.command';
 import { CookieConsentMapper } from './CookieConsent.mapper';
 
 describe('CookieConsentMapper', () => {
   const baseCommand: CreateCookieConsentCommand = {
-    policyVersion: '2026-02-11',
-    locale: 'fr',
-    region: 'EU_UK',
-    source: 'banner',
-    action: 'accept_all',
-    preferences: {
-      essential: true,
-      preferences: true,
-      analytics: false,
-      marketing: false,
-    },
+    ...buildChoixDeConsentement(),
     ip: null,
     userAgent: null,
     referer: null,

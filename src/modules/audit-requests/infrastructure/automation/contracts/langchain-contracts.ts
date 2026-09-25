@@ -3,6 +3,7 @@ import type {
   PerPageDetailedAnalysis,
 } from '../../../domain/AuditReportTiers';
 import type { AuditLocale } from '../../../domain/audit-locale.util';
+import type { EnTetesTechniques } from '../shared/html-signals.util';
 
 type SynthesisSectionName =
   | 'summary'
@@ -41,24 +42,21 @@ export interface LangchainAuditInput {
     affectedUrls: string[];
     recommendation: string;
   }>;
-  sampledUrls: Array<{
-    url: string;
-    statusCode: number | null;
-    indexable: boolean;
-    canonical: string | null;
-    title?: string | null;
-    metaDescription?: string | null;
-    h1Count?: number;
-    htmlLang?: string | null;
-    canonicalCount?: number;
-    responseTimeMs?: number | null;
-    server?: string | null;
-    xPoweredBy?: string | null;
-    setCookiePatterns?: string[];
-    cacheHeaders?: Record<string, string>;
-    securityHeaders?: Record<string, string>;
-    error: string | null;
-  }>;
+  sampledUrls: Array<
+    EnTetesTechniques & {
+      url: string;
+      statusCode: number | null;
+      indexable: boolean;
+      canonical: string | null;
+      title?: string | null;
+      metaDescription?: string | null;
+      h1Count?: number;
+      htmlLang?: string | null;
+      canonicalCount?: number;
+      responseTimeMs?: number | null;
+      error: string | null;
+    }
+  >;
   pageRecaps: Array<{
     url: string;
     priority: 'high' | 'medium' | 'low';

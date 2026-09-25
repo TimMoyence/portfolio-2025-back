@@ -1,5 +1,6 @@
 import { validateClientReport, validateExpertReport } from './tier-validators';
 import type { ClientReportSynthesis } from '../../../domain/AuditReportTiers';
+import { attendreRapportAccepte } from '../../../../../../test/helpers/validation-de-rapport';
 
 function buildClientReport(
   overrides?: Partial<ClientReportSynthesis>,
@@ -44,10 +45,7 @@ function buildClientReport(
 
 describe('validateClientReport', () => {
   it('valide un rapport client correctement forme', () => {
-    const result = validateClientReport(buildClientReport());
-    expect(result.issues).toEqual([]);
-    expect(result.valid).toBe(true);
-    expect(result.shouldFallback).toBe(false);
+    attendreRapportAccepte(validateClientReport(buildClientReport()));
   });
 
   it('rejette quand executiveSummary est vide', () => {

@@ -1,5 +1,5 @@
-import { ColonnesDeProvenance } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { ColonnesDeRequete } from '../../../../common/infrastructure/typeorm/ColonnesDeProvenance';
+import { Column, Entity, Index } from 'typeorm';
 import type { AuditProcessingStatus } from '../../domain/AuditProcessing';
 import type {
   ClientReportSynthesis,
@@ -16,13 +16,7 @@ import type { EngineCoverage } from '../../domain/EngineCoverage';
 @Index('idx_audit_requests_ip_created_at', ['ip', 'createdAt'], {
   where: '"ip" IS NOT NULL',
 })
-export class AuditRequestEntity extends ColonnesDeProvenance {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ type: 'uuid' })
-  requestId: string;
-
+export class AuditRequestEntity extends ColonnesDeRequete {
   @Column({ type: 'text' })
   websiteName: string;
 

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { Public } from '../../../common/interfaces/auth/public.decorator';
 import type { Request } from 'express';
-import { resolveClientIp } from '../../../common/interfaces/security/client-ip.util';
+import { provenanceDeLaRequete } from '../../../common/interfaces/security/client-ip.util';
 import { CreateCookieConsentsUseCase } from '../application/CreateCookieConsents.useCase';
 import { CreateCookieConsentCommand } from '../application/dto/CreateCookieConsent.command';
 import { CookieConsentResponseDto } from './dto/cookie-consent.response.dto';
@@ -29,8 +29,6 @@ export class CookieConsentsController {
     @Body() dto: CookieConsentRequestDto,
     @Req() req: Request,
   ): Promise<CookieConsentResponseDto> {
-    const ip = resolveClientIp(req);
-
     const command: CreateCookieConsentCommand = {
       policyVersion: dto.policyVersion,
       locale: dto.locale,
@@ -38,9 +36,7 @@ export class CookieConsentsController {
       source: dto.source,
       action: dto.action,
       preferences: dto.preferences,
-      ip,
-      userAgent: req.headers['user-agent'] ?? null,
-      referer: req.headers['referer'] ?? null,
+      ...provenanceDeLaRequete(req),
     };
 
     const response = await this.createUseCase.execute(command);
