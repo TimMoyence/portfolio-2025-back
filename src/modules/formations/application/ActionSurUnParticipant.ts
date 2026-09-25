@@ -1,26 +1,11 @@
-import { Inject } from '@nestjs/common';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
-import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
-import type {
-  ISessionsRepository,
-  SessionRecord,
-} from '../domain/ISessions.repository';
-import {
-  PARTICIPANTS_REPOSITORY,
-  SESSION_STATE_CACHE,
-  SESSIONS_REPOSITORY,
-} from '../domain/token';
+import { Injectable } from '@nestjs/common';
+import type { SessionRecord } from '../domain/ISessions.repository';
+import { ParticipationEnSeance } from './ParticipationEnSeance';
 import { agirSurUnParticipant } from './SessionAccess';
 
+@Injectable()
 export abstract class ActionSurUnParticipant {
-  constructor(
-    @Inject(SESSIONS_REPOSITORY)
-    private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    protected readonly participants: IParticipantsRepository,
-    @Inject(SESSION_STATE_CACHE)
-    private readonly cache: ISessionStateCache,
-  ) {}
+  constructor(protected readonly participation: ParticipationEnSeance) {}
 
   protected abstract agir(
     session: SessionRecord,
@@ -33,10 +18,10 @@ export abstract class ActionSurUnParticipant {
     participantId: string,
   ): Promise<void> {
     await agirSurUnParticipant(
-      this.sessions,
+      this.participation.sessions,
       { sessionId, teacherId, participantId },
       (session) => this.agir(session, participantId),
     );
-    this.cache.signalerActivite(sessionId);
+    this.participation.signalerActivite(sessionId);
   }
 }

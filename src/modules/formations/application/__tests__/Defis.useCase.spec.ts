@@ -1,39 +1,33 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import {
   buildCoursAvecDefi,
-  creerCatalogueDeTest,
   DEFI_DE_TEST,
+  monterParticipationSurLeDernierEcran,
   STRATEGIES_REVELEES_DU_DEFI,
 } from '../../../../../test/factories/cours.factory';
 import {
   buildFreeResponseRecord,
   buildSessionRecord,
-  buildParticipantRecord,
   createMockFreeResponsesRepo,
-  createMockParticipantsRepo,
-  createMockSessionStateCache,
-  createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import {
+  verifierContratDeParticipation,
+  verifierGardesDeParticipant,
+} from '../../../../../test/helpers/gardes-de-seance';
 import {
   BlankFieldError,
   DefiInconnuError,
   DefiSansTentativeError,
-  EcranNonServiError,
-  ParticipantNotFoundError,
   PhaseFermeeError,
-  SessionClosedError,
 } from '../../domain/errors/FormationErrors';
 import { DefisUseCase } from '../Defis.useCase';
 
 const COURS = buildCoursAvecDefi();
-const DERNIER_ECRAN = COURS.ecrans.length - 1;
 const ECRAN_DU_DEFI = 'E-DEFI';
 
 describe('DefisUseCase', () => {
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
+  let depots: ReturnType<typeof monterParticipationSurLeDernierEcran>;
   let freeResponses: ReturnType<typeof createMockFreeResponsesRepo>;
-  let cache: ReturnType<typeof createMockSessionStateCache>;
-  let participants: ReturnType<typeof createMockParticipantsRepo>;
   let sut: DefisUseCase;
 
   const commande = {
@@ -44,26 +38,29 @@ describe('DefisUseCase', () => {
     dureeMs: 120000,
   };
 
-  const seance = (pilotage: Record<string, { revele: boolean }> = {}) =>
-    buildSessionRecord({
-      courseSlug: COURS.slug,
-      ecranCourant: DERNIER_ECRAN,
-      pilotageEcrans: pilotage,
-    });
+  const reveler = () =>
+    depots.sessions.findById.mockResolvedValue(
+      buildSessionRecord({
+        courseSlug: COURS.slug,
+        ecranCourant: COURS.ecrans.length - 1,
+        pilotageEcrans: { [ECRAN_DU_DEFI]: { revele: true } },
+      }),
+    );
+
+  const lireStrategies = () =>
+    sut.strategies('session-uuid', 'participant-uuid', DEFI_DE_TEST);
+
+  const strategiesApresTentative = () => {
+    freeResponses.trouverParActivite.mockResolvedValue(
+      buildFreeResponseRecord({ activityId: DEFI_DE_TEST }),
+    );
+    return lireStrategies();
+  };
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(seance());
+    depots = monterParticipationSurLeDernierEcran(COURS);
     freeResponses = createMockFreeResponsesRepo();
-    cache = createMockSessionStateCache();
-    participants = createMockParticipantsRepo();
-    sut = new DefisUseCase(
-      sessions,
-      freeResponses,
-      cache,
-      creerCatalogueDeTest(COURS),
-      participants,
-    );
+    sut = new DefisUseCase(depots.participation, freeResponses);
   });
 
   it('enregistre la tentative sans blancs superflus et fige la premiere', async () => {
@@ -89,27 +86,16 @@ describe('DefisUseCase', () => {
   });
 
   it('SEC-4 · refuse une tentative une fois le defi revele, sans rien ecrire', async () => {
-    sessions.findById.mockResolvedValue(
-      seance({ [ECRAN_DU_DEFI]: { revele: true } }),
-    );
+    reveler();
 
     await expect(sut.tenter(commande)).rejects.toThrow(PhaseFermeeError);
     expect(freeResponses.enregistrerTentativeDeDefi).not.toHaveBeenCalled();
   });
 
   it('ajoute la justesse une fois la revelation pilotee', async () => {
-    sessions.findById.mockResolvedValue(
-      seance({ [ECRAN_DU_DEFI]: { revele: true } }),
-    );
-    freeResponses.trouverParActivite.mockResolvedValue(
-      buildFreeResponseRecord({ activityId: DEFI_DE_TEST }),
-    );
+    reveler();
 
-    const rendu = await sut.strategies(
-      'session-uuid',
-      'participant-uuid',
-      DEFI_DE_TEST,
-    );
+    const rendu = await strategiesApresTentative();
 
     expect(rendu.strategies).toEqual(STRATEGIES_REVELEES_DU_DEFI);
   });
@@ -127,44 +113,18 @@ describe('DefisUseCase', () => {
     ).rejects.toThrow(DefiInconnuError);
   });
 
-  it('refuse une tentative visant un ecran non projete', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, ecranCourant: 0 }),
-    );
-
-    await expect(sut.tenter(commande)).rejects.toThrow(EcranNonServiError);
-  });
-
-  it('refuse une tentative apres la cloture', async () => {
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, etat: 'terminee' }),
-    );
-
-    await expect(sut.tenter(commande)).rejects.toThrow(SessionClosedError);
-  });
-
-  it('signale l activite de la seance', async () => {
-    await sut.tenter(commande);
-
-    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
-  });
+  verifierContratDeParticipation(() => ({
+    ...depots,
+    executer: () => sut.tenter(commande),
+    effetsInterdits: () => [freeResponses.enregistrerTentativeDeDefi],
+  }));
 
   it('refuse de servir les strategies sans tentative du participant', async () => {
-    await expect(
-      sut.strategies('session-uuid', 'participant-uuid', DEFI_DE_TEST),
-    ).rejects.toThrow(DefiSansTentativeError);
+    await expect(lireStrategies()).rejects.toThrow(DefiSansTentativeError);
   });
 
   it('resert les strategies au participant qui a deja tente', async () => {
-    freeResponses.trouverParActivite.mockResolvedValue(
-      buildFreeResponseRecord({ activityId: DEFI_DE_TEST }),
-    );
-
-    const rendu = await sut.strategies(
-      'session-uuid',
-      'participant-uuid',
-      DEFI_DE_TEST,
-    );
+    const rendu = await strategiesApresTentative();
 
     expect(rendu.strategies.map((strategie) => strategie.id)).toEqual([
       'axe',
@@ -185,42 +145,15 @@ describe('DefisUseCase', () => {
     );
   });
 
-  it('ne livre plus le corrige du defi a un participant evince', async () => {
-    sessions.findById.mockResolvedValue(
-      seance({ [ECRAN_DU_DEFI]: { revele: true } }),
-    );
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({
-        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
-      }),
-    );
+  describe('corrige du defi deja revele', () => {
+    beforeEach(() => {
+      reveler();
+    });
 
-    await expect(
-      sut.strategies('session-uuid', 'participant-uuid', DEFI_DE_TEST),
-    ).rejects.toThrow(ParticipantNotFoundError);
-    expect(freeResponses.trouverParActivite).not.toHaveBeenCalled();
-  });
-
-  it('refuse la tentative d un participant evince', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({
-        evinceLe: new Date('2026-09-20T09:00:00.000Z'),
-      }),
-    );
-
-    await expect(sut.tenter(commande)).rejects.toThrow(
-      ParticipantNotFoundError,
-    );
-    expect(freeResponses.enregistrerTentativeDeDefi).not.toHaveBeenCalled();
-  });
-
-  it('refuse le participant d une autre seance', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({ sessionId: 'une-autre-seance' }),
-    );
-
-    await expect(sut.tenter(commande)).rejects.toThrow(
-      ParticipantNotFoundError,
-    );
+    verifierGardesDeParticipant(() => ({
+      participants: depots.participants,
+      executer: lireStrategies,
+      effetsInterdits: () => [freeResponses.trouverParActivite],
+    }));
   });
 });

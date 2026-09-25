@@ -21,6 +21,7 @@ import {
   createMockSessionStateCache,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { installerVariables } from '../../../../../test/helpers/environnement';
 import {
   SessionClosedError,
   SessionNotOwnedError,
@@ -34,9 +35,6 @@ const TEACHER_ID = 'teacher-uuid';
 const AUTRE_TEACHER_ID = 'autre-teacher-uuid';
 const REVIEW_SECRET_VALIDE = 'a'.repeat(32);
 const TEACHER_NOTIFICATION_EMAIL = 'notifications-formateur@example.com';
-const ORIGINAL_REVIEW_TOKEN_SECRET = process.env.FORMATION_REVIEW_TOKEN_SECRET;
-const ORIGINAL_TEACHER_NOTIFICATION_TO =
-  process.env.FORMATION_TEACHER_NOTIFICATION_TO;
 
 describe('CloseSessionUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -48,13 +46,16 @@ describe('CloseSessionUseCase', () => {
   let scores: ReturnType<typeof createMockScoresRepo>;
   let sut: CloseSessionUseCase;
 
+  installerVariables(
+    {
+      FORMATION_REVIEW_TOKEN_SECRET: REVIEW_SECRET_VALIDE,
+      FORMATION_TEACHER_NOTIFICATION_TO: TEACHER_NOTIFICATION_EMAIL,
+    },
+    'chaque-test',
+  );
+
   beforeEach(() => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = REVIEW_SECRET_VALIDE;
-    process.env.FORMATION_TEACHER_NOTIFICATION_TO = TEACHER_NOTIFICATION_EMAIL;
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ teacherId: TEACHER_ID }),
-    );
+    sessions = createMockSessionsRepo({ teacherId: TEACHER_ID });
     participants = createMockParticipantsRepo();
     answers = createMockAnswersRepo();
     incidents = createMockIncidentsRepo();
@@ -76,23 +77,6 @@ describe('CloseSessionUseCase', () => {
       mailer,
       cache,
     );
-  });
-
-  afterAll(() => {
-    if (ORIGINAL_REVIEW_TOKEN_SECRET === undefined) {
-      delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    } else {
-      process.env.FORMATION_REVIEW_TOKEN_SECRET = ORIGINAL_REVIEW_TOKEN_SECRET;
-    }
-  });
-
-  afterEach(() => {
-    if (ORIGINAL_TEACHER_NOTIFICATION_TO === undefined) {
-      delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
-    } else {
-      process.env.FORMATION_TEACHER_NOTIFICATION_TO =
-        ORIGINAL_TEACHER_NOTIFICATION_TO;
-    }
   });
 
   it('marque la session terminee', async () => {
@@ -123,11 +107,21 @@ describe('CloseSessionUseCase', () => {
     );
   });
 
-  it('envoie une copie a chaque etudiant', async () => {
+  const deuxEtudiants = () =>
     participants.listBySession.mockResolvedValue([
       buildParticipantRecord({ id: 'p1', email: 'a@example.com' }),
       buildParticipantRecord({ id: 'p2', email: 'b@example.com' }),
     ]);
+
+  const cloturerMalgreLaPanne = async () => {
+    await expect(
+      sut.execute('session-uuid', TEACHER_ID),
+    ).resolves.toBeUndefined();
+    expect(sessions.update).toHaveBeenCalled();
+  };
+
+  it('envoie une copie a chaque etudiant', async () => {
+    deuxEtudiants();
     await sut.execute('session-uuid', TEACHER_ID);
     expect(mailer.sendCopieEtudiant).toHaveBeenCalledTimes(2);
   });
@@ -196,10 +190,7 @@ describe('CloseSessionUseCase', () => {
 
   describe('scores de la seance', () => {
     beforeEach(() => {
-      participants.listBySession.mockResolvedValue([
-        buildParticipantRecord({ id: 'p1', email: 'a@example.com' }),
-        buildParticipantRecord({ id: 'p2', email: 'b@example.com' }),
-      ]);
+      deuxEtudiants();
       answers.listBySession.mockResolvedValue([
         buildAnswerRecord({ participantId: 'p1' }),
       ]);
@@ -271,18 +262,12 @@ describe('CloseSessionUseCase', () => {
 
   it('n interrompt pas la cloture si un mail echoue', async () => {
     mailer.sendCopieEtudiant.mockRejectedValue(new Error('smtp indisponible'));
-    await expect(
-      sut.execute('session-uuid', TEACHER_ID),
-    ).resolves.toBeUndefined();
-    expect(sessions.update).toHaveBeenCalled();
+    await cloturerMalgreLaPanne();
   });
 
   it('cloture tout de meme mais ne produit aucun jeton si le secret de revision est absent', async () => {
     delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    await expect(
-      sut.execute('session-uuid', TEACHER_ID),
-    ).resolves.toBeUndefined();
-    expect(sessions.update).toHaveBeenCalled();
+    await cloturerMalgreLaPanne();
     expect(mailer.sendCopieEtudiant).not.toHaveBeenCalled();
   });
 

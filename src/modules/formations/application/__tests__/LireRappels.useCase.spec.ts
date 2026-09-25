@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { buildCoursB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
-import { creerCatalogueAVersions } from '../../../../../test/factories/cours.factory';
+import {
+  creerCatalogueAVersions,
+  creerParticipationEnSeance,
+} from '../../../../../test/factories/cours.factory';
 import {
   buildMasteryRecord,
   buildParticipantRecord,
@@ -10,17 +13,20 @@ import {
   createMockParticipantsRepo,
   createMockRappelsServisRepo,
   createMockSessionsRepo,
+  PARTICIPANT_DE_TEST,
 } from '../../../../../test/factories/formation.factory';
 import { verifierGardesDeParticipant } from '../../../../../test/helpers/gardes-de-seance';
 import {
   EcranNonServiError,
   RappelsIndisponiblesError,
 } from '../../domain/errors/FormationErrors';
+import type { Cours } from '../../domain/contrats/cours';
 import { LireRappelsUseCase } from '../LireRappels.useCase';
 
 const COURS = buildCoursB2_01();
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
 const OBLIGATOIRES = ['b2-01-r-compensation', 'b2-01-r-multiple-neuf'];
+const SEANCE_DU_COURS = { courseSlug: COURS.slug, courseVersion: 3 } as const;
 
 describe('LireRappelsUseCase', () => {
   let sessions: ReturnType<typeof createMockSessionsRepo>;
@@ -30,25 +36,25 @@ describe('LireRappelsUseCase', () => {
   let rappels: ReturnType<typeof createMockRappelsServisRepo>;
   let sut: LireRappelsUseCase;
 
-  const monter = (): LireRappelsUseCase =>
+  const monter = (cours: Cours = COURS): LireRappelsUseCase =>
     new LireRappelsUseCase(
-      sessions,
-      participants,
+      creerParticipationEnSeance({
+        sessions,
+        participants,
+        catalogue: creerCatalogueAVersions({ [COURS.slug]: { 3: cours } }),
+      }),
       answers,
       mastery,
       rappels,
-      creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
     );
 
+  const lire = () => sut.execute(PARTICIPANT_DE_TEST);
+
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        courseSlug: COURS.slug,
-        courseVersion: 3,
-        ecranCourant: DERNIER_ECRAN,
-      }),
-    );
+    sessions = createMockSessionsRepo({
+      ...SEANCE_DU_COURS,
+      ecranCourant: DERNIER_ECRAN,
+    });
     participants = createMockParticipantsRepo();
     participants.findById.mockResolvedValue(
       buildParticipantRecord({ seed: 11 }),
@@ -60,7 +66,7 @@ describe('LireRappelsUseCase', () => {
   });
 
   it('sert trois a quatre questions dont les deux obligatoires', async () => {
-    const { questions } = await sut.execute('session-uuid', 'participant-uuid');
+    const { questions } = await lire();
 
     expect(questions.length).toBeGreaterThanOrEqual(3);
     expect(questions.length).toBeLessThanOrEqual(4);
@@ -70,7 +76,7 @@ describe('LireRappelsUseCase', () => {
   });
 
   it('sert des options a identifiants stables et un enonce, sans bonne reponse', async () => {
-    const { questions } = await sut.execute('session-uuid', 'participant-uuid');
+    const { questions } = await lire();
 
     for (const question of questions) {
       expect(question.enonce.length).toBeGreaterThan(0);
@@ -86,10 +92,10 @@ describe('LireRappelsUseCase', () => {
   });
 
   it('fige la liste au premier appel et la resert telle quelle', async () => {
-    const premier = await sut.execute('session-uuid', 'participant-uuid');
+    const premier = await lire();
     answers.listerDuParticipant.mockResolvedValue([]);
 
-    const second = await sut.execute('session-uuid', 'participant-uuid');
+    const second = await lire();
 
     expect(rappels.figer).toHaveBeenCalledTimes(1);
     expect(second.questions.map((question) => question.questionId)).toEqual(
@@ -102,7 +108,7 @@ describe('LireRappelsUseCase', () => {
       buildMasteryRecord({ concept: 'controle-coherence', boite: 3 }),
     ]);
 
-    const { questions } = await sut.execute('session-uuid', 'participant-uuid');
+    const { questions } = await lire();
 
     expect(questions[0].boite).toBe(3);
     expect(questions[questions.length - 1].boite).toBe(1);
@@ -110,21 +116,15 @@ describe('LireRappelsUseCase', () => {
 
   it('refuse un ecran de rappel non projete', async () => {
     sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        courseSlug: COURS.slug,
-        courseVersion: 3,
-        ecranCourant: 0,
-      }),
+      buildSessionRecord({ ...SEANCE_DU_COURS, ecranCourant: 0 }),
     );
 
-    await expect(
-      sut.execute('session-uuid', 'participant-uuid'),
-    ).rejects.toThrow(EcranNonServiError);
+    await expect(lire()).rejects.toThrow(EcranNonServiError);
   });
 
   verifierGardesDeParticipant(() => ({
     participants,
-    executer: () => sut.execute('session-uuid', 'participant-uuid'),
+    executer: lire,
     effetsInterdits: () => [rappels.figer],
   }));
 
@@ -133,17 +133,8 @@ describe('LireRappelsUseCase', () => {
       (ecran) => ecran.brique !== 'fp-spaced',
     );
     const sansRappel = { ...COURS, ecrans: [premier, ...suite] as const };
-    sut = new LireRappelsUseCase(
-      sessions,
-      participants,
-      answers,
-      mastery,
-      rappels,
-      creerCatalogueAVersions({ [COURS.slug]: { 3: sansRappel } }),
-    );
+    sut = monter(sansRappel);
 
-    await expect(
-      sut.execute('session-uuid', 'participant-uuid'),
-    ).rejects.toThrow(RappelsIndisponiblesError);
+    await expect(lire()).rejects.toThrow(RappelsIndisponiblesError);
   });
 });

@@ -15,6 +15,7 @@ import {
   SessionNotFoundError,
   SessionNotOwnedError,
 } from '../../domain/errors/FormationErrors';
+import { LectureDeSeance } from '../LectureDeSeance';
 import { LireDerouleUseCase } from '../LireDeroule.useCase';
 
 const TEACHER_ID = 'teacher-uuid';
@@ -35,7 +36,9 @@ describe('LireDerouleUseCase', () => {
   beforeEach(() => {
     sessions = createMockSessionsRepo();
     sessions.findById.mockResolvedValue(SESSION);
-    sut = new LireDerouleUseCase(sessions, creerCatalogueDeTest(COURS));
+    sut = new LireDerouleUseCase(
+      new LectureDeSeance(sessions, creerCatalogueDeTest(COURS)),
+    );
   });
 
   it('rend le deroule annote du cours a la graine de reference du bareme', async () => {
@@ -48,7 +51,7 @@ describe('LireDerouleUseCase', () => {
     const catalogue = creerCatalogueDeTest(COURS);
     const trouver = jest.spyOn(catalogue, 'trouver').mockResolvedValue(COURS);
     sessions.findById.mockResolvedValue({ ...SESSION, courseVersion: 2 });
-    sut = new LireDerouleUseCase(sessions, catalogue);
+    sut = new LireDerouleUseCase(new LectureDeSeance(sessions, catalogue));
 
     await sut.execute(SESSION.id, PROPRIETAIRE);
 
@@ -77,8 +80,10 @@ describe('LireDerouleUseCase', () => {
 
   it('refuse un cours absent du catalogue', async () => {
     sut = new LireDerouleUseCase(
-      sessions,
-      creerCatalogueDeTest(buildCoursDeTest({ slug: 'un-autre-slug' })),
+      new LectureDeSeance(
+        sessions,
+        creerCatalogueDeTest(buildCoursDeTest({ slug: 'un-autre-slug' })),
+      ),
     );
 
     await expect(sut.execute(SESSION.id, PROPRIETAIRE)).rejects.toBeInstanceOf(

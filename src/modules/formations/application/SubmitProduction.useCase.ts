@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import type { ValeurProduction } from '../domain/contrats/resultats';
-import { libelleLisible } from '../domain/cours/banque/confusions';
-import type { ConfusionId } from '../domain/cours/banque/confusions';
+import {
+  detailsLisibles,
+  libelleLisible,
+} from '../domain/cours/banque/confusions';
+import type {
+  ConfusionId,
+  DetailLisible,
+} from '../domain/cours/banque/confusions';
 import {
   confusionDominante,
   corrigerProduction,
@@ -13,13 +19,8 @@ import {
   ReprisesEpuiseesError,
   TypeDeQuestionError,
 } from '../domain/errors/FormationErrors';
-import {
-  assertEcranOuvertAuxProductions,
-  coursDeLaSeance,
-  seanceOuverteAuxReponses,
-} from './CoursDeLaSeance';
+import { assertEcranOuvertAuxProductions } from './CoursDeLaSeance';
 import { EnregistrementDeReponse } from './EnregistrementDeReponse';
-import { participantActif } from './ParticipantActif';
 
 export interface SubmitProductionCommand {
   readonly sessionId: string;
@@ -29,16 +30,10 @@ export interface SubmitProductionCommand {
   readonly dureeMs: number;
 }
 
-interface DetailVerdict {
-  cle: string;
-  juste: boolean;
-  libelleConfusion: string | null;
-}
-
 export interface SubmitProductionResult {
   correcte: boolean;
   score: number;
-  details: DetailVerdict[];
+  details: DetailLisible[];
   libelleConfusion: string | null;
 }
 
@@ -47,11 +42,9 @@ export class SubmitProductionUseCase extends EnregistrementDeReponse {
   async execute(
     command: SubmitProductionCommand,
   ): Promise<SubmitProductionResult> {
-    const session = await seanceOuverteAuxReponses(
-      this.sessions,
+    const { session, cours } = await this.participation.seanceEtCours(
       command.sessionId,
     );
-    const cours = await coursDeLaSeance(this.catalogue, session);
     const cible = ecranDeProduction(cours, command.questionId);
     if (cible === null) {
       throw new TypeDeQuestionError(
@@ -70,11 +63,7 @@ export class SubmitProductionUseCase extends EnregistrementDeReponse {
     if (reprise && !PRODUCTIONS_REPRENABLES.includes(cible.ecran.brique)) {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
-    const participant = await participantActif(
-      this.participants,
-      command.sessionId,
-      command.participantId,
-    );
+    const participant = await this.participation.participantActif(command);
 
     const verdict = corrigerProduction(cible.question.corrige, valeur, cible);
     const confusion = confusionDominante(verdict.details);
@@ -90,7 +79,7 @@ export class SubmitProductionUseCase extends EnregistrementDeReponse {
         valeur,
       },
     );
-    this.cache.signalerActivite(command.sessionId);
+    this.participation.signalerActivite(command.sessionId);
     if (!reprise) {
       await this.mastery.enregistrerTentative({
         studentKey: participant.studentKey,
@@ -103,11 +92,7 @@ export class SubmitProductionUseCase extends EnregistrementDeReponse {
     return {
       correcte: verdict.correcte,
       score: verdict.score,
-      details: verdict.details.map((detail) => ({
-        cle: detail.cle,
-        juste: detail.juste,
-        libelleConfusion: libelleLisible(detail.confusion),
-      })),
+      details: detailsLisibles(verdict.details),
       libelleConfusion: libelleLisible(confusion),
     };
   }

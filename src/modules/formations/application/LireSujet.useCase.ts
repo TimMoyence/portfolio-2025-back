@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
 import {
   correctionDeLEcranRevele,
@@ -9,18 +9,10 @@ import {
 import { dernierEcranServi } from '../domain/cours/EcranServi';
 import type { Cours } from '../domain/contrats/cours';
 import type { CoursPublic, EcranPublic } from '../domain/contrats/tirage';
-import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { TirageAmbiguError, tirer } from '../domain/cours/Tirage';
 import type { TirageDuCours } from '../domain/cours/Tirage';
 import { CoursModifieError } from '../domain/errors/FormationErrors';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
-import {
-  CATALOGUE_COURS,
-  PARTICIPANTS_REPOSITORY,
-  SESSIONS_REPOSITORY,
-} from '../domain/token';
-import { contexteDuParticipant } from './CoursDeLaSeance';
+import { ParticipationEnSeance } from './ParticipationEnSeance';
 
 export interface LireSujetQuery {
   sessionId: string;
@@ -29,25 +21,11 @@ export interface LireSujetQuery {
 
 @Injectable()
 export class LireSujetUseCase {
-  constructor(
-    @Inject(SESSIONS_REPOSITORY)
-    private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
-    @Inject(CATALOGUE_COURS)
-    private readonly catalogue: ICatalogueCours,
-  ) {}
+  constructor(private readonly participation: ParticipationEnSeance) {}
 
   async execute(query: LireSujetQuery): Promise<CoursPublic> {
-    const { session, participant, cours } = await contexteDuParticipant(
-      {
-        sessions: this.sessions,
-        participants: this.participants,
-        catalogue: this.catalogue,
-      },
-      query.sessionId,
-      query.participantId,
-    );
+    const { session, participant, cours } =
+      await this.participation.contexte(query);
     const tirage = this.tirerOuLever(cours, participant.seed);
     const stockees = solutionsDuTirage(session.bareme, participant.seed);
     if (

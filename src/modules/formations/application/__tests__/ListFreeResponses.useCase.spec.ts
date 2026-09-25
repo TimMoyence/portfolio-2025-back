@@ -3,7 +3,6 @@ import {
   buildActeurFormation,
   buildAdministrateur,
   buildFreeResponseRecord,
-  buildSessionRecord,
   createMockFreeResponsesRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
@@ -19,10 +18,7 @@ describe('ListFreeResponsesUseCase', () => {
   let sut: ListFreeResponsesUseCase;
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ id: SESSION_ID, teacherId: PROPRIETAIRE.id }),
-    );
+    sessions = createMockSessionsRepo({ teacherId: PROPRIETAIRE.id });
     freeResponses = createMockFreeResponsesRepo();
     sut = new ListFreeResponsesUseCase(sessions, freeResponses);
   });

@@ -5,24 +5,19 @@ import type {
 } from '../domain/contrats/donnees-publiques';
 import { choisirRappels, ecranDeRappel } from '../domain/cours/ChoixDesRappels';
 import { assertEcranServi } from '../domain/cours/EcranServi';
-import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { tirer } from '../domain/cours/Tirage';
 import { RappelsIndisponiblesError } from '../domain/errors/FormationErrors';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import type { IRappelsServisRepository } from '../domain/IRappelsServis.repository';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
 import type { Boite } from '../domain/LeitnerBox';
 import {
   ANSWERS_REPOSITORY,
-  CATALOGUE_COURS,
   MASTERY_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
   RAPPELS_SERVIS_REPOSITORY,
-  SESSIONS_REPOSITORY,
 } from '../domain/token';
-import { contexteDuParticipant } from './CoursDeLaSeance';
+import { ParticipationEnSeance } from './ParticipationEnSeance';
+import type { CibleDuParticipant } from './ParticipationEnSeance';
 
 const BOITE_PAR_DEFAUT: Boite = 1;
 
@@ -51,33 +46,21 @@ function projeterRappel(entree: {
 @Injectable()
 export class LireRappelsUseCase {
   constructor(
-    @Inject(SESSIONS_REPOSITORY)
-    private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
+    private readonly participation: ParticipationEnSeance,
     @Inject(ANSWERS_REPOSITORY)
     private readonly answers: IAnswersRepository,
     @Inject(MASTERY_REPOSITORY)
     private readonly mastery: IMasteryRepository,
     @Inject(RAPPELS_SERVIS_REPOSITORY)
     private readonly rappels: IRappelsServisRepository,
-    @Inject(CATALOGUE_COURS)
-    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async execute(
-    sessionId: string,
-    participantId: string,
+    demande: CibleDuParticipant,
   ): Promise<{ questions: readonly SpacedQuestionPublique[] }> {
-    const { session, participant, cours } = await contexteDuParticipant(
-      {
-        sessions: this.sessions,
-        participants: this.participants,
-        catalogue: this.catalogue,
-      },
-      sessionId,
-      participantId,
-    );
+    const { sessionId, participantId } = demande;
+    const { session, participant, cours } =
+      await this.participation.contexte(demande);
     const cible = ecranDeRappel(cours);
     if (cible === null) {
       throw new RappelsIndisponiblesError(session.courseSlug);

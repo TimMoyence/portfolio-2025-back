@@ -5,12 +5,12 @@ import {
   buildAdministrateur,
   buildMasteryRecord,
   buildParticipantRecord,
-  buildSessionRecord,
   createMockMasteryRepo,
   createMockParticipantsRepo,
   createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import { SessionNotOwnedError } from '../../domain/errors/FormationErrors';
+import { LectureDeSeance } from '../LectureDeSeance';
 import { SyntheseRappelsUseCase } from '../SyntheseRappels.useCase';
 
 const COURS = buildCoursB2_01();
@@ -22,17 +22,19 @@ describe('SyntheseRappelsUseCase', () => {
   let sut: SyntheseRappelsUseCase;
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({ courseSlug: COURS.slug, courseVersion: 3 }),
-    );
+    sessions = createMockSessionsRepo({
+      courseSlug: COURS.slug,
+      courseVersion: 3,
+    });
     participants = createMockParticipantsRepo();
     mastery = createMockMasteryRepo();
     sut = new SyntheseRappelsUseCase(
-      sessions,
+      new LectureDeSeance(
+        sessions,
+        creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
+      ),
       participants,
       mastery,
-      creerCatalogueAVersions({ [COURS.slug]: { 3: COURS } }),
     );
   });
 

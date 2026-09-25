@@ -1,23 +1,18 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import {
   buildCoursAvecEnigmes,
-  creerCatalogueDeTest,
+  buildProgressionEnigme,
   ENIGMES_DE_TEST,
+  monterParticipationSurLeDernierEcran,
   PARCOURS_DE_TEST,
   TENTATIVES_MAX_DE_TEST,
 } from '../../../../../test/factories/cours.factory';
-import {
-  verifierGardesDeParticipant,
-  verifierGardesDeSeance,
-} from '../../../../../test/helpers/gardes-de-seance';
+import { verifierContratDeParticipation } from '../../../../../test/helpers/gardes-de-seance';
 import {
   buildSessionRecord,
   createMockAnswersRepo,
   createMockEscapeRepo,
   createMockMasteryRepo,
-  createMockParticipantsRepo,
-  createMockSessionStateCache,
-  createMockSessionsRepo,
 } from '../../../../../test/factories/formation.factory';
 import {
   EnigmeDejaResolueError,
@@ -32,12 +27,10 @@ const COURS = buildCoursAvecEnigmes();
 const DERNIER_ECRAN = COURS.ecrans.length - 1;
 
 describe('TenterEnigmeUseCase', () => {
-  let sessions: ReturnType<typeof createMockSessionsRepo>;
-  let participants: ReturnType<typeof createMockParticipantsRepo>;
+  let depots: ReturnType<typeof monterParticipationSurLeDernierEcran>;
   let escape: ReturnType<typeof createMockEscapeRepo>;
   let answers: ReturnType<typeof createMockAnswersRepo>;
   let mastery: ReturnType<typeof createMockMasteryRepo>;
-  let cache: ReturnType<typeof createMockSessionStateCache>;
   let sut: TenterEnigmeUseCase;
 
   const commande = {
@@ -50,26 +43,15 @@ describe('TenterEnigmeUseCase', () => {
   };
 
   beforeEach(() => {
-    sessions = createMockSessionsRepo();
-    sessions.findById.mockResolvedValue(
-      buildSessionRecord({
-        courseSlug: COURS.slug,
-        ecranCourant: DERNIER_ECRAN,
-      }),
-    );
-    participants = createMockParticipantsRepo();
+    depots = monterParticipationSurLeDernierEcran(COURS);
     escape = createMockEscapeRepo();
     answers = createMockAnswersRepo();
     mastery = createMockMasteryRepo();
-    cache = createMockSessionStateCache();
     sut = new TenterEnigmeUseCase(
-      sessions,
-      participants,
+      depots.participation,
       escape,
       answers,
       mastery,
-      cache,
-      creerCatalogueDeTest(COURS),
     );
   });
 
@@ -109,13 +91,7 @@ describe('TenterEnigmeUseCase', () => {
   it('ne consomme rien pour une saisie deja tentee', async () => {
     escape.tentativeDejaFaite.mockResolvedValue(true);
     escape.listerProgression.mockResolvedValue([
-      {
-        participantId: 'participant-uuid',
-        parcoursId: PARCOURS_DE_TEST,
-        enigmeId: ENIGMES_DE_TEST[0],
-        tentatives: 4,
-        resolueLe: null,
-      },
+      buildProgressionEnigme({ tentatives: 4, resolueLe: null }),
     ]);
 
     const verdict = await sut.execute({ ...commande, reponse: '10' });
@@ -141,13 +117,7 @@ describe('TenterEnigmeUseCase', () => {
 
   it('ouvre l enigme suivante des que la precedente est resolue', async () => {
     escape.listerProgression.mockResolvedValue([
-      {
-        participantId: 'participant-uuid',
-        parcoursId: PARCOURS_DE_TEST,
-        enigmeId: ENIGMES_DE_TEST[0],
-        tentatives: 2,
-        resolueLe: new Date('2026-09-11T09:00:00.000Z'),
-      },
+      buildProgressionEnigme({ tentatives: 2 }),
     ]);
 
     const verdict = await sut.execute({
@@ -161,15 +131,7 @@ describe('TenterEnigmeUseCase', () => {
   });
 
   it('refuse une enigme deja resolue', async () => {
-    escape.listerProgression.mockResolvedValue([
-      {
-        participantId: 'participant-uuid',
-        parcoursId: PARCOURS_DE_TEST,
-        enigmeId: ENIGMES_DE_TEST[0],
-        tentatives: 1,
-        resolueLe: new Date('2026-09-11T09:00:00.000Z'),
-      },
-    ]);
+    escape.listerProgression.mockResolvedValue([buildProgressionEnigme()]);
 
     await expect(sut.execute(commande)).rejects.toThrow(EnigmeDejaResolueError);
   });
@@ -186,11 +148,10 @@ describe('TenterEnigmeUseCase', () => {
     ).rejects.toThrow(EnigmeInconnueError);
   });
 
-  verifierGardesDeSeance(() => ({
-    sessions,
-    courseSlug: COURS.slug,
+  verifierContratDeParticipation(() => ({
+    ...depots,
     executer: () => sut.execute(commande),
-    effetsInterdits: () => [escape.incrementerTentative],
+    effetsInterdits: () => [escape.incrementerTentative, escape.journaliser],
   }));
 
   describe('SEC-4 · coffre dont la correction est servie', () => {
@@ -202,7 +163,7 @@ describe('TenterEnigmeUseCase', () => {
     ])(
       'refuse toute tentative une fois le coffre %s, sans rien noter',
       async (_etat, pilotage) => {
-        sessions.findById.mockResolvedValue(
+        depots.sessions.findById.mockResolvedValue(
           buildSessionRecord({
             courseSlug: COURS.slug,
             ecranCourant: DERNIER_ECRAN,
@@ -217,12 +178,6 @@ describe('TenterEnigmeUseCase', () => {
       },
     );
   });
-
-  verifierGardesDeParticipant(() => ({
-    participants,
-    executer: () => sut.execute(commande),
-    effetsInterdits: () => [escape.incrementerTentative, escape.journaliser],
-  }));
 
   it('journalise chaque tentative avec sa valeur normalisee', async () => {
     await sut.execute({ ...commande, reponse: '23 ,4' });
@@ -257,11 +212,5 @@ describe('TenterEnigmeUseCase', () => {
 
     expect(answers.create).not.toHaveBeenCalled();
     expect(mastery.enregistrerTentative).not.toHaveBeenCalled();
-  });
-
-  it('signale l activite de la seance', async () => {
-    await sut.execute(commande);
-
-    expect(cache.signalerActivite).toHaveBeenCalledWith('session-uuid');
   });
 });

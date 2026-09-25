@@ -6,7 +6,6 @@ import {
   enigmeVisee,
 } from '../domain/cours/Enigmes';
 import type { ProgressionDEnigme } from '../domain/cours/Enigmes';
-import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import {
   AnswerAlreadySubmittedError,
   EnigmeDejaResolueError,
@@ -17,24 +16,13 @@ import {
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IEscapeRepository } from '../domain/IEscape.repository';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
-import type { IParticipantsRepository } from '../domain/IParticipants.repository';
-import type { ISessionStateCache } from '../domain/ISessionStateCache.port';
-import type { ISessionsRepository } from '../domain/ISessions.repository';
 import {
   ANSWERS_REPOSITORY,
-  CATALOGUE_COURS,
   ESCAPE_REPOSITORY,
   MASTERY_REPOSITORY,
-  PARTICIPANTS_REPOSITORY,
-  SESSION_STATE_CACHE,
-  SESSIONS_REPOSITORY,
 } from '../domain/token';
-import {
-  assertEcranOuvertAuxProductions,
-  coursDeLaSeance,
-  seanceOuverteAuxReponses,
-} from './CoursDeLaSeance';
-import { participantActif } from './ParticipantActif';
+import { assertEcranOuvertAuxProductions } from './CoursDeLaSeance';
+import { ParticipationEnSeance } from './ParticipationEnSeance';
 
 export interface TenterEnigmeCommand {
   readonly sessionId: string;
@@ -54,28 +42,19 @@ export interface TenterEnigmeResult {
 @Injectable()
 export class TenterEnigmeUseCase {
   constructor(
-    @Inject(SESSIONS_REPOSITORY)
-    private readonly sessions: ISessionsRepository,
-    @Inject(PARTICIPANTS_REPOSITORY)
-    private readonly participants: IParticipantsRepository,
+    private readonly participation: ParticipationEnSeance,
     @Inject(ESCAPE_REPOSITORY)
     private readonly escape: IEscapeRepository,
     @Inject(ANSWERS_REPOSITORY)
     private readonly answers: IAnswersRepository,
     @Inject(MASTERY_REPOSITORY)
     private readonly mastery: IMasteryRepository,
-    @Inject(SESSION_STATE_CACHE)
-    private readonly cache: ISessionStateCache,
-    @Inject(CATALOGUE_COURS)
-    private readonly catalogue: ICatalogueCours,
   ) {}
 
   async execute(command: TenterEnigmeCommand): Promise<TenterEnigmeResult> {
-    const session = await seanceOuverteAuxReponses(
-      this.sessions,
+    const { session, cours } = await this.participation.seanceEtCours(
       command.sessionId,
     );
-    const cours = await coursDeLaSeance(this.catalogue, session);
     const cible = ecranDEnigmes(cours, command.parcoursId);
     if (cible === null) {
       throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
@@ -86,11 +65,7 @@ export class TenterEnigmeUseCase {
     if (visee === null) {
       throw new EnigmeInconnueError(command.parcoursId, command.enigmeId);
     }
-    const participant = await participantActif(
-      this.participants,
-      command.sessionId,
-      command.participantId,
-    );
+    const participant = await this.participation.participantActif(command);
 
     const progression = await this.lireProgression(command);
     if (!enigmeOuverte(cible, progression, visee.rangEnigme)) {
@@ -131,7 +106,7 @@ export class TenterEnigmeUseCase {
     if (verdict.correcte) {
       await this.escape.marquerResolue(command.participantId, command.enigmeId);
     }
-    this.cache.signalerActivite(command.sessionId);
+    this.participation.signalerActivite(command.sessionId);
 
     return {
       correcte: verdict.correcte,
