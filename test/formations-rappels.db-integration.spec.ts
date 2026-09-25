@@ -4,6 +4,8 @@ import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   ADMIN_DE_TEST,
+  attendreEcranNonServi,
+  attendreJetonEtrangerRefuse,
   AUTRE_FORMATEUR_DE_TEST,
   CODE_HTTP,
   installerBancDeSeance,
@@ -81,31 +83,22 @@ describeDb('Rappels espaces (B9, db integration)', () => {
   });
 
   it('refuse les rappels avant que le formateur ait projete l ecran', async () => {
-    const seance = await banc.ouvrirSeance({
-      cle: 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005',
-    });
-    await banc
-      .formateur('patch', `/sessions/${seance.sessionId}/control`)
-      .send({ ecran: 0 })
-      .expect(CODE_HTTP.SANS_CONTENU);
-
-    const refus = await lireRappels(seance);
-
-    expect(refus.status).toBe(CODE_HTTP.INTROUVABLE);
-    expect((refus.body as { code?: string }).code).toBe('ECRAN_NON_SERVI');
+    await attendreEcranNonServi(
+      banc,
+      'aaaaaaaa-aaaa-4aaa-8aaa-000000000005',
+      (seance) => lireRappels(seance),
+    );
   });
 
   it('refuse le jeton d un participant d une autre seance', async () => {
-    const seance = await banc.ouvrirSeance({
-      cle: 'aaaaaaaa-aaaa-4aaa-8aaa-000000000006',
-    });
-    const autre = await banc.ouvrirSeance({
-      cle: 'aaaaaaaa-aaaa-4aaa-8aaa-000000000007',
-    });
-
-    const refus = await lireRappels(seance, autre.jeton);
-
-    expect(refus.status).toBe(CODE_HTTP.NON_AUTORISE);
+    await attendreJetonEtrangerRefuse(
+      banc,
+      [
+        'aaaaaaaa-aaaa-4aaa-8aaa-000000000006',
+        'aaaaaaaa-aaaa-4aaa-8aaa-000000000007',
+      ],
+      (seance) => lireRappels(seance),
+    );
   });
 
   it('sert la carte de maitrise au formateur proprietaire et a l administrateur', async () => {

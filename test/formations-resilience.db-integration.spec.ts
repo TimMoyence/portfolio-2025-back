@@ -13,6 +13,7 @@ import type { RapportSession } from '../src/modules/formations/domain/IFormation
 import {
   buildCoursDeClasse,
   creerCatalogueDeTest,
+  reponseDeClasse,
 } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
@@ -169,11 +170,14 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
   const commander = (chemin: string): Test => client.formateur('post', chemin);
 
   const repondre = (sessionId: string, jeton: string, question: number): Test =>
-    client.participant(`/sessions/${sessionId}/answers`, jeton).send({
-      questionId: identifiantQuestion(question),
-      valeur: 1,
-      dureeMs: 12000,
-    });
+    client
+      .participant(`/sessions/${sessionId}/answers`, jeton)
+      .send(reponseDeClasse(COURS_DE_CLASSE, question));
+
+  const questionsEnBase = async (sessionId: string): Promise<string[]> =>
+    (await contexte.answers.listBySession(sessionId))
+      .map((reponse) => reponse.questionId)
+      .sort((a, b) => a.localeCompare(b));
 
   const lireResultats = (sessionId: string): Test =>
     client.formateur('get', `/sessions/${sessionId}/results`);
@@ -327,12 +331,10 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
         MESSAGE_DOUBLON,
       ]);
       expect(suite.status).toBe(CREE);
-      const enBase = await contexte.answers.listBySession(seance.sessionId);
-      expect(
-        enBase
-          .map((reponse) => reponse.questionId)
-          .sort((a, b) => a.localeCompare(b)),
-      ).toEqual([identifiantQuestion(0), identifiantQuestion(1)]);
+      expect(await questionsEnBase(seance.sessionId)).toEqual([
+        identifiantQuestion(0),
+        identifiantQuestion(1),
+      ]);
     },
     DELAI_TEST_MS,
   );
@@ -435,8 +437,7 @@ describeDb('Formations face aux pannes du cours (db integration)', () => {
 
       expect(envoi.status).toBe(CREE);
       expect(fin.status).toBe(SANS_CONTENU);
-      const enBase = await contexte.answers.listBySession(seance.sessionId);
-      expect(enBase.map((reponse) => reponse.questionId)).toEqual([
+      expect(await questionsEnBase(seance.sessionId)).toEqual([
         identifiantQuestion(0),
       ]);
       expect(questionsDuRapport(syntheseEnvoyee())).toEqual([

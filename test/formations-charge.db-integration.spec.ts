@@ -1,47 +1,33 @@
 import { performance } from 'node:perf_hooks';
-import type { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import type { Response, Test } from 'supertest';
-import type { ResultatsDeSeance } from '../src/modules/formations/application/GetSessionResults.useCase';
+import type { Test } from 'supertest';
+import type { ResultatsDeSeance } from '../src/modules/formations/domain/contrats/resultats';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import type { AnswerValue } from '../src/modules/formations/domain/GradingCore';
-import type { IFormationMailer } from '../src/modules/formations/domain/IFormationMailer.port';
 import type { ResultatsSeance } from '../src/modules/formations/domain/ResultatsSeance';
-import { createMockFormationMailer } from './factories/formation.factory';
+import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
+import { creerCatalogueDeTest } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
-  DELAI_OUVERTURE_CONTEXTE_MS,
-  ouvrirContexteFormations,
-  type ContexteFormations,
-} from './helpers/formations-db';
+  CODE_HTTP,
+  FORMATEUR_DE_TEST,
+  installerBancDeSeance,
+  statutsEnEchec,
+} from './helpers/formations-banc-seance';
 import {
   abonnerAuFlux,
   coursPublie,
   EN_TETE_IDENTITE,
-  monterApplicationFormations,
   patienter,
-  routeFormations,
-  serveurHttpDe,
   type FluxEcoute,
 } from './helpers/formations-harness';
-import {
-  ecouterEnBoucleLocale,
-  fermerApplication,
-} from './helpers/nest-test-app';
-import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const TAILLE_CLASSE = 30;
 const COURS = coursPublie('b2-01-traitement-information-chiffree');
 const QUESTIONS = questionsDuCours(COURS);
 const [PREMIERE_QUESTION] = QUESTIONS;
-const FORMATEUR = 'c3333333-3333-4333-8333-333333333333';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
 const SYNTHESE_A = 'charge-formateur@example.test';
-const EN_TETE_JETON = 'x-participant-token';
-const OK = 200;
-const CREE = 201;
-const SANS_CONTENU = 204;
+const { OK, CREE, SANS_CONTENU } = CODE_HTTP;
 
 const BUDGET_RATTACHEMENT_MS = 5_000;
 const BUDGET_REPONSES_MS = 3_000;
@@ -159,63 +145,37 @@ async function attendreTotalPousse(
   return totalPousse(flux, questionId);
 }
 
-function statutsEnEchec(
-  reponses: readonly Response[],
-  attendu: number,
-): number[] {
-  return reponses
-    .map((reponse) => reponse.status)
-    .filter((statut) => statut !== attendu);
-}
-
 describeDb('Formations sous charge de classe (db integration)', () => {
-  silenceNestLogger(['log', 'warn', 'error']);
-
-  let contexte: ContexteFormations;
-  let app: INestApplication;
-  let mailer: jest.Mocked<IFormationMailer>;
-  let port: number;
-
-  const serveur = () => serveurHttpDe(app);
-
-  const route = routeFormations;
+  const banc = installerBancDeSeance({
+    catalogue: creerCatalogueDeTest(COURS),
+    slug: COURS.slug,
+    environnement: { FORMATION_TEACHER_NOTIFICATION_TO: SYNTHESE_A },
+  });
+  const contexte = () => banc.contexte();
 
   const rejoindre = (code: string, index: number): Test =>
-    request(serveur())
-      .post(route(`/sessions/${code}/join`))
-      .send(identiteDe(index));
+    banc.anonyme('post', `/sessions/${code}/join`).send(identiteDe(index));
 
   const repondreJuste = (
     sessionId: string,
     inscrit: Inscrit,
     valeur: AnswerValue,
   ): Test =>
-    request(serveur())
-      .post(route(`/sessions/${sessionId}/answers`))
-      .set(EN_TETE_JETON, inscrit.jeton)
+    banc
+      .avecJeton('post', `/sessions/${sessionId}/answers`, inscrit.jeton)
       .send({
         questionId: PREMIERE_QUESTION.id,
         valeur,
         dureeMs: DUREE_REPONSE_MS,
       });
 
-  const commander = (chemin: string): Test =>
-    request(serveur())
-      .post(route(chemin))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`);
-
-  const ouvrirSeance = (): Test =>
-    commander('/sessions').send({ courseSlug: COURS.slug });
+  const commander = (chemin: string): Test => banc.formateur('post', chemin);
 
   const solutionsDe = async (inscrit: Inscrit) =>
-    tirer(COURS, await contexte.graineDe(inscrit.participantId)).solutions;
+    tirer(COURS, await contexte().graineDe(inscrit.participantId)).solutions;
 
   const preparerClasse = async (): Promise<Classe> => {
-    const ouverture = await ouvrirSeance().expect(CREE);
-    const { sessionId, code } = ouverture.body as {
-      sessionId: string;
-      code: string;
-    };
+    const { sessionId, code } = await banc.ouvrir();
     const inscrits: Inscrit[] = [];
     for (let index = 0; index < TAILLE_CLASSE; index += 1) {
       const inscription = await rejoindre(code, index).expect(CREE);
@@ -227,11 +187,11 @@ describeDb('Formations sous charge de classe (db integration)', () => {
 
   const semerReponses = async (classe: Classe): Promise<void> => {
     for (const inscrit of classe.inscrits) {
-      const seed = await contexte.graineDe(inscrit.participantId);
+      const seed = await contexte().graineDe(inscrit.participantId);
       const { solutions } = tirer(COURS, seed);
       await Promise.all(
         QUESTIONS.map((question, rang) =>
-          contexte.answers.create({
+          contexte().answers.create({
             sessionId: classe.sessionId,
             participantId: inscrit.participantId,
             questionId: question.id,
@@ -246,48 +206,29 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       );
     }
     await expect(
-      contexte.answers.listBySession(classe.sessionId),
+      contexte().answers.listBySession(classe.sessionId),
     ).resolves.toHaveLength(TAILLE_CLASSE * QUESTIONS.length);
   };
 
-  const ouvrirFlux = (sessionId: string, jeton: string): Promise<FluxEcoute> =>
-    abonnerAuFlux(port, route(`/sessions/${sessionId}/stream`), {
-      [EN_TETE_JETON]: jeton,
-    });
+  const ecouter = (
+    sessionId: string,
+    flux: string,
+    enTete: Record<string, string>,
+  ): Promise<FluxEcoute> =>
+    abonnerAuFlux(
+      banc.port(),
+      banc.route(`/sessions/${sessionId}/${flux}`),
+      enTete,
+    );
 
-  beforeAll(async () => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    process.env.FORMATION_TEACHER_NOTIFICATION_TO = SYNTHESE_A;
-    contexte = await ouvrirContexteFormations();
-    mailer = createMockFormationMailer();
-    app = await monterApplicationFormations({
-      ...contexte,
-      mailer,
-    });
-    port = await ecouterEnBoucleLocale(app);
-  }, DELAI_OUVERTURE_CONTEXTE_MS);
-
-  afterAll(async () => {
-    await fermerApplication(app);
-    await contexte.fermer();
-    delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-    delete process.env.FORMATION_TEACHER_NOTIFICATION_TO;
+  afterAll(() => {
     process.stdout.write(`\nMesures de charge\n${mesures.join('\n')}\n`);
-  });
-
-  beforeEach(async () => {
-    await contexte.nettoyer();
-    jest.clearAllMocks();
   });
 
   it(
     'rattache trente etudiants simultanes dans le temps d une dictee de code',
     async () => {
-      const ouverture = await ouvrirSeance().expect(CREE);
-      const { sessionId, code } = ouverture.body as {
-        sessionId: string;
-        code: string;
-      };
+      const { sessionId, code } = await banc.ouvrir();
 
       const [inscriptions, duree] = await chronometrer(() =>
         Promise.all(
@@ -298,7 +239,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       );
 
       expect(statutsEnEchec(inscriptions, CREE)).toEqual([]);
-      const inscrits = await contexte.participants.listBySession(sessionId);
+      const inscrits = await contexte().participants.listBySession(sessionId);
       expect(new Set(inscrits.map((inscrit) => inscrit.seed)).size).toBe(
         TAILLE_CLASSE,
       );
@@ -321,11 +262,9 @@ describeDb('Formations sous charge de classe (db integration)', () => {
             (await solutionsDe(inscrit))[PREMIERE_QUESTION.id].valeur,
         ),
       );
-      const presentateur = await abonnerAuFlux(
-        port,
-        route(`/sessions/${classe.sessionId}/presenter-stream`),
-        { [EN_TETE_IDENTITE]: `${FORMATEUR}:teacher` },
-      );
+      const presentateur = await ecouter(classe.sessionId, 'presenter-stream', {
+        [EN_TETE_IDENTITE]: `${FORMATEUR_DE_TEST}:teacher`,
+      });
       await attendreTotalPousse(presentateur, PREMIERE_QUESTION.id, 0);
 
       const [envois, duree] = await chronometrer(() =>
@@ -344,7 +283,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
 
       expect(statutsEnEchec(envois, CREE)).toEqual([]);
       await expect(
-        contexte.answers.listBySession(classe.sessionId),
+        contexte().answers.listBySession(classe.sessionId),
       ).resolves.toHaveLength(TAILLE_CLASSE);
       expect({
         statut: presentateur.statut,
@@ -370,8 +309,10 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       );
 
       expect(cloture.status).toBe(SANS_CONTENU);
-      expect(mailer.sendSyntheseFormateur.mock.calls).toHaveLength(1);
-      expect(mailer.sendCopieEtudiant.mock.calls).toHaveLength(TAILLE_CLASSE);
+      expect(banc.mailer().sendSyntheseFormateur.mock.calls).toHaveLength(1);
+      expect(banc.mailer().sendCopieEtudiant.mock.calls).toHaveLength(
+        TAILLE_CLASSE,
+      );
       exigerDuree(
         `cloture de ${TAILLE_CLASSE * QUESTIONS.length} reponses`,
         duree,
@@ -388,9 +329,7 @@ describeDb('Formations sous charge de classe (db integration)', () => {
       await semerReponses(classe);
 
       const [lecture, duree] = await chronometrer(() =>
-        request(serveur())
-          .get(route(`/sessions/${classe.sessionId}/results`))
-          .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`),
+        banc.formateur('get', `/sessions/${classe.sessionId}/results`),
       );
 
       const corps = lecture.body as ResultatsDeSeance;
@@ -409,7 +348,9 @@ describeDb('Formations sous charge de classe (db integration)', () => {
 
       const abonnements = await Promise.all(
         classe.inscrits.map((inscrit) =>
-          ouvrirFlux(classe.sessionId, inscrit.jeton),
+          ecouter(classe.sessionId, 'stream', {
+            [EN_TETE_JETON]: inscrit.jeton,
+          }),
         ),
       );
       expect(

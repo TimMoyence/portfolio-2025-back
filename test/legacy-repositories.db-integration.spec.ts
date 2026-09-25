@@ -1,94 +1,76 @@
-import type { DataSource } from 'typeorm';
 import { Courses } from '../src/modules/courses/domain/Courses';
-import { CoursesRepositoryTypeORM } from '../src/modules/courses/infrastructure/Courses.repository.typeORM';
-import { CourseResourceEntity } from '../src/modules/courses/infrastructure/entities/CourseResources.entity';
-import { CoursesEntity } from '../src/modules/courses/infrastructure/entities/Courses.entity';
-import { CoursesTranslationEntity } from '../src/modules/courses/infrastructure/entities/CoursesTranslation.entity';
 import { Projects } from '../src/modules/projects/domain/Projects';
-import { ProjectsRepositoryTypeORM } from '../src/modules/projects/infrastructure/Projects.repository.typeORM';
-import { ProjectsEntity } from '../src/modules/projects/infrastructure/entities/Projects.entity';
-import { ProjectsTranslationsEntity } from '../src/modules/projects/infrastructure/entities/ProjectsTranslations.entity';
 import { Redirects } from '../src/modules/redirects/domain/Redirects';
-import { RedirectsRepositoryTypeORM } from '../src/modules/redirects/infrastructure/Redirects.repository.typeORM';
-import { RedirectsEntity } from '../src/modules/redirects/infrastructure/entities/Redirects.entity';
 import { Services } from '../src/modules/services/domain/Services';
-import { ServicesRepositoryTypeORM } from '../src/modules/services/infrastructure/Services.repository.typeORM';
-import { ServicesEntity } from '../src/modules/services/infrastructure/entities/Services.entity';
-import { ServicesFaqEntity } from '../src/modules/services/infrastructure/entities/ServicesFaq.entity';
-import { ServicesFaqTranslationEntity } from '../src/modules/services/infrastructure/entities/ServicesFaqTranslation.entity';
-import { ServicesTranslationEntity } from '../src/modules/services/infrastructure/entities/ServicesTranslation.entity';
+import {
+  LEGACY_COURSE_PAYLOAD,
+  LEGACY_PROJECT_PAYLOAD,
+  LEGACY_REDIRECT_PAYLOAD,
+  LEGACY_SERVICE_PAYLOAD,
+} from './factories/legacy-contract.factory';
 import {
   describeDb,
   destroyDbIntegrationDataSource,
-  initDbIntegrationDataSource,
 } from './helpers/db-integration-datasource';
+import { ouvrirBaseLegacy, type BaseLegacy } from './helpers/legacy-db';
+
+const PREMIERE_PAGE = { page: 1, limit: 10 };
+const PAR_ORDRE = { ...PREMIERE_PAGE, sortBy: 'order', order: 'ASC' } as const;
+const PAR_CREATION = {
+  ...PREMIERE_PAGE,
+  sortBy: 'createdAt',
+  order: 'DESC',
+} as const;
+
+interface Liste<T> {
+  readonly items: readonly T[];
+  readonly total: number;
+}
+
+async function attendrePersisteEtListe<T extends { id?: string; slug: string }>(
+  creer: () => Promise<T>,
+  lister: () => Promise<Liste<T>>,
+): Promise<void> {
+  const created = await creer();
+
+  expect(created.id).toEqual(expect.any(String));
+
+  const result = await lister();
+  expect(result.items.some((item) => item.slug === created.slug)).toBe(true);
+  expect(result.total).toBeGreaterThanOrEqual(1);
+}
+
+function attendreFiltre<T>(
+  result: Liste<T>,
+  retenu: (item: T) => boolean,
+): void {
+  expect(result.items.length).toBeGreaterThanOrEqual(1);
+  expect(result.items.every(retenu)).toBe(true);
+}
 
 describeDb('Legacy repositories (db integration)', () => {
-  let dataSource: DataSource;
-  let servicesRepository: ServicesRepositoryTypeORM;
-  let projectsRepository: ProjectsRepositoryTypeORM;
-  let coursesRepository: CoursesRepositoryTypeORM;
-  let redirectsRepository: RedirectsRepositoryTypeORM;
+  let base: BaseLegacy;
 
   beforeAll(async () => {
-    dataSource = await initDbIntegrationDataSource([
-      ServicesEntity,
-      ServicesTranslationEntity,
-      ServicesFaqEntity,
-      ServicesFaqTranslationEntity,
-      ProjectsEntity,
-      ProjectsTranslationsEntity,
-      CoursesEntity,
-      CoursesTranslationEntity,
-      CourseResourceEntity,
-      RedirectsEntity,
-    ]);
-
-    servicesRepository = new ServicesRepositoryTypeORM(
-      dataSource.getRepository(ServicesEntity),
-    );
-    projectsRepository = new ProjectsRepositoryTypeORM(
-      dataSource.getRepository(ProjectsEntity),
-    );
-    coursesRepository = new CoursesRepositoryTypeORM(
-      dataSource.getRepository(CoursesEntity),
-    );
-    redirectsRepository = new RedirectsRepositoryTypeORM(
-      dataSource.getRepository(RedirectsEntity),
-    );
+    base = await ouvrirBaseLegacy();
   });
 
   afterAll(async () => {
-    await destroyDbIntegrationDataSource(dataSource);
+    await destroyDbIntegrationDataSource(base?.dataSource);
   });
 
   it('persists and reads services entities', async () => {
-    const created = await servicesRepository.create(
-      Services.create({
-        slug: 'technical-seo',
-        name: 'Technical SEO',
-        icon: '/icons/seo.svg',
-        status: 'PUBLISHED',
-        order: 1,
-      }),
+    await attendrePersisteEtListe(
+      () =>
+        base.services.create(
+          Services.create({ ...LEGACY_SERVICE_PAYLOAD, status: 'PUBLISHED' }),
+        ),
+      () => base.services.findAll(PAR_ORDRE),
     );
-
-    expect(created.id).toEqual(expect.any(String));
-
-    const result = await servicesRepository.findAll({
-      page: 1,
-      limit: 10,
-      sortBy: 'order',
-      order: 'ASC',
-    });
-    expect(
-      result.items.some((service) => service.slug === 'technical-seo'),
-    ).toBe(true);
-    expect(result.total).toBeGreaterThanOrEqual(1);
   });
 
   it('filters services entities by status', async () => {
-    await servicesRepository.create(
+    await base.services.create(
       Services.create({
         slug: 'service-draft',
         name: 'Service Draft',
@@ -96,7 +78,7 @@ describeDb('Legacy repositories (db integration)', () => {
         order: 3,
       }),
     );
-    await servicesRepository.create(
+    await base.services.create(
       Services.create({
         slug: 'service-published',
         name: 'Service Published',
@@ -105,51 +87,28 @@ describeDb('Legacy repositories (db integration)', () => {
       }),
     );
 
-    const result = await servicesRepository.findAll({
-      page: 1,
-      limit: 10,
-      sortBy: 'order',
-      status: 'PUBLISHED',
-      order: 'ASC',
-    });
-
-    expect(result.items.length).toBeGreaterThanOrEqual(1);
-    expect(result.items.every((item) => item.status === 'PUBLISHED')).toBe(
-      true,
+    attendreFiltre(
+      await base.services.findAll({ ...PAR_ORDRE, status: 'PUBLISHED' }),
+      (item) => item.status === 'PUBLISHED',
     );
   });
 
   it('persists and reads projects entities', async () => {
-    const created = await projectsRepository.create(
-      Projects.create({
-        slug: 'portfolio-site',
-        type: 'SIDE',
-        repoUrl: 'https://github.com/acme/portfolio',
-        liveUrl: 'https://example.com',
-        coverImage: '/images/portfolio.webp',
-        gallery: ['/images/portfolio-1.webp'],
-        stack: ['nestjs', 'postgres'],
-        status: 'PUBLISHED',
-        order: 2,
-      }),
+    await attendrePersisteEtListe(
+      () =>
+        base.projects.create(
+          Projects.create({
+            ...LEGACY_PROJECT_PAYLOAD,
+            type: 'SIDE',
+            status: 'PUBLISHED',
+          }),
+        ),
+      () => base.projects.findAll(PAR_ORDRE),
     );
-
-    expect(created.id).toEqual(expect.any(String));
-
-    const result = await projectsRepository.findAll({
-      page: 1,
-      limit: 10,
-      sortBy: 'order',
-      order: 'ASC',
-    });
-    expect(
-      result.items.some((project) => project.slug === 'portfolio-site'),
-    ).toBe(true);
-    expect(result.total).toBeGreaterThanOrEqual(1);
   });
 
   it('filters projects entities by type and status', async () => {
-    await projectsRepository.create(
+    await base.projects.create(
       Projects.create({
         slug: 'project-client-draft',
         type: 'CLIENT',
@@ -158,7 +117,7 @@ describeDb('Legacy repositories (db integration)', () => {
         order: 3,
       }),
     );
-    await projectsRepository.create(
+    await base.projects.create(
       Projects.create({
         slug: 'project-side-published',
         type: 'SIDE',
@@ -168,122 +127,65 @@ describeDb('Legacy repositories (db integration)', () => {
       }),
     );
 
-    const result = await projectsRepository.findAll({
-      page: 1,
-      limit: 10,
-      sortBy: 'order',
-      type: 'SIDE',
-      status: 'PUBLISHED',
-      order: 'ASC',
-    });
-
-    expect(result.items.length).toBeGreaterThanOrEqual(1);
-    expect(
-      result.items.every(
-        (item) => item.type === 'SIDE' && item.status === 'PUBLISHED',
-      ),
-    ).toBe(true);
+    attendreFiltre(
+      await base.projects.findAll({
+        ...PAR_ORDRE,
+        type: 'SIDE',
+        status: 'PUBLISHED',
+      }),
+      (item) => item.type === 'SIDE' && item.status === 'PUBLISHED',
+    );
   });
 
   it('persists and reads courses entities', async () => {
-    const created = await coursesRepository.create(
-      Courses.create({
-        slug: 'ai-course',
-        title: 'AI Course',
-        summary: 'A premium course for practical AI delivery.',
-        coverImage: '/images/ai-course.webp',
-      }),
+    await attendrePersisteEtListe(
+      () => base.courses.create(Courses.create(LEGACY_COURSE_PAYLOAD)),
+      () => base.courses.findAll(PAR_CREATION),
     );
-
-    expect(created.id).toEqual(expect.any(String));
-
-    const result = await coursesRepository.findAll({
-      page: 1,
-      limit: 10,
-      sortBy: 'createdAt',
-      order: 'DESC',
-    });
-    expect(result.items.some((course) => course.slug === 'ai-course')).toBe(
-      true,
-    );
-    expect(result.total).toBeGreaterThanOrEqual(1);
   });
 
   it('persists and reads redirects entities', async () => {
-    const created = await redirectsRepository.create(
-      Redirects.create({
-        slug: 'promo-offer',
-        targetUrl: 'https://example.com/promo',
-        enabled: true,
-        clicks: 0,
-      }),
+    await attendrePersisteEtListe(
+      () => base.redirects.create(Redirects.create(LEGACY_REDIRECT_PAYLOAD)),
+      () => base.redirects.findAll(PAR_CREATION),
     );
-
-    expect(created.id).toEqual(expect.any(String));
-
-    const result = await redirectsRepository.findAll({
-      page: 1,
-      limit: 10,
-      sortBy: 'createdAt',
-      order: 'DESC',
-    });
-    expect(
-      result.items.some((redirect) => redirect.slug === 'promo-offer'),
-    ).toBe(true);
-    expect(result.total).toBeGreaterThanOrEqual(1);
   });
 
   it('filters redirects entities by enabled flag', async () => {
-    await redirectsRepository.create(
-      Redirects.create({
-        slug: 'redirect-enabled',
-        targetUrl: 'https://example.com/enabled',
-        enabled: true,
-        clicks: 3,
-      }),
-    );
-    await redirectsRepository.create(
-      Redirects.create({
-        slug: 'redirect-disabled',
-        targetUrl: 'https://example.com/disabled',
-        enabled: false,
-        clicks: 5,
-      }),
-    );
+    for (const [etat, enabled, clicks] of [
+      ['enabled', true, 3],
+      ['disabled', false, 5],
+    ] as const) {
+      await base.redirects.create(
+        Redirects.create({
+          slug: `redirect-${etat}`,
+          targetUrl: `https://example.com/${etat}`,
+          enabled,
+          clicks,
+        }),
+      );
+    }
 
-    const result = await redirectsRepository.findAll({
-      page: 1,
-      limit: 10,
-      sortBy: 'createdAt',
-      enabled: false,
-      order: 'DESC',
-    });
-
-    expect(result.items.length).toBeGreaterThanOrEqual(1);
-    expect(result.items.every((item) => item.enabled === false)).toBe(true);
+    attendreFiltre(
+      await base.redirects.findAll({ ...PAR_CREATION, enabled: false }),
+      (item) => item.enabled === false,
+    );
   });
 
-  it('creates expected indexes for filtered legacy list queries', async () => {
-    const servicesStatusOrderIndex: Array<{ indexname: string }> =
-      await dataSource.query(
-        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'services' AND indexname = 'IDX_services_status_order'`,
-      );
-    const projectsTypeOrderIndex: Array<{ indexname: string }> =
-      await dataSource.query(
-        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'projects' AND indexname = 'IDX_projects_type_order'`,
-      );
-    const projectsStatusOrderIndex: Array<{ indexname: string }> =
-      await dataSource.query(
-        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'projects' AND indexname = 'IDX_projects_status_order'`,
-      );
-    const redirectsEnabledCreatedAtIndex: Array<{ indexname: string }> =
-      await dataSource.query(
-        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = 'redirects' AND indexname = 'IDX_redirects_enabled_created_at'`,
+  it.each([
+    ['services', 'IDX_services_status_order'],
+    ['projects', 'IDX_projects_type_order'],
+    ['projects', 'IDX_projects_status_order'],
+    ['redirects', 'IDX_redirects_enabled_created_at'],
+  ])(
+    'creates the %s index %s for filtered legacy list queries',
+    async (table, index) => {
+      const trouves: Array<{ indexname: string }> = await base.dataSource.query(
+        `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = $1 AND indexname = $2`,
+        [table, index],
       );
 
-    expect(servicesStatusOrderIndex).toHaveLength(1);
-    expect(projectsTypeOrderIndex).toHaveLength(1);
-    expect(projectsStatusOrderIndex).toHaveLength(1);
-    expect(redirectsEnabledCreatedAtIndex).toHaveLength(1);
-  });
+      expect(trouves).toHaveLength(1);
+    },
+  );
 });

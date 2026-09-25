@@ -4,6 +4,7 @@ import { activitesLibres } from '../src/modules/formations/domain/cours/EcranSer
 import { buildCoursB2_01 } from './factories/cours-b2-01.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
+  attendreRefus,
   CODE_HTTP,
   installerBancDeSeance,
   type SeanceDeTest,
@@ -48,6 +49,14 @@ describeDb(
         .avecJeton('get', `/sessions/${seance.sessionId}/sujet`, seance.jeton)
         .expect(OK);
 
+    const lireEcran = async (seance: SeanceDeTest, id: string) =>
+      ecranDuSujet(await lireSujet(seance), id);
+
+    const projeter = async (seance: SeanceDeTest, id: string) => {
+      await piloter(seance, { ecran: rang(id) });
+      return lireEcran(seance, id);
+    };
+
     const repondreAuxPoints = (seance: SeanceDeTest, texte: string) =>
       banc
         .avecJeton(
@@ -71,15 +80,9 @@ describeDb(
         intervalle: { premier: 0, dernier: rang(CORRECTION_DE_L_ATELIER) },
       });
 
-      const avant = ecranDuSujet(
-        await lireSujet(seance),
-        CORRECTION_DE_L_ATELIER,
-      );
+      const avant = await lireEcran(seance, CORRECTION_DE_L_ATELIER);
       await piloter(seance, { pilotage: { screenId: ATELIER, revele: true } });
-      const apres = ecranDuSujet(
-        await lireSujet(seance),
-        CORRECTION_DE_L_ATELIER,
-      );
+      const apres = await lireEcran(seance, CORRECTION_DE_L_ATELIER);
 
       expect(avant).toMatchObject({
         type: 'ecran-verrouille',
@@ -108,20 +111,13 @@ describeDb(
       });
       await repondreAuxPoints(seance, 'Moins 2,3 points.').expect(CREE);
 
-      await piloter(seance, { ecran: rang(CORRECTION_DES_POINTS) });
-      const projetee = ecranDuSujet(
-        await lireSujet(seance),
-        CORRECTION_DES_POINTS,
-      );
+      const projetee = await projeter(seance, CORRECTION_DES_POINTS);
       await piloter(seance, { ecran: rang(POINTS) });
       const refus = await repondreAuxPoints(seance, 'Après la correction.');
 
       expect(projetee?.type).toBe('fp-worked');
       expect(projetee?.correction?.ecranId).toBe(POINTS);
-      expect([refus.status, (refus.body as { code?: string }).code]).toEqual([
-        CONFLIT,
-        'PHASE_FERMEE',
-      ]);
+      attendreRefus(refus, CONFLIT, 'PHASE_FERMEE');
     });
 
     it('SEC-4 · ferme le coffre aux tentatives dès que sa correction est projetée en pilote', async () => {
@@ -130,11 +126,7 @@ describeDb(
         ecran: rang(COFFRE),
       });
 
-      await piloter(seance, { ecran: rang(CORRECTION_DU_COFFRE) });
-      const projetee = ecranDuSujet(
-        await lireSujet(seance),
-        CORRECTION_DU_COFFRE,
-      );
+      const projetee = await projeter(seance, CORRECTION_DU_COFFRE);
       const refus = await banc
         .avecJeton(
           'post',
@@ -144,10 +136,7 @@ describeDb(
         .send({ enigmeId: PREMIERE_ENIGME, reponse: '12', dureeMs: 30000 });
 
       expect(projetee?.correction?.ecranId).toBe(COFFRE);
-      expect([refus.status, (refus.body as { code?: string }).code]).toEqual([
-        CONFLIT,
-        'PHASE_FERMEE',
-      ]);
+      attendreRefus(refus, CONFLIT, 'PHASE_FERMEE');
     });
 
     it('T9 · sert sur le diagnostic et la feuille révélés leur propre corrigé, et rien avant', async () => {

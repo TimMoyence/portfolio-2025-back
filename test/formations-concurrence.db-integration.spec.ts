@@ -1,5 +1,3 @@
-import type { INestApplication } from '@nestjs/common';
-import request from 'supertest';
 import type { Response, Test } from 'supertest';
 import { questionsDuCours } from '../src/modules/formations/domain/cours/Cours';
 import type { RapportSession } from '../src/modules/formations/domain/IFormationMailer.port';
@@ -7,39 +5,27 @@ import { SessionCode } from '../src/modules/formations/domain/SessionCode';
 import {
   buildCoursDeClasse,
   creerCatalogueDeTest,
+  reponseDeClasse,
 } from './factories/cours.factory';
-import {
-  buildBareme,
-  createMockFormationMailer,
-} from './factories/formation.factory';
+import { buildBareme } from './factories/formation.factory';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
-  DELAI_OUVERTURE_CONTEXTE_MS,
-  ouvrirContexteFormations,
-  type ContexteFormations,
-} from './helpers/formations-db';
-import {
-  EN_TETE_IDENTITE,
-  monterApplicationFormations,
-  patienter,
-  routeFormations,
-  serveurHttpDe,
-} from './helpers/formations-harness';
-import {
-  ecouterEnBoucleLocale,
-  fermerApplication,
-} from './helpers/nest-test-app';
-import { silenceNestLogger } from './helpers/silence-nest-logger';
+  AUTRE_FORMATEUR_DE_TEST,
+  CODE_HTTP,
+  FORMATEUR_DE_TEST,
+  installerBancDeSeance,
+  statutsEnEchec,
+  type SeanceOuverteDeTest,
+} from './helpers/formations-banc-seance';
+import { patienter } from './helpers/formations-harness';
 
 const TAILLE_CLASSE = 30;
 const NB_QUESTIONS = 2;
 const NB_QUESTIONS_DU_COURS = 12;
 const COURS_DE_CLASSE = buildCoursDeClasse(NB_QUESTIONS_DU_COURS);
 const COURS = COURS_DE_CLASSE.slug;
-const FORMATEUR = 'a1111111-1111-4111-8111-111111111111';
-const AUTRE_FORMATEUR = 'b2222222-2222-4222-8222-222222222222';
-const SECRET = 'secret-de-test-formations-assez-long-1234';
-const EN_TETE_JETON = 'x-participant-token';
+const FORMATEUR = FORMATEUR_DE_TEST;
+const AUTRE_FORMATEUR = AUTRE_FORMATEUR_DE_TEST;
 const CODE_DOUBLON = '4271';
 const CODE_DE_REPLI = '5382';
 const MESSAGE_CLOTURE =
@@ -50,10 +36,7 @@ const ECRAN_INTRUS_PREMIER = 9;
 const ECRAN_INTRUS_SECOND = 11;
 const MAX_SONDAGES = 200;
 const PAS_SONDAGE_MS = 25;
-const CREE = 201;
-const SANS_CONTENU = 204;
-const INTERDIT = 403;
-const CONFLIT = 409;
+const { OK, CREE, SANS_CONTENU, INTERDIT, CONFLIT } = CODE_HTTP;
 
 interface ReponseInscription {
   participantId: string;
@@ -61,22 +44,8 @@ interface ReponseInscription {
   jeton: string;
 }
 
-interface ReponseOuverture {
-  sessionId: string;
-  code: string;
-}
-
 function identifiantQuestion(question: number): string {
   return questionsDuCours(COURS_DE_CLASSE)[question].id;
-}
-
-function statutsEnEchec(
-  reponses: readonly Response[],
-  attendu: number,
-): number[] {
-  return reponses
-    .map((reponse) => reponse.status)
-    .filter((statut) => statut !== attendu);
 }
 
 function detailDe(reponse: Response): unknown {
@@ -88,55 +57,31 @@ function trier(valeurs: readonly string[]): string[] {
 }
 
 describeDb('Formations sous requetes simultanees (db integration)', () => {
-  silenceNestLogger(['log', 'warn', 'error']);
-
-  let contexte: ContexteFormations;
-  let app: INestApplication;
-
-  const serveur = () => serveurHttpDe(app);
-
-  const route = routeFormations;
+  const banc = installerBancDeSeance({
+    catalogue: creerCatalogueDeTest(COURS_DE_CLASSE),
+    slug: COURS,
+  });
+  const contexte = () => banc.contexte();
 
   const ouvrir = (): Test =>
-    request(serveur())
-      .post(route('/sessions'))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`)
-      .send({ courseSlug: COURS });
+    banc.formateur('post', '/sessions').send({ courseSlug: COURS });
 
   const inscrire = (code: string, index: number): Test =>
-    request(serveur())
-      .post(route(`/sessions/${code}/join`))
-      .send({
-        prenom: `Prenom-${index}`,
-        nom: `Nom-${index}`,
-        email: `etudiant-${index}@example.test`,
-      });
+    banc.anonyme('post', `/sessions/${code}/join`).send({
+      prenom: `Prenom-${index}`,
+      nom: `Nom-${index}`,
+      email: `etudiant-${index}@example.test`,
+    });
 
   const repondre = (sessionId: string, jeton: string, question: number): Test =>
-    request(serveur())
-      .post(route(`/sessions/${sessionId}/answers`))
-      .set(EN_TETE_JETON, jeton)
-      .send({
-        questionId: identifiantQuestion(question),
-        valeur: 1,
-        dureeMs: 12000,
-      });
+    banc
+      .avecJeton('post', `/sessions/${sessionId}/answers`, jeton)
+      .send(reponseDeClasse(COURS_DE_CLASSE, question));
 
   const piloter = (sessionId: string, teacherId: string, ecran: number): Test =>
-    request(serveur())
-      .patch(route(`/sessions/${sessionId}/control`))
-      .set(EN_TETE_IDENTITE, `${teacherId}:teacher`)
-      .send({ ecran });
+    banc.piloter(sessionId, { ecran }, `${teacherId}:teacher`);
 
-  const fermer = (sessionId: string): Test =>
-    request(serveur())
-      .post(route(`/sessions/${sessionId}/close`))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`);
-
-  const ouvrirSeance = async (): Promise<ReponseOuverture> => {
-    const reponse = await ouvrir().expect(CREE);
-    return reponse.body as ReponseOuverture;
-  };
+  const ouvrirSeance = (): Promise<SeanceOuverteDeTest> => banc.ouvrir();
 
   const premierInscrit = async (code: string): Promise<ReponseInscription> => {
     const reponse = await inscrire(code, 0).expect(CREE);
@@ -144,24 +89,33 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
   };
 
   const demarrer = async (sessionId: string): Promise<void> => {
-    await request(serveur())
-      .post(route(`/sessions/${sessionId}/start`))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`)
+    await banc
+      .formateur('post', `/sessions/${sessionId}/start`)
       .expect(SANS_CONTENU);
   };
 
+  const seanceDemarreeAvecUnInscrit = async (): Promise<{
+    sessionId: string;
+    etudiant: ReponseInscription;
+  }> => {
+    const { sessionId, code } = await ouvrirSeance();
+    const etudiant = await premierInscrit(code);
+    await demarrer(sessionId);
+    return { sessionId, etudiant };
+  };
+
   const ecranDe = async (sessionId: string): Promise<number | undefined> =>
-    (await contexte.sessions.findById(sessionId))?.ecranCourant;
+    (await contexte().sessions.findById(sessionId))?.ecranCourant;
 
   const codesEnBase = async (): Promise<string[]> => {
-    const lignes: Array<{ code: string }> = await contexte.dataSource.query(
+    const lignes: Array<{ code: string }> = await contexte().dataSource.query(
       `SELECT code FROM formation_sessions`,
     );
     return lignes.map((ligne) => ligne.code);
   };
 
   const requetesBloquees = async (debut: string): Promise<number> => {
-    const lignes: Array<{ total: string }> = await contexte.dataSource.query(
+    const lignes: Array<{ total: string }> = await contexte().dataSource.query(
       `SELECT count(*)::text AS total FROM pg_stat_activity WHERE wait_event_type = 'Lock' AND query LIKE $1`,
       [`${debut}%`],
     );
@@ -189,35 +143,12 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     participantId: string,
   ): Promise<string | null> => {
     const lignes: Array<{ empreinte: string | null }> =
-      await contexte.dataSource.query(
+      await contexte().dataSource.query(
         `SELECT "empreinte_de_reprise" AS "empreinte" FROM "formation_participants" WHERE "id" = $1`,
         [participantId],
       );
     return lignes[0].empreinte;
   };
-
-  beforeAll(async () => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    contexte = await ouvrirContexteFormations();
-    app = await monterApplicationFormations(
-      {
-        ...contexte,
-        mailer: createMockFormationMailer(),
-      },
-      creerCatalogueDeTest(COURS_DE_CLASSE),
-    );
-    await ecouterEnBoucleLocale(app);
-  }, DELAI_OUVERTURE_CONTEXTE_MS);
-
-  afterAll(async () => {
-    await fermerApplication(app);
-    await contexte.fermer();
-    delete process.env.FORMATION_REVIEW_TOKEN_SECRET;
-  });
-
-  beforeEach(async () => {
-    await contexte.nettoyer();
-  });
 
   it('attribue trente graines distinctes a trente inscriptions simultanees', async () => {
     const { sessionId, code } = await ouvrirSeance();
@@ -231,12 +162,12 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     expect(statutsEnEchec(inscriptions, CREE)).toEqual([]);
     const graines = await Promise.all(
       inscriptions.map((reponse) =>
-        contexte.graineDe((reponse.body as ReponseInscription).participantId),
+        contexte().graineDe((reponse.body as ReponseInscription).participantId),
       ),
     );
     expect(new Set(graines).size).toBe(TAILLE_CLASSE);
 
-    const enBase = await contexte.participants.listBySession(sessionId);
+    const enBase = await contexte().participants.listBySession(sessionId);
     expect(enBase).toHaveLength(TAILLE_CLASSE);
     expect(new Set(enBase.map((participant) => participant.seed)).size).toBe(
       TAILLE_CLASSE,
@@ -244,9 +175,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
   }, 120_000);
 
   it('n enregistre qu une des deux reponses simultanees au meme enonce', async () => {
-    const { sessionId, code } = await ouvrirSeance();
-    const etudiant = await premierInscrit(code);
-    await demarrer(sessionId);
+    const { sessionId, etudiant } = await seanceDemarreeAvecUnInscrit();
 
     const envois = await Promise.all([
       repondre(sessionId, etudiant.jeton, 0),
@@ -259,7 +188,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
         .sort((gauche, droite) => gauche - droite),
     ).toEqual([CREE, CONFLIT]);
     await expect(
-      contexte.answers.listBySession(sessionId),
+      contexte().answers.listBySession(sessionId),
     ).resolves.toHaveLength(1);
   }, 60_000);
 
@@ -268,7 +197,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
       .spyOn(SessionCode, 'generate')
       .mockReturnValueOnce(CODE_DOUBLON)
       .mockReturnValue(CODE_DE_REPLI);
-    const concurrente = contexte.dataSource.createQueryRunner();
+    const concurrente = contexte().dataSource.createQueryRunner();
     await concurrente.connect();
     await concurrente.startTransaction();
     await concurrente.query(
@@ -287,7 +216,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
 
     expect(bloquees).toBe(1);
     expect(reponse.status).toBe(CREE);
-    expect((reponse.body as ReponseOuverture).code).toBe(CODE_DE_REPLI);
+    expect((reponse.body as SeanceOuverteDeTest).code).toBe(CODE_DE_REPLI);
     expect(trier(await codesEnBase())).toEqual(
       trier([CODE_DOUBLON, CODE_DE_REPLI]),
     );
@@ -296,7 +225,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
   it('S1 · ne laisse pas une reprise en cours annuler la liberation du poste', async () => {
     const { sessionId, code } = await ouvrirSeance();
     const { participantId } = await premierInscrit(code);
-    const reprise = contexte.dataSource.createQueryRunner();
+    const reprise = contexte().dataSource.createQueryRunner();
     await reprise.connect();
     await reprise.startTransaction();
     await reprise.query(
@@ -305,8 +234,8 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     );
 
     let liberee = false;
-    const liberation = contexte.participants
-      .libererPoste(sessionId, participantId)
+    const liberation = contexte()
+      .participants.libererPoste(sessionId, participantId)
       .then((resultat) => {
         liberee = true;
         return resultat;
@@ -325,19 +254,18 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
     await expect(liberation).resolves.toBe(true);
     await expect(empreinteDeRepriseDe(participantId)).resolves.toBeNull();
     expect(
-      (await contexte.participants.findById(participantId))?.generationDeJeton,
+      (await contexte().participants.findById(participantId))
+        ?.generationDeJeton,
     ).toBe(1);
     expect(bloquees).toBe(1);
   }, 60_000);
 
   it('ne perd ni ne double aucune reponse arrivee pendant la cloture', async () => {
-    const { sessionId, code } = await ouvrirSeance();
-    const etudiant = await premierInscrit(code);
-    await demarrer(sessionId);
+    const { sessionId, etudiant } = await seanceDemarreeAvecUnInscrit();
     await piloter(sessionId, FORMATEUR, NB_QUESTIONS - 1).expect(SANS_CONTENU);
 
     const [cloture, ...envois] = await Promise.all([
-      fermer(sessionId),
+      banc.formateur('post', `/sessions/${sessionId}/close`),
       ...Array.from({ length: NB_QUESTIONS }, (_, question) =>
         repondre(sessionId, etudiant.jeton, question),
       ),
@@ -361,7 +289,7 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
       refusees.map(() => ({ statut: CONFLIT, detail: MESSAGE_CLOTURE })),
     );
 
-    const enBase = await contexte.answers.listBySession(sessionId);
+    const enBase = await contexte().answers.listBySession(sessionId);
     expect(trier(enBase.map((reponse) => reponse.questionId))).toEqual(
       trier(acceptees),
     );
@@ -372,10 +300,9 @@ describeDb('Formations sous requetes simultanees (db integration)', () => {
       detail: MESSAGE_CLOTURE,
     });
 
-    const synthese = await request(serveur())
-      .get(route(`/sessions/${sessionId}/results`))
-      .set(EN_TETE_IDENTITE, `${FORMATEUR}:teacher`)
-      .expect(200);
+    const synthese = await banc
+      .formateur('get', `/sessions/${sessionId}/results`)
+      .expect(OK);
     const rapport = synthese.body as RapportSession;
     expect(
       trier(
