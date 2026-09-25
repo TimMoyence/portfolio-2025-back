@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
-import { requireText } from '../../../common/domain/validation/domain-validators';
+import {
+  requireText,
+  requireValidDate,
+} from '../../../common/domain/validation/domain-validators';
 import { EmailAddress } from '../../../common/domain/value-objects/EmailAddress';
 import type { SubscriptionStatus } from './SubscriptionStatus';
 
@@ -52,12 +55,7 @@ export class NewsletterSubscriber {
       100,
     );
     const termsVersion = requireText(props.termsVersion, 'termsVersion', 1, 50);
-    if (
-      !(props.termsAcceptedAt instanceof Date) ||
-      Number.isNaN(props.termsAcceptedAt.getTime())
-    ) {
-      throw new DomainValidationError('Invalid termsAcceptedAt date');
-    }
+    requireValidDate(props.termsAcceptedAt, 'termsAcceptedAt');
     const firstName =
       typeof props.firstName === 'string' && props.firstName.trim().length > 0
         ? requireText(props.firstName, 'firstName', 1, 50)

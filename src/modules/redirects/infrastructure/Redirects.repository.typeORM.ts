@@ -1,33 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PaginatedResult } from '../../../common/domain/pagination.types';
-import { pageDeRequete } from '../../../common/infrastructure/typeorm/page-de-requete';
-import {
-  RedirectListQuery,
-  RedirectSortBy,
-} from '../domain/RedirectList.query';
+import { DepotPagine } from '../../../common/infrastructure/typeorm/page-de-requete';
+import { RedirectListQuery } from '../domain/RedirectList.query';
 import { IRedirectsRepository } from '../domain/IRedirects.repository';
 import { Redirects } from '../domain/Redirects';
 import { RedirectsEntity } from './entities/Redirects.entity';
 
 @Injectable()
-export class RedirectsRepositoryTypeORM implements IRedirectsRepository {
+export class RedirectsRepositoryTypeORM
+  extends DepotPagine<RedirectsEntity, Redirects, RedirectListQuery>
+  implements IRedirectsRepository
+{
   constructor(
     @InjectRepository(RedirectsEntity)
-    private readonly repo: Repository<RedirectsEntity>,
-  ) {}
-
-  async findAll(query: RedirectListQuery): Promise<PaginatedResult<Redirects>> {
-    return pageDeRequete(
-      this.repo.createQueryBuilder('redirect'),
-      {
-        ...query,
-        colonneDeTri: this.resolveSortColumn(query.sortBy),
-        filtres: { enabled: query.enabled },
-      },
-      (entity) => this.toDomain(entity),
-    );
+    repo: Repository<RedirectsEntity>,
+  ) {
+    super(repo, {
+      alias: 'redirect',
+      colonnes: ['slug', 'clicks', 'createdAt'],
+      parDefaut: 'createdAt',
+      filtres: (query) => ({ enabled: query.enabled }),
+    });
   }
 
   async create(data: Redirects): Promise<Redirects> {
@@ -42,7 +36,7 @@ export class RedirectsRepositoryTypeORM implements IRedirectsRepository {
     return this.toDomain(saved);
   }
 
-  private toDomain(entity: RedirectsEntity): Redirects {
+  protected toDomain(entity: RedirectsEntity): Redirects {
     const redirect = new Redirects();
     redirect.id = entity.id;
     redirect.slug = entity.slug;
@@ -50,17 +44,5 @@ export class RedirectsRepositoryTypeORM implements IRedirectsRepository {
     redirect.enabled = entity.enabled;
     redirect.clicks = entity.clicks;
     return redirect;
-  }
-
-  private resolveSortColumn(sortBy: RedirectSortBy): string {
-    switch (sortBy) {
-      case 'slug':
-        return 'redirect.slug';
-      case 'clicks':
-        return 'redirect.clicks';
-      case 'createdAt':
-      default:
-        return 'redirect.createdAt';
-    }
   }
 }

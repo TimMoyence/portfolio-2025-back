@@ -8,6 +8,7 @@ import {
   type ArticleRecord,
   type ArticleWrite,
   type ArticlesRepository,
+  type PagePubliee,
 } from '../application/articles.repository';
 import { ArticleBroadcastEntity } from './entities/article-broadcast.entity';
 import { ArticleDeliveryEntity } from './entities/article-delivery.entity';
@@ -67,12 +68,7 @@ export class TypeOrmArticlesRepository implements ArticlesRepository {
     });
   }
 
-  async listPublished(params: {
-    locale: 'fr' | 'en';
-    tag?: string;
-    offset: number;
-    limit: number;
-  }): Promise<ArticleRecord[]> {
+  async listPublished(params: PagePubliee): Promise<ArticleRecord[]> {
     const builder = this.articles
       .createQueryBuilder('article')
       .where('article.status = :status', { status: 'published' })

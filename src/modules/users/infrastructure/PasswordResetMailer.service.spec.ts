@@ -1,23 +1,21 @@
 import { Logger } from '@nestjs/common';
-import { createTransport } from 'nodemailer';
 import type { PasswordResetNotificationPayload } from '../domain/IPasswordResetNotifier';
-import { PasswordResetMailerService } from './PasswordResetMailer.service';
 import {
   attendreScriptEchappe,
   createMockTransporter,
+  creationDeTransportSimulee,
   DEFAULT_SMTP_ENV,
+  nodemailerSimule,
   premierMailEnvoye,
   retirerSmtpEnv,
   setSmtpEnv,
 } from '../../../../test/factories/mailer.factory';
 
-jest.mock('nodemailer', () => ({
-  createTransport: jest.fn(),
-}));
+jest.mock('nodemailer', () => nodemailerSimule());
 
-const mockedCreateTransport = createTransport as jest.MockedFunction<
-  typeof createTransport
->;
+import { PasswordResetMailerService } from './PasswordResetMailer.service';
+
+const mockedCreateTransport = creationDeTransportSimulee();
 
 class TestablePasswordResetMailer extends PasswordResetMailerService {
   public testEscapeHtml(input: string): string {

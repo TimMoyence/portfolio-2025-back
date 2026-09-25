@@ -1,28 +1,15 @@
-import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
+import { ContenuASlugUnique } from '../../../../common/infrastructure/typeorm/ColonnesDeContenu';
 import {
   PUBLISHABLE_STATUSES,
   type PublishableStatus,
 } from '../../../../common/domain/types/publishable-status';
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { ServicesFaqEntity } from './ServicesFaq.entity';
 import { ServicesTranslationEntity } from './ServicesTranslation.entity';
 
 @Index('IDX_services_status_order', ['status', 'order'])
 @Entity({ name: 'services' })
-export class ServicesEntity extends ColonnesDeTrace {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Index({ unique: true })
-  @Column('text')
-  slug: string;
-
+export class ServicesEntity extends ContenuASlugUnique {
   @Column('text')
   name: string;
 

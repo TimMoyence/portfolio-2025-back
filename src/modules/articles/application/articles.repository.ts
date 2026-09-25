@@ -53,6 +53,13 @@ export interface ArticleBroadcastSchedule {
   sendAfter: Date;
 }
 
+export interface PagePubliee {
+  locale: 'fr' | 'en';
+  tag?: string;
+  offset: number;
+  limit: number;
+}
+
 export interface ArticlesRepository {
   findDelivery(deliveryId: string): Promise<ArticleDeliveryRecord | null>;
   findDeliveryByDeliveryOrIdempotency(
@@ -66,12 +73,7 @@ export interface ArticlesRepository {
     delivery: ArticleDeliveryWrite,
     broadcast: ArticleBroadcastSchedule,
   ): Promise<void>;
-  listPublished(params: {
-    locale: 'fr' | 'en';
-    tag?: string;
-    offset: number;
-    limit: number;
-  }): Promise<ArticleRecord[]>;
+  listPublished(params: PagePubliee): Promise<ArticleRecord[]>;
   findPublishedBySlug(
     slug: string,
     locale: 'fr' | 'en',

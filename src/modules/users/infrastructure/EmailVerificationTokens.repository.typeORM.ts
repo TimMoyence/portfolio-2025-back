@@ -4,6 +4,7 @@ import { MoreThan, Repository } from 'typeorm';
 import type { IEmailVerificationTokensRepository } from '../domain/IEmailVerificationTokens.repository';
 import type { EmailVerificationToken } from '../domain/EmailVerificationToken';
 import { EmailVerificationTokenEntity } from './entities/EmailVerificationToken.entity';
+import { jetonNonExpire } from './jetons.typeorm';
 
 @Injectable()
 export class EmailVerificationTokensRepositoryTypeORM implements IEmailVerificationTokensRepository {
@@ -26,13 +27,7 @@ export class EmailVerificationTokensRepositoryTypeORM implements IEmailVerificat
   async findActiveByToken(
     token: string,
   ): Promise<EmailVerificationToken | null> {
-    const entity = await this.repo.findOne({
-      where: {
-        token,
-        expiresAt: MoreThan(new Date()),
-      },
-    });
-
+    const entity = await jetonNonExpire(this.repo, { token });
     return entity ? this.toDomain(entity) : null;
   }
 

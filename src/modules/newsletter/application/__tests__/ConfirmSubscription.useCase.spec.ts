@@ -1,35 +1,37 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { ResourceNotFoundError } from '../../../../common/domain/errors/ResourceNotFoundError';
 import {
-  buildNewsletterSubscriber,
-  createMockEmailDripScheduler,
-  createMockNewsletterMailer,
-  createMockNewsletterSubscriberRepo,
+  createNewsletterDependances,
+  type PreparationDAbonne,
 } from '../../../../../test/factories/newsletter-subscriber.factory';
-import { flushPromises } from '../../../../../test/helpers/flush-promises';
+import {
+  attendreTokenInconnuRefuse,
+  executerSurAbonneTrouve,
+} from '../../../../../test/helpers/token-newsletter';
 import { ConfirmSubscriptionUseCase } from '../ConfirmSubscription.useCase';
 
 describe('ConfirmSubscriptionUseCase', () => {
-  let repo: ReturnType<typeof createMockNewsletterSubscriberRepo>;
-  let mailer: ReturnType<typeof createMockNewsletterMailer>;
-  let scheduler: ReturnType<typeof createMockEmailDripScheduler>;
+  let { repo, mailer, scheduler } = createNewsletterDependances();
   let useCase: ConfirmSubscriptionUseCase;
 
   beforeEach(() => {
-    repo = createMockNewsletterSubscriberRepo();
-    mailer = createMockNewsletterMailer();
-    scheduler = createMockEmailDripScheduler();
+    ({ repo, mailer, scheduler } = createNewsletterDependances());
     useCase = new ConfirmSubscriptionUseCase(repo, mailer, scheduler);
   });
 
-  it('confirme un abonne pending et declenche welcome + drip', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
-    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
+  const confirmer = (preparer?: PreparationDAbonne) =>
+    executerSurAbonneTrouve(repo.findByConfirmToken, preparer, (abonne) =>
+      useCase.execute(abonne.confirmToken),
+    );
 
-    const result = await useCase.execute(subscriber.confirmToken);
-    await flushPromises();
+  const attendreAucunEffet = () => {
+    expect(repo.update).not.toHaveBeenCalled();
+    expect(mailer.sendWelcome).not.toHaveBeenCalled();
+    expect(scheduler.schedule).not.toHaveBeenCalled();
+  };
+
+  it('confirme un abonne pending et declenche welcome + drip', async () => {
+    const result = await confirmer();
 
     expect(result.status).toBe('confirmed');
     expect(result.alreadyConfirmed).toBe(false);
@@ -39,80 +41,53 @@ describe('ConfirmSubscriptionUseCase', () => {
   });
 
   it('est idempotent quand deja confirme — ne renvoie pas welcome', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.confirm(new Date('2026-04-10T10:00:00Z'));
-    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
-
-    const result = await useCase.execute(subscriber.confirmToken);
-    await flushPromises();
+    const result = await confirmer((abonne) =>
+      abonne.confirm(new Date('2026-04-10T10:00:00Z')),
+    );
 
     expect(result.status).toBe('confirmed');
     expect(result.alreadyConfirmed).toBe(true);
-    expect(repo.update).not.toHaveBeenCalled();
-    expect(mailer.sendWelcome).not.toHaveBeenCalled();
-    expect(scheduler.schedule).not.toHaveBeenCalled();
+    attendreAucunEffet();
   });
 
   it('leve ResourceNotFoundError pour un token inconnu', async () => {
-    repo.findByConfirmToken.mockResolvedValueOnce(null);
-    await expect(
-      useCase.execute('00000000-0000-0000-0000-000000000000'),
-    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+    await attendreTokenInconnuRefuse(repo.findByConfirmToken, (token) =>
+      useCase.execute(token),
+    );
   });
 
-  it('ne propage pas l\u2019erreur si sendWelcome echoue (fire-and-forget)', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
-    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
-    mailer.sendWelcome.mockRejectedValueOnce(new Error('SMTP down'));
+  it.each([
+    [
+      'ne propage pas l’erreur si sendWelcome echoue (fire-and-forget)',
+      () => mailer.sendWelcome.mockRejectedValueOnce(new Error('SMTP down')),
+      () => repo.update,
+    ],
+    [
+      "ne propage pas l'erreur si scheduler.schedule echoue (fire-and-forget)",
+      () => scheduler.schedule.mockRejectedValueOnce(new Error('BullMQ down')),
+      () => scheduler.schedule,
+    ],
+  ])('%s', async (_titre, faireEchouer, etapeAtteinte) => {
+    faireEchouer();
 
-    await expect(
-      useCase.execute(subscriber.confirmToken),
-    ).resolves.toBeDefined();
-    await flushPromises();
-    expect(repo.update).toHaveBeenCalled();
+    await expect(confirmer()).resolves.toBeDefined();
+    expect(etapeAtteinte()).toHaveBeenCalledTimes(1);
   });
 
   it('leve DomainValidationError si le subscriber est unsubscribed', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.unsubscribe();
-    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
-
-    await expect(useCase.execute(subscriber.confirmToken)).rejects.toThrow(
+    await expect(confirmer((abonne) => abonne.unsubscribe())).rejects.toThrow(
       /Cannot confirm an unsubscribed/,
     );
   });
 
   it('rejette un token expire (> 7j) comme un token inconnu', async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    subscriber.confirmTokenExpiresAt = new Date(
-      Date.now() - 24 * 60 * 60 * 1000,
-    );
-    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
-
     await expect(
-      useCase.execute(subscriber.confirmToken),
+      confirmer((abonne) => {
+        abonne.confirmTokenExpiresAt = new Date(
+          Date.now() - 24 * 60 * 60 * 1000,
+        );
+      }),
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
-    expect(repo.update).not.toHaveBeenCalled();
-    expect(mailer.sendWelcome).not.toHaveBeenCalled();
-    expect(scheduler.schedule).not.toHaveBeenCalled();
-  });
-
-  it("ne propage pas l'erreur si scheduler.schedule echoue (fire-and-forget)", async () => {
-    const subscriber = buildNewsletterSubscriber();
-    subscriber.id = 'sub-id';
-    repo.findByConfirmToken.mockResolvedValueOnce(subscriber);
-    repo.update.mockImplementationOnce((s) => Promise.resolve(s));
-    scheduler.schedule.mockRejectedValueOnce(new Error('BullMQ down'));
-
-    await expect(
-      useCase.execute(subscriber.confirmToken),
-    ).resolves.toBeDefined();
-    await flushPromises();
-    expect(scheduler.schedule).toHaveBeenCalledTimes(1);
+    attendreAucunEffet();
   });
 });

@@ -10,6 +10,10 @@ import {
   buildPasswordResetToken,
   createMockPasswordResetTokensRepo,
 } from '../../../../test/factories/password-reset-token.factory';
+import {
+  attendreNouveauMotDePasseEnregistre,
+  preparerNouveauMotDePasse,
+} from '../../../../test/helpers/utilisateurs';
 
 const CHOSEN_CREDENTIAL = 'NewPassword123!';
 const ANY_VALID_CREDENTIAL = 'StrongPass1!';
@@ -32,28 +36,28 @@ describe('ResetPasswordUseCase', () => {
     );
   });
 
-  it('reinitialise le mot de passe avec un token valide', async () => {
-    const token = buildPasswordResetToken({ id: 'token-1', userId: 'user-1' });
-    const user = buildUser({ id: 'user-1', passwordHash: 'old-hash' });
-    const updatedUser = buildUser({ id: 'user-1', passwordHash: 'new-hash' });
+  const attendreReinitialisationRefusee = (token: string) =>
+    expect(
+      useCase.execute({ token, newPassword: ANY_VALID_CREDENTIAL }),
+    ).rejects.toBeInstanceOf(InvalidInputError);
 
-    tokensRepository.findActiveByTokenHash.mockResolvedValue(token);
-    usersRepository.findById.mockResolvedValue(user);
-    passwordService.hash.mockResolvedValue('new-hash');
-    usersRepository.update.mockResolvedValue(updatedUser);
+  it('reinitialise le mot de passe avec un token valide', async () => {
+    tokensRepository.findActiveByTokenHash.mockResolvedValue(
+      buildPasswordResetToken({ id: 'token-1', userId: 'user-1' }),
+    );
+    preparerNouveauMotDePasse(usersRepository, passwordService, {
+      passwordHash: 'old-hash',
+    });
 
     const result = await useCase.execute({
       token: 'raw-token',
       newPassword: CHOSEN_CREDENTIAL,
     });
 
-    expect(passwordService.hash).toHaveBeenCalledWith(CHOSEN_CREDENTIAL);
-    expect(usersRepository.update).toHaveBeenCalledWith(
-      'user-1',
-      expect.objectContaining({
-        passwordHash: 'new-hash',
-        updatedOrCreatedBy: 'password-reset',
-      }),
+    attendreNouveauMotDePasseEnregistre(
+      { hacher: passwordService.hash, mettreAJour: usersRepository.update },
+      CHOSEN_CREDENTIAL,
+      'password-reset',
     );
     expect(tokensRepository.markUsed).toHaveBeenCalledWith('token-1');
     expect(result.message).toContain('reinitialise');
@@ -62,41 +66,20 @@ describe('ResetPasswordUseCase', () => {
   it('rejette un token inconnu, expire ou deja utilise', async () => {
     tokensRepository.findActiveByTokenHash.mockResolvedValue(null);
 
-    await expect(
-      useCase.execute({
-        token: 'invalid-token',
-        newPassword: ANY_VALID_CREDENTIAL,
-      }),
-    ).rejects.toBeInstanceOf(InvalidInputError);
+    await attendreReinitialisationRefusee('invalid-token');
 
     expect(usersRepository.update).not.toHaveBeenCalled();
     expect(tokensRepository.markUsed).not.toHaveBeenCalled();
   });
 
   it('rejette quand le compte est introuvable ou inactif', async () => {
-    const token = buildPasswordResetToken({
-      id: 'token-1',
-      userId: 'user-404',
-    });
-    tokensRepository.findActiveByTokenHash.mockResolvedValue(token);
-    usersRepository.findById.mockResolvedValue(null);
-
-    await expect(
-      useCase.execute({
-        token: 'valid-token',
-        newPassword: ANY_VALID_CREDENTIAL,
-      }),
-    ).rejects.toBeInstanceOf(InvalidInputError);
-
-    usersRepository.findById.mockResolvedValue(
-      buildUser({ id: 'user-1', isActive: false }),
+    tokensRepository.findActiveByTokenHash.mockResolvedValue(
+      buildPasswordResetToken({ id: 'token-1', userId: 'user-404' }),
     );
 
-    await expect(
-      useCase.execute({
-        token: 'valid-token',
-        newPassword: ANY_VALID_CREDENTIAL,
-      }),
-    ).rejects.toBeInstanceOf(InvalidInputError);
+    for (const compte of [null, buildUser({ id: 'user-1', isActive: false })]) {
+      usersRepository.findById.mockResolvedValue(compte);
+      await attendreReinitialisationRefusee('valid-token');
+    }
   });
 });

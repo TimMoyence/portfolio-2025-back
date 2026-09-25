@@ -39,6 +39,13 @@ export interface BroadcastRecipient {
   unsubscribeToken: string;
 }
 
+export interface RechercheDeDestinataires {
+  broadcastId: string;
+  source: string;
+  locale: 'fr' | 'en';
+  limit: number;
+}
+
 export interface ModeratedArticle {
   article: ArticleRecord;
   broadcast: ArticleBroadcastRecord | null;
@@ -50,10 +57,7 @@ export interface ArticleBroadcastRepository {
     lockedUntil: Date,
   ): Promise<ArticleBroadcastRecord | null>;
   findPendingRecipients(
-    broadcastId: string,
-    source: string,
-    locale: 'fr' | 'en',
-    limit: number,
+    recherche: RechercheDeDestinataires,
   ): Promise<BroadcastRecipient[]>;
   reserveRecipient(broadcastId: string, subscriberId: string): Promise<boolean>;
   markRecipient(

@@ -1,9 +1,10 @@
-import { Body, Controller, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Query } from '@nestjs/common';
 import {
+  ControleurDeCatalogue,
   CreationAdmin,
   FILTRE_STATUT_DE_PUBLICATION,
   ListePubliquePaginee,
+  pageDemandee,
   reponsePaginee,
 } from '../../../common/interfaces/http/routes-de-catalogue';
 import { CreateProjectsUseCase } from '../application/CreateProjects.useCase';
@@ -14,8 +15,7 @@ import { ProjectListResponseDto } from './dto/project-list.response.dto';
 import { ProjectRequestDto } from './dto/project.request.dto';
 import { ProjectResponseDto } from './dto/project.response.dto';
 
-@ApiTags('projects')
-@Controller('projects')
+@ControleurDeCatalogue('projects')
 export class ProjectsController {
   constructor(
     private readonly listUseCase: ListProjectsUseCase,
@@ -42,12 +42,9 @@ export class ProjectsController {
     @Query() query: ProjectListQueryDto,
   ): Promise<ProjectListResponseDto> {
     const result = await this.listUseCase.execute({
-      page: query.page,
-      limit: query.limit,
-      sortBy: query.sortBy,
+      ...pageDemandee(query),
       type: query.type,
       status: query.status,
-      order: query.order,
     });
     return reponsePaginee(result, (project) =>
       ProjectResponseDto.fromDomain(project),

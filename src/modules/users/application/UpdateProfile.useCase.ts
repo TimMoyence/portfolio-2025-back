@@ -1,24 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
-import type { IUsersRepository } from '../domain/IUsers.repository';
-import { USERS_REPOSITORY } from '../domain/token';
+import { Injectable } from '@nestjs/common';
 import type { User } from '../domain/User';
+import { CasDUsageUtilisateurs } from './CasDUsageUtilisateurs';
 import type { UpdateProfileCommand } from './dto/UpdateProfile.command';
 import { UsersMapper } from './mappers/UsersMapper';
 
 @Injectable()
-export class UpdateProfileUseCase {
-  constructor(
-    @Inject(USERS_REPOSITORY)
-    private readonly repo: IUsersRepository,
-  ) {}
-
+export class UpdateProfileUseCase extends CasDUsageUtilisateurs {
   async execute(userId: string, command: UpdateProfileCommand): Promise<User> {
-    const existing = await this.repo.findById(userId);
-
-    if (!existing) {
-      throw new UserNotFoundError(`User with id ${userId} was not found`);
-    }
+    await this.utilisateurExistant(userId);
 
     const updatePayload = UsersMapper.fromUpdateCommand({
       firstName: command.firstName,

@@ -4,11 +4,13 @@ import { TokenExpiredError } from '../../../common/domain/errors/TokenExpiredErr
 import { TokenReuseDetectedError } from '../../../common/domain/errors/TokenReuseDetectedError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import type { IUsersRepository } from '../domain/IUsers.repository';
-import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY, USERS_REPOSITORY } from '../domain/token';
 import { REFRESH_TOKEN_ROTATION_GRACE_MS } from '../domain/auth.constants';
 import type { AuthResult } from './AuthenticateUser.useCase';
-import { issueAuthSession } from './services/issue-auth-session';
+import {
+  issueAuthSession,
+  jetonDeRafraichissementConnu,
+} from './services/issue-auth-session';
 import { JwtTokenService } from './services/JwtTokenService';
 
 @Injectable()
@@ -22,12 +24,10 @@ export class RefreshTokensUseCase {
   ) {}
 
   async execute(rawRefreshToken: string): Promise<AuthResult> {
-    const tokenHash = TokenHash.fromRaw(rawRefreshToken).value;
-    const stored = await this.refreshTokensRepo.findByTokenHash(tokenHash);
-
-    if (!stored) {
-      throw new InvalidCredentialsError('Invalid refresh token');
-    }
+    const stored = await jetonDeRafraichissementConnu(
+      this.refreshTokensRepo,
+      rawRefreshToken,
+    );
 
     const maintenant = Date.now();
     if (
@@ -36,15 +36,7 @@ export class RefreshTokensUseCase {
       stored.rotationGraceUntil !== undefined &&
       stored.rotationGraceUntil.getTime() > maintenant
     ) {
-      const user = await this.usersRepo.findById(stored.userId);
-      if (!user || !user.isActive) {
-        throw new InvalidCredentialsError('User not found or inactive');
-      }
-      return issueAuthSession(
-        user,
-        this.jwtTokenService,
-        this.refreshTokensRepo,
-      );
+      return this.ouvrirUneSession(stored.userId);
     }
 
     if (stored.revoked) {
@@ -64,12 +56,14 @@ export class RefreshTokensUseCase {
       throw new InvalidCredentialsError('Invalid refresh token');
     }
 
-    const user = await this.usersRepo.findById(stored.userId);
+    return this.ouvrirUneSession(stored.userId);
+  }
 
+  private async ouvrirUneSession(userId: string): Promise<AuthResult> {
+    const user = await this.usersRepo.findById(userId);
     if (!user || !user.isActive) {
       throw new InvalidCredentialsError('User not found or inactive');
     }
-
     return issueAuthSession(user, this.jwtTokenService, this.refreshTokensRepo);
   }
 }

@@ -1,22 +1,9 @@
-import { ColonnesDeTrace } from '../../../../common/infrastructure/typeorm/ColonnesDeTrace';
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { ContenuASlugUnique } from '../../../../common/infrastructure/typeorm/ColonnesDeContenu';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { CoursesTranslationEntity } from './CoursesTranslation.entity';
 
 @Entity({ name: 'courses' })
-export class CoursesEntity extends ColonnesDeTrace {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Index({ unique: true })
-  @Column('text')
-  slug: string;
-
+export class CoursesEntity extends ContenuASlugUnique {
   @Column('text')
   title: string;
 

@@ -4,6 +4,7 @@ import { IsNull, MoreThan, Repository } from 'typeorm';
 import type { IPasswordResetTokensRepository } from '../domain/IPasswordResetTokens.repository';
 import type { PasswordResetToken } from '../domain/PasswordResetToken';
 import { PasswordResetTokenEntity } from './entities/PasswordResetToken.entity';
+import { champsDuJeton, jetonNonExpire } from './jetons.typeorm';
 
 @Injectable()
 export class PasswordResetTokensRepositoryTypeORM implements IPasswordResetTokensRepository {
@@ -14,9 +15,7 @@ export class PasswordResetTokensRepositoryTypeORM implements IPasswordResetToken
 
   async create(token: PasswordResetToken): Promise<PasswordResetToken> {
     const entity = this.repo.create({
-      userId: token.userId,
-      tokenHash: token.tokenHash,
-      expiresAt: token.expiresAt,
+      ...champsDuJeton(token),
       usedAt: token.usedAt,
     });
 
@@ -27,14 +26,10 @@ export class PasswordResetTokensRepositoryTypeORM implements IPasswordResetToken
   async findActiveByTokenHash(
     tokenHash: string,
   ): Promise<PasswordResetToken | null> {
-    const entity = await this.repo.findOne({
-      where: {
-        tokenHash,
-        usedAt: IsNull(),
-        expiresAt: MoreThan(new Date()),
-      },
+    const entity = await jetonNonExpire(this.repo, {
+      tokenHash,
+      usedAt: IsNull(),
     });
-
     return entity ? this.toDomain(entity) : null;
   }
 

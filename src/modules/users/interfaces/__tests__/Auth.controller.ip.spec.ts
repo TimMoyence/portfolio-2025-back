@@ -4,11 +4,12 @@ import {
   createMockAuthAuditLogger,
   createMockUseCase,
 } from '../../../../../test/factories/user.factory';
+import { REFRESH_TOKEN_COOKIE_NAME } from '../../domain/auth.constants';
 import { AuthController } from '../Auth.controller';
 import type { GoogleAuthDto } from '../dto/GoogleAuth.dto';
 import type { LoginDto } from '../dto/Login.dto';
 
-type Flux = 'login' | 'google';
+type Flux = 'login' | 'google' | 'refresh';
 type Issue = { resolves: unknown } | { rejects: Error };
 
 describe('AuthController — IP tracee dans l’audit', () => {
@@ -46,6 +47,7 @@ describe('AuthController — IP tracee dans l’audit', () => {
         'x-forwarded-for': `${FORGED_BY_CLIENT}, 203.0.113.11`,
         'user-agent': 'jest-agent',
       },
+      cookies: { [REFRESH_TOKEN_COOKIE_NAME]: 'jeton-brut' },
     } as unknown as Request;
   }
 
@@ -62,7 +64,7 @@ describe('AuthController — IP tracee dans l’audit', () => {
       flux === 'google' ? useCase : unused,
       unused,
       unused,
-      unused,
+      flux === 'refresh' ? useCase : unused,
       unused,
       unused,
       unused,
@@ -73,11 +75,13 @@ describe('AuthController — IP tracee dans l’audit', () => {
       unused,
       auditLogger,
     );
-    const requete = buildRequest(ip ?? undefined);
-    const appel =
-      flux === 'login'
-        ? controller.login(loginDto, requete, res)
-        : controller.googleAuth(googleDto, requete, res);
+    const echange = { req: buildRequest(ip ?? undefined), res };
+    const appels: Record<Flux, () => Promise<unknown>> = {
+      login: () => controller.login(loginDto, echange),
+      google: () => controller.googleAuth(googleDto, echange),
+      refresh: () => controller.refresh(echange),
+    };
+    const appel = appels[flux]();
     if ('rejects' in issue) {
       await expect(appel).rejects.toThrow();
     } else {
@@ -132,6 +136,31 @@ describe('AuthController — IP tracee dans l’audit', () => {
       email: 'google@example.com',
       userId: 'u-2',
     });
+  });
+
+  it('journalise le compte rafraichi sur un succes', async () => {
+    expect(
+      await entreeDAudit('refresh', succes('u-3', 'eve@example.com')),
+    ).toMatchObject({
+      event: 'TOKEN_REFRESH',
+      email: 'eve@example.com',
+      userId: 'u-3',
+      ip: RESOLVED_BY_EXPRESS,
+      userAgent: 'jest-agent',
+    });
+  });
+
+  it('journalise l echec de rafraichissement sans email', async () => {
+    const entree = await entreeDAudit('refresh', {
+      rejects: new Error('Refresh token expired'),
+    });
+
+    expect(entree).toMatchObject({
+      event: 'TOKEN_REFRESH_FAILURE',
+      ip: RESOLVED_BY_EXPRESS,
+      details: 'Refresh token expired',
+    });
+    expect(entree).not.toHaveProperty('email');
   });
 
   it('ne journalise aucun email sur un echec Google', async () => {

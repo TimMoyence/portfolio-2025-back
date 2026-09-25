@@ -4,8 +4,9 @@ import type { ListOneUserUseCase } from '../application/ListOneUser.useCase';
 import type { CreateUsersUseCase } from '../application/CreateUsers.useCase';
 import type { UpdateUsersUseCase } from '../application/UpdateUsers.useCase';
 import type { DeleteUsersUseCase } from '../application/DeleteUsers.useCase';
-import { buildUser } from '../../../../test/factories/user.factory';
+import type { User } from '../domain/User';
 import {
+  buildUser,
   createMockUsersUseCases,
   type MockUsersUseCases,
 } from '../../../../test/factories/user.factory';
@@ -43,31 +44,33 @@ describe('UsersController', () => {
     expect(result[1].id).toBe('user-2');
   });
 
+  const listerUnSeul = async (user: User) => {
+    useCases.listUsers.execute.mockResolvedValue([user]);
+    const [premier] = await controller.findAll();
+    return premier;
+  };
+
   it('devrait mapper correctement les champs du UserResponseDto', async () => {
     const user = buildUser({
       roles: ['admin', 'teacher'],
       phone: '+33612345678',
     });
-    useCases.listUsers.execute.mockResolvedValue([user]);
 
-    const result = await controller.findAll();
+    const dto = await listerUnSeul(user);
 
-    expect(result[0].email).toBe(user.email);
-    expect(result[0].firstName).toBe(user.firstName);
-    expect(result[0].lastName).toBe(user.lastName);
-    expect(result[0].phone).toBe('+33612345678');
-    expect(result[0].roles).toEqual(['admin', 'teacher']);
-    expect(result[0].isActive).toBe(true);
-    expect(result[0].hasPassword).toBe(true);
+    expect(dto.email).toBe(user.email);
+    expect(dto.firstName).toBe(user.firstName);
+    expect(dto.lastName).toBe(user.lastName);
+    expect(dto.phone).toBe('+33612345678');
+    expect(dto.roles).toEqual(['admin', 'teacher']);
+    expect(dto.isActive).toBe(true);
+    expect(dto.hasPassword).toBe(true);
   });
 
   it('devrait retourner hasPassword=false pour un user sans mot de passe', async () => {
-    const user = buildUser({ passwordHash: '' });
-    useCases.listUsers.execute.mockResolvedValue([user]);
+    const dto = await listerUnSeul(buildUser({ passwordHash: '' }));
 
-    const result = await controller.findAll();
-
-    expect(result[0].hasPassword).toBe(false);
+    expect(dto.hasPassword).toBe(false);
   });
 
   it('devrait deleguer findOne au use case ListOneUser', async () => {
@@ -129,23 +132,23 @@ describe('UsersController', () => {
     expect(result.isActive).toBe(false);
   });
 
-  it('devrait propager UserNotFoundError du use case update', async () => {
-    const error = new Error('User with id user-999 was not found');
-    error.name = 'UserNotFoundError';
-    useCases.updateUsers.execute.mockRejectedValue(error);
+  it.each([
+    [
+      'update',
+      () => useCases.updateUsers,
+      () => controller.update('user-999', { firstName: 'Ghost' }),
+    ],
+    ['delete', () => useCases.deleteUsers, () => controller.delete('user-999')],
+  ])(
+    'devrait propager UserNotFoundError du use case %s',
+    async (_action, useCase, appeler) => {
+      const error = new Error('User with id user-999 was not found');
+      error.name = 'UserNotFoundError';
+      useCase().execute.mockRejectedValue(error);
 
-    await expect(
-      controller.update('user-999', { firstName: 'Ghost' }),
-    ).rejects.toThrow('User with id user-999 was not found');
-  });
-
-  it('devrait propager UserNotFoundError du use case delete', async () => {
-    const error = new Error('User with id user-999 was not found');
-    error.name = 'UserNotFoundError';
-    useCases.deleteUsers.execute.mockRejectedValue(error);
-
-    await expect(controller.delete('user-999')).rejects.toThrow(
-      'User with id user-999 was not found',
-    );
-  });
+      await expect(appeler()).rejects.toThrow(
+        'User with id user-999 was not found',
+      );
+    },
+  );
 });

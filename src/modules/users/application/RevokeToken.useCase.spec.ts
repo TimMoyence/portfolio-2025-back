@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
+import { itRefuseUnRefreshTokenInconnu } from '../../../../test/helpers/utilisateurs';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
 import { RevokeTokenUseCase } from './RevokeToken.useCase';
 import {
@@ -29,11 +29,5 @@ describe('RevokeTokenUseCase', () => {
     );
   });
 
-  it('lance InvalidCredentialsError quand le token est inexistant', async () => {
-    refreshTokensRepo.findByTokenHash.mockResolvedValue(null);
-
-    await expect(useCase.execute('unknown-token')).rejects.toBeInstanceOf(
-      InvalidCredentialsError,
-    );
-  });
+  itRefuseUnRefreshTokenInconnu(() => ({ refreshTokensRepo, useCase }));
 });

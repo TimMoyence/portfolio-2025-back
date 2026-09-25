@@ -2,11 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ForeignKey,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { ArticleEntity } from './article.entity';
+import { ReferenceArticle } from './reference-article';
 
 @Entity({ name: 'article_deliveries' })
 @Unique('UQ_article_delivery_delivery', ['deliveryId'])
@@ -25,11 +24,7 @@ export class ArticleDeliveryEntity {
   @Column({ type: 'varchar', length: 128 })
   nonce: string;
 
-  @ForeignKey(() => ArticleEntity, {
-    name: 'FK_article_delivery_article',
-    onDelete: 'RESTRICT',
-  })
-  @Column({ type: 'uuid' })
+  @ReferenceArticle('FK_article_delivery_article', 'RESTRICT')
   articleRecordId: string;
 
   @Column({ type: 'varchar', length: 20, default: 'accepted' })

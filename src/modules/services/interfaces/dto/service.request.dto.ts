@@ -1,25 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import type { PublishableStatus } from '../../../../common/domain/types/publishable-status';
 import {
-  IsIn,
-  IsInt,
-  IsOptional,
-  IsString,
-  Matches,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
-
-const SERVICE_STATUSES = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
-type ServiceStatusValue = (typeof SERVICE_STATUSES)[number];
+  RangDAffichage,
+  SlugDeContenu,
+  StatutDePublication,
+} from '../../../../common/interfaces/dto/champs-de-contenu.decorator';
 
 export class ServiceRequestDto {
-  @ApiProperty({ example: 'technical-seo' })
-  @IsString()
-  @MinLength(2)
-  @MaxLength(120)
-  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+  @SlugDeContenu('technical-seo')
   slug: string;
 
   @ApiProperty({ example: 'Technical SEO' })
@@ -34,20 +23,9 @@ export class ServiceRequestDto {
   @MaxLength(500)
   icon?: string;
 
-  @ApiProperty({
-    example: 'PUBLISHED',
-    required: false,
-    enum: SERVICE_STATUSES,
-  })
-  @IsOptional()
-  @IsString()
-  @IsIn(SERVICE_STATUSES)
-  status?: ServiceStatusValue;
+  @StatutDePublication()
+  status?: PublishableStatus;
 
-  @ApiProperty({ example: 0, required: false, minimum: 0, maximum: 10000 })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(10000)
+  @RangDAffichage()
   order?: number;
 }

@@ -1,7 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional } from 'class-validator';
 import {
+  ChoixOptionnel,
   PaginationQueryDto,
   SORT_DIRECTIONS,
 } from '../../../../common/interfaces/dto/pagination.query.dto';
@@ -28,13 +29,10 @@ function parseBooleanQueryValue(value: unknown): unknown {
 }
 
 export class RedirectListQueryDto extends PaginationQueryDto {
-  @ApiPropertyOptional({
-    example: 'createdAt',
-    default: 'createdAt',
-    enum: REDIRECT_SORT_FIELDS,
+  @ChoixOptionnel(REDIRECT_SORT_FIELDS, {
+    exemple: 'createdAt',
+    parDefaut: 'createdAt',
   })
-  @IsOptional()
-  @IsIn(REDIRECT_SORT_FIELDS)
   sortBy: (typeof REDIRECT_SORT_FIELDS)[number] = 'createdAt';
 
   @ApiPropertyOptional({
@@ -47,12 +45,6 @@ export class RedirectListQueryDto extends PaginationQueryDto {
   @IsBoolean()
   enabled?: boolean;
 
-  @ApiPropertyOptional({
-    example: 'DESC',
-    default: 'DESC',
-    enum: SORT_DIRECTIONS,
-  })
-  @IsOptional()
-  @IsIn(SORT_DIRECTIONS)
+  @ChoixOptionnel(SORT_DIRECTIONS, { exemple: 'DESC', parDefaut: 'DESC' })
   override order: (typeof SORT_DIRECTIONS)[number] = 'DESC';
 }

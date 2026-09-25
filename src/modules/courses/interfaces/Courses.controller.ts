@@ -1,8 +1,9 @@
-import { Body, Controller, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Query } from '@nestjs/common';
 import {
+  ControleurDeCatalogue,
   CreationAdmin,
   ListePubliquePaginee,
+  pageDemandee,
   reponsePaginee,
 } from '../../../common/interfaces/http/routes-de-catalogue';
 import { CreateCoursesUseCase } from '../application/CreateCourses.useCase';
@@ -13,8 +14,7 @@ import { CourseListResponseDto } from './dto/course-list.response.dto';
 import { CourseRequestDto } from './dto/course.request.dto';
 import { CourseResponseDto } from './dto/course.response.dto';
 
-@ApiTags('courses')
-@Controller('courses')
+@ControleurDeCatalogue('courses')
 export class CoursesController {
   constructor(
     private readonly listUseCase: ListCoursesUseCase,
@@ -31,12 +31,7 @@ export class CoursesController {
   async findAll(
     @Query() query: CourseListQueryDto,
   ): Promise<CourseListResponseDto> {
-    const result = await this.listUseCase.execute({
-      page: query.page,
-      limit: query.limit,
-      sortBy: query.sortBy,
-      order: query.order,
-    });
+    const result = await this.listUseCase.execute(pageDemandee(query));
     return reponsePaginee(result, (course) =>
       CourseResponseDto.fromDomain(course),
     );

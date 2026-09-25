@@ -1,10 +1,12 @@
 import { applyDecorators } from '@nestjs/common';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
   IsIn,
   IsOptional,
   IsString,
   Matches,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 import { VALID_ROLES } from '../../domain/roles';
@@ -19,6 +21,15 @@ export function MotDePasseRobuste(): PropertyDecorator {
       message:
         'Le mot de passe doit contenir au moins 1 majuscule, 1 chiffre et 1 caractere special.',
     }),
+  );
+}
+
+export function TelephoneOptionnel(exemple: string): PropertyDecorator {
+  return applyDecorators(
+    ApiPropertyOptional({ example: exemple, nullable: true, maxLength: 30 }),
+    IsOptional(),
+    IsString(),
+    MaxLength(30),
   );
 }
 

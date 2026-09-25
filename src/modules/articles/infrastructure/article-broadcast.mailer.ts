@@ -49,6 +49,15 @@ const COPY = {
   },
 } as const;
 
+interface ContenuDuMessage {
+  greeting: string;
+  article: ArticleRecord;
+  sections: EmailSection[];
+  articleUrl: string;
+  unsubscribeUrl: string;
+  copy: (typeof COPY)[keyof typeof COPY];
+}
+
 function text(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
@@ -126,7 +135,14 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
     const greeting = recipient.firstName
       ? `${copy.greeting} ${recipient.firstName}`
       : copy.greeting;
-    const sections = emailSections(article.sections);
+    const contenu: ContenuDuMessage = {
+      greeting,
+      article,
+      sections: emailSections(article.sections),
+      articleUrl,
+      unsubscribeUrl,
+      copy,
+    };
 
     await this.transporter.sendMail({
       from: process.env.SMTP_FROM,
@@ -138,33 +154,12 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         'List-Id': LIST_ID,
       },
-      text: this.plainText({
-        greeting,
-        article,
-        sections,
-        articleUrl,
-        unsubscribeUrl,
-        copy,
-      }),
-      html: this.html({
-        greeting,
-        article,
-        sections,
-        articleUrl,
-        unsubscribeUrl,
-        copy,
-      }),
+      text: this.plainText(contenu),
+      html: this.html(contenu),
     });
   }
 
-  private plainText(options: {
-    greeting: string;
-    article: ArticleRecord;
-    sections: EmailSection[];
-    articleUrl: string;
-    unsubscribeUrl: string;
-    copy: (typeof COPY)[keyof typeof COPY];
-  }): string {
+  private plainText(options: ContenuDuMessage): string {
     const sections = options.sections
       .map((section) =>
         [
@@ -189,14 +184,7 @@ export class ArticleBroadcastMailerService implements ArticleBroadcastMailer {
       .join('\n\n');
   }
 
-  private html(options: {
-    greeting: string;
-    article: ArticleRecord;
-    sections: EmailSection[];
-    articleUrl: string;
-    unsubscribeUrl: string;
-    copy: (typeof COPY)[keyof typeof COPY];
-  }): EscapedHtml {
+  private html(options: ContenuDuMessage): EscapedHtml {
     const itemHtml = (item: EmailSection['items'][number]): EscapedHtml => {
       const lead = item.entity
         ? safeHtml`<strong>${escapeHtml(item.entity)}</strong> — `

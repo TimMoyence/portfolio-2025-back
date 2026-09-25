@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { ConfigService } from '@nestjs/config';
+import type { User } from '../domain/User';
 import { RequestPasswordResetUseCase } from './RequestPasswordReset.useCase';
 import {
   buildUser,
@@ -36,17 +37,21 @@ describe('RequestPasswordResetUseCase', () => {
     );
   });
 
+  const compteExistant = (overrides: Partial<User>) => {
+    const user = buildUser({ id: 'user-1', ...overrides });
+    usersRepository.findByEmail.mockResolvedValue(user);
+    tokensRepository.create.mockResolvedValue(buildPasswordResetToken());
+    notifier.sendPasswordResetEmail.mockResolvedValue();
+    return user;
+  };
+
   it('envoie un email de reset quand le compte existe', async () => {
-    const user = buildUser({
-      id: 'user-1',
+    const user = compteExistant({
       email: 'john@example.com',
       firstName: 'John',
       lastName: 'Doe',
       passwordHash: LEGACY_HASH,
     });
-    usersRepository.findByEmail.mockResolvedValue(user);
-    tokensRepository.create.mockResolvedValue(buildPasswordResetToken());
-    notifier.sendPasswordResetEmail.mockResolvedValue();
 
     const result = await useCase.execute({ email: user.email });
 
@@ -81,10 +86,7 @@ describe('RequestPasswordResetUseCase', () => {
   });
 
   it('invalide les anciens jetons actifs et fixe une expiration a une heure', async () => {
-    const user = buildUser({ id: 'user-1', passwordHash: 'hash' });
-    usersRepository.findByEmail.mockResolvedValue(user);
-    tokensRepository.create.mockResolvedValue(buildPasswordResetToken());
-    notifier.sendPasswordResetEmail.mockResolvedValue();
+    const user = compteExistant({ passwordHash: 'hash' });
 
     const before = Date.now();
     await useCase.execute({ email: user.email });
@@ -98,9 +100,7 @@ describe('RequestPasswordResetUseCase', () => {
   });
 
   it('ne casse pas le flow si le mailer echoue', async () => {
-    const user = buildUser({ id: 'user-1', passwordHash: 'hash' });
-    usersRepository.findByEmail.mockResolvedValue(user);
-    tokensRepository.create.mockResolvedValue(buildPasswordResetToken());
+    const user = compteExistant({ passwordHash: 'hash' });
     notifier.sendPasswordResetEmail.mockRejectedValue(new Error('smtp down'));
 
     await expect(useCase.execute({ email: user.email })).resolves.toEqual(

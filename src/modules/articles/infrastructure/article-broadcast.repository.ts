@@ -6,6 +6,7 @@ import type {
   ArticleBroadcastRepository,
   BroadcastRecipient,
   ModeratedArticle,
+  RechercheDeDestinataires,
 } from '../application/article-broadcast.repository';
 import type { ArticleStatus } from '../application/articles.repository';
 import { ArticleBroadcastRecipientEntity } from './entities/article-broadcast-recipient.entity';
@@ -54,12 +55,12 @@ export class TypeOrmArticleBroadcastRepository implements ArticleBroadcastReposi
     return toRecord(entity);
   }
 
-  findPendingRecipients(
-    broadcastId: string,
-    source: string,
-    locale: 'fr' | 'en',
-    limit: number,
-  ): Promise<BroadcastRecipient[]> {
+  findPendingRecipients({
+    broadcastId,
+    source,
+    locale,
+    limit,
+  }: RechercheDeDestinataires): Promise<BroadcastRecipient[]> {
     return this.dataSource.query(
       `SELECT s."id" AS "subscriberId", s."email", s."first_name" AS "firstName",
               s."unsubscribe_token" AS "unsubscribeToken"

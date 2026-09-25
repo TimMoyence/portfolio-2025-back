@@ -1,18 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsOptional,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { SlugDeContenu } from '../../../../common/interfaces/dto/champs-de-contenu.decorator';
 
 export class CourseRequestDto {
-  @ApiProperty({ example: 'ai-course' })
-  @IsString()
-  @MinLength(2)
-  @MaxLength(120)
-  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+  @SlugDeContenu('ai-course')
   slug: string;
 
   @ApiProperty({ example: 'AI Course' })

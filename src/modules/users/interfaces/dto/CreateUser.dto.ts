@@ -5,10 +5,13 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  MaxLength,
 } from 'class-validator';
 import type { CreateUserCommand } from '../../application/dto/CreateUser.command';
-import { MotDePasseRobuste, RolesValides } from './regles-de-saisie';
+import {
+  MotDePasseRobuste,
+  RolesValides,
+  TelephoneOptionnel,
+} from './regles-de-saisie';
 
 export class CreateUserDto implements CreateUserCommand {
   @ApiProperty({ example: 'john@example.com' })
@@ -30,14 +33,7 @@ export class CreateUserDto implements CreateUserCommand {
   @IsNotEmpty()
   lastName: string;
 
-  @ApiPropertyOptional({
-    example: '+11234567890',
-    nullable: true,
-    maxLength: 30,
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(30)
+  @TelephoneOptionnel('+11234567890')
   phone?: string | null;
 
   @ApiPropertyOptional({ example: true, default: true })

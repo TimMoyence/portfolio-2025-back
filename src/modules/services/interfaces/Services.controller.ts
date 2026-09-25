@@ -1,9 +1,10 @@
-import { Body, Controller, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Query } from '@nestjs/common';
 import {
+  ControleurDeCatalogue,
   CreationAdmin,
   FILTRE_STATUT_DE_PUBLICATION,
   ListePubliquePaginee,
+  pageDemandee,
   reponsePaginee,
 } from '../../../common/interfaces/http/routes-de-catalogue';
 import { CreateServicesUseCase } from '../application/CreateServices.useCase';
@@ -14,8 +15,7 @@ import { ServiceListQueryDto } from './dto/service-list.query.dto';
 import { ServiceRequestDto } from './dto/service.request.dto';
 import { ServiceResponseDto } from './dto/service.response.dto';
 
-@ApiTags('services')
-@Controller('services')
+@ControleurDeCatalogue('services')
 export class ServicesController {
   constructor(
     private readonly listUseCase: ListServicesUseCase,
@@ -34,11 +34,8 @@ export class ServicesController {
     @Query() query: ServiceListQueryDto,
   ): Promise<ServiceListResponseDto> {
     const result = await this.listUseCase.execute({
-      page: query.page,
-      limit: query.limit,
-      sortBy: query.sortBy,
+      ...pageDemandee(query),
       status: query.status,
-      order: query.order,
     });
     return reponsePaginee(result, (service) =>
       ServiceResponseDto.fromDomain(service),

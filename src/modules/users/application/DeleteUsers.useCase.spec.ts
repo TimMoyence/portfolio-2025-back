@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
 import { DeleteUsersUseCase } from './DeleteUsers.useCase';
 import type { IUsersRepository } from '../domain/IUsers.repository';
 import {
   createMockUsersRepo,
   buildUser,
 } from '../../../../test/factories/user.factory';
+import { attendreUtilisateurIntrouvable } from '../../../../test/helpers/utilisateurs';
 
 describe('DeleteUsersUseCase', () => {
   let repo: jest.Mocked<IUsersRepository>;
@@ -30,11 +30,10 @@ describe('DeleteUsersUseCase', () => {
   });
 
   it('devrait lever une exception quand l utilisateur n existe pas', async () => {
-    repo.findById.mockResolvedValue(null);
-
-    await expect(useCase.execute('missing')).rejects.toBeInstanceOf(
-      UserNotFoundError,
+    await attendreUtilisateurIntrouvable(
+      repo,
+      () => useCase.execute('missing'),
+      repo.deactivate,
     );
-    expect(repo.deactivate).not.toHaveBeenCalled();
   });
 });

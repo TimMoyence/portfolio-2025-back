@@ -8,6 +8,10 @@ import {
   createMockPasswordService,
   createMockUsersRepo,
 } from '../../../../test/factories/user.factory';
+import {
+  attendreNouveauMotDePasseEnregistre,
+  preparerNouveauMotDePasse,
+} from '../../../../test/helpers/utilisateurs';
 
 const CHOSEN_CREDENTIAL = 'NewPassword123!';
 const EXISTING_HASH = 'existing-hash';
@@ -24,12 +28,11 @@ describe('SetPasswordUseCase', () => {
   });
 
   it('autorise un compte Google-only a definir un mot de passe', async () => {
-    const user = buildUser({ id: 'user-1', passwordHash: null });
-    const updatedUser = buildUser({ id: 'user-1', passwordHash: 'new-hash' });
-
-    usersRepository.findById.mockResolvedValue(user);
-    passwordService.hash.mockResolvedValue('new-hash');
-    usersRepository.update.mockResolvedValue(updatedUser);
+    const updatedUser = preparerNouveauMotDePasse(
+      usersRepository,
+      passwordService,
+      { passwordHash: null },
+    );
 
     const result = await useCase.execute({
       userId: 'user-1',
@@ -37,13 +40,10 @@ describe('SetPasswordUseCase', () => {
       updatedOrCreatedBy: 'self-service',
     });
 
-    expect(passwordService.hash).toHaveBeenCalledWith(CHOSEN_CREDENTIAL);
-    expect(usersRepository.update).toHaveBeenCalledWith(
-      'user-1',
-      expect.objectContaining({
-        passwordHash: 'new-hash',
-        updatedOrCreatedBy: 'self-service',
-      }),
+    attendreNouveauMotDePasseEnregistre(
+      { hacher: passwordService.hash, mettreAJour: usersRepository.update },
+      CHOSEN_CREDENTIAL,
+      'self-service',
     );
     expect(result).toEqual(updatedUser);
   });

@@ -1,5 +1,6 @@
 import { DomainValidationError } from '../../../common/domain/errors/DomainValidationError';
 import { requireHttpUrl } from '../../../common/domain/validation/domain-validators';
+import { resolveCompteurBorne } from '../../../common/domain/validation/status-order.utils';
 import { Slug } from '../../../common/domain/value-objects/Slug';
 
 export interface CreateRedirectProps {
@@ -38,19 +39,6 @@ export class Redirects {
   }
 
   private static resolveClicks(raw: unknown): number {
-    if (raw === undefined || raw === null) {
-      return 0;
-    }
-
-    if (!Number.isInteger(raw)) {
-      throw new DomainValidationError('Invalid redirect clicks count');
-    }
-
-    const value = Number(raw);
-    if (value < 0 || value > 1000000000) {
-      throw new DomainValidationError('Invalid redirect clicks count');
-    }
-
-    return value;
+    return resolveCompteurBorne(raw, 'redirect clicks count', 1000000000);
   }
 }

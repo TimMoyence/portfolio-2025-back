@@ -1,13 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsEmail,
-  IsOptional,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator';
 import type { UpdateUserCommand } from '../../application/dto/UpdateUser.command';
-import { MotDePasseRobuste, RolesValides } from './regles-de-saisie';
+import {
+  MotDePasseRobuste,
+  RolesValides,
+  TelephoneOptionnel,
+} from './regles-de-saisie';
 
 export class UpdateUserDto implements UpdateUserCommand {
   @ApiPropertyOptional({ example: 'john@example.com' })
@@ -30,14 +28,7 @@ export class UpdateUserDto implements UpdateUserCommand {
   @IsString()
   lastName?: string;
 
-  @ApiPropertyOptional({
-    example: '+11234567890',
-    nullable: true,
-    maxLength: 30,
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(30)
+  @TelephoneOptionnel('+11234567890')
   phone?: string | null;
 
   @ApiPropertyOptional({

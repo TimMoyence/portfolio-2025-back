@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
 import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
-import { TokenHash } from '../domain/TokenHash';
 import { REFRESH_TOKENS_REPOSITORY } from '../domain/token';
+import { jetonDeRafraichissementConnu } from './services/issue-auth-session';
 
 @Injectable()
 export class RevokeTokenUseCase {
@@ -12,13 +11,10 @@ export class RevokeTokenUseCase {
   ) {}
 
   async execute(rawRefreshToken: string): Promise<void> {
-    const tokenHash = TokenHash.fromRaw(rawRefreshToken).value;
-    const stored = await this.refreshTokensRepo.findByTokenHash(tokenHash);
-
-    if (!stored) {
-      throw new InvalidCredentialsError('Invalid refresh token');
-    }
-
+    const stored = await jetonDeRafraichissementConnu(
+      this.refreshTokensRepo,
+      rawRefreshToken,
+    );
     await this.refreshTokensRepo.revokeByUserId(stored.userId);
   }
 }

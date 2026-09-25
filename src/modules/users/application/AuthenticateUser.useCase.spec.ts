@@ -1,23 +1,15 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { InvalidCredentialsError } from '../../../common/domain/errors/InvalidCredentialsError';
-import type { IRefreshTokensRepository } from '../domain/IRefreshTokens.repository';
-import type { IUsersRepository } from '../domain/IUsers.repository';
+import type { User } from '../domain/User';
 import { AuthenticateUserUseCase } from './AuthenticateUser.useCase';
 import type { LoginCommand } from './dto/Login.command';
-import type { JwtTokenService } from './services/JwtTokenService';
 import type { PasswordService } from './services/PasswordService';
 import {
   attendreSessionOuverte,
   buildUser,
-  createMockUsersRepo,
   createMockPasswordService,
-  createMockJwtService,
-  buildSignedToken,
+  createMockSessionDependances,
 } from '../../../../test/factories/user.factory';
-import {
-  buildRefreshToken,
-  createMockRefreshTokensRepo,
-} from '../../../../test/factories/refresh-token.factory';
 
 const WRONG_CREDENTIAL = 'bad-password';
 const LEGACY_PBKDF2_HASH = 'legacy-pbkdf2-hash';
@@ -25,22 +17,26 @@ const REHASHED_ARGON2 = '$argon2id$new-hash';
 const CURRENT_ARGON2 = '$argon2id$already-good';
 
 describe('AuthenticateUserUseCase', () => {
-  let repo: jest.Mocked<IUsersRepository>;
-  let refreshTokensRepo: jest.Mocked<IRefreshTokensRepository>;
+  let { repo, refreshTokensRepo, jwtTokenService } =
+    createMockSessionDependances();
   let passwordService: jest.Mocked<PasswordService>;
-  let jwtTokenService: jest.Mocked<JwtTokenService>;
   let useCase: AuthenticateUserUseCase;
 
+  const attendreConnexionRefuseeSansVerification = async (user: User) => {
+    repo.findByEmail.mockResolvedValue(user);
+
+    await expect(
+      useCase.execute({ email: user.email, password: 'password' }),
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
+    expect(passwordService.verify).not.toHaveBeenCalled();
+    expect(jwtTokenService.sign).not.toHaveBeenCalled();
+  };
+
   beforeEach(() => {
-    repo = createMockUsersRepo();
-    refreshTokensRepo = createMockRefreshTokensRepo();
+    ({ repo, refreshTokensRepo, jwtTokenService } =
+      createMockSessionDependances());
     passwordService = createMockPasswordService();
     passwordService.verify.mockResolvedValue(true);
-    jwtTokenService = createMockJwtService();
-    jwtTokenService.sign.mockResolvedValue(buildSignedToken());
-    refreshTokensRepo.create.mockResolvedValue(
-      buildRefreshToken({ tokenHash: 'hashed', expiresAt: new Date() }),
-    );
 
     useCase = new AuthenticateUserUseCase(
       repo,
@@ -83,40 +79,29 @@ describe('AuthenticateUserUseCase', () => {
   });
 
   it('throws when the user is inactive', async () => {
-    const inactiveUser = buildUser({
-      id: 'user-2',
-      email: 'inactive@example.com',
-      passwordHash: 'hashed',
-      firstName: 'Ina',
-      lastName: 'Ctive',
-      isActive: false,
-    });
-
-    repo.findByEmail.mockResolvedValue(inactiveUser);
-
-    await expect(
-      useCase.execute({ email: 'inactive@example.com', password: 'password' }),
-    ).rejects.toBeInstanceOf(InvalidCredentialsError);
-    expect(passwordService.verify).not.toHaveBeenCalled();
-    expect(jwtTokenService.sign).not.toHaveBeenCalled();
+    await attendreConnexionRefuseeSansVerification(
+      buildUser({
+        id: 'user-2',
+        email: 'inactive@example.com',
+        passwordHash: 'hashed',
+        firstName: 'Ina',
+        lastName: 'Ctive',
+        isActive: false,
+      }),
+    );
   });
 
   it('throws when user has no password hash (Google-only account)', async () => {
-    const googleUser = buildUser({
-      id: 'user-google',
-      email: 'google@example.com',
-      passwordHash: null,
-      firstName: 'Google',
-      lastName: 'User',
-      googleId: 'google-123',
-    });
-    repo.findByEmail.mockResolvedValue(googleUser);
-
-    await expect(
-      useCase.execute({ email: 'google@example.com', password: 'password' }),
-    ).rejects.toBeInstanceOf(InvalidCredentialsError);
-    expect(passwordService.verify).not.toHaveBeenCalled();
-    expect(jwtTokenService.sign).not.toHaveBeenCalled();
+    await attendreConnexionRefuseeSansVerification(
+      buildUser({
+        id: 'user-google',
+        email: 'google@example.com',
+        passwordHash: null,
+        firstName: 'Google',
+        lastName: 'User',
+        googleId: 'google-123',
+      }),
+    );
   });
 
   it('throws when the password does not match', async () => {

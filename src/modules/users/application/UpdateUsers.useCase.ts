@@ -1,26 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
-import type { IUsersRepository } from '../domain/IUsers.repository';
-import { USERS_REPOSITORY } from '../domain/token';
+import { Injectable } from '@nestjs/common';
 import type { User } from '../domain/User';
+import { CasDUsageMotDePasse } from './CasDUsageUtilisateurs';
 import type { UpdateUserCommand } from './dto/UpdateUser.command';
 import { UsersMapper } from './mappers/UsersMapper';
-import { PasswordService } from './services/PasswordService';
 
 @Injectable()
-export class UpdateUsersUseCase {
-  constructor(
-    @Inject(USERS_REPOSITORY)
-    private readonly repo: IUsersRepository,
-    private readonly passwordService: PasswordService,
-  ) {}
-
+export class UpdateUsersUseCase extends CasDUsageMotDePasse {
   async execute(id: string, dto: UpdateUserCommand): Promise<User> {
-    const existing = await this.repo.findById(id);
-
-    if (!existing) {
-      throw new UserNotFoundError(`User with id ${id} was not found`);
-    }
+    await this.utilisateurExistant(id);
 
     const passwordHash = dto.password
       ? await this.passwordService.hash(dto.password)

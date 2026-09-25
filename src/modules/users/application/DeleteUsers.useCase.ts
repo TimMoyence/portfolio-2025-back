@@ -1,23 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UserNotFoundError } from '../../../common/domain/errors/UserNotFoundError';
-import type { IUsersRepository } from '../domain/IUsers.repository';
-import { USERS_REPOSITORY } from '../domain/token';
+import { Injectable } from '@nestjs/common';
 import { User } from '../domain/User';
+import { CasDUsageUtilisateurs } from './CasDUsageUtilisateurs';
 
 @Injectable()
-export class DeleteUsersUseCase {
-  constructor(
-    @Inject(USERS_REPOSITORY)
-    private readonly repo: IUsersRepository,
-  ) {}
-
+export class DeleteUsersUseCase extends CasDUsageUtilisateurs {
   async execute(id: string): Promise<User> {
-    const existing = await this.repo.findById(id);
-
-    if (!existing) {
-      throw new UserNotFoundError(`User with id ${id} was not found`);
-    }
-
+    await this.utilisateurExistant(id);
     return this.repo.deactivate(id);
   }
 }

@@ -12,23 +12,23 @@ describe('ArticleContract', () => {
     expect(() => ArticleContract.parse({})).toThrow();
   });
 
+  const sectionIdAccepte = (id: string) => {
+    const payload = structuredClone(validArticleIngestEnvelope);
+    payload.article.sections[0].id = id;
+    return ArticleContract.safeParse(payload).success;
+  };
+
   it.each(['-ab', 'a', 'a'.repeat(81), 'Ab', 'a_b'])(
     'refuse un section.id hors du motif du producteur (%s)',
     (id) => {
-      const payload = structuredClone(validArticleIngestEnvelope);
-      payload.article.sections[0].id = id;
-
-      expect(ArticleContract.safeParse(payload).success).toBe(false);
+      expect(sectionIdAccepte(id)).toBe(false);
     },
   );
 
   it.each(['ab', '0-', 'a'.repeat(80), 'radar-2'])(
     'accepte un section.id conforme au motif du producteur (%s)',
     (id) => {
-      const payload = structuredClone(validArticleIngestEnvelope);
-      payload.article.sections[0].id = id;
-
-      expect(ArticleContract.safeParse(payload).success).toBe(true);
+      expect(sectionIdAccepte(id)).toBe(true);
     },
   );
 });

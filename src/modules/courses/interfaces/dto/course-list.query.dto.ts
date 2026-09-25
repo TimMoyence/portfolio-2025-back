@@ -1,6 +1,5 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional } from 'class-validator';
 import {
+  ChoixOptionnel,
   PaginationQueryDto,
   SORT_DIRECTIONS,
 } from '../../../../common/interfaces/dto/pagination.query.dto';
@@ -8,21 +7,12 @@ import {
 const COURSE_SORT_FIELDS = ['slug', 'title', 'createdAt'] as const;
 
 export class CourseListQueryDto extends PaginationQueryDto {
-  @ApiPropertyOptional({
-    example: 'createdAt',
-    default: 'createdAt',
-    enum: COURSE_SORT_FIELDS,
+  @ChoixOptionnel(COURSE_SORT_FIELDS, {
+    exemple: 'createdAt',
+    parDefaut: 'createdAt',
   })
-  @IsOptional()
-  @IsIn(COURSE_SORT_FIELDS)
   sortBy: (typeof COURSE_SORT_FIELDS)[number] = 'createdAt';
 
-  @ApiPropertyOptional({
-    example: 'DESC',
-    default: 'DESC',
-    enum: SORT_DIRECTIONS,
-  })
-  @IsOptional()
-  @IsIn(SORT_DIRECTIONS)
+  @ChoixOptionnel(SORT_DIRECTIONS, { exemple: 'DESC', parDefaut: 'DESC' })
   override order: (typeof SORT_DIRECTIONS)[number] = 'DESC';
 }

@@ -14,36 +14,37 @@ const schema = JSON.parse(
   ),
 );
 
+type Enveloppe = typeof validArticleIngestEnvelope;
+
+function valider(modifier: (payload: Enveloppe) => void = () => undefined) {
+  const ajv = new Ajv2020({ allErrors: true });
+  addFormats(ajv);
+  const validate = ajv.compile(schema);
+  const payload = structuredClone(validArticleIngestEnvelope);
+  modifier(payload);
+  return validate(payload);
+}
+
 describe('ArticleIngestEnvelopeV1 JSON Schema', () => {
   it('est accepté par le validateur AJV à partir du schéma partagé', () => {
-    const ajv = new Ajv2020({ allErrors: true });
-    addFormats(ajv);
-    const validate = ajv.compile(schema);
-
-    expect(validate(validArticleIngestEnvelope)).toBe(true);
+    expect(valider()).toBe(true);
   });
 
   it('accepte les dates de source nulles et une description SEO courte autorisées par le Pi', () => {
-    const ajv = new Ajv2020({ allErrors: true });
-    addFormats(ajv);
-    const validate = ajv.compile(schema);
-    const payload = structuredClone(validArticleIngestEnvelope);
-
-    payload.article.sources[0].published_at = null;
-    payload.article.sources[0].retrieved_at = null;
-    payload.article.seo.description = 'Veille IA sourcée du jour.';
-
-    expect(validate(payload)).toBe(true);
+    expect(
+      valider((payload) => {
+        payload.article.sources[0].published_at = null;
+        payload.article.sources[0].retrieved_at = null;
+        payload.article.seo.description = 'Veille IA sourcée du jour.';
+      }),
+    ).toBe(true);
   });
 
   it('refuse un section.id d un seul caractère, comme zod', () => {
-    const ajv = new Ajv2020({ allErrors: true });
-    addFormats(ajv);
-    const validate = ajv.compile(schema);
-    const payload = structuredClone(validArticleIngestEnvelope);
-
-    payload.article.sections[0].id = 'a';
-
-    expect(validate(payload)).toBe(false);
+    expect(
+      valider((payload) => {
+        payload.article.sections[0].id = 'a';
+      }),
+    ).toBe(false);
   });
 });

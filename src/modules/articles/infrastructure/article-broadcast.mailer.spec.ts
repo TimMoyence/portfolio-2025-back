@@ -1,3 +1,4 @@
+import { buildArticleRecord } from '../../../../test/factories/article.factory';
 import type { ArticleRecord } from '../application/articles.repository';
 
 const mockSendMail = jest.fn().mockResolvedValue({ messageId: 'test-id' });
@@ -17,17 +18,8 @@ const recipient = {
 };
 
 function article(overrides: Partial<ArticleRecord> = {}): ArticleRecord {
-  return {
-    id: 'record-1',
-    articleId: 'morning-brief-2026-09-23-fr',
-    slug: 'morning-brief-2026-09-23',
-    locale: 'fr',
-    status: 'published',
+  return buildArticleRecord({
     title: 'Veille IA <du> 23 septembre',
-    excerpt: 'Les faits IA du jour, sourcés.',
-    contentMarkdown: '# Veille',
-    readingTimeMinutes: 6,
-    tags: [],
     sections: [
       {
         id: 'essentiel',
@@ -51,14 +43,8 @@ function article(overrides: Partial<ArticleRecord> = {}): ArticleRecord {
         ],
       },
     ],
-    sources: [],
-    provenance: {},
-    seo: {},
-    publishedAt: new Date('2026-09-23T04:15:00.000Z'),
-    updatedAt: new Date('2026-09-23T04:15:00.000Z'),
-    contentSha256: 'a'.repeat(64),
     ...overrides,
-  };
+  });
 }
 
 describe('ArticleBroadcastMailerService', () => {

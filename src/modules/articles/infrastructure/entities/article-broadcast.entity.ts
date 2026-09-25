@@ -2,13 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ForeignKey,
   Index,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 import type { ArticleBroadcastStatus } from '../../application/article-broadcast.repository';
-import { ArticleEntity } from './article.entity';
+import { ReferenceArticle } from './reference-article';
 
 @Entity({ name: 'article_broadcasts' })
 @Unique('UQ_article_broadcast_article', ['articleRecordId'])
@@ -17,11 +16,7 @@ export class ArticleBroadcastEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ForeignKey(() => ArticleEntity, {
-    name: 'FK_article_broadcast_article',
-    onDelete: 'CASCADE',
-  })
-  @Column({ type: 'uuid' })
+  @ReferenceArticle('FK_article_broadcast_article', 'CASCADE')
   articleRecordId: string;
 
   @Column({ type: 'varchar', length: 20, default: 'scheduled' })

@@ -11,6 +11,7 @@ import {
   createMockUsersRepo,
   createMockPasswordService,
 } from '../../../../test/factories/user.factory';
+import { attendreMiseAJourDeLUtilisateur } from '../../../../test/helpers/utilisateurs';
 
 const CURRENT_CREDENTIAL = 'OldPassword123';
 const NEXT_CREDENTIAL = 'NewPassword456';
@@ -55,14 +56,10 @@ describe('ChangePasswordUseCase', () => {
       user.passwordHash,
     );
     expect(passwordService.hash).toHaveBeenCalledWith(dto.newPassword);
-    expect(repo.update).toHaveBeenCalledWith(
-      'user-1',
-      expect.objectContaining({
-        passwordHash: 'new-hash',
-        updatedOrCreatedBy: user.updatedOrCreatedBy,
-        updatedAt: expect.any(Date),
-      }),
-    );
+    attendreMiseAJourDeLUtilisateur(repo.update, {
+      passwordHash: 'new-hash',
+      updatedOrCreatedBy: user.updatedOrCreatedBy,
+    });
     expect(result).toBe(updatedUser);
   });
 

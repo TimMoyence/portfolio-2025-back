@@ -1,6 +1,5 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional } from 'class-validator';
 import {
+  ChoixOptionnel,
   PaginationQueryDto,
   SORT_DIRECTIONS,
 } from '../../../../common/interfaces/dto/pagination.query.dto';
@@ -10,37 +9,15 @@ const PROJECT_TYPES = ['CLIENT', 'SIDE'] as const;
 const PROJECT_STATUSES = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
 
 export class ProjectListQueryDto extends PaginationQueryDto {
-  @ApiPropertyOptional({
-    example: 'order',
-    default: 'order',
-    enum: PROJECT_SORT_FIELDS,
-  })
-  @IsOptional()
-  @IsIn(PROJECT_SORT_FIELDS)
+  @ChoixOptionnel(PROJECT_SORT_FIELDS, { exemple: 'order', parDefaut: 'order' })
   sortBy: (typeof PROJECT_SORT_FIELDS)[number] = 'order';
 
-  @ApiPropertyOptional({
-    example: 'SIDE',
-    enum: PROJECT_TYPES,
-  })
-  @IsOptional()
-  @IsIn(PROJECT_TYPES)
+  @ChoixOptionnel(PROJECT_TYPES, { exemple: 'SIDE' })
   type?: (typeof PROJECT_TYPES)[number];
 
-  @ApiPropertyOptional({
-    example: 'PUBLISHED',
-    enum: PROJECT_STATUSES,
-  })
-  @IsOptional()
-  @IsIn(PROJECT_STATUSES)
+  @ChoixOptionnel(PROJECT_STATUSES, { exemple: 'PUBLISHED' })
   status?: (typeof PROJECT_STATUSES)[number];
 
-  @ApiPropertyOptional({
-    example: 'ASC',
-    default: 'ASC',
-    enum: SORT_DIRECTIONS,
-  })
-  @IsOptional()
-  @IsIn(SORT_DIRECTIONS)
+  @ChoixOptionnel(SORT_DIRECTIONS, { exemple: 'ASC', parDefaut: 'ASC' })
   override order: (typeof SORT_DIRECTIONS)[number] = 'ASC';
 }

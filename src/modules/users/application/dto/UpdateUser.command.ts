@@ -1,10 +1,3 @@
-export interface UpdateUserCommand {
-  email?: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string | null;
-  isActive?: boolean;
-  roles?: string[];
-  updatedOrCreatedBy?: string | null;
-}
+import type { CreateUserCommand } from './CreateUser.command';
+
+export type UpdateUserCommand = Partial<CreateUserCommand>;

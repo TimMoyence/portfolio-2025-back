@@ -19,8 +19,6 @@ import {
   ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
-import { Public } from '../../../common/interfaces/auth/public.decorator';
 import { ConfirmSubscriptionUseCase } from '../application/ConfirmSubscription.useCase';
 import { SubscribeNewsletterUseCase } from '../application/SubscribeNewsletter.useCase';
 import {
@@ -29,6 +27,10 @@ import {
 } from '../application/UnsubscribeNewsletter.useCase';
 import { SubscribeNewsletterRequestDto } from './dto/subscribe-newsletter.request.dto';
 import { SubscribeNewsletterResponseDto } from './dto/subscribe-newsletter.response.dto';
+import {
+  FormulairePublic,
+  LienPublic,
+} from '../../../common/interfaces/security/formulaire-public.decorator';
 import { PublicFormProtectionService } from '../../../common/interfaces/security/public-form-protection.service';
 
 /**
@@ -54,9 +56,7 @@ export class NewsletterController {
     private readonly formProtection = new PublicFormProtectionService(),
   ) {}
 
-  @Public()
-  @Throttle({ default: { limit: 3, ttl: 3600000 } })
-  @Post('subscribe')
+  @FormulairePublic(3, 'subscribe')
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary:
@@ -87,8 +87,7 @@ export class NewsletterController {
     return response;
   }
 
-  @Public()
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @LienPublic()
   @Get('confirm')
   @ApiOperation({
     summary:
@@ -104,8 +103,7 @@ export class NewsletterController {
     return { status: result.status };
   }
 
-  @Public()
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @LienPublic()
   @Get('unsubscribe')
   @ApiOperation({
     summary: 'Desabonne un utilisateur via son token (acces public)',
@@ -127,8 +125,7 @@ export class NewsletterController {
    * sans page intermediaire ni confirmation : c'est la contrepartie de
    * l'en-tete annonce par `NewsletterMailerService`.
    */
-  @Public()
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @LienPublic()
   @Post('unsubscribe')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
