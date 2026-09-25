@@ -1,12 +1,6 @@
-import {
-  IsInt,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { DureeDeReponse } from './duree-de-reponse.decorator';
 
 export class SaveFreeResponseRequestDto {
   @ApiProperty({ example: 'B2-01-S11-C1' })
@@ -26,9 +20,6 @@ export class SaveFreeResponseRequestDto {
   @MaxLength(10000)
   response: string;
 
-  @ApiProperty({ example: 12000 })
-  @IsInt()
-  @Min(0)
-  @Max(5 * 60 * 60 * 1000)
+  @DureeDeReponse(12000)
   dureeMs: number;
 }

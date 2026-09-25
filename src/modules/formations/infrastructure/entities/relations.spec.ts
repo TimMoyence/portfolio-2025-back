@@ -1,9 +1,12 @@
 import { getMetadataArgsStorage } from 'typeorm';
 import { FormationAnswerEntity } from './FormationAnswer.entity';
 import { FormationCourseContentEntity } from './FormationCourseContent.entity';
+import { FormationEscapeAttemptEntity } from './FormationEscapeAttempt.entity';
+import { FormationEscapeProgressEntity } from './FormationEscapeProgress.entity';
 import { FormationFreeResponseEntity } from './FormationFreeResponse.entity';
 import { FormationIncidentEntity } from './FormationIncident.entity';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
+import { FormationRappelServiEntity } from './FormationRappelServi.entity';
 import { FormationScoreEntity } from './FormationScore.entity';
 import { FormationScreenContentEntity } from './FormationScreenContent.entity';
 import { FormationSessionEntity } from './FormationSession.entity';
@@ -94,6 +97,42 @@ const ATTENDUES: readonly RelationAttendue[] = [
     FormationCourseContentEntity,
     'FK_formation_screen_contents_course',
   ),
+  cascade(
+    FormationEscapeAttemptEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_escape_attempts_session',
+  ),
+  cascade(
+    FormationEscapeAttemptEntity,
+    'participant',
+    FormationParticipantEntity,
+    'FK_formation_escape_attempts_participant',
+  ),
+  cascade(
+    FormationEscapeProgressEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_escape_progress_session',
+  ),
+  cascade(
+    FormationEscapeProgressEntity,
+    'participant',
+    FormationParticipantEntity,
+    'FK_formation_escape_progress_participant',
+  ),
+  cascade(
+    FormationRappelServiEntity,
+    'session',
+    FormationSessionEntity,
+    'FK_formation_rappels_servis_session',
+  ),
+  cascade(
+    FormationRappelServiEntity,
+    'participant',
+    FormationParticipantEntity,
+    'FK_formation_rappels_servis_participant',
+  ),
 ];
 
 const declareePour = (cible: unknown, entite: Entite): boolean =>
@@ -104,8 +143,8 @@ describe('relations des entites formations', () => {
   const relations = getMetadataArgsStorage().relations;
   const jointures = getMetadataArgsStorage().joinColumns;
 
-  it('declare les dix clefs etrangeres des migrations', () => {
-    expect(ATTENDUES).toHaveLength(10);
+  it('declare les seize clefs etrangeres des migrations', () => {
+    expect(ATTENDUES).toHaveLength(16);
   });
 
   for (const attendue of ATTENDUES) {

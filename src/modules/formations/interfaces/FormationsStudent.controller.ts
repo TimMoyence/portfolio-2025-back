@@ -84,8 +84,8 @@ import {
   LIMITE_REVISION_PAR_PARTICIPANT,
   LIMITE_SUJET_PAR_PARTICIPANT,
   LIMITE_TENTATIVES_PAR_PARTICIPANT,
+  LimiteParParticipant,
   suivreParCodeDeSession,
-  suivreParParticipant,
 } from './formations-throttling';
 import {
   EN_TETE_JETON,
@@ -169,13 +169,7 @@ export class FormationsStudentController {
     };
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_REPONSES_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_REPONSES_PAR_PARTICIPANT)
   @Post('sessions/:id/answers')
   @ApiOperation({ summary: 'Soumet une reponse, corrigee cote serveur' })
   @ApiCreatedResponse({ type: SubmitAnswerResponseDto })
@@ -208,13 +202,7 @@ export class FormationsStudentController {
     };
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_REPONSES_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_REPONSES_PAR_PARTICIPANT)
   @Post('sessions/:id/free-responses')
   @ApiOperation({
     summary:
@@ -251,13 +239,7 @@ export class FormationsStudentController {
     return { status: 'enregistre' };
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_REPONSES_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_REPONSES_PAR_PARTICIPANT)
   @Post('sessions/:id/productions')
   @ApiOperation({
     summary: 'Soumet une production, corrigee et notee cote serveur',
@@ -287,13 +269,7 @@ export class FormationsStudentController {
     });
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_TENTATIVES_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_TENTATIVES_PAR_PARTICIPANT)
   @Post('sessions/:id/escape/:parcoursId/tentatives')
   @ApiOperation({
     summary: 'Tente une enigme, corrigee et plafonnee cote serveur',
@@ -322,13 +298,7 @@ export class FormationsStudentController {
     });
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_JALONS_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_JALONS_PAR_PARTICIPANT)
   @Put('sessions/:id/pulses/:sondageId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
@@ -356,13 +326,7 @@ export class FormationsStudentController {
     });
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_TENTATIVES_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_TENTATIVES_PAR_PARTICIPANT)
   @Post('sessions/:id/defis/:defiId/tentative')
   @ApiOperation({
     summary:
@@ -388,13 +352,7 @@ export class FormationsStudentController {
     });
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_JALONS_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_JALONS_PAR_PARTICIPANT)
   @Get('sessions/:id/defis/:defiId/strategies')
   @ApiOperation({
     summary:
@@ -414,13 +372,7 @@ export class FormationsStudentController {
     return this.defis.strategies(sessionId, participantId, defiId);
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_ETAT_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_ETAT_PAR_PARTICIPANT)
   @UseGuards(ParticipantTokenGuard)
   @Get('sessions/:id/moi')
   @ApiOperation({
@@ -433,19 +385,13 @@ export class FormationsStudentController {
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Req() request: Request,
   ): Promise<EtatParticipantResponseDto> {
-    return this.lireEtatParticipant.execute(
+    return this.lireEtatParticipant.execute({
       sessionId,
-      request.participantId!,
-    ) as Promise<EtatParticipantResponseDto>;
+      participantId: request.participantId!,
+    }) as Promise<EtatParticipantResponseDto>;
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_RAPPELS_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_RAPPELS_PAR_PARTICIPANT)
   @UseGuards(ParticipantTokenGuard)
   @Get('sessions/:id/rappels')
   @ApiOperation({
@@ -463,19 +409,13 @@ export class FormationsStudentController {
     @Param('id', ParseUUIDPipe) sessionId: string,
     @Req() request: Request,
   ): Promise<RappelsResponseDto> {
-    return this.lireRappels.execute(
+    return this.lireRappels.execute({
       sessionId,
-      request.participantId!,
-    ) as Promise<RappelsResponseDto>;
+      participantId: request.participantId!,
+    }) as Promise<RappelsResponseDto>;
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_INCIDENTS_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_INCIDENTS_PAR_PARTICIPANT)
   @Post('sessions/:id/incidents')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remonte le journal d incidents du poste etudiant' })
@@ -503,13 +443,7 @@ export class FormationsStudentController {
     );
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_REVISION_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_REVISION_PAR_PARTICIPANT)
   @Get('sessions/:id/due-questions')
   @ApiOperation({
     summary: 'Liste les questions a revoir, de la premiere boite a la derniere',
@@ -528,13 +462,7 @@ export class FormationsStudentController {
     };
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_SUJET_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_SUJET_PAR_PARTICIPANT)
   @UseGuards(ParticipantTokenGuard)
   @Get('sessions/:id/sujet')
   @ApiOperation({
@@ -558,13 +486,7 @@ export class FormationsStudentController {
     });
   }
 
-  @Throttle({
-    default: {
-      limit: LIMITE_FLUX_PAR_PARTICIPANT,
-      ttl: FENETRE_THROTTLE_MS,
-      getTracker: suivreParParticipant,
-    },
-  })
+  @LimiteParParticipant(LIMITE_FLUX_PAR_PARTICIPANT)
   @UseGuards(ParticipantTokenGuard)
   @Sse('sessions/:id/stream')
   @ApiOperation({ summary: 'Flux temps reel de l etat de la session' })

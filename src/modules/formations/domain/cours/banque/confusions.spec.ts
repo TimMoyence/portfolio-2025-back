@@ -1,5 +1,10 @@
 import { CONCEPTS } from './concepts';
-import { CONFUSIONS, libelleDeConfusion, libelleLisible } from './confusions';
+import {
+  CONFUSIONS,
+  detailsLisibles,
+  libelleDeConfusion,
+  libelleLisible,
+} from './confusions';
 
 const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'proportion-confondue-avec-evolution': {
@@ -219,5 +224,23 @@ describe('libelleLisible', () => {
 
   it('rend null quand aucune confusion n est reconnue', () => {
     expect(libelleLisible(null)).toBeNull();
+  });
+});
+
+describe('detailsLisibles', () => {
+  it('remplace la confusion de chaque detail par son libelle lisible', () => {
+    expect(
+      detailsLisibles([
+        { cle: 'B2', juste: false, confusion: 'hausse-baisse-symetriques' },
+        { cle: 'B3', juste: true, confusion: null },
+      ]),
+    ).toEqual([
+      {
+        cle: 'B2',
+        juste: false,
+        libelleConfusion: CONFUSIONS['hausse-baisse-symetriques'].libelle,
+      },
+      { cle: 'B3', juste: true, libelleConfusion: null },
+    ]);
   });
 });

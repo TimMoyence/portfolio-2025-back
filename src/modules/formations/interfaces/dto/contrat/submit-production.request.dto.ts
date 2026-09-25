@@ -10,7 +10,6 @@ import {
   IsObject,
   IsString,
   Matches,
-  Max,
   MaxLength,
   Min,
   MinLength,
@@ -23,8 +22,9 @@ import type {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import type { ValeurProduction } from '../../../domain/contrats/resultats';
+import { DureeDeReponse } from '../duree-de-reponse.decorator';
+import { entreesBornees } from '../objet-plat';
 
-const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
 const LONGUEUR_MAX_IDENTIFIANT = 60;
 const LONGUEUR_MAX_FORMULE = 200;
 const ENTREES_MAX = 400;
@@ -34,23 +34,14 @@ const TYPES_DE_PRODUCTION = ['feuille', 'tableau', 'classement'] as const;
 class DictionnaireDeTextes implements ValidatorConstraintInterface {
   validate(valeur: unknown, args: ValidationArguments): boolean {
     const [longueurMax] = args.constraints as [number];
-    if (
-      typeof valeur !== 'object' ||
-      valeur === null ||
-      Array.isArray(valeur)
-    ) {
-      return false;
-    }
-    const entrees = Object.entries(valeur);
     return (
-      entrees.length <= ENTREES_MAX &&
-      entrees.every(
+      entreesBornees(valeur, ENTREES_MAX)?.every(
         ([cle, texte]) =>
           cle.length > 0 &&
           cle.length <= LONGUEUR_MAX_IDENTIFIANT &&
           typeof texte === 'string' &&
           texte.length <= longueurMax,
-      )
+      ) ?? false
     );
   }
 
@@ -60,7 +51,7 @@ class DictionnaireDeTextes implements ValidatorConstraintInterface {
   }
 }
 
-export class ProductionFeuilleDto {
+class ProductionFeuilleDto {
   @ApiProperty({ enum: ['feuille'] })
   @Equals('feuille')
   type: 'feuille';
@@ -75,7 +66,7 @@ export class ProductionFeuilleDto {
   cellules: Record<string, string>;
 }
 
-export class SaisieTableauDto {
+class SaisieTableauDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   @Min(0)
@@ -92,7 +83,7 @@ export class SaisieTableauDto {
   valeur: number;
 }
 
-export class ProductionTableauDto {
+class ProductionTableauDto {
   @ApiProperty({ enum: ['tableau'] })
   @Equals('tableau')
   type: 'tableau';
@@ -105,7 +96,7 @@ export class ProductionTableauDto {
   saisies: SaisieTableauDto[];
 }
 
-export class ProductionClassementDto {
+class ProductionClassementDto {
   @ApiProperty({ enum: ['classement'] })
   @Equals('classement')
   type: 'classement';
@@ -120,7 +111,7 @@ export class ProductionClassementDto {
   classement: Record<string, string>;
 }
 
-export class ProductionNeSaitPasDto {
+class ProductionNeSaitPasDto {
   @ApiProperty({ enum: TYPES_DE_PRODUCTION })
   @IsIn(TYPES_DE_PRODUCTION)
   type: (typeof TYPES_DE_PRODUCTION)[number];
@@ -129,6 +120,17 @@ export class ProductionNeSaitPasDto {
   @Equals(true)
   neSaitPas: true;
 }
+
+export const MODELES_DE_PRODUCTION = [
+  ProductionFeuilleDto,
+  ProductionTableauDto,
+  ProductionClassementDto,
+  ProductionNeSaitPasDto,
+];
+
+export const SCHEMAS_DE_PRODUCTION = MODELES_DE_PRODUCTION.map((modele) => ({
+  $ref: getSchemaPath(modele),
+}));
 
 const CLASSE_PAR_TYPE: Readonly<Record<string, new () => object>> = {
   feuille: ProductionFeuilleDto,
@@ -151,12 +153,7 @@ function versProduction(valeur: unknown): unknown {
   return classe === undefined ? valeur : plainToInstance(classe, brute);
 }
 
-@ApiExtraModels(
-  ProductionFeuilleDto,
-  ProductionTableauDto,
-  ProductionClassementDto,
-  ProductionNeSaitPasDto,
-)
+@ApiExtraModels(...MODELES_DE_PRODUCTION)
 export class SubmitProductionRequestDto {
   @ApiProperty({
     description:
@@ -171,21 +168,13 @@ export class SubmitProductionRequestDto {
   @ApiProperty({
     description:
       'Production brute du poste, corrigee cote serveur contre le plan',
-    oneOf: [
-      { $ref: getSchemaPath(ProductionFeuilleDto) },
-      { $ref: getSchemaPath(ProductionTableauDto) },
-      { $ref: getSchemaPath(ProductionClassementDto) },
-      { $ref: getSchemaPath(ProductionNeSaitPasDto) },
-    ],
+    oneOf: SCHEMAS_DE_PRODUCTION,
   })
   @Transform(({ value }: { value: unknown }) => versProduction(value))
   @IsObject()
   @ValidateNested()
   valeur: ValeurProduction;
 
-  @ApiProperty({ example: 600000 })
-  @IsInt()
-  @Min(0)
-  @Max(DUREE_MAX_MS)
+  @DureeDeReponse(600000)
   dureeMs: number;
 }

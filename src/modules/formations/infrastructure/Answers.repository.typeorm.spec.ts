@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { LessThan, type Repository } from 'typeorm';
 import {
+  buildCreateAnswerInput,
   mockTypeOrmCreate,
   mockTypeOrmSave,
 } from '../../../../test/factories/formation.factory';
+import { verifierPanneDEcritureTransmise } from '../../../../test/helpers/pannes-d-ecriture';
 import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
 import {
   AnswersRepositoryTypeORM,
@@ -59,17 +62,7 @@ describe('AnswersRepositoryTypeORM', () => {
   let count: jest.Mock;
   let sut: AnswersRepositoryTypeORM;
 
-  const input = {
-    sessionId: 'session-uuid',
-    participantId: 'participant-uuid',
-    questionId: 'Q-CAP-03',
-    concept: 'capitalisation',
-    valeur: 1338.23,
-    seed: 1001,
-    correcte: true,
-    misconception: null,
-    dureeMs: 42000,
-  };
+  const input = buildCreateAnswerInput();
 
   beforeEach(() => {
     update = jest.fn();
@@ -105,10 +98,10 @@ describe('AnswersRepositoryTypeORM', () => {
     );
   });
 
-  it('laisse passer une erreur qui ne vient pas d une violation de contrainte unique', async () => {
-    repo.save.mockRejectedValue(new Error('connexion perdue'));
-    await expect(sut.create(input)).rejects.toThrow('connexion perdue');
-  });
+  verifierPanneDEcritureTransmise(() => ({
+    save: repo.save,
+    ecrire: () => sut.create(input),
+  }));
 
   it('F16 · remplace la production du participant sur la même question', async () => {
     update.mockResolvedValue({ affected: 1 });

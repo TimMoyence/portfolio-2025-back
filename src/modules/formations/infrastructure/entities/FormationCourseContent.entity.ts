@@ -5,8 +5,8 @@ import {
   Entity,
   Index,
   OneToMany,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ContenuDeCours } from './contenu-de-cours';
 import { FormationScreenContentEntity } from './FormationScreenContent.entity';
 
 @Entity({ name: 'formation_course_contents' })
@@ -14,10 +14,7 @@ import { FormationScreenContentEntity } from './FormationScreenContent.entity';
   unique: true,
 })
 @Check('chk_formation_course_version_positive', '"version" > 0')
-export class FormationCourseContentEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class FormationCourseContentEntity extends ContenuDeCours {
   @Column({ type: 'varchar', length: 120 })
   slug: string;
 
@@ -29,12 +26,6 @@ export class FormationCourseContentEntity {
 
   @Column({ type: 'varchar', length: 20 })
   niveau: string;
-
-  @Column({ name: 'duree_minutes', type: 'int' })
-  dureeMinutes: number;
-
-  @Column({ type: 'jsonb' })
-  concepts: readonly string[];
 
   @Column({ type: 'jsonb', default: {} })
   remediations: Readonly<Record<string, unknown>>;

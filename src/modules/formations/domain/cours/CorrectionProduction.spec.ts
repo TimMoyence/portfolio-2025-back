@@ -1,8 +1,10 @@
 import {
+  ATTENDU_PRIX_INITIAL,
   buildCorrigeFeuille,
   buildCorrigeTableau,
   buildPlanFeuille,
 } from '../../../../../test/factories/corriges.factory';
+import { attendreProductionReussie } from '../../../../../test/helpers/corrections';
 import { corrigerFeuille, corrigerTableau } from './CorrectionProduction';
 
 const PLAN = buildPlanFeuille({
@@ -24,7 +26,7 @@ const ATTENDU_D2 = CORRIGE_FEUILLE.attendus[0];
 const CORRIGE_D2 = buildCorrigeFeuille({ plan: PLAN, attendus: [ATTENDU_D2] });
 const CORRIGE_TABLEAU = buildCorrigeTableau({
   attendus: [
-    { rang: 0, cle: 'prix', valeur: 21.6, pieges: [] },
+    ATTENDU_PRIX_INITIAL,
     {
       rang: 0,
       cle: 'indice',
@@ -52,14 +54,7 @@ function verdict(
 
 describe('corrigerFeuille', () => {
   it('accepte les formules de référence et déclare la production réussie', () => {
-    const correction = corrigerFeuille(CORRIGE_FEUILLE, JUSTES);
-
-    expect(correction.verdicts.map((cellule) => cellule.juste)).toEqual([
-      true,
-      true,
-    ]);
-    expect(correction.score).toBe(1);
-    expect(correction.correcte).toBe(true);
+    attendreProductionReussie(corrigerFeuille(CORRIGE_FEUILLE, JUSTES), 2);
   });
 
   it('accepte une formule équivalente qui garde la même forme recopiable', () => {
@@ -187,34 +182,28 @@ describe('corrigerFeuille', () => {
 
 describe('corrigerTableau', () => {
   it('accepte les valeurs attendues à la tolérance du corrigé', () => {
-    const correction = corrigerTableau(CORRIGE_TABLEAU, [
-      { prix: 21.605, indice: 108 },
-    ]);
-
-    expect(correction.verdicts.every((ligne) => ligne.juste)).toBe(true);
-    expect(correction.correcte).toBe(true);
+    attendreProductionReussie(
+      corrigerTableau(CORRIGE_TABLEAU, [{ prix: 21.605, indice: 108 }]),
+      2,
+    );
   });
 
-  it('localise la ligne fausse et reconnaît son piège', () => {
-    const correction = corrigerTableau(CORRIGE_TABLEAU, [
+  it.each([
+    [
+      'localise la ligne fausse et reconnaît son piège',
       { prix: 21.6, indice: 8 },
-    ]);
+      'indice-lu-comme-taux',
+    ],
+    [
+      'refuse une saisie absente sans lui prêter de confusion',
+      { prix: 21.6 },
+      null,
+    ],
+  ])('%s', (_titre, saisie, confusion) => {
+    const correction = corrigerTableau(CORRIGE_TABLEAU, [saisie]);
 
     expect(correction.verdicts.filter((ligne) => !ligne.juste)).toEqual([
-      {
-        rang: 0,
-        cle: 'indice',
-        juste: false,
-        confusion: 'indice-lu-comme-taux',
-      },
-    ]);
-  });
-
-  it('refuse une saisie absente sans lui prêter de confusion', () => {
-    const correction = corrigerTableau(CORRIGE_TABLEAU, [{ prix: 21.6 }]);
-
-    expect(correction.verdicts.filter((ligne) => !ligne.juste)).toEqual([
-      { rang: 0, cle: 'indice', juste: false, confusion: null },
+      { rang: 0, cle: 'indice', juste: false, confusion },
     ]);
     expect(correction.score).toBe(0.5);
   });

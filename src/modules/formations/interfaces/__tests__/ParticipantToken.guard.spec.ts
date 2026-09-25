@@ -3,6 +3,7 @@ import {
   buildParticipantRecord,
   createMockParticipantsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { installerVariables } from '../../../../../test/helpers/environnement';
 import { ParticipantTokenGuard } from '../ParticipantToken.guard';
 import {
   EN_TETE_JETON,
@@ -45,16 +46,13 @@ function contexte(
 }
 
 describe('ParticipantTokenGuard', () => {
-  const secretInitial = process.env.FORMATION_REVIEW_TOKEN_SECRET;
   const participants = createMockParticipantsRepo();
   const tokens = new ParticipantTokenService(participants);
   const garde = new ParticipantTokenGuard(tokens);
   const signer = (sessionId = SESSION_ID, generation = 0) =>
     tokens.sign(sessionId, PARTICIPANT_ID, generation);
 
-  beforeAll(() => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET_TEST;
-  });
+  installerVariables({ FORMATION_REVIEW_TOKEN_SECRET: SECRET_TEST });
 
   beforeEach(() => {
     participants.findById
@@ -62,10 +60,6 @@ describe('ParticipantTokenGuard', () => {
       .mockResolvedValue(
         buildParticipantRecord({ id: PARTICIPANT_ID, sessionId: SESSION_ID }),
       );
-  });
-
-  afterAll(() => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = secretInitial;
   });
 
   it('laisse passer un jeton signe pour cette seance', async () => {

@@ -15,6 +15,14 @@ export interface TentativeEnigmeInput {
   readonly correcte: boolean;
 }
 
+export interface IncrementDeTentative {
+  readonly sessionId: string;
+  readonly participantId: string;
+  readonly parcoursId: string;
+  readonly enigmeId: string;
+  readonly plafond: number;
+}
+
 export interface IEscapeRepository {
   listerProgression(
     participantId: string,
@@ -26,13 +34,7 @@ export interface IEscapeRepository {
   listerProgressionDuParticipant(
     participantId: string,
   ): Promise<readonly ProgressionEnigmeRecord[]>;
-  incrementerTentative(input: {
-    readonly sessionId: string;
-    readonly participantId: string;
-    readonly parcoursId: string;
-    readonly enigmeId: string;
-    readonly plafond: number;
-  }): Promise<number | null>;
+  incrementerTentative(input: IncrementDeTentative): Promise<number | null>;
   marquerResolue(participantId: string, enigmeId: string): Promise<void>;
   journaliser(input: TentativeEnigmeInput): Promise<void>;
   tentativeDejaFaite(

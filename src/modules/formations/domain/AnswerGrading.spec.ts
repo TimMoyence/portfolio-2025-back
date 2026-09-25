@@ -52,46 +52,45 @@ describe('matchesSolution', () => {
 });
 
 describe('gradeAnswer', () => {
-  it('retourne correcte sans misconception quand la reponse est juste', () => {
-    const result = gradeAnswer(1338.23, {
-      valeur: 1338.23,
-      pieges: [{ valeur: 1300, misconception: 'interet-simple' }],
-    });
-    expect(result).toEqual({ correcte: true, misconception: null });
-  });
+  const PIEGE_INTERET_SIMPLE = {
+    valeur: 1300,
+    misconception: 'interet-simple',
+  };
 
-  it('identifie le piege declenche quand la reponse est fausse', () => {
-    const result = gradeAnswer(1300, {
-      valeur: 1338.23,
-      pieges: [{ valeur: 1300, misconception: 'interet-simple' }],
-    });
-    expect(result).toEqual({
-      correcte: false,
-      misconception: 'interet-simple',
-    });
-  });
-
-  it('retourne une misconception nulle pour une erreur non prevue', () => {
-    const result = gradeAnswer(42, {
-      valeur: 1338.23,
-      pieges: [{ valeur: 1300, misconception: 'interet-simple' }],
-    });
-    expect(result).toEqual({ correcte: false, misconception: null });
-  });
-
-  it('traite je ne sais pas comme une erreur sans misconception', () => {
-    const result = gradeAnswer('__je_ne_sais_pas__', {
-      valeur: 1338.23,
-      pieges: [{ valeur: 1300, misconception: 'interet-simple' }],
-    });
-    expect(result).toEqual({ correcte: false, misconception: null });
-  });
-
-  it('ne detecte pas de misconception meme si un piege textuel correspond a je ne sais pas', () => {
-    const result = gradeAnswer('__je_ne_sais_pas__', {
-      valeur: 1338.23,
-      pieges: [{ valeur: '__je_ne_sais_pas__', misconception: 'renonce' }],
-    });
-    expect(result).toEqual({ correcte: false, misconception: null });
+  it.each([
+    [
+      'retourne correcte sans misconception quand la reponse est juste',
+      1338.23,
+      PIEGE_INTERET_SIMPLE,
+      { correcte: true, misconception: null },
+    ],
+    [
+      'identifie le piege declenche quand la reponse est fausse',
+      1300,
+      PIEGE_INTERET_SIMPLE,
+      { correcte: false, misconception: 'interet-simple' },
+    ],
+    [
+      'retourne une misconception nulle pour une erreur non prevue',
+      42,
+      PIEGE_INTERET_SIMPLE,
+      { correcte: false, misconception: null },
+    ],
+    [
+      'traite je ne sais pas comme une erreur sans misconception',
+      '__je_ne_sais_pas__',
+      PIEGE_INTERET_SIMPLE,
+      { correcte: false, misconception: null },
+    ],
+    [
+      'ne detecte pas de misconception meme si un piege textuel correspond a je ne sais pas',
+      '__je_ne_sais_pas__',
+      { valeur: '__je_ne_sais_pas__', misconception: 'renonce' },
+      { correcte: false, misconception: null },
+    ],
+  ])('%s', (_titre, reponse, piege, attendu) => {
+    expect(gradeAnswer(reponse, { valeur: 1338.23, pieges: [piege] })).toEqual(
+      attendu,
+    );
   });
 });

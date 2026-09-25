@@ -1,14 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsInt,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
-
-const DUREE_MAX_MS = 5 * 60 * 60 * 1000;
+import { IsString, MaxLength, MinLength } from 'class-validator';
+import { DureeDeReponse } from '../duree-de-reponse.decorator';
 
 export class SubmitDefiRequestDto {
   @ApiProperty({
@@ -20,9 +12,6 @@ export class SubmitDefiRequestDto {
   @MaxLength(2000)
   texte: string;
 
-  @ApiProperty({ example: 180000 })
-  @IsInt()
-  @Min(0)
-  @Max(DUREE_MAX_MS)
+  @DureeDeReponse(180000)
   dureeMs: number;
 }

@@ -1,3 +1,4 @@
+import { Throttle } from '@nestjs/throttler';
 import { EN_TETE_JETON, identiteSignee } from './ParticipantToken.service';
 
 export const FENETRE_THROTTLE_MS = 60_000;
@@ -51,6 +52,20 @@ export function suivreParParticipant(req: Record<string, unknown>): string {
   return identite === null
     ? parAdresse(req)
     : `participant:${identite.participantId}:${identite.generation}`;
+}
+
+export function LimiteParMinute(limit: number): MethodDecorator {
+  return Throttle({ default: { limit, ttl: FENETRE_THROTTLE_MS } });
+}
+
+export function LimiteParParticipant(limit: number): MethodDecorator {
+  return Throttle({
+    default: {
+      limit,
+      ttl: FENETRE_THROTTLE_MS,
+      getTracker: suivreParParticipant,
+    },
+  });
 }
 
 function identiteSigneeSansLever(

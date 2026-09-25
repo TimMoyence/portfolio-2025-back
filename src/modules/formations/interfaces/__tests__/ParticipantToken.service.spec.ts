@@ -4,6 +4,7 @@ import {
   buildParticipantRecord,
   createMockParticipantsRepo,
 } from '../../../../../test/factories/formation.factory';
+import { installerVariables } from '../../../../../test/helpers/environnement';
 import {
   identiteSignee,
   ParticipantTokenService,
@@ -17,21 +18,21 @@ const PARTICIPANT = '8f1c3b2a-5d4e-4f6a-9b8c-7d6e5f4a3b2c';
 describe('ParticipantTokenService', () => {
   const participants = createMockParticipantsRepo();
   const service = new ParticipantTokenService(participants);
-  const secretInitial = process.env.FORMATION_REVIEW_TOKEN_SECRET;
 
-  beforeEach(() => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = SECRET;
-    participants.findById.mockReset().mockResolvedValue(
+  const participantALaGeneration = (generationDeJeton: number) =>
+    participants.findById.mockResolvedValue(
       buildParticipantRecord({
         id: PARTICIPANT,
         sessionId: SESSION,
-        generationDeJeton: 0,
+        generationDeJeton,
       }),
     );
-  });
 
-  afterAll(() => {
-    process.env.FORMATION_REVIEW_TOKEN_SECRET = secretInitial;
+  installerVariables({ FORMATION_REVIEW_TOKEN_SECRET: SECRET }, 'chaque-test');
+
+  beforeEach(() => {
+    participants.findById.mockReset();
+    participantALaGeneration(0);
   });
 
   it('rend le participantId signe', async () => {
@@ -68,13 +69,7 @@ describe('ParticipantTokenService', () => {
 
   it('S1 · refuse le jeton d une generation revoquee par la liberation du poste', async () => {
     const jeton = service.sign(SESSION, PARTICIPANT, 0);
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({
-        id: PARTICIPANT,
-        sessionId: SESSION,
-        generationDeJeton: 1,
-      }),
-    );
+    participantALaGeneration(1);
 
     await expect(service.verify(SESSION, jeton)).rejects.toThrow(
       UnauthorizedException,
@@ -82,13 +77,7 @@ describe('ParticipantTokenService', () => {
   });
 
   it('S1 · accepte le jeton de la generation courante apres liberation', async () => {
-    participants.findById.mockResolvedValue(
-      buildParticipantRecord({
-        id: PARTICIPANT,
-        sessionId: SESSION,
-        generationDeJeton: 1,
-      }),
-    );
+    participantALaGeneration(1);
 
     await expect(
       service.verify(SESSION, service.sign(SESSION, PARTICIPANT, 1)),

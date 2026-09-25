@@ -17,6 +17,7 @@ import {
   mockTypeOrmCreate,
   mockTypeOrmSave,
 } from '../../../../test/factories/formation.factory';
+import { verifierPanneDEcritureTransmise } from '../../../../test/helpers/pannes-d-ecriture';
 import type { FormationParticipantEntity } from './entities/FormationParticipant.entity';
 import { ParticipantsRepositoryTypeORM } from './Participants.repository.typeorm';
 
@@ -229,10 +230,10 @@ describe('ParticipantsRepositoryTypeORM', () => {
     );
   });
 
-  it('laisse passer une erreur qui ne vient pas d une violation de contrainte unique', async () => {
-    save.mockRejectedValue(new Error('connexion perdue'));
-    await expect(sut.inscrire(input)).rejects.toThrow('connexion perdue');
-  });
+  verifierPanneDEcritureTransmise(() => ({
+    save,
+    ecrire: () => sut.inscrire(input),
+  }));
 
   it('retrouve un participant par seance et cle etudiante, ou par identifiant', async () => {
     await expect(

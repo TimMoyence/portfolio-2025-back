@@ -9,8 +9,9 @@ import {
 import {
   buildContenuB2_01,
   buildCoursB2_01,
+  ouvrirLeBaremeV2DuB2_01,
 } from '../../../../../test/factories/cours-b2-01.factory';
-import { tireurSequentiel } from '../../../../../test/factories/cours.factory';
+import { fuitesDeConfidentialite } from '../../../../../test/factories/structure.factory';
 import type { Ecran, Question } from '../../domain/contrats/cours';
 import { CONFUSIONS } from '../../domain/cours/banque/confusions';
 import type { CorrigeProduction } from '../../domain/cours/Corrige';
@@ -23,7 +24,6 @@ import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import { activitesLibres } from '../../domain/cours/EcranServi';
 import { projeterCatalogue } from '../../domain/cours/Diffusion';
-import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { slugOption } from '../../domain/cours/QuestionStockee';
 import { verifierStructure } from '../../domain/cours/StructureCours';
 import { tirer } from '../../domain/cours/Tirage';
@@ -63,12 +63,6 @@ function coursDontLeTitre(screenId: string, titre: string): typeof COURS {
   });
 }
 
-function fuitesDeConfidentialite(cours: typeof COURS): (string | null)[] {
-  return verifierStructure(cours)
-    .filter((violation) => violation.regle === 'confidentialite')
-    .map((violation) => violation.ecran);
-}
-
 function renduDe(ecran: Ecran): string | null {
   if (ecran.brique !== 'fp-story') {
     return null;
@@ -94,19 +88,28 @@ function corrigeDe(id: string): CorrigeProduction {
   return question.corrige;
 }
 
-function chainesDe(valeur: unknown): string[] {
-  if (typeof valeur === 'string') {
-    return [valeur];
-  }
+function descendre(
+  valeur: unknown,
+  entree: (cle: string, element: unknown) => string[],
+): string[] {
   if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => chainesDe(element));
+    return valeur.flatMap((element: unknown) => descendre(element, entree));
   }
   if (typeof valeur !== 'object' || valeur === null) {
     return [];
   }
-  return Object.entries(valeur)
-    .filter(([cle]) => !CLES_NON_TEXTUELLES.has(cle))
-    .flatMap(([, element]) => chainesDe(element));
+  return Object.entries(valeur).flatMap(([cle, element]) =>
+    entree(cle, element),
+  );
+}
+
+function chainesDe(valeur: unknown): string[] {
+  if (typeof valeur === 'string') {
+    return [valeur];
+  }
+  return descendre(valeur, (cle, element) =>
+    CLES_NON_TEXTUELLES.has(cle) ? [] : chainesDe(element),
+  );
 }
 
 function justificationsPropres(
@@ -139,16 +142,7 @@ function correctionDuTri(triId: string): string | null {
 }
 
 function clesDe(valeur: unknown): string[] {
-  if (Array.isArray(valeur)) {
-    return valeur.flatMap((element: unknown) => clesDe(element));
-  }
-  if (typeof valeur !== 'object' || valeur === null) {
-    return [];
-  }
-  return Object.entries(valeur).flatMap(([cle, element]) => [
-    cle,
-    ...clesDe(element),
-  ]);
+  return descendre(valeur, (cle, element) => [cle, ...clesDe(element)]);
 }
 
 function arrondi(valeur: number, decimales = 6): number {
@@ -320,10 +314,8 @@ describe('B2-01 — fichier de données', () => {
   });
 
   it('ouvre 61 tirages non ambigus et un barème v2 de moins de 400 Ko (AC-08)', () => {
-    const bareme = ouvrirTirages(COURS, tireurSequentiel(1));
+    const bareme = ouvrirLeBaremeV2DuB2_01(COURS);
 
-    expect(bareme.version).toBe(2);
-    expect(bareme.tirages).toHaveLength(60);
     expect(
       Buffer.byteLength(JSON.stringify(bareme), 'utf8'),
     ).toBeLessThanOrEqual(TAILLE_MAX_DU_BAREME);

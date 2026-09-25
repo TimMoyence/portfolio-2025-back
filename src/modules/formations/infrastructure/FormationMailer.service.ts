@@ -1,12 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
-import type { Transporter } from 'nodemailer';
+import { Injectable } from '@nestjs/common';
+import { ExpediteurSmtp } from '../../../common/infrastructure/mail/expediteur-smtp';
 import {
   escapeHtml,
   escapeUrl,
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
-import { createOptionalSmtpTransporter } from '../../../common/infrastructure/mail/smtp-transporter.util';
 import type {
   CopieEtudiant,
   IFormationMailer,
@@ -27,16 +26,12 @@ function verdictDe(reponse: RapportQuestion): string {
 }
 
 @Injectable()
-export class FormationMailerService implements IFormationMailer {
-  private readonly logger = new Logger(FormationMailerService.name);
-  private readonly transporter: Transporter | null;
-  private readonly from = process.env.SMTP_FROM;
-
+export class FormationMailerService
+  extends ExpediteurSmtp
+  implements IFormationMailer
+{
   constructor() {
-    this.transporter = createOptionalSmtpTransporter(
-      this.logger,
-      'Formation mailer',
-    );
+    super(FormationMailerService.name, 'Formation mailer');
   }
 
   async sendSyntheseFormateur(

@@ -173,41 +173,27 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
   });
 
   describe('PATCH sessions/:id/control', () => {
-    it('accepte une commande de pilotage d’écran', async () => {
-      const pilotage = {
-        screenId: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE',
-        phase: 'revote',
-      };
-      const dto = await validateBody({ pilotage }, ControlSessionRequestDto);
-
-      expect(dto.pilotage).toEqual(pilotage);
-    });
-
-    it('RET-21 · accepte les reglages numeriques de la machine', async () => {
-      const pilotage = {
-        screenId: 'B2-01-A3-02-MACHINE-COEFFICIENTS',
-        reglages: { prix: 250, taux: -12.5 },
-      };
-      const dto = await validateBody({ pilotage }, ControlSessionRequestDto);
-
-      expect(dto.pilotage).toEqual(pilotage);
-    });
-
-    it('F08 · accepte la projection des résultats d un écran', async () => {
-      const pilotage = {
-        screenId: 'B2-01-A2-03-ATELIER-1',
-        resultatsProjetes: true,
-      };
-      const dto = await validateBody({ pilotage }, ControlSessionRequestDto);
-
-      expect(dto.pilotage).toEqual(pilotage);
-    });
-
-    it('F02 · accepte l affichage immédiat des options d un rappel', async () => {
-      const pilotage = {
-        screenId: 'B2-01-A1-01-DIAGNOSTIC',
-        optionsAffichees: true,
-      };
+    it.each([
+      [
+        'une commande de pilotage d’écran',
+        { screenId: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE', phase: 'revote' },
+      ],
+      [
+        'RET-21 · les reglages numeriques de la machine',
+        {
+          screenId: 'B2-01-A3-02-MACHINE-COEFFICIENTS',
+          reglages: { prix: 250, taux: -12.5 },
+        },
+      ],
+      [
+        'F08 · la projection des résultats d un écran',
+        { screenId: 'B2-01-A2-03-ATELIER-1', resultatsProjetes: true },
+      ],
+      [
+        'F02 · l affichage immédiat des options d un rappel',
+        { screenId: 'B2-01-A1-01-DIAGNOSTIC', optionsAffichees: true },
+      ],
+    ])('accepte %s', async (_cas, pilotage) => {
       const dto = await validateBody({ pilotage }, ControlSessionRequestDto);
 
       expect(dto.pilotage).toEqual(pilotage);
@@ -215,18 +201,14 @@ describe('DTO de requête du contrat V3 (§ 9.5, sans route active)', () => {
 
     it.each([
       [
-        'un réglage non numérique',
+        'RET-21 · un réglage non numérique',
         { screenId: 'M', reglages: { prix: 'cent' } },
       ],
-      ['un réglage infini', { screenId: 'M', reglages: { prix: Infinity } }],
-      ['des réglages en liste', { screenId: 'M', reglages: [1, 2] }],
-    ])('RET-21 · refuse %s', async (_cas, pilotage) => {
-      await expect(
-        validateBody({ pilotage }, ControlSessionRequestDto),
-      ).rejects.toThrow(BadRequestException);
-    });
-
-    it.each([
+      [
+        'RET-21 · un réglage infini',
+        { screenId: 'M', reglages: { prix: Infinity } },
+      ],
+      ['RET-21 · des réglages en liste', { screenId: 'M', reglages: [1, 2] }],
       ['une phase inconnue', { screenId: 'B2-01-A3-01', phase: 'fin' }],
       ['un étayage négatif', { screenId: 'B2-01-A3-06', etayage: -1 }],
       ['une révélation non booléenne', { screenId: 'B2-01-A5-08', revele: 1 }],

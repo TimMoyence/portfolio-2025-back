@@ -1,5 +1,6 @@
 import { matchesSolution } from '../GradingCore';
 import type { Cours, Ecran, QuestionProduction } from '../contrats/cours';
+import type { ProgressionEnigme } from '../contrats/resultats';
 import type { ConfusionId } from './banque/confusions';
 import type { CorrigeEnigme } from './Corrige';
 import { lireNombreSaisi } from './SaisieNumerique';
@@ -125,15 +126,6 @@ export function corrigerEnigme(
   };
 }
 
-export interface ProgressionAgregee {
-  readonly parcoursId: string;
-  readonly enigmeId: string;
-  readonly ouvertes: number;
-  readonly resolues: number;
-  readonly tentativesMoyennes: number;
-  readonly epuisees: number;
-}
-
 interface CumulDEnigme {
   ouvertes: number;
   resolues: number;
@@ -149,7 +141,7 @@ export function agregerEnigmes(
     readonly resolueLe: Date | null;
   }[],
   plafond: number = TENTATIVES_MAX_PAR_ENIGME,
-): readonly ProgressionAgregee[] {
+): readonly ProgressionEnigme[] {
   const cumuls = new Map<string, CumulDEnigme>();
   for (const ligne of progressions) {
     const cle = `${ligne.parcoursId}|${ligne.enigmeId}`;

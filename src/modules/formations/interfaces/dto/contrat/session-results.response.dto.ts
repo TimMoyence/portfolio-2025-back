@@ -203,7 +203,6 @@ export class ProgressionEnigmeResponseDto implements ProgressionEnigme {
 export class SessionResultsResponseDto
   extends OmitType(SessionResultsServiResponseDto, [
     'participants',
-    'resultats',
     'notation',
   ] as const)
   implements ResultatsDeSeance

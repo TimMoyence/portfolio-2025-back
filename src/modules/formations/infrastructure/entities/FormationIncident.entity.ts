@@ -1,12 +1,6 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import { FormationParticipantEntity } from './FormationParticipant.entity';
+import { RelieeAuParticipant } from './ligne-de-participant';
 
 @Entity({ name: 'formation_incidents' })
 @Index('idx_formation_incidents_session', ['sessionId'])
@@ -20,11 +14,7 @@ export class FormationIncidentEntity {
   @Column({ name: 'participant_id', type: 'uuid' })
   participantId: string;
 
-  @ManyToOne(() => FormationParticipantEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({
-    name: 'participant_id',
-    foreignKeyConstraintName: 'FK_formation_incidents_participant',
-  })
+  @RelieeAuParticipant('formation_incidents')
   participant: FormationParticipantEntity;
 
   @Column({ type: 'varchar', length: 40 })

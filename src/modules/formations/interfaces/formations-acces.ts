@@ -1,16 +1,21 @@
-import { applyDecorators } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiNotFoundResponse } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
+import { applyDecorators, Controller, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { Request } from 'express';
 import { Roles } from '../../../common/interfaces/auth/roles.decorator';
+import { RolesGuard } from '../../../common/interfaces/auth/roles.guard';
 import { ROLE_ADMINISTRATEUR } from '../domain/SessionOwnership';
 import type { ActeurFormation } from '../domain/SessionOwnership';
 import {
-  FENETRE_THROTTLE_MS,
   LIMITE_LECTURE_FORMATEUR_PAR_MINUTE,
+  LimiteParMinute,
 } from './formations-throttling';
 
-export const ROLE_FORMATEUR = 'teacher';
+const ROLE_FORMATEUR = 'teacher';
 
 const SEANCE_INTROUVABLE = 'Séance introuvable';
 
@@ -18,14 +23,19 @@ export function acteurDe(request: Request): ActeurFormation {
   return { id: request.user!.sub, roles: request.user!.roles };
 }
 
+export function ControleurFormateur(): ClassDecorator {
+  return applyDecorators(
+    ApiTags('formations'),
+    ApiBearerAuth(),
+    Controller('formations'),
+    UseGuards(RolesGuard),
+    Roles(ROLE_FORMATEUR),
+  );
+}
+
 export function LectureDeSeance(): MethodDecorator {
   return applyDecorators(
-    Throttle({
-      default: {
-        limit: LIMITE_LECTURE_FORMATEUR_PAR_MINUTE,
-        ttl: FENETRE_THROTTLE_MS,
-      },
-    }),
+    LimiteParMinute(LIMITE_LECTURE_FORMATEUR_PAR_MINUTE),
     Roles(ROLE_FORMATEUR, ROLE_ADMINISTRATEUR),
     ApiForbiddenResponse({
       description:

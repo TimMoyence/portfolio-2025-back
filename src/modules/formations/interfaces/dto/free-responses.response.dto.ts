@@ -1,14 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ParticipantDeSeanceResponseDto } from './participant-de-seance.response.dto';
 
-export class FreeResponseResponseDto {
+export class FreeResponseResponseDto extends ParticipantDeSeanceResponseDto {
   @ApiProperty({ format: 'uuid' })
   id: string;
-
-  @ApiProperty({ format: 'uuid' })
-  sessionId: string;
-
-  @ApiProperty({ format: 'uuid' })
-  participantId: string;
 
   @ApiProperty({ example: 'B2-01-S11-REFLECTION' })
   screenId: string;

@@ -101,14 +101,6 @@ export class ResultatQuestionResponseDto {
   confusions: ConfusionCompteeResponseDto[];
 }
 
-export class ResultatsSeanceResponseDto {
-  @ApiProperty({ description: 'Nombre de participants inscrits', example: 30 })
-  participants: number;
-
-  @ApiProperty({ type: [ResultatQuestionResponseDto] })
-  questions: ResultatQuestionResponseDto[];
-}
-
 export class StatistiquesSeanceResponseDto {
   @ApiProperty({ description: 'Moyenne des notes sur 20', example: 12.5 })
   moyenne: number;
@@ -221,9 +213,6 @@ export class SessionResultsResponseDto {
 
   @ApiProperty({ type: [String], example: ['taux-evolution'] })
   conceptsFragiles: string[];
-
-  @ApiProperty({ type: ResultatsSeanceResponseDto })
-  resultats: ResultatsSeanceResponseDto;
 
   @ApiProperty({
     type: StatistiquesSeanceResponseDto,

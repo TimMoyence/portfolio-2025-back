@@ -1,9 +1,9 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual } from 'node:crypto';
+import { signer } from '../application/SignatureFormations';
 import type { IParticipantsRepository } from '../domain/IParticipants.repository';
 import { PARTICIPANTS_REPOSITORY } from '../domain/token';
 
-const SECRET_LONGUEUR_MIN = 32;
 const SEPARATEUR = '.';
 const CONTEXTE = 'participant';
 const GENERATION_LISIBLE = /^(0|[1-9]\d{0,8})$/;
@@ -56,19 +56,7 @@ function empreinte(
   participantId: string,
   generation: number,
 ): string {
-  return createHmac('sha256', secret())
-    .update(`${CONTEXTE}:${sessionId}:${participantId}:${generation}`)
-    .digest('hex');
-}
-
-function secret(): string {
-  const valeur = process.env.FORMATION_REVIEW_TOKEN_SECRET;
-  if (!valeur || valeur.length < SECRET_LONGUEUR_MIN) {
-    throw new Error(
-      `FORMATION_REVIEW_TOKEN_SECRET doit etre configure avec au moins ${SECRET_LONGUEUR_MIN} caracteres`,
-    );
-  }
-  return valeur;
+  return signer(`${CONTEXTE}:${sessionId}:${participantId}:${generation}`);
 }
 
 /**

@@ -1,12 +1,5 @@
-import {
-  Check,
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Check, Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { ContenuDeCours } from './contenu-de-cours';
 import { FormationCourseContentEntity } from './FormationCourseContent.entity';
 
 @Entity({ name: 'formation_screen_contents' })
@@ -28,10 +21,7 @@ import { FormationCourseContentEntity } from './FormationCourseContent.entity';
     unique: true,
   },
 )
-export class FormationScreenContentEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class FormationScreenContentEntity extends ContenuDeCours {
   @Column({ name: 'course_id', type: 'uuid' })
   courseId: string;
 
@@ -58,12 +48,6 @@ export class FormationScreenContentEntity {
 
   @Column({ type: 'varchar', length: 40 })
   brique: string;
-
-  @Column({ name: 'duree_minutes', type: 'int' })
-  dureeMinutes: number;
-
-  @Column({ type: 'jsonb' })
-  concepts: readonly string[];
 
   @Column({ type: 'text' })
   notes: string;

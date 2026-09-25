@@ -1,18 +1,9 @@
-import { LigneDeSeance } from './ligne-de-seance';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  Unique,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, Unique } from 'typeorm';
 import type {
   DetailProduction,
   ValeurReponse,
 } from '../../domain/contrats/resultats';
-import { FormationParticipantEntity } from './FormationParticipant.entity';
+import { LigneDeParticipant } from './ligne-de-participant';
 
 @Entity({ name: 'formation_answers' })
 @Unique('UQ_formation_answers_participant_question', [
@@ -20,17 +11,9 @@ import { FormationParticipantEntity } from './FormationParticipant.entity';
   'questionId',
 ])
 @Index('idx_formation_answers_session_question', ['sessionId', 'questionId'])
-export class FormationAnswerEntity extends LigneDeSeance('formation_answers') {
-  @Column({ name: 'participant_id', type: 'uuid' })
-  participantId: string;
-
-  @ManyToOne(() => FormationParticipantEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({
-    name: 'participant_id',
-    foreignKeyConstraintName: 'FK_formation_answers_participant',
-  })
-  participant: FormationParticipantEntity;
-
+export class FormationAnswerEntity extends LigneDeParticipant(
+  'formation_answers',
+) {
   @Column({ name: 'question_id', type: 'varchar', length: 60 })
   questionId: string;
 

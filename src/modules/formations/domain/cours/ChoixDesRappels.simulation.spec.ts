@@ -84,34 +84,42 @@ describe('choisirRappels sur des historiques tires au sort', () => {
   const questionsRepondues = (reponses: readonly { questionId: string }[]) =>
     new Set(reponses.map((item) => item.questionId));
 
-  it('ne sert jamais une question deja repondue, ni le concept exclu en complement', () => {
+  const pourTousLesHistoriques = (
+    verifier: (
+      servis: readonly string[],
+      imposees: readonly string[],
+      repondues: ReadonlySet<string>,
+    ) => void,
+  ) => {
     fc.assert(
       fc.property(obligatoires, historique, (imposees, reponses) => {
-        const servis = choisirRappels(contexte(imposees, reponses));
-
-        const repondues = questionsRepondues(reponses);
-        const complement = servis.filter((id) => !imposees.includes(id));
-        expect(servis.filter((id) => repondues.has(id))).toEqual([]);
-        expect(
-          complement.filter((id) => id.startsWith('controle-coherence')),
-        ).toEqual([]);
-      }),
-    );
-  });
-
-  it('sert les obligatoires non repondus puis au plus deux concepts de plus', () => {
-    fc.assert(
-      fc.property(obligatoires, historique, (imposees, reponses) => {
-        const servis = choisirRappels(contexte(imposees, reponses));
-
-        const repondues = questionsRepondues(reponses);
-        const attendues = imposees.filter((id) => !repondues.has(id));
-        expect(servis.slice(0, attendues.length)).toEqual(attendues);
-        expect(servis.length).toBeLessThanOrEqual(
-          attendues.length + CONCEPTS_MAX,
+        verifier(
+          choisirRappels(contexte(imposees, reponses)),
+          imposees,
+          questionsRepondues(reponses),
         );
       }),
     );
+  };
+
+  it('ne sert jamais une question deja repondue, ni le concept exclu en complement', () => {
+    pourTousLesHistoriques((servis, imposees, repondues) => {
+      const complement = servis.filter((id) => !imposees.includes(id));
+      expect(servis.filter((id) => repondues.has(id))).toEqual([]);
+      expect(
+        complement.filter((id) => id.startsWith('controle-coherence')),
+      ).toEqual([]);
+    });
+  });
+
+  it('sert les obligatoires non repondus puis au plus deux concepts de plus', () => {
+    pourTousLesHistoriques((servis, imposees, repondues) => {
+      const attendues = imposees.filter((id) => !repondues.has(id));
+      expect(servis.slice(0, attendues.length)).toEqual(attendues);
+      expect(servis.length).toBeLessThanOrEqual(
+        attendues.length + CONCEPTS_MAX,
+      );
+    });
   });
 
   it('rend deux fois la meme liste pour le meme historique', () => {

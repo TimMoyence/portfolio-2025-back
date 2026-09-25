@@ -3,6 +3,7 @@ import {
   buildMasteryRecord,
 } from '../../../../../test/factories/formation.factory';
 import type { AnswerRecord } from '../IAnswers.repository';
+import type { MasteryRecord } from '../IMastery.repository';
 import {
   choisirRappels,
   CONCEPTS_MAX,
@@ -66,13 +67,19 @@ describe('ecranDeRappel', () => {
 });
 
 describe('choisirRappels', () => {
-  const choisir = (reponses: readonly AnswerRecord[], maitrise = []) =>
+  const choisir = (
+    reponses: readonly AnswerRecord[],
+    maitrise: readonly MasteryRecord[] = [],
+  ) =>
     choisirRappels({
       cible: CIBLE,
       reponses,
       maitrise,
       maintenant: MAINTENANT,
     });
+
+  const enBoiteTrois = (concept: string, succes: number, echecs: number) =>
+    buildMasteryRecord({ concept, boite: 3, succes, echecs });
 
   it('sert d abord les deux rappels obligatoires', () => {
     expect(choisir([]).slice(0, 2)).toEqual([
@@ -125,55 +132,23 @@ describe('choisirRappels', () => {
   });
 
   it('retient le plus faible taux de reussite a priorite egale', () => {
-    const servis = choisirRappels({
-      cible: CIBLE,
-      reponses: [],
-      maitrise: [
-        buildMasteryRecord({
-          concept: 'proportion',
-          boite: 3,
-          succes: 1,
-          echecs: 9,
-        }),
-        buildMasteryRecord({
-          concept: 'taux-evolution',
-          boite: 3,
-          succes: 9,
-          echecs: 1,
-        }),
-        buildMasteryRecord({
-          concept: 'indice-base-100',
-          boite: 3,
-          succes: 8,
-          echecs: 2,
-        }),
+    const servis = choisir(
+      [],
+      [
+        enBoiteTrois('proportion', 1, 9),
+        enBoiteTrois('taux-evolution', 9, 1),
+        enBoiteTrois('indice-base-100', 8, 2),
       ],
-      maintenant: MAINTENANT,
-    });
+    );
 
     expect(servis[2]).toBe('R-PROPORTION');
   });
 
   it('sert en premier un concept jamais vu, au taux de reussite nul', () => {
-    const servis = choisirRappels({
-      cible: CIBLE,
-      reponses: [],
-      maitrise: [
-        buildMasteryRecord({
-          concept: 'proportion',
-          boite: 3,
-          succes: 5,
-          echecs: 5,
-        }),
-        buildMasteryRecord({
-          concept: 'indice-base-100',
-          boite: 3,
-          succes: 5,
-          echecs: 5,
-        }),
-      ],
-      maintenant: MAINTENANT,
-    });
+    const servis = choisir(
+      [],
+      [enBoiteTrois('proportion', 5, 5), enBoiteTrois('indice-base-100', 5, 5)],
+    );
 
     expect(servis[2]).toBe('R-TAUX');
   });

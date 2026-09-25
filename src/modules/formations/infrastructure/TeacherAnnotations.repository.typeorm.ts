@@ -6,16 +6,25 @@ import type {
   SaveTeacherAnnotationInput,
   TeacherAnnotationRecord,
 } from '../domain/ITeacherAnnotations.repository';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationTeacherAnnotationEntity } from './entities/FormationTeacherAnnotation.entity';
 
 const CLE_ANNOTATION = ['sessionId', 'screenId'];
 
 @Injectable()
-export class TeacherAnnotationsRepositoryTypeORM implements ITeacherAnnotationsRepository {
+export class TeacherAnnotationsRepositoryTypeORM
+  extends DepotEnDomaine<
+    FormationTeacherAnnotationEntity,
+    TeacherAnnotationRecord
+  >
+  implements ITeacherAnnotationsRepository
+{
   constructor(
     @InjectRepository(FormationTeacherAnnotationEntity)
-    private readonly repo: Repository<FormationTeacherAnnotationEntity>,
-  ) {}
+    repo: Repository<FormationTeacherAnnotationEntity>,
+  ) {
+    super(repo);
+  }
 
   async save(
     input: SaveTeacherAnnotationInput,
@@ -38,18 +47,17 @@ export class TeacherAnnotationsRepositoryTypeORM implements ITeacherAnnotationsR
     );
   }
 
-  async listBySession(
+  listBySession(
     sessionId: string,
     teacherId: string,
   ): Promise<readonly TeacherAnnotationRecord[]> {
-    const rows = await this.repo.find({
+    return this.lister({
       where: { sessionId, teacherId },
       order: { screenId: 'ASC' },
     });
-    return rows.map((row) => this.toDomain(row));
   }
 
-  private toDomain(
+  protected toDomain(
     row: FormationTeacherAnnotationEntity,
   ): TeacherAnnotationRecord {
     return {

@@ -5,26 +5,23 @@ import {
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import {
   buildNumeriqueStockee,
-  buildOptionStockee,
-  buildVoteStocke,
+  buildRappelDeCompensation,
 } from '../../../../../test/factories/questions-stockees.factory';
 import {
   buildCoursConforme,
   buildEcranDeCitation,
+  fuitesDeConfidentialite as fuites,
   lireEcranStocke,
   recomposer,
 } from '../../../../../test/factories/structure.factory';
 import type { Cours, Ecran } from '../contrats/cours';
 import type { NumeriqueStockee } from '../contrats/cours';
-import { verifierStructure } from './StructureCours';
 
 const base = buildCoursConforme();
 const [ouverture, citation, atelier, cloture] = base.ecrans;
 
-function fuites(cours: Cours): readonly (string | null)[] {
-  return verifierStructure(cours)
-    .filter((violation) => violation.regle === 'confidentialite')
-    .map((violation) => violation.ecran);
+function autourDeLAtelier(...ecrans: Ecran[]): Cours {
+  return recomposer(base, [ouverture, citation, atelier, ...ecrans, cloture]);
 }
 
 function texteDe(
@@ -60,6 +57,7 @@ function billetInvitant(invite: string): Ecran {
 
 const AVANT = 'B2-01-A1-02-AVANT';
 const APRES = 'B2-01-A1-05-APRES';
+const AVANT_PRODUCTION = 'B2-01-A1-04-AVANT';
 
 describe('garde confidentialite — volet exact', () => {
   it('refuse la forme publiee d une reponse numerique dans un ecran precedent', () => {
@@ -73,58 +71,42 @@ describe('garde confidentialite — volet exact', () => {
     expect(fuites(cours)).toEqual([AVANT]);
   });
 
-  it('ignore la forme dans un ecran de seance posterieur a la question', () => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
-      texteDe(APRES, 'La marketplace pèse 45,5 % du CA.'),
-      cloture,
-    ]);
+  it.each([
+    [
+      'ignore la forme dans un ecran de seance posterieur a la question',
+      'seance',
+      [],
+    ],
+    [
+      'refuse la forme dans un ecran catalogue posterieur, servi a tout moment',
+      'catalogue',
+      [APRES],
+    ],
+  ] as const)('%s', (_titre, diffusion, attendu) => {
+    const cours = autourDeLAtelier(
+      texteDe(APRES, 'La marketplace pèse 45,5 % du CA.', diffusion),
+    );
 
-    expect(fuites(cours)).toEqual([]);
-  });
-
-  it('refuse la forme dans un ecran catalogue posterieur, servi a tout moment', () => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
-      texteDe(APRES, 'La marketplace pèse 45,5 % du CA.', 'catalogue'),
-      cloture,
-    ]);
-
-    expect(fuites(cours)).toEqual([APRES]);
+    expect(fuites(cours)).toEqual(attendu);
   });
 
   it('rejoue le volet catalogue sur le titre d un ecran verrouille, visible au catalogue (§ 6.4, point 3)', () => {
-    const verrouille = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
+    const verrouille = autourDeLAtelier(
       buildEcranDeCitation(APRES, 1, { titre: 'Pourquoi 45,5 % ?' }),
-      cloture,
-    ]);
-    const catalogue = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
+    );
+    const catalogue = autourDeLAtelier(
       buildEcranDeCitation(APRES, 1, {
         titre: 'Pourquoi 45,5 % ?',
         diffusion: 'catalogue',
       }),
-      cloture,
-    ]);
+    );
 
     expect(fuites(verrouille)).toEqual([APRES]);
     expect(fuites(catalogue)).toEqual([APRES]);
   });
 
   it('garde les donnees d un ecran verrouille hors du volet catalogue', () => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
+    const cours = autourDeLAtelier(
       buildEcranDeCitation(APRES, 1, {
         titre: 'Un titre neutre',
         proprietes: {
@@ -133,8 +115,7 @@ describe('garde confidentialite — volet exact', () => {
           source: null,
         },
       }),
-      cloture,
-    ]);
+    );
 
     expect(fuites(cours)).toEqual([]);
   });
@@ -222,26 +203,18 @@ describe('garde confidentialite — volet exact', () => {
 
 describe('garde confidentialite — volet segments', () => {
   it('refuse une chaine precedente qui porte tous les segments, sans casse', () => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
+    const cours = autourDeLAtelier(
       texteDe(APRES, 'On GAGNE toujours un Point quand le taux monte.'),
-      cloture,
-    ]);
+    );
 
     expect(fuites(cours)).toEqual([APRES]);
   });
 
   it('accepte des segments repartis dans deux chaines', () => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
+    const cours = autourDeLAtelier(
       texteDe(APRES, 'On gagne du temps.'),
       texteDe('B2-01-A1-06-APRES', 'Un point de vue.'),
-      cloture,
-    ]);
+    );
 
     expect(fuites(cours)).toEqual([]);
   });
@@ -265,23 +238,14 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
         screenId: 'B2-01-A1-05-RAPPEL',
         dureeMinutes: 3,
         proprietes: {
-          rappel: { id: 'b2-01-a6-rappel', intitule: 'Rappel de mémoire' },
+          ...buildProprietesStockees('fp-spaced'),
           banque: {
             questions: [
-              buildVoteStocke({
-                id: 'b2-01-r-compensation',
-                concept: 'controle-coherence',
-                noteCompte: false,
-                enonce: 'Peut-on valider chaque écriture ?',
-                options: [
-                  buildOptionStockee('Non, deux écarts se compensent', null),
-                  buildOptionStockee(
-                    'Oui, le total concorde',
-                    'total-concordant-vaut-preuve',
-                  ),
-                ],
-                segments: ['écarts', 'compensent'],
-              }),
+              buildRappelDeCompensation(
+                'Non, deux écarts se compensent',
+                'Oui, le total concorde',
+                { segments: ['écarts', 'compensent'] },
+              ),
             ],
             obligatoires: [],
           },
@@ -290,22 +254,14 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
     );
 
   it('exclut les rappels du volet segments et leur garde le volet exact', () => {
-    const segments = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
+    const segments = autourDeLAtelier(
       texteDe(APRES, 'Deux écarts qui se compensent.'),
       rappel(),
-      cloture,
-    ]);
-    const exact = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
+    );
+    const exact = autourDeLAtelier(
       texteDe(APRES, 'Non, deux écarts se compensent'),
       rappel(),
-      cloture,
-    ]);
+    );
 
     expect(fuites(segments)).toEqual([]);
     expect(fuites(exact)).toEqual([APRES]);
@@ -319,69 +275,47 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
       }),
     );
 
+  const fuitesAvant = (texte: string, ...suite: Ecran[]) =>
+    fuites(autourDeLAtelier(texteDe(AVANT_PRODUCTION, texte), ...suite));
+
   it.each([
-    ['le prix passe à 21,60 €', ['B2-01-A1-04-AVANT']],
-    ['soit 2 052,00 centimes', ['B2-01-A1-04-AVANT']],
-    ['un prix de 20,5200 €', ['B2-01-A1-04-AVANT']],
+    ['le prix passe à 21,60 €', [AVANT_PRODUCTION]],
+    ['soit 2 052,00 centimes', [AVANT_PRODUCTION]],
+    ['un prix de 20,5200 €', [AVANT_PRODUCTION]],
     ['un prix de 21,6 €', []],
   ])(
     'cherche les valeurs saisies d un tableau a 2, 4 et 6 decimales : « %s »',
     (texte, attendu) => {
-      const cours = recomposer(base, [
-        ouverture,
-        citation,
-        atelier,
-        texteDe('B2-01-A1-04-AVANT', texte),
-        production('fp-table-build'),
-        cloture,
-      ]);
-
-      expect(fuites(cours)).toEqual(attendu);
+      expect(fuitesAvant(texte, production('fp-table-build'))).toEqual(attendu);
     },
   );
 
   it.each([
-    ['un taux de 0,178054', ['B2-01-A1-04-AVANT']],
-    ['un taux de 17,8054 %', ['B2-01-A1-04-AVANT']],
-    ['un taux de 0,1781', ['B2-01-A1-04-AVANT']],
+    ['un taux de 0,178054', [AVANT_PRODUCTION]],
+    ['un taux de 17,8054 %', [AVANT_PRODUCTION]],
+    ['un taux de 0,1781', [AVANT_PRODUCTION]],
     ['le CA du sur-mesure recule de 17,81 %', []],
     ['un taux de 0,18', []],
   ])(
     'cherche les attendus d une feuille a leur precision calculee, pas a leur arrondi d affichage : « %s »',
     (texte, attendu) => {
-      const cours = recomposer(base, [
-        ouverture,
-        citation,
-        atelier,
-        texteDe('B2-01-A1-04-AVANT', texte),
-        production('fp-sheet'),
-        cloture,
-      ]);
-
-      expect(fuites(cours)).toEqual(attendu);
+      expect(fuitesAvant(texte, production('fp-sheet'))).toEqual(attendu);
     },
   );
 
   it.each([
-    ['Inflation : ni unité, ni période, ni source.', ['B2-01-A1-04-AVANT']],
+    ['Inflation : ni unité, ni période, ni source.', [AVANT_PRODUCTION]],
     ['Une inflation sans unité ni période.', []],
   ])(
     'SEC-3 · cherche les justifications d un classement avant le tri : « %s »',
     (texte, attendu) => {
-      const cours = recomposer(base, [
-        ouverture,
-        citation,
-        atelier,
-        texteDe('B2-01-A1-04-AVANT', texte),
-        lireEcranStocke(
-          buildEcranDeBrique('fp-cardsort', {
-            screenId: 'B2-01-A1-05-PRODUCTION',
-          }),
-        ),
-        cloture,
-      ]);
+      const tri = lireEcranStocke(
+        buildEcranDeBrique('fp-cardsort', {
+          screenId: 'B2-01-A1-05-PRODUCTION',
+        }),
+      );
 
-      expect(fuites(cours)).toEqual(attendu);
+      expect(fuitesAvant(texte, tri)).toEqual(attendu);
     },
   );
 
@@ -400,35 +334,21 @@ describe('garde confidentialite — rappels, productions et enigmes', () => {
     );
 
   it('refuse un indice d enigme qui contient un chiffre', () => {
-    const avecChiffre = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
-      coffre('Divisez par 9.'),
-      cloture,
-    ]);
-    const sansChiffre = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
+    const avecChiffre = autourDeLAtelier(coffre('Divisez par 9.'));
+    const sansChiffre = autourDeLAtelier(
       coffre('Additionnez les marges, puis divisez.'),
-      cloture,
-    ]);
+    );
 
     expect(fuites(avecChiffre)).toEqual(['B2-01-A1-05-COFFRE']);
     expect(fuites(sansChiffre)).toEqual([]);
   });
 
   it('refuse la forme publiee de la solution d une enigme avant le coffre', () => {
-    const cours = recomposer(base, [
-      ouverture,
-      citation,
-      atelier,
-      texteDe('B2-01-A1-04-AVANT', 'Le taux global vaut 23,4 %.'),
-      coffre('Additionnez les marges, puis divisez.'),
-      cloture,
-    ]);
-
-    expect(fuites(cours)).toEqual(['B2-01-A1-04-AVANT']);
+    expect(
+      fuitesAvant(
+        'Le taux global vaut 23,4 %.',
+        coffre('Additionnez les marges, puis divisez.'),
+      ),
+    ).toEqual([AVANT_PRODUCTION]);
   });
 });

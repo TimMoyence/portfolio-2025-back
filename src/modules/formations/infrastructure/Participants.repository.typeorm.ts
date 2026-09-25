@@ -16,7 +16,7 @@ import type {
   IParticipantsRepository,
   ParticipantRecord,
 } from '../domain/IParticipants.repository';
-import { PostgresErrorClassifier } from './PostgresErrorClassifier';
+import { DepotEnDomaine } from '../../../common/infrastructure/typeorm/DepotEnDomaine';
 import { FormationParticipantEntity } from './entities/FormationParticipant.entity';
 
 const SESSION_KEY_CONSTRAINT = 'uq_formation_participants_session_key';
@@ -24,14 +24,14 @@ const SESSION_SEED_CONSTRAINT = 'uq_formation_participants_session_seed';
 
 @Injectable()
 export class ParticipantsRepositoryTypeORM
-  extends PostgresErrorClassifier
+  extends DepotEnDomaine<FormationParticipantEntity, ParticipantRecord>
   implements IParticipantsRepository
 {
   constructor(
     @InjectRepository(FormationParticipantEntity)
-    private readonly repo: Repository<FormationParticipantEntity>,
+    repo: Repository<FormationParticipantEntity>,
   ) {
-    super();
+    super(repo);
   }
 
   inscrire(input: InscriptionInput): Promise<Inscription> {
@@ -158,39 +158,31 @@ export class ParticipantsRepositoryTypeORM
     );
   }
 
-  async findBySessionAndStudentKey(
+  findBySessionAndStudentKey(
     sessionId: string,
     studentKey: string,
   ): Promise<ParticipantRecord | null> {
-    const entity = await this.repo.findOne({
-      where: { sessionId, studentKey, evinceLe: IsNull() },
-    });
-    return entity ? this.toDomain(entity) : null;
+    return this.trouver({ sessionId, studentKey, evinceLe: IsNull() });
   }
 
-  async findById(id: string): Promise<ParticipantRecord | null> {
-    const entity = await this.repo.findOne({ where: { id } });
-    return entity ? this.toDomain(entity) : null;
+  findById(id: string): Promise<ParticipantRecord | null> {
+    return this.trouver({ id });
   }
 
-  async listBySession(
-    sessionId: string,
-  ): Promise<readonly ParticipantRecord[]> {
-    const entities = await this.repo.find({
+  listBySession(sessionId: string): Promise<readonly ParticipantRecord[]> {
+    return this.lister({
       where: { sessionId, evinceLe: IsNull() },
       order: { rejointLe: 'ASC', id: 'ASC' },
     });
-    return entities.map((entity) => this.toDomain(entity));
   }
 
-  async listEvincesBySession(
+  listEvincesBySession(
     sessionId: string,
   ): Promise<readonly ParticipantRecord[]> {
-    const entities = await this.repo.find({
+    return this.lister({
       where: { sessionId, evinceLe: Not(IsNull()) },
       order: { evinceLe: 'ASC', id: 'ASC' },
     });
-    return entities.map((entity) => this.toDomain(entity));
   }
 
   countBySession(sessionId: string): Promise<number> {
@@ -259,7 +251,7 @@ export class ParticipantsRepositoryTypeORM
     });
   }
 
-  private toDomain(entity: FormationParticipantEntity): ParticipantRecord {
+  protected toDomain(entity: FormationParticipantEntity): ParticipantRecord {
     return {
       id: entity.id,
       sessionId: entity.sessionId,

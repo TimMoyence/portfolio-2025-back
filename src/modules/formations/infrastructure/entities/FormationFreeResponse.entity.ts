@@ -1,16 +1,13 @@
-import { LigneDeSeance } from './ligne-de-seance';
 import {
   Check,
   Column,
   CreateDateColumn,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   Unique,
 } from 'typeorm';
 import type { FreeResponseStatus } from '../../domain/IFreeResponses.repository';
-import { FormationParticipantEntity } from './FormationParticipant.entity';
+import { LigneDeParticipant } from './ligne-de-participant';
 
 @Entity({ name: 'formation_free_responses' })
 @Unique('UQ_formation_free_responses_participant_activity', [
@@ -24,19 +21,9 @@ import { FormationParticipantEntity } from './FormationParticipant.entity';
   `"status" IN ('enregistre', 'en_attente', 'echec')`,
 )
 @Check('CHK_formation_free_responses_duration', '"duree_ms" >= 0')
-export class FormationFreeResponseEntity extends LigneDeSeance(
+export class FormationFreeResponseEntity extends LigneDeParticipant(
   'formation_free_responses',
 ) {
-  @Column({ name: 'participant_id', type: 'uuid' })
-  participantId: string;
-
-  @ManyToOne(() => FormationParticipantEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({
-    name: 'participant_id',
-    foreignKeyConstraintName: 'FK_formation_free_responses_participant',
-  })
-  participant: FormationParticipantEntity;
-
   @Column({ name: 'screen_id', type: 'varchar', length: 120 })
   screenId: string;
 

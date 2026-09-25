@@ -137,16 +137,16 @@ describe('evaluerFeuille', () => {
     expect(valeurs(resultats).B1).toBe(VALEUR);
   });
 
-  it('refuse une formule plus longue que la borne', () => {
-    const trop = `=${'1+'.repeat(LONGUEUR_MAX_FORMULE)}1`;
-
-    expect(valeurs(evaluerFeuille(feuille({ A1: trop }))).A1).toBe(VALEUR);
-  });
-
-  it('refuse une imbrication plus profonde que la borne', () => {
-    const profondeur = PROFONDEUR_MAX + 1;
-    const trop = `=${'('.repeat(profondeur)}1${')'.repeat(profondeur)}`;
-
+  it.each([
+    [
+      'une formule plus longue que la borne',
+      `=${'1+'.repeat(LONGUEUR_MAX_FORMULE)}1`,
+    ],
+    [
+      'une imbrication plus profonde que la borne',
+      `=${'('.repeat(PROFONDEUR_MAX + 1)}1${')'.repeat(PROFONDEUR_MAX + 1)}`,
+    ],
+  ])('refuse %s', (_cas, trop) => {
     expect(valeurs(evaluerFeuille(feuille({ A1: trop }))).A1).toBe(VALEUR);
   });
 
