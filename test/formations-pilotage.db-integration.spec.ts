@@ -149,6 +149,22 @@ describeDb('Pilotage par ecran persiste (B21, db integration)', () => {
     expect(seance?.revision).toBe(2);
   });
 
+  it('garde les champs deja pilotes d un ecran quand une commande en pose un autre', async () => {
+    const sessionId = await ouvrirSeance();
+    await formateur('patch', `/sessions/${sessionId}/control`)
+      .send({ pilotage: { screenId: ECRAN_DE_VOTE, resultatsProjetes: true } })
+      .expect(SANS_CONTENU);
+    await formateur('patch', `/sessions/${sessionId}/control`)
+      .send({ pilotage: { screenId: ECRAN_DE_VOTE, phase: 'discussion' } })
+      .expect(SANS_CONTENU);
+
+    const seance = await contexte.sessions.findById(sessionId);
+
+    expect(seance?.pilotageEcrans).toEqual({
+      [ECRAN_DE_VOTE]: { phase: 'discussion', resultatsProjetes: true },
+    });
+  });
+
   it('refuse de ramener une phase en arriere', async () => {
     const sessionId = await ouvrirSeance();
     await formateur('patch', `/sessions/${sessionId}/control`)

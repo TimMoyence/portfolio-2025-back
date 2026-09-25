@@ -308,6 +308,24 @@ describe('fusionnerPilotage', () => {
     ).toEqual({ 'E-VOTE': { phase: 'revote' } });
   });
 
+  it('garde la révélation quand la demande porte ses champs optionnels à undefined', () => {
+    expect(
+      fusionnerPilotage(
+        { 'E-TABLEAU': { revele: true, etayage: 1, optionsAffichees: true } },
+        {
+          screenId: 'E-TABLEAU',
+          etayage: 2,
+          revele: undefined,
+          phase: undefined,
+          optionsAffichees: undefined,
+          reglages: undefined,
+        },
+      ),
+    ).toEqual({
+      'E-TABLEAU': { revele: true, etayage: 2, optionsAffichees: true },
+    });
+  });
+
   it('refuse de retirer une revelation deja faite', () => {
     expect(() => {
       fusionnerPilotage(

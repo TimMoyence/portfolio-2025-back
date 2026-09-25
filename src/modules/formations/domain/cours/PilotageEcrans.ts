@@ -118,7 +118,8 @@ function sansClesNonPilotables(
 ): Omit<PilotageEcran, 'etayageAtteint'> {
   return Object.fromEntries(
     Object.entries(pilotage).filter(
-      ([cle]) => !CLES_NON_PILOTABLES.includes(cle),
+      ([cle, valeur]) =>
+        valeur !== undefined && !CLES_NON_PILOTABLES.includes(cle),
     ),
   );
 }
