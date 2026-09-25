@@ -30,10 +30,13 @@ extraction réelle (factory de test, helper, classe de base, `it.each`).
 
 ## Résultat
 
-| Périmètre  | jscpd 5 | jscpd 4 |
-| ---------- | ------- | ------- |
-| Production | 0 clone | 0 clone |
-| Tests      | 0 clone | 0 clone |
+| Périmètre  | jscpd 5 avant | jscpd 4 avant | jscpd 5 après | jscpd 4 après |
+| ---------- | ------------- | ------------- | ------------- | ------------- |
+| Production | 165 clones    | 171 clones    | 0             | 0             |
+| Tests      | 314 clones    | 320 clones    | 0             | 0             |
+
+La mesure « avant » est prise sur master à 30 jetons avec les deux moteurs, jscpd 4 sans
+son plafond par défaut de 1000 lignes par fichier.
 
 Suites rejouées après le refactor, toutes vertes :
 
