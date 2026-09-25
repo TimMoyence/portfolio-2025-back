@@ -128,13 +128,13 @@ function capacitePartagee(): IStreamCapacity {
       });
     },
     refresh: () => Promise.resolve(),
-    release: (lease: StreamCapacityLease) => {
+    release: async (lease: StreamCapacityLease) => {
+      await Promise.resolve();
       for (const key of lease.keys) {
         const places = occupants.get(key);
         places?.delete(lease.token);
         if (places?.size === 0) occupants.delete(key);
       }
-      return Promise.resolve();
     },
   };
 }
@@ -559,6 +559,39 @@ describe('StreamSessionUseCase', () => {
       expect(participantAuDelaDuPlafond()).toThrow(SessionStreamLimitError);
       fermer([...siens, ...autres, nouveau]);
     });
+
+    it.each([
+      {
+        titulaire: 'd un participant',
+        plafond: MAX_FLUX_PAR_PARTICIPANT,
+        ouvrir: (instance: StreamSessionUseCase) =>
+          ecouterEtudiant(PARTICIPANT_ID, instance),
+      },
+      {
+        titulaire: 'du formateur',
+        plafond: MAX_FLUX_FORMATEUR_PAR_SESSION,
+        ouvrir: (instance: StreamSessionUseCase) => ecouterFormateur(instance),
+      },
+    ])(
+      'remplace le plus ancien flux $titulaire a son plafond quand la capacite est partagee',
+      async ({ plafond, ouvrir }) => {
+        const instance = instanceNeuve(capacitePartagee());
+        const siens: Ecoute[] = [];
+        for (let rang = 0; rang < plafond; rang += 1) {
+          siens.push(await ouvrir(instance));
+          await laisserPasser();
+        }
+
+        const nouveau = await ouvrir(instance);
+        await laisserPasser();
+
+        expect(siens.map((ecoute) => ecoute.terminee())).toEqual(
+          Array.from({ length: plafond }, (_, rang) => rang === 0),
+        );
+        expect(nouveau.types()).toContain('etat');
+        fermer([...siens, nouveau]);
+      },
+    );
 
     it('applique le plafond de session entre deux instances', async () => {
       const capacite = capacitePartagee();
