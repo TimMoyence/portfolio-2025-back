@@ -101,7 +101,7 @@ function erreurDuFlux(flux: Observable<MessageEvent>): Promise<unknown> {
   });
 }
 
-function capacitePartagee(): IStreamCapacity {
+function capacitePartagee(microtachesDeLiberation = 1): IStreamCapacity {
   const occupants = new Map<string, Map<string, number>>();
   let sequence = 0;
   return {
@@ -129,7 +129,9 @@ function capacitePartagee(): IStreamCapacity {
     },
     refresh: () => Promise.resolve(),
     release: async (lease: StreamCapacityLease) => {
-      await Promise.resolve();
+      for (let tour = 0; tour < microtachesDeLiberation; tour += 1) {
+        await Promise.resolve();
+      }
       for (const key of lease.keys) {
         const places = occupants.get(key);
         places?.delete(lease.token);
@@ -322,6 +324,44 @@ describe('StreamSessionUseCase', () => {
     });
     const capaciteEnPanne = () =>
       capaciteQuiRefuse(new Error('Redis indisponible'));
+    const capaciteEnPanneApres = (ms: number): IStreamCapacity => ({
+      acquire: () =>
+        new Promise<never>((_, rejeter) =>
+          setTimeout(() => rejeter(new Error('Redis indisponible')), ms),
+        ),
+      refresh: () => Promise.resolve(),
+      release: () => Promise.resolve(),
+    });
+
+    it.each([
+      { mode: 'degrade lent', capacite: () => capaciteEnPanneApres(50) },
+      { mode: 'memoire', capacite: () => undefined },
+    ])(
+      'tient le plafond participant en mode $mode quand deux flux s ouvrent en meme temps',
+      async ({ capacite }) => {
+        jest
+          .spyOn(Logger.prototype, 'error')
+          .mockImplementation(() => undefined);
+        const instance = instanceNeuve(capacite());
+        const ouverts: Ecoute[] = [];
+        for (let rang = 0; rang < MAX_FLUX_PAR_PARTICIPANT; rang += 1) {
+          ouverts.push(ecouterEtudiant(PARTICIPANT_ID, instance));
+          await laisserPasser(100);
+        }
+
+        ouverts.push(
+          ecouterEtudiant(PARTICIPANT_ID, instance),
+          ecouterEtudiant(PARTICIPANT_ID, instance),
+        );
+        await laisserPasser(100);
+
+        expect(ouverts.filter((ecoute) => !ecoute.terminee())).toHaveLength(
+          MAX_FLUX_PAR_PARTICIPANT,
+        );
+        fermer(ouverts);
+        jest.restoreAllMocks();
+      },
+    );
 
     it('refuse le flux en 429 et journalise un avertissement quand le plafond est atteint', async () => {
       const avertir = jest
@@ -573,9 +613,9 @@ describe('StreamSessionUseCase', () => {
         ouvrir: (instance: StreamSessionUseCase) => ecouterFormateur(instance),
       },
     ])(
-      'remplace le plus ancien flux $titulaire a son plafond quand la capacite est partagee',
+      'remplace le plus ancien flux $titulaire a son plafond quand la capacite partagee libere lentement son bail',
       async ({ plafond, ouvrir }) => {
-        const instance = instanceNeuve(capacitePartagee());
+        const instance = instanceNeuve(capacitePartagee(20));
         const siens: Ecoute[] = [];
         for (let rang = 0; rang < plafond; rang += 1) {
           siens.push(await ouvrir(instance));
