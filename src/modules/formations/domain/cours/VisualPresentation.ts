@@ -42,6 +42,45 @@ const series = strict({
   values: auMoinsUn(z.number()),
   tone: z.enum(['teal', 'gold', 'ink']).optional(),
 });
+const resumeEnCinqNombres = strict({
+  label: texte,
+  min: z.number(),
+  q1: z.number(),
+  median: z.number(),
+  q3: z.number(),
+  max: z.number(),
+  mean: z.number().optional(),
+  tone: z.enum(['teal', 'gold', 'ink']).optional(),
+}).refine(
+  ({ min, q1, median, q3, max, mean }) =>
+    min <= q1 &&
+    q1 <= median &&
+    median <= q3 &&
+    q3 <= max &&
+    (mean === undefined || (min <= mean && mean <= max)),
+  { message: 'min ≤ Q1 ≤ médiane ≤ Q3 ≤ max, moyenne comprise' },
+);
+const boiteAMoustaches = strict({
+  ...titled,
+  unit: texte.optional(),
+  axisRange: z
+    .tuple([z.number(), z.number()])
+    .refine(([debut, fin]) => debut < fin, { message: 'axe croissant' }),
+  series: auMoinsUn(resumeEnCinqNombres),
+  reading: texte.optional(),
+  source: texte.optional(),
+  description: texte,
+}).superRefine(({ axisRange: [debut, fin], series }, contexte) => {
+  for (const [position, { min, max }] of series.entries()) {
+    if (min < debut || max > fin) {
+      contexte.addIssue({
+        code: 'custom',
+        path: ['series', position],
+        message: `série hors de l’axe [${debut} ; ${fin}]`,
+      });
+    }
+  }
+});
 const categorieCorrigee = strict({ id: texte, label: texte });
 const carteCorrigee = strict({
   id: texte,
@@ -124,6 +163,7 @@ export const presentationVisuelle = z.discriminatedUnion('renderer', [
       description: texte.optional(),
     }),
   ),
+  rendu('boxplot', boiteAMoustaches),
   rendu(
     'grid',
     strict({

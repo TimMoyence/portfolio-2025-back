@@ -1,5 +1,8 @@
 import type { z } from 'zod';
-import { CONCEPTS, type ConceptId } from '../../domain/cours/banque/concepts';
+import {
+  CONCEPTS_DU_B2_01,
+  type ConceptId,
+} from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import {
@@ -4216,7 +4219,7 @@ export const COURS_B2_01: ContenuDeCours = {
   titre: 'Lire, contrôler et décider avec l’information chiffrée',
   niveau: 'B2',
   dureeMinutes: 211,
-  concepts: [...CONCEPTS],
+  concepts: [...CONCEPTS_DU_B2_01],
   remediations: REMEDIATIONS,
   medias: MEDIAS,
   ecrans: ECRANS_DU_COURS,

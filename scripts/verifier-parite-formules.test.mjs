@@ -34,7 +34,7 @@ void test('serialiserCanonique trie les cles et empreinte le tableau vide comme 
 void test('le fichier de vecteurs porte l empreinte de ses propres vecteurs', () => {
   const fichier = lireFichierDeVecteurs(VECTEURS);
 
-  assert.equal(fichier.vecteurs.length, 12);
+  assert.equal(fichier.vecteurs.length, 19);
   assert.equal(empreinteDesVecteurs(fichier.vecteurs), fichier.sha256);
 });
 
