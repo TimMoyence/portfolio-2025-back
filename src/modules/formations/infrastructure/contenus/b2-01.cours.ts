@@ -1,241 +1,24 @@
-import type { z } from 'zod';
-import {
-  CONCEPTS_DU_B2_01,
-  type ConceptId,
-} from '../../domain/cours/banque/concepts';
+import { CONCEPTS_DU_B2_01 } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import {
-  slugOption,
-  type numeriqueStockee,
-  type voteStocke,
-} from '../../domain/cours/QuestionStockee';
-
-type EcranDuCours = ContenuDeCours['ecrans'][number];
-type Acte = [EcranDuCours, ...EcranDuCours[]];
-type EcranDeRecit = Extract<EcranDuCours, { readonly brique: 'fp-story' }>;
-type SocleDEcran = Omit<EcranDeRecit, 'brique' | 'proprietes'>;
-type ReserveDuRecit = Omit<EcranDeRecit['proprietes'], 'presentation'>;
-type EcranDeTri = Extract<EcranDuCours, { readonly brique: 'fp-cardsort' }>;
-type ProprietesDeClassement = EcranDeTri['proprietes'];
-type CorrectionDeTri = Omit<SocleDEcran, 'diffusion'> & {
-  readonly sousTitre: string;
-  readonly intitule?: string;
-};
-type CorrectionDeReponses = Omit<SocleDEcran, 'diffusion' | 'titre'> & {
-  readonly titre: string;
-  readonly sousTitre?: string;
-};
-type EcranDExemple = Extract<EcranDuCours, { readonly brique: 'fp-worked' }>;
-type VoteDuCours = z.input<typeof voteStocke>;
-type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
-type AuMoinsUn<T> = [T, ...T[]];
-type Piege = readonly [string, ConfusionId];
-
-const TOLERANCE_RELATIVE = { type: 'relative', valeur: 0.0001 } as const;
-const TOLERANCE_NULLE = { type: 'absolue', valeur: 0 } as const;
-const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
-
-function mapper<T, U>(
-  liste: AuMoinsUn<T>,
-  transformer: (element: T) => U,
-): AuMoinsUn<U> {
-  const [premier, ...suite] = liste;
-  return [transformer(premier), ...suite.map(transformer)];
-}
-
-function puces(...lignes: AuMoinsUn<string>): string {
-  return lignes.map((ligne) => `• ${ligne}`).join('\n');
-}
-
-function option(libelle: string, confusion: ConfusionId | null) {
-  return { id: slugOption(libelle), libelle, confusion };
-}
-
-function vote(
-  id: string,
-  concept: ConceptId,
-  noteCompte: boolean,
-  enonce: string,
-  bonne: string,
-  pieges: AuMoinsUn<Piege>,
-  segments: readonly string[] = [],
-): VoteDuCours {
-  const [premier, ...suite] = pieges;
-  return {
-    type: 'vote',
-    id,
-    concept,
-    noteCompte,
-    enonce,
-    options: [
-      option(bonne, null),
-      option(...premier),
-      ...suite.map((piege) => option(...piege)),
-    ],
-    segments: [...segments],
-  };
-}
-
-function numerique(
-  id: string,
-  concept: ConceptId,
-  enonce: string,
-  unite: string | null,
-  solution: number,
-  tolerance: NumeriqueDuCours['tolerance'],
-  formePubliee: string,
-  pieges: AuMoinsUn<readonly [number, ConfusionId]>,
-): NumeriqueDuCours {
-  return {
-    type: 'numeric',
-    id,
-    concept,
-    noteCompte: true,
-    enonce,
-    unite,
-    solution,
-    tolerance,
-    formePubliee,
-    pieges: mapper(pieges, ([valeur, confusion]) => ({ valeur, confusion })),
-  };
-}
-
-function ecranV2(
-  socle: SocleDEcran,
-  renderer: string,
-  props: Readonly<Record<string, unknown>>,
-  reserve: ReserveDuRecit = {},
-): EcranDeRecit {
-  return {
-    ...socle,
-    brique: 'fp-story',
-    proprietes: {
-      presentation: { version: 2, screenId: socle.screenId, renderer, props },
-      ...reserve,
-    },
-  };
-}
-
-interface Carte {
-  readonly id: string;
-  readonly libelle: string;
-  readonly categorie: string;
-  readonly confusion: ConfusionId;
-  readonly justification: string;
-}
-
-function classement(
-  plan: {
-    readonly id: string;
-    readonly intitule: string;
-    readonly dureeJeuMs?: number;
-  },
-  concept: ConceptId,
-  categories: AuMoinsUn<readonly [string, string]>,
-  cartes: AuMoinsUn<Carte>,
-): Pick<ProprietesDeClassement, 'plan' | 'questions'> {
-  return {
-    plan: {
-      ...plan,
-      cartes: mapper(cartes, (carte) => ({
-        id: carte.id,
-        libelle: carte.libelle,
-      })),
-      categories: mapper(categories, ([id, libelle]) => ({ id, libelle })),
-    },
-    questions: [
-      {
-        type: 'classement',
-        id: plan.id,
-        concept,
-        noteCompte: true,
-        corrige: {
-          type: 'classement',
-          attendus: mapper(cartes, (carte) => ({
-            carteId: carte.id,
-            categorieId: carte.categorie,
-            confusionSiErreur: carte.confusion,
-            justification: carte.justification,
-          })),
-          seuilReussite: 0.75,
-        },
-      },
-    ],
-  };
-}
-
-function suiviDeSaCorrection(
-  { sousTitre, intitule = 'Correction du tri', ...socle }: CorrectionDeTri,
-  tri: EcranDeTri,
-): [EcranDeTri, EcranDeRecit] {
-  const {
-    plan,
-    questions: [{ corrige }],
-  } = tri.proprietes;
-  const attendus = new Map(
-    corrige.attendus.map((attendu) => [attendu.carteId, attendu]),
-  );
-  return [
-    tri,
-    ecranV2({ ...socle, diffusion: 'seance' }, 'sort-review', {
-      title: intitule,
-      subtitle: sousTitre,
-      source: { screenId: tri.screenId, sortId: plan.id },
-      categories: plan.categories.map(({ id, libelle }) => ({
-        id,
-        label: libelle,
-      })),
-      cards: plan.cartes.map(({ id, libelle }) => ({
-        id,
-        label: libelle,
-        category: attendus.get(id)?.categorieId,
-        justification: attendus.get(id)?.justification,
-      })),
-    }),
-  ];
-}
-
-function correctionDesReponses(
-  { sousTitre, ...socle }: CorrectionDeReponses,
-  source: string,
-  explications: AuMoinsUn<readonly [string, string]>,
-): EcranDeRecit {
-  return ecranV2({ ...socle, diffusion: 'seance' }, 'answer-review', {
-    title: socle.titre,
-    ...(sousTitre === undefined ? {} : { subtitle: sousTitre }),
-    source: { screenId: source },
-    explications: explications.map(([reference, texte]) => ({
-      reference,
-      texte,
-    })),
-  });
-}
-
-function suiviDeSonCorrige(
-  socle: Omit<SocleDEcran, 'diffusion'>,
-  exercice: EcranDExemple,
-): [EcranDExemple, EcranDExemple] {
-  const { exemple } = exercice.proprietes;
-  return [
-    exercice,
-    {
-      ...socle,
-      diffusion: 'seance',
-      brique: 'fp-worked',
-      proprietes: {
-        exemple: { ...exemple, id: `${exemple.id}-corrige` },
-        etayage: 0,
-        pilote: true,
-        corrigeDe: exercice.screenId,
-      },
-    },
-  ];
-}
-
-function strategie(id: string, libelle: string, fausse = false) {
-  return { id, libelle, fausse };
-}
+  attendu,
+  classement,
+  correctionDesReponses,
+  DEUX_DECIMALES,
+  ecranV2,
+  enigme,
+  numerique,
+  puces,
+  rappel,
+  strategie,
+  suiviDeSaCorrection,
+  suiviDeSonCorrige,
+  TOLERANCE_NULLE,
+  vote,
+  type Acte,
+  type PlanDeTableau,
+} from './briques';
 
 const ACTE_1: Acte = [
   {
@@ -2037,31 +1820,6 @@ const PLAN_FEUILLE = {
   ],
 };
 
-function attendu(
-  reference: string,
-  formuleReference: string,
-  valeur: number,
-  forme: 'references' | { readonly memeQue: string },
-  pieges: readonly (readonly [number, ConfusionId])[] = [],
-  confusionSiErreurFormule: ConfusionId | null = null,
-  tolerance:
-    | typeof TOLERANCE_RELATIVE
-    | typeof TOLERANCE_NULLE = TOLERANCE_RELATIVE,
-) {
-  return {
-    reference,
-    formuleReference,
-    valeur,
-    tolerance,
-    forme,
-    confusionSiErreurFormule,
-    pieges: pieges.map(([valeurDuPiege, confusion]) => ({
-      valeur: valeurDuPiege,
-      confusion,
-    })),
-  };
-}
-
 const RECOPIE_DE_D2 = { memeQue: 'D2' } as const;
 const RECOPIE_DE_E2 = { memeQue: 'E2' } as const;
 const RECOPIE_DE_G2 = { memeQue: 'G2' } as const;
@@ -2139,10 +1897,7 @@ const PLAN_TABLEAU = {
       decimales: 2,
     },
   ],
-} as const satisfies Extract<
-  EcranDuCours,
-  { readonly brique: 'fp-table-build' }
->['proprietes']['plan'];
+} as const satisfies PlanDeTableau;
 
 function ligneDeTableau(
   rang: number,
@@ -3361,50 +3116,7 @@ const ACTE_5: Acte = [
   },
 ];
 
-function enigme(
-  rang: number,
-  id: string,
-  concept: ConceptId,
-  valeur: number,
-  tolerance: number,
-  formePubliee: string,
-  fragment: string,
-  pieges: AuMoinsUn<readonly [number, ConfusionId]>,
-) {
-  return {
-    type: 'enigme' as const,
-    id,
-    concept,
-    noteCompte: false,
-    corrige: {
-      type: 'enigme' as const,
-      parcoursId: 'b2-01-a6-coffre',
-      enigmeId: id,
-      rang,
-      solution: {
-        type: 'nombre' as const,
-        valeur,
-        tolerance: { type: 'absolue' as const, valeur: tolerance },
-        formePubliee,
-      },
-      fragment,
-      pieges: mapper(pieges, ([valeurDuPiege, confusion]) => ({
-        valeur: valeurDuPiege,
-        confusion,
-      })),
-    },
-  };
-}
-
-function rappel(
-  id: string,
-  concept: ConceptId,
-  enonce: string,
-  bonne: string,
-  pieges: AuMoinsUn<Piege>,
-): VoteDuCours {
-  return vote(id, concept, false, enonce, bonne, pieges);
-}
+const PARCOURS_DU_COFFRE = 'b2-01-a6-coffre';
 
 const ACTE_6: Acte = [
   ecranV2(
@@ -3460,7 +3172,7 @@ const ACTE_6: Acte = [
     proprietes: {
       modalite: 'solo',
       parcours: {
-        id: 'b2-01-a6-coffre',
+        id: PARCOURS_DU_COFFRE,
         intitule:
           'Le coffre du comité : quatre vérifications, un code pour ouvrir la salle',
         delaiIndiceMs: 60000,
@@ -3503,6 +3215,7 @@ const ACTE_6: Acte = [
       },
       questions: [
         enigme(
+          PARCOURS_DU_COFFRE,
           0,
           'b2-01-a6-e1-mix',
           'moyenne-ponderee',
@@ -3513,6 +3226,7 @@ const ACTE_6: Acte = [
           [[26.666667, 'moyenne-simple-des-taux']],
         ),
         enigme(
+          PARCOURS_DU_COFFRE,
           1,
           'b2-01-a6-e2-points',
           'point-de-pourcentage',
@@ -3527,6 +3241,7 @@ const ACTE_6: Acte = [
           ],
         ),
         enigme(
+          PARCOURS_DU_COFFRE,
           2,
           'b2-01-a6-e3-rouleau',
           'evolution-reciproque',
@@ -3541,6 +3256,7 @@ const ACTE_6: Acte = [
           ],
         ),
         enigme(
+          PARCOURS_DU_COFFRE,
           3,
           'b2-01-a6-e4-tva',
           'controle-coherence',

@@ -15,6 +15,18 @@ export const CONCEPTS_DU_B2_01 = [
   'tableur',
 ] as const;
 
-export const CONCEPTS = [...CONCEPTS_DU_B2_01] as const;
+export const CONCEPTS_DU_B2_02 = [
+  'serie-statistique',
+  'moyenne',
+  'mediane',
+  'quartiles',
+  'dispersion',
+  'ecart-type',
+  'boite-a-moustaches',
+  'histogramme',
+  'choix-du-resume',
+] as const;
+
+export const CONCEPTS = [...CONCEPTS_DU_B2_01, ...CONCEPTS_DU_B2_02] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];
