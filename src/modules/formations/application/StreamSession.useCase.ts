@@ -53,7 +53,7 @@ export const CADENCES_PRODUCTION: CadencesFlux = {
   dureeMaxMs: DUREE_MAX_MS,
 };
 
-type Fermeture = () => void;
+type Fermeture = () => Promise<void>;
 
 const CAPACITE_MEMOIRE: IStreamCapacity = {
   acquire: () => Promise.resolve(null),
@@ -208,17 +208,20 @@ export class StreamSessionUseCase {
       let boucle: ReturnType<typeof setInterval> | undefined;
       let battement: ReturnType<typeof setInterval> | undefined;
       let limite: ReturnType<typeof setTimeout> | undefined;
+      let liberation: Promise<void> = Promise.resolve();
+      let demarrage: Promise<void> = Promise.resolve();
 
       const libererCapacite = (): void => {
         const aLiberer = bail;
         bail = null;
-        if (aLiberer !== null) {
-          void this.capacity.release(aLiberer).catch((error: unknown) => {
-            this.logger.warn(
-              `Bail de flux non libere pour la session ${sessionId}: ${messageDe(error)}`,
-            );
-          });
+        if (aLiberer === null) {
+          return;
         }
+        liberation = this.capacity.release(aLiberer).catch((error: unknown) => {
+          this.logger.warn(
+            `Bail de flux non libere pour la session ${sessionId}: ${messageDe(error)}`,
+          );
+        });
       };
 
       const arreter = (): void => {
@@ -229,9 +232,10 @@ export class StreamSessionUseCase {
         libererCapacite();
       };
 
-      const ceder = (): void => {
+      const ceder = (): Promise<void> => {
         subscriber.complete();
         arreter();
+        return demarrage.then(() => liberation);
       };
 
       const pousserResultatsSiActivite = async (
@@ -349,12 +353,11 @@ export class StreamSessionUseCase {
           arreter();
         }, this.cadences.dureeMaxMs);
 
-        fermerLesPlusAnciens(places.porteur);
-        occuper(places, ceder);
         void tick();
       };
 
-      const demarrer = async (): Promise<void> => {
+      const demarrer = async (evinces: Promise<void>): Promise<void> => {
+        await evinces;
         try {
           bail = await this.capacity.acquire(demande);
         } catch (error) {
@@ -375,7 +378,9 @@ export class StreamSessionUseCase {
         installer();
       };
 
-      void demarrer();
+      const evinces = fermerLesPlusAnciens(places.porteur);
+      occuper(places, ceder);
+      demarrage = demarrer(evinces);
 
       return () => {
         liberer(places, ceder);
@@ -482,10 +487,11 @@ function assertSeanceDisponible({ porteur, seance }: PlacesDuFlux): void {
   }
 }
 
-function fermerLesPlusAnciens(porteur: Place): void {
+function fermerLesPlusAnciens(porteur: Place): Promise<void> {
   const occupants = occupantsDe(porteur);
   const enTrop = Math.max(0, occupants.length - porteur.plafond + 1);
-  occupants.slice(0, enTrop).forEach((fermer) => fermer());
+  const fermetures = occupants.slice(0, enTrop).map((fermer) => fermer());
+  return Promise.all(fermetures).then(() => undefined);
 }
 
 function occuper(places: PlacesDuFlux, fermeture: Fermeture): void {
