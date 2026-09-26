@@ -189,6 +189,91 @@ export const CONFUSIONS = {
     libelle:
       'Écrire une formule différente à chaque ligne au lieu d’une formule recopiable.',
   },
+  'role-statistique-confondu': {
+    concept: 'serie-statistique',
+    libelle:
+      'Confondre la population étudiée, le caractère observé et l’effectif d’une série.',
+  },
+  'effectif-cumule-confondu': {
+    concept: 'serie-statistique',
+    libelle:
+      'Confondre l’effectif (ou la fréquence) d’une classe et l’effectif cumulé jusqu’à cette classe.',
+  },
+  'moyenne-lue-comme-mediane': {
+    concept: 'mediane',
+    libelle:
+      'Croire que la moyenne partage la série en deux moitiés d’effectifs égaux.',
+  },
+  'mediane-sans-tri': {
+    concept: 'mediane',
+    libelle:
+      'Prendre la valeur du milieu de la liste sans avoir trié les valeurs.',
+  },
+  'mediane-rang-pair': {
+    concept: 'mediane',
+    libelle:
+      'Pour un effectif pair, retenir une seule des deux valeurs centrales au lieu de leur demi-somme.',
+  },
+  'valeur-extreme-ignoree': {
+    concept: 'choix-du-resume',
+    libelle:
+      'Résumer par la moyenne une série tirée par une valeur extrême, sans le signaler.',
+  },
+  'valeur-extreme-supprimee': {
+    concept: 'choix-du-resume',
+    libelle:
+      'Retirer une valeur extrême gênante sans pièce qui prouve qu’elle est une erreur.',
+  },
+  'quartile-moitie-de-mediane': {
+    concept: 'quartiles',
+    libelle:
+      'Calculer un quartile à partir de la médiane (sa moitié, ou la médiane plus la moitié) au lieu de chercher la valeur qui laisse un quart de l’effectif en dessous.',
+  },
+  'convention-de-quartile-ignoree': {
+    concept: 'quartiles',
+    libelle:
+      'Comparer des quartiles obtenus par deux conventions différentes (programme, tableur) sans le signaler.',
+  },
+  'boite-lue-comme-effectif': {
+    concept: 'boite-a-moustaches',
+    libelle:
+      'Croire qu’une partie plus longue de la boîte contient davantage de valeurs.',
+  },
+  'ecart-type-population-echantillon': {
+    concept: 'ecart-type',
+    libelle:
+      'Confondre l’écart-type de la population (division par n) et l’écart-type estimé sur un échantillon (division par n − 1).',
+  },
+  'variance-confondue-avec-ecart-type': {
+    concept: 'ecart-type',
+    libelle:
+      'Donner la variance, exprimée dans le carré de l’unité, comme écart-type.',
+  },
+  'etendue-prise-pour-dispersion': {
+    concept: 'dispersion',
+    libelle:
+      'Juger la dispersion sur la seule étendue, qui ne dépend que des deux valeurs extrêmes.',
+  },
+  'meme-moyenne-meme-serie': {
+    concept: 'dispersion',
+    libelle:
+      'Conclure que deux séries de même moyenne se ressemblent, sans regarder leur dispersion.',
+  },
+  'moyenne-des-moyennes': {
+    concept: 'moyenne',
+    libelle:
+      'Faire la moyenne simple de moyennes calculées sur des groupes d’effectifs différents.',
+  },
+  'centre-de-classe-oublie': {
+    concept: 'moyenne',
+    libelle:
+      'Calculer la moyenne de données groupées avec une borne des classes au lieu de leur centre.',
+  },
+  'histogramme-classes-inegales': {
+    concept: 'histogramme',
+    libelle:
+      'Lire la hauteur d’un histogramme à classes d’amplitudes inégales comme un effectif, au lieu d’une densité.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export type ConfusionId = keyof typeof CONFUSIONS;

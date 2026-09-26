@@ -1,4 +1,4 @@
-import { CONCEPTS } from './concepts';
+import { CONCEPTS, CONCEPTS_DU_B2_01, CONCEPTS_DU_B2_02 } from './concepts';
 import {
   CONFUSIONS,
   detailsLisibles,
@@ -153,9 +153,116 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   },
 };
 
+const CONFUSIONS_DU_B2_02 = {
+  'role-statistique-confondu': {
+    concept: 'serie-statistique',
+    libelle:
+      'Confondre la population étudiée, le caractère observé et l’effectif d’une série.',
+  },
+  'effectif-cumule-confondu': {
+    concept: 'serie-statistique',
+    libelle:
+      'Confondre l’effectif (ou la fréquence) d’une classe et l’effectif cumulé jusqu’à cette classe.',
+  },
+  'moyenne-lue-comme-mediane': {
+    concept: 'mediane',
+    libelle:
+      'Croire que la moyenne partage la série en deux moitiés d’effectifs égaux.',
+  },
+  'mediane-sans-tri': {
+    concept: 'mediane',
+    libelle:
+      'Prendre la valeur du milieu de la liste sans avoir trié les valeurs.',
+  },
+  'mediane-rang-pair': {
+    concept: 'mediane',
+    libelle:
+      'Pour un effectif pair, retenir une seule des deux valeurs centrales au lieu de leur demi-somme.',
+  },
+  'valeur-extreme-ignoree': {
+    concept: 'choix-du-resume',
+    libelle:
+      'Résumer par la moyenne une série tirée par une valeur extrême, sans le signaler.',
+  },
+  'valeur-extreme-supprimee': {
+    concept: 'choix-du-resume',
+    libelle:
+      'Retirer une valeur extrême gênante sans pièce qui prouve qu’elle est une erreur.',
+  },
+  'quartile-moitie-de-mediane': {
+    concept: 'quartiles',
+    libelle:
+      'Calculer un quartile à partir de la médiane (sa moitié, ou la médiane plus la moitié) au lieu de chercher la valeur qui laisse un quart de l’effectif en dessous.',
+  },
+  'convention-de-quartile-ignoree': {
+    concept: 'quartiles',
+    libelle:
+      'Comparer des quartiles obtenus par deux conventions différentes (programme, tableur) sans le signaler.',
+  },
+  'boite-lue-comme-effectif': {
+    concept: 'boite-a-moustaches',
+    libelle:
+      'Croire qu’une partie plus longue de la boîte contient davantage de valeurs.',
+  },
+  'ecart-type-population-echantillon': {
+    concept: 'ecart-type',
+    libelle:
+      'Confondre l’écart-type de la population (division par n) et l’écart-type estimé sur un échantillon (division par n − 1).',
+  },
+  'variance-confondue-avec-ecart-type': {
+    concept: 'ecart-type',
+    libelle:
+      'Donner la variance, exprimée dans le carré de l’unité, comme écart-type.',
+  },
+  'etendue-prise-pour-dispersion': {
+    concept: 'dispersion',
+    libelle:
+      'Juger la dispersion sur la seule étendue, qui ne dépend que des deux valeurs extrêmes.',
+  },
+  'meme-moyenne-meme-serie': {
+    concept: 'dispersion',
+    libelle:
+      'Conclure que deux séries de même moyenne se ressemblent, sans regarder leur dispersion.',
+  },
+  'moyenne-des-moyennes': {
+    concept: 'moyenne',
+    libelle:
+      'Faire la moyenne simple de moyennes calculées sur des groupes d’effectifs différents.',
+  },
+  'centre-de-classe-oublie': {
+    concept: 'moyenne',
+    libelle:
+      'Calculer la moyenne de données groupées avec une borne des classes au lieu de leur centre.',
+  },
+  'histogramme-classes-inegales': {
+    concept: 'histogramme',
+    libelle:
+      'Lire la hauteur d’un histogramme à classes d’amplitudes inégales comme un effectif, au lieu d’une densité.',
+  },
+};
+
 describe('CONCEPTS', () => {
+  it('fige les quatorze concepts du B2-01 dans leur ordre', () => {
+    expect(CONCEPTS.slice(0, 14)).toEqual([...CONCEPTS_DU_B2_01]);
+  });
+
+  it('ajoute à la suite les neuf concepts du B2-02', () => {
+    expect(CONCEPTS.slice(14)).toEqual([...CONCEPTS_DU_B2_02]);
+    expect(CONCEPTS_DU_B2_02).toEqual([
+      'serie-statistique',
+      'moyenne',
+      'mediane',
+      'quartiles',
+      'dispersion',
+      'ecart-type',
+      'boite-a-moustaches',
+      'histogramme',
+      'choix-du-resume',
+    ]);
+  });
+
   it('ajoute aux sept concepts existants les sept concepts de la V3 (§ 5.9)', () => {
-    expect(CONCEPTS).toEqual([
+    expect(CONCEPTS_DU_B2_01).toEqual([
       'proportion',
       'pourcentage',
       'taux-evolution',
@@ -182,8 +289,15 @@ describe('CONFUSIONS', () => {
     }
   });
 
+  it('ajoute les dix-sept confusions du B2-02 aux trente-huit du B2-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(55);
+    expect(Object.keys(CONFUSIONS).slice(38)).toEqual(
+      Object.keys(CONFUSIONS_DU_B2_02),
+    );
+    expect(CONFUSIONS).toMatchObject(CONFUSIONS_DU_B2_02);
+  });
+
   it('conserve les huit confusions existantes et ajoute les trente de la V3 (§ 5.9)', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(38);
     expect(CONFUSIONS).toMatchObject(CONFUSIONS_AJOUTEES_PAR_LA_V3);
     expect(Object.keys(CONFUSIONS).slice(0, 8)).toEqual([
       'hausse-baisse-symetriques',
