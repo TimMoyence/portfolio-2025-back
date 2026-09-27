@@ -26,7 +26,7 @@ import {
   estProduction,
   productionJuste,
   reponseDEnigme,
-} from './helpers/reponses-b2-01';
+} from './helpers/reponses-de-cours';
 import { silenceNestLogger } from './helpers/silence-nest-logger';
 
 const SLUG = 'b2-01-traitement-information-chiffree';

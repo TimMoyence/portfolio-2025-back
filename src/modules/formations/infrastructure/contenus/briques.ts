@@ -31,10 +31,12 @@ type VoteDuCours = z.input<typeof voteStocke>;
 type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
 export type AuMoinsUn<T> = [T, ...T[]];
 export type Piege = readonly [string, ConfusionId];
-export type PlanDeTableau = Extract<
+type EcranDeTableau = Extract<
   EcranDuCours,
   { readonly brique: 'fp-table-build' }
->['proprietes']['plan'];
+>;
+export type PlanDeTableau = EcranDeTableau['proprietes']['plan'];
+type QuestionDeTableau = EcranDeTableau['proprietes']['questions'][number];
 
 export const TOLERANCE_RELATIVE = {
   type: 'relative',
@@ -313,4 +315,71 @@ export function rappel(
   pieges: AuMoinsUn<Piege>,
 ): VoteDuCours {
   return vote(id, concept, false, enonce, bonne, pieges);
+}
+
+export function controle(reference: string, formuleReference: string) {
+  return attendu(
+    reference,
+    formuleReference,
+    1,
+    'references',
+    [],
+    null,
+    TOLERANCE_NULLE,
+  );
+}
+
+export function questionDeTableau(
+  id: string,
+  concept: ConceptId,
+  attendus: QuestionDeTableau['corrige']['attendus'],
+): QuestionDeTableau {
+  return {
+    type: 'tableau',
+    id,
+    concept,
+    noteCompte: true,
+    corrige: {
+      type: 'tableau',
+      attendus,
+      tolerance: { type: 'absolue', valeur: 0.01 },
+      seuilReussite: 0.75,
+    },
+  };
+}
+
+export const ETAPE_TRANSFERER = {
+  id: 'transferer',
+  title: 'Acte 6 · Transférer',
+  question: 'Saurez-vous le refaire seul·e ?',
+  proof: 'Situation nouvelle, réponse d’IA corrigée, rappel.',
+  result: 'Une fiche mémo pour le CCF.',
+} as const;
+
+export const COLONNES_DU_DOSSIER = [
+  { key: 'rubrique', label: 'Rubrique' },
+  { key: 'contenu', label: 'Ce que montre le dossier' },
+] as const;
+
+export const REFERENTIEL_DU_BTS_CG = {
+  title: 'Référentiel du BTS CG',
+  description: 'Le programme de mathématiques et l’épreuve E3.',
+  href: 'https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf',
+  external: true,
+} as const;
+
+export function coursB2(
+  actes: AuMoinsUn<Acte>,
+  remediations: ContenuDeCours['remediations'],
+  medias: ContenuDeCours['medias'],
+  fiche: Pick<ContenuDeCours, 'slug' | 'titre' | 'dureeMinutes' | 'concepts'>,
+): ContenuDeCours {
+  const [premier, ...suite] = actes;
+  return {
+    ...fiche,
+    niveau: 'B2',
+    remediations,
+    medias,
+    ecrans: [...premier, ...suite.flat()],
+  };
 }

@@ -1,26 +1,9 @@
 import { CONCEPTS_DU_B2_01 } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
-import {
-  attendu,
-  classement,
-  correctionDesReponses,
-  DEUX_DECIMALES,
-  ecranV2,
-  enigme,
-  numerique,
-  puces,
-  rappel,
-  strategie,
-  suiviDeSaCorrection,
-  suiviDeSonCorrige,
-  TOLERANCE_NULLE,
-  vote,
-  type Acte,
-  type PlanDeTableau,
-} from './briques';
+import * as moteur from './briques';
 
-const ACTE_1: Acte = [
+const ACTE_1: moteur.Acte = [
   {
     screenId: 'B2-01-A1-01-DIAGNOSTIC',
     titre: 'Diagnostic : le prix d’une réparation',
@@ -28,7 +11,7 @@ const ACTE_1: Acte = [
     brique: 'fp-recall',
     dureeMinutes: 3,
     concepts: ['taux-evolution'],
-    notes: puces(
+    notes: moteur.puces(
       'Avant de lancer : vérifier au pupitre que tous les postes ont rejoint la séance.',
       'Annoncer « seule la participation compte ». Les propositions s’affichent d’emblée : chacun choisit son pourcentage.',
       'Piège dominant : « +20 % » (division par 100, la valeur d’arrivée). Contrôle à faire dire : 80 × 1,25 = 100.',
@@ -37,7 +20,7 @@ const ACTE_1: Acte = [
     proprietes: {
       modalite: 'solo',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a1-diagnostic',
           'taux-evolution',
           true,
@@ -53,14 +36,14 @@ const ACTE_1: Acte = [
       delaiMs: 0,
     },
   },
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A1-02-ACCROCHE',
       titre: 'Lire un chiffre, ce n’est pas le croire',
       diffusion: 'catalogue',
       dureeMinutes: 1,
       concepts: ['contrat-de-lecture'],
-      notes: puces(
+      notes: moteur.puces(
         'Présenter Atelier Rivage en une phrase ; faire sortir les calculatrices.',
         'Question à la classe : « À quoi sert un tableau de bord ? » (à décider).',
         'Transition : « Voici le courriel reçu ce matin. »',
@@ -87,7 +70,7 @@ const ACTE_1: Acte = [
     brique: 'fp-pro',
     dureeMinutes: 4,
     concepts: ['contrat-de-lecture'],
-    notes: puces(
+    notes: moteur.puces(
       'Lecture à voix haute (90 s), puis 2 min d’écriture individuelle.',
       'Au pupitre, lire deux réponses à « Que mesure chaque chiffre ? » : l’une parle d’un montant, l’autre d’un taux. « Gagner plus » peut vouloir dire les deux : c’est le fil de la séance.',
       'Transition : « Voici le chemin : six actes pour répondre à Hélène, en commençant par le tableau de bord tel qu’il a été envoyé. »',
@@ -120,7 +103,7 @@ const ACTE_1: Acte = [
       ],
     },
   },
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A1-07-PLAN',
       titre: 'Le plan de la séance',
@@ -170,24 +153,18 @@ const ACTE_1: Acte = [
           result:
             'Une recommandation fondée sur les poids, les scénarios et les limites.',
         },
-        {
-          id: 'transferer',
-          title: 'Acte 6 · Transférer',
-          question: 'Saurez-vous le refaire seul·e ?',
-          proof: 'Situation nouvelle, réponse d’IA corrigée, rappel.',
-          result: 'Une fiche mémo pour le CCF.',
-        },
+        moteur.ETAPE_TRANSFERER,
       ],
     },
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A1-04-TABLEAU-DE-BORD',
       titre: 'Tableau de bord 2025 transmis au comité',
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['contrat-de-lecture'],
-      notes: puces(
+      notes: moteur.puces(
         '1 min de lecture silencieuse ; ne rien commenter, ne rien corriger.',
         'Anomalies à laisser trouver au tri : « −2,3 % » (écart de deux taux), « +1 200 » et « 4,9 » (sans unité), « Taux de marge » (lequel ?), toile à 20,80 € (le vrai prix, 20,70 €, sort en acte 4).',
         'Transition : « Avant de discuter des chiffres, classons-les. »',
@@ -240,7 +217,7 @@ const ACTE_1: Acte = [
       note: 'Données fictives Atelier Rivage, créées pour ce cours.',
     },
   ),
-  ...suiviDeSaCorrection(
+  ...moteur.suiviDeSaCorrection(
     {
       screenId: 'B2-01-A1-05-CORRECTION',
       titre: 'Correction : ce que dit chaque chiffre du tableau de bord',
@@ -248,7 +225,7 @@ const ACTE_1: Acte = [
         'Un pourcentage se lit avec sa base : part d’un total, évolution depuis une valeur de départ, ou écart entre deux taux, en points. Sans unité, base ou période, un chiffre reste ambigu.',
       dureeMinutes: 1,
       concepts: ['contrat-de-lecture'],
-      notes: puces(
+      notes: moteur.puces(
         'Commencer par les deux cartes les plus ratées (taux d’erreur au pupitre).',
         'Faire dire à un binôme pourquoi sa carte bordée de rouge change de colonne.',
         'Transition : « Un taux n’est une information que si l’on connaît sa fiche d’identité. »',
@@ -261,7 +238,7 @@ const ACTE_1: Acte = [
       brique: 'fp-cardsort',
       dureeMinutes: 8,
       concepts: ['contrat-de-lecture'],
-      notes: puces(
+      notes: moteur.puces(
         'Binômes, 5 min de tri ; annoncer « plus qu’une minute » à 4 min. Chacun envoie depuis son poste.',
         'Cartes les plus ratées : « Taux de marge : −2,3 % » (des points) et « Inflation : 4,9 » (ambigu, pas une évolution).',
         'Relance pour toute carte discutée : « Rapporté à quoi ? »',
@@ -271,7 +248,7 @@ const ACTE_1: Acte = [
         modalite: 'binome',
         renvoi: 'B2-01-A1-04-TABLEAU-DE-BORD',
         cadrageDuRenvoi: { extrait: { lignes: [0, 1, 2, 3, 4, 5] } },
-        ...classement(
+        ...moteur.classement(
           {
             id: 'b2-01-a1-anatomie',
             intitule:
@@ -352,14 +329,14 @@ const ACTE_1: Acte = [
       },
     },
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A1-06-FICHE-INDICATEUR',
       titre: '27,6 % : la fiche d’identité d’un taux',
       diffusion: 'catalogue',
       dureeMinutes: 3,
       concepts: ['contrat-de-lecture', 'pourcentage', 'taux-evolution'],
-      notes: puces(
+      notes: moteur.puces(
         'Retourner les six cartes une à une, classe entière.',
         'Calcul à faire dire : 289 800 ÷ 1 050 000 = 0,276, soit « pour 100 € de CA HT, 27,60 € de marge brute ».',
         'Relances : « Que manque-t-il à "Inflation : 4,9" ? » (unité, période, source) ; « Quel dénominateur écrire à côté de "Taux de marge" chez Samir ? » (le CA HT).',
@@ -405,14 +382,14 @@ const ACTE_1: Acte = [
       ],
     },
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A1-08-QUESTION-DE-GESTION',
       titre: 'La question d’Hélène, en chiffres',
       diffusion: 'seance',
       dureeMinutes: 3,
       concepts: ['contrat-de-lecture'],
-      notes: puces(
+      notes: moteur.puces(
         '2 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Refuser toute réponse sans période (2024 → 2025) ou sans dénominateur (CA HT).',
         'Attendu : deux mesures, un montant (marge brute en €) et un taux (marge ÷ CA HT).',
@@ -441,14 +418,14 @@ const ACTE_1: Acte = [
       cadrageDuRenvoi: { extrait: { champs: ['situation'] } },
     },
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A1-09-DIAPOSITIVE',
       titre: 'La diapositive de Samir',
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['lecture-graphique'],
-      notes: puces(
+      notes: moteur.puces(
         '30 s de projection sans commentaire, puis : « Peut-on la montrer jeudi ? » Pas de réponse orale : on écrit à l’écran suivant.',
         'Chiffre de contrôle : sur un axe de 284 000 à 292 000 €, la barre 2025 est 7 fois plus haute que celle de 2022 (7 000 € contre 1 000 € au-dessus de l’origine), pour +2,1 % réel.',
         'Transition : « Écrivez ce que vous vérifieriez avant de répondre à Hélène. »',
@@ -483,7 +460,7 @@ const ACTE_1: Acte = [
     brique: 'fp-challenge',
     dureeMinutes: 2,
     concepts: ['lecture-graphique'],
-    notes: puces(
+    notes: moteur.puces(
       '2 min d’écriture individuelle, puis révélation au pupitre.',
       'Repérer ceux qui citent l’axe et ceux qui ne citent que la couleur ou le titre.',
       'Avant de révéler, faire trouver la piste fausse : changer la couleur ne corrige rien.',
@@ -500,23 +477,23 @@ const ACTE_1: Acte = [
       corrige: {
         type: 'defi',
         strategies: [
-          strategie(
+          moteur.strategie(
             'axe',
             'Lire l’origine et l’amplitude de l’axe vertical avant de comparer les hauteurs.',
           ),
-          strategie(
+          moteur.strategie(
             'evolution',
             'Calculer l’évolution réelle entre 2022 et 2025 avant de parler de croissance.',
           ),
-          strategie(
+          moteur.strategie(
             'titre',
             'Vérifier que le titre décrit la mesure au lieu de conclure.',
           ),
-          strategie(
+          moteur.strategie(
             'montant',
             'Comparer la marge au CA : un montant ne dit rien de la rentabilité.',
           ),
-          strategie(
+          moteur.strategie(
             'couleur',
             'Changer la couleur des barres pour rendre le graphique plus neutre.',
             true,
@@ -526,7 +503,7 @@ const ACTE_1: Acte = [
       renvoi: 'B2-01-A1-09-DIAPOSITIVE',
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A1-10-CORRECTION',
       titre: 'Correction : l’audit de la diapositive',
@@ -534,7 +511,7 @@ const ACTE_1: Acte = [
         'Avant de comparer des hauteurs, on lit l’axe ; avant de parler de croissance, on calcule l’évolution.',
       dureeMinutes: 1,
       concepts: ['lecture-graphique'],
-      notes: puces(
+      notes: moteur.puces(
         '1 min de mise en commun : faire lire à voix haute deux vérifications justes.',
         'Ne pas donner l’évolution réelle (+2,1 %) : c’est la première question de l’atelier 1.',
         'Transition : jalon 1.',
@@ -571,7 +548,7 @@ const ACTE_1: Acte = [
     brique: 'fp-pulse',
     dureeMinutes: 1,
     concepts: ['contrat-de-lecture'],
-    notes: puces(
+    notes: moteur.puces(
       '30 s de vote anonyme.',
       'Si plus de 30 % « Perdu » : reprendre la fiche A1-06 en 2 min sur « Inflation : 4,9 ».',
       'Transition : « Acte 2 · Auditer : comparer sans tromper. Retour en 1786. »',
@@ -586,15 +563,15 @@ const ACTE_1: Acte = [
   },
 ];
 
-const ACTE_2: Acte = [
-  ecranV2(
+const ACTE_2: moteur.Acte = [
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A2-01-PLAYFAIR',
       titre: '1786 : le graphique devient un langage',
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['lecture-graphique'],
-      notes: puces(
+      notes: moteur.puces(
         'Raconter en 1 min ; montrer que l’écart entre les deux courbes est la balance commerciale.',
         'Relance : « Qu’est-ce qui manque à la diapositive de Samir ? » (une échelle honnête).',
         'Transition : « Déplacez vous-même l’origine de l’axe. »',
@@ -627,7 +604,7 @@ const ACTE_2: Acte = [
     brique: 'fp-plot',
     dureeMinutes: 2,
     concepts: ['lecture-graphique'],
-    notes: puces(
+    notes: moteur.puces(
       'Chacun passe de « Axe de Samir » à « Axe à zéro ».',
       'Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la barre 2025 vaut toujours 291 000 €.',
       'Phrase à faire dire : « L’échelle change l’impression, pas la donnée ».',
@@ -677,7 +654,7 @@ const ACTE_2: Acte = [
     brique: 'questionnaire',
     dureeMinutes: 6,
     concepts: ['lecture-graphique', 'proportion'],
-    notes: puces(
+    notes: moteur.puces(
       '5 min de travail sur les questions 1 à 3 (annoncer « plus qu’une minute » à 4 min), puis 1 min de comparaison avec le voisin.',
       'Pièges : Q1 « sept fois plus » (axe) ; Q3 « 84 % des commandes, donc 84 % du CA ».',
       'Contrôle à faire dire : 1 150 000 × 0,455 ≈ 523 000.',
@@ -690,7 +667,7 @@ const ACTE_2: Acte = [
       regime: 'focus',
       ordre: 'fixe',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a2-evolution-marge',
           'lecture-graphique',
           true,
@@ -705,7 +682,7 @@ const ACTE_2: Acte = [
           ],
           ['+2,1 %', 'trois ans'],
         ),
-        numerique(
+        moteur.numerique(
           'b2-01-a2-part-marketplace',
           'proportion',
           'En 2025, la marketplace réalise 523 000 € d’un CA HT total de 1 150 000 €. Quelle part du CA représente-t-elle ? Réponse en %, arrondie au dixième.',
@@ -718,7 +695,7 @@ const ACTE_2: Acte = [
             [219.885277, 'base-inversee'],
           ],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a2-population-reference',
           'proportion',
           true,
@@ -739,13 +716,13 @@ const ACTE_2: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A2-03-CORRECTION-1',
       titre: 'Correction de l’atelier 1 : questions 1 à 3',
       dureeMinutes: 1,
       concepts: ['lecture-graphique', 'proportion'],
-      notes: puces(
+      notes: moteur.puces(
         'Commencer par la question la moins réussie (score affiché sous chaque correction).',
         'Rapprocher Q2 et Q3 : la marketplace fait 84 % des commandes mais 45,5 % du CA ; même canal, deux populations de référence.',
         'Q1 : si « +6 000 € : une forte croissance » domine, faire rapporter l’écart à 285 000 € : +2,1 %.',
@@ -775,7 +752,7 @@ const ACTE_2: Acte = [
     brique: 'questionnaire',
     dureeMinutes: 6,
     concepts: ['taux-evolution', 'pourcentage'],
-    notes: puces(
+    notes: moteur.puces(
       '5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).',
       'Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.',
       'Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.',
@@ -787,13 +764,13 @@ const ACTE_2: Acte = [
       regime: 'focus',
       ordre: 'fixe',
       questions: [
-        numerique(
+        moteur.numerique(
           'b2-01-a2-evolution-sur-mesure',
           'taux-evolution',
           'Le CA HT du sur-mesure passe de 483 000 € (2024) à 397 000 € (2025). Quel est son taux d’évolution ? Réponse en %, arrondie au centième, signe compris.',
           '%',
           -17.805383,
-          DEUX_DECIMALES,
+          moteur.DEUX_DECIMALES,
           '−17,81',
           [
             [-21.662469, 'base-arrivee'],
@@ -802,7 +779,7 @@ const ACTE_2: Acte = [
             [17.805383, 'sens-de-variation'],
           ],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a2-ordre-de-grandeur',
           'taux-evolution',
           true,
@@ -813,7 +790,7 @@ const ACTE_2: Acte = [
             ['Environ +1 300 %', 'ecart-absolu-au-lieu-du-taux'],
           ],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a2-marge-marque',
           'pourcentage',
           true,
@@ -831,13 +808,13 @@ const ACTE_2: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A2-03-CORRECTION-2',
       titre: 'Correction de l’atelier 1 : questions 4 à 6',
       dureeMinutes: 1,
       concepts: ['taux-evolution', 'pourcentage'],
-      notes: puces(
+      notes: moteur.puces(
         'Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.',
         'Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.',
         'Revenir à la diapositive de Samir : de 285 000 € à 291 000 €, la marge brute gagne +6 000 €, soit +2,1 % en trois ans. Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.',
@@ -860,14 +837,14 @@ const ACTE_2: Acte = [
       ],
     ],
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A2-05-ECRITURES',
       titre: 'Cinq écritures, cinq questions',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['pourcentage', 'point-de-pourcentage'],
-      notes: puces(
+      notes: moteur.puces(
         'Faire associer chaque écriture à une carte du tri A1-05.',
         'Relance : « Quelle écriture aurait dû remplacer "−2,3 %" dans le tableau de bord ? » (−2,3 points).',
         'Piège : confondre +9,5 % (évolution) et 20 % (proportion) : les deux s’écrivent en %.',
@@ -895,13 +872,13 @@ const ACTE_2: Acte = [
     },
     { renvoi: 'B2-01-A1-05-CORRECTION' },
   ),
-  ...suiviDeSonCorrige(
+  ...moteur.suiviDeSonCorrige(
     {
       screenId: 'B2-01-A2-06-CORRECTION',
       titre: 'Correction : points ou pourcentage',
       dureeMinutes: 2,
       concepts: ['point-de-pourcentage'],
-      notes: puces(
+      notes: moteur.puces(
         'Révéler une étape à la fois (« Corriger une étape de plus »), après avoir lu une réponse d’élève à l’étape.',
         'S’arrêter sur l’étape 3 : la phrase du comité donne les points et l’évolution relative, jamais « −2,3 % ».',
         'Transition : « Mini-jeu : tout n’est pas comparable. »',
@@ -914,7 +891,7 @@ const ACTE_2: Acte = [
       brique: 'fp-worked',
       dureeMinutes: 2,
       concepts: ['point-de-pourcentage'],
-      notes: puces(
+      notes: moteur.puces(
         'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
         'À l’étape 1, guetter « −2,3 % » : exiger « points ».',
       ),
@@ -965,7 +942,7 @@ const ACTE_2: Acte = [
       },
     },
   ),
-  ...suiviDeSaCorrection(
+  ...moteur.suiviDeSaCorrection(
     {
       screenId: 'B2-01-A2-07-CORRECTION',
       titre: 'Correction : comparable ou pas ?',
@@ -974,7 +951,7 @@ const ACTE_2: Acte = [
         'Comparable si même unité, même périmètre et même période ; sinon on retraite, ou on cherche la donnée manquante.',
       dureeMinutes: 1,
       concepts: ['contrat-de-lecture'],
-      notes: puces(
+      notes: moteur.puces(
         'Commencer par les deux cartes les plus ratées (pupitre).',
         'Pour chaque retraitement, faire dire l’opération : TTC ÷ 1,2 ; prix du rouleau ÷ 50 ; CA 2025 − 523 000 €.',
         'Transition : jalon 2, puis acte 3.',
@@ -987,13 +964,13 @@ const ACTE_2: Acte = [
       brique: 'fp-cardsort',
       dureeMinutes: 8,
       concepts: ['contrat-de-lecture'],
-      notes: puces(
+      notes: moteur.puces(
         'Binômes, chrono de 5 min (annoncer la dernière minute), puis débriefing sur l’écran de correction.',
         'Cartes à risque : « semestre / année » (activité saisonnière : doubler un semestre ne donne pas l’année) et « inflation » (4,9 = inflation 2023, pas 2025).',
       ),
       proprietes: {
         modalite: 'binome',
-        ...classement(
+        ...moteur.classement(
           {
             id: 'b2-01-a2-comparable',
             intitule:
@@ -1091,7 +1068,7 @@ const ACTE_2: Acte = [
     brique: 'fp-pulse',
     dureeMinutes: 1,
     concepts: ['contrat-de-lecture'],
-    notes: puces(
+    notes: moteur.puces(
       '30 s de vote anonyme.',
       'Si plus de 30 % « Perdu » : reprendre la Q3 de l’atelier 1 (commandes ≠ CA) et la Q6 (coût ≠ prix de vente).',
       'Transition : « Acte 3 : un prix monte, puis redescend. »',
@@ -1109,7 +1086,7 @@ const ACTE_2: Acte = [
 const CONSIGNE_DE_L_ATELIER_2 =
   'Calculatrice autorisée. Base 100 = moyenne annuelle 2019. Taux annuels moyens de l’Insee : 2020 : 0,5 % ; 2021 : 1,6 % ; 2022 : 5,2 % ; 2023 : 4,9 % ; 2024 : 2,0 % ; 2025 : 0,9 %.';
 
-const ACTE_3: Acte = [
+const ACTE_3: moteur.Acte = [
   {
     screenId: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE',
     titre: 'Vote : +10 %, puis −10 %',
@@ -1117,7 +1094,7 @@ const ACTE_3: Acte = [
     brique: 'fp-vote',
     dureeMinutes: 8,
     concepts: ['evolutions-successives'],
-    notes: puces(
+    notes: moteur.puces(
       'Vote 1 individuel, sans calculatrice.',
       'Entre 30 et 70 % de bonnes réponses : débat en binôme « convainquez votre voisin », puis revote ; sinon, revote directement.',
       'Pièges : « identique » (+10 % puis −10 % s’annuleraient) ; « 12 % » (remises additionnées). Contrôles : 110 × 0,90 = 99 ; 4 000 × 0,882 = 3 528 € HT.',
@@ -1126,7 +1103,7 @@ const ACTE_3: Acte = [
     proprietes: {
       modalite: 'solo',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a3-sac-v1',
           'evolutions-successives',
           true,
@@ -1141,7 +1118,7 @@ const ACTE_3: Acte = [
           ],
           ['Inférieur', '1 %'],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a3-remise-v2',
           'evolutions-successives',
           true,
@@ -1171,7 +1148,7 @@ const ACTE_3: Acte = [
     brique: 'fp-concept4',
     dureeMinutes: 2,
     concepts: ['coefficient-multiplicateur', 'evolutions-successives'],
-    notes: puces(
+    notes: moteur.puces(
       'Faire tester +50 % puis −50 % : on arrive à 75, soit −25 % (1,5 × 0,5 = 0,75).',
       'Faire formuler : on multiplie les coefficients ; taux global = coefficient global − 1.',
       'Transition : « Conséquence pour la marge du sac. »',
@@ -1228,14 +1205,14 @@ const ACTE_3: Acte = [
         'Chaque taux s’applique à la valeur devenue courante : on multiplie les coefficients, on n’additionne pas les taux. Taux d’évolution = (arrivée − départ) ÷ départ.',
     },
   },
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A3-03-PRIX-SAC',
       titre: 'Le sac étanche : prix et marge',
       diffusion: 'seance',
       dureeMinutes: 1,
       concepts: ['evolutions-successives'],
-      notes: puces(
+      notes: moteur.puces(
         '45 s, sur la seule courbe de marge.',
         'Chiffre clé : −1 % sur le prix = −5 % sur la marge ((19 − 20) ÷ 20), car la marge ne fait que 20 % du prix.',
         'Transition : « Même raisonnement sur un achat : le fil technique. »',
@@ -1269,13 +1246,13 @@ const ACTE_3: Acte = [
     },
     { renvoi: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE' },
   ),
-  ...suiviDeSonCorrige(
+  ...moteur.suiviDeSonCorrige(
     {
       screenId: 'B2-01-A3-04-CORRECTION',
       titre: 'Correction : le fil technique',
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
-      notes: puces(
+      notes: moteur.puces(
         '« Corriger une étape de plus » : passer vite sur les étapes 1 à 3, s’arrêter sur 4 à 6 (l’opération inverse).',
         'Réflexe à faire dire : retour au montant connu, 12,50 × 1,10 = 13,75.',
         'L’étape 5 prépare la question « retour de 100 € à 80 € » de l’atelier 2.',
@@ -1289,7 +1266,7 @@ const ACTE_3: Acte = [
       brique: 'fp-worked',
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
-      notes: puces(
+      notes: moteur.puces(
         'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
         'Pièges : étapes 4-5, retirer 10 % de 13,75 € (12,375 € au lieu de 12,50 €) ; étape 6, retirer 20 % du TTC (2 880 € au lieu de 3 000 €).',
       ),
@@ -1352,14 +1329,14 @@ const ACTE_3: Acte = [
       },
     },
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A3-05-INFLATION-RYTHME',
       titre: 'Inflation annuelle en France, 2019–2025',
       diffusion: 'catalogue',
       dureeMinutes: 1,
       concepts: ['indice-base-100'],
-      notes: puces(
+      notes: moteur.puces(
         'Lire la série sans commenter le niveau des prix : chaque barre est une hausse sur un an.',
         'Faire repérer que le « 4,9 » du tableau de bord de Samir est l’inflation de 2023, pas celle de 2025 (0,9 %).',
         'Transition : « Comment passer d’une série de taux à un indice et à un taux moyen ? »',
@@ -1387,13 +1364,13 @@ const ACTE_3: Acte = [
         'Diagramme en barres des taux d’inflation annuels moyens : 1,1 % en 2019, 0,5 % en 2020, 1,6 % en 2021, 5,2 % en 2022, 4,9 % en 2023, 2,0 % en 2024 et 0,9 % en 2025.',
     },
   ),
-  ...suiviDeSonCorrige(
+  ...moteur.suiviDeSonCorrige(
     {
       screenId: 'B2-01-A3-06-CORRECTION',
       titre: 'Correction : lire un indice et un rythme',
       dureeMinutes: 2,
       concepts: ['indice-base-100', 'taux-moyen'],
-      notes: puces(
+      notes: moteur.puces(
         '« Corriger une étape de plus » : 5 étapes en 2 min ; s’arrêter sur la 5ᵉ (19,10 ÷ 3).',
         'Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (+6 % par an).',
         'Transition : « Même méthode sur les prix en France depuis 2019 : atelier 2. »',
@@ -1406,7 +1383,7 @@ const ACTE_3: Acte = [
       brique: 'fp-worked',
       dureeMinutes: 3,
       concepts: ['indice-base-100', 'taux-moyen'],
-      notes: puces(
+      notes: moteur.puces(
         'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
         'Pièges : lire 119,10 comme +119,10 % ; diviser 19,10 par 3 (6,37 %).',
         'Vérifier que chacun sait taper 1,19102 ^ (1 ÷ 3) sur sa calculatrice.',
@@ -1471,7 +1448,7 @@ const ACTE_3: Acte = [
     brique: 'questionnaire',
     dureeMinutes: 4,
     concepts: ['indice-base-100', 'evolutions-successives'],
-    notes: puces(
+    notes: moteur.puces(
       '4 min individuelles sur les questions 1 à 3.',
       'Pièges : Q1 « plus bas » (rythme lu comme niveau) ; Q2 112,2 et Q3 15,1 % (taux additionnés).',
     ),
@@ -1482,7 +1459,7 @@ const ACTE_3: Acte = [
       regime: 'focus',
       ordre: 'fixe',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a3-niveau-prix',
           'indice-base-100',
           true,
@@ -1494,26 +1471,26 @@ const ACTE_3: Acte = [
           ],
           ['Plus élevé', '2024'],
         ),
-        numerique(
+        moteur.numerique(
           'b2-01-a3-indice-2023',
           'indice-base-100',
           'Calculez l’indice des prix de 2023 (base 100 = moyenne 2019), arrondi au centième.',
           null,
           112.681079,
-          DEUX_DECIMALES,
+          moteur.DEUX_DECIMALES,
           '112,68',
           [
             [112.2, 'taux-successifs-additionnes'],
             [12.681079, 'indice-lu-comme-taux'],
           ],
         ),
-        numerique(
+        moteur.numerique(
           'b2-01-a3-hausse-2019-2025',
           'evolutions-successives',
           'De combien les prix ont-ils augmenté entre 2019 et 2025 ? Réponse en %, arrondie au centième.',
           '%',
           15.969113,
-          DEUX_DECIMALES,
+          moteur.DEUX_DECIMALES,
           '15,97',
           [
             [15.1, 'taux-successifs-additionnes'],
@@ -1523,13 +1500,13 @@ const ACTE_3: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A3-07-CORRECTION-1',
       titre: 'Correction de l’atelier 2 : questions 1 à 3',
       dureeMinutes: 1,
       concepts: ['indice-base-100', 'evolutions-successives'],
-      notes: puces(
+      notes: moteur.puces(
         'Commencer par la question la moins réussie.',
         'Ne pas citer le taux moyen ni 1,025⁶ : c’est la question suivante. Laisser 1,1597 en vue, elle en part.',
         'Niveau des prix : si « plus bas » domine, faire dire que 0,9 % reste une hausse (le mot « désinflation » viendra en A3-08).',
@@ -1559,7 +1536,7 @@ const ACTE_3: Acte = [
     brique: 'questionnaire',
     dureeMinutes: 4,
     concepts: ['taux-moyen', 'evolution-reciproque'],
-    notes: puces(
+    notes: moteur.puces(
       '3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).',
       'Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).',
       'La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.',
@@ -1571,20 +1548,20 @@ const ACTE_3: Acte = [
       regime: 'focus',
       ordre: 'fixe',
       questions: [
-        numerique(
+        moteur.numerique(
           'b2-01-a3-taux-moyen',
           'taux-moyen',
           'Quel taux annuel constant, appliqué six années de suite, donne la même hausse des prix entre 2019 et 2025 ? Réponse en %, arrondie au centième.',
           '%',
           2.499966,
-          DEUX_DECIMALES,
+          moteur.DEUX_DECIMALES,
           '2,50',
           [
             [2.661519, 'taux-moyen-arithmetique'],
             [2.516667, 'taux-successifs-additionnes'],
           ],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a3-reciproque',
           'evolution-reciproque',
           true,
@@ -1598,13 +1575,13 @@ const ACTE_3: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A3-07-CORRECTION-2',
       titre: 'Correction de l’atelier 2 : questions 4 et 5',
       dureeMinutes: 1,
       concepts: ['taux-moyen', 'evolution-reciproque'],
-      notes: puces(
+      notes: moteur.puces(
         'Taux moyen : la moyenne des six taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % au lieu de 32,6 %).',
         'Transition : « Voici la courbe que vous venez de calculer. »',
       ),
@@ -1621,14 +1598,14 @@ const ACTE_3: Acte = [
       ],
     ],
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A3-08-INDICE-PRIX',
       titre: 'Rythme et niveau : l’indice des prix depuis 2019',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['indice-base-100'],
-      notes: puces(
+      notes: moteur.puces(
         'Faire superposer : les barres de A3-05 baissent depuis 2023, la courbe de l’indice monte toujours.',
         'Mot à fixer : désinflation (le rythme ralentit, les prix montent encore) ≠ déflation (les prix baissent).',
         'Lecture à dire : les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019 ; le rythme ralentit depuis 2023, mais l’indice continue de monter.',
@@ -1660,14 +1637,14 @@ const ACTE_3: Acte = [
     },
     { renvoi: 'B2-01-A3-05-INFLATION-RYTHME' },
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A3-09-NOTE-CONJONCTURE',
       titre: 'Note de conjoncture pour Hélène',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['indice-base-100'],
-      notes: puces(
+      notes: moteur.puces(
         '90 s de rédaction, puis lire deux réponses.',
         'Écarter les phrases sans source ou qui ne parlent que du rythme.',
         'Calcul attendu : 1 ÷ 1,1597 − 1 ≈ −13,8 % de valeur réelle pour des tarifs inchangés depuis 2019.',
@@ -1705,7 +1682,7 @@ const ACTE_3: Acte = [
     brique: 'fp-pulse',
     dureeMinutes: 1,
     concepts: ['evolutions-successives', 'indice-base-100', 'taux-moyen'],
-    notes: puces(
+    notes: moteur.puces(
       '30 s de vote anonyme.',
       'Si plus de 30 % « Perdu » : au retour de pause, rejouer la machine à coefficients (A3-02) et l’étape « Taux annuel moyen » de A3-06.',
       'Annoncer la pause de 15 min ; au retour, acte 4 au tableur.',
@@ -1876,7 +1853,7 @@ const PLAN_TABLEAU = {
       decimales: 2,
     },
   ],
-} as const satisfies PlanDeTableau;
+} as const satisfies moteur.PlanDeTableau;
 
 function ligneDeTableau(
   rang: number,
@@ -1931,7 +1908,7 @@ const [PREMIERE_LIGNE_DU_TABLEAU, ...AUTRES_LIGNES_DU_TABLEAU] = [
 const CONSIGNE_DE_L_ATELIER_3 =
   'Pour le comité, vous devez montrer comment le CA HT 2025 de chaque canal a évolué au fil des trimestres. CA HT 2025, en milliers d’euros, du 1er au 4e trimestre : sur-mesure 120 ; 95 ; 102 ; 80 · entretien 58 ; 61 ; 49 ; 62 · marketplace 98 ; 131 ; 167 ; 127.';
 
-const ACTE_4: Acte = [
+const ACTE_4: moteur.Acte = [
   {
     screenId: 'B2-01-A4-01-CAPSULE',
     titre: 'Capsule : une formule qui se recopie',
@@ -1939,7 +1916,7 @@ const ACTE_4: Acte = [
     brique: 'fp-story',
     dureeMinutes: 3,
     concepts: ['tableur'],
-    notes: puces(
+    notes: moteur.puces(
       'Projeter en plein écran, sous-titres activés (2 min 30).',
       'Après la vidéo : « Que devient =C2/C6 recopiée d’une ligne ? » (=C3/C7, d’où #DIV/0!) ; « Que détecte chaque contrôle ? » (les parts : les formules ; le compte de résultat : les données).',
       'Transition : « À vous, sur le tableau de bord d’Atelier Rivage. »',
@@ -1976,7 +1953,7 @@ const ACTE_4: Acte = [
     brique: 'fp-sheet',
     dureeMinutes: 13,
     concepts: ['tableur'],
-    notes: puces(
+    notes: moteur.puces(
       'Binômes ; circuler. À 9 min, projeter la grille d’un binôme volontaire.',
       'Erreurs à chercher : #DIV/0! en E3 ($C$5 oublié) ; taux saisis × 100 (−17,8 au lieu de −0,178) ; valeurs tapées sans formule.',
       'Valeurs de contrôle : D2 −0,178 ; E4 0,455 ; G5 291 000 ; F5 0,253 ; B7 = C7 = 1.',
@@ -1995,25 +1972,25 @@ const ACTE_4: Acte = [
             type: 'feuille',
             plan: PLAN_FEUILLE,
             attendus: [
-              attendu('B5', '=SOMME(B2:B4)', 1050000, 'references'),
-              attendu('C5', '=SOMME(C2:C4)', 1150000, 'references'),
-              attendu('D2', '=(C2-B2)/B2', -0.178054, 'references', [
+              moteur.attendu('B5', '=SOMME(B2:B4)', 1050000, 'references'),
+              moteur.attendu('C5', '=SOMME(C2:C4)', 1150000, 'references'),
+              moteur.attendu('D2', '=(C2-B2)/B2', -0.178054, 'references', [
                 [-17.805383, 'taux-valeur-facteur-cent'],
                 [-0.216625, 'base-arrivee'],
               ]),
-              attendu('D3', '=(C3-B3)/B3', 0.095238, RECOPIE_DE_D2, [
+              moteur.attendu('D3', '=(C3-B3)/B3', 0.095238, RECOPIE_DE_D2, [
                 [9.52381, 'taux-valeur-facteur-cent'],
                 [0.086957, 'base-arrivee'],
               ]),
-              attendu('D4', '=(C4-B4)/B4', 0.464986, RECOPIE_DE_D2, [
+              moteur.attendu('D4', '=(C4-B4)/B4', 0.464986, RECOPIE_DE_D2, [
                 [46.498599, 'taux-valeur-facteur-cent'],
                 [0.3174, 'base-arrivee'],
               ]),
-              attendu('D5', '=(C5-B5)/B5', 0.095238, RECOPIE_DE_D2, [
+              moteur.attendu('D5', '=(C5-B5)/B5', 0.095238, RECOPIE_DE_D2, [
                 [9.52381, 'taux-valeur-facteur-cent'],
                 [0.086957, 'base-arrivee'],
               ]),
-              attendu(
+              moteur.attendu(
                 'E2',
                 '=C2/$C$5',
                 0.345217,
@@ -2021,8 +1998,15 @@ const ACTE_4: Acte = [
                 [[34.521739, 'taux-valeur-facteur-cent']],
                 NON_FIGEE,
               ),
-              attendu('E3', '=C3/$C$5', 0.2, RECOPIE_DE_E2, [], NON_FIGEE),
-              attendu(
+              moteur.attendu(
+                'E3',
+                '=C3/$C$5',
+                0.2,
+                RECOPIE_DE_E2,
+                [],
+                NON_FIGEE,
+              ),
+              moteur.attendu(
                 'E4',
                 '=C4/$C$5',
                 0.454783,
@@ -2030,33 +2014,17 @@ const ACTE_4: Acte = [
                 [[523000, NON_FIGEE]],
                 NON_FIGEE,
               ),
-              attendu('E5', '=C5/$C$5', 1, RECOPIE_DE_E2, [], NON_FIGEE),
-              attendu('G2', '=C2*F2', 142920, 'references'),
-              attendu('G3', '=C3*F3', 64400, RECOPIE_DE_G2),
-              attendu('G4', '=C4*F4', 83680, RECOPIE_DE_G2),
-              attendu('G5', '=SOMME(G2:G4)', 291000, 'references'),
-              attendu('F5', '=G5/C5', 0.253043, 'references', [
+              moteur.attendu('E5', '=C5/$C$5', 1, RECOPIE_DE_E2, [], NON_FIGEE),
+              moteur.attendu('G2', '=C2*F2', 142920, 'references'),
+              moteur.attendu('G3', '=C3*F3', 64400, RECOPIE_DE_G2),
+              moteur.attendu('G4', '=C4*F4', 83680, RECOPIE_DE_G2),
+              moteur.attendu('G5', '=SOMME(G2:G4)', 291000, 'references'),
+              moteur.attendu('F5', '=G5/C5', 0.253043, 'references', [
                 [25.304348, 'taux-valeur-facteur-cent'],
                 [0.266667, 'moyenne-simple-des-taux'],
               ]),
-              attendu(
-                'B7',
-                '=SI(ARRONDI(SOMME(E2:E4);6)=1;1;0)',
-                1,
-                'references',
-                [],
-                null,
-                TOLERANCE_NULLE,
-              ),
-              attendu(
-                'C7',
-                '=SI(ARRONDI(G5-B6;0)=0;1;0)',
-                1,
-                'references',
-                [],
-                null,
-                TOLERANCE_NULLE,
-              ),
+              moteur.controle('B7', '=SI(ARRONDI(SOMME(E2:E4);6)=1;1;0)'),
+              moteur.controle('C7', '=SI(ARRONDI(G5-B6;0)=0;1;0)'),
             ],
             seuilReussite: 0.8,
           },
@@ -2071,7 +2039,7 @@ const ACTE_4: Acte = [
     brique: 'questionnaire',
     dureeMinutes: 3,
     concepts: ['lecture-graphique'],
-    notes: puces(
+    notes: moteur.puces(
       '3 min de travail sur la forme et le titre.',
       'Piège principal : un titre qui conclut (« La marketplace s’envole… ») ; exiger un titre qui décrit, avec l’unité.',
     ),
@@ -2082,7 +2050,7 @@ const ACTE_4: Acte = [
       regime: 'focus',
       ordre: 'fixe',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a4-forme',
           'lecture-graphique',
           true,
@@ -2094,7 +2062,7 @@ const ACTE_4: Acte = [
           ],
           ['courbes', 'trimestres'],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a4-titre',
           'lecture-graphique',
           true,
@@ -2112,13 +2080,13 @@ const ACTE_4: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A4-03-CORRECTION-1',
       titre: 'Correction de l’atelier 3 : forme et titre',
       dureeMinutes: 1,
       concepts: ['lecture-graphique'],
-      notes: puces(
+      notes: moteur.puces(
         'Faire justifier la forme par la question posée : une évolution dans le temps.',
         'Transition : « Il reste l’axe et la phrase de lecture. »',
       ),
@@ -2142,7 +2110,7 @@ const ACTE_4: Acte = [
     brique: 'questionnaire',
     dureeMinutes: 3,
     concepts: ['lecture-graphique'],
-    notes: puces(
+    notes: moteur.puces(
       '3 min seul.',
       'Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).',
       'Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).',
@@ -2154,7 +2122,7 @@ const ACTE_4: Acte = [
       regime: 'focus',
       ordre: 'fixe',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a4-axe',
           'lecture-graphique',
           true,
@@ -2172,7 +2140,7 @@ const ACTE_4: Acte = [
           ],
           ['À 0', 'graduation'],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a4-lecture',
           'lecture-graphique',
           true,
@@ -2193,13 +2161,13 @@ const ACTE_4: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A4-03-CORRECTION-2',
       titre: 'Correction de l’atelier 3 : axe et lecture',
       dureeMinutes: 1,
       concepts: ['lecture-graphique'],
-      notes: puces(
+      notes: moteur.puces(
         '« Le sur-mesure s’effondre » est même faux au 3e trimestre : il remonte de 95 à 102 k€.',
         'Relance sur « 167 % du CA » : quelle est la vraie part ? 167 ÷ 318 ≈ 52,5 % (on la retrouvera dans le TCD).',
         'Transition : « Voici le graphique retenu pour le dossier. »',
@@ -2217,14 +2185,14 @@ const ACTE_4: Acte = [
       ],
     ],
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A4-04-CA-TRIMESTRIEL',
       titre: 'Le graphique retenu pour le dossier du comité',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['lecture-graphique'],
-      notes: puces(
+      notes: moteur.puces(
         'Comparer au choix de l’atelier 3 : courbes étiquetées directement, axe à zéro.',
         'Rappeler : la phrase de lecture décrit, elle n’explique pas (pas de « parce que »).',
         'Transition : « Deuxième tâche : le prix de la toile, révision après révision. »',
@@ -2258,7 +2226,7 @@ const ACTE_4: Acte = [
     brique: 'fp-table-build',
     dureeMinutes: 9,
     concepts: ['evolutions-successives'],
-    notes: puces(
+    notes: moteur.puces(
       'Individuel, 7 min ; la correction de la synthèse vient à l’écran suivant.',
       'Piège : recalculer chaque prix depuis 20,00 € (20,60 ; 21,40 ; 20,80 €). Le 20,80 € du tableau de bord de Samir vient de là.',
       'Contrôles : 21,60 ; 20,52 ; 21,34 ; 20,70 € ; coefficients 1,08 ; 0,95 ; 1,04 ; 0,97 ; évolution réelle +3,50 % contre « +4 % ».',
@@ -2267,28 +2235,21 @@ const ACTE_4: Acte = [
       modalite: 'solo',
       plan: PLAN_TABLEAU,
       questions: [
-        {
-          type: 'tableau',
-          id: 'b2-01-a4-indice-toile',
-          concept: 'evolutions-successives',
-          noteCompte: true,
-          corrige: {
-            type: 'tableau',
-            attendus: [PREMIERE_LIGNE_DU_TABLEAU, ...AUTRES_LIGNES_DU_TABLEAU],
-            tolerance: { type: 'absolue', valeur: 0.01 },
-            seuilReussite: 0.75,
-          },
-        },
+        moteur.questionDeTableau(
+          'b2-01-a4-indice-toile',
+          'evolutions-successives',
+          [PREMIERE_LIGNE_DU_TABLEAU, ...AUTRES_LIGNES_DU_TABLEAU],
+        ),
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A4-05-CORRECTION',
       titre: 'Correction : prix et indice de la toile',
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
-      notes: puces(
+      notes: moteur.puces(
         'Boucler avec la carte « toile » du tri A1-05, laissée « à vérifier à l’acte 4 » : +3,50 %, et non +4 %.',
         'Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈ +0,8 %), pas la moyenne annuelle de 0,9 %.',
         'Transition : jalon 4, puis l’acte 5.',
@@ -2309,7 +2270,7 @@ const ACTE_4: Acte = [
     brique: 'fp-pulse',
     dureeMinutes: 1,
     concepts: ['tableur'],
-    notes: puces(
+    notes: moteur.puces(
       '30 s de vote anonyme.',
       'Si plus de 30 % « Perdu » : rejouer la capsule de 1 min 02 à 1 min 34 (#DIV/0!, puis $C$6).',
       'Transition : « Acte 5 : défendre une décision. D’abord, une infirmière en 1858. »',
@@ -2329,15 +2290,15 @@ const DONNEES_PAR_CANAL =
 
 const CONSIGNE_DE_L_ATELIER_4 = `${DONNEES_PAR_CANAL} Marge brute totale 2025 : 291 000 €.`;
 
-const ACTE_5: Acte = [
-  ecranV2(
+const ACTE_5: moteur.Acte = [
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A5-01-NIGHTINGALE',
       titre: '1858 : Florence Nightingale fait décider par les données',
       diffusion: 'catalogue',
       dureeMinutes: 1,
       concepts: ['lecture-graphique'],
-      notes: puces(
+      notes: moteur.puces(
         'Raconter en 45 s ; montrer un mois où le bleu (maladies évitables) écrase le rouge (blessures).',
         'Relance : « Quelle décision le comité doit-il prendre jeudi ? » (investir ou non dans la marketplace).',
         'Transition : « Prouvons d’où vient la baisse du taux de marge. »',
@@ -2361,13 +2322,13 @@ const ACTE_5: Acte = [
       },
     },
   ),
-  ...suiviDeSonCorrige(
+  ...moteur.suiviDeSonCorrige(
     {
       screenId: 'B2-01-A5-03-CORRECTION',
       titre: 'Correction : prouver l’effet de répartition',
       dureeMinutes: 2,
       concepts: ['moyenne-ponderee'],
-      notes: puces(
+      notes: moteur.puces(
         '« Corriger une étape de plus » : vite sur les étapes 1 à 4, s’arrêter sur 5 (effet de répartition) et 6 (négation).',
         'Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition −26 400 € = +1 200 € de marge.',
         'Transition : « Vérifions que la classe sait l’expliquer : vote. »',
@@ -2380,7 +2341,7 @@ const ACTE_5: Acte = [
       brique: 'fp-worked',
       dureeMinutes: 3,
       concepts: ['moyenne-ponderee'],
-      notes: puces(
+      notes: moteur.puces(
         'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
         'Étapes difficiles : 5 (que serait la marge avec la répartition de 2024 ?) et 6 (négation d’un « si… alors » : « il existe… et… »).',
       ),
@@ -2451,7 +2412,7 @@ const ACTE_5: Acte = [
     brique: 'fp-vote',
     dureeMinutes: 8,
     concepts: ['moyenne-ponderee'],
-    notes: puces(
+    notes: moteur.puces(
       'Vote 1 (2 min), débat en binôme (3 min), vote 2 sur le lycée (2 min), révélation (1 min).',
       'Juste après la démonstration, le vote 1 devrait dépasser 70 % : dans ce cas, écourter le débat et passer au vote 2.',
       'Grille du débat : un argument complet associe taux stables, poids modifiés et un exemple chiffré.',
@@ -2460,7 +2421,7 @@ const ACTE_5: Acte = [
     proprietes: {
       modalite: 'solo',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a5-paradoxe-v1',
           'moyenne-ponderee',
           true,
@@ -2477,7 +2438,7 @@ const ACTE_5: Acte = [
             ],
           ],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a5-paradoxe-v2',
           'moyenne-ponderee',
           true,
@@ -2513,7 +2474,7 @@ const ACTE_5: Acte = [
     brique: 'fp-plot',
     dureeMinutes: 2,
     concepts: ['moyenne-ponderee'],
-    notes: puces(
+    notes: moteur.puces(
       'Réponses : part de marketplace qui garde 27,6 % → 34 % (celle de 2024) ; taux de marketplace qui redonne 27,6 % à 45,5 % de part → ≈ 21 %.',
       'Pente à faire lire : chaque point de part gagné par la marketplace coûte 0,2 point de taux global (part 20 % → 30,4 %).',
       'Transition : « Le tableur fait ce calcul, à condition de choisir le bon total. »',
@@ -2565,14 +2526,14 @@ const ACTE_5: Acte = [
         'Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ?',
     },
   },
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A5-05-TCD',
       titre: 'Tableau croisé dynamique : deux totaux de taux',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['moyenne-ponderee', 'tableur'],
-      notes: puces(
+      notes: moteur.puces(
         'Faire dire ce que calcule chaque colonne de droite au total : la moyenne des trois taux (26,7 %) ; la marge totale ÷ le CA total (77 160 ÷ 318 000 = 24,3 %).',
         'Pourquoi 24,3 % < 26,7 % : ce trimestre, la marketplace (16 %) pèse 52,5 % du CA.',
         'Annoncer le devoir à déposer : refaire ce TCD sur l’année (taux au total attendu : 25,3 %).',
@@ -2631,7 +2592,7 @@ const ACTE_5: Acte = [
     brique: 'questionnaire',
     dureeMinutes: 4,
     concepts: ['proportion', 'taux-evolution', 'lecture-graphique'],
-    notes: puces(
+    notes: moteur.puces(
       '3 min de travail sur les questions 1 à 3.',
       'Pièges : Q1 45,5 % (part du CA, pas de la marge) ; Q2 −86 000 € (écart de CA, pas de marge) ; Q3 « c’est prouvé ».',
     ),
@@ -2641,7 +2602,7 @@ const ACTE_5: Acte = [
       regime: 'focus',
       ordre: 'fixe',
       questions: [
-        numerique(
+        moteur.numerique(
           'b2-01-a5-part-marge-marketplace',
           'proportion',
           'En 2025, quelle part de la marge brute d’Atelier Rivage provient de la marketplace ? Réponse en %, arrondie au dixième.',
@@ -2655,7 +2616,7 @@ const ACTE_5: Acte = [
             [347.753346, 'base-inversee'],
           ],
         ),
-        numerique(
+        moteur.numerique(
           'b2-01-a5-variation-marge-sur-mesure',
           'taux-evolution',
           'De combien la marge brute du sur-mesure a-t-elle varié entre 2024 et 2025 ? Réponse en euros, signe compris.',
@@ -2668,7 +2629,7 @@ const ACTE_5: Acte = [
             [-86000, 'ca-confondu-avec-marge'],
           ],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a5-causalite',
           'lecture-graphique',
           true,
@@ -2689,13 +2650,13 @@ const ACTE_5: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A5-06-CORRECTION-1',
       titre: 'Correction de l’atelier 4 : questions 1 à 3',
       dureeMinutes: 1,
       concepts: ['proportion', 'taux-evolution', 'lecture-graphique'],
-      notes: puces(
+      notes: moteur.puces(
         'Chiffre absent de l’écran : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; c’est l’argument contre « arrêter la marketplace ».',
         'Contrôle par canal : −30 960 + 5 600 + 26 560 = +1 200 €, la hausse de marge du tableau de bord.',
         'Transition : « Deux questions de plus, pour rédiger le dossier. »',
@@ -2724,7 +2685,7 @@ const ACTE_5: Acte = [
     brique: 'questionnaire',
     dureeMinutes: 3,
     concepts: ['contrat-de-lecture', 'moyenne-ponderee'],
-    notes: puces(
+    notes: moteur.puces(
       '2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).',
       'Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).',
       'TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.',
@@ -2736,7 +2697,7 @@ const ACTE_5: Acte = [
       regime: 'focus',
       ordre: 'fixe',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a5-synthese',
           'contrat-de-lecture',
           true,
@@ -2754,7 +2715,7 @@ const ACTE_5: Acte = [
           ],
           ['1 200 €', '2,3 points'],
         ),
-        vote(
+        moteur.vote(
           'b2-01-a5-tcd',
           'moyenne-ponderee',
           true,
@@ -2775,13 +2736,13 @@ const ACTE_5: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A5-06-CORRECTION-2',
       titre: 'Correction de l’atelier 4 : questions 4 et 5',
       dureeMinutes: 1,
       concepts: ['contrat-de-lecture', 'moyenne-ponderee'],
-      notes: puces(
+      notes: moteur.puces(
         'Faire relire la phrase retenue à voix haute : c’est celle du dossier.',
         'Transition : « Quel contrôle pour chaque anomalie du dossier ? »',
       ),
@@ -2798,7 +2759,7 @@ const ACTE_5: Acte = [
       ],
     ],
   ),
-  ...suiviDeSaCorrection(
+  ...moteur.suiviDeSaCorrection(
     {
       screenId: 'B2-01-A5-07-CORRECTION',
       titre: 'Correction : le contrôle qui tranche chaque anomalie',
@@ -2806,7 +2767,7 @@ const ACTE_5: Acte = [
         'À efficacité égale, le contrôle le moins coûteux d’abord : métadonnées, puis recalcul, puis pièce.',
       dureeMinutes: 1,
       concepts: ['controle-coherence'],
-      notes: puces(
+      notes: moteur.puces(
         'Commencer par « factures », « compensation » et « détourne nos clients ».',
         'Point clé : un total qui concorde ne prouve pas chaque ligne (+100 € et −100 € se compensent) ; un indice oriente, une pièce tranche.',
         'Transition : « Rédigez votre recommandation. »',
@@ -2819,14 +2780,14 @@ const ACTE_5: Acte = [
       brique: 'fp-cardsort',
       dureeMinutes: 8,
       concepts: ['controle-coherence'],
-      notes: puces(
+      notes: moteur.puces(
         'Binômes, 5 min de tri (annoncer la dernière minute), puis écran de correction.',
         'Cartes à risque : « factures de mars » et « compensation de février » (preuve par la pièce, pas recalcul) ; « détourne nos clients » (seule une donnée par client tranche).',
         'Relance : « Ce contrôle permet-il de trancher, ou seulement de soupçonner ? »',
       ),
       proprietes: {
         modalite: 'binome',
-        ...classement(
+        ...moteur.classement(
           {
             id: 'b2-01-a5-controle',
             intitule:
@@ -2923,14 +2884,14 @@ const ACTE_5: Acte = [
       },
     },
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A5-08-DOSSIER-COMITE',
       titre: 'Le dossier du comité en une page',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['moyenne-ponderee'],
-      notes: puces(
+      notes: moteur.puces(
         '1 min de lecture silencieuse, sans commentaire.',
         'Relance : « Si la marketplace double à taux constant, combien de marge en plus ? » (+83 680 €, face à 40 000 € investis).',
         '« Et le taux global ? » (≈ 22,4 % : le taux baisse encore, la marge en euros monte).',
@@ -2941,10 +2902,7 @@ const ACTE_5: Acte = [
     {
       title: 'Le dossier du comité : ce que disent les chiffres',
       subtitle: 'Atelier Rivage, exercices 2024 et 2025 (données fictives).',
-      columns: [
-        { key: 'rubrique', label: 'Rubrique' },
-        { key: 'contenu', label: 'Ce que montre le dossier' },
-      ],
+      columns: moteur.COLONNES_DU_DOSSIER,
       rows: [
         {
           rubrique: 'Constat',
@@ -2976,7 +2934,7 @@ const ACTE_5: Acte = [
     brique: 'fp-challenge',
     dureeMinutes: 4,
     concepts: ['moyenne-ponderee'],
-    notes: puces(
+    notes: moteur.puces(
       '3 min d’écriture, révélation, 1 min d’échange.',
       'Piège : recommander d’arrêter la marketplace parce qu’elle fait baisser le taux ; elle apporte +26 560 € de marge.',
       'Exiger un chiffre ou une pièce dans chaque phrase ; la décision porte sur la marge en euros, pas sur le CA.',
@@ -2995,31 +2953,31 @@ const ACTE_5: Acte = [
       corrige: {
         type: 'defi',
         strategies: [
-          strategie(
+          moteur.strategie(
             'constat',
             'Constat : CA +9,5 %, marge brute +1 200 €, taux de marge brute −2,3 points (27,6 % → 25,3 %).',
           ),
-          strategie(
+          moteur.strategie(
             'mecanisme',
             'Mécanisme : taux par canal stables ; la marketplace (16 %) passe de 34 % à 45,5 % du CA : effet de répartition d’environ −26 400 € de marge, confirmé par le champ calculé du TCD.',
           ),
-          strategie(
+          moteur.strategie(
             'a-prouver',
             'À prouver : le transfert de clients du sur-mesure vers la marketplace (données par client) et l’écart de 90 € sur les factures de vente de mars.',
           ),
-          strategie(
+          moteur.strategie(
             'decision',
             'Décision : conditionner l’investissement à un objectif de marge en euros et à un plan pour le sur-mesure, plutôt qu’à un objectif de CA.',
           ),
-          strategie(
+          moteur.strategie(
             'limite',
             'Limite : deux exercices seulement, données annuelles, coûts directs supposés stables.',
           ),
-          strategie(
+          moteur.strategie(
             'priorites',
             'Priorités : d’abord l’effet de répartition (−26 400 € de marge), puis le recul du sur-mesure (−30 960 €), enfin l’écart de 90 € des factures, sans effet sur la décision mais à corriger.',
           ),
-          strategie(
+          moteur.strategie(
             'arreter',
             'Arrêter la marketplace, puisqu’elle fait baisser le taux global.',
             true,
@@ -3035,7 +2993,7 @@ const ACTE_5: Acte = [
     brique: 'fp-pulse',
     dureeMinutes: 1,
     concepts: ['moyenne-ponderee'],
-    notes: puces(
+    notes: moteur.puces(
       '30 s de vote anonyme.',
       'Si plus de 30 % « Perdu » : refaire au tableau l’étape « Taux global 2024 » de A5-03 (poids × taux).',
       'Transition : « Jeudi, 13 h 30. Avant d’entrer, un détour par Venise. »',
@@ -3052,15 +3010,15 @@ const ACTE_5: Acte = [
 
 const PARCOURS_DU_COFFRE = 'b2-01-a6-coffre';
 
-const ACTE_6: Acte = [
-  ecranV2(
+const ACTE_6: moteur.Acte = [
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A6-01-PACIOLI',
       titre: '1494 : Pacioli et la méthode du contrôle',
       diffusion: 'seance',
       dureeMinutes: 2,
       concepts: ['controle-coherence'],
-      notes: puces(
+      notes: moteur.puces(
         'Écrire au tableau (10a + b) − (10b + a) = 9 × (a − b), avec 1 263 saisi 1 623 : écart de 360 = 9 × 40.',
         'Relances : « Que prouve un total juste ? » (une cohérence, pas l’exactitude de chaque ligne) ; « 360 ÷ 9 = 40 : où est l’inversion ? » (centaines et dizaines).',
         'Transition : « Quatre vérifications ouvrent la salle du comité. »',
@@ -3097,7 +3055,7 @@ const ACTE_6: Acte = [
       'evolution-reciproque',
       'controle-coherence',
     ],
-    notes: puces(
+    notes: moteur.puces(
       'Lancer ; indices disponibles après 60 s. À 7 min, projeter l’énigme la moins résolue.',
       'Pièges : E1 26,7 % (moyenne simple) ; E2 −10,7 (en %, pas en points) ; E3 1 032,57 € (÷ 1,02, taux additionnés).',
       'E3 : le prix du 1er janvier 2026 est celui du 31 décembre 2025 : 20,70 €/m² × 50 m² = 1 035,00 € ; contrôle 1 035 × 1,06 × 0,96 = 1 053,22.',
@@ -3148,7 +3106,7 @@ const ACTE_6: Acte = [
         ],
       },
       questions: [
-        enigme(
+        moteur.enigme(
           PARCOURS_DU_COFFRE,
           0,
           'b2-01-a6-e1-mix',
@@ -3159,7 +3117,7 @@ const ACTE_6: Acte = [
           'K7',
           [[26.666667, 'moyenne-simple-des-taux']],
         ),
-        enigme(
+        moteur.enigme(
           PARCOURS_DU_COFFRE,
           1,
           'b2-01-a6-e2-points',
@@ -3174,7 +3132,7 @@ const ACTE_6: Acte = [
             [-1.904348, 'bases-incompatibles'],
           ],
         ),
-        enigme(
+        moteur.enigme(
           PARCOURS_DU_COFFRE,
           2,
           'b2-01-a6-e3-rouleau',
@@ -3189,7 +3147,7 @@ const ACTE_6: Acte = [
             [1032.1556, 'reciproque-meme-taux'],
           ],
         ),
-        enigme(
+        moteur.enigme(
           PARCOURS_DU_COFFRE,
           3,
           'b2-01-a6-e4-tva',
@@ -3207,7 +3165,7 @@ const ACTE_6: Acte = [
       ],
     },
   },
-  correctionDesReponses(
+  moteur.correctionDesReponses(
     {
       screenId: 'B2-01-A6-02-CORRECTION',
       titre: 'Correction du coffre : les quatre vérifications',
@@ -3218,7 +3176,7 @@ const ACTE_6: Acte = [
         'evolution-reciproque',
         'controle-coherence',
       ],
-      notes: puces(
+      notes: moteur.puces(
         'S’attarder sur l’énigme la moins résolue (pupitre).',
         'Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3 le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).',
         'Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce qu’elle ne peut pas faire. »',
@@ -3244,14 +3202,14 @@ const ACTE_6: Acte = [
       ],
     ],
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A6-03-IA-CADRE',
       titre: 'IA : accélérer la préparation, jamais déléguer le jugement',
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['controle-coherence'],
-      notes: puces(
+      notes: moteur.puces(
         'Relance : « Quelle donnée d’Atelier Rivage ne doit jamais être collée dans un outil grand public ? » (noms de clients, montants réels).',
         'Insister sur « Faire challenger » : savoir écrire « je ne peux pas conclure ».',
         'Transition : « Corrigez cette réponse d’IA. »',
@@ -3313,7 +3271,7 @@ const ACTE_6: Acte = [
     brique: 'fp-challenge',
     dureeMinutes: 4,
     concepts: ['taux-moyen'],
-    notes: puces(
+    notes: moteur.puces(
       '3 min d’écriture, révélation, 1 min d’échange.',
       'Repérer qui ne trouve qu’une erreur, et qui retrouve le CA 2023 : 357 000 ÷ 1,20 = 297 500 €.',
       'Contrôle : 297 500 × 1,326² ≈ 523 000. L’IA se trompe de 0,65 point (33,25 % contre 32,6 %) : l’ordre de grandeur ne suffit pas.',
@@ -3331,19 +3289,19 @@ const ACTE_6: Acte = [
       corrige: {
         type: 'defi',
         strategies: [
-          strategie(
+          moteur.strategie(
             'successives',
             'Erreur 1 : des évolutions successives se multiplient : 1,20 × 1,465 ≈ 1,758, soit +75,8 % (297 500 € → 523 000 €).',
           ),
-          strategie(
+          moteur.strategie(
             'racine',
             'Erreur 2 : le taux moyen se calcule avec une racine carrée : √1,758 − 1 ≈ 0,326, soit +32,6 % par an.',
           ),
-          strategie(
+          moteur.strategie(
             'tableur',
             'Contrôle au tableur : =297500*PUISSANCE(1,326;2) redonne environ 523 000.',
           ),
-          strategie(
+          moteur.strategie(
             'garder',
             'Garder la réponse de l’IA : elle donne le bon ordre de grandeur.',
             true,
@@ -3370,7 +3328,7 @@ const ACTE_6: Acte = [
       'lecture-graphique',
       'controle-coherence',
     ],
-    notes: puces(
+    notes: moteur.puces(
       '2 min 30 individuelles, puis projeter la carte de maîtrise.',
       'Tous reçoivent les deux questions obligatoires (compensation, multiple de 9), en plus de leurs points faibles.',
       'Annoncer que les concepts restés en boîte 1 pour plus de 30 % de la classe ouvriront B2-02.',
@@ -3382,7 +3340,7 @@ const ACTE_6: Acte = [
       },
       banque: {
         questions: [
-          rappel(
+          moteur.rappel(
             'b2-01-r-taux-evolution',
             'taux-evolution',
             'Le CA de l’entretien passe de 210 000 € à 230 000 €. Quel est son taux d’évolution ?',
@@ -3392,7 +3350,7 @@ const ACTE_6: Acte = [
               ['+20 000 €', 'ecart-absolu-au-lieu-du-taux'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-points',
             'point-de-pourcentage',
             'Le taux de retour des colis passe de 4 % à 5 %. Quelle phrase est exacte ?',
@@ -3402,7 +3360,7 @@ const ACTE_6: Acte = [
               ['+25 points', 'points-confondus-avec-pourcentage'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-successives',
             'evolutions-successives',
             'Un prix augmente de 20 %, puis baisse de 20 %. Quelle est son évolution globale ?',
@@ -3412,7 +3370,7 @@ const ACTE_6: Acte = [
               ['Une hausse de 4 %', 'coefficient-global-mal-interprete'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-reciproque',
             'evolution-reciproque',
             'Après une baisse de 20 %, quelle hausse ramène au prix initial ?',
@@ -3422,7 +3380,7 @@ const ACTE_6: Acte = [
               ['Une hausse de 80 %', 'coefficient-confondu-avec-taux'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-indice',
             'indice-base-100',
             'L’indice du prix de la toile vaut 103,5 (base 100 au 1er janvier). Que signifie-t-il ?',
@@ -3432,7 +3390,7 @@ const ACTE_6: Acte = [
               ['Le prix a augmenté de 103,5 %', 'indice-lu-comme-taux'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-taux-moyen',
             'taux-moyen',
             'Un CA augmente de 21 % en deux ans. Quel taux annuel moyen ?',
@@ -3442,7 +3400,7 @@ const ACTE_6: Acte = [
               ['4,6 % par an', 'coefficient-confondu-avec-taux'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-ponderee',
             'moyenne-ponderee',
             'Canal A : 100 000 € de CA à 30 % de marge ; canal B : 300 000 € à 10 %. Taux de marge global ?',
@@ -3452,7 +3410,7 @@ const ACTE_6: Acte = [
               ['Un taux global de 40 %', 'raisonnement-additif'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-population',
             'proportion',
             'Un canal réalise 45 % des commandes mais 20 % du CA. Est-ce contradictoire ?',
@@ -3468,7 +3426,7 @@ const ACTE_6: Acte = [
               ],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-axe',
             'lecture-graphique',
             'Deux barres valent 98 et 100 ; l’axe vertical va de 97 à 101 ; la seconde paraît trois fois plus haute. Quel est l’écart réel ?',
@@ -3478,7 +3436,7 @@ const ACTE_6: Acte = [
               ['La valeur a triplé', 'axe-tronque-lu-comme-ecart'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-compensation',
             'controle-coherence',
             'Contrôle de février : le total du grand livre égale celui des pièces, mais F002 est à +100 € et F003 à −100 €. Peut-on valider chaque écriture ?',
@@ -3491,7 +3449,7 @@ const ACTE_6: Acte = [
               ],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-multiple-neuf',
             'controle-coherence',
             'Un écart de 270 € sépare le grand livre d’avril des pièces ; 270 est divisible par 9. Qu’en concluez-vous ?',
@@ -3504,7 +3462,7 @@ const ACTE_6: Acte = [
               ['Il n’y a pas d’erreur', 'total-concordant-vaut-preuve'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-taux-mensuel',
             'taux-moyen',
             'Un placement rapporte 6 % par an. Quel taux mensuel, appliqué douze fois, donne le même résultat ?',
@@ -3514,7 +3472,7 @@ const ACTE_6: Acte = [
               ['72 % par an', 'taux-successifs-additionnes'],
             ],
           ),
-          rappel(
+          moteur.rappel(
             'b2-01-r-ttc-ht',
             'evolution-reciproque',
             'Pour passer d’un prix TTC (TVA 20 %) au prix HT, de quel pourcentage le prix baisse-t-il ?',
@@ -3529,7 +3487,7 @@ const ACTE_6: Acte = [
       },
     },
   },
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A6-06-FICHE-MEMO',
       titre: 'Fiche mémo : quelle méthode pour quelle question ?',
@@ -3548,7 +3506,7 @@ const ACTE_6: Acte = [
         'lecture-graphique',
         'controle-coherence',
       ],
-      notes: puces(
+      notes: moteur.puces(
         '90 s de lecture.',
         'Relance : « Quelle carte pour "le taux global baisse alors que chaque taux est stable" ? » (moyenne pondérée).',
       ),
@@ -3617,14 +3575,14 @@ const ACTE_6: Acte = [
       ],
     },
   ),
-  ecranV2(
+  moteur.ecranV2(
     {
       screenId: 'B2-01-A6-07-BOITE-A-OUTILS',
       titre: 'Pour aller plus loin : outils et sources',
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['tableur'],
-      notes: puces(
+      notes: moteur.puces(
         'Montrer les cartes « Une ligne = une observation » et « SIERREUR ».',
         'Rappeler le devoir : refaire le TCD du 3e trimestre sur l’année ; les liens Excel et LibreOffice de l’écran montrent la manipulation.',
         'Transition : « Billet de sortie. »',
@@ -3700,12 +3658,7 @@ const ACTE_6: Acte = [
           href: 'https://www.education.gouv.fr/cadre-d-usage-de-l-ia-en-education-450647',
           external: true,
         },
-        {
-          title: 'Référentiel du BTS CG',
-          description: 'Le programme de mathématiques et l’épreuve E3.',
-          href: 'https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf',
-          external: true,
-        },
+        moteur.REFERENTIEL_DU_BTS_CG,
       ],
     },
   ),
@@ -3716,7 +3669,7 @@ const ACTE_6: Acte = [
     brique: 'fp-exit',
     dureeMinutes: 3,
     concepts: ['contrat-de-lecture'],
-    notes: puces(
+    notes: moteur.puces(
       '3 min ; clore la séance quand le compteur de billets est complet.',
       'Pièges : la phrase en « −2,3 % » et celle qui attribue la baisse au taux de chaque canal.',
       'Réponse attendue : « 27,6 % → 25,3 %, soit −2,3 points ; la marketplace passe de 34 % à 45,5 % du CA. »',
@@ -3725,7 +3678,7 @@ const ACTE_6: Acte = [
     proprietes: {
       modalite: 'solo',
       questions: [
-        vote(
+        moteur.vote(
           'b2-01-a6-billet',
           'contrat-de-lecture',
           true,
@@ -3855,22 +3808,14 @@ const MEDIAS: ContenuDeCours['medias'] = [
   },
 ];
 
-const ECRANS_DU_COURS: ContenuDeCours['ecrans'] = [
-  ...ACTE_1,
-  ...ACTE_2,
-  ...ACTE_3,
-  ...ACTE_4,
-  ...ACTE_5,
-  ...ACTE_6,
-];
-
-export const COURS_B2_01: ContenuDeCours = {
-  slug: 'b2-01-traitement-information-chiffree',
-  titre: 'Lire, contrôler et décider avec l’information chiffrée',
-  niveau: 'B2',
-  dureeMinutes: 211,
-  concepts: [...CONCEPTS_DU_B2_01],
-  remediations: REMEDIATIONS,
-  medias: MEDIAS,
-  ecrans: ECRANS_DU_COURS,
-};
+export const COURS_B2_01 = moteur.coursB2(
+  [ACTE_1, ACTE_2, ACTE_3, ACTE_4, ACTE_5, ACTE_6],
+  REMEDIATIONS,
+  MEDIAS,
+  {
+    slug: 'b2-01-traitement-information-chiffree',
+    titre: 'Lire, contrôler et décider avec l’information chiffrée',
+    dureeMinutes: 211,
+    concepts: [...CONCEPTS_DU_B2_01],
+  },
+);
