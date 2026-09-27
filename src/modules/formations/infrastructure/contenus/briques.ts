@@ -8,7 +8,7 @@ import {
   type voteStocke,
 } from '../../domain/cours/QuestionStockee';
 
-export type EcranDuCours = ContenuDeCours['ecrans'][number];
+type EcranDuCours = ContenuDeCours['ecrans'][number];
 export type Acte = [EcranDuCours, ...EcranDuCours[]];
 export type EcranDeRecit = Extract<
   EcranDuCours,
@@ -43,7 +43,7 @@ export const TOLERANCE_RELATIVE = {
 export const TOLERANCE_NULLE = { type: 'absolue', valeur: 0 } as const;
 export const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
 
-export function mapper<T, U>(
+function mapper<T, U>(
   liste: AuMoinsUn<T>,
   transformer: (element: T) => U,
 ): AuMoinsUn<U> {
