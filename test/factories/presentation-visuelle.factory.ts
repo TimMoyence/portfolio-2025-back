@@ -46,6 +46,26 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
     labels: ['2024', '2025'],
     series: [{ label: 'CA', values: [120, 138] }],
   },
+  boxplot: {
+    title: 'Délais de paiement des clients',
+    unit: 'jours',
+    axisRange: [0, 160],
+    series: [
+      { label: '2024', min: 25, q1: 38, median: 46.5, q3: 57, max: 78 },
+      {
+        label: '2025',
+        min: 18,
+        q1: 33,
+        median: 42.5,
+        q3: 58,
+        max: 152,
+        mean: 48.85,
+        tone: 'gold',
+      },
+    ],
+    description:
+      'Deux boîtes à moustaches des délais de paiement, 2024 et 2025.',
+  },
   grid: { title: 'Les quatre contrôles', items: [ELEMENT] },
   comparison: {
     title: 'Écart ou taux',

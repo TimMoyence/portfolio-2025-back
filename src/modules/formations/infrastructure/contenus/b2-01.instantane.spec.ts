@@ -76,7 +76,6 @@ describe('instantané du B2-01 livré au front', () => {
 
     expect(tri?.resoluPar).toEqual(['B2-01-A1-05-CORRECTION']);
     expect(tri?.cadrageDuRenvoi).toEqual({
-      part: 40,
       extrait: { lignes: [0, 1, 2, 3, 4, 5] },
     });
   });

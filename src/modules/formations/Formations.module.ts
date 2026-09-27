@@ -29,7 +29,7 @@ import { LireEtatParticipantUseCase } from './application/LireEtatParticipant.us
 import { SubmitProductionUseCase } from './application/SubmitProduction.useCase';
 import { TenterEnigmeUseCase } from './application/TenterEnigme.useCase';
 import { SynchroniserCoursUseCase } from './application/SynchroniserCours.useCase';
-import { COURS_B2_01 } from './infrastructure/contenus/b2-01.cours';
+import { CONTENUS } from './infrastructure/contenus';
 import { PublicationDesCoursRepositoryTypeORM } from './infrastructure/PublicationDesCours.repository.typeorm';
 import { SynchronisationAuDemarrageService } from './infrastructure/SynchronisationAuDemarrage.service';
 import {
@@ -215,7 +215,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     },
     {
       provide: CONTENUS_DES_COURS,
-      useValue: [COURS_B2_01],
+      useValue: CONTENUS,
     },
     SynchroniserCoursUseCase,
     SynchronisationAuDemarrageService,

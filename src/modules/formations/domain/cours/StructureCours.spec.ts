@@ -182,43 +182,36 @@ describe('verifierStructure', () => {
         cloture,
       ]);
 
-    it('accepte une part seule, des lignes du tableau renvoyé ou des champs du cas renvoyé', () => {
-      expect(regles(cadrer(tableau.id, { part: 30 }))).toEqual([]);
+    it('accepte des lignes du tableau renvoyé ou des champs du cas renvoyé', () => {
+      expect(regles(cadrer(tableau.id, { extrait: { lignes: [1] } }))).toEqual(
+        [],
+      );
       expect(
-        regles(cadrer(tableau.id, { part: 40, extrait: { lignes: [1] } })),
-      ).toEqual([]);
-      expect(
-        regles(
-          cadrer(cas.id, { part: 70, extrait: { champs: ['situation'] } }),
-        ),
+        regles(cadrer(cas.id, { extrait: { champs: ['situation'] } })),
       ).toEqual([]);
     });
 
     it('refuse un cadrage sans renvoi', () => {
-      expect(regles(cadrer(undefined, { part: 60 }))).toEqual([
+      expect(regles(cadrer(undefined, { extrait: { lignes: [0] } }))).toEqual([
         'cadrage-du-renvoi',
       ]);
     });
 
     it('refuse une ligne absente du tableau ou des lignes sur un écran sans tableau', () => {
-      expect(
-        regles(cadrer(tableau.id, { part: 40, extrait: { lignes: [2] } })),
-      ).toEqual(['cadrage-du-renvoi']);
-      expect(
-        regles(cadrer(cas.id, { part: 40, extrait: { lignes: [0] } })),
-      ).toEqual(['cadrage-du-renvoi']);
+      expect(regles(cadrer(tableau.id, { extrait: { lignes: [2] } }))).toEqual([
+        'cadrage-du-renvoi',
+      ]);
+      expect(regles(cadrer(cas.id, { extrait: { lignes: [0] } }))).toEqual([
+        'cadrage-du-renvoi',
+      ]);
     });
 
     it('refuse un champ que le cas renvoyé ne porte pas', () => {
       expect(
-        regles(
-          cadrer(cas.id, { part: 70, extrait: { champs: ['consequence'] } }),
-        ),
+        regles(cadrer(cas.id, { extrait: { champs: ['consequence'] } })),
       ).toEqual(['cadrage-du-renvoi']);
       expect(
-        regles(
-          cadrer(tableau.id, { part: 70, extrait: { champs: ['situation'] } }),
-        ),
+        regles(cadrer(tableau.id, { extrait: { champs: ['situation'] } })),
       ).toEqual(['cadrage-du-renvoi']);
     });
   });

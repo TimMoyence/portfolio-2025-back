@@ -328,9 +328,12 @@ describe('B2-01 — fichier de données', () => {
     const ecrans = new Set(COURS.ecrans.map((ecran) => ecran.id));
 
     expect(COURS.remediations).toEqual(remediationsDuDocument(DOCUMENT));
+    expect(Object.keys(COURS.remediations)).toHaveLength(38);
     expect(
-      Object.keys(COURS.remediations).sort((a, b) => a.localeCompare(b)),
-    ).toEqual(Object.keys(CONFUSIONS).sort((a, b) => a.localeCompare(b)));
+      Object.keys(COURS.remediations).filter(
+        (confusion) => !Object.hasOwn(CONFUSIONS, confusion),
+      ),
+    ).toEqual([]);
     expect(
       Object.values(COURS.remediations).filter((cible) => !ecrans.has(cible)),
     ).toEqual([]);
@@ -1004,10 +1007,11 @@ describe('B2-01 — retours de QA', () => {
     ).toEqual([]);
   });
 
-  it('R4 · rappelle à l étudiant, sur la recommandation, le dossier chiffré depuis le début', () => {
+  it('R4 · montre à l étudiant, à côté de la recommandation, le dossier chiffré depuis le début', () => {
+    const ecrans = tirer(COURS, 0).sujet.ecrans;
+    const recommandation = ecrans.find(({ id }) => id === RECOMMANDATION);
     const servie = JSON.stringify(
-      tirer(COURS, 0).sujet.ecrans.find(({ id }) => id === RECOMMANDATION)
-        ?.donnees,
+      ecrans.find(({ id }) => id === recommandation?.renvoi)?.donnees,
     );
 
     for (const chiffre of [
@@ -1023,7 +1027,8 @@ describe('B2-01 — retours de QA', () => {
     ]) {
       expect(servie).toContain(chiffre);
     }
-    expect(servie).toContain('"rappel"');
+    expect(recommandation?.renvoi).toBe('B2-01-A5-08-DOSSIER-COMITE');
+    expect(JSON.stringify(recommandation?.donnees)).not.toContain('"rappel"');
   });
 
   it.each([
@@ -1135,33 +1140,19 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
     );
   });
 
-  it('R3 · R7 · cadre chaque diapositive commentée écran par écran', () => {
+  it('R3 · R7 · ne cadre une diapositive commentée que pour en extraire une partie', () => {
     const cadrages = Object.fromEntries(
       COURS.ecrans
-        .filter(({ renvoi }) => renvoi !== undefined)
+        .filter(({ cadrageDuRenvoi }) => cadrageDuRenvoi !== undefined)
         .map(({ id, cadrageDuRenvoi }) => [id, cadrageDuRenvoi]),
     );
 
     expect(cadrages).toEqual({
-      'B2-01-A1-05-ANATOMIE': {
-        part: 40,
-        extrait: { lignes: [0, 1, 2, 3, 4, 5] },
-      },
+      'B2-01-A1-05-ANATOMIE': { extrait: { lignes: [0, 1, 2, 3, 4, 5] } },
       'B2-01-A1-08-QUESTION-DE-GESTION': {
-        part: 70,
         extrait: { champs: ['situation'] },
       },
-      'B2-01-A1-10-AUDIT-DIAPOSITIVE': { part: 60 },
-      'B2-01-A2-03-ATELIER-1': { part: 40 },
-      'B2-01-A2-05-ECRITURES': { part: 50 },
-      'B2-01-A2-06-POINTS': { part: 30, extrait: { lignes: [3] } },
-      'B2-01-A3-03-PRIX-SAC': { part: 40 },
-      'B2-01-A3-07-ATELIER-2': { part: 40 },
-      'B2-01-A3-07-ATELIER-2-SUITE': { part: 40 },
-      'B2-01-A3-08-INDICE-PRIX': { part: 40 },
-      'B2-01-A3-09-NOTE-CONJONCTURE': { part: 60 },
-      'B2-01-A5-06-ATELIER-4-SUITE': { part: 40 },
-      'B2-01-A5-08-RECOMMANDATION': { part: 50 },
+      'B2-01-A2-06-POINTS': { extrait: { lignes: [3] } },
     });
   });
 

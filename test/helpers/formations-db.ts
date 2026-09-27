@@ -33,7 +33,7 @@ import {
   type IssueDeSynchronisation,
 } from '../../src/modules/formations/application/SynchroniserCours.useCase';
 import type { ContenuAPublier } from '../../src/modules/formations/domain/cours/CoursStocke';
-import { COURS_B2_01 } from '../../src/modules/formations/infrastructure/contenus/b2-01.cours';
+import { CONTENUS } from '../../src/modules/formations/infrastructure/contenus';
 import { PublicationDesCoursRepositoryTypeORM } from '../../src/modules/formations/infrastructure/PublicationDesCours.repository.typeorm';
 import type {
   IParticipantsRepository,
@@ -223,7 +223,7 @@ export async function ouvrirContexteFormations(): Promise<ContexteFormations> {
     dataSource.getRepository(FormationCourseContentEntity),
   );
   const synchronisation = new SynchroniserCoursUseCase(publication);
-  await synchronisation.execute([COURS_B2_01]);
+  await synchronisation.execute(CONTENUS);
 
   return {
     dataSource,

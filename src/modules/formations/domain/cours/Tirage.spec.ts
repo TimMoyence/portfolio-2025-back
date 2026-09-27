@@ -448,7 +448,7 @@ describe('tirer (briques de la V3)', () => {
       proprietes: {
         ...buildProprietesStockees('fp-worked'),
         renvoi: 'B2-01-A1-01-FP-QUOTE',
-        cadrageDuRenvoi: { part: 30 },
+        cadrageDuRenvoi: { extrait: { lignes: [0] } },
       },
     });
     const rappel = buildEcranDeBrique('fp-recall', {
@@ -475,7 +475,7 @@ describe('tirer (briques de la V3)', () => {
     });
     expect(source).toMatchObject({
       renvoi: 'B2-01-A1-01-FP-QUOTE',
-      cadrageDuRenvoi: { part: 30 },
+      cadrageDuRenvoi: { extrait: { lignes: [0] } },
     });
     expect(ouverture).not.toHaveProperty('cadrageDuRenvoi');
     expect(source).not.toHaveProperty('ecranCorrige');

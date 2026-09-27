@@ -1,4 +1,4 @@
-export const CONCEPTS = [
+export const CONCEPTS_DU_B2_01 = [
   'proportion',
   'pourcentage',
   'taux-evolution',
@@ -14,5 +14,19 @@ export const CONCEPTS = [
   'contrat-de-lecture',
   'tableur',
 ] as const;
+
+export const CONCEPTS_DU_B2_02 = [
+  'serie-statistique',
+  'moyenne',
+  'mediane',
+  'quartiles',
+  'dispersion',
+  'ecart-type',
+  'boite-a-moustaches',
+  'histogramme',
+  'choix-du-resume',
+] as const;
+
+export const CONCEPTS = [...CONCEPTS_DU_B2_01, ...CONCEPTS_DU_B2_02] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sha256": "d95119feb3e14213f2c0675a4977b1e18cc15a4333540214ba7f79fa4f8fed66",
+  "sha256": "a043e692d2a51961d08dbc53be36a5d0656715dbdb18bb62a846ba8231b3fab9",
   "vecteurs": [
     {
       "id": "feuille-cycle-deux-maillons",
@@ -101,6 +101,122 @@
       "type": "r1c1",
       "entree": { "formule": "=C2*F2", "cellule": "G2" },
       "attendu": "=RC[-4]*RC[-1]"
+    },
+    {
+      "id": "feuille-resume-statistique-serie-paire",
+      "type": "feuille",
+      "entree": {
+        "lignes": 8,
+        "colonnes": 2,
+        "cellules": {
+          "B1": "4",
+          "B2": "2",
+          "B3": "9",
+          "B4": "4",
+          "B5": "5",
+          "B6": "4",
+          "B7": "7",
+          "B8": "5",
+          "A1": "=MIN(B1:B8)",
+          "A2": "=MAX(B1:B8)",
+          "A3": "=NB(B1:B8)",
+          "A4": "=MEDIANE(B1:B8)",
+          "A5": "=ECARTYPEP(B1:B8)",
+          "A6": "=QUARTILE(B1:B8;1)",
+          "A7": "=QUARTILE(B1:B8;3)",
+          "A8": "=MEDIANE(B1:B7)"
+        }
+      },
+      "attendu": {
+        "A1": { "valeur": 2, "erreur": null },
+        "A2": { "valeur": 9, "erreur": null },
+        "A3": { "valeur": 8, "erreur": null },
+        "A4": { "valeur": 4.5, "erreur": null },
+        "A5": { "valeur": 2, "erreur": null },
+        "A6": { "valeur": 4, "erreur": null },
+        "A7": { "valeur": 5.5, "erreur": null },
+        "A8": { "valeur": 4, "erreur": null },
+        "B1": { "valeur": 4, "erreur": null },
+        "B2": { "valeur": 2, "erreur": null },
+        "B3": { "valeur": 9, "erreur": null },
+        "B4": { "valeur": 4, "erreur": null },
+        "B5": { "valeur": 5, "erreur": null },
+        "B6": { "valeur": 4, "erreur": null },
+        "B7": { "valeur": 7, "erreur": null },
+        "B8": { "valeur": 5, "erreur": null }
+      }
+    },
+    {
+      "id": "feuille-statistiques-cellules-ignorees-et-serie-vide",
+      "type": "feuille",
+      "entree": {
+        "lignes": 4,
+        "colonnes": 4,
+        "cellules": {
+          "B1": "1",
+          "B3": "absent",
+          "B4": "3",
+          "A1": "=NB(B1:B4)",
+          "A2": "=MEDIANE(B1:B4)",
+          "A3": "=ECARTYPEP(B1:B4)",
+          "A4": "=QUARTILE(B1:B4;1,9)",
+          "C1": "=MEDIANE(D1:D4)",
+          "C2": "=ECARTYPEP(D1:D4)",
+          "C3": "=MIN(D1:D4)",
+          "C4": "=QUARTILE(B1:B4;5)"
+        }
+      },
+      "attendu": {
+        "A1": { "valeur": 2, "erreur": null },
+        "A2": { "valeur": 2, "erreur": null },
+        "A3": { "valeur": 1, "erreur": null },
+        "A4": { "valeur": 1.5, "erreur": null },
+        "B1": { "valeur": 1, "erreur": null },
+        "B3": { "valeur": null, "erreur": "#VALEUR!" },
+        "B4": { "valeur": 3, "erreur": null },
+        "C1": { "valeur": null, "erreur": "#VALEUR!" },
+        "C2": { "valeur": null, "erreur": "#DIV/0!" },
+        "C3": { "valeur": 0, "erreur": null },
+        "C4": { "valeur": null, "erreur": "#VALEUR!" }
+      }
+    },
+    {
+      "id": "feuille-statistique-propage-erreur-de-cellule",
+      "type": "feuille",
+      "entree": {
+        "lignes": 2,
+        "colonnes": 2,
+        "cellules": { "B1": "=1/0", "B2": "3", "A1": "=MEDIANE(B1:B2)" }
+      },
+      "attendu": {
+        "A1": { "valeur": null, "erreur": "#DIV/0!" },
+        "B1": { "valeur": null, "erreur": "#DIV/0!" },
+        "B2": { "valeur": 3, "erreur": null }
+      }
+    },
+    {
+      "id": "expression-mediane-de-valeurs-libres",
+      "type": "expression",
+      "entree": { "expression": "MEDIANE(3;1;2)", "variables": {} },
+      "attendu": { "valeur": 2, "erreur": null }
+    },
+    {
+      "id": "expression-ecart-type-echantillon",
+      "type": "expression",
+      "entree": { "expression": "ECARTYPE(2;4;6)", "variables": {} },
+      "attendu": { "valeur": 2, "erreur": null }
+    },
+    {
+      "id": "expression-ecart-type-echantillon-d-une-valeur",
+      "type": "expression",
+      "entree": { "expression": "ECARTYPE(5)", "variables": {} },
+      "attendu": { "valeur": null, "erreur": "#DIV/0!" }
+    },
+    {
+      "id": "expression-quartile-sans-plage",
+      "type": "expression",
+      "entree": { "expression": "QUARTILE(1;2;3;4;1)", "variables": {} },
+      "attendu": { "valeur": null, "erreur": "#VALEUR!" }
     }
   ]
 }

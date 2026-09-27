@@ -165,6 +165,12 @@ describe('SubmitAnswerUseCase', () => {
     await expect(soumettre()).rejects.toThrow(ParticipantNotFoundError);
   });
 
+  it('refuse comme introuvable un participant retiré qui avait déjà répondu, sans révéler le doublon', async () => {
+    deps.participants.findById.mockResolvedValue(null);
+    deps.answers.existsFor.mockResolvedValue(true);
+    await expect(soumettre()).rejects.toThrow(ParticipantNotFoundError);
+  });
+
   it('enregistre une tentative reussie sur le concept de la question', async () => {
     await soumettre();
     expect(deps.mastery.enregistrerTentative).toHaveBeenCalledWith(

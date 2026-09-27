@@ -117,14 +117,14 @@ describe('FormationsModule', () => {
     );
   });
 
-  it('publie au démarrage le cours B2-01 du dépôt dans la base', async () => {
+  it('publie au démarrage tous les cours du dépôt, B2-01 compris', async () => {
     const module = await monter();
     expect({
       contenus: module.get(CONTENUS_DES_COURS),
       publication: module.get(PUBLICATION_DES_COURS),
       demarrage: module.get(SynchronisationAuDemarrageService),
     }).toEqual({
-      contenus: [COURS_B2_01],
+      contenus: expect.arrayContaining([COURS_B2_01]),
       publication: expect.any(PublicationDesCoursRepositoryTypeORM),
       demarrage: expect.any(SynchronisationAuDemarrageService),
     });

@@ -847,11 +847,7 @@ describeDb('E2E-01 seance complete du B2-01 publie (db integration)', () => {
         `/sessions/${sessionId}/sujet`,
         evince.jeton,
       );
-      const ecritureDeLEvince = await ecrireLibrement(evince, {
-        screenId: rappel.id,
-        activityId: (activitesLibres(cours).get(rappel.id) ?? [''])[0],
-        response: 'Encore la, malgre l eviction.',
-      });
+      const ecritureDeLEvince = await repondre(evince, questionsDe(rappel)[0]);
       const lectureDeLEvince = await poste(
         'get',
         `/sessions/${sessionId}/due-questions`,

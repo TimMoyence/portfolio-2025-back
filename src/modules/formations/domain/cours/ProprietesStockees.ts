@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  CHAMPS_EXTRAITS_DU_CAS,
-  PARTS_DU_RENVOI,
-  type CadrageDuRenvoi,
-} from '../contrats/cours';
+import { CHAMPS_EXTRAITS_DU_CAS } from '../contrats/cours';
 import type { CorrigeProduction } from './Corrige';
 import {
   confusionsDuCorrige,
@@ -41,16 +37,11 @@ const rang = z.number().int().nonnegative();
 const seuil = z.number().gt(0).lte(1);
 const modalite = z.enum(['solo', 'binome', 'groupe', 'classe']);
 
+const partFigeeDansLesVersionsPubliees = z.number().optional();
+
 const cadrageDuRenvoi = z
   .object({
-    part: z.custom<CadrageDuRenvoi['part']>(
-      (valeur) =>
-        typeof valeur === 'number' &&
-        PARTS_DU_RENVOI.some((part) => part === valeur),
-      {
-        message: `part du renvoi attendue parmi ${PARTS_DU_RENVOI.join(', ')}`,
-      },
-    ),
+    part: partFigeeDansLesVersionsPubliees,
     extrait: z
       .object({
         lignes: z.array(rang).min(1).optional(),
@@ -59,7 +50,8 @@ const cadrageDuRenvoi = z
       .strict()
       .optional(),
   })
-  .strict();
+  .strict()
+  .transform(({ extrait }) => (extrait === undefined ? {} : { extrait }));
 
 const quizNote = z
   .object({

@@ -295,24 +295,24 @@ côté serveur :
 
 #### 2.6.2 Règles adaptées, seuils et résultat
 
-| Règle                                    | Définition                                                                                                                                                                                                                                                                  | Seuil                  | Résultat sur la V3                                                              |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------- |
-| `exposition-continue`                    | cumul des minutes d’écrans non interactifs consécutifs, jalons compris                                                                                                                                                                                                      | ≤ 6 min                | **6 min** au plus (A1-10-CORRECTION → A2-02)                                    |
-| `ratio-interaction`                      | minutes interactives ÷ minutes d’exposition                                                                                                                                                                                                                                 | ≥ 0,30                 | 142 ÷ 69 = **2,06**                                                             |
-| `ouverture-cloture`                      | premier écran `fp-recall`, dernier écran `fp-exit`                                                                                                                                                                                                                          | —                      | A1-01 `fp-recall`, A6-08 `fp-exit`                                              |
-| `duree-ecran`                            | chaque durée est un entier strictement positif                                                                                                                                                                                                                              | > 0                    | 74 écrans de 1 à 13 min                                                         |
-| `duree-cours`                            | somme des écrans **égale** à la durée annoncée (la tolérance de 5 % est supprimée)                                                                                                                                                                                          | écart = 0              | 211 = 211                                                                       |
-| `reference-inconnue`                     | toute cible `ref:` (remédiations, renvois) existe                                                                                                                                                                                                                           | —                      | 38 remédiations, toutes vers des écrans existants (§ 5.9)                       |
-| `renvoi-anterieur`                       | un renvoi vise un écran déjà projeté, jamais l'écran lui-même ni un écran à venir, qui fuiterait avant sa projection (SEC-4.2)                                                                                                                                              | —                      | tous les renvois pointent vers un écran antérieur                               |
-| **nouvelle** `cadrage-du-renvoi`         | un `cadrageDuRenvoi` exige un `renvoi` ; son extrait sélectionne des lignes existantes d’un tableau v2 `table` (`lignes`) ou des champs renseignés d’un `fp-pro` (`champs`), jamais une copie ; la part vaut 30, 40, 50, 60 ou 70 % (retours QA du 2026-09-24)              | 0 manquement           | 13 renvois cadrés (§ 3.1, « Cadrage des diapositives commentées »)              |
-| `reference-circulaire`                   | aucune boucle de références                                                                                                                                                                                                                                                 | —                      | aucune boucle (les renvois et les corrections pointent vers un écran antérieur) |
-| **nouvelle** `correction-apres-source`   | un écran de correction (`corrigeDe` d’un `fp-worked` piloté, `source` d’un `answer-review` ou d’un `sort-review`) vise un écran du cours placé avant lui, et il est en diffusion `seance`                                                                                   | 0 manquement           | 18 écrans de correction, tous après leur exercice, tous en `seance`             |
-| **nouvelle** `notes-formateur`           | la note est facultative (`notes` vide) ; présente, elle n’a aucune ligne vide : des puces `• ` jointes par `\n`                                                                                                                                                             | 0 ligne vide           | 73 notes en puces ; A1-07 sans note                                             |
-| **nouvelle** `atelier-questions-fermees` | un temps noté (écran portant une question `vote`, `numeric` ou `classement` avec `noteCompte`, suivi de ses écrans de correction) dure au plus 15 min ; une suite de temps notés contigus dure au moins 8 min ; exceptions : `fp-recall` en ouverture, `fp-exit` en clôture | temps ≤ 15 ; suite ≥ 8 | 13 écrans notés en 9 suites, de 8 à 14 min                                      |
-| **nouvelle** `confidentialite`           | trois volets (exact, segments, catalogue), § 6.4                                                                                                                                                                                                                            | 0 fuite                | 0 fuite                                                                         |
-| **nouvelle** `catalogue-sans-question`   | aucun écran interactif n’est en diffusion `catalogue`                                                                                                                                                                                                                       | 0                      | 0                                                                               |
-| **nouvelle** `media-sans-licence`        | toute image, vidéo ou piste des propriétés publiques figure au catalogue des médias du cours (page source, auteur, licence)                                                                                                                                                 | 0 manque               | 5 médias catalogués (§ 8.2)                                                     |
-| **nouvelle** `options-neutres`           | l’identifiant stable de chaque option de vote vaut `slugOption(libelle)` (§ 9.2)                                                                                                                                                                                            | 0 écart                | 0 écart                                                                         |
+| Règle                                    | Définition                                                                                                                                                                                                                                                                               | Seuil                  | Résultat sur la V3                                                              |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------- |
+| `exposition-continue`                    | cumul des minutes d’écrans non interactifs consécutifs, jalons compris                                                                                                                                                                                                                   | ≤ 6 min                | **6 min** au plus (A1-10-CORRECTION → A2-02)                                    |
+| `ratio-interaction`                      | minutes interactives ÷ minutes d’exposition                                                                                                                                                                                                                                              | ≥ 0,30                 | 142 ÷ 69 = **2,06**                                                             |
+| `ouverture-cloture`                      | premier écran `fp-recall`, dernier écran `fp-exit`                                                                                                                                                                                                                                       | —                      | A1-01 `fp-recall`, A6-08 `fp-exit`                                              |
+| `duree-ecran`                            | chaque durée est un entier strictement positif                                                                                                                                                                                                                                           | > 0                    | 74 écrans de 1 à 13 min                                                         |
+| `duree-cours`                            | somme des écrans **égale** à la durée annoncée (la tolérance de 5 % est supprimée)                                                                                                                                                                                                       | écart = 0              | 211 = 211                                                                       |
+| `reference-inconnue`                     | toute cible `ref:` (remédiations, renvois) existe                                                                                                                                                                                                                                        | —                      | 38 remédiations, toutes vers des écrans existants (§ 5.9)                       |
+| `renvoi-anterieur`                       | un renvoi vise un écran déjà projeté, jamais l'écran lui-même ni un écran à venir, qui fuiterait avant sa projection (SEC-4.2)                                                                                                                                                           | —                      | tous les renvois pointent vers un écran antérieur                               |
+| **nouvelle** `cadrage-du-renvoi`         | un `cadrageDuRenvoi` exige un `renvoi` ; son extrait sélectionne des lignes existantes d’un tableau v2 `table` (`lignes`) ou des champs renseignés d’un `fp-pro` (`champs`), jamais une copie ; la répartition 60/40 relève du design system (retours QA du 2026-09-24 et du 2026-09-27) | 0 manquement           | 13 renvois cadrés (§ 3.1, « Cadrage des diapositives commentées »)              |
+| `reference-circulaire`                   | aucune boucle de références                                                                                                                                                                                                                                                              | —                      | aucune boucle (les renvois et les corrections pointent vers un écran antérieur) |
+| **nouvelle** `correction-apres-source`   | un écran de correction (`corrigeDe` d’un `fp-worked` piloté, `source` d’un `answer-review` ou d’un `sort-review`) vise un écran du cours placé avant lui, et il est en diffusion `seance`                                                                                                | 0 manquement           | 18 écrans de correction, tous après leur exercice, tous en `seance`             |
+| **nouvelle** `notes-formateur`           | la note est facultative (`notes` vide) ; présente, elle n’a aucune ligne vide : des puces `• ` jointes par `\n`                                                                                                                                                                          | 0 ligne vide           | 73 notes en puces ; A1-07 sans note                                             |
+| **nouvelle** `atelier-questions-fermees` | un temps noté (écran portant une question `vote`, `numeric` ou `classement` avec `noteCompte`, suivi de ses écrans de correction) dure au plus 15 min ; une suite de temps notés contigus dure au moins 8 min ; exceptions : `fp-recall` en ouverture, `fp-exit` en clôture              | temps ≤ 15 ; suite ≥ 8 | 13 écrans notés en 9 suites, de 8 à 14 min                                      |
+| **nouvelle** `confidentialite`           | trois volets (exact, segments, catalogue), § 6.4                                                                                                                                                                                                                                         | 0 fuite                | 0 fuite                                                                         |
+| **nouvelle** `catalogue-sans-question`   | aucun écran interactif n’est en diffusion `catalogue`                                                                                                                                                                                                                                    | 0                      | 0                                                                               |
+| **nouvelle** `media-sans-licence`        | toute image, vidéo ou piste des propriétés publiques figure au catalogue des médias du cours (page source, auteur, licence)                                                                                                                                                              | 0 manque               | 5 médias catalogués (§ 8.2)                                                     |
+| **nouvelle** `options-neutres`           | l’identifiant stable de chaque option de vote vaut `slugOption(libelle)` (§ 9.2)                                                                                                                                                                                                         | 0 écart                | 0 écart                                                                         |
 
 Les **dérogations** (champ `Cours.derogations`, retiré en `c8324cb`) sont restaurées avec la règle
 « dérogation sans justification », mais **la V3 n’en utilise aucune**.
@@ -459,28 +459,30 @@ fichier de données (chaque ligne commence par `• `, aucune ligne vide ; A1-07
 sont jamais projetées. Les options des questions, leurs identifiants stables, les bonnes réponses et les
 confusions sont au § 5.10. Les années des `labels` des graphiques sont des chaînes (`"2022"`).
 
-**Cadrage des diapositives commentées** (retours QA du 2026-09-24). Un écran à `renvoi` montre, à
-côté de lui, l’écran qu’il commente. Son `cadrageDuRenvoi` fixe la part de la toile donnée à ce
-renvoi et, au besoin, un extrait : une sélection de lignes d’un tableau (`lignes`, rangs à partir
-de 0, sans titre ni note) ou de champs d’un cas `fp-pro` (`champs`). L’extrait sélectionne, il ne
-recopie jamais ; la règle `cadrage-du-renvoi` (§ 2.6.2) le contrôle. Le cadre du renvoi occupe
-toute la hauteur de sa colonne.
+**Cadrage des diapositives commentées** (retours QA du 2026-09-24 et du 2026-09-27). Un écran à
+`renvoi` montre, à côté de lui, l’écran qu’il commente. La répartition est une règle du design
+system, identique sur tous les écrans : la diapositive commentée occupe 60 % de la toile, l’écran
+courant 40 %. Le `cadrageDuRenvoi` ne porte plus qu’un extrait éventuel : une sélection de lignes
+d’un tableau (`lignes`, rangs à partir de 0, sans titre ni note) ou de champs d’un cas `fp-pro`
+(`champs`). L’extrait sélectionne, il ne recopie jamais ; la règle `cadrage-du-renvoi` (§ 2.6.2) le
+contrôle. Le cadre du renvoi occupe toute la hauteur de sa colonne. Les versions publiées avant le
+2026-09-27 portent encore une `part` : elle est relue sans être servie.
 
-| Écran                     | Renvoi                   | Part | Extrait                                |
-| ------------------------- | ------------------------ | ---: | -------------------------------------- |
-| A1-05-ANATOMIE            | A1-04-TABLEAU-DE-BORD    | 40 % | lignes 0 à 5 (le tableau seul)         |
-| A1-08-QUESTION-DE-GESTION | A1-03-MISSION            | 70 % | champ `situation` (« Lundi, 8 h 40… ») |
-| A1-10-AUDIT-DIAPOSITIVE   | A1-09-DIAPOSITIVE        | 60 % | —                                      |
-| A2-03-ATELIER-1           | A1-09-DIAPOSITIVE        | 40 % | —                                      |
-| A2-05-ECRITURES           | A1-05-CORRECTION         | 50 % | —                                      |
-| A2-06-POINTS              | A1-04-TABLEAU-DE-BORD    | 30 % | ligne 3 (« Taux de marge »)            |
-| A3-03-PRIX-SAC            | A3-01-VOTE-HAUSSE-BAISSE | 40 % | —                                      |
-| A3-07-ATELIER-2           | A3-05-INFLATION-RYTHME   | 40 % | —                                      |
-| A3-07-ATELIER-2-SUITE     | A3-05-INFLATION-RYTHME   | 40 % | —                                      |
-| A3-08-INDICE-PRIX         | A3-05-INFLATION-RYTHME   | 40 % | —                                      |
-| A3-09-NOTE-CONJONCTURE    | A3-08-INDICE-PRIX        | 60 % | —                                      |
-| A5-06-ATELIER-4-SUITE     | A5-05-TCD                | 40 % | —                                      |
-| A5-08-RECOMMANDATION      | A5-08-DOSSIER-COMITE     | 50 % | —                                      |
+| Écran                     | Renvoi                   | Extrait                                |
+| ------------------------- | ------------------------ | -------------------------------------- |
+| A1-05-ANATOMIE            | A1-04-TABLEAU-DE-BORD    | lignes 0 à 5 (le tableau seul)         |
+| A1-08-QUESTION-DE-GESTION | A1-03-MISSION            | champ `situation` (« Lundi, 8 h 40… ») |
+| A1-10-AUDIT-DIAPOSITIVE   | A1-09-DIAPOSITIVE        | —                                      |
+| A2-03-ATELIER-1           | A1-09-DIAPOSITIVE        | —                                      |
+| A2-05-ECRITURES           | A1-05-CORRECTION         | —                                      |
+| A2-06-POINTS              | A1-04-TABLEAU-DE-BORD    | ligne 3 (« Taux de marge »)            |
+| A3-03-PRIX-SAC            | A3-01-VOTE-HAUSSE-BAISSE | —                                      |
+| A3-07-ATELIER-2           | A3-05-INFLATION-RYTHME   | —                                      |
+| A3-07-ATELIER-2-SUITE     | A3-05-INFLATION-RYTHME   | —                                      |
+| A3-08-INDICE-PRIX         | A3-05-INFLATION-RYTHME   | —                                      |
+| A3-09-NOTE-CONJONCTURE    | A3-08-INDICE-PRIX        | —                                      |
+| A5-06-ATELIER-4-SUITE     | A5-05-TCD                | —                                      |
+| A5-08-RECOMMANDATION      | A5-08-DOSSIER-COMITE     | —                                      |
 
 L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de Samir » et s’affiche en plein
 écran.
@@ -496,14 +498,15 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
   - Titre public : « Diagnostic : le prix d’une réparation »
   - Énoncé (`b2-01-a1-diagnostic`) : « Le prix d’une réparation de voile passe de 80 € à 100 €. De
     quel pourcentage a-t-il augmenté ? »
-  - Rappel libre avant les options : « Écrivez votre calcul avant de voir les propositions : elles
-    apparaissent au bout de 30 secondes. » (`delaiMs: 30000`).
+  - Options affichées d’emblée, sans consigne ni écrit préalable (`delaiMs: 0`, retour de QA : un
+    délai d’écriture de 30 s n’apportait rien au diagnostic).
   - Options (ordre mélangé par graine) : les quatre libellés du § 5.10.
-- **Interaction et correction** : vote corrigé serveur, noté (participation) ; le texte du rappel est
-  enregistré en réponse libre (`activityId: b2-01-a1-diagnostic:rappel`), non noté, jamais envoyé vide.
+- **Interaction et correction** : vote corrigé serveur, noté (participation) ; sans délai, l’écran
+  n’admet aucune réponse libre.
 - **Notes** :
   - Avant de lancer : vérifier au pupitre que tous les postes ont rejoint la séance.
-  - Annoncer « seule la participation compte ». 30 s de calcul écrit avant l’apparition des options.
+  - Annoncer « seule la participation compte ». Les propositions s’affichent d’emblée : chacun
+    choisit son pourcentage.
   - Piège dominant : « +20 % » (division par 100, la valeur d’arrivée). Contrôle à faire dire : 80 ×
     1,25 = 100.
   - Ne pas s’attarder : la situation revient en atelier 1 (Q6, taux de marge) et en atelier 2 (Q5, à
@@ -620,9 +623,9 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
   - Titre public : « Que dit chaque chiffre du tableau de bord ? »
   - Intitulé du plan `b2-01-a1-anatomie` : « Classez chaque chiffre du tableau de bord selon ce qu’il
     exprime. »
-  - Catégories : « Valeur en euros » ; « Proportion : part d’un total » ; « Évolution : variation par
-    rapport à une valeur de départ » ; « Écart entre deux taux, en points » ; « Ambigu en l’état :
-    unité, base ou période manquante ».
+  - Catégories : « Valeur en € » ; « Proportion » ; « Évolution » ; « Écart en points » ; « Ambigu »
+    (libellés courts pour tenir dans les 40 % de la toile, retours QA du 2026-09-27 ; leurs
+    définitions sont dans le sous-titre de la correction).
   - Cartes : « CA HT 2025 : 1 150 000 € » ; « CA : « +9,5 % » par rapport à 2024 » ; « Entretien :
     20 % du CA 2025 » ; « Taux de marge 2025 : 25,3 % » ; « Taux de marge : « −2,3 % » par rapport à
     2024 » ; « Marge brute : « +1 200 » (colonne « Évolution affichée », dont les autres lignes sont en
@@ -644,7 +647,8 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
 - **Contenu (public)** :
   - Titre public : « Correction : ce que dit chaque chiffre du tableau de bord »
   - `title` « Correction du tri » ; `subtitle` « Un pourcentage se lit avec sa base : part d’un total,
-    évolution depuis une valeur de départ, ou écart entre deux taux, en points. »
+    évolution depuis une valeur de départ, ou écart entre deux taux, en points. Sans unité, base ou
+    période, un chiffre reste ambigu. »
   - `source` : l’écran `B2-01-A1-05-ANATOMIE` et son plan `b2-01-a1-anatomie` ; catégories, cartes,
     catégorie attendue et justification de chaque carte reprises de son corrigé.
 - **Interaction et correction** : aucune saisie ; sur chaque poste, les cartes du tri de l’étudiant
@@ -953,16 +957,18 @@ changent pas, puisqu’ils servent de clés en base.
   - Titre public : « Cinq écritures, cinq questions »
   - `title` « Cinq écritures, cinq questions » ; `subtitle` « Chaque écriture répond à une question
     différente ; les mélanger dans une note crée une erreur de décision. »
-  - `stats` : « 100 000 € » · « valeur : combien ? (hausse du CA HT en 2025) » ; « 20 % » ·
-    « proportion : quelle part du total ? (l’entretien dans le CA 2025) » ; « +9,5 % » · « évolution :
-    de combien par rapport au départ ? (CA HT 2024 → 2025) » ; « −2,3 points » · « écart entre deux
-    taux (taux de marge brute 2024 → 2025) » ; « indice 112 » · « niveau relatif : +12 % par rapport à
-    la base 100 ».
+  - `stats` : « 100 000 € » · « valeur : combien ? » ; « 20 % » · « proportion : quelle part du
+    total ? » ; « +9,5 % » · « évolution : de combien par rapport au départ ? » ; « −2,3 points » ·
+    « écart entre deux taux » ; « indice 112 » · « niveau relatif : +12 % par rapport à la base 100 ».
+    Les exemples passent dans les notes (retours QA du 2026-09-27 : l’écran tient dans les 40 % de
+    la toile).
 - **Notes** :
   - Faire associer chaque écriture à une carte du tri A1-05.
   - Relance : « Quelle écriture aurait dû remplacer "−2,3 %" dans le tableau de bord ? » (−2,3
     points).
   - Piège : confondre +9,5 % (évolution) et 20 % (proportion) : les deux s’écrivent en %.
+  - Exemples à citer : 100 000 € (hausse du CA HT en 2025) ; 20 % (l’entretien dans le CA 2025) ;
+    +9,5 % (CA HT 2024 → 2025) ; −2,3 points (taux de marge brute 2024 → 2025).
 
 #### A2-06 · `B2-01-A2-06-POINTS` — 2 min · `fp-worked` · séance · Modifié (S16)
 
@@ -1338,9 +1344,8 @@ changent pas, puisqu’ils servent de clés en base.
     "2025"] ; `series` [{ « Indice des prix », [100, 100.5, 102.11, 107.42, 112.68, 114.93, 115.97],
     gold }] ; `axisRanges` [[95, 120]] ; `axisLabels` [« 95 à 120 »] ; `unit` « indice (base 100 en 2019) »
   - `formula` « Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97 »
-  - `reading` « Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit
-    depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive
-    s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation. »
+  - Pas de `reading` à l’écran : la lecture se dit à l’oral (notes), pour que l’écran tienne dans les
+    40 % de la toile (retours QA du 2026-09-27).
   - `source` « Calcul d’après les taux annuels moyens de l’IPC publiés par l’Insee. » (l’indice
     officiel, publié en base 100 = moyenne 2025 et rebasé à 100 en 2019, vaut 116,04 en 2025 : les
     taux publiés étant arrondis au dixième, l’indice reconstitué s’en écarte de quelques centièmes ;
@@ -1355,6 +1360,8 @@ changent pas, puisqu’ils servent de clés en base.
   - Faire superposer : les barres de A3-05 baissent depuis 2023, la courbe de l’indice monte toujours.
   - Mot à fixer : désinflation (le rythme ralentit, les prix montent encore) ≠ déflation (les prix
     baissent).
+  - Lecture à dire : les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019 ; le rythme
+    ralentit depuis 2023, mais l’indice continue de monter.
   - Transition : « Répondez à Samir, qui veut baisser les tarifs. »
 
 #### A3-09 · `B2-01-A3-09-NOTE-CONJONCTURE` — 2 min · v2 `reflection` · séance · Modifié (S28)
@@ -1915,21 +1922,9 @@ changent pas, puisqu’ils servent de clés en base.
     structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi
     que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire. » ;
     `strategies` [] à l’envoi initial.
-  - `rappel` (les chiffres du dossier, affichés au-dessus de la zone de rédaction) :
-    - « Le dossier » : « Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace),
-      exercices 2024 et 2025, données annuelles. »
-    - « La proposition de Samir » : « Investir 40 000 € pour doubler les ventes de la
-      marketplace. »
-    - « Chiffre d’affaires HT » : « 1 050 000 € → 1 150 000 €, soit +9,5 %. »
-    - « Marge brute » : « 289 800 € → 291 000 €, soit +1 200 €. »
-    - « Taux de marge brute global » : « 27,6 % → 25,3 %, soit −2,3 points. »
-    - « CA HT par canal » : « sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ;
-      marketplace 357 000 € → 523 000 €. »
-    - « Taux de marge brute par canal, identiques les deux années » : « sur-mesure 36 % ;
-      entretien 28 % ; marketplace 16 %. »
-    - « Part de la marketplace dans le CA » : « 34 % → 45,5 %. »
-    - « Anomalie relevée au contrôle » : « 90 € d’écart entre le grand livre (48 795 € HT) et les
-      factures de vente de mars (48 705 € HT). »
+  - Pas de `rappel` : les chiffres du dossier sont lus sur la diapositive commentée
+    `B2-01-A5-08-DOSSIER-COMITE`, affichée à côté sur 60 % de la toile (retours QA du 2026-09-27 : le
+    rappel recopiait ce dossier et empêchait l’écran de tenir).
 - **Stratégies de référence (corrigé)** : `constat` « Constat : CA +9,5 %, marge brute +1 200 €, taux
   de marge brute −2,3 points (27,6 % → 25,3 %). » ; `mecanisme` « Mécanisme : taux par canal stables ;
   la marketplace (16 %) passe de 34 % à 45,5 % du CA : effet de répartition d’environ −26 400 € de
@@ -2224,17 +2219,18 @@ changent pas, puisqu’ils servent de clés en base.
 - **Contenu (public)** :
   - Titre public : « Billet de sortie : la phrase du compte rendu »
   - `billet` `b2-01-a6-billet` : `question` « Le comité ne retiendra qu’une phrase. Laquelle peut
-    figurer telle quelle au compte rendu ? » ; quatre options (§ 5.10) ; `invite` « Justifiez en trois
-    phrases : le calcul qui prouve votre choix, la limite de l’analyse et l’action que vous proposez.
-    Ajoutez l’alerte au cabinet sur les ventes de mars : pièce, montant, action. »
+    figurer telle quelle au compte rendu ? » ; quatre options (§ 5.10) ; `invite` « Quels deux chiffres
+    du dossier prouvent que cette phrase est juste ? Écrivez-les avec leur unité. »
+- **Modification (retours QA)** : l’invite en trois consignes et l’alerte au cabinet (déjà traitée à
+  l’énigme E4) laissent place à une seule question qui prolonge le vote.
 - **Interaction et correction** : le choix est noté (participation) et corrigé serveur ; le texte libre
   est enregistré (`activityId: b2-01-a6-billet`), lu par le formateur, non noté ; le pupitre affiche
   « N billets reçus / M participants » avant la clôture.
 - **Notes** :
   - 3 min ; clore la séance quand le compteur de billets est complet.
   - Pièges : la phrase en « −2,3 % » et celle qui attribue la baisse au taux de chaque canal.
-  - Alerte attendue : « F004 saisie 12 430 € au lieu de 12 340 € (pièce) : écart de 90 €, TVA
-    collectée à corriger de 18 €, écriture à rectifier. »
+  - Réponse attendue : « 27,6 % → 25,3 %, soit −2,3 points ; la marketplace passe de 34 % à 45,5 %
+    du CA. »
   - Transition : « Rendez-vous en B2-02. »
 
 ### 3.8 Correspondance des 72 écrans du deck actuel
@@ -3238,9 +3234,8 @@ statiques (mêmes données pour toute la classe).
 | `b2-01-a5-tcd`                        | vote · moyenne-ponderee          | « 24,3 % : il pondère chaque canal par son CA »                                    | « 26,7 % : il traite les trois canaux à égalité » (`moyenne-simple-des-taux`) ; « L’un ou l’autre : ils mesurent le même taux » (`moyenne-simple-des-taux`)                                                                       | « pondère » ; « 24,3 % »       |
 
 **Classement A1-05** `b2-01-a1-anatomie` (contrat-de-lecture ; seuil 0,75) — catégories `valeur`
-« Valeur en euros », `proportion` « Proportion : part d’un total », `evolution` « Évolution :
-variation par rapport à une valeur de départ », `points` « Écart entre deux taux, en points »,
-`ambigu` « Ambigu en l’état : unité, base ou période manquante » :
+« Valeur en € », `proportion` « Proportion », `evolution` « Évolution », `points` « Écart en
+points », `ambigu` « Ambigu » :
 
 | Carte              | Libellé                                                                                     | Catégorie  | Confusion si erreur                   | Justification                                                                 |
 | ------------------ | ------------------------------------------------------------------------------------------- | ---------- | ------------------------------------- | ----------------------------------------------------------------------------- |

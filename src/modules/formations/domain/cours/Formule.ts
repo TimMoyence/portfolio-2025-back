@@ -81,6 +81,12 @@ type Contenu =
   | { readonly genre: 'texte' }
   | { readonly genre: 'formule'; readonly source: string };
 
+const TEXTE_IGNORE: ReadonlySet<Contenu['genre']> = new Set(['texte']);
+const TEXTE_ET_VIDES_IGNORES: ReadonlySet<Contenu['genre']> = new Set([
+  'texte',
+  'vide',
+]);
+
 class ErreurFormule extends Error {
   constructor(readonly code: CodeErreur) {
     super(code);
@@ -110,7 +116,17 @@ const FONCTIONS_BINAIRES: ReadonlySet<string> = new Set([
   'ARRONDI',
   'PUISSANCE',
 ]);
+const FONCTIONS_STATISTIQUES: ReadonlySet<string> = new Set([
+  'MIN',
+  'MAX',
+  'NB',
+  'MEDIANE',
+  'ECARTYPEP',
+  'ECARTYPE',
+]);
 const NOM_CONDITION = 'SI';
+const NOM_QUARTILE = 'QUARTILE';
+const RANG_MAX_QUARTILE = 4;
 const ALPHABET = 26;
 const CODE_A = 'A'.charCodeAt(0);
 const PRECISION_DECIMALE = 15;
@@ -446,6 +462,48 @@ function appliquer(operateur: string, gauche: number, droite: number): number {
   return comparer(operateur, gauche, droite);
 }
 
+function quantile(valeurs: readonly number[], part: number): number {
+  if (valeurs.length === 0) {
+    refuser(ERREUR_VALEUR);
+  }
+  const triees = [...valeurs].sort((gauche, droite) => gauche - droite);
+  const position = (triees.length - 1) * part;
+  const bas = Math.floor(position);
+  const haut = Math.min(bas + 1, triees.length - 1);
+  return triees[bas] + (position - bas) * (triees[haut] - triees[bas]);
+}
+
+function ecartType(valeurs: readonly number[], degresPerdus: number): number {
+  const diviseur = valeurs.length - degresPerdus;
+  if (diviseur <= 0) {
+    refuser(ERREUR_DIVISION);
+  }
+  const moyenne =
+    valeurs.reduce((cumul, valeur) => cumul + valeur, 0) / valeurs.length;
+  const carres = valeurs.reduce(
+    (cumul, valeur) => cumul + (valeur - moyenne) ** 2,
+    0,
+  );
+  return Math.sqrt(carres / diviseur);
+}
+
+function statistique(nom: string, valeurs: readonly number[]): number {
+  switch (nom) {
+    case 'MIN':
+      return valeurs.length === 0 ? 0 : Math.min(...valeurs);
+    case 'MAX':
+      return valeurs.length === 0 ? 0 : Math.max(...valeurs);
+    case 'NB':
+      return valeurs.length;
+    case 'MEDIANE':
+      return quantile(valeurs, 1 / 2);
+    case 'ECARTYPEP':
+      return ecartType(valeurs, 0);
+    default:
+      return ecartType(valeurs, 1);
+  }
+}
+
 function fini(valeur: number): number {
   return Number.isFinite(valeur)
     ? sansZeroNegatif(valeur)
@@ -586,6 +644,7 @@ class Evaluation {
 
   private valeursDeLaPlage(
     noeud: Extract<Noeud, { genre: 'plage' }>,
+    ignorees: ReadonlySet<Contenu['genre']> = TEXTE_IGNORE,
   ): number[] {
     const { debut, fin } = noeud;
     this.exigerDansLaGrille(debut);
@@ -603,7 +662,7 @@ class Evaluation {
       ) {
         this.depenser();
         const nom = nomCellule(ligne, colonne);
-        if (lireContenu(this.contenus.get(nom) ?? '').genre !== 'texte') {
+        if (!ignorees.has(lireContenu(this.contenus.get(nom) ?? '').genre)) {
           valeurs.push(
             this.valeurCellule({
               ligne,
@@ -622,6 +681,25 @@ class Evaluation {
     return noeud.genre === 'plage'
       ? this.valeursDeLaPlage(noeud)
       : [this.calculer(noeud)];
+  }
+
+  private serie(parametres: readonly Noeud[]): number[] {
+    return parametres.flatMap((argument) =>
+      argument.genre === 'plage'
+        ? this.valeursDeLaPlage(argument, TEXTE_ET_VIDES_IGNORES)
+        : [this.calculer(argument)],
+    );
+  }
+
+  private quartile(parametres: readonly Noeud[]): number {
+    if (parametres.length !== 2) {
+      refuser(ERREUR_VALEUR);
+    }
+    const rang = Math.trunc(this.calculer(parametres[1]));
+    if (rang < 0 || rang > RANG_MAX_QUARTILE) {
+      refuser(ERREUR_VALEUR);
+    }
+    return quantile(this.serie([parametres[0]]), rang / RANG_MAX_QUARTILE);
   }
 
   private condition(parametres: readonly Noeud[]): number {
@@ -667,6 +745,12 @@ class Evaluation {
     }
     if (FONCTIONS_BINAIRES.has(noeud.nom)) {
       return this.binaireNommee(noeud.nom, noeud.arguments);
+    }
+    if (FONCTIONS_STATISTIQUES.has(noeud.nom)) {
+      return statistique(noeud.nom, this.serie(noeud.arguments));
+    }
+    if (noeud.nom === NOM_QUARTILE) {
+      return this.quartile(noeud.arguments);
     }
     return refuser(ERREUR_NOM);
   }
