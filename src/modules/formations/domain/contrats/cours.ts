@@ -102,8 +102,6 @@ export interface ProprietesExposition {
   };
 }
 
-export const PARTS_DU_RENVOI = [30, 40, 50, 60, 70] as const;
-
 export const CHAMPS_EXTRAITS_DU_CAS = [
   'metier',
   'situation',
@@ -112,7 +110,6 @@ export const CHAMPS_EXTRAITS_DU_CAS = [
 ] as const;
 
 export interface CadrageDuRenvoi {
-  readonly part: (typeof PARTS_DU_RENVOI)[number];
   readonly extrait?: {
     readonly lignes?: readonly number[];
     readonly champs?: readonly (typeof CHAMPS_EXTRAITS_DU_CAS)[number][];

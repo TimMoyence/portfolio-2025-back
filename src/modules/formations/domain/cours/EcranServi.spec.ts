@@ -131,8 +131,23 @@ describe('activitesLibres', () => {
     expect(activites.get('E-REM')).toEqual(['E-REM:etape-1']);
   });
 
-  it('admet le texte du rappel d ouverture', () => {
-    expect(activites.get('E-OUV')).toEqual(['Q-TEST-RAPPEL:rappel']);
+  function coursAvecDelaiDeRappel(delaiMs: number) {
+    const cours = buildCoursDeTest();
+    const [ouverture, ...suite] = cours.ecrans;
+    if (ouverture.brique !== 'fp-recall') {
+      throw new Error('le cours de test ouvre sur un rappel');
+    }
+    return { ...cours, ecrans: [{ ...ouverture, delaiMs }, ...suite] as const };
+  }
+
+  it('admet le texte du rappel d ouverture qui diffère ses options', () => {
+    expect(activitesLibres(coursAvecDelaiDeRappel(30000)).get('E-OUV')).toEqual(
+      ['Q-TEST-RAPPEL:rappel'],
+    );
+  });
+
+  it('n admet aucun texte sur un rappel qui montre ses options d emblée', () => {
+    expect(activitesLibres(coursAvecDelaiDeRappel(0)).has('E-OUV')).toBe(false);
   });
 
   it('admet le texte argumente du billet de sortie', () => {

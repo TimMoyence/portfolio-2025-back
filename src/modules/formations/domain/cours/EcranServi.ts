@@ -86,7 +86,7 @@ export function activitesDeLEcran(ecran: Ecran): readonly string[] {
         (etape) => `${ecran.proprietes.exemple.id}:${etape.id}`,
       );
     case 'fp-recall':
-      return [`${ecran.question.id}:rappel`];
+      return ecran.delaiMs > 0 ? [`${ecran.question.id}:rappel`] : [];
     case 'fp-exit':
       return [ecran.question.id];
     case 'fp-story':
