@@ -573,7 +573,7 @@ describe('stockage multi-briques (B1)', () => {
     });
 
     it('R3 · porte le cadrage du renvoi hors des propriétés de la brique', () => {
-      const cadrage = { part: 70, extrait: { champs: ['situation'] } };
+      const cadrage = { extrait: { champs: ['situation'] } };
       const ecran = lireEcran(
         avecProprietes('fp-worked', (proprietes) => {
           proprietes.renvoi = 'B2-01-A1-03-MISSION';
@@ -587,19 +587,21 @@ describe('stockage multi-briques (B1)', () => {
       ).not.toHaveProperty('cadrageDuRenvoi');
     });
 
-    it.each([20, 45, 80])(
-      'R3 · refuse une part de renvoi de %i %%, hors de 30 à 70 par pas de 10',
-      (part) => {
-        expect(() =>
-          lireEcran(
-            avecProprietes('fp-story', (proprietes) => {
-              proprietes.renvoi = 'B2-01-A1-03-MISSION';
-              proprietes.cadrageDuRenvoi = { part };
-            }),
-          ),
-        ).toThrow();
-      },
-    );
+    it('relit la part de renvoi d une version publiée sans la servir : la répartition est fixée par le design system', () => {
+      const ecran = lireEcran(
+        avecProprietes('fp-story', (proprietes) => {
+          proprietes.renvoi = 'B2-01-A1-03-MISSION';
+          proprietes.cadrageDuRenvoi = {
+            part: 30,
+            extrait: { champs: ['situation'] },
+          };
+        }),
+      );
+
+      expect(ecran.cadrageDuRenvoi).toEqual({
+        extrait: { champs: ['situation'] },
+      });
+    });
 
     it.each<readonly [string, readonly Record<string, number>[]]>([
       ['fp-concept4', [{ depart: 100 }, { depart: 200 }, { depart: 1 }]],

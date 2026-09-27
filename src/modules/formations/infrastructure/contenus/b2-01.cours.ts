@@ -1,241 +1,24 @@
-import type { z } from 'zod';
-import {
-  CONCEPTS_DU_B2_01,
-  type ConceptId,
-} from '../../domain/cours/banque/concepts';
+import { CONCEPTS_DU_B2_01 } from '../../domain/cours/banque/concepts';
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import {
-  slugOption,
-  type numeriqueStockee,
-  type voteStocke,
-} from '../../domain/cours/QuestionStockee';
-
-type EcranDuCours = ContenuDeCours['ecrans'][number];
-type Acte = [EcranDuCours, ...EcranDuCours[]];
-type EcranDeRecit = Extract<EcranDuCours, { readonly brique: 'fp-story' }>;
-type SocleDEcran = Omit<EcranDeRecit, 'brique' | 'proprietes'>;
-type ReserveDuRecit = Omit<EcranDeRecit['proprietes'], 'presentation'>;
-type EcranDeTri = Extract<EcranDuCours, { readonly brique: 'fp-cardsort' }>;
-type ProprietesDeClassement = EcranDeTri['proprietes'];
-type CorrectionDeTri = Omit<SocleDEcran, 'diffusion'> & {
-  readonly sousTitre: string;
-  readonly intitule?: string;
-};
-type CorrectionDeReponses = Omit<SocleDEcran, 'diffusion' | 'titre'> & {
-  readonly titre: string;
-  readonly sousTitre?: string;
-};
-type EcranDExemple = Extract<EcranDuCours, { readonly brique: 'fp-worked' }>;
-type VoteDuCours = z.input<typeof voteStocke>;
-type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
-type AuMoinsUn<T> = [T, ...T[]];
-type Piege = readonly [string, ConfusionId];
-
-const TOLERANCE_RELATIVE = { type: 'relative', valeur: 0.0001 } as const;
-const TOLERANCE_NULLE = { type: 'absolue', valeur: 0 } as const;
-const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
-
-function mapper<T, U>(
-  liste: AuMoinsUn<T>,
-  transformer: (element: T) => U,
-): AuMoinsUn<U> {
-  const [premier, ...suite] = liste;
-  return [transformer(premier), ...suite.map(transformer)];
-}
-
-function puces(...lignes: AuMoinsUn<string>): string {
-  return lignes.map((ligne) => `• ${ligne}`).join('\n');
-}
-
-function option(libelle: string, confusion: ConfusionId | null) {
-  return { id: slugOption(libelle), libelle, confusion };
-}
-
-function vote(
-  id: string,
-  concept: ConceptId,
-  noteCompte: boolean,
-  enonce: string,
-  bonne: string,
-  pieges: AuMoinsUn<Piege>,
-  segments: readonly string[] = [],
-): VoteDuCours {
-  const [premier, ...suite] = pieges;
-  return {
-    type: 'vote',
-    id,
-    concept,
-    noteCompte,
-    enonce,
-    options: [
-      option(bonne, null),
-      option(...premier),
-      ...suite.map((piege) => option(...piege)),
-    ],
-    segments: [...segments],
-  };
-}
-
-function numerique(
-  id: string,
-  concept: ConceptId,
-  enonce: string,
-  unite: string | null,
-  solution: number,
-  tolerance: NumeriqueDuCours['tolerance'],
-  formePubliee: string,
-  pieges: AuMoinsUn<readonly [number, ConfusionId]>,
-): NumeriqueDuCours {
-  return {
-    type: 'numeric',
-    id,
-    concept,
-    noteCompte: true,
-    enonce,
-    unite,
-    solution,
-    tolerance,
-    formePubliee,
-    pieges: mapper(pieges, ([valeur, confusion]) => ({ valeur, confusion })),
-  };
-}
-
-function ecranV2(
-  socle: SocleDEcran,
-  renderer: string,
-  props: Readonly<Record<string, unknown>>,
-  reserve: ReserveDuRecit = {},
-): EcranDeRecit {
-  return {
-    ...socle,
-    brique: 'fp-story',
-    proprietes: {
-      presentation: { version: 2, screenId: socle.screenId, renderer, props },
-      ...reserve,
-    },
-  };
-}
-
-interface Carte {
-  readonly id: string;
-  readonly libelle: string;
-  readonly categorie: string;
-  readonly confusion: ConfusionId;
-  readonly justification: string;
-}
-
-function classement(
-  plan: {
-    readonly id: string;
-    readonly intitule: string;
-    readonly dureeJeuMs?: number;
-  },
-  concept: ConceptId,
-  categories: AuMoinsUn<readonly [string, string]>,
-  cartes: AuMoinsUn<Carte>,
-): Pick<ProprietesDeClassement, 'plan' | 'questions'> {
-  return {
-    plan: {
-      ...plan,
-      cartes: mapper(cartes, (carte) => ({
-        id: carte.id,
-        libelle: carte.libelle,
-      })),
-      categories: mapper(categories, ([id, libelle]) => ({ id, libelle })),
-    },
-    questions: [
-      {
-        type: 'classement',
-        id: plan.id,
-        concept,
-        noteCompte: true,
-        corrige: {
-          type: 'classement',
-          attendus: mapper(cartes, (carte) => ({
-            carteId: carte.id,
-            categorieId: carte.categorie,
-            confusionSiErreur: carte.confusion,
-            justification: carte.justification,
-          })),
-          seuilReussite: 0.75,
-        },
-      },
-    ],
-  };
-}
-
-function suiviDeSaCorrection(
-  { sousTitre, intitule = 'Correction du tri', ...socle }: CorrectionDeTri,
-  tri: EcranDeTri,
-): [EcranDeTri, EcranDeRecit] {
-  const {
-    plan,
-    questions: [{ corrige }],
-  } = tri.proprietes;
-  const attendus = new Map(
-    corrige.attendus.map((attendu) => [attendu.carteId, attendu]),
-  );
-  return [
-    tri,
-    ecranV2({ ...socle, diffusion: 'seance' }, 'sort-review', {
-      title: intitule,
-      subtitle: sousTitre,
-      source: { screenId: tri.screenId, sortId: plan.id },
-      categories: plan.categories.map(({ id, libelle }) => ({
-        id,
-        label: libelle,
-      })),
-      cards: plan.cartes.map(({ id, libelle }) => ({
-        id,
-        label: libelle,
-        category: attendus.get(id)?.categorieId,
-        justification: attendus.get(id)?.justification,
-      })),
-    }),
-  ];
-}
-
-function correctionDesReponses(
-  { sousTitre, ...socle }: CorrectionDeReponses,
-  source: string,
-  explications: AuMoinsUn<readonly [string, string]>,
-): EcranDeRecit {
-  return ecranV2({ ...socle, diffusion: 'seance' }, 'answer-review', {
-    title: socle.titre,
-    ...(sousTitre === undefined ? {} : { subtitle: sousTitre }),
-    source: { screenId: source },
-    explications: explications.map(([reference, texte]) => ({
-      reference,
-      texte,
-    })),
-  });
-}
-
-function suiviDeSonCorrige(
-  socle: Omit<SocleDEcran, 'diffusion'>,
-  exercice: EcranDExemple,
-): [EcranDExemple, EcranDExemple] {
-  const { exemple } = exercice.proprietes;
-  return [
-    exercice,
-    {
-      ...socle,
-      diffusion: 'seance',
-      brique: 'fp-worked',
-      proprietes: {
-        exemple: { ...exemple, id: `${exemple.id}-corrige` },
-        etayage: 0,
-        pilote: true,
-        corrigeDe: exercice.screenId,
-      },
-    },
-  ];
-}
-
-function strategie(id: string, libelle: string, fausse = false) {
-  return { id, libelle, fausse };
-}
+  attendu,
+  classement,
+  correctionDesReponses,
+  DEUX_DECIMALES,
+  ecranV2,
+  enigme,
+  numerique,
+  puces,
+  rappel,
+  strategie,
+  suiviDeSaCorrection,
+  suiviDeSonCorrige,
+  TOLERANCE_NULLE,
+  vote,
+  type Acte,
+  type PlanDeTableau,
+} from './briques';
 
 const ACTE_1: Acte = [
   {
@@ -247,7 +30,7 @@ const ACTE_1: Acte = [
     concepts: ['taux-evolution'],
     notes: puces(
       'Avant de lancer : vérifier au pupitre que tous les postes ont rejoint la séance.',
-      'Annoncer « seule la participation compte ». 30 s de calcul écrit avant l’apparition des options.',
+      'Annoncer « seule la participation compte ». Les propositions s’affichent d’emblée : chacun choisit son pourcentage.',
       'Piège dominant : « +20 % » (division par 100, la valeur d’arrivée). Contrôle à faire dire : 80 × 1,25 = 100.',
       'Ne pas s’attarder : la situation revient en atelier 1 (Q6, taux de marge) et en atelier 2 (Q5, à l’envers).',
     ),
@@ -267,9 +50,7 @@ const ACTE_1: Acte = [
           ],
         ),
       ],
-      delaiMs: 30000,
-      consigne:
-        'Écrivez votre calcul avant de voir les propositions : elles apparaissent au bout de 30 secondes.',
+      delaiMs: 0,
     },
   },
   ecranV2(
@@ -464,7 +245,7 @@ const ACTE_1: Acte = [
       screenId: 'B2-01-A1-05-CORRECTION',
       titre: 'Correction : ce que dit chaque chiffre du tableau de bord',
       sousTitre:
-        'Un pourcentage se lit avec sa base : part d’un total, évolution depuis une valeur de départ, ou écart entre deux taux, en points.',
+        'Un pourcentage se lit avec sa base : part d’un total, évolution depuis une valeur de départ, ou écart entre deux taux, en points. Sans unité, base ou période, un chiffre reste ambigu.',
       dureeMinutes: 1,
       concepts: ['contrat-de-lecture'],
       notes: puces(
@@ -489,7 +270,7 @@ const ACTE_1: Acte = [
       proprietes: {
         modalite: 'binome',
         renvoi: 'B2-01-A1-04-TABLEAU-DE-BORD',
-        cadrageDuRenvoi: { part: 40, extrait: { lignes: [0, 1, 2, 3, 4, 5] } },
+        cadrageDuRenvoi: { extrait: { lignes: [0, 1, 2, 3, 4, 5] } },
         ...classement(
           {
             id: 'b2-01-a1-anatomie',
@@ -498,14 +279,11 @@ const ACTE_1: Acte = [
           },
           'contrat-de-lecture',
           [
-            ['valeur', 'Valeur en euros'],
-            ['proportion', 'Proportion : part d’un total'],
-            [
-              'evolution',
-              'Évolution : variation par rapport à une valeur de départ',
-            ],
-            ['points', 'Écart entre deux taux, en points'],
-            ['ambigu', 'Ambigu en l’état : unité, base ou période manquante'],
+            ['valeur', 'Valeur en €'],
+            ['proportion', 'Proportion'],
+            ['evolution', 'Évolution'],
+            ['points', 'Écart en points'],
+            ['ambigu', 'Ambigu'],
           ],
           [
             {
@@ -660,7 +438,7 @@ const ACTE_1: Acte = [
           'Vérifiez que votre question nomme un indicateur, un dénominateur, deux dates et un périmètre.',
       },
       renvoi: 'B2-01-A1-03-MISSION',
-      cadrageDuRenvoi: { part: 70, extrait: { champs: ['situation'] } },
+      cadrageDuRenvoi: { extrait: { champs: ['situation'] } },
     },
   ),
   ecranV2(
@@ -746,7 +524,6 @@ const ACTE_1: Acte = [
         ],
       },
       renvoi: 'B2-01-A1-09-DIAPOSITIVE',
-      cadrageDuRenvoi: { part: 60 },
     },
   },
   correctionDesReponses(
@@ -907,7 +684,6 @@ const ACTE_2: Acte = [
     ),
     proprietes: {
       renvoi: 'B2-01-A1-09-DIAPOSITIVE',
-      cadrageDuRenvoi: { part: 40 },
       intitule: 'Atelier 1 — Lire, rapporter, estimer (questions 1 à 3)',
       consigne:
         'Calculatrice autorisée. Répondez seul·e, puis comparez avec votre voisin·e avant la correction.',
@@ -1095,6 +871,7 @@ const ACTE_2: Acte = [
         'Faire associer chaque écriture à une carte du tri A1-05.',
         'Relance : « Quelle écriture aurait dû remplacer "−2,3 %" dans le tableau de bord ? » (−2,3 points).',
         'Piège : confondre +9,5 % (évolution) et 20 % (proportion) : les deux s’écrivent en %.',
+        'Exemples à citer : 100 000 € (hausse du CA HT en 2025) ; 20 % (l’entretien dans le CA 2025) ; +9,5 % (CA HT 2024 → 2025) ; −2,3 points (taux de marge brute 2024 → 2025).',
       ),
     },
     'stats',
@@ -1103,31 +880,20 @@ const ACTE_2: Acte = [
       subtitle:
         'Chaque écriture répond à une question différente ; les mélanger dans une note crée une erreur de décision.',
       stats: [
-        {
-          value: '100 000 €',
-          label: 'valeur : combien ? (hausse du CA HT en 2025)',
-        },
-        {
-          value: '20 %',
-          label:
-            'proportion : quelle part du total ? (l’entretien dans le CA 2025)',
-        },
+        { value: '100 000 €', label: 'valeur : combien ?' },
+        { value: '20 %', label: 'proportion : quelle part du total ?' },
         {
           value: '+9,5 %',
-          label:
-            'évolution : de combien par rapport au départ ? (CA HT 2024 → 2025)',
+          label: 'évolution : de combien par rapport au départ ?',
         },
-        {
-          value: '−2,3 points',
-          label: 'écart entre deux taux (taux de marge brute 2024 → 2025)',
-        },
+        { value: '−2,3 points', label: 'écart entre deux taux' },
         {
           value: 'indice 112',
           label: 'niveau relatif : +12 % par rapport à la base 100',
         },
       ],
     },
-    { renvoi: 'B2-01-A1-05-CORRECTION', cadrageDuRenvoi: { part: 50 } },
+    { renvoi: 'B2-01-A1-05-CORRECTION' },
   ),
   ...suiviDeSonCorrige(
     {
@@ -1155,7 +921,7 @@ const ACTE_2: Acte = [
       proprietes: {
         modalite: 'solo',
         renvoi: 'B2-01-A1-04-TABLEAU-DE-BORD',
-        cadrageDuRenvoi: { part: 30, extrait: { lignes: [3] } },
+        cadrageDuRenvoi: { extrait: { lignes: [3] } },
         exemple: {
           id: 'b2-01-a2-points',
           enonce:
@@ -1501,7 +1267,7 @@ const ACTE_3: Acte = [
       description:
         'Trois courbes étiquetées : prix de vente 100, 110 puis 99 € ; coût d’achat constant à 80 € ; marge unitaire 20, 30 puis 19 €.',
     },
-    { renvoi: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE', cadrageDuRenvoi: { part: 40 } },
+    { renvoi: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE' },
   ),
   ...suiviDeSonCorrige(
     {
@@ -1711,7 +1477,6 @@ const ACTE_3: Acte = [
     ),
     proprietes: {
       renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
-      cadrageDuRenvoi: { part: 40 },
       intitule: 'Atelier 2 — Rythme, niveau, indice (questions 1 à 3)',
       consigne: CONSIGNE_DE_L_ATELIER_2,
       regime: 'focus',
@@ -1801,7 +1566,6 @@ const ACTE_3: Acte = [
     ),
     proprietes: {
       renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
-      cadrageDuRenvoi: { part: 40 },
       intitule: 'Atelier 2 — Rythme, niveau, indice (questions 4 et 5)',
       consigne: CONSIGNE_DE_L_ATELIER_2,
       regime: 'focus',
@@ -1867,6 +1631,7 @@ const ACTE_3: Acte = [
       notes: puces(
         'Faire superposer : les barres de A3-05 baissent depuis 2023, la courbe de l’indice monte toujours.',
         'Mot à fixer : désinflation (le rythme ralentit, les prix montent encore) ≠ déflation (les prix baissent).',
+        'Lecture à dire : les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019 ; le rythme ralentit depuis 2023, mais l’indice continue de monter.',
         'Transition : « Répondez à Samir, qui veut baisser les tarifs. »',
       ),
     },
@@ -1888,14 +1653,12 @@ const ACTE_3: Acte = [
       unit: 'indice (base 100 en 2019)',
       formula:
         'Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97',
-      reading:
-        'Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation.',
       source:
         'Calcul d’après les taux annuels moyens de l’IPC publiés par l’Insee.',
       description:
         'Courbe croissante de l’indice : base 100 en 2019, niveau intermédiaire en 2022, niveau final supérieur à 115 en 2025 ; axe gradué de 95 à 120.',
     },
-    { renvoi: 'B2-01-A3-05-INFLATION-RYTHME', cadrageDuRenvoi: { part: 40 } },
+    { renvoi: 'B2-01-A3-05-INFLATION-RYTHME' },
   ),
   ecranV2(
     {
@@ -1933,7 +1696,6 @@ const ACTE_3: Acte = [
           'Citez toujours deux chiffres : le rythme (taux annuel) et le niveau (indice), avec leur source.',
       },
       renvoi: 'B2-01-A3-08-INDICE-PRIX',
-      cadrageDuRenvoi: { part: 60 },
     },
   ),
   {
@@ -2037,31 +1799,6 @@ const PLAN_FEUILLE = {
   ],
 };
 
-function attendu(
-  reference: string,
-  formuleReference: string,
-  valeur: number,
-  forme: 'references' | { readonly memeQue: string },
-  pieges: readonly (readonly [number, ConfusionId])[] = [],
-  confusionSiErreurFormule: ConfusionId | null = null,
-  tolerance:
-    | typeof TOLERANCE_RELATIVE
-    | typeof TOLERANCE_NULLE = TOLERANCE_RELATIVE,
-) {
-  return {
-    reference,
-    formuleReference,
-    valeur,
-    tolerance,
-    forme,
-    confusionSiErreurFormule,
-    pieges: pieges.map(([valeurDuPiege, confusion]) => ({
-      valeur: valeurDuPiege,
-      confusion,
-    })),
-  };
-}
-
 const RECOPIE_DE_D2 = { memeQue: 'D2' } as const;
 const RECOPIE_DE_E2 = { memeQue: 'E2' } as const;
 const RECOPIE_DE_G2 = { memeQue: 'G2' } as const;
@@ -2139,10 +1876,7 @@ const PLAN_TABLEAU = {
       decimales: 2,
     },
   ],
-} as const satisfies Extract<
-  EcranDuCours,
-  { readonly brique: 'fp-table-build' }
->['proprietes']['plan'];
+} as const satisfies PlanDeTableau;
 
 function ligneDeTableau(
   rang: number,
@@ -2997,7 +2731,6 @@ const ACTE_5: Acte = [
     ),
     proprietes: {
       renvoi: 'B2-01-A5-05-TCD',
-      cadrageDuRenvoi: { part: 40 },
       intitule: 'Atelier 4 — Du constat à la preuve (questions 4 et 5)',
       consigne: CONSIGNE_DE_L_ATELIER_4,
       regime: 'focus',
@@ -3252,56 +2985,12 @@ const ACTE_5: Acte = [
     proprietes: {
       modalite: 'solo',
       renvoi: 'B2-01-A5-08-DOSSIER-COMITE',
-      cadrageDuRenvoi: { part: 50 },
       probleme: {
         id: 'b2-01-a5-recommandation',
         enonce:
           'Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.',
         invite:
           'Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire.',
-        rappel: [
-          {
-            libelle: 'Le dossier',
-            valeur:
-              'Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace), exercices 2024 et 2025, données annuelles.',
-          },
-          {
-            libelle: 'La proposition de Samir',
-            valeur:
-              'Investir 40 000 € pour doubler les ventes de la marketplace.',
-          },
-          {
-            libelle: 'Chiffre d’affaires HT',
-            valeur: '1 050 000 € → 1 150 000 €, soit +9,5 %.',
-          },
-          {
-            libelle: 'Marge brute',
-            valeur: '289 800 € → 291 000 €, soit +1 200 €.',
-          },
-          {
-            libelle: 'Taux de marge brute global',
-            valeur: '27,6 % → 25,3 %, soit −2,3 points.',
-          },
-          {
-            libelle: 'CA HT par canal',
-            valeur:
-              'sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ; marketplace 357 000 € → 523 000 €.',
-          },
-          {
-            libelle:
-              'Taux de marge brute par canal, identiques les deux années',
-            valeur: 'sur-mesure 36 % ; entretien 28 % ; marketplace 16 %.',
-          },
-          {
-            libelle: 'Part de la marketplace dans le CA',
-            valeur: '34 % → 45,5 %.',
-          },
-          {
-            libelle: 'Anomalie relevée au contrôle',
-            valeur:
-              '90 € d’écart entre le grand livre (48 795 € HT) et les factures de vente de mars (48 705 € HT).',
-          },
-        ],
       },
       corrige: {
         type: 'defi',
@@ -3361,50 +3050,7 @@ const ACTE_5: Acte = [
   },
 ];
 
-function enigme(
-  rang: number,
-  id: string,
-  concept: ConceptId,
-  valeur: number,
-  tolerance: number,
-  formePubliee: string,
-  fragment: string,
-  pieges: AuMoinsUn<readonly [number, ConfusionId]>,
-) {
-  return {
-    type: 'enigme' as const,
-    id,
-    concept,
-    noteCompte: false,
-    corrige: {
-      type: 'enigme' as const,
-      parcoursId: 'b2-01-a6-coffre',
-      enigmeId: id,
-      rang,
-      solution: {
-        type: 'nombre' as const,
-        valeur,
-        tolerance: { type: 'absolue' as const, valeur: tolerance },
-        formePubliee,
-      },
-      fragment,
-      pieges: mapper(pieges, ([valeurDuPiege, confusion]) => ({
-        valeur: valeurDuPiege,
-        confusion,
-      })),
-    },
-  };
-}
-
-function rappel(
-  id: string,
-  concept: ConceptId,
-  enonce: string,
-  bonne: string,
-  pieges: AuMoinsUn<Piege>,
-): VoteDuCours {
-  return vote(id, concept, false, enonce, bonne, pieges);
-}
+const PARCOURS_DU_COFFRE = 'b2-01-a6-coffre';
 
 const ACTE_6: Acte = [
   ecranV2(
@@ -3460,7 +3106,7 @@ const ACTE_6: Acte = [
     proprietes: {
       modalite: 'solo',
       parcours: {
-        id: 'b2-01-a6-coffre',
+        id: PARCOURS_DU_COFFRE,
         intitule:
           'Le coffre du comité : quatre vérifications, un code pour ouvrir la salle',
         delaiIndiceMs: 60000,
@@ -3503,6 +3149,7 @@ const ACTE_6: Acte = [
       },
       questions: [
         enigme(
+          PARCOURS_DU_COFFRE,
           0,
           'b2-01-a6-e1-mix',
           'moyenne-ponderee',
@@ -3513,6 +3160,7 @@ const ACTE_6: Acte = [
           [[26.666667, 'moyenne-simple-des-taux']],
         ),
         enigme(
+          PARCOURS_DU_COFFRE,
           1,
           'b2-01-a6-e2-points',
           'point-de-pourcentage',
@@ -3527,6 +3175,7 @@ const ACTE_6: Acte = [
           ],
         ),
         enigme(
+          PARCOURS_DU_COFFRE,
           2,
           'b2-01-a6-e3-rouleau',
           'evolution-reciproque',
@@ -3541,6 +3190,7 @@ const ACTE_6: Acte = [
           ],
         ),
         enigme(
+          PARCOURS_DU_COFFRE,
           3,
           'b2-01-a6-e4-tva',
           'controle-coherence',
@@ -4069,7 +3719,7 @@ const ACTE_6: Acte = [
     notes: puces(
       '3 min ; clore la séance quand le compteur de billets est complet.',
       'Pièges : la phrase en « −2,3 % » et celle qui attribue la baisse au taux de chaque canal.',
-      'Alerte attendue : « F004 saisie 12 430 € au lieu de 12 340 € (pièce) : écart de 90 €, TVA collectée à corriger de 18 €, écriture à rectifier. »',
+      'Réponse attendue : « 27,6 % → 25,3 %, soit −2,3 points ; la marketplace passe de 34 % à 45,5 % du CA. »',
       'Transition : « Rendez-vous en B2-02. »',
     ),
     proprietes: {
@@ -4099,7 +3749,7 @@ const ACTE_6: Acte = [
         ),
       ],
       invite:
-        'Justifiez en trois phrases : le calcul qui prouve votre choix, la limite de l’analyse et l’action que vous proposez. Ajoutez l’alerte au cabinet sur les ventes de mars : pièce, montant, action.',
+        'Quels deux chiffres du dossier prouvent que cette phrase est juste ? Écrivez-les avec leur unité.',
     },
   },
 ];

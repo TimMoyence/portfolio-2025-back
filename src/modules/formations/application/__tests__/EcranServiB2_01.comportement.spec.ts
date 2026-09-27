@@ -69,9 +69,7 @@ describe('garde « écran servi » sur le B2-01 (B20, AC-19)', () => {
   it('n’admet que les activités libres déclarées par les écrans du B2-01', () => {
     const admises = activitesLibres(COURS);
 
-    expect(admises.get('B2-01-A1-01-DIAGNOSTIC')).toEqual([
-      'b2-01-a1-diagnostic:rappel',
-    ]);
+    expect(admises.has('B2-01-A1-01-DIAGNOSTIC')).toBe(false);
     expect(admises.get('B2-01-A1-08-QUESTION-DE-GESTION')).toEqual([
       'b2-01-a1-question-gestion',
     ]);

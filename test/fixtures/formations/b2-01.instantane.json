@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "c56ed8e46763df63facea77e2b7f10595b2a0e8839e74a24b9c8209c997fe175",
+  "empreinte": "5f98bf23924f413a4d2b8699b1fdb728e562b3fc5805a531593367c02ddffd7b",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -59,8 +59,7 @@
               "regime": "ouvert"
             }
           },
-          "delaiMs": 30000,
-          "consigne": "Écrivez votre calcul avant de voir les propositions : elles apparaissent au bout de 30 secondes."
+          "delaiMs": 0
         }
       },
       {
@@ -340,23 +339,23 @@
             "categories": [
               {
                 "id": "valeur",
-                "libelle": "Valeur en euros"
+                "libelle": "Valeur en €"
               },
               {
                 "id": "proportion",
-                "libelle": "Proportion : part d’un total"
+                "libelle": "Proportion"
               },
               {
                 "id": "evolution",
-                "libelle": "Évolution : variation par rapport à une valeur de départ"
+                "libelle": "Évolution"
               },
               {
                 "id": "points",
-                "libelle": "Écart entre deux taux, en points"
+                "libelle": "Écart en points"
               },
               {
                 "id": "ambigu",
-                "libelle": "Ambigu en l’état : unité, base ou période manquante"
+                "libelle": "Ambigu"
               }
             ],
             "metadonnees": {
@@ -370,7 +369,6 @@
         },
         "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD",
         "cadrageDuRenvoi": {
-          "part": 40,
           "extrait": {
             "lignes": [0, 1, 2, 3, 4, 5]
           }
@@ -392,7 +390,7 @@
               "renderer": "sort-review",
               "props": {
                 "title": "Correction du tri",
-                "subtitle": "Un pourcentage se lit avec sa base : part d’un total, évolution depuis une valeur de départ, ou écart entre deux taux, en points.",
+                "subtitle": "Un pourcentage se lit avec sa base : part d’un total, évolution depuis une valeur de départ, ou écart entre deux taux, en points. Sans unité, base ou période, un chiffre reste ambigu.",
                 "source": {
                   "screenId": "B2-01-A1-05-ANATOMIE",
                   "sortId": "b2-01-a1-anatomie"
@@ -400,23 +398,23 @@
                 "categories": [
                   {
                     "id": "valeur",
-                    "label": "Valeur en euros"
+                    "label": "Valeur en €"
                   },
                   {
                     "id": "proportion",
-                    "label": "Proportion : part d’un total"
+                    "label": "Proportion"
                   },
                   {
                     "id": "evolution",
-                    "label": "Évolution : variation par rapport à une valeur de départ"
+                    "label": "Évolution"
                   },
                   {
                     "id": "points",
-                    "label": "Écart entre deux taux, en points"
+                    "label": "Écart en points"
                   },
                   {
                     "id": "ambigu",
-                    "label": "Ambigu en l’état : unité, base ou période manquante"
+                    "label": "Ambigu"
                   }
                 ],
                 "cards": [
@@ -580,7 +578,6 @@
         },
         "renvoi": "B2-01-A1-03-MISSION",
         "cadrageDuRenvoi": {
-          "part": 70,
           "extrait": {
             "champs": ["situation"]
           }
@@ -650,9 +647,6 @@
           }
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "cadrageDuRenvoi": {
-          "part": 60
-        },
         "resoluPar": ["B2-01-A1-10-CORRECTION"]
       },
       {
@@ -915,9 +909,6 @@
           ]
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "resoluPar": ["B2-01-A2-03-CORRECTION-1"]
       },
       {
@@ -1108,19 +1099,19 @@
                 "stats": [
                   {
                     "value": "100 000 €",
-                    "label": "valeur : combien ? (hausse du CA HT en 2025)"
+                    "label": "valeur : combien ?"
                   },
                   {
                     "value": "20 %",
-                    "label": "proportion : quelle part du total ? (l’entretien dans le CA 2025)"
+                    "label": "proportion : quelle part du total ?"
                   },
                   {
                     "value": "+9,5 %",
-                    "label": "évolution : de combien par rapport au départ ? (CA HT 2024 → 2025)"
+                    "label": "évolution : de combien par rapport au départ ?"
                   },
                   {
                     "value": "−2,3 points",
-                    "label": "écart entre deux taux (taux de marge brute 2024 → 2025)"
+                    "label": "écart entre deux taux"
                   },
                   {
                     "value": "indice 112",
@@ -1138,10 +1129,7 @@
             }
           }
         },
-        "renvoi": "B2-01-A1-05-CORRECTION",
-        "cadrageDuRenvoi": {
-          "part": 50
-        }
+        "renvoi": "B2-01-A1-05-CORRECTION"
       },
       {
         "id": "B2-01-A2-06-POINTS",
@@ -1191,7 +1179,6 @@
         },
         "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD",
         "cadrageDuRenvoi": {
-          "part": 30,
           "extrait": {
             "lignes": [3]
           }
@@ -1643,10 +1630,7 @@
             }
           }
         },
-        "renvoi": "B2-01-A3-01-VOTE-HAUSSE-BAISSE",
-        "cadrageDuRenvoi": {
-          "part": 40
-        }
+        "renvoi": "B2-01-A3-01-VOTE-HAUSSE-BAISSE"
       },
       {
         "id": "B2-01-A3-04-FIL-TECHNIQUE",
@@ -2001,9 +1985,6 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "resoluPar": ["B2-01-A3-07-CORRECTION-1"]
       },
       {
@@ -2106,9 +2087,6 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "resoluPar": ["B2-01-A3-07-CORRECTION-2"]
       },
       {
@@ -2190,7 +2168,6 @@
                 "axisLabels": ["95 à 120"],
                 "unit": "indice (base 100 en 2019)",
                 "formula": "Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97",
-                "reading": "Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation.",
                 "source": "Calcul d’après les taux annuels moyens de l’IPC publiés par l’Insee.",
                 "kind": "line",
                 "description": "Courbe croissante de l’indice : base 100 en 2019, niveau intermédiaire en 2022, niveau final supérieur à 115 en 2025 ; axe gradué de 95 à 120."
@@ -2205,10 +2182,7 @@
             }
           }
         },
-        "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "cadrageDuRenvoi": {
-          "part": 40
-        }
+        "renvoi": "B2-01-A3-05-INFLATION-RYTHME"
       },
       {
         "id": "B2-01-A3-09-NOTE-CONJONCTURE",
@@ -2243,10 +2217,7 @@
             }
           }
         },
-        "renvoi": "B2-01-A3-08-INDICE-PRIX",
-        "cadrageDuRenvoi": {
-          "part": 60
-        }
+        "renvoi": "B2-01-A3-08-INDICE-PRIX"
       },
       {
         "id": "B2-01-A3-10-JALON-3",
@@ -3345,9 +3316,6 @@
           ]
         },
         "renvoi": "B2-01-A5-05-TCD",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "resoluPar": ["B2-01-A5-06-CORRECTION-2"]
       },
       {
@@ -3642,44 +3610,6 @@
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
             "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire.",
-            "rappel": [
-              {
-                "libelle": "Le dossier",
-                "valeur": "Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace), exercices 2024 et 2025, données annuelles."
-              },
-              {
-                "libelle": "La proposition de Samir",
-                "valeur": "Investir 40 000 € pour doubler les ventes de la marketplace."
-              },
-              {
-                "libelle": "Chiffre d’affaires HT",
-                "valeur": "1 050 000 € → 1 150 000 €, soit +9,5 %."
-              },
-              {
-                "libelle": "Marge brute",
-                "valeur": "289 800 € → 291 000 €, soit +1 200 €."
-              },
-              {
-                "libelle": "Taux de marge brute global",
-                "valeur": "27,6 % → 25,3 %, soit −2,3 points."
-              },
-              {
-                "libelle": "CA HT par canal",
-                "valeur": "sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ; marketplace 357 000 € → 523 000 €."
-              },
-              {
-                "libelle": "Taux de marge brute par canal, identiques les deux années",
-                "valeur": "sur-mesure 36 % ; entretien 28 % ; marketplace 16 %."
-              },
-              {
-                "libelle": "Part de la marketplace dans le CA",
-                "valeur": "34 % → 45,5 %."
-              },
-              {
-                "libelle": "Anomalie relevée au contrôle",
-                "valeur": "90 € d’écart entre le grand livre (48 795 € HT) et les factures de vente de mars (48 705 € HT)."
-              }
-            ],
             "strategies": [],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
@@ -3690,10 +3620,7 @@
             }
           }
         },
-        "renvoi": "B2-01-A5-08-DOSSIER-COMITE",
-        "cadrageDuRenvoi": {
-          "part": 50
-        }
+        "renvoi": "B2-01-A5-08-DOSSIER-COMITE"
       },
       {
         "id": "B2-01-A5-09-JALON-5",
@@ -4181,7 +4108,7 @@
           "billet": {
             "id": "b2-01-a6-billet",
             "question": "Le comité ne retiendra qu’une phrase. Laquelle peut figurer telle quelle au compte rendu ?",
-            "invite": "Justifiez en trois phrases : le calcul qui prouve votre choix, la limite de l’analyse et l’action que vous proposez. Ajoutez l’alerte au cabinet sur les ventes de mars : pièce, montant, action.",
+            "invite": "Quels deux chiffres du dossier prouvent que cette phrase est juste ? Écrivez-les avec leur unité.",
             "options": [
               {
                 "id": "la-marge-brute-progresse-de-1-200-eur-et-c3943fcd",
@@ -4270,10 +4197,9 @@
               "regime": "ouvert"
             }
           },
-          "delaiMs": 30000,
-          "consigne": "Écrivez votre calcul avant de voir les propositions : elles apparaissent au bout de 30 secondes."
+          "delaiMs": 0
         },
-        "notes": "• Avant de lancer : vérifier au pupitre que tous les postes ont rejoint la séance.\n• Annoncer « seule la participation compte ». 30 s de calcul écrit avant l’apparition des options.\n• Piège dominant : « +20 % » (division par 100, la valeur d’arrivée). Contrôle à faire dire : 80 × 1,25 = 100.\n• Ne pas s’attarder : la situation revient en atelier 1 (Q6, taux de marge) et en atelier 2 (Q5, à l’envers).",
+        "notes": "• Avant de lancer : vérifier au pupitre que tous les postes ont rejoint la séance.\n• Annoncer « seule la participation compte ». Les propositions s’affichent d’emblée : chacun choisit son pourcentage.\n• Piège dominant : « +20 % » (division par 100, la valeur d’arrivée). Contrôle à faire dire : 80 × 1,25 = 100.\n• Ne pas s’attarder : la situation revient en atelier 1 (Q6, taux de marge) et en atelier 2 (Q5, à l’envers).",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4623,23 +4549,23 @@
             "categories": [
               {
                 "id": "valeur",
-                "libelle": "Valeur en euros"
+                "libelle": "Valeur en €"
               },
               {
                 "id": "proportion",
-                "libelle": "Proportion : part d’un total"
+                "libelle": "Proportion"
               },
               {
                 "id": "evolution",
-                "libelle": "Évolution : variation par rapport à une valeur de départ"
+                "libelle": "Évolution"
               },
               {
                 "id": "points",
-                "libelle": "Écart entre deux taux, en points"
+                "libelle": "Écart en points"
               },
               {
                 "id": "ambigu",
-                "libelle": "Ambigu en l’état : unité, base ou période manquante"
+                "libelle": "Ambigu"
               }
             ],
             "metadonnees": {
@@ -4653,7 +4579,6 @@
         },
         "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD",
         "cadrageDuRenvoi": {
-          "part": 40,
           "extrait": {
             "lignes": [0, 1, 2, 3, 4, 5]
           }
@@ -4732,7 +4657,7 @@
               "renderer": "sort-review",
               "props": {
                 "title": "Correction du tri",
-                "subtitle": "Un pourcentage se lit avec sa base : part d’un total, évolution depuis une valeur de départ, ou écart entre deux taux, en points.",
+                "subtitle": "Un pourcentage se lit avec sa base : part d’un total, évolution depuis une valeur de départ, ou écart entre deux taux, en points. Sans unité, base ou période, un chiffre reste ambigu.",
                 "source": {
                   "screenId": "B2-01-A1-05-ANATOMIE",
                   "sortId": "b2-01-a1-anatomie"
@@ -4740,23 +4665,23 @@
                 "categories": [
                   {
                     "id": "valeur",
-                    "label": "Valeur en euros"
+                    "label": "Valeur en €"
                   },
                   {
                     "id": "proportion",
-                    "label": "Proportion : part d’un total"
+                    "label": "Proportion"
                   },
                   {
                     "id": "evolution",
-                    "label": "Évolution : variation par rapport à une valeur de départ"
+                    "label": "Évolution"
                   },
                   {
                     "id": "points",
-                    "label": "Écart entre deux taux, en points"
+                    "label": "Écart en points"
                   },
                   {
                     "id": "ambigu",
-                    "label": "Ambigu en l’état : unité, base ou période manquante"
+                    "label": "Ambigu"
                   }
                 ],
                 "cards": [
@@ -4932,7 +4857,6 @@
         },
         "renvoi": "B2-01-A1-03-MISSION",
         "cadrageDuRenvoi": {
-          "part": 70,
           "extrait": {
             "champs": ["situation"]
           }
@@ -5018,9 +4942,6 @@
           }
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "cadrageDuRenvoi": {
-          "part": 60
-        },
         "resoluPar": ["B2-01-A1-10-CORRECTION"],
         "notes": "• 2 min d’écriture individuelle, puis révélation au pupitre.\n• Repérer ceux qui citent l’axe et ceux qui ne citent que la couleur ou le titre.\n• Avant de révéler, faire trouver la piste fausse : changer la couleur ne corrige rien.",
         "diffusion": "seance",
@@ -5342,9 +5263,6 @@
           ]
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "resoluPar": ["B2-01-A2-03-CORRECTION-1"],
         "notes": "• 5 min de travail sur les questions 1 à 3 (annoncer « plus qu’une minute » à 4 min), puis 1 min de comparaison avec le voisin.\n• Pièges : Q1 « sept fois plus » (axe) ; Q3 « 84 % des commandes, donc 84 % du CA ».\n• Contrôle à faire dire : 1 150 000 × 0,455 ≈ 523 000.",
         "diffusion": "seance",
@@ -5737,19 +5655,19 @@
                 "stats": [
                   {
                     "value": "100 000 €",
-                    "label": "valeur : combien ? (hausse du CA HT en 2025)"
+                    "label": "valeur : combien ?"
                   },
                   {
                     "value": "20 %",
-                    "label": "proportion : quelle part du total ? (l’entretien dans le CA 2025)"
+                    "label": "proportion : quelle part du total ?"
                   },
                   {
                     "value": "+9,5 %",
-                    "label": "évolution : de combien par rapport au départ ? (CA HT 2024 → 2025)"
+                    "label": "évolution : de combien par rapport au départ ?"
                   },
                   {
                     "value": "−2,3 points",
-                    "label": "écart entre deux taux (taux de marge brute 2024 → 2025)"
+                    "label": "écart entre deux taux"
                   },
                   {
                     "value": "indice 112",
@@ -5768,10 +5686,7 @@
           }
         },
         "renvoi": "B2-01-A1-05-CORRECTION",
-        "cadrageDuRenvoi": {
-          "part": 50
-        },
-        "notes": "• Faire associer chaque écriture à une carte du tri A1-05.\n• Relance : « Quelle écriture aurait dû remplacer \"−2,3 %\" dans le tableau de bord ? » (−2,3 points).\n• Piège : confondre +9,5 % (évolution) et 20 % (proportion) : les deux s’écrivent en %.",
+        "notes": "• Faire associer chaque écriture à une carte du tri A1-05.\n• Relance : « Quelle écriture aurait dû remplacer \"−2,3 %\" dans le tableau de bord ? » (−2,3 points).\n• Piège : confondre +9,5 % (évolution) et 20 % (proportion) : les deux s’écrivent en %.\n• Exemples à citer : 100 000 € (hausse du CA HT en 2025) ; 20 % (l’entretien dans le CA 2025) ; +9,5 % (CA HT 2024 → 2025) ; −2,3 points (taux de marge brute 2024 → 2025).",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5826,7 +5741,6 @@
         },
         "renvoi": "B2-01-A1-04-TABLEAU-DE-BORD",
         "cadrageDuRenvoi": {
-          "part": 30,
           "extrait": {
             "lignes": [3]
           }
@@ -6451,9 +6365,6 @@
           }
         },
         "renvoi": "B2-01-A3-01-VOTE-HAUSSE-BAISSE",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "notes": "• 45 s, sur la seule courbe de marge.\n• Chiffre clé : −1 % sur le prix = −5 % sur la marge ((19 − 20) ÷ 20), car la marge ne fait que 20 % du prix.\n• Transition : « Même raisonnement sur un achat : le fil technique. »",
         "diffusion": "seance",
         "seuil": null,
@@ -6844,9 +6755,6 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "resoluPar": ["B2-01-A3-07-CORRECTION-1"],
         "notes": "• 4 min individuelles sur les questions 1 à 3.\n• Pièges : Q1 « plus bas » (rythme lu comme niveau) ; Q2 112,2 et Q3 15,1 % (taux additionnés).",
         "diffusion": "seance",
@@ -7033,9 +6941,6 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "resoluPar": ["B2-01-A3-07-CORRECTION-2"],
         "notes": "• 3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).\n• La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.",
         "diffusion": "seance",
@@ -7182,7 +7087,6 @@
                 "axisLabels": ["95 à 120"],
                 "unit": "indice (base 100 en 2019)",
                 "formula": "Indice 2025 = 100 × 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 115,97",
-                "reading": "Les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019. Le rythme ralentit depuis 2023, mais l’indice continue de monter : une inflation qui ralentit tout en restant positive s’appelle une désinflation ; une baisse du niveau des prix s’appellerait une déflation.",
                 "source": "Calcul d’après les taux annuels moyens de l’IPC publiés par l’Insee.",
                 "kind": "line",
                 "description": "Courbe croissante de l’indice : base 100 en 2019, niveau intermédiaire en 2022, niveau final supérieur à 115 en 2025 ; axe gradué de 95 à 120."
@@ -7198,10 +7102,7 @@
           }
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
-        "notes": "• Faire superposer : les barres de A3-05 baissent depuis 2023, la courbe de l’indice monte toujours.\n• Mot à fixer : désinflation (le rythme ralentit, les prix montent encore) ≠ déflation (les prix baissent).\n• Transition : « Répondez à Samir, qui veut baisser les tarifs. »",
+        "notes": "• Faire superposer : les barres de A3-05 baissent depuis 2023, la courbe de l’indice monte toujours.\n• Mot à fixer : désinflation (le rythme ralentit, les prix montent encore) ≠ déflation (les prix baissent).\n• Lecture à dire : les prix de 2025 sont en moyenne 16,0 % plus élevés qu’en 2019 ; le rythme ralentit depuis 2023, mais l’indice continue de monter.\n• Transition : « Répondez à Samir, qui veut baisser les tarifs. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -7242,9 +7143,6 @@
           }
         },
         "renvoi": "B2-01-A3-08-INDICE-PRIX",
-        "cadrageDuRenvoi": {
-          "part": 60
-        },
         "notes": "• 90 s de rédaction, puis lire deux réponses.\n• Écarter les phrases sans source ou qui ne parlent que du rythme.\n• Calcul attendu : 1 ÷ 1,1597 − 1 ≈ −13,8 % de valeur réelle pour des tarifs inchangés depuis 2019.\n• Transition : jalon 3, puis pause de 15 min.",
         "diffusion": "seance",
         "seuil": null,
@@ -9001,9 +8899,6 @@
           ]
         },
         "renvoi": "B2-01-A5-05-TCD",
-        "cadrageDuRenvoi": {
-          "part": 40
-        },
         "resoluPar": ["B2-01-A5-06-CORRECTION-2"],
         "notes": "• 2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).\n• TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.",
         "diffusion": "seance",
@@ -9450,44 +9345,6 @@
             "id": "b2-01-a5-recommandation",
             "enonce": "Mercredi, 17 h. Samir annonce qu’il proposera demain d’investir 40 000 € pour doubler les ventes de la marketplace. Hélène vous demande votre recommandation écrite, fondée sur le dossier.",
             "invite": "Rédigez trois phrases structurées : 1) le constat chiffré et son unité ; 2) le mécanisme expliqué par les poids, ainsi que ce qui reste à prouver ; 3) la décision proposée, sa limite et le contrôle prioritaire.",
-            "rappel": [
-              {
-                "libelle": "Le dossier",
-                "valeur": "Atelier Rivage, trois canaux (sur-mesure, entretien, marketplace), exercices 2024 et 2025, données annuelles."
-              },
-              {
-                "libelle": "La proposition de Samir",
-                "valeur": "Investir 40 000 € pour doubler les ventes de la marketplace."
-              },
-              {
-                "libelle": "Chiffre d’affaires HT",
-                "valeur": "1 050 000 € → 1 150 000 €, soit +9,5 %."
-              },
-              {
-                "libelle": "Marge brute",
-                "valeur": "289 800 € → 291 000 €, soit +1 200 €."
-              },
-              {
-                "libelle": "Taux de marge brute global",
-                "valeur": "27,6 % → 25,3 %, soit −2,3 points."
-              },
-              {
-                "libelle": "CA HT par canal",
-                "valeur": "sur-mesure 483 000 € → 397 000 € ; entretien 210 000 € → 230 000 € ; marketplace 357 000 € → 523 000 €."
-              },
-              {
-                "libelle": "Taux de marge brute par canal, identiques les deux années",
-                "valeur": "sur-mesure 36 % ; entretien 28 % ; marketplace 16 %."
-              },
-              {
-                "libelle": "Part de la marketplace dans le CA",
-                "valeur": "34 % → 45,5 %."
-              },
-              {
-                "libelle": "Anomalie relevée au contrôle",
-                "valeur": "90 € d’écart entre le grand livre (48 795 € HT) et les factures de vente de mars (48 705 € HT)."
-              }
-            ],
             "strategies": [],
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
@@ -9499,9 +9356,6 @@
           }
         },
         "renvoi": "B2-01-A5-08-DOSSIER-COMITE",
-        "cadrageDuRenvoi": {
-          "part": 50
-        },
         "notes": "• 3 min d’écriture, révélation, 1 min d’échange.\n• Piège : recommander d’arrêter la marketplace parce qu’elle fait baisser le taux ; elle apporte +26 560 € de marge.\n• Exiger un chiffre ou une pièce dans chaque phrase ; la décision porte sur la marge en euros, pas sur le CA.\n• Transition : jalon 5.",
         "diffusion": "seance",
         "seuil": null,
@@ -10576,7 +10430,7 @@
           "billet": {
             "id": "b2-01-a6-billet",
             "question": "Le comité ne retiendra qu’une phrase. Laquelle peut figurer telle quelle au compte rendu ?",
-            "invite": "Justifiez en trois phrases : le calcul qui prouve votre choix, la limite de l’analyse et l’action que vous proposez. Ajoutez l’alerte au cabinet sur les ventes de mars : pièce, montant, action.",
+            "invite": "Quels deux chiffres du dossier prouvent que cette phrase est juste ? Écrivez-les avec leur unité.",
             "options": [
               {
                 "id": "la-marge-brute-progresse-de-1-200-eur-et-c3943fcd",
@@ -10604,7 +10458,7 @@
             }
           }
         },
-        "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : la phrase en « −2,3 % » et celle qui attribue la baisse au taux de chaque canal.\n• Alerte attendue : « F004 saisie 12 430 € au lieu de 12 340 € (pièce) : écart de 90 €, TVA collectée à corriger de 18 €, écriture à rectifier. »\n• Transition : « Rendez-vous en B2-02. »",
+        "notes": "• 3 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : la phrase en « −2,3 % » et celle qui attribue la baisse au taux de chaque canal.\n• Réponse attendue : « 27,6 % → 25,3 %, soit −2,3 points ; la marketplace passe de 34 % à 45,5 % du CA. »\n• Transition : « Rendez-vous en B2-02. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
