@@ -28,6 +28,8 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       command.sessionId,
     );
 
+    const participant = await this.participation.participantActif(command);
+
     const deja = await this.answers.existsFor(
       command.participantId,
       command.questionId,
@@ -35,8 +37,6 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
     if (deja) {
       throw new AnswerAlreadySubmittedError(command.questionId);
     }
-
-    const participant = await this.participation.participantActif(command);
 
     const question = findQuestion(session.bareme, command.questionId);
     if (!question) {
