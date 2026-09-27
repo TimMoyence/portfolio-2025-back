@@ -1,4 +1,5 @@
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import { COURS_B2_01 } from './b2-01.cours';
+import { COURS_B2_02 } from './b2-02.cours';
 
-export const CONTENUS: readonly ContenuDeCours[] = [COURS_B2_01];
+export const CONTENUS: readonly ContenuDeCours[] = [COURS_B2_01, COURS_B2_02];

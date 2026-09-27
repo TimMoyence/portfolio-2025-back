@@ -1,35 +1,33 @@
 import {
   lireConception,
-  mediasDuDocument,
-  remediationsDuDocument,
   texteNormalise,
-  titresPublics,
-  vueDEnsemble,
-} from '../../../../../test/helpers/conception-b2-01';
+} from '../../../../../test/helpers/conception-de-cours';
 import {
   buildContenuB2_01,
   buildCoursB2_01,
   ouvrirLeBaremeV2DuB2_01,
 } from '../../../../../test/factories/cours-b2-01.factory';
 import { fuitesDeConfidentialite } from '../../../../../test/factories/structure.factory';
-import type { Ecran, Question } from '../../domain/contrats/cours';
-import { CONFUSIONS } from '../../domain/cours/banque/confusions';
-import type { CorrigeProduction } from '../../domain/cours/Corrige';
 import {
-  estInteractif,
-  questionsDe,
-  questionsDuCours,
-} from '../../domain/cours/Cours';
+  attendreLaFeuille,
+  attendreLesEnigmes,
+  attendreLesNumeriques,
+  corrigeDe,
+  decrireLaFicheDuCours,
+  valeursEtPieges,
+} from '../../../../../test/helpers/fiche-de-cours';
+import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
+import type { Ecran } from '../../domain/contrats/cours';
+import type { CorrigeProduction } from '../../domain/cours/Corrige';
+import { estInteractif } from '../../domain/cours/Cours';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import { activitesLibres } from '../../domain/cours/EcranServi';
 import { projeterCatalogue } from '../../domain/cours/Diffusion';
-import { slugOption } from '../../domain/cours/QuestionStockee';
-import { verifierStructure } from '../../domain/cours/StructureCours';
 import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B2_01 } from './b2-01.cours';
 
-const DOCUMENT = lireConception();
+const DOCUMENT = lireConception('cours-b2-01-conception.md');
 const COURS = buildCoursB2_01();
 
 function ecranDuCours(screenId: string): Ecran {
@@ -39,16 +37,10 @@ function ecranDuCours(screenId: string): Ecran {
   }
   return trouve;
 }
-const TAILLE_MAX_DU_BAREME = 400 * 1024;
-const IDENTIFIANT_D_ECRAN = /^B2-01-A[1-6]-\d{2}-[A-Z0-9-]+$/;
 const LONGUEUR_MIN_D_UN_TEXTE_COMPARE = 12;
 const CLES_NON_TEXTUELLES = new Set(['id', 'formuleReference', 'transcript']);
 
 const ECRAN_DU_GRAPHIQUE_TRIMESTRIEL = 'B2-01-A4-04-CA-TRIMESTRIEL';
-
-function acteDe(ecran: Ecran): number {
-  return Number(ecran.id.slice('B2-01-A'.length, 'B2-01-A'.length + 1));
-}
 
 function coursDontLeTitre(screenId: string, titre: string): typeof COURS {
   const brut = buildContenuB2_01();
@@ -61,31 +53,6 @@ function coursDontLeTitre(screenId: string, titre: string): typeof COURS {
       ecran.screenId === screenId ? { ...ecran, titre } : ecran,
     ),
   });
-}
-
-function renduDe(ecran: Ecran): string | null {
-  if (ecran.brique !== 'fp-story') {
-    return null;
-  }
-  const presentation = ecran.proprietes.presentation;
-  return presentation?.version === 2 ? presentation.renderer : null;
-}
-
-function estFermeeNotee(question: Question): boolean {
-  return (
-    question.noteCompte &&
-    ['vote', 'numeric', 'classement'].includes(question.type)
-  );
-}
-
-function corrigeDe(id: string): CorrigeProduction {
-  const question = questionsDuCours(COURS).find(
-    (candidate) => candidate.id === id,
-  );
-  if (question === undefined || !('corrige' in question)) {
-    throw new Error(`production ${id} absente du cours`);
-  }
-  return question.corrige;
 }
 
 function descendre(
@@ -145,71 +112,55 @@ function clesDe(valeur: unknown): string[] {
   return descendre(valeur, (cle, element) => [cle, ...clesDe(element)]);
 }
 
-function arrondi(valeur: number, decimales = 6): number {
-  return Number(valeur.toFixed(decimales));
-}
-
 function vaut(valeur: number, cible: number): boolean {
   return Math.abs(valeur - cible) < 1e-9;
 }
 
-function decimalesEcrites(valeur: number): number {
-  const [, fraction = ''] = String(valeur).split('.');
-  return fraction.length;
-}
-
-function alignees(
-  lues: readonly number[],
-  calculees: readonly number[],
-): number[] {
-  return calculees.map((calculee, rang) =>
-    rang < lues.length
-      ? arrondi(calculee, decimalesEcrites(lues[rang]))
-      : calculee,
-  );
-}
+decrireLaFicheDuCours('B2-01', COURS, {
+  conception: 'cours-b2-01-conception.md',
+  ecrans: 74,
+  dureeMinutes: 211,
+  minutesParActe: [32, 34, 36, 38, 43, 28],
+  rythme: { expositionContinueMax: 6, interactives: 142, exposition: 69 },
+  ateliersNotes: [
+    'A1-05 (8)',
+    'A2-03 (6)',
+    'A2-03 (6)',
+    'A2-07 (8)',
+    'A3-01 (8)',
+    'A3-07 (4)',
+    'A3-07 (4)',
+    'A4-03 (3)',
+    'A4-03 (3)',
+    'A5-02 (8)',
+    'A5-06 (4)',
+    'A5-06 (3)',
+    'A5-07 (8)',
+  ],
+  noteesParType: [19, 7, 3, 1, 1],
+  enigmes: 4,
+  rappels: 13,
+  remediations: 38,
+  options: 19 + 13,
+  catalogue: [
+    'A1-02',
+    'A1-07',
+    'A1-04',
+    'A1-06',
+    'A1-09',
+    'A2-01',
+    'A2-02',
+    'A3-05',
+    'A4-01',
+    'A5-01',
+    'A6-03',
+    'A6-07',
+  ],
+});
 
 describe('B2-01 — fichier de données', () => {
-  it('suit ligne à ligne le tableau du § 3.1 (AC-02)', () => {
-    const lues = COURS.ecrans.map((ecran, rang) => ({
-      rang: rang + 1,
-      id: ecran.id,
-      minutes: ecran.dureeMinutes,
-      brique: ecran.brique,
-      rendu: renduDe(ecran),
-      interactif: estInteractif(ecran),
-      questionsNotees: questionsDe(ecran).filter(estFermeeNotee).length,
-      diffusion: ecran.diffusion,
-    }));
-
-    expect(lues).toEqual(vueDEnsemble(DOCUMENT));
-    expect(lues).toHaveLength(74);
-  });
-
-  it('nomme chaque écran selon la convention et le titre du § 3 (AC-02)', () => {
-    const titres = titresPublics(DOCUMENT);
-
-    for (const ecran of COURS.ecrans) {
-      expect(ecran.id).toMatch(IDENTIFIANT_D_ECRAN);
-      expect(ecran.titre).toBe(titres.get(ecran.id));
-      expect(ecran.titre?.length).toBeLessThanOrEqual(120);
-    }
-    expect(new Set(COURS.ecrans.map((ecran) => ecran.id)).size).toBe(74);
-  });
-
-  it('dure 211 min, soit 32, 34, 36, 38, 43 et 28 min par acte (AC-03)', () => {
-    const parActe = [1, 2, 3, 4, 5, 6].map((acte) =>
-      COURS.ecrans
-        .filter((ecran) => acteDe(ecran) === acte)
-        .reduce((total, ecran) => total + ecran.dureeMinutes, 0),
-    );
-
-    expect(COURS.dureeMinutes).toBe(211);
-    expect(parActe).toEqual([32, 34, 36, 38, 43, 28]);
-  });
-
-  it('ne lève aucune violation de structure, sans dérogation (AC-01, AC-14)', () => {
-    expect(verifierStructure(COURS)).toEqual([]);
+  it('ouvre un barème v2 de soixante tirages (AC-08)', () => {
+    expect(ouvrirLeBaremeV2DuB2_01(COURS).tirages).toHaveLength(60);
   });
 
   it('publie les arrondis d’affichage des attendus de A4-02 sans fuite (A2-06, capsule A4-01)', () => {
@@ -234,131 +185,16 @@ describe('B2-01 — fichier de données', () => {
     expect(fuitesDeConfidentialite(COURS)).toEqual([]);
   });
 
-  it('borne l’exposition continue à 6 min pour 142 min interactives et 69 d’exposition (AC-04)', () => {
-    let bloc = 0;
-    let plusLong = 0;
-    for (const ecran of COURS.ecrans) {
-      bloc = estInteractif(ecran) ? 0 : bloc + ecran.dureeMinutes;
-      plusLong = Math.max(plusLong, bloc);
-    }
-    const minutes = (interactif: boolean): number =>
+  it('tolère un seul écran sans note, le plan (AC-06)', () => {
+    expect(
       COURS.ecrans
-        .filter((ecran) => estInteractif(ecran) === interactif)
-        .reduce((total, ecran) => total + ecran.dureeMinutes, 0);
-
-    expect(plusLong).toBe(6);
-    expect([minutes(true), minutes(false)]).toEqual([142, 69]);
+        .filter((ecran) => ecran.notes === '')
+        .map((ecran) => ecran.id),
+    ).toEqual(['B2-01-A1-07-PLAN']);
   });
 
-  it('porte les questions fermées notées sur treize écrans d atelier, les longs questionnaires découpés (AC-05)', () => {
-    const ateliers = COURS.ecrans
-      .slice(1, -1)
-      .filter((ecran) => questionsDe(ecran).some(estFermeeNotee))
-      .map((ecran) => `${ecran.id.slice(6, 11)} (${ecran.dureeMinutes})`);
-
-    expect(ateliers).toEqual([
-      'A1-05 (8)',
-      'A2-03 (6)',
-      'A2-03 (6)',
-      'A2-07 (8)',
-      'A3-01 (8)',
-      'A3-07 (4)',
-      'A3-07 (4)',
-      'A4-03 (3)',
-      'A4-03 (3)',
-      'A5-02 (8)',
-      'A5-06 (4)',
-      'A5-06 (3)',
-      'A5-07 (8)',
-    ]);
-  });
-
-  it('rédige chaque note présente en puces « • » non vides, et tolère l’écran sans note (AC-06)', () => {
-    const sansNote = COURS.ecrans.filter((ecran) => ecran.notes === '');
-
-    expect(sansNote.map((ecran) => ecran.id)).toEqual(['B2-01-A1-07-PLAN']);
-    for (const ecran of COURS.ecrans.filter((ecran) => ecran.notes !== '')) {
-      const lignes = ecran.notes.split('\n');
-
-      expect(
-        lignes.filter(
-          (ligne) => !ligne.startsWith('• ') || ligne.slice(2).trim() === '',
-        ),
-      ).toEqual([]);
-    }
-  });
-
-  it('compte 31 questions notées, 4 énigmes et 13 rappels aux identifiants uniques (AC-07)', () => {
-    const questions = questionsDuCours(COURS);
-    const notees = questions.filter((question) => question.noteCompte);
-    const parType = (type: string): number =>
-      notees.filter((question) => question.type === type).length;
-    const identifiants = questions.map((question) => question.id);
-
-    expect(notees).toHaveLength(31);
-    expect(
-      ['vote', 'numeric', 'classement', 'feuille', 'tableau'].map(parType),
-    ).toEqual([19, 7, 3, 1, 1]);
-    expect(
-      questions.filter((question) => question.type === 'enigme'),
-    ).toHaveLength(4);
-    expect(
-      COURS.ecrans.flatMap((ecran) =>
-        ecran.brique === 'fp-spaced' ? ecran.banque : [],
-      ),
-    ).toHaveLength(13);
-    expect(new Set(identifiants).size).toBe(identifiants.length);
-    expect(
-      Math.max(...identifiants.map((id) => id.length)),
-    ).toBeLessThanOrEqual(60);
-  });
-
-  it('ouvre 61 tirages non ambigus et un barème v2 de moins de 400 Ko (AC-08)', () => {
-    const bareme = ouvrirLeBaremeV2DuB2_01(COURS);
-
-    expect(
-      Buffer.byteLength(JSON.stringify(bareme), 'utf8'),
-    ).toBeLessThanOrEqual(TAILLE_MAX_DU_BAREME);
-    for (let graine = 1; graine <= 61; graine += 1) {
-      expect(() => tirer(COURS, graine)).not.toThrow();
-    }
-  });
-
-  it('remédie chacune des 38 confusions vers l’écran du § 5.9 (AC-09)', () => {
-    const ecrans = new Set(COURS.ecrans.map((ecran) => ecran.id));
-
-    expect(COURS.remediations).toEqual(remediationsDuDocument(DOCUMENT));
-    expect(Object.keys(COURS.remediations)).toHaveLength(38);
-    expect(
-      Object.keys(COURS.remediations).filter(
-        (confusion) => !Object.hasOwn(CONFUSIONS, confusion),
-      ),
-    ).toEqual([]);
-    expect(
-      Object.values(COURS.remediations).filter((cible) => !ecrans.has(cible)),
-    ).toEqual([]);
-  });
-
-  it('identifie chaque option de vote par slugOption(libelle) (AC-09)', () => {
-    const { libellesOptions } = tirer(COURS, 0);
-    const ecarts = Object.values(libellesOptions).flatMap((libelles) =>
-      Object.entries(libelles).filter(
-        ([id, libelle]) => id !== slugOption(libelle),
-      ),
-    );
-
-    expect(Object.keys(libellesOptions)).toHaveLength(19 + 13);
-    expect(ecarts).toEqual([]);
-  });
-
-  it('garde la banque de rappel hors du sujet et la projette en privé (B4)', () => {
-    const tirage = tirer(COURS, 42);
-    const sujet = JSON.stringify(tirage.sujet);
-
-    expect(Object.keys(tirage.banque)).toHaveLength(13);
-    expect(
-      Object.keys(tirage.banque).filter((id) => sujet.includes(id)),
-    ).toEqual([]);
+  it('projette en privé les treize rappels de la banque (B4)', () => {
+    expect(Object.keys(tirer(COURS, 42).banque)).toHaveLength(13);
   });
 
   it('expose au déroulé 31 questions notées, 4 énigmes et 13 rappels (B22)', () => {
@@ -410,33 +246,6 @@ describe('B2-01 — fichier de données', () => {
 
     expect(corriges.get('b2-01-a2-part-marketplace')).toBe('45,5');
     expect(corriges.get('b2-01-a5-variation-marge-sur-mesure')).toBe('−30 960');
-  });
-
-  it('sert au catalogue les 12 écrans catalogue et verrouille les 62 autres (B19)', () => {
-    const catalogue = projeterCatalogue(COURS);
-    const verrouilles = catalogue.ecrans.filter(
-      (ecran) => ecran.type === 'ecran-verrouille',
-    );
-
-    expect(verrouilles).toHaveLength(62);
-    expect(
-      catalogue.ecrans
-        .filter((ecran) => ecran.type !== 'ecran-verrouille')
-        .map((ecran) => ecran.id.slice(6, 11)),
-    ).toEqual([
-      'A1-02',
-      'A1-07',
-      'A1-04',
-      'A1-06',
-      'A1-09',
-      'A2-01',
-      'A2-02',
-      'A3-05',
-      'A4-01',
-      'A5-01',
-      'A6-03',
-      'A6-07',
-    ]);
   });
 
   it('ne projette aucun secret dans le sujet ni dans le catalogue (§ 6.1)', () => {
@@ -573,17 +382,8 @@ describe('B2-01 — fichier de données', () => {
     );
   });
 
-  it('catalogue les cinq médias du § 8.2 avec page source, licence et attribution (AC-20)', () => {
-    expect(
-      COURS.medias.map((media) => ({
-        id: media.id,
-        pageSource:
-          media.pageSource ?? 'capsule produite pour le cours (annexe A)',
-        licence: media.licence,
-        fichiers: media.chemins.map((chemin) => chemin.split('/').at(-1)),
-        attribution: media.attribution,
-      })),
-    ).toEqual(mediasDuDocument(DOCUMENT));
+  it('catalogue cinq médias au § 8.2 (AC-20)', () => {
+    expect(COURS.medias).toHaveLength(5);
   });
 });
 
@@ -603,20 +403,6 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
     ],
     [100],
   );
-
-  function numeriques(): Record<string, readonly number[]> {
-    return Object.fromEntries(
-      questionsDuCours(COURS)
-        .filter((question) => question.type === 'numeric')
-        .map((question) => {
-          const { valeur, pieges } = tirer(COURS, 0).solutions[question.id];
-          return [
-            question.id,
-            [Number(valeur), ...pieges.map((piege) => Number(piege.valeur))],
-          ];
-        }),
-    );
-  }
 
   it('recalcule les solutions et pièges des sept questions numériques', () => {
     const [marge24SurMesure] = marges2024;
@@ -661,11 +447,7 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
         ca2025[0] - ca2024[0],
       ],
     };
-    const lues = numeriques();
-
-    for (const [id, valeurs] of Object.entries(attendus)) {
-      expect(lues[id]).toEqual(alignees(lues[id], valeurs));
-    }
+    attendreLesNumeriques(COURS, attendus);
   });
 
   it('recalcule les solutions et pièges des quatre énigmes', () => {
@@ -700,22 +482,12 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
       ],
     };
 
-    for (const [id, valeurs] of Object.entries(attendus)) {
-      const corrige = corrigeDe(id);
-      if (corrige.type !== 'enigme' || corrige.solution.type !== 'nombre') {
-        throw new Error(`${id} n’est pas une énigme numérique`);
-      }
-      const lues = [
-        corrige.solution.valeur,
-        ...corrige.pieges.map((piege) => piege.valeur),
-      ];
-      expect(lues).toEqual(alignees(lues, valeurs));
-    }
+    attendreLesEnigmes(COURS, attendus);
     expect(arrondi(1035 * coefficient, 2)).toBeCloseTo(1053.22, 6);
   });
 
   it('recalcule les 17 cellules attendues de la feuille A4-02 et leurs pièges', () => {
-    const corrige = corrigeDe('b2-01-a4-feuille-canaux');
+    const corrige = corrigeDe(COURS, 'b2-01-a4-feuille-canaux');
     if (corrige.type !== 'feuille') {
       throw new Error('la feuille A4-02 n’a pas de corrigé de feuille');
     }
@@ -754,17 +526,11 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
     };
 
     expect(corrige.attendus).toHaveLength(17);
-    for (const attendu of corrige.attendus) {
-      const lues = [
-        attendu.valeur,
-        ...attendu.pieges.map((piege) => piege.valeur),
-      ];
-      expect(lues).toEqual(alignees(lues, attendus[attendu.reference]));
-    }
+    attendreLaFeuille(corrige, attendus);
   });
 
   it('recalcule les prix et indices de la toile, révision après révision', () => {
-    const corrige = corrigeDe('b2-01-a4-indice-toile');
+    const corrige = corrigeDe(COURS, 'b2-01-a4-indice-toile');
     if (corrige.type !== 'tableau') {
       throw new Error('le tableau A4-05 n’a pas de corrigé de tableau');
     }
@@ -790,12 +556,7 @@ describe('B2-01 — recalcul des corrigés depuis les données brutes (AC-10)', 
       ],
     ]);
 
-    expect(
-      corrige.attendus.map((attendu) => [
-        attendu.valeur,
-        ...attendu.pieges.map((piege) => piege.valeur),
-      ]),
-    ).toEqual(attendus);
+    expect(corrige.attendus.map(valeursEtPieges)).toEqual(attendus);
   });
 });
 

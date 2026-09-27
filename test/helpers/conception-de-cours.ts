@@ -1,12 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const CHEMIN_DU_DOCUMENT = join(
-  __dirname,
-  '../../docs/cours-b2-01-conception.md',
-);
 const LIGNE_DE_TABLEAU = /^\|\s*\d+\s*\|/;
-const ENTETE_DE_FICHE = /^#### (A\d-\d{2}) · `(B2-01-[^`]+)`/;
+const ENTETE_DE_FICHE = /^#### (A\d-\d{2}) · `(B\d-\d{2}-[^`]+)`/;
 const TITRE_PUBLIC = /Titre public : « (.+) »$/;
 const PREMIER_CODE = /`([^`]+)`/;
 const RENDU_V2 = /v2 `([^`]+)`/;
@@ -30,8 +26,8 @@ export interface MediaDuDocument {
   readonly attribution: string;
 }
 
-export function lireConception(): string {
-  return readFileSync(CHEMIN_DU_DOCUMENT, 'utf8');
+export function lireConception(fichier: string): string {
+  return readFileSync(join(__dirname, '../../docs', fichier), 'utf8');
 }
 
 function lignesDeSection(

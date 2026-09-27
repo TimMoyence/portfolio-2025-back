@@ -2,15 +2,19 @@ import type { BaremeV2 } from '../../src/modules/formations/domain/contrats/bare
 import type { Cours } from '../../src/modules/formations/domain/contrats/cours';
 import { ouvrirTirages } from '../../src/modules/formations/domain/cours/OuvertureTirages';
 import { tireurSequentiel } from './cours.factory';
-import {
-  type ContenuDeCours,
-  type ContenuDeCoursBrut,
-  lireCoursStocke,
+import type {
+  ContenuDeCours,
+  ContenuDeCoursBrut,
 } from '../../src/modules/formations/domain/cours/CoursStocke';
 import type { IPublicationDesCours } from '../../src/modules/formations/domain/cours/IPublicationDesCours.port';
 import { COURS_B2_01 } from '../../src/modules/formations/infrastructure/contenus/b2-01.cours';
+import {
+  buildContenuDuCours,
+  buildCoursDuContenu,
+  VERSION_PUBLIEE_DE_TEST,
+} from './contenus-de-cours.factory';
 
-export const VERSION_PUBLIEE_DE_TEST = 1;
+export { VERSION_PUBLIEE_DE_TEST };
 
 export function buildContenuAPublierB2_01(): ContenuDeCours {
   return structuredClone(COURS_B2_01);
@@ -26,11 +30,11 @@ export function createMockPublicationDesCours(): jest.Mocked<IPublicationDesCour
 export function buildContenuB2_01(
   version = VERSION_PUBLIEE_DE_TEST,
 ): ContenuDeCoursBrut {
-  return structuredClone({ ...COURS_B2_01, version });
+  return buildContenuDuCours(COURS_B2_01, version);
 }
 
 export function buildCoursB2_01(version = VERSION_PUBLIEE_DE_TEST): Cours {
-  return lireCoursStocke(buildContenuB2_01(version));
+  return buildCoursDuContenu(COURS_B2_01, version);
 }
 
 export function ouvrirLeBaremeV2DuB2_01(cours: Cours): BaremeV2 {
