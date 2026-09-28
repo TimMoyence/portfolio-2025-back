@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "9bea227adef9219351501b612f4269ffd9d5579d0733c3a6eadca21593f6dae5",
+  "empreinte": "ba0686f482ee29d6331752dd3ddce2b0c32cc5c72bb5466347e47190c394afec",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -1708,7 +1708,7 @@
         "donnees": {
           "plan": {
             "id": "b2-02-a4-feuille-fibre",
-            "intitule": "Question tableur — Ajuster la série de la fibre",
+            "intitule": "Question tableur (3 points) — Ajuster la série de la fibre",
             "lignes": 7,
             "colonnes": 5,
             "cellules": {
@@ -4450,7 +4450,7 @@
         "donnees": {
           "plan": {
             "id": "b2-02-a4-feuille-fibre",
-            "intitule": "Question tableur — Ajuster la série de la fibre",
+            "intitule": "Question tableur (3 points) — Ajuster la série de la fibre",
             "lignes": 7,
             "colonnes": 5,
             "cellules": {
@@ -4532,7 +4532,7 @@
         "questions": [
           {
             "id": "b2-02-a4-feuille-fibre",
-            "enonce": "Question tableur — Ajuster la série de la fibre",
+            "enonce": "Question tableur (3 points) — Ajuster la série de la fibre",
             "options": null
           }
         ],

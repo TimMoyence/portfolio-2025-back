@@ -126,15 +126,18 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
     );
   });
 
-  it('note chaque énigme de la mini-situation, tableur compris, sur dix points', () => {
-    const points = [
-      ...texteDeLEcran('B2-02-A4-03-COFFRE-FIBRE').matchAll(
-        /\((\d+(?:,\d+)?) points?\)/g,
-      ),
-    ].map(([, valeur]) => Number(valeur.replace(',', '.')));
+  it('note chaque énigme de la mini-situation, tableur compris, sur dix points imprimés au sujet', () => {
+    const pointsDe = (screenId: string): number[] =>
+      [...texteDeLEcran(screenId).matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(
+        ([, valeur]) => Number(valeur.replace(',', '.')),
+      );
+    const enigmes = pointsDe('B2-02-A4-03-COFFRE-FIBRE');
 
-    expect(points).toHaveLength(4);
-    expect(somme(points) + POINTS_DE_LA_QUESTION_TABLEUR).toBe(
+    expect(enigmes).toHaveLength(4);
+    expect(new Set(pointsDe('B2-02-A4-02-TABLEUR-FIBRE'))).toEqual(
+      new Set([POINTS_DE_LA_QUESTION_TABLEUR]),
+    );
+    expect(somme(enigmes) + POINTS_DE_LA_QUESTION_TABLEUR).toBe(
       POINTS_DE_LA_MINI_SITUATION,
     );
   });
