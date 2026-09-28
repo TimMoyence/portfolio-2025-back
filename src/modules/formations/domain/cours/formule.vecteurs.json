@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sha256": "b38f05f2d8fca461d03a4b471c4e687f13ec8b32133f1868d0b9f13ecb9a288f",
+  "sha256": "6899229e7a8d56ea8184a6eb9542d7147fde4060d8c15697a96d640ed5d15285",
   "vecteurs": [
     {
       "id": "feuille-cycle-deux-maillons",
@@ -290,6 +290,22 @@
         "C1": { "valeur": null, "erreur": "#DIV/0!" },
         "C2": { "valeur": null, "erreur": "#DIV/0!" },
         "C3": { "valeur": null, "erreur": "#DIV/0!" }
+      }
+    },
+    {
+      "id": "feuille-nom-pointe-hors-appel",
+      "type": "feuille",
+      "entree": {
+        "lignes": 1,
+        "colonnes": 2,
+        "cellules": {
+          "A1": "=this.constructor",
+          "B1": "=PENTE.INCONNUE(A1)"
+        }
+      },
+      "attendu": {
+        "A1": { "valeur": null, "erreur": "#VALEUR!" },
+        "B1": { "valeur": null, "erreur": "#NOM?" }
       }
     }
   ]
