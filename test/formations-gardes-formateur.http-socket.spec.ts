@@ -62,6 +62,7 @@ const ROUTES_FORMATEUR: readonly RouteFormateur[] = [
   { methode: 'post', chemin: `${PARTICIPANT_DE_LA_SEANCE}/liberation` },
   { methode: 'get', chemin: `sessions/${SESSION_ID}/annotations` },
   { methode: 'post', chemin: `sessions/${SESSION_ID}/annotations` },
+  { methode: 'get', chemin: `livrets/${COURS.slug}` },
 ];
 
 const EN_TETES_REFUSES = [
@@ -220,7 +221,8 @@ describe('Gardes reelles des routes formateur (e2e http socket)', () => {
             ].toLowerCase();
           const chemin = (Reflect.getMetadata(PATH_METADATA, handler) as string)
             .replace(':participantId', PARTICIPANT_ID)
-            .replace(':id', SESSION_ID);
+            .replace(':id', SESSION_ID)
+            .replace(':slug', COURS.slug);
           return `${methode} ${chemin}`;
         });
     });
