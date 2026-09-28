@@ -45,6 +45,13 @@ export function LectureDeSeance(): MethodDecorator {
   );
 }
 
+export function LectureDeLivret(): MethodDecorator {
+  return applyDecorators(
+    LimiteParMinute(LIMITE_LECTURE_FORMATEUR_PAR_MINUTE),
+    Roles(ROLE_FORMATEUR, ROLE_ADMINISTRATEUR),
+  );
+}
+
 export function PilotageDeSeance(): MethodDecorator {
   return applyDecorators(
     ApiForbiddenResponse({

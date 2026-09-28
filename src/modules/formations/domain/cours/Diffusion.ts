@@ -12,7 +12,7 @@ import { questionsDe } from './Cours';
 import { corrigeDeLEcran } from './DeroulePresentateur';
 import { tirer } from './Tirage';
 
-const GRAINE_DU_CATALOGUE = 0;
+export const GRAINE_DU_CATALOGUE = 0;
 
 export function ecranVerrouille(ecran: EcranPublic): EcranPublic {
   return {
