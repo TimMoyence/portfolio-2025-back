@@ -11,6 +11,7 @@ import {
 import type { ConfusionId } from './banque/confusions';
 import { confusionsDuCorrige } from './CorrigeStocke';
 import {
+  GABARITS,
   questionsDe,
   questionVote,
   type AuMoinsUn,
@@ -51,6 +52,7 @@ export interface ContenuAPublier {
   readonly slug: string;
   readonly titre: string;
   readonly niveau: string;
+  readonly gabarit?: string;
   readonly dureeMinutes: number;
   readonly concepts: readonly string[];
   readonly remediations?: Readonly<Record<string, unknown>>;
@@ -185,6 +187,7 @@ const coursStocke = z
     slug: texte,
     titre: texte,
     niveau: texte,
+    gabarit: z.enum(GABARITS).optional(),
     dureeMinutes: duree,
     concepts,
     remediations: z.partialRecord(confusion, texte).optional(),
@@ -486,6 +489,7 @@ function lire(
     slug: stocke.slug,
     titre: stocke.titre,
     niveau: stocke.niveau,
+    ...(stocke.gabarit === undefined ? {} : { gabarit: stocke.gabarit }),
     dureeMinutes: stocke.dureeMinutes,
     concepts: stocke.concepts,
     ecrans: mapperAuMoinsUn(stocke.ecrans, versEcran),

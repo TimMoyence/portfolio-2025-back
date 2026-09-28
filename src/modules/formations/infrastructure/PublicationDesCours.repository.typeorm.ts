@@ -62,6 +62,7 @@ export class PublicationDesCoursRepositoryTypeORM implements IPublicationDesCour
           version,
           titre: contenu.titre,
           niveau: contenu.niveau,
+          gabarit: contenu.gabarit ?? null,
           dureeMinutes: contenu.dureeMinutes,
           concepts: contenu.concepts,
           remediations: contenu.remediations ?? {},

@@ -8,6 +8,12 @@ import {
   type Manquement,
 } from './GardeConfidentialite';
 import { slugOption } from './QuestionStockee';
+import {
+  controlerBudget,
+  controlerCycle,
+  controlerMiniSituation,
+  controlerTempsDesExercices,
+} from './StructureGabarit';
 import { tirer } from './Tirage';
 
 export const REGLES_STRUCTURE = [
@@ -27,6 +33,10 @@ export const REGLES_STRUCTURE = [
   'catalogue-sans-question',
   'media-sans-licence',
   'options-neutres',
+  'gabarit-budget',
+  'gabarit-cycle',
+  'gabarit-temps-exercice',
+  'gabarit-mini-situation',
 ] as const;
 
 type RegleStructure = (typeof REGLES_STRUCTURE)[number];
@@ -741,6 +751,12 @@ interface Regle {
   readonly controler: (analyse: Analyse) => readonly Manquement[];
 }
 
+function auGabaritV3(
+  controler: (cours: Cours) => readonly Manquement[],
+): Regle['controler'] {
+  return ({ cours }) => (cours.gabarit === 'v3' ? controler(cours) : []);
+}
+
 const REGLES: readonly Regle[] = [
   { id: 'exposition-continue', controler: controlerExposition },
   { id: 'ratio-interaction', controler: controlerRatio },
@@ -761,6 +777,16 @@ const REGLES: readonly Regle[] = [
   { id: 'catalogue-sans-question', controler: controlerCatalogue },
   { id: 'media-sans-licence', controler: controlerMedias },
   { id: 'options-neutres', controler: controlerOptions },
+  { id: 'gabarit-budget', controler: auGabaritV3(controlerBudget) },
+  { id: 'gabarit-cycle', controler: auGabaritV3(controlerCycle) },
+  {
+    id: 'gabarit-temps-exercice',
+    controler: auGabaritV3(controlerTempsDesExercices),
+  },
+  {
+    id: 'gabarit-mini-situation',
+    controler: auGabaritV3(controlerMiniSituation),
+  },
 ];
 
 function executer(

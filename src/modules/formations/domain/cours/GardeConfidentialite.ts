@@ -127,12 +127,28 @@ function chainesDe(valeur: unknown, exclue: string | null): string[] {
     .flatMap(([, element]) => chainesDe(element, exclue));
 }
 
-function valeursDesGraphiques(valeur: unknown): number[] {
-  return cueillirDansArbre(valeur, (cle, element) =>
-    cle === 'values' && Array.isArray(element)
-      ? element.filter((nombre): nombre is number => typeof nombre === 'number')
-      : null,
+const CLES_DES_NOMBRES_DU_NUAGE: readonly string[] = [
+  'x',
+  'y',
+  'slope',
+  'intercept',
+];
+
+function nombresDe(elements: readonly unknown[]): number[] {
+  return elements.filter(
+    (nombre): nombre is number => typeof nombre === 'number',
   );
+}
+
+function valeursDesGraphiques(valeur: unknown): number[] {
+  return cueillirDansArbre(valeur, (cle, element) => {
+    if (cle === 'values' && Array.isArray(element)) {
+      return nombresDe(element);
+    }
+    return CLES_DES_NOMBRES_DU_NUAGE.includes(cle)
+      ? nombresDe([element])
+      : null;
+  });
 }
 
 interface Portee {
