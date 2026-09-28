@@ -3,16 +3,14 @@ import { DomainValidationError } from '../../../common/domain/errors/DomainValid
 import type { Bareme } from '../domain/contrats/bareme';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { ouvrirTirages } from '../domain/cours/OuvertureTirages';
-import {
-  CoursInconnuError,
-  SessionCodeAlreadyActiveError,
-} from '../domain/errors/FormationErrors';
+import { SessionCodeAlreadyActiveError } from '../domain/errors/FormationErrors';
 import type {
   ISessionsRepository,
   SessionRecord,
 } from '../domain/ISessions.repository';
 import { SessionCode } from '../domain/SessionCode';
 import { CATALOGUE_COURS, SESSIONS_REPOSITORY } from '../domain/token';
+import { coursPublieOuInconnu } from './coursPublieOuInconnu';
 import type {
   OpenSessionCommand,
   OpenSessionResult,
@@ -30,10 +28,10 @@ export class OpenSessionUseCase {
   ) {}
 
   async execute(command: OpenSessionCommand): Promise<OpenSessionResult> {
-    const publie = await this.catalogue.trouverCourant(command.courseSlug);
-    if (!publie) {
-      throw new CoursInconnuError(command.courseSlug);
-    }
+    const publie = await coursPublieOuInconnu(
+      this.catalogue,
+      command.courseSlug,
+    );
     const session = await this.createSurUnCodeLibre(
       command,
       ouvrirTirages(publie.cours),

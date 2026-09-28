@@ -1,24 +1,19 @@
-import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
-import { GRAINE_DU_CATALOGUE } from '../src/modules/formations/domain/cours/Diffusion';
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
+import { GRAINE_DU_CATALOGUE } from '../src/modules/formations/domain/cours/Diffusion';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
-import { creerCatalogueDeTest } from './factories/cours.factory';
-import { buildCoursStocke } from './factories/cours-stocke.factory';
-import { createMockDepotsFormations } from './factories/formation.factory';
 import { clesDuCorrigeDans } from './helpers/cles-du-corrige';
+import { buildCoursStocke } from './factories/cours-stocke.factory';
+import {
+  ecartsAuSchemaDeLaRoute,
+  installerApplicationSurCatalogue,
+} from './helpers/application-sur-catalogue';
 import {
   EN_TETE_IDENTITE,
-  monterApplicationFormations,
   routeFormations,
   serveurHttpDe,
 } from './helpers/formations-harness';
-import { fermerApplication } from './helpers/nest-test-app';
-import {
-  documentOpenApiFormations,
-  ecartsAuSchemaDeReponse,
-} from './helpers/schema-openapi';
 
 const COURS = lireCoursStocke(buildCoursStocke());
 const FORMATEUR = 'a1111111-1111-4111-8111-111111111111:teacher';
@@ -30,27 +25,16 @@ interface Livret {
 }
 
 describe('Livret papier d un cours publié (e2e http socket)', () => {
-  let app: INestApplication;
+  const app = installerApplicationSurCatalogue(COURS);
 
   const lire = (slug: string, identite?: string): request.Test => {
-    const requete = request(serveurHttpDe(app)).get(
+    const requete = request(serveurHttpDe(app())).get(
       routeFormations(`/livrets/${slug}`),
     );
     return identite === undefined
       ? requete
       : requete.set(EN_TETE_IDENTITE, identite);
   };
-
-  beforeAll(async () => {
-    app = await monterApplicationFormations(
-      createMockDepotsFormations(),
-      creerCatalogueDeTest(COURS),
-    );
-  });
-
-  afterAll(async () => {
-    await fermerApplication(app);
-  });
 
   it('sert au formateur le sujet et le corrigé du tirage du catalogue', async () => {
     const reponse = await lire(COURS.slug, FORMATEUR).expect(200);
@@ -90,11 +74,10 @@ describe('Livret papier d un cours publié (e2e http socket)', () => {
   });
 
   it('documente exactement la forme rendue', async () => {
-    const document = documentOpenApiFormations(app);
     const reponse = await lire(COURS.slug, FORMATEUR).expect(200);
 
     expect(
-      ecartsAuSchemaDeReponse(document, '/livrets/{slug}', reponse.body),
+      ecartsAuSchemaDeLaRoute(app(), '/livrets/{slug}', reponse.body),
     ).toEqual([]);
   });
 });

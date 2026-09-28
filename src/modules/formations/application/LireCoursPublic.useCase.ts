@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { projeterCatalogue } from '../domain/cours/Diffusion';
 import type { CoursPublicCatalogue } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
-import { CoursInconnuError } from '../domain/errors/FormationErrors';
 import { CATALOGUE_COURS } from '../domain/token';
+import { coursPublieOuInconnu } from './coursPublieOuInconnu';
 
 @Injectable()
 export class LireCoursPublicUseCase {
@@ -13,10 +13,7 @@ export class LireCoursPublicUseCase {
   ) {}
 
   async execute(slug: string): Promise<CoursPublicCatalogue> {
-    const publie = await this.catalogue.trouverCourant(slug);
-    if (publie === null) {
-      throw new CoursInconnuError(slug);
-    }
+    const publie = await coursPublieOuInconnu(this.catalogue, slug);
     return {
       ...projeterCatalogue(publie.cours),
       version: publie.version,

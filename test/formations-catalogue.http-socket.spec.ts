@@ -1,22 +1,15 @@
-import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { lireCoursStocke } from '../src/modules/formations/domain/cours/CoursStocke';
 import { projeterCatalogue } from '../src/modules/formations/domain/cours/Diffusion';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
-import { creerCatalogueDeTest } from './factories/cours.factory';
 import { buildCoursStocke } from './factories/cours-stocke.factory';
-import { createMockDepotsFormations } from './factories/formation.factory';
+import {
+  ecartsAuSchemaDeLaRoute,
+  installerApplicationSurCatalogue,
+} from './helpers/application-sur-catalogue';
 import { clesDuCorrigeDans, clesImbriquees } from './helpers/cles-du-corrige';
-import {
-  monterApplicationFormations,
-  PREFIXE_API,
-} from './helpers/formations-harness';
-import { fermerApplication } from './helpers/nest-test-app';
-import {
-  attendreVersionServie,
-  documentOpenApiFormations,
-  ecartsAuSchemaDeReponse,
-} from './helpers/schema-openapi';
+import { PREFIXE_API } from './helpers/formations-harness';
+import { attendreVersionServie } from './helpers/schema-openapi';
 
 const COURS = lireCoursStocke(buildCoursStocke());
 const DONNEES_DU_FORMATEUR = [
@@ -29,23 +22,12 @@ const DONNEES_DU_FORMATEUR = [
 ];
 
 describe('Catalogue public des formations (e2e http socket)', () => {
-  let app: INestApplication;
+  const app = installerApplicationSurCatalogue(COURS);
 
   const lire = (slug: string) =>
-    request(app.getHttpServer() as Parameters<typeof request>[0]).get(
+    request(app().getHttpServer() as Parameters<typeof request>[0]).get(
       `/${PREFIXE_API}/formations/catalogue/${slug}`,
     );
-
-  beforeAll(async () => {
-    app = await monterApplicationFormations(
-      createMockDepotsFormations(),
-      creerCatalogueDeTest(COURS),
-    );
-  });
-
-  afterAll(async () => {
-    await fermerApplication(app);
-  });
 
   it('sert sans authentification le sujet public du cours publie', async () => {
     const reponse = await lire(COURS.slug).expect(200);
@@ -94,11 +76,10 @@ describe('Catalogue public des formations (e2e http socket)', () => {
   });
 
   it('documente exactement la forme rendue', async () => {
-    const document = documentOpenApiFormations(app);
     const reponse = await lire(COURS.slug).expect(200);
 
     expect(
-      ecartsAuSchemaDeReponse(document, '/catalogue/{slug}', reponse.body),
+      ecartsAuSchemaDeLaRoute(app(), '/catalogue/{slug}', reponse.body),
     ).toEqual([]);
   });
 });

@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import { livretDuCours, type LivretPublie } from '../domain/cours/Livret';
-import { CoursInconnuError } from '../domain/errors/FormationErrors';
 import { CATALOGUE_COURS } from '../domain/token';
+import { coursPublieOuInconnu } from './coursPublieOuInconnu';
 
 @Injectable()
 export class LireLivretUseCase {
@@ -12,10 +12,7 @@ export class LireLivretUseCase {
   ) {}
 
   async execute(slug: string): Promise<LivretPublie> {
-    const publie = await this.catalogue.trouverCourant(slug);
-    if (publie === null) {
-      throw new CoursInconnuError(slug);
-    }
+    const publie = await coursPublieOuInconnu(this.catalogue, slug);
     return { version: publie.version, ...livretDuCours(publie.cours) };
   }
 }
