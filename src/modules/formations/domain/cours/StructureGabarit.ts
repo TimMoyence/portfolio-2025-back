@@ -3,8 +3,8 @@ import { estInteractif, questionsDe } from './Cours';
 import { correctionsDe } from './Corrections';
 import type { Manquement } from './GardeConfidentialite';
 
-export const ECRANS_MAXIMUM_DU_GABARIT = 40;
-export const MINUTES_MAXIMUM_DU_GABARIT = 180;
+const ECRANS_MAXIMUM_DU_GABARIT = 40;
+const MINUTES_MAXIMUM_DU_GABARIT = 180;
 const BRIQUES_HORS_CYCLE: readonly string[] = [
   'fp-recall',
   'fp-exit',
