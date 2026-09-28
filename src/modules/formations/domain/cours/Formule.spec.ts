@@ -211,6 +211,115 @@ describe('evaluerFeuille', () => {
   });
 });
 
+describe('fonctions à deux séries', () => {
+  const donneesMobiles = {
+    A1: '0',
+    A2: '1',
+    A3: '2',
+    A4: '3',
+    A5: '4',
+    B1: '2,20',
+    B2: '3,64',
+    B3: '5,24',
+    B4: '7,13',
+    B5: '8,66',
+  };
+
+  it('ajuste y en x par les moindres carrés et mesure la corrélation linéaire', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        ...donneesMobiles,
+        D1: '=PENTE(B1:B5;A1:A5)',
+        D2: '=ORDONNEE.ORIGINE(B1:B5;A1:A5)',
+        D3: '=COEFFICIENT.CORRELATION(A1:A5;B1:B5)',
+        D4: '=ARRONDI(coefficient.correlation(A1:A5;B1:B5);6)',
+      }),
+    );
+    const lus = valeurs(resultats);
+
+    expect(lus.D1).toBeCloseTo(1.641, 12);
+    expect(lus.D2).toBeCloseTo(2.092, 12);
+    expect(lus.D3).toBeCloseTo(0.999045, 6);
+    expect(lus.D4).toBeCloseTo(0.999045, 12);
+  });
+
+  it('écarte une paire dès qu’un de ses membres est du texte ou vide', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: 'Rang',
+        A2: '0',
+        A3: '1',
+        A4: '2',
+        A5: '3',
+        B1: '12',
+        B2: '1',
+        B3: '3',
+        B4: 'absent',
+        B5: '7',
+        C1: '=PENTE(B1:B5;A1:A5)',
+        C2: '=ORDONNEE.ORIGINE(B1:B5;A1:A5)',
+      }),
+    );
+
+    expect(valeurs(resultats).C1).toBe(2);
+    expect(valeurs(resultats).C2).toBe(1);
+  });
+
+  it('refuse des séries de tailles différentes ou passées hors plage par #VALEUR!', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        ...donneesMobiles,
+        D1: '=PENTE(B1:B5;A1:A4)',
+        D2: '=PENTE(B1:B5)',
+        D3: '=PENTE(3;4)',
+      }),
+    );
+
+    expect(valeurs(resultats)).toMatchObject({
+      D1: VALEUR,
+      D2: VALEUR,
+      D3: VALEUR,
+    });
+  });
+
+  it('signale une série constante ou trop courte par #DIV/0!', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '5',
+        A2: '5',
+        B1: '1',
+        B2: '4',
+        C1: '=PENTE(B1:B2;A1:A2)',
+        C2: '=COEFFICIENT.CORRELATION(B1:B2;A1:A2)',
+        C3: '=PENTE(B1:B1;A1:A1)',
+      }),
+    );
+
+    expect(valeurs(resultats)).toMatchObject({ C1: DIV, C2: DIV, C3: DIV });
+  });
+
+  it('propage l’erreur d’une cellule appariée', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '1',
+        A2: '2',
+        B1: '=1/0',
+        B2: '3',
+        C1: '=COEFFICIENT.CORRELATION(A1:A2;B1:B2)',
+      }),
+    );
+
+    expect(valeurs(resultats).C1).toBe(DIV);
+  });
+
+  it('garde #NOM? pour un nom pointé inconnu', () => {
+    expect(evaluerExpression('LOI.INCONNUE(1)', {})).toEqual({
+      valeur: null,
+      erreur: NOM,
+    });
+  });
+});
+
 describe('evaluerCellule', () => {
   const grille = feuille({ A1: '4', A2: '=A1*2' });
 

@@ -97,7 +97,7 @@ const OPTIONS_PAR_DEFAUT: OptionsEvaluation = { budgetNoeuds: 20_000 };
 const MARQUE = '=';
 const MOTIF_NOMBRE = /^(?:\d+(?:[.,]\d*)?|[.,]\d+)/;
 const MOTIF_REFERENCE = /^(\$?)([A-Za-z]{1,3})(\$?)(\d{1,7})(?![A-Za-z\d])/;
-const MOTIF_NOM = /^[A-Za-z]+/;
+const MOTIF_NOM = /^[A-Za-z]+(?:\.[A-Za-z]+)*/;
 const MOTIF_ESPACE = /^\s+/;
 const MOTIF_NOMBRE_SAISI = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
 const COMPARAISONS = ['<=', '>=', '<>', '<', '>', '='] as const;
@@ -126,6 +126,13 @@ const FONCTIONS_STATISTIQUES: ReadonlySet<string> = new Set([
 ]);
 const NOM_CONDITION = 'SI';
 const NOM_QUARTILE = 'QUARTILE';
+const NOM_PENTE = 'PENTE';
+const NOM_CORRELATION = 'COEFFICIENT.CORRELATION';
+const FONCTIONS_BIVARIEES: ReadonlySet<string> = new Set([
+  NOM_PENTE,
+  'ORDONNEE.ORIGINE',
+  NOM_CORRELATION,
+]);
 const RANG_MAX_QUARTILE = 4;
 const ALPHABET = 26;
 const CODE_A = 'A'.charCodeAt(0);
@@ -504,6 +511,37 @@ function statistique(nom: string, valeurs: readonly number[]): number {
   }
 }
 
+function deuxSeries(
+  nom: string,
+  paires: readonly (readonly [number, number])[],
+): number {
+  if (paires.length < 2) {
+    return refuser(ERREUR_DIVISION);
+  }
+  const moyenne = (rang: 0 | 1): number =>
+    paires.reduce((cumul, paire) => cumul + paire[rang], 0) / paires.length;
+  const [moyenneGauche, moyenneDroite] = [moyenne(0), moyenne(1)];
+  let carresGauche = 0;
+  let carresDroite = 0;
+  let produits = 0;
+  for (const [gauche, droite] of paires) {
+    carresGauche += (gauche - moyenneGauche) ** 2;
+    carresDroite += (droite - moyenneDroite) ** 2;
+    produits += (gauche - moyenneGauche) * (droite - moyenneDroite);
+  }
+  if (nom === NOM_CORRELATION) {
+    const denominateur = Math.sqrt(carresGauche * carresDroite);
+    return denominateur === 0
+      ? refuser(ERREUR_DIVISION)
+      : produits / denominateur;
+  }
+  if (carresDroite === 0) {
+    return refuser(ERREUR_DIVISION);
+  }
+  const pente = produits / carresDroite;
+  return nom === NOM_PENTE ? pente : moyenneGauche - pente * moyenneDroite;
+}
+
 function fini(valeur: number): number {
   return Number.isFinite(valeur)
     ? sansZeroNegatif(valeur)
@@ -642,14 +680,14 @@ class Evaluation {
       : refuser(resultat.erreur ?? ERREUR_VALEUR);
   }
 
-  private valeursDeLaPlage(
+  private cellulesDeLaPlage(
     noeud: Extract<Noeud, { genre: 'plage' }>,
-    ignorees: ReadonlySet<Contenu['genre']> = TEXTE_IGNORE,
-  ): number[] {
+    ignorees: ReadonlySet<Contenu['genre']>,
+  ): (number | null)[] {
     const { debut, fin } = noeud;
     this.exigerDansLaGrille(debut);
     this.exigerDansLaGrille(fin);
-    const valeurs: number[] = [];
+    const cellules: (number | null)[] = [];
     for (
       let ligne = Math.min(debut.ligne, fin.ligne);
       ligne <= Math.max(debut.ligne, fin.ligne);
@@ -662,19 +700,52 @@ class Evaluation {
       ) {
         this.depenser();
         const nom = nomCellule(ligne, colonne);
-        if (!ignorees.has(lireContenu(this.contenus.get(nom) ?? '').genre)) {
-          valeurs.push(
-            this.valeurCellule({
-              ligne,
-              colonne,
-              ligneFixe: false,
-              colonneFixe: false,
-            }),
-          );
-        }
+        cellules.push(
+          ignorees.has(lireContenu(this.contenus.get(nom) ?? '').genre)
+            ? null
+            : this.valeurCellule({
+                ligne,
+                colonne,
+                ligneFixe: false,
+                colonneFixe: false,
+              }),
+        );
       }
     }
-    return valeurs;
+    return cellules;
+  }
+
+  private valeursDeLaPlage(
+    noeud: Extract<Noeud, { genre: 'plage' }>,
+    ignorees: ReadonlySet<Contenu['genre']> = TEXTE_IGNORE,
+  ): number[] {
+    return this.cellulesDeLaPlage(noeud, ignorees).filter(
+      (valeur): valeur is number => valeur !== null,
+    );
+  }
+
+  private bivariee(nom: string, parametres: readonly Noeud[]): number {
+    const [premiere, seconde] = parametres;
+    if (
+      parametres.length !== 2 ||
+      premiere.genre !== 'plage' ||
+      seconde.genre !== 'plage'
+    ) {
+      return refuser(ERREUR_VALEUR);
+    }
+    const gauche = this.cellulesDeLaPlage(premiere, TEXTE_ET_VIDES_IGNORES);
+    const droite = this.cellulesDeLaPlage(seconde, TEXTE_ET_VIDES_IGNORES);
+    if (gauche.length !== droite.length) {
+      return refuser(ERREUR_VALEUR);
+    }
+    const paires: [number, number][] = [];
+    gauche.forEach((valeur, rang) => {
+      const associee = droite[rang];
+      if (valeur !== null && associee !== null) {
+        paires.push([valeur, associee]);
+      }
+    });
+    return deuxSeries(nom, paires);
   }
 
   private etendre(noeud: Noeud): number[] {
@@ -751,6 +822,9 @@ class Evaluation {
     }
     if (noeud.nom === NOM_QUARTILE) {
       return this.quartile(noeud.arguments);
+    }
+    if (FONCTIONS_BIVARIEES.has(noeud.nom)) {
+      return this.bivariee(noeud.nom, noeud.arguments);
     }
     return refuser(ERREUR_NOM);
   }
