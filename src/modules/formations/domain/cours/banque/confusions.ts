@@ -274,6 +274,41 @@ export const CONFUSIONS = {
     libelle:
       'Lire la hauteur d’un histogramme à classes d’amplitudes inégales comme un effectif, au lieu d’une densité.',
   },
+  'point-moyen-confondu': {
+    concept: 'nuage-de-points',
+    libelle:
+      'Prendre pour point moyen le point du milieu du tableau au lieu du point de coordonnées (x̄ ; ȳ).',
+  },
+  'correlation-lue-comme-pente': {
+    concept: 'correlation',
+    libelle:
+      'Lire le coefficient de corrélation comme la pente de la droite d’ajustement.',
+  },
+  'correlation-jugee-au-signe': {
+    concept: 'correlation',
+    libelle:
+      'Juger la qualité d’un ajustement au signe du coefficient de corrélation au lieu de sa proximité avec 1 ou −1.',
+  },
+  'pente-ordonnee-inversees': {
+    concept: 'ajustement-affine',
+    libelle:
+      'Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine.',
+  },
+  'rang-pris-pour-annee': {
+    concept: 'prevision',
+    libelle:
+      'Remplacer x par l’année au lieu de son rang dans l’équation de la droite.',
+  },
+  'extrapolation-sans-reserve': {
+    concept: 'prevision',
+    libelle:
+      'Prolonger une tendance loin des données observées sans signaler la limite de la prévision.',
+  },
+  'seuil-mal-arrondi': {
+    concept: 'prevision',
+    libelle:
+      'Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export type ConfusionId = keyof typeof CONFUSIONS;

@@ -1,613 +1,454 @@
-# B2-02 · Résumer une série sans la trahir — conception de référence
+# B2-02 · Séries statistiques : résumer, relier, prévoir — conception de référence (gabarit v3)
 
-> Cahier des charges de référence du cours B2-02 : statistique descriptive à une variable, au niveau
-> du B2-01 et sur le même moteur de cours (mêmes briques, mêmes règles de structure, même garde de
-> confidentialité, même contrat commun des cours servis). Le fil rouge « Atelier Rivage » continue :
-> après le comité du B2-01, la banque demande des chiffres. Ce document ne contient aucun code
-> exécutable ; toute divergence d’implémentation est un défaut de l’implémentation, pas une liberté.
-> Les tests `b2-02.cours.spec.ts` relisent ce document : § 3.1, titres publics du § 3, § 5.9, § 8.2.
+> Cahier des charges du cours B2-02 au gabarit v3 (`docs/cours-gabarit-v3.md`) : une séance de
+> 3 h 30 dont 30 minutes de pause, trois notions traitées chacune par un cycle réfléchir → comprendre
+> → s'exercer, puis une mini-situation CCF. Il remplace la conception v1 (« Résumer une série sans la
+> trahir », 62 écrans, 204 minutes), dont le contenu versionné reste lisible en base pour les séances
+> clôturées. Ce document ne contient aucun code exécutable ; toute divergence d'implémentation est un
+> défaut de l'implémentation. Les tests `b2-02.cours.spec.ts` relisent ce document : § 3.1, titres
+> publics du § 3, § 5.9, § 8.2.
 
-| Rubrique    | Valeur                                                                                                                                        |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Date        | 27 septembre 2026                                                                                                                             |
-| Statut      | **Référence pédagogique** : deuxième cours de la progression BTS CG 2 (B2-01 → B2-12)                                                         |
-| Cours       | `b2-02-serie-statistique-une-variable`, contenu unique du cours (`b2-02.cours.ts`), publié au démarrage de l’API dès que son empreinte change |
-| Titre servi | « Résumer une série sans la trahir »                                                                                                          |
-| Durée       | **204 minutes exactes** (somme des écrans), 6 actes de 33, 34, 31, 33, 47 et 26 minutes, plus une pause de 15 minutes hors durée              |
-| Écrans      | **62**, dont 8 écrans catalogue                                                                                                               |
-| Sources     | `docs/donnees-b2-02-sources.md` (espace de travail) : Insee, Banque de France, DVF, Légifrance, référentiel BTS CG                            |
+| Rubrique    | Valeur                                                                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| Date        | 28 septembre 2026                                                                                                   |
+| Statut      | **Référence pédagogique** : deuxième cours du plan v3 (`docs/cours-bts-cg2-plan-v3.md`), premier au gabarit v3      |
+| Cours       | `b2-02-series-statistiques` (ancien slug `b2-02-serie-statistique-une-variable`, redirigé en 301 côté front)        |
+| Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`                   |
+| Titre servi | « Séries statistiques : résumer, relier, prévoir »                                                                  |
+| Durée       | **180 minutes exactes** (somme des écrans), 4 actes de 44, 47, 41 et 48 minutes, plus 2 pauses de 15 min hors durée |
+| Écrans      | **38**, dont 8 écrans catalogue                                                                                     |
+| Sources     | `docs/donnees-b2-02-sources.md` (espace de travail) : Arcep (série fibre), données Atelier Rivage fictives          |
 
 ---
 
 ## 0. Synthèse des décisions
 
-- **Une question de gestion, pas un chapitre** : « Quel délai de paiement annoncer à la banque, et avec
-  quelle régularité ? ». Chaque notion (médiane, quartiles, écart-type, boîte, classes) arrive parce
-  qu’elle répond à une question que la précédente laisse ouverte.
-- **Une série unique, vingt factures**, avec une valeur extrême réelle et contestée (F105, 146 jours) :
-  elle rend visibles, sans artifice, l’écart moyenne/médiane, la fragilité de l’étendue et la
-  résistance des quartiles.
-- **Deux conventions de quartile assumées** : la convention du cours (rang ⌈n ÷ 4⌉ et ⌈3n ÷ 4⌉, une
-  valeur de la série) et celle du tableur (`QUARTILE`, interpolée). La feuille A4-02 les confronte ;
-  la confusion `convention-de-quartile-ignoree` la mesure.
-- **Écart-type population d’abord** (`ECARTYPEP`, division par n) : c’est la définition du
-  programme ; `ECARTYPE` (n − 1) n’apparaît que pour un échantillon explicite.
-- **Données réelles pour transférer** : salaires du privé (Insee), délais fournisseurs (Banque de
-  France), prix des locaux (DVF), patrimoine (Insee). Les nombres publiés restent ceux des sources.
-- **Même moteur que le B2-01** : aucune brique nouvelle ; le rendu `boxplot` et les confusions du
-  B2-02 existaient déjà dans le moteur. Le cours est ajouté à `CONTENUS` et passe le contrat commun.
+- **Une question de gestion en deux temps** : la banque d'Atelier Rivage demande le délai de paiement
+  typique des clients professionnels et sa régularité, puis une prévision du chiffre d'affaires 2028
+  pour dimensionner une facilité de caisse. La première partie se règle avec une variable, la seconde
+  demande deux variables.
+- **Une variable en reprise théorique** : les vingt délais du trimestre (dont la facture contestée de
+  146 jours) servent à revoir centre, écart et choix du résumé en un seul cycle, sans boîte à
+  moustaches ni classes, jamais évaluées seules au CCF.
+- **Deux variables comme cœur du cours** : nuage, point moyen, coefficient de corrélation,
+  corrélation ≠ causalité, droite des moindres carrés, interpolation, extrapolation, seuil.
+- **Une série réelle pour la mini-situation** : abonnements à la fibre optique en France, fin 2020 à
+  fin 2024 (Arcep). La valeur réelle de fin 2025, publiée depuis, permet de juger la prévision du
+  modèle : elle la surestime, parce que la croissance ralentit.
+- **Cinq fonctions de tableur** au plus : `MOYENNE`, `MEDIANE`, `ECARTYPEP` (rappel),
+  `COEFFICIENT.CORRELATION`, `PENTE`, `ORDONNEE.ORIGINE` ; `MEDIANE` et `ECARTYPEP` sont des rappels de
+  la v1, seules les trois dernières sont nouvelles.
+- **Fil rouge « Atelier Rivage » conservé** : la question à deux variables s'y prête (six années de
+  chiffre d'affaires, rang de l'année en abscisse), comme le modèle 2024 Ex. 2 A (bénéfice, ajustement,
+  année du seuil).
 
-## 1. Objectifs d’apprentissage et public
+## 1. Objectifs d'apprentissage et public
 
 ### 1.1 Rattachement au programme officiel
 
-Module **« Statistique descriptive »** du programme de mathématiques du BTS Comptabilité et gestion
-(arrêté du 4 juin 2013, annexes I et II ; épreuve **E3 – Mathématiques appliquées** depuis l’arrêté
-du 8 juillet 2024). Capacités visées : exploiter une série statistique à une variable ; déterminer
-et interpréter les paramètres de position (moyenne, médiane, quartiles) et de dispersion (étendue,
-écart interquartile, écart-type) ; représenter une série (diagramme en boîte, histogramme) ; utiliser
-le tableur pour calculer ces paramètres. La variance n’est qu’un intermédiaire de calcul.
+Module « Statistique descriptive » du BTS CG : série statistique à une variable (reprise), série
+statistique à deux variables, nuage de points, point moyen, ajustement affine par la méthode des
+moindres carrés, coefficient de corrélation linéaire, interpolation et extrapolation. Capacités :
+utiliser la calculatrice ou le tableur pour obtenir les paramètres, interpréter un coefficient de
+corrélation, prévoir et discuter la pertinence d'une prévision (`docs/programme-bts-cg-maths-officiel.md`).
 
-### 1.2 Objectifs du cours B2-02
+### 1.2 Objectifs du cours
 
-À la fin de la séance, l’étudiant sait :
+À la fin de la séance, l'étudiant sait :
 
-1. décrire une série : population, individu, caractère, effectif, effectif cumulé, unité, période ;
-2. calculer une moyenne (avec effectifs), une médiane (effectif pair ou impair), des quartiles selon
-   la convention du cours ;
-3. mesurer la dispersion : étendue, écart interquartile, écart-type de la population, et dire quand
-   diviser par n − 1 ;
-4. lire et comparer des boîtes à moustaches, en vérifiant où s’arrêtent les moustaches ;
-5. calculer avec des classes : centres, effectifs cumulés, classe médiane, densité d’un histogramme ;
-6. choisir le résumé à publier quand une valeur extrême tire la série, et l’écrire pour un tiers.
+1. résumer une série par un centre et un écart adaptés, en signalant une valeur extrême ;
+2. représenter une série à deux variables, placer le point moyen et interpréter r ;
+3. distinguer corrélation et causalité ;
+4. obtenir au tableur la droite des moindres carrés et l'utiliser pour interpoler, extrapoler et
+   trouver l'année d'un seuil, en rédigeant la limite de la prévision.
 
 ### 1.3 Public et conditions
 
-BTS CG 2, groupe de 24 à 35 étudiants, un poste par étudiant, calculatrice et tableur autorisés.
-Prérequis : B2-01 (proportions, taux, lecture critique d’un chiffre). Séance de 3 h 30 avec une
-pause de 15 minutes après le jalon 3.
+BTS CG 2e année, 25 étudiants au plus, calculatrice autorisée, un poste par étudiant ou le livret
+papier. Séance de 3 h 30 : 180 minutes de travail, pause de 15 minutes après l'acte 1 et après
+l'acte 3.
 
 ## 2. Architecture
 
-### 2.1 Les six actes
+### 2.1 Les quatre actes
 
-| Acte | Question                                          | Minutes | Notions                                        |
-| ---- | ------------------------------------------------- | ------: | ---------------------------------------------- |
-| A1   | Que regarde-t-on, et combien de nombres faut-il ? |      33 | série, vocabulaire, fiche d’identité           |
-| A2   | Moyenne ou médiane ?                              |      34 | moyenne, médiane, valeur extrême, choix        |
-| A3   | Les délais sont-ils réguliers ?                   |      31 | étendue, quartiles, EIQ, écart-type            |
-| A4   | Le tableur et la boîte disent-ils la même chose ? |      33 | fonctions du tableur, boîte à moustaches       |
-| A5   | Que faire quand les valeurs sont en classes ?     |      47 | effectifs cumulés, centres, densité, choix     |
-| A6   | Saurez-vous le refaire seul·e ?                   |      26 | transfert, IA, rappel espacé, billet de sortie |
+| Acte | Rôle                              | Notion | Minutes |
+| ---- | --------------------------------- | ------ | ------: |
+| 1    | Ouverture, puis résumer une série | N1     |      44 |
+| 2    | Relier deux variables             | N2     |      47 |
+| 3    | Prévoir avec une droite           | N3     |      41 |
+| 4    | Mini-situation CCF et clôture     | —      |      48 |
 
-### 2.2 Le fil rouge « Atelier Rivage »
+Pause 1 (15 min) après le jalon A1-09 ; pause 2 (15 min) après le jalon A3-06. Les pauses ne sont
+pas des écrans : le formateur les annonce, la durée programmée n'en tient pas compte.
 
-Lundi 11 janvier 2027. Les vingt factures professionnelles émises au 2e trimestre 2026 sont toutes
-encaissées au 31 décembre 2026. La chargée d’affaires demande « le délai de paiement de vos clients
-professionnels et sa régularité » pour dimensionner une facilité de caisse. Samir a préparé une
-diapositive : « 48 jours en moyenne, nous sommes dans les clous » (plafond de 60 jours, Code de
-commerce, art. L441-10). Hélène Garnier, la dirigeante, veut une vérification avant envoi.
+### 2.2 Le cycle d'une notion
+
+Chaque notion suit : **Réfléchir** (écran interactif de réflexion : `reflection`, `fp-pro` ou vote
+non noté) → **Comprendre** (trace écrite, rendu v2 `lesson`, 6 minutes au plus, puis exemple guidé
+`fp-worked` et son corrigé) → **S'exercer** (exercices notés, chacun suivi de son écran de
+correction). Chaque exercice annonce ses temps dans les notes formateur, sous la forme
+`• Temps : réflexion N min · travail N min`, dont la somme est la durée de l'écran ; la correction
+est l'écran suivant.
 
 ### 2.3 Règles de structure
 
-Le cours passe `verifierStructure` sans dérogation : premier écran `fp-recall`, dernier `fp-exit`,
-durée = somme des écrans, exposition continue ≤ 6 min (4 min au plus ici), ratio interactif ≥ 0,3
-(151 min interactives pour 53 d’exposition), temps notés ≤ 15 min et suites ≥ 8 min, renvois vers
-l’amont, corrections après leur source, confidentialité (§ 6).
+Le cours passe les seize règles communes et les quatre règles du gabarit v3 : 38 écrans ≤ 40,
+180 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un exercice, chaque
+exercice avec ses temps et sa correction, mini-situation (`fp-escape`) sans trace écrite après elle.
+Exposition continue de 6 minutes au plus.
 
 ### 2.4 Diffusion
 
-Huit écrans catalogue, sans réponse : accroche, plan, factures, fiche d’identité, diapositive de
-Samir, Quetelet, Galton, boîte à outils. Tous les autres sont servis en séance et verrouillés au
-catalogue.
+Catalogue : l'accroche, les deux tableaux de données, le nuage d'Atelier Rivage, les trois traces
+écrites et la fiche mémo. Tout le reste est servi en séance.
 
 ## 3. Déroulé écran par écran
 
-### 3.1 Vue d’ensemble
+### 3.1 Vue d'ensemble
 
 Identifiants : `B2-02-A{acte}-{rang}-{SLUG}`, conformes à `^B2-02-A[1-6]-\d{2}-[A-Z0-9-]+$`.
 Colonne « Brique · rendu » : valeur de la colonne `brique` ; les écrans « v2 » sont stockés en
 `fp-story` avec une présentation v2. « I » = interactif. « Q » = questions fermées notées (vote,
-numérique, classement) portées par l’écran.
+numérique, classement) portées par l'écran.
 
-| Rang | Identifiant                       | Min | Brique · rendu                  |  I  |   Q | Diffusion |
-| ---: | --------------------------------- | --: | ------------------------------- | :-: | --: | --------- |
-|    1 | B2-02-A1-01-DIAGNOSTIC            |   3 | `fp-recall`                     |  I  |   1 | seance    |
-|    2 | B2-02-A1-02-ACCROCHE              |   1 | `fp-story` · v2 `hero`          |     |   0 | catalogue |
-|    3 | B2-02-A1-03-MISSION               |   4 | `fp-pro`                        |  I  |   0 | seance    |
-|    4 | B2-02-A1-04-PLAN                  |   1 | `fp-story` · v2 `method-path`   |     |   0 | catalogue |
-|    5 | B2-02-A1-05-FACTURES              |   2 | `fp-story` · v2 `table`         |     |   0 | catalogue |
-|    6 | B2-02-A1-06-VOCABULAIRE           |   8 | `fp-cardsort`                   |  I  |   1 | seance    |
-|    7 | B2-02-A1-06-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    |
-|    8 | B2-02-A1-07-FICHE-SERIE           |   3 | `fp-story` · v2 `grid`          |     |   0 | catalogue |
-|    9 | B2-02-A1-08-QUESTION-DE-LA-BANQUE |   3 | `fp-story` · v2 `reflection`    |  I  |   0 | seance    |
-|   10 | B2-02-A1-09-DIAPOSITIVE           |   2 | `fp-story` · v2 `stats`         |     |   0 | catalogue |
-|   11 | B2-02-A1-10-AUDIT-DIAPOSITIVE     |   3 | `fp-challenge`                  |  I  |   0 | seance    |
-|   12 | B2-02-A1-10-CORRECTION            |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   13 | B2-02-A1-11-JALON-1               |   1 | `fp-pulse`                      |     |   0 | seance    |
-|   14 | B2-02-A2-01-QUETELET              |   2 | `fp-story` · v2 `image-left`    |     |   0 | catalogue |
-|   15 | B2-02-A2-02-DEUX-CENTRES          |   4 | `fp-worked`                     |  I  |   0 | seance    |
-|   16 | B2-02-A2-02-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    |
-|   17 | B2-02-A2-03-ATELIER-1             |   6 | `questionnaire`                 |  I  |   3 | seance    |
-|   18 | B2-02-A2-03-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   19 | B2-02-A2-03-ATELIER-1-SUITE       |   6 | `questionnaire`                 |  I  |   3 | seance    |
-|   20 | B2-02-A2-03-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   21 | B2-02-A2-04-FACTURE-LITIGE        |   2 | `fp-concept4`                   |     |   0 | seance    |
-|   22 | B2-02-A2-05-MOYENNE-OU-MEDIANE    |   8 | `fp-cardsort`                   |  I  |   1 | seance    |
-|   23 | B2-02-A2-05-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    |
-|   24 | B2-02-A2-06-JALON-2               |   1 | `fp-pulse`                      |     |   0 | seance    |
-|   25 | B2-02-A3-01-VOTE-SEGMENTS         |   8 | `fp-vote`                       |  I  |   2 | seance    |
-|   26 | B2-02-A3-02-DISPERSION            |   4 | `fp-worked`                     |  I  |   0 | seance    |
-|   27 | B2-02-A3-02-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    |
-|   28 | B2-02-A3-03-DEUX-ECARTS-TYPES     |   2 | `fp-story` · v2 `comparison`    |     |   0 | seance    |
-|   29 | B2-02-A3-04-ATELIER-2             |   6 | `questionnaire`                 |  I  |   3 | seance    |
-|   30 | B2-02-A3-04-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   31 | B2-02-A3-04-ATELIER-2-SUITE       |   6 | `questionnaire`                 |  I  |   2 | seance    |
-|   32 | B2-02-A3-04-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   33 | B2-02-A3-05-JALON-3               |   1 | `fp-pulse`                      |     |   0 | seance    |
-|   34 | B2-02-A4-01-GALTON                |   2 | `fp-story` · v2 `image-left`    |     |   0 | catalogue |
-|   35 | B2-02-A4-02-FEUILLE-DELAIS        |  15 | `fp-sheet`                      |  I  |   0 | seance    |
-|   36 | B2-02-A4-03-BOITE-DELAIS          |   2 | `fp-story` · v2 `boxplot`       |     |   0 | seance    |
-|   37 | B2-02-A4-04-BDF                   |   2 | `fp-story` · v2 `boxplot`       |     |   0 | seance    |
-|   38 | B2-02-A4-05-ATELIER-3             |   7 | `questionnaire`                 |  I  |   3 | seance    |
-|   39 | B2-02-A4-05-CORRECTION            |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   40 | B2-02-A4-06-LECTURE               |   3 | `fp-story` · v2 `reflection`    |  I  |   0 | seance    |
-|   41 | B2-02-A4-07-JALON-4               |   1 | `fp-pulse`                      |     |   0 | seance    |
-|   42 | B2-02-A5-01-HISTOGRAMME           |   2 | `fp-story` · v2 `chart`         |     |   0 | seance    |
-|   43 | B2-02-A5-02-CLASSES               |   4 | `fp-worked`                     |  I  |   0 | seance    |
-|   44 | B2-02-A5-02-CORRECTION            |   2 | `fp-worked` (piloté)            |     |   0 | seance    |
-|   45 | B2-02-A5-03-EFFECTIFS-CUMULES     |   8 | `fp-table-build`                |  I  |   0 | seance    |
-|   46 | B2-02-A5-03-CORRECTION            |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   47 | B2-02-A5-04-ATELIER-4             |   6 | `questionnaire`                 |  I  |   3 | seance    |
-|   48 | B2-02-A5-04-CORRECTION-1          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   49 | B2-02-A5-04-ATELIER-4-SUITE       |   6 | `questionnaire`                 |  I  |   2 | seance    |
-|   50 | B2-02-A5-04-CORRECTION-2          |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   51 | B2-02-A5-05-QUEL-GRAPHIQUE        |   8 | `fp-cardsort`                   |  I  |   1 | seance    |
-|   52 | B2-02-A5-05-CORRECTION            |   1 | `fp-story` · v2 `sort-review`   |     |   0 | seance    |
-|   53 | B2-02-A5-06-DOSSIER-BANQUE        |   2 | `fp-story` · v2 `table`         |     |   0 | seance    |
-|   54 | B2-02-A5-07-NOTE-BANQUE           |   4 | `fp-challenge`                  |  I  |   0 | seance    |
-|   55 | B2-02-A5-08-JALON-5               |   1 | `fp-pulse`                      |     |   0 | seance    |
-|   56 | B2-02-A6-01-COFFRE                |  10 | `fp-escape`                     |  I  |   0 | seance    |
-|   57 | B2-02-A6-01-CORRECTION            |   1 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
-|   58 | B2-02-A6-02-IA-ERREUR             |   4 | `fp-challenge`                  |  I  |   0 | seance    |
-|   59 | B2-02-A6-03-RAPPEL                |   4 | `fp-spaced`                     |  I  |   0 | seance    |
-|   60 | B2-02-A6-04-FICHE-MEMO            |   2 | `fp-story` · v2 `grid`          |     |   0 | seance    |
-|   61 | B2-02-A6-05-BOITE-A-OUTILS        |   2 | `fp-story` · v2 `grid`          |     |   0 | catalogue |
-|   62 | B2-02-A6-06-BILLET-DE-SORTIE      |   3 | `fp-exit`                       |  I  |   1 | seance    |
+| Rang | Identifiant                    | Min | Brique · rendu                  |  I  |   Q | Diffusion |
+| ---: | ------------------------------ | --: | ------------------------------- | :-: | --: | --------- |
+|    1 | B2-02-A1-01-DIAGNOSTIC         |   4 | `fp-recall`                     |  I  |   1 | seance    |
+|    2 | B2-02-A1-02-ACCROCHE           |   1 | `fp-story` · v2 `hero`          |     |   0 | catalogue |
+|    3 | B2-02-A1-03-MISSION            |   5 | `fp-pro`                        |  I  |   0 | seance    |
+|    4 | B2-02-A1-04-FACTURES           |   2 | `fp-story` · v2 `table`         |     |   0 | catalogue |
+|    5 | B2-02-A1-05-UN-SEUL-NOMBRE     |   5 | `fp-story` · v2 `reflection`    |  I  |   0 | seance    |
+|    6 | B2-02-A1-06-COURS-RESUMER      |   6 | `fp-story` · v2 `lesson`        |     |   0 | catalogue |
+|    7 | B2-02-A1-07-EXEMPLE-RESUME     |   6 | `fp-worked`                     |  I  |   0 | seance    |
+|    8 | B2-02-A1-07-CORRECTION         |   2 | `fp-worked`                     |     |   0 | seance    |
+|    9 | B2-02-A1-08-ATELIER-RESUME     |  10 | `questionnaire`                 |  I  |   4 | seance    |
+|   10 | B2-02-A1-08-CORRECTION         |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
+|   11 | B2-02-A1-09-JALON              |   1 | `fp-pulse`                      |     |   0 | seance    |
+|   12 | B2-02-A2-01-NUAGE-RIVAGE       |   2 | `fp-story` · v2 `scatter`       |     |   0 | catalogue |
+|   13 | B2-02-A2-02-VOTE-CORRELATION   |   8 | `fp-vote`                       |  I  |   0 | seance    |
+|   14 | B2-02-A2-03-COURS-NUAGE        |   6 | `fp-story` · v2 `lesson`        |     |   0 | catalogue |
+|   15 | B2-02-A2-04-EXEMPLE-NUAGE      |   5 | `fp-worked`                     |  I  |   0 | seance    |
+|   16 | B2-02-A2-04-CORRECTION         |   2 | `fp-worked`                     |     |   0 | seance    |
+|   17 | B2-02-A2-05-ATELIER-NUAGE      |   9 | `questionnaire`                 |  I  |   4 | seance    |
+|   18 | B2-02-A2-05-CORRECTION         |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
+|   19 | B2-02-A2-06-ECARTS-POINT-MOYEN |  10 | `fp-table-build`                |  I  |   0 | seance    |
+|   20 | B2-02-A2-06-CORRECTION         |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
+|   21 | B2-02-A2-07-JALON              |   1 | `fp-pulse`                      |     |   0 | seance    |
+|   22 | B2-02-A3-01-JUSQU-OU           |   5 | `fp-story` · v2 `reflection`    |  I  |   0 | seance    |
+|   23 | B2-02-A3-02-COURS-DROITE       |   6 | `fp-story` · v2 `lesson`        |     |   0 | catalogue |
+|   24 | B2-02-A3-03-EXEMPLE-DROITE     |   6 | `fp-worked`                     |  I  |   0 | seance    |
+|   25 | B2-02-A3-03-CORRECTION         |   2 | `fp-worked`                     |     |   0 | seance    |
+|   26 | B2-02-A3-04-ATELIER-DROITE     |   9 | `questionnaire`                 |  I  |   4 | seance    |
+|   27 | B2-02-A3-04-CORRECTION         |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
+|   28 | B2-02-A3-05-DEFI-IA            |   8 | `fp-challenge`                  |  I  |   0 | seance    |
+|   29 | B2-02-A3-05-CORRECTION         |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
+|   30 | B2-02-A3-06-JALON              |   1 | `fp-pulse`                      |     |   0 | seance    |
+|   31 | B2-02-A4-01-SITUATION-FIBRE    |   3 | `fp-story` · v2 `table`         |     |   0 | catalogue |
+|   32 | B2-02-A4-02-TABLEUR-FIBRE      |  15 | `fp-sheet`                      |  I  |   0 | seance    |
+|   33 | B2-02-A4-02-CORRECTION         |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
+|   34 | B2-02-A4-03-COFFRE-FIBRE       |  14 | `fp-escape`                     |  I  |   0 | seance    |
+|   35 | B2-02-A4-03-CORRECTION         |   2 | `fp-story` · v2 `answer-review` |     |   0 | seance    |
+|   36 | B2-02-A4-04-RAPPEL             |   6 | `fp-spaced`                     |  I  |   0 | seance    |
+|   37 | B2-02-A4-05-FICHE-MEMO         |   2 | `fp-story` · v2 `grid`          |     |   0 | catalogue |
+|   38 | B2-02-A4-06-BILLET-DE-SORTIE   |   4 | `fp-exit`                       |  I  |   1 | seance    |
 
-Questions : 28 notées (13 votes, 10 numériques, 3 classements, 1 feuille, 1 tableau), 4 énigmes,
-13 rappels. Temps notés : A1-06, A2-03 (×2), A2-05, A3-01, A3-04 (×2), A4-05, A5-04 (×2), A5-05.
+Rythme : 129 minutes interactives, 51 d'exposition, exposition continue de 6 minutes au plus.
 
-### 3.2 Acte 1 — Décrire la série (33 min)
+### 3.2 Acte 1 — Ouverture, puis résumer une série (44 min)
 
-#### A1-01 · `B2-02-A1-01-DIAGNOSTIC` — 3 min · `fp-recall` · séance
+#### A1-01 · `B2-02-A1-01-DIAGNOSTIC` — 4 min · `fp-recall` · séance
 
 - Titre public : « Diagnostic : le délai du milieu »
 - Énoncé (`b2-02-a1-diagnostic`) : cinq délais 35, 20, 140, 25 et 30 jours ; quel délai partage les
   clients en deux groupes de même effectif ? Bonne réponse « 30 jours ». Pièges : « 50 jours »
-  (`moyenne-lue-comme-mediane`), « 140 jours » (`mediane-sans-tri`). Sans délai d’écriture.
+  (`moyenne-lue-comme-mediane`), « 140 jours » (`mediane-sans-tri`).
+- Papier : question du livret, réponse entourée, vote à main levée.
 
 #### A1-02 · `B2-02-A1-02-ACCROCHE` — 1 min · v2 `hero` · catalogue
 
-- Titre public : « Résumer une série sans la trahir »
-- Situation d’Atelier Rivage et demande de la banque ; aucun nombre de la série.
+- Titre public : « Résumer, relier, prévoir »
+- Atelier Rivage et le dossier de la banque ; plan en trois notions et une mini-situation.
 
-#### A1-03 · `B2-02-A1-03-MISSION` — 4 min · `fp-pro` · séance
+#### A1-03 · `B2-02-A1-03-MISSION` — 5 min · `fp-pro` · séance
 
-- Titre public : « Votre mission : répondre à la banque »
-- Trois questions libres : que mesure-t-on, un seul nombre suffit-il, que vérifier avant d’envoyer.
+- Titre public : « Votre mission : le dossier de la banque »
+- Hélène Garnier transmet la demande de la banque : délai de paiement typique et régularité, puis
+  prévision du chiffre d'affaires 2028. Trois questions libres : que mesure-t-on, combien de nombres,
+  que faut-il vérifier avant une prévision.
+- Papier : trois lignes d'écriture dans le livret.
 
-#### A1-04 · `B2-02-A1-04-PLAN` — 1 min · v2 `method-path` · catalogue
+#### A1-04 · `B2-02-A1-04-FACTURES` — 2 min · v2 `table` · catalogue
 
-- Titre public : « Le plan de la séance »
-- Six étapes, une par acte, question → preuve → résultat.
+- Titre public : « Les vingt délais de paiement du trimestre »
+- Les vingt factures F101 à F120 et leur délai, F105 contestée (146 jours).
 
-#### A1-05 · `B2-02-A1-05-FACTURES` — 2 min · v2 `table` · catalogue
+#### A1-05 · `B2-02-A1-05-UN-SEUL-NOMBRE` — 5 min · v2 `reflection` · séance
 
-- Titre public : « Les vingt factures du 2e trimestre 2026 »
-- Tableau F101 à F120, type de client, délai ; F105 signalée « facture contestée ». Données § 4.1.
+- Titre public : « Réfléchir : un seul nombre suffit-il ? »
+- Réflexion écrite : quel nombre annoncer à la banque, et que cache-t-il ? Temps « réfléchir » de N1.
+- Papier : cadre de réponse du livret.
 
-#### A1-06 · `B2-02-A1-06-VOCABULAIRE` — 8 min · `fp-cardsort` · séance
+#### A1-06 · `B2-02-A1-06-COURS-RESUMER` — 6 min · v2 `lesson` · catalogue
 
-- Titre public : « Que désigne chaque élément du fichier ? »
-- Six catégories (population, individu, caractère, valeur, effectif, effectif cumulé), huit cartes.
-  Confusions : `role-statistique-confondu`, `effectif-cumule-confondu`. Renvoi A1-05.
+- Titre public : « Cours : résumer une série par un centre et un écart »
+- Quatre blocs : moyenne et médiane (définition, méthode du tri) ; mesurer l'écart (étendue, écart
+  interquartile, écart-type) ; une valeur extrême (propriété) ; rédiger au CCF (tableur, unité,
+  variance en unité²).
 
-#### A1-06 · `B2-02-A1-06-CORRECTION` — 1 min · v2 `sort-review` · séance
+#### A1-07 · `B2-02-A1-07-EXEMPLE-RESUME` — 6 min · `fp-worked` · séance
 
-- Titre public : « Correction : les mots de la statistique »
+- Titre public : « Exemple guidé : huit factures de septembre »
+- Huit délais 28, 41, 35, 90, 33, 39, 44, 30 : moyenne 42,5, tri, médiane 37, effet de la facture de
+  90 jours, écart-type ≈ 18,66 jours, choix du résumé.
+- Papier : réponses sous chaque étape du livret.
 
-#### A1-07 · `B2-02-A1-07-FICHE-SERIE` — 3 min · v2 `grid` · catalogue
+#### A1-07 · `B2-02-A1-07-CORRECTION` — 2 min · `fp-worked` · séance
 
-- Titre public : « La fiche d’identité d’une série »
-- Six cartes : population, caractère, effectif, unité, période, source. Aucun nombre de la série.
+- Titre public : « Correction : huit factures de septembre »
 
-#### A1-08 · `B2-02-A1-08-QUESTION-DE-LA-BANQUE` — 3 min · v2 `reflection` · séance
+#### A1-08 · `B2-02-A1-08-ATELIER-RESUME` — 10 min · `questionnaire` · séance
 
-- Titre public : « La question de la banque, en statistique »
-- Réécrire la demande en population, caractère, période et deux mesures (un centre, un écart).
-  Renvoi A1-03, cadré sur la situation.
+- Titre public : « Exercice 1 — Le centre et l’écart des vingt délais »
+- Temps : réflexion 2 min · travail 8 min.
+- `b2-02-a1-mediane` : 43 jours ; pièges 39,5 (`mediane-sans-tri`), 42 (`mediane-rang-pair`), 47,75
+  (`moyenne-lue-comme-mediane`).
+- `b2-02-a1-moyenne` : 47,75 jours ; pièges 42,58 (`valeur-extreme-supprimee`), 43
+  (`moyenne-lue-comme-mediane`).
+- `b2-02-a1-ecart-type` : 26,2 jours ; pièges 26,88 (`ecart-type-population-echantillon`), 686,49
+  (`variance-confondue-avec-ecart-type`).
+- `b2-02-a1-resume` (vote) : garder la facture contestée, la signaler, publier la médiane avec la
+  moyenne et un écart ; pièges `valeur-extreme-ignoree`, `valeur-extreme-supprimee`.
+- Papier : exercice 1 du livret.
 
-#### A1-09 · `B2-02-A1-09-DIAPOSITIVE` — 2 min · v2 `stats` · catalogue
+#### A1-08 · `B2-02-A1-08-CORRECTION` — 2 min · v2 `answer-review` · séance
 
-- Titre public : « La diapositive de Samir pour la banque »
-- « 48 jours », « 60 jours » (L441-10), « dans les clous ». La moyenne exacte n’est jamais écrite.
+- Titre public : « Correction de l’exercice 1 »
 
-#### A1-10 · `B2-02-A1-10-AUDIT-DIAPOSITIVE` — 3 min · `fp-challenge` · séance
+#### A1-09 · `B2-02-A1-09-JALON` — 1 min · `fp-pulse` · séance
 
-- Titre public : « Audit de la diapositive »
-- Stratégies : extrême, milieu, écart, plafond ; piste fausse : retirer la facture contestée.
+- Titre public : « Jalon 1 : résumer une série »
+- Puis pause de 15 minutes.
 
-#### A1-10 · `B2-02-A1-10-CORRECTION` — 1 min · v2 `answer-review` · séance
+### 3.3 Acte 2 — Relier deux variables (47 min)
 
-- Titre public : « Correction : l’audit de la diapositive »
+#### A2-01 · `B2-02-A2-01-NUAGE-RIVAGE` — 2 min · v2 `scatter` · catalogue
 
-#### A1-11 · `B2-02-A1-11-JALON-1` — 1 min · `fp-pulse` · séance
+- Titre public : « Six années de chiffre d’affaires d’Atelier Rivage »
+- Nuage des six points (rang 1 à 6 pour 2020 à 2025 ; 610, 652, 694, 736, 790, 826 k€), sans point
+  moyen ni droite.
 
-- Titre public : « Jalon 1 : où en êtes-vous ? »
+#### A2-02 · `B2-02-A2-02-VOTE-CORRELATION` — 8 min · `fp-vote` · séance
 
-### 3.3 Acte 2 — Trouver le centre (34 min)
+- Titre public : « Vote : deux séries qui montent ensemble »
+- Vote puis revote, non notés (temps « réfléchir » de N2). Vote 1 : ventes de voiles et ventes du
+  glacier voisin, mois par mois ; vote 2 : chiffre d'affaires et heures de formation. Bonne réponse :
+  une troisième variable (la saison, le temps) ; piège `correlation-prise-pour-causalite`.
+- Papier : vote à main levée, puis revote après discussion en binôme.
 
-#### A2-01 · `B2-02-A2-01-QUETELET` — 2 min · v2 `image-left` · catalogue
+#### A2-03 · `B2-02-A2-03-COURS-NUAGE` — 6 min · v2 `lesson` · catalogue
 
-- Titre public : « 1835 : Quetelet et l’homme moyen »
-- Média M1 (§ 8.2).
+- Titre public : « Cours : nuage de points, point moyen, corrélation »
+- Quatre blocs : série à deux variables et nuage ; point moyen G(x̄ ; ȳ) ; coefficient r ; corrélation
+  n'est pas causalité.
 
-#### A2-02 · `B2-02-A2-02-DEUX-CENTRES` — 4 min · `fp-worked` · séance
+#### A2-04 · `B2-02-A2-04-EXEMPLE-NUAGE` — 5 min · `fp-worked` · séance
 
-- Titre public : « Deux centres pour huit factures »
-- Huit délais de septembre 2026 : 28, 41, 35, 90, 33, 39, 44, 30. Étapes : moyenne 42,5 ; tri ;
-  médiane 37 ; écart des centres ; sans la facture de 90 jours (35,7 et 35) ; moyenne avec effectifs
-  (2 × 30 + 6 × 50) ÷ 8 = 45.
+- Titre public : « Exemple guidé : publicité et commandes »
+- Quatre mois : publicité 2, 4, 6, 8 (centaines d'euros), commandes 11, 15, 20, 22 ; G(5 ; 17),
+  r ≈ 0,988, lecture et prudence sur la cause.
 
-#### A2-02 · `B2-02-A2-02-CORRECTION` — 2 min · `fp-worked` (piloté) · séance
+#### A2-04 · `B2-02-A2-04-CORRECTION` — 2 min · `fp-worked` · séance
 
-- Titre public : « Correction : deux centres pour huit factures »
+- Titre public : « Correction : publicité et commandes »
 
-#### A2-03 · `B2-02-A2-03-ATELIER-1` — 6 min · `questionnaire` · séance
+#### A2-05 · `B2-02-A2-05-ATELIER-NUAGE` — 9 min · `questionnaire` · séance
 
-- Titre public : « Atelier 1 — Le centre des vingt délais »
-- `b2-02-a2-mediane` : 43 (pièges 39,5 sans tri ; 42 et 44 rang pair ; 47,75 moyenne).
-- `b2-02-a2-moyenne` : 47,75 (pièges 42,578947 sans F105 ; 43 médiane).
-- `b2-02-a2-au-dessus` : vote « Moins de la moitié : 7 factures sur 20 ».
+- Titre public : « Exercice 2 — Le nuage d’Atelier Rivage »
+- Temps : réflexion 2 min · travail 7 min.
+- `b2-02-a2-x-moyen` : 3,5 ; piège 21 (`point-moyen-confondu`).
+- `b2-02-a2-y-moyen` : 718 k€ ; pièges 715 et 4 308 (`point-moyen-confondu`).
+- `b2-02-a2-r` : 0,999 ; piège 43,89 (`correlation-lue-comme-pente`).
+- `b2-02-a2-lecture-r` (vote) : ajustement affine justifié ; pièges `correlation-prise-pour-causalite`,
+  `correlation-lue-comme-pente`.
 
-#### A2-03 · `B2-02-A2-03-CORRECTION-1` — 1 min · v2 `answer-review` · séance
+#### A2-05 · `B2-02-A2-05-CORRECTION` — 2 min · v2 `answer-review` · séance
 
-- Titre public : « Correction de l’atelier 1 : questions 1 à 3 »
+- Titre public : « Correction de l’exercice 2 »
 
-#### A2-03 · `B2-02-A2-03-ATELIER-1-SUITE` — 6 min · `questionnaire` · séance
+#### A2-06 · `B2-02-A2-06-ECARTS-POINT-MOYEN` — 10 min · `fp-table-build` · séance
 
-- Titre public : « Atelier 1 — Le centre des vingt délais (suite) »
-- `b2-02-a2-facture-contestee` : garder, signaler, publier un résumé que F105 ne tire pas.
-- `b2-02-a2-salaire-moyen` : 2 735 € ± 2 (Insee publie 2 733 €) ; piège 2 813,50 (moyenne simple).
-- `b2-02-a2-relances` : 19 ÷ 20 = 0,95 ; pièges 2 et 4.
+- Titre public : « Exercice 3 — Les écarts au point moyen »
+- Temps : réflexion 2 min · travail 8 min.
+- Tableau : rang, chiffre d'affaires, puis saisie de xᵢ − x̄ et yᵢ − ȳ ; piège xᵢ − 3
+  (`point-moyen-confondu`). Les signes des écarts, toujours les mêmes deux à deux, montrent la
+  corrélation positive.
+- Papier : tableau du livret.
 
-#### A2-03 · `B2-02-A2-03-CORRECTION-2` — 1 min · v2 `answer-review` · séance
+#### A2-06 · `B2-02-A2-06-CORRECTION` — 2 min · v2 `answer-review` · séance
 
-- Titre public : « Correction de l’atelier 1 : questions 4 à 6 »
+- Titre public : « Correction de l’exercice 3 »
 
-#### A2-04 · `B2-02-A2-04-FACTURE-LITIGE` — 2 min · `fp-concept4` · séance
+#### A2-07 · `B2-02-A2-07-JALON` — 1 min · `fp-pulse` · séance
 
-- Titre public : « La facture contestée : qui bouge, qui résiste ? »
-- Paramètre `litige` de 20 à 200 (146 par défaut) ; étapes `MOYENNE` et `MEDIANE` des vingt délais.
+- Titre public : « Jalon 2 : relier deux variables »
 
-#### A2-05 · `B2-02-A2-05-MOYENNE-OU-MEDIANE` — 8 min · `fp-cardsort` · séance
+### 3.4 Acte 3 — Prévoir avec une droite (41 min)
 
-- Titre public : « Moyenne ou médiane : quel centre pour quelle question ? »
-- Huit situations de gestion, deux catégories. Total → moyenne ; individu typique ou moitié → médiane.
+#### A3-01 · `B2-02-A3-01-JUSQU-OU` — 5 min · v2 `reflection` · séance
 
-#### A2-05 · `B2-02-A2-05-CORRECTION` — 1 min · v2 `sort-review` · séance
+- Titre public : « Réfléchir : jusqu’où prolonger une tendance ? »
+- Réflexion écrite : quelle droite tracer dans le nuage, et jusqu'à quelle année s'y fier.
 
-- Titre public : « Correction : moyenne ou médiane ? »
+#### A3-02 · `B2-02-A3-02-COURS-DROITE` — 6 min · v2 `lesson` · catalogue
 
-#### A2-06 · `B2-02-A2-06-JALON-2` — 1 min · `fp-pulse` · séance
+- Titre public : « Cours : la droite des moindres carrés et la prévision »
+- Quatre blocs : la droite des moindres carrés (a, b, passage par G, tableur) ; prévoir (rang, pas
+  année ; interpolation, extrapolation) ; seuil (premier rang entier) ; rédiger au CCF.
 
-- Titre public : « Jalon 2 : où en êtes-vous ? »
+#### A3-03 · `B2-02-A3-03-EXEMPLE-DROITE` — 6 min · `fp-worked` · séance
 
-### 3.4 Acte 3 — Mesurer l’écart (31 min)
+- Titre public : « Exemple guidé : la droite de la publicité »
+- Même série qu'en A2-04 : a = 1,9, b = 7,5, passage par G, prévision pour 10 (26,5 commandes), seuil
+  de 30 commandes (x ≥ 11,84, donc 1 200 €), limite de l'extrapolation.
 
-#### A3-01 · `B2-02-A3-01-VOTE-SEGMENTS` — 8 min · `fp-vote` · séance
+#### A3-03 · `B2-02-A3-03-CORRECTION` — 2 min · `fp-worked` · séance
 
-- Titre public : « Vote : même moyenne, même clientèle ? »
-- Clubs 40, 42, 44, 45, 46, 48, 50 et chantiers 15, 20, 30, 45, 60, 70, 75 (moyenne et médiane 45) ;
-  fournisseurs A (10, 50, 50, 50, 90) et B (10, 20, 50, 80, 90), même étendue, B plus dispersée.
+- Titre public : « Correction : la droite de la publicité »
 
-#### A3-02 · `B2-02-A3-02-DISPERSION` — 4 min · `fp-worked` · séance
+#### A3-04 · `B2-02-A3-04-ATELIER-DROITE` — 9 min · `questionnaire` · séance
 
-- Titre public : « Mesurer l’écart des deux segments »
-- Étendues 10 et 60 ; quartiles 42/48 et 20/70 ; EIQ 6 et 50 ; variances 10 et 500 ; écarts-types
-  3,16 et 22,36.
+- Titre public : « Exercice 4 — Prévoir le chiffre d’affaires »
+- Temps : réflexion 2 min · travail 7 min.
+- `b2-02-a3-pente` : 43,89 ; pièges 0,02 et 564,4 (`pente-ordonnee-inversees`).
+- `b2-02-a3-ordonnee` : 564,4 ; piège 43,89 (`pente-ordonnee-inversees`).
+- `b2-02-a3-prevision` : 959 k€ en 2028 (rang 9) ; piège 89 565 (`rang-pris-pour-annee`).
+- `b2-02-a3-seuil` : 2029 (premier rang 10 pour 1 000 k€) ; piège 2028 (`seuil-mal-arrondi`).
 
-#### A3-02 · `B2-02-A3-02-CORRECTION` — 2 min · `fp-worked` (piloté) · séance
+#### A3-04 · `B2-02-A3-04-CORRECTION` — 2 min · v2 `answer-review` · séance
 
-- Titre public : « Correction : mesurer l’écart des deux segments »
+- Titre public : « Correction de l’exercice 4 »
 
-#### A3-03 · `B2-02-A3-03-DEUX-ECARTS-TYPES` — 2 min · v2 `comparison` · séance
+#### A3-05 · `B2-02-A3-05-DEFI-IA` — 8 min · `fp-challenge` · séance
 
-- Titre public : « Deux fonctions d’écart-type : laquelle choisir ? »
+- Titre public : « Exercice 5 — Corriger la prévision d’une IA »
+- Temps : réflexion 2 min · travail 6 min.
+- Une IA prolonge la droite jusqu'en 2035 avec l'année à la place du rang et conclut que les hausses
+  de tarifs causent la croissance. Pistes justes : rang, extrapolation lointaine, causalité, contrôle
+  par G ; piste fausse : garder la réponse parce que r est proche de 1.
 
-#### A3-04 · `B2-02-A3-04-ATELIER-2` — 6 min · `questionnaire` · séance
+#### A3-05 · `B2-02-A3-05-CORRECTION` — 2 min · v2 `answer-review` · séance
 
-- Titre public : « Atelier 2 — L’écart des délais »
-- `b2-02-a3-eiq` : 21 (Q1 31, Q3 52) ; pièges 128 étendue, 19,5 tableur, 43 médiane.
-- `b2-02-a3-ecart-type-cinq` : 30, 40, 50, 60, 70 → 14,14 ; pièges 15,81 et 200.
-- `b2-02-a3-variance` : 686,49 est en jours².
+- Titre public : « Correction de l’exercice 5 »
 
-#### A3-04 · `B2-02-A3-04-CORRECTION-1` — 1 min · v2 `answer-review` · séance
+#### A3-06 · `B2-02-A3-06-JALON` — 1 min · `fp-pulse` · séance
 
-- Titre public : « Correction de l’atelier 2 : questions 1 à 3 »
+- Titre public : « Jalon 3 : prévoir avec une droite »
+- Puis pause de 15 minutes.
 
-#### A3-04 · `B2-02-A3-04-ATELIER-2-SUITE` — 6 min · `questionnaire` · séance
+### 3.5 Acte 4 — Mini-situation CCF et clôture (48 min)
 
-- Titre public : « Atelier 2 — L’écart des délais (suite) »
-- `b2-02-a3-fonction` : ECARTYPEP. `b2-02-a3-ecart-type-echantillon` : 15,81 ; pièges 14,14 et 250.
+#### A4-01 · `B2-02-A4-01-SITUATION-FIBRE` — 3 min · v2 `table` · catalogue
 
-#### A3-04 · `B2-02-A3-04-CORRECTION-2` — 1 min · v2 `answer-review` · séance
+- Titre public : « Mini-situation CCF : la fibre optique en France »
+- Abonnements à la fibre, fin 2020 à fin 2024 : 10,3 ; 14,5 ; 18,1 ; 21,4 ; 24,4 millions (Arcep).
 
-- Titre public : « Correction de l’atelier 2 : questions 4 et 5 »
+#### A4-02 · `B2-02-A4-02-TABLEUR-FIBRE` — 15 min · `fp-sheet` · séance
 
-#### A3-05 · `B2-02-A3-05-JALON-3` — 1 min · `fp-pulse` · séance
+- Titre public : « Question tableur (3 points sur 10) : ajuster la série »
+- Temps : réflexion 3 min · travail 12 min.
+- Feuille : rangs en A2:A6, abonnements en B2:B6 ; six cellules attendues : E2
+  `=COEFFICIENT.CORRELATION(A2:A6;B2:B6)`, E3 `=PENTE(B2:B6;A2:A6)`, E4
+  `=ORDONNEE.ORIGINE(B2:B6;A2:A6)`, E5 `=MOYENNE(A2:A6)`, E6 `=MOYENNE(B2:B6)`, E7 contrôle du passage
+  par le point moyen. Pièges : pente des séries inversées (`pente-ordonnee-inversees`).
+- Papier : la même question se traite à la calculatrice, formules écrites sur la copie ; en CCF, elle
+  se fait devant l'examinateur (appel).
 
-- Titre public : « Jalon 3 : où en êtes-vous ? »
+#### A4-02 · `B2-02-A4-02-CORRECTION` — 2 min · v2 `answer-review` · séance
 
-### 3.5 Acte 4 — Outiller et représenter (33 min)
+- Titre public : « Correction de la question tableur »
 
-#### A4-01 · `B2-02-A4-01-GALTON` — 2 min · v2 `image-left` · catalogue
+#### A4-03 · `B2-02-A4-03-COFFRE-FIBRE` — 14 min · `fp-escape` · séance
 
-- Titre public : « De Galton à Tukey : résumer par des rangs »
-- Média M2 (§ 8.2).
+- Titre public : « Mini-situation : prévoir et juger la prévision »
+- Temps : réflexion 2 min · travail 12 min.
+- E1 prévision fin 2025 (28,27 millions ; pièges `rang-pris-pour-annee`, `pente-ordonnee-inversees`) ;
+  E2 année du seuil de 35 millions (2027 ; piège `seuil-mal-arrondi`) ; E3 prévision fin 2030
+  (45,82 millions ; piège `rang-pris-pour-annee`) ; E4 écart entre la hausse annuelle du modèle et la
+  hausse observée en 2025, 2,7 millions (0,81 ; piège `extrapolation-sans-reserve`).
+- Papier : quatre questions rédigées du livret, sans code de coffre.
 
-#### A4-02 · `B2-02-A4-02-FEUILLE-DELAIS` — 15 min · `fp-sheet` · séance
+#### A4-03 · `B2-02-A4-03-CORRECTION` — 2 min · v2 `answer-review` · séance
 
-- Titre public : « Tâche de tableur — Résumer les vingt délais »
-- Colonnes A (facture) et B (délai), lignes 2 à 21 ; indicateurs en E2 à E10 : NB 20 ; MOYENNE
-  47,75 ; MEDIANE 43 ; QUARTILE 33,25 et 52,75 ; écart 19,5 ; étendue 128 ; ECARTYPEP 26,200906 ;
-  contrôle `SI(ARRONDI(E2*E3-SOMME(…);6)=0;1;0)` = 1. Seuil de réussite 0,8.
+- Titre public : « Correction de la mini-situation »
 
-#### A4-03 · `B2-02-A4-03-BOITE-DELAIS` — 2 min · v2 `boxplot` · séance
-
-- Titre public : « La boîte à moustaches des vingt délais »
-- Deux boîtes : 18 / 31 / 43 / 52 / 146 (moyenne 47,75) et sans F105 18 / 31 / 42 / 52 / 75
-  (moyenne 42,58). Renvoi A4-02.
-
-#### A4-04 · `B2-02-A4-04-BDF` — 2 min · v2 `boxplot` · séance
-
-- Titre public : « Délais fournisseurs des entreprises françaises, 2023 et 2024 »
-- Moustaches aux 10e et 90e centiles, données § 4.4.
-
-#### A4-05 · `B2-02-A4-05-ATELIER-3` — 7 min · `questionnaire` · séance
-
-- Titre public : « Atelier 3 — Lire une boîte à moustaches »
-- `b2-02-a4-part-boite` : environ la moitié. `b2-02-a4-eiq-2024` : 33,3 (pièges 70,5 et 18,8).
-  `b2-02-a4-asymetrie` : plus étalés, pour un même quart.
-
-#### A4-05 · `B2-02-A4-05-CORRECTION` — 1 min · v2 `answer-review` · séance
-
-- Titre public : « Correction de l’atelier 3 : lire une boîte »
-
-#### A4-06 · `B2-02-A4-06-LECTURE` — 3 min · v2 `reflection` · séance
-
-- Titre public : « La phrase de lecture pour la banque »
-
-#### A4-07 · `B2-02-A4-07-JALON-4` — 1 min · `fp-pulse` · séance
-
-- Titre public : « Jalon 4 : où en êtes-vous ? »
-
-### 3.6 Acte 5 — Regrouper et choisir (47 min)
-
-#### A5-01 · `B2-02-A5-01-HISTOGRAMME` — 2 min · v2 `chart` · séance
-
-- Titre public : « Les salaires du secteur privé, regroupés en classes »
-- Neuf tranches de 500 € (§ 4.3), deux tranches ouvertes.
-
-#### A5-02 · `B2-02-A5-02-CLASSES` — 4 min · `fp-worked` · séance
-
-- Titre public : « Calculer avec des classes »
-- Classe modale 1 500–2 000 € ; classe médiane 2 000–2 500 € ; interpolation ≈ 2 222 € (Insee
-  publie 2 190 €) ; pas de moyenne exacte avec des classes ouvertes ; densité 1 029 ÷ 10 = 102,9.
-
-#### A5-02 · `B2-02-A5-02-CORRECTION` — 2 min · `fp-worked` (piloté) · séance
-
-- Titre public : « Correction : calculer avec des classes »
-
-#### A5-03 · `B2-02-A5-03-EFFECTIFS-CUMULES` — 8 min · `fp-table-build` · séance
-
-- Titre public : « Tableau des effectifs cumulés des vingt délais »
-- Classes [0 ; 30[, [30 ; 45[, [45 ; 60[, [60 ; 90[, [90 ; 150[ d’effectifs 3, 8, 6, 2, 1 ; cumuls 3,
-  11, 17, 19, 20 ; fréquences cumulées 15, 55, 85, 95, 100 %. Seuil 0,75.
-
-#### A5-03 · `B2-02-A5-03-CORRECTION` — 1 min · v2 `answer-review` · séance
-
-- Titre public : « Correction : les effectifs cumulés »
-
-#### A5-04 · `B2-02-A5-04-ATELIER-4` — 6 min · `questionnaire` · séance
-
-- Titre public : « Atelier 4 — Calculer avec des classes »
-- `b2-02-a5-moyenne-classes` : 46,5 (pièges 36 et 57, bornes). `b2-02-a5-densite` : 239,4 (pièges
-  2 394 et 478,8). `b2-02-a5-classes-ouvertes` : non.
-
-#### A5-04 · `B2-02-A5-04-CORRECTION-1` — 1 min · v2 `answer-review` · séance
-
-- Titre public : « Correction de l’atelier 4 : questions 1 à 3 »
-
-#### A5-04 · `B2-02-A5-04-ATELIER-4-SUITE` — 6 min · `questionnaire` · séance
-
-- Titre public : « Atelier 4 — Calculer avec des classes (suite) »
-- `b2-02-a5-locaux` : le prix médian (DVF). `b2-02-a5-patrimoine` : la moitié possède moins de
-  205 100 €.
-
-#### A5-04 · `B2-02-A5-04-CORRECTION-2` — 1 min · v2 `answer-review` · séance
-
-- Titre public : « Correction de l’atelier 4 : questions 4 et 5 »
-
-#### A5-05 · `B2-02-A5-05-QUEL-GRAPHIQUE` — 8 min · `fp-cardsort` · séance
-
-- Titre public : « Quel graphique pour quelle série ? »
-- Quatre catégories (barres, histogramme, boîtes, courbe), sept séries.
-
-#### A5-05 · `B2-02-A5-05-CORRECTION` — 1 min · v2 `sort-review` · séance
-
-- Titre public : « Correction : quel graphique pour quelle série ? »
-
-#### A5-06 · `B2-02-A5-06-DOSSIER-BANQUE` — 2 min · v2 `table` · séance
-
-- Titre public : « Le dossier pour la banque en une page »
-
-#### A5-07 · `B2-02-A5-07-NOTE-BANQUE` — 4 min · `fp-challenge` · séance
-
-- Titre public : « Votre note à la banque »
-- Stratégies : centre, écart, plafond, suivi, moyenne signalée ; piste fausse : retirer F105.
-
-#### A5-08 · `B2-02-A5-08-JALON-5` — 1 min · `fp-pulse` · séance
-
-- Titre public : « Jalon 5 : où en êtes-vous ? »
-
-### 3.7 Acte 6 — Transférer (26 min)
-
-#### A6-01 · `B2-02-A6-01-COFFRE` — 10 min · `fp-escape` · séance
-
-- Titre public : « Le coffre de la banque »
-- Douze délais fournisseurs 30, 45, 28, 60, 35, 38, 58, 32, 46, 36, 56, 62. E1 médiane 41,5
-  (pièges 48 sans tri, 43,833333 moyenne) ; E2 EIQ 24 (Q1 32, Q3 56 ; pièges 22,25 tableur, 34
-  étendue) ; E3 écart-type de 25, 35, 45, 55, 65, 75 : 17,08 (pièges 18,71 et 291,67) ; E4 (28 × 30 +
-  12 × 75) ÷ 40 = 43,5 (piège 52,5). Fragments R4, T8, N3, W6.
-
-#### A6-01 · `B2-02-A6-01-CORRECTION` — 1 min · v2 `answer-review` · séance
-
-- Titre public : « Correction du coffre : les quatre calculs »
-
-#### A6-02 · `B2-02-A6-02-IA-ERREUR` — 4 min · `fp-challenge` · séance
-
-- Titre public : « Corriger une réponse d’IA »
-- Deux erreurs : « la moitié paie en plus de la moyenne » ; ECARTYPE au lieu de ECARTYPEP.
-
-#### A6-03 · `B2-02-A6-03-RAPPEL` — 4 min · `fp-spaced` · séance
+#### A4-04 · `B2-02-A4-04-RAPPEL` — 6 min · `fp-spaced` · séance
 
 - Titre public : « Rappel : de mémoire, sans vos notes »
-- Treize rappels, deux obligatoires (`b2-02-r-extreme`, `b2-02-r-variance`). Les bonnes réponses
-  numériques sont rédigées en phrase : un nombre seul fuirait par les références de cellules ou
-  les rangs cités plus haut.
 
-#### A6-04 · `B2-02-A6-04-FICHE-MEMO` — 2 min · v2 `grid` · séance
+#### A4-05 · `B2-02-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
-- Titre public : « Fiche mémo : quel indicateur pour quelle question ? »
+- Titre public : « Fiche mémo : résumer, relier, prévoir »
 
-#### A6-05 · `B2-02-A6-05-BOITE-A-OUTILS` — 2 min · v2 `grid` · catalogue
-
-- Titre public : « Pour aller plus loin : outils et sources »
-
-#### A6-06 · `B2-02-A6-06-BILLET-DE-SORTIE` — 3 min · `fp-exit` · séance
+#### A4-06 · `B2-02-A4-06-BILLET-DE-SORTIE` — 4 min · `fp-exit` · séance
 
 - Titre public : « Billet de sortie : la phrase pour la banque »
-- Bonne réponse : médiane 43 jours, moitié centrale 31–52, 3 sur 20 au-delà de 60 jours. Pièges :
-  la phrase de Samir, la moyenne sans F105, « la moitié en moins de 47,75 jours ».
 
-## 4. Données vérifiées
+## 4. Mode papier
 
-Chaque nombre de ce paragraphe est recalculé par `b2-02.cours.spec.ts` depuis les données brutes.
+Le livret étudiant reprend, dans l'ordre des écrans, les traces écrites, les énoncés et un cadre de
+réponse par question ; il ne contient aucune bonne réponse. Le corrigé formateur ajoute les réponses,
+les pièges et le barème. Sans poste, le formateur pilote les révélations depuis le pupitre ; les votes
+se font à main levée, la feuille de calcul à la calculatrice.
 
-### 4.1 Les vingt délais (jours)
-
-Ordre F101 → F120 : 42, 25, 58, 31, 146, 38, 47, 18, 62, 44, 35, 52, 28, 75, 40, 30, 55, 34, 50, 45.
-Somme 955, moyenne 47,75, médiane 43 (10e et 11e valeurs triées 42 et 44), milieu non trié 39,5.
-Convention du cours : Q1 = 31 (5e), Q3 = 52 (15e), EIQ 21. Tableur : 33,25 et 52,75, écart 19,5.
-Étendue 128. Écart-type population 26,200906, échantillon 26,881563, variance 686,4875. Sans F105 :
-moyenne 42,578947, médiane 42, maximum 75. Au-delà de 60 jours : 3 ; au-dessus de la moyenne : 7.
-
-### 4.2 Séries d’exemple
-
-Septembre : 28, 41, 35, 90, 33, 39, 44, 30 (moyenne 42,5, médiane 37). Clubs et chantiers : § 3.4.
-Cinq clients 30 à 70 : σ 14,142136, σ(n − 1) 15,811388. Relances : 0 (9), 1 (6), 2 (3), 3 (1), 4 (1).
-Coffre : § 3.7.
-
-### 4.3 Salaires du secteur privé 2024 (Insee Première n° 2079, milliers d’EQTP)
-
-Tranches de 100 € regroupées par 500 € : < 1 500 : 1 928 ; 1 500–2 000 : 5 563 ; 2 000–2 500 :
-3 979 ; 2 500–3 000 : 2 365 ; 3 000–3 500 : 1 464 ; 3 500–4 000 : 930 ; 4 000–4 500 : 613 ;
-4 500–5 000 : 416 ; ≥ 5 000 : 1 261 ; total 18 519. Moyennes par catégorie : cadres 4 629 € (23,0 %),
-professions intermédiaires 2 633 € (20,6 %), employés 1 941 € (27,9 %), ouvriers 2 051 € (28,6 %).
-
-### 4.4 Délais fournisseurs (Banque de France, Bulletin n° 260/5, encadré 2)
-
-2023 : p10 31,0 ; Q1 42,8 ; médiane 57,3 ; Q3 75,6 ; p90 99,8. 2024 : 29,9 ; 41,7 ; 56,2 ; 75,0 ;
-100,4. EIQ 2024 : 33,3. Demi-boîtes 2024 : 14,5 sous la médiane, 18,8 au-dessus.
-
-### 4.5 Autres sources
-
-DVF 2021-2025, locaux commerciaux : moyenne 3 398 €/m², médiane 1 473 €/m². Insee Focus n° 371,
-patrimoine brut début 2024 : moyenne 374 900 €, médiane 205 100 €.
-
-## 5. Concepts, confusions et remédiations
+## 5. Contenus
 
 ### 5.9 Concepts, confusions et remédiations
 
-**Concepts** : `serie-statistique`, `moyenne`, `mediane`, `quartiles`, `dispersion`, `ecart-type`,
-`boite-a-moustaches`, `histogramme`, `choix-du-resume`. **Confusions** : les dix-sept du B2-02 et
-`forme-inadaptee`, reprise du B2-01 pour le tri des graphiques.
+**Concepts** : `serie-statistique`, `moyenne`, `mediane`, `ecart-type`, `dispersion`,
+`choix-du-resume`, `nuage-de-points`, `correlation`, `ajustement-affine`, `prevision`.
+**Confusions** : huit de la v1 (une variable), `correlation-prise-pour-causalite` du B2-01, et sept
+nouvelles (deux variables). Les concepts et confusions de la v1 non repris ici restent dans la banque :
+les versions clôturées du cours y renvoient encore.
 
-| Identifiant                          | Concept            | Libellé                                                                           | Remédiation                   |
-| ------------------------------------ | ------------------ | --------------------------------------------------------------------------------- | ----------------------------- |
-| `role-statistique-confondu`          | serie-statistique  | Confondre la population étudiée, le caractère observé et l’effectif d’une série.  | B2-02-A1-07-FICHE-SERIE       |
-| `effectif-cumule-confondu`           | serie-statistique  | Confondre l’effectif d’une classe et l’effectif cumulé jusqu’à cette classe.      | B2-02-A5-03-EFFECTIFS-CUMULES |
-| `moyenne-lue-comme-mediane`          | mediane            | Croire que la moyenne partage la série en deux moitiés d’effectifs égaux.         | B2-02-A2-02-DEUX-CENTRES      |
-| `mediane-sans-tri`                   | mediane            | Prendre la valeur du milieu de la liste sans avoir trié les valeurs.              | B2-02-A2-02-DEUX-CENTRES      |
-| `mediane-rang-pair`                  | mediane            | Pour un effectif pair, retenir une seule des deux valeurs centrales.              | B2-02-A2-02-DEUX-CENTRES      |
-| `valeur-extreme-ignoree`             | choix-du-resume    | Résumer par la moyenne une série tirée par une valeur extrême, sans le signaler.  | B2-02-A2-04-FACTURE-LITIGE    |
-| `valeur-extreme-supprimee`           | choix-du-resume    | Retirer une valeur extrême gênante sans pièce qui prouve qu’elle est une erreur.  | B2-02-A2-04-FACTURE-LITIGE    |
-| `moyenne-des-moyennes`               | moyenne            | Faire la moyenne simple de moyennes de groupes d’effectifs différents.            | B2-02-A2-02-DEUX-CENTRES      |
-| `quartile-moitie-de-mediane`         | quartiles          | Calculer un quartile à partir de la médiane au lieu de chercher le rang du quart. | B2-02-A3-02-DISPERSION        |
-| `convention-de-quartile-ignoree`     | quartiles          | Comparer des quartiles de deux conventions (programme, tableur) sans le signaler. | B2-02-A4-02-FEUILLE-DELAIS    |
-| `etendue-prise-pour-dispersion`      | dispersion         | Juger la dispersion sur la seule étendue.                                         | B2-02-A3-02-DISPERSION        |
-| `meme-moyenne-meme-serie`            | dispersion         | Conclure que deux séries de même moyenne se ressemblent.                          | B2-02-A3-01-VOTE-SEGMENTS     |
-| `variance-confondue-avec-ecart-type` | ecart-type         | Donner la variance, en unité au carré, comme écart-type.                          | B2-02-A3-02-DISPERSION        |
-| `ecart-type-population-echantillon`  | ecart-type         | Confondre la division par n et la division par n − 1.                             | B2-02-A3-03-DEUX-ECARTS-TYPES |
-| `boite-lue-comme-effectif`           | boite-a-moustaches | Croire qu’une partie plus longue de la boîte contient davantage de valeurs.       | B2-02-A4-03-BOITE-DELAIS      |
-| `centre-de-classe-oublie`            | moyenne            | Calculer la moyenne de données groupées avec une borne au lieu du centre.         | B2-02-A5-02-CLASSES           |
-| `histogramme-classes-inegales`       | histogramme        | Lire la hauteur d’un histogramme à classes inégales comme un effectif.            | B2-02-A5-02-CLASSES           |
-| `forme-inadaptee`                    | lecture-graphique  | Choisir une forme de graphique qui ne montre pas la relation demandée.            | B2-02-A5-05-QUEL-GRAPHIQUE    |
+| Identifiant                          | Concept           | Libellé                                                         | Remédiation                |
+| ------------------------------------ | ----------------- | --------------------------------------------------------------- | -------------------------- |
+| `moyenne-lue-comme-mediane`          | mediane           | Croire que la moyenne partage la série en deux moitiés.         | B2-02-A1-07-EXEMPLE-RESUME |
+| `mediane-sans-tri`                   | mediane           | Prendre la valeur du milieu de la liste sans trier.             | B2-02-A1-07-EXEMPLE-RESUME |
+| `mediane-rang-pair`                  | mediane           | Retenir une seule des deux valeurs centrales.                   | B2-02-A1-07-EXEMPLE-RESUME |
+| `valeur-extreme-ignoree`             | choix-du-resume   | Résumer par la moyenne une série tirée par une valeur extrême.  | B2-02-A1-06-COURS-RESUMER  |
+| `valeur-extreme-supprimee`           | choix-du-resume   | Retirer une valeur extrême gênante sans pièce.                  | B2-02-A1-06-COURS-RESUMER  |
+| `ecart-type-population-echantillon`  | ecart-type        | Confondre division par n et par n − 1.                          | B2-02-A1-06-COURS-RESUMER  |
+| `variance-confondue-avec-ecart-type` | ecart-type        | Donner la variance comme écart-type.                            | B2-02-A1-06-COURS-RESUMER  |
+| `etendue-prise-pour-dispersion`      | dispersion        | Juger la dispersion sur la seule étendue.                       | B2-02-A1-06-COURS-RESUMER  |
+| `correlation-prise-pour-causalite`   | lecture-graphique | Conclure sur une cause à partir de deux évolutions simultanées. | B2-02-A2-03-COURS-NUAGE    |
+| `point-moyen-confondu`               | nuage-de-points   | Prendre le point du milieu du tableau pour le point moyen.      | B2-02-A2-04-EXEMPLE-NUAGE  |
+| `correlation-lue-comme-pente`        | correlation       | Lire r comme la pente de la droite.                             | B2-02-A2-03-COURS-NUAGE    |
+| `correlation-jugee-au-signe`         | correlation       | Juger l'ajustement au signe de r.                               | B2-02-A2-03-COURS-NUAGE    |
+| `pente-ordonnee-inversees`           | ajustement-affine | Inverser les séries dans PENTE, ou la pente et l'ordonnée.      | B2-02-A3-03-EXEMPLE-DROITE |
+| `rang-pris-pour-annee`               | prevision         | Remplacer x par l'année au lieu du rang.                        | B2-02-A3-03-EXEMPLE-DROITE |
+| `seuil-mal-arrondi`                  | prevision         | Arrondir le rang d'un seuil à l'entier inférieur.               | B2-02-A3-03-EXEMPLE-DROITE |
+| `extrapolation-sans-reserve`         | prevision         | Prolonger une tendance loin des données sans réserve.           | B2-02-A3-02-COURS-DROITE   |
 
-### 5.10 Barème
+### 5.10 Rappels espacés
 
-Le barème v2 suit le B2-01 : votes et classements corrigés serveur ; numériques à tolérance absolue
-(0,05 pour les entiers et dixièmes, `DEUX_DECIMALES` pour les centièmes, 2 € pour le salaire moyen) ;
-feuille à 0,8 ; tableau à 0,75 ; énigmes à tolérance absolue. 61 tirages sans ambiguïté, barème de
-moins de 400 Ko (contrat commun).
-
-## 6. Confidentialité
-
-La garde `GardeConfidentialite` s’applique sans dérogation. Trois décisions en découlent :
-
-1. **Rappels rédigés** : une réponse « 5 » ou « 16 » fuirait par une référence de cellule (A5, A16)
-   ou un rang cité plus haut ; chaque bonne réponse de la banque de rappel est une phrase.
-2. **Coffre** : l’écart interquartile des fournisseurs vaut 24, hors des références A1 à A21 de la
-   feuille A4-02 ; un écart de 16 ou 17 aurait fui.
-3. **Segments** : aucun segment générique (« population », « ouvertes », « médian ») ; les votes
-   dont la bonne réponse ne tient que par un mot courant n’ont pas de segments.
-
-La moyenne exacte (47,75) n’apparaît dans aucun texte public avant l’atelier 1 ; la diapositive de
-Samir n’affiche que l’arrondi 48.
-
-## 7. Scénario de séance et QA
-
-- **Instantané** : `test/fixtures/formations/b2-02.instantane.json`, graine 0, régénéré par
-  `ECRIRE_INSTANTANE=1` ; copié côté front pour les tests de rendu.
-- **Scénario de séance en base** : le parcours complet du B2-01 est rejoué sur le B2-02 (ouverture,
-  jonction, réponses justes et pièges, révélations, clôture, synthèse).
-- **Banc** : le parcours acte par acte et le volume à trente postes couvrent le B2-02 comme le B2-01.
-- **QA des trois rendus** : projection, pupitre et poste étudiant, sur les mêmes composants.
+Douze rappels : médiane (tri, effectif pair), écart-type (population, variance), valeur extrême,
+étendue, point moyen, lecture de r (signe, pente), causalité, rang ou année, seuil. Obligatoires :
+`b2-02-r-causalite` et `b2-02-r-rang`.
 
 ## 8. Médias
 
+### 8.1 Principe
+
+Aucune image : le nuage est dessiné par le rendu `scatter`, les tableaux par le rendu `table`.
+
 ### 8.2 Catalogue des médias
 
-Images converties en WebP et servies depuis `/assets/cours/b2-02/v1/`.
-
-| Id  | Écran | Fichier source (page)                                                                       | Original          | Auteur, date                                                            | Licence        | Dérivé servi         | Attribution affichée                                                             |
-| --- | ----- | ------------------------------------------------------------------------------------------- | ----------------- | ----------------------------------------------------------------------- | -------------- | -------------------- | -------------------------------------------------------------------------------- |
-| M1  | A2-01 | https://commons.wikimedia.org/wiki/File:Adolphe_Qu%C3%A9telet_by_Joseph-Arnold_Demannez.jpg | gravure sur acier | Joseph-Arnold Demannez, Annuaire de l’Académie royale de Belgique, 1875 | domaine public | `quetelet-1875.webp` | « Gravure de Joseph-Arnold Demannez, 1875 · Wikimedia Commons (domaine public) » |
-| M2  | A4-01 | https://commons.wikimedia.org/wiki/File:Sir_Francis_Galton,_circa_1890.jpg                  | photographie      | Graham’s Art Studios, vers 1890                                         | domaine public | `galton-1890.webp`   | « Graham’s Art Studios, vers 1890 · Wikimedia Commons (domaine public) »         |
+Aucun média catalogué.
 
 ### 8.3 Sources des données
 
-Voir `docs/donnees-b2-02-sources.md` à la racine de l’espace de travail : pages, dates de parution,
-licences et extraits utilisés.
+- Vingt délais et chiffre d'affaires d'Atelier Rivage : données fictives créées pour le cours.
+- Abonnements à la fibre optique : Arcep, Observatoire des marchés des communications électroniques,
+  chiffres des 4es trimestres 2020 à 2025, données publiques réutilisables ; détail et calculs dans
+  `docs/donnees-b2-02-sources.md`.

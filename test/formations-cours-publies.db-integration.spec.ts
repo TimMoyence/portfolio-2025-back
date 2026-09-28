@@ -39,7 +39,7 @@ interface AttenduDuCours {
 
 const COURS_PUBLIES: readonly AttenduDuCours[] = [
   { contenu: COURS_B2_01, cellulesDeLaFeuille: 17 },
-  { contenu: COURS_B2_02, cellulesDeLaFeuille: 9 },
+  { contenu: COURS_B2_02, cellulesDeLaFeuille: 6 },
 ];
 
 function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {
@@ -108,6 +108,10 @@ for (const { contenu, cellulesDeLaFeuille } of COURS_PUBLIES) {
       );
       expect(cours.dureeMinutes).toBe(contenu.dureeMinutes);
       expect(cours.ecrans.filter((ecran) => ecran.titre === null)).toEqual([]);
+    });
+
+    it('relit le gabarit déclaré par le fichier', () => {
+      expect(cours.gabarit).toBe(contenu.gabarit);
     });
 
     it('relit les remédiations et les médias persistés en jsonb', () => {

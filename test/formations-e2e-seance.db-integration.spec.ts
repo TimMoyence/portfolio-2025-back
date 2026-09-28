@@ -52,7 +52,6 @@ import { silenceNestLogger } from './helpers/silence-nest-logger';
 const VERSION_COURS = VERSION_PUBLIEE_SUR_BASE_NEUVE;
 const VERSION_DU_BAREME = 2;
 const ENIGMES_DU_COURS = 4;
-const JALONS_DU_COURS = 5;
 const TYPES_NOTABLES = 5;
 const CAPACITE = 4;
 const FORMATEUR = 'e1111111-1111-4111-8111-111111111111:teacher';
@@ -63,7 +62,6 @@ const DELAI_TEST_MS = 900_000;
 const DELAI_FLUX_MS = 20_000;
 const MARGE_DU_DEBIT = 2;
 const FORMULE_HORS_SUJET = '=123456789';
-const INTERVALLE_LIBRE = { premier: 8, dernier: 20 };
 const TABLES_HORS_SEANCE = ['formation_mastery'];
 
 const { OK, CREE, SANS_CONTENU, INVALIDE, INTROUVABLE, CONFLIT } = CODE_HTTP;
@@ -116,6 +114,11 @@ interface AttenduDuCours {
   readonly questionsNotees: number;
   readonly cellulesDeLaFeuille: number;
   readonly exerciceEnAvance: string;
+  readonly jalons: number;
+  readonly intervalleLibre: {
+    readonly premier: number;
+    readonly dernier: number;
+  };
 }
 
 function seanceComplete(
@@ -677,24 +680,26 @@ function seanceComplete(
       };
 
       const jouerRythmeLibre = async (): Promise<void> => {
+        const { intervalleLibre } = attendu;
         const libres = [...activitesLibres(cours).keys()];
         const dedans = cours.ecrans.find(
           (ecran) =>
             libres.includes(ecran.id) &&
-            cours.ecrans.indexOf(ecran) >= INTERVALLE_LIBRE.premier &&
-            cours.ecrans.indexOf(ecran) <= INTERVALLE_LIBRE.dernier,
+            ecran.brique !== 'fp-worked' &&
+            cours.ecrans.indexOf(ecran) >= intervalleLibre.premier &&
+            cours.ecrans.indexOf(ecran) <= intervalleLibre.dernier,
         );
         const dehors = cours.ecrans.find(
           (ecran) =>
             libres.includes(ecran.id) &&
-            cours.ecrans.indexOf(ecran) > INTERVALLE_LIBRE.dernier,
+            cours.ecrans.indexOf(ecran) > intervalleLibre.dernier,
         );
         if (dedans === undefined || dehors === undefined) {
           throw new Error(
             `Le ${PREFIXE} ne permet pas de borner un intervalle libre`,
           );
         }
-        await piloter({ mode: 'libre', intervalle: INTERVALLE_LIBRE }).expect(
+        await piloter({ mode: 'libre', intervalle: intervalleLibre }).expect(
           SANS_CONTENU,
         );
         const admise = await reponseLibreSur(
@@ -1015,7 +1020,7 @@ function seanceComplete(
           const complet = (bilan: Record<string, unknown>): boolean => {
             const pousse = bilan as BilanPousse;
             return (
-              Object.keys(pousse.jalons).length === JALONS_DU_COURS &&
+              Object.keys(pousse.jalons).length === attendu.jalons &&
               pousse.enigmes.length === ENIGMES_DU_COURS
             );
           };
@@ -1046,7 +1051,7 @@ function seanceComplete(
             fluxB: true,
             fluxEtudiant: 0,
             statistiques: true,
-            jalons: JALONS_DU_COURS,
+            jalons: attendu.jalons,
             enigmes: expect.any(Number),
             questionsNotees: attendu.questionsNotees,
             participants: CAPACITE,
@@ -1093,7 +1098,7 @@ function seanceComplete(
           }).toEqual({
             participant: postes[0].participantId,
             reponses: expect.any(Number),
-            jalons: JALONS_DU_COURS,
+            jalons: attendu.jalons,
             enigmes: expect.any(Number),
             defis: expect.any(Number),
             rappels: expect.any(Boolean),
@@ -1242,7 +1247,7 @@ function seanceComplete(
             participants: CAPACITE,
             questionsNotees: attendu.questionsNotees,
             notation: TYPES_NOTABLES,
-            jalons: JALONS_DU_COURS,
+            jalons: attendu.jalons,
             enigmes: ENIGMES_DU_COURS,
             scores: true,
             synthese: 1,
@@ -1361,10 +1366,14 @@ seanceComplete(COURS_B2_01, {
   questionsNotees: 31,
   cellulesDeLaFeuille: 17,
   exerciceEnAvance: 'B2-01-A2-06-POINTS',
+  jalons: 5,
+  intervalleLibre: { premier: 8, dernier: 20 },
 });
 
 seanceComplete(COURS_B2_02, {
-  questionsNotees: 28,
-  cellulesDeLaFeuille: 9,
-  exerciceEnAvance: 'B2-02-A2-02-DEUX-CENTRES',
+  questionsNotees: 16,
+  cellulesDeLaFeuille: 6,
+  exerciceEnAvance: 'B2-02-A2-04-EXEMPLE-NUAGE',
+  jalons: 3,
+  intervalleLibre: { premier: 1, dernier: 20 },
 });

@@ -25,6 +25,10 @@ export const CONCEPTS_DU_B2_02 = [
   'boite-a-moustaches',
   'histogramme',
   'choix-du-resume',
+  'nuage-de-points',
+  'correlation',
+  'ajustement-affine',
+  'prevision',
 ] as const;
 
 export const CONCEPTS = [...CONCEPTS_DU_B2_01, ...CONCEPTS_DU_B2_02] as const;

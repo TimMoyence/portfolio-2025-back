@@ -372,7 +372,10 @@ export function coursB2(
   actes: AuMoinsUn<Acte>,
   remediations: ContenuDeCours['remediations'],
   medias: ContenuDeCours['medias'],
-  fiche: Pick<ContenuDeCours, 'slug' | 'titre' | 'dureeMinutes' | 'concepts'>,
+  fiche: Pick<
+    ContenuDeCours,
+    'slug' | 'titre' | 'dureeMinutes' | 'concepts' | 'gabarit'
+  >,
 ): ContenuDeCours {
   const [premier, ...suite] = actes;
   return {
