@@ -955,4 +955,13 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
   ])('%s', (_, id, animation) => {
     expect(ecranDuCours(id)).toMatchObject({ proprietes: { animation } });
   });
+
+  it('donne au livret papier du simulateur une consigne de lecture et non de réglage', () => {
+    expect(ecranDuCours('B2-01-A5-04-SIMULATEUR-MIX')).toMatchObject({
+      proprietes: {
+        descriptionPapier:
+          'Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %).',
+      },
+    });
+  });
 });

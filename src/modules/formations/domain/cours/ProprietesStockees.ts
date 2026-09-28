@@ -499,6 +499,7 @@ const proprietesTrace = z
       .optional(),
     sourceUrl: z.url({ protocol: /^https$/ }).optional(),
     description: texte.optional(),
+    descriptionPapier: texte.optional(),
     forme: z.enum(['courbes', 'barres']).optional(),
     unite: z.literal('euros').optional(),
     etiquettes: z.array(texte).optional(),

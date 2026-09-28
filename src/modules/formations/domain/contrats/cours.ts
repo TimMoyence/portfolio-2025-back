@@ -90,6 +90,7 @@ export interface ProprietesExposition {
     };
     readonly sourceUrl?: string;
     readonly description?: string;
+    readonly descriptionPapier?: string;
     readonly forme?: 'courbes' | 'barres';
     readonly unite?: 'euros';
     readonly etiquettes?: readonly string[];

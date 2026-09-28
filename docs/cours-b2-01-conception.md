@@ -1713,6 +1713,9 @@ changent pas, puisqu’ils servent de clés en base.
     une valeur toutes les 3 s (retour de QA R9)
   - `description` « Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite
     le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ? »
+  - `descriptionPapier`, imprimée au livret à la place de la description (le taux y est figé à
+    16 %) : « Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis
+    calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %). »
 - **Modèle** : taux global = 34,4 − 0,2 × part (avec 16 %) ; 27,6 % à 34 % (2024) et 25,30 % à 45,48 %
   (2025) : les deux années réelles sont sur la courbe.
 - **Notes** :

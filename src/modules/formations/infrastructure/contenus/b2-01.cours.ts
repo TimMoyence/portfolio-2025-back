@@ -2524,6 +2524,8 @@ const ACTE_5: moteur.Acte = [
       ],
       description:
         'Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ?',
+      descriptionPapier:
+        'Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %).',
     },
   },
   moteur.ecranV2(
