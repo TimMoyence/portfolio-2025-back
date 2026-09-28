@@ -87,6 +87,7 @@ export class CoursCatalogueRepositoryTypeORM implements ICatalogueCours {
       version: entity.version,
       titre: entity.titre,
       niveau: entity.niveau,
+      ...(entity.gabarit === null ? {} : { gabarit: entity.gabarit }),
       dureeMinutes: entity.dureeMinutes,
       concepts: entity.concepts,
       remediations: entity.remediations,

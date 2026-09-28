@@ -27,6 +27,9 @@ export class FormationCourseContentEntity extends ContenuDeCours {
   @Column({ type: 'varchar', length: 20 })
   niveau: string;
 
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  gabarit: string | null;
+
   @Column({ type: 'jsonb', default: {} })
   remediations: Readonly<Record<string, unknown>>;
 

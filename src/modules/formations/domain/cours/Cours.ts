@@ -241,10 +241,14 @@ export type Ecran = {
   };
 }[BriqueDExpositionHistorique];
 
+export const GABARITS = ['v3'] as const;
+type Gabarit = (typeof GABARITS)[number];
+
 export interface Cours {
   readonly slug: string;
   readonly titre: string;
   readonly niveau: string;
+  readonly gabarit?: Gabarit;
   readonly dureeMinutes: number;
   readonly concepts: AuMoinsUn<ConceptId>;
   readonly ecrans: AuMoinsUn<Ecran>;

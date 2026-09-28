@@ -66,6 +66,38 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
     description:
       'Deux boîtes à moustaches des délais de paiement, 2024 et 2025.',
   },
+  scatter: {
+    title: 'Données mobiles et SMS',
+    xLabel: 'Rang de l’année',
+    yLabel: 'Données consommées (Go par mois)',
+    xRange: [0, 5],
+    yRange: [0, 10],
+    points: [
+      { x: 0, y: 2.2 },
+      { x: 1, y: 3.64 },
+      { x: 2, y: 5.24, label: '2020' },
+    ],
+    meanPoint: { x: 1, y: 3.69 },
+    line: { slope: 1.52, intercept: 2.17 },
+    description: 'Nuage de trois points qui montent régulièrement.',
+  },
+  lesson: {
+    title: 'Le point moyen',
+    blocks: [
+      {
+        kind: 'definition',
+        title: 'Définition',
+        text: 'Le point moyen G a pour coordonnées les deux moyennes.',
+        formula: 'G(x̄ ; ȳ)',
+      },
+      {
+        kind: 'method',
+        title: 'Au tableur',
+        text: 'Deux moyennes, une par colonne.',
+        steps: ['x̄ = MOYENNE(A2:A6)', 'ȳ = MOYENNE(B2:B6)'],
+      },
+    ],
+  },
   grid: { title: 'Les quatre contrôles', items: [ELEMENT] },
   comparison: {
     title: 'Écart ou taux',

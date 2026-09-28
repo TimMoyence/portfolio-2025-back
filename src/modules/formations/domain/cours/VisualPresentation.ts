@@ -60,12 +60,13 @@ const resumeEnCinqNombres = strict({
     (mean === undefined || (min <= mean && mean <= max)),
   { message: 'min ≤ Q1 ≤ médiane ≤ Q3 ≤ max, moyenne comprise' },
 );
+const axeCroissant = z
+  .tuple([z.number(), z.number()])
+  .refine(([debut, fin]) => debut < fin, { message: 'axe croissant' });
 const boiteAMoustaches = strict({
   ...titled,
   unit: texte.optional(),
-  axisRange: z
-    .tuple([z.number(), z.number()])
-    .refine(([debut, fin]) => debut < fin, { message: 'axe croissant' }),
+  axisRange: axeCroissant,
   series: auMoinsUn(resumeEnCinqNombres),
   reading: texte.optional(),
   source: texte.optional(),
@@ -80,6 +81,51 @@ const boiteAMoustaches = strict({
       });
     }
   }
+});
+const coordonnees = { x: z.number(), y: z.number() };
+const nuageDePoints = strict({
+  ...titled,
+  xLabel: texte,
+  yLabel: texte,
+  xRange: axeCroissant,
+  yRange: axeCroissant,
+  points: z.array(strict({ ...coordonnees, label: texte.optional() })).min(2),
+  meanPoint: strict(coordonnees).optional(),
+  line: strict({
+    slope: z.number(),
+    intercept: z.number(),
+    label: texte.optional(),
+  }).optional(),
+  reading: texte.optional(),
+  source: texte.optional(),
+  description: texte,
+}).superRefine(({ xRange, yRange, points, meanPoint }, contexte) => {
+  const dansLesAxes = ({ x, y }: { x: number; y: number }): boolean =>
+    x >= xRange[0] && x <= xRange[1] && y >= yRange[0] && y <= yRange[1];
+  for (const [position, point] of points.entries()) {
+    if (!dansLesAxes(point)) {
+      contexte.addIssue({
+        code: 'custom',
+        path: ['points', position],
+        message: 'point hors des axes',
+      });
+    }
+  }
+  if (meanPoint !== undefined && !dansLesAxes(meanPoint)) {
+    contexte.addIssue({
+      code: 'custom',
+      path: ['meanPoint'],
+      message: 'point moyen hors des axes',
+    });
+  }
+});
+const BLOCS_MAXIMUM_D_UNE_LECON = 4;
+const blocDeLecon = strict({
+  kind: z.enum(['definition', 'property', 'method', 'example', 'exam']),
+  title: texte,
+  text: texte,
+  formula: texte.optional(),
+  steps: textes.optional(),
 });
 const categorieCorrigee = strict({ id: texte, label: texte });
 const carteCorrigee = strict({
@@ -164,6 +210,14 @@ export const presentationVisuelle = z.discriminatedUnion('renderer', [
     }),
   ),
   rendu('boxplot', boiteAMoustaches),
+  rendu('scatter', nuageDePoints),
+  rendu(
+    'lesson',
+    strict({
+      ...titled,
+      blocks: auMoinsUn(blocDeLecon).max(BLOCS_MAXIMUM_D_UNE_LECON),
+    }),
+  ),
   rendu(
     'grid',
     strict({

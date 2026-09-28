@@ -15,8 +15,53 @@ describe('contrat visuel du catalogue', () => {
     },
   );
 
-  it('L4 · couvre chacun des dix-sept rendus du deck, corrections de tri et de réponses comprises', () => {
-    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(17);
+  it('L4 · couvre chacun des dix-neuf rendus du deck, corrections de tri et de réponses comprises', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(19);
+  });
+
+  describe('nuage de points (B2-02 v3)', () => {
+    const nuage = PRESENTATIONS_VISUELLES_VALIDES.scatter;
+    const avec = (alteration: Record<string, unknown>) => ({
+      renderer: 'scatter',
+      props: { ...nuage, ...alteration },
+    });
+
+    it.each([
+      ['un point hors de l axe des abscisses', { points: [{ x: 6, y: 1 }] }],
+      ['un point hors de l axe des ordonnées', { points: [{ x: 1, y: -1 }] }],
+      ['un point moyen hors des axes', { meanPoint: { x: 1, y: 11 } }],
+      ['un axe inversé', { xRange: [5, 0] }],
+      ['un nuage sans description', { description: undefined }],
+      ['un nuage d un seul point', { points: [{ x: 1, y: 1 }] }],
+    ])('refuse %s', (_cas, alteration) => {
+      expect(() => parseVisualPresentation(avec(alteration))).toThrow();
+    });
+  });
+
+  describe('trace écrite (B2-02 v3)', () => {
+    const lecon = PRESENTATIONS_VISUELLES_VALIDES.lesson;
+    const [bloc] = lecon.blocks as Record<string, unknown>[];
+
+    it.each([
+      ['un bloc de genre inconnu', { kind: 'remarque' }],
+      ['un bloc sans texte', { text: '' }],
+    ])('refuse %s', (_cas, alteration) => {
+      expect(() =>
+        parseVisualPresentation({
+          renderer: 'lesson',
+          props: { ...lecon, blocks: [{ ...bloc, ...alteration }] },
+        }),
+      ).toThrow();
+    });
+
+    it('refuse plus de quatre blocs sur un écran', () => {
+      expect(() =>
+        parseVisualPresentation({
+          renderer: 'lesson',
+          props: { ...lecon, blocks: [bloc, bloc, bloc, bloc, bloc] },
+        }),
+      ).toThrow();
+    });
   });
 
   describe('boîte à moustaches (B2-02)', () => {

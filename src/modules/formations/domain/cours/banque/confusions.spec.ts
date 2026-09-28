@@ -241,12 +241,22 @@ const CONFUSIONS_DU_B2_02 = {
   },
 };
 
+const CONFUSIONS_DES_DEUX_VARIABLES = {
+  'point-moyen-confondu': { concept: 'nuage-de-points' },
+  'correlation-lue-comme-pente': { concept: 'correlation' },
+  'correlation-jugee-au-signe': { concept: 'correlation' },
+  'pente-ordonnee-inversees': { concept: 'ajustement-affine' },
+  'rang-pris-pour-annee': { concept: 'prevision' },
+  'extrapolation-sans-reserve': { concept: 'prevision' },
+  'seuil-mal-arrondi': { concept: 'prevision' },
+};
+
 describe('CONCEPTS', () => {
   it('fige les quatorze concepts du B2-01 dans leur ordre', () => {
     expect(CONCEPTS.slice(0, 14)).toEqual([...CONCEPTS_DU_B2_01]);
   });
 
-  it('ajoute à la suite les neuf concepts du B2-02', () => {
+  it('ajoute à la suite les treize concepts du B2-02, les quatre de deux variables en dernier', () => {
     expect(CONCEPTS.slice(14)).toEqual([...CONCEPTS_DU_B2_02]);
     expect(CONCEPTS_DU_B2_02).toEqual([
       'serie-statistique',
@@ -258,6 +268,10 @@ describe('CONCEPTS', () => {
       'boite-a-moustaches',
       'histogramme',
       'choix-du-resume',
+      'nuage-de-points',
+      'correlation',
+      'ajustement-affine',
+      'prevision',
     ]);
   });
 
@@ -290,11 +304,18 @@ describe('CONFUSIONS', () => {
   });
 
   it('ajoute les dix-sept confusions du B2-02 aux trente-huit du B2-01', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(55);
-    expect(Object.keys(CONFUSIONS).slice(38)).toEqual(
+    expect(Object.keys(CONFUSIONS).slice(38, 55)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_02),
     );
     expect(CONFUSIONS).toMatchObject(CONFUSIONS_DU_B2_02);
+  });
+
+  it('ajoute en dernier les sept confusions de deux variables, sans retirer celles de la v1', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(62);
+    expect(Object.keys(CONFUSIONS).slice(55)).toEqual(
+      Object.keys(CONFUSIONS_DES_DEUX_VARIABLES),
+    );
+    expect(CONFUSIONS).toMatchObject(CONFUSIONS_DES_DEUX_VARIABLES);
   });
 
   it('conserve les huit confusions existantes et ajoute les trente de la V3 (§ 5.9)', () => {

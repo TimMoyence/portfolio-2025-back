@@ -174,30 +174,62 @@ describe('garde confidentialite — volet exact', () => {
     expect(fuites(cours)).toEqual([cloture.id]);
   });
 
-  it('refuse les valeurs d un graphique arrondies a la precision de la question', () => {
+  function graphiqueAvant(
+    renderer: string,
+    props: Readonly<Record<string, unknown>>,
+  ): Cours {
     const graphique = lireEcranStocke(
       buildEcranDeBrique('fp-story', {
         screenId: AVANT,
         dureeMinutes: 1,
         proprietes: {
-          presentation: {
-            version: 2,
-            screenId: AVANT,
-            renderer: 'chart',
-            props: {
-              title: 'Part des canaux',
-              labels: ['Marketplace'],
-              series: [{ label: 'Part (%)', values: [45.478261] }],
-              description: 'Une barre par canal.',
-            },
-          },
+          presentation: { version: 2, screenId: AVANT, renderer, props },
         },
       }),
     );
+    return recomposer(base, [ouverture, graphique, atelier, cloture]);
+  }
 
-    expect(
-      fuites(recomposer(base, [ouverture, graphique, atelier, cloture])),
-    ).toEqual([AVANT]);
+  it('refuse les valeurs d un graphique arrondies a la precision de la question', () => {
+    const cours = graphiqueAvant('chart', {
+      title: 'Part des canaux',
+      labels: ['Marketplace'],
+      series: [{ label: 'Part (%)', values: [45.478261] }],
+      description: 'Une barre par canal.',
+    });
+
+    expect(fuites(cours)).toEqual([AVANT]);
+  });
+
+  const NUAGE = {
+    title: 'Deux séries',
+    xLabel: 'x',
+    yLabel: 'y',
+    xRange: [0, 100],
+    yRange: [0, 100],
+    points: [
+      { x: 1, y: 2 },
+      { x: 3, y: 4 },
+    ],
+    description: 'Un nuage de deux points.',
+  };
+
+  it.each([
+    ['un point', { points: [...NUAGE.points, { x: 45.478261, y: 3 }] }],
+    ['le point moyen', { meanPoint: { x: 2, y: 45.478261 } }],
+    ['la pente de la droite', { line: { slope: 45.478261, intercept: 0 } }],
+    ['l ordonnée à l origine', { line: { slope: 1, intercept: 45.478261 } }],
+  ])(
+    'refuse une coordonnée du nuage arrondie à la précision de la question : %s',
+    (_cas, alteration) => {
+      expect(
+        fuites(graphiqueAvant('scatter', { ...NUAGE, ...alteration })),
+      ).toEqual([AVANT]);
+    },
+  );
+
+  it('accepte un nuage dont aucune coordonnée ne donne la réponse', () => {
+    expect(fuites(graphiqueAvant('scatter', NUAGE))).toEqual([]);
   });
 });
 

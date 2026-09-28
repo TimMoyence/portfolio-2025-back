@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sha256": "a043e692d2a51961d08dbc53be36a5d0656715dbdb18bb62a846ba8231b3fab9",
+  "sha256": "6899229e7a8d56ea8184a6eb9542d7147fde4060d8c15697a96d640ed5d15285",
   "vecteurs": [
     {
       "id": "feuille-cycle-deux-maillons",
@@ -217,6 +217,96 @@
       "type": "expression",
       "entree": { "expression": "QUARTILE(1;2;3;4;1)", "variables": {} },
       "attendu": { "valeur": null, "erreur": "#VALEUR!" }
+    },
+    {
+      "id": "feuille-ajustement-affine-paires-ecartees",
+      "type": "feuille",
+      "entree": {
+        "lignes": 6,
+        "colonnes": 4,
+        "cellules": {
+          "A1": "Rang",
+          "A2": "0",
+          "A3": "1",
+          "A4": "2",
+          "A5": "3",
+          "A6": "4",
+          "B1": "Eo",
+          "B2": "1",
+          "B3": "3",
+          "B5": "7",
+          "B6": "9",
+          "C1": "=PENTE(B1:B6;A1:A6)",
+          "C2": "=ORDONNEE.ORIGINE(B1:B6;A1:A6)",
+          "C3": "=COEFFICIENT.CORRELATION(A1:A6;B1:B6)",
+          "C4": "=pente(B2:B6;A2:A5)",
+          "C5": "=PENTE(B2:B3;A2:A2)",
+          "D1": "=PENTE(B2;A2)",
+          "D2": "=CORRELATION(A2:A6;B2:B6)"
+        }
+      },
+      "attendu": {
+        "A1": { "valeur": null, "erreur": "#VALEUR!" },
+        "A2": { "valeur": 0, "erreur": null },
+        "A3": { "valeur": 1, "erreur": null },
+        "A4": { "valeur": 2, "erreur": null },
+        "A5": { "valeur": 3, "erreur": null },
+        "A6": { "valeur": 4, "erreur": null },
+        "B1": { "valeur": null, "erreur": "#VALEUR!" },
+        "B2": { "valeur": 1, "erreur": null },
+        "B3": { "valeur": 3, "erreur": null },
+        "B5": { "valeur": 7, "erreur": null },
+        "B6": { "valeur": 9, "erreur": null },
+        "C1": { "valeur": 2, "erreur": null },
+        "C2": { "valeur": 1, "erreur": null },
+        "C3": { "valeur": 1, "erreur": null },
+        "C4": { "valeur": null, "erreur": "#VALEUR!" },
+        "C5": { "valeur": null, "erreur": "#VALEUR!" },
+        "D1": { "valeur": null, "erreur": "#VALEUR!" },
+        "D2": { "valeur": null, "erreur": "#NOM?" }
+      }
+    },
+    {
+      "id": "feuille-ajustement-affine-serie-constante",
+      "type": "feuille",
+      "entree": {
+        "lignes": 3,
+        "colonnes": 3,
+        "cellules": {
+          "A1": "5",
+          "A2": "5",
+          "B1": "1",
+          "B2": "4",
+          "C1": "=PENTE(B1:B2;A1:A2)",
+          "C2": "=ORDONNEE.ORIGINE(B1:B2;A1:A2)",
+          "C3": "=COEFFICIENT.CORRELATION(B1:B1;A1:A1)"
+        }
+      },
+      "attendu": {
+        "A1": { "valeur": 5, "erreur": null },
+        "A2": { "valeur": 5, "erreur": null },
+        "B1": { "valeur": 1, "erreur": null },
+        "B2": { "valeur": 4, "erreur": null },
+        "C1": { "valeur": null, "erreur": "#DIV/0!" },
+        "C2": { "valeur": null, "erreur": "#DIV/0!" },
+        "C3": { "valeur": null, "erreur": "#DIV/0!" }
+      }
+    },
+    {
+      "id": "feuille-nom-pointe-hors-appel",
+      "type": "feuille",
+      "entree": {
+        "lignes": 1,
+        "colonnes": 2,
+        "cellules": {
+          "A1": "=this.constructor",
+          "B1": "=PENTE.INCONNUE(A1)"
+        }
+      },
+      "attendu": {
+        "A1": { "valeur": null, "erreur": "#VALEUR!" },
+        "B1": { "valeur": null, "erreur": "#NOM?" }
+      }
     }
   ]
 }

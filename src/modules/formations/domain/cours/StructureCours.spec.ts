@@ -46,7 +46,7 @@ const avecAtelierDe = (dureeMinutes: number): Cours =>
   ]);
 
 describe('verifierStructure', () => {
-  it('expose les seize regles de structure dans l ordre applique aux violations', () => {
+  it('expose les vingt regles de structure dans l ordre applique aux violations', () => {
     expect(REGLES_STRUCTURE).toEqual([
       'exposition-continue',
       'ratio-interaction',
@@ -64,6 +64,10 @@ describe('verifierStructure', () => {
       'catalogue-sans-question',
       'media-sans-licence',
       'options-neutres',
+      'gabarit-budget',
+      'gabarit-cycle',
+      'gabarit-temps-exercice',
+      'gabarit-mini-situation',
     ]);
   });
 
