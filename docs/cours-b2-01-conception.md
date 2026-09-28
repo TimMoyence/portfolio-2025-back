@@ -846,6 +846,10 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
     `reference` « Axe de Samir » ; `series`
     [{ id « marge », libelle « Marge brute », trait « plein », calcul
     `SI(x<=1;285000+3000*x;SI(x<=2;288000+1800*(x-1);289800+1200*(x-2)))` }]
+  - `descriptionPapier`, imprimée au livret à la place de la description (les deux axes y sont
+    imprimés côte à côte, rapport des hauteurs compris) : « Comparez les deux figures : à gauche
+    l’axe de Samir part de 284 000 €, à droite il part de 0 €. Sous chacune, le rapport des hauteurs
+    est indiqué : expliquez pourquoi il change alors que les montants, eux, ne bougent pas. »
   - `description` « Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de
     l’axe vertical. Combien de fois la barre 2025 paraît-elle plus haute que celle de 2022 dans chaque
     cas ? Les montants, eux, ne bougent pas. » ; aucun `renvoi` : le préréglage « Axe de Samir » fige
