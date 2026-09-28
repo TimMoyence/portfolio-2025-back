@@ -266,7 +266,7 @@ const ACTE_1: moteur.Acte = [
         {
           kind: 'definition',
           title: 'Mesurer l’écart',
-          text: 'L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen à la moyenne, dans l’unité de la série ; la variance, son carré, est en unité².',
+          text: 'L’étendue (max − min) ne regarde que deux valeurs ; l’écart interquartile Q₃ − Q₁, la moitié centrale. L’écart-type mesure la dispersion autour de la moyenne, dans l’unité ; la variance, son carré, en unité².',
           formula: 'σ = √[((x₁ − x̄)² + … + (xₙ − x̄)²) ÷ n]',
         },
         {
@@ -338,7 +338,7 @@ const ACTE_1: moteur.Acte = [
               id: 'extreme',
               intitule: 'L’effet d’une valeur extrême',
               raisonnement:
-                'La facture de 90 jours tire la moyenne cinq jours au-dessus de la médiane ; la médiane ne dépend que du rang des valeurs du milieu.',
+                'La facture de 90 jours tire la moyenne 5,5 jours au-dessus de la médiane ; la médiane ne dépend que du rang des valeurs du milieu.',
               invite:
                 'Pourquoi la moyenne dépasse-t-elle nettement la médiane ?',
             },
@@ -1131,7 +1131,7 @@ const ACTE_3: moteur.Acte = [
           null,
           564.4,
           moteur.DEUX_DECIMALES,
-          '564,4',
+          '564,40',
           [[43.885714, 'pente-ordonnee-inversees']],
         ),
         moteur.numerique(
@@ -1364,7 +1364,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['nuage-de-points', 'prevision'],
       notes: moteur.puces(
-        'Conditions du CCF : 25 min, calculatrice, poste individuel ; la question tableur vaut 3 points sur 10.',
+        'Mini-situation de 29 min (tableur 15, coffre 14), calculatrice, poste individuel ; barème sur 10 : tableur 3, énigmes 2, 2, 1,5 et 1,5.',
         'Papier : la situation est en tête de la partie 4 du livret.',
       ),
     },
@@ -1509,14 +1509,14 @@ const ACTE_4: moteur.Acte = [
         enigmes: [
           {
             id: 'b2-02-a4-e1-prevision',
-            intitule: 'La prévision de fin 2025',
+            intitule: 'La prévision de fin 2025 (2 points)',
             enonce:
               'Avec la droite y = 3,51x + 7,21, quel nombre d’abonnements à la fibre prévoir pour fin 2025, en millions ? Arrondir au centième.',
             indice: 'Remplacez x par le rang de l’année, pas par l’année.',
           },
           {
             id: 'b2-02-a4-e2-seuil',
-            intitule: 'L’année des 35 millions',
+            intitule: 'L’année des 35 millions (2 points)',
             enonce:
               'Selon ce modèle, en quelle année le nombre d’abonnements dépasserait-il 35 millions pour la première fois ?',
             indice:
@@ -1524,7 +1524,7 @@ const ACTE_4: moteur.Acte = [
           },
           {
             id: 'b2-02-a4-e3-lointaine',
-            intitule: 'Une prévision lointaine',
+            intitule: 'Une prévision lointaine (1,5 point)',
             enonce:
               'Quel nombre d’abonnements le modèle prévoit-il pour fin 2030, en millions ? Arrondir au centième.',
             indice:
@@ -1532,7 +1532,7 @@ const ACTE_4: moteur.Acte = [
           },
           {
             id: 'b2-02-a4-e4-ralentissement',
-            intitule: 'Le modèle face au réel',
+            intitule: 'Le modèle face au réel (1,5 point)',
             enonce:
               'L’Arcep a publié depuis le chiffre réel : la fibre a gagné 2,7 millions d’abonnements en 2025. De combien de millions la hausse annuelle prévue par le modèle dépasse-t-elle cette hausse observée ? Arrondir au centième.',
             indice:
@@ -1719,7 +1719,7 @@ const ACTE_4: moteur.Acte = [
             '(2,5 ; 30), les deux moyennes',
             [
               [
-                '(2 ; 20), le point du milieu du tableau',
+                '(2 ; 20), les valeurs du deuxième rang',
                 'point-moyen-confondu',
               ],
               ['(10 ; 120), les deux sommes', 'point-moyen-confondu'],

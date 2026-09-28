@@ -84,6 +84,62 @@ decrireLaFicheDuCours('B2-02', COURS, {
   ],
 });
 
+const FACTURES_DE_SEPTEMBRE = [28, 41, 35, 90, 33, 39, 44, 30];
+const POINTS_DE_LA_QUESTION_TABLEUR = 3;
+const POINTS_DE_LA_MINI_SITUATION = 10;
+
+function texteDeLEcran(screenId: string): string {
+  const ecran = COURS_B2_02.ecrans.find(
+    (candidat) => candidat.screenId === screenId,
+  );
+  if (ecran === undefined) {
+    throw new Error(`écran ${screenId} absent du B2-02`);
+  }
+  return JSON.stringify(ecran);
+}
+
+const enFrancais = (valeur: number): string =>
+  valeur.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+
+describe('B2-02 — textes relus contre les données et le programme', () => {
+  it('chiffre l’écart entre moyenne et médiane de l’exemple A1-07', () => {
+    const ecart =
+      moyenne(FACTURES_DE_SEPTEMBRE) - mediane(FACTURES_DE_SEPTEMBRE);
+
+    expect(texteDeLEcran('B2-02-A1-07-EXEMPLE-RESUME')).toContain(
+      `${enFrancais(ecart)} jours au-dessus de la médiane`,
+    );
+  });
+
+  it('nomme l’écart interquartile dans la trace écrite de la dispersion', () => {
+    expect(texteDeLEcran('B2-02-A1-06-COURS-RESUMER')).toContain(
+      'écart interquartile',
+    );
+  });
+
+  it('ne propose pas en rappel le point du milieu du tableau que l’exemple A2-04 récuse', () => {
+    expect(texteDeLEcran('B2-02-A2-04-EXEMPLE-NUAGE')).toContain(
+      'point du milieu du tableau n’existe pas',
+    );
+    expect(texteDeLEcran('B2-02-A4-04-RAPPEL')).not.toContain(
+      'point du milieu du tableau',
+    );
+  });
+
+  it('note chaque énigme de la mini-situation, tableur compris, sur dix points', () => {
+    const points = [
+      ...texteDeLEcran('B2-02-A4-03-COFFRE-FIBRE').matchAll(
+        /\((\d+(?:,\d+)?) points?\)/g,
+      ),
+    ].map(([, valeur]) => Number(valeur.replace(',', '.')));
+
+    expect(points).toHaveLength(4);
+    expect(somme(points) + POINTS_DE_LA_QUESTION_TABLEUR).toBe(
+      POINTS_DE_LA_MINI_SITUATION,
+    );
+  });
+});
+
 describe('B2-02 — gabarit v3', () => {
   it('déclare le gabarit v3, dont contrat-des-cours contrôle les règles', () => {
     expect(COURS.gabarit).toBe('v3');
