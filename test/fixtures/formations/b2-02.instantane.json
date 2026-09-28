@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "b02d02833dacd5ebcaac5317f675e61f02f9d1b2c206a0b3ebb3a4005d1f98af",
+  "empreinte": "9ad2e6342ea5aa5a030e26a251cda6ffebe4122f8b0da15a95d07e92e2dda66b",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -146,118 +146,110 @@
                 "note": "Délai = nombre de jours entre l’émission de la facture et son encaissement. Données fictives Atelier Rivage, créées pour ce cours.",
                 "columns": [
                   {
-                    "key": "facture",
+                    "key": "facture1",
                     "label": "Facture"
                   },
                   {
-                    "key": "client",
+                    "key": "client1",
                     "label": "Type de client"
                   },
                   {
-                    "key": "delai",
-                    "label": "Délai de paiement (jours)"
+                    "key": "delai1",
+                    "label": "Délai (jours)"
+                  },
+                  {
+                    "key": "facture2",
+                    "label": "Facture"
+                  },
+                  {
+                    "key": "client2",
+                    "label": "Type de client"
+                  },
+                  {
+                    "key": "delai2",
+                    "label": "Délai (jours)"
                   }
                 ],
                 "rows": [
                   {
-                    "facture": "F101",
-                    "client": "Club nautique",
-                    "delai": "42"
+                    "facture1": "F101",
+                    "client1": "Club nautique",
+                    "delai1": "42",
+                    "facture2": "F111",
+                    "client2": "Club nautique",
+                    "delai2": "35"
                   },
                   {
-                    "facture": "F102",
-                    "client": "Particulier",
-                    "delai": "25"
+                    "facture1": "F102",
+                    "client1": "École de voile",
+                    "delai1": "25",
+                    "facture2": "F112",
+                    "client2": "Chantier naval",
+                    "delai2": "52"
                   },
                   {
-                    "facture": "F103",
-                    "client": "Chantier naval",
-                    "delai": "58"
+                    "facture1": "F103",
+                    "client1": "Chantier naval",
+                    "delai1": "58",
+                    "facture2": "F113",
+                    "client2": "École de voile",
+                    "delai2": "28"
                   },
                   {
-                    "facture": "F104",
-                    "client": "Club nautique",
-                    "delai": "31"
+                    "facture1": "F104",
+                    "client1": "Club nautique",
+                    "delai1": "31",
+                    "facture2": "F114",
+                    "client2": "Chantier naval",
+                    "delai2": "75"
                   },
                   {
-                    "facture": "F105",
-                    "client": "Chantier naval (facture contestée)",
-                    "delai": "146"
+                    "facture1": "F105",
+                    "client1": "Chantier naval (facture contestée)",
+                    "delai1": "146",
+                    "facture2": "F115",
+                    "client2": "Club nautique",
+                    "delai2": "40"
                   },
                   {
-                    "facture": "F106",
-                    "client": "Loueur de bateaux",
-                    "delai": "38"
+                    "facture1": "F106",
+                    "client1": "Loueur de bateaux",
+                    "delai1": "38",
+                    "facture2": "F116",
+                    "client2": "Loueur de bateaux",
+                    "delai2": "30"
                   },
                   {
-                    "facture": "F107",
-                    "client": "Club nautique",
-                    "delai": "47"
+                    "facture1": "F107",
+                    "client1": "Club nautique",
+                    "delai1": "47",
+                    "facture2": "F117",
+                    "client2": "Chantier naval",
+                    "delai2": "55"
                   },
                   {
-                    "facture": "F108",
-                    "client": "Particulier",
-                    "delai": "18"
+                    "facture1": "F108",
+                    "client1": "École de voile",
+                    "delai1": "18",
+                    "facture2": "F118",
+                    "client2": "Club nautique",
+                    "delai2": "34"
                   },
                   {
-                    "facture": "F109",
-                    "client": "Chantier naval",
-                    "delai": "62"
+                    "facture1": "F109",
+                    "client1": "Chantier naval",
+                    "delai1": "62",
+                    "facture2": "F119",
+                    "client2": "Loueur de bateaux",
+                    "delai2": "50"
                   },
                   {
-                    "facture": "F110",
-                    "client": "Loueur de bateaux",
-                    "delai": "44"
-                  },
-                  {
-                    "facture": "F111",
-                    "client": "Club nautique",
-                    "delai": "35"
-                  },
-                  {
-                    "facture": "F112",
-                    "client": "Chantier naval",
-                    "delai": "52"
-                  },
-                  {
-                    "facture": "F113",
-                    "client": "Particulier",
-                    "delai": "28"
-                  },
-                  {
-                    "facture": "F114",
-                    "client": "Chantier naval",
-                    "delai": "75"
-                  },
-                  {
-                    "facture": "F115",
-                    "client": "Club nautique",
-                    "delai": "40"
-                  },
-                  {
-                    "facture": "F116",
-                    "client": "Loueur de bateaux",
-                    "delai": "30"
-                  },
-                  {
-                    "facture": "F117",
-                    "client": "Chantier naval",
-                    "delai": "55"
-                  },
-                  {
-                    "facture": "F118",
-                    "client": "Club nautique",
-                    "delai": "34"
-                  },
-                  {
-                    "facture": "F119",
-                    "client": "Loueur de bateaux",
-                    "delai": "50"
-                  },
-                  {
-                    "facture": "F120",
-                    "client": "Club nautique",
-                    "delai": "45"
+                    "facture1": "F110",
+                    "client1": "Loueur de bateaux",
+                    "delai1": "44",
+                    "facture2": "F120",
+                    "client2": "Club nautique",
+                    "delai2": "45"
                   }
                 ]
               }
@@ -337,18 +329,18 @@
                   {
                     "kind": "definition",
                     "title": "Mesurer l’écart",
-                    "text": "L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen des valeurs à la moyenne, dans l’unité de la série ; la variance est son carré, en unité².",
+                    "text": "L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen à la moyenne, dans l’unité de la série ; la variance, son carré, est en unité².",
                     "formula": "σ = √[((x₁ − x̄)² + … + (xₙ − x̄)²) ÷ n]"
                   },
                   {
                     "kind": "property",
                     "title": "Une valeur extrême",
-                    "text": "Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce qui prouve une erreur, on ne la retire pas : on la garde, on la signale et l’on publie la médiane à côté de la moyenne."
+                    "text": "Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne."
                   },
                   {
                     "kind": "exam",
                     "title": "Au CCF, au tableur",
-                    "text": "Toute la population est observée : écart-type avec ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.",
+                    "text": "Population entière : ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.",
                     "steps": [
                       "=MOYENNE(plage)",
                       "=MEDIANE(plage)",
@@ -593,7 +585,6 @@
             }
           ]
         },
-        "renvoi": "B2-02-A1-04-FACTURES",
         "resoluPar": ["B2-02-A1-08-CORRECTION"]
       },
       {
@@ -1032,7 +1023,6 @@
             }
           ]
         },
-        "renvoi": "B2-02-A2-01-NUAGE-RIVAGE",
         "resoluPar": ["B2-02-A2-05-CORRECTION"]
       },
       {
@@ -2300,118 +2290,110 @@
                 "note": "Délai = nombre de jours entre l’émission de la facture et son encaissement. Données fictives Atelier Rivage, créées pour ce cours.",
                 "columns": [
                   {
-                    "key": "facture",
+                    "key": "facture1",
                     "label": "Facture"
                   },
                   {
-                    "key": "client",
+                    "key": "client1",
                     "label": "Type de client"
                   },
                   {
-                    "key": "delai",
-                    "label": "Délai de paiement (jours)"
+                    "key": "delai1",
+                    "label": "Délai (jours)"
+                  },
+                  {
+                    "key": "facture2",
+                    "label": "Facture"
+                  },
+                  {
+                    "key": "client2",
+                    "label": "Type de client"
+                  },
+                  {
+                    "key": "delai2",
+                    "label": "Délai (jours)"
                   }
                 ],
                 "rows": [
                   {
-                    "facture": "F101",
-                    "client": "Club nautique",
-                    "delai": "42"
+                    "facture1": "F101",
+                    "client1": "Club nautique",
+                    "delai1": "42",
+                    "facture2": "F111",
+                    "client2": "Club nautique",
+                    "delai2": "35"
                   },
                   {
-                    "facture": "F102",
-                    "client": "Particulier",
-                    "delai": "25"
+                    "facture1": "F102",
+                    "client1": "École de voile",
+                    "delai1": "25",
+                    "facture2": "F112",
+                    "client2": "Chantier naval",
+                    "delai2": "52"
                   },
                   {
-                    "facture": "F103",
-                    "client": "Chantier naval",
-                    "delai": "58"
+                    "facture1": "F103",
+                    "client1": "Chantier naval",
+                    "delai1": "58",
+                    "facture2": "F113",
+                    "client2": "École de voile",
+                    "delai2": "28"
                   },
                   {
-                    "facture": "F104",
-                    "client": "Club nautique",
-                    "delai": "31"
+                    "facture1": "F104",
+                    "client1": "Club nautique",
+                    "delai1": "31",
+                    "facture2": "F114",
+                    "client2": "Chantier naval",
+                    "delai2": "75"
                   },
                   {
-                    "facture": "F105",
-                    "client": "Chantier naval (facture contestée)",
-                    "delai": "146"
+                    "facture1": "F105",
+                    "client1": "Chantier naval (facture contestée)",
+                    "delai1": "146",
+                    "facture2": "F115",
+                    "client2": "Club nautique",
+                    "delai2": "40"
                   },
                   {
-                    "facture": "F106",
-                    "client": "Loueur de bateaux",
-                    "delai": "38"
+                    "facture1": "F106",
+                    "client1": "Loueur de bateaux",
+                    "delai1": "38",
+                    "facture2": "F116",
+                    "client2": "Loueur de bateaux",
+                    "delai2": "30"
                   },
                   {
-                    "facture": "F107",
-                    "client": "Club nautique",
-                    "delai": "47"
+                    "facture1": "F107",
+                    "client1": "Club nautique",
+                    "delai1": "47",
+                    "facture2": "F117",
+                    "client2": "Chantier naval",
+                    "delai2": "55"
                   },
                   {
-                    "facture": "F108",
-                    "client": "Particulier",
-                    "delai": "18"
+                    "facture1": "F108",
+                    "client1": "École de voile",
+                    "delai1": "18",
+                    "facture2": "F118",
+                    "client2": "Club nautique",
+                    "delai2": "34"
                   },
                   {
-                    "facture": "F109",
-                    "client": "Chantier naval",
-                    "delai": "62"
+                    "facture1": "F109",
+                    "client1": "Chantier naval",
+                    "delai1": "62",
+                    "facture2": "F119",
+                    "client2": "Loueur de bateaux",
+                    "delai2": "50"
                   },
                   {
-                    "facture": "F110",
-                    "client": "Loueur de bateaux",
-                    "delai": "44"
-                  },
-                  {
-                    "facture": "F111",
-                    "client": "Club nautique",
-                    "delai": "35"
-                  },
-                  {
-                    "facture": "F112",
-                    "client": "Chantier naval",
-                    "delai": "52"
-                  },
-                  {
-                    "facture": "F113",
-                    "client": "Particulier",
-                    "delai": "28"
-                  },
-                  {
-                    "facture": "F114",
-                    "client": "Chantier naval",
-                    "delai": "75"
-                  },
-                  {
-                    "facture": "F115",
-                    "client": "Club nautique",
-                    "delai": "40"
-                  },
-                  {
-                    "facture": "F116",
-                    "client": "Loueur de bateaux",
-                    "delai": "30"
-                  },
-                  {
-                    "facture": "F117",
-                    "client": "Chantier naval",
-                    "delai": "55"
-                  },
-                  {
-                    "facture": "F118",
-                    "client": "Club nautique",
-                    "delai": "34"
-                  },
-                  {
-                    "facture": "F119",
-                    "client": "Loueur de bateaux",
-                    "delai": "50"
-                  },
-                  {
-                    "facture": "F120",
-                    "client": "Club nautique",
-                    "delai": "45"
+                    "facture1": "F110",
+                    "client1": "Loueur de bateaux",
+                    "delai1": "44",
+                    "facture2": "F120",
+                    "client2": "Club nautique",
+                    "delai2": "45"
                   }
                 ]
               }
@@ -2507,18 +2489,18 @@
                   {
                     "kind": "definition",
                     "title": "Mesurer l’écart",
-                    "text": "L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen des valeurs à la moyenne, dans l’unité de la série ; la variance est son carré, en unité².",
+                    "text": "L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen à la moyenne, dans l’unité de la série ; la variance, son carré, est en unité².",
                     "formula": "σ = √[((x₁ − x̄)² + … + (xₙ − x̄)²) ÷ n]"
                   },
                   {
                     "kind": "property",
                     "title": "Une valeur extrême",
-                    "text": "Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce qui prouve une erreur, on ne la retire pas : on la garde, on la signale et l’on publie la médiane à côté de la moyenne."
+                    "text": "Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne."
                   },
                   {
                     "kind": "exam",
                     "title": "Au CCF, au tableur",
-                    "text": "Toute la population est observée : écart-type avec ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.",
+                    "text": "Population entière : ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.",
                     "steps": [
                       "=MOYENNE(plage)",
                       "=MEDIANE(plage)",
@@ -2781,7 +2763,6 @@
             }
           ]
         },
-        "renvoi": "B2-02-A1-04-FACTURES",
         "resoluPar": ["B2-02-A1-08-CORRECTION"],
         "notes": "• Temps : réflexion 2 min · travail 8 min\n• Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.\n• Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.\n• Papier : exercice 1 du livret.",
         "diffusion": "seance",
@@ -3437,7 +3418,6 @@
             }
           ]
         },
-        "renvoi": "B2-02-A2-01-NUAGE-RIVAGE",
         "resoluPar": ["B2-02-A2-05-CORRECTION"],
         "notes": "• Temps : réflexion 2 min · travail 7 min\n• Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.\n• Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.\n• Papier : exercice 2 du livret.",
         "diffusion": "seance",
@@ -5546,118 +5526,110 @@
                 "note": "Délai = nombre de jours entre l’émission de la facture et son encaissement. Données fictives Atelier Rivage, créées pour ce cours.",
                 "columns": [
                   {
-                    "key": "facture",
+                    "key": "facture1",
                     "label": "Facture"
                   },
                   {
-                    "key": "client",
+                    "key": "client1",
                     "label": "Type de client"
                   },
                   {
-                    "key": "delai",
-                    "label": "Délai de paiement (jours)"
+                    "key": "delai1",
+                    "label": "Délai (jours)"
+                  },
+                  {
+                    "key": "facture2",
+                    "label": "Facture"
+                  },
+                  {
+                    "key": "client2",
+                    "label": "Type de client"
+                  },
+                  {
+                    "key": "delai2",
+                    "label": "Délai (jours)"
                   }
                 ],
                 "rows": [
                   {
-                    "facture": "F101",
-                    "client": "Club nautique",
-                    "delai": "42"
+                    "facture1": "F101",
+                    "client1": "Club nautique",
+                    "delai1": "42",
+                    "facture2": "F111",
+                    "client2": "Club nautique",
+                    "delai2": "35"
                   },
                   {
-                    "facture": "F102",
-                    "client": "Particulier",
-                    "delai": "25"
+                    "facture1": "F102",
+                    "client1": "École de voile",
+                    "delai1": "25",
+                    "facture2": "F112",
+                    "client2": "Chantier naval",
+                    "delai2": "52"
                   },
                   {
-                    "facture": "F103",
-                    "client": "Chantier naval",
-                    "delai": "58"
+                    "facture1": "F103",
+                    "client1": "Chantier naval",
+                    "delai1": "58",
+                    "facture2": "F113",
+                    "client2": "École de voile",
+                    "delai2": "28"
                   },
                   {
-                    "facture": "F104",
-                    "client": "Club nautique",
-                    "delai": "31"
+                    "facture1": "F104",
+                    "client1": "Club nautique",
+                    "delai1": "31",
+                    "facture2": "F114",
+                    "client2": "Chantier naval",
+                    "delai2": "75"
                   },
                   {
-                    "facture": "F105",
-                    "client": "Chantier naval (facture contestée)",
-                    "delai": "146"
+                    "facture1": "F105",
+                    "client1": "Chantier naval (facture contestée)",
+                    "delai1": "146",
+                    "facture2": "F115",
+                    "client2": "Club nautique",
+                    "delai2": "40"
                   },
                   {
-                    "facture": "F106",
-                    "client": "Loueur de bateaux",
-                    "delai": "38"
+                    "facture1": "F106",
+                    "client1": "Loueur de bateaux",
+                    "delai1": "38",
+                    "facture2": "F116",
+                    "client2": "Loueur de bateaux",
+                    "delai2": "30"
                   },
                   {
-                    "facture": "F107",
-                    "client": "Club nautique",
-                    "delai": "47"
+                    "facture1": "F107",
+                    "client1": "Club nautique",
+                    "delai1": "47",
+                    "facture2": "F117",
+                    "client2": "Chantier naval",
+                    "delai2": "55"
                   },
                   {
-                    "facture": "F108",
-                    "client": "Particulier",
-                    "delai": "18"
+                    "facture1": "F108",
+                    "client1": "École de voile",
+                    "delai1": "18",
+                    "facture2": "F118",
+                    "client2": "Club nautique",
+                    "delai2": "34"
                   },
                   {
-                    "facture": "F109",
-                    "client": "Chantier naval",
-                    "delai": "62"
+                    "facture1": "F109",
+                    "client1": "Chantier naval",
+                    "delai1": "62",
+                    "facture2": "F119",
+                    "client2": "Loueur de bateaux",
+                    "delai2": "50"
                   },
                   {
-                    "facture": "F110",
-                    "client": "Loueur de bateaux",
-                    "delai": "44"
-                  },
-                  {
-                    "facture": "F111",
-                    "client": "Club nautique",
-                    "delai": "35"
-                  },
-                  {
-                    "facture": "F112",
-                    "client": "Chantier naval",
-                    "delai": "52"
-                  },
-                  {
-                    "facture": "F113",
-                    "client": "Particulier",
-                    "delai": "28"
-                  },
-                  {
-                    "facture": "F114",
-                    "client": "Chantier naval",
-                    "delai": "75"
-                  },
-                  {
-                    "facture": "F115",
-                    "client": "Club nautique",
-                    "delai": "40"
-                  },
-                  {
-                    "facture": "F116",
-                    "client": "Loueur de bateaux",
-                    "delai": "30"
-                  },
-                  {
-                    "facture": "F117",
-                    "client": "Chantier naval",
-                    "delai": "55"
-                  },
-                  {
-                    "facture": "F118",
-                    "client": "Club nautique",
-                    "delai": "34"
-                  },
-                  {
-                    "facture": "F119",
-                    "client": "Loueur de bateaux",
-                    "delai": "50"
-                  },
-                  {
-                    "facture": "F120",
-                    "client": "Club nautique",
-                    "delai": "45"
+                    "facture1": "F110",
+                    "client1": "Loueur de bateaux",
+                    "delai1": "44",
+                    "facture2": "F120",
+                    "client2": "Club nautique",
+                    "delai2": "45"
                   }
                 ]
               }
@@ -5711,18 +5683,18 @@
                   {
                     "kind": "definition",
                     "title": "Mesurer l’écart",
-                    "text": "L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen des valeurs à la moyenne, dans l’unité de la série ; la variance est son carré, en unité².",
+                    "text": "L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen à la moyenne, dans l’unité de la série ; la variance, son carré, est en unité².",
                     "formula": "σ = √[((x₁ − x̄)² + … + (xₙ − x̄)²) ÷ n]"
                   },
                   {
                     "kind": "property",
                     "title": "Une valeur extrême",
-                    "text": "Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce qui prouve une erreur, on ne la retire pas : on la garde, on la signale et l’on publie la médiane à côté de la moyenne."
+                    "text": "Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne."
                   },
                   {
                     "kind": "exam",
                     "title": "Au CCF, au tableur",
-                    "text": "Toute la population est observée : écart-type avec ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.",
+                    "text": "Population entière : ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.",
                     "steps": [
                       "=MOYENNE(plage)",
                       "=MEDIANE(plage)",

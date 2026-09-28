@@ -22,18 +22,18 @@ const DELAIS_DU_TRIMESTRE = [
 
 const CLIENTS_DU_TRIMESTRE = [
   'Club nautique',
-  'Particulier',
+  'École de voile',
   'Chantier naval',
   'Club nautique',
   'Chantier naval',
   'Loueur de bateaux',
   'Club nautique',
-  'Particulier',
+  'École de voile',
   'Chantier naval',
   'Loueur de bateaux',
   'Club nautique',
   'Chantier naval',
-  'Particulier',
+  'École de voile',
   'Chantier naval',
   'Club nautique',
   'Loueur de bateaux',
@@ -45,8 +45,22 @@ const CLIENTS_DU_TRIMESTRE = [
 
 const FACTURE_EN_LITIGE = 'F105';
 
+const FACTURES_PAR_BLOC = DELAIS_DU_TRIMESTRE.length / 2;
+
 function numeroDeFacture(rang: number): string {
   return `F${101 + rang}`;
+}
+
+function celluleDeFacture(rang: number, bloc: 1 | 2): Record<string, string> {
+  const facture = numeroDeFacture(rang);
+  return {
+    [`facture${bloc}`]: facture,
+    [`client${bloc}`]:
+      facture === FACTURE_EN_LITIGE
+        ? `${CLIENTS_DU_TRIMESTRE[rang]} (facture contestée)`
+        : CLIENTS_DU_TRIMESTRE[rang],
+    [`delai${bloc}`]: String(DELAIS_DU_TRIMESTRE[rang]),
+  };
 }
 
 const ANNEES_RIVAGE = [2020, 2021, 2022, 2023, 2024, 2025] as const;
@@ -175,18 +189,14 @@ const ACTE_1: moteur.Acte = [
       title: 'Les vingt délais de paiement du trimestre',
       subtitle:
         'Factures aux clients professionnels émises au dernier trimestre, toutes encaissées depuis.',
-      columns: [
-        { key: 'facture', label: 'Facture' },
-        { key: 'client', label: 'Type de client' },
-        { key: 'delai', label: 'Délai de paiement (jours)' },
-      ],
-      rows: DELAIS_DU_TRIMESTRE.map((delai, rang) => ({
-        facture: numeroDeFacture(rang),
-        client:
-          numeroDeFacture(rang) === FACTURE_EN_LITIGE
-            ? `${CLIENTS_DU_TRIMESTRE[rang]} (facture contestée)`
-            : CLIENTS_DU_TRIMESTRE[rang],
-        delai: String(delai),
+      columns: [1, 2].flatMap((bloc) => [
+        { key: `facture${bloc}`, label: 'Facture' },
+        { key: `client${bloc}`, label: 'Type de client' },
+        { key: `delai${bloc}`, label: 'Délai (jours)' },
+      ]),
+      rows: Array.from({ length: FACTURES_PAR_BLOC }, (_, ligne) => ({
+        ...celluleDeFacture(ligne, 1),
+        ...celluleDeFacture(ligne + FACTURES_PAR_BLOC, 2),
       })),
       note: 'Délai = nombre de jours entre l’émission de la facture et son encaissement. Données fictives Atelier Rivage, créées pour ce cours.',
     },
@@ -256,18 +266,18 @@ const ACTE_1: moteur.Acte = [
         {
           kind: 'definition',
           title: 'Mesurer l’écart',
-          text: 'L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen des valeurs à la moyenne, dans l’unité de la série ; la variance est son carré, en unité².',
+          text: 'L’étendue (maximum − minimum) ne regarde que deux valeurs. L’écart-type mesure l’écart moyen à la moyenne, dans l’unité de la série ; la variance, son carré, est en unité².',
           formula: 'σ = √[((x₁ − x̄)² + … + (xₙ − x̄)²) ÷ n]',
         },
         {
           kind: 'property',
           title: 'Une valeur extrême',
-          text: 'Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce qui prouve une erreur, on ne la retire pas : on la garde, on la signale et l’on publie la médiane à côté de la moyenne.',
+          text: 'Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne.',
         },
         {
           kind: 'exam',
           title: 'Au CCF, au tableur',
-          text: 'Toute la population est observée : écart-type avec ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.',
+          text: 'Population entière : ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.',
           steps: ['=MOYENNE(plage)', '=MEDIANE(plage)', '=ECARTYPEP(plage)'],
         },
       ],
@@ -366,7 +376,6 @@ const ACTE_1: moteur.Acte = [
       'Papier : exercice 1 du livret.',
     ),
     proprietes: {
-      renvoi: 'B2-02-A1-04-FACTURES',
       intitule: 'Exercice 1 — Le centre et l’écart des vingt délais',
       consigne: CONSIGNE_DES_DELAIS,
       regime: 'focus',
@@ -729,7 +738,6 @@ const ACTE_2: moteur.Acte = [
       'Papier : exercice 2 du livret.',
     ),
     proprietes: {
-      renvoi: 'B2-02-A2-01-NUAGE-RIVAGE',
       intitule: 'Exercice 2 — Le nuage d’Atelier Rivage',
       consigne: CONSIGNE_DE_RIVAGE,
       regime: 'focus',
