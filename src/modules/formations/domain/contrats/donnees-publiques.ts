@@ -97,6 +97,7 @@ export interface TableBuildPlanPublic {
   readonly intitule: string;
   readonly consignes: readonly string[];
   readonly echeances: number;
+  readonly intituleDesLignes?: string;
   readonly libellesLignes: readonly string[];
   readonly parametres: Readonly<Record<string, number>>;
   readonly colonnes: readonly TableColonneServie[];

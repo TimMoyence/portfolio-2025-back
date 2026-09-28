@@ -137,6 +137,7 @@ export const planTableau = z
     intitule: texte,
     consignes: z.array(texte),
     echeances: z.number().int().positive(),
+    intituleDesLignes: texte.optional(),
     libellesLignes: z.array(texte),
     parametres: z.record(z.string().regex(NOM_DE_VARIABLE), z.number()),
     colonnes: auMoinsUn(colonneDeTableau),

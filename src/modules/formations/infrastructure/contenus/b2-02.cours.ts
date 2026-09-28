@@ -853,6 +853,7 @@ const ACTE_2: moteur.Acte = [
           'Comparez les signes des deux écarts sur chaque ligne.',
         ],
         echeances: ANNEES_RIVAGE.length,
+        intituleDesLignes: 'Année',
         libellesLignes: ANNEES_RIVAGE.map(String),
         parametres: {},
         colonnes: [

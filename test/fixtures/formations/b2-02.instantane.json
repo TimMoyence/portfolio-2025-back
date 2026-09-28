@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "ba0686f482ee29d6331752dd3ddce2b0c32cc5c72bb5466347e47190c394afec",
+  "empreinte": "3924c3b2e91e8b7cc7b0b21b42f69e983527f4ba09aeba70ceb3bf1ad0707fdd",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -1090,6 +1090,7 @@
               "Comparez les signes des deux écarts sur chaque ligne."
             ],
             "echeances": 6,
+            "intituleDesLignes": "Année",
             "libellesLignes": ["2020", "2021", "2022", "2023", "2024", "2025"],
             "parametres": {},
             "colonnes": [
@@ -3580,6 +3581,7 @@
               "Comparez les signes des deux écarts sur chaque ligne."
             ],
             "echeances": 6,
+            "intituleDesLignes": "Année",
             "libellesLignes": ["2020", "2021", "2022", "2023", "2024", "2025"],
             "parametres": {},
             "colonnes": [

@@ -126,6 +126,12 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
     );
   });
 
+  it('intitule « Année » les lignes du tableau des écarts, qui portent les années 2020 à 2025', () => {
+    expect(texteDeLEcran('B2-02-A2-06-ECARTS-POINT-MOYEN')).toContain(
+      '"intituleDesLignes":"Année"',
+    );
+  });
+
   it('note chaque énigme de la mini-situation, tableur compris, sur dix points imprimés au sujet', () => {
     const pointsDe = (screenId: string): number[] =>
       [...texteDeLEcran(screenId).matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(
