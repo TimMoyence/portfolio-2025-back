@@ -9,8 +9,7 @@ import { activitesDeLEcran } from '../src/modules/formations/domain/cours/EcranS
 import { describeDb } from './helpers/db-integration-datasource';
 import { VERSION_PUBLIEE_SUR_BASE_NEUVE } from './helpers/formations-db';
 import {
-  clientFormations,
-  installerBancFormationsVierge,
+  installerBancDuCours,
   type BancFormations,
   type ClientFormations,
 } from './helpers/formations-harness';
@@ -63,20 +62,14 @@ describeDb('Seance du B2-02 en mode papier (db integration)', () => {
   const piloter = (corps: Record<string, unknown>) =>
     client.formateur('patch', `/sessions/${sessionId}/control`).send(corps);
 
-  installerBancFormationsVierge(
+  installerBancDuCours(
     { secret: SECRET, syntheseA: SYNTHESE_A },
-    async (monte) => {
-      banc = monte;
-      client = clientFormations(banc.app, FORMATEUR);
-      const publie = await banc.contexte.catalogue.trouver(
-        SLUG,
-        VERSION_PUBLIEE_SUR_BASE_NEUVE,
-      );
-      if (publie === null) {
-        throw new Error(`Le cours ${SLUG} manque a la base migree`);
-      }
-      cours = publie;
+    {
+      formateurId: FORMATEUR,
+      slug: SLUG,
+      version: VERSION_PUBLIEE_SUR_BASE_NEUVE,
     },
+    (monte) => ({ banc, client, cours } = monte),
   );
 
   it(

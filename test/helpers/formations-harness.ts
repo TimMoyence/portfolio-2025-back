@@ -361,6 +361,18 @@ export interface BancFormations {
   fermer(): Promise<void>;
 }
 
+export async function coursDuCatalogue(
+  banc: BancFormations,
+  slug: string,
+  version: number,
+): Promise<Cours> {
+  const cours = await banc.contexte.catalogue.trouver(slug, version);
+  if (cours === null) {
+    throw new Error(`Le cours ${slug} v${version} manque au catalogue`);
+  }
+  return cours;
+}
+
 export async function monterBancFormations(
   catalogueDeTest?: ICatalogueCours,
 ): Promise<BancFormations> {
@@ -399,6 +411,26 @@ export function installerBancFormationsVierge(
 
   afterAll(async () => {
     await banc?.fermer();
+  });
+}
+
+export interface BancDuCours {
+  readonly banc: BancFormations;
+  readonly client: ClientFormations;
+  readonly cours: Cours;
+}
+
+export function installerBancDuCours(
+  env: EnvFormations,
+  cible: { formateurId: string; slug: string; version: number },
+  recevoir: (monte: BancDuCours) => void,
+): void {
+  installerBancFormationsVierge(env, async (banc) => {
+    recevoir({
+      banc,
+      client: clientFormations(banc.app, cible.formateurId),
+      cours: await coursDuCatalogue(banc, cible.slug, cible.version),
+    });
   });
 }
 

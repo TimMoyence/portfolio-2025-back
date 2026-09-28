@@ -15,9 +15,8 @@ import { describeDb } from './helpers/db-integration-datasource';
 import { statutsEnEchec } from './helpers/formations-banc-seance';
 import { VERSION_PUBLIEE_SUR_BASE_NEUVE } from './helpers/formations-db';
 import {
-  clientFormations,
   EN_TETE_IDENTITE,
-  installerBancFormationsVierge,
+  installerBancDuCours,
   serveurHttpDe,
   type BancFormations,
   type ClientFormations,
@@ -259,17 +258,10 @@ describeDb('Classe de trente sur le B2-01 (db integration)', () => {
     }));
   };
 
-  installerBancFormationsVierge(
+  installerBancDuCours(
     { secret: SECRET, syntheseA: SYNTHESE_A },
-    async (monte) => {
-      banc = monte;
-      client = clientFormations(banc.app, ADMIN);
-      const lu = await banc.contexte.catalogue.trouver(SLUG, VERSION_COURS);
-      if (lu === null) {
-        throw new Error(`Le cours ${SLUG} manque a la base migree`);
-      }
-      cours = lu;
-    },
+    { formateurId: ADMIN, slug: SLUG, version: VERSION_COURS },
+    (monte) => ({ banc, client, cours } = monte),
   );
 
   afterAll(() => {
