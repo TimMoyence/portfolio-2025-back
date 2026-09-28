@@ -35,9 +35,9 @@
 - **Une série réelle pour la mini-situation** : abonnements à la fibre optique en France, fin 2020 à
   fin 2024 (Arcep). La valeur réelle de fin 2025, publiée depuis, permet de juger la prévision du
   modèle : elle la surestime, parce que la croissance ralentit.
-- **Cinq fonctions de tableur** au plus : `MOYENNE`, `MEDIANE`, `ECARTYPEP` (rappel),
-  `COEFFICIENT.CORRELATION`, `PENTE`, `ORDONNEE.ORIGINE` ; `MEDIANE` et `ECARTYPEP` sont des rappels de
-  la v1, seules les trois dernières sont nouvelles.
+- **Six fonctions de tableur**, dont trois nouvelles : `MOYENNE`, `MEDIANE` et `ECARTYPEP` sont des
+  rappels de la v1 ; `COEFFICIENT.CORRELATION`, `PENTE` et `ORDONNEE.ORIGINE` sont nouvelles. La
+  cellule de contrôle E7 ajoute `SI` et `ARRONDI`, déjà connues.
 - **Fil rouge « Atelier Rivage » conservé** : la question à deux variables s'y prête (six années de
   chiffre d'affaires, rang de l'année en abscisse), comme le modèle 2024 Ex. 2 A (bénéfice, ajustement,
   année du seuil).
