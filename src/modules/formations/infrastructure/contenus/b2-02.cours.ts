@@ -140,34 +140,39 @@ const ACTE_1: moteur.Acte = [
     dureeMinutes: 5,
     concepts: ['serie-statistique'],
     notes: moteur.puces(
-      'Lecture à voix haute (90 s), puis 3 min d’écriture individuelle.',
-      'Au pupitre, lire deux réponses à « Combien de nombres ? » : l’une propose un seul délai, l’autre un délai et un écart.',
+      'Lecture à voix haute du courriel et des notes d’Hélène (1 min), puis 3 min d’écriture individuelle et 1 min de mise en commun au pupitre.',
+      'Question 1 : faire séparer le passé (des factures déjà encaissées) et l’avenir (2028) : c’est le plan du cours, résumer puis prévoir.',
+      'Question 2 : faire dire que 146 jours est une exception, et que la banque demande aussi la « régularité » : un seul délai ne suffit pas.',
+      'Question 3 : faire émerger « rien ne garantit que la hausse continue » ; écrire au tableau « si la tendance se poursuit », repris à l’acte 3.',
       'Papier : trois lignes d’écriture dans le livret.',
     ),
     proprietes: {
       metier:
         'Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)',
       situation:
-        'Lundi, 8 h 40. Hélène Garnier, la dirigeante, vous transfère le courriel de la banque : « Pour dimensionner votre facilité de caisse, indiquez-nous le délai de paiement de vos clients professionnels et sa régularité, puis une prévision argumentée de votre chiffre d’affaires 2028. »',
+        'Lundi, 8 h 40. Hélène Garnier, la dirigeante, vous transfère le courriel de la banque : « Pour dimensionner votre facilité de caisse, indiquez-nous le délai de paiement habituel de vos clients professionnels et sa régularité, puis une prévision argumentée de votre chiffre d’affaires 2028. » Elle y joint ses notes : « Au dernier trimestre, nos vingt factures ont été payées entre 18 et 75 jours, sauf F105, contestée par le client, payée en 146 jours. Notre chiffre d’affaires monte chaque année depuis 2020 : 610 k€ en 2020, 826 k€ en 2025, notre dernier exercice clos. »',
       geste:
-        'Avant de calculer quoi que ce soit, répondez par écrit aux trois questions ci-dessous.',
+        'Sans rien calculer, répondez aux trois questions à partir du courriel et des notes d’Hélène.',
       consequence:
         'Un délai trompeur ou une prévision sans réserve peut conduire la banque à sous-dimensionner la facilité de caisse, et Atelier Rivage à manquer de trésorerie.',
       questionsLibres: [
         {
-          id: 'b2-02-a1-mission:quoi',
-          question: 'Que mesure-t-on exactement, et sur quelles données ?',
-          placeholder: 'Le délai entre…, pour les factures…',
+          id: 'b2-02-a1-mission:demandes',
+          question:
+            'La banque fait deux demandes. Laquelle porte sur ce qui s’est déjà passé, laquelle sur ce qui n’a pas encore eu lieu ?',
+          placeholder: 'Déjà passé : … Pas encore eu lieu : …',
         },
         {
-          id: 'b2-02-a1-mission:combien',
-          question: 'Un seul nombre suffit-il à répondre sur les délais ?',
-          placeholder: 'Un délai typique, un écart…',
+          id: 'b2-02-a1-mission:f105',
+          question:
+            'Hélène propose d’écrire à la banque : « Nos clients paient en 146 jours. » Pourquoi cette phrase la tromperait-elle, et que faut-il lui donner à la place ?',
+          placeholder: '146 jours, c’est… La banque demande…',
         },
         {
-          id: 'b2-02-a1-mission:verifier',
-          question: 'Que faut-il vérifier avant de prévoir une année future ?',
-          placeholder: 'Une tendance, une limite…',
+          id: 'b2-02-a1-mission:prevision',
+          question:
+            'Le chiffre d’affaires monte depuis 2020. Peut-on promettre à la banque qu’il montera encore jusqu’en 2028 ? Que devra dire votre prévision ?',
+          placeholder: 'Non, parce que… La prévision devra préciser…',
         },
       ],
     },
@@ -198,7 +203,7 @@ const ACTE_1: moteur.Acte = [
         ...celluleDeFacture(ligne, 1),
         ...celluleDeFacture(ligne + FACTURES_PAR_BLOC, 2),
       })),
-      note: 'Délai = nombre de jours entre l’émission de la facture et son encaissement. Données fictives Atelier Rivage, créées pour ce cours.',
+      note: 'Délai = nombre de jours entre l’émission de la facture et son encaissement. Les vingt délais forment une série statistique d’effectif 20 : un délai par facture. Données fictives Atelier Rivage, créées pour ce cours.',
     },
   ),
   moteur.ecranV2(
@@ -211,6 +216,7 @@ const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Temps « réfléchir » de la notion 1 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
+        'Relance : « Votre nombre dit-il si les clients paient tous à peu près en même temps ? »',
         'Papier : cadre de réponse du livret.',
       ),
     },
@@ -238,62 +244,105 @@ const ACTE_1: moteur.Acte = [
   moteur.ecranV2(
     {
       screenId: 'B2-02-A1-06-COURS-RESUMER',
-      titre: 'Cours : résumer une série par un centre et un écart',
+      titre: 'Cours : le centre d’une série, moyenne et médiane',
       diffusion: 'catalogue',
-      dureeMinutes: 6,
-      concepts: ['moyenne', 'mediane', 'ecart-type', 'dispersion'],
+      dureeMinutes: 3,
+      concepts: ['moyenne', 'mediane'],
       notes: moteur.puces(
-        'Trace écrite à recopier ou à coller dans le livret : 6 min au plus.',
-        'Insister sur le tri avant la médiane et sur ECARTYPEP pour une population entière.',
+        '3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
+        'Avant de lire l’exemple, demander : « Un artisan est payé en 10, 14, 8, 12 et 56 jours. Quel délai annonceriez-vous à sa banque ? » Laisser venir 20.',
+        'Relance : « Combien de ces factures sont payées en moins de 20 jours ? » Quatre sur cinq : la moyenne ne dit pas le délai habituel.',
+        'Faire trouver le piège : demander le milieu de la liste non triée (8), puis faire corriger par le tri.',
+        'Lien au dossier : « Dans nos vingt délais, quelle facture joue le rôle des 56 jours ? » F105.',
       ),
     },
     'lesson',
     {
-      title: 'Résumer une série par un centre et un écart',
-      subtitle: 'Trace écrite · notion 1',
+      title: 'Le centre d’une série : moyenne et médiane',
+      subtitle: 'Trace écrite · notion 1 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
-          title: 'Deux centres : la moyenne et la médiane',
-          text: 'La moyenne répartit le total également entre les valeurs. La médiane partage la série triée en deux groupes de même effectif.',
+          title: 'Deux façons de dire le délai habituel',
+          text: 'Une série statistique est la liste des valeurs d’un même caractère : ici, le délai de paiement de chaque facture. La moyenne est le délai qu’aurait chaque facture si l’on partageait le total en parts égales. La médiane coupe la série triée en deux moitiés de même effectif : la moitié des factures est payée en un délai inférieur ou égal, l’autre moitié en un délai supérieur ou égal. La banque veut ce délai habituel pour savoir combien de temps Atelier Rivage attend son argent.',
           formula: 'x̄ = (x₁ + x₂ + … + xₙ) ÷ n',
+        },
+        {
+          kind: 'example',
+          title: 'Pour débuter : cinq factures',
+          text: 'Un artisan a été payé en 10, 14, 8, 12 et 56 jours.',
           steps: [
-            'Trier la série dans l’ordre croissant.',
-            'Effectif impair : la médiane est la valeur du milieu.',
-            'Effectif pair : la médiane est la demi-somme des deux valeurs du milieu.',
+            'Moyenne : 10 + 14 + 8 + 12 + 56 = 100 jours, et 100 ÷ 5 = 20 jours.',
+            'Tri : 8 ; 10 ; 12 ; 14 ; 56. Cinq valeurs : celle du milieu est la 3ᵉ.',
+            'Médiane : 12 jours. Deux factures sont payées plus vite, deux plus lentement.',
+            'La facture de 56 jours tire la moyenne à 20 jours, alors que quatre factures sur cinq sont payées en 14 jours au plus.',
           ],
         },
         {
-          kind: 'definition',
-          title: 'Mesurer l’écart',
-          text: 'L’étendue (max − min) ne regarde que deux valeurs ; l’écart interquartile Q₃ − Q₁, la moitié centrale. L’écart-type mesure la dispersion autour de la moyenne, dans l’unité ; la variance, son carré, en unité².',
-          formula: 'σ = √[((x₁ − x̄)² + … + (xₙ − x̄)²) ÷ n]',
-        },
-        {
-          kind: 'property',
-          title: 'Une valeur extrême',
-          text: 'Une valeur extrême tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne.',
-        },
-        {
-          kind: 'exam',
-          title: 'Au CCF, au tableur',
-          text: 'Population entière : ECARTYPEP, qui divise par n ; ECARTYPE divise par n − 1, pour un échantillon. Toujours donner l’unité.',
-          steps: ['=MOYENNE(plage)', '=MEDIANE(plage)', '=ECARTYPEP(plage)'],
+          kind: 'method',
+          title: 'Trouver la médiane sans se tromper',
+          text: 'Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe CCF : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.',
+          steps: [
+            'Trier la série dans l’ordre croissant.',
+            'Effectif impair : la médiane est la valeur du milieu.',
+            'Effectif pair : la demi-somme des deux valeurs du milieu. Pour 8 ; 10 ; 12 ; 14 : (10 + 12) ÷ 2 = 11.',
+            'Au tableur : =MOYENNE(plage) et =MEDIANE(plage).',
+          ],
         },
       ],
     },
   ),
-  ...moteur.suiviDeSonCorrige(
+  moteur.ecranV2(
     {
-      screenId: 'B2-02-A1-07-CORRECTION',
-      titre: 'Correction : huit factures de septembre',
-      dureeMinutes: 2,
-      concepts: ['moyenne', 'mediane', 'ecart-type'],
+      screenId: 'B2-02-A1-06-COURS-ECART',
+      titre: 'Cours : la régularité d’une série, l’écart-type',
+      diffusion: 'catalogue',
+      dureeMinutes: 3,
+      concepts: ['ecart-type', 'dispersion', 'choix-du-resume'],
       notes: moteur.puces(
-        'S’arrêter sur le tri (étape 2) et sur l’effet de la facture de 90 jours (étape 4).',
-        'Transition : « À vous, sur les vingt délais : exercice 1. »',
+        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite.',
+        'Question d’ouverture : « Les clients A et B ont la même moyenne. Si vous étiez la banque, lequel préféreriez-vous ? Pourquoi ? »',
+        'Faire additionner les écarts de A (−2 + 2 − 2 + 2 = 0) : c’est pour cela qu’on les élève au carré.',
+        'Piège à faire dire : 50 est en jours², ce n’est pas un délai ; l’écart-type, ≈ 7,07 jours, l’est.',
+        'Relance CCF : « Nos vingt factures, est-ce toutes les factures ou un échantillon ? » Toutes : ECARTYPEP.',
       ),
     },
+    'lesson',
+    {
+      title: 'La régularité d’une série : l’écart-type',
+      subtitle: 'Trace écrite · notion 1 · page 2 sur 2',
+      blocks: [
+        {
+          kind: 'definition',
+          title: 'Mesurer si les valeurs se ressemblent',
+          text: 'Deux séries peuvent avoir le même centre et des valeurs très différentes. L’étendue (plus grande valeur − plus petite) ne regarde que deux valeurs, l’écart interquartile Q₃ − Q₁ la moitié centrale. L’écart-type σ mesure l’éloignement typique des valeurs à la moyenne, dans l’unité de la série : plus il est petit, plus la série est régulière. La variance V est son carré, en unité². La banque en a besoin : des délais réguliers rendent la trésorerie prévisible.',
+          formula: 'V = [(x₁ − x̄)² + … + (xₙ − x̄)²] ÷ n · σ = √V',
+        },
+        {
+          kind: 'example',
+          title: 'Pour débuter : deux clients, même moyenne',
+          text: 'Quatre factures chacun. Client A : 8, 12, 8, 12 jours. Client B : 2, 18, 4, 16 jours. Les deux moyennes valent 40 ÷ 4 = 10 jours.',
+          steps: [
+            'Écarts à 10 : A donne −2, 2, −2, 2 ; B donne −8, 8, −6, 6. Leur somme est nulle : on les élève au carré.',
+            'Carrés : A donne 4, 4, 4, 4, de somme 16 ; B donne 64, 64, 36, 36, de somme 200.',
+            'Variances : 16 ÷ 4 = 4 jours² pour A ; 200 ÷ 4 = 50 jours² pour B.',
+            'Écarts-types : √4 = 2 jours pour A ; √50 ≈ 7,07 jours pour B. Même moyenne, mais B est bien moins régulier.',
+          ],
+        },
+        {
+          kind: 'exam',
+          title: 'Au CCF : valeur extrême, fonction, unité',
+          text: 'Une valeur extrême, comme la facture contestée F105, tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne et de l’écart-type. Pièges : donner la variance pour l’écart-type, choisir ECARTYPE pour une population entière.',
+          steps: [
+            'Toutes les factures de la période : =ECARTYPEP(plage), qui divise par n.',
+            'ECARTYPE divise par n − 1 : il sert pour un échantillon.',
+            'Toujours l’unité : σ en jours, V en jours².',
+          ],
+        },
+      ],
+    },
+  ),
+  moteur.corrigeEtapeParEtape(
     {
       screenId: 'B2-02-A1-07-EXEMPLE-RESUME',
       titre: 'Exemple guidé : huit factures de septembre',
@@ -302,7 +351,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['moyenne', 'mediane', 'ecart-type'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
+        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
         'Papier : réponses sous chaque étape du livret.',
       ),
       proprietes: {
@@ -361,99 +410,102 @@ const ACTE_1: moteur.Acte = [
         etayage: 0,
       },
     },
-  ),
-  {
-    screenId: 'B2-02-A1-08-ATELIER-RESUME',
-    titre: 'Exercice 1 — Le centre et l’écart des vingt délais',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 10,
-    concepts: ['mediane', 'moyenne', 'ecart-type', 'choix-du-resume'],
-    notes: moteur.puces(
-      'Temps : réflexion 2 min · travail 8 min',
-      'Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.',
-      'Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.',
-      'Papier : exercice 1 du livret.',
-    ),
-    proprietes: {
-      intitule: 'Exercice 1 — Le centre et l’écart des vingt délais',
-      consigne: CONSIGNE_DES_DELAIS,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.numerique(
-          'b2-02-a1-mediane',
-          'mediane',
-          'Quelle est la médiane des vingt délais de paiement ? Réponse en jours.',
-          'jours',
-          43,
-          { type: 'absolue', valeur: 0.05 },
-          '43',
-          [
-            [39.5, 'mediane-sans-tri'],
-            [42, 'mediane-rang-pair'],
-            [47.75, 'moyenne-lue-comme-mediane'],
-          ],
-        ),
-        moteur.numerique(
-          'b2-02-a1-moyenne',
-          'moyenne',
-          'Quelle est la moyenne des vingt délais de paiement ? Réponse en jours, arrondie au centième.',
-          'jours',
-          47.75,
-          moteur.DEUX_DECIMALES,
-          '47,75',
-          [
-            [42.578947, 'valeur-extreme-supprimee'],
-            [43, 'moyenne-lue-comme-mediane'],
-          ],
-        ),
-        moteur.numerique(
-          'b2-02-a1-ecart-type',
-          'ecart-type',
-          'Quel est l’écart-type des vingt délais ? Réponse en jours, arrondie au dixième.',
-          'jours',
-          26.200906,
-          { type: 'absolue', valeur: 0.05 },
-          '26,2',
-          [
-            [26.881563, 'ecart-type-population-echantillon'],
-            [686.4875, 'variance-confondue-avec-ecart-type'],
-          ],
-        ),
-        moteur.vote(
-          'b2-02-a1-resume',
-          'choix-du-resume',
-          true,
-          'La facture F105 (146 jours) est contestée par le client. Quel résumé des délais envoyer à la banque ?',
-          'Garder F105, la signaler, et publier la médiane avec la moyenne et l’écart-type',
-          [
-            [
-              'Retirer F105 et publier la moyenne des dix-neuf autres délais',
-              'valeur-extreme-supprimee',
-            ],
-            [
-              'Publier la moyenne seule, arrondie au jour',
-              'valeur-extreme-ignoree',
-            ],
-          ],
-          ['Garder F105'],
-        ),
+    {
+      minutes: 2,
+      notes: [
+        'S’arrêter sur le tri (étape 2) et sur l’effet de la facture de 90 jours (étape 4).',
+        'Transition : « À vous, sur les vingt délais : exercice 1. »',
       ],
     },
-  },
-  moteur.correctionDesReponses(
+  ),
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-02-A1-08-CORRECTION',
-      titre: 'Correction de l’exercice 1',
-      dureeMinutes: 2,
+      screenId: 'B2-02-A1-08-ATELIER-RESUME',
+      titre: 'Exercice 1 — Le centre et l’écart des vingt délais',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 10,
       concepts: ['mediane', 'moyenne', 'ecart-type', 'choix-du-resume'],
       notes: moteur.puces(
-        'Commencer par la question la moins réussie (score sous chaque correction).',
-        'Transition : jalon 1, puis pause de 15 minutes.',
+        'Temps : réflexion 2 min · travail 8 min',
+        'Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.',
+        'Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.',
+        'Papier : exercice 1 du livret.',
       ),
+      proprietes: {
+        intitule: 'Exercice 1 — Le centre et l’écart des vingt délais',
+        consigne: CONSIGNE_DES_DELAIS,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.numerique(
+            'b2-02-a1-mediane',
+            'mediane',
+            'Quelle est la médiane des vingt délais de paiement ? Réponse en jours.',
+            'jours',
+            43,
+            { type: 'absolue', valeur: 0.05 },
+            '43',
+            [
+              [39.5, 'mediane-sans-tri'],
+              [42, 'mediane-rang-pair'],
+              [47.75, 'moyenne-lue-comme-mediane'],
+            ],
+          ),
+          moteur.numerique(
+            'b2-02-a1-moyenne',
+            'moyenne',
+            'Quelle est la moyenne des vingt délais de paiement ? Réponse en jours, arrondie au centième.',
+            'jours',
+            47.75,
+            moteur.DEUX_DECIMALES,
+            '47,75',
+            [
+              [42.578947, 'valeur-extreme-supprimee'],
+              [43, 'moyenne-lue-comme-mediane'],
+            ],
+          ),
+          moteur.numerique(
+            'b2-02-a1-ecart-type',
+            'ecart-type',
+            'Quel est l’écart-type des vingt délais ? Réponse en jours, arrondie au dixième.',
+            'jours',
+            26.200906,
+            { type: 'absolue', valeur: 0.05 },
+            '26,2',
+            [
+              [26.881563, 'ecart-type-population-echantillon'],
+              [686.4875, 'variance-confondue-avec-ecart-type'],
+            ],
+          ),
+          moteur.vote(
+            'b2-02-a1-resume',
+            'choix-du-resume',
+            true,
+            'La facture F105 (146 jours) est contestée par le client. Quel résumé des délais envoyer à la banque ?',
+            'Garder F105, la signaler, et publier la médiane avec la moyenne et l’écart-type',
+            [
+              [
+                'Retirer F105 et publier la moyenne des dix-neuf autres délais',
+                'valeur-extreme-supprimee',
+              ],
+              [
+                'Publier la moyenne seule, arrondie au jour',
+                'valeur-extreme-ignoree',
+              ],
+            ],
+            ['Garder F105'],
+          ),
+        ],
+      },
     },
-    'B2-02-A1-08-ATELIER-RESUME',
+    {
+      minutes: 2,
+      notes: [
+        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        'Transition : jalon 1, puis pause de 15 minutes.',
+      ],
+    },
     [
       [
         'b2-02-a1-mediane',
@@ -531,7 +583,7 @@ const ACTE_2: moteur.Acte = [
     {
       title: 'Six années de chiffre d’affaires d’Atelier Rivage',
       subtitle:
-        'Rang de l’année en abscisse (1 pour 2020), chiffre d’affaires annuel en milliers d’euros.',
+        'Série à deux variables : chaque point associe le rang d’une année (1 pour 2020) à son chiffre d’affaires en k€.',
       xLabel: 'Rang de l’année',
       yLabel: 'Chiffre d’affaires (k€)',
       xRange: [0, 7],
@@ -614,57 +666,103 @@ const ACTE_2: moteur.Acte = [
   moteur.ecranV2(
     {
       screenId: 'B2-02-A2-03-COURS-NUAGE',
-      titre: 'Cours : nuage de points, point moyen, corrélation',
+      titre: 'Cours : nuage de points et point moyen',
       diffusion: 'catalogue',
-      dureeMinutes: 6,
-      concepts: ['nuage-de-points', 'correlation'],
+      dureeMinutes: 3,
+      concepts: ['nuage-de-points'],
       notes: moteur.puces(
-        'Trace écrite : 6 min au plus.',
-        'Faire dire la différence entre le point moyen et le point du milieu du tableau.',
+        '3 min ; garder le nuage d’Atelier Rivage (A2-01) en tête pour situer x et y.',
+        'Avant l’exemple, demander : « Le point de la ligne du milieu du tableau est-il le centre du nuage ? » Vote à main levée, sans trancher.',
+        'Faire calculer ȳ de tête (18 ÷ 3), puis comparer (2 ; 6) à (2 ; 5) : le vote est tranché.',
+        'Piège à faire émerger : les sommes (6 ; 18) au lieu des moyennes.',
       ),
     },
     'lesson',
     {
-      title: 'Nuage de points, point moyen, corrélation',
-      subtitle: 'Trace écrite · notion 2',
+      title: 'Nuage de points et point moyen',
+      subtitle: 'Trace écrite · notion 2 · page 1 sur 2',
       blocks: [
         {
           kind: 'definition',
-          title: 'Série à deux variables et nuage de points',
-          text: 'On observe deux caractères x et y aux mêmes dates ou sur les mêmes individus. Chaque couple (xᵢ ; yᵢ) donne un point ; l’ensemble des points forme le nuage.',
-        },
-        {
-          kind: 'definition',
-          title: 'Le point moyen',
-          text: 'Le point moyen G a pour abscisse la moyenne des xᵢ et pour ordonnée la moyenne des yᵢ. Ce n’est pas le point du milieu du tableau.',
+          title: 'Deux variables, un nuage, un centre',
+          text: 'Une série à deux variables associe à chaque individu, ou à chaque date, deux nombres x et y. Chaque couple (xᵢ ; yᵢ) devient un point ; l’ensemble des points forme le nuage. Le point moyen G a pour coordonnées la moyenne des x et la moyenne des y : c’est le centre du nuage, comme la moyenne est le centre d’une série. Pour Atelier Rivage, x est le rang de l’année et y le chiffre d’affaires : le nuage montre la tendance que la banque veut voir prolongée.',
           formula: 'G(x̄ ; ȳ)',
         },
         {
-          kind: 'property',
-          title: 'Le coefficient de corrélation linéaire r',
-          text: 'r est compris entre −1 et 1. Plus |r| est proche de 1, plus les points sont proches d’une droite ; le signe de r dit seulement si cette droite monte ou descend. r n’est pas la pente de la droite.',
-          formula:
-            '−1 ≤ r ≤ 1 · =COEFFICIENT.CORRELATION(plage des x;plage des y)',
+          kind: 'example',
+          title: 'Pour débuter : une boutique, trois années',
+          text: 'Rangs x = 1, 2, 3 (années 2022, 2023, 2024) ; chiffre d’affaires y = 4, 5, 9, en milliers d’euros.',
+          steps: [
+            'Points du nuage : (1 ; 4), (2 ; 5), (3 ; 9). Ils montent de gauche à droite.',
+            'x̄ = (1 + 2 + 3) ÷ 3 = 6 ÷ 3 = 2.',
+            'ȳ = (4 + 5 + 9) ÷ 3 = 18 ÷ 3 = 6, donc G(2 ; 6).',
+            'Le point de la ligne du milieu, (2 ; 5), n’est pas G : 5 n’est pas la moyenne des y.',
+          ],
         },
         {
-          kind: 'property',
-          title: 'Corrélation n’est pas causalité',
-          text: 'Deux séries peuvent évoluer ensemble parce qu’une troisième variable, la saison ou le temps, les fait varier toutes les deux. Un |r| proche de 1 autorise un ajustement affine, jamais une conclusion sur une cause.',
+          kind: 'method',
+          title: 'Placer G sans se tromper',
+          text: 'Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe CCF : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.',
+          steps: [
+            'x̄ : =MOYENNE(plage des x)',
+            'ȳ : =MOYENNE(plage des y)',
+            'Contrôle : les écarts xᵢ − x̄ ont une somme nulle, les écarts yᵢ − ȳ aussi. Ici : −1 + 0 + 1 = 0 et −2 − 1 + 3 = 0.',
+          ],
         },
       ],
     },
   ),
-  ...moteur.suiviDeSonCorrige(
+  moteur.ecranV2(
     {
-      screenId: 'B2-02-A2-04-CORRECTION',
-      titre: 'Correction : publicité et commandes',
-      dureeMinutes: 2,
-      concepts: ['nuage-de-points', 'correlation'],
+      screenId: 'B2-02-A2-03-COURS-CORRELATION',
+      titre: 'Cours : le coefficient de corrélation r',
+      diffusion: 'catalogue',
+      dureeMinutes: 3,
+      concepts: ['correlation'],
       notes: moteur.puces(
-        'S’arrêter sur le point moyen (étape 2) et sur la prudence (étape 5).',
-        'Transition : « À vous, sur Atelier Rivage : exercice 2. »',
+        '3 min, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé au CCF : il montre ce que la touche r calcule.',
+        'Question : « Si un point était en haut à gauche de G, quel serait le signe de son produit d’écarts ? » Négatif : il ferait baisser r.',
+        'Relier au vote A2-02 : voiles et glaces montent ensemble, r élevé, et pourtant aucune cause.',
+        'Faire dire qu’un r de −0,98 autorise aussi une droite, qui descend.',
+        'Annoncer l’exercice 3 : on y refait les écarts au point moyen sur Atelier Rivage.',
       ),
     },
+    'lesson',
+    {
+      title: 'Le coefficient de corrélation r',
+      subtitle: 'Trace écrite · notion 2 · page 2 sur 2',
+      blocks: [
+        {
+          kind: 'definition',
+          title: 'Mesurer l’alignement des points',
+          text: 'Le coefficient de corrélation linéaire r mesure à quel point les points du nuage sont proches d’une même droite. Il est toujours compris entre −1 et 1. Plus |r| est proche de 1, plus les points sont alignés ; son signe dit seulement si la droite monte (r > 0) ou descend (r < 0). Pour Atelier Rivage, r dit si l’on a le droit de résumer six années par une droite avant de prévoir 2028.',
+          formula: '−1 ≤ r ≤ 1',
+        },
+        {
+          kind: 'example',
+          title: 'Pour débuter : r de la boutique, à la main',
+          text: 'On part des écarts au point moyen G(2 ; 6). La calculatrice fait ce calcul ; le voir une fois montre d’où vient r.',
+          formula: 'r = Σ(xᵢ − x̄)(yᵢ − ȳ) ÷ √[Σ(xᵢ − x̄)² × Σ(yᵢ − ȳ)²]',
+          steps: [
+            'Écarts des x : −1, 0, 1. Écarts des y : −2, −1, 3.',
+            'Produits des écarts : 2, 0, 3, de somme 5. Aucun n’est négatif : les points sont en bas à gauche et en haut à droite de G.',
+            'Sommes des carrés : 1 + 0 + 1 = 2 pour x ; 4 + 1 + 9 = 14 pour y.',
+            'r = 5 ÷ √(2 × 14) = 5 ÷ √28 ≈ 0,945 : les trois points sont proches d’une droite qui monte.',
+          ],
+        },
+        {
+          kind: 'exam',
+          title: 'Au CCF : lire r, et rien de plus',
+          text: 'Trois pièges. r n’est pas la pente : il ne dit pas de combien y augmente quand x augmente de 1. Un r négatif proche de −1 justifie aussi un ajustement, par une droite qui descend. Corrélation n’est pas causalité : deux séries peuvent monter ensemble parce qu’une troisième chose, la saison ou le temps, les fait varier toutes les deux.',
+          steps: [
+            '=COEFFICIENT.CORRELATION(plage des x;plage des y)',
+            'Rédiger : « r ≈ … est proche de 1 : les points sont presque alignés, un ajustement affine est justifié. »',
+          ],
+        },
+      ],
+    },
+  ),
+  moteur.corrigeEtapeParEtape(
     {
       screenId: 'B2-02-A2-04-EXEMPLE-NUAGE',
       titre: 'Exemple guidé : publicité et commandes',
@@ -673,7 +771,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['nuage-de-points', 'correlation'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
+        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
         'Papier : réponses sous chaque étape du livret.',
       ),
       proprietes: {
@@ -723,92 +821,95 @@ const ACTE_2: moteur.Acte = [
         etayage: 0,
       },
     },
-  ),
-  {
-    screenId: 'B2-02-A2-05-ATELIER-NUAGE',
-    titre: 'Exercice 2 — Le nuage d’Atelier Rivage',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 9,
-    concepts: ['nuage-de-points', 'correlation'],
-    notes: moteur.puces(
-      'Temps : réflexion 2 min · travail 7 min',
-      'Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.',
-      'Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.',
-      'Papier : exercice 2 du livret.',
-    ),
-    proprietes: {
-      intitule: 'Exercice 2 — Le nuage d’Atelier Rivage',
-      consigne: CONSIGNE_DE_RIVAGE,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.numerique(
-          'b2-02-a2-x-moyen',
-          'nuage-de-points',
-          'Quelle est l’abscisse x̄ du point moyen G ?',
-          null,
-          3.5,
-          { type: 'absolue', valeur: 0.01 },
-          '3,5',
-          [[21, 'point-moyen-confondu']],
-        ),
-        moteur.numerique(
-          'b2-02-a2-y-moyen',
-          'nuage-de-points',
-          'Quelle est l’ordonnée ȳ du point moyen G, en milliers d’euros ?',
-          'k€',
-          718,
-          { type: 'absolue', valeur: 0.5 },
-          '718',
-          [
-            [715, 'point-moyen-confondu'],
-            [4308, 'point-moyen-confondu'],
-          ],
-        ),
-        moteur.numerique(
-          'b2-02-a2-r',
-          'correlation',
-          'Quel est le coefficient de corrélation linéaire r entre x et y ? Arrondir au millième.',
-          null,
-          0.999055,
-          { type: 'decimales', valeur: 3 },
-          '0,999',
-          [[43.885714, 'correlation-lue-comme-pente']],
-        ),
-        moteur.vote(
-          'b2-02-a2-lecture-r',
-          'correlation',
-          true,
-          'Hélène demande : peut-on résumer la tendance du chiffre d’affaires par une droite ?',
-          'Oui : r est très proche de 1, les points sont presque alignés',
-          [
-            [
-              'Oui, et r prouve que les hausses de tarifs causent cette croissance',
-              'correlation-prise-pour-causalite',
-            ],
-            [
-              'Non : r devrait être égal à la hausse annuelle du chiffre d’affaires',
-              'correlation-lue-comme-pente',
-            ],
-          ],
-          ['r est très proche de 1'],
-        ),
+    {
+      minutes: 2,
+      notes: [
+        'S’arrêter sur le point moyen (étape 2) et sur la prudence (étape 5).',
+        'Transition : « À vous, sur Atelier Rivage : exercice 2. »',
       ],
     },
-  },
-  moteur.correctionDesReponses(
+  ),
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-02-A2-05-CORRECTION',
-      titre: 'Correction de l’exercice 2',
-      dureeMinutes: 2,
+      screenId: 'B2-02-A2-05-ATELIER-NUAGE',
+      titre: 'Exercice 2 — Le nuage d’Atelier Rivage',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 9,
       concepts: ['nuage-de-points', 'correlation'],
       notes: moteur.puces(
-        'Commencer par la question la moins réussie.',
-        'Transition : « Vérifions G autrement : les écarts au point moyen. »',
+        'Temps : réflexion 2 min · travail 7 min',
+        'Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.',
+        'Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.',
+        'Papier : exercice 2 du livret.',
       ),
+      proprietes: {
+        intitule: 'Exercice 2 — Le nuage d’Atelier Rivage',
+        consigne: CONSIGNE_DE_RIVAGE,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.numerique(
+            'b2-02-a2-x-moyen',
+            'nuage-de-points',
+            'Quelle est l’abscisse x̄ du point moyen G ?',
+            null,
+            3.5,
+            { type: 'absolue', valeur: 0.01 },
+            '3,5',
+            [[21, 'point-moyen-confondu']],
+          ),
+          moteur.numerique(
+            'b2-02-a2-y-moyen',
+            'nuage-de-points',
+            'Quelle est l’ordonnée ȳ du point moyen G, en milliers d’euros ?',
+            'k€',
+            718,
+            { type: 'absolue', valeur: 0.5 },
+            '718',
+            [
+              [715, 'point-moyen-confondu'],
+              [4308, 'point-moyen-confondu'],
+            ],
+          ),
+          moteur.numerique(
+            'b2-02-a2-r',
+            'correlation',
+            'Quel est le coefficient de corrélation linéaire r entre x et y ? Arrondir au millième.',
+            null,
+            0.999055,
+            { type: 'decimales', valeur: 3 },
+            '0,999',
+            [[43.885714, 'correlation-lue-comme-pente']],
+          ),
+          moteur.vote(
+            'b2-02-a2-lecture-r',
+            'correlation',
+            true,
+            'Hélène demande : peut-on résumer la tendance du chiffre d’affaires par une droite ?',
+            'Oui : r est très proche de 1, les points sont presque alignés',
+            [
+              [
+                'Oui, et r prouve que les hausses de tarifs causent cette croissance',
+                'correlation-prise-pour-causalite',
+              ],
+              [
+                'Non : r devrait être égal à la hausse annuelle du chiffre d’affaires',
+                'correlation-lue-comme-pente',
+              ],
+            ],
+            ['r est très proche de 1'],
+          ),
+        ],
+      },
     },
-    'B2-02-A2-05-ATELIER-NUAGE',
+    {
+      minutes: 2,
+      notes: [
+        'Corriger question par question, en commençant par la moins réussie.',
+        'Transition : « Vérifions G autrement : les écarts au point moyen. »',
+      ],
+    },
     [
       [
         'b2-02-a2-x-moyen',
@@ -828,89 +929,85 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-02-A2-06-ECARTS-POINT-MOYEN',
-    titre: 'Exercice 3 — Les écarts au point moyen',
-    diffusion: 'seance',
-    brique: 'fp-table-build',
-    dureeMinutes: 10,
-    concepts: ['nuage-de-points'],
-    notes: moteur.puces(
-      'Temps : réflexion 2 min · travail 8 min',
-      'Réflexion : prévoir le signe des écarts de la première et de la dernière année.',
-      'Piège : l’écart au rang du milieu du tableau au lieu de x̄.',
-      'Contrôle à faire dire : les écarts d’une colonne ont une somme nulle.',
-      'Papier : tableau du livret.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      plan: {
-        id: 'b2-02-a2-ecarts-point-moyen',
-        intitule: 'Les écarts au point moyen',
-        consignes: [
-          'Rappel de l’exercice 2 : x̄ = 3,5 et ȳ = 718 k€.',
-          'Pour chaque année, écrivez l’écart du rang à x̄, puis l’écart du chiffre d’affaires à ȳ.',
-          'Comparez les signes des deux écarts sur chaque ligne.',
-        ],
-        echeances: ANNEES_RIVAGE.length,
-        intituleDesLignes: 'Année',
-        libellesLignes: ANNEES_RIVAGE.map(String),
-        parametres: {},
-        colonnes: [
-          {
-            cle: 'rang',
-            intitule: 'Rang xᵢ',
-            role: 'donnee',
-            valeurs: ANNEES_RIVAGE.map((_, rang) => rang + 1),
-            decimales: 0,
-            totalise: false,
-          },
-          {
-            cle: 'ca',
-            intitule: 'Chiffre d’affaires yᵢ (k€)',
-            role: 'donnee',
-            valeurs: [...CA_RIVAGE],
-            decimales: 0,
-            totalise: false,
-          },
-          {
-            cle: 'ecartX',
-            intitule: 'xᵢ − x̄',
-            role: 'saisie',
-            decimales: 1,
-            totalise: false,
-          },
-          {
-            cle: 'ecartY',
-            intitule: 'yᵢ − ȳ (k€)',
-            role: 'saisie',
-            decimales: 0,
-            totalise: false,
-          },
-        ],
-        synthese: [],
-      },
-      questions: [
-        moteur.questionDeTableau(
-          'b2-02-a2-ecarts-point-moyen',
-          'nuage-de-points',
-          [PREMIER_ECART, ...AUTRES_ECARTS],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-02-A2-06-CORRECTION',
-      titre: 'Correction de l’exercice 3',
-      dureeMinutes: 2,
+      screenId: 'B2-02-A2-06-ECARTS-POINT-MOYEN',
+      titre: 'Exercice 3 — Les écarts au point moyen',
+      diffusion: 'seance',
+      brique: 'fp-table-build',
+      dureeMinutes: 10,
       concepts: ['nuage-de-points'],
       notes: moteur.puces(
+        'Temps : réflexion 2 min · travail 8 min',
+        'Réflexion : prévoir le signe des écarts de la première et de la dernière année.',
+        'Piège : l’écart au rang du milieu du tableau au lieu de x̄.',
+        'Contrôle à faire dire : les écarts d’une colonne ont une somme nulle.',
+        'Papier : tableau du livret.',
+      ),
+      proprietes: {
+        modalite: 'solo',
+        plan: {
+          id: 'b2-02-a2-ecarts-point-moyen',
+          intitule: 'Les écarts au point moyen',
+          consignes: [
+            'Rappel de l’exercice 2 : x̄ = 3,5 et ȳ = 718 k€.',
+            'Pour chaque année, écrivez l’écart du rang à x̄, puis l’écart du chiffre d’affaires à ȳ.',
+            'Comparez les signes des deux écarts sur chaque ligne.',
+          ],
+          echeances: ANNEES_RIVAGE.length,
+          intituleDesLignes: 'Année',
+          libellesLignes: ANNEES_RIVAGE.map(String),
+          parametres: {},
+          colonnes: [
+            {
+              cle: 'rang',
+              intitule: 'Rang xᵢ',
+              role: 'donnee',
+              valeurs: ANNEES_RIVAGE.map((_, rang) => rang + 1),
+              decimales: 0,
+              totalise: false,
+            },
+            {
+              cle: 'ca',
+              intitule: 'Chiffre d’affaires yᵢ (k€)',
+              role: 'donnee',
+              valeurs: [...CA_RIVAGE],
+              decimales: 0,
+              totalise: false,
+            },
+            {
+              cle: 'ecartX',
+              intitule: 'xᵢ − x̄',
+              role: 'saisie',
+              decimales: 1,
+              totalise: false,
+            },
+            {
+              cle: 'ecartY',
+              intitule: 'yᵢ − ȳ (k€)',
+              role: 'saisie',
+              decimales: 0,
+              totalise: false,
+            },
+          ],
+          synthese: [],
+        },
+        questions: [
+          moteur.questionDeTableau(
+            'b2-02-a2-ecarts-point-moyen',
+            'nuage-de-points',
+            [PREMIER_ECART, ...AUTRES_ECARTS],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 2,
+      notes: [
         'Faire lire les signes : négatifs ensemble avant G, positifs ensemble après.',
         'Transition : jalon 2.',
-      ),
+      ],
     },
-    'B2-02-A2-06-ECARTS-POINT-MOYEN',
     [
       [
         'b2-02-a2-ecarts-point-moyen',
@@ -976,61 +1073,104 @@ const ACTE_3: moteur.Acte = [
   moteur.ecranV2(
     {
       screenId: 'B2-02-A3-02-COURS-DROITE',
-      titre: 'Cours : la droite des moindres carrés et la prévision',
+      titre: 'Cours : la droite des moindres carrés',
       diffusion: 'catalogue',
-      dureeMinutes: 6,
-      concepts: ['ajustement-affine', 'prevision'],
+      dureeMinutes: 3,
+      concepts: ['ajustement-affine'],
       notes: moteur.puces(
-        'Trace écrite : 6 min au plus.',
+        '3 min ; reprendre les sommes de l’exemple de r (5 et 2) : rien à recalculer.',
+        'Question : « Que veut dire a = 2,5 pour la boutique ? » Attendre « 2,5 milliers d’euros de plus par an, en tendance ».',
+        'Faire vérifier le passage par G avant d’accepter une équation : c’est le contrôle du CCF.',
+        'Piège à faire dire : PENTE(plage des x;plage des y) donne une autre droite, celle de x en y.',
+      ),
+    },
+    'lesson',
+    {
+      title: 'La droite des moindres carrés',
+      subtitle: 'Trace écrite · notion 3 · page 1 sur 2',
+      blocks: [
+        {
+          kind: 'definition',
+          title: 'La droite qui passe au plus près des points',
+          text: 'Quand |r| est proche de 1, on résume le nuage par une droite y = ax + b. La droite des moindres carrés est, parmi toutes les droites, celle qui rend la plus petite possible la somme des carrés des écarts verticaux entre les points et la droite. Elle passe toujours par G. a est la hausse de y quand x augmente de 1 ; b est la valeur de y pour x = 0. C’est elle qui donnera à la banque la tendance du chiffre d’affaires d’Atelier Rivage.',
+          formula: 'a = Σ(xᵢ − x̄)(yᵢ − ȳ) ÷ Σ(xᵢ − x̄)² · b = ȳ − a x̄',
+        },
+        {
+          kind: 'example',
+          title: 'Pour débuter : la droite de la boutique',
+          text: 'Même boutique : G(2 ; 6), somme des produits des écarts 5, somme des carrés des écarts des x 2.',
+          steps: [
+            'a = 5 ÷ 2 = 2,5 : en tendance, le chiffre d’affaires monte de 2,5 milliers d’euros par an.',
+            'b = ȳ − a x̄ = 6 − 2,5 × 2 = 6 − 5 = 1. Droite : y = 2,5x + 1.',
+            'Contrôle par G : 2,5 × 2 + 1 = 6, l’ordonnée de G.',
+            'Écarts verticaux des trois points à la droite : 0,5 ; −1 ; 0,5. Somme de leurs carrés : 1,5 ; aucune autre droite ne fait moins.',
+          ],
+        },
+        {
+          kind: 'method',
+          title: 'Obtenir la droite au CCF',
+          text: 'Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe CCF : écrire l’équation avec ses arrondis, puis la contrôler par G.',
+          steps: [
+            'a : =PENTE(plage des y;plage des x)',
+            'b : =ORDONNEE.ORIGINE(plage des y;plage des x)',
+            'Contrôle : a × x̄ + b redonne ȳ.',
+            'La hausse par rang se lit dans a, jamais dans r.',
+          ],
+        },
+      ],
+    },
+  ),
+  moteur.ecranV2(
+    {
+      screenId: 'B2-02-A3-02-COURS-PREVOIR',
+      titre: 'Cours : prévoir avec la droite, et ses limites',
+      diffusion: 'catalogue',
+      dureeMinutes: 3,
+      concepts: ['prevision'],
+      notes: moteur.puces(
+        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        'Faire calculer à main levée 2,5 × 2026 + 1 : l’absurdité de 5 066 fixe la règle du rang.',
+        'Question : « À 6,8, on prend le rang 6 ou le rang 7 ? » Faire vérifier que le rang 6 donne 16, sous le seuil.',
+        'Relance : « Jusqu’à quelle année feriez-vous confiance à cette droite ? » Renvoyer aux réponses de la réflexion A3-01.',
         'Insister : x est le rang de l’année, jamais l’année.',
       ),
     },
     'lesson',
     {
-      title: 'La droite des moindres carrés et la prévision',
-      subtitle: 'Trace écrite · notion 3',
+      title: 'Prévoir avec la droite, et ses limites',
+      subtitle: 'Trace écrite · notion 3 · page 2 sur 2',
       blocks: [
         {
-          kind: 'definition',
-          title: 'La droite des moindres carrés',
-          text: 'C’est la droite y = ax + b qui rend minimale la somme des carrés des écarts verticaux entre les points et la droite. Elle passe toujours par le point moyen G.',
-          formula: 'a = cov(x, y) ÷ V(x) · b = ȳ − a x̄',
-          steps: [
-            'a : =PENTE(plage des y;plage des x)',
-            'b : =ORDONNEE.ORIGINE(plage des y;plage des x)',
-            'Contrôle : a x̄ + b redonne ȳ.',
-          ],
-        },
-        {
           kind: 'method',
-          title: 'Prévoir avec la droite',
-          text: 'Remplacer x par le rang de l’année, jamais par l’année elle-même. Entre les rangs observés, on interpole ; au-delà, on extrapole : la prévision suppose que la tendance continue et devient fragile loin des données.',
+          title: 'Prévoir : le rang, puis la réserve',
+          text: 'Pour prévoir, on remplace x par le rang de l’année, jamais par l’année elle-même. Entre les rangs observés, on interpole : la prévision reste proche des données. Au-delà du dernier rang, on extrapole : on suppose que la tendance continue, et la prévision devient plus fragile à mesure qu’on s’éloigne. La banque demande 2028, trois ans après la dernière année connue d’Atelier Rivage : c’est une extrapolation, qui doit porter sa réserve.',
           formula: 'rang = année − année du rang 1 + 1',
         },
         {
-          kind: 'method',
-          title: 'Trouver l’année d’un seuil',
-          text: 'Résoudre ax + b ≥ seuil, puis prendre le premier rang entier qui convient, c’est-à-dire l’entier supérieur, et le traduire en année.',
+          kind: 'example',
+          title: 'Pour débuter : la boutique en 2026, puis le seuil de 18',
+          text: 'Droite y = 2,5x + 1, en milliers d’euros, avec le rang 1 pour 2022.',
+          steps: [
+            'Rang de 2026 : 2026 − 2022 + 1 = 5.',
+            'Prévision : 2,5 × 5 + 1 = 13,5 milliers d’euros, si la tendance se poursuit. Avec x = 2026, on trouverait 5 066 : absurde.',
+            'Seuil de 18 : 2,5x + 1 ≥ 18 donne x ≥ 17 ÷ 2,5 = 6,8.',
+            'Premier rang entier : 7, soit 2022 + 7 − 1 = 2028. Le rang 6 ne suffit pas : 2,5 × 6 + 1 = 16.',
+          ],
         },
         {
           kind: 'exam',
           title: 'Rédiger au CCF',
-          text: 'Donner l’équation avec ses arrondis, la valeur de r et sa lecture, la prévision avec son unité, puis la réserve : « si la tendance observée se poursuit ».',
+          text: 'Pièges : remplacer x par l’année, arrondir le rang d’un seuil à l’entier inférieur, oublier la réserve. Une réponse complète donne l’équation, la valeur de r et sa lecture, la prévision avec son unité, puis la réserve.',
+          steps: [
+            '« La droite des moindres carrés a pour équation y = …x + … ; r ≈ …, les points sont presque alignés. »',
+            '« Pour l’année … (rang …), on prévoit … k€, si la tendance observée se poursuit. »',
+            'Seuil : résoudre ax + b ≥ seuil, prendre l’entier supérieur, le traduire en année.',
+          ],
         },
       ],
     },
   ),
-  ...moteur.suiviDeSonCorrige(
-    {
-      screenId: 'B2-02-A3-03-CORRECTION',
-      titre: 'Correction : la droite de la publicité',
-      dureeMinutes: 2,
-      concepts: ['ajustement-affine', 'prevision'],
-      notes: moteur.puces(
-        'S’arrêter sur le contrôle par G (étape 3) et sur l’arrondi du seuil (étape 5).',
-        'Transition : « À vous, sur Atelier Rivage : exercice 4. »',
-      ),
-    },
+  moteur.corrigeEtapeParEtape(
     {
       screenId: 'B2-02-A3-03-EXEMPLE-DROITE',
       titre: 'Exemple guidé : la droite de la publicité',
@@ -1039,7 +1179,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['ajustement-affine', 'prevision'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
+        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
         'Papier : réponses sous chaque étape du livret.',
       ),
       proprietes: {
@@ -1091,85 +1231,88 @@ const ACTE_3: moteur.Acte = [
         etayage: 0,
       },
     },
-  ),
-  {
-    screenId: 'B2-02-A3-04-ATELIER-DROITE',
-    titre: 'Exercice 4 — Prévoir le chiffre d’affaires',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 9,
-    concepts: ['ajustement-affine', 'prevision'],
-    notes: moteur.puces(
-      'Temps : réflexion 2 min · travail 7 min',
-      'Réflexion : écrire le rang de 2028 avant tout calcul.',
-      'Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.',
-      'Papier : exercice 4 du livret.',
-    ),
-    proprietes: {
-      renvoi: 'B2-02-A2-01-NUAGE-RIVAGE',
-      intitule: 'Exercice 4 — Prévoir le chiffre d’affaires',
-      consigne: `${CONSIGNE_DE_RIVAGE} Utiliser les coefficients non arrondis pour les prévisions.`,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.numerique(
-          'b2-02-a3-pente',
-          'ajustement-affine',
-          'Quel est le coefficient directeur a de la droite des moindres carrés de y en x ? Arrondir au centième.',
-          null,
-          43.885714,
-          moteur.DEUX_DECIMALES,
-          '43,89',
-          [
-            [0.022743, 'pente-ordonnee-inversees'],
-            [564.4, 'pente-ordonnee-inversees'],
-          ],
-        ),
-        moteur.numerique(
-          'b2-02-a3-ordonnee',
-          'ajustement-affine',
-          'Quelle est l’ordonnée à l’origine b de cette droite ? Arrondir au centième.',
-          null,
-          564.4,
-          moteur.DEUX_DECIMALES,
-          '564,40',
-          [[43.885714, 'pente-ordonnee-inversees']],
-        ),
-        moteur.numerique(
-          'b2-02-a3-prevision',
-          'prevision',
-          'Si la tendance se poursuit, quel chiffre d’affaires prévoir pour 2028 ? Réponse en milliers d’euros, arrondie à l’unité.',
-          'k€',
-          959.371429,
-          { type: 'absolue', valeur: 0.5 },
-          '959',
-          [[89564.628571, 'rang-pris-pour-annee']],
-        ),
-        moteur.numerique(
-          'b2-02-a3-seuil',
-          'prevision',
-          'Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?',
-          null,
-          2029,
-          moteur.TOLERANCE_NULLE,
-          '2029',
-          [[2028, 'seuil-mal-arrondi']],
-        ),
+    {
+      minutes: 2,
+      notes: [
+        'S’arrêter sur le contrôle par G (étape 3) et sur l’arrondi du seuil (étape 5).',
+        'Transition : « À vous, sur Atelier Rivage : exercice 4. »',
       ],
     },
-  },
-  moteur.correctionDesReponses(
+  ),
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-02-A3-04-CORRECTION',
-      titre: 'Correction de l’exercice 4',
-      dureeMinutes: 2,
+      screenId: 'B2-02-A3-04-ATELIER-DROITE',
+      titre: 'Exercice 4 — Prévoir le chiffre d’affaires',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 9,
       concepts: ['ajustement-affine', 'prevision'],
       notes: moteur.puces(
-        'Commencer par la question la moins réussie.',
-        'Transition : « Une IA a fait la même prévision, pour 2035. »',
+        'Temps : réflexion 2 min · travail 7 min',
+        'Réflexion : écrire le rang de 2028 avant tout calcul.',
+        'Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.',
+        'Papier : exercice 4 du livret.',
       ),
+      proprietes: {
+        renvoi: 'B2-02-A2-01-NUAGE-RIVAGE',
+        intitule: 'Exercice 4 — Prévoir le chiffre d’affaires',
+        consigne: `${CONSIGNE_DE_RIVAGE} Utiliser les coefficients non arrondis pour les prévisions.`,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.numerique(
+            'b2-02-a3-pente',
+            'ajustement-affine',
+            'Quel est le coefficient directeur a de la droite des moindres carrés de y en x ? Arrondir au centième.',
+            null,
+            43.885714,
+            moteur.DEUX_DECIMALES,
+            '43,89',
+            [
+              [0.022743, 'pente-ordonnee-inversees'],
+              [564.4, 'pente-ordonnee-inversees'],
+            ],
+          ),
+          moteur.numerique(
+            'b2-02-a3-ordonnee',
+            'ajustement-affine',
+            'Quelle est l’ordonnée à l’origine b de cette droite ? Arrondir au centième.',
+            null,
+            564.4,
+            moteur.DEUX_DECIMALES,
+            '564,40',
+            [[43.885714, 'pente-ordonnee-inversees']],
+          ),
+          moteur.numerique(
+            'b2-02-a3-prevision',
+            'prevision',
+            'Si la tendance se poursuit, quel chiffre d’affaires prévoir pour 2028 ? Réponse en milliers d’euros, arrondie à l’unité.',
+            'k€',
+            959.371429,
+            { type: 'absolue', valeur: 0.5 },
+            '959',
+            [[89564.628571, 'rang-pris-pour-annee']],
+          ),
+          moteur.numerique(
+            'b2-02-a3-seuil',
+            'prevision',
+            'Selon ce modèle, en quelle année le chiffre d’affaires dépasserait-il 1 000 k€ pour la première fois ?',
+            null,
+            2029,
+            moteur.TOLERANCE_NULLE,
+            '2029',
+            [[2028, 'seuil-mal-arrondi']],
+          ),
+        ],
+      },
     },
-    'B2-02-A3-04-ATELIER-DROITE',
+    {
+      minutes: 2,
+      notes: [
+        'Corriger question par question, en commençant par la moins réussie.',
+        'Transition : « Une IA a fait la même prévision, pour 2035. »',
+      ],
+    },
     [
       [
         'b2-02-a3-pente',
@@ -1189,69 +1332,65 @@ const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-02-A3-05-DEFI-IA',
-    titre: 'Exercice 5 — Corriger la prévision d’une IA',
-    diffusion: 'seance',
-    brique: 'fp-challenge',
-    dureeMinutes: 8,
-    concepts: ['prevision', 'correlation'],
-    notes: moteur.puces(
-      'Temps : réflexion 2 min · travail 6 min',
-      'Réflexion : relire la trace écrite A3-02 et la règle du rang.',
-      'Repérer qui trouve le rang, l’extrapolation et la causalité ; faire trouver la piste fausse avant de révéler.',
-      'Papier : exercice 5 du livret.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      probleme: {
-        id: 'b2-02-a3-defi-ia',
-        enonce:
-          'Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »',
-        invite:
-          'Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.',
-      },
-      corrige: {
-        type: 'defi',
-        strategies: [
-          moteur.strategie(
-            'rang',
-            'Remplacer x par le rang de 2035, 16, et non par 2035 : y ≈ 43,89 × 16 + 564,4 ≈ 1 267 k€.',
-          ),
-          moteur.strategie(
-            'loin',
-            '2035 est à dix ans des données : l’extrapolation suppose que la tendance dure, la prévision est très fragile.',
-          ),
-          moteur.strategie(
-            'causalite',
-            'r proche de 1 dit que les points sont alignés, pas ce qui cause la hausse : aucune conclusion sur les tarifs.',
-          ),
-          moteur.strategie(
-            'controle',
-            'Contrôler la droite par le point moyen : 43,89 × 3,5 + 564,4 ≈ 718, l’ordonnée de G.',
-          ),
-          moteur.strategie(
-            'garder',
-            'Garder la réponse : r est proche de 1, donc la prévision est sûre.',
-            true,
-          ),
-        ],
-      },
-      renvoi: 'B2-02-A2-01-NUAGE-RIVAGE',
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-02-A3-05-CORRECTION',
-      titre: 'Correction de l’exercice 5',
-      dureeMinutes: 2,
+      screenId: 'B2-02-A3-05-DEFI-IA',
+      titre: 'Exercice 5 — Corriger la prévision d’une IA',
+      diffusion: 'seance',
+      brique: 'fp-challenge',
+      dureeMinutes: 8,
       concepts: ['prevision', 'correlation'],
       notes: moteur.puces(
-        'Faire lire deux réserves écrites par la classe.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
+        'Temps : réflexion 2 min · travail 6 min',
+        'Réflexion : relire la trace écrite A3-02 et la règle du rang.',
+        'Repérer qui trouve le rang, l’extrapolation et la causalité ; faire trouver la piste fausse avant de révéler.',
+        'Papier : exercice 5 du livret.',
       ),
+      proprietes: {
+        modalite: 'solo',
+        probleme: {
+          id: 'b2-02-a3-defi-ia',
+          enonce:
+            'Samir a demandé une prévision pour 2035 à un assistant IA. Réponse : « Droite : y = 43,89x + 564,4. En 2035, y = 43,89 × 2035 + 564,4 ≈ 89 881 k€. Comme r est proche de 1, ce sont nos hausses de tarifs qui causent la croissance. »',
+          invite:
+            'Trouvez les erreurs de l’IA, corrigez la prévision et écrivez la réserve à ajouter.',
+        },
+        corrige: {
+          type: 'defi',
+          strategies: [
+            moteur.strategie(
+              'rang',
+              'Remplacer x par le rang de 2035, 16, et non par 2035 : y ≈ 43,89 × 16 + 564,4 ≈ 1 267 k€.',
+            ),
+            moteur.strategie(
+              'loin',
+              '2035 est à dix ans des données : l’extrapolation suppose que la tendance dure, la prévision est très fragile.',
+            ),
+            moteur.strategie(
+              'causalite',
+              'r proche de 1 dit que les points sont alignés, pas ce qui cause la hausse : aucune conclusion sur les tarifs.',
+            ),
+            moteur.strategie(
+              'controle',
+              'Contrôler la droite par le point moyen : 43,89 × 3,5 + 564,4 ≈ 718, l’ordonnée de G.',
+            ),
+            moteur.strategie(
+              'garder',
+              'Garder la réponse : r est proche de 1, donc la prévision est sûre.',
+              true,
+            ),
+          ],
+        },
+        renvoi: 'B2-02-A2-01-NUAGE-RIVAGE',
+      },
     },
-    'B2-02-A3-05-DEFI-IA',
+    {
+      minutes: 2,
+      notes: [
+        'Faire lire deux réserves écrites par la classe, puis dévoiler les pistes une à une.',
+        'Transition : jalon 3, puis pause de 15 minutes.',
+      ],
+    },
     [
       [
         'rang',
@@ -1391,85 +1530,81 @@ const ACTE_4: moteur.Acte = [
       },
     },
   ),
-  {
-    screenId: 'B2-02-A4-02-TABLEUR-FIBRE',
-    titre: 'Question tableur (3 points sur 10) : ajuster la série',
-    diffusion: 'seance',
-    brique: 'fp-sheet',
-    dureeMinutes: 15,
-    concepts: ['correlation', 'ajustement-affine'],
-    notes: moteur.puces(
-      'Temps : réflexion 3 min · travail 12 min',
-      'Réflexion : chacun écrit sur papier les fonctions à utiliser et l’ordre des plages.',
-      'Erreurs à chercher : plages inversées dans PENTE ; valeurs tapées à la main au lieu de formules.',
-      'Papier : même question à la calculatrice, formules écrites sur la copie ; en CCF, elle se fait devant l’examinateur.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      plan: PLAN_FEUILLE,
-      questions: [
-        {
-          type: 'feuille',
-          id: 'b2-02-a4-feuille-fibre',
-          concept: 'ajustement-affine',
-          noteCompte: true,
-          corrige: {
-            type: 'feuille',
-            plan: PLAN_FEUILLE,
-            attendus: [
-              moteur.attendu(
-                'E2',
-                `=COEFFICIENT.CORRELATION(${PLAGE_DES_RANGS};${PLAGE_DE_LA_FIBRE})`,
-                0.997852,
-                'references',
-              ),
-              moteur.attendu(
-                'E3',
-                `=PENTE(${PLAGE_DE_LA_FIBRE};${PLAGE_DES_RANGS})`,
-                3.51,
-                'references',
-                [[0.283678, 'pente-ordonnee-inversees']],
-              ),
-              moteur.attendu(
-                'E4',
-                `=ORDONNEE.ORIGINE(${PLAGE_DE_LA_FIBRE};${PLAGE_DES_RANGS})`,
-                7.21,
-                'references',
-                [[-2.032441, 'pente-ordonnee-inversees']],
-              ),
-              moteur.attendu(
-                'E5',
-                `=MOYENNE(${PLAGE_DES_RANGS})`,
-                3,
-                'references',
-              ),
-              moteur.attendu(
-                'E6',
-                `=MOYENNE(${PLAGE_DE_LA_FIBRE})`,
-                17.74,
-                'references',
-                [[3, 'point-moyen-confondu']],
-              ),
-              moteur.controle('E7', '=SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0)'),
-            ],
-            seuilReussite: 0.8,
-          },
-        },
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-02-A4-02-CORRECTION',
-      titre: 'Correction de la question tableur',
-      dureeMinutes: 2,
+      screenId: 'B2-02-A4-02-TABLEUR-FIBRE',
+      titre: 'Question tableur (3 points sur 10) : ajuster la série',
+      diffusion: 'seance',
+      brique: 'fp-sheet',
+      dureeMinutes: 15,
       concepts: ['correlation', 'ajustement-affine'],
       notes: moteur.puces(
+        'Temps : réflexion 3 min · travail 12 min',
+        'Réflexion : chacun écrit sur papier les fonctions à utiliser et l’ordre des plages.',
+        'Erreurs à chercher : plages inversées dans PENTE ; valeurs tapées à la main au lieu de formules.',
+        'Papier : même question à la calculatrice, formules écrites sur la copie ; en CCF, elle se fait devant l’examinateur.',
+      ),
+      proprietes: {
+        modalite: 'solo',
+        plan: PLAN_FEUILLE,
+        questions: [
+          {
+            type: 'feuille',
+            id: 'b2-02-a4-feuille-fibre',
+            concept: 'ajustement-affine',
+            noteCompte: true,
+            corrige: {
+              type: 'feuille',
+              plan: PLAN_FEUILLE,
+              attendus: [
+                moteur.attendu(
+                  'E2',
+                  `=COEFFICIENT.CORRELATION(${PLAGE_DES_RANGS};${PLAGE_DE_LA_FIBRE})`,
+                  0.997852,
+                  'references',
+                ),
+                moteur.attendu(
+                  'E3',
+                  `=PENTE(${PLAGE_DE_LA_FIBRE};${PLAGE_DES_RANGS})`,
+                  3.51,
+                  'references',
+                  [[0.283678, 'pente-ordonnee-inversees']],
+                ),
+                moteur.attendu(
+                  'E4',
+                  `=ORDONNEE.ORIGINE(${PLAGE_DE_LA_FIBRE};${PLAGE_DES_RANGS})`,
+                  7.21,
+                  'references',
+                  [[-2.032441, 'pente-ordonnee-inversees']],
+                ),
+                moteur.attendu(
+                  'E5',
+                  `=MOYENNE(${PLAGE_DES_RANGS})`,
+                  3,
+                  'references',
+                ),
+                moteur.attendu(
+                  'E6',
+                  `=MOYENNE(${PLAGE_DE_LA_FIBRE})`,
+                  17.74,
+                  'references',
+                  [[3, 'point-moyen-confondu']],
+                ),
+                moteur.controle('E7', '=SI(ARRONDI(E3*E5+E4-E6;6)=0;1;0)'),
+              ],
+              seuilReussite: 0.8,
+            },
+          },
+        ],
+      },
+    },
+    {
+      minutes: 2,
+      notes: [
         'Projeter la feuille d’un poste volontaire et relire chaque formule.',
         'Transition : « Avec cette droite, prévoyez : le coffre de la mini-situation. »',
-      ),
+      ],
     },
-    'B2-02-A4-02-TABLEUR-FIBRE',
     [
       [
         'E2',
@@ -1485,125 +1620,121 @@ const ACTE_4: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-02-A4-03-COFFRE-FIBRE',
-    titre: 'Mini-situation : prévoir et juger la prévision',
-    diffusion: 'seance',
-    brique: 'fp-escape',
-    dureeMinutes: 14,
-    concepts: ['prevision'],
-    notes: moteur.puces(
-      'Temps : réflexion 2 min · travail 12 min',
-      'Réflexion : écrire les rangs de 2025 et de 2030 avant d’ouvrir le coffre.',
-      'Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.',
-      'Papier : quatre questions rédigées du livret, sans code de coffre.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      parcours: {
-        id: PARCOURS_DU_COFFRE,
-        intitule:
-          'Prévoir et juger la prévision : quatre réponses pour ouvrir le coffre',
-        delaiIndiceMs: 60000,
-        budgetEnigmeMs: 150000,
-        tentativesMax: 10,
-        enigmes: [
-          {
-            id: 'b2-02-a4-e1-prevision',
-            intitule: 'La prévision de fin 2025 (2 points)',
-            enonce:
-              'Avec la droite y = 3,51x + 7,21, quel nombre d’abonnements à la fibre prévoir pour fin 2025, en millions ? Arrondir au centième.',
-            indice: 'Remplacez x par le rang de l’année, pas par l’année.',
-          },
-          {
-            id: 'b2-02-a4-e2-seuil',
-            intitule: 'L’année des 35 millions (2 points)',
-            enonce:
-              'Selon ce modèle, en quelle année le nombre d’abonnements dépasserait-il 35 millions pour la première fois ?',
-            indice:
-              'Résolvez l’inéquation, prenez le premier rang entier, puis traduisez-le en année.',
-          },
-          {
-            id: 'b2-02-a4-e3-lointaine',
-            intitule: 'Une prévision lointaine (1,5 point)',
-            enonce:
-              'Quel nombre d’abonnements le modèle prévoit-il pour fin 2030, en millions ? Arrondir au centième.',
-            indice:
-              'Même méthode que pour la première énigme, avec le rang de la nouvelle année.',
-          },
-          {
-            id: 'b2-02-a4-e4-ralentissement',
-            intitule: 'Le modèle face au réel (1,5 point)',
-            enonce:
-              'L’Arcep a publié depuis le chiffre réel : la fibre a gagné 2,7 millions d’abonnements en 2025. De combien de millions la hausse annuelle prévue par le modèle dépasse-t-elle cette hausse observée ? Arrondir au centième.',
-            indice:
-              'Le modèle ajoute chaque année la même quantité : son coefficient directeur.',
-          },
-        ],
-      },
-      questions: [
-        moteur.enigme(
-          PARCOURS_DU_COFFRE,
-          0,
-          'b2-02-a4-e1-prevision',
-          'prevision',
-          28.27,
-          0.005,
-          '28,27',
-          'F7',
-          [
-            [7114.96, 'rang-pris-pour-annee'],
-            [46.77, 'pente-ordonnee-inversees'],
-          ],
-        ),
-        moteur.enigme(
-          PARCOURS_DU_COFFRE,
-          1,
-          'b2-02-a4-e2-seuil',
-          'prevision',
-          2027,
-          0.05,
-          '2027',
-          'B3',
-          [[2026, 'seuil-mal-arrondi']],
-        ),
-        moteur.enigme(
-          PARCOURS_DU_COFFRE,
-          2,
-          'b2-02-a4-e3-lointaine',
-          'prevision',
-          45.82,
-          0.005,
-          '45,82',
-          'R9',
-          [[7132.51, 'rang-pris-pour-annee']],
-        ),
-        moteur.enigme(
-          PARCOURS_DU_COFFRE,
-          3,
-          'b2-02-a4-e4-ralentissement',
-          'prevision',
-          0.81,
-          0.005,
-          '0,81',
-          'E5',
-          [[2.7, 'extrapolation-sans-reserve']],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-02-A4-03-CORRECTION',
-      titre: 'Correction de la mini-situation',
-      dureeMinutes: 2,
+      screenId: 'B2-02-A4-03-COFFRE-FIBRE',
+      titre: 'Mini-situation : prévoir et juger la prévision',
+      diffusion: 'seance',
+      brique: 'fp-escape',
+      dureeMinutes: 14,
       concepts: ['prevision'],
       notes: moteur.puces(
-        'S’attarder sur l’énigme la moins résolue (pupitre).',
-        'Finir sur la comparaison au réel : c’est la réserve à écrire au CCF.',
+        'Temps : réflexion 2 min · travail 12 min',
+        'Réflexion : écrire les rangs de 2025 et de 2030 avant d’ouvrir le coffre.',
+        'Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.',
+        'Papier : quatre questions rédigées du livret, sans code de coffre.',
       ),
+      proprietes: {
+        modalite: 'solo',
+        parcours: {
+          id: PARCOURS_DU_COFFRE,
+          intitule:
+            'Prévoir et juger la prévision : quatre réponses pour ouvrir le coffre',
+          delaiIndiceMs: 60000,
+          budgetEnigmeMs: 150000,
+          tentativesMax: 10,
+          enigmes: [
+            {
+              id: 'b2-02-a4-e1-prevision',
+              intitule: 'La prévision de fin 2025 (2 points)',
+              enonce:
+                'Avec la droite y = 3,51x + 7,21, quel nombre d’abonnements à la fibre prévoir pour fin 2025, en millions ? Arrondir au centième.',
+              indice: 'Remplacez x par le rang de l’année, pas par l’année.',
+            },
+            {
+              id: 'b2-02-a4-e2-seuil',
+              intitule: 'L’année des 35 millions (2 points)',
+              enonce:
+                'Selon ce modèle, en quelle année le nombre d’abonnements dépasserait-il 35 millions pour la première fois ?',
+              indice:
+                'Résolvez l’inéquation, prenez le premier rang entier, puis traduisez-le en année.',
+            },
+            {
+              id: 'b2-02-a4-e3-lointaine',
+              intitule: 'Une prévision lointaine (1,5 point)',
+              enonce:
+                'Quel nombre d’abonnements le modèle prévoit-il pour fin 2030, en millions ? Arrondir au centième.',
+              indice:
+                'Même méthode que pour la première énigme, avec le rang de la nouvelle année.',
+            },
+            {
+              id: 'b2-02-a4-e4-ralentissement',
+              intitule: 'Le modèle face au réel (1,5 point)',
+              enonce:
+                'L’Arcep a publié depuis le chiffre réel : la fibre a gagné 2,7 millions d’abonnements en 2025. De combien de millions la hausse annuelle prévue par le modèle dépasse-t-elle cette hausse observée ? Arrondir au centième.',
+              indice:
+                'Le modèle ajoute chaque année la même quantité : son coefficient directeur.',
+            },
+          ],
+        },
+        questions: [
+          moteur.enigme(
+            PARCOURS_DU_COFFRE,
+            0,
+            'b2-02-a4-e1-prevision',
+            'prevision',
+            28.27,
+            0.005,
+            '28,27',
+            'F7',
+            [
+              [7114.96, 'rang-pris-pour-annee'],
+              [46.77, 'pente-ordonnee-inversees'],
+            ],
+          ),
+          moteur.enigme(
+            PARCOURS_DU_COFFRE,
+            1,
+            'b2-02-a4-e2-seuil',
+            'prevision',
+            2027,
+            0.05,
+            '2027',
+            'B3',
+            [[2026, 'seuil-mal-arrondi']],
+          ),
+          moteur.enigme(
+            PARCOURS_DU_COFFRE,
+            2,
+            'b2-02-a4-e3-lointaine',
+            'prevision',
+            45.82,
+            0.005,
+            '45,82',
+            'R9',
+            [[7132.51, 'rang-pris-pour-annee']],
+          ),
+          moteur.enigme(
+            PARCOURS_DU_COFFRE,
+            3,
+            'b2-02-a4-e4-ralentissement',
+            'prevision',
+            0.81,
+            0.005,
+            '0,81',
+            'E5',
+            [[2.7, 'extrapolation-sans-reserve']],
+          ),
+        ],
+      },
     },
-    'B2-02-A4-03-COFFRE-FIBRE',
+    {
+      minutes: 2,
+      notes: [
+        'Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).',
+        'Finir sur la comparaison au réel : c’est la réserve à écrire au CCF.',
+      ],
+    },
     [
       [
         'b2-02-a4-e1-prevision',
@@ -1904,19 +2035,19 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'moyenne-lue-comme-mediane': 'B2-02-A1-07-EXEMPLE-RESUME',
   'mediane-sans-tri': 'B2-02-A1-07-EXEMPLE-RESUME',
   'mediane-rang-pair': 'B2-02-A1-07-EXEMPLE-RESUME',
-  'valeur-extreme-ignoree': 'B2-02-A1-06-COURS-RESUMER',
-  'valeur-extreme-supprimee': 'B2-02-A1-06-COURS-RESUMER',
-  'ecart-type-population-echantillon': 'B2-02-A1-06-COURS-RESUMER',
-  'variance-confondue-avec-ecart-type': 'B2-02-A1-06-COURS-RESUMER',
-  'etendue-prise-pour-dispersion': 'B2-02-A1-06-COURS-RESUMER',
-  'correlation-prise-pour-causalite': 'B2-02-A2-03-COURS-NUAGE',
+  'valeur-extreme-ignoree': 'B2-02-A1-06-COURS-ECART',
+  'valeur-extreme-supprimee': 'B2-02-A1-06-COURS-ECART',
+  'ecart-type-population-echantillon': 'B2-02-A1-06-COURS-ECART',
+  'variance-confondue-avec-ecart-type': 'B2-02-A1-06-COURS-ECART',
+  'etendue-prise-pour-dispersion': 'B2-02-A1-06-COURS-ECART',
+  'correlation-prise-pour-causalite': 'B2-02-A2-03-COURS-CORRELATION',
   'point-moyen-confondu': 'B2-02-A2-04-EXEMPLE-NUAGE',
-  'correlation-lue-comme-pente': 'B2-02-A2-03-COURS-NUAGE',
-  'correlation-jugee-au-signe': 'B2-02-A2-03-COURS-NUAGE',
+  'correlation-lue-comme-pente': 'B2-02-A2-03-COURS-CORRELATION',
+  'correlation-jugee-au-signe': 'B2-02-A2-03-COURS-CORRELATION',
   'pente-ordonnee-inversees': 'B2-02-A3-03-EXEMPLE-DROITE',
   'rang-pris-pour-annee': 'B2-02-A3-03-EXEMPLE-DROITE',
   'seuil-mal-arrondi': 'B2-02-A3-03-EXEMPLE-DROITE',
-  'extrapolation-sans-reserve': 'B2-02-A3-02-COURS-DROITE',
+  'extrapolation-sans-reserve': 'B2-02-A3-02-COURS-PREVOIR',
 };
 
 export const COURS_B2_02 = moteur.coursB2(
