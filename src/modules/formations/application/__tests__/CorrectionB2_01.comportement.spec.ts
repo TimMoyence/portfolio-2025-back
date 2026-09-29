@@ -90,7 +90,10 @@ describe('A4-02 — correction serveur de la tâche de tableur 1 (AC-11)', () =>
     expect(calculees.G5).toBe(291000);
     expect([calculees.B7, calculees.C7]).toEqual([1, 1]);
     for (const attendu of FEUILLE.attendus) {
-      expect(calculees[attendu.reference]).toBeCloseTo(attendu.valeur, 5);
+      expect(calculees[attendu.reference]).toBeCloseTo(
+        Number(attendu.valeur),
+        5,
+      );
     }
   });
 

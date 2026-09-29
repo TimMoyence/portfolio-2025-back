@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sha256": "6899229e7a8d56ea8184a6eb9542d7147fde4060d8c15697a96d640ed5d15285",
+  "sha256": "e328b123724fbccd117dbfbe8a28bfeac9b8764fb1e6489ae184978b7b5931af",
   "vecteurs": [
     {
       "id": "feuille-cycle-deux-maillons",
@@ -8,11 +8,20 @@
       "entree": {
         "lignes": 1,
         "colonnes": 2,
-        "cellules": { "A1": "=B1", "B1": "=A1" }
+        "cellules": {
+          "A1": "=B1",
+          "B1": "=A1"
+        }
       },
       "attendu": {
-        "A1": { "valeur": null, "erreur": "#REF!" },
-        "B1": { "valeur": null, "erreur": "#REF!" }
+        "A1": {
+          "valeur": null,
+          "erreur": "#REF!"
+        },
+        "B1": {
+          "valeur": null,
+          "erreur": "#REF!"
+        }
       }
     },
     {
@@ -21,10 +30,15 @@
       "entree": {
         "lignes": 1,
         "colonnes": 2,
-        "cellules": { "A1": "=1/B1" }
+        "cellules": {
+          "A1": "=1/B1"
+        }
       },
       "attendu": {
-        "A1": { "valeur": null, "erreur": "#DIV/0!" }
+        "A1": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        }
       }
     },
     {
@@ -33,73 +47,118 @@
       "entree": {
         "lignes": 1,
         "colonnes": 1,
-        "cellules": { "A1": "=A2" }
+        "cellules": {
+          "A1": "=A2"
+        }
       },
       "attendu": {
-        "A1": { "valeur": null, "erreur": "#REF!" }
+        "A1": {
+          "valeur": null,
+          "erreur": "#REF!"
+        }
       }
     },
     {
       "id": "expression-puissance-associative-a-gauche",
       "type": "expression",
-      "entree": { "expression": "2^3^2", "variables": {} },
-      "attendu": { "valeur": 64, "erreur": null }
+      "entree": {
+        "expression": "2^3^2",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": 64,
+        "erreur": null
+      }
     },
     {
       "id": "expression-arrondi-mi-chemin-negatif",
       "type": "expression",
-      "entree": { "expression": "ARRONDI(-2,5;0)", "variables": {} },
-      "attendu": { "valeur": -3, "erreur": null }
+      "entree": {
+        "expression": "ARRONDI(-2,5;0)",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": -3,
+        "erreur": null
+      }
     },
     {
       "id": "expression-coefficient-de-la-toile",
       "type": "expression",
       "entree": {
         "expression": "prix / avantPrix",
-        "variables": { "prix": 20.52, "avantPrix": 21.6 }
+        "variables": {
+          "prix": 20.52,
+          "avantPrix": 21.6
+        }
       },
-      "attendu": { "valeur": 0.95, "erreur": null }
+      "attendu": {
+        "valeur": 0.95,
+        "erreur": null
+      }
     },
     {
       "id": "expression-evolution-depuis-l-indice",
       "type": "expression",
       "entree": {
         "expression": "indice - 100",
-        "variables": { "indice": 103.5 }
+        "variables": {
+          "indice": 103.5
+        }
       },
-      "attendu": { "valeur": 3.5, "erreur": null }
+      "attendu": {
+        "valeur": 3.5,
+        "erreur": null
+      }
     },
     {
       "id": "expression-total-des-taux",
       "type": "expression",
       "entree": {
         "expression": "totalTaux",
-        "variables": { "totalTaux": 4 }
+        "variables": {
+          "totalTaux": 4
+        }
       },
-      "attendu": { "valeur": 4, "erreur": null }
+      "attendu": {
+        "valeur": 4,
+        "erreur": null
+      }
     },
     {
       "id": "r1c1-taux-d-evolution-d2",
       "type": "r1c1",
-      "entree": { "formule": "=(C2-B2)/B2", "cellule": "D2" },
+      "entree": {
+        "formule": "=(C2-B2)/B2",
+        "cellule": "D2"
+      },
       "attendu": "=(RC[-1]-RC[-2])/RC[-2]"
     },
     {
       "id": "r1c1-part-figee-e2",
       "type": "r1c1",
-      "entree": { "formule": "=C2/$C$5", "cellule": "E2" },
+      "entree": {
+        "formule": "=C2/$C$5",
+        "cellule": "E2"
+      },
       "attendu": "=RC[-2]/R5C3"
     },
     {
       "id": "r1c1-part-figee-recopiee-e3",
       "type": "r1c1",
-      "entree": { "formule": "=C3/$C$5", "cellule": "E3" },
+      "entree": {
+        "formule": "=C3/$C$5",
+        "cellule": "E3"
+      },
       "attendu": "=RC[-2]/R5C3"
     },
     {
       "id": "r1c1-marge-g2",
       "type": "r1c1",
-      "entree": { "formule": "=C2*F2", "cellule": "G2" },
+      "entree": {
+        "formule": "=C2*F2",
+        "cellule": "G2"
+      },
       "attendu": "=RC[-4]*RC[-1]"
     },
     {
@@ -128,22 +187,70 @@
         }
       },
       "attendu": {
-        "A1": { "valeur": 2, "erreur": null },
-        "A2": { "valeur": 9, "erreur": null },
-        "A3": { "valeur": 8, "erreur": null },
-        "A4": { "valeur": 4.5, "erreur": null },
-        "A5": { "valeur": 2, "erreur": null },
-        "A6": { "valeur": 4, "erreur": null },
-        "A7": { "valeur": 5.5, "erreur": null },
-        "A8": { "valeur": 4, "erreur": null },
-        "B1": { "valeur": 4, "erreur": null },
-        "B2": { "valeur": 2, "erreur": null },
-        "B3": { "valeur": 9, "erreur": null },
-        "B4": { "valeur": 4, "erreur": null },
-        "B5": { "valeur": 5, "erreur": null },
-        "B6": { "valeur": 4, "erreur": null },
-        "B7": { "valeur": 7, "erreur": null },
-        "B8": { "valeur": 5, "erreur": null }
+        "A1": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "A2": {
+          "valeur": 9,
+          "erreur": null
+        },
+        "A3": {
+          "valeur": 8,
+          "erreur": null
+        },
+        "A4": {
+          "valeur": 4.5,
+          "erreur": null
+        },
+        "A5": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "A6": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "A7": {
+          "valeur": 5.5,
+          "erreur": null
+        },
+        "A8": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "B1": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "B2": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "B3": {
+          "valeur": 9,
+          "erreur": null
+        },
+        "B4": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "B5": {
+          "valeur": 5,
+          "erreur": null
+        },
+        "B6": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "B7": {
+          "valeur": 7,
+          "erreur": null
+        },
+        "B8": {
+          "valeur": 5,
+          "erreur": null
+        }
       }
     },
     {
@@ -167,17 +274,50 @@
         }
       },
       "attendu": {
-        "A1": { "valeur": 2, "erreur": null },
-        "A2": { "valeur": 2, "erreur": null },
-        "A3": { "valeur": 1, "erreur": null },
-        "A4": { "valeur": 1.5, "erreur": null },
-        "B1": { "valeur": 1, "erreur": null },
-        "B3": { "valeur": null, "erreur": "#VALEUR!" },
-        "B4": { "valeur": 3, "erreur": null },
-        "C1": { "valeur": null, "erreur": "#VALEUR!" },
-        "C2": { "valeur": null, "erreur": "#DIV/0!" },
-        "C3": { "valeur": 0, "erreur": null },
-        "C4": { "valeur": null, "erreur": "#VALEUR!" }
+        "B1": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "B3": {
+          "valeur": "absent",
+          "erreur": null
+        },
+        "B4": {
+          "valeur": 3,
+          "erreur": null
+        },
+        "A1": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "A2": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "A3": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "A4": {
+          "valeur": 1.5,
+          "erreur": null
+        },
+        "C1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "C2": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        },
+        "C3": {
+          "valeur": 0,
+          "erreur": null
+        },
+        "C4": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        }
       }
     },
     {
@@ -186,37 +326,74 @@
       "entree": {
         "lignes": 2,
         "colonnes": 2,
-        "cellules": { "B1": "=1/0", "B2": "3", "A1": "=MEDIANE(B1:B2)" }
+        "cellules": {
+          "B1": "=1/0",
+          "B2": "3",
+          "A1": "=MEDIANE(B1:B2)"
+        }
       },
       "attendu": {
-        "A1": { "valeur": null, "erreur": "#DIV/0!" },
-        "B1": { "valeur": null, "erreur": "#DIV/0!" },
-        "B2": { "valeur": 3, "erreur": null }
+        "A1": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        },
+        "B1": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        },
+        "B2": {
+          "valeur": 3,
+          "erreur": null
+        }
       }
     },
     {
       "id": "expression-mediane-de-valeurs-libres",
       "type": "expression",
-      "entree": { "expression": "MEDIANE(3;1;2)", "variables": {} },
-      "attendu": { "valeur": 2, "erreur": null }
+      "entree": {
+        "expression": "MEDIANE(3;1;2)",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": 2,
+        "erreur": null
+      }
     },
     {
       "id": "expression-ecart-type-echantillon",
       "type": "expression",
-      "entree": { "expression": "ECARTYPE(2;4;6)", "variables": {} },
-      "attendu": { "valeur": 2, "erreur": null }
+      "entree": {
+        "expression": "ECARTYPE(2;4;6)",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": 2,
+        "erreur": null
+      }
     },
     {
       "id": "expression-ecart-type-echantillon-d-une-valeur",
       "type": "expression",
-      "entree": { "expression": "ECARTYPE(5)", "variables": {} },
-      "attendu": { "valeur": null, "erreur": "#DIV/0!" }
+      "entree": {
+        "expression": "ECARTYPE(5)",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": null,
+        "erreur": "#DIV/0!"
+      }
     },
     {
       "id": "expression-quartile-sans-plage",
       "type": "expression",
-      "entree": { "expression": "QUARTILE(1;2;3;4;1)", "variables": {} },
-      "attendu": { "valeur": null, "erreur": "#VALEUR!" }
+      "entree": {
+        "expression": "QUARTILE(1;2;3;4;1)",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": null,
+        "erreur": "#VALEUR!"
+      }
     },
     {
       "id": "feuille-ajustement-affine-paires-ecartees",
@@ -246,24 +423,78 @@
         }
       },
       "attendu": {
-        "A1": { "valeur": null, "erreur": "#VALEUR!" },
-        "A2": { "valeur": 0, "erreur": null },
-        "A3": { "valeur": 1, "erreur": null },
-        "A4": { "valeur": 2, "erreur": null },
-        "A5": { "valeur": 3, "erreur": null },
-        "A6": { "valeur": 4, "erreur": null },
-        "B1": { "valeur": null, "erreur": "#VALEUR!" },
-        "B2": { "valeur": 1, "erreur": null },
-        "B3": { "valeur": 3, "erreur": null },
-        "B5": { "valeur": 7, "erreur": null },
-        "B6": { "valeur": 9, "erreur": null },
-        "C1": { "valeur": 2, "erreur": null },
-        "C2": { "valeur": 1, "erreur": null },
-        "C3": { "valeur": 1, "erreur": null },
-        "C4": { "valeur": null, "erreur": "#VALEUR!" },
-        "C5": { "valeur": null, "erreur": "#VALEUR!" },
-        "D1": { "valeur": null, "erreur": "#VALEUR!" },
-        "D2": { "valeur": null, "erreur": "#NOM?" }
+        "A1": {
+          "valeur": "Rang",
+          "erreur": null
+        },
+        "A2": {
+          "valeur": 0,
+          "erreur": null
+        },
+        "A3": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "A4": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "A5": {
+          "valeur": 3,
+          "erreur": null
+        },
+        "A6": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "B1": {
+          "valeur": "Eo",
+          "erreur": null
+        },
+        "B2": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "B3": {
+          "valeur": 3,
+          "erreur": null
+        },
+        "B5": {
+          "valeur": 7,
+          "erreur": null
+        },
+        "B6": {
+          "valeur": 9,
+          "erreur": null
+        },
+        "C1": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "C2": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "C3": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "C4": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "C5": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "D1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "D2": {
+          "valeur": null,
+          "erreur": "#NOM?"
+        }
       }
     },
     {
@@ -283,13 +514,34 @@
         }
       },
       "attendu": {
-        "A1": { "valeur": 5, "erreur": null },
-        "A2": { "valeur": 5, "erreur": null },
-        "B1": { "valeur": 1, "erreur": null },
-        "B2": { "valeur": 4, "erreur": null },
-        "C1": { "valeur": null, "erreur": "#DIV/0!" },
-        "C2": { "valeur": null, "erreur": "#DIV/0!" },
-        "C3": { "valeur": null, "erreur": "#DIV/0!" }
+        "A1": {
+          "valeur": 5,
+          "erreur": null
+        },
+        "A2": {
+          "valeur": 5,
+          "erreur": null
+        },
+        "B1": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "B2": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "C1": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        },
+        "C2": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        },
+        "C3": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        }
       }
     },
     {
@@ -304,8 +556,422 @@
         }
       },
       "attendu": {
-        "A1": { "valeur": null, "erreur": "#VALEUR!" },
-        "B1": { "valeur": null, "erreur": "#NOM?" }
+        "A1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "B1": {
+          "valeur": null,
+          "erreur": "#NOM?"
+        }
+      }
+    },
+    {
+      "id": "feuille-regle-de-relance-texte-et-connecteur",
+      "type": "feuille",
+      "entree": {
+        "lignes": 3,
+        "colonnes": 4,
+        "cellules": {
+          "A1": "72",
+          "B1": "Impayée",
+          "A2": "60",
+          "B2": "impayée",
+          "A3": "90",
+          "B3": "Payée",
+          "C1": "=SI(ET(B1=\"Impayée\";A1>60);\"Relancer\";\"\")",
+          "C2": "=SI(ET(B2=\"Impayée\";A2>60);\"Relancer\";\"\")",
+          "C3": "=SI(ET(B3=\"Impayée\";A3>60);\"Relancer\";\"\")",
+          "D1": "=NB.SI(C1:C3;\"Relancer\")",
+          "D2": "=\"a\"\"b\"",
+          "D3": "=\"abc"
+        }
+      },
+      "attendu": {
+        "A1": {
+          "valeur": 72,
+          "erreur": null
+        },
+        "B1": {
+          "valeur": "Impayée",
+          "erreur": null
+        },
+        "A2": {
+          "valeur": 60,
+          "erreur": null
+        },
+        "B2": {
+          "valeur": "impayée",
+          "erreur": null
+        },
+        "A3": {
+          "valeur": 90,
+          "erreur": null
+        },
+        "B3": {
+          "valeur": "Payée",
+          "erreur": null
+        },
+        "C1": {
+          "valeur": "Relancer",
+          "erreur": null
+        },
+        "C2": {
+          "valeur": "",
+          "erreur": null
+        },
+        "C3": {
+          "valeur": "",
+          "erreur": null
+        },
+        "D1": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "D2": {
+          "valeur": "a\"b",
+          "erreur": null
+        },
+        "D3": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        }
+      }
+    },
+    {
+      "id": "feuille-comparaisons-types-mixtes-et-constantes",
+      "type": "feuille",
+      "entree": {
+        "lignes": 2,
+        "colonnes": 6,
+        "cellules": {
+          "A1": "=\"impayée\"=\"Impayée\"",
+          "B1": "=\"a\"<\"B\"",
+          "C1": "=1=\"1\"",
+          "D1": "=\"a\">5",
+          "E1": "=VRAI>\"z\"",
+          "F1": "=faux",
+          "A2": "Vrai",
+          "B2": "=VRAI+1",
+          "C2": "=\"3\"+1",
+          "D2": "=\"a\"+1",
+          "E2": "=-FAUX",
+          "F2": "=SI(1>2;10)"
+        }
+      },
+      "attendu": {
+        "A1": {
+          "valeur": true,
+          "erreur": null
+        },
+        "B1": {
+          "valeur": true,
+          "erreur": null
+        },
+        "C1": {
+          "valeur": false,
+          "erreur": null
+        },
+        "D1": {
+          "valeur": true,
+          "erreur": null
+        },
+        "E1": {
+          "valeur": true,
+          "erreur": null
+        },
+        "F1": {
+          "valeur": false,
+          "erreur": null
+        },
+        "A2": {
+          "valeur": true,
+          "erreur": null
+        },
+        "B2": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "C2": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "D2": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "E2": {
+          "valeur": 0,
+          "erreur": null
+        },
+        "F2": {
+          "valeur": false,
+          "erreur": null
+        }
+      }
+    },
+    {
+      "id": "feuille-connecteurs-plages-et-erreurs",
+      "type": "feuille",
+      "entree": {
+        "lignes": 3,
+        "colonnes": 5,
+        "cellules": {
+          "A1": "=1>0",
+          "A2": "texte",
+          "B1": "=ET(A1:A3)",
+          "B2": "=OU(A2:A3)",
+          "B3": "=NON(0)",
+          "C1": "=ET(\"a\")",
+          "C2": "=NON(1;2)",
+          "C3": "=OU(1/0;VRAI)",
+          "D1": "=SI(\"a\";1;0)",
+          "D2": "=ET()",
+          "D3": "=OU(FAUX;2)",
+          "E1": "=SI(1>0;\"x\";\"\")",
+          "E2": "4",
+          "E3": "=SOMME(E1:E2)"
+        }
+      },
+      "attendu": {
+        "A1": {
+          "valeur": true,
+          "erreur": null
+        },
+        "A2": {
+          "valeur": "texte",
+          "erreur": null
+        },
+        "B1": {
+          "valeur": true,
+          "erreur": null
+        },
+        "B2": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "B3": {
+          "valeur": true,
+          "erreur": null
+        },
+        "C1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "C2": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "C3": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        },
+        "D1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "D2": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "D3": {
+          "valeur": true,
+          "erreur": null
+        },
+        "E1": {
+          "valeur": "x",
+          "erreur": null
+        },
+        "E2": {
+          "valeur": 4,
+          "erreur": null
+        },
+        "E3": {
+          "valeur": 4,
+          "erreur": null
+        }
+      }
+    },
+    {
+      "id": "feuille-nb-si-criteres",
+      "type": "feuille",
+      "entree": {
+        "lignes": 5,
+        "colonnes": 4,
+        "cellules": {
+          "A1": "France",
+          "A2": "Allemagne",
+          "A3": "france",
+          "A5": "Espagne",
+          "B1": "6400",
+          "B2": "890",
+          "B3": "5000",
+          "B4": "n/a",
+          "B5": "=4999+1",
+          "C1": "=NB.SI(A1:A5;\"France\")",
+          "C2": "=NB.SI(A1:A5;\"<>France\")",
+          "C3": "=NB.SI(A1:A5;\"\")",
+          "C4": "=NB.SI(B1:B5;\">=5000\")",
+          "C5": "=NB.SI(B1:B5;\">1000,5\")",
+          "D1": "=NB.SI(B1:B5;5000)",
+          "D2": "=NB.SI(B1:B5;B2)",
+          "D3": "=NB.SI(B1:B5;>=5000)",
+          "D4": "=NB.SI(5;\">1\")",
+          "D5": "=NB.SI(B1:B5)"
+        }
+      },
+      "attendu": {
+        "A1": {
+          "valeur": "France",
+          "erreur": null
+        },
+        "A2": {
+          "valeur": "Allemagne",
+          "erreur": null
+        },
+        "A3": {
+          "valeur": "france",
+          "erreur": null
+        },
+        "A5": {
+          "valeur": "Espagne",
+          "erreur": null
+        },
+        "B1": {
+          "valeur": 6400,
+          "erreur": null
+        },
+        "B2": {
+          "valeur": 890,
+          "erreur": null
+        },
+        "B3": {
+          "valeur": 5000,
+          "erreur": null
+        },
+        "B4": {
+          "valeur": "n/a",
+          "erreur": null
+        },
+        "B5": {
+          "valeur": 5000,
+          "erreur": null
+        },
+        "C1": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "C2": {
+          "valeur": 3,
+          "erreur": null
+        },
+        "C3": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "C4": {
+          "valeur": 3,
+          "erreur": null
+        },
+        "C5": {
+          "valeur": 3,
+          "erreur": null
+        },
+        "D1": {
+          "valeur": 2,
+          "erreur": null
+        },
+        "D2": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "D3": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "D4": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "D5": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        }
+      }
+    },
+    {
+      "id": "expression-comparaison-rend-un-nombre",
+      "type": "expression",
+      "entree": {
+        "expression": "ET(2>1;VRAI)+(3<=2)",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": 1,
+        "erreur": null
+      }
+    },
+    {
+      "id": "expression-texte-refuse",
+      "type": "expression",
+      "entree": {
+        "expression": "\"a\"",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": null,
+        "erreur": "#VALEUR!"
+      }
+    },
+    {
+      "id": "r1c1-chaines-conservees",
+      "type": "r1c1",
+      "entree": {
+        "formule": "=SI(F2=\"Impayée\";\"Relancer\";\"\")",
+        "cellule": "H2"
+      },
+      "attendu": "=SI(RC[-2]=\"Impayée\";\"Relancer\";\"\")"
+    },
+    {
+      "id": "feuille-nb-si-cycle-et-erreur-ignoree",
+      "type": "feuille",
+      "entree": {
+        "lignes": 3,
+        "colonnes": 3,
+        "cellules": {
+          "A1": "5",
+          "A2": "=OU(B1>0;FAUX)",
+          "B1": "=NB.SI(A1:A2;\">0\")",
+          "A3": "=1/0",
+          "C1": "=NB.SI(A3:B3;\"\")",
+          "C2": "=NB.SI(A1:A3;\">0\")"
+        }
+      },
+      "attendu": {
+        "A1": {
+          "valeur": 5,
+          "erreur": null
+        },
+        "A2": {
+          "valeur": null,
+          "erreur": "#REF!"
+        },
+        "B1": {
+          "valeur": null,
+          "erreur": "#REF!"
+        },
+        "A3": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        },
+        "C1": {
+          "valeur": 1,
+          "erreur": null
+        },
+        "C2": {
+          "valeur": null,
+          "erreur": "#REF!"
+        }
       }
     }
   ]

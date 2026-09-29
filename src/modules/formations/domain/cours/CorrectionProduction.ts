@@ -8,7 +8,7 @@ import type {
   PiegeNumerique,
 } from './Corrige';
 import type { ConfusionId } from './banque/confusions';
-import type { Feuille, ResultatFormule } from './Formule';
+import type { Feuille, ResultatFormule, ValeurFormule } from './Formule';
 import { evaluerFeuille, formeR1C1, surfaceDeFormule } from './Formule';
 
 interface VerdictDeCellule {
@@ -83,16 +83,36 @@ function trahitLaFormule(saisie: string, attendu: AttenduDeCellule): boolean {
   if (surface === null || surface.references.length === 0) {
     return true;
   }
-  if (estValeurDeControle(attendu.valeur)) {
+  const valeur = attendu.valeur;
+  if (typeof valeur !== 'number' || estValeurDeControle(valeur)) {
     return false;
   }
   return surface.litteraux.some((litteral) =>
-    matchesSolution(
-      Math.abs(litteral),
-      Math.abs(attendu.valeur),
-      attendu.tolerance,
-    ),
+    matchesSolution(Math.abs(litteral), Math.abs(valeur), attendu.tolerance),
   );
+}
+
+function normaliserTexte(texte: string): string {
+  return texte.trim().toUpperCase();
+}
+
+function valeurConforme(
+  valeur: ValeurFormule,
+  attendu: AttenduDeCellule,
+): boolean {
+  if (typeof attendu.valeur === 'number') {
+    return (
+      typeof valeur === 'number' &&
+      matchesSolution(valeur, attendu.valeur, attendu.tolerance)
+    );
+  }
+  if (typeof attendu.valeur === 'string') {
+    return (
+      typeof valeur === 'string' &&
+      normaliserTexte(valeur) === normaliserTexte(attendu.valeur)
+    );
+  }
+  return valeur === attendu.valeur;
 }
 
 function trahitLaRecopie(attendu: AttenduDeCellule, feuille: Feuille): boolean {
@@ -120,12 +140,18 @@ function confusionDeLaCellule(
   if (trahitLaFormule(saisie, attendu)) {
     return SANS_FORMULE;
   }
-  if (resultat === undefined || resultat.erreur !== null) {
+  if (
+    resultat === undefined ||
+    resultat.erreur !== null ||
+    resultat.valeur === null
+  ) {
     return attendu.confusionSiErreurFormule;
   }
-  const valeur = resultat.valeur ?? Number.NaN;
-  if (!matchesSolution(valeur, attendu.valeur, attendu.tolerance)) {
-    return confusionDuPiege(valeur, attendu.pieges, attendu.tolerance);
+  const valeur = resultat.valeur;
+  if (!valeurConforme(valeur, attendu)) {
+    return typeof valeur === 'number'
+      ? confusionDuPiege(valeur, attendu.pieges, attendu.tolerance)
+      : null;
   }
   return trahitLaRecopie(attendu, feuille) ? NON_RECOPIABLE : undefined;
 }

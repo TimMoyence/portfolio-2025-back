@@ -5,6 +5,7 @@ import type {
 } from '../../src/modules/formations/domain/cours/Corrige';
 import { questionsDuCours } from '../../src/modules/formations/domain/cours/Cours';
 import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Diffusion';
+import type { ValeurFormule } from '../../src/modules/formations/domain/cours/Formule';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import { fuitesDeConfidentialite } from '../factories/structure.factory';
 import {
@@ -154,10 +155,14 @@ export function corrigeDe(cours: Cours, id: string): CorrigeProduction {
 }
 
 export function valeursEtPieges(attendu: {
-  readonly valeur: number;
+  readonly valeur: ValeurFormule;
   readonly pieges: readonly { readonly valeur: number }[];
-}): number[] {
+}): ValeurFormule[] {
   return [attendu.valeur, ...attendu.pieges.map((piege) => piege.valeur)];
+}
+
+function nombres(valeurs: readonly ValeurFormule[]): number[] {
+  return valeurs.filter((valeur) => typeof valeur === 'number');
 }
 
 function attendreAlignees(
@@ -186,18 +191,31 @@ export function attendreLesEnigmes(
 
 export function attendreLaFeuille(
   corrige: CorrigeFeuille,
-  calculees: Readonly<Record<string, readonly number[]>>,
+  calculees: Readonly<Record<string, readonly ValeurFormule[]>>,
 ): void {
   expect(new Set(corrige.attendus.map((attendu) => attendu.reference))).toEqual(
     new Set(Object.keys(calculees)),
   );
+  const numeriques = corrige.attendus.filter(
+    (attendu) => typeof attendu.valeur === 'number',
+  );
   attendreAlignees(
     Object.fromEntries(
-      corrige.attendus.map((attendu) => [
+      numeriques.map((attendu) => [
         attendu.reference,
-        valeursEtPieges(attendu),
+        nombres(valeursEtPieges(attendu)),
       ]),
     ),
-    calculees,
+    Object.fromEntries(
+      numeriques.map((attendu) => [
+        attendu.reference,
+        nombres(calculees[attendu.reference] ?? []),
+      ]),
+    ),
   );
+  for (const attendu of corrige.attendus) {
+    if (typeof attendu.valeur !== 'number') {
+      expect(calculees[attendu.reference]).toEqual([attendu.valeur]);
+    }
+  }
 }

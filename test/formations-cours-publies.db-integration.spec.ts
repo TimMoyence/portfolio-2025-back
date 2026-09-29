@@ -15,7 +15,10 @@ import type { ContenuDeCours } from '../src/modules/formations/domain/cours/Cour
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../src/modules/formations/domain/cours/Diffusion';
 import { empreinteCanonique } from '../src/modules/formations/domain/cours/EmpreinteCanonique';
-import { evaluerFeuille } from '../src/modules/formations/domain/cours/Formule';
+import {
+  evaluerFeuille,
+  type ValeurFormule,
+} from '../src/modules/formations/domain/cours/Formule';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
@@ -31,6 +34,13 @@ import {
 } from './helpers/formations-db';
 
 const GRAINE_DE_REFERENCE = 0;
+const DECIMALES_COMPAREES = 5;
+
+function comparable(valeur: ValeurFormule | null): ValeurFormule | null {
+  return typeof valeur === 'number'
+    ? Number(valeur.toFixed(DECIMALES_COMPAREES))
+    : valeur;
+}
 
 interface AttenduDuCours {
   readonly contenu: ContenuDeCours;
@@ -152,8 +162,8 @@ for (const { contenu, cellulesDeLaFeuille } of COURS_PUBLIES) {
       expect(corrige.attendus).toHaveLength(cellulesDeLaFeuille);
       for (const attendu of corrige.attendus) {
         expect(
-          resultats.get(attendu.reference)?.valeur ?? Number.NaN,
-        ).toBeCloseTo(attendu.valeur, 5);
+          comparable(resultats.get(attendu.reference)?.valeur ?? null),
+        ).toEqual(comparable(attendu.valeur));
       }
     });
 

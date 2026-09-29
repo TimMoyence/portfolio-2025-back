@@ -296,7 +296,8 @@ function formesDesAttendus(corrige: CorrigeProduction): readonly string[] {
   const valeurs = corrige.attendus
     .map((attendu) => attendu.valeur)
     .filter(
-      (valeur) =>
+      (valeur): valeur is number =>
+        typeof valeur === 'number' &&
         chiffresSignificatifs(valeur) >= CHIFFRES_SIGNIFICATIFS_MINIMUM,
     );
   return [
