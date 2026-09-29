@@ -2,7 +2,21 @@ import * as fc from 'fast-check';
 import { lireNombreSaisi } from './SaisieNumerique';
 
 const ESPACES_SAISIS = [' ', ' ', ' ', ' '] as const;
-const SUFFIXES_SAISIS = ['', '%', '€', 'pt', 'pts', 'point', 'points'] as const;
+const SUFFIXES_SAISIS = [
+  '',
+  '%',
+  '€',
+  'pt',
+  'pts',
+  'point',
+  'points',
+  'euro',
+  'Euros',
+  'facture',
+  'factures',
+  'ligne',
+  'lignes',
+] as const;
 const DECIMALES_MAX = 4;
 const BORNE = 1_000_000;
 

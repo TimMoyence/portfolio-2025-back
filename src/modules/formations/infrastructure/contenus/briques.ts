@@ -255,7 +255,7 @@ export function strategie(id: string, libelle: string, fausse = false) {
 export function attendu(
   reference: string,
   formuleReference: string,
-  valeur: number,
+  valeur: number | string,
   forme: 'references' | { readonly memeQue: string },
   pieges: readonly (readonly [number, ConfusionId])[] = [],
   confusionSiErreurFormule: ConfusionId | null = null,

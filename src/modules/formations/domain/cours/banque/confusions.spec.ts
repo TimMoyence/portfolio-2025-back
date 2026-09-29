@@ -1,4 +1,9 @@
-import { CONCEPTS, CONCEPTS_DU_B2_01, CONCEPTS_DU_B2_02 } from './concepts';
+import {
+  CONCEPTS,
+  CONCEPTS_DU_B2_01,
+  CONCEPTS_DU_B2_02,
+  CONCEPTS_DU_B2_03,
+} from './concepts';
 import {
   CONFUSIONS,
   detailsLisibles,
@@ -251,13 +256,27 @@ const CONFUSIONS_DES_DEUX_VARIABLES = {
   'seuil-mal-arrondi': { concept: 'prevision' },
 };
 
+const CONFUSIONS_DU_B2_03 = {
+  'ou-lu-exclusif': { concept: 'connecteur' },
+  'implication-lue-comme-equivalence': { concept: 'connecteur' },
+  'borne-stricte-large': { concept: 'proposition' },
+  'negation-sans-morgan': { concept: 'negation' },
+  'negation-comparaison': { concept: 'negation' },
+  'negation-pour-tout-en-aucun': { concept: 'quantificateur' },
+  'negation-il-existe-gardee': { concept: 'quantificateur' },
+  'ordre-quantificateurs-inverse': { concept: 'quantificateur' },
+  'critere-sans-guillemets': { concept: 'tableur' },
+  'ou-compte-deux-fois': { concept: 'connecteur' },
+  'et-traduit-par-ou': { concept: 'connecteur' },
+};
+
 describe('CONCEPTS', () => {
   it('fige les quatorze concepts du B2-01 dans leur ordre', () => {
     expect(CONCEPTS.slice(0, 14)).toEqual([...CONCEPTS_DU_B2_01]);
   });
 
   it('ajoute à la suite les treize concepts du B2-02, les quatre de deux variables en dernier', () => {
-    expect(CONCEPTS.slice(14)).toEqual([...CONCEPTS_DU_B2_02]);
+    expect(CONCEPTS.slice(14, 27)).toEqual([...CONCEPTS_DU_B2_02]);
     expect(CONCEPTS_DU_B2_02).toEqual([
       'serie-statistique',
       'moyenne',
@@ -272,6 +291,16 @@ describe('CONCEPTS', () => {
       'correlation',
       'ajustement-affine',
       'prevision',
+    ]);
+  });
+
+  it('ajoute en dernier les quatre concepts de logique du B2-03', () => {
+    expect(CONCEPTS.slice(27)).toEqual([...CONCEPTS_DU_B2_03]);
+    expect(CONCEPTS_DU_B2_03).toEqual([
+      'proposition',
+      'connecteur',
+      'negation',
+      'quantificateur',
     ]);
   });
 
@@ -311,11 +340,18 @@ describe('CONFUSIONS', () => {
   });
 
   it('ajoute en dernier les sept confusions de deux variables, sans retirer celles de la v1', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(62);
-    expect(Object.keys(CONFUSIONS).slice(55)).toEqual(
+    expect(Object.keys(CONFUSIONS).slice(55, 62)).toEqual(
       Object.keys(CONFUSIONS_DES_DEUX_VARIABLES),
     );
     expect(CONFUSIONS).toMatchObject(CONFUSIONS_DES_DEUX_VARIABLES);
+  });
+
+  it('ajoute en dernier les onze confusions de logique du B2-03', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(73);
+    expect(Object.keys(CONFUSIONS).slice(62)).toEqual(
+      Object.keys(CONFUSIONS_DU_B2_03),
+    );
+    expect(CONFUSIONS).toMatchObject(CONFUSIONS_DU_B2_03);
   });
 
   it('conserve les huit confusions existantes et ajoute les trente de la V3 (§ 5.9)', () => {

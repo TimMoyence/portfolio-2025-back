@@ -2,6 +2,7 @@ import {
   ATTENDU_PRIX_INITIAL,
   buildCorrigeFeuille,
   buildCorrigeTableau,
+  buildCorrigeTableDeVerite,
   buildPlanFeuille,
 } from '../../../../../test/factories/corriges.factory';
 import { attendreProductionReussie } from '../../../../../test/helpers/corrections';
@@ -292,6 +293,19 @@ describe('corrigerTableau', () => {
 
     expect(correction.verdicts.filter((ligne) => !ligne.juste)).toEqual([
       { rang: 0, cle: 'indice', juste: false, confusion },
+    ]);
+    expect(correction.score).toBe(0.5);
+  });
+
+  it('corrige une table de vérité case par case, le « ou » lu exclusif reconnu', () => {
+    const correction = corrigerTableau(buildCorrigeTableDeVerite(), [
+      { pEtQ: 1, pOuQ: 1 },
+      { pEtQ: 1, pOuQ: 0 },
+    ]);
+
+    expect(correction.verdicts.filter((ligne) => !ligne.juste)).toEqual([
+      { rang: 1, cle: 'pEtQ', juste: false, confusion: null },
+      { rang: 1, cle: 'pOuQ', juste: false, confusion: 'ou-lu-exclusif' },
     ]);
     expect(correction.score).toBe(0.5);
   });

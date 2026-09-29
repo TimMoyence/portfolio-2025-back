@@ -101,6 +101,7 @@ const colonneDeTableau = z
     cle: z.string().regex(NOM_DE_VARIABLE),
     intitule: texte,
     role: z.enum(['donnee', 'saisie', 'deduite']),
+    format: z.enum(['nombre', 'booleen']).optional(),
     decimales: z.number().int().nonnegative(),
     valeurs: z.array(z.number()).optional(),
     formule: texte.optional(),
@@ -112,10 +113,33 @@ const colonneDeTableau = z
 
 type ColonneDeTableau = z.output<typeof colonneDeTableau>;
 
+export function estUneValeurDeVerite(valeur: number): boolean {
+  return valeur === 0 || valeur === 1;
+}
+
+function incoherenceBooleenne(colonne: ColonneDeTableau): string | null {
+  if (colonne.role === 'deduite') {
+    return `la colonne booléenne ${colonne.cle} est une donnée ou une saisie`;
+  }
+  if (colonne.totalise || colonne.soldeDe !== undefined) {
+    return `la colonne booléenne ${colonne.cle} ne se totalise ni ne se solde`;
+  }
+  if (!(colonne.valeurs ?? []).every(estUneValeurDeVerite)) {
+    return `la colonne booléenne ${colonne.cle} ne porte que 1 (vrai) ou 0 (faux)`;
+  }
+  return null;
+}
+
 function incoherenceDeColonne(
   colonne: ColonneDeTableau,
   echeances: number,
 ): string | null {
+  if (colonne.format === 'booleen') {
+    const incoherence = incoherenceBooleenne(colonne);
+    if (incoherence !== null) {
+      return incoherence;
+    }
+  }
   if (colonne.role === 'donnee' && colonne.valeurs?.length !== echeances) {
     return `la colonne de donnée ${colonne.cle} doit porter ${echeances} valeurs`;
   }

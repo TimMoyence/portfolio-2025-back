@@ -24,6 +24,7 @@ import { verifierStructure } from '../src/modules/formations/domain/cours/Struct
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
 import { COURS_B2_02 } from '../src/modules/formations/infrastructure/contenus/b2-02.cours';
+import { COURS_B2_03 } from '../src/modules/formations/infrastructure/contenus/b2-03.cours';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import { tireurSequentiel } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
@@ -50,6 +51,7 @@ interface AttenduDuCours {
 const COURS_PUBLIES: readonly AttenduDuCours[] = [
   { contenu: COURS_B2_01, cellulesDeLaFeuille: 17 },
   { contenu: COURS_B2_02, cellulesDeLaFeuille: 6 },
+  { contenu: COURS_B2_03, cellulesDeLaFeuille: 5 },
 ];
 
 function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {

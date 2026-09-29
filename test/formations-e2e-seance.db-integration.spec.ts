@@ -21,6 +21,7 @@ import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';
 import type { ContenuDeCours } from '../src/modules/formations/domain/cours/CoursStocke';
 import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
 import { COURS_B2_02 } from '../src/modules/formations/infrastructure/contenus/b2-02.cours';
+import { COURS_B2_03 } from '../src/modules/formations/infrastructure/contenus/b2-03.cours';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import { clesSecretesDans } from './helpers/cles-du-corrige';
@@ -113,7 +114,7 @@ interface Ouverture {
 
 interface AttenduDuCours {
   readonly questionsNotees: number;
-  readonly cellulesDeLaFeuille: number;
+  readonly cellulesDesFeuilles: readonly number[];
   readonly exerciceEnAvance: string;
   readonly jalons: number;
   readonly intervalleLibre: {
@@ -359,6 +360,12 @@ function seanceComplete(
         if (!('cellules' in juste)) {
           throw new Error(`L ecran ${ecran.id} ne porte pas de feuille`);
         }
+        const cellulesAttendues =
+          attendu.cellulesDesFeuilles[
+            cours.ecrans
+              .filter((candidat) => candidat.brique === 'fp-sheet')
+              .findIndex((candidat) => candidat.id === ecran.id)
+          ];
         const [premiere, ...suite] = Object.keys(juste.cellules);
         const recopiee: ValeurProduction = {
           type: 'feuille',
@@ -411,13 +418,13 @@ function seanceComplete(
           restantes: suite.length,
         }).toEqual({
           vide: [INVALIDE, 'PRODUCTION_VIDE'],
-          cellules: attendu.cellulesDeLaFeuille,
+          cellules: cellulesAttendues,
           parfaite: true,
           scoreParfait: 1,
           aRevoirParfaite: 0,
           cellulePiegee: true,
           confusionNommee: true,
-          restantes: attendu.cellulesDeLaFeuille - 1,
+          restantes: cellulesAttendues - 1,
         });
         expect(aRevoir.length).toBeGreaterThan(0);
         expect(verdictFautif.score).toBeLessThan(1);
@@ -1361,7 +1368,7 @@ function seanceComplete(
 
 seanceComplete(COURS_B2_01, {
   questionsNotees: 31,
-  cellulesDeLaFeuille: 17,
+  cellulesDesFeuilles: [17],
   exerciceEnAvance: 'B2-01-A2-06-POINTS',
   jalons: 5,
   intervalleLibre: { premier: 8, dernier: 20 },
@@ -1369,8 +1376,16 @@ seanceComplete(COURS_B2_01, {
 
 seanceComplete(COURS_B2_02, {
   questionsNotees: 16,
-  cellulesDeLaFeuille: 6,
+  cellulesDesFeuilles: [6],
   exerciceEnAvance: 'B2-02-A2-04-EXEMPLE-NUAGE',
+  jalons: 3,
+  intervalleLibre: { premier: 1, dernier: 20 },
+});
+
+seanceComplete(COURS_B2_03, {
+  questionsNotees: 18,
+  cellulesDesFeuilles: [5, 10, 34],
+  exerciceEnAvance: 'B2-03-A2-04-EXEMPLE-MORGAN',
   jalons: 3,
   intervalleLibre: { premier: 1, dernier: 20 },
 });

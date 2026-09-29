@@ -9,6 +9,7 @@ import {
   buildCoursDeBriques,
   buildEcranDeBrique,
   buildProprietesStockees,
+  buildProprietesTableDeVerite,
   QUESTIONS_LIBRES_DE_MISSION,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import type { Ecran } from '../contrats/cours';
@@ -86,6 +87,90 @@ describe('stockage multi-briques (B1)', () => {
       ).toThrow(ContenuDeCoursInvalideError);
     },
   );
+
+  describe('table de vérité (colonnes au format booléen)', () => {
+    function tableDeVerite(modifier: (proprietes: any) => void = () => {}) {
+      const proprietes = buildProprietesTableDeVerite();
+      modifier(proprietes);
+      return buildEcranDeBrique('fp-table-build', { proprietes });
+    }
+
+    it('lit une table de vérité et sert le format de chaque colonne', () => {
+      const ecran = lireEcran(tableDeVerite());
+
+      expect(ecran).toMatchObject({
+        brique: 'fp-table-build',
+        proprietes: {
+          plan: {
+            colonnes: [
+              { cle: 'p', format: 'booleen', valeurs: [1, 1] },
+              { cle: 'q', format: 'booleen' },
+              { cle: 'pEtQ', format: 'booleen', role: 'saisie' },
+              { cle: 'pOuQ', format: 'booleen', role: 'saisie' },
+            ],
+          },
+        },
+      });
+    });
+
+    it.each<readonly [string, (proprietes: any) => void, RegExp]>([
+      [
+        'une donnée booléenne hors de 0 et 1',
+        (p) => {
+          p.plan.colonnes[0].valeurs = [1, 2];
+        },
+        /booléenne p ne porte que 1 \(vrai\) ou 0 \(faux\)/,
+      ],
+      [
+        'une colonne booléenne totalisée',
+        (p) => {
+          p.plan.colonnes[0].totalise = true;
+        },
+        /booléenne p ne se totalise ni ne se solde/,
+      ],
+      [
+        'une colonne booléenne soldée',
+        (p) => {
+          p.plan.colonnes[2].soldeDe = 'p';
+        },
+        /booléenne pEtQ ne se totalise ni ne se solde/,
+      ],
+      [
+        'une colonne booléenne déduite',
+        (p) => {
+          p.plan.colonnes[3] = {
+            ...p.plan.colonnes[3],
+            role: 'deduite',
+            formule: 'p * q',
+          };
+        },
+        /booléenne pOuQ est une donnée ou une saisie/,
+      ],
+      [
+        'un format inconnu',
+        (p) => {
+          p.plan.colonnes[0].format = 'texte';
+        },
+        /plan\.colonnes\[0\]\.format/,
+      ],
+      [
+        'un attendu booléen hors de 0 et 1',
+        (p) => {
+          p.questions[0].corrige.attendus[0].valeur = 0.5;
+        },
+        /attendu booléen 0:pEtQ vaut 1 ou 0/,
+      ],
+      [
+        'un piège booléen qui n’est pas la valeur contraire',
+        (p) => {
+          p.questions[0].corrige.attendus[3].pieges[0].valeur = 1;
+        },
+        /attendu booléen 1:pOuQ vaut 1 ou 0 et son piège la valeur contraire/,
+      ],
+    ])('refuse %s', (_cas, modifier, raison) => {
+      expect(() => lireEcran(tableDeVerite(modifier))).toThrow(raison);
+    });
+  });
 
   it.each<readonly [string, Chemin]>([
     ['fp-story', ['video']],
