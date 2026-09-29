@@ -190,9 +190,9 @@ describeDb('Formations repositories (db integration)', () => {
     await annulerJusquA('RetireLesGroupesDeSuivi1790600000000');
     await contexte.dataSource.query(
       `INSERT INTO "formation_teacher_annotations" ("session_id", "teacher_id", "screen_id", "group_name", "note")
-       VALUES ($1, $2, 'B2-01-A2-03-CORRECTION-1', 'Classe entière', 'Relancer sur la base.'),
-              ($1, $2, 'B2-01-A2-03-CORRECTION-1', 'Groupe A', 'Revoir le 45,5 %.'),
-              ($1, $2, 'B2-01-A2-06-CORRECTION', 'Groupe B', 'Faire lire les points.')`,
+       VALUES ($1, $2, 'B2-01-A2-03-ATELIER-1', 'Classe entière', 'Relancer sur la base.'),
+              ($1, $2, 'B2-01-A2-03-ATELIER-1', 'Groupe A', 'Revoir le 45,5 %.'),
+              ($1, $2, 'B2-01-A2-06-POINTS', 'Groupe B', 'Faire lire les points.')`,
       [seance.id, FORMATEUR],
     );
 
@@ -202,11 +202,11 @@ describeDb('Formations repositories (db integration)', () => {
       contexte.annotations.listBySession(seance.id, FORMATEUR),
     ).resolves.toEqual([
       expect.objectContaining({
-        screenId: 'B2-01-A2-03-CORRECTION-1',
+        screenId: 'B2-01-A2-03-ATELIER-1',
         note: 'Relancer sur la base.\nGroupe A : Revoir le 45,5 %.',
       }),
       expect.objectContaining({
-        screenId: 'B2-01-A2-06-CORRECTION',
+        screenId: 'B2-01-A2-06-POINTS',
         note: 'Groupe B : Faire lire les points.',
       }),
     ]);
@@ -219,7 +219,7 @@ describeDb('Formations repositories (db integration)', () => {
       contexte.annotations.save({
         sessionId: seance.id,
         teacherId: FORMATEUR,
-        screenId: 'B2-01-A2-06-CORRECTION',
+        screenId: 'B2-01-A2-06-POINTS',
         note: 'Faire lire les points, puis les taux.',
       }),
     ).resolves.toEqual(

@@ -53,12 +53,12 @@ function optionsParQuestion(
 }
 
 describe('B2-01 — simulation du tirage et de l’ouverture', () => {
-  it('tire les 74 écrans et les 48 solutions pour toute graine', () => {
+  it('tire les 59 écrans et les 48 solutions pour toute graine', () => {
     fc.assert(
       fc.property(graine, (valeur) => {
         const tirage = tirer(COURS, valeur);
 
-        expect(tirage.sujet.ecrans).toHaveLength(74);
+        expect(tirage.sujet.ecrans).toHaveLength(59);
         expect(Object.keys(tirage.solutions)).toHaveLength(19 + 7 + 13);
         expect(Object.keys(tirage.banque)).toHaveLength(13);
       }),
@@ -191,7 +191,9 @@ describe('B2-01 — simulation du tirage et de l’ouverture', () => {
 
     for (let valeur = 1; valeur <= SEANCES_SIMULEES; valeur += 1) {
       const tirage = tirer(COURS, valeur);
-      const questionnaire = tirage.sujet.ecrans[13].donnees;
+      const questionnaire = tirage.sujet.ecrans.find(
+        ({ id }) => id === 'B2-01-A2-03-ATELIER-1',
+      )?.donnees;
       const servi = JSON.stringify(tirage.sujet);
       const premier = tirage.sujet.ecrans[0].donnees as {
         readonly question: { readonly options: readonly { id: string }[] };
@@ -210,7 +212,7 @@ describe('B2-01 — simulation du tirage et de l’ouverture', () => {
       fc.property(graine, (valeur) => {
         const deroule = deroulePresentateur(COURS, valeur);
 
-        expect(deroule.ecrans).toHaveLength(74);
+        expect(deroule.ecrans).toHaveLength(59);
         expect(deroule.ecrans.flatMap((ecran) => ecran.questions)).toHaveLength(
           48,
         );
