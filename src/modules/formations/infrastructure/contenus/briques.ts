@@ -22,6 +22,7 @@ type CorrectionDeTri = Omit<SocleDEcran, 'diffusion'> & {
   readonly sousTitre: string;
   readonly intitule?: string;
 };
+type EcranDeRappel = Extract<EcranDuCours, { readonly brique: 'fp-spaced' }>;
 type EcranDExemple = Extract<EcranDuCours, { readonly brique: 'fp-worked' }>;
 type VoteDuCours = z.input<typeof voteStocke>;
 type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
@@ -321,6 +322,62 @@ export function rappel(
   pieges: AuMoinsUn<Piege>,
 ): VoteDuCours {
   return vote(id, concept, false, enonce, bonne, pieges);
+}
+
+const INTITULE_DU_RAPPEL = 'Rappel : de mémoire, sans vos notes';
+
+export function ecranDeRappel(
+  { screenId, concepts }: Pick<SocleDEcran, 'screenId' | 'concepts'>,
+  obligatoiresEnNote: string,
+  rappelId: string,
+  banque: EcranDeRappel['proprietes']['banque'],
+): EcranDeRappel {
+  return {
+    screenId,
+    titre: INTITULE_DU_RAPPEL,
+    diffusion: 'seance',
+    brique: 'fp-spaced',
+    dureeMinutes: 6,
+    concepts,
+    notes: puces(
+      '5 min individuelles, puis projeter la carte de maîtrise.',
+      obligatoiresEnNote,
+    ),
+    proprietes: {
+      rappel: { id: rappelId, intitule: INTITULE_DU_RAPPEL },
+      banque,
+    },
+  };
+}
+
+export function ficheMemo(
+  {
+    screenId,
+    titre,
+    concepts,
+  }: Pick<SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  items: readonly unknown[],
+): EcranDeRecit {
+  return ecranV2(
+    {
+      screenId,
+      titre,
+      diffusion: 'catalogue',
+      dureeMinutes: 2,
+      concepts,
+      notes: puces(
+        '90 s de lecture ; la fiche s’imprime pour le classeur de CCF.',
+      ),
+    },
+    'grid',
+    {
+      title: titre,
+      subtitle:
+        'À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.',
+      imprimable: true,
+      items,
+    },
+  );
 }
 
 export function controle(reference: string, formuleReference: string) {

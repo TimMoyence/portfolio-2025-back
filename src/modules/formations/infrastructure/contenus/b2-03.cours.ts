@@ -2004,189 +2004,164 @@ const ACTE_4: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-03-A4-04-RAPPEL',
-    titre: 'Rappel : de mémoire, sans vos notes',
-    diffusion: 'seance',
-    brique: 'fp-spaced',
-    dureeMinutes: 6,
-    concepts: [...CONCEPTS_DU_COURS],
-    notes: moteur.puces(
-      '5 min individuelles, puis projeter la carte de maîtrise.',
-      'Tous reçoivent les deux questions obligatoires (Morgan, négation de « tous »), en plus de leurs points faibles.',
-    ),
-    proprietes: {
-      rappel: {
-        id: 'b2-03-a4-rappel',
-        intitule: 'Rappel : de mémoire, sans vos notes',
-      },
-      banque: {
-        questions: [
-          moteur.rappel(
-            'b2-03-r-ou',
-            'connecteur',
-            'P est vraie et Q est vraie. Que vaut « P ou Q » ?',
-            'Vrai : « ou » accepte les deux conditions vraies',
-            [['Faux : il faut une seule condition vraie', 'ou-lu-exclusif']],
-          ),
-          moteur.rappel(
-            'b2-03-r-implication',
-            'connecteur',
-            'Règle : « si P, alors Q ». Quel cas la contredit ?',
-            'P est vraie alors que Q est fausse',
-            [['P fausse et Q vraie', 'implication-lue-comme-equivalence']],
-          ),
-          moteur.rappel(
-            'b2-03-r-borne',
-            'proposition',
-            '« Au-delà de 30 jours », délai en B2 : quelle condition écrire au tableur ?',
-            'B2>30',
-            [['B2>=30', 'borne-stricte-large']],
-          ),
-          moteur.rappel(
-            'b2-03-r-morgan-et',
-            'negation',
-            'Quel est le contraire de « payée et livrée » ?',
-            'Non payée ou non livrée',
-            [['Non payée et non livrée', 'negation-sans-morgan']],
-          ),
-          moteur.rappel(
-            'b2-03-r-morgan-ou',
-            'negation',
-            'Quel est le contraire de « urgente ou importante » ?',
-            'Ni urgente ni importante',
-            [['Non urgente ou non importante', 'negation-sans-morgan']],
-          ),
-          moteur.rappel(
-            'b2-03-r-comparaison',
-            'negation',
-            'Quel est le contraire de « stock ≥ 20 » ?',
-            'Stock < 20',
-            [['Stock ≤ 20', 'negation-comparaison']],
-          ),
-          moteur.rappel(
-            'b2-03-r-pour-tout',
-            'quantificateur',
-            'Quel est le contraire de « tous les clients ont payé » ?',
-            'Au moins un client n’a pas payé',
-            [['Aucun client n’a payé', 'negation-pour-tout-en-aucun']],
-          ),
-          moteur.rappel(
-            'b2-03-r-il-existe',
-            'quantificateur',
-            'Quel est le contraire de « il existe une facture en retard » ?',
-            'Aucune facture n’est en retard',
+  moteur.ecranDeRappel(
+    { screenId: 'B2-03-A4-04-RAPPEL', concepts: [...CONCEPTS_DU_COURS] },
+    'Tous reçoivent les deux questions obligatoires (Morgan, négation de « tous »), en plus de leurs points faibles.',
+    'b2-03-a4-rappel',
+    {
+      questions: [
+        moteur.rappel(
+          'b2-03-r-ou',
+          'connecteur',
+          'P est vraie et Q est vraie. Que vaut « P ou Q » ?',
+          'Vrai : « ou » accepte les deux conditions vraies',
+          [['Faux : il faut une seule condition vraie', 'ou-lu-exclusif']],
+        ),
+        moteur.rappel(
+          'b2-03-r-implication',
+          'connecteur',
+          'Règle : « si P, alors Q ». Quel cas la contredit ?',
+          'P est vraie alors que Q est fausse',
+          [['P fausse et Q vraie', 'implication-lue-comme-equivalence']],
+        ),
+        moteur.rappel(
+          'b2-03-r-borne',
+          'proposition',
+          '« Au-delà de 30 jours », délai en B2 : quelle condition écrire au tableur ?',
+          'B2>30',
+          [['B2>=30', 'borne-stricte-large']],
+        ),
+        moteur.rappel(
+          'b2-03-r-morgan-et',
+          'negation',
+          'Quel est le contraire de « payée et livrée » ?',
+          'Non payée ou non livrée',
+          [['Non payée et non livrée', 'negation-sans-morgan']],
+        ),
+        moteur.rappel(
+          'b2-03-r-morgan-ou',
+          'negation',
+          'Quel est le contraire de « urgente ou importante » ?',
+          'Ni urgente ni importante',
+          [['Non urgente ou non importante', 'negation-sans-morgan']],
+        ),
+        moteur.rappel(
+          'b2-03-r-comparaison',
+          'negation',
+          'Quel est le contraire de « stock ≥ 20 » ?',
+          'Stock < 20',
+          [['Stock ≤ 20', 'negation-comparaison']],
+        ),
+        moteur.rappel(
+          'b2-03-r-pour-tout',
+          'quantificateur',
+          'Quel est le contraire de « tous les clients ont payé » ?',
+          'Au moins un client n’a pas payé',
+          [['Aucun client n’a payé', 'negation-pour-tout-en-aucun']],
+        ),
+        moteur.rappel(
+          'b2-03-r-il-existe',
+          'quantificateur',
+          'Quel est le contraire de « il existe une facture en retard » ?',
+          'Aucune facture n’est en retard',
+          [
             [
-              [
-                'Il existe une facture qui n’est pas en retard',
-                'negation-il-existe-gardee',
-              ],
+              'Il existe une facture qui n’est pas en retard',
+              'negation-il-existe-gardee',
             ],
-          ),
-          moteur.rappel(
-            'b2-03-r-ordre',
-            'quantificateur',
-            '« Chaque salarié a un badge » veut-il dire « un même badge sert à tous les salariés » ?',
-            'Non : l’ordre des quantificateurs change le sens',
+          ],
+        ),
+        moteur.rappel(
+          'b2-03-r-ordre',
+          'quantificateur',
+          '« Chaque salarié a un badge » veut-il dire « un même badge sert à tous les salariés » ?',
+          'Non : l’ordre des quantificateurs change le sens',
+          [
             [
-              [
-                'Oui : les deux phrases disent la même chose',
-                'ordre-quantificateurs-inverse',
-              ],
+              'Oui : les deux phrases disent la même chose',
+              'ordre-quantificateurs-inverse',
             ],
-          ),
-          moteur.rappel(
-            'b2-03-r-guillemets',
-            'tableur',
-            'Quel critère NB.SI compte les montants d’au moins 1 000 ?',
-            '">=1000", entre guillemets',
-            [['>=1000, sans guillemets', 'critere-sans-guillemets']],
-          ),
-          moteur.rappel(
-            'b2-03-r-compter-ou',
-            'connecteur',
-            '12 lignes vérifient A, 9 vérifient B, 4 vérifient les deux. Combien vérifient « A ou B » ?',
-            '17, soit 12 + 9 − 4',
-            [['21, soit 12 + 9', 'ou-compte-deux-fois']],
-          ),
-          moteur.rappel(
-            'b2-03-r-sql',
-            'connecteur',
-            'Règle « client fidèle et commande d’au moins 1 000 € » : quelle clause WHERE écrire ?',
-            "fidele = 'Oui' AND montant >= 1000",
-            [["fidele = 'Oui' OR montant >= 1000", 'et-traduit-par-ou']],
-          ),
-        ],
-        obligatoires: ['b2-03-r-morgan-et', 'b2-03-r-pour-tout'],
-      },
+          ],
+        ),
+        moteur.rappel(
+          'b2-03-r-guillemets',
+          'tableur',
+          'Quel critère NB.SI compte les montants d’au moins 1 000 ?',
+          '">=1000", entre guillemets',
+          [['>=1000, sans guillemets', 'critere-sans-guillemets']],
+        ),
+        moteur.rappel(
+          'b2-03-r-compter-ou',
+          'connecteur',
+          '12 lignes vérifient A, 9 vérifient B, 4 vérifient les deux. Combien vérifient « A ou B » ?',
+          '17, soit 12 + 9 − 4',
+          [['21, soit 12 + 9', 'ou-compte-deux-fois']],
+        ),
+        moteur.rappel(
+          'b2-03-r-sql',
+          'connecteur',
+          'Règle « client fidèle et commande d’au moins 1 000 € » : quelle clause WHERE écrire ?',
+          "fidele = 'Oui' AND montant >= 1000",
+          [["fidele = 'Oui' OR montant >= 1000", 'et-traduit-par-ou']],
+        ),
+      ],
+      obligatoires: ['b2-03-r-morgan-et', 'b2-03-r-pour-tout'],
     },
-  },
-  moteur.ecranV2(
+  ),
+  moteur.ficheMemo(
     {
       screenId: 'B2-03-A4-05-FICHE-MEMO',
       titre: 'Fiche mémo : écrire et contrôler une règle',
-      diffusion: 'catalogue',
-      dureeMinutes: 2,
       concepts: [...CONCEPTS_DU_COURS],
-      notes: moteur.puces(
-        '90 s de lecture ; la fiche s’imprime pour le classeur de CCF.',
-      ),
     },
-    'grid',
-    {
-      title: 'Fiche mémo : écrire et contrôler une règle',
-      subtitle:
-        'À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.',
-      imprimable: true,
-      items: [
-        {
-          title: 'Proposition',
-          description: 'Vraie ou fausse ?',
-          back: 'Une phrase qui est V ou F. Nommer chaque condition par une lettre.',
-        },
-        {
-          title: 'Et, ou',
-          description: 'Deux conditions ?',
-          back: 'P ∧ Q : les deux. P ∨ Q : au moins une, les deux comprises. Compter « A ou B » : A + B − (A et B).',
-        },
-        {
-          title: 'Si… alors',
-          description: 'Une règle ?',
-          back: 'P ⇒ Q est fausse seulement si P est vraie et Q fausse. La réciproque est une autre phrase.',
-        },
-        {
-          title: 'Bornes',
-          description: 'Quel symbole ?',
-          back: '« Plus de », « au-delà de », « dépasse » : >. « Au moins », « à partir de », « atteint » : ≥.',
-        },
-        {
-          title: 'Négation',
-          description: 'Le contraire d’une comparaison ?',
-          back: '> devient ≤, ≥ devient <. Tester la borne des deux côtés.',
-        },
-        {
-          title: 'Morgan',
-          description: 'Nier deux conditions ?',
-          back: '¬(P ∧ Q) = ¬P ∨ ¬Q ; ¬(P ∨ Q) = ¬P ∧ ¬Q.',
-        },
-        {
-          title: 'Quantificateurs',
-          description: 'Tous, ou au moins un ?',
-          back: '¬(∀x, P(x)) = ∃x, ¬P(x) ; ¬(∃x, P(x)) = ∀x, ¬P(x). L’ordre de ∀ et ∃ compte.',
-        },
-        {
-          title: 'Tableur',
-          description: 'Quelle formule ?',
-          back: 'SI, ET, OU, NON ; NB.SI(plage;"critère"). Textes et critères entre guillemets.',
-        },
-        {
-          title: 'Requête',
-          description: 'Filtrer une table ?',
-          back: 'WHERE traduit la règle : AND pour « et », OR pour « ou », <> pour « différent de ».',
-        },
-        moteur.REFERENTIEL_DU_BTS_CG,
-      ],
-    },
+    [
+      {
+        title: 'Proposition',
+        description: 'Vraie ou fausse ?',
+        back: 'Une phrase qui est V ou F. Nommer chaque condition par une lettre.',
+      },
+      {
+        title: 'Et, ou',
+        description: 'Deux conditions ?',
+        back: 'P ∧ Q : les deux. P ∨ Q : au moins une, les deux comprises. Compter « A ou B » : A + B − (A et B).',
+      },
+      {
+        title: 'Si… alors',
+        description: 'Une règle ?',
+        back: 'P ⇒ Q est fausse seulement si P est vraie et Q fausse. La réciproque est une autre phrase.',
+      },
+      {
+        title: 'Bornes',
+        description: 'Quel symbole ?',
+        back: '« Plus de », « au-delà de », « dépasse » : >. « Au moins », « à partir de », « atteint » : ≥.',
+      },
+      {
+        title: 'Négation',
+        description: 'Le contraire d’une comparaison ?',
+        back: '> devient ≤, ≥ devient <. Tester la borne des deux côtés.',
+      },
+      {
+        title: 'Morgan',
+        description: 'Nier deux conditions ?',
+        back: '¬(P ∧ Q) = ¬P ∨ ¬Q ; ¬(P ∨ Q) = ¬P ∧ ¬Q.',
+      },
+      {
+        title: 'Quantificateurs',
+        description: 'Tous, ou au moins un ?',
+        back: '¬(∀x, P(x)) = ∃x, ¬P(x) ; ¬(∃x, P(x)) = ∀x, ¬P(x). L’ordre de ∀ et ∃ compte.',
+      },
+      {
+        title: 'Tableur',
+        description: 'Quelle formule ?',
+        back: 'SI, ET, OU, NON ; NB.SI(plage;"critère"). Textes et critères entre guillemets.',
+      },
+      {
+        title: 'Requête',
+        description: 'Filtrer une table ?',
+        back: 'WHERE traduit la règle : AND pour « et », OR pour « ou », <> pour « différent de ».',
+      },
+      moteur.REFERENTIEL_DU_BTS_CG,
+    ],
   ),
   {
     screenId: 'B2-03-A4-06-BILLET-DE-SORTIE',
