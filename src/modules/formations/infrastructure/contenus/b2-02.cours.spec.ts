@@ -5,9 +5,9 @@ import {
   attendreLesNumeriques,
   corrigeDe,
   decrireLaFicheDuCours,
+  pointsImprimes,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
-import { ecransCorrigesSurPlace } from '../../../../../test/helpers/lecture-de-cours';
 import { COURS_B2_02 } from './b2-02.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_02);
@@ -86,6 +86,15 @@ decrireLaFicheDuCours('B2-02', COURS, {
     'A4-01',
     'A4-05',
   ],
+  corrigesSurPlace: [
+    'B2-02-A1-08-ATELIER-RESUME',
+    'B2-02-A2-05-ATELIER-NUAGE',
+    'B2-02-A2-06-ECARTS-POINT-MOYEN',
+    'B2-02-A3-04-ATELIER-DROITE',
+    'B2-02-A3-05-DEFI-IA',
+    'B2-02-A4-02-TABLEUR-FIBRE',
+    'B2-02-A4-03-COFFRE-FIBRE',
+  ],
 });
 
 const FACTURES_DE_SEPTEMBRE = [28, 41, 35, 90, 33, 39, 44, 30];
@@ -138,9 +147,7 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
 
   it('note chaque énigme de la mini-situation, tableur compris, sur dix points imprimés au sujet', () => {
     const pointsDe = (screenId: string): number[] =>
-      [...texteDeLEcran(screenId).matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(
-        ([, valeur]) => Number(valeur.replace(',', '.')),
-      );
+      pointsImprimes(texteDeLEcran(screenId));
     const enigmes = pointsDe('B2-02-A4-03-COFFRE-FIBRE');
 
     expect(enigmes).toHaveLength(4);
@@ -150,27 +157,6 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
     expect(somme(enigmes) + POINTS_DE_LA_QUESTION_TABLEUR).toBe(
       POINTS_DE_LA_MINI_SITUATION,
     );
-  });
-});
-
-describe('B2-02 — gabarit v3', () => {
-  it('déclare le gabarit v3, dont contrat-des-cours contrôle les règles', () => {
-    expect(COURS.gabarit).toBe('v3');
-  });
-
-  it('corrige chaque exercice sur son propre écran, sans écran de correction qui le suive', () => {
-    expect(ecransCorrigesSurPlace(COURS)).toEqual([
-      'B2-02-A1-08-ATELIER-RESUME',
-      'B2-02-A2-05-ATELIER-NUAGE',
-      'B2-02-A2-06-ECARTS-POINT-MOYEN',
-      'B2-02-A3-04-ATELIER-DROITE',
-      'B2-02-A3-05-DEFI-IA',
-      'B2-02-A4-02-TABLEUR-FIBRE',
-      'B2-02-A4-03-COFFRE-FIBRE',
-    ]);
-    expect(
-      COURS.ecrans.filter((ecran) => ecran.id.endsWith('-CORRECTION')),
-    ).toEqual([]);
   });
 });
 

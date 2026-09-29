@@ -5,9 +5,9 @@ import {
   attendreLesNumeriques,
   corrigeDe,
   decrireLaFicheDuCours,
+  pointsImprimes,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
-import { ecransCorrigesSurPlace } from '../../../../../test/helpers/lecture-de-cours';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { COURS_B2_03 } from './b2-03.cours';
@@ -104,6 +104,17 @@ decrireLaFicheDuCours('B2-03', COURS, {
     'A4-01',
     'A4-05',
   ],
+  corrigesSurPlace: [
+    'B2-03-A1-09-TABLE-VERITE',
+    'B2-03-A1-10-ATELIER-CONNECTEURS',
+    'B2-03-A1-11-TABLEUR-SI-OU',
+    'B2-03-A2-05-ATELIER-MORGAN',
+    'B2-03-A2-06-TABLEUR-NON-OU',
+    'B2-03-A3-05-ATELIER-QUANTIF',
+    'B2-03-A3-06-DEFI-IA',
+    'B2-03-A4-02-TABLEUR-CONTROLE',
+    'B2-03-A4-03-COFFRE-CONTROLE',
+  ],
 });
 
 function feuilleDe(id: string): CorrigeFeuille {
@@ -140,28 +151,7 @@ function texteDeLEcran(screenId: string): string {
   return JSON.stringify(ecran);
 }
 
-describe('B2-03 — gabarit v3', () => {
-  it('déclare le gabarit v3, dont contrat-des-cours contrôle les règles', () => {
-    expect(COURS.gabarit).toBe('v3');
-  });
-
-  it('corrige chaque exercice sur son propre écran, sans écran de correction qui le suive', () => {
-    expect(ecransCorrigesSurPlace(COURS)).toEqual([
-      'B2-03-A1-09-TABLE-VERITE',
-      'B2-03-A1-10-ATELIER-CONNECTEURS',
-      'B2-03-A1-11-TABLEUR-SI-OU',
-      'B2-03-A2-05-ATELIER-MORGAN',
-      'B2-03-A2-06-TABLEUR-NON-OU',
-      'B2-03-A3-05-ATELIER-QUANTIF',
-      'B2-03-A3-06-DEFI-IA',
-      'B2-03-A4-02-TABLEUR-CONTROLE',
-      'B2-03-A4-03-COFFRE-CONTROLE',
-    ]);
-    expect(
-      COURS.ecrans.filter((ecran) => ecran.id.endsWith('-CORRECTION')),
-    ).toEqual([]);
-  });
-
+describe('B2-03 — textes relus contre les données', () => {
   it('marque les factures d’Atelier Rivage comme fictives sur les écrans qui les montrent', () => {
     for (const ecran of [
       'B2-03-A1-04-FACTURES',
@@ -172,12 +162,12 @@ describe('B2-03 — gabarit v3', () => {
   });
 
   it('note la mini-situation sur dix points, tableur compris', () => {
-    const pointsDe = (screenId: string): number[] =>
-      [...texteDeLEcran(screenId).matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(
-        ([, valeur]) => Number(valeur.replace(',', '.')),
-      );
-    const enigmes = pointsDe('B2-03-A4-03-COFFRE-CONTROLE');
-    const tableur = pointsDe('B2-03-A4-02-TABLEUR-CONTROLE');
+    const enigmes = pointsImprimes(
+      texteDeLEcran('B2-03-A4-03-COFFRE-CONTROLE'),
+    );
+    const tableur = pointsImprimes(
+      texteDeLEcran('B2-03-A4-02-TABLEUR-CONTROLE'),
+    );
 
     expect(enigmes).toHaveLength(4);
     expect(new Set(tableur)).toEqual(new Set([3]));

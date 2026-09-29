@@ -1,4 +1,7 @@
-import { chaineDeDoublements } from '../../../../../test/factories/feuille.factory';
+import {
+  chaineDeDoublements,
+  colonneDeSommesCirculaires,
+} from '../../../../../test/factories/feuille.factory';
 import type { Feuille, ResultatFormule } from './Formule';
 import {
   evaluerCellule,
@@ -60,11 +63,7 @@ describe('evaluerFeuille', () => {
   });
 
   it('arrête une plage à sa première cellule circulaire, sans épuiser le budget sur la grille la plus large', () => {
-    const cellules: Record<string, string> = {};
-    for (let rang = 1; rang <= NOMBRE_MAX_CELLULES; rang += 1) {
-      cellules[`A${rang}`] = `=SOMME(A1:A${NOMBRE_MAX_CELLULES})`;
-    }
-    const large = feuille(cellules, NOMBRE_MAX_CELLULES, 1);
+    const large = colonneDeSommesCirculaires();
     const derniere = `A${NOMBRE_MAX_CELLULES}`;
 
     expect(evaluerFeuille(large).get(derniere)).toEqual({

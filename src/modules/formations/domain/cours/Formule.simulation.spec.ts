@@ -1,5 +1,8 @@
 import * as fc from 'fast-check';
-import { chaineDeDoublements } from '../../../../../test/factories/feuille.factory';
+import {
+  chaineDeDoublements,
+  colonneDeSommesCirculaires,
+} from '../../../../../test/factories/feuille.factory';
 import type { CodeErreur, Feuille, ResultatFormule } from './Formule';
 import {
   evaluerCellule,
@@ -48,14 +51,6 @@ function cycleDeMaillons(longueur: number): Feuille {
     cellules[`A${rang}`] = `=A${(rang % longueur) + 1}`;
   }
   return { lignes: longueur, colonnes: 1, cellules };
-}
-
-function largeurMaximale(): Feuille {
-  const cellules: Record<string, string> = {};
-  for (let rang = 1; rang <= NOMBRE_MAX_CELLULES; rang += 1) {
-    cellules[`A${rang}`] = `=SOMME(A1:A${NOMBRE_MAX_CELLULES})`;
-  }
-  return { lignes: NOMBRE_MAX_CELLULES, colonnes: 1, cellules };
 }
 
 function millisecondesDeProcesseur(mesurer: () => void): number {
@@ -219,7 +214,10 @@ describe('moteur de formules — feuilles adverses', () => {
     [`${MAILLONS} SOMME croisées`, sommesCroisees(MAILLONS)],
     [`cycle de ${MAILLONS} maillons`, cycleDeMaillons(MAILLONS)],
     [`chaîne de 1500 doublements`, chaineDeDoublements(1500)],
-    [`largeur maximale (${NOMBRE_MAX_CELLULES} cellules)`, largeurMaximale()],
+    [
+      `largeur maximale (${NOMBRE_MAX_CELLULES} cellules)`,
+      colonneDeSommesCirculaires(),
+    ],
   ];
 
   for (const [intitule, feuille] of adverses) {

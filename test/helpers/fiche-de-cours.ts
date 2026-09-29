@@ -18,6 +18,7 @@ import {
 import {
   alignees,
   ateliersNotes,
+  ecransCorrigesSurPlace,
   minutesParActe,
   rythmeDuCours,
   solutionsDesEnigmes,
@@ -40,6 +41,32 @@ export interface FicheAttendue {
   readonly remediations: number;
   readonly options: number;
   readonly catalogue: readonly string[];
+  readonly corrigesSurPlace?: readonly string[];
+}
+
+export function pointsImprimes(texte: string): number[] {
+  return [...texte.matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(([, valeur]) =>
+    Number(valeur.replace(',', '.')),
+  );
+}
+
+function decrireLeGabaritV3(
+  code: string,
+  cours: Cours,
+  corrigesSurPlace: readonly string[],
+): void {
+  describe(`${code} — gabarit v3`, () => {
+    it('déclare le gabarit v3, dont contrat-des-cours contrôle les règles', () => {
+      expect(cours.gabarit).toBe('v3');
+    });
+
+    it('corrige chaque exercice sur son propre écran, sans écran de correction qui le suive', () => {
+      expect(ecransCorrigesSurPlace(cours)).toEqual(corrigesSurPlace);
+      expect(
+        cours.ecrans.filter((ecran) => ecran.id.endsWith('-CORRECTION')),
+      ).toEqual([]);
+    });
+  });
 }
 
 export function decrireLaFicheDuCours(
@@ -142,6 +169,10 @@ export function decrireLaFicheDuCours(
       ).toEqual(mediasDuDocument(document));
     });
   });
+
+  if (attendu.corrigesSurPlace !== undefined) {
+    decrireLeGabaritV3(code, cours, attendu.corrigesSurPlace);
+  }
 }
 
 export function corrigeDe(cours: Cours, id: string): CorrigeProduction {
