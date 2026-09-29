@@ -33,6 +33,7 @@ import {
 import {
   abonnerAuFlux,
   attendreQue,
+  coursDuCatalogue,
   EN_TETE_IDENTITE,
   installerBancFormationsVierge,
   PREFIXE_API,
@@ -794,11 +795,7 @@ function seanceComplete(
             .expect(CREE);
           ({ sessionId, code: codeDeJonction } = ouverture.body as Ouverture);
           const seance = await banc.contexte.sessions.findById(sessionId);
-          const lu = await banc.contexte.catalogue.trouver(SLUG, VERSION_COURS);
-          if (lu === null) {
-            throw new Error(`Le cours ${PREFIXE} est absent du catalogue`);
-          }
-          cours = lu;
+          cours = await coursDuCatalogue(banc, SLUG, VERSION_COURS);
 
           expect({
             servi: servi.version,

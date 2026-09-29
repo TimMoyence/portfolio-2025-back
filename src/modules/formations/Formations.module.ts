@@ -7,6 +7,7 @@ import { GetSessionResultsUseCase } from './application/GetSessionResults.useCas
 import { JoinSessionUseCase } from './application/JoinSession.useCase';
 import { LireCoursPublicUseCase } from './application/LireCoursPublic.useCase';
 import { LireDerouleUseCase } from './application/LireDeroule.useCase';
+import { LireLivretUseCase } from './application/LireLivret.useCase';
 import { LireSujetUseCase } from './application/LireSujet.useCase';
 import { ListFreeResponsesUseCase } from './application/ListFreeResponses.useCase';
 import { ListSessionParticipantsUseCase } from './application/ListSessionParticipants.useCase';
@@ -86,6 +87,7 @@ import { FormationsParticipantsController } from './interfaces/FormationsPartici
 import { FormationsPresenterController } from './interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from './interfaces/FormationsStudent.controller';
 import { FormationsCatalogController } from './interfaces/FormationsCatalog.controller';
+import { FormationsLivretController } from './interfaces/FormationsLivret.controller';
 import { CleEtudiantService } from './interfaces/CleEtudiant.service';
 import { CodeScanProtectionService } from './interfaces/CodeScanProtection.service';
 import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
@@ -116,6 +118,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     FormationsParticipantsController,
     FormationsAnnotationsController,
     FormationsStudentController,
+    FormationsLivretController,
   ],
   providers: [
     OpenSessionUseCase,
@@ -124,6 +127,7 @@ import { ParticipantTokenService } from './interfaces/ParticipantToken.service';
     GetSessionResultsUseCase,
     JoinSessionUseCase,
     LireCoursPublicUseCase,
+    LireLivretUseCase,
     SubmitAnswerUseCase,
     SubmitProductionUseCase,
     TenterEnigmeUseCase,

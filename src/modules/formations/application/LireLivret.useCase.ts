@@ -1,23 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { projeterCatalogue } from '../domain/cours/Diffusion';
-import type { CoursPublicCatalogue } from '../domain/contrats/tirage';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { livretDuCours, type LivretPublie } from '../domain/cours/Livret';
 import { CATALOGUE_COURS } from '../domain/token';
 import { coursPublieOuInconnu } from './coursPublieOuInconnu';
 
 @Injectable()
-export class LireCoursPublicUseCase {
+export class LireLivretUseCase {
   constructor(
     @Inject(CATALOGUE_COURS)
     private readonly catalogue: ICatalogueCours,
   ) {}
 
-  async execute(slug: string): Promise<CoursPublicCatalogue> {
+  async execute(slug: string): Promise<LivretPublie> {
     const publie = await coursPublieOuInconnu(this.catalogue, slug);
-    return {
-      ...projeterCatalogue(publie.cours),
-      version: publie.version,
-      publieLe: publie.publieLe.toISOString(),
-    };
+    return { version: publie.version, ...livretDuCours(publie.cours) };
   }
 }

@@ -21,6 +21,7 @@ import { DueQuestionsUseCase } from '../../src/modules/formations/application/Du
 import { GetSessionResultsUseCase } from '../../src/modules/formations/application/GetSessionResults.useCase';
 import { JoinSessionUseCase } from '../../src/modules/formations/application/JoinSession.useCase';
 import { LireCoursPublicUseCase } from '../../src/modules/formations/application/LireCoursPublic.useCase';
+import { LireLivretUseCase } from '../../src/modules/formations/application/LireLivret.useCase';
 import { LireDerouleUseCase } from '../../src/modules/formations/application/LireDeroule.useCase';
 import { LireSujetUseCase } from '../../src/modules/formations/application/LireSujet.useCase';
 import { ListFreeResponsesUseCase } from '../../src/modules/formations/application/ListFreeResponses.useCase';
@@ -78,6 +79,7 @@ import { CleEtudiantService } from '../../src/modules/formations/interfaces/CleE
 import { CodeScanProtectionService } from '../../src/modules/formations/interfaces/CodeScanProtection.service';
 import { FormationsAnnotationsController } from '../../src/modules/formations/interfaces/FormationsAnnotations.controller';
 import { FormationsCatalogController } from '../../src/modules/formations/interfaces/FormationsCatalog.controller';
+import { FormationsLivretController } from '../../src/modules/formations/interfaces/FormationsLivret.controller';
 import { FormationsParticipantsController } from '../../src/modules/formations/interfaces/FormationsParticipants.controller';
 import { FormationsPresenterController } from '../../src/modules/formations/interfaces/FormationsPresenter.controller';
 import { FormationsStudentController } from '../../src/modules/formations/interfaces/FormationsStudent.controller';
@@ -155,6 +157,7 @@ export const CONTROLEURS_FORMATIONS = [
   FormationsAnnotationsController,
   FormationsStudentController,
   FormationsCatalogController,
+  FormationsLivretController,
 ];
 
 export function fournisseursFormations(
@@ -186,6 +189,7 @@ export function fournisseursFormations(
     LireSujetUseCase,
     LireDerouleUseCase,
     LireCoursPublicUseCase,
+    LireLivretUseCase,
     ManageTeacherAnnotationsUseCase,
     ListSessionParticipantsUseCase,
     ListFreeResponsesUseCase,
@@ -357,6 +361,18 @@ export interface BancFormations {
   fermer(): Promise<void>;
 }
 
+export async function coursDuCatalogue(
+  banc: BancFormations,
+  slug: string,
+  version: number,
+): Promise<Cours> {
+  const cours = await banc.contexte.catalogue.trouver(slug, version);
+  if (cours === null) {
+    throw new Error(`Le cours ${slug} v${version} manque au catalogue`);
+  }
+  return cours;
+}
+
 export async function monterBancFormations(
   catalogueDeTest?: ICatalogueCours,
 ): Promise<BancFormations> {
@@ -395,6 +411,26 @@ export function installerBancFormationsVierge(
 
   afterAll(async () => {
     await banc?.fermer();
+  });
+}
+
+export interface BancDuCours {
+  readonly banc: BancFormations;
+  readonly client: ClientFormations;
+  readonly cours: Cours;
+}
+
+export function installerBancDuCours(
+  env: EnvFormations,
+  cible: { formateurId: string; slug: string; version: number },
+  recevoir: (monte: BancDuCours) => void,
+): void {
+  installerBancFormationsVierge(env, async (banc) => {
+    recevoir({
+      banc,
+      client: clientFormations(banc.app, cible.formateurId),
+      cours: await coursDuCatalogue(banc, cible.slug, cible.version),
+    });
   });
 }
 

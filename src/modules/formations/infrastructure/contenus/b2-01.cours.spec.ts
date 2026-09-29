@@ -955,4 +955,22 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
   ])('%s', (_, id, animation) => {
     expect(ecranDuCours(id)).toMatchObject({ proprietes: { animation } });
   });
+
+  it('donne au livret papier de la diapositive de Samir une consigne d interprétation', () => {
+    expect(ecranDuCours('B2-01-A2-02-ORIGINE-AXE')).toMatchObject({
+      proprietes: {
+        descriptionPapier:
+          'Comparez les deux figures : à gauche l’axe de Samir part de 284 000 €, à droite il part de 0 €. Sous chacune, le rapport des hauteurs est indiqué : expliquez pourquoi il change alors que les montants, eux, ne bougent pas.',
+      },
+    });
+  });
+
+  it('donne au livret papier du simulateur une consigne de lecture et non de réglage', () => {
+    expect(ecranDuCours('B2-01-A5-04-SIMULATEUR-MIX')).toMatchObject({
+      proprietes: {
+        descriptionPapier:
+          'Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %).',
+      },
+    });
+  });
 });

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "9bea227adef9219351501b612f4269ffd9d5579d0733c3a6eadca21593f6dae5",
+  "empreinte": "3924c3b2e91e8b7cc7b0b21b42f69e983527f4ba09aeba70ceb3bf1ad0707fdd",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -1090,6 +1090,7 @@
               "Comparez les signes des deux écarts sur chaque ligne."
             ],
             "echeances": 6,
+            "intituleDesLignes": "Année",
             "libellesLignes": ["2020", "2021", "2022", "2023", "2024", "2025"],
             "parametres": {},
             "colonnes": [
@@ -1708,7 +1709,7 @@
         "donnees": {
           "plan": {
             "id": "b2-02-a4-feuille-fibre",
-            "intitule": "Question tableur — Ajuster la série de la fibre",
+            "intitule": "Question tableur (3 points) — Ajuster la série de la fibre",
             "lignes": 7,
             "colonnes": 5,
             "cellules": {
@@ -3580,6 +3581,7 @@
               "Comparez les signes des deux écarts sur chaque ligne."
             ],
             "echeances": 6,
+            "intituleDesLignes": "Année",
             "libellesLignes": ["2020", "2021", "2022", "2023", "2024", "2025"],
             "parametres": {},
             "colonnes": [
@@ -4450,7 +4452,7 @@
         "donnees": {
           "plan": {
             "id": "b2-02-a4-feuille-fibre",
-            "intitule": "Question tableur — Ajuster la série de la fibre",
+            "intitule": "Question tableur (3 points) — Ajuster la série de la fibre",
             "lignes": 7,
             "colonnes": 5,
             "cellules": {
@@ -4532,7 +4534,7 @@
         "questions": [
           {
             "id": "b2-02-a4-feuille-fibre",
-            "enonce": "Question tableur — Ajuster la série de la fibre",
+            "enonce": "Question tableur (3 points) — Ajuster la série de la fibre",
             "options": null
           }
         ],

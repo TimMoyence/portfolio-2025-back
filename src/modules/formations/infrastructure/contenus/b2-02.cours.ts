@@ -853,6 +853,7 @@ const ACTE_2: moteur.Acte = [
           'Comparez les signes des deux écarts sur chaque ligne.',
         ],
         echeances: ANNEES_RIVAGE.length,
+        intituleDesLignes: 'Année',
         libellesLignes: ANNEES_RIVAGE.map(String),
         parametres: {},
         colonnes: [
@@ -1324,7 +1325,7 @@ const INDICATEURS_DE_LA_FIBRE = [
 
 const PLAN_FEUILLE = {
   id: 'b2-02-a4-feuille-fibre',
-  intitule: 'Question tableur — Ajuster la série de la fibre',
+  intitule: 'Question tableur (3 points) — Ajuster la série de la fibre',
   lignes: 7,
   colonnes: 5,
   cellules: {

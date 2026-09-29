@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "5f98bf23924f413a4d2b8699b1fdb728e562b3fc5805a531593367c02ddffd7b",
+  "empreinte": "945c1c6e5cb3aba3ac0514d2531e305ad51efd31c71a2dd278d168ecc02f3070",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -803,6 +803,7 @@
               "minParametre": "origine"
             },
             "description": "Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de l’axe vertical. Combien de fois la barre 2025 paraît-elle plus haute que celle de 2022 dans chaque cas ? Les montants, eux, ne bougent pas.",
+            "descriptionPapier": "Comparez les deux figures : à gauche l’axe de Samir part de 284 000 €, à droite il part de 0 €. Sous chacune, le rapport des hauteurs est indiqué : expliquez pourquoi il change alors que les montants, eux, ne bougent pas.",
             "forme": "barres",
             "unite": "euros",
             "etiquettes": ["2022", "2023", "2024", "2025"],
@@ -3021,6 +3022,7 @@
               "max": 40
             },
             "description": "Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ?",
+            "descriptionPapier": "Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %).",
             "animation": [
               {
                 "tauxMarketplace": 16
@@ -5151,6 +5153,7 @@
               "minParametre": "origine"
             },
             "description": "Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de l’axe vertical. Combien de fois la barre 2025 paraît-elle plus haute que celle de 2022 dans chaque cas ? Les montants, eux, ne bougent pas.",
+            "descriptionPapier": "Comparez les deux figures : à gauche l’axe de Samir part de 284 000 €, à droite il part de 0 €. Sous chacune, le rapport des hauteurs est indiqué : expliquez pourquoi il change alors que les montants, eux, ne bougent pas.",
             "forme": "barres",
             "unite": "euros",
             "etiquettes": ["2022", "2023", "2024", "2025"],
@@ -8504,6 +8507,7 @@
               "max": 40
             },
             "description": "Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ?",
+            "descriptionPapier": "Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %).",
             "animation": [
               {
                 "tauxMarketplace": 16
@@ -11013,6 +11017,7 @@
               "minParametre": "origine"
             },
             "description": "Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de l’axe vertical. Combien de fois la barre 2025 paraît-elle plus haute que celle de 2022 dans chaque cas ? Les montants, eux, ne bougent pas.",
+            "descriptionPapier": "Comparez les deux figures : à gauche l’axe de Samir part de 284 000 €, à droite il part de 0 €. Sous chacune, le rapport des hauteurs est indiqué : expliquez pourquoi il change alors que les montants, eux, ne bougent pas.",
             "forme": "barres",
             "unite": "euros",
             "etiquettes": ["2022", "2023", "2024", "2025"],

@@ -846,6 +846,10 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
     `reference` « Axe de Samir » ; `series`
     [{ id « marge », libelle « Marge brute », trait « plein », calcul
     `SI(x<=1;285000+3000*x;SI(x<=2;288000+1800*(x-1);289800+1200*(x-2)))` }]
+  - `descriptionPapier`, imprimée au livret à la place de la description (les deux axes y sont
+    imprimés côte à côte, rapport des hauteurs compris) : « Comparez les deux figures : à gauche
+    l’axe de Samir part de 284 000 €, à droite il part de 0 €. Sous chacune, le rapport des hauteurs
+    est indiqué : expliquez pourquoi il change alors que les montants, eux, ne bougent pas. »
   - `description` « Passez de « Axe de Samir » à « Axe à zéro », puis faites glisser l’origine de
     l’axe vertical. Combien de fois la barre 2025 paraît-elle plus haute que celle de 2022 dans chaque
     cas ? Les montants, eux, ne bougent pas. » ; aucun `renvoi` : le préréglage « Axe de Samir » fige
@@ -1713,6 +1717,9 @@ changent pas, puisqu’ils servent de clés en base.
     une valeur toutes les 3 s (retour de QA R9)
   - `description` « Quelle part de la marketplace garderait le taux de 2024 (27,6 %) ? Réglez ensuite
     le taux de marge de la marketplace : lequel redonnerait 27,6 % avec la part de 2025 (45,5 %) ? »
+  - `descriptionPapier`, imprimée au livret à la place de la description (le taux y est figé à
+    16 %) : « Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis
+    calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %). »
 - **Modèle** : taux global = 34,4 − 0,2 × part (avec 16 %) ; 27,6 % à 34 % (2024) et 25,30 % à 45,48 %
   (2025) : les deux années réelles sont sur la courbe.
 - **Notes** :
