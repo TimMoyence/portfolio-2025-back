@@ -2,6 +2,7 @@ import {
   buildCoursAvecProductions,
   PLAN_DE_CLASSEMENT_TEST,
 } from '../../../../../test/factories/cours.factory';
+import { PLAN_TABLE_DE_VERITE } from '../../../../../test/factories/ecrans-stockes.factory';
 import {
   ProductionInvalideError,
   ProductionVideError,
@@ -27,6 +28,25 @@ function cible(questionId: string): EcranDeProduction {
 const FEUILLE = cible('Q-TEST-FEUILLE');
 const CLASSEMENT = cible('Q-TEST-CLASSEMENT');
 const TABLEAU = cible('Q-TEST-TABLEAU');
+const TABLE_DE_VERITE = tableauSurLePlan(PLAN_TABLE_DE_VERITE);
+
+function tableauSurLePlan(
+  plan: typeof PLAN_TABLE_DE_VERITE,
+): EcranDeProduction {
+  if (TABLEAU.ecran.brique !== 'fp-table-build') {
+    throw new Error('le cours de test doit porter un tableau');
+  }
+  return {
+    ...TABLEAU,
+    ecran: {
+      ...TABLEAU.ecran,
+      proprietes: {
+        ...TABLEAU.ecran.proprietes,
+        plan: structuredClone(plan),
+      },
+    },
+  };
+}
 
 describe('ecranDeProduction', () => {
   it('rend l ecran, la question et son rang', () => {
@@ -131,6 +151,29 @@ describe('normaliserProduction', () => {
     expect(() => {
       normaliserProduction(TABLEAU, { type: 'tableau', saisies });
     }).toThrow(ProductionInvalideError);
+  });
+
+  it.each([0.5, 7, -1])(
+    'refuse %s dans une case de verite, qui n accepte que 0 ou 1',
+    (valeur) => {
+      expect(() => {
+        normaliserProduction(TABLE_DE_VERITE, {
+          type: 'tableau',
+          saisies: [{ rang: 0, cle: 'pEtQ', valeur }],
+        });
+      }).toThrow(ProductionInvalideError);
+    },
+  );
+
+  it('accepte V ou F dans une case de verite', () => {
+    const saisies = [
+      { rang: 0, cle: 'pEtQ', valeur: 1 },
+      { rang: 1, cle: 'pEtQ', valeur: 0 },
+    ];
+
+    expect(
+      normaliserProduction(TABLE_DE_VERITE, { type: 'tableau', saisies }),
+    ).toEqual({ type: 'tableau', saisies });
   });
 
   it('refuse un tableau sans aucune saisie', () => {

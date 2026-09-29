@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CHAMPS_EXTRAITS_DU_CAS } from '../contrats/cours';
-import type { CorrigeProduction } from './Corrige';
+import type { CorrigeProduction, CorrigeTableau } from './Corrige';
 import {
   confusionsDuCorrige,
   corrigeClassement,
@@ -11,6 +11,7 @@ import {
   corrigeTableau,
 } from './CorrigeStocke';
 import {
+  estUneValeurDeVerite,
   parcoursEnigmes,
   planClassement,
   planFeuille,
@@ -671,6 +672,15 @@ const proprietesFeuille = z
     }),
   );
 
+function estUnAttenduDeVerite(
+  attendu: CorrigeTableau['attendus'][number],
+): boolean {
+  return (
+    estUneValeurDeVerite(attendu.valeur) &&
+    attendu.pieges.every((piege) => piege.valeur === 1 - attendu.valeur)
+  );
+}
+
 const proprietesTableau = z
   .object({
     plan: planTableau,
@@ -683,11 +693,24 @@ const proprietesTableau = z
       const saisies = plan.colonnes
         .filter((colonne) => colonne.role === 'saisie')
         .map((colonne) => colonne.cle);
+      const booleennes = plan.colonnes
+        .filter((colonne) => colonne.format === 'booleen')
+        .map((colonne) => colonne.cle);
       question.corrige.attendus.forEach((attendu, position) => {
+        const chemin = ['questions', 0, 'corrige', 'attendus', position];
         if (!saisies.includes(attendu.cle) || attendu.rang >= plan.echeances) {
           signaler(
-            ['questions', 0, 'corrige', 'attendus', position],
+            chemin,
             `l'attendu ${attendu.rang}:${attendu.cle} ne vise pas une saisie du plan`,
+          );
+        }
+        if (
+          booleennes.includes(attendu.cle) &&
+          !estUnAttenduDeVerite(attendu)
+        ) {
+          signaler(
+            chemin,
+            `l'attendu booléen ${attendu.rang}:${attendu.cle} vaut 1 ou 0 et son piège la valeur contraire`,
           );
         }
       });

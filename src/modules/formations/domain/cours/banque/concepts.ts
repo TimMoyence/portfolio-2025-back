@@ -31,6 +31,17 @@ export const CONCEPTS_DU_B2_02 = [
   'prevision',
 ] as const;
 
-export const CONCEPTS = [...CONCEPTS_DU_B2_01, ...CONCEPTS_DU_B2_02] as const;
+export const CONCEPTS_DU_B2_03 = [
+  'proposition',
+  'connecteur',
+  'negation',
+  'quantificateur',
+] as const;
+
+export const CONCEPTS = [
+  ...CONCEPTS_DU_B2_01,
+  ...CONCEPTS_DU_B2_02,
+  ...CONCEPTS_DU_B2_03,
+] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];

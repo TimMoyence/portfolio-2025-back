@@ -1,4 +1,7 @@
-import { chaineDeDoublements } from '../../../../../test/factories/feuille.factory';
+import {
+  chaineDeDoublements,
+  colonneDeSommesCirculaires,
+} from '../../../../../test/factories/feuille.factory';
 import type { Feuille, ResultatFormule } from './Formule';
 import {
   evaluerCellule,
@@ -27,7 +30,7 @@ function feuille(
 
 function valeurs(
   resultats: ReadonlyMap<string, ResultatFormule>,
-): Record<string, number | string> {
+): Record<string, number | string | boolean> {
   return Object.fromEntries(
     [...resultats].map(([nom, resultat]) => [
       nom,
@@ -59,6 +62,20 @@ describe('evaluerFeuille', () => {
     expect(valeurs(resultats)).toEqual({ A1: REF, A2: REF, A3: REF });
   });
 
+  it('arrête une plage à sa première cellule circulaire, sans épuiser le budget sur la grille la plus large', () => {
+    const large = colonneDeSommesCirculaires();
+    const derniere = `A${NOMBRE_MAX_CELLULES}`;
+
+    expect(evaluerFeuille(large).get(derniere)).toEqual({
+      valeur: null,
+      erreur: REF,
+    });
+    expect(evaluerCellule(large, derniere)).toEqual({
+      valeur: null,
+      erreur: REF,
+    });
+  });
+
   it('signale une division par une cellule vide par #DIV/0!', () => {
     expect(valeurs(evaluerFeuille(feuille({ A1: '=1/B1' })))).toEqual({
       A1: DIV,
@@ -84,7 +101,7 @@ describe('evaluerFeuille', () => {
       feuille({ A1: 'Canal', A2: '=RACINE(4)', A3: '=A1+1' }),
     );
 
-    expect(valeurs(resultats)).toEqual({ A1: VALEUR, A2: NOM, A3: VALEUR });
+    expect(valeurs(resultats)).toEqual({ A1: 'Canal', A2: NOM, A3: VALEUR });
   });
 
   it('additionne une plage en ignorant ses cellules de texte', () => {
@@ -320,6 +337,238 @@ describe('fonctions à deux séries', () => {
   });
 });
 
+describe('texte et logique', () => {
+  const FACTURES = {
+    A1: '72',
+    B1: 'Impayée',
+    A2: '60',
+    B2: 'impayée',
+    A3: '90',
+    B3: 'Payée',
+    C1: '=SI(ET(B1="Impayée";A1>60);"Relancer";"")',
+    C2: '=SI(ET(B2="Impayée";A2>60);"Relancer";"")',
+    C3: '=SI(ET(B3="Impayée";A3>60);"Relancer";"")',
+    D1: '=NB.SI(C1:C3;"Relancer")',
+  };
+
+  it('rend le texte d’une cellule saisie et celui d’une formule', () => {
+    const resultats = valeurs(evaluerFeuille(feuille(FACTURES)));
+
+    expect(resultats).toMatchObject({
+      B1: 'Impayée',
+      C1: 'Relancer',
+      C2: '',
+      C3: '',
+      D1: 1,
+    });
+  });
+
+  it('lit une chaîne entre guillemets, guillemet doublé compris, et refuse une chaîne ouverte', () => {
+    expect(
+      valeurs(evaluerFeuille(feuille({ A1: '="a""b"', A2: '="abc' }))),
+    ).toEqual({ A1: 'a"b', A2: VALEUR });
+  });
+
+  it('rend VRAI ou FAUX pour une comparaison, une constante ou une saisie', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '72',
+        B1: '=A1>60',
+        B2: '=A1<=60',
+        B3: '=VRAI',
+        B4: '=faux',
+        B5: 'Vrai',
+      }),
+    );
+
+    expect(valeurs(resultats)).toMatchObject({
+      B1: true,
+      B2: false,
+      B3: true,
+      B4: false,
+      B5: true,
+    });
+  });
+
+  it('compare deux textes sans tenir compte de la casse, et range nombre < texte < booléen', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '="impayée"="Impayée"',
+        A2: '="a"<"B"',
+        A3: '=1="1"',
+        A4: '="a">5',
+        A5: '=VRAI>"z"',
+        A6: '="France"<>"france"',
+      }),
+    );
+
+    expect(valeurs(resultats)).toEqual({
+      A1: true,
+      A2: true,
+      A3: false,
+      A4: true,
+      A5: true,
+      A6: false,
+    });
+  });
+
+  it('convertit VRAI et un texte numérique en calcul, et refuse un autre texte', () => {
+    const resultats = evaluerFeuille(
+      feuille({ A1: '=VRAI+1', A2: '="3"+1', A3: '="a"+1', A4: '=-FAUX' }),
+    );
+
+    expect(valeurs(resultats)).toEqual({ A1: 2, A2: 4, A3: VALEUR, A4: 0 });
+  });
+
+  it('combine des conditions par ET, OU et NON', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '=ET(VRAI;1>0)',
+        A2: '=ET(VRAI;0)',
+        A3: '=OU(FAUX;0)',
+        A4: '=OU(FAUX;2)',
+        A5: '=NON(3>2)',
+        A6: '=NON(0)',
+      }),
+    );
+
+    expect(valeurs(resultats)).toEqual({
+      A1: true,
+      A2: false,
+      A3: false,
+      A4: true,
+      A5: false,
+      A6: true,
+    });
+  });
+
+  it('lit dans une plage les seules valeurs logiques ou numériques de ET et OU', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '=1>0',
+        A2: 'texte',
+        B1: '=ET(A1:A3)',
+        B2: '=OU(A2:A3)',
+      }),
+    );
+
+    expect(valeurs(resultats)).toMatchObject({ B1: true, B2: VALEUR });
+  });
+
+  it('refuse du texte en condition, un NON à deux arguments et propage une erreur', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '=ET("a")',
+        A2: '=NON(1;2)',
+        A3: '=OU(1/0;VRAI)',
+        A4: '=SI("a";1;0)',
+        A5: '=ET()',
+      }),
+    );
+
+    expect(valeurs(resultats)).toEqual({
+      A1: VALEUR,
+      A2: VALEUR,
+      A3: DIV,
+      A4: VALEUR,
+      A5: VALEUR,
+    });
+  });
+
+  it('rend FAUX pour un SI à deux arguments dont la condition est fausse', () => {
+    expect(valeurs(evaluerFeuille(feuille({ A1: '=SI(1>2;10)' })))).toEqual({
+      A1: false,
+    });
+  });
+
+  it('ignore les textes et les booléens calculés dans une plage numérique', () => {
+    const resultats = evaluerFeuille(
+      feuille({
+        A1: '=SI(1>0;"x";"")',
+        A2: '4',
+        A3: '=2>1',
+        A4: '=SOMME(A1:A3)',
+      }),
+    );
+
+    expect(valeurs(resultats).A4).toBe(4);
+  });
+
+  describe('NB.SI', () => {
+    const DONNEES = {
+      A1: 'France',
+      A2: 'Allemagne',
+      A3: 'france',
+      A5: 'Espagne',
+      B1: '6400',
+      B2: '890',
+      B3: '5000',
+      B4: 'n/a',
+      B5: '=4999+1',
+    };
+
+    function compter(critere: string): number | string | boolean {
+      const resultats = evaluerFeuille(
+        feuille({ ...DONNEES, D1: `=NB.SI(${critere})` }),
+      );
+      return valeurs(resultats).D1;
+    }
+
+    it('compte un texte égal sans tenir compte de la casse', () => {
+      expect(compter('A1:A5;"France"')).toBe(2);
+    });
+
+    it('compte les cellules différentes d’un texte, vides comprises', () => {
+      expect(compter('A1:A5;"<>France"')).toBe(3);
+    });
+
+    it('compte les cellules vides avec un critère vide', () => {
+      expect(compter('A1:A5;""')).toBe(1);
+    });
+
+    it('compare les seuls nombres à un critère numérique, virgule comprise', () => {
+      expect(compter('B1:B5;">=5000"')).toBe(3);
+      expect(compter('B1:B5;">1000,5"')).toBe(3);
+      expect(compter('B1:B5;"<1000"')).toBe(1);
+    });
+
+    it('compte les égalités à un nombre ou à une cellule', () => {
+      expect(compter('B1:B5;5000')).toBe(2);
+      expect(compter('B1:B5;B2')).toBe(1);
+    });
+
+    it('refuse un critère sans guillemets, une plage absente ou un argument manquant', () => {
+      expect(compter('B1:B5;>=5000')).toBe(VALEUR);
+      expect(compter('5;">1"')).toBe(VALEUR);
+      expect(compter('B1:B5')).toBe(VALEUR);
+    });
+
+    it('ignore une cellule en erreur de la plage sans échouer', () => {
+      expect(
+        valeurs(
+          evaluerFeuille(
+            feuille({ A1: '=1/0', A2: '7', B1: '=NB.SI(A1:A2;">0")' }),
+          ),
+        ).B1,
+      ).toBe(1);
+    });
+
+    it('propage une référence circulaire à toutes ses cellules, quelle que soit la cellule d’entrée', () => {
+      const circulaire = feuille({
+        A1: '5',
+        A2: '=OU(B1>0;FAUX)',
+        B1: '=NB.SI(A1:A2;">0")',
+      });
+      const passe = evaluerFeuille(circulaire);
+
+      expect(valeurs(passe)).toEqual({ A1: 5, A2: REF, B1: REF });
+      for (const [nom, attendu] of passe) {
+        expect(evaluerCellule(circulaire, nom)).toEqual(attendu);
+      }
+    });
+  });
+});
+
 describe('evaluerCellule', () => {
   const grille = feuille({ A1: '4', A2: '=A1*2' });
 
@@ -391,6 +640,12 @@ describe('evaluerExpression', () => {
   it('compare et rend 1 ou 0', () => {
     expect(evaluerExpression('SI(3<>4;1;0)', {}).valeur).toBe(1);
     expect(evaluerExpression('SI(4>=4;1;0)', {}).valeur).toBe(1);
+    expect(evaluerExpression('2>1', {}).valeur).toBe(1);
+    expect(evaluerExpression('ET(2>1;FAUX)', {}).valeur).toBe(0);
+  });
+
+  it('refuse un résultat texte, qu’aucune colonne déduite ne sait lire', () => {
+    expect(evaluerExpression('"a"', {}).erreur).toBe(VALEUR);
   });
 
   it('refuse une variable inconnue par #NOM?', () => {
@@ -425,6 +680,13 @@ describe('surfaceDeFormule', () => {
     });
   });
 
+  it('ne compte pas une chaîne parmi les littéraux', () => {
+    expect(surfaceDeFormule('=NB.SI(H2:H17;"Relancer")')).toEqual({
+      references: ['H2', 'H17'],
+      litteraux: [],
+    });
+  });
+
   it('rend null pour une valeur tapée et pour une formule illisible', () => {
     expect(surfaceDeFormule('0,345217')).toBeNull();
     expect(surfaceDeFormule('=C2/')).toBeNull();
@@ -451,6 +713,12 @@ describe('formeR1C1', () => {
   it('conserve les noms de fonctions et les séparateurs', () => {
     expect(formeR1C1('=SI(ARRONDI(SOMME(E2:E4);6)=1;1;0)', 'B7')).toBe(
       '=SI(ARRONDI(SOMME(R[-5]C[3]:R[-3]C[3]);6)=1;1;0)',
+    );
+  });
+
+  it('garde les chaînes telles quelles dans la forme recopiable', () => {
+    expect(formeR1C1('=SI(F2="Impayée";"Relancer";"")', 'H2')).toBe(
+      '=SI(RC[-2]="Impayée";"Relancer";"")',
     );
   });
 

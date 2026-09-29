@@ -309,6 +309,61 @@ export const CONFUSIONS = {
     libelle:
       'Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie.',
   },
+  'ou-lu-exclusif': {
+    concept: 'connecteur',
+    libelle:
+      'Lire « ou » comme exclusif (l’un ou l’autre mais pas les deux), alors que le « ou » logique est vrai aussi quand les deux conditions sont vraies.',
+  },
+  'implication-lue-comme-equivalence': {
+    concept: 'connecteur',
+    libelle:
+      'Lire « si P alors Q » comme « P si et seulement si Q » : croire que Q vrai entraîne P vrai.',
+  },
+  'borne-stricte-large': {
+    concept: 'proposition',
+    libelle:
+      'Confondre une inégalité stricte et une inégalité large (> et ≥) : la valeur à la borne change de camp.',
+  },
+  'negation-sans-morgan': {
+    concept: 'negation',
+    libelle:
+      'Nier « P et Q » en « non P et non Q » (ou « P ou Q » en « non P ou non Q ») : la loi de Morgan échange aussi le connecteur.',
+  },
+  'negation-comparaison': {
+    concept: 'negation',
+    libelle:
+      'Nier « x > a » en « x < a » au lieu de « x ≤ a » : la borne est oubliée.',
+  },
+  'negation-pour-tout-en-aucun': {
+    concept: 'quantificateur',
+    libelle:
+      'Nier « toutes vérifient P » en « aucune ne vérifie P » au lieu de « au moins une ne vérifie pas P ».',
+  },
+  'negation-il-existe-gardee': {
+    concept: 'quantificateur',
+    libelle:
+      'Nier « il existe x qui vérifie P » en « il existe x qui ne vérifie pas P » au lieu de « aucun x ne vérifie P ».',
+  },
+  'ordre-quantificateurs-inverse': {
+    concept: 'quantificateur',
+    libelle:
+      'Échanger « pour tout … il existe » et « il existe … pour tout » : la phrase change de sens.',
+  },
+  'critere-sans-guillemets': {
+    concept: 'tableur',
+    libelle:
+      'Écrire un texte ou un critère sans guillemets dans une formule (France au lieu de "France") : le tableur renvoie une erreur.',
+  },
+  'ou-compte-deux-fois': {
+    concept: 'connecteur',
+    libelle:
+      'Compter « A ou B » en additionnant les A et les B : les lignes qui vérifient les deux conditions sont comptées deux fois.',
+  },
+  'et-traduit-par-ou': {
+    concept: 'connecteur',
+    libelle:
+      'Traduire une règle « et » par un « ou » (OU dans le tableur, OR en SQL) : on retient les lignes qui ne vérifient qu’une des conditions.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export type ConfusionId = keyof typeof CONFUSIONS;

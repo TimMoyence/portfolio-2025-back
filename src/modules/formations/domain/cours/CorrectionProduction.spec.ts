@@ -2,6 +2,7 @@ import {
   ATTENDU_PRIX_INITIAL,
   buildCorrigeFeuille,
   buildCorrigeTableau,
+  buildCorrigeTableDeVerite,
   buildPlanFeuille,
 } from '../../../../../test/factories/corriges.factory';
 import { attendreProductionReussie } from '../../../../../test/helpers/corrections';
@@ -143,7 +144,10 @@ describe('corrigerFeuille', () => {
     });
   });
 
-  it('rend la confusion déclarée quand la formule tombe en erreur', () => {
+  it.each([
+    ['tombe en erreur', '=(C2-B2)/B9'],
+    ['ne s’analyse pas', '=(C2-B2)/;'],
+  ])('rend la confusion déclarée quand la formule %s', (_cas, saisie) => {
     const corrige = buildCorrigeFeuille({
       plan: PLAN,
       attendus: [
@@ -154,7 +158,7 @@ describe('corrigerFeuille', () => {
       ],
     });
 
-    const correction = corrigerFeuille(corrige, { D2: '=(C2-B2)/B9' });
+    const correction = corrigerFeuille(corrige, { D2: saisie });
 
     expect(correction.verdicts).toEqual([
       {
@@ -176,6 +180,94 @@ describe('corrigerFeuille', () => {
       reference: 'D2',
       juste: true,
       confusion: null,
+    });
+  });
+
+  describe('cellule à résultat texte ou logique', () => {
+    const PLAN_RELANCE = buildPlanFeuille({
+      lignes: 3,
+      colonnes: 4,
+      cellules: {
+        A1: 'Statut',
+        B1: 'Délai',
+        A2: 'Impayée',
+        B2: '72',
+        A3: 'Payée',
+        B3: '90',
+      },
+      verrouillees: ['A1', 'B1', 'A2', 'B2', 'A3', 'B3'],
+    });
+    const RELANCE = '=SI(ET(A2="Impayée";B2>60);"Relancer";"")';
+    const CORRIGE_RELANCE = buildCorrigeFeuille({
+      plan: PLAN_RELANCE,
+      attendus: [
+        {
+          ...ATTENDU_D2,
+          reference: 'C2',
+          formuleReference: RELANCE,
+          valeur: 'Relancer',
+          forme: 'references',
+          pieges: [],
+        },
+        {
+          ...ATTENDU_D2,
+          reference: 'C3',
+          formuleReference: '=SI(ET(A3="Impayée";B3>60);"Relancer";"")',
+          valeur: '',
+          forme: { memeQue: 'C2' },
+          pieges: [],
+        },
+        {
+          ...ATTENDU_D2,
+          reference: 'D2',
+          formuleReference: '=B2>60',
+          valeur: true,
+          forme: 'references',
+          pieges: [],
+        },
+      ],
+    });
+
+    it('accepte le texte attendu sans tenir compte de la casse ni des espaces', () => {
+      const correction = corrigerFeuille(CORRIGE_RELANCE, {
+        C2: '=SI(ET(A2="impayée";B2>60);" relancer";"")',
+        C3: '=SI(ET(A3="impayée";B3>60);" relancer";"")',
+        D2: '=B2>60',
+      });
+
+      expect(correction.verdicts.map((verdict) => verdict.juste)).toEqual([
+        true,
+        true,
+        true,
+      ]);
+    });
+
+    it('refuse un texte différent, un nombre à la place du texte et un booléen inversé', () => {
+      const correction = corrigerFeuille(CORRIGE_RELANCE, {
+        C2: '=SI(OU(A2="Impayée";B2>60);"Relance";"")',
+        C3: '=SI(B3>60;1;0)',
+        D2: '=B2<=60',
+      });
+
+      expect(correction.verdicts.map((verdict) => verdict.juste)).toEqual([
+        false,
+        false,
+        false,
+      ]);
+    });
+
+    it('refuse le texte attendu tapé sans formule ou sans référence', () => {
+      const correction = corrigerFeuille(CORRIGE_RELANCE, {
+        C2: 'Relancer',
+        C3: '=""',
+        D2: '=VRAI',
+      });
+
+      expect(correction.verdicts.map((verdict) => verdict.confusion)).toEqual([
+        SANS_FORMULE,
+        SANS_FORMULE,
+        SANS_FORMULE,
+      ]);
     });
   });
 });
@@ -204,6 +296,19 @@ describe('corrigerTableau', () => {
 
     expect(correction.verdicts.filter((ligne) => !ligne.juste)).toEqual([
       { rang: 0, cle: 'indice', juste: false, confusion },
+    ]);
+    expect(correction.score).toBe(0.5);
+  });
+
+  it('corrige une table de vérité case par case, le « ou » lu exclusif reconnu', () => {
+    const correction = corrigerTableau(buildCorrigeTableDeVerite(), [
+      { pEtQ: 1, pOuQ: 1 },
+      { pEtQ: 1, pOuQ: 0 },
+    ]);
+
+    expect(correction.verdicts.filter((ligne) => !ligne.juste)).toEqual([
+      { rang: 1, cle: 'pEtQ', juste: false, confusion: null },
+      { rang: 1, cle: 'pOuQ', juste: false, confusion: 'ou-lu-exclusif' },
     ]);
     expect(correction.score).toBe(0.5);
   });

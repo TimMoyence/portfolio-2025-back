@@ -83,8 +83,25 @@ describe('schémas zod des corrigés (§ 9.3.3)', () => {
           plan: { ...buildPlanFeuille(), metadonnees: {} },
         },
       ],
+      [
+        'un piège numérique sur une valeur attendue textuelle',
+        buildCorrigeFeuille({
+          attendus: [{ ...ATTENDU_D2, valeur: 'Relancer' }],
+        }),
+      ],
     ])('refuse %s', (_cas, corrige) => {
       expect(corrigeFeuille.safeParse(corrige).success).toBe(false);
+    });
+
+    it('accepte une valeur attendue textuelle ou logique sans piège', () => {
+      const corrige = buildCorrigeFeuille({
+        attendus: [
+          { ...ATTENDU_D2, valeur: 'Relancer', pieges: [] },
+          { ...ATTENDU_D2, reference: 'D3', valeur: true, pieges: [] },
+        ],
+      });
+
+      expect(corrigeFeuille.safeParse(corrige).success).toBe(true);
     });
   });
 

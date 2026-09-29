@@ -1,7 +1,11 @@
 import * as fc from 'fast-check';
-import { chaineDeDoublements } from '../../../../../test/factories/feuille.factory';
+import {
+  chaineDeDoublements,
+  colonneDeSommesCirculaires,
+} from '../../../../../test/factories/feuille.factory';
 import type { CodeErreur, Feuille, ResultatFormule } from './Formule';
 import {
+  evaluerCellule,
   evaluerExpression,
   evaluerFeuille,
   NOMBRE_MAX_CELLULES,
@@ -49,14 +53,6 @@ function cycleDeMaillons(longueur: number): Feuille {
   return { lignes: longueur, colonnes: 1, cellules };
 }
 
-function largeurMaximale(): Feuille {
-  const cellules: Record<string, string> = {};
-  for (let rang = 1; rang <= NOMBRE_MAX_CELLULES; rang += 1) {
-    cellules[`A${rang}`] = `=SOMME(A1:A${NOMBRE_MAX_CELLULES})`;
-  }
-  return { lignes: NOMBRE_MAX_CELLULES, colonnes: 1, cellules };
-}
-
 function millisecondesDeProcesseur(mesurer: () => void): number {
   for (let chauffe = 0; chauffe < REPETITIONS_DE_MESURE; chauffe += 1) {
     mesurer();
@@ -72,9 +68,13 @@ function millisecondesDeProcesseur(mesurer: () => void): number {
 }
 
 function estResultatRecevable(resultat: ResultatFormule): boolean {
-  return resultat.erreur === null
-    ? typeof resultat.valeur === 'number' && Number.isFinite(resultat.valeur)
-    : resultat.valeur === null && CODES.includes(resultat.erreur);
+  if (resultat.erreur !== null) {
+    return resultat.valeur === null && CODES.includes(resultat.erreur);
+  }
+  return typeof resultat.valeur === 'number'
+    ? Number.isFinite(resultat.valeur)
+    : typeof resultat.valeur === 'string' ||
+        typeof resultat.valeur === 'boolean';
 }
 
 const nombreDeCellule = fc
@@ -82,7 +82,14 @@ const nombreDeCellule = fc
   .map((entier) => entier / 100);
 
 const contenuQuelconque = fc.oneof(
-  fc.constantFrom('', '   ', 'Canal', 'Total'),
+  fc.constantFrom('', '   ', 'Canal', 'Total', 'Vrai'),
+  fc.constantFrom(
+    '=ET(A1>0;B2)',
+    '=OU(A1:B8)',
+    '=NON(C3)',
+    '=NB.SI(A1:C8;">0")',
+    '=SI(A1="Canal";"oui";FAUX)',
+  ),
   nombreDeCellule.map((valeur) => String(valeur).replace('.', ',')),
   fc
     .tuple(
@@ -134,10 +141,10 @@ describe('moteur de formules — propriétés sur des feuilles générées', () 
             B3: `=SOMME(A${hauteur}:A1)`,
           };
           const resultats = evaluerFeuille({ ...base, cellules });
-          const total = resultats.get('B1')?.valeur ?? Number.NaN;
+          const total = Number(resultats.get('B1')?.valeur ?? Number.NaN);
 
-          expect(resultats.get('B2')?.valeur).toBeCloseTo(total, 6);
-          expect(resultats.get('B3')?.valeur).toBeCloseTo(total, 6);
+          expect(Number(resultats.get('B2')?.valeur)).toBeCloseTo(total, 6);
+          expect(Number(resultats.get('B3')?.valeur)).toBeCloseTo(total, 6);
         },
       ),
       { numRuns: 200 },
@@ -151,6 +158,19 @@ describe('moteur de formules — propriétés sur des feuilles générées', () 
         const second = Object.fromEntries(evaluerFeuille(feuille));
 
         expect(second).toEqual(premier);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it('donne à chaque cellule prise seule le résultat que la passe complète lui donne', () => {
+    fc.assert(
+      fc.property(feuilleQuelconque, (feuille) => {
+        const passe = evaluerFeuille(feuille);
+
+        for (const [nom, attendu] of passe) {
+          expect(evaluerCellule(feuille, nom)).toEqual(attendu);
+        }
       }),
       { numRuns: 300 },
     );
@@ -194,7 +214,10 @@ describe('moteur de formules — feuilles adverses', () => {
     [`${MAILLONS} SOMME croisées`, sommesCroisees(MAILLONS)],
     [`cycle de ${MAILLONS} maillons`, cycleDeMaillons(MAILLONS)],
     [`chaîne de 1500 doublements`, chaineDeDoublements(1500)],
-    [`largeur maximale (${NOMBRE_MAX_CELLULES} cellules)`, largeurMaximale()],
+    [
+      `largeur maximale (${NOMBRE_MAX_CELLULES} cellules)`,
+      colonneDeSommesCirculaires(),
+    ],
   ];
 
   for (const [intitule, feuille] of adverses) {

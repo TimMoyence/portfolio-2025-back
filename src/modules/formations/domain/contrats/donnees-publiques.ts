@@ -84,6 +84,7 @@ export interface TableColonneServie {
   readonly cle: string;
   readonly intitule: string;
   readonly role: 'donnee' | 'saisie' | 'deduite';
+  readonly format?: 'nombre' | 'booleen';
   readonly decimales: number;
   readonly valeurs?: readonly number[];
   readonly formule?: string;

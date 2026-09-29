@@ -1,6 +1,7 @@
 import type { Tolerance } from '../GradingCore';
 import type { SheetPlanStocke } from '../contrats/cours';
 import type { AuMoinsUn } from './Cours';
+import type { ValeurFormule } from './Formule';
 import type { ConfusionId } from './banque/confusions';
 
 export interface PiegeNumerique {
@@ -16,7 +17,7 @@ export interface CorrigeFeuille {
   readonly attendus: AuMoinsUn<{
     readonly reference: string;
     readonly formuleReference: string;
-    readonly valeur: number;
+    readonly valeur: ValeurFormule;
     readonly tolerance: Tolerance;
     readonly forme: FormeFormule;
     readonly confusionSiErreurFormule: ConfusionId | null;

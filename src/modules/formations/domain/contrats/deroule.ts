@@ -5,6 +5,7 @@ import type {
 } from '../cours/Cours';
 import type { FormeFormule } from '../cours/Corrige';
 import type { CorrigePresentateur } from '../cours/DeroulePresentateur';
+import type { ValeurFormule } from '../cours/Formule';
 import type { Diffusion } from './cours';
 import type { CoursPublic, EcranPublic } from './tirage';
 
@@ -32,7 +33,7 @@ export type CorrigeEcranPresentateur =
       readonly attendus: readonly {
         readonly reference: string;
         readonly formuleReference: string;
-        readonly valeur: number;
+        readonly valeur: ValeurFormule;
         readonly tolerance: Tolerance;
         readonly forme: FormeFormule;
       }[];

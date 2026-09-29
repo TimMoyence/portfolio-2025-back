@@ -15,12 +15,16 @@ import type { ContenuDeCours } from '../src/modules/formations/domain/cours/Cour
 import { deroulePresentateur } from '../src/modules/formations/domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../src/modules/formations/domain/cours/Diffusion';
 import { empreinteCanonique } from '../src/modules/formations/domain/cours/EmpreinteCanonique';
-import { evaluerFeuille } from '../src/modules/formations/domain/cours/Formule';
+import {
+  evaluerFeuille,
+  type ValeurFormule,
+} from '../src/modules/formations/domain/cours/Formule';
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
 import { COURS_B2_02 } from '../src/modules/formations/infrastructure/contenus/b2-02.cours';
+import { COURS_B2_03 } from '../src/modules/formations/infrastructure/contenus/b2-03.cours';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import { tireurSequentiel } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
@@ -31,6 +35,13 @@ import {
 } from './helpers/formations-db';
 
 const GRAINE_DE_REFERENCE = 0;
+const DECIMALES_COMPAREES = 5;
+
+function comparable(valeur: ValeurFormule | null): ValeurFormule | null {
+  return typeof valeur === 'number'
+    ? Number(valeur.toFixed(DECIMALES_COMPAREES))
+    : valeur;
+}
 
 interface AttenduDuCours {
   readonly contenu: ContenuDeCours;
@@ -40,6 +51,7 @@ interface AttenduDuCours {
 const COURS_PUBLIES: readonly AttenduDuCours[] = [
   { contenu: COURS_B2_01, cellulesDeLaFeuille: 17 },
   { contenu: COURS_B2_02, cellulesDeLaFeuille: 6 },
+  { contenu: COURS_B2_03, cellulesDeLaFeuille: 5 },
 ];
 
 function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {
@@ -152,8 +164,8 @@ for (const { contenu, cellulesDeLaFeuille } of COURS_PUBLIES) {
       expect(corrige.attendus).toHaveLength(cellulesDeLaFeuille);
       for (const attendu of corrige.attendus) {
         expect(
-          resultats.get(attendu.reference)?.valeur ?? Number.NaN,
-        ).toBeCloseTo(attendu.valeur, 5);
+          comparable(resultats.get(attendu.reference)?.valeur ?? null),
+        ).toEqual(comparable(attendu.valeur));
       }
     });
 

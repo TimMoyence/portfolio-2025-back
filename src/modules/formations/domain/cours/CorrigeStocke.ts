@@ -68,7 +68,7 @@ const attenduDeFeuille = z
   .object({
     reference: referenceDeCellule,
     formuleReference: z.string().startsWith('='),
-    valeur: z.number(),
+    valeur: z.union([z.number(), z.string(), z.boolean()]),
     tolerance,
     forme: formeFormule,
     confusionSiErreurFormule: confusion.nullable(),
@@ -105,13 +105,20 @@ export const corrigeFeuille = z
       ) {
         signaler(chemin, `${attendu.forme.memeQue} n'a pas d'attendu`);
       }
-      signalerAmbiguite(
-        attendu.valeur,
-        attendu.pieges,
-        attendu.tolerance,
-        chemin,
-        signaler,
-      );
+      if (typeof attendu.valeur === 'number') {
+        signalerAmbiguite(
+          attendu.valeur,
+          attendu.pieges,
+          attendu.tolerance,
+          chemin,
+          signaler,
+        );
+      } else if (attendu.pieges.length > 0) {
+        signaler(
+          chemin,
+          'un piège numérique suppose une valeur attendue numérique',
+        );
+      }
     });
   }) satisfies z.ZodType<CorrigeFeuille>;
 

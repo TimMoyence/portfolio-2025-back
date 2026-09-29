@@ -1754,239 +1754,211 @@ const ACTE_4: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-02-A4-04-RAPPEL',
-    titre: 'Rappel : de mémoire, sans vos notes',
-    diffusion: 'seance',
-    brique: 'fp-spaced',
-    dureeMinutes: 6,
-    concepts: [...CONCEPTS_DU_COURS],
-    notes: moteur.puces(
-      '5 min individuelles, puis projeter la carte de maîtrise.',
-      'Tous reçoivent les deux questions obligatoires (causalité, rang), en plus de leurs points faibles.',
-    ),
-    proprietes: {
-      rappel: {
-        id: 'b2-02-a4-rappel',
-        intitule: 'Rappel : de mémoire, sans vos notes',
-      },
-      banque: {
-        questions: [
-          moteur.rappel(
-            'b2-02-r-mediane-paire',
-            'mediane',
-            'Quelle est la médiane de la série 12, 15, 20, 26, 31, 40 ?',
-            '23, la demi-somme des deux valeurs du milieu',
+  moteur.ecranDeRappel(
+    { screenId: 'B2-02-A4-04-RAPPEL', concepts: [...CONCEPTS_DU_COURS] },
+    'Tous reçoivent les deux questions obligatoires (causalité, rang), en plus de leurs points faibles.',
+    'b2-02-a4-rappel',
+    {
+      questions: [
+        moteur.rappel(
+          'b2-02-r-mediane-paire',
+          'mediane',
+          'Quelle est la médiane de la série 12, 15, 20, 26, 31, 40 ?',
+          '23, la demi-somme des deux valeurs du milieu',
+          [
+            ['20, la troisième valeur seule', 'mediane-rang-pair'],
+            ['24, la moyenne des six valeurs', 'moyenne-lue-comme-mediane'],
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-mediane-tri',
+          'mediane',
+          'Quelle est la médiane de la série 9, 2, 7, 4, 5 ?',
+          '5, la valeur du milieu une fois la série triée',
+          [
+            ['7, la valeur du milieu de la liste', 'mediane-sans-tri'],
+            ['5,4, la moyenne des cinq valeurs', 'moyenne-lue-comme-mediane'],
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-extreme',
+          'choix-du-resume',
+          'Une facture contestée étire fortement la série. Que faites-vous ?',
+          'La garder, la signaler et donner la médiane avec la moyenne',
+          [
+            ['La retirer sans le dire', 'valeur-extreme-supprimee'],
+            ['Donner la moyenne seule', 'valeur-extreme-ignoree'],
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-variance',
+          'ecart-type',
+          'La variance d’une série de délais vaut 36 jours². Quel est son écart-type ?',
+          '6 jours, la racine carrée de la variance',
+          [
             [
-              ['20, la troisième valeur seule', 'mediane-rang-pair'],
-              ['24, la moyenne des six valeurs', 'moyenne-lue-comme-mediane'],
+              '36 jours, la variance elle-même',
+              'variance-confondue-avec-ecart-type',
             ],
-          ),
-          moteur.rappel(
-            'b2-02-r-mediane-tri',
-            'mediane',
-            'Quelle est la médiane de la série 9, 2, 7, 4, 5 ?',
-            '5, la valeur du milieu une fois la série triée',
             [
-              ['7, la valeur du milieu de la liste', 'mediane-sans-tri'],
-              ['5,4, la moyenne des cinq valeurs', 'moyenne-lue-comme-mediane'],
+              '18 jours, la moitié de la variance',
+              'variance-confondue-avec-ecart-type',
             ],
-          ),
-          moteur.rappel(
-            'b2-02-r-extreme',
-            'choix-du-resume',
-            'Une facture contestée étire fortement la série. Que faites-vous ?',
-            'La garder, la signaler et donner la médiane avec la moyenne',
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-population',
+          'ecart-type',
+          'On a relevé les délais de tous les clients de l’année. Quelle fonction d’écart-type utiliser ?',
+          'ECARTYPEP, division par n',
+          [
             [
-              ['La retirer sans le dire', 'valeur-extreme-supprimee'],
-              ['Donner la moyenne seule', 'valeur-extreme-ignoree'],
+              'ECARTYPE, division par n − 1',
+              'ecart-type-population-echantillon',
             ],
-          ),
-          moteur.rappel(
-            'b2-02-r-variance',
-            'ecart-type',
-            'La variance d’une série de délais vaut 36 jours². Quel est son écart-type ?',
-            '6 jours, la racine carrée de la variance',
+            ['VAR, la variance', 'variance-confondue-avec-ecart-type'],
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-etendue',
+          'dispersion',
+          'Deux séries ont la même étendue. Ont-elles la même dispersion ?',
+          'Pas forcément : l’étendue ne regarde que les deux extrêmes',
+          [
+            ['Oui, toujours', 'etendue-prise-pour-dispersion'],
             [
-              [
-                '36 jours, la variance elle-même',
-                'variance-confondue-avec-ecart-type',
-              ],
-              [
-                '18 jours, la moitié de la variance',
-                'variance-confondue-avec-ecart-type',
-              ],
+              'Oui, si elles ont aussi la même médiane',
+              'etendue-prise-pour-dispersion',
             ],
-          ),
-          moteur.rappel(
-            'b2-02-r-population',
-            'ecart-type',
-            'On a relevé les délais de tous les clients de l’année. Quelle fonction d’écart-type utiliser ?',
-            'ECARTYPEP, division par n',
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-point-moyen',
+          'nuage-de-points',
+          'Rangs 1, 2, 3, 4 et valeurs 10, 20, 30, 60. Quelles sont les coordonnées du point moyen ?',
+          '(2,5 ; 30), les deux moyennes',
+          [
+            ['(2 ; 20), les valeurs du deuxième rang', 'point-moyen-confondu'],
+            ['(10 ; 120), les deux sommes', 'point-moyen-confondu'],
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-signe',
+          'correlation',
+          'Un coefficient de corrélation vaut −0,96. Un ajustement affine est-il justifié ?',
+          'Oui : les points sont proches d’une droite qui descend',
+          [
+            ['Non : r est négatif', 'correlation-jugee-au-signe'],
+            ['Non : la pente vaudrait −0,96', 'correlation-lue-comme-pente'],
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-pente',
+          'correlation',
+          'r = 0,98 et la droite est y = 12x + 300. Quelle hausse par rang la droite prévoit-elle ?',
+          '12, le coefficient directeur',
+          [
             [
-              [
-                'ECARTYPE, division par n − 1',
-                'ecart-type-population-echantillon',
-              ],
-              ['VAR, la variance', 'variance-confondue-avec-ecart-type'],
+              '0,98, le coefficient de corrélation',
+              'correlation-lue-comme-pente',
             ],
-          ),
-          moteur.rappel(
-            'b2-02-r-etendue',
-            'dispersion',
-            'Deux séries ont la même étendue. Ont-elles la même dispersion ?',
-            'Pas forcément : l’étendue ne regarde que les deux extrêmes',
+            ['300, l’ordonnée à l’origine', 'pente-ordonnee-inversees'],
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-causalite',
+          'correlation',
+          'Les ventes de parapluies et le nombre de rhumes montent ensemble en hiver, avec r = 0,95. Que conclure ?',
+          'Rien sur une cause : l’hiver fait varier les deux séries',
+          [
             [
-              ['Oui, toujours', 'etendue-prise-pour-dispersion'],
-              [
-                'Oui, si elles ont aussi la même médiane',
-                'etendue-prise-pour-dispersion',
-              ],
+              'Les parapluies donnent des rhumes',
+              'correlation-prise-pour-causalite',
             ],
-          ),
-          moteur.rappel(
-            'b2-02-r-point-moyen',
-            'nuage-de-points',
-            'Rangs 1, 2, 3, 4 et valeurs 10, 20, 30, 60. Quelles sont les coordonnées du point moyen ?',
-            '(2,5 ; 30), les deux moyennes',
             [
-              [
-                '(2 ; 20), les valeurs du deuxième rang',
-                'point-moyen-confondu',
-              ],
-              ['(10 ; 120), les deux sommes', 'point-moyen-confondu'],
+              'Les rhumes font acheter des parapluies',
+              'correlation-prise-pour-causalite',
             ],
-          ),
-          moteur.rappel(
-            'b2-02-r-signe',
-            'correlation',
-            'Un coefficient de corrélation vaut −0,96. Un ajustement affine est-il justifié ?',
-            'Oui : les points sont proches d’une droite qui descend',
-            [
-              ['Non : r est négatif', 'correlation-jugee-au-signe'],
-              ['Non : la pente vaudrait −0,96', 'correlation-lue-comme-pente'],
-            ],
-          ),
-          moteur.rappel(
-            'b2-02-r-pente',
-            'correlation',
-            'r = 0,98 et la droite est y = 12x + 300. Quelle hausse par rang la droite prévoit-elle ?',
-            '12, le coefficient directeur',
-            [
-              [
-                '0,98, le coefficient de corrélation',
-                'correlation-lue-comme-pente',
-              ],
-              ['300, l’ordonnée à l’origine', 'pente-ordonnee-inversees'],
-            ],
-          ),
-          moteur.rappel(
-            'b2-02-r-causalite',
-            'correlation',
-            'Les ventes de parapluies et le nombre de rhumes montent ensemble en hiver, avec r = 0,95. Que conclure ?',
-            'Rien sur une cause : l’hiver fait varier les deux séries',
-            [
-              [
-                'Les parapluies donnent des rhumes',
-                'correlation-prise-pour-causalite',
-              ],
-              [
-                'Les rhumes font acheter des parapluies',
-                'correlation-prise-pour-causalite',
-              ],
-            ],
-          ),
-          moteur.rappel(
-            'b2-02-r-rang',
-            'prevision',
-            'Droite y = 5x + 40, avec x = 1 pour 2021. Quel x utiliser pour prévoir 2026 ?',
-            '6, le rang de 2026',
-            [
-              ['2026, l’année elle-même', 'rang-pris-pour-annee'],
-              ['5, l’écart entre les deux années', 'rang-pris-pour-annee'],
-            ],
-          ),
-          moteur.rappel(
-            'b2-02-r-seuil',
-            'prevision',
-            'L’inéquation d’un seuil donne x ≥ 7,2. Quel est le premier rang où le seuil est atteint ?',
-            '8, l’entier suivant',
-            [
-              ['7, l’arrondi à l’entier inférieur', 'seuil-mal-arrondi'],
-              ['7,2, sans arrondir', 'seuil-mal-arrondi'],
-            ],
-          ),
-        ],
-        obligatoires: ['b2-02-r-causalite', 'b2-02-r-rang'],
-      },
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-rang',
+          'prevision',
+          'Droite y = 5x + 40, avec x = 1 pour 2021. Quel x utiliser pour prévoir 2026 ?',
+          '6, le rang de 2026',
+          [
+            ['2026, l’année elle-même', 'rang-pris-pour-annee'],
+            ['5, l’écart entre les deux années', 'rang-pris-pour-annee'],
+          ],
+        ),
+        moteur.rappel(
+          'b2-02-r-seuil',
+          'prevision',
+          'L’inéquation d’un seuil donne x ≥ 7,2. Quel est le premier rang où le seuil est atteint ?',
+          '8, l’entier suivant',
+          [
+            ['7, l’arrondi à l’entier inférieur', 'seuil-mal-arrondi'],
+            ['7,2, sans arrondir', 'seuil-mal-arrondi'],
+          ],
+        ),
+      ],
+      obligatoires: ['b2-02-r-causalite', 'b2-02-r-rang'],
     },
-  },
-  moteur.ecranV2(
+  ),
+  moteur.ficheMemo(
     {
       screenId: 'B2-02-A4-05-FICHE-MEMO',
       titre: 'Fiche mémo : résumer, relier, prévoir',
-      diffusion: 'catalogue',
-      dureeMinutes: 2,
       concepts: [...CONCEPTS_DU_COURS],
-      notes: moteur.puces(
-        '90 s de lecture ; la fiche s’imprime pour le classeur de CCF.',
-      ),
     },
-    'grid',
-    {
-      title: 'Fiche mémo : résumer, relier, prévoir',
-      subtitle:
-        'À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.',
-      imprimable: true,
-      items: [
-        {
-          title: 'Moyenne',
-          description: 'Raisonne-t-on sur un total ?',
-          back: 'Somme des valeurs ÷ effectif. Une valeur extrême la tire.',
-        },
-        {
-          title: 'Médiane',
-          description: 'Cherche-t-on une moitié ?',
-          back: 'Trier d’abord. Effectif pair : demi-somme des deux valeurs du milieu.',
-        },
-        {
-          title: 'Écart-type',
-          description: 'Les valeurs sont-elles régulières ?',
-          back: 'Population entière : ECARTYPEP (÷ n). La variance est en unité², l’écart-type dans l’unité.',
-        },
-        {
-          title: 'Valeur extrême',
-          description: 'Une valeur tire la série ?',
-          back: 'Ne pas la retirer sans pièce ; la signaler, publier la médiane à côté de la moyenne.',
-        },
-        {
-          title: 'Point moyen',
-          description: 'Où passe la droite ?',
-          back: 'G(x̄ ; ȳ), les deux moyennes, jamais le point du milieu du tableau.',
-        },
-        {
-          title: 'Corrélation r',
-          description: 'Les points sont-ils alignés ?',
-          back: '|r| proche de 1 : ajustement affine justifié. r n’est pas la pente et ne prouve aucune cause.',
-        },
-        {
-          title: 'Droite des moindres carrés',
-          description: 'Quelle équation ?',
-          back: 'a = PENTE(y;x), b = ORDONNEE.ORIGINE(y;x) ; contrôle par G.',
-        },
-        {
-          title: 'Prévoir',
-          description: 'Quelle valeur de x ?',
-          back: 'Le rang de l’année, jamais l’année. Loin des données : réserve « si la tendance se poursuit ».',
-        },
-        {
-          title: 'Seuil',
-          description: 'En quelle année ?',
-          back: 'Résoudre ax + b ≥ seuil, prendre l’entier supérieur, le traduire en année.',
-        },
-        moteur.REFERENTIEL_DU_BTS_CG,
-      ],
-    },
+    [
+      {
+        title: 'Moyenne',
+        description: 'Raisonne-t-on sur un total ?',
+        back: 'Somme des valeurs ÷ effectif. Une valeur extrême la tire.',
+      },
+      {
+        title: 'Médiane',
+        description: 'Cherche-t-on une moitié ?',
+        back: 'Trier d’abord. Effectif pair : demi-somme des deux valeurs du milieu.',
+      },
+      {
+        title: 'Écart-type',
+        description: 'Les valeurs sont-elles régulières ?',
+        back: 'Population entière : ECARTYPEP (÷ n). La variance est en unité², l’écart-type dans l’unité.',
+      },
+      {
+        title: 'Valeur extrême',
+        description: 'Une valeur tire la série ?',
+        back: 'Ne pas la retirer sans pièce ; la signaler, publier la médiane à côté de la moyenne.',
+      },
+      {
+        title: 'Point moyen',
+        description: 'Où passe la droite ?',
+        back: 'G(x̄ ; ȳ), les deux moyennes, jamais le point du milieu du tableau.',
+      },
+      {
+        title: 'Corrélation r',
+        description: 'Les points sont-ils alignés ?',
+        back: '|r| proche de 1 : ajustement affine justifié. r n’est pas la pente et ne prouve aucune cause.',
+      },
+      {
+        title: 'Droite des moindres carrés',
+        description: 'Quelle équation ?',
+        back: 'a = PENTE(y;x), b = ORDONNEE.ORIGINE(y;x) ; contrôle par G.',
+      },
+      {
+        title: 'Prévoir',
+        description: 'Quelle valeur de x ?',
+        back: 'Le rang de l’année, jamais l’année. Loin des données : réserve « si la tendance se poursuit ».',
+      },
+      {
+        title: 'Seuil',
+        description: 'En quelle année ?',
+        back: 'Résoudre ax + b ≥ seuil, prendre l’entier supérieur, le traduire en année.',
+      },
+      moteur.REFERENTIEL_DU_BTS_CG,
+    ],
   ),
   {
     screenId: 'B2-02-A4-06-BILLET-DE-SORTIE',

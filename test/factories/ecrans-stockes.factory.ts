@@ -10,6 +10,7 @@ import {
   buildCorrigeFeuille,
   buildCorrigeRevelation,
   buildCorrigeTableau,
+  buildCorrigeTableDeVerite,
   buildPlanFeuille,
 } from './corriges.factory';
 import {
@@ -79,6 +80,67 @@ export const PLAN_TABLEAU = {
     },
   ],
 } as const;
+
+export const PLAN_TABLE_DE_VERITE = {
+  id: 'b2-03-a1-table-et-ou',
+  intitule: 'Table de vérité de « P et Q » et de « P ou Q »',
+  consignes: ['Choisissez V ou F dans chaque case.'],
+  echeances: 2,
+  libellesLignes: ['Cas 1', 'Cas 2'],
+  parametres: {},
+  colonnes: [
+    {
+      cle: 'p',
+      intitule: 'P',
+      role: 'donnee',
+      format: 'booleen',
+      valeurs: [1, 1],
+      decimales: 0,
+      totalise: false,
+    },
+    {
+      cle: 'q',
+      intitule: 'Q',
+      role: 'donnee',
+      format: 'booleen',
+      valeurs: [1, 0],
+      decimales: 0,
+      totalise: false,
+    },
+    {
+      cle: 'pEtQ',
+      intitule: 'P ∧ Q',
+      role: 'saisie',
+      format: 'booleen',
+      decimales: 0,
+      totalise: false,
+    },
+    {
+      cle: 'pOuQ',
+      intitule: 'P ∨ Q',
+      role: 'saisie',
+      format: 'booleen',
+      decimales: 0,
+      totalise: false,
+    },
+  ],
+  synthese: [],
+} as const;
+
+export function buildProprietesTableDeVerite(): Record<string, unknown> {
+  return structuredClone({
+    plan: PLAN_TABLE_DE_VERITE,
+    questions: [
+      {
+        type: 'tableau',
+        id: PLAN_TABLE_DE_VERITE.id,
+        concept: 'connecteur',
+        noteCompte: true,
+        corrige: buildCorrigeTableDeVerite(),
+      },
+    ],
+  });
+}
 
 export const PARCOURS_ENIGMES = {
   id: 'b2-01-a6-coffre',

@@ -2353,7 +2353,7 @@ Les formes exactes des données publiques sont au § 9.4, les corrigés au § 9.
   contrat public.
 - **Correction serveur** : `POST …/escape/:parcoursId/tentatives` ; saisie lue par
   `lireNombreSaisi` (espaces ordinaires, insécables et fines ; virgule ou point ; signe moins
-  typographique U+2212 ; suffixes « % », « € », « pt », « point(s) ») ; une saisie équivalente à une
+  typographique U+2212 ; suffixes « % », « € », « euro(s) », « pt », « point(s) », « facture(s) », « ligne(s) ») ; une saisie équivalente à une
   tentative déjà faite ne consomme rien ; incrément atomique plafonné à 10 ; une énigme s’ouvre quand
   la précédente est résolue **ou** que ses 10 tentatives sont épuisées (sans fragment : le code final
   reste alors incomplet) ; énigme non ouverte → 409 `ENIGME_VERROUILLEE` ; plafond atteint → 409

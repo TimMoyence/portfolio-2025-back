@@ -91,6 +91,28 @@ export function buildCorrigeTableau(
   };
 }
 
+export function buildCorrigeTableDeVerite(
+  overrides: Partial<CorrigeTableau> = {},
+): CorrigeTableau {
+  return {
+    type: 'tableau',
+    attendus: [
+      { rang: 0, cle: 'pEtQ', valeur: 1, pieges: [] },
+      { rang: 1, cle: 'pEtQ', valeur: 0, pieges: [] },
+      { rang: 0, cle: 'pOuQ', valeur: 1, pieges: [] },
+      {
+        rang: 1,
+        cle: 'pOuQ',
+        valeur: 1,
+        pieges: [{ valeur: 0, confusion: 'ou-lu-exclusif' }],
+      },
+    ],
+    tolerance: { type: 'absolue', valeur: 0 },
+    seuilReussite: 0.75,
+    ...overrides,
+  };
+}
+
 export function buildCorrigeClassement(
   overrides: Partial<CorrigeClassement> = {},
 ): CorrigeClassement {
