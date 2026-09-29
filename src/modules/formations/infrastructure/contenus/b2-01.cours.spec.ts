@@ -365,7 +365,17 @@ describe('B2-01 — fichier de données', () => {
         ? atelierBrut.proprietes
         : null;
 
-    expect(graphique?.titre).toBe('La diapositive de Samir — axe réglable');
+    expect(graphique?.titre).toBe(
+      'La diapositive de Samir — l’origine de l’axe',
+    );
+    expect(graphique?.notes).toContain(
+      'Faire comparer « Axe de Samir » et « Axe à zéro » : à l’écran, chacun bascule de l’un à l’autre ; sur le livret, les deux figures sont côte à côte.',
+    );
+    expect(proprietesGraphique).toEqual(
+      expect.objectContaining({
+        titre: 'Diapositive de Samir : marge brute et origine de l’axe',
+      }),
+    );
     expect(
       proprietesGraphique !== null && 'description' in proprietesGraphique
         ? proprietesGraphique.description

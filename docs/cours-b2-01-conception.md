@@ -835,9 +835,9 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
 #### A2-02 · `B2-01-A2-02-ORIGINE-AXE` — 2 min · `fp-plot` · catalogue · Modifié (S04, S32)
 
 - **Contenu (public)** :
-  - Titre public : « La diapositive de Samir — axe réglable »
-  - `definition` : `id` `b2-01-a2-origine-axe` ; `titre` « Diapositive de Samir : marge brute et axe
-    réglable » ; `source` « Service commercial d’Atelier Rivage (données fictives). » ; `forme`
+  - Titre public : « La diapositive de Samir — l’origine de l’axe »
+  - `definition` : `id` `b2-01-a2-origine-axe` ; `titre` « Diapositive de Samir : marge brute et
+    origine de l’axe » ; `source` « Service commercial d’Atelier Rivage (données fictives). » ; `forme`
     « barres » ; `unite` « euros » ; `abscisse` { libelle « Année », min 0, max 3 } ; `etiquettes`
     [« 2022 », « 2023 », « 2024 », « 2025 »] ; `ordonnee` « Marge brute (€) » ; `bornesOrdonnee`
     { minParametre « origine », max 292000 } ; `parametres` [{ cle « origine », libelle « Origine de
@@ -855,7 +855,8 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
     cas ? Les montants, eux, ne bougent pas. » ; aucun `renvoi` : le préréglage « Axe de Samir » fige
     déjà la diapositive de Samir, l’écran s’affiche en plein écran (retours QA du 2026-09-24).
 - **Notes** :
-  - Chacun passe de « Axe de Samir » à « Axe à zéro ».
+  - Faire comparer « Axe de Samir » et « Axe à zéro » : à l’écran, chacun bascule de l’un à l’autre ;
+    sur le livret, les deux figures sont côte à côte.
   - Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la
     barre 2025 vaut toujours 291 000 €.
   - Phrase à faire dire : « L’échelle change l’impression, pas la donnée ».
@@ -3010,7 +3011,7 @@ avec prix arrondis (21,34 × 0,97 = 20,6998) redonne 20,70. Les expressions `pri
 
 | Graphique | Écran | Titre                                                      | Unité                             | Source                                                                          | Phrase de lecture                                                       |
 | --------- | ----- | ---------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| G1        | A2-02 | Diapositive de Samir : marge brute et axe réglable         | € (préréglage « Axe à zéro »)     | service commercial d’Atelier Rivage (fictif)                                    | +6 000 € en trois ans, soit +2,1 % (lu aux notes de A2-03-CORRECTION-2) |
+| G1        | A2-02 | Diapositive de Samir : marge brute et origine de l’axe     | € (préréglage « Axe à zéro »)     | service commercial d’Atelier Rivage (fictif)                                    | +6 000 € en trois ans, soit +2,1 % (lu aux notes de A2-03-CORRECTION-2) |
 | G2        | A3-05 | Inflation annuelle en France, 2019–2025                    | % par an                          | Insee, paru le 23 mars 2026                                                     | le taux culmine à 5,2 % en 2022, puis diminue                           |
 | G3        | A3-08 | Indice des prix à la consommation, base 100 = moyenne 2019 | indice (axe 95 à 120)             | calcul du cours à partir des taux Insee ; indice officiel rebasé 116,04 en 2025 | prix 2025 supérieurs de 16,0 % à 2019 ; désinflation, pas déflation     |
 | G4        | A4-04 | CA HT 2025 : choisir une représentation temporelle         | milliers d’euros HT (axe 0 à 180) | comptabilité analytique 2025 (fictive)                                          | marketplace au plus haut au 3e trimestre ; sur-mesure de 120 à 80 k€    |
