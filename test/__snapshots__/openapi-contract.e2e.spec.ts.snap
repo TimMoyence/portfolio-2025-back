@@ -1016,6 +1016,12 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "minimum": 0,
         "type": "number",
       },
+      "explicationsDevoilees": {
+        "description": "Explications devoilees sur l ecran d un exercice corrige sur place, dans leur ordre, jamais retirees",
+        "example": 1,
+        "minimum": 0,
+        "type": "number",
+      },
       "optionsAffichees": {
         "description": "Affichage immediat des options d un rappel, sans attendre la fin du decompte, jamais retire",
         "type": "boolean",
