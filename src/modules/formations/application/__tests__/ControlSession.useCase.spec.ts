@@ -16,6 +16,7 @@ import {
   buildCorrectionDeReponses,
   buildCoursDeBriques,
   buildEcranDeBrique,
+  buildQuestionnaireCorrigeSurPlace,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
 import { lireCoursStocke } from '../../domain/cours/CoursStocke';
@@ -283,6 +284,35 @@ describe('ControlSessionUseCase', () => {
       await b.piloter({ pilotage: { screenId: 'E-VOTE', phase: 'revote' } });
 
       b.attendreEcriture({ pilotageEcrans: { 'E-VOTE': { phase: 'revote' } } });
+    });
+
+    it('corrige un exercice sur place et ferme le questionnaire à sa dernière correction', async () => {
+      const questionnaire = buildQuestionnaireCorrigeSurPlace();
+      b.changerDeCatalogue(
+        creerCatalogueDeTest(
+          lireCoursStocke(
+            buildCoursDeBriques([questionnaire], { slug: COURS_SLUG }),
+          ),
+        ),
+      );
+      const corriger = (explicationsDevoilees: number) =>
+        b.piloter({
+          pilotage: { screenId: questionnaire.screenId, explicationsDevoilees },
+        });
+
+      await corriger(1);
+      b.attendreEcriture({
+        pilotageEcrans: {
+          [questionnaire.screenId]: { explicationsDevoilees: 1 },
+        },
+      });
+
+      await corriger(2);
+      b.attendreEcriture({
+        pilotageEcrans: {
+          [questionnaire.screenId]: { explicationsDevoilees: 2, revele: true },
+        },
+      });
     });
 
     it('refuse de ramener une phase en arriere', async () => {

@@ -444,6 +444,40 @@ export const buildCorrectionDExemple = fabriqueDeCorrection(
   }),
 );
 
+export const EXPLICATIONS_SUR_PLACE = [
+  {
+    reference: 'b2-01-a2-evolution-marge',
+    texte: 'La marge perd 2,3 points : 25,3 − 27,6.',
+  },
+  {
+    reference: 'b2-01-a2-part-marketplace',
+    texte: 'La marketplace pèse 45,5 % du chiffre d’affaires.',
+  },
+] as const;
+
+export function buildCorrigeSurPlace(
+  brique: string,
+  explications: readonly { reference: string; texte: string }[],
+  overrides: Partial<EcranDeCoursBrut> = {},
+): EcranDeCoursBrut {
+  return buildEcranDeBrique(brique, {
+    proprietes: {
+      ...buildProprietesStockees(brique),
+      correctionSurPlace: { explications: structuredClone(explications) },
+    },
+    ...overrides,
+  });
+}
+
+export function buildQuestionnaireCorrigeSurPlace(
+  overrides: Partial<EcranDeCoursBrut> = {},
+): EcranDeCoursBrut {
+  return buildCorrigeSurPlace('questionnaire', EXPLICATIONS_SUR_PLACE, {
+    screenId: 'B2-01-A2-03-ATELIER-1',
+    ...overrides,
+  });
+}
+
 export function buildCoursDeBriques(
   ecrans: readonly EcranDeCoursBrut[],
   overrides: Partial<ContenuDeCoursBrut> = {},

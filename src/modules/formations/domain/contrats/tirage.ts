@@ -4,6 +4,7 @@ import type {
   CoursPublic as CoursPublicActuel,
   EcranPublic as EcranPublicActuel,
 } from '../cours/CoursPublic';
+import type { ExplicationDeCorrection } from '../cours/Cours';
 import type { CorrigeTire, LibellesDesOptions } from '../cours/Tirage';
 import type { CorrigeEcranPresentateur } from './deroule';
 import type { VotePublic } from './donnees-publiques';
@@ -20,6 +21,7 @@ export interface CorrectionServie {
     readonly attendu: string;
     readonly suite: string | null;
   } | null;
+  readonly explications?: readonly ExplicationDeCorrection[];
 }
 
 export interface EcranPublic extends EcranPublicActuel {

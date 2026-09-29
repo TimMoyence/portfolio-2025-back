@@ -11,11 +11,37 @@ import { PRESENTATIONS_VISUELLES_VALIDES } from './presentation-visuelle.factory
 import { buildNumeriqueStockee } from './questions-stockees.factory';
 import { buildEcransStockesConformes } from './structure.factory';
 
-export function notesDExercice(reflexion: number, travail: number): string {
+export function notesDExercice(
+  reflexion: number,
+  travail: number,
+  correction?: number,
+): string {
+  const tempsDeCorrection =
+    correction === undefined ? '' : ` · correction ${correction} min`;
   return [
-    `• Temps : réflexion ${reflexion} min · travail ${travail} min`,
+    `• Temps : réflexion ${reflexion} min · travail ${travail} min${tempsDeCorrection}`,
     '• Relancer les binômes bloqués.',
   ].join('\n');
+}
+
+export function corrigeSurPlaceV3(
+  exercice: EcranDeCoursBrut,
+  references: readonly string[] = [`${exercice.screenId.toLowerCase()}-q`],
+): EcranDeCoursBrut {
+  return {
+    ...exercice,
+    dureeMinutes: 12,
+    notes: notesDExercice(2, 6, 4),
+    proprietes: {
+      ...exercice.proprietes,
+      correctionSurPlace: {
+        explications: references.map((reference) => ({
+          reference,
+          texte: 'La réponse expliquée.',
+        })),
+      },
+    },
+  };
 }
 
 function ecranV2(

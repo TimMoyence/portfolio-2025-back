@@ -27,6 +27,7 @@ export const REGLES_STRUCTURE = [
   'cadrage-du-renvoi',
   'reference-circulaire',
   'correction-apres-source',
+  'correction-sur-place',
   'notes-formateur',
   'atelier-questions-fermees',
   'confidentialite',
@@ -652,6 +653,41 @@ function controlerAteliers({ cours }: Analyse): readonly Manquement[] {
   ];
 }
 
+function defautDeCorrectionSurPlace(ecran: Ecran): string | null {
+  if (
+    ecran.correctionSurPlace === undefined ||
+    ecran.brique !== 'questionnaire'
+  ) {
+    return null;
+  }
+  const references = ecran.correctionSurPlace.explications
+    .map((explication) => explication.reference)
+    .join(', ');
+  const questions = ecran.questions.map((question) => question.id).join(', ');
+  if (references !== questions) {
+    return `ses explications (${references}) ne suivent pas ses questions (${questions}) une à une`;
+  }
+  return ecran.ordre === 'fixe'
+    ? null
+    : 'ses questions sont mélangées alors que la correction les dévoile dans l ordre';
+}
+
+function controlerCorrectionsSurPlace({
+  cours,
+}: Analyse): readonly Manquement[] {
+  return cours.ecrans.flatMap((ecran) => {
+    const defaut = defautDeCorrectionSurPlace(ecran);
+    return defaut === null
+      ? []
+      : [
+          {
+            ecran: ecran.id,
+            raison: `la correction sur place de « ${ecran.id} » est incohérente : ${defaut}.`,
+          },
+        ];
+  });
+}
+
 function controlerCorrections({ cours }: Analyse): readonly Manquement[] {
   const rangs = rangsParNom(cours);
   return cours.ecrans.flatMap((ecran, rang) => {
@@ -768,6 +804,7 @@ const REGLES: readonly Regle[] = [
   { id: 'cadrage-du-renvoi', controler: controlerCadrages },
   { id: 'reference-circulaire', controler: controlerCycles },
   { id: 'correction-apres-source', controler: controlerCorrections },
+  { id: 'correction-sur-place', controler: controlerCorrectionsSurPlace },
   { id: 'notes-formateur', controler: controlerNotes },
   { id: 'atelier-questions-fermees', controler: controlerAteliers },
   {

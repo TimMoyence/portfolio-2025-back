@@ -230,6 +230,16 @@ export interface SocleHistorique {
   readonly guide?: GuideFormateur;
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
+  readonly correctionSurPlace?: CorrectionSurPlace;
+}
+
+export interface ExplicationDeCorrection {
+  readonly reference: string;
+  readonly texte: string;
+}
+
+export interface CorrectionSurPlace {
+  readonly explications: AuMoinsUn<ExplicationDeCorrection>;
 }
 
 type BriqueDExpositionHistorique = keyof ProprietesDesExpositionsHistoriques;

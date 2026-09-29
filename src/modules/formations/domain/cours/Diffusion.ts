@@ -8,8 +8,10 @@ import type {
   TirageDuCours,
 } from '../contrats/tirage';
 import { ecranCorrigePar } from './Corrections';
+import { explicationsRevelees } from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
 import { corrigeDeLEcran } from './DeroulePresentateur';
+import { etayageAtteint } from './EcranServi';
 import { tirer } from './Tirage';
 
 export const GRAINE_DU_CATALOGUE = 0;
@@ -36,7 +38,7 @@ export function exempleAuRythmeDuPilotage(
     return ecran;
   }
   const donnees = ecran.donnees as DonneesParBrique['fp-worked'];
-  const etayage = pilotage?.etayage ?? 0;
+  const etayage = etayageAtteint(pilotage);
   const servi: DonneesParBrique['fp-worked'] = {
     ...donnees,
     exemple: {
@@ -81,6 +83,29 @@ export function correctionDeLEcranRevele(
     correction.reflexion === null
     ? null
     : correction;
+}
+
+export function correctionSurPlaceServie(
+  ecran: Ecran,
+  tirage: TirageDuCours,
+  pilotage: PilotageEcran | undefined,
+): CorrectionServie | null {
+  const explications = explicationsRevelees(ecran, pilotage);
+  if (explications.length === 0) {
+    return null;
+  }
+  const correction = correctionDe(ecran, tirage);
+  const references = new Set(
+    explications.map((explication) => explication.reference),
+  );
+  const toutes = pilotage?.revele === true;
+  return {
+    ...correction,
+    questions: correction.questions.filter(
+      (question) => toutes || references.has(question.questionId),
+    ),
+    explications,
+  };
 }
 
 function correctionDe(source: Ecran, tirage: TirageDuCours): CorrectionServie {

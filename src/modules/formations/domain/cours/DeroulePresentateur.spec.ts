@@ -3,6 +3,8 @@ import {
   BRIQUES_STOCKEES,
   buildCoursDeBriques,
   buildEcranDeBrique,
+  buildQuestionnaireCorrigeSurPlace,
+  EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { PRESENTATIONS_VISUELLES_VALIDES } from '../../../../../test/factories/presentation-visuelle.factory';
 import { CONFUSIONS } from './banque/confusions';
@@ -212,5 +214,24 @@ describe('deroulePresentateur (corrigés au déroulé, B22)', () => {
       'b2-01-a2-part-marketplace',
     ]);
     expect(ecran('fp-recall').corriges[0].bonneReponse).toBe('+25 %');
+  });
+});
+
+describe('deroulePresentateur (correction sur place)', () => {
+  const deroule = deroulePresentateur(
+    lireCoursStocke(
+      buildCoursDeBriques([
+        buildQuestionnaireCorrigeSurPlace(),
+        buildEcranDeBrique('fp-numeric'),
+      ]),
+    ),
+    424,
+  );
+
+  it('donne au formateur toutes les explications, qu il révèle ensuite une à une', () => {
+    const [questionnaire, numerique] = deroule.ecrans;
+
+    expect(questionnaire.explications).toEqual(EXPLICATIONS_SUR_PLACE);
+    expect(numerique.explications).toBeUndefined();
   });
 });

@@ -92,6 +92,18 @@ describe('exemple corrigé au rythme du pilotage', () => {
       exemple: { etapes: [{ raisonnement: '25,30 − 27,60 = −2,30 points.' }] },
     });
   });
+
+  it('garde dévoilée une étape corrigée même quand le formateur la masque', () => {
+    const servi = exempleAuRythmeDuPilotage(corrige, {
+      etayage: 0,
+      etayageAtteint: 1,
+    });
+
+    expect(servi.donnees).toMatchObject({
+      etayage: 1,
+      exemple: { etapes: [{ raisonnement: '25,30 − 27,60 = −2,30 points.' }] },
+    });
+  });
 });
 
 describe('correctionServie', () => {

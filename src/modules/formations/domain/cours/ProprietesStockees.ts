@@ -280,11 +280,28 @@ export type ProprietesRecit = Omit<
   'modalite' | 'renvoi' | 'cadrageDuRenvoi'
 >;
 
+const correctionSurPlace = z
+  .object({
+    explications: auMoinsUn(
+      z.object({ reference: texte, texte }).strict(),
+    ).superRefine((explications, contexte) => {
+      const references = explications.map(({ reference }) => reference);
+      if (new Set(references).size !== references.length) {
+        contexte.addIssue({
+          code: 'custom',
+          message: 'deux explications portent la même référence',
+        });
+      }
+    }),
+  })
+  .strict();
+
 const communes = {
   guide: guideFormateur.optional(),
   modalite: modalite.optional(),
   renvoi: texte.optional(),
   cadrageDuRenvoi: cadrageDuRenvoi.optional(),
+  correctionSurPlace: correctionSurPlace.optional(),
 };
 
 const parametreCurseur = z

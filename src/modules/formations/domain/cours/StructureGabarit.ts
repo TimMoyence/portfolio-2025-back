@@ -15,7 +15,8 @@ const BRIQUES_D_EXERCICE_OUVERT: readonly string[] = [
   'fp-escape',
   'fp-challenge',
 ];
-const MOTIF_DES_TEMPS = /^• Temps : réflexion (\d+) min · travail (\d+) min$/m;
+const MOTIF_DES_TEMPS =
+  /^• Temps : réflexion (\d+) min · travail (\d+) min(?: · correction (\d+) min)?$/m;
 
 type Temps = 'reflechir' | 'comprendre' | 'exercer';
 
@@ -134,19 +135,21 @@ function defautDeLAnnonce(ecran: Ecran): readonly string[] {
       'aucune ligne « • Temps : réflexion N min · travail N min » dans les notes',
     ];
   }
-  const [, reflexion, travail] = temps;
-  return Number(reflexion) + Number(travail) === ecran.dureeMinutes
+  const [, reflexion, travail, correction = '0'] = temps;
+  return Number(reflexion) + Number(travail) + Number(correction) ===
+    ecran.dureeMinutes
     ? []
     : [
-        `réflexion ${reflexion} min et travail ${travail} min ne font pas les ${ecran.dureeMinutes} min de l'écran`,
+        `réflexion ${reflexion} min, travail ${travail} min et correction ${correction} min ne font pas les ${ecran.dureeMinutes} min de l'écran`,
       ];
 }
 
 function defautsDesTemps(cours: Cours, ecran: Ecran): readonly string[] {
   const annonce = defautDeLAnnonce(ecran);
   const correction =
+    ecran.correctionSurPlace === undefined &&
     correctionsDe(cours, ecran.id).length === 0
-      ? ['aucun écran de correction ne le suit']
+      ? ['aucune correction, ni sur place ni sur un écran qui le suit']
       : [];
   return [...annonce, ...correction];
 }

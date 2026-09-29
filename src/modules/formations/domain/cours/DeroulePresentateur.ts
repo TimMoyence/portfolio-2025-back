@@ -61,6 +61,7 @@ function versEcranDeroule(
     ),
     corrigeEcran: corrigeDeLEcran(ecran),
     guide: ecran.guide,
+    explications: ecran.correctionSurPlace?.explications,
   };
 }
 
