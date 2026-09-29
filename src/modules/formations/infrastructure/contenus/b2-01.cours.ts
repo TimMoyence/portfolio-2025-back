@@ -599,19 +599,19 @@ const ACTE_2: moteur.Acte = [
   ),
   {
     screenId: 'B2-01-A2-02-ORIGINE-AXE',
-    titre: 'La diapositive de Samir — axe réglable',
+    titre: 'La diapositive de Samir — l’origine de l’axe',
     diffusion: 'catalogue',
     brique: 'fp-plot',
     dureeMinutes: 2,
     concepts: ['lecture-graphique'],
     notes: moteur.puces(
-      'Chacun passe de « Axe de Samir » à « Axe à zéro ».',
+      'Faire comparer « Axe de Samir » et « Axe à zéro » : à l’écran, chacun bascule de l’un à l’autre ; sur le livret, les deux figures sont côte à côte.',
       'Faire lire le rapport des hauteurs : ×7 avec l’axe à 284 000 €, ≈ ×1,02 avec l’axe à zéro ; la barre 2025 vaut toujours 291 000 €.',
       'Phrase à faire dire : « L’échelle change l’impression, pas la donnée ».',
     ),
     proprietes: {
       id: 'b2-01-a2-origine-axe',
-      titre: 'Diapositive de Samir : marge brute et axe réglable',
+      titre: 'Diapositive de Samir : marge brute et origine de l’axe',
       source: 'Service commercial d’Atelier Rivage (données fictives).',
       forme: 'barres',
       unite: 'euros',
