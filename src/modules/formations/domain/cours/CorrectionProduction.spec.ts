@@ -144,7 +144,10 @@ describe('corrigerFeuille', () => {
     });
   });
 
-  it('rend la confusion déclarée quand la formule tombe en erreur', () => {
+  it.each([
+    ['tombe en erreur', '=(C2-B2)/B9'],
+    ['ne s’analyse pas', '=(C2-B2)/;'],
+  ])('rend la confusion déclarée quand la formule %s', (_cas, saisie) => {
     const corrige = buildCorrigeFeuille({
       plan: PLAN,
       attendus: [
@@ -155,7 +158,7 @@ describe('corrigerFeuille', () => {
       ],
     });
 
-    const correction = corrigerFeuille(corrige, { D2: '=(C2-B2)/B9' });
+    const correction = corrigerFeuille(corrige, { D2: saisie });
 
     expect(correction.verdicts).toEqual([
       {

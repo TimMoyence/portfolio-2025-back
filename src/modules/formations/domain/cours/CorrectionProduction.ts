@@ -9,7 +9,12 @@ import type {
 } from './Corrige';
 import type { ConfusionId } from './banque/confusions';
 import type { Feuille, ResultatFormule, ValeurFormule } from './Formule';
-import { evaluerFeuille, formeR1C1, surfaceDeFormule } from './Formule';
+import {
+  estUneFormule,
+  evaluerFeuille,
+  formeR1C1,
+  surfaceDeFormule,
+} from './Formule';
 
 interface VerdictDeCellule {
   readonly reference: string;
@@ -80,7 +85,10 @@ function estValeurDeControle(valeur: number): boolean {
 
 function trahitLaFormule(saisie: string, attendu: AttenduDeCellule): boolean {
   const surface = surfaceDeFormule(saisie);
-  if (surface === null || surface.references.length === 0) {
+  if (surface === null) {
+    return !estUneFormule(saisie);
+  }
+  if (surface.references.length === 0) {
     return true;
   }
   const valeur = attendu.valeur;

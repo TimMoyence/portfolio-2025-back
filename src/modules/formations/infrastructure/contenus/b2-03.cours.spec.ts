@@ -10,6 +10,7 @@ import {
 } from '../../../../../test/helpers/fiche-de-cours';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
+import { evaluerCellule } from '../../domain/cours/Formule';
 import { COURS_B2_03 } from './b2-03.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_03);
@@ -298,6 +299,42 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
         (verdict) => verdict.confusion,
       ),
     ).toEqual(Array.from({ length: 5 }, () => 'critere-sans-guillemets'));
+  });
+
+  it('nomme l’oubli des guillemets autour d’un texte accentué ou d’un critère de NB.SI', () => {
+    const corrige = feuilleDe('b2-03-a4-feuille-controle');
+    const lignes = lignesDe(2, 17);
+    const envoi = {
+      ...recopier('=SI(ET(F2=Impayée;E2>60);"Relancer";"Non")', 'H', lignes),
+      K3: '=NB.SI(D2:D17;>=5000)',
+    };
+    const confusions = new Map(
+      corrigerFeuille(corrige, envoi).verdicts.map((verdict) => [
+        verdict.reference,
+        verdict.confusion,
+      ]),
+    );
+
+    expect(lignes.map((ligne) => confusions.get(`H${ligne}`))).toEqual(
+      lignes.map(() => 'critere-sans-guillemets'),
+    );
+    expect(confusions.get('K3')).toBe('critere-sans-guillemets');
+  });
+
+  it('compte au tableur les montants d’au moins 5 000 € HT et les clients hors de France', () => {
+    const { plan } = feuilleDe('b2-03-a4-feuille-controle');
+    const feuille = {
+      lignes: plan.lignes,
+      colonnes: plan.colonnes,
+      cellules: {
+        ...plan.cellules,
+        K4: '=NB.SI(D2:D17;">=5000")',
+        K5: '=NB.SI(C2:C17;"<>France")',
+      },
+    };
+
+    expect(evaluerCellule(feuille, 'K4').valeur).toBe(compter(grosMontant));
+    expect(evaluerCellule(feuille, 'K5').valeur).toBe(compter(horsDeFrance));
   });
 
   it('reconnaît justes les deux contrôles équivalents de l’exercice 5', () => {

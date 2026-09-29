@@ -209,6 +209,9 @@ Rythme : 151 minutes interactives, 29 d'exposition, exposition continue de 6 min
 - P « hors de France », Q « montant d'au moins 5 000 € » sur F205, F203, F202, F201 ; saisie de ¬P,
   P ∧ Q, P ∨ Q, P ⇒ Q. Pièges : `ou-lu-exclusif` (ligne V, V), `implication-lue-comme-equivalence`
   (ligne F, V).
+- Choix T-01 : pas de brique nouvelle. Une colonne `fp-table-build` de format `booleen` se saisit
+  par une liste V/F (0 ou 1, toute autre valeur refusée par le serveur) et s'imprime « V / F » au
+  livret.
 
 #### A1-10 · `B2-03-A1-10-ATELIER-CONNECTEURS` — 8 min · `questionnaire` · séance
 

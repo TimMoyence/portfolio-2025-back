@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sha256": "e328b123724fbccd117dbfbe8a28bfeac9b8764fb1e6489ae184978b7b5931af",
+  "sha256": "110417683ed4df02db51af9ac34042105fb529e045cb3df2b0df8bdcec0e850e",
   "vecteurs": [
     {
       "id": "feuille-cycle-deux-maillons",
@@ -561,6 +561,33 @@
           "erreur": "#VALEUR!"
         },
         "B1": {
+          "valeur": null,
+          "erreur": "#NOM?"
+        }
+      }
+    },
+    {
+      "id": "feuille-texte-accentue-sans-guillemets",
+      "type": "feuille",
+      "entree": {
+        "lignes": 1,
+        "colonnes": 3,
+        "cellules": {
+          "A1": "Impayée",
+          "B1": "=SI(A1=Impayée;1;0)",
+          "C1": "=Payée"
+        }
+      },
+      "attendu": {
+        "A1": {
+          "valeur": "Impayée",
+          "erreur": null
+        },
+        "B1": {
+          "valeur": null,
+          "erreur": "#NOM?"
+        },
+        "C1": {
           "valeur": null,
           "erreur": "#NOM?"
         }

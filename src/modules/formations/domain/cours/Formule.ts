@@ -114,7 +114,7 @@ const OPTIONS_PAR_DEFAUT: OptionsEvaluation = { budgetNoeuds: 20_000 };
 const MARQUE = '=';
 const MOTIF_NOMBRE = /^(?:\d+(?:[.,]\d*)?|[.,]\d+)/;
 const MOTIF_REFERENCE = /^(\$?)([A-Za-z]{1,3})(\$?)(\d{1,7})(?![A-Za-z\d])/;
-const MOTIF_NOM = /^[A-Za-z]+(?:(?:\.[A-Za-z]+)+(?=\())?/;
+const MOTIF_NOM = /^\p{L}+(?:(?:\.\p{L}+)+(?=\())?/u;
 const MOTIF_ESPACE = /^\s+/;
 const MOTIF_NOMBRE_SAISI = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
 const COMPARAISONS = ['<=', '>=', '<>', '<', '>', '='] as const;
@@ -478,6 +478,10 @@ function analyser(source: string): Noeud {
 function sourceDeFormule(brut: string): string | null {
   const debut = brut.trimStart();
   return debut.startsWith(MARQUE) ? debut.slice(MARQUE.length) : null;
+}
+
+export function estUneFormule(brut: string): boolean {
+  return sourceDeFormule(brut) !== null;
 }
 
 function lireContenu(brut: string): Contenu {

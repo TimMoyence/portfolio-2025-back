@@ -378,7 +378,7 @@ const ACTE_1: moteur.Acte = [
       metier:
         'Assistant·e comptable — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)',
       situation:
-        'Mardi, 9 h. Marc Lefèvre, l’expert-comptable d’Atelier Rivage, prépare la révision des comptes clients. Il écrit : « Avant la clôture, contrôlez les seize factures du trimestre avec trois règles. Relance : une facture impayée dont le délai dépasse 60 jours, le maximum prévu par vos conditions générales de vente ; chaque facture payée en retard ouvre droit à une indemnité forfaitaire de 40 €. TVA : une facture à un client professionnel d’un autre pays de l’Union européenne porte son numéro de TVA intracommunautaire. Visa : Hélène vise toute facture d’au moins 5 000 € HT ou adressée hors de France. » Hélène Garnier, la dirigeante, ajoute : « F213, de Chantier Duval, est impayée depuis exactement 60 jours. Et toutes nos factures hors de France portent un numéro de TVA. »',
+        'Mardi, 9 h. Marc Lefèvre, l’expert-comptable d’Atelier Rivage, prépare la révision des comptes clients. Il écrit : « Avant la clôture, contrôlez les seize factures du trimestre avec trois règles. Relance : une facture impayée dont le délai dépasse 60 jours, le maximum prévu par vos conditions générales de vente ; chaque relance réclame l’indemnité forfaitaire de 40 € due pour tout retard. TVA : une facture à un client professionnel d’un autre pays de l’Union européenne porte son numéro de TVA intracommunautaire. Visa : Hélène vise toute facture d’au moins 5 000 € HT ou adressée hors de France. » Hélène Garnier, la dirigeante, ajoute : « F213, de Chantier Duval, est impayée depuis exactement 60 jours. Et toutes nos factures hors de France portent un numéro de TVA. »',
       geste:
         'Sans rien calculer, répondez aux trois questions à partir du courriel.',
       consequence:
@@ -1809,7 +1809,7 @@ const ACTE_4: moteur.Acte = [
         label: `${LETTRES_DU_FICHIER[rang]} · ${colonne.label}`,
       })),
       rows: LIGNES_DES_FACTURES,
-      note: `Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 € par facture en retard (Code de commerce). Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. ${DONNEES_FICTIVES}`,
+      note: `Relance : facture impayée dont le délai dépasse 60 jours ; indemnité forfaitaire de 40 €, due pour tout retard (Code de commerce), réclamée avec chaque relance. Visa (procédure interne fictive) : montant HT d’au moins 5 000 € ou client hors de France. ${DONNEES_FICTIVES}`,
     },
   ),
   moteur.corrigeSurPlace(
@@ -1895,7 +1895,7 @@ const ACTE_4: moteur.Acte = [
               id: 'b2-03-a4-e1-indemnites',
               intitule: 'Les indemnités de retard (2 points)',
               enonce:
-                'Chaque facture à relancer ouvre droit à une indemnité forfaitaire de 40 €. Quel montant total d’indemnités Atelier Rivage peut-il réclamer, en euros ?',
+                'Marc joint à chaque relance l’indemnité forfaitaire de 40 €. Quel montant total d’indemnités réclame-t-il, en euros ?',
               indice:
                 'Comptez d’abord les factures qui vérifient les deux conditions de la relance, borne comprise.',
             },
