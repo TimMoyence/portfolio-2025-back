@@ -20,6 +20,7 @@ export interface PilotageEcran {
   readonly revele?: boolean;
   readonly etayage?: number;
   readonly etayageAtteint?: number;
+  readonly explicationsDevoilees?: number;
   readonly reglages?: Readonly<Record<string, number>>;
   readonly resultatsProjetes?: boolean;
   readonly optionsAffichees?: boolean;

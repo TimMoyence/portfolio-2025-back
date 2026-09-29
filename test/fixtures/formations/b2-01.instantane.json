@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "29ea9aca64a4c5e4631e8fd17ccf68806e9e360e5cf476bed39d151a071d3b37",
+  "empreinte": "37d3fa26a97299dcc85865240ad0b3a99395b51b8a5c0d096400da26f86b387e",
   "sujet": {
     "id": "b2-01-traitement-information-chiffree",
     "titre": "Lire, contrôler et décider avec l’information chiffrée",
@@ -629,7 +629,7 @@
         "id": "B2-01-A1-10-AUDIT-DIAPOSITIVE",
         "type": "fp-challenge",
         "titre": "Audit de la diapositive",
-        "duree": 2,
+        "duree": 3,
         "interactif": true,
         "donnees": {
           "probleme": {
@@ -640,68 +640,13 @@
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 3,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "resoluPar": ["B2-01-A1-10-CORRECTION"]
-      },
-      {
-        "id": "B2-01-A1-10-CORRECTION",
-        "type": "fp-story",
-        "titre": "Correction : l’audit de la diapositive",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A1-10-CORRECTION",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A1-10-CORRECTION",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction : l’audit de la diapositive",
-                "subtitle": "Avant de comparer des hauteurs, on lit l’axe ; avant de parler de croissance, on calcule l’évolution.",
-                "source": {
-                  "screenId": "B2-01-A1-10-AUDIT-DIAPOSITIVE"
-                },
-                "explications": [
-                  {
-                    "reference": "axe",
-                    "texte": "L’axe vertical part de 284 000 € : la barre 2025 dépasse l’origine de 7 000 €, celle de 2022 de 1 000 €, d’où l’impression d’un rapport de 1 à 7."
-                  },
-                  {
-                    "reference": "evolution",
-                    "texte": "Avant de parler de croissance, on rapporte l’écart de marge à la valeur de 2022 : c’est la première question de l’atelier 1."
-                  },
-                  {
-                    "reference": "titre",
-                    "texte": "« Une croissance continue » conclut à la place du lecteur ; un titre de référence décrit la mesure, son unité et sa période."
-                  },
-                  {
-                    "reference": "montant",
-                    "texte": "Une marge en euros ne dit rien de la rentabilité : il faut la rapporter au CA HT."
-                  },
-                  {
-                    "reference": "couleur",
-                    "texte": "Changer la couleur ne corrige ni l’axe, ni le titre, ni l’absence de taux : piste fausse."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A1-10-AUDIT-DIAPOSITIVE"
+        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
       },
       {
         "id": "B2-01-A1-11-JALON-1",
@@ -836,7 +781,7 @@
         "id": "B2-01-A2-03-ATELIER-1",
         "type": "questionnaire",
         "titre": "Atelier 1 — Lire, rapporter, estimer",
-        "duree": 6,
+        "duree": 7,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 1 — Lire, rapporter, estimer (questions 1 à 3)",
@@ -877,7 +822,7 @@
                   "metadonnees": {
                     "concepts": ["lecture-graphique", "proportion"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 6,
+                    "dureeMinutes": 7,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -909,59 +854,13 @@
             }
           ]
         },
-        "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "resoluPar": ["B2-01-A2-03-CORRECTION-1"]
-      },
-      {
-        "id": "B2-01-A2-03-CORRECTION-1",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 1 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A2-03-CORRECTION-1",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A2-03-CORRECTION-1",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 1 : questions 1 à 3",
-                "source": {
-                  "screenId": "B2-01-A2-03-ATELIER-1"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a2-evolution-marge",
-                    "texte": "(291 000 − 285 000) ÷ 285 000 ≈ 0,021 : +2,1 % en trois ans. La hauteur des barres dépendait de l’axe, pas de la marge."
-                  },
-                  {
-                    "reference": "b2-01-a2-part-marketplace",
-                    "texte": "523 000 ÷ 1 150 000 ≈ 0,455, soit 45,5 % du CA. Contrôle : 1 150 000 × 0,455 ≈ 523 000."
-                  },
-                  {
-                    "reference": "b2-01-a2-population-reference",
-                    "texte": "84 % des commandes ne disent rien de la part du CA : une commande de la marketplace rapporte moins qu’une voile sur mesure. Nommez toujours la population de référence."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique", "proportion"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A2-03-ATELIER-1"
+        "renvoi": "B2-01-A1-09-DIAPOSITIVE"
       },
       {
         "id": "B2-01-A2-03-ATELIER-1-SUITE",
         "type": "questionnaire",
         "titre": "Atelier 1 — Lire, rapporter, estimer (suite)",
-        "duree": 6,
+        "duree": 7,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 1 — Lire, rapporter, estimer (questions 4 à 6)",
@@ -979,7 +878,7 @@
                   "metadonnees": {
                     "concepts": ["taux-evolution", "pourcentage"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 6,
+                    "dureeMinutes": 7,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1033,53 +932,7 @@
               }
             }
           ]
-        },
-        "resoluPar": ["B2-01-A2-03-CORRECTION-2"]
-      },
-      {
-        "id": "B2-01-A2-03-CORRECTION-2",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 1 : questions 4 à 6",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A2-03-CORRECTION-2",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A2-03-CORRECTION-2",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 1 : questions 4 à 6",
-                "source": {
-                  "screenId": "B2-01-A2-03-ATELIER-1-SUITE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a2-evolution-sur-mesure",
-                    "texte": "(397 000 − 483 000) ÷ 483 000 ≈ −17,8 %. On divise par la valeur de départ (483 000 €), pas par celle d’arrivée."
-                  },
-                  {
-                    "reference": "b2-01-a2-ordre-de-grandeur",
-                    "texte": "1 300 commandes de plus pour 2 900 au départ : un peu moins de la moitié, soit environ +45 %. Contrôle : 2 900 × 1,45 ≈ 4 200."
-                  },
-                  {
-                    "reference": "b2-01-a2-marge-marque",
-                    "texte": "Marge : 20 €. Taux de marque = 20 ÷ 100 = 20 % (sur le prix de vente) ; taux de marge = 20 ÷ 80 = 25 % (sur le coût d’achat), la même hausse qu’au diagnostic."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["taux-evolution", "pourcentage"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A2-03-ATELIER-1-SUITE"
+        }
       },
       {
         "id": "B2-01-A2-05-ECRITURES",
@@ -1136,7 +989,7 @@
         "id": "B2-01-A2-06-POINTS",
         "type": "fp-worked",
         "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 2,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -1171,7 +1024,7 @@
             "metadonnees": {
               "concepts": ["point-de-pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1183,58 +1036,7 @@
           "extrait": {
             "lignes": [3]
           }
-        },
-        "resoluPar": ["B2-01-A2-06-CORRECTION"]
-      },
-      {
-        "id": "B2-01-A2-06-CORRECTION",
-        "type": "fp-worked",
-        "titre": "Correction : points ou pourcentage",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a2-points-corrige",
-            "enonce": "Le taux de marge brute passe de 27,60 % (2024) à 25,30 % (2025). Hélène veut une phrase juste pour le comité.",
-            "etapes": [
-              {
-                "id": "ecart",
-                "intitule": "Écart entre les deux taux",
-                "raisonnement": "25,30 − 27,60 = −2,30. Un écart entre deux pourcentages se mesure en points de pourcentage : −2,30 points.",
-                "invite": "Quel est l’écart entre les deux taux, et dans quelle unité s’exprime-t-il ?"
-              },
-              {
-                "id": "relatif",
-                "intitule": "Évolution relative du taux",
-                "raisonnement": "−2,30 ÷ 27,60 ≈ −0,083, soit −8,3 % : le taux lui-même a perdu 8,3 % de sa valeur.",
-                "invite": "De quel pourcentage le taux lui-même a-t-il baissé par rapport à celui de 2024 ?"
-              },
-              {
-                "id": "phrase",
-                "intitule": "Phrase pour le comité",
-                "raisonnement": "« Le taux de marge brute recule de 2,3 points (de 27,6 % à 25,3 %), soit une baisse relative de 8,3 %. »",
-                "invite": "Quelle phrase écrivez-vous pour le comité, sans utiliser « −2,3 % » ?"
-              },
-              {
-                "id": "controle",
-                "intitule": "Contrôle",
-                "raisonnement": "27,60 × (1 − 0,083) ≈ 25,31 : l’évolution relative redonne le taux d’arrivée, à l’arrondi près.",
-                "invite": "En appliquant cette baisse relative à 27,60 %, retrouvez-vous le taux de 2025 ?"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["point-de-pourcentage"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 0,
-          "pilote": true,
-          "corrigeDe": "B2-01-A2-06-POINTS"
-        },
-        "ecranCorrige": "B2-01-A2-06-POINTS"
+        }
       },
       {
         "id": "B2-01-A2-07-JEU-COMPARABLE",
@@ -1637,7 +1439,7 @@
         "id": "B2-01-A3-04-FIL-TECHNIQUE",
         "type": "fp-worked",
         "titre": "Le fil technique : choisir l’opération inverse",
-        "duree": 2,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -1684,76 +1486,13 @@
             "metadonnees": {
               "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
           "etayage": 0
-        },
-        "resoluPar": ["B2-01-A3-04-CORRECTION"]
-      },
-      {
-        "id": "B2-01-A3-04-CORRECTION",
-        "type": "fp-worked",
-        "titre": "Correction : le fil technique",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a3-fil-corrige",
-            "enonce": "Atelier Rivage achète son fil technique 12,50 € HT la bobine. Le fournisseur annonce +10 % au 1er avril, puis −8 % au 1er octobre. Le service commercial écrit : « au final, +2 % ».",
-            "etapes": [
-              {
-                "id": "coefficients",
-                "intitule": "Traduire les taux",
-                "raisonnement": "+10 % → × 1,10 ; −8 % → × 0,92.",
-                "invite": "Par quel nombre multiplie-t-on le prix pour appliquer +10 % ? Et pour appliquer −8 % ?"
-              },
-              {
-                "id": "global",
-                "intitule": "Évolution globale",
-                "raisonnement": "1,10 × 0,92 = 1,012 : l’évolution globale est de +1,2 %, et non de +2 %.",
-                "invite": "Quelle est l’évolution globale du prix sur l’année, en % ? Le « +2 % » annoncé est-il juste ?"
-              },
-              {
-                "id": "prix",
-                "intitule": "Prix final",
-                "raisonnement": "12,50 × 1,012 = 12,65 € HT la bobine.",
-                "invite": "Combien coûte la bobine après les deux changements de prix, en € HT ?"
-              },
-              {
-                "id": "base",
-                "intitule": "Retrouver la base",
-                "raisonnement": "Après la hausse d’avril, la bobine coûte 13,75 €. Prix initial = 13,75 ÷ 1,10 = 12,50 € : on divise par le coefficient, on ne retire pas 10 %.",
-                "invite": "La bobine coûte 13,75 € après la hausse d’avril : quel était son prix avant cette hausse ?"
-              },
-              {
-                "id": "reciproque",
-                "intitule": "Évolution réciproque",
-                "raisonnement": "Pour annuler une hausse de 10 %, il faut multiplier par 1 ÷ 1,10 ≈ 0,909, soit une baisse d’environ 9,1 % ; une baisse de 10 % irait trop loin (13,75 × 0,90 = 12,375 €).",
-                "invite": "De quel pourcentage faut-il baisser 13,75 € pour revenir à 12,50 € ?"
-              },
-              {
-                "id": "tva",
-                "intitule": "Du TTC au HT",
-                "raisonnement": "Une facture d’entretien affiche 3 600 € TTC (TVA 20 %). HT = 3 600 ÷ 1,20 = 3 000 € : on divise par le coefficient 1,20. Retirer 20 % donnerait 2 880 €, ce qui est faux. Passer du TTC au HT, c’est une baisse de 1 − 1 ÷ 1,20 ≈ 16,67 %. Contrôle inverse : 3 000 × 1,20 = 3 600.",
-                "invite": "Une facture affiche 3 600 € TTC (TVA 20 %) : quel est son montant HT, et de quel pourcentage baisse-t-on en passant du TTC au HT ?"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["evolutions-successives"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 0,
-          "pilote": true,
-          "corrigeDe": "B2-01-A3-04-FIL-TECHNIQUE"
-        },
-        "ecranCorrige": "B2-01-A3-04-FIL-TECHNIQUE"
+        }
       },
       {
         "id": "B2-01-A3-05-INFLATION-RYTHME",
@@ -1808,7 +1547,7 @@
         "id": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN",
         "type": "fp-worked",
         "titre": "Le loyer de l’atelier : lire un indice et un rythme",
-        "duree": 3,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -1849,76 +1588,19 @@
             "metadonnees": {
               "concepts": ["indice-base-100", "taux-moyen"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 5,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
           "etayage": 0
-        },
-        "resoluPar": ["B2-01-A3-06-CORRECTION"]
-      },
-      {
-        "id": "B2-01-A3-06-CORRECTION",
-        "type": "fp-worked",
-        "titre": "Correction : lire un indice et un rythme",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a3-indice-taux-moyen-corrige",
-            "enonce": "Le loyer de l’atelier d’Atelier Rivage passe de 1 000 € (2021) à 1 060 € (2022), 1 123,60 € (2023) et 1 191,02 € (2024). Samir écrit : « +19,10 % en trois ans, donc +6,37 % par an ».",
-            "etapes": [
-              {
-                "id": "indice",
-                "intitule": "Indice base 100 en 2021",
-                "raisonnement": "I = 100 × V ÷ V₀ : 2022 : 100 × 1 060 ÷ 1 000 = 106,00 ; 2023 : 112,36 ; 2024 : 119,10.",
-                "invite": "Quel est l’indice du loyer en 2022, en 2023 et en 2024, base 100 en 2021 ?"
-              },
-              {
-                "id": "lire",
-                "intitule": "Lire un indice",
-                "raisonnement": "119,10 signifie +19,10 % depuis 2021 : taux = I ÷ 100 − 1. Ce n’est ni +119,10 %, ni un loyer de 119,10 €.",
-                "invite": "Que signifie l’indice 119,10 de 2024, traduit en taux d’évolution depuis 2021 ?"
-              },
-              {
-                "id": "chainer",
-                "intitule": "Chaîner des coefficients",
-                "raisonnement": "Indice = 100 × produit des coefficients : 100 × 1,06 × 1,06 × 1,06 = 119,10. Additionner les taux (6 + 6 + 6 = 18) sous-estime la hausse.",
-                "invite": "Comment retrouvez-vous l’indice 2024 à partir des coefficients annuels ?"
-              },
-              {
-                "id": "taux-moyen",
-                "intitule": "Taux annuel moyen",
-                "raisonnement": "On cherche x tel que x³ = 1,19102 : x = 1,19102^(1/3) ≈ 1,0600, soit +6,00 % par an. Calculatrice : 1,19102 ^ (1 ÷ 3) ; tableur : =PUISSANCE(1,19102;1/3).",
-                "invite": "Quel taux annuel constant, appliqué trois années de suite, donne +19,10 % ?"
-              },
-              {
-                "id": "piege",
-                "intitule": "Pourquoi pas 19,10 ÷ 3 ?",
-                "raisonnement": "19,10 ÷ 3 ≈ 6,37 % est faux : 1,0637³ ≈ 1,2035, et non 1,1910. Diviser un taux global par le nombre d’années surestime le taux moyen.",
-                "invite": "En appliquant +6,37 % trois années de suite, obtient-on bien +19,10 % ?"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["indice-base-100", "taux-moyen"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 0,
-          "pilote": true,
-          "corrigeDe": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN"
-        },
-        "ecranCorrige": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN"
+        }
       },
       {
         "id": "B2-01-A3-07-ATELIER-2",
         "type": "questionnaire",
         "titre": "Atelier 2 — Rythme, niveau, indice",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 2 — Rythme, niveau, indice (questions 1 à 3)",
@@ -1959,7 +1641,7 @@
                   "metadonnees": {
                     "concepts": ["indice-base-100", "evolutions-successives"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1976,7 +1658,7 @@
                   "metadonnees": {
                     "concepts": ["indice-base-100", "evolutions-successives"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -1985,59 +1667,13 @@
             }
           ]
         },
-        "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "resoluPar": ["B2-01-A3-07-CORRECTION-1"]
-      },
-      {
-        "id": "B2-01-A3-07-CORRECTION-1",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 2 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A3-07-CORRECTION-1",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A3-07-CORRECTION-1",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 2 : questions 1 à 3",
-                "source": {
-                  "screenId": "B2-01-A3-07-ATELIER-2"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a3-niveau-prix",
-                    "texte": "Une inflation de 0,9 % reste une hausse : le rythme ralentit, mais le niveau des prix de 2025 dépasse celui de 2024."
-                  },
-                  {
-                    "reference": "b2-01-a3-indice-2023",
-                    "texte": "100 × 1,005 × 1,016 × 1,052 × 1,049 ≈ 112,68. Additionner les taux (112,2) oublie que chaque hausse s’applique au niveau déjà atteint."
-                  },
-                  {
-                    "reference": "b2-01-a3-hausse-2019-2025",
-                    "texte": "Coefficient global : 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 1,1597, soit +15,97 % ; la somme des taux (15,1 %) sous-estime la hausse."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["indice-base-100", "evolutions-successives"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A3-07-ATELIER-2"
+        "renvoi": "B2-01-A3-05-INFLATION-RYTHME"
       },
       {
         "id": "B2-01-A3-07-ATELIER-2-SUITE",
         "type": "questionnaire",
         "titre": "Atelier 2 — Rythme, niveau, indice (suite)",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 2 — Rythme, niveau, indice (questions 4 et 5)",
@@ -2055,7 +1691,7 @@
                   "metadonnees": {
                     "concepts": ["taux-moyen", "evolution-reciproque"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -2087,49 +1723,7 @@
             }
           ]
         },
-        "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "resoluPar": ["B2-01-A3-07-CORRECTION-2"]
-      },
-      {
-        "id": "B2-01-A3-07-CORRECTION-2",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 2 : questions 4 et 5",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A3-07-CORRECTION-2",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A3-07-CORRECTION-2",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 2 : questions 4 et 5",
-                "source": {
-                  "screenId": "B2-01-A3-07-ATELIER-2-SUITE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a3-taux-moyen",
-                    "texte": "On cherche x tel que x⁶ = 1,1597 : 1,1597 ^ (1 ÷ 6) ≈ 1,0250, soit +2,50 % par an. Diviser 15,97 par 6 (2,66 %) surestime le rythme."
-                  },
-                  {
-                    "reference": "b2-01-a3-reciproque",
-                    "texte": "Coefficient de retour : 80 ÷ 100 = 0,80, soit −20 %. Reprendre le même taux à l’envers (−25 %) mènerait à 75 €."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["taux-moyen", "evolution-reciproque"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A3-07-ATELIER-2-SUITE"
+        "renvoi": "B2-01-A3-05-INFLATION-RYTHME"
       },
       {
         "id": "B2-01-A3-08-INDICE-PRIX",
@@ -2368,7 +1962,7 @@
         "id": "B2-01-A4-03-ATELIER-3",
         "type": "questionnaire",
         "titre": "Atelier 3 — Habiller le graphique du comité",
-        "duree": 3,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 3 — Habiller le graphique du comité (questions 1 et 2)",
@@ -2423,55 +2017,13 @@
               }
             }
           ]
-        },
-        "resoluPar": ["B2-01-A4-03-CORRECTION-1"]
-      },
-      {
-        "id": "B2-01-A4-03-CORRECTION-1",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 3 : forme et titre",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A4-03-CORRECTION-1",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A4-03-CORRECTION-1",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 3 : forme et titre",
-                "source": {
-                  "screenId": "B2-01-A4-03-ATELIER-3"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a4-forme",
-                    "texte": "Une évolution dans le temps se montre par des courbes : une par canal, les trimestres en abscisse. Des secteurs ou une barre annuelle effacent le temps."
-                  },
-                  {
-                    "reference": "b2-01-a4-titre",
-                    "texte": "Le titre décrit ce que montre le graphique, avec l’unité. « La marketplace s’envole… » conclut à la place du lecteur ; « Évolution des canaux » ne dit ni l’année ni l’unité."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A4-03-ATELIER-3"
+        }
       },
       {
         "id": "B2-01-A4-03-ATELIER-3-SUITE",
         "type": "questionnaire",
         "titre": "Atelier 3 — Habiller le graphique du comité (suite)",
-        "duree": 3,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 3 — Habiller le graphique du comité (questions 3 et 4)",
@@ -2526,49 +2078,7 @@
               }
             }
           ]
-        },
-        "resoluPar": ["B2-01-A4-03-CORRECTION-2"]
-      },
-      {
-        "id": "B2-01-A4-03-CORRECTION-2",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 3 : axe et lecture",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A4-03-CORRECTION-2",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A4-03-CORRECTION-2",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 3 : axe et lecture",
-                "source": {
-                  "screenId": "B2-01-A4-03-ATELIER-3-SUITE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a4-axe",
-                    "texte": "L’axe part de zéro et reste gradué : le tronquer à 49 000 € grossirait les écarts, comme sur la diapositive de Samir."
-                  },
-                  {
-                    "reference": "b2-01-a4-lecture",
-                    "texte": "La phrase décrit deux valeurs avec leur unité ; elle ne conclut pas (« s’effondre ») et ne confond pas un montant avec un pourcentage."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A4-03-ATELIER-3-SUITE"
+        }
       },
       {
         "id": "B2-01-A4-04-CA-TRIMESTRIEL",
@@ -2626,7 +2136,7 @@
         "id": "B2-01-A4-05-INDICE-TOILE",
         "type": "fp-table-build",
         "titre": "Tâche de tableur 2 — Prix et indice de la toile",
-        "duree": 9,
+        "duree": 11,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -2706,50 +2216,12 @@
             "metadonnees": {
               "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 9,
+              "dureeMinutes": 11,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
-        },
-        "resoluPar": ["B2-01-A4-05-CORRECTION"]
-      },
-      {
-        "id": "B2-01-A4-05-CORRECTION",
-        "type": "fp-story",
-        "titre": "Correction : prix et indice de la toile",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A4-05-CORRECTION",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A4-05-CORRECTION",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction : prix et indice de la toile",
-                "source": {
-                  "screenId": "B2-01-A4-05-INDICE-TOILE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a4-indice-toile",
-                    "texte": "Chaque révision s’applique au prix précédent : 20,00 × 1,08 = 21,60 € ; × 0,95 = 20,52 € ; × 1,04 = 21,34 € ; × 0,97 = 20,70 €. Indice final : 20,70 ÷ 20 × 100 = 103,50, soit +3,50 % sur l’année, et non la somme des taux annoncés (+4 %). Recalculer chaque prix depuis 20,00 € mène au 20,80 € du tableau de bord."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["evolutions-successives"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A4-05-INDICE-TOILE"
+        }
       },
       {
         "id": "B2-01-A4-06-JALON-4",
@@ -2813,7 +2285,7 @@
         "id": "B2-01-A5-03-MOYENNE-PONDEREE",
         "type": "fp-worked",
         "titre": "Prouver l’effet de répartition",
-        "duree": 3,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -2860,76 +2332,13 @@
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 5,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
           "etayage": 0
-        },
-        "resoluPar": ["B2-01-A5-03-CORRECTION"]
-      },
-      {
-        "id": "B2-01-A5-03-CORRECTION",
-        "type": "fp-worked",
-        "titre": "Correction : prouver l’effet de répartition",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a5-ponderee-corrige",
-            "enonce": "Données par canal, CA HT 2024 → 2025 : sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 € (28 %) ; marketplace 357 000 € → 523 000 € (16 %). Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
-            "etapes": [
-              {
-                "id": "poids",
-                "intitule": "Poids des canaux",
-                "raisonnement": "Poids d’un canal = CA du canal ÷ CA total. 2024 : 483 ÷ 1 050 ≈ 0,46 ; 210 ÷ 1 050 = 0,20 ; 357 ÷ 1 050 = 0,34. 2025 : 397 ÷ 1 150 ≈ 0,345 ; 230 ÷ 1 150 = 0,20 ; 523 ÷ 1 150 ≈ 0,455.",
-                "invite": "Quelle part du CA total représente chaque canal, en 2024 puis en 2025 ?"
-              },
-              {
-                "id": "taux-2024",
-                "intitule": "Taux global 2024",
-                "raisonnement": "0,46 × 36 + 0,20 × 28 + 0,34 × 16 = 16,56 + 5,60 + 5,44 = 27,60 %.",
-                "invite": "Quel taux global de 2024 obtenez-vous en pondérant le taux de chaque canal par son poids ?"
-              },
-              {
-                "id": "taux-2025",
-                "intitule": "Taux global 2025",
-                "raisonnement": "0,345 × 36 + 0,20 × 28 + 0,455 × 16 = 12,42 + 5,60 + 7,28 = 25,30 %. Avec les poids exacts (397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150), on obtient 25,304 %, soit 291 000 ÷ 1 150 000.",
-                "invite": "Quel taux global de 2025 obtenez-vous avec les poids de 2025 ?"
-              },
-              {
-                "id": "moyenne-simple",
-                "intitule": "Pourquoi pas la moyenne simple ?",
-                "raisonnement": "(36 + 28 + 16) ÷ 3 ≈ 26,7 % : ce nombre ne correspond à aucune année, car il suppose trois canaux de même poids.",
-                "invite": "Pourquoi la moyenne simple des trois taux ne donne-t-elle le taux global d’aucune année ?"
-              },
-              {
-                "id": "effet",
-                "intitule": "Chiffrer l’effet de répartition",
-                "raisonnement": "Avec la répartition de 2024, le CA 2025 (1 150 000 €) aurait donné 27,6 % de marge, soit 317 400 €. La marge réelle est de 291 000 € : le changement de répartition « coûte » 26 400 € de marge.",
-                "invite": "Combien de marge le changement de répartition fait-il perdre en 2025, en euros ?"
-              },
-              {
-                "id": "logique",
-                "intitule": "Réfuter une implication",
-                "raisonnement": "L’affirmation « si chaque canal garde son taux, alors le taux global est inchangé » est fausse : Atelier Rivage en est un contre-exemple. Sa négation s’écrit : « il existe une répartition du CA pour laquelle chaque canal garde son taux et le taux global change ».",
-                "invite": "Comment s’écrit la négation de « si chaque canal garde son taux, alors le taux global est inchangé », et quel contre-exemple la prouve ?"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 0,
-          "pilote": true,
-          "corrigeDe": "B2-01-A5-03-MOYENNE-PONDEREE"
-        },
-        "ecranCorrige": "B2-01-A5-03-MOYENNE-PONDEREE"
+        }
       },
       {
         "id": "B2-01-A5-02-VOTE-PARADOXE",
@@ -3135,7 +2544,7 @@
         "id": "B2-01-A5-06-ATELIER-4",
         "type": "questionnaire",
         "titre": "Atelier 4 — Du constat à la preuve",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 4 — Du constat à la preuve (questions 1 à 3)",
@@ -3157,7 +2566,7 @@
                       "lecture-graphique"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3178,7 +2587,7 @@
                       "lecture-graphique"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -3209,59 +2618,13 @@
               }
             }
           ]
-        },
-        "resoluPar": ["B2-01-A5-06-CORRECTION-1"]
-      },
-      {
-        "id": "B2-01-A5-06-CORRECTION-1",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 4 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A5-06-CORRECTION-1",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A5-06-CORRECTION-1",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 4 : questions 1 à 3",
-                "source": {
-                  "screenId": "B2-01-A5-06-ATELIER-4"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a5-part-marge-marketplace",
-                    "texte": "Marge de la marketplace : 523 000 × 0,16 = 83 680 €, soit 83 680 ÷ 291 000 ≈ 28,8 % de la marge. 45,5 % est sa part du CA, pas de la marge."
-                  },
-                  {
-                    "reference": "b2-01-a5-variation-marge-sur-mesure",
-                    "texte": "Marge du sur-mesure : 483 000 × 0,36 = 173 880 € en 2024, 397 000 × 0,36 = 142 920 € en 2025, soit −30 960 €. −86 000 € est l’écart de CA, pas de marge."
-                  },
-                  {
-                    "reference": "b2-01-a5-causalite",
-                    "texte": "Deux évolutions simultanées ne prouvent pas une cause : l’hypothèse de Samir reste à vérifier, client par client."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["proportion", "taux-evolution", "lecture-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A5-06-ATELIER-4"
+        }
       },
       {
         "id": "B2-01-A5-06-ATELIER-4-SUITE",
         "type": "questionnaire",
         "titre": "Atelier 4 — Du constat à la preuve (suite)",
-        "duree": 3,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 4 — Du constat à la preuve (questions 4 et 5)",
@@ -3317,49 +2680,7 @@
             }
           ]
         },
-        "renvoi": "B2-01-A5-05-TCD",
-        "resoluPar": ["B2-01-A5-06-CORRECTION-2"]
-      },
-      {
-        "id": "B2-01-A5-06-CORRECTION-2",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 4 : questions 4 et 5",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A5-06-CORRECTION-2",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A5-06-CORRECTION-2",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 4 : questions 4 et 5",
-                "source": {
-                  "screenId": "B2-01-A5-06-ATELIER-4-SUITE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a5-synthese",
-                    "texte": "La marge passe de 289 800 € à 291 000 € (+1 200 €) ; son taux passe de 27,6 % à 25,3 % : l’écart entre deux taux se dit en points, pas en %. Une marge en euros ne dit rien de la rentabilité."
-                  },
-                  {
-                    "reference": "b2-01-a5-tcd",
-                    "texte": "77 160 ÷ 318 000 ≈ 24,3 % : le total recalculé sur les sommes tient compte du CA de chaque canal. 26,7 % traite les trois canaux à égalité."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["contrat-de-lecture", "moyenne-ponderee"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A5-06-ATELIER-4-SUITE"
+        "renvoi": "B2-01-A5-05-TCD"
       },
       {
         "id": "B2-01-A5-07-CONTROLE-DISCRIMINANT",
@@ -3687,7 +3008,7 @@
         "id": "B2-01-A6-02-COFFRE",
         "type": "fp-escape",
         "titre": "Le coffre du comité",
-        "duree": 9,
+        "duree": 10,
         "interactif": true,
         "donnees": {
           "parcours": {
@@ -3730,67 +3051,12 @@
                 "controle-coherence"
               ],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 9,
+              "dureeMinutes": 10,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
-        },
-        "resoluPar": ["B2-01-A6-02-CORRECTION"]
-      },
-      {
-        "id": "B2-01-A6-02-CORRECTION",
-        "type": "fp-story",
-        "titre": "Correction du coffre : les quatre vérifications",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A6-02-CORRECTION",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A6-02-CORRECTION",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction du coffre : les quatre vérifications",
-                "source": {
-                  "screenId": "B2-01-A6-02-COFFRE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a6-e1-mix",
-                    "texte": "Marges : 54 000 + 33 600 + 52 800 = 140 400 € ; 140 400 ÷ 600 000 = 23,4 %. La moyenne simple des trois taux (26,7 %) ignore le poids de chaque canal."
-                  },
-                  {
-                    "reference": "b2-01-a6-e2-points",
-                    "texte": "23,4 − 26,2 = −2,8 points. L’écart entre deux taux se dit en points ; −10,7 % serait l’évolution relative du taux."
-                  },
-                  {
-                    "reference": "b2-01-a6-e3-rouleau",
-                    "texte": "Coefficient global : 1,06 × 0,96 = 1,0176 ; 1 053,22 ÷ 1,0176 ≈ 1 035,00 €, soit 20,70 €/m² × 50 m². Diviser par 1,02 (taux additionnés) donnerait 1 032,57 €."
-                  },
-                  {
-                    "reference": "b2-01-a6-e4-tva",
-                    "texte": "L’écart de 90 € vient de F004 : 12 430 saisi pour 12 340 (inversion, 90 = 9 × 10). La pièce fait foi : TVA = 48 705 × 0,20 = 9 741 €, et non 9 759 € (base du grand livre)."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee",
-                "point-de-pourcentage",
-                "evolution-reciproque",
-                "controle-coherence"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "ecranCorrige": "B2-01-A6-02-COFFRE"
+        }
       },
       {
         "id": "B2-01-A6-03-IA-CADRE",
@@ -4926,7 +4192,7 @@
         "id": "B2-01-A1-10-AUDIT-DIAPOSITIVE",
         "type": "fp-challenge",
         "titre": "Audit de la diapositive",
-        "duree": 2,
+        "duree": 3,
         "interactif": true,
         "donnees": {
           "probleme": {
@@ -4937,15 +4203,14 @@
             "metadonnees": {
               "concepts": ["lecture-graphique"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 3,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "resoluPar": ["B2-01-A1-10-CORRECTION"],
-        "notes": "• 2 min d’écriture individuelle, puis révélation au pupitre.\n• Repérer ceux qui citent l’axe et ceux qui ne citent que la couleur ou le titre.\n• Avant de révéler, faire trouver la piste fausse : changer la couleur ne corrige rien.",
+        "notes": "• 2 min d’écriture individuelle, puis révélation au pupitre.\n• Repérer ceux qui citent l’axe et ceux qui ne citent que la couleur ou le titre.\n• Avant de révéler, faire trouver la piste fausse : changer la couleur ne corrige rien.\n• 1 min de mise en commun : faire lire à voix haute deux vérifications justes.\n• Avant de comparer des hauteurs, on lit l’axe ; avant de parler de croissance, on calcule l’évolution.\n• Ne pas donner l’évolution réelle (+2,1 %) : c’est la première question de l’atelier 1.\n• Transition : jalon 1.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4979,67 +4244,29 @@
               "fausse": true
             }
           ]
-        }
-      },
-      {
-        "id": "B2-01-A1-10-CORRECTION",
-        "type": "fp-story",
-        "titre": "Correction : l’audit de la diapositive",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A1-10-CORRECTION",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A1-10-CORRECTION",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction : l’audit de la diapositive",
-                "subtitle": "Avant de comparer des hauteurs, on lit l’axe ; avant de parler de croissance, on calcule l’évolution.",
-                "source": {
-                  "screenId": "B2-01-A1-10-AUDIT-DIAPOSITIVE"
-                },
-                "explications": [
-                  {
-                    "reference": "axe",
-                    "texte": "L’axe vertical part de 284 000 € : la barre 2025 dépasse l’origine de 7 000 €, celle de 2022 de 1 000 €, d’où l’impression d’un rapport de 1 à 7."
-                  },
-                  {
-                    "reference": "evolution",
-                    "texte": "Avant de parler de croissance, on rapporte l’écart de marge à la valeur de 2022 : c’est la première question de l’atelier 1."
-                  },
-                  {
-                    "reference": "titre",
-                    "texte": "« Une croissance continue » conclut à la place du lecteur ; un titre de référence décrit la mesure, son unité et sa période."
-                  },
-                  {
-                    "reference": "montant",
-                    "texte": "Une marge en euros ne dit rien de la rentabilité : il faut la rapporter au CA HT."
-                  },
-                  {
-                    "reference": "couleur",
-                    "texte": "Changer la couleur ne corrige ni l’axe, ni le titre, ni l’absence de taux : piste fausse."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
         },
-        "ecranCorrige": "B2-01-A1-10-AUDIT-DIAPOSITIVE",
-        "notes": "• 1 min de mise en commun : faire lire à voix haute deux vérifications justes.\n• Ne pas donner l’évolution réelle (+2,1 %) : c’est la première question de l’atelier 1.\n• Transition : jalon 1.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        "explications": [
+          {
+            "reference": "axe",
+            "texte": "L’axe vertical part de 284 000 € : la barre 2025 dépasse l’origine de 7 000 €, celle de 2022 de 1 000 €, d’où l’impression d’un rapport de 1 à 7."
+          },
+          {
+            "reference": "evolution",
+            "texte": "Avant de parler de croissance, on rapporte l’écart de marge à la valeur de 2022 : c’est la première question de l’atelier 1."
+          },
+          {
+            "reference": "titre",
+            "texte": "« Une croissance continue » conclut à la place du lecteur ; un titre de référence décrit la mesure, son unité et sa période."
+          },
+          {
+            "reference": "montant",
+            "texte": "Une marge en euros ne dit rien de la rentabilité : il faut la rapporter au CA HT."
+          },
+          {
+            "reference": "couleur",
+            "texte": "Changer la couleur ne corrige ni l’axe, ni le titre, ni l’absence de taux : piste fausse."
+          }
+        ]
       },
       {
         "id": "B2-01-A1-11-JALON-1",
@@ -5192,7 +4419,7 @@
         "id": "B2-01-A2-03-ATELIER-1",
         "type": "questionnaire",
         "titre": "Atelier 1 — Lire, rapporter, estimer",
-        "duree": 6,
+        "duree": 7,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 1 — Lire, rapporter, estimer (questions 1 à 3)",
@@ -5233,7 +4460,7 @@
                   "metadonnees": {
                     "concepts": ["lecture-graphique", "proportion"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 6,
+                    "dureeMinutes": 7,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -5266,8 +4493,7 @@
           ]
         },
         "renvoi": "B2-01-A1-09-DIAPOSITIVE",
-        "resoluPar": ["B2-01-A2-03-CORRECTION-1"],
-        "notes": "• 5 min de travail sur les questions 1 à 3 (annoncer « plus qu’une minute » à 4 min), puis 1 min de comparaison avec le voisin.\n• Pièges : Q1 « sept fois plus » (axe) ; Q3 « 84 % des commandes, donc 84 % du CA ».\n• Contrôle à faire dire : 1 150 000 × 0,455 ≈ 523 000.",
+        "notes": "• 5 min de travail sur les questions 1 à 3 (annoncer « plus qu’une minute » à 4 min), puis 1 min de comparaison avec le voisin.\n• Pièges : Q1 « sept fois plus » (axe) ; Q3 « 84 % des commandes, donc 84 % du CA ».\n• Contrôle à faire dire : 1 150 000 × 0,455 ≈ 523 000.\n• Commencer par la question la moins réussie (score affiché sous chaque correction).\n• Rapprocher Q2 et Q3 : la marketplace fait 84 % des commandes mais 45,5 % du CA ; même canal, deux populations de référence.\n• Q1 : si « +6 000 € : une forte croissance » domine, faire rapporter l’écart à 285 000 € : +2,1 %.\n• Transition : « Trois questions de plus : deux évolutions, puis marge et marque. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -5357,64 +4583,27 @@
             ]
           }
         ],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A2-03-CORRECTION-1",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 1 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A2-03-CORRECTION-1",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A2-03-CORRECTION-1",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 1 : questions 1 à 3",
-                "source": {
-                  "screenId": "B2-01-A2-03-ATELIER-1"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a2-evolution-marge",
-                    "texte": "(291 000 − 285 000) ÷ 285 000 ≈ 0,021 : +2,1 % en trois ans. La hauteur des barres dépendait de l’axe, pas de la marge."
-                  },
-                  {
-                    "reference": "b2-01-a2-part-marketplace",
-                    "texte": "523 000 ÷ 1 150 000 ≈ 0,455, soit 45,5 % du CA. Contrôle : 1 150 000 × 0,455 ≈ 523 000."
-                  },
-                  {
-                    "reference": "b2-01-a2-population-reference",
-                    "texte": "84 % des commandes ne disent rien de la part du CA : une commande de la marketplace rapporte moins qu’une voile sur mesure. Nommez toujours la population de référence."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique", "proportion"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-01-a2-evolution-marge",
+            "texte": "(291 000 − 285 000) ÷ 285 000 ≈ 0,021 : +2,1 % en trois ans. La hauteur des barres dépendait de l’axe, pas de la marge."
+          },
+          {
+            "reference": "b2-01-a2-part-marketplace",
+            "texte": "523 000 ÷ 1 150 000 ≈ 0,455, soit 45,5 % du CA. Contrôle : 1 150 000 × 0,455 ≈ 523 000."
+          },
+          {
+            "reference": "b2-01-a2-population-reference",
+            "texte": "84 % des commandes ne disent rien de la part du CA : une commande de la marketplace rapporte moins qu’une voile sur mesure. Nommez toujours la population de référence."
           }
-        },
-        "ecranCorrige": "B2-01-A2-03-ATELIER-1",
-        "notes": "• Commencer par la question la moins réussie (score affiché sous chaque correction).\n• Rapprocher Q2 et Q3 : la marketplace fait 84 % des commandes mais 45,5 % du CA ; même canal, deux populations de référence.\n• Q1 : si « +6 000 € : une forte croissance » domine, faire rapporter l’écart à 285 000 € : +2,1 %.\n• Transition : « Trois questions de plus : deux évolutions, puis marge et marque. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        ]
       },
       {
         "id": "B2-01-A2-03-ATELIER-1-SUITE",
         "type": "questionnaire",
         "titre": "Atelier 1 — Lire, rapporter, estimer (suite)",
-        "duree": 6,
+        "duree": 7,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 1 — Lire, rapporter, estimer (questions 4 à 6)",
@@ -5432,7 +4621,7 @@
                   "metadonnees": {
                     "concepts": ["taux-evolution", "pourcentage"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 6,
+                    "dureeMinutes": 7,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -5487,8 +4676,7 @@
             }
           ]
         },
-        "resoluPar": ["B2-01-A2-03-CORRECTION-2"],
-        "notes": "• 5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).\n• Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.\n• Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.",
+        "notes": "• 5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).\n• Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.\n• Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.\n• Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.\n• Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.\n• Revenir à la diapositive de Samir : de 285 000 € à 291 000 €, la marge brute gagne +6 000 €, soit +2,1 % en trois ans. Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.\n• Transition : « Cinq écritures reviennent sans cesse : fixons-les. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -5586,58 +4774,21 @@
             ]
           }
         ],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A2-03-CORRECTION-2",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 1 : questions 4 à 6",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A2-03-CORRECTION-2",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A2-03-CORRECTION-2",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 1 : questions 4 à 6",
-                "source": {
-                  "screenId": "B2-01-A2-03-ATELIER-1-SUITE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a2-evolution-sur-mesure",
-                    "texte": "(397 000 − 483 000) ÷ 483 000 ≈ −17,8 %. On divise par la valeur de départ (483 000 €), pas par celle d’arrivée."
-                  },
-                  {
-                    "reference": "b2-01-a2-ordre-de-grandeur",
-                    "texte": "1 300 commandes de plus pour 2 900 au départ : un peu moins de la moitié, soit environ +45 %. Contrôle : 2 900 × 1,45 ≈ 4 200."
-                  },
-                  {
-                    "reference": "b2-01-a2-marge-marque",
-                    "texte": "Marge : 20 €. Taux de marque = 20 ÷ 100 = 20 % (sur le prix de vente) ; taux de marge = 20 ÷ 80 = 25 % (sur le coût d’achat), la même hausse qu’au diagnostic."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["taux-evolution", "pourcentage"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-01-a2-evolution-sur-mesure",
+            "texte": "(397 000 − 483 000) ÷ 483 000 ≈ −17,8 %. On divise par la valeur de départ (483 000 €), pas par celle d’arrivée."
+          },
+          {
+            "reference": "b2-01-a2-ordre-de-grandeur",
+            "texte": "1 300 commandes de plus pour 2 900 au départ : un peu moins de la moitié, soit environ +45 %. Contrôle : 2 900 × 1,45 ≈ 4 200."
+          },
+          {
+            "reference": "b2-01-a2-marge-marque",
+            "texte": "Marge : 20 €. Taux de marque = 20 ÷ 100 = 20 % (sur le prix de vente) ; taux de marge = 20 ÷ 80 = 25 % (sur le coût d’achat), la même hausse qu’au diagnostic."
           }
-        },
-        "ecranCorrige": "B2-01-A2-03-ATELIER-1-SUITE",
-        "notes": "• Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.\n• Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.\n• Revenir à la diapositive de Samir : de 285 000 € à 291 000 €, la marge brute gagne +6 000 €, soit +2,1 % en trois ans. Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.\n• Transition : « Cinq écritures reviennent sans cesse : fixons-les. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        ]
       },
       {
         "id": "B2-01-A2-05-ECRITURES",
@@ -5700,7 +4851,7 @@
         "id": "B2-01-A2-06-POINTS",
         "type": "fp-worked",
         "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 2,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -5735,7 +4886,7 @@
             "metadonnees": {
               "concepts": ["point-de-pourcentage"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5748,64 +4899,7 @@
             "lignes": [3]
           }
         },
-        "resoluPar": ["B2-01-A2-06-CORRECTION"],
-        "notes": "• Chacun répond sous chaque étape ; la correction vient à l’écran suivant.\n• À l’étape 1, guetter « −2,3 % » : exiger « points ».",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A2-06-CORRECTION",
-        "type": "fp-worked",
-        "titre": "Correction : points ou pourcentage",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a2-points-corrige",
-            "enonce": "Le taux de marge brute passe de 27,60 % (2024) à 25,30 % (2025). Hélène veut une phrase juste pour le comité.",
-            "etapes": [
-              {
-                "id": "ecart",
-                "intitule": "Écart entre les deux taux",
-                "raisonnement": "25,30 − 27,60 = −2,30. Un écart entre deux pourcentages se mesure en points de pourcentage : −2,30 points.",
-                "invite": "Quel est l’écart entre les deux taux, et dans quelle unité s’exprime-t-il ?"
-              },
-              {
-                "id": "relatif",
-                "intitule": "Évolution relative du taux",
-                "raisonnement": "−2,30 ÷ 27,60 ≈ −0,083, soit −8,3 % : le taux lui-même a perdu 8,3 % de sa valeur.",
-                "invite": "De quel pourcentage le taux lui-même a-t-il baissé par rapport à celui de 2024 ?"
-              },
-              {
-                "id": "phrase",
-                "intitule": "Phrase pour le comité",
-                "raisonnement": "« Le taux de marge brute recule de 2,3 points (de 27,6 % à 25,3 %), soit une baisse relative de 8,3 %. »",
-                "invite": "Quelle phrase écrivez-vous pour le comité, sans utiliser « −2,3 % » ?"
-              },
-              {
-                "id": "controle",
-                "intitule": "Contrôle",
-                "raisonnement": "27,60 × (1 − 0,083) ≈ 25,31 : l’évolution relative redonne le taux d’arrivée, à l’arrondi près.",
-                "invite": "En appliquant cette baisse relative à 27,60 %, retrouvez-vous le taux de 2025 ?"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["point-de-pourcentage"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 0,
-          "pilote": true,
-          "corrigeDe": "B2-01-A2-06-POINTS"
-        },
-        "ecranCorrige": "B2-01-A2-06-POINTS",
-        "notes": "• Révéler une étape à la fois (« Corriger une étape de plus »), après avoir lu une réponse d’élève à l’étape.\n• S’arrêter sur l’étape 3 : la phrase du comité donne les points et l’évolution relative, jamais « −2,3 % ».\n• Transition : « Mini-jeu : tout n’est pas comparable. »",
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• À l’étape 1, guetter « −2,3 % » : exiger « points ».\n• Révéler une étape à la fois (« Corriger une étape de plus »), après avoir lu une réponse d’élève à l’étape.\n• S’arrêter sur l’étape 3 : la phrase du comité donne les points et l’évolution relative, jamais « −2,3 % ».\n• Transition : « Mini-jeu : tout n’est pas comparable. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6379,7 +5473,7 @@
         "id": "B2-01-A3-04-FIL-TECHNIQUE",
         "type": "fp-worked",
         "titre": "Le fil technique : choisir l’opération inverse",
-        "duree": 2,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -6426,83 +5520,14 @@
             "metadonnees": {
               "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
+              "dureeMinutes": 4,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
           "etayage": 0
         },
-        "resoluPar": ["B2-01-A3-04-CORRECTION"],
-        "notes": "• Chacun répond sous chaque étape ; la correction vient à l’écran suivant.\n• Pièges : étapes 4-5, retirer 10 % de 13,75 € (12,375 € au lieu de 12,50 €) ; étape 6, retirer 20 % du TTC (2 880 € au lieu de 3 000 €).",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A3-04-CORRECTION",
-        "type": "fp-worked",
-        "titre": "Correction : le fil technique",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a3-fil-corrige",
-            "enonce": "Atelier Rivage achète son fil technique 12,50 € HT la bobine. Le fournisseur annonce +10 % au 1er avril, puis −8 % au 1er octobre. Le service commercial écrit : « au final, +2 % ».",
-            "etapes": [
-              {
-                "id": "coefficients",
-                "intitule": "Traduire les taux",
-                "raisonnement": "+10 % → × 1,10 ; −8 % → × 0,92.",
-                "invite": "Par quel nombre multiplie-t-on le prix pour appliquer +10 % ? Et pour appliquer −8 % ?"
-              },
-              {
-                "id": "global",
-                "intitule": "Évolution globale",
-                "raisonnement": "1,10 × 0,92 = 1,012 : l’évolution globale est de +1,2 %, et non de +2 %.",
-                "invite": "Quelle est l’évolution globale du prix sur l’année, en % ? Le « +2 % » annoncé est-il juste ?"
-              },
-              {
-                "id": "prix",
-                "intitule": "Prix final",
-                "raisonnement": "12,50 × 1,012 = 12,65 € HT la bobine.",
-                "invite": "Combien coûte la bobine après les deux changements de prix, en € HT ?"
-              },
-              {
-                "id": "base",
-                "intitule": "Retrouver la base",
-                "raisonnement": "Après la hausse d’avril, la bobine coûte 13,75 €. Prix initial = 13,75 ÷ 1,10 = 12,50 € : on divise par le coefficient, on ne retire pas 10 %.",
-                "invite": "La bobine coûte 13,75 € après la hausse d’avril : quel était son prix avant cette hausse ?"
-              },
-              {
-                "id": "reciproque",
-                "intitule": "Évolution réciproque",
-                "raisonnement": "Pour annuler une hausse de 10 %, il faut multiplier par 1 ÷ 1,10 ≈ 0,909, soit une baisse d’environ 9,1 % ; une baisse de 10 % irait trop loin (13,75 × 0,90 = 12,375 €).",
-                "invite": "De quel pourcentage faut-il baisser 13,75 € pour revenir à 12,50 € ?"
-              },
-              {
-                "id": "tva",
-                "intitule": "Du TTC au HT",
-                "raisonnement": "Une facture d’entretien affiche 3 600 € TTC (TVA 20 %). HT = 3 600 ÷ 1,20 = 3 000 € : on divise par le coefficient 1,20. Retirer 20 % donnerait 2 880 €, ce qui est faux. Passer du TTC au HT, c’est une baisse de 1 − 1 ÷ 1,20 ≈ 16,67 %. Contrôle inverse : 3 000 × 1,20 = 3 600.",
-                "invite": "Une facture affiche 3 600 € TTC (TVA 20 %) : quel est son montant HT, et de quel pourcentage baisse-t-on en passant du TTC au HT ?"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["evolutions-successives"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 0,
-          "pilote": true,
-          "corrigeDe": "B2-01-A3-04-FIL-TECHNIQUE"
-        },
-        "ecranCorrige": "B2-01-A3-04-FIL-TECHNIQUE",
-        "notes": "• « Corriger une étape de plus » : passer vite sur les étapes 1 à 3, s’arrêter sur 4 à 6 (l’opération inverse).\n• Réflexe à faire dire : retour au montant connu, 12,50 × 1,10 = 13,75.\n• L’étape 5 prépare la question « retour de 100 € à 80 € » de l’atelier 2.\n• Transition : « Et quand tous les prix montent ? L’inflation. »",
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Pièges : étapes 4-5, retirer 10 % de 13,75 € (12,375 € au lieu de 12,50 €) ; étape 6, retirer 20 % du TTC (2 880 € au lieu de 3 000 €).\n• « Corriger une étape de plus » : passer vite sur les étapes 1 à 3, s’arrêter sur 4 à 6 (l’opération inverse).\n• Réflexe à faire dire : retour au montant connu, 12,50 × 1,10 = 13,75.\n• L’étape 5 prépare la question « retour de 100 € à 80 € » de l’atelier 2.\n• Transition : « Et quand tous les prix montent ? L’inflation. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6568,7 +5593,7 @@
         "id": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN",
         "type": "fp-worked",
         "titre": "Le loyer de l’atelier : lire un indice et un rythme",
-        "duree": 3,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -6609,77 +5634,14 @@
             "metadonnees": {
               "concepts": ["indice-base-100", "taux-moyen"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 5,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
           "etayage": 0
         },
-        "resoluPar": ["B2-01-A3-06-CORRECTION"],
-        "notes": "• Chacun répond sous chaque étape ; la correction vient à l’écran suivant.\n• Pièges : lire 119,10 comme +119,10 % ; diviser 19,10 par 3 (6,37 %).\n• Vérifier que chacun sait taper 1,19102 ^ (1 ÷ 3) sur sa calculatrice.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A3-06-CORRECTION",
-        "type": "fp-worked",
-        "titre": "Correction : lire un indice et un rythme",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a3-indice-taux-moyen-corrige",
-            "enonce": "Le loyer de l’atelier d’Atelier Rivage passe de 1 000 € (2021) à 1 060 € (2022), 1 123,60 € (2023) et 1 191,02 € (2024). Samir écrit : « +19,10 % en trois ans, donc +6,37 % par an ».",
-            "etapes": [
-              {
-                "id": "indice",
-                "intitule": "Indice base 100 en 2021",
-                "raisonnement": "I = 100 × V ÷ V₀ : 2022 : 100 × 1 060 ÷ 1 000 = 106,00 ; 2023 : 112,36 ; 2024 : 119,10.",
-                "invite": "Quel est l’indice du loyer en 2022, en 2023 et en 2024, base 100 en 2021 ?"
-              },
-              {
-                "id": "lire",
-                "intitule": "Lire un indice",
-                "raisonnement": "119,10 signifie +19,10 % depuis 2021 : taux = I ÷ 100 − 1. Ce n’est ni +119,10 %, ni un loyer de 119,10 €.",
-                "invite": "Que signifie l’indice 119,10 de 2024, traduit en taux d’évolution depuis 2021 ?"
-              },
-              {
-                "id": "chainer",
-                "intitule": "Chaîner des coefficients",
-                "raisonnement": "Indice = 100 × produit des coefficients : 100 × 1,06 × 1,06 × 1,06 = 119,10. Additionner les taux (6 + 6 + 6 = 18) sous-estime la hausse.",
-                "invite": "Comment retrouvez-vous l’indice 2024 à partir des coefficients annuels ?"
-              },
-              {
-                "id": "taux-moyen",
-                "intitule": "Taux annuel moyen",
-                "raisonnement": "On cherche x tel que x³ = 1,19102 : x = 1,19102^(1/3) ≈ 1,0600, soit +6,00 % par an. Calculatrice : 1,19102 ^ (1 ÷ 3) ; tableur : =PUISSANCE(1,19102;1/3).",
-                "invite": "Quel taux annuel constant, appliqué trois années de suite, donne +19,10 % ?"
-              },
-              {
-                "id": "piege",
-                "intitule": "Pourquoi pas 19,10 ÷ 3 ?",
-                "raisonnement": "19,10 ÷ 3 ≈ 6,37 % est faux : 1,0637³ ≈ 1,2035, et non 1,1910. Diviser un taux global par le nombre d’années surestime le taux moyen.",
-                "invite": "En appliquant +6,37 % trois années de suite, obtient-on bien +19,10 % ?"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["indice-base-100", "taux-moyen"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 0,
-          "pilote": true,
-          "corrigeDe": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN"
-        },
-        "ecranCorrige": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN",
-        "notes": "• « Corriger une étape de plus » : 5 étapes en 2 min ; s’arrêter sur la 5ᵉ (19,10 ÷ 3).\n• Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (+6 % par an).\n• Transition : « Même méthode sur les prix en France depuis 2019 : atelier 2. »",
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Pièges : lire 119,10 comme +119,10 % ; diviser 19,10 par 3 (6,37 %).\n• Vérifier que chacun sait taper 1,19102 ^ (1 ÷ 3) sur sa calculatrice.\n• « Corriger une étape de plus » : 5 étapes en 2 min ; s’arrêter sur la 5ᵉ (19,10 ÷ 3).\n• Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (+6 % par an).\n• Transition : « Même méthode sur les prix en France depuis 2019 : atelier 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6690,7 +5652,7 @@
         "id": "B2-01-A3-07-ATELIER-2",
         "type": "questionnaire",
         "titre": "Atelier 2 — Rythme, niveau, indice",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 2 — Rythme, niveau, indice (questions 1 à 3)",
@@ -6731,7 +5693,7 @@
                   "metadonnees": {
                     "concepts": ["indice-base-100", "evolutions-successives"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -6748,7 +5710,7 @@
                   "metadonnees": {
                     "concepts": ["indice-base-100", "evolutions-successives"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -6758,8 +5720,7 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "resoluPar": ["B2-01-A3-07-CORRECTION-1"],
-        "notes": "• 4 min individuelles sur les questions 1 à 3.\n• Pièges : Q1 « plus bas » (rythme lu comme niveau) ; Q2 112,2 et Q3 15,1 % (taux additionnés).",
+        "notes": "• 4 min individuelles sur les questions 1 à 3.\n• Pièges : Q1 « plus bas » (rythme lu comme niveau) ; Q2 112,2 et Q3 15,1 % (taux additionnés).\n• Commencer par la question la moins réussie.\n• Ne pas citer le taux moyen ni 1,025⁶ : c’est la question suivante. Laisser 1,1597 en vue, elle en part.\n• Niveau des prix : si « plus bas » domine, faire dire que 0,9 % reste une hausse (le mot « désinflation » viendra en A3-08).\n• Transition : « Deux questions de plus : le rythme moyen, puis le retour en arrière. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -6836,64 +5797,27 @@
             "options": null
           }
         ],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A3-07-CORRECTION-1",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 2 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A3-07-CORRECTION-1",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A3-07-CORRECTION-1",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 2 : questions 1 à 3",
-                "source": {
-                  "screenId": "B2-01-A3-07-ATELIER-2"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a3-niveau-prix",
-                    "texte": "Une inflation de 0,9 % reste une hausse : le rythme ralentit, mais le niveau des prix de 2025 dépasse celui de 2024."
-                  },
-                  {
-                    "reference": "b2-01-a3-indice-2023",
-                    "texte": "100 × 1,005 × 1,016 × 1,052 × 1,049 ≈ 112,68. Additionner les taux (112,2) oublie que chaque hausse s’applique au niveau déjà atteint."
-                  },
-                  {
-                    "reference": "b2-01-a3-hausse-2019-2025",
-                    "texte": "Coefficient global : 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 1,1597, soit +15,97 % ; la somme des taux (15,1 %) sous-estime la hausse."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["indice-base-100", "evolutions-successives"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-01-a3-niveau-prix",
+            "texte": "Une inflation de 0,9 % reste une hausse : le rythme ralentit, mais le niveau des prix de 2025 dépasse celui de 2024."
+          },
+          {
+            "reference": "b2-01-a3-indice-2023",
+            "texte": "100 × 1,005 × 1,016 × 1,052 × 1,049 ≈ 112,68. Additionner les taux (112,2) oublie que chaque hausse s’applique au niveau déjà atteint."
+          },
+          {
+            "reference": "b2-01-a3-hausse-2019-2025",
+            "texte": "Coefficient global : 1,005 × 1,016 × 1,052 × 1,049 × 1,020 × 1,009 ≈ 1,1597, soit +15,97 % ; la somme des taux (15,1 %) sous-estime la hausse."
           }
-        },
-        "ecranCorrige": "B2-01-A3-07-ATELIER-2",
-        "notes": "• Commencer par la question la moins réussie.\n• Ne pas citer le taux moyen ni 1,025⁶ : c’est la question suivante. Laisser 1,1597 en vue, elle en part.\n• Niveau des prix : si « plus bas » domine, faire dire que 0,9 % reste une hausse (le mot « désinflation » viendra en A3-08).\n• Transition : « Deux questions de plus : le rythme moyen, puis le retour en arrière. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        ]
       },
       {
         "id": "B2-01-A3-07-ATELIER-2-SUITE",
         "type": "questionnaire",
         "titre": "Atelier 2 — Rythme, niveau, indice (suite)",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 2 — Rythme, niveau, indice (questions 4 et 5)",
@@ -6911,7 +5835,7 @@
                   "metadonnees": {
                     "concepts": ["taux-moyen", "evolution-reciproque"],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -6944,8 +5868,7 @@
           ]
         },
         "renvoi": "B2-01-A3-05-INFLATION-RYTHME",
-        "resoluPar": ["B2-01-A3-07-CORRECTION-2"],
-        "notes": "• 3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).\n• La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.",
+        "notes": "• 3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).\n• La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.\n• Taux moyen : la moyenne des six taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % au lieu de 32,6 %).\n• Transition : « Voici la courbe que vous venez de calculer. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -7003,54 +5926,17 @@
             ]
           }
         ],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A3-07-CORRECTION-2",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 2 : questions 4 et 5",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A3-07-CORRECTION-2",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A3-07-CORRECTION-2",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 2 : questions 4 et 5",
-                "source": {
-                  "screenId": "B2-01-A3-07-ATELIER-2-SUITE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a3-taux-moyen",
-                    "texte": "On cherche x tel que x⁶ = 1,1597 : 1,1597 ^ (1 ÷ 6) ≈ 1,0250, soit +2,50 % par an. Diviser 15,97 par 6 (2,66 %) surestime le rythme."
-                  },
-                  {
-                    "reference": "b2-01-a3-reciproque",
-                    "texte": "Coefficient de retour : 80 ÷ 100 = 0,80, soit −20 %. Reprendre le même taux à l’envers (−25 %) mènerait à 75 €."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["taux-moyen", "evolution-reciproque"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-01-a3-taux-moyen",
+            "texte": "On cherche x tel que x⁶ = 1,1597 : 1,1597 ^ (1 ÷ 6) ≈ 1,0250, soit +2,50 % par an. Diviser 15,97 par 6 (2,66 %) surestime le rythme."
+          },
+          {
+            "reference": "b2-01-a3-reciproque",
+            "texte": "Coefficient de retour : 80 ÷ 100 = 0,80, soit −20 %. Reprendre le même taux à l’envers (−25 %) mènerait à 75 €."
           }
-        },
-        "ecranCorrige": "B2-01-A3-07-ATELIER-2-SUITE",
-        "notes": "• Taux moyen : la moyenne des six taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % au lieu de 32,6 %).\n• Transition : « Voici la courbe que vous venez de calculer. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        ]
       },
       {
         "id": "B2-01-A3-08-INDICE-PRIX",
@@ -7520,7 +6406,7 @@
         "id": "B2-01-A4-03-ATELIER-3",
         "type": "questionnaire",
         "titre": "Atelier 3 — Habiller le graphique du comité",
-        "duree": 3,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 3 — Habiller le graphique du comité (questions 1 et 2)",
@@ -7576,8 +6462,7 @@
             }
           ]
         },
-        "resoluPar": ["B2-01-A4-03-CORRECTION-1"],
-        "notes": "• 3 min de travail sur la forme et le titre.\n• Piège principal : un titre qui conclut (« La marketplace s’envole… ») ; exiger un titre qui décrit, avec l’unité.",
+        "notes": "• 3 min de travail sur la forme et le titre.\n• Piège principal : un titre qui conclut (« La marketplace s’envole… ») ; exiger un titre qui décrit, avec l’unité.\n• Faire justifier la forme par la question posée : une évolution dans le temps.\n• Transition : « Il reste l’axe et la phrase de lecture. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -7648,60 +6533,23 @@
             ]
           }
         ],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A4-03-CORRECTION-1",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 3 : forme et titre",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A4-03-CORRECTION-1",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A4-03-CORRECTION-1",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 3 : forme et titre",
-                "source": {
-                  "screenId": "B2-01-A4-03-ATELIER-3"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a4-forme",
-                    "texte": "Une évolution dans le temps se montre par des courbes : une par canal, les trimestres en abscisse. Des secteurs ou une barre annuelle effacent le temps."
-                  },
-                  {
-                    "reference": "b2-01-a4-titre",
-                    "texte": "Le titre décrit ce que montre le graphique, avec l’unité. « La marketplace s’envole… » conclut à la place du lecteur ; « Évolution des canaux » ne dit ni l’année ni l’unité."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-01-a4-forme",
+            "texte": "Une évolution dans le temps se montre par des courbes : une par canal, les trimestres en abscisse. Des secteurs ou une barre annuelle effacent le temps."
+          },
+          {
+            "reference": "b2-01-a4-titre",
+            "texte": "Le titre décrit ce que montre le graphique, avec l’unité. « La marketplace s’envole… » conclut à la place du lecteur ; « Évolution des canaux » ne dit ni l’année ni l’unité."
           }
-        },
-        "ecranCorrige": "B2-01-A4-03-ATELIER-3",
-        "notes": "• Faire justifier la forme par la question posée : une évolution dans le temps.\n• Transition : « Il reste l’axe et la phrase de lecture. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        ]
       },
       {
         "id": "B2-01-A4-03-ATELIER-3-SUITE",
         "type": "questionnaire",
         "titre": "Atelier 3 — Habiller le graphique du comité (suite)",
-        "duree": 3,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 3 — Habiller le graphique du comité (questions 3 et 4)",
@@ -7757,8 +6605,7 @@
             }
           ]
         },
-        "resoluPar": ["B2-01-A4-03-CORRECTION-2"],
-        "notes": "• 3 min seul.\n• Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).\n• Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).",
+        "notes": "• 3 min seul.\n• Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).\n• Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).\n• « Le sur-mesure s’effondre » est même faux au 3e trimestre : il remonte de 95 à 102 k€.\n• Relance sur « 167 % du CA » : quelle est la vraie part ? 167 ÷ 318 ≈ 52,5 % (on la retrouvera dans le TCD).\n• Transition : « Voici le graphique retenu pour le dossier. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -7829,54 +6676,17 @@
             ]
           }
         ],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A4-03-CORRECTION-2",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 3 : axe et lecture",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A4-03-CORRECTION-2",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A4-03-CORRECTION-2",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 3 : axe et lecture",
-                "source": {
-                  "screenId": "B2-01-A4-03-ATELIER-3-SUITE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a4-axe",
-                    "texte": "L’axe part de zéro et reste gradué : le tronquer à 49 000 € grossirait les écarts, comme sur la diapositive de Samir."
-                  },
-                  {
-                    "reference": "b2-01-a4-lecture",
-                    "texte": "La phrase décrit deux valeurs avec leur unité ; elle ne conclut pas (« s’effondre ») et ne confond pas un montant avec un pourcentage."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["lecture-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-01-a4-axe",
+            "texte": "L’axe part de zéro et reste gradué : le tronquer à 49 000 € grossirait les écarts, comme sur la diapositive de Samir."
+          },
+          {
+            "reference": "b2-01-a4-lecture",
+            "texte": "La phrase décrit deux valeurs avec leur unité ; elle ne conclut pas (« s’effondre ») et ne confond pas un montant avec un pourcentage."
           }
-        },
-        "ecranCorrige": "B2-01-A4-03-ATELIER-3-SUITE",
-        "notes": "• « Le sur-mesure s’effondre » est même faux au 3e trimestre : il remonte de 95 à 102 k€.\n• Relance sur « 167 % du CA » : quelle est la vraie part ? 167 ÷ 318 ≈ 52,5 % (on la retrouvera dans le TCD).\n• Transition : « Voici le graphique retenu pour le dossier. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        ]
       },
       {
         "id": "B2-01-A4-04-CA-TRIMESTRIEL",
@@ -7940,7 +6750,7 @@
         "id": "B2-01-A4-05-INDICE-TOILE",
         "type": "fp-table-build",
         "titre": "Tâche de tableur 2 — Prix et indice de la toile",
-        "duree": 9,
+        "duree": 11,
         "interactif": true,
         "donnees": {
           "plan": {
@@ -8020,14 +6830,13 @@
             "metadonnees": {
               "concepts": ["evolutions-successives"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 9,
+              "dureeMinutes": 11,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "resoluPar": ["B2-01-A4-05-CORRECTION"],
-        "notes": "• Individuel, 7 min ; la correction de la synthèse vient à l’écran suivant.\n• Piège : recalculer chaque prix depuis 20,00 € (20,60 ; 21,40 ; 20,80 €). Le 20,80 € du tableau de bord de Samir vient de là.\n• Contrôles : 21,60 ; 20,52 ; 21,34 ; 20,70 € ; coefficients 1,08 ; 0,95 ; 1,04 ; 0,97 ; évolution réelle +3,50 % contre « +4 % ».",
+        "notes": "• Individuel, 7 min ; la synthèse se corrige ensuite sur ce même écran.\n• Piège : recalculer chaque prix depuis 20,00 € (20,60 ; 21,40 ; 20,80 €). Le 20,80 € du tableau de bord de Samir vient de là.\n• Contrôles : 21,60 ; 20,52 ; 21,34 ; 20,70 € ; coefficients 1,08 ; 0,95 ; 1,04 ; 0,97 ; évolution réelle +3,50 % contre « +4 % ».\n• Boucler avec la carte « toile » du tri A1-05, laissée « à vérifier à l’acte 4 » : +3,50 %, et non +4 %.\n• Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈ +0,8 %), pas la moyenne annuelle de 0,9 %.\n• Transition : jalon 4, puis l’acte 5.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -8087,50 +6896,13 @@
             "valeur": 0.01
           },
           "seuilReussite": 0.75
-        }
-      },
-      {
-        "id": "B2-01-A4-05-CORRECTION",
-        "type": "fp-story",
-        "titre": "Correction : prix et indice de la toile",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A4-05-CORRECTION",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A4-05-CORRECTION",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction : prix et indice de la toile",
-                "source": {
-                  "screenId": "B2-01-A4-05-INDICE-TOILE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a4-indice-toile",
-                    "texte": "Chaque révision s’applique au prix précédent : 20,00 × 1,08 = 21,60 € ; × 0,95 = 20,52 € ; × 1,04 = 21,34 € ; × 0,97 = 20,70 €. Indice final : 20,70 ÷ 20 × 100 = 103,50, soit +3,50 % sur l’année, et non la somme des taux annoncés (+4 %). Recalculer chaque prix depuis 20,00 € mène au 20,80 € du tableau de bord."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["evolutions-successives"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
         },
-        "ecranCorrige": "B2-01-A4-05-INDICE-TOILE",
-        "notes": "• Boucler avec la carte « toile » du tri A1-05, laissée « à vérifier à l’acte 4 » : +3,50 %, et non +4 %.\n• Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈ +0,8 %), pas la moyenne annuelle de 0,9 %.\n• Transition : jalon 4, puis l’acte 5.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        "explications": [
+          {
+            "reference": "b2-01-a4-indice-toile",
+            "texte": "Chaque révision s’applique au prix précédent : 20,00 × 1,08 = 21,60 € ; × 0,95 = 20,52 € ; × 1,04 = 21,34 € ; × 0,97 = 20,70 €. Indice final : 20,70 ÷ 20 × 100 = 103,50, soit +3,50 % sur l’année, et non la somme des taux annoncés (+4 %). Recalculer chaque prix depuis 20,00 € mène au 20,80 € du tableau de bord."
+          }
+        ]
       },
       {
         "id": "B2-01-A4-06-JALON-4",
@@ -8206,7 +6978,7 @@
         "id": "B2-01-A5-03-MOYENNE-PONDEREE",
         "type": "fp-worked",
         "titre": "Prouver l’effet de répartition",
-        "duree": 3,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "exemple": {
@@ -8253,83 +7025,14 @@
             "metadonnees": {
               "concepts": ["moyenne-ponderee"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 5,
               "modalite": "solo",
               "regime": "ouvert"
             }
           },
           "etayage": 0
         },
-        "resoluPar": ["B2-01-A5-03-CORRECTION"],
-        "notes": "• Chacun répond sous chaque étape ; la correction vient à l’écran suivant.\n• Étapes difficiles : 5 (que serait la marge avec la répartition de 2024 ?) et 6 (négation d’un « si… alors » : « il existe… et… »).",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A5-03-CORRECTION",
-        "type": "fp-worked",
-        "titre": "Correction : prouver l’effet de répartition",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {
-          "exemple": {
-            "id": "b2-01-a5-ponderee-corrige",
-            "enonce": "Données par canal, CA HT 2024 → 2025 : sur-mesure 483 000 € → 397 000 € (taux de marge brute 36 %) ; entretien 210 000 € → 230 000 € (28 %) ; marketplace 357 000 € → 523 000 € (16 %). Prouvez au comité que la baisse du taux global vient du changement de répartition du CA.",
-            "etapes": [
-              {
-                "id": "poids",
-                "intitule": "Poids des canaux",
-                "raisonnement": "Poids d’un canal = CA du canal ÷ CA total. 2024 : 483 ÷ 1 050 ≈ 0,46 ; 210 ÷ 1 050 = 0,20 ; 357 ÷ 1 050 = 0,34. 2025 : 397 ÷ 1 150 ≈ 0,345 ; 230 ÷ 1 150 = 0,20 ; 523 ÷ 1 150 ≈ 0,455.",
-                "invite": "Quelle part du CA total représente chaque canal, en 2024 puis en 2025 ?"
-              },
-              {
-                "id": "taux-2024",
-                "intitule": "Taux global 2024",
-                "raisonnement": "0,46 × 36 + 0,20 × 28 + 0,34 × 16 = 16,56 + 5,60 + 5,44 = 27,60 %.",
-                "invite": "Quel taux global de 2024 obtenez-vous en pondérant le taux de chaque canal par son poids ?"
-              },
-              {
-                "id": "taux-2025",
-                "intitule": "Taux global 2025",
-                "raisonnement": "0,345 × 36 + 0,20 × 28 + 0,455 × 16 = 12,42 + 5,60 + 7,28 = 25,30 %. Avec les poids exacts (397 ÷ 1 150 ; 230 ÷ 1 150 ; 523 ÷ 1 150), on obtient 25,304 %, soit 291 000 ÷ 1 150 000.",
-                "invite": "Quel taux global de 2025 obtenez-vous avec les poids de 2025 ?"
-              },
-              {
-                "id": "moyenne-simple",
-                "intitule": "Pourquoi pas la moyenne simple ?",
-                "raisonnement": "(36 + 28 + 16) ÷ 3 ≈ 26,7 % : ce nombre ne correspond à aucune année, car il suppose trois canaux de même poids.",
-                "invite": "Pourquoi la moyenne simple des trois taux ne donne-t-elle le taux global d’aucune année ?"
-              },
-              {
-                "id": "effet",
-                "intitule": "Chiffrer l’effet de répartition",
-                "raisonnement": "Avec la répartition de 2024, le CA 2025 (1 150 000 €) aurait donné 27,6 % de marge, soit 317 400 €. La marge réelle est de 291 000 € : le changement de répartition « coûte » 26 400 € de marge.",
-                "invite": "Combien de marge le changement de répartition fait-il perdre en 2025, en euros ?"
-              },
-              {
-                "id": "logique",
-                "intitule": "Réfuter une implication",
-                "raisonnement": "L’affirmation « si chaque canal garde son taux, alors le taux global est inchangé » est fausse : Atelier Rivage en est un contre-exemple. Sa négation s’écrit : « il existe une répartition du CA pour laquelle chaque canal garde son taux et le taux global change ».",
-                "invite": "Comment s’écrit la négation de « si chaque canal garde son taux, alors le taux global est inchangé », et quel contre-exemple la prouve ?"
-              }
-            ],
-            "metadonnees": {
-              "concepts": ["moyenne-ponderee"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 2,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          },
-          "etayage": 0,
-          "pilote": true,
-          "corrigeDe": "B2-01-A5-03-MOYENNE-PONDEREE"
-        },
-        "ecranCorrige": "B2-01-A5-03-MOYENNE-PONDEREE",
-        "notes": "• « Corriger une étape de plus » : vite sur les étapes 1 à 4, s’arrêter sur 5 (effet de répartition) et 6 (négation).\n• Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition −26 400 € = +1 200 € de marge.\n• Transition : « Vérifions que la classe sait l’expliquer : vote. »",
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Étapes difficiles : 5 (que serait la marge avec la répartition de 2024 ?) et 6 (négation d’un « si… alors » : « il existe… et… »).\n• « Corriger une étape de plus » : vite sur les étapes 1 à 4, s’arrêter sur 5 (effet de répartition) et 6 (négation).\n• Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition −26 400 € = +1 200 € de marge.\n• Transition : « Vérifions que la classe sait l’expliquer : vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -8632,7 +7335,7 @@
         "id": "B2-01-A5-06-ATELIER-4",
         "type": "questionnaire",
         "titre": "Atelier 4 — Du constat à la preuve",
-        "duree": 4,
+        "duree": 5,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 4 — Du constat à la preuve (questions 1 à 3)",
@@ -8654,7 +7357,7 @@
                       "lecture-graphique"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -8675,7 +7378,7 @@
                       "lecture-graphique"
                     ],
                     "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
+                    "dureeMinutes": 5,
                     "modalite": "solo",
                     "regime": "focus"
                   }
@@ -8707,8 +7410,7 @@
             }
           ]
         },
-        "resoluPar": ["B2-01-A5-06-CORRECTION-1"],
-        "notes": "• 3 min de travail sur les questions 1 à 3.\n• Pièges : Q1 45,5 % (part du CA, pas de la marge) ; Q2 −86 000 € (écart de CA, pas de marge) ; Q3 « c’est prouvé ».",
+        "notes": "• 3 min de travail sur les questions 1 à 3.\n• Pièges : Q1 45,5 % (part du CA, pas de la marge) ; Q2 −86 000 € (écart de CA, pas de marge) ; Q3 « c’est prouvé ».\n• Chiffre absent de l’écran : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; c’est l’argument contre « arrêter la marketplace ».\n• Contrôle par canal : −30 960 + 5 600 + 26 560 = +1 200 €, la hausse de marge du tableau de bord.\n• Transition : « Deux questions de plus, pour rédiger le dossier. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -8789,64 +7491,27 @@
             ]
           }
         ],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A5-06-CORRECTION-1",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 4 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A5-06-CORRECTION-1",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A5-06-CORRECTION-1",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 4 : questions 1 à 3",
-                "source": {
-                  "screenId": "B2-01-A5-06-ATELIER-4"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a5-part-marge-marketplace",
-                    "texte": "Marge de la marketplace : 523 000 × 0,16 = 83 680 €, soit 83 680 ÷ 291 000 ≈ 28,8 % de la marge. 45,5 % est sa part du CA, pas de la marge."
-                  },
-                  {
-                    "reference": "b2-01-a5-variation-marge-sur-mesure",
-                    "texte": "Marge du sur-mesure : 483 000 × 0,36 = 173 880 € en 2024, 397 000 × 0,36 = 142 920 € en 2025, soit −30 960 €. −86 000 € est l’écart de CA, pas de marge."
-                  },
-                  {
-                    "reference": "b2-01-a5-causalite",
-                    "texte": "Deux évolutions simultanées ne prouvent pas une cause : l’hypothèse de Samir reste à vérifier, client par client."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["proportion", "taux-evolution", "lecture-graphique"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-01-a5-part-marge-marketplace",
+            "texte": "Marge de la marketplace : 523 000 × 0,16 = 83 680 €, soit 83 680 ÷ 291 000 ≈ 28,8 % de la marge. 45,5 % est sa part du CA, pas de la marge."
+          },
+          {
+            "reference": "b2-01-a5-variation-marge-sur-mesure",
+            "texte": "Marge du sur-mesure : 483 000 × 0,36 = 173 880 € en 2024, 397 000 × 0,36 = 142 920 € en 2025, soit −30 960 €. −86 000 € est l’écart de CA, pas de marge."
+          },
+          {
+            "reference": "b2-01-a5-causalite",
+            "texte": "Deux évolutions simultanées ne prouvent pas une cause : l’hypothèse de Samir reste à vérifier, client par client."
           }
-        },
-        "ecranCorrige": "B2-01-A5-06-ATELIER-4",
-        "notes": "• Chiffre absent de l’écran : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; c’est l’argument contre « arrêter la marketplace ».\n• Contrôle par canal : −30 960 + 5 600 + 26 560 = +1 200 €, la hausse de marge du tableau de bord.\n• Transition : « Deux questions de plus, pour rédiger le dossier. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        ]
       },
       {
         "id": "B2-01-A5-06-ATELIER-4-SUITE",
         "type": "questionnaire",
         "titre": "Atelier 4 — Du constat à la preuve (suite)",
-        "duree": 3,
+        "duree": 4,
         "interactif": true,
         "donnees": {
           "intitule": "Atelier 4 — Du constat à la preuve (questions 4 et 5)",
@@ -8903,8 +7568,7 @@
           ]
         },
         "renvoi": "B2-01-A5-05-TCD",
-        "resoluPar": ["B2-01-A5-06-CORRECTION-2"],
-        "notes": "• 2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).\n• TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.",
+        "notes": "• 2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).\n• Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).\n• TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.\n• Faire relire la phrase retenue à voix haute : c’est celle du dossier.\n• Transition : « Quel contrôle pour chaque anomalie du dossier ? »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -8975,54 +7639,17 @@
             ]
           }
         ],
-        "corrigeEcran": null
-      },
-      {
-        "id": "B2-01-A5-06-CORRECTION-2",
-        "type": "fp-story",
-        "titre": "Correction de l’atelier 4 : questions 4 et 5",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A5-06-CORRECTION-2",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A5-06-CORRECTION-2",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction de l’atelier 4 : questions 4 et 5",
-                "source": {
-                  "screenId": "B2-01-A5-06-ATELIER-4-SUITE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a5-synthese",
-                    "texte": "La marge passe de 289 800 € à 291 000 € (+1 200 €) ; son taux passe de 27,6 % à 25,3 % : l’écart entre deux taux se dit en points, pas en %. Une marge en euros ne dit rien de la rentabilité."
-                  },
-                  {
-                    "reference": "b2-01-a5-tcd",
-                    "texte": "77 160 ÷ 318 000 ≈ 24,3 % : le total recalculé sur les sommes tient compte du CA de chaque canal. 26,7 % traite les trois canaux à égalité."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["contrat-de-lecture", "moyenne-ponderee"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-01-a5-synthese",
+            "texte": "La marge passe de 289 800 € à 291 000 € (+1 200 €) ; son taux passe de 27,6 % à 25,3 % : l’écart entre deux taux se dit en points, pas en %. Une marge en euros ne dit rien de la rentabilité."
+          },
+          {
+            "reference": "b2-01-a5-tcd",
+            "texte": "77 160 ÷ 318 000 ≈ 24,3 % : le total recalculé sur les sommes tient compte du CA de chaque canal. 26,7 % traite les trois canaux à égalité."
           }
-        },
-        "ecranCorrige": "B2-01-A5-06-ATELIER-4-SUITE",
-        "notes": "• Faire relire la phrase retenue à voix haute : c’est celle du dossier.\n• Transition : « Quel contrôle pour chaque anomalie du dossier ? »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        ]
       },
       {
         "id": "B2-01-A5-07-CONTROLE-DISCRIMINANT",
@@ -9481,7 +8108,7 @@
         "id": "B2-01-A6-02-COFFRE",
         "type": "fp-escape",
         "titre": "Le coffre du comité",
-        "duree": 9,
+        "duree": 10,
         "interactif": true,
         "donnees": {
           "parcours": {
@@ -9524,14 +8151,13 @@
                 "controle-coherence"
               ],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 9,
+              "dureeMinutes": 10,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "resoluPar": ["B2-01-A6-02-CORRECTION"],
-        "notes": "• Lancer ; indices disponibles après 60 s. À 7 min, projeter l’énigme la moins résolue.\n• Pièges : E1 26,7 % (moyenne simple) ; E2 −10,7 (en %, pas en points) ; E3 1 032,57 € (÷ 1,02, taux additionnés).\n• E3 : le prix du 1er janvier 2026 est celui du 31 décembre 2025 : 20,70 €/m² × 50 m² = 1 035,00 € ; contrôle 1 035 × 1,06 × 0,96 = 1 053,22.\n• E4 : l’écart de 90 € vient de F004 (12 430 saisi pour 12 340 : inversion, 90 = 9 × 10). TVA = 48 705 × 0,20 = 9 741 €, pas 9 759 € (base du grand livre).",
+        "notes": "• Lancer ; indices disponibles après 60 s. À 7 min, projeter l’énigme la moins résolue.\n• Pièges : E1 26,7 % (moyenne simple) ; E2 −10,7 (en %, pas en points) ; E3 1 032,57 € (÷ 1,02, taux additionnés).\n• E3 : le prix du 1er janvier 2026 est celui du 31 décembre 2025 : 20,70 €/m² × 50 m² = 1 035,00 € ; contrôle 1 035 × 1,06 × 0,96 = 1 053,22.\n• E4 : l’écart de 90 € vient de F004 (12 430 saisi pour 12 340 : inversion, 90 = 9 × 10). TVA = 48 705 × 0,20 = 9 741 €, pas 9 759 € (base du grand livre).\n• S’attarder sur l’énigme la moins résolue (pupitre).\n• Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3 le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).\n• Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce qu’elle ne peut pas faire. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -9582,67 +8208,25 @@
             }
           ],
           "codeFinal": "K7M2Q94X"
-        }
-      },
-      {
-        "id": "B2-01-A6-02-CORRECTION",
-        "type": "fp-story",
-        "titre": "Correction du coffre : les quatre vérifications",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-01-A6-02-CORRECTION",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-01-A6-02-CORRECTION",
-              "renderer": "answer-review",
-              "props": {
-                "title": "Correction du coffre : les quatre vérifications",
-                "source": {
-                  "screenId": "B2-01-A6-02-COFFRE"
-                },
-                "explications": [
-                  {
-                    "reference": "b2-01-a6-e1-mix",
-                    "texte": "Marges : 54 000 + 33 600 + 52 800 = 140 400 € ; 140 400 ÷ 600 000 = 23,4 %. La moyenne simple des trois taux (26,7 %) ignore le poids de chaque canal."
-                  },
-                  {
-                    "reference": "b2-01-a6-e2-points",
-                    "texte": "23,4 − 26,2 = −2,8 points. L’écart entre deux taux se dit en points ; −10,7 % serait l’évolution relative du taux."
-                  },
-                  {
-                    "reference": "b2-01-a6-e3-rouleau",
-                    "texte": "Coefficient global : 1,06 × 0,96 = 1,0176 ; 1 053,22 ÷ 1,0176 ≈ 1 035,00 €, soit 20,70 €/m² × 50 m². Diviser par 1,02 (taux additionnés) donnerait 1 032,57 €."
-                  },
-                  {
-                    "reference": "b2-01-a6-e4-tva",
-                    "texte": "L’écart de 90 € vient de F004 : 12 430 saisi pour 12 340 (inversion, 90 = 9 × 10). La pièce fait foi : TVA = 48 705 × 0,20 = 9 741 €, et non 9 759 € (base du grand livre)."
-                  }
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": [
-                "moyenne-ponderee",
-                "point-de-pourcentage",
-                "evolution-reciproque",
-                "controle-coherence"
-              ],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
         },
-        "ecranCorrige": "B2-01-A6-02-COFFRE",
-        "notes": "• S’attarder sur l’énigme la moins résolue (pupitre).\n• Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3 le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).\n• Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce qu’elle ne peut pas faire. »",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null
+        "explications": [
+          {
+            "reference": "b2-01-a6-e1-mix",
+            "texte": "Marges : 54 000 + 33 600 + 52 800 = 140 400 € ; 140 400 ÷ 600 000 = 23,4 %. La moyenne simple des trois taux (26,7 %) ignore le poids de chaque canal."
+          },
+          {
+            "reference": "b2-01-a6-e2-points",
+            "texte": "23,4 − 26,2 = −2,8 points. L’écart entre deux taux se dit en points ; −10,7 % serait l’évolution relative du taux."
+          },
+          {
+            "reference": "b2-01-a6-e3-rouleau",
+            "texte": "Coefficient global : 1,06 × 0,96 = 1,0176 ; 1 053,22 ÷ 1,0176 ≈ 1 035,00 €, soit 20,70 €/m² × 50 m². Diviser par 1,02 (taux additionnés) donnerait 1 032,57 €."
+          },
+          {
+            "reference": "b2-01-a6-e4-tva",
+            "texte": "L’écart de 90 € vient de F004 : 12 430 saisi pour 12 340 (inversion, 90 = 9 × 10). La pièce fait foi : TVA = 48 705 × 0,20 = 9 741 €, et non 9 759 € (base du grand livre)."
+          }
+        ]
       },
       {
         "id": "B2-01-A6-03-IA-CADRE",
@@ -10916,18 +9500,9 @@
         "id": "B2-01-A1-10-AUDIT-DIAPOSITIVE",
         "type": "ecran-verrouille",
         "titre": "Audit de la diapositive",
-        "duree": 2,
+        "duree": 3,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A1-10-CORRECTION",
-        "type": "ecran-verrouille",
-        "titre": "Correction : l’audit de la diapositive",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A1-10-AUDIT-DIAPOSITIVE"
       },
       {
         "id": "B2-01-A1-11-JALON-1",
@@ -11050,35 +9625,17 @@
         "id": "B2-01-A2-03-ATELIER-1",
         "type": "ecran-verrouille",
         "titre": "Atelier 1 — Lire, rapporter, estimer",
-        "duree": 6,
+        "duree": 7,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A2-03-CORRECTION-1",
-        "type": "ecran-verrouille",
-        "titre": "Correction de l’atelier 1 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A2-03-ATELIER-1"
       },
       {
         "id": "B2-01-A2-03-ATELIER-1-SUITE",
         "type": "ecran-verrouille",
         "titre": "Atelier 1 — Lire, rapporter, estimer (suite)",
-        "duree": 6,
+        "duree": 7,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A2-03-CORRECTION-2",
-        "type": "ecran-verrouille",
-        "titre": "Correction de l’atelier 1 : questions 4 à 6",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A2-03-ATELIER-1-SUITE"
       },
       {
         "id": "B2-01-A2-05-ECRITURES",
@@ -11092,18 +9649,9 @@
         "id": "B2-01-A2-06-POINTS",
         "type": "ecran-verrouille",
         "titre": "Points ou pourcentage : la phrase du comité",
-        "duree": 2,
+        "duree": 4,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A2-06-CORRECTION",
-        "type": "ecran-verrouille",
-        "titre": "Correction : points ou pourcentage",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A2-06-POINTS"
       },
       {
         "id": "B2-01-A2-07-JEU-COMPARABLE",
@@ -11158,18 +9706,9 @@
         "id": "B2-01-A3-04-FIL-TECHNIQUE",
         "type": "ecran-verrouille",
         "titre": "Le fil technique : choisir l’opération inverse",
-        "duree": 2,
+        "duree": 4,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A3-04-CORRECTION",
-        "type": "ecran-verrouille",
-        "titre": "Correction : le fil technique",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A3-04-FIL-TECHNIQUE"
       },
       {
         "id": "B2-01-A3-05-INFLATION-RYTHME",
@@ -11224,52 +9763,25 @@
         "id": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN",
         "type": "ecran-verrouille",
         "titre": "Le loyer de l’atelier : lire un indice et un rythme",
-        "duree": 3,
+        "duree": 5,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A3-06-CORRECTION",
-        "type": "ecran-verrouille",
-        "titre": "Correction : lire un indice et un rythme",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A3-06-INDICE-ET-TAUX-MOYEN"
       },
       {
         "id": "B2-01-A3-07-ATELIER-2",
         "type": "ecran-verrouille",
         "titre": "Atelier 2 — Rythme, niveau, indice",
-        "duree": 4,
+        "duree": 5,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A3-07-CORRECTION-1",
-        "type": "ecran-verrouille",
-        "titre": "Correction de l’atelier 2 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A3-07-ATELIER-2"
       },
       {
         "id": "B2-01-A3-07-ATELIER-2-SUITE",
         "type": "ecran-verrouille",
         "titre": "Atelier 2 — Rythme, niveau, indice (suite)",
-        "duree": 4,
+        "duree": 5,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A3-07-CORRECTION-2",
-        "type": "ecran-verrouille",
-        "titre": "Correction de l’atelier 2 : questions 4 et 5",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A3-07-ATELIER-2-SUITE"
       },
       {
         "id": "B2-01-A3-08-INDICE-PRIX",
@@ -11347,35 +9859,17 @@
         "id": "B2-01-A4-03-ATELIER-3",
         "type": "ecran-verrouille",
         "titre": "Atelier 3 — Habiller le graphique du comité",
-        "duree": 3,
+        "duree": 4,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A4-03-CORRECTION-1",
-        "type": "ecran-verrouille",
-        "titre": "Correction de l’atelier 3 : forme et titre",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A4-03-ATELIER-3"
       },
       {
         "id": "B2-01-A4-03-ATELIER-3-SUITE",
         "type": "ecran-verrouille",
         "titre": "Atelier 3 — Habiller le graphique du comité (suite)",
-        "duree": 3,
+        "duree": 4,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A4-03-CORRECTION-2",
-        "type": "ecran-verrouille",
-        "titre": "Correction de l’atelier 3 : axe et lecture",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A4-03-ATELIER-3-SUITE"
       },
       {
         "id": "B2-01-A4-04-CA-TRIMESTRIEL",
@@ -11389,18 +9883,9 @@
         "id": "B2-01-A4-05-INDICE-TOILE",
         "type": "ecran-verrouille",
         "titre": "Tâche de tableur 2 — Prix et indice de la toile",
-        "duree": 9,
+        "duree": 11,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A4-05-CORRECTION",
-        "type": "ecran-verrouille",
-        "titre": "Correction : prix et indice de la toile",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A4-05-INDICE-TOILE"
       },
       {
         "id": "B2-01-A4-06-JALON-4",
@@ -11452,18 +9937,9 @@
         "id": "B2-01-A5-03-MOYENNE-PONDEREE",
         "type": "ecran-verrouille",
         "titre": "Prouver l’effet de répartition",
-        "duree": 3,
+        "duree": 5,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A5-03-CORRECTION",
-        "type": "ecran-verrouille",
-        "titre": "Correction : prouver l’effet de répartition",
-        "duree": 2,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A5-03-MOYENNE-PONDEREE"
       },
       {
         "id": "B2-01-A5-02-VOTE-PARADOXE",
@@ -11493,35 +9969,17 @@
         "id": "B2-01-A5-06-ATELIER-4",
         "type": "ecran-verrouille",
         "titre": "Atelier 4 — Du constat à la preuve",
-        "duree": 4,
+        "duree": 5,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A5-06-CORRECTION-1",
-        "type": "ecran-verrouille",
-        "titre": "Correction de l’atelier 4 : questions 1 à 3",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A5-06-ATELIER-4"
       },
       {
         "id": "B2-01-A5-06-ATELIER-4-SUITE",
         "type": "ecran-verrouille",
         "titre": "Atelier 4 — Du constat à la preuve (suite)",
-        "duree": 3,
+        "duree": 4,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A5-06-CORRECTION-2",
-        "type": "ecran-verrouille",
-        "titre": "Correction de l’atelier 4 : questions 4 et 5",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A5-06-ATELIER-4-SUITE"
       },
       {
         "id": "B2-01-A5-07-CONTROLE-DISCRIMINANT",
@@ -11576,18 +10034,9 @@
         "id": "B2-01-A6-02-COFFRE",
         "type": "ecran-verrouille",
         "titre": "Le coffre du comité",
-        "duree": 9,
+        "duree": 10,
         "interactif": false,
         "donnees": {}
-      },
-      {
-        "id": "B2-01-A6-02-CORRECTION",
-        "type": "ecran-verrouille",
-        "titre": "Correction du coffre : les quatre vérifications",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {},
-        "ecranCorrige": "B2-01-A6-02-COFFRE"
       },
       {
         "id": "B2-01-A6-03-IA-CADRE",

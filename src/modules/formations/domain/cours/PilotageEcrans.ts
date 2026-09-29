@@ -10,6 +10,7 @@ import {
   PhaseNonMonotoneError,
   PilotageIncompatibleError,
 } from '../errors/FormationErrors';
+import { correctionsRevelables } from './CorrectionSurPlace';
 import { questionsDe } from './Cours';
 import { activitesDeLEcran, etayageAtteint } from './EcranServi';
 
@@ -65,6 +66,21 @@ function assertReglagesDeLaMachine(
   }
 }
 
+function assertCorrectionsRevelables(
+  ecran: Ecran,
+  demandees: number,
+  refuser: (raison: string) => never,
+): void {
+  const revelables = correctionsRevelables(ecran);
+  if (revelables === null) {
+    refuser('seul un exercice corrigé sur place révèle ses corrections');
+    return;
+  }
+  if (demandees > revelables) {
+    refuser(`${demandees} corrections au-delà des ${revelables} explications`);
+  }
+}
+
 export function assertPilotageCompatible(
   ecran: Ecran,
   demande: PilotageDemande,
@@ -95,6 +111,9 @@ export function assertPilotageCompatible(
   }
   if (demande.optionsAffichees !== undefined && ecran.brique !== 'fp-recall') {
     refuser('seul un rappel diffère l affichage de ses options');
+  }
+  if (demande.explicationsDevoilees !== undefined) {
+    assertCorrectionsRevelables(ecran, demande.explicationsDevoilees, refuser);
   }
   if (demande.etayage === undefined) {
     return;
@@ -144,7 +163,9 @@ export function fusionnerPilotage(
   if (
     (changements.revele === false && precedent.revele === true) ||
     (changements.optionsAffichees === false &&
-      precedent.optionsAffichees === true)
+      precedent.optionsAffichees === true) ||
+    (changements.explicationsDevoilees ?? Infinity) <
+      (precedent.explicationsDevoilees ?? 0)
   ) {
     throw new PhaseNonMonotoneError(screenId);
   }

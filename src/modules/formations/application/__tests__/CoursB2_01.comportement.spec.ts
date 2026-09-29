@@ -58,10 +58,10 @@ describe('B2-01 — comportement des cas d’usage servis par les contrôleurs',
 
     expect(cours.id).toBe(COURS.slug);
     expect(cours.duree).toBe(211);
-    expect(cours.ecrans).toHaveLength(74);
+    expect(cours.ecrans).toHaveLength(59);
     expect(
       cours.ecrans.filter((ecran) => ecran.type === 'ecran-verrouille'),
-    ).toHaveLength(62);
+    ).toHaveLength(47);
     expect(cours.ecrans.every((ecran) => (ecran.titre ?? '').length > 0)).toBe(
       true,
     );
@@ -104,8 +104,8 @@ describe('B2-01 — comportement des cas d’usage servis par les contrôleurs',
       (ecran) => ecran.type === 'ecran-verrouille',
     );
 
-    expect(sujet.ecrans).toHaveLength(74);
-    expect(verrouilles).toHaveLength(74 - (ECRAN_COURANT + 1));
+    expect(sujet.ecrans).toHaveLength(59);
+    expect(verrouilles).toHaveLength(59 - (ECRAN_COURANT + 1));
     expect(sujet.ecrans.slice(0, ECRAN_COURANT + 1).map((e) => e.type)).toEqual(
       COURS.ecrans.slice(0, ECRAN_COURANT + 1).map((e) => e.brique),
     );

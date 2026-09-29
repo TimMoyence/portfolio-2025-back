@@ -453,71 +453,66 @@ const ACTE_1: moteur.Acte = [
         'Diagramme en barres : marge brute de 2022 à 2025, axe vertical de 284 000 € à 292 000 € ; barres de 285 000 €, 288 000 €, 289 800 € et 291 000 €.',
     },
   ),
-  {
-    screenId: 'B2-01-A1-10-AUDIT-DIAPOSITIVE',
-    titre: 'Audit de la diapositive',
-    diffusion: 'seance',
-    brique: 'fp-challenge',
-    dureeMinutes: 2,
-    concepts: ['lecture-graphique'],
-    notes: moteur.puces(
-      '2 min d’écriture individuelle, puis révélation au pupitre.',
-      'Repérer ceux qui citent l’axe et ceux qui ne citent que la couleur ou le titre.',
-      'Avant de révéler, faire trouver la piste fausse : changer la couleur ne corrige rien.',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      probleme: {
-        id: 'b2-01-a1-audit-diapositive',
-        enonce:
-          'Sur la diapositive de Samir, la barre 2025 est sept fois plus haute que la barre 2022. Hélène demande si elle peut la projeter telle quelle jeudi.',
-        invite:
-          'Écrivez trois vérifications à faire avant de lui répondre, puis votre réponse en une phrase.',
-      },
-      corrige: {
-        type: 'defi',
-        strategies: [
-          moteur.strategie(
-            'axe',
-            'Lire l’origine et l’amplitude de l’axe vertical avant de comparer les hauteurs.',
-          ),
-          moteur.strategie(
-            'evolution',
-            'Calculer l’évolution réelle entre 2022 et 2025 avant de parler de croissance.',
-          ),
-          moteur.strategie(
-            'titre',
-            'Vérifier que le titre décrit la mesure au lieu de conclure.',
-          ),
-          moteur.strategie(
-            'montant',
-            'Comparer la marge au CA : un montant ne dit rien de la rentabilité.',
-          ),
-          moteur.strategie(
-            'couleur',
-            'Changer la couleur des barres pour rendre le graphique plus neutre.',
-            true,
-          ),
-        ],
-      },
-      renvoi: 'B2-01-A1-09-DIAPOSITIVE',
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A1-10-CORRECTION',
-      titre: 'Correction : l’audit de la diapositive',
-      sousTitre:
-        'Avant de comparer des hauteurs, on lit l’axe ; avant de parler de croissance, on calcule l’évolution.',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A1-10-AUDIT-DIAPOSITIVE',
+      titre: 'Audit de la diapositive',
+      diffusion: 'seance',
+      brique: 'fp-challenge',
+      dureeMinutes: 2,
       concepts: ['lecture-graphique'],
       notes: moteur.puces(
+        '2 min d’écriture individuelle, puis révélation au pupitre.',
+        'Repérer ceux qui citent l’axe et ceux qui ne citent que la couleur ou le titre.',
+        'Avant de révéler, faire trouver la piste fausse : changer la couleur ne corrige rien.',
+      ),
+      proprietes: {
+        modalite: 'solo',
+        probleme: {
+          id: 'b2-01-a1-audit-diapositive',
+          enonce:
+            'Sur la diapositive de Samir, la barre 2025 est sept fois plus haute que la barre 2022. Hélène demande si elle peut la projeter telle quelle jeudi.',
+          invite:
+            'Écrivez trois vérifications à faire avant de lui répondre, puis votre réponse en une phrase.',
+        },
+        corrige: {
+          type: 'defi',
+          strategies: [
+            moteur.strategie(
+              'axe',
+              'Lire l’origine et l’amplitude de l’axe vertical avant de comparer les hauteurs.',
+            ),
+            moteur.strategie(
+              'evolution',
+              'Calculer l’évolution réelle entre 2022 et 2025 avant de parler de croissance.',
+            ),
+            moteur.strategie(
+              'titre',
+              'Vérifier que le titre décrit la mesure au lieu de conclure.',
+            ),
+            moteur.strategie(
+              'montant',
+              'Comparer la marge au CA : un montant ne dit rien de la rentabilité.',
+            ),
+            moteur.strategie(
+              'couleur',
+              'Changer la couleur des barres pour rendre le graphique plus neutre.',
+              true,
+            ),
+          ],
+        },
+        renvoi: 'B2-01-A1-09-DIAPOSITIVE',
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         '1 min de mise en commun : faire lire à voix haute deux vérifications justes.',
+        'Avant de comparer des hauteurs, on lit l’axe ; avant de parler de croissance, on calcule l’évolution.',
         'Ne pas donner l’évolution réelle (+2,1 %) : c’est la première question de l’atelier 1.',
         'Transition : jalon 1.',
-      ),
+      ],
     },
-    'B2-01-A1-10-AUDIT-DIAPOSITIVE',
     [
       [
         'axe',
@@ -649,89 +644,88 @@ const ACTE_2: moteur.Acte = [
         'Comparez les deux figures : à gauche l’axe de Samir part de 284 000 €, à droite il part de 0 €. Sous chacune, le rapport des hauteurs est indiqué : expliquez pourquoi il change alors que les montants, eux, ne bougent pas.',
     },
   },
-  {
-    screenId: 'B2-01-A2-03-ATELIER-1',
-    titre: 'Atelier 1 — Lire, rapporter, estimer',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 6,
-    concepts: ['lecture-graphique', 'proportion'],
-    notes: moteur.puces(
-      '5 min de travail sur les questions 1 à 3 (annoncer « plus qu’une minute » à 4 min), puis 1 min de comparaison avec le voisin.',
-      'Pièges : Q1 « sept fois plus » (axe) ; Q3 « 84 % des commandes, donc 84 % du CA ».',
-      'Contrôle à faire dire : 1 150 000 × 0,455 ≈ 523 000.',
-    ),
-    proprietes: {
-      renvoi: 'B2-01-A1-09-DIAPOSITIVE',
-      intitule: 'Atelier 1 — Lire, rapporter, estimer (questions 1 à 3)',
-      consigne:
-        'Calculatrice autorisée. Répondez seul·e, puis comparez avec votre voisin·e avant la correction.',
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.vote(
-          'b2-01-a2-evolution-marge',
-          'lecture-graphique',
-          true,
-          'La diapositive de Samir montre une marge brute passée de 285 000 € (2022) à 291 000 € (2025). Quelle évolution réelle représente-t-elle ?',
-          '+2,1 % en trois ans',
-          [
-            [
-              'Environ sept fois plus de marge qu’en 2022',
-              'axe-tronque-lu-comme-ecart',
-            ],
-            ['+6 000 € : une forte croissance', 'ecart-absolu-au-lieu-du-taux'],
-          ],
-          ['+2,1 %', 'trois ans'],
-        ),
-        moteur.numerique(
-          'b2-01-a2-part-marketplace',
-          'proportion',
-          'En 2025, la marketplace réalise 523 000 € d’un CA HT total de 1 150 000 €. Quelle part du CA représente-t-elle ? Réponse en %, arrondie au dixième.',
-          '%',
-          45.478261,
-          { type: 'absolue', valeur: 0.05 },
-          '45,5',
-          [
-            [0.454783, 'taux-valeur-facteur-cent'],
-            [219.885277, 'base-inversee'],
-          ],
-        ),
-        moteur.vote(
-          'b2-01-a2-population-reference',
-          'proportion',
-          true,
-          'La marketplace traite 4 200 des 5 000 commandes de 2025, soit 84 %. Samir en conclut qu’elle réalise « l’essentiel du chiffre d’affaires ». Que lui répondez-vous ?',
-          'Rien ne le prouve : 84 % des commandes ne disent rien de la part du CA.',
-          [
-            [
-              'Il a raison : 84 % des commandes, c’est environ 84 % du CA.',
-              'population-reference-ignoree',
-            ],
-            [
-              'Il a tort : il fallait diviser 5 000 par 4 200.',
-              'base-inversee',
-            ],
-          ],
-          ['commandes', 'part du CA'],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A2-03-CORRECTION-1',
-      titre: 'Correction de l’atelier 1 : questions 1 à 3',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A2-03-ATELIER-1',
+      titre: 'Atelier 1 — Lire, rapporter, estimer',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 6,
       concepts: ['lecture-graphique', 'proportion'],
       notes: moteur.puces(
+        '5 min de travail sur les questions 1 à 3 (annoncer « plus qu’une minute » à 4 min), puis 1 min de comparaison avec le voisin.',
+        'Pièges : Q1 « sept fois plus » (axe) ; Q3 « 84 % des commandes, donc 84 % du CA ».',
+        'Contrôle à faire dire : 1 150 000 × 0,455 ≈ 523 000.',
+      ),
+      proprietes: {
+        renvoi: 'B2-01-A1-09-DIAPOSITIVE',
+        intitule: 'Atelier 1 — Lire, rapporter, estimer (questions 1 à 3)',
+        consigne:
+          'Calculatrice autorisée. Répondez seul·e, puis comparez avec votre voisin·e avant la correction.',
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.vote(
+            'b2-01-a2-evolution-marge',
+            'lecture-graphique',
+            true,
+            'La diapositive de Samir montre une marge brute passée de 285 000 € (2022) à 291 000 € (2025). Quelle évolution réelle représente-t-elle ?',
+            '+2,1 % en trois ans',
+            [
+              [
+                'Environ sept fois plus de marge qu’en 2022',
+                'axe-tronque-lu-comme-ecart',
+              ],
+              [
+                '+6 000 € : une forte croissance',
+                'ecart-absolu-au-lieu-du-taux',
+              ],
+            ],
+            ['+2,1 %', 'trois ans'],
+          ),
+          moteur.numerique(
+            'b2-01-a2-part-marketplace',
+            'proportion',
+            'En 2025, la marketplace réalise 523 000 € d’un CA HT total de 1 150 000 €. Quelle part du CA représente-t-elle ? Réponse en %, arrondie au dixième.',
+            '%',
+            45.478261,
+            { type: 'absolue', valeur: 0.05 },
+            '45,5',
+            [
+              [0.454783, 'taux-valeur-facteur-cent'],
+              [219.885277, 'base-inversee'],
+            ],
+          ),
+          moteur.vote(
+            'b2-01-a2-population-reference',
+            'proportion',
+            true,
+            'La marketplace traite 4 200 des 5 000 commandes de 2025, soit 84 %. Samir en conclut qu’elle réalise « l’essentiel du chiffre d’affaires ». Que lui répondez-vous ?',
+            'Rien ne le prouve : 84 % des commandes ne disent rien de la part du CA.',
+            [
+              [
+                'Il a raison : 84 % des commandes, c’est environ 84 % du CA.',
+                'population-reference-ignoree',
+              ],
+              [
+                'Il a tort : il fallait diviser 5 000 par 4 200.',
+                'base-inversee',
+              ],
+            ],
+            ['commandes', 'part du CA'],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         'Commencer par la question la moins réussie (score affiché sous chaque correction).',
         'Rapprocher Q2 et Q3 : la marketplace fait 84 % des commandes mais 45,5 % du CA ; même canal, deux populations de référence.',
         'Q1 : si « +6 000 € : une forte croissance » domine, faire rapporter l’écart à 285 000 € : +2,1 %.',
         'Transition : « Trois questions de plus : deux évolutions, puis marge et marque. »',
-      ),
+      ],
     },
-    'B2-01-A2-03-ATELIER-1',
     [
       [
         'b2-01-a2-evolution-marge',
@@ -747,83 +741,79 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-01-A2-03-ATELIER-1-SUITE',
-    titre: 'Atelier 1 — Lire, rapporter, estimer (suite)',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 6,
-    concepts: ['taux-evolution', 'pourcentage'],
-    notes: moteur.puces(
-      '5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).',
-      'Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.',
-      'Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.',
-    ),
-    proprietes: {
-      intitule: 'Atelier 1 — Lire, rapporter, estimer (questions 4 à 6)',
-      consigne:
-        'Calculatrice autorisée, sauf pour la question sur le nombre de commandes (ordre de grandeur). Répondez seul·e, puis comparez avec votre voisin·e avant la correction.',
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.numerique(
-          'b2-01-a2-evolution-sur-mesure',
-          'taux-evolution',
-          'Le CA HT du sur-mesure passe de 483 000 € (2024) à 397 000 € (2025). Quel est son taux d’évolution ? Réponse en %, arrondie au centième, signe compris.',
-          '%',
-          -17.805383,
-          moteur.DEUX_DECIMALES,
-          '−17,81',
-          [
-            [-21.662469, 'base-arrivee'],
-            [-86000, 'ecart-absolu-au-lieu-du-taux'],
-            [82.194617, 'coefficient-confondu-avec-taux'],
-            [17.805383, 'sens-de-variation'],
-          ],
-        ),
-        moteur.vote(
-          'b2-01-a2-ordre-de-grandeur',
-          'taux-evolution',
-          true,
-          'Sans calculatrice : le nombre de commandes de la marketplace passe de 2 900 (2024) à 4 200 (2025). La hausse est d’environ…',
-          'Environ +45 %',
-          [
-            ['Environ +31 %', 'base-arrivee'],
-            ['Environ +1 300 %', 'ecart-absolu-au-lieu-du-taux'],
-          ],
-        ),
-        moteur.vote(
-          'b2-01-a2-marge-marque',
-          'pourcentage',
-          true,
-          'Atelier Rivage achète un sac étanche 80 € HT à son atelier partenaire et le revend 100 € HT. Quelle affirmation est exacte ?',
-          'Taux de marque : 20 % ; taux de marge : 25 %',
-          [
-            [
-              'Taux de marque : 25 % ; taux de marge : 20 %',
-              'marque-confondue-avec-marge',
-            ],
-            ['Taux de marque : 20 % ; taux de marge : 20 %', 'base-arrivee'],
-          ],
-          ['marque : 20 %', 'marge : 25 %'],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A2-03-CORRECTION-2',
-      titre: 'Correction de l’atelier 1 : questions 4 à 6',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A2-03-ATELIER-1-SUITE',
+      titre: 'Atelier 1 — Lire, rapporter, estimer (suite)',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 6,
       concepts: ['taux-evolution', 'pourcentage'],
       notes: moteur.puces(
+        '5 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 à 3).',
+        'Pièges : sur-mesure (Q4) −21,66 % (÷ 397 000) ou 17,81 sans signe ; commandes (Q5) ≈ +31 % (÷ 4 200) ; marque et marge (Q6) inversées.',
+        'Contrôles à faire dire : 483 000 × 0,822 ≈ 397 000 ; 80 × 1,25 = 100.',
+      ),
+      proprietes: {
+        intitule: 'Atelier 1 — Lire, rapporter, estimer (questions 4 à 6)',
+        consigne:
+          'Calculatrice autorisée, sauf pour la question sur le nombre de commandes (ordre de grandeur). Répondez seul·e, puis comparez avec votre voisin·e avant la correction.',
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.numerique(
+            'b2-01-a2-evolution-sur-mesure',
+            'taux-evolution',
+            'Le CA HT du sur-mesure passe de 483 000 € (2024) à 397 000 € (2025). Quel est son taux d’évolution ? Réponse en %, arrondie au centième, signe compris.',
+            '%',
+            -17.805383,
+            moteur.DEUX_DECIMALES,
+            '−17,81',
+            [
+              [-21.662469, 'base-arrivee'],
+              [-86000, 'ecart-absolu-au-lieu-du-taux'],
+              [82.194617, 'coefficient-confondu-avec-taux'],
+              [17.805383, 'sens-de-variation'],
+            ],
+          ),
+          moteur.vote(
+            'b2-01-a2-ordre-de-grandeur',
+            'taux-evolution',
+            true,
+            'Sans calculatrice : le nombre de commandes de la marketplace passe de 2 900 (2024) à 4 200 (2025). La hausse est d’environ…',
+            'Environ +45 %',
+            [
+              ['Environ +31 %', 'base-arrivee'],
+              ['Environ +1 300 %', 'ecart-absolu-au-lieu-du-taux'],
+            ],
+          ),
+          moteur.vote(
+            'b2-01-a2-marge-marque',
+            'pourcentage',
+            true,
+            'Atelier Rivage achète un sac étanche 80 € HT à son atelier partenaire et le revend 100 € HT. Quelle affirmation est exacte ?',
+            'Taux de marque : 20 % ; taux de marge : 25 %',
+            [
+              [
+                'Taux de marque : 25 % ; taux de marge : 20 %',
+                'marque-confondue-avec-marge',
+              ],
+              ['Taux de marque : 20 % ; taux de marge : 20 %', 'base-arrivee'],
+            ],
+            ['marque : 20 %', 'marge : 25 %'],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         'Commencer par la question la moins réussie ; à l’écran, elles sont numérotées 1 à 3.',
         'Sur-mesure : nommer les deux erreurs, −21,66 % (÷ 397 000, la valeur d’arrivée) et 17,81 sans signe moins.',
         'Revenir à la diapositive de Samir : de 285 000 € à 291 000 €, la marge brute gagne +6 000 €, soit +2,1 % en trois ans. Faire nommer les quatre exigences d’un graphique de référence : titre descriptif, unité, source, phrase de lecture chiffrée.',
         'Transition : « Cinq écritures reviennent sans cesse : fixons-les. »',
-      ),
+      ],
     },
-    'B2-01-A2-03-ATELIER-1-SUITE',
     [
       [
         'b2-01-a2-evolution-sur-mesure',
@@ -874,18 +864,7 @@ const ACTE_2: moteur.Acte = [
     },
     { renvoi: 'B2-01-A1-05-CORRECTION' },
   ),
-  ...moteur.suiviDeSonCorrige(
-    {
-      screenId: 'B2-01-A2-06-CORRECTION',
-      titre: 'Correction : points ou pourcentage',
-      dureeMinutes: 2,
-      concepts: ['point-de-pourcentage'],
-      notes: moteur.puces(
-        'Révéler une étape à la fois (« Corriger une étape de plus »), après avoir lu une réponse d’élève à l’étape.',
-        'S’arrêter sur l’étape 3 : la phrase du comité donne les points et l’évolution relative, jamais « −2,3 % ».',
-        'Transition : « Mini-jeu : tout n’est pas comparable. »',
-      ),
-    },
+  moteur.corrigeEtapeParEtape(
     {
       screenId: 'B2-01-A2-06-POINTS',
       titre: 'Points ou pourcentage : la phrase du comité',
@@ -894,7 +873,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['point-de-pourcentage'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
+        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
         'À l’étape 1, guetter « −2,3 % » : exiger « points ».',
       ),
       proprietes: {
@@ -942,6 +921,14 @@ const ACTE_2: moteur.Acte = [
         },
         etayage: 0,
       },
+    },
+    {
+      minutes: 2,
+      notes: [
+        'Révéler une étape à la fois (« Corriger une étape de plus »), après avoir lu une réponse d’élève à l’étape.',
+        'S’arrêter sur l’étape 3 : la phrase du comité donne les points et l’évolution relative, jamais « −2,3 % ».',
+        'Transition : « Mini-jeu : tout n’est pas comparable. »',
+      ],
     },
   ),
   ...moteur.suiviDeSaCorrection(
@@ -1248,19 +1235,7 @@ const ACTE_3: moteur.Acte = [
     },
     { renvoi: 'B2-01-A3-01-VOTE-HAUSSE-BAISSE' },
   ),
-  ...moteur.suiviDeSonCorrige(
-    {
-      screenId: 'B2-01-A3-04-CORRECTION',
-      titre: 'Correction : le fil technique',
-      dureeMinutes: 2,
-      concepts: ['evolutions-successives'],
-      notes: moteur.puces(
-        '« Corriger une étape de plus » : passer vite sur les étapes 1 à 3, s’arrêter sur 4 à 6 (l’opération inverse).',
-        'Réflexe à faire dire : retour au montant connu, 12,50 × 1,10 = 13,75.',
-        'L’étape 5 prépare la question « retour de 100 € à 80 € » de l’atelier 2.',
-        'Transition : « Et quand tous les prix montent ? L’inflation. »',
-      ),
-    },
+  moteur.corrigeEtapeParEtape(
     {
       screenId: 'B2-01-A3-04-FIL-TECHNIQUE',
       titre: 'Le fil technique : choisir l’opération inverse',
@@ -1269,7 +1244,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
+        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
         'Pièges : étapes 4-5, retirer 10 % de 13,75 € (12,375 € au lieu de 12,50 €) ; étape 6, retirer 20 % du TTC (2 880 € au lieu de 3 000 €).',
       ),
       proprietes: {
@@ -1330,6 +1305,15 @@ const ACTE_3: moteur.Acte = [
         etayage: 0,
       },
     },
+    {
+      minutes: 2,
+      notes: [
+        '« Corriger une étape de plus » : passer vite sur les étapes 1 à 3, s’arrêter sur 4 à 6 (l’opération inverse).',
+        'Réflexe à faire dire : retour au montant connu, 12,50 × 1,10 = 13,75.',
+        'L’étape 5 prépare la question « retour de 100 € à 80 € » de l’atelier 2.',
+        'Transition : « Et quand tous les prix montent ? L’inflation. »',
+      ],
+    },
   ),
   moteur.ecranV2(
     {
@@ -1366,18 +1350,7 @@ const ACTE_3: moteur.Acte = [
         'Diagramme en barres des taux d’inflation annuels moyens : 1,1 % en 2019, 0,5 % en 2020, 1,6 % en 2021, 5,2 % en 2022, 4,9 % en 2023, 2,0 % en 2024 et 0,9 % en 2025.',
     },
   ),
-  ...moteur.suiviDeSonCorrige(
-    {
-      screenId: 'B2-01-A3-06-CORRECTION',
-      titre: 'Correction : lire un indice et un rythme',
-      dureeMinutes: 2,
-      concepts: ['indice-base-100', 'taux-moyen'],
-      notes: moteur.puces(
-        '« Corriger une étape de plus » : 5 étapes en 2 min ; s’arrêter sur la 5ᵉ (19,10 ÷ 3).',
-        'Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (+6 % par an).',
-        'Transition : « Même méthode sur les prix en France depuis 2019 : atelier 2. »',
-      ),
-    },
+  moteur.corrigeEtapeParEtape(
     {
       screenId: 'B2-01-A3-06-INDICE-ET-TAUX-MOYEN',
       titre: 'Le loyer de l’atelier : lire un indice et un rythme',
@@ -1386,7 +1359,7 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['indice-base-100', 'taux-moyen'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
+        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
         'Pièges : lire 119,10 comme +119,10 % ; diviser 19,10 par 3 (6,37 %).',
         'Vérifier que chacun sait taper 1,19102 ^ (1 ÷ 3) sur sa calculatrice.',
       ),
@@ -1442,80 +1415,84 @@ const ACTE_3: moteur.Acte = [
         etayage: 0,
       },
     },
-  ),
-  {
-    screenId: 'B2-01-A3-07-ATELIER-2',
-    titre: 'Atelier 2 — Rythme, niveau, indice',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 4,
-    concepts: ['indice-base-100', 'evolutions-successives'],
-    notes: moteur.puces(
-      '4 min individuelles sur les questions 1 à 3.',
-      'Pièges : Q1 « plus bas » (rythme lu comme niveau) ; Q2 112,2 et Q3 15,1 % (taux additionnés).',
-    ),
-    proprietes: {
-      renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
-      intitule: 'Atelier 2 — Rythme, niveau, indice (questions 1 à 3)',
-      consigne: CONSIGNE_DE_L_ATELIER_2,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.vote(
-          'b2-01-a3-niveau-prix',
-          'indice-base-100',
-          true,
-          'L’inflation passe de 2,0 % en 2024 à 0,9 % en 2025. En 2025, le niveau général des prix est…',
-          'Plus élevé qu’en 2024',
-          [
-            ['Plus bas qu’en 2024', 'rythme-confondu-avec-niveau'],
-            ['Identique à celui de 2024', 'rythme-confondu-avec-niveau'],
-          ],
-          ['Plus élevé', '2024'],
-        ),
-        moteur.numerique(
-          'b2-01-a3-indice-2023',
-          'indice-base-100',
-          'Calculez l’indice des prix de 2023 (base 100 = moyenne 2019), arrondi au centième.',
-          null,
-          112.681079,
-          moteur.DEUX_DECIMALES,
-          '112,68',
-          [
-            [112.2, 'taux-successifs-additionnes'],
-            [12.681079, 'indice-lu-comme-taux'],
-          ],
-        ),
-        moteur.numerique(
-          'b2-01-a3-hausse-2019-2025',
-          'evolutions-successives',
-          'De combien les prix ont-ils augmenté entre 2019 et 2025 ? Réponse en %, arrondie au centième.',
-          '%',
-          15.969113,
-          moteur.DEUX_DECIMALES,
-          '15,97',
-          [
-            [15.1, 'taux-successifs-additionnes'],
-            [115.969113, 'indice-lu-comme-taux'],
-          ],
-        ),
+    {
+      minutes: 2,
+      notes: [
+        '« Corriger une étape de plus » : 5 étapes en 2 min ; s’arrêter sur la 5ᵉ (19,10 ÷ 3).',
+        'Distinguer à voix haute le niveau (indice 119,10), le taux global (+19,10 %) et le rythme (+6 % par an).',
+        'Transition : « Même méthode sur les prix en France depuis 2019 : atelier 2. »',
       ],
     },
-  },
-  moteur.correctionDesReponses(
+  ),
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A3-07-CORRECTION-1',
-      titre: 'Correction de l’atelier 2 : questions 1 à 3',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A3-07-ATELIER-2',
+      titre: 'Atelier 2 — Rythme, niveau, indice',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 4,
       concepts: ['indice-base-100', 'evolutions-successives'],
       notes: moteur.puces(
+        '4 min individuelles sur les questions 1 à 3.',
+        'Pièges : Q1 « plus bas » (rythme lu comme niveau) ; Q2 112,2 et Q3 15,1 % (taux additionnés).',
+      ),
+      proprietes: {
+        renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
+        intitule: 'Atelier 2 — Rythme, niveau, indice (questions 1 à 3)',
+        consigne: CONSIGNE_DE_L_ATELIER_2,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.vote(
+            'b2-01-a3-niveau-prix',
+            'indice-base-100',
+            true,
+            'L’inflation passe de 2,0 % en 2024 à 0,9 % en 2025. En 2025, le niveau général des prix est…',
+            'Plus élevé qu’en 2024',
+            [
+              ['Plus bas qu’en 2024', 'rythme-confondu-avec-niveau'],
+              ['Identique à celui de 2024', 'rythme-confondu-avec-niveau'],
+            ],
+            ['Plus élevé', '2024'],
+          ),
+          moteur.numerique(
+            'b2-01-a3-indice-2023',
+            'indice-base-100',
+            'Calculez l’indice des prix de 2023 (base 100 = moyenne 2019), arrondi au centième.',
+            null,
+            112.681079,
+            moteur.DEUX_DECIMALES,
+            '112,68',
+            [
+              [112.2, 'taux-successifs-additionnes'],
+              [12.681079, 'indice-lu-comme-taux'],
+            ],
+          ),
+          moteur.numerique(
+            'b2-01-a3-hausse-2019-2025',
+            'evolutions-successives',
+            'De combien les prix ont-ils augmenté entre 2019 et 2025 ? Réponse en %, arrondie au centième.',
+            '%',
+            15.969113,
+            moteur.DEUX_DECIMALES,
+            '15,97',
+            [
+              [15.1, 'taux-successifs-additionnes'],
+              [115.969113, 'indice-lu-comme-taux'],
+            ],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         'Commencer par la question la moins réussie.',
         'Ne pas citer le taux moyen ni 1,025⁶ : c’est la question suivante. Laisser 1,1597 en vue, elle en part.',
         'Niveau des prix : si « plus bas » domine, faire dire que 0,9 % reste une hausse (le mot « désinflation » viendra en A3-08).',
         'Transition : « Deux questions de plus : le rythme moyen, puis le retour en arrière. »',
-      ),
+      ],
     },
-    'B2-01-A3-07-ATELIER-2',
     [
       [
         'b2-01-a3-niveau-prix',
@@ -1531,64 +1508,60 @@ const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-01-A3-07-ATELIER-2-SUITE',
-    titre: 'Atelier 2 — Rythme, niveau, indice (suite)',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 4,
-    concepts: ['taux-moyen', 'evolution-reciproque'],
-    notes: moteur.puces(
-      '3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).',
-      'Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).',
-      'La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.',
-    ),
-    proprietes: {
-      renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
-      intitule: 'Atelier 2 — Rythme, niveau, indice (questions 4 et 5)',
-      consigne: CONSIGNE_DE_L_ATELIER_2,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.numerique(
-          'b2-01-a3-taux-moyen',
-          'taux-moyen',
-          'Quel taux annuel constant, appliqué six années de suite, donne la même hausse des prix entre 2019 et 2025 ? Réponse en %, arrondie au centième.',
-          '%',
-          2.499966,
-          moteur.DEUX_DECIMALES,
-          '2,50',
-          [
-            [2.661519, 'taux-moyen-arithmetique'],
-            [2.516667, 'taux-successifs-additionnes'],
-          ],
-        ),
-        moteur.vote(
-          'b2-01-a3-reciproque',
-          'evolution-reciproque',
-          true,
-          'Le prix d’une réparation est passé de 80 € à 100 €. Pour revenir à 80 €, de quel pourcentage faut-il le baisser ?',
-          'Une baisse de 20 %',
-          [
-            ['Une baisse de 25 %', 'reciproque-meme-taux'],
-            ['Une baisse de 80 %', 'coefficient-confondu-avec-taux'],
-          ],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A3-07-CORRECTION-2',
-      titre: 'Correction de l’atelier 2 : questions 4 et 5',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A3-07-ATELIER-2-SUITE',
+      titre: 'Atelier 2 — Rythme, niveau, indice (suite)',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 4,
       concepts: ['taux-moyen', 'evolution-reciproque'],
       notes: moteur.puces(
+        '3 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).',
+        'Pièges : taux moyen (Q4) 2,66 % (15,97 ÷ 6) ; réparation (Q5) « baisse de 25 % » (même taux à l’envers).',
+        'La réparation est le diagnostic du début à l’envers : +25 % à l’aller, −20 % au retour.',
+      ),
+      proprietes: {
+        renvoi: 'B2-01-A3-05-INFLATION-RYTHME',
+        intitule: 'Atelier 2 — Rythme, niveau, indice (questions 4 et 5)',
+        consigne: CONSIGNE_DE_L_ATELIER_2,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.numerique(
+            'b2-01-a3-taux-moyen',
+            'taux-moyen',
+            'Quel taux annuel constant, appliqué six années de suite, donne la même hausse des prix entre 2019 et 2025 ? Réponse en %, arrondie au centième.',
+            '%',
+            2.499966,
+            moteur.DEUX_DECIMALES,
+            '2,50',
+            [
+              [2.661519, 'taux-moyen-arithmetique'],
+              [2.516667, 'taux-successifs-additionnes'],
+            ],
+          ),
+          moteur.vote(
+            'b2-01-a3-reciproque',
+            'evolution-reciproque',
+            true,
+            'Le prix d’une réparation est passé de 80 € à 100 €. Pour revenir à 80 €, de quel pourcentage faut-il le baisser ?',
+            'Une baisse de 20 %',
+            [
+              ['Une baisse de 25 %', 'reciproque-meme-taux'],
+              ['Une baisse de 80 %', 'coefficient-confondu-avec-taux'],
+            ],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         'Taux moyen : la moyenne des six taux annuels (2,52 %) tombe près de 2,50 % parce que les taux sont petits ; la méthode reste fausse (A6-04 : 33,25 % au lieu de 32,6 %).',
         'Transition : « Voici la courbe que vous venez de calculer. »',
-      ),
+      ],
     },
-    'B2-01-A3-07-ATELIER-2-SUITE',
     [
       [
         'b2-01-a3-taux-moyen',
@@ -2034,66 +2007,62 @@ const ACTE_4: moteur.Acte = [
       ],
     },
   },
-  {
-    screenId: 'B2-01-A4-03-ATELIER-3',
-    titre: 'Atelier 3 — Habiller le graphique du comité',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 3,
-    concepts: ['lecture-graphique'],
-    notes: moteur.puces(
-      '3 min de travail sur la forme et le titre.',
-      'Piège principal : un titre qui conclut (« La marketplace s’envole… ») ; exiger un titre qui décrit, avec l’unité.',
-    ),
-    proprietes: {
-      intitule:
-        'Atelier 3 — Habiller le graphique du comité (questions 1 et 2)',
-      consigne: CONSIGNE_DE_L_ATELIER_3,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.vote(
-          'b2-01-a4-forme',
-          'lecture-graphique',
-          true,
-          'Quel graphique choisissez-vous pour montrer l’évolution trimestrielle du CA HT de chaque canal ?',
-          'Trois courbes, une par canal, trimestres en abscisse',
-          [
-            ['Trois secteurs en relief, un par canal', 'forme-inadaptee'],
-            ['Une barre par canal avec son CA annuel', 'forme-inadaptee'],
-          ],
-          ['courbes', 'trimestres'],
-        ),
-        moteur.vote(
-          'b2-01-a4-titre',
-          'lecture-graphique',
-          true,
-          'Quel titre donnez-vous à ce graphique ?',
-          'CA HT 2025 par canal et par trimestre (en milliers d’euros)',
-          [
-            [
-              'La marketplace s’envole au troisième trimestre',
-              'titre-interpretatif',
-            ],
-            ['Évolution des canaux', 'unite-manquante-ignoree'],
-          ],
-          ['par canal et par trimestre'],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A4-03-CORRECTION-1',
-      titre: 'Correction de l’atelier 3 : forme et titre',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A4-03-ATELIER-3',
+      titre: 'Atelier 3 — Habiller le graphique du comité',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 3,
       concepts: ['lecture-graphique'],
       notes: moteur.puces(
+        '3 min de travail sur la forme et le titre.',
+        'Piège principal : un titre qui conclut (« La marketplace s’envole… ») ; exiger un titre qui décrit, avec l’unité.',
+      ),
+      proprietes: {
+        intitule:
+          'Atelier 3 — Habiller le graphique du comité (questions 1 et 2)',
+        consigne: CONSIGNE_DE_L_ATELIER_3,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.vote(
+            'b2-01-a4-forme',
+            'lecture-graphique',
+            true,
+            'Quel graphique choisissez-vous pour montrer l’évolution trimestrielle du CA HT de chaque canal ?',
+            'Trois courbes, une par canal, trimestres en abscisse',
+            [
+              ['Trois secteurs en relief, un par canal', 'forme-inadaptee'],
+              ['Une barre par canal avec son CA annuel', 'forme-inadaptee'],
+            ],
+            ['courbes', 'trimestres'],
+          ),
+          moteur.vote(
+            'b2-01-a4-titre',
+            'lecture-graphique',
+            true,
+            'Quel titre donnez-vous à ce graphique ?',
+            'CA HT 2025 par canal et par trimestre (en milliers d’euros)',
+            [
+              [
+                'La marketplace s’envole au troisième trimestre',
+                'titre-interpretatif',
+              ],
+              ['Évolution des canaux', 'unite-manquante-ignoree'],
+            ],
+            ['par canal et par trimestre'],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         'Faire justifier la forme par la question posée : une évolution dans le temps.',
         'Transition : « Il reste l’axe et la phrase de lecture. »',
-      ),
+      ],
     },
-    'B2-01-A4-03-ATELIER-3',
     [
       [
         'b2-01-a4-forme',
@@ -2105,77 +2074,73 @@ const ACTE_4: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-01-A4-03-ATELIER-3-SUITE',
-    titre: 'Atelier 3 — Habiller le graphique du comité (suite)',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 3,
-    concepts: ['lecture-graphique'],
-    notes: moteur.puces(
-      '3 min seul.',
-      'Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).',
-      'Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).',
-    ),
-    proprietes: {
-      intitule:
-        'Atelier 3 — Habiller le graphique du comité (questions 3 et 4)',
-      consigne: CONSIGNE_DE_L_ATELIER_3,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.vote(
-          'b2-01-a4-axe',
-          'lecture-graphique',
-          true,
-          'Où placez-vous l’origine de l’axe vertical ?',
-          'À 0, avec une graduation tous les 20 000 €',
-          [
-            [
-              'À 49 000 €, la plus petite valeur du tableau',
-              'axe-tronque-lu-comme-ecart',
-            ],
-            [
-              'Nulle part : sans graduation, seules les courbes comptent',
-              'axe-tronque-lu-comme-ecart',
-            ],
-          ],
-          ['À 0', 'graduation'],
-        ),
-        moteur.vote(
-          'b2-01-a4-lecture',
-          'lecture-graphique',
-          true,
-          'Quelle phrase de lecture placez-vous sous le graphique ?',
-          'Au 3e trimestre, la marketplace atteint 167 000 €, contre 102 000 € pour le sur-mesure.',
-          [
-            [
-              'Au 3e trimestre, la marketplace réalise 167 % du CA.',
-              'valeur-confondue-avec-taux',
-            ],
-            [
-              'Au 3e trimestre, le sur-mesure s’effondre.',
-              'titre-interpretatif',
-            ],
-          ],
-          ['167 000 €', '102 000 €'],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A4-03-CORRECTION-2',
-      titre: 'Correction de l’atelier 3 : axe et lecture',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A4-03-ATELIER-3-SUITE',
+      titre: 'Atelier 3 — Habiller le graphique du comité (suite)',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 3,
       concepts: ['lecture-graphique'],
       notes: moteur.puces(
+        '3 min seul.',
+        'Pièges : l’axe à 49 000 € (le geste de la diapositive de Samir) ; « 167 % du CA » (167 milliers d’euros lus comme un pourcentage).',
+        'Pour les plus rapides : « Les quatre trimestres redonnent-ils le CA annuel ? » (397, 230 et 523 k€ : oui).',
+      ),
+      proprietes: {
+        intitule:
+          'Atelier 3 — Habiller le graphique du comité (questions 3 et 4)',
+        consigne: CONSIGNE_DE_L_ATELIER_3,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.vote(
+            'b2-01-a4-axe',
+            'lecture-graphique',
+            true,
+            'Où placez-vous l’origine de l’axe vertical ?',
+            'À 0, avec une graduation tous les 20 000 €',
+            [
+              [
+                'À 49 000 €, la plus petite valeur du tableau',
+                'axe-tronque-lu-comme-ecart',
+              ],
+              [
+                'Nulle part : sans graduation, seules les courbes comptent',
+                'axe-tronque-lu-comme-ecart',
+              ],
+            ],
+            ['À 0', 'graduation'],
+          ),
+          moteur.vote(
+            'b2-01-a4-lecture',
+            'lecture-graphique',
+            true,
+            'Quelle phrase de lecture placez-vous sous le graphique ?',
+            'Au 3e trimestre, la marketplace atteint 167 000 €, contre 102 000 € pour le sur-mesure.',
+            [
+              [
+                'Au 3e trimestre, la marketplace réalise 167 % du CA.',
+                'valeur-confondue-avec-taux',
+              ],
+              [
+                'Au 3e trimestre, le sur-mesure s’effondre.',
+                'titre-interpretatif',
+              ],
+            ],
+            ['167 000 €', '102 000 €'],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         '« Le sur-mesure s’effondre » est même faux au 3e trimestre : il remonte de 95 à 102 k€.',
         'Relance sur « 167 % du CA » : quelle est la vraie part ? 167 ÷ 318 ≈ 52,5 % (on la retrouvera dans le TCD).',
         'Transition : « Voici le graphique retenu pour le dossier. »',
-      ),
+      ],
     },
-    'B2-01-A4-03-ATELIER-3-SUITE',
     [
       [
         'b2-01-a4-axe',
@@ -2221,43 +2186,39 @@ const ACTE_4: moteur.Acte = [
         'Trois séries étiquetées sur quatre périodes : sur-mesure 120, 95, 102, 80 ; entretien 58, 61, 49, 62 ; marketplace 98, 131, 167, 127 (milliers d’euros) ; axe de 0 à 180.',
     },
   ),
-  {
-    screenId: 'B2-01-A4-05-INDICE-TOILE',
-    titre: 'Tâche de tableur 2 — Prix et indice de la toile',
-    diffusion: 'seance',
-    brique: 'fp-table-build',
-    dureeMinutes: 9,
-    concepts: ['evolutions-successives'],
-    notes: moteur.puces(
-      'Individuel, 7 min ; la correction de la synthèse vient à l’écran suivant.',
-      'Piège : recalculer chaque prix depuis 20,00 € (20,60 ; 21,40 ; 20,80 €). Le 20,80 € du tableau de bord de Samir vient de là.',
-      'Contrôles : 21,60 ; 20,52 ; 21,34 ; 20,70 € ; coefficients 1,08 ; 0,95 ; 1,04 ; 0,97 ; évolution réelle +3,50 % contre « +4 % ».',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      plan: PLAN_TABLEAU,
-      questions: [
-        moteur.questionDeTableau(
-          'b2-01-a4-indice-toile',
-          'evolutions-successives',
-          [PREMIERE_LIGNE_DU_TABLEAU, ...AUTRES_LIGNES_DU_TABLEAU],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A4-05-CORRECTION',
-      titre: 'Correction : prix et indice de la toile',
-      dureeMinutes: 2,
+      screenId: 'B2-01-A4-05-INDICE-TOILE',
+      titre: 'Tâche de tableur 2 — Prix et indice de la toile',
+      diffusion: 'seance',
+      brique: 'fp-table-build',
+      dureeMinutes: 9,
       concepts: ['evolutions-successives'],
       notes: moteur.puces(
+        'Individuel, 7 min ; la synthèse se corrige ensuite sur ce même écran.',
+        'Piège : recalculer chaque prix depuis 20,00 € (20,60 ; 21,40 ; 20,80 €). Le 20,80 € du tableau de bord de Samir vient de là.',
+        'Contrôles : 21,60 ; 20,52 ; 21,34 ; 20,70 € ; coefficients 1,08 ; 0,95 ; 1,04 ; 0,97 ; évolution réelle +3,50 % contre « +4 % ».',
+      ),
+      proprietes: {
+        modalite: 'solo',
+        plan: PLAN_TABLEAU,
+        questions: [
+          moteur.questionDeTableau(
+            'b2-01-a4-indice-toile',
+            'evolutions-successives',
+            [PREMIERE_LIGNE_DU_TABLEAU, ...AUTRES_LIGNES_DU_TABLEAU],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 2,
+      notes: [
         'Boucler avec la carte « toile » du tri A1-05, laissée « à vérifier à l’acte 4 » : +3,50 %, et non +4 %.',
         'Comparaison à l’inflation : prendre le glissement de l’IPC sur l’année (décembre à décembre, ≈ +0,8 %), pas la moyenne annuelle de 0,9 %.',
         'Transition : jalon 4, puis l’acte 5.',
-      ),
+      ],
     },
-    'B2-01-A4-05-INDICE-TOILE',
     [
       [
         'b2-01-a4-indice-toile',
@@ -2324,18 +2285,7 @@ const ACTE_5: moteur.Acte = [
       },
     },
   ),
-  ...moteur.suiviDeSonCorrige(
-    {
-      screenId: 'B2-01-A5-03-CORRECTION',
-      titre: 'Correction : prouver l’effet de répartition',
-      dureeMinutes: 2,
-      concepts: ['moyenne-ponderee'],
-      notes: moteur.puces(
-        '« Corriger une étape de plus » : vite sur les étapes 1 à 4, s’arrêter sur 5 (effet de répartition) et 6 (négation).',
-        'Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition −26 400 € = +1 200 € de marge.',
-        'Transition : « Vérifions que la classe sait l’expliquer : vote. »',
-      ),
-    },
+  moteur.corrigeEtapeParEtape(
     {
       screenId: 'B2-01-A5-03-MOYENNE-PONDEREE',
       titre: 'Prouver l’effet de répartition',
@@ -2344,7 +2294,7 @@ const ACTE_5: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['moyenne-ponderee'],
       notes: moteur.puces(
-        'Chacun répond sous chaque étape ; la correction vient à l’écran suivant.',
+        'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
         'Étapes difficiles : 5 (que serait la marge avec la répartition de 2024 ?) et 6 (négation d’un « si… alors » : « il existe… et… »).',
       ),
       proprietes: {
@@ -2405,6 +2355,14 @@ const ACTE_5: moteur.Acte = [
         },
         etayage: 0,
       },
+    },
+    {
+      minutes: 2,
+      notes: [
+        '« Corriger une étape de plus » : vite sur les étapes 1 à 4, s’arrêter sur 5 (effet de répartition) et 6 (négation).',
+        'Contrôle à écrire au tableau : effet volume +27 600 € (100 000 × 27,6 %) + effet de répartition −26 400 € = +1 200 € de marge.',
+        'Transition : « Vérifions que la classe sait l’expliquer : vote. »',
+      ],
     },
   ),
   {
@@ -2589,84 +2547,80 @@ const ACTE_5: moteur.Acte = [
       note: '« Moyenne de Taux » applique la fonction Moyenne aux trois valeurs du champ Taux ; le champ calculé Taux divise la marge par le CA, ligne par ligne et au total. Données fictives Atelier Rivage (3e trimestre 2025).',
     },
   ),
-  {
-    screenId: 'B2-01-A5-06-ATELIER-4',
-    titre: 'Atelier 4 — Du constat à la preuve',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 4,
-    concepts: ['proportion', 'taux-evolution', 'lecture-graphique'],
-    notes: moteur.puces(
-      '3 min de travail sur les questions 1 à 3.',
-      'Pièges : Q1 45,5 % (part du CA, pas de la marge) ; Q2 −86 000 € (écart de CA, pas de marge) ; Q3 « c’est prouvé ».',
-    ),
-    proprietes: {
-      intitule: 'Atelier 4 — Du constat à la preuve (questions 1 à 3)',
-      consigne: CONSIGNE_DE_L_ATELIER_4,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.numerique(
-          'b2-01-a5-part-marge-marketplace',
-          'proportion',
-          'En 2025, quelle part de la marge brute d’Atelier Rivage provient de la marketplace ? Réponse en %, arrondie au dixième.',
-          '%',
-          28.756014,
-          { type: 'absolue', valeur: 0.05 },
-          '28,8',
-          [
-            [45.478261, 'population-reference-ignoree'],
-            [0.28756, 'taux-valeur-facteur-cent'],
-            [347.753346, 'base-inversee'],
-          ],
-        ),
-        moteur.numerique(
-          'b2-01-a5-variation-marge-sur-mesure',
-          'taux-evolution',
-          'De combien la marge brute du sur-mesure a-t-elle varié entre 2024 et 2025 ? Réponse en euros, signe compris.',
-          '€',
-          -30960,
-          { type: 'absolue', valeur: 0.5 },
-          '−30 960',
-          [
-            [30960, 'sens-de-variation'],
-            [-86000, 'ca-confondu-avec-marge'],
-          ],
-        ),
-        moteur.vote(
-          'b2-01-a5-causalite',
-          'lecture-graphique',
-          true,
-          'Samir écrit : « La marketplace détourne nos clients du sur-mesure : son CA monte pendant que celui du sur-mesure baisse. » Que lui répondez-vous ?',
-          'Hypothèse plausible, à vérifier avec les données par client.',
-          [
-            [
-              'C’est prouvé : les deux évolutions sont simultanées.',
-              'correlation-prise-pour-causalite',
-            ],
-            [
-              'C’est exclu : les deux canaux n’ont pas les mêmes clients.',
-              'correlation-prise-pour-causalite',
-            ],
-          ],
-          ['Hypothèse', 'par client'],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A5-06-CORRECTION-1',
-      titre: 'Correction de l’atelier 4 : questions 1 à 3',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A5-06-ATELIER-4',
+      titre: 'Atelier 4 — Du constat à la preuve',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 4,
       concepts: ['proportion', 'taux-evolution', 'lecture-graphique'],
       notes: moteur.puces(
+        '3 min de travail sur les questions 1 à 3.',
+        'Pièges : Q1 45,5 % (part du CA, pas de la marge) ; Q2 −86 000 € (écart de CA, pas de marge) ; Q3 « c’est prouvé ».',
+      ),
+      proprietes: {
+        intitule: 'Atelier 4 — Du constat à la preuve (questions 1 à 3)',
+        consigne: CONSIGNE_DE_L_ATELIER_4,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.numerique(
+            'b2-01-a5-part-marge-marketplace',
+            'proportion',
+            'En 2025, quelle part de la marge brute d’Atelier Rivage provient de la marketplace ? Réponse en %, arrondie au dixième.',
+            '%',
+            28.756014,
+            { type: 'absolue', valeur: 0.05 },
+            '28,8',
+            [
+              [45.478261, 'population-reference-ignoree'],
+              [0.28756, 'taux-valeur-facteur-cent'],
+              [347.753346, 'base-inversee'],
+            ],
+          ),
+          moteur.numerique(
+            'b2-01-a5-variation-marge-sur-mesure',
+            'taux-evolution',
+            'De combien la marge brute du sur-mesure a-t-elle varié entre 2024 et 2025 ? Réponse en euros, signe compris.',
+            '€',
+            -30960,
+            { type: 'absolue', valeur: 0.5 },
+            '−30 960',
+            [
+              [30960, 'sens-de-variation'],
+              [-86000, 'ca-confondu-avec-marge'],
+            ],
+          ),
+          moteur.vote(
+            'b2-01-a5-causalite',
+            'lecture-graphique',
+            true,
+            'Samir écrit : « La marketplace détourne nos clients du sur-mesure : son CA monte pendant que celui du sur-mesure baisse. » Que lui répondez-vous ?',
+            'Hypothèse plausible, à vérifier avec les données par client.',
+            [
+              [
+                'C’est prouvé : les deux évolutions sont simultanées.',
+                'correlation-prise-pour-causalite',
+              ],
+              [
+                'C’est exclu : les deux canaux n’ont pas les mêmes clients.',
+                'correlation-prise-pour-causalite',
+              ],
+            ],
+            ['Hypothèse', 'par client'],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         'Chiffre absent de l’écran : la marketplace apporte +26 560 € de marge (83 680 − 57 120) ; c’est l’argument contre « arrêter la marketplace ».',
         'Contrôle par canal : −30 960 + 5 600 + 26 560 = +1 200 €, la hausse de marge du tableau de bord.',
         'Transition : « Deux questions de plus, pour rédiger le dossier. »',
-      ),
+      ],
     },
-    'B2-01-A5-06-ATELIER-4',
     [
       [
         'b2-01-a5-part-marge-marketplace',
@@ -2682,76 +2636,72 @@ const ACTE_5: moteur.Acte = [
       ],
     ],
   ),
-  {
-    screenId: 'B2-01-A5-06-ATELIER-4-SUITE',
-    titre: 'Atelier 4 — Du constat à la preuve (suite)',
-    diffusion: 'seance',
-    brique: 'questionnaire',
-    dureeMinutes: 3,
-    concepts: ['contrat-de-lecture', 'moyenne-ponderee'],
-    notes: moteur.puces(
-      '2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).',
-      'Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).',
-      'TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.',
-    ),
-    proprietes: {
-      renvoi: 'B2-01-A5-05-TCD',
-      intitule: 'Atelier 4 — Du constat à la preuve (questions 4 et 5)',
-      consigne: CONSIGNE_DE_L_ATELIER_4,
-      regime: 'focus',
-      ordre: 'fixe',
-      questions: [
-        moteur.vote(
-          'b2-01-a5-synthese',
-          'contrat-de-lecture',
-          true,
-          'Quelle phrase pouvez-vous écrire telle quelle dans le dossier du comité ?',
-          'En 2025, la marge brute progresse de 1 200 € et son taux recule de 2,3 points.',
-          [
-            [
-              'En 2025, la marge brute progresse de 1 200 € et son taux recule de 2,3 %.',
-              'points-confondus-avec-pourcentage',
-            ],
-            [
-              'En 2025, la rentabilité progresse, puisque la marge brute gagne 1 200 €.',
-              'valeur-confondue-avec-taux',
-            ],
-          ],
-          ['1 200 €', '2,3 points'],
-        ),
-        moteur.vote(
-          'b2-01-a5-tcd',
-          'moyenne-ponderee',
-          true,
-          'Le tableau croisé dynamique du 3e trimestre affiche deux totaux de taux, 26,7 % et 24,3 %. Lequel portez-vous au dossier du comité ?',
-          '24,3 % : il pondère chaque canal par son CA',
-          [
-            [
-              '26,7 % : il traite les trois canaux à égalité',
-              'moyenne-simple-des-taux',
-            ],
-            [
-              'L’un ou l’autre : ils mesurent le même taux',
-              'moyenne-simple-des-taux',
-            ],
-          ],
-          ['pondère', '24,3 %'],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A5-06-CORRECTION-2',
-      titre: 'Correction de l’atelier 4 : questions 4 et 5',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A5-06-ATELIER-4-SUITE',
+      titre: 'Atelier 4 — Du constat à la preuve (suite)',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 3,
       concepts: ['contrat-de-lecture', 'moyenne-ponderee'],
       notes: moteur.puces(
+        '2 min seul, puis 1 min avec le voisin (le pupitre numérote ces questions 1 et 2).',
+        'Phrase du dossier (Q4) : pièges « recule de 2,3 % » (des points) et « la rentabilité progresse » (un montant ne dit rien d’un taux).',
+        'TCD (Q5) : piège 26,7 %, la moyenne simple qui met les trois canaux à égalité.',
+      ),
+      proprietes: {
+        renvoi: 'B2-01-A5-05-TCD',
+        intitule: 'Atelier 4 — Du constat à la preuve (questions 4 et 5)',
+        consigne: CONSIGNE_DE_L_ATELIER_4,
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          moteur.vote(
+            'b2-01-a5-synthese',
+            'contrat-de-lecture',
+            true,
+            'Quelle phrase pouvez-vous écrire telle quelle dans le dossier du comité ?',
+            'En 2025, la marge brute progresse de 1 200 € et son taux recule de 2,3 points.',
+            [
+              [
+                'En 2025, la marge brute progresse de 1 200 € et son taux recule de 2,3 %.',
+                'points-confondus-avec-pourcentage',
+              ],
+              [
+                'En 2025, la rentabilité progresse, puisque la marge brute gagne 1 200 €.',
+                'valeur-confondue-avec-taux',
+              ],
+            ],
+            ['1 200 €', '2,3 points'],
+          ),
+          moteur.vote(
+            'b2-01-a5-tcd',
+            'moyenne-ponderee',
+            true,
+            'Le tableau croisé dynamique du 3e trimestre affiche deux totaux de taux, 26,7 % et 24,3 %. Lequel portez-vous au dossier du comité ?',
+            '24,3 % : il pondère chaque canal par son CA',
+            [
+              [
+                '26,7 % : il traite les trois canaux à égalité',
+                'moyenne-simple-des-taux',
+              ],
+              [
+                'L’un ou l’autre : ils mesurent le même taux',
+                'moyenne-simple-des-taux',
+              ],
+            ],
+            ['pondère', '24,3 %'],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         'Faire relire la phrase retenue à voix haute : c’est celle du dossier.',
         'Transition : « Quel contrôle pour chaque anomalie du dossier ? »',
-      ),
+      ],
     },
-    'B2-01-A5-06-ATELIER-4-SUITE',
     [
       [
         'b2-01-a5-synthese',
@@ -3047,133 +2997,13 @@ const ACTE_6: moteur.Acte = [
       },
     },
   ),
-  {
-    screenId: 'B2-01-A6-02-COFFRE',
-    titre: 'Le coffre du comité',
-    diffusion: 'seance',
-    brique: 'fp-escape',
-    dureeMinutes: 9,
-    concepts: [
-      'moyenne-ponderee',
-      'point-de-pourcentage',
-      'evolution-reciproque',
-      'controle-coherence',
-    ],
-    notes: moteur.puces(
-      'Lancer ; indices disponibles après 60 s. À 7 min, projeter l’énigme la moins résolue.',
-      'Pièges : E1 26,7 % (moyenne simple) ; E2 −10,7 (en %, pas en points) ; E3 1 032,57 € (÷ 1,02, taux additionnés).',
-      'E3 : le prix du 1er janvier 2026 est celui du 31 décembre 2025 : 20,70 €/m² × 50 m² = 1 035,00 € ; contrôle 1 035 × 1,06 × 0,96 = 1 053,22.',
-      'E4 : l’écart de 90 € vient de F004 (12 430 saisi pour 12 340 : inversion, 90 = 9 × 10). TVA = 48 705 × 0,20 = 9 741 €, pas 9 759 € (base du grand livre).',
-    ),
-    proprietes: {
-      modalite: 'solo',
-      parcours: {
-        id: PARCOURS_DU_COFFRE,
-        intitule:
-          'Le coffre du comité : quatre vérifications, un code pour ouvrir la salle',
-        delaiIndiceMs: 60000,
-        budgetEnigmeMs: 150000,
-        tentativesMax: 10,
-        enigmes: [
-          {
-            id: 'b2-01-a6-e1-mix',
-            intitule: 'Le premier semestre 2026',
-            enonce:
-              'Au 1er semestre 2026 : sur-mesure 150 000 € de CA HT (taux de marge brute 36 %), entretien 120 000 € (28 %), marketplace 330 000 € (16 %). Quel est le taux de marge brute global, en %, arrondi au dixième ?',
-            indice:
-              'Additionnez les marges en euros, puis divisez par le CA total.',
-          },
-          {
-            id: 'b2-01-a6-e2-points',
-            intitule: 'L’écart',
-            enonce:
-              'Au 1er semestre 2025, le taux de marge brute global était de 26,2 %. De combien a-t-il varié au 1er semestre 2026 (taux trouvé à l’énigme précédente) ? Réponse en points, signe compris, arrondie au dixième.',
-            indice:
-              'Comparez deux semestres entre eux ; un écart entre deux taux se lit en points : soustrayez le taux de départ.',
-          },
-          {
-            id: 'b2-01-a6-e3-rouleau',
-            intitule: 'Le rouleau en 2026',
-            enonce:
-              'Pour 2026, le fournisseur annonce +6 % au 1er mars, puis −4 % au 1er juin. Au 1er juin 2026, un rouleau de 50 m² de toile coûte 1 053,22 € HT. Quel était son prix au 1er janvier 2026, en euros, arrondi au centime ?',
-            indice:
-              'Remontez le temps : divisez par le coefficient global, pas par la somme des taux.',
-          },
-          {
-            id: 'b2-01-a6-e4-tva',
-            intitule: 'Les factures de vente de mars',
-            enonce:
-              'Courriel du cabinet : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT. Détail (grand livre / pièce) : F001 12 000 / 12 000 ; F002 8 500 / 8 500 ; F003 15 865 / 15 865 ; F004 12 430 / 12 340. Quel montant de TVA collectée à 20 % faut-il retenir pour les ventes de mars, en euros ?',
-            indice:
-              'Comparez chaque ligne du grand livre à sa pièce : la pièce justificative fait foi.',
-          },
-        ],
-      },
-      questions: [
-        moteur.enigme(
-          PARCOURS_DU_COFFRE,
-          0,
-          'b2-01-a6-e1-mix',
-          'moyenne-ponderee',
-          23.4,
-          0.05,
-          '23,4',
-          'K7',
-          [[26.666667, 'moyenne-simple-des-taux']],
-        ),
-        moteur.enigme(
-          PARCOURS_DU_COFFRE,
-          1,
-          'b2-01-a6-e2-points',
-          'point-de-pourcentage',
-          -2.8,
-          0.05,
-          '−2,8',
-          'M2',
-          [
-            [-10.687023, 'points-confondus-avec-pourcentage'],
-            [2.8, 'sens-de-variation'],
-            [-1.904348, 'bases-incompatibles'],
-          ],
-        ),
-        moteur.enigme(
-          PARCOURS_DU_COFFRE,
-          2,
-          'b2-01-a6-e3-rouleau',
-          'evolution-reciproque',
-          1035.003931,
-          0.005,
-          '1 035,00',
-          'Q9',
-          [
-            [1032.568627, 'taux-successifs-additionnes'],
-            [1034.683328, 'reciproque-meme-taux'],
-            [1032.1556, 'reciproque-meme-taux'],
-          ],
-        ),
-        moteur.enigme(
-          PARCOURS_DU_COFFRE,
-          3,
-          'b2-01-a6-e4-tva',
-          'controle-coherence',
-          9741,
-          0.5,
-          '9 741',
-          '4X',
-          [
-            [9759, 'tva-base-non-corrigee'],
-            [8117.5, 'tva-calculee-sur-ttc'],
-            [18, 'controle-non-discriminant'],
-          ],
-        ),
-      ],
-    },
-  },
-  moteur.correctionDesReponses(
+  moteur.corrigeSurPlace(
     {
-      screenId: 'B2-01-A6-02-CORRECTION',
-      titre: 'Correction du coffre : les quatre vérifications',
-      dureeMinutes: 1,
+      screenId: 'B2-01-A6-02-COFFRE',
+      titre: 'Le coffre du comité',
+      diffusion: 'seance',
+      brique: 'fp-escape',
+      dureeMinutes: 9,
       concepts: [
         'moyenne-ponderee',
         'point-de-pourcentage',
@@ -3181,12 +3011,123 @@ const ACTE_6: moteur.Acte = [
         'controle-coherence',
       ],
       notes: moteur.puces(
+        'Lancer ; indices disponibles après 60 s. À 7 min, projeter l’énigme la moins résolue.',
+        'Pièges : E1 26,7 % (moyenne simple) ; E2 −10,7 (en %, pas en points) ; E3 1 032,57 € (÷ 1,02, taux additionnés).',
+        'E3 : le prix du 1er janvier 2026 est celui du 31 décembre 2025 : 20,70 €/m² × 50 m² = 1 035,00 € ; contrôle 1 035 × 1,06 × 0,96 = 1 053,22.',
+        'E4 : l’écart de 90 € vient de F004 (12 430 saisi pour 12 340 : inversion, 90 = 9 × 10). TVA = 48 705 × 0,20 = 9 741 €, pas 9 759 € (base du grand livre).',
+      ),
+      proprietes: {
+        modalite: 'solo',
+        parcours: {
+          id: PARCOURS_DU_COFFRE,
+          intitule:
+            'Le coffre du comité : quatre vérifications, un code pour ouvrir la salle',
+          delaiIndiceMs: 60000,
+          budgetEnigmeMs: 150000,
+          tentativesMax: 10,
+          enigmes: [
+            {
+              id: 'b2-01-a6-e1-mix',
+              intitule: 'Le premier semestre 2026',
+              enonce:
+                'Au 1er semestre 2026 : sur-mesure 150 000 € de CA HT (taux de marge brute 36 %), entretien 120 000 € (28 %), marketplace 330 000 € (16 %). Quel est le taux de marge brute global, en %, arrondi au dixième ?',
+              indice:
+                'Additionnez les marges en euros, puis divisez par le CA total.',
+            },
+            {
+              id: 'b2-01-a6-e2-points',
+              intitule: 'L’écart',
+              enonce:
+                'Au 1er semestre 2025, le taux de marge brute global était de 26,2 %. De combien a-t-il varié au 1er semestre 2026 (taux trouvé à l’énigme précédente) ? Réponse en points, signe compris, arrondie au dixième.',
+              indice:
+                'Comparez deux semestres entre eux ; un écart entre deux taux se lit en points : soustrayez le taux de départ.',
+            },
+            {
+              id: 'b2-01-a6-e3-rouleau',
+              intitule: 'Le rouleau en 2026',
+              enonce:
+                'Pour 2026, le fournisseur annonce +6 % au 1er mars, puis −4 % au 1er juin. Au 1er juin 2026, un rouleau de 50 m² de toile coûte 1 053,22 € HT. Quel était son prix au 1er janvier 2026, en euros, arrondi au centime ?',
+              indice:
+                'Remontez le temps : divisez par le coefficient global, pas par la somme des taux.',
+            },
+            {
+              id: 'b2-01-a6-e4-tva',
+              intitule: 'Les factures de vente de mars',
+              enonce:
+                'Courriel du cabinet : grand livre des ventes de mars 48 795 € HT, pièces 48 705 € HT. Détail (grand livre / pièce) : F001 12 000 / 12 000 ; F002 8 500 / 8 500 ; F003 15 865 / 15 865 ; F004 12 430 / 12 340. Quel montant de TVA collectée à 20 % faut-il retenir pour les ventes de mars, en euros ?',
+              indice:
+                'Comparez chaque ligne du grand livre à sa pièce : la pièce justificative fait foi.',
+            },
+          ],
+        },
+        questions: [
+          moteur.enigme(
+            PARCOURS_DU_COFFRE,
+            0,
+            'b2-01-a6-e1-mix',
+            'moyenne-ponderee',
+            23.4,
+            0.05,
+            '23,4',
+            'K7',
+            [[26.666667, 'moyenne-simple-des-taux']],
+          ),
+          moteur.enigme(
+            PARCOURS_DU_COFFRE,
+            1,
+            'b2-01-a6-e2-points',
+            'point-de-pourcentage',
+            -2.8,
+            0.05,
+            '−2,8',
+            'M2',
+            [
+              [-10.687023, 'points-confondus-avec-pourcentage'],
+              [2.8, 'sens-de-variation'],
+              [-1.904348, 'bases-incompatibles'],
+            ],
+          ),
+          moteur.enigme(
+            PARCOURS_DU_COFFRE,
+            2,
+            'b2-01-a6-e3-rouleau',
+            'evolution-reciproque',
+            1035.003931,
+            0.005,
+            '1 035,00',
+            'Q9',
+            [
+              [1032.568627, 'taux-successifs-additionnes'],
+              [1034.683328, 'reciproque-meme-taux'],
+              [1032.1556, 'reciproque-meme-taux'],
+            ],
+          ),
+          moteur.enigme(
+            PARCOURS_DU_COFFRE,
+            3,
+            'b2-01-a6-e4-tva',
+            'controle-coherence',
+            9741,
+            0.5,
+            '9 741',
+            '4X',
+            [
+              [9759, 'tva-base-non-corrigee'],
+              [8117.5, 'tva-calculee-sur-ttc'],
+              [18, 'controle-non-discriminant'],
+            ],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
         'S’attarder sur l’énigme la moins résolue (pupitre).',
         'Faire relier chaque énigme à son acte : E1 la moyenne pondérée (A5-03), E2 les points (A2-06), E3 le 20,70 €/m² de la tâche de tableur 2 (A4-05), E4 l’inversion de Pacioli (A6-01).',
         'Transition : « Avant la dernière réponse à corriger, le cadre : ce que l’IA peut faire, et ce qu’elle ne peut pas faire. »',
-      ),
+      ],
     },
-    'B2-01-A6-02-COFFRE',
     [
       [
         'b2-01-a6-e1-mix',

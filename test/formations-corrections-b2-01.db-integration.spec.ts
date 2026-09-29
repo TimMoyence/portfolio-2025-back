@@ -12,13 +12,10 @@ import {
 
 const COURS = buildCoursB2_01();
 const ATELIER = 'B2-01-A2-03-ATELIER-1';
-const CORRECTION_DE_L_ATELIER = 'B2-01-A2-03-CORRECTION-1';
 const POINTS = 'B2-01-A2-06-POINTS';
-const CORRECTION_DES_POINTS = 'B2-01-A2-06-CORRECTION';
 const DIAGNOSTIC = 'B2-01-A1-01-DIAGNOSTIC';
 const FEUILLE = 'B2-01-A4-02-FEUILLE-CANAUX';
 const COFFRE = 'B2-01-A6-02-COFFRE';
-const CORRECTION_DU_COFFRE = 'B2-01-A6-02-CORRECTION';
 const PARCOURS_DU_COFFRE = 'b2-01-a6-coffre';
 const PREMIERE_ENIGME = 'b2-01-a6-e1-mix';
 const { OK, CREE, SANS_CONTENU, CONFLIT } = CODE_HTTP;
@@ -34,7 +31,7 @@ function ecranDuSujet(reponse: Response, id: string): EcranPublic | undefined {
 }
 
 describeDb(
-  'corrections du B2-01 servies à la révélation (SEC-1, SEC-2, db integration)',
+  'corrections du B2-01 servies sur place à la révélation (SEC-1, SEC-2, db integration)',
   () => {
     const banc = installerBancDeSeance({ slug: COURS.slug });
 
@@ -52,11 +49,6 @@ describeDb(
     const lireEcran = async (seance: SeanceDeTest, id: string) =>
       ecranDuSujet(await lireSujet(seance), id);
 
-    const projeter = async (seance: SeanceDeTest, id: string) => {
-      await piloter(seance, { ecran: rang(id) });
-      return lireEcran(seance, id);
-    };
-
     const repondreAuxPoints = (seance: SeanceDeTest, texte: string) =>
       banc
         .avecJeton(
@@ -71,29 +63,29 @@ describeDb(
           dureeMs: 30000,
         });
 
-    it('verrouille la correction en rythme libre tant que sa source n est pas révélée, puis la sert', async () => {
+    it('sert sur l atelier lui-même ses explications révélées une à une, et rien avant', async () => {
       const seance = await banc.ouvrirSeance({
         cle: 'c0000000-0000-4000-8000-000000000001',
+        ecran: rang(ATELIER),
       });
+
+      const avant = await lireEcran(seance, ATELIER);
       await piloter(seance, {
-        mode: 'libre',
-        intervalle: { premier: 0, dernier: rang(CORRECTION_DE_L_ATELIER) },
+        pilotage: { screenId: ATELIER, explicationsDevoilees: 1 },
       });
-
-      const avant = await lireEcran(seance, CORRECTION_DE_L_ATELIER);
-      await piloter(seance, { pilotage: { screenId: ATELIER, revele: true } });
-      const apres = await lireEcran(seance, CORRECTION_DE_L_ATELIER);
-
-      expect(avant).toMatchObject({
-        type: 'ecran-verrouille',
-        ecranCorrige: ATELIER,
-        donnees: {},
+      const premiere = await lireEcran(seance, ATELIER);
+      await piloter(seance, {
+        pilotage: { screenId: ATELIER, explicationsDevoilees: 3 },
       });
+      const complete = await lireEcran(seance, ATELIER);
+
       expect(avant?.correction).toBeUndefined();
-      expect(apres?.type).toBe('fp-story');
-      expect(apres?.correction?.ecranId).toBe(ATELIER);
+      expect(premiere?.type).toBe('questionnaire');
       expect(
-        apres?.correction?.questions.map(({ questionId, bonneReponse }) => [
+        premiere?.correction?.explications?.map(({ reference }) => reference),
+      ).toEqual(['b2-01-a2-evolution-marge']);
+      expect(
+        complete?.correction?.questions.map(({ questionId, bonneReponse }) => [
           questionId,
           questionId === 'b2-01-a2-part-marketplace' ? bonneReponse : 'vote',
         ]),
@@ -102,31 +94,33 @@ describeDb(
         ['b2-01-a2-part-marketplace', '45,5'],
         ['b2-01-a2-population-reference', 'vote'],
       ]);
+      expect(complete?.correction?.explications).toHaveLength(3);
     });
 
-    it('révèle la source en pilote dès la projection de sa correction, sans la rouvrir au retour arrière', async () => {
+    it('ferme l étape des points dès que sa correction se dévoile, sans la rouvrir au retour arrière', async () => {
       const seance = await banc.ouvrirSeance({
         cle: 'c0000000-0000-4000-8000-000000000002',
         ecran: rang(POINTS),
       });
       await repondreAuxPoints(seance, 'Moins 2,3 points.').expect(CREE);
 
-      const projetee = await projeter(seance, CORRECTION_DES_POINTS);
-      await piloter(seance, { ecran: rang(POINTS) });
+      await piloter(seance, { pilotage: { screenId: POINTS, etayage: 1 } });
+      await piloter(seance, { pilotage: { screenId: POINTS, etayage: 0 } });
       const refus = await repondreAuxPoints(seance, 'Après la correction.');
 
-      expect(projetee?.type).toBe('fp-worked');
-      expect(projetee?.correction?.ecranId).toBe(POINTS);
       attendreRefus(refus, CONFLIT, 'PHASE_FERMEE');
     });
 
-    it('SEC-4 · ferme le coffre aux tentatives dès que sa correction est projetée en pilote', async () => {
+    it('SEC-4 · ferme le coffre aux tentatives dès que sa correction se dévoile sur place', async () => {
       const seance = await banc.ouvrirSeance({
         cle: 'c0000000-0000-4000-8000-000000000004',
         ecran: rang(COFFRE),
       });
 
-      const projetee = await projeter(seance, CORRECTION_DU_COFFRE);
+      await piloter(seance, {
+        pilotage: { screenId: COFFRE, explicationsDevoilees: 1 },
+      });
+      const corrige = await lireEcran(seance, COFFRE);
       const refus = await banc
         .avecJeton(
           'post',
@@ -135,7 +129,10 @@ describeDb(
         )
         .send({ enigmeId: PREMIERE_ENIGME, reponse: '12', dureeMs: 30000 });
 
-      expect(projetee?.correction?.ecranId).toBe(COFFRE);
+      expect(corrige?.correction?.ecranId).toBe(COFFRE);
+      expect(corrige?.correction?.explications?.[0]?.reference).toBe(
+        PREMIERE_ENIGME,
+      );
       attendreRefus(refus, CONFLIT, 'PHASE_FERMEE');
     });
 

@@ -1,5 +1,8 @@
 import type { Tolerance } from '../GradingCore';
-import type { Ecran as EcranActuel } from '../cours/Cours';
+import type {
+  Ecran as EcranActuel,
+  ExplicationDeCorrection,
+} from '../cours/Cours';
 import type { FormeFormule } from '../cours/Corrige';
 import type { CorrigePresentateur } from '../cours/DeroulePresentateur';
 import type { Diffusion } from './cours';
@@ -19,6 +22,7 @@ export interface EcranDeroule extends EcranPublic {
   }[];
   readonly corrigeEcran: CorrigeEcranPresentateur | null;
   readonly guide?: NonNullable<EcranActuel['guide']>;
+  readonly explications?: readonly ExplicationDeCorrection[];
   readonly renvoi?: string;
 }
 

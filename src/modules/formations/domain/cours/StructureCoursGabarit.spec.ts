@@ -8,6 +8,7 @@ import {
   buildExerciceV3,
   buildLeconV3,
   buildReflexionV3,
+  corrigeSurPlaceV3,
   IDS_V3,
   notesDExercice,
 } from '../../../../../test/factories/gabarit-v3.factory';
@@ -163,6 +164,42 @@ describe('verifierStructure — gabarit v3', () => {
       expect(violationsDuGabarit(sansCorrection)).toEqual([
         { regle: 'gabarit-temps-exercice', ecran: IDS_V3.exercice },
       ]);
+    });
+
+    const corrigeSurPlace = (references?: readonly string[]) =>
+      remplacer(IDS_V3.correction, () => null).map((ecran) =>
+        ecran.screenId === IDS_V3.exercice
+          ? corrigeSurPlaceV3(ecran, references)
+          : ecran,
+      );
+
+    it('accepte un exercice corrigé sur place, dont les notes annoncent le temps de correction', () => {
+      expect(verifierStructure(buildCoursV3(corrigeSurPlace()))).toEqual([]);
+    });
+
+    it('refuse une correction sur place qui ne suit pas les questions du questionnaire', () => {
+      const violations = verifierStructure(
+        buildCoursV3(corrigeSurPlace(['une-autre-question'])),
+      ).map(({ regle, ecran }) => ({ regle, ecran }));
+
+      expect(violations).toEqual([
+        { regle: 'correction-sur-place', ecran: IDS_V3.exercice },
+      ]);
+    });
+
+    it('refuse une correction sur place dans un questionnaire aux questions mélangées', () => {
+      const melange = corrigeSurPlace().map((ecran) =>
+        ecran.screenId === IDS_V3.exercice
+          ? { ...ecran, proprietes: { ...ecran.proprietes, ordre: 'melange' } }
+          : ecran,
+      );
+
+      expect(
+        verifierStructure(buildCoursV3(melange)).map(({ regle, ecran }) => ({
+          regle,
+          ecran,
+        })),
+      ).toEqual([{ regle: 'correction-sur-place', ecran: IDS_V3.exercice }]);
     });
   });
 

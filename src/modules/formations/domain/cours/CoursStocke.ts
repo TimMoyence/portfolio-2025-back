@@ -15,6 +15,7 @@ import {
   questionsDe,
   questionVote,
   type AuMoinsUn,
+  type CorrectionSurPlace,
   type Modalite,
   type QuestionVote,
 } from './Cours';
@@ -265,6 +266,7 @@ interface SocleDEcran {
   readonly guide?: GuideFormateur;
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
+  readonly correctionSurPlace?: CorrectionSurPlace;
 }
 
 type GuideFormateur = NonNullable<Ecran['guide']>;
@@ -274,6 +276,7 @@ interface Communes {
   readonly modalite?: Modalite;
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
+  readonly correctionSurPlace?: CorrectionSurPlace;
 }
 
 const CLES_COMMUNES: readonly string[] = [
@@ -281,6 +284,7 @@ const CLES_COMMUNES: readonly string[] = [
   'modalite',
   'renvoi',
   'cadrageDuRenvoi',
+  'correctionSurPlace',
 ];
 
 type BriqueDExposition =
@@ -295,7 +299,7 @@ type BriqueDeProductionUnique = 'fp-cardsort' | 'fp-sheet' | 'fp-table-build';
 
 function socleDe(
   ecran: EcranStocke,
-  { modalite, guide, renvoi, cadrageDuRenvoi }: Communes,
+  { modalite, guide, renvoi, cadrageDuRenvoi, correctionSurPlace }: Communes,
 ): SocleDEcran {
   return {
     id: ecran.screenId,
@@ -308,6 +312,7 @@ function socleDe(
     ...(guide === undefined ? {} : { guide }),
     ...(renvoi === undefined ? {} : { renvoi }),
     ...(cadrageDuRenvoi === undefined ? {} : { cadrageDuRenvoi }),
+    ...(correctionSurPlace === undefined ? {} : { correctionSurPlace }),
   };
 }
 

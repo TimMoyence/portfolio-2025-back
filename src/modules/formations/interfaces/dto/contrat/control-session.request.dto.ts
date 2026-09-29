@@ -69,6 +69,17 @@ export class PilotageEcranRequestDto implements PilotageEcran {
   etayage?: number;
 
   @ApiPropertyOptional({
+    description:
+      'Explications devoilees sur l ecran d un exercice corrige sur place, dans leur ordre, jamais retirees',
+    minimum: 0,
+    example: 1,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  explicationsDevoilees?: number;
+
+  @ApiPropertyOptional({
     type: 'object',
     additionalProperties: { type: 'number' },
     description: 'Réglages des curseurs de la machine, par clé de paramètre',

@@ -3,11 +3,13 @@ import { solutionsDuTirage, solutionsIdentiques } from '../domain/Bareme';
 import {
   correctionDeLEcranRevele,
   correctionServie,
+  correctionSurPlaceServie,
   ecranVerrouille,
   exempleAuRythmeDuPilotage,
 } from '../domain/cours/Diffusion';
 import { dernierEcranServi } from '../domain/cours/EcranServi';
 import type { Cours } from '../domain/contrats/cours';
+import type { PilotageEcran } from '../domain/contrats/pilotage';
 import type { CoursPublic, EcranPublic } from '../domain/contrats/tirage';
 import { TirageAmbiguError, tirer } from '../domain/cours/Tirage';
 import type { TirageDuCours } from '../domain/cours/Tirage';
@@ -42,7 +44,9 @@ export class LireSujetUseCase {
       ...tirage.sujet,
       ecrans: tirage.sujet.ecrans.map((ecran, index) => {
         if (terminee) {
-          return this.avecCorrection(cours, index, ecran, tirage, true);
+          return this.avecCorrection(cours, index, ecran, tirage, {
+            revele: true,
+          });
         }
         if (
           index > dernier ||
@@ -56,7 +60,7 @@ export class LireSujetUseCase {
           index,
           exempleAuRythmeDuPilotage(ecran, session.pilotageEcrans[ecran.id]),
           tirage,
-          sourceRevelee(ecran.id),
+          session.pilotageEcrans[ecran.id],
         );
       }),
     };
@@ -67,11 +71,15 @@ export class LireSujetUseCase {
     index: number,
     ecran: EcranPublic,
     tirage: TirageDuCours,
-    revele: boolean,
+    pilotage: PilotageEcran | undefined,
   ): EcranPublic {
+    const source = cours.ecrans[index];
     const correction =
-      correctionServie(cours, cours.ecrans[index], tirage) ??
-      (revele ? correctionDeLEcranRevele(cours.ecrans[index], tirage) : null);
+      correctionServie(cours, source, tirage) ??
+      correctionSurPlaceServie(source, tirage, pilotage) ??
+      (pilotage?.revele === true
+        ? correctionDeLEcranRevele(source, tirage)
+        : null);
     return correction === null ? ecran : { ...ecran, correction };
   }
 

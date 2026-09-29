@@ -46,7 +46,7 @@ const avecAtelierDe = (dureeMinutes: number): Cours =>
   ]);
 
 describe('verifierStructure', () => {
-  it('expose les vingt regles de structure dans l ordre applique aux violations', () => {
+  it('expose les vingt et une regles de structure dans l ordre applique aux violations', () => {
     expect(REGLES_STRUCTURE).toEqual([
       'exposition-continue',
       'ratio-interaction',
@@ -58,6 +58,7 @@ describe('verifierStructure', () => {
       'cadrage-du-renvoi',
       'reference-circulaire',
       'correction-apres-source',
+      'correction-sur-place',
       'notes-formateur',
       'atelier-questions-fermees',
       'confidentialite',

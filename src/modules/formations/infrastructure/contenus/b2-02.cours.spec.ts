@@ -7,6 +7,7 @@ import {
   decrireLaFicheDuCours,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
+import { ecransCorrigesSurPlace } from '../../../../../test/helpers/lecture-de-cours';
 import { COURS_B2_02 } from './b2-02.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_02);
@@ -62,11 +63,11 @@ const premierRangAtteignant = (
 
 decrireLaFicheDuCours('B2-02', COURS, {
   conception: 'cours-b2-02-conception.md',
-  ecrans: 38,
+  ecrans: 31,
   dureeMinutes: 180,
   minutesParActe: [44, 47, 41, 48, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 129, exposition: 51 },
-  ateliersNotes: ['A1-08 (10)', 'A2-05 (9)', 'A3-04 (9)'],
+  rythme: { expositionContinueMax: 6, interactives: 149, exposition: 31 },
+  ateliersNotes: ['A1-08 (12)', 'A2-05 (11)', 'A3-04 (11)'],
   noteesParType: [4, 10, 0, 1, 1],
   enigmes: 4,
   rappels: 12,
@@ -76,8 +77,11 @@ decrireLaFicheDuCours('B2-02', COURS, {
     'A1-02',
     'A1-04',
     'A1-06',
+    'A1-06',
     'A2-01',
     'A2-03',
+    'A2-03',
+    'A3-02',
     'A3-02',
     'A4-01',
     'A4-05',
@@ -112,7 +116,7 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
   });
 
   it('nomme l’écart interquartile dans la trace écrite de la dispersion', () => {
-    expect(texteDeLEcran('B2-02-A1-06-COURS-RESUMER')).toContain(
+    expect(texteDeLEcran('B2-02-A1-06-COURS-ECART')).toContain(
       'écart interquartile',
     );
   });
@@ -152,6 +156,21 @@ describe('B2-02 — textes relus contre les données et le programme', () => {
 describe('B2-02 — gabarit v3', () => {
   it('déclare le gabarit v3, dont contrat-des-cours contrôle les règles', () => {
     expect(COURS.gabarit).toBe('v3');
+  });
+
+  it('corrige chaque exercice sur son propre écran, sans écran de correction qui le suive', () => {
+    expect(ecransCorrigesSurPlace(COURS)).toEqual([
+      'B2-02-A1-08-ATELIER-RESUME',
+      'B2-02-A2-05-ATELIER-NUAGE',
+      'B2-02-A2-06-ECARTS-POINT-MOYEN',
+      'B2-02-A3-04-ATELIER-DROITE',
+      'B2-02-A3-05-DEFI-IA',
+      'B2-02-A4-02-TABLEUR-FIBRE',
+      'B2-02-A4-03-COFFRE-FIBRE',
+    ]);
+    expect(
+      COURS.ecrans.filter((ecran) => ecran.id.endsWith('-CORRECTION')),
+    ).toEqual([]);
   });
 });
 

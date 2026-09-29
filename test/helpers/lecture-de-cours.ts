@@ -21,6 +21,12 @@ export function renduDe(ecran: Ecran): string | null {
   return presentation?.version === 2 ? presentation.renderer : null;
 }
 
+export function ecransCorrigesSurPlace(cours: Cours): readonly string[] {
+  return cours.ecrans
+    .filter((ecran) => ecran.correctionSurPlace !== undefined)
+    .map((ecran) => ecran.id);
+}
+
 export function estFermeeNotee(question: Question): boolean {
   return (
     question.noteCompte &&

@@ -17,6 +17,8 @@ import {
   buildCorrectionDeReponses,
   buildCoursDeBriques,
   buildEcranDeBrique,
+  buildQuestionnaireCorrigeSurPlace,
+  EXPLICATIONS_SUR_PLACE,
 } from '../../../../../test/factories/ecrans-stockes.factory';
 import { verifierIntrouvables } from '../../../../../test/helpers/gardes-de-seance';
 import type { Cours } from '../../domain/contrats/cours';
@@ -430,5 +432,48 @@ describe('LireSujetUseCase — correction de l écran source révélé (T9)', ()
     expect(rappel.correction?.ecranId).toBe(RAPPEL.screenId);
     expect(feuille.correction?.ecranId).toBe(FEUILLE.screenId);
     expect(citation.correction).toBeUndefined();
+  });
+});
+
+describe('LireSujetUseCase — exercice corrigé sur place', () => {
+  const QUESTIONNAIRE = buildQuestionnaireCorrigeSurPlace();
+  const COURS_SUR_PLACE = lireCoursStocke(buildCoursDeBriques([QUESTIONNAIRE]));
+  const [premiere, seconde] = EXPLICATIONS_SUR_PLACE;
+  let sessions: ReturnType<typeof createMockSessionsRepo>;
+  let sut: LireSujetUseCase;
+
+  const correctionServie = async (diffusion: Partial<SessionRecord>) => {
+    sessions.findById.mockResolvedValue(
+      seanceDuCours(COURS_SUR_PLACE, diffusion),
+    );
+    return (await sujetDuParticipant(sut)).ecrans[0].correction;
+  };
+
+  beforeEach(() => {
+    sessions = createMockSessionsRepo();
+    sut = lecteurDuParticipant(sessions, COURS_SUR_PLACE);
+  });
+
+  it('ne sert aucune correction avant que le formateur corrige', async () => {
+    expect(await correctionServie({})).toBeUndefined();
+  });
+
+  it('sert la réponse et l explication de chaque question corrigée, pas des suivantes', async () => {
+    const correction = await correctionServie({
+      pilotageEcrans: {
+        [QUESTIONNAIRE.screenId]: { explicationsDevoilees: 1 },
+      },
+    });
+
+    expect(correction?.questions.map(({ questionId }) => questionId)).toEqual([
+      premiere.reference,
+    ]);
+    expect(correction?.explications).toEqual([premiere]);
+  });
+
+  it('sert toutes les explications après la clôture', async () => {
+    const correction = await correctionServie({ etat: 'terminee' });
+
+    expect(correction?.explications).toEqual([premiere, seconde]);
   });
 });

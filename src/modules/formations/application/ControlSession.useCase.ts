@@ -4,6 +4,7 @@ import type { Cours } from '../domain/contrats/cours';
 import type { PilotageEcran } from '../domain/contrats/pilotage';
 import { sourcesAReveler } from '../domain/cours/Corrections';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
+import { demandeDeCorrection } from '../domain/cours/CorrectionSurPlace';
 import type { PilotageDemande } from '../domain/cours/PilotageEcrans';
 import {
   assertPilotageCompatible,
@@ -157,7 +158,10 @@ export class ControlSessionUseCase {
       );
     }
     assertPilotageCompatible(ecran, demande);
-    return fusionnerPilotage(session.pilotageEcrans, demande);
+    return fusionnerPilotage(
+      session.pilotageEcrans,
+      demandeDeCorrection(ecran, demande),
+    );
   }
 
   private validerEtProjeter(

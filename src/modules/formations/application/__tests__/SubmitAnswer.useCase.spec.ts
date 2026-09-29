@@ -3,7 +3,15 @@ import { DomainValidationError } from '../../../../common/domain/errors/DomainVa
 import {
   buildCoursDuBaremeV1,
   creerCatalogueDeTest,
+  tireurSequentiel,
 } from '../../../../../test/factories/cours.factory';
+import {
+  buildCoursDeBriques,
+  buildQuestionnaireCorrigeSurPlace,
+  EXPLICATIONS_SUR_PLACE,
+} from '../../../../../test/factories/ecrans-stockes.factory';
+import { lireCoursStocke } from '../../domain/cours/CoursStocke';
+import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import {
   buildBaremeV2,
   buildParticipantRecord,
@@ -66,6 +74,16 @@ describe('SubmitAnswerUseCase', () => {
     questionId: string,
     valeur: SubmitAnswerCommand['valeur'],
   ) => sut.execute({ ...commande, questionId, valeur });
+
+  const attendreLaPhaseFermee = async (
+    questionId: string,
+    valeur: SubmitAnswerCommand['valeur'],
+  ) => {
+    await expect(repondreA(questionId, valeur)).rejects.toThrow(
+      PhaseFermeeError,
+    );
+    expect(deps.answers.create).not.toHaveBeenCalled();
+  };
 
   const soumettreEnDouble = async () => {
     deps.answers.existsFor.mockResolvedValue(true);
@@ -324,10 +342,7 @@ describe('SubmitAnswerUseCase', () => {
     it('refuse la jumelle avant le revote', async () => {
       deps.sessions.findById.mockResolvedValue(seanceEnPhase());
 
-      await expect(repondreA('Q-JUMELLE', 'b')).rejects.toThrow(
-        PhaseFermeeError,
-      );
-      expect(deps.answers.create).not.toHaveBeenCalled();
+      await attendreLaPhaseFermee('Q-JUMELLE', 'b');
     });
 
     it('ferme les deux questions pendant la discussion', async () => {
@@ -346,6 +361,46 @@ describe('SubmitAnswerUseCase', () => {
       expect(result.correcte).toBe(true);
       await expect(repondreA('Q-PRINCIPALE', 'a')).rejects.toThrow(
         PhaseFermeeError,
+      );
+    });
+  });
+
+  describe('exercice corrigé sur place', () => {
+    const questionnaire = buildQuestionnaireCorrigeSurPlace();
+    const cours = lireCoursStocke(buildCoursDeBriques([questionnaire]));
+    const bareme = ouvrirTirages(cours, tireurSequentiel(300));
+    const [premiere, seconde] = EXPLICATIONS_SUR_PLACE;
+
+    beforeEach(() => {
+      deps = creerDependancesDEnregistrement(
+        buildSessionRecord({
+          ...EN_RYTHME_LIBRE,
+          courseSlug: cours.slug,
+          bareme,
+          pilotageEcrans: {
+            [questionnaire.screenId]: { explicationsDevoilees: 1 },
+          },
+        }),
+      );
+      deps.participants.findById.mockResolvedValue(
+        buildParticipantRecord({ seed: bareme.tirages[0].seed }),
+      );
+      sut = monterEnregistrement(
+        SubmitAnswerUseCase,
+        deps,
+        creerCatalogueDeTest(cours),
+      );
+    });
+
+    it('refuse une réponse à une question déjà corrigée', async () => {
+      await attendreLaPhaseFermee(premiere.reference, 'a');
+    });
+
+    it('accepte encore la question que le formateur n a pas corrigée', async () => {
+      await repondreA(seconde.reference, 45.5);
+
+      expect(deps.answers.create).toHaveBeenCalledWith(
+        expect.objectContaining({ questionId: seconde.reference }),
       );
     });
   });

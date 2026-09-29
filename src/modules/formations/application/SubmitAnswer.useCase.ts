@@ -4,6 +4,7 @@ import { gradeAnswer } from '../domain/AnswerGrading';
 import { estValeurConnue, findQuestion, solutionFor } from '../domain/Bareme';
 import { libelleLisible } from '../domain/cours/banque/confusions';
 import { assertEcranServi, rangDeLaQuestion } from '../domain/cours/EcranServi';
+import { assertQuestionNonCorrigee } from '../domain/cours/CorrectionSurPlace';
 import { assertPhaseOuverte } from '../domain/cours/PilotageEcrans';
 import { AnswerAlreadySubmittedError } from '../domain/errors/FormationErrors';
 import { coursDeLaSeance, seanceOuverteAuxReponses } from './CoursDeLaSeance';
@@ -63,6 +64,11 @@ export class SubmitAnswerUseCase extends EnregistrementDeReponse {
       ...question,
       ecranId,
     });
+    assertQuestionNonCorrigee(
+      session.pilotageEcrans,
+      cours.ecrans.find((ecran) => ecran.id === ecranId),
+      command.questionId,
+    );
 
     const solution = solutionFor(
       session.bareme,

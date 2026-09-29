@@ -16,7 +16,10 @@ import {
   decrireLaFicheDuCours,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
-import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
+import {
+  arrondi,
+  ecransCorrigesSurPlace,
+} from '../../../../../test/helpers/lecture-de-cours';
 import type { Ecran } from '../../domain/contrats/cours';
 import type { CorrigeProduction } from '../../domain/cours/Corrige';
 import { estInteractif } from '../../domain/cours/Cours';
@@ -118,23 +121,23 @@ function vaut(valeur: number, cible: number): boolean {
 
 decrireLaFicheDuCours('B2-01', COURS, {
   conception: 'cours-b2-01-conception.md',
-  ecrans: 74,
+  ecrans: 59,
   dureeMinutes: 211,
   minutesParActe: [32, 34, 36, 38, 43, 28],
-  rythme: { expositionContinueMax: 6, interactives: 142, exposition: 69 },
+  rythme: { expositionContinueMax: 5, interactives: 162, exposition: 49 },
   ateliersNotes: [
     'A1-05 (8)',
-    'A2-03 (6)',
-    'A2-03 (6)',
+    'A2-03 (7)',
+    'A2-03 (7)',
     'A2-07 (8)',
     'A3-01 (8)',
-    'A3-07 (4)',
-    'A3-07 (4)',
-    'A4-03 (3)',
-    'A4-03 (3)',
+    'A3-07 (5)',
+    'A3-07 (5)',
+    'A4-03 (4)',
+    'A4-03 (4)',
     'A5-02 (8)',
+    'A5-06 (5)',
     'A5-06 (4)',
-    'A5-06 (3)',
     'A5-07 (8)',
   ],
   noteesParType: [19, 7, 3, 1, 1],
@@ -667,16 +670,16 @@ describe('B2-01 — retours de QA', () => {
     ).toBe('Axe de Samir');
   });
 
-  it('RET-23 (b) · fait répondre à chaque étape de POINTS sous l exemple lui-même, corrigé ensuite par l écran piloté', () => {
+  it('RET-23 (b) · fait répondre à chaque étape de POINTS sous l exemple lui-même, corrigé étape par étape sur ce même écran', () => {
     const points = ecran(POINTS);
-    const correction = ecran(CORRECTION_POINTS);
-    if (points.brique !== 'fp-worked' || correction.brique !== 'fp-worked') {
+    if (points.brique !== 'fp-worked') {
       throw new Error('POINTS de brique inattendue');
     }
 
     expect(COURS.ecrans.some(({ id }) => id === EXERCICE_POINTS)).toBe(false);
+    expect(COURS.ecrans.some(({ id }) => id === CORRECTION_POINTS)).toBe(false);
     expect(points.renvoi).toBe('B2-01-A1-04-TABLEAU-DE-BORD');
-    expect(correction.proprietes.corrigeDe).toBe(POINTS);
+    expect(points.notes).toContain('étape par étape sur ce même écran');
     expect(estInteractif(points)).toBe(true);
     expect(activitesLibres(COURS).get(POINTS)).toHaveLength(
       points.proprietes.exemple.etapes.length,
@@ -862,7 +865,7 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
   const MISSION = 'B2-01-A1-03-MISSION';
   const PLAN = 'B2-01-A1-07-PLAN';
   const JALON_1 = 'B2-01-A1-11-JALON-1';
-  const CORRECTION_ATELIER_1 = 'B2-01-A2-03-CORRECTION-2';
+  const SUITE_DE_L_ATELIER_1 = 'B2-01-A2-03-ATELIER-1-SUITE';
 
   function titresDuPlan(): string[] {
     const plan = ecranDuCours(PLAN);
@@ -897,7 +900,7 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
   });
 
   it('R6 · retire le récapitulatif de l axe à zéro et reloge sa lecture chiffrée dans les notes', () => {
-    const notes = ecranDuCours(CORRECTION_ATELIER_1).notes;
+    const notes = ecranDuCours(SUITE_DE_L_ATELIER_1).notes;
 
     expect(COURS.ecrans.some(({ id }) => id.startsWith('B2-01-A2-04'))).toBe(
       false,
@@ -943,7 +946,7 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
 
   it.each([
     [
-      'R8 · rejoue à l écran 28 la hausse de 50 % puis la baisse de 50 %',
+      'R8 · rejoue sur la machine à coefficients la hausse de 50 % puis la baisse de 50 %',
       'B2-01-A3-02-MACHINE-COEFFICIENTS',
       [
         { depart: 100, tauxUn: 0, tauxDeux: 0 },
@@ -952,7 +955,7 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
       ],
     ],
     [
-      'R9 · fait monter à l écran 56 la part marketplace de 16 % à 30 %',
+      'R9 · fait monter au simulateur de mix la part marketplace de 16 % à 30 %',
       'B2-01-A5-04-SIMULATEUR-MIX',
       [
         { tauxMarketplace: 16 },
@@ -982,5 +985,45 @@ describe('B2-01 — retours de QA du 2026-09-24', () => {
           'Lisez sur la figure la part de la marketplace qui garde le taux de 2024 (27,6 %), puis calculez le taux de marge de la marketplace qui redonnerait 27,6 % avec la part de 2025 (45,5 %).',
       },
     });
+  });
+});
+
+describe('B2-01 — correction sur place', () => {
+  it('corrige chaque exercice sur son propre écran, sans écran de correction qui le suive', () => {
+    expect(ecransCorrigesSurPlace(COURS)).toEqual([
+      'B2-01-A1-10-AUDIT-DIAPOSITIVE',
+      'B2-01-A2-03-ATELIER-1',
+      'B2-01-A2-03-ATELIER-1-SUITE',
+      'B2-01-A3-07-ATELIER-2',
+      'B2-01-A3-07-ATELIER-2-SUITE',
+      'B2-01-A4-03-ATELIER-3',
+      'B2-01-A4-03-ATELIER-3-SUITE',
+      'B2-01-A4-05-INDICE-TOILE',
+      'B2-01-A5-06-ATELIER-4',
+      'B2-01-A5-06-ATELIER-4-SUITE',
+      'B2-01-A6-02-COFFRE',
+    ]);
+    expect(
+      COURS.ecrans.filter(
+        (ecran) =>
+          /-CORRECTION(-\d)?$/.test(ecran.id) && ecran.brique !== 'fp-story',
+      ),
+    ).toEqual([]);
+  });
+
+  it('dévoile les exemples guidés étape par étape sur leur propre écran', () => {
+    const guides = COURS.ecrans.filter((ecran) => ecran.brique === 'fp-worked');
+
+    expect(guides.map(({ id }) => id)).toEqual([
+      'B2-01-A2-06-POINTS',
+      'B2-01-A3-04-FIL-TECHNIQUE',
+      'B2-01-A3-06-INDICE-ET-TAUX-MOYEN',
+      'B2-01-A5-03-MOYENNE-PONDEREE',
+    ]);
+    expect(
+      guides.every(({ notes }) =>
+        notes.includes('étape par étape sur ce même écran'),
+      ),
+    ).toBe(true);
   });
 });

@@ -22,10 +22,6 @@ type CorrectionDeTri = Omit<SocleDEcran, 'diffusion'> & {
   readonly sousTitre: string;
   readonly intitule?: string;
 };
-type CorrectionDeReponses = Omit<SocleDEcran, 'diffusion' | 'titre'> & {
-  readonly titre: string;
-  readonly sousTitre?: string;
-};
 type EcranDExemple = Extract<EcranDuCours, { readonly brique: 'fp-worked' }>;
 type VoteDuCours = z.input<typeof voteStocke>;
 type NumeriqueDuCours = z.input<typeof numeriqueStockee>;
@@ -205,41 +201,51 @@ export function suiviDeSaCorrection(
   ];
 }
 
-export function correctionDesReponses(
-  { sousTitre, ...socle }: CorrectionDeReponses,
-  source: string,
-  explications: AuMoinsUn<readonly [string, string]>,
-): EcranDeRecit {
-  return ecranV2({ ...socle, diffusion: 'seance' }, 'answer-review', {
-    title: socle.titre,
-    ...(sousTitre === undefined ? {} : { subtitle: sousTitre }),
-    source: { screenId: source },
-    explications: explications.map(([reference, texte]) => ({
-      reference,
-      texte,
-    })),
-  });
+export interface TempsDeCorrection {
+  readonly minutes: number;
+  readonly notes: AuMoinsUn<string>;
 }
 
-export function suiviDeSonCorrige(
-  socle: Omit<SocleDEcran, 'diffusion'>,
+function annoncerLaCorrection(notes: string, minutes: number): string {
+  return notes.replace(
+    /^(• Temps : réflexion \d+ min · travail \d+ min)$/m,
+    `$1 · correction ${minutes} min`,
+  );
+}
+
+export function corrigeEtapeParEtape(
   exercice: EcranDExemple,
-): [EcranDExemple, EcranDExemple] {
-  const { exemple } = exercice.proprietes;
-  return [
-    exercice,
-    {
-      ...socle,
-      diffusion: 'seance',
-      brique: 'fp-worked',
-      proprietes: {
-        exemple: { ...exemple, id: `${exemple.id}-corrige` },
-        etayage: 0,
-        pilote: true,
-        corrigeDe: exercice.screenId,
+  { minutes, notes }: TempsDeCorrection,
+): EcranDExemple {
+  return {
+    ...exercice,
+    dureeMinutes: exercice.dureeMinutes + minutes,
+    notes: [exercice.notes, puces(...notes)].join('\n'),
+  };
+}
+
+export function corrigeSurPlace<E extends EcranDuCours>(
+  exercice: E,
+  { minutes, notes }: TempsDeCorrection,
+  explications: AuMoinsUn<readonly [string, string]>,
+): E {
+  return {
+    ...exercice,
+    dureeMinutes: exercice.dureeMinutes + minutes,
+    notes: [
+      annoncerLaCorrection(exercice.notes, minutes),
+      puces(...notes),
+    ].join('\n'),
+    proprietes: {
+      ...exercice.proprietes,
+      correctionSurPlace: {
+        explications: mapper(explications, ([reference, texte]) => ({
+          reference,
+          texte,
+        })),
       },
     },
-  ];
+  };
 }
 
 export function strategie(id: string, libelle: string, fausse = false) {
