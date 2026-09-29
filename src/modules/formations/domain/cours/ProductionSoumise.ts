@@ -12,7 +12,7 @@ import {
   corrigerTableau,
   type SaisiesDeTableau,
 } from './CorrectionProduction';
-import { estDansLaGrille } from './PlansStockes';
+import { estDansLaGrille, estUneValeurDeVerite } from './PlansStockes';
 
 const REFERENCE_DE_CELLULE = /^[A-Z][1-9]\d{0,2}$/;
 
@@ -82,9 +82,11 @@ function saisiesNettoyees(
     refuser(cible.question.id, 'cette question n’attend pas un tableau');
   }
   const plan = cible.ecran.proprietes.plan;
-  const colonnes = new Set(
-    plan.colonnes
-      .filter((colonne) => colonne.role === 'saisie')
+  const aSaisir = plan.colonnes.filter((colonne) => colonne.role === 'saisie');
+  const colonnes = new Set(aSaisir.map((colonne) => colonne.cle));
+  const booleennes = new Set(
+    aSaisir
+      .filter((colonne) => colonne.format === 'booleen')
       .map((colonne) => colonne.cle),
   );
   const lignes: Record<string, number | undefined>[] = Array.from(
@@ -96,6 +98,12 @@ function saisiesNettoyees(
       refuser(
         cible.question.id,
         `saisie hors du plan : ${saisie.rang}:${saisie.cle}`,
+      );
+    }
+    if (booleennes.has(saisie.cle) && !estUneValeurDeVerite(saisie.valeur)) {
+      refuser(
+        cible.question.id,
+        `valeur de vérité attendue : ${saisie.rang}:${saisie.cle}`,
       );
     }
     if (lignes[saisie.rang][saisie.cle] !== undefined) {
