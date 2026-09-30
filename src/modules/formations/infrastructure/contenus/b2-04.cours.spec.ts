@@ -7,10 +7,17 @@ import {
   corrigeDeFeuille,
   decrireLaFicheDuCours,
   decrireLaMiniSituation,
-  ecranDuContenu,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
-import type { CorrigeFeuille } from '../../domain/cours/Corrige';
+import {
+  attendreUneRecopieNonFigee,
+  confusionsDe,
+  enFrancais,
+  proprietesV2 as proprietesDe,
+  rangsDe,
+  recopier,
+  texteDeLEcran as texteDe,
+} from '../../../../../test/helpers/feuille-de-cours';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { COURS_B2_04 } from './b2-04.cours';
 
@@ -39,9 +46,6 @@ const hypotheseB = (rang: number): number =>
 const boutique = (rang: number): number =>
   CA_DE_LA_BOUTIQUE * (1 + TAUX_DE_LA_BOUTIQUE) ** rang;
 
-const rangsDe = (premier: number, dernier: number): number[] =>
-  Array.from({ length: dernier - premier + 1 }, (_, rang) => premier + rang);
-
 function cumul(
   suite: (rang: number) => number,
   premier: number,
@@ -59,10 +63,6 @@ function rangDuSeuil(suite: (rang: number) => number, seuil: number): number {
     rang += 1;
   }
   return rang;
-}
-
-function enFrancais(valeur: number, decimales: number): string {
-  return valeur.toFixed(decimales).replace('.', ',');
 }
 
 decrireLaFicheDuCours('B2-04', COURS, {
@@ -104,67 +104,11 @@ decrireLaFicheDuCours('B2-04', COURS, {
   ],
 });
 
-function recopier(
-  modele: string,
-  colonne: string,
-  premiere: number,
-  derniere: number,
-): Record<string, string> {
-  return Object.fromEntries(
-    rangsDe(premiere, derniere).map((ligne) => [
-      `${colonne}${ligne}`,
-      modele.replaceAll(
-        /(?<![$A-Z])([A-H])(\d+)\b/g,
-        (_, lettre: string, numero: string) =>
-          `${lettre}${Number(numero) + ligne - premiere}`,
-      ),
-    ]),
-  );
-}
-
-function confusionsDe(
-  corrige: CorrigeFeuille,
-  envoi: Readonly<Record<string, string>>,
-  colonne: string,
-): (string | null)[] {
-  return corrigerFeuille(corrige, envoi)
-    .verdicts.filter((verdict) => verdict.reference.startsWith(colonne))
-    .map((verdict) => verdict.confusion);
-}
-
-function attendreUneRecopieNonFigee(
-  corrige: CorrigeFeuille,
-  envoi: Readonly<Record<string, string>>,
-  colonne: string,
-  lignesDecalees: number,
-): void {
-  expect(confusionsDe(corrige, envoi, colonne)).toEqual([
-    null,
-    ...Array.from(
-      { length: lignesDecalees },
-      () => 'reference-relative-non-figee',
-    ),
-  ]);
-}
-
 const texteDeLEcran = (screenId: string): string =>
-  JSON.stringify(ecranDuContenu(COURS_B2_04, screenId));
+  texteDe(COURS_B2_04, screenId);
 
-function proprietesV2(screenId: string): Readonly<Record<string, unknown>> {
-  const ecran = ecranDuContenu(COURS_B2_04, screenId);
-  if (ecran.brique !== 'fp-story') {
-    throw new Error(`l’écran ${screenId} n’est pas un écran v2`);
-  }
-  const { presentation } = ecran.proprietes;
-  if (presentation?.version !== 2) {
-    throw new Error(`l’écran ${screenId} n’a pas de présentation v2`);
-  }
-  const { props } = presentation;
-  if (typeof props !== 'object' || props === null) {
-    throw new Error(`l’écran ${screenId} n’a pas de propriétés v2`);
-  }
-  return { ...props };
-}
+const proprietesV2 = (screenId: string): Readonly<Record<string, unknown>> =>
+  proprietesDe(COURS_B2_04, screenId);
 
 decrireLaMiniSituation('B2-04', COURS_B2_04, {
   donneesFictives: ['B2-04-A1-05-HISTORIQUE', 'B2-04-A4-01-SITUATION-BOUTIQUE'],

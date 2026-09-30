@@ -275,7 +275,8 @@ export function attendu(
   confusionSiErreurFormule: ConfusionId | null = null,
   tolerance:
     | typeof TOLERANCE_RELATIVE
-    | typeof TOLERANCE_NULLE = TOLERANCE_RELATIVE,
+    | typeof TOLERANCE_NULLE
+    | typeof DEUX_DECIMALES = TOLERANCE_RELATIVE,
 ) {
   return {
     reference,

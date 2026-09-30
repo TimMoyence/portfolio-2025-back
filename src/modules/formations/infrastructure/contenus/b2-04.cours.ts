@@ -1,7 +1,16 @@
 import type { ConceptId } from '../../domain/cours/banque/concepts';
-import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import * as moteur from './briques';
+import {
+  anneesEtRangs,
+  auMillionieme,
+  avecVirgule,
+  colonneDeValeurs,
+  colonneRecopiee,
+  rangIdentique,
+  termes,
+  type AttenduDeFeuille,
+} from './feuilles';
 
 const CONCEPTS_DU_COURS = [
   'suite-arithmetique',
@@ -46,28 +55,6 @@ const DONNEES_FICTIVES =
 const RENVOI_A_L_HISTORIQUE = 'B2-04-A1-05-HISTORIQUE';
 const RENVOI_A_LA_BOUTIQUE = 'B2-04-A4-01-SITUATION-BOUTIQUE';
 
-function auMillionieme(valeur: number): number {
-  return Number(valeur.toFixed(6));
-}
-
-function avecVirgule(valeur: number, decimales: number): string {
-  return valeur.toFixed(decimales).replace('.', ',');
-}
-
-function termes<T>(
-  suite: (rang: number) => T,
-  premier: number,
-  dernier: number,
-): moteur.AuMoinsUn<T> {
-  return [
-    suite(premier),
-    ...Array.from({ length: dernier - premier }, (_, ecart) =>
-      suite(premier + 1 + ecart),
-    ),
-  ];
-}
-
-const rangIdentique = (rang: number): number => rang;
 const hypotheseA = (rang: number): number => CA_DE_DEPART + RAISON_A * rang;
 const hypotheseB = (rang: number): number =>
   auMillionieme(CA_DE_DEPART * (1 + TAUX_B) ** rang);
@@ -97,77 +84,6 @@ const LIGNES_DE_L_HISTORIQUE = CA_OBSERVE.map((ca, rang) => {
   };
 });
 
-function anneesEtRangs(dernierRang: number): Record<string, string> {
-  return Object.fromEntries(
-    termes(rangIdentique, 0, dernierRang).flatMap((rang) => [
-      [`A${rang + 2}`, String(ANNEE_DE_DEPART + rang)],
-      [`B${rang + 2}`, String(rang)],
-    ]),
-  );
-}
-
-function colonneDeValeurs(
-  colonne: string,
-  valeurs: readonly number[],
-): Record<string, string> {
-  return Object.fromEntries(
-    valeurs.map((valeur, rang) => [`${colonne}${rang + 2}`, String(valeur)]),
-  );
-}
-
-function recopiee(modele: string, decalage: number): string {
-  return modele.replaceAll(
-    /(?<![$A-Z])([A-H])(\d+)/g,
-    (_, colonne: string, ligne: string) =>
-      `${colonne}${Number(ligne) + decalage}`,
-  );
-}
-
-type PiegeDeCellule = readonly [number, ConfusionId];
-
-interface Recopie {
-  readonly colonne: string;
-  readonly premiereLigne: number;
-  readonly formule: string;
-  readonly piegesDuModele?: readonly PiegeDeCellule[];
-  readonly piegesDeLaRecopie?: readonly PiegeDeCellule[];
-  readonly confusionSiErreur?: ConfusionId;
-}
-
-function colonneRecopiee(
-  {
-    colonne,
-    premiereLigne,
-    formule,
-    piegesDuModele = [],
-    piegesDeLaRecopie = [],
-    confusionSiErreur,
-  }: Recopie,
-  [premiere, ...suivantes]: moteur.AuMoinsUn<number | string>,
-): moteur.AuMoinsUn<ReturnType<typeof moteur.attendu>> {
-  const modele = `${colonne}${premiereLigne}`;
-  return [
-    moteur.attendu(
-      modele,
-      formule,
-      premiere,
-      'references',
-      piegesDuModele,
-      confusionSiErreur ?? null,
-    ),
-    ...suivantes.map((valeur, rang) =>
-      moteur.attendu(
-        `${colonne}${premiereLigne + rang + 1}`,
-        recopiee(formule, rang + 1),
-        valeur,
-        { memeQue: modele },
-        piegesDeLaRecopie,
-        confusionSiErreur ?? null,
-      ),
-    ),
-  ];
-}
-
 const FORMULE_DE_L_HYPOTHESE_A = '=C2+$F$1';
 
 const CELLULES_DE_L_EXERCICE_2 = {
@@ -177,7 +93,7 @@ const CELLULES_DE_L_EXERCICE_2 = {
   C2: String(CA_DE_DEPART),
   E1: 'Raison r (k€)',
   F1: String(RAISON_A),
-  ...anneesEtRangs(DERNIER_RANG_DU_PLAN),
+  ...anneesEtRangs(ANNEE_DE_DEPART, DERNIER_RANG_DU_PLAN),
 };
 
 const PLAN_DE_L_HYPOTHESE_A = {
@@ -219,7 +135,7 @@ const CELLULES_DE_L_EXERCICE_4 = {
   G1: String(RAISON_A),
   F2: 'Taux annuel t',
   G2: avecVirgule(TAUX_B, 2),
-  ...anneesEtRangs(DERNIER_RANG_DU_PLAN),
+  ...anneesEtRangs(ANNEE_DE_DEPART, DERNIER_RANG_DU_PLAN),
   ...colonneDeValeurs('C', termes(hypotheseA, 0, DERNIER_RANG_DU_PLAN)),
 };
 
@@ -237,9 +153,7 @@ const PLAN_DES_DEUX_HYPOTHESES = {
   ],
 };
 
-const ATTENDUS_DES_DEUX_HYPOTHESES: moteur.AuMoinsUn<
-  ReturnType<typeof moteur.attendu>
-> = [
+const ATTENDUS_DES_DEUX_HYPOTHESES: moteur.AuMoinsUn<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'D',
@@ -301,7 +215,7 @@ const CELLULES_DE_LA_BOUTIQUE = {
   G1: 'Seuil (k€)',
   H1: String(SEUIL_DE_LA_BOUTIQUE),
   E3: 'Cumul 2025-2030 (k€)',
-  ...anneesEtRangs(DERNIER_RANG_DE_LA_BOUTIQUE),
+  ...anneesEtRangs(ANNEE_DE_DEPART, DERNIER_RANG_DE_LA_BOUTIQUE),
 };
 
 const PLAN_DE_LA_BOUTIQUE = {
@@ -319,9 +233,7 @@ const PLAN_DE_LA_BOUTIQUE = {
   ],
 };
 
-const ATTENDUS_DE_LA_BOUTIQUE: moteur.AuMoinsUn<
-  ReturnType<typeof moteur.attendu>
-> = [
+const ATTENDUS_DE_LA_BOUTIQUE: moteur.AuMoinsUn<AttenduDeFeuille> = [
   ...colonneRecopiee(
     {
       colonne: 'C',
