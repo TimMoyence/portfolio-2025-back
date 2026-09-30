@@ -6,6 +6,7 @@ import {
   safeHtml,
 } from '../../../common/infrastructure/mail/html-escape.util';
 import type { EscapedHtml } from '../../../common/infrastructure/mail/html-escape.util';
+import { conceptsFragilesLisibles } from '../domain/IFormationMailer.port';
 import type {
   CopieEtudiant,
   IFormationMailer,
@@ -103,9 +104,7 @@ export class FormationMailerService
       '',
     ];
     if (rapport.conceptsFragiles.length > 0) {
-      lignes.push(
-        `Concepts fragiles : ${rapport.conceptsFragiles.join(', ')}.`,
-      );
+      lignes.push(`Concepts fragiles : ${conceptsFragilesLisibles(rapport)}.`);
       lignes.push('');
     }
     for (const participant of rapport.participants) {
@@ -124,7 +123,7 @@ export class FormationMailerService
   private syntheseHtml(rapport: RapportSession): EscapedHtml {
     const fragilesTexte =
       rapport.conceptsFragiles.length > 0
-        ? escapeHtml(rapport.conceptsFragiles.join(', '))
+        ? escapeHtml(conceptsFragilesLisibles(rapport))
         : escapeHtml('aucun');
     const lignesParticipants = rapport.participants.map(
       (participant) => safeHtml`<tr>

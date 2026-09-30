@@ -16,7 +16,7 @@ const BRIQUES_D_EXERCICE_OUVERT: readonly string[] = [
   'fp-challenge',
 ];
 const MOTIF_DES_TEMPS =
-  /^• Temps : réflexion (\d+) min · travail (\d+) min(?: · correction (\d+) min)?$/m;
+  /^• Temps\s: réflexion (\d+) min · travail (\d+) min(?: · correction (\d+) min)?$/m;
 
 type Temps = 'reflechir' | 'comprendre' | 'exercer';
 

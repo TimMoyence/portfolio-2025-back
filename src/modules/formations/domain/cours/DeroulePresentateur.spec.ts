@@ -1,4 +1,8 @@
-import { buildCoursDeTest } from '../../../../../test/factories/cours.factory';
+import {
+  buildCoursAUneQuestion,
+  buildCoursDeTest,
+  QUESTION_A_CONFUSION_REPETEE,
+} from '../../../../../test/factories/cours.factory';
 import {
   BRIQUES_STOCKEES,
   buildCoursDeBriques,
@@ -57,6 +61,17 @@ describe('deroulePresentateur', () => {
       ],
     };
     expect(ecran('E-OUV').corriges[0]).toEqual(corrigeAttendu);
+  });
+
+  it('ne cite qu une fois la confusion portée par deux distracteurs', () => {
+    const repetee = deroulePresentateur(
+      buildCoursAUneQuestion(QUESTION_A_CONFUSION_REPETEE),
+      424,
+    );
+
+    expect(
+      repetee.ecrans[0].corriges[0].confusions.map((confusion) => confusion.id),
+    ).toEqual(['hausse-baisse-symetriques']);
   });
 
   it('expose les remediations du cours', () => {

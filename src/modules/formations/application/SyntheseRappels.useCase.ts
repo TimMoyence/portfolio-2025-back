@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { libelleDeConcept } from '../domain/cours/banque/concepts';
 import { ecranDeRappel } from '../domain/cours/ChoixDesRappels';
 import { RappelsIndisponiblesError } from '../domain/errors/FormationErrors';
 import type { IMasteryRepository } from '../domain/IMastery.repository';
@@ -56,7 +57,7 @@ export class SyntheseRappelsUseCase {
         );
         return {
           concept,
-          libelle: concept,
+          libelle: libelleDeConcept(concept),
           boite1: boites.filter((boite) => boite === 1).length,
           boite2: boites.filter((boite) => boite === 2).length,
           boite3: boites.filter((boite) => boite === 3).length,

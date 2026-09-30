@@ -53,3 +53,47 @@ export const CONCEPTS = [
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];
+
+const LIBELLES_DES_CONCEPTS: Readonly<Record<ConceptId, string>> = {
+  proportion: 'Proportion',
+  pourcentage: 'Pourcentage',
+  'taux-evolution': 'Taux d’évolution',
+  'coefficient-multiplicateur': 'Coefficient multiplicateur',
+  'evolutions-successives': 'Évolutions successives',
+  'evolution-reciproque': 'Évolution réciproque',
+  'taux-moyen': 'Taux moyen',
+  'indice-base-100': 'Indice base 100',
+  'point-de-pourcentage': 'Point de pourcentage',
+  'moyenne-ponderee': 'Moyenne pondérée',
+  'lecture-graphique': 'Lecture de graphique',
+  'controle-coherence': 'Contrôle de cohérence',
+  'contrat-de-lecture': 'Contrat de lecture d’un chiffre',
+  tableur: 'Tableur',
+  'serie-statistique': 'Série statistique',
+  moyenne: 'Moyenne',
+  mediane: 'Médiane',
+  quartiles: 'Quartiles',
+  dispersion: 'Dispersion',
+  'ecart-type': 'Écart-type',
+  'boite-a-moustaches': 'Boîte à moustaches',
+  histogramme: 'Histogramme',
+  'choix-du-resume': 'Choix du résumé statistique',
+  'nuage-de-points': 'Nuage de points',
+  correlation: 'Corrélation',
+  'ajustement-affine': 'Ajustement affine',
+  prevision: 'Prévision',
+  proposition: 'Proposition logique',
+  connecteur: 'Connecteurs ET, OU',
+  negation: 'Négation',
+  quantificateur: 'Quantificateurs',
+  'suite-arithmetique': 'Suite arithmétique',
+  'suite-geometrique': 'Suite géométrique',
+  'algorithme-de-seuil': 'Algorithme de seuil',
+  'somme-de-termes': 'Somme de termes',
+};
+
+export function libelleDeConcept(id: string): string {
+  return Object.hasOwn(LIBELLES_DES_CONCEPTS, id)
+    ? LIBELLES_DES_CONCEPTS[id as ConceptId]
+    : id;
+}

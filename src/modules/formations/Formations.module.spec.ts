@@ -29,7 +29,7 @@ import {
   CONTENUS_DES_COURS,
   PUBLICATION_DES_COURS,
 } from './domain/token';
-import { COURS_B2_01 } from './infrastructure/contenus/b2-01.cours';
+import { CONTENUS } from './infrastructure/contenus';
 import { PublicationDesCoursRepositoryTypeORM } from './infrastructure/PublicationDesCours.repository.typeorm';
 import { SynchronisationAuDemarrageService } from './infrastructure/SynchronisationAuDemarrage.service';
 import { FormationsModule } from './Formations.module';
@@ -124,7 +124,7 @@ describe('FormationsModule', () => {
       publication: module.get(PUBLICATION_DES_COURS),
       demarrage: module.get(SynchronisationAuDemarrageService),
     }).toEqual({
-      contenus: expect.arrayContaining([COURS_B2_01]),
+      contenus: CONTENUS,
       publication: expect.any(PublicationDesCoursRepositoryTypeORM),
       demarrage: expect.any(SynchronisationAuDemarrageService),
     });

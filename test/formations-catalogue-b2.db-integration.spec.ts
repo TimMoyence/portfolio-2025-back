@@ -9,7 +9,7 @@ import { deroulePresentateur } from '../src/modules/formations/domain/cours/Dero
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
 import { FormationCourseContentEntity } from '../src/modules/formations/infrastructure/entities/FormationCourseContent.entity';
 import { FormationScreenContentEntity } from '../src/modules/formations/infrastructure/entities/FormationScreenContent.entity';
-import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
+import { COURS_B2_01 } from './factories/contenus-publies';
 import {
   buildEcranStockeAvec,
   buildQuizNote,

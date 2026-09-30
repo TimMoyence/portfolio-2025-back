@@ -43,6 +43,7 @@ function buildRapport(overrides: Partial<RapportSession> = {}): RapportSession {
     fermeeLe: new Date('2026-09-11T11:30:00.000Z'),
     participants: [buildParticipant()],
     conceptsFragiles: [],
+    libellesDesConcepts: {},
     ...overrides,
   };
 }
@@ -245,6 +246,19 @@ describe('FormationMailerService', () => {
 
       expect(mail.text).toContain('interet-simple');
       expect(mail.html).toContain('interet-simple');
+    });
+
+    it('nomme les concepts fragiles par leur libellé quand le rapport le porte', async () => {
+      const mail = await synthese(
+        buildRapport({
+          conceptsFragiles: ['suite-geometrique'],
+          libellesDesConcepts: { 'suite-geometrique': 'Suite géométrique' },
+        }),
+      );
+
+      expect(mail.text).toContain('Concepts fragiles : Suite géométrique.');
+      expect(mail.html).toContain('Suite géométrique');
+      expect(mail.html).not.toContain('suite-geometrique');
     });
   });
 

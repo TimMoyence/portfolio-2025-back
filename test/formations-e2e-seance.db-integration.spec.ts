@@ -19,11 +19,13 @@ import {
 } from '../src/modules/formations/domain/cours/Tirage';
 import { NE_SAIT_PAS } from '../src/modules/formations/domain/GradingCore';
 import type { ContenuDeCours } from '../src/modules/formations/domain/cours/CoursStocke';
-import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
-import { COURS_B2_02 } from '../src/modules/formations/infrastructure/contenus/b2-02.cours';
-import { COURS_B2_03 } from '../src/modules/formations/infrastructure/contenus/b2-03.cours';
-import { COURS_B2_04 } from '../src/modules/formations/infrastructure/contenus/b2-04.cours';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
+import {
+  COURS_B2_01,
+  COURS_B2_02,
+  COURS_B2_03,
+  COURS_B2_04,
+} from './factories/contenus-publies';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import { clesSecretesDans } from './helpers/cles-du-corrige';
 import { describeDb } from './helpers/db-integration-datasource';

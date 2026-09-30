@@ -11,6 +11,7 @@ import {
   slugOption,
   voteStocke,
 } from './QuestionStockee';
+import { typographier } from './Typographie';
 
 const TIRAGE = creerTirage(creerRng(3));
 
@@ -35,6 +36,19 @@ describe('slugOption', () => {
     );
     expect(slugOption(`${'a'.repeat(39)} b`)).toMatch(
       new RegExp(`^${'a'.repeat(39)}-[0-9a-f]{8}$`),
+    );
+  });
+
+  it('garde le même identifiant quand les espaces du libellé deviennent insécables', () => {
+    expect(slugOption(typographier('+25 %'))).toBe(slugOption('+25 %'));
+  });
+
+  it('garde le même identifiant quand les ordinaux du libellé passent en exposant', () => {
+    const libelle = 'Au 3e trimestre, depuis le 1er janvier';
+
+    expect(slugOption(typographier(libelle))).toBe(slugOption(libelle));
+    expect(slugOption(libelle)).toMatch(
+      /^au-3e-trimestre-depuis-le-1er-janvier-/,
     );
   });
 

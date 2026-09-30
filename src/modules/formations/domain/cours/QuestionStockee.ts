@@ -16,6 +16,7 @@ import {
   texte,
   tolerance,
 } from './SchemasCommuns';
+import { sansTypographie } from './Typographie';
 
 const LONGUEUR_MAX_DU_SLUG = 40;
 const LONGUEUR_DE_L_EMPREINTE = 8;
@@ -37,15 +38,16 @@ function sansTiretsAuxBords(slug: string): string {
 }
 
 export function slugOption(libelle: string): string {
+  const brut = sansTypographie(libelle);
   const lisible = SYMBOLES_NOMMES.reduce(
     (courant, [symbole, mot]) => courant.replace(symbole, mot),
-    libelle.normalize('NFD').replace(DIACRITIQUES, '').toLowerCase(),
+    brut.normalize('NFD').replace(DIACRITIQUES, '').toLowerCase(),
   ).replace(HORS_ALPHANUMERIQUE, '-');
   const tronque = sansTiretsAuxBords(
     sansTiretsAuxBords(lisible).slice(0, LONGUEUR_MAX_DU_SLUG),
   );
   const empreinte = createHash('sha256')
-    .update(libelle.normalize('NFC'), 'utf8')
+    .update(brut.normalize('NFC'), 'utf8')
     .digest('hex')
     .slice(0, LONGUEUR_DE_L_EMPREINTE);
   return `${tronque}-${empreinte}`;

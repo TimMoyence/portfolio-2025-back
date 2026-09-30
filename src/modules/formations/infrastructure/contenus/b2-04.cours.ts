@@ -425,7 +425,7 @@ const ACTE_1: moteur.Acte = [
     notes: moteur.puces(
       'Rappel rapide : deux votes non notés, un par cours précédent.',
       'Dire où chaque acquis resservira : la pente dans l’hypothèse A, la négation dans la boucle « Tant que ».',
-      ...moteur.NOTES_DU_VOTE_PUIS_REVOTE,
+      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
     ),
     proprietes: {
       modalite: 'solo',
@@ -461,7 +461,7 @@ const ACTE_1: moteur.Acte = [
         type: 'revelation',
         titre: 'Deux acquis qui resservent aujourd’hui',
         lignes: [
-          'Dans y = ax + b, la pente a est la variation de y quand x augmente de 1 : ici, environ 44 k€ de plus par an.',
+          'La pente d’une droite d’ajustement est la variation de y quand x augmente de 1 : ici, environ 44 k€ de plus par an.',
           'Le contraire de « < » est « ≥ » : la borne passe de l’autre côté.',
           'L’écran suivant rassemble ce que les trois premiers cours apportent à celui-ci.',
         ],
@@ -1701,8 +1701,8 @@ const ACTE_3: moteur.Acte = [
             'algorithme-de-seuil',
             true,
             'Quelle condition écrire dans la boucle qui cherche ce rang ?',
-            'Tant que v < 1200',
-            [['Tant que v ≥ 1200', 'condition-tant-que-inversee']],
+            'Tant que v < 1 200',
+            [['Tant que v ≥ 1 200', 'condition-tant-que-inversee']],
           ),
           moteur.numerique(
             'b2-04-a3-cumul-a',

@@ -4,6 +4,7 @@ import {
   CONCEPTS_DU_B2_02,
   CONCEPTS_DU_B2_03,
   CONCEPTS_DU_B2_04,
+  libelleDeConcept,
 } from './concepts';
 import {
   CONFUSIONS,
@@ -11,6 +12,7 @@ import {
   libelleDeConfusion,
   libelleLisible,
 } from './confusions';
+import { typographierEnProfondeur } from '../Typographie';
 
 const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'proportion-confondue-avec-evolution': {
@@ -145,7 +147,7 @@ const CONFUSIONS_AJOUTEES_PAR_LA_V3 = {
   'reference-relative-non-figee': {
     concept: 'tableur',
     libelle:
-      'Recopier une formule dont la référence au total n’est pas figée ($) : le dénominateur glisse.',
+      'Recopier une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une ligne à chaque recopie.',
   },
   'valeur-saisie-sans-formule': {
     concept: 'tableur',
@@ -280,6 +282,18 @@ const CONFUSIONS_DU_B2_04 = {
   'terme-pris-pour-somme': { concept: 'somme-de-termes' },
 };
 
+describe('libelleDeConcept', () => {
+  it('nomme chaque concept de la banque autrement que par son identifiant', () => {
+    expect(CONCEPTS.filter((id) => libelleDeConcept(id) === id)).toEqual([]);
+    expect(libelleDeConcept('suite-geometrique')).toBe('Suite géométrique');
+  });
+
+  it('rend l identifiant tel quel quand le concept est inconnu ou hérité', () => {
+    expect(libelleDeConcept('interet-simple')).toBe('interet-simple');
+    expect(libelleDeConcept('toString')).toBe('toString');
+  });
+});
+
 describe('CONCEPTS', () => {
   it('fige les quatorze concepts du B2-01 dans leur ordre', () => {
     expect(CONCEPTS.slice(0, 14)).toEqual([...CONCEPTS_DU_B2_01]);
@@ -344,7 +358,26 @@ describe('CONCEPTS', () => {
   });
 });
 
+function attendreDansLaBanque(definitions: object): void {
+  expect(CONFUSIONS).toMatchObject(typographierEnProfondeur(definitions));
+}
+
 describe('CONFUSIONS', () => {
+  it('ne laisse aucun nombre ni signe de ponctuation haute sécable', () => {
+    for (const { libelle } of Object.values(CONFUSIONS)) {
+      expect(libelle).not.toMatch(/\d %| [;:?!»]|« /);
+    }
+  });
+
+  it('décrit les confusions réutilisées sans citer le cours qui les a introduites', () => {
+    expect(libelleDeConfusion('coefficient-confondu-avec-taux')).toContain(
+      'coefficient multiplicateur 1 + t',
+    );
+    expect(libelleDeConfusion('reference-relative-non-figee')).not.toContain(
+      'total',
+    );
+  });
+
   it('rattache chaque confusion a un concept de la banque', () => {
     for (const confusion of Object.values(CONFUSIONS)) {
       expect(CONCEPTS).toContain(confusion.concept);
@@ -356,21 +389,21 @@ describe('CONFUSIONS', () => {
     expect(Object.keys(CONFUSIONS).slice(38, 55)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_02),
     );
-    expect(CONFUSIONS).toMatchObject(CONFUSIONS_DU_B2_02);
+    attendreDansLaBanque(CONFUSIONS_DU_B2_02);
   });
 
   it('ajoute en dernier les sept confusions de deux variables, sans retirer celles de la v1', () => {
     expect(Object.keys(CONFUSIONS).slice(55, 62)).toEqual(
       Object.keys(CONFUSIONS_DES_DEUX_VARIABLES),
     );
-    expect(CONFUSIONS).toMatchObject(CONFUSIONS_DES_DEUX_VARIABLES);
+    attendreDansLaBanque(CONFUSIONS_DES_DEUX_VARIABLES);
   });
 
   it('ajoute à la suite les onze confusions de logique du B2-03', () => {
     expect(Object.keys(CONFUSIONS).slice(62, 73)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_03),
     );
-    expect(CONFUSIONS).toMatchObject(CONFUSIONS_DU_B2_03);
+    attendreDansLaBanque(CONFUSIONS_DU_B2_03);
   });
 
   it('ajoute en dernier les six confusions de suites du B2-04', () => {
@@ -378,11 +411,11 @@ describe('CONFUSIONS', () => {
     expect(Object.keys(CONFUSIONS).slice(73)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_04),
     );
-    expect(CONFUSIONS).toMatchObject(CONFUSIONS_DU_B2_04);
+    attendreDansLaBanque(CONFUSIONS_DU_B2_04);
   });
 
   it('conserve les huit confusions existantes et ajoute les trente de la V3 (§ 5.9)', () => {
-    expect(CONFUSIONS).toMatchObject(CONFUSIONS_AJOUTEES_PAR_LA_V3);
+    attendreDansLaBanque(CONFUSIONS_AJOUTEES_PAR_LA_V3);
     expect(Object.keys(CONFUSIONS).slice(0, 8)).toEqual([
       'hausse-baisse-symetriques',
       'taux-successifs-additionnes',

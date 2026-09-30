@@ -7,7 +7,7 @@ import type {
   ContenuDeCoursBrut,
 } from '../../src/modules/formations/domain/cours/CoursStocke';
 import type { IPublicationDesCours } from '../../src/modules/formations/domain/cours/IPublicationDesCours.port';
-import { COURS_B2_01 } from '../../src/modules/formations/infrastructure/contenus/b2-01.cours';
+import { COURS_B2_01 } from './contenus-publies';
 import {
   buildContenuDuCours,
   buildCoursDuContenu,

@@ -140,6 +140,20 @@ describe('buildRapportSession', () => {
     expect(rapport.conceptsFragiles).toContain('interet-simple');
   });
 
+  it('joint le libellé lisible de chaque concept fragile', () => {
+    const rapport = rapportDe({
+      answers: [
+        buildAnswerRecord({ concept: 'suite-geometrique', correcte: false }),
+        buildAnswerRecord({ concept: 'hors-banque', correcte: false }),
+      ],
+    });
+
+    expect(rapport.libellesDesConcepts).toEqual({
+      'suite-geometrique': 'Suite géométrique',
+      'hors-banque': 'hors-banque',
+    });
+  });
+
   it('n inclut pas un concept dont la reussite atteint 70 pourcent ou plus', () => {
     const rapport = rapportDe({
       answers: [

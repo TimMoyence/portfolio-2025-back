@@ -215,6 +215,14 @@ export class SessionResultsResponseDto {
   conceptsFragiles: string[];
 
   @ApiProperty({
+    type: 'object',
+    additionalProperties: { type: 'string' },
+    example: { 'taux-evolution': 'Taux d’évolution' },
+    description: 'Libellé lisible de chaque concept fragile',
+  })
+  libellesDesConcepts: Record<string, string>;
+
+  @ApiProperty({
     type: StatistiquesSeanceResponseDto,
     description: 'Indicateurs calculés côté serveur pour le pilotage formateur',
   })
