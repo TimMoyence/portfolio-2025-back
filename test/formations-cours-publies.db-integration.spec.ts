@@ -35,10 +35,15 @@ import {
 const GRAINE_DE_REFERENCE = 0;
 const DECIMALES_COMPAREES = 5;
 
-function comparable(valeur: ValeurFormule | null): ValeurFormule | null {
-  return typeof valeur === 'number'
-    ? Number(valeur.toFixed(DECIMALES_COMPAREES))
-    : valeur;
+function attendreLaMemeValeur(
+  recalculee: ValeurFormule | null,
+  attendue: ValeurFormule,
+): void {
+  if (typeof recalculee === 'number' && typeof attendue === 'number') {
+    expect(recalculee).toBeCloseTo(attendue, DECIMALES_COMPAREES);
+    return;
+  }
+  expect(recalculee).toEqual(attendue);
 }
 
 const CELLULES_DE_LA_FEUILLE: Readonly<Record<string, number>> = {
@@ -46,6 +51,7 @@ const CELLULES_DE_LA_FEUILLE: Readonly<Record<string, number>> = {
   'b2-02-series-statistiques': 6,
   'b2-03-logique': 5,
   'b2-04-suites': 5,
+  'b2-05-mathematiques-financieres': 10,
 };
 
 function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {
@@ -158,9 +164,10 @@ for (const contenu of CONTENUS) {
 
       expect(corrige.attendus).toHaveLength(cellulesDeLaFeuille);
       for (const attendu of corrige.attendus) {
-        expect(
-          comparable(resultats.get(attendu.reference)?.valeur ?? null),
-        ).toEqual(comparable(attendu.valeur));
+        attendreLaMemeValeur(
+          resultats.get(attendu.reference)?.valeur ?? null,
+          attendu.valeur,
+        );
       }
     });
 
