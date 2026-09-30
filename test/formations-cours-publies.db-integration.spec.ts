@@ -22,9 +22,7 @@ import {
 import { ouvrirTirages } from '../src/modules/formations/domain/cours/OuvertureTirages';
 import { verifierStructure } from '../src/modules/formations/domain/cours/StructureCours';
 import { tirer } from '../src/modules/formations/domain/cours/Tirage';
-import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
-import { COURS_B2_02 } from '../src/modules/formations/infrastructure/contenus/b2-02.cours';
-import { COURS_B2_03 } from '../src/modules/formations/infrastructure/contenus/b2-03.cours';
+import { CONTENUS } from '../src/modules/formations/infrastructure/contenus';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import { tireurSequentiel } from './factories/cours.factory';
 import { describeDb } from './helpers/db-integration-datasource';
@@ -43,16 +41,12 @@ function comparable(valeur: ValeurFormule | null): ValeurFormule | null {
     : valeur;
 }
 
-interface AttenduDuCours {
-  readonly contenu: ContenuDeCours;
-  readonly cellulesDeLaFeuille: number;
-}
-
-const COURS_PUBLIES: readonly AttenduDuCours[] = [
-  { contenu: COURS_B2_01, cellulesDeLaFeuille: 17 },
-  { contenu: COURS_B2_02, cellulesDeLaFeuille: 6 },
-  { contenu: COURS_B2_03, cellulesDeLaFeuille: 5 },
-];
+const CELLULES_DE_LA_FEUILLE: Readonly<Record<string, number>> = {
+  'b2-01-traitement-information-chiffree': 17,
+  'b2-02-series-statistiques': 6,
+  'b2-03-logique': 5,
+  'b2-04-suites': 5,
+};
 
 function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {
   return JSON.parse(
@@ -66,7 +60,8 @@ function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {
   ) as { readonly empreinte: string };
 }
 
-for (const { contenu, cellulesDeLaFeuille } of COURS_PUBLIES) {
+for (const contenu of CONTENUS) {
+  const cellulesDeLaFeuille = CELLULES_DE_LA_FEUILLE[contenu.slug];
   const prefixe = prefixeDuCours(contenu);
 
   describeDb(`cours ${prefixe} publié en base`, () => {

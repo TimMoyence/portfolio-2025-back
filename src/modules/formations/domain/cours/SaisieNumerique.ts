@@ -1,6 +1,16 @@
 const ESPACES = new RegExp('[\\s\\u00a0\\u202f\\u2009]', 'g');
 const MOINS_TYPOGRAPHIQUE = new RegExp('\\u2212', 'g');
-const SUFFIXES = /(?:%|€|euros?|pts?|points?|factures?|lignes?)$/i;
+const UNITES_LUES = [
+  '%',
+  'k?€',
+  'euros?',
+  'pts?',
+  'points?',
+  'factures?',
+  'lignes?',
+  'passages?',
+];
+const SUFFIXES = new RegExp(`(?:${UNITES_LUES.join('|')})$`, 'i');
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
 
 export function lireNombreSaisi(brut: string): number | null {

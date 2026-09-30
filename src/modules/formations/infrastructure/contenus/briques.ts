@@ -54,6 +54,18 @@ export function puces(...lignes: AuMoinsUn<string>): string {
   return lignes.map((ligne) => `• ${ligne}`).join('\n');
 }
 
+export const NOTES_DU_VOTE_PUIS_REVOTE = [
+  'Vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme puis revote ; sinon, révéler directement.',
+  'Papier : vote à main levée, puis revote après discussion en binôme.',
+] as const;
+
+export function notesDuVoteQuiOuvreLaNotion(notion: 1 | 2 | 3): string {
+  return puces(
+    `Temps « réfléchir » de la notion ${notion} : votes non notés.`,
+    ...NOTES_DU_VOTE_PUIS_REVOTE,
+  );
+}
+
 function option(libelle: string, confusion: ConfusionId | null) {
   return { id: slugOption(libelle), libelle, confusion };
 }

@@ -364,6 +364,36 @@ export const CONFUSIONS = {
     libelle:
       'Traduire une règle « et » par un « ou » (OU dans le tableur, OR en SQL) : on retient les lignes qui ne vérifient qu’une des conditions.',
   },
+  'rang-decale': {
+    concept: 'suite-arithmetique',
+    libelle:
+      'Se décaler d’un rang : prendre le terme d’avant ou d’après, ou compter le premier terme comme le rang 1 alors qu’il porte le rang 0.',
+  },
+  'rang-confondu-avec-annee': {
+    concept: 'algorithme-de-seuil',
+    libelle:
+      'Répondre par l’année alors que la question porte sur le rang, ou l’inverse : l’année est l’année de départ plus le rang.',
+  },
+  'nature-de-suite-confondue': {
+    concept: 'suite-geometrique',
+    libelle:
+      'Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique).',
+  },
+  'condition-tant-que-inversee': {
+    concept: 'algorithme-de-seuil',
+    libelle:
+      'Écrire dans « Tant que » la condition d’arrêt au lieu de la condition pour continuer : la boucle tourne tant que le seuil n’est pas atteint.',
+  },
+  'nombre-de-termes-decale': {
+    concept: 'somme-de-termes',
+    libelle:
+      'Compter un terme de trop ou de moins dans une somme : du rang p au rang n, il y a n − p + 1 termes.',
+  },
+  'terme-pris-pour-somme': {
+    concept: 'somme-de-termes',
+    libelle:
+      'Donner le dernier terme à la place du cumul : la somme additionne tous les termes de la période.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export type ConfusionId = keyof typeof CONFUSIONS;
