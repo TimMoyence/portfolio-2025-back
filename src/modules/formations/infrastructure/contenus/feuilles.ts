@@ -1,7 +1,7 @@
 import type { ConfusionId } from '../../domain/cours/banque/confusions';
 import * as moteur from './briques';
 
-export type PiegeDeCellule = readonly [number, ConfusionId];
+type PiegeDeCellule = readonly [number, ConfusionId];
 export type AttenduDeFeuille = ReturnType<typeof moteur.attendu>;
 
 export function auMillionieme(valeur: number): number {
@@ -48,7 +48,7 @@ export function colonneDeValeurs(
   );
 }
 
-export function recopiee(modele: string, decalage: number): string {
+function recopiee(modele: string, decalage: number): string {
   return modele.replaceAll(
     /(?<![$A-Z])([A-H])(\d+)/g,
     (_, colonne: string, ligne: string) =>
