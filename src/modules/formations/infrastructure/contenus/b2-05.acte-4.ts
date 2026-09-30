@@ -89,7 +89,7 @@ export const ACTE_4: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 3 min · travail 11 min',
         'Réflexion : chacun nomme en français les colonnes C, D et E, puis écrit sur papier les formules de la ligne 2.',
-        'Erreurs à chercher : VPM sans signe moins ; G2 ou I2 sans $ ; intérêts sur 32 000 € chaque ligne ; J2 = total remboursé.',
+        'Erreurs à chercher : VPM sans signe moins ; F2 ou H2 sans $ ; intérêts sur 32 000 € chaque ligne ; I2 = total remboursé.',
         'Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.',
       ),
       proprietes: {
@@ -121,12 +121,12 @@ export const ACTE_4: moteur.Acte = [
     },
     [
       [
-        'I2',
+        'H2',
         `${FORMULE_DE_L_ANNUITE} ≈ 8 712,04 €. Sans le signe moins, l’annuité s’affiche négative ; 32 000 ÷ 4 = 8 000 € oublie les intérêts.`,
       ],
       [
         'C2 à C5',
-        `${FORMULE_DES_INTERETS}, recopiée : 1 120 €, puis 854,28 €, 579,26 € et 294,61 €. Sans les $, la recopie lit G3, vide.`,
+        `${FORMULE_DES_INTERETS}, recopiée : 1 120 €, puis 854,28 €, 579,26 € et 294,61 €. Sans les $, la recopie lit F3, vide.`,
       ],
       [
         'D2 à D5 et E2 à E5',
@@ -137,8 +137,8 @@ export const ACTE_4: moteur.Acte = [
         `${FORMULE_DU_REPORT}, recopiée : le capital dû en début d’année reprend la fin de l’année précédente.`,
       ],
       [
-        'J2',
-        `${FORMULE_DU_COUT} ≈ 2 848,15 €. =I2*H2 donne le total remboursé, pas le coût.`,
+        'I2',
+        `${FORMULE_DU_COUT} ≈ 2 848,15 €. =H2*G2 donne le total remboursé, pas le coût.`,
       ],
     ],
   ),
@@ -287,7 +287,7 @@ export const ACTE_4: moteur.Acte = [
       ],
       [
         'b2-05-a4-e4-cout',
-        '4 × 8 712,04 − 32 000 ≈ 2 848,15 €, la cellule J2. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année.',
+        '4 × 8 712,04 − 32 000 ≈ 2 848,15 €, la cellule I2. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année.',
       ],
     ],
   ),

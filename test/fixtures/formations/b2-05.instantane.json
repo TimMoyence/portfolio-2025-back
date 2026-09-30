@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "1ada5d1acaa81d665c9754c710ad7de642bb71a0bd9f697562988fab661a8edc",
+  "empreinte": "fd9398ee320bcfa0e57079ed1ed06155a9e3c23c433a289a6ad3b944740b23f8",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -1591,7 +1591,7 @@
             "id": "b2-05-a4-feuille-camionnette",
             "intitule": "Question tableur (3 points) — Le tableau d’amortissement de la camionnette",
             "lignes": 5,
-            "colonnes": 10,
+            "colonnes": 9,
             "cellules": {
               "A1": "Année",
               "B1": "Capital dû en début d’année (€)",
@@ -1599,12 +1599,12 @@
               "C1": "Intérêts (€)",
               "D1": "Amortissement (€)",
               "E1": "Capital dû en fin d’année (€)",
-              "G1": "Taux annuel",
-              "G2": "0,035",
-              "H1": "Durée (années)",
-              "H2": "4",
-              "I1": "Annuité (€)",
-              "J1": "Coût du crédit (€)",
+              "F1": "Taux annuel",
+              "F2": "0,035",
+              "G1": "Durée (années)",
+              "G2": "4",
+              "H1": "Annuité (€)",
+              "I1": "Coût du crédit (€)",
               "A2": "1",
               "A3": "2",
               "A4": "3",
@@ -1617,23 +1617,23 @@
               "C1",
               "D1",
               "E1",
+              "F1",
+              "F2",
               "G1",
               "G2",
               "H1",
-              "H2",
               "I1",
-              "J1",
               "A2",
               "A3",
               "A4",
               "A5"
             ],
             "consignes": [
-              "En I2, calculez l’annuité avec VPM, à partir du taux (G2), de la durée (H2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.",
+              "En H2, calculez l’annuité avec VPM, à partir du taux (F2), de la durée (G2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.",
               "En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5.",
               "En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5.",
-              "En J2, calculez le coût du crédit.",
-              "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez G2 et I2, figés par des $ là où la formule est recopiée."
+              "En I2, calculez le coût du crédit.",
+              "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
             "metadonnees": {
               "concepts": [
@@ -4508,7 +4508,7 @@
             "id": "b2-05-a4-feuille-camionnette",
             "intitule": "Question tableur (3 points) — Le tableau d’amortissement de la camionnette",
             "lignes": 5,
-            "colonnes": 10,
+            "colonnes": 9,
             "cellules": {
               "A1": "Année",
               "B1": "Capital dû en début d’année (€)",
@@ -4516,12 +4516,12 @@
               "C1": "Intérêts (€)",
               "D1": "Amortissement (€)",
               "E1": "Capital dû en fin d’année (€)",
-              "G1": "Taux annuel",
-              "G2": "0,035",
-              "H1": "Durée (années)",
-              "H2": "4",
-              "I1": "Annuité (€)",
-              "J1": "Coût du crédit (€)",
+              "F1": "Taux annuel",
+              "F2": "0,035",
+              "G1": "Durée (années)",
+              "G2": "4",
+              "H1": "Annuité (€)",
+              "I1": "Coût du crédit (€)",
               "A2": "1",
               "A3": "2",
               "A4": "3",
@@ -4534,23 +4534,23 @@
               "C1",
               "D1",
               "E1",
+              "F1",
+              "F2",
               "G1",
               "G2",
               "H1",
-              "H2",
               "I1",
-              "J1",
               "A2",
               "A3",
               "A4",
               "A5"
             ],
             "consignes": [
-              "En I2, calculez l’annuité avec VPM, à partir du taux (G2), de la durée (H2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.",
+              "En H2, calculez l’annuité avec VPM, à partir du taux (F2), de la durée (G2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.",
               "En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5.",
               "En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5.",
-              "En J2, calculez le coût du crédit.",
-              "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez G2 et I2, figés par des $ là où la formule est recopiée."
+              "En I2, calculez le coût du crédit.",
+              "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée."
             ],
             "metadonnees": {
               "concepts": [
@@ -4566,7 +4566,7 @@
           }
         },
         "renvoi": "B2-05-A4-01-SITUATION-CAMIONNETTE",
-        "notes": "• Temps : réflexion 3 min · travail 11 min · correction 2 min\n• Réflexion : chacun nomme en français les colonnes C, D et E, puis écrit sur papier les formules de la ligne 2.\n• Erreurs à chercher : VPM sans signe moins ; G2 ou I2 sans $ ; intérêts sur 32 000 € chaque ligne ; J2 = total remboursé.\n• Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec cette feuille, ouvrez le coffre de la mini-situation. »",
+        "notes": "• Temps : réflexion 3 min · travail 11 min · correction 2 min\n• Réflexion : chacun nomme en français les colonnes C, D et E, puis écrit sur papier les formules de la ligne 2.\n• Erreurs à chercher : VPM sans signe moins ; F2 ou H2 sans $ ; intérêts sur 32 000 € chaque ligne ; I2 = total remboursé.\n• Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec cette feuille, ouvrez le coffre de la mini-situation. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4581,8 +4581,8 @@
           "type": "feuille",
           "attendus": [
             {
-              "reference": "I2",
-              "formuleReference": "=VPM(G2;H2;-B2)",
+              "reference": "H2",
+              "formuleReference": "=VPM(F2;G2;-B2)",
               "valeur": 8712.036464,
               "tolerance": {
                 "type": "relative",
@@ -4626,7 +4626,7 @@
             },
             {
               "reference": "C2",
-              "formuleReference": "=B2*$G$2",
+              "formuleReference": "=B2*$F$2",
               "valeur": 1120,
               "tolerance": {
                 "type": "relative",
@@ -4636,7 +4636,7 @@
             },
             {
               "reference": "C3",
-              "formuleReference": "=B3*$G$2",
+              "formuleReference": "=B3*$F$2",
               "valeur": 854.278724,
               "tolerance": {
                 "type": "relative",
@@ -4648,7 +4648,7 @@
             },
             {
               "reference": "C4",
-              "formuleReference": "=B4*$G$2",
+              "formuleReference": "=B4*$F$2",
               "valeur": 579.257203,
               "tolerance": {
                 "type": "relative",
@@ -4660,7 +4660,7 @@
             },
             {
               "reference": "C5",
-              "formuleReference": "=B5*$G$2",
+              "formuleReference": "=B5*$F$2",
               "valeur": 294.609929,
               "tolerance": {
                 "type": "relative",
@@ -4672,7 +4672,7 @@
             },
             {
               "reference": "D2",
-              "formuleReference": "=$I$2-C2",
+              "formuleReference": "=$H$2-C2",
               "valeur": 7592.036464,
               "tolerance": {
                 "type": "relative",
@@ -4682,7 +4682,7 @@
             },
             {
               "reference": "D3",
-              "formuleReference": "=$I$2-C3",
+              "formuleReference": "=$H$2-C3",
               "valeur": 7857.75774,
               "tolerance": {
                 "type": "relative",
@@ -4694,7 +4694,7 @@
             },
             {
               "reference": "D4",
-              "formuleReference": "=$I$2-C4",
+              "formuleReference": "=$H$2-C4",
               "valeur": 8132.779261,
               "tolerance": {
                 "type": "relative",
@@ -4706,7 +4706,7 @@
             },
             {
               "reference": "D5",
-              "formuleReference": "=$I$2-C5",
+              "formuleReference": "=$H$2-C5",
               "valeur": 8417.426535,
               "tolerance": {
                 "type": "relative",
@@ -4763,8 +4763,8 @@
               }
             },
             {
-              "reference": "J2",
-              "formuleReference": "=I2*H2-B2",
+              "reference": "I2",
+              "formuleReference": "=H2*G2-B2",
               "valeur": 2848.145855,
               "tolerance": {
                 "type": "relative",
@@ -4777,24 +4777,24 @@
         },
         "explications": [
           {
-            "reference": "I2",
-            "texte": "=VPM(G2;H2;-B2) ≈ 8 712,04 €. Sans le signe moins, l’annuité s’affiche négative ; 32 000 ÷ 4 = 8 000 € oublie les intérêts."
+            "reference": "H2",
+            "texte": "=VPM(F2;G2;-B2) ≈ 8 712,04 €. Sans le signe moins, l’annuité s’affiche négative ; 32 000 ÷ 4 = 8 000 € oublie les intérêts."
           },
           {
             "reference": "C2 à C5",
-            "texte": "=B2*$G$2, recopiée : 1 120 €, puis 854,28 €, 579,26 € et 294,61 €. Sans les $, la recopie lit G3, vide."
+            "texte": "=B2*$F$2, recopiée : 1 120 €, puis 854,28 €, 579,26 € et 294,61 €. Sans les $, la recopie lit F3, vide."
           },
           {
             "reference": "D2 à D5 et E2 à E5",
-            "texte": "=$I$2-C2 et =B2-D2, recopiées : le capital dû tombe à 0 en fin d’année 4."
+            "texte": "=$H$2-C2 et =B2-D2, recopiées : le capital dû tombe à 0 en fin d’année 4."
           },
           {
             "reference": "B3 à B5",
             "texte": "=E2, recopiée : le capital dû en début d’année reprend la fin de l’année précédente."
           },
           {
-            "reference": "J2",
-            "texte": "=I2*H2-B2 ≈ 2 848,15 €. =I2*H2 donne le total remboursé, pas le coût."
+            "reference": "I2",
+            "texte": "=H2*G2-B2 ≈ 2 848,15 €. =H2*G2 donne le total remboursé, pas le coût."
           }
         ]
       },
@@ -4919,7 +4919,7 @@
           },
           {
             "reference": "b2-05-a4-e4-cout",
-            "texte": "4 × 8 712,04 − 32 000 ≈ 2 848,15 €, la cellule J2. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année."
+            "texte": "4 × 8 712,04 − 32 000 ≈ 2 848,15 €, la cellule I2. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année."
           }
         ]
       },

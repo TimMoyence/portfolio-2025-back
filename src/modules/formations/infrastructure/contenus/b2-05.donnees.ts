@@ -293,12 +293,12 @@ export const ATTENDUS_DE_L_EPARGNE: moteur.AuMoinsUn<AttenduDeFeuille> = [
   ),
 ];
 
-export const FORMULE_DE_L_ANNUITE = '=VPM(G2;H2;-B2)';
-export const FORMULE_DES_INTERETS = '=B2*$G$2';
-export const FORMULE_DE_L_AMORTISSEMENT = '=$I$2-C2';
+export const FORMULE_DE_L_ANNUITE = '=VPM(F2;G2;-B2)';
+export const FORMULE_DES_INTERETS = '=B2*$F$2';
+export const FORMULE_DE_L_AMORTISSEMENT = '=$H$2-C2';
 export const FORMULE_DU_CAPITAL_RESTANT = '=B2-D2';
 export const FORMULE_DU_REPORT = '=E2';
-export const FORMULE_DU_COUT = '=I2*H2-B2';
+export const FORMULE_DU_COUT = '=H2*G2-B2';
 
 const CELLULES_DE_LA_CAMIONNETTE = {
   A1: 'Année',
@@ -307,12 +307,12 @@ const CELLULES_DE_LA_CAMIONNETTE = {
   C1: 'Intérêts (€)',
   D1: 'Amortissement (€)',
   E1: 'Capital dû en fin d’année (€)',
-  G1: 'Taux annuel',
-  G2: avecVirgule(TAUX_DE_LA_CAMIONNETTE, 3),
-  H1: 'Durée (années)',
-  H2: String(DUREE_DE_LA_CAMIONNETTE),
-  I1: 'Annuité (€)',
-  J1: 'Coût du crédit (€)',
+  F1: 'Taux annuel',
+  F2: avecVirgule(TAUX_DE_LA_CAMIONNETTE, 3),
+  G1: 'Durée (années)',
+  G2: String(DUREE_DE_LA_CAMIONNETTE),
+  H1: 'Annuité (€)',
+  I1: 'Coût du crédit (€)',
   ...colonneDeValeurs(
     'A',
     termes((annee) => annee, 1, DUREE_DE_LA_CAMIONNETTE),
@@ -324,21 +324,21 @@ export const PLAN_DE_LA_CAMIONNETTE = {
   intitule:
     'Question tableur (3 points) — Le tableau d’amortissement de la camionnette',
   lignes: DUREE_DE_LA_CAMIONNETTE + 1,
-  colonnes: 10,
+  colonnes: 9,
   cellules: CELLULES_DE_LA_CAMIONNETTE,
   verrouillees: Object.keys(CELLULES_DE_LA_CAMIONNETTE),
   consignes: [
-    'En I2, calculez l’annuité avec VPM, à partir du taux (G2), de la durée (H2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.',
+    'En H2, calculez l’annuité avec VPM, à partir du taux (F2), de la durée (G2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.',
     'En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5.',
     'En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5.',
-    'En J2, calculez le coût du crédit.',
-    'Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez G2 et I2, figés par des $ là où la formule est recopiée.',
+    'En I2, calculez le coût du crédit.',
+    'Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez F2 et H2, figés par des $ là où la formule est recopiée.',
   ],
 };
 
 export const ATTENDUS_DE_LA_CAMIONNETTE: moteur.AuMoinsUn<AttenduDeFeuille> = [
   moteur.attendu(
-    'I2',
+    'H2',
     FORMULE_DE_L_ANNUITE,
     ANNUITE_DE_LA_CAMIONNETTE,
     'references',
@@ -407,7 +407,7 @@ export const ATTENDUS_DE_LA_CAMIONNETTE: moteur.AuMoinsUn<AttenduDeFeuille> = [
       DUREE_DE_LA_CAMIONNETTE - 1,
     ),
   ),
-  moteur.attendu('J2', FORMULE_DU_COUT, COUT_DE_LA_CAMIONNETTE, 'references', [
+  moteur.attendu('I2', FORMULE_DU_COUT, COUT_DE_LA_CAMIONNETTE, 'references', [
     [COUT_DE_LA_CAMIONNETTE + CAMIONNETTE, TOTAL_REMBOURSE],
     [
       DUREE_DE_LA_CAMIONNETTE * CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE,

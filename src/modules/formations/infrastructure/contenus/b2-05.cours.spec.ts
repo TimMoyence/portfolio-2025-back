@@ -7,6 +7,7 @@ import {
   corrigeDeFeuille,
   decrireLaFicheDuCours,
   decrireLaMiniSituation,
+  ecranDuContenu,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
@@ -440,7 +441,7 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
       DUREE_DE_LA_CAMIONNETTE * ANNUITE_DE_LA_CAMIONNETTE - CAMIONNETTE;
 
     attendreLaFeuille(corrige, {
-      I2: [
+      H2: [
         ANNUITE_DE_LA_CAMIONNETTE,
         -ANNUITE_DE_LA_CAMIONNETTE,
         CAMIONNETTE / DUREE_DE_LA_CAMIONNETTE,
@@ -468,7 +469,7 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
           [arrondi(ligne.capital - ligne.amortissement)],
         ]),
       ),
-      J2: [
+      I2: [
         cout,
         cout + CAMIONNETTE,
         DUREE_DE_LA_CAMIONNETTE * CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE,
@@ -477,39 +478,64 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
     expect(corrige.attendus).toHaveLength(17);
     expect(
       corrigerFeuille(corrige, {
-        I2: '=VPM(G2;H2;-B2)',
-        ...recopier('=B2*$G$2', 'C', 2, 5),
-        ...recopier('=$I$2-C2', 'D', 2, 5),
+        H2: '=VPM(F2;G2;-B2)',
+        ...recopier('=B2*$F$2', 'C', 2, 5),
+        ...recopier('=$H$2-C2', 'D', 2, 5),
         ...recopier('=B2-D2', 'E', 2, 5),
         ...recopier('=E2', 'B', 3, 5),
-        J2: '=I2*H2-B2',
+        I2: '=H2*G2-B2',
       }).score,
     ).toBe(1);
+  });
+
+  it('QF-28 · ne laisse dans la feuille de la camionnette aucune colonne sans intitulé ni réponse, pour tenir au poste étudiant', () => {
+    const ecran = ecranDuContenu(
+      COURS_B2_05,
+      'B2-05-A4-02-TABLEUR-CAMIONNETTE',
+    );
+    if (ecran.brique !== 'fp-sheet') {
+      throw new Error('la feuille de la camionnette n’est plus un tableur');
+    }
+    const { plan } = ecran.proprietes;
+    const corrige = corrigeDeFeuille(COURS, 'b2-05-a4-feuille-camionnette');
+    const references = [
+      ...Object.keys(plan.cellules),
+      ...corrige.attendus.map(({ reference }) => reference),
+    ];
+    const colonnes = Array.from({ length: plan.colonnes }, (_, rang) =>
+      String.fromCodePoint(65 + rang),
+    );
+
+    expect(
+      colonnes.filter(
+        (colonne) => !references.some((nom) => nom.startsWith(colonne)),
+      ),
+    ).toEqual([]);
   });
 
   it('nomme dans la camionnette le capital de VPM sans signe, le taux non figé et le total remboursé', () => {
     const corrige = corrigeDeFeuille(COURS, 'b2-05-a4-feuille-camionnette');
     const justes = {
-      I2: '=VPM(G2;H2;-B2)',
-      ...recopier('=$I$2-C2', 'D', 2, 5),
+      H2: '=VPM(F2;G2;-B2)',
+      ...recopier('=$H$2-C2', 'D', 2, 5),
       ...recopier('=B2-D2', 'E', 2, 5),
       ...recopier('=E2', 'B', 3, 5),
     };
 
-    expect(confusionsDe(corrige, { I2: '=VPM(G2;H2;B2)' }, 'I2')).toEqual([
+    expect(confusionsDe(corrige, { H2: '=VPM(F2;G2;B2)' }, 'H2')).toEqual([
       'capital-de-vpm-non-signe',
     ]);
     attendreUneRecopieNonFigee(
       corrige,
-      { ...justes, ...recopier('=B2*G2', 'C', 2, 5) },
+      { ...justes, ...recopier('=B2*F2', 'C', 2, 5) },
       'C',
       3,
     );
     expect(
       confusionsDe(
         corrige,
-        { ...justes, ...recopier('=B2*$G$2', 'C', 2, 5), J2: '=I2*H2' },
-        'J2',
+        { ...justes, ...recopier('=B2*$F$2', 'C', 2, 5), I2: '=H2*G2' },
+        'I2',
       ),
     ).toEqual(['cout-credit-confondu-avec-total-rembourse']);
   });

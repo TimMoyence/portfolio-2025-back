@@ -407,10 +407,12 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Titre public : « Question tableur (3 points sur 10) : le tableau d’amortissement »
 - Temps : réflexion 3 min · travail 11 min · correction 2 min sur place.
 - Années 1 à 4 en colonne A, 32 000 € en B2 ; paramètres en ligne 2 sous leurs libellés de la
-  ligne 1 : taux 0,035 en G2, durée 4 en H2. Annuité en I2 (`=VPM(G2;H2;-B2)`), intérêts en
-  colonne C (`=B2*$G$2`), amortissement en colonne D (`=$I$2-C2`), capital dû en fin d'année en
-  colonne E (`=B2-D2`, comparé au centime), report en colonne B (`=E2`), coût du crédit en J2
-  (`=I2*H2-B2`).
+  ligne 1 : taux 0,035 en F2, durée 4 en G2. Annuité en H2 (`=VPM(F2;G2;-B2)`), intérêts en
+  colonne C (`=B2*$F$2`), amortissement en colonne D (`=$H$2-C2`), capital dû en fin d'année en
+  colonne E (`=B2-D2`, comparé au centime), report en colonne B (`=E2`), coût du crédit en I2
+  (`=H2*G2-B2`).
+  Neuf colonnes, sans colonne vide : dix colonnes de champs ne tiennent pas dans la toile du poste
+  étudiant (QF-28).
   Dix-sept cellules attendues ; pièges `capital-de-vpm-non-signe`,
   `annuite-confondue-avec-amortissement`, `reference-relative-non-figee`,
   `interets-sur-capital-initial`, `cout-credit-confondu-avec-total-rembourse`.
