@@ -63,6 +63,7 @@ export interface Recopie {
   readonly piegesDuModele?: readonly PiegeDeCellule[];
   readonly piegesDeLaRecopie?: readonly PiegeDeCellule[];
   readonly confusionSiErreur?: ConfusionId;
+  readonly tolerance?: AttenduDeFeuille['tolerance'];
 }
 
 export function colonneRecopiee(
@@ -73,6 +74,7 @@ export function colonneRecopiee(
     piegesDuModele = [],
     piegesDeLaRecopie = [],
     confusionSiErreur,
+    tolerance,
   }: Recopie,
   [premiere, ...suivantes]: moteur.AuMoinsUn<number | string>,
 ): moteur.AuMoinsUn<AttenduDeFeuille> {
@@ -85,6 +87,7 @@ export function colonneRecopiee(
       'references',
       piegesDuModele,
       confusionSiErreur ?? null,
+      tolerance,
     ),
     ...suivantes.map((valeur, rang) =>
       moteur.attendu(
@@ -94,6 +97,7 @@ export function colonneRecopiee(
         { memeQue: modele },
         piegesDeLaRecopie,
         confusionSiErreur ?? null,
+        tolerance,
       ),
     ),
   ];
