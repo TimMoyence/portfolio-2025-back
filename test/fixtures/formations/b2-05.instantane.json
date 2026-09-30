@@ -1861,5 +1861,1736 @@
         }
       }
     ]
+  },
+  "deroule": {
+    "id": "b2-05-mathematiques-financieres",
+    "titre": "Mathématiques financières : placer, emprunter",
+    "niveau": "B2",
+    "duree": 180,
+    "concepts": [
+      "interets-composes",
+      "valeur-actuelle",
+      "annuites",
+      "tableau-d-amortissement",
+      "cout-du-credit",
+      "tableur",
+      "suite-geometrique",
+      "somme-de-termes",
+      "coefficient-multiplicateur",
+      "evolution-reciproque"
+    ],
+    "ecrans": [
+      {
+        "id": "B2-05-A1-01-RAPPEL-SUITE",
+        "type": "fp-recall",
+        "titre": "Rappel du B2-04 : un capital qui gagne 2 % par an",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b2-05-a1-rappel-suite",
+            "enonce": "Un capital augmente de 2 % chaque année. Quelle suite modélise sa valeur année après année ?",
+            "options": [
+              {
+                "id": "une-suite-geometrique-de-raison-0-02-a112d428",
+                "libelle": "Une suite géométrique de raison 0,02"
+              },
+              {
+                "id": "une-suite-arithmetique-de-raison-2-5d237ba1",
+                "libelle": "Une suite arithmétique de raison 2"
+              },
+              {
+                "id": "une-suite-geometrique-de-raison-1-02-c94f2a0a",
+                "libelle": "Une suite géométrique de raison 1,02"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["suite-geometrique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "delaiMs": 0
+        },
+        "notes": "• Avant de lancer : vérifier au pupitre que tous les postes ont rejoint la séance.\n• Annoncer « seule la participation compte ». Chacun répond sans calculatrice.\n• Piège : prendre le taux (0,02) pour la raison ; tout l’acte 1 repose sur ce coefficient.\n• Papier : la question est en tête du livret ; vote à main levée.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b2-05-a1-rappel-suite",
+            "bonneReponse": "Une suite géométrique de raison 1,02",
+            "confusions": [
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              },
+              {
+                "id": "nature-de-suite-confondue",
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-05-a1-rappel-suite",
+            "enonce": "Un capital augmente de 2 % chaque année. Quelle suite modélise sa valeur année après année ?",
+            "options": [
+              {
+                "id": "une-suite-geometrique-de-raison-0-02-a112d428",
+                "libelle": "Une suite géométrique de raison 0,02"
+              },
+              {
+                "id": "une-suite-arithmetique-de-raison-2-5d237ba1",
+                "libelle": "Une suite arithmétique de raison 2"
+              },
+              {
+                "id": "une-suite-geometrique-de-raison-1-02-c94f2a0a",
+                "libelle": "Une suite géométrique de raison 1,02"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A1-02-ACCROCHE",
+        "type": "fp-story",
+        "titre": "Placer, emprunter : le prix du temps",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-02-ACCROCHE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-02-ACCROCHE",
+              "renderer": "hero",
+              "props": {
+                "title": "Placer, emprunter : le prix du temps",
+                "subtitle": "Atelier Rivage, voilerie de La Rochelle. Pour financer son second atelier, la dirigeante place sa trésorerie, épargne chaque année et emprunte : trois calculs que la banque va vérifier.",
+                "bullets": [
+                  "BTS Comptabilité et gestion · 2ᵉ année · cinquième cours de mathématiques",
+                  "Un rappel rapide du B2-01 et du B2-04, réinvestis aujourd’hui",
+                  "Trois notions : intérêts composés, suites d’annuités, emprunts",
+                  "Une mini-situation CCF et sa question tableur"
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "interets-composes",
+                "annuites",
+                "tableau-d-amortissement"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Rappeler en une phrase le B2-04 : le plan à cinq ans est prêt ; Hélène monte maintenant le dossier de financement du second atelier.\n• Annoncer le plan : un rappel rapide du B2-01 et du B2-04, puis trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), et une mini-situation CCF.\n• Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A1-03-VOTE-ACQUIS",
+        "type": "fp-vote",
+        "titre": "Vote : deux rappels, B2-01 et B2-04",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b2-05-a1-rappel-reciproque",
+            "enonce": "Rappel du B2-01. Un prix augmente de 25 %. Par quel nombre faut-il multiplier le nouveau prix pour retrouver le prix de départ ?",
+            "options": [
+              {
+                "id": "par-0-75-soit-une-baisse-de-25-pct-3f809a4a",
+                "libelle": "Par 0,75, soit une baisse de 25 %"
+              },
+              {
+                "id": "par-1-1-25-0-8-fac8c7a9",
+                "libelle": "Par 1 ÷ 1,25 = 0,8"
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b2-05-a1-rappel-termes",
+            "enonce": "Rappel du B2-04. Combien de termes additionne-t-on du rang 0 au rang 4 inclus ?",
+            "options": [
+              {
+                "id": "quatre-termes-4-moins-0-6df242a2",
+                "libelle": "Quatre termes : 4 − 0"
+              },
+              {
+                "id": "cinq-termes-4-moins-0-plus-1-1b0b427b",
+                "libelle": "Cinq termes : 4 − 0 + 1"
+              }
+            ]
+          }
+        },
+        "notes": "• Rappel rapide : deux votes non notés, un par cours.\n• Dire où chaque acquis resservira : la réciproque pour actualiser, le nombre de termes pour les annuités.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b2-05-a1-rappel-reciproque",
+            "bonneReponse": "Par 1 ÷ 1,25 = 0,8",
+            "confusions": [
+              {
+                "id": "reciproque-meme-taux",
+                "libelle": "Croire que le même pourcentage en sens inverse suffit pour revenir au départ."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a1-rappel-termes",
+            "bonneReponse": "Cinq termes : 4 − 0 + 1",
+            "confusions": [
+              {
+                "id": "nombre-de-termes-decale",
+                "libelle": "Compter un terme de trop ou de moins dans une somme : du rang p au rang n, il y a n − p + 1 termes."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-05-a1-rappel-reciproque",
+            "enonce": "Rappel du B2-01. Un prix augmente de 25 %. Par quel nombre faut-il multiplier le nouveau prix pour retrouver le prix de départ ?",
+            "options": [
+              {
+                "id": "par-0-75-soit-une-baisse-de-25-pct-3f809a4a",
+                "libelle": "Par 0,75, soit une baisse de 25 %"
+              },
+              {
+                "id": "par-1-1-25-0-8-fac8c7a9",
+                "libelle": "Par 1 ÷ 1,25 = 0,8"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-a1-rappel-termes",
+            "enonce": "Rappel du B2-04. Combien de termes additionne-t-on du rang 0 au rang 4 inclus ?",
+            "options": [
+              {
+                "id": "quatre-termes-4-moins-0-6df242a2",
+                "libelle": "Quatre termes : 4 − 0"
+              },
+              {
+                "id": "cinq-termes-4-moins-0-plus-1-1b0b427b",
+                "libelle": "Cinq termes : 4 − 0 + 1"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": {
+          "type": "revelation",
+          "titre": "Deux acquis qui resservent aujourd’hui",
+          "lignes": [
+            "Pour annuler une hausse, on divise par son coefficient : ÷ 1,25, c’est × 0,8, soit une baisse de 20 %, pas de 25 %.",
+            "Du rang 0 au rang 4 inclus, on compte 4 − 0 + 1 = 5 termes.",
+            "L’écran suivant dit ce que ces acquis deviennent aujourd’hui."
+          ]
+        }
+      },
+      {
+        "id": "B2-05-A1-04-ACQUIS",
+        "type": "fp-story",
+        "titre": "Ce que vous savez déjà",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-04-ACQUIS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-04-ACQUIS",
+              "renderer": "comparison",
+              "props": {
+                "title": "Ce que vous savez déjà",
+                "subtitle": "Trois acquis réinvestis aujourd’hui.",
+                "note": "Les fiches mémo du B2-01 et du B2-04 sont dans votre classeur de CCF.",
+                "columns": [
+                  {
+                    "label": "B2-01 · Information chiffrée",
+                    "tone": "info",
+                    "items": [
+                      "Hausse de t % : × (1 + t).",
+                      "Annuler une hausse : ÷ (1 + t).",
+                      "Aujourd’hui : capitaliser, puis actualiser."
+                    ]
+                  },
+                  {
+                    "label": "B2-04 · Suites",
+                    "tone": "success",
+                    "items": [
+                      "Géométrique : uₙ = u₀ × qⁿ.",
+                      "Somme de termes : compter les rangs.",
+                      "Aujourd’hui : capital placé et annuités."
+                    ]
+                  },
+                  {
+                    "label": "Tableur",
+                    "tone": "warning",
+                    "items": [
+                      "Une formule, recopiée vers le bas.",
+                      "Le taux figé par des $.",
+                      "Aujourd’hui : VPM et le tableau d’amortissement."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "coefficient-multiplicateur",
+                "evolution-reciproque",
+                "suite-geometrique",
+                "somme-de-termes"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 2 min : lire la dernière ligne de chaque colonne, c’est le fil du cours.\n• Question : « Lequel de ces acquis servira à calculer la somme à placer aujourd’hui ? » La réciproque : on divise par le coefficient.\n• Ne pas refaire les cours : renvoyer aux fiches mémo du classeur de CCF.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A1-05-DOSSIER",
+        "type": "fp-story",
+        "titre": "Le dossier de financement d’Atelier Rivage",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-05-DOSSIER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-05-DOSSIER",
+              "renderer": "table",
+              "props": {
+                "title": "Le dossier de financement d’Atelier Rivage",
+                "subtitle": "Les trois lignes du plan de financement du second atelier, à présenter à la banque.",
+                "note": "Données fictives Atelier Rivage, créées pour ce cours.",
+                "columns": [
+                  {
+                    "key": "rubrique",
+                    "label": "Rubrique"
+                  },
+                  {
+                    "key": "contenu",
+                    "label": "Ce que montre le dossier"
+                  }
+                ],
+                "rows": [
+                  {
+                    "rubrique": "Le projet",
+                    "contenu": "Un second atelier de voilerie, à équiper à partir de 2031. Hélène Garnier, la dirigeante, présente son plan de financement à la banque."
+                  },
+                  {
+                    "rubrique": "La trésorerie",
+                    "contenu": "40 000 € disponibles au 1ᵉʳ janvier 2026, placés à 2,5 % par an, intérêts laissés sur le compte, en attendant le chantier."
+                  },
+                  {
+                    "rubrique": "L’épargne des machines",
+                    "contenu": "6 000 € mis de côté à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an."
+                  },
+                  {
+                    "rubrique": "L’emprunt d’équipement",
+                    "contenu": "60 000 € empruntés sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes."
+                  },
+                  {
+                    "rubrique": "La question de la banque",
+                    "contenu": "Combien le placement et l’épargne rapporteront-ils, et combien l’emprunt coûtera-t-il ?"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "interets-composes",
+                "annuites",
+                "tableau-d-amortissement"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min de lecture silencieuse ; ne rien calculer.\n• Faire dire les trois lignes du plan : placer une fois, placer chaque année, emprunter.\n• Relier aux notions du jour : une ligne du dossier par notion.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A1-06-MISSION",
+        "type": "fp-pro",
+        "titre": "Votre mission : le dossier de financement",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B2-05-A1-06-MISSION",
+            "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
+            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La banque veut voir trois lignes de notre plan : les 40 000 € de trésorerie placés à 2,5 % par an, les 6 000 € que nous mettrons de côté chaque fin d’année de 2026 à 2030 à 3 %, et l’emprunt de 60 000 € sur 5 ans à 4 %. Pouvez-vous chiffrer chaque ligne ? » Marc Lefèvre, l’expert-comptable, ajoute : « Pour l’emprunt, ne vous contentez pas de diviser 60 000 € par 5 : la banque se paie aussi en intérêts. »",
+            "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
+            "consequence": "Un placement surestimé, et le chantier manque d’argent ; un emprunt sous-estimé, et les annuités pèsent sur la trésorerie des cinq prochaines années.",
+            "questionsLibres": [
+              {
+                "id": "b2-05-a1-mission:placement",
+                "question": "Le placement de 40 000 € rapporte-t-il les mêmes intérêts chaque année ? Pourquoi ?",
+                "placeholder": "Oui / Non, parce que chaque année…"
+              },
+              {
+                "id": "b2-05-a1-mission:epargne",
+                "question": "Cinq versements de 6 000 € font-ils 30 000 € d’épargne fin 2030 ? Plus, moins ?",
+                "placeholder": "Plus / moins / autant, parce que…"
+              },
+              {
+                "id": "b2-05-a1-mission:emprunt",
+                "question": "Rembourser 12 000 € par an pendant cinq ans suffit-il à solder l’emprunt ? Pourquoi ?",
+                "placeholder": "Oui / Non, parce que la banque…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": [
+                "interets-composes",
+                "annuites",
+                "tableau-d-amortissement"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Lecture à voix haute du courriel (1 min), puis 4 min d’écriture individuelle et 1 min de mise en commun au pupitre.\n• Question 1 : faire dire que les intérêts de la deuxième année portent aussi sur ceux de la première.\n• Question 2 : faire dire que chaque versement ne rapporte pas pendant la même durée.\n• Question 3 : faire émerger qu’une annuité paie aussi des intérêts ; c’est l’acte 3.\n• Papier : trois lignes d’écriture dans le livret.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
+        "type": "fp-story",
+        "titre": "Cours : intérêts composés et valeur acquise",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
+              "renderer": "lesson",
+              "props": {
+                "title": "Intérêts composés : les intérêts rapportent à leur tour",
+                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Capitaliser : multiplier par 1 + t chaque année",
+                    "text": "Un capital C₀ placé au taux annuel t rapporte des intérêts. Aux intérêts simples, ils sont calculés chaque année sur le seul capital de départ. Aux intérêts composés, ils s’ajoutent au capital à la fin de chaque année et rapportent à leur tour : on multiplie par 1 + t chaque année. Le capital Cₙ obtenu au bout de n années s’appelle la valeur acquise. C’est une suite géométrique de raison 1 + t (B2-04). C’est le calcul de la trésorerie d’Hélène.",
+                    "formula": "Intérêts composés : Cₙ = C₀ × (1 + t)ⁿ · intérêts simples : C₀ × (1 + n × t)"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : le livret à 3 %",
+                    "text": "On place 2 000 € sur un livret à 3 % par an, intérêts laissés sur le livret. C₀ = 2 000 et 1 + t = 1,03.",
+                    "steps": [
+                      "Après un an : 2 000 × 1,03 = 2 060 € ; les intérêts sont de 60 €.",
+                      "Après deux ans : 2 060 × 1,03 = 2 121,80 € ; les intérêts de la deuxième année, 61,80 €, portent sur 2 060 €.",
+                      "Après dix ans : 2 000 × 1,03¹⁰ ≈ 2 687,83 €.",
+                      "Aux intérêts simples : 2 000 × (1 + 10 × 0,03) = 2 600 € seulement."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Calculer une valeur acquise",
+                    "text": "Pièges : multiplier par le taux au lieu du coefficient (0,03 au lieu de 1,03) ; calculer les intérêts sur le seul capital de départ ; placer une année de trop ou de moins en comptant mal la durée.",
+                    "steps": [
+                      "Écrire le capital de départ et le taux en décimal.",
+                      "Compter la durée n en années entières de placement.",
+                      "Calculer C₀ × (1 + t)ⁿ avec la touche puissance ; arrondir au centime à la fin.",
+                      "Intérêts gagnés : Cₙ − C₀."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["interets-composes", "suite-geometrique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Avant l’exemple, demander : « 3 % pendant 10 ans, est-ce 30 % ? » Laisser venir les intérêts des intérêts.\n• Relier au B2-04 : le capital placé est une suite géométrique de raison 1 + t.\n• Lien au dossier : « La trésorerie d’Hélène, placée combien d’années avant le chantier ? »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
+        "type": "fp-story",
+        "titre": "Cours : valeur actuelle et tableur",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Valeur actuelle : ce qu’il faut placer aujourd’hui",
+                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Actualiser : diviser par (1 + t)ⁿ",
+                    "text": "La valeur actuelle d’une somme Cₙ disponible dans n années est le capital C₀ qu’il faut placer aujourd’hui, au taux t, pour obtenir Cₙ. On remonte le temps : on divise par le coefficient, comme pour annuler une hausse (B2-01). Capitaliser, c’est aller vers le futur (× (1 + t)ⁿ) ; actualiser, c’est revenir au présent (÷ (1 + t)ⁿ).",
+                    "formula": "C₀ = Cₙ ÷ (1 + t)ⁿ"
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Au tableur : le taux dans une cellule figée",
+                    "text": "Une valeur de départ, puis une formule recopiée qui multiplie le capital du dessus par 1 + taux. Le taux est rangé dans une cellule à part, figé par des $.",
+                    "steps": [
+                      "B2 contient le capital placé ; le taux, écrit 0,03, est en E1.",
+                      "En B3 : =B2*(1+$E$1), puis recopier vers le bas.",
+                      "Intérêts de l’année en C3 : =B3-B2, recopiée.",
+                      "Sans les $, B4 lirait E2, vide : le capital cesserait de grossir."
+                    ]
+                  },
+                  {
+                    "kind": "exam",
+                    "title": "Au CCF : capitaliser ou actualiser ?",
+                    "text": "Lire d’abord le sens de la question. « Que vaudra… dans n ans ? » : on capitalise. « Combien placer aujourd’hui pour avoir… ? » : on actualise. Pièges : multiplier au lieu de diviser ; diviser par 1 + n × t, comme aux intérêts simples.",
+                    "steps": [
+                      "Repérer la somme connue et sa date.",
+                      "Futur connu, présent cherché : ÷ (1 + t)ⁿ.",
+                      "Contrôle : la valeur actuelle est plus petite que la somme future."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "valeur-actuelle",
+                "evolution-reciproque",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Relier au vote de rappel : annuler une hausse, c’est diviser par son coefficient ; actualiser, c’est annuler n hausses.\n• Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se fige, l’erreur fixe la règle.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A1-09-EXEMPLE-PLACEMENT",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : placer 8 000 € à 2 %",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b2-05-a1-exemple-placement",
+            "enonce": "Le comité d’entreprise d’Atelier Rivage place 8 000 € à intérêts composés au taux annuel de 2 %. Il se demande aussi combien placer aujourd’hui pour disposer de 10 000 € dans 5 ans.",
+            "etapes": [
+              {
+                "id": "coefficient",
+                "intitule": "Le coefficient",
+                "raisonnement": "Gagner 2 % par an, c’est multiplier par 1 + 0,02 = 1,02 chaque année.",
+                "invite": "Par quel nombre multiplie-t-on le capital chaque année ?"
+              },
+              {
+                "id": "premieres",
+                "intitule": "Les deux premières valeurs",
+                "raisonnement": "Après un an : 8 000 × 1,02 = 8 160 € ; après deux ans : 8 160 × 1,02 = 8 323,20 €.",
+                "invite": "Calculez le capital après un an, puis après deux ans."
+              },
+              {
+                "id": "valeur-acquise",
+                "intitule": "La valeur acquise",
+                "raisonnement": "Après cinq ans : 8 000 × 1,02⁵ ≈ 8 832,65 €, soit 832,65 € d’intérêts.",
+                "invite": "Calculez la valeur acquise au bout de 5 ans."
+              },
+              {
+                "id": "simples",
+                "intitule": "La comparaison",
+                "raisonnement": "Aux intérêts simples : 8 000 × (1 + 5 × 0,02) = 8 800 €. Les intérêts composés rapportent 32,65 € de plus : les intérêts des intérêts.",
+                "invite": "Que donneraient les intérêts simples sur 5 ans ?"
+              },
+              {
+                "id": "actualiser",
+                "intitule": "La valeur actuelle",
+                "raisonnement": "10 000 ÷ 1,02⁵ ≈ 9 057,31 € : c’est la somme à placer aujourd’hui. Multiplier par 1,02⁵ donnerait une somme plus grande que 10 000 €, absurde.",
+                "invite": "Combien placer aujourd’hui pour avoir 10 000 € dans 5 ans ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["interets-composes", "valeur-actuelle"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’écart avec les intérêts simples (étape 4) et sur le sens de l’actualisation (étape 5).\n• Transition : « À vous, sur la trésorerie d’Hélène : exercice 1. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A1-10-ATELIER-PLACEMENT",
+        "type": "questionnaire",
+        "titre": "Exercice 1 — Placer la trésorerie",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 1 — Placer la trésorerie",
+          "consigne": "Trésorerie : 40 000 € placés le 1ᵉʳ janvier 2026 à intérêts composés, au taux annuel de 2,5 %. Résultats au centime.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a1-coefficient",
+                  "enonce": "Par quel nombre la valeur du placement est-elle multipliée chaque année ?",
+                  "options": [
+                    {
+                      "id": "0-025-le-taux-ecrit-en-decimal-e9ce7062",
+                      "libelle": "0,025 : le taux écrit en décimal"
+                    },
+                    {
+                      "id": "1-025-on-multiplie-par-1-plus-0-025-768772c6",
+                      "libelle": "1,025 : on multiplie par 1 + 0,025"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a1-valeur-acquise",
+                  "enonce": "Quelle est la valeur acquise du placement au 1ᵉʳ janvier 2029 ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": ["interets-composes", "valeur-actuelle"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a1-actualiser",
+                  "enonce": "Hélène voudrait disposer de 50 000 € au 1ᵉʳ janvier 2029. Quel calcul donne la somme à placer au 1ᵉʳ janvier 2026 ?",
+                  "options": [
+                    {
+                      "id": "50-000-1-025-1d0b8136",
+                      "libelle": "50 000 ÷ 1,025³"
+                    },
+                    {
+                      "id": "50-000-1-plus-3-0-025-686f41b6",
+                      "libelle": "50 000 ÷ (1 + 3 × 0,025)"
+                    },
+                    {
+                      "id": "50-000-1-025-1d6087df",
+                      "libelle": "50 000 × 1,025³"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a1-valeur-actuelle",
+                  "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": ["interets-composes", "valeur-actuelle"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "renvoi": "B2-05-A1-05-DOSSIER",
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire le capital, le taux décimal et la durée avant de calculer ; dire, pour chaque question, s’il faut capitaliser ou actualiser.\n• Pièges : taux pris pour le coefficient ; intérêts simples ; une année de trop ; multiplier pour actualiser.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Faisons calculer tout le placement par le tableur : exercice 2. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b2-05-a1-coefficient",
+            "bonneReponse": "1,025 : on multiplie par 1 + 0,025",
+            "confusions": [
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a1-valeur-acquise",
+            "bonneReponse": "43 075,63 €",
+            "confusions": [
+              {
+                "id": "interets-simples-au-lieu-de-composes",
+                "libelle": "Calculer les intérêts de chaque année sur le seul capital de départ, sans les intérêts déjà acquis : à intérêts composés, on multiplie par 1 + t chaque année."
+              },
+              {
+                "id": "rang-decale",
+                "libelle": "Se décaler d’un rang : prendre le terme d’avant ou d’après, ou compter le premier terme comme le rang 1 alors qu’il porte le rang 0."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a1-actualiser",
+            "bonneReponse": "50 000 ÷ 1,025³",
+            "confusions": [
+              {
+                "id": "actualisation-inversee",
+                "libelle": "Multiplier par (1 + t)ⁿ au lieu de diviser pour ramener une somme future à aujourd’hui : la valeur actuelle est plus petite que la somme future."
+              },
+              {
+                "id": "interets-simples-au-lieu-de-composes",
+                "libelle": "Calculer les intérêts de chaque année sur le seul capital de départ, sans les intérêts déjà acquis : à intérêts composés, on multiplie par 1 + t chaque année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a1-valeur-actuelle",
+            "bonneReponse": "46 429,97 €",
+            "confusions": [
+              {
+                "id": "actualisation-inversee",
+                "libelle": "Multiplier par (1 + t)ⁿ au lieu de diviser pour ramener une somme future à aujourd’hui : la valeur actuelle est plus petite que la somme future."
+              },
+              {
+                "id": "interets-simples-au-lieu-de-composes",
+                "libelle": "Calculer les intérêts de chaque année sur le seul capital de départ, sans les intérêts déjà acquis : à intérêts composés, on multiplie par 1 + t chaque année."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-05-a1-coefficient",
+            "enonce": "Par quel nombre la valeur du placement est-elle multipliée chaque année ?",
+            "options": [
+              {
+                "id": "0-025-le-taux-ecrit-en-decimal-e9ce7062",
+                "libelle": "0,025 : le taux écrit en décimal"
+              },
+              {
+                "id": "1-025-on-multiplie-par-1-plus-0-025-768772c6",
+                "libelle": "1,025 : on multiplie par 1 + 0,025"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-a1-valeur-acquise",
+            "enonce": "Quelle est la valeur acquise du placement au 1ᵉʳ janvier 2029 ?",
+            "options": null
+          },
+          {
+            "id": "b2-05-a1-actualiser",
+            "enonce": "Hélène voudrait disposer de 50 000 € au 1ᵉʳ janvier 2029. Quel calcul donne la somme à placer au 1ᵉʳ janvier 2026 ?",
+            "options": [
+              {
+                "id": "50-000-1-025-1d0b8136",
+                "libelle": "50 000 ÷ 1,025³"
+              },
+              {
+                "id": "50-000-1-plus-3-0-025-686f41b6",
+                "libelle": "50 000 ÷ (1 + 3 × 0,025)"
+              },
+              {
+                "id": "50-000-1-025-1d6087df",
+                "libelle": "50 000 × 1,025³"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-a1-valeur-actuelle",
+            "enonce": "Quelle somme faut-il placer au 1ᵉʳ janvier 2026 pour disposer de 50 000 € au 1ᵉʳ janvier 2029 ?",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-05-a1-coefficient",
+            "texte": "Gagner 2,5 % par an, c’est multiplier par 1 + 0,025 = 1,025. 0,025 est le taux, pas le coefficient."
+          },
+          {
+            "reference": "b2-05-a1-valeur-acquise",
+            "texte": "Du 1ᵉʳ janvier 2026 au 1ᵉʳ janvier 2029 : trois années. 40 000 × 1,025³ ≈ 43 075,63 €. Aux intérêts simples, 40 000 × 1,075 = 43 000 € ; avec une année de trop, 44 152,52 €."
+          },
+          {
+            "reference": "b2-05-a1-actualiser",
+            "texte": "La somme future est connue, la somme présente est cherchée : on actualise, on divise par 1,025³. Multiplier irait dans le mauvais sens du temps."
+          },
+          {
+            "reference": "b2-05-a1-valeur-actuelle",
+            "texte": "50 000 ÷ 1,025³ ≈ 46 429,97 €. Contrôle : 46 429,97 × 1,025³ ≈ 50 000 €. Multiplier donnerait 53 844,53 €, plus que la somme visée."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A1-11-TABLEUR-PLACEMENT",
+        "type": "fp-sheet",
+        "titre": "Exercice 2 — Le placement au tableur",
+        "duree": 8,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b2-05-a1-tableur-placement",
+            "intitule": "Exercice 2 — Le placement au tableur",
+            "lignes": 7,
+            "colonnes": 7,
+            "cellules": {
+              "A1": "Au 1ᵉʳ janvier",
+              "B1": "Années n",
+              "C1": "Valeur acquise (€)",
+              "C2": "40000",
+              "D1": "Intérêts de l’année (€)",
+              "F1": "Taux annuel",
+              "G1": "0,025",
+              "A2": "2026",
+              "B2": "0",
+              "A3": "2027",
+              "B3": "1",
+              "A4": "2028",
+              "B4": "2",
+              "A5": "2029",
+              "B5": "3",
+              "A6": "2030",
+              "B6": "4",
+              "A7": "2031",
+              "B7": "5"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "C1",
+              "C2",
+              "D1",
+              "F1",
+              "G1",
+              "A2",
+              "B2",
+              "A3",
+              "B3",
+              "A4",
+              "B4",
+              "A5",
+              "B5",
+              "A6",
+              "B6",
+              "A7",
+              "B7"
+            ],
+            "consignes": [
+              "En C3, écrivez la formule qui calcule la valeur acquise au 1ᵉʳ janvier 2027 à partir de C2 et du taux (G1). Recopiez-la jusqu’en C7.",
+              "En D3, écrivez les intérêts gagnés pendant l’année écoulée. Recopiez jusqu’en D7.",
+              "Le taux ne s’écrit pas dans la formule : utilisez la cellule G1."
+            ],
+            "metadonnees": {
+              "concepts": ["tableur", "interets-composes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 8,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier la formule de C3, puis ce qu’elle devient en C4 une fois recopiée.\n• Erreurs à chercher : =C2*$G$1 (le taux seul) ; G1 sans $ : la colonne reste bloquée à 41 000 ; des intérêts toujours égaux à 1 000 €.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire et relire la formule de C3, puis celle de C7.\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b2-05-a1-tableur-placement",
+            "enonce": "Exercice 2 — Le placement au tableur",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "feuille",
+          "attendus": [
+            {
+              "reference": "C3",
+              "formuleReference": "=C2*(1+$G$1)",
+              "valeur": 41000,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "C4",
+              "formuleReference": "=C3*(1+$G$1)",
+              "valeur": 42025,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C5",
+              "formuleReference": "=C4*(1+$G$1)",
+              "valeur": 43075.625,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C6",
+              "formuleReference": "=C5*(1+$G$1)",
+              "valeur": 44152.515625,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C7",
+              "formuleReference": "=C6*(1+$G$1)",
+              "valeur": 45256.328516,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "D3",
+              "formuleReference": "=C3-C2",
+              "valeur": 1000,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "D4",
+              "formuleReference": "=C4-C3",
+              "valeur": 1025,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "D3"
+              }
+            },
+            {
+              "reference": "D5",
+              "formuleReference": "=C5-C4",
+              "valeur": 1050.625,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "D3"
+              }
+            },
+            {
+              "reference": "D6",
+              "formuleReference": "=C6-C5",
+              "valeur": 1076.890625,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "D3"
+              }
+            },
+            {
+              "reference": "D7",
+              "formuleReference": "=C7-C6",
+              "valeur": 1103.812891,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "D3"
+              }
+            }
+          ],
+          "seuilReussite": 0.8
+        },
+        "explications": [
+          {
+            "reference": "C3 à C7",
+            "texte": "=C2*(1+$G$1), recopiée : 41 000 € au 1er janvier 2027, jusqu’à environ 45 256,33 € au 1er janvier 2031. Sans les $, la recopie lit G2, vide, et la colonne reste à 41 000."
+          },
+          {
+            "reference": "D3 à D7",
+            "texte": "=C3-C2, recopiée : 1 000 €, puis 1 025 €, 1 050,63 €… Les intérêts grossissent chaque année ; toujours 1 000 €, ce seraient des intérêts simples."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A1-12-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 1 : intérêts composés",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b2-05-a1-jalon",
+            "invite": "Je sais calculer une valeur acquise et une valeur actuelle, et les écrire au tableur.",
+            "metadonnees": {
+              "concepts": ["interets-composes", "valeur-actuelle"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la trace écrite A1-08 sur le sens de l’actualisation après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A2-01-REFLEXION-VERSEMENTS",
+        "type": "fp-story",
+        "titre": "Réfléchir : 6 000 € par an pendant cinq ans",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A2-01-REFLEXION-VERSEMENTS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A2-01-REFLEXION-VERSEMENTS",
+              "renderer": "reflection",
+              "props": {
+                "promptData": {
+                  "id": "b2-05-a2-reflexion-versements",
+                  "type": "reflection",
+                  "question": "Un stagiaire chiffre l’épargne des machines : « Cinq versements de 6 000 € placés cinq ans à 3 % : 5 × 6 000 × 1,03⁵. » Sans calculatrice, dites s’il a raison, versement par versement : combien d’années chacun rapporte-t-il des intérêts jusqu’à fin 2030 ?",
+                  "placeholder": "Il a raison / il a tort, parce que le versement de…",
+                  "competency": "Modéliser · reconnaître une suite de versements"
+                }
+              }
+            },
+            "metadonnees": {
+              "concepts": ["annuites", "interets-composes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 5,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "renvoi": "B2-05-A1-05-DOSSIER",
+        "notes": "• Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.\n• Ne rien trancher : la trace écrite suivante répond.\n• Relance : « Le versement de fin 2030 rapporte-t-il des intérêts avant fin 2030 ? »\n• Papier : cadre de réponse du livret.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": {
+          "type": "reflexion",
+          "attendu": "Il a tort : le versement de fin 2026 rapporte quatre ans, celui de fin 2027 trois ans, et ainsi de suite ; celui de fin 2030 ne rapporte rien. Chaque versement a sa propre durée, et son calcul surestime l’épargne.",
+          "suite": "Gardez votre réponse : la trace écrite additionne les versements un par un."
+        }
+      },
+      {
+        "id": "B2-05-A2-02-COURS-ANNUITES",
+        "type": "fp-story",
+        "titre": "Cours : suite d’annuités et valeur acquise",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A2-02-COURS-ANNUITES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A2-02-COURS-ANNUITES",
+              "renderer": "lesson",
+              "props": {
+                "title": "Suite d’annuités : additionner des versements placés",
+                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Chaque versement a sa durée",
+                    "text": "Une suite d’annuités est une suite de versements égaux, faits à intervalles réguliers, ici en fin d’année. Sa valeur acquise, à la date du dernier versement, est la somme des valeurs acquises de chaque versement : le premier est placé n − 1 années, le dernier ne rapporte rien. Ces valeurs forment une suite géométrique de raison 1 + t (B2-04), d’où une formule donnée au CCF. C’est l’épargne des machines d’Hélène.",
+                    "formula": "Vₙ = a × ((1 + t)ⁿ − 1) ÷ t · n versements de a, en fin de période"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : 1 000 € par an à 2 %",
+                    "text": "Trois versements de 1 000 €, en fin d’année, sur un compte à 2 %. Valeur acquise au troisième versement ?",
+                    "steps": [
+                      "Le premier est placé deux ans : 1 000 × 1,02² = 1 040,40 €.",
+                      "Le deuxième est placé un an : 1 000 × 1,02 = 1 020 €.",
+                      "Le troisième ne rapporte rien : 1 000 €.",
+                      "Somme : 3 060,40 € ; formule : 1 000 × (1,02³ − 1) ÷ 0,02 = 3 060,40 €."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Calculer la valeur acquise d’une suite d’annuités",
+                    "text": "Pièges : additionner les versements sans leurs intérêts (3 000 € au lieu de 3 060,40 €) ; placer chaque versement pendant toute la durée ; compter un versement de trop ou de moins.",
+                    "steps": [
+                      "Compter les versements n, du premier au dernier inclus.",
+                      "Repérer la date d’évaluation : celle du dernier versement.",
+                      "Appliquer la formule donnée, taux en décimal ; arrondir au centime à la fin.",
+                      "Intérêts gagnés : valeur acquise − n × a."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["annuites", "suite-geometrique", "somme-de-termes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; garder la réflexion précédente sous les yeux.\n• Faire tracer au tableau une frise de 2026 à 2030, une flèche par versement jusqu’à fin 2030.\n• Relier au B2-04 : les valeurs acquises forment une suite géométrique de raison 1 + t, qu’on additionne.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
+        "type": "fp-story",
+        "titre": "Cours : les annuités au tableur",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
+              "renderer": "lesson",
+              "props": {
+                "title": "Les annuités au tableur : une ligne par année",
+                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Le tableau d’épargne",
+                    "text": "Première ligne : le premier versement. Chaque ligne suivante reprend l’épargne de l’an passé, lui ajoute ses intérêts de l’année, puis le nouveau versement. Taux et versement sont rangés dans deux cellules figées par des $.",
+                    "steps": [
+                      "B2 contient le premier versement ; le taux est en E1, le versement en G1.",
+                      "En B3 : =B2*(1+$E$1)+$G$1, puis recopier vers le bas.",
+                      "Intérêts de l’année en C3 : =B2*$E$1, recopiée.",
+                      "Sans les $, la recopie lit E2 et G2, vides : l’épargne n’augmente plus."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Total des intérêts : une somme",
+                    "text": "Le total des intérêts gagnés est la somme de la colonne des intérêts, ou la dernière épargne moins le total versé. La dernière cellule de la colonne ne donne que les intérêts d’une seule année.",
+                    "formula": "=SOMME(plage des intérêts) = dernière épargne − n × a"
+                  },
+                  {
+                    "kind": "exam",
+                    "title": "Au CCF : lire la date d’évaluation",
+                    "text": "Un sujet demande souvent la valeur acquise « au dernier versement » avec la formule donnée, puis une formule de tableur à recopier. Pièges : compter le dernier versement comme placé ; oublier les $ ; donner une valeur de la colonne pour le total.",
+                    "steps": [
+                      "Relever a, t et n, puis vérifier la date du dernier versement.",
+                      "Contrôle : la valeur acquise dépasse n × a, d’un écart plausible.",
+                      "Au tableur : une formule, recopiée, taux et versement figés."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["annuites", "tableur", "somme-de-termes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Dire la formule en français avant de l’écrire : « l’épargne de l’an passé, plus ses intérêts, plus le versement ».\n• Question : « Le total des intérêts, c’est la dernière ligne de la colonne ? » Non : une somme.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A2-04-EXEMPLE-ANNUITES",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : 1 500 € par an à 2,5 %",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b2-05-a2-exemple-annuites",
+            "enonce": "Le comité d’entreprise verse 1 500 € à la fin de chaque année, pendant quatre ans, sur un compte à 2,5 % par an. Quelle épargne aura-t-il au quatrième versement ?",
+            "etapes": [
+              {
+                "id": "durees",
+                "intitule": "La durée de chaque versement",
+                "raisonnement": "Le premier versement est placé trois ans, le deuxième deux ans, le troisième un an ; le quatrième ne rapporte rien.",
+                "invite": "Combien d’années chaque versement rapporte-t-il jusqu’au quatrième versement ?"
+              },
+              {
+                "id": "valeurs",
+                "intitule": "Les valeurs acquises",
+                "raisonnement": "1 500 × 1,025³ ≈ 1 615,34 € ; 1 500 × 1,025² ≈ 1 575,94 € ; 1 500 × 1,025 = 1 537,50 € ; 1 500 €.",
+                "invite": "Calculez la valeur acquise de chaque versement."
+              },
+              {
+                "id": "formule",
+                "intitule": "La formule donnée",
+                "raisonnement": "1 500 × (1,025⁴ − 1) ÷ 0,025 ≈ 6 228,77 €. La somme des valeurs arrondies donne 6 228,78 € : un centime d’arrondi.",
+                "invite": "Retrouvez l’épargne avec la formule de la trace écrite."
+              },
+              {
+                "id": "interets",
+                "intitule": "Les intérêts gagnés",
+                "raisonnement": "Versé : 4 × 1 500 = 6 000 €. Intérêts : 6 228,77 − 6 000 = 228,77 €.",
+                "invite": "Combien les versements ont-ils rapporté ?"
+              },
+              {
+                "id": "piege",
+                "intitule": "Le piège de la durée pleine",
+                "raisonnement": "4 × 1 500 × 1,025⁴ ≈ 6 622,88 € : c’est trop, car le dernier versement ne rapporte rien.",
+                "invite": "Que donnerait le calcul « quatre versements placés quatre ans » ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["annuites"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur les durées (étape 1) et sur l’écart avec la durée pleine (étape 5).\n• Transition : « À vous, sur l’épargne des machines : exercice 3. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A2-05-ATELIER-ANNUITES",
+        "type": "questionnaire",
+        "titre": "Exercice 3 — L’épargne des machines",
+        "duree": 11,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 3 — L’épargne des machines",
+          "consigne": "Épargne des machines : 6 000 € versés à la fin de chaque année, de 2026 à 2030, sur un compte à 3 % par an. Résultats au centime.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a2-duree",
+                  "enonce": "Le versement de fin 2026 : pendant combien d’années rapporte-t-il des intérêts jusqu’à fin 2030 ?",
+                  "options": [
+                    {
+                      "id": "quatre-ans-de-fin-2026-a-fin-2030-a3601264",
+                      "libelle": "Quatre ans : de fin 2026 à fin 2030"
+                    },
+                    {
+                      "id": "cinq-ans-la-duree-du-plan-b7930e2e",
+                      "libelle": "Cinq ans : la durée du plan"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a2-premier",
+                  "enonce": "Que vaut le versement de fin 2026 à la fin de 2030 ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": ["annuites"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 11,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a2-expression",
+                  "enonce": "Quelle expression donne l’épargne disponible fin 2030, au dernier versement ?",
+                  "options": [
+                    {
+                      "id": "6-000-1-03-moins-1-0-03-d12e1314",
+                      "libelle": "6 000 × (1,03⁵ − 1) ÷ 0,03"
+                    },
+                    {
+                      "id": "5-6-000-e47edac5",
+                      "libelle": "5 × 6 000"
+                    },
+                    {
+                      "id": "5-6-000-1-03-2567f5fe",
+                      "libelle": "5 × 6 000 × 1,03⁵"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a2-valeur-acquise",
+                  "enonce": "Quelle épargne Hélène aura-t-elle à la fin de 2030 ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": ["annuites"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 11,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "renvoi": "B2-05-A1-05-DOSSIER",
+        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : dessiner la frise des cinq versements et écrire sous chacun sa durée de placement.\n• Pièges : chaque versement placé cinq ans ; versements additionnés sans intérêts ; intérêts simples.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Faisons tenir l’épargne dans un tableau : exercice 4. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b2-05-a2-duree",
+            "bonneReponse": "Quatre ans : de fin 2026 à fin 2030",
+            "confusions": [
+              {
+                "id": "versements-places-toute-la-duree",
+                "libelle": "Placer chaque versement pendant toute la durée : un versement de fin d’année n’est placé que jusqu’au dernier versement, le dernier ne rapporte rien."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a2-premier",
+            "bonneReponse": "6 753,05 €",
+            "confusions": [
+              {
+                "id": "versements-places-toute-la-duree",
+                "libelle": "Placer chaque versement pendant toute la durée : un versement de fin d’année n’est placé que jusqu’au dernier versement, le dernier ne rapporte rien."
+              },
+              {
+                "id": "interets-simples-au-lieu-de-composes",
+                "libelle": "Calculer les intérêts de chaque année sur le seul capital de départ, sans les intérêts déjà acquis : à intérêts composés, on multiplie par 1 + t chaque année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a2-expression",
+            "bonneReponse": "6 000 × (1,03⁵ − 1) ÷ 0,03",
+            "confusions": [
+              {
+                "id": "versements-places-toute-la-duree",
+                "libelle": "Placer chaque versement pendant toute la durée : un versement de fin d’année n’est placé que jusqu’au dernier versement, le dernier ne rapporte rien."
+              },
+              {
+                "id": "versements-sans-interets",
+                "libelle": "Additionner les versements sans leurs intérêts : la valeur acquise d’une suite d’annuités dépasse le total versé."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a2-valeur-acquise",
+            "bonneReponse": "31 854,81 €",
+            "confusions": [
+              {
+                "id": "versements-sans-interets",
+                "libelle": "Additionner les versements sans leurs intérêts : la valeur acquise d’une suite d’annuités dépasse le total versé."
+              },
+              {
+                "id": "versements-places-toute-la-duree",
+                "libelle": "Placer chaque versement pendant toute la durée : un versement de fin d’année n’est placé que jusqu’au dernier versement, le dernier ne rapporte rien."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-05-a2-duree",
+            "enonce": "Le versement de fin 2026 : pendant combien d’années rapporte-t-il des intérêts jusqu’à fin 2030 ?",
+            "options": [
+              {
+                "id": "quatre-ans-de-fin-2026-a-fin-2030-a3601264",
+                "libelle": "Quatre ans : de fin 2026 à fin 2030"
+              },
+              {
+                "id": "cinq-ans-la-duree-du-plan-b7930e2e",
+                "libelle": "Cinq ans : la durée du plan"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-a2-premier",
+            "enonce": "Que vaut le versement de fin 2026 à la fin de 2030 ?",
+            "options": null
+          },
+          {
+            "id": "b2-05-a2-expression",
+            "enonce": "Quelle expression donne l’épargne disponible fin 2030, au dernier versement ?",
+            "options": [
+              {
+                "id": "6-000-1-03-moins-1-0-03-d12e1314",
+                "libelle": "6 000 × (1,03⁵ − 1) ÷ 0,03"
+              },
+              {
+                "id": "5-6-000-e47edac5",
+                "libelle": "5 × 6 000"
+              },
+              {
+                "id": "5-6-000-1-03-2567f5fe",
+                "libelle": "5 × 6 000 × 1,03⁵"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-a2-valeur-acquise",
+            "enonce": "Quelle épargne Hélène aura-t-elle à la fin de 2030 ?",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-05-a2-duree",
+            "texte": "Fin 2026, fin 2027, fin 2028, fin 2029, fin 2030 : quatre années de placement. Seul un versement fait en début de plan rapporterait cinq ans."
+          },
+          {
+            "reference": "b2-05-a2-premier",
+            "texte": "6 000 × 1,03⁴ ≈ 6 753,05 €. Placé cinq ans, on trouverait 6 955,64 € ; aux intérêts simples, 6 000 × 1,12 = 6 720 €."
+          },
+          {
+            "reference": "b2-05-a2-expression",
+            "texte": "Cinq versements de 6 000 € en fin d’année : la formule donnée avec a = 6 000, t = 0,03 et n = 5. 5 × 6 000 × 1,03⁵ place chaque versement cinq ans ; 5 × 6 000 oublie les intérêts."
+          },
+          {
+            "reference": "b2-05-a2-valeur-acquise",
+            "texte": "6 000 × (1,03⁵ − 1) ÷ 0,03 ≈ 31 854,81 €, soit 1 854,81 € d’intérêts. 30 000 € oublie les intérêts ; 32 810,46 € place tout un an de trop."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A2-06-TABLEUR-EPARGNE",
+        "type": "fp-sheet",
+        "titre": "Exercice 4 — L’épargne au tableur",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b2-05-a2-tableur-epargne",
+            "intitule": "Exercice 4 — L’épargne au tableur",
+            "lignes": 6,
+            "colonnes": 8,
+            "cellules": {
+              "A1": "Fin d’année",
+              "B1": "Épargne disponible (€)",
+              "B2": "6000",
+              "C1": "Intérêts de l’année (€)",
+              "E1": "Taux annuel",
+              "F1": "0,03",
+              "G1": "Versement (€)",
+              "H1": "6000",
+              "E3": "Total des intérêts (€)",
+              "A2": "2026",
+              "A3": "2027",
+              "A4": "2028",
+              "A5": "2029",
+              "A6": "2030"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "B2",
+              "C1",
+              "E1",
+              "F1",
+              "G1",
+              "H1",
+              "E3",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6"
+            ],
+            "consignes": [
+              "B2 : le premier versement, fin 2026. En B3, écrivez l’épargne disponible fin 2027 : l’épargne de l’an passé, ses intérêts de l’année, puis le nouveau versement (H1). Recopiez jusqu’en B6.",
+              "En C3, écrivez les intérêts gagnés pendant l’année. Recopiez jusqu’en C6.",
+              "En F3, calculez le total des intérêts gagnés de 2027 à 2030.",
+              "Le taux et le versement ne s’écrivent pas dans les formules : utilisez F1 et H1."
+            ],
+            "metadonnees": {
+              "concepts": ["tableur", "annuites"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 10,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : dire en français la formule de B3, puis l’écrire sur papier.\n• Erreurs à chercher : =B2+$H$1 (pas d’intérêts) ; F1 ou H1 sans $ ; =C6 pour le total.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; comparer B6 à la réponse de l’exercice 3.\n• Transition : jalon 2.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b2-05-a2-tableur-epargne",
+            "enonce": "Exercice 4 — L’épargne au tableur",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "feuille",
+          "attendus": [
+            {
+              "reference": "B3",
+              "formuleReference": "=B2*(1+$F$1)+$H$1",
+              "valeur": 12180,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "B4",
+              "formuleReference": "=B3*(1+$F$1)+$H$1",
+              "valeur": 18545.4,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B3"
+              }
+            },
+            {
+              "reference": "B5",
+              "formuleReference": "=B4*(1+$F$1)+$H$1",
+              "valeur": 25101.762,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B3"
+              }
+            },
+            {
+              "reference": "B6",
+              "formuleReference": "=B5*(1+$F$1)+$H$1",
+              "valeur": 31854.81486,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B3"
+              }
+            },
+            {
+              "reference": "C3",
+              "formuleReference": "=B2*$F$1",
+              "valeur": 180,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "C4",
+              "formuleReference": "=B3*$F$1",
+              "valeur": 365.4,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C5",
+              "formuleReference": "=B4*$F$1",
+              "valeur": 556.362,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C6",
+              "formuleReference": "=B5*$F$1",
+              "valeur": 753.05286,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "F3",
+              "formuleReference": "=SOMME(C3:C6)",
+              "valeur": 1854.81486,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            }
+          ],
+          "seuilReussite": 0.8
+        },
+        "explications": [
+          {
+            "reference": "B3 à B6",
+            "texte": "=B2*(1+$F$1)+$H$1, recopiée : 12 180 € fin 2027, jusqu’à environ 31 854,81 € fin 2030, la valeur de l’exercice 3. =B2+$H$1 additionne les versements sans intérêts."
+          },
+          {
+            "reference": "C3 à C6",
+            "texte": "=B2*$F$1, recopiée : 180 €, puis 365,40 €, 556,36 € et 753,05 €. Sans les $, la recopie lit F2, vide, et donne 0."
+          },
+          {
+            "reference": "F3",
+            "texte": "=SOMME(C3:C6) : environ 1 854,81 € d’intérêts. =C6 ne donne que ceux de 2030."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A2-07-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 2 : suites d’annuités",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b2-05-a2-jalon",
+            "invite": "Je sais calculer la valeur acquise d’une suite de versements et la construire au tableur.",
+            "metadonnees": {
+              "concepts": ["annuites"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la frise des versements de la trace écrite A2-02.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      }
+    ]
   }
 }
