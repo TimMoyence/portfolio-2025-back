@@ -45,11 +45,20 @@ export const CONCEPTS_DU_B2_04 = [
   'somme-de-termes',
 ] as const;
 
+export const CONCEPTS_DU_B2_05 = [
+  'interets-composes',
+  'valeur-actuelle',
+  'annuites',
+  'tableau-d-amortissement',
+  'cout-du-credit',
+] as const;
+
 export const CONCEPTS = [
   ...CONCEPTS_DU_B2_01,
   ...CONCEPTS_DU_B2_02,
   ...CONCEPTS_DU_B2_03,
   ...CONCEPTS_DU_B2_04,
+  ...CONCEPTS_DU_B2_05,
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];
@@ -90,6 +99,11 @@ const LIBELLES_DES_CONCEPTS: Readonly<Record<ConceptId, string>> = {
   'suite-geometrique': 'Suite géométrique',
   'algorithme-de-seuil': 'Algorithme de seuil',
   'somme-de-termes': 'Somme de termes',
+  'interets-composes': 'Intérêts composés',
+  'valeur-actuelle': 'Valeur actuelle',
+  annuites: 'Suite d’annuités',
+  'tableau-d-amortissement': 'Tableau d’amortissement',
+  'cout-du-credit': 'Coût du crédit',
 };
 
 export function libelleDeConcept(id: string): string {

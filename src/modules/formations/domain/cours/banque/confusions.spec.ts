@@ -4,6 +4,7 @@ import {
   CONCEPTS_DU_B2_02,
   CONCEPTS_DU_B2_03,
   CONCEPTS_DU_B2_04,
+  CONCEPTS_DU_B2_05,
   libelleDeConcept,
 } from './concepts';
 import {
@@ -282,6 +283,19 @@ const CONFUSIONS_DU_B2_04 = {
   'terme-pris-pour-somme': { concept: 'somme-de-termes' },
 };
 
+const CONFUSIONS_DU_B2_05 = {
+  'interets-simples-au-lieu-de-composes': { concept: 'interets-composes' },
+  'actualisation-inversee': { concept: 'valeur-actuelle' },
+  'versements-sans-interets': { concept: 'annuites' },
+  'versements-places-toute-la-duree': { concept: 'annuites' },
+  'interets-sur-capital-initial': { concept: 'tableau-d-amortissement' },
+  'annuite-confondue-avec-amortissement': {
+    concept: 'tableau-d-amortissement',
+  },
+  'cout-credit-confondu-avec-total-rembourse': { concept: 'cout-du-credit' },
+  'capital-de-vpm-non-signe': { concept: 'tableur' },
+};
+
 describe('libelleDeConcept', () => {
   it('nomme chaque concept de la banque autrement que par son identifiant', () => {
     expect(CONCEPTS.filter((id) => libelleDeConcept(id) === id)).toEqual([]);
@@ -318,8 +332,19 @@ describe('CONCEPTS', () => {
     ]);
   });
 
-  it('ajoute en dernier les quatre concepts de suites du B2-04', () => {
-    expect(CONCEPTS.slice(31)).toEqual([...CONCEPTS_DU_B2_04]);
+  it('ajoute en dernier les cinq concepts de mathématiques financières du B2-05', () => {
+    expect(CONCEPTS.slice(35)).toEqual([...CONCEPTS_DU_B2_05]);
+    expect(CONCEPTS_DU_B2_05).toEqual([
+      'interets-composes',
+      'valeur-actuelle',
+      'annuites',
+      'tableau-d-amortissement',
+      'cout-du-credit',
+    ]);
+  });
+
+  it('ajoute à la suite les quatre concepts de suites du B2-04', () => {
+    expect(CONCEPTS.slice(31, 35)).toEqual([...CONCEPTS_DU_B2_04]);
     expect(CONCEPTS_DU_B2_04).toEqual([
       'suite-arithmetique',
       'suite-geometrique',
@@ -406,12 +431,19 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_03);
   });
 
-  it('ajoute en dernier les six confusions de suites du B2-04', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(79);
-    expect(Object.keys(CONFUSIONS).slice(73)).toEqual(
+  it('ajoute à la suite les six confusions de suites du B2-04', () => {
+    expect(Object.keys(CONFUSIONS).slice(73, 79)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_04),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_04);
+  });
+
+  it('ajoute en dernier les huit confusions de mathématiques financières du B2-05', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(87);
+    expect(Object.keys(CONFUSIONS).slice(79)).toEqual(
+      Object.keys(CONFUSIONS_DU_B2_05),
+    );
+    attendreDansLaBanque(CONFUSIONS_DU_B2_05);
   });
 
   it('conserve les huit confusions existantes et ajoute les trente de la V3 (§ 5.9)', () => {
