@@ -1164,7 +1164,7 @@ const ACTE_3: moteur.Acte = [
           text: 'VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.',
           steps: [
             'Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).',
-            'Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.',
+            'Capital dû en B2 : intérêts =B2*$K$1, recopiée, le taux restant figé en K1.',
             'Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.',
             'Coût : annuité × durée − capital.',
           ],

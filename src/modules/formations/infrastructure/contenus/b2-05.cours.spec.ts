@@ -668,6 +668,14 @@ describe('B2-05 — retours de la relecture adverse', () => {
     expect(controle).not.toContain('somme des amortissements');
   });
 
+  it('garde le taux dans une seule cellule figée de VPM aux intérêts, dans la méthode tableur', () => {
+    const methode = texteDe(COURS_B2_05, 'B2-05-A3-04-COURS-COUT-TABLEUR');
+
+    expect(methode).toContain('=VPM(K1;K2;-K3)');
+    expect(methode).toContain('=B2*$K$1');
+    expect(methode).not.toContain('G1');
+  });
+
   it('distingue l’amortissement d’un emprunt de la dotation d’une immobilisation, et le coût du crédit de ses frais', () => {
     expect(texteDe(COURS_B2_05, 'B2-05-A3-03-COURS-EMPRUNT')).toContain(
       'dotation',
