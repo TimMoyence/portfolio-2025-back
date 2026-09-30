@@ -3590,7 +3590,1861 @@
         "corriges": [],
         "questions": [],
         "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A3-01-GRAPHIQUE",
+        "type": "fp-story",
+        "titre": "Un emprunt remboursé par annuités constantes",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-01-GRAPHIQUE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-01-GRAPHIQUE",
+              "renderer": "chart",
+              "props": {
+                "title": "Emprunt type : 100 000 € sur 10 ans à 5 %",
+                "caption": "Décomposition de chaque annuité, en euros",
+                "labels": [
+                  "Année 1",
+                  "Année 2",
+                  "Année 3",
+                  "Année 4",
+                  "Année 5",
+                  "Année 6",
+                  "Année 7",
+                  "Année 8",
+                  "Année 9",
+                  "Année 10"
+                ],
+                "series": [
+                  {
+                    "label": "Intérêts",
+                    "values": [
+                      5000, 4602.48, 4185.08, 3746.81, 3286.63, 2803.44,
+                      2296.08, 1763.37, 1204.01, 616.69
+                    ],
+                    "tone": "ink"
+                  },
+                  {
+                    "label": "Amortissement du capital",
+                    "values": [
+                      7950.46, 8347.98, 8765.38, 9203.65, 9663.83, 10147.02,
+                      10654.37, 11187.09, 11746.45, 12333.77
+                    ],
+                    "tone": "teal"
+                  }
+                ],
+                "unit": "€",
+                "formula": "Annuité = intérêts + amortissement, environ 12 950,46 € chaque année",
+                "reading": "Chaque année, la barre a la même hauteur : l’annuité. Les intérêts baissent, car ils portent sur un capital restant dû de plus en plus petit ; l’amortissement monte d’autant.",
+                "source": "Emprunt type. Données fictives Atelier Rivage, créées pour ce cours.",
+                "kind": "bars",
+                "description": "Dix barres de même hauteur totale. La part des intérêts part de 5 000 € en année 1 et descend jusqu’à 617 € environ en année 10 ; la part de l’amortissement monte de 7 950 € environ à 12 334 € environ."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 2 min : faire décrire les deux couleurs avant de lire la légende.\n• Question : « La hauteur totale de chaque barre change-t-elle ? » Non : c’est l’annuité, constante.\n• Transition : « Pourquoi les intérêts baissent-ils ? »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A3-02-VOTE-EMPRUNT",
+        "type": "fp-vote",
+        "titre": "Vote : rembourser et payer les intérêts",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b2-05-a3-rembourse",
+            "enonce": "Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?",
+            "options": [
+              {
+                "id": "13-000-eur-toute-l-annuite-5c472c0c",
+                "libelle": "13 000 € : toute l’annuité"
+              },
+              {
+                "id": "11-000-eur-l-annuite-moins-les-interets-de572ef1",
+                "libelle": "11 000 € : l’annuité moins les intérêts"
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b2-05-a3-cout-vote",
+            "enonce": "On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?",
+            "options": [
+              {
+                "id": "11-200-eur-le-total-rembourse-a7b8d1f8",
+                "libelle": "11 200 € : le total remboursé"
+              },
+              {
+                "id": "1-200-eur-le-total-rembourse-moins-le-ca-5a48e536",
+                "libelle": "1 200 € : le total remboursé moins le capital"
+              }
+            ]
+          }
+        },
+        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b2-05-a3-rembourse",
+            "bonneReponse": "11 000 € : l’annuité moins les intérêts",
+            "confusions": [
+              {
+                "id": "annuite-confondue-avec-amortissement",
+                "libelle": "Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a3-cout-vote",
+            "bonneReponse": "1 200 € : le total remboursé moins le capital",
+            "confusions": [
+              {
+                "id": "cout-credit-confondu-avec-total-rembourse",
+                "libelle": "Donner le total remboursé pour le coût du crédit : le coût est ce total moins le capital emprunté, soit la somme des intérêts."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-05-a3-rembourse",
+            "enonce": "Une annuité de 13 000 € contient 2 000 € d’intérêts. Quelle part du capital emprunté rembourse-t-elle ?",
+            "options": [
+              {
+                "id": "13-000-eur-toute-l-annuite-5c472c0c",
+                "libelle": "13 000 € : toute l’annuité"
+              },
+              {
+                "id": "11-000-eur-l-annuite-moins-les-interets-de572ef1",
+                "libelle": "11 000 € : l’annuité moins les intérêts"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-a3-cout-vote",
+            "enonce": "On emprunte 10 000 € et l’on rembourse 11 200 € en tout. Combien le crédit a-t-il coûté ?",
+            "options": [
+              {
+                "id": "11-200-eur-le-total-rembourse-a7b8d1f8",
+                "libelle": "11 200 € : le total remboursé"
+              },
+              {
+                "id": "1-200-eur-le-total-rembourse-moins-le-ca-5a48e536",
+                "libelle": "1 200 € : le total remboursé moins le capital"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": {
+          "type": "revelation",
+          "titre": "Rembourser, ce n’est pas seulement rendre le capital",
+          "lignes": [
+            "Une annuité paie d’abord les intérêts de l’année ; le reste, l’amortissement, rembourse le capital : 13 000 − 2 000 = 11 000 €.",
+            "Le coût du crédit est ce que l’on paie en plus du capital : 11 200 − 10 000 = 1 200 €.",
+            "La trace écrite construit le tableau d’amortissement ligne par ligne."
+          ]
+        }
+      },
+      {
+        "id": "B2-05-A3-03-COURS-EMPRUNT",
+        "type": "fp-story",
+        "titre": "Cours : emprunt et tableau d’amortissement",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-03-COURS-EMPRUNT",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-03-COURS-EMPRUNT",
+              "renderer": "lesson",
+              "props": {
+                "title": "Emprunter : intérêts, amortissement, annuité",
+                "subtitle": "Trace écrite · notion 3 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Une annuité paie les intérêts, puis rembourse",
+                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
+                    "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ) · intérêts = capital restant dû × t · amortissement = a − intérêts"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : 10 000 € sur 3 ans à 5 %",
+                    "text": "a = 10 000 × 0,05 ÷ (1 − 1,05⁻³) ≈ 3 672,09 €.",
+                    "steps": [
+                      "Année 1 : intérêts 10 000 × 0,05 = 500 € ; amortissement 3 672,09 − 500 = 3 172,09 €.",
+                      "Capital restant dû : 10 000 − 3 172,09 = 6 827,91 €.",
+                      "Année 2 : intérêts 6 827,91 × 0,05 ≈ 341,40 € ; amortissement 3 330,69 €.",
+                      "La dernière ligne solde le capital, au centime d’arrondi près."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Remplir le tableau ligne par ligne",
+                    "text": "Pièges : calculer les intérêts chaque année sur le capital emprunté ; prendre l’annuité pour l’amortissement ; oublier de retirer l’amortissement du capital restant dû.",
+                    "steps": [
+                      "Capital dû en début d’année : le capital emprunté, puis la fin d’année précédente.",
+                      "Intérêts : capital dû × t.",
+                      "Amortissement : annuité − intérêts.",
+                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement", "annuites"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; la trace écrite est imprimée dans le livret.\n• Remplir au tableau la première ligne de l’exemple, puis la deuxième : faire dire sur quel capital portent les intérêts.\n• Lien au dossier : « L’emprunt d’Hélène, 60 000 € : combien d’intérêts la première année ? »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A3-04-COURS-COUT-TABLEUR",
+        "type": "fp-story",
+        "titre": "Cours : coût du crédit et tableur",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A3-04-COURS-COUT-TABLEUR",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A3-04-COURS-COUT-TABLEUR",
+              "renderer": "lesson",
+              "props": {
+                "title": "Coût du crédit et tableau d’amortissement au tableur",
+                "subtitle": "Trace écrite · notion 3 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Le coût du crédit",
+                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
+                    "formula": "Coût = n × a − C = somme des intérêts"
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Au tableur : VPM et formules recopiées",
+                    "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
+                    "steps": [
+                      "Taux en B1, durée en B2, capital emprunté en B3 : =VPM(B1;B2;-B3).",
+                      "Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.",
+                      "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
+                      "Coût : annuité × durée − capital."
+                    ]
+                  },
+                  {
+                    "kind": "exam",
+                    "title": "Au CCF : les formules d’un tableau d’amortissement",
+                    "text": "Un sujet donne souvent un tableau à compléter et demande les formules de deux cellules, à recopier vers le bas. Pièges : taux ou annuité non figés ; annuité négative par oubli du signe ; total remboursé donné pour le coût.",
+                    "steps": [
+                      "Nommer chaque colonne en français avant d’écrire sa formule.",
+                      "Figer par des $ ce qui ne change pas d’une ligne à l’autre.",
+                      "Contrôle : dernier capital dû égal à 0 ; somme des amortissements égale au capital."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["cout-du-credit", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Faire taper VPM sans le signe moins sur un poste volontaire : l’annuité sort négative, l’erreur fixe la règle.\n• Question : « Le coût du crédit, c’est ce que je rembourse ? » Non : ce que je rembourse en plus.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A3-05-EXEMPLE-EMPRUNT",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : emprunter 24 000 € à 3 %",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b2-05-a3-exemple-emprunt",
+            "enonce": "Atelier Rivage finance une machine à coudre industrielle : 24 000 € empruntés sur 4 ans au taux annuel de 3 %, remboursés par annuités constantes.",
+            "etapes": [
+              {
+                "id": "annuite",
+                "intitule": "L’annuité",
+                "raisonnement": "a = 24 000 × 0,03 ÷ (1 − 1,03⁻⁴) ≈ 6 456,65 €.",
+                "invite": "Calculez l’annuité avec la formule de la trace écrite."
+              },
+              {
+                "id": "ligne-1",
+                "intitule": "La première ligne",
+                "raisonnement": "Intérêts : 24 000 × 0,03 = 720 € ; amortissement : 6 456,65 − 720 = 5 736,65 € ; reste dû : 18 263,35 €.",
+                "invite": "Calculez les intérêts, l’amortissement et le capital restant dû de l’année 1."
+              },
+              {
+                "id": "ligne-2",
+                "intitule": "La deuxième ligne",
+                "raisonnement": "Intérêts : 18 263,35 × 0,03 ≈ 547,90 €, et non 720 € ; amortissement : 5 908,75 € ; reste dû : 12 354,60 €.",
+                "invite": "Même travail pour l’année 2."
+              },
+              {
+                "id": "cout",
+                "intitule": "Le coût du crédit",
+                "raisonnement": "4 × 6 456,65 − 24 000 = 1 826,60 €. Le total remboursé, 25 826,60 €, n’est pas le coût.",
+                "invite": "Combien ce crédit coûte-t-il ?"
+              },
+              {
+                "id": "tableur",
+                "intitule": "Au tableur",
+                "raisonnement": "=VPM(A1;A2;-A3) ≈ 6 456,65 € ; sans le signe moins, −6 456,65 €.",
+                "invite": "Taux en A1, durée en A2, capital en A3 : quelle formule donne l’annuité ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur la base des intérêts de l’année 2 (étape 3) et sur le coût (étape 4).\n• Transition : « À vous, sur l’emprunt d’Hélène : exercice 5. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A3-06-ATELIER-EMPRUNT",
+        "type": "questionnaire",
+        "titre": "Exercice 5 — L’emprunt de 60 000 €",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 5 — L’emprunt de 60 000 €",
+          "consigne": "Emprunt d’équipement : 60 000 € sur 5 ans au taux annuel de 4 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ). Résultats au centime.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a3-annuite",
+                  "enonce": "Quelle est l’annuité de l’emprunt ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "tableau-d-amortissement",
+                      "cout-du-credit",
+                      "tableur"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a3-base",
+                  "enonce": "Sur quel capital calcule-t-on les intérêts de la deuxième année ?",
+                  "options": [
+                    {
+                      "id": "sur-le-capital-restant-du-au-debut-de-la-841a48b8",
+                      "libelle": "Sur le capital restant dû au début de la deuxième année"
+                    },
+                    {
+                      "id": "sur-les-60-000-eur-empruntes-0e73514e",
+                      "libelle": "Sur les 60 000 € empruntés"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a3-cout",
+                  "enonce": "Quel est le coût du crédit, avec l’annuité arrondie au centime ?",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "tableau-d-amortissement",
+                      "cout-du-credit",
+                      "tableur"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-05-a3-vpm",
+                  "enonce": "Taux en F1, durée en F2, capital emprunté en F3 : quelle formule affiche l’annuité, positive ?",
+                  "options": [
+                    {
+                      "id": "vpm-f1-f2-f3-9c4dd652",
+                      "libelle": "=VPM(F1;F2;-F3)"
+                    },
+                    {
+                      "id": "f3-f2-c6fca683",
+                      "libelle": "=F3/F2"
+                    },
+                    {
+                      "id": "vpm-f1-f2-f3-b4834417",
+                      "libelle": "=VPM(F1;F2;F3)"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "renvoi": "B2-05-A1-05-DOSSIER",
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire C, t et n, puis poser la formule de l’annuité sans l’effectuer.\n• Pièges : 60 000 ÷ 5 ; intérêts toujours sur 60 000 € ; total remboursé pris pour le coût ; VPM sans signe moins.\n• Papier : exercice 5 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « L’annuité est trouvée : remplissons le tableau d’amortissement, exercice 6. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b2-05-a3-annuite",
+            "bonneReponse": "13 477,63 €",
+            "confusions": [
+              {
+                "id": "annuite-confondue-avec-amortissement",
+                "libelle": "Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année."
+              },
+              {
+                "id": "interets-sur-capital-initial",
+                "libelle": "Calculer les intérêts de chaque année sur le capital emprunté au départ : ils portent sur le capital restant dû en début d’année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a3-base",
+            "bonneReponse": "Sur le capital restant dû au début de la deuxième année",
+            "confusions": [
+              {
+                "id": "interets-sur-capital-initial",
+                "libelle": "Calculer les intérêts de chaque année sur le capital emprunté au départ : ils portent sur le capital restant dû en début d’année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a3-cout",
+            "bonneReponse": "7 388,15 €",
+            "confusions": [
+              {
+                "id": "cout-credit-confondu-avec-total-rembourse",
+                "libelle": "Donner le total remboursé pour le coût du crédit : le coût est ce total moins le capital emprunté, soit la somme des intérêts."
+              },
+              {
+                "id": "interets-sur-capital-initial",
+                "libelle": "Calculer les intérêts de chaque année sur le capital emprunté au départ : ils portent sur le capital restant dû en début d’année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-a3-vpm",
+            "bonneReponse": "=VPM(F1;F2;-F3)",
+            "confusions": [
+              {
+                "id": "capital-de-vpm-non-signe",
+                "libelle": "Écrire le capital emprunté sans signe moins dans VPM : le tableur rend alors une annuité négative."
+              },
+              {
+                "id": "annuite-confondue-avec-amortissement",
+                "libelle": "Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-05-a3-annuite",
+            "enonce": "Quelle est l’annuité de l’emprunt ?",
+            "options": null
+          },
+          {
+            "id": "b2-05-a3-base",
+            "enonce": "Sur quel capital calcule-t-on les intérêts de la deuxième année ?",
+            "options": [
+              {
+                "id": "sur-le-capital-restant-du-au-debut-de-la-841a48b8",
+                "libelle": "Sur le capital restant dû au début de la deuxième année"
+              },
+              {
+                "id": "sur-les-60-000-eur-empruntes-0e73514e",
+                "libelle": "Sur les 60 000 € empruntés"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-a3-cout",
+            "enonce": "Quel est le coût du crédit, avec l’annuité arrondie au centime ?",
+            "options": null
+          },
+          {
+            "id": "b2-05-a3-vpm",
+            "enonce": "Taux en F1, durée en F2, capital emprunté en F3 : quelle formule affiche l’annuité, positive ?",
+            "options": [
+              {
+                "id": "vpm-f1-f2-f3-9c4dd652",
+                "libelle": "=VPM(F1;F2;-F3)"
+              },
+              {
+                "id": "f3-f2-c6fca683",
+                "libelle": "=F3/F2"
+              },
+              {
+                "id": "vpm-f1-f2-f3-b4834417",
+                "libelle": "=VPM(F1;F2;F3)"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-05-a3-annuite",
+            "texte": "a = 60 000 × 0,04 ÷ (1 − 1,04⁻⁵) ≈ 13 477,63 €. 60 000 ÷ 5 = 12 000 € ne rembourse que le capital ; 12 000 + 2 400 = 14 400 € garde les intérêts de la première année chaque année."
+          },
+          {
+            "reference": "b2-05-a3-base",
+            "texte": "Les intérêts portent sur ce qui reste dû : 60 000 − 11 077,63 = 48 922,37 € au début de la deuxième année, soit 1 956,89 € d’intérêts."
+          },
+          {
+            "reference": "b2-05-a3-cout",
+            "texte": "5 × 13 477,63 − 60 000 = 7 388,15 €. 67 388,15 € est le total remboursé ; 5 × 2 400 = 12 000 € calcule les intérêts sur 60 000 € chaque année."
+          },
+          {
+            "reference": "b2-05-a3-vpm",
+            "texte": "Le tableur renvoie une annuité négative pour un capital positif : le signe moins devant F3 la rend positive. =F3/F2 ne donne que l’amortissement moyen, sans intérêts."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A3-07-TABLEAU-AMORTISSEMENT",
+        "type": "fp-table-build",
+        "titre": "Exercice 6 — Le tableau d’amortissement",
+        "duree": 8,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b2-05-a3-tableau-amortissement",
+            "intitule": "Le tableau d’amortissement de l’emprunt de 60 000 €",
+            "consignes": [
+              "Emprunt de 60 000 € sur 5 ans à 4 %, annuité de 13 477,63 €.",
+              "Pour chaque année, saisissez les intérêts (capital dû × 0,04), puis l’amortissement (annuité − intérêts), arrondis au centime.",
+              "Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau."
+            ],
+            "echeances": 5,
+            "intituleDesLignes": "Année",
+            "libellesLignes": [
+              "Année 1",
+              "Année 2",
+              "Année 3",
+              "Année 4",
+              "Année 5"
+            ],
+            "parametres": {
+              "emprunt": 60000
+            },
+            "colonnes": [
+              {
+                "cle": "capital",
+                "intitule": "Capital dû en début d’année (€)",
+                "role": "deduite",
+                "decimales": 2,
+                "formule": "avantCapital - avantAmortissement",
+                "formuleInitiale": "emprunt",
+                "totalise": false
+              },
+              {
+                "cle": "interets",
+                "intitule": "Intérêts (€)",
+                "role": "saisie",
+                "decimales": 2,
+                "totalise": true
+              },
+              {
+                "cle": "amortissement",
+                "intitule": "Amortissement (€)",
+                "role": "saisie",
+                "decimales": 2,
+                "soldeDe": "capital",
+                "totalise": true
+              },
+              {
+                "cle": "annuite",
+                "intitule": "Annuité (€)",
+                "role": "donnee",
+                "decimales": 2,
+                "valeurs": [13477.63, 13477.63, 13477.63, 13477.63, 13477.63],
+                "totalise": true
+              }
+            ],
+            "synthese": [],
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 8,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : dire en français comment passer d’une ligne à la suivante.\n• Pièges : intérêts sur 60 000 € chaque année ; annuité écrite comme amortissement.\n• Papier : tableau du livret, rempli à la main, calculs arrondis au centime.\n• Projeter le tableau juste, ligne par ligne ; faire lire la colonne des intérêts de haut en bas.\n• Transition : « Une IA a fait le même calcul. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b2-05-a3-tableau-amortissement",
+            "enonce": "Le tableau d’amortissement de l’emprunt de 60 000 €",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "tableau",
+          "attendus": [
+            {
+              "rang": 0,
+              "cle": "interets",
+              "valeur": 2400
+            },
+            {
+              "rang": 0,
+              "cle": "amortissement",
+              "valeur": 11077.63
+            },
+            {
+              "rang": 1,
+              "cle": "interets",
+              "valeur": 1956.89
+            },
+            {
+              "rang": 1,
+              "cle": "amortissement",
+              "valeur": 11520.74
+            },
+            {
+              "rang": 2,
+              "cle": "interets",
+              "valeur": 1496.07
+            },
+            {
+              "rang": 2,
+              "cle": "amortissement",
+              "valeur": 11981.56
+            },
+            {
+              "rang": 3,
+              "cle": "interets",
+              "valeur": 1016.8
+            },
+            {
+              "rang": 3,
+              "cle": "amortissement",
+              "valeur": 12460.83
+            },
+            {
+              "rang": 4,
+              "cle": "interets",
+              "valeur": 518.37
+            },
+            {
+              "rang": 4,
+              "cle": "amortissement",
+              "valeur": 12959.26
+            }
+          ],
+          "tolerance": {
+            "type": "absolue",
+            "valeur": 0.01
+          },
+          "seuilReussite": 0.75
+        },
+        "explications": [
+          {
+            "reference": "b2-05-a3-tableau-amortissement",
+            "texte": "Intérêts : 2 400 ; 1 956,89 ; 1 496,07 ; 1 016,80 ; 518,37 €. Amortissements : 11 077,63 ; 11 520,74 ; 11 981,56 ; 12 460,83 ; 12 959,26 €. Le solde final de −0,02 € vient de l’annuité arrondie au centime : c’est aussi l’écart entre le coût du crédit, 7 388,15 €, et la somme des intérêts, 7 388,13 €."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A3-08-DEFI-IA",
+        "type": "fp-challenge",
+        "titre": "Exercice 7 — Corriger le calcul d’une IA",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "probleme": {
+            "id": "b2-05-a3-defi-ia",
+            "enonce": "Hélène a demandé à un assistant IA de chiffrer l’emprunt de 60 000 € sur 5 ans à 4 %. Réponse : « 1. Chaque année, vous remboursez 60 000 ÷ 5 = 12 000 € de capital, plus 60 000 × 4 % = 2 400 € d’intérêts : l’annuité est de 14 400 €. 2. Les intérêts restent de 2 400 € chaque année, puisque le taux ne change pas. 3. Le coût du crédit est de 5 × 14 400 = 72 000 €. »",
+            "invite": "Trouvez les erreurs de l’IA, corrigez chacune et dites comment la contrôler.",
+            "strategies": [],
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 10,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : relire les traces écrites de la notion 3.\n• Repérer qui trouve la formule, la base des intérêts et le coût ; faire trouver la piste fausse avant de révéler.\n• Papier : exercice 7 du livret.\n• Faire lire deux corrections écrites par la classe, puis dévoiler les pistes une à une.\n• Transition : jalon 3, puis pause de 15 minutes.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": {
+          "type": "defi",
+          "strategies": [
+            {
+              "id": "formule",
+              "libelle": "L’annuité constante se calcule avec la formule donnée, a = C × t ÷ (1 − (1 + t)⁻ⁿ), et non en ajoutant les intérêts de la première année au capital divisé par la durée.",
+              "fausse": false
+            },
+            {
+              "id": "base",
+              "libelle": "Les intérêts portent sur le capital restant dû, qui diminue : ils baissent chaque année.",
+              "fausse": false
+            },
+            {
+              "id": "cout",
+              "libelle": "Le coût du crédit est le total remboursé moins le capital, pas le total remboursé.",
+              "fausse": false
+            },
+            {
+              "id": "controle",
+              "libelle": "Contrôler par le tableau : la somme des amortissements doit redonner les 60 000 € empruntés.",
+              "fausse": false
+            },
+            {
+              "id": "garder",
+              "libelle": "Garder le calcul : il rembourse bien 60 000 € et paie des intérêts.",
+              "fausse": true
+            }
+          ]
+        },
+        "explications": [
+          {
+            "reference": "formule",
+            "texte": "a = 60 000 × 0,04 ÷ (1 − 1,04⁻⁵) ≈ 13 477,63 € : l’IA surestime l’annuité de près de 1 000 € par an."
+          },
+          {
+            "reference": "base",
+            "texte": "Deuxième année : 48 922,37 × 0,04 ≈ 1 956,89 €, et non 2 400 €. Les intérêts baissent jusqu’à 518,37 € la dernière année."
+          },
+          {
+            "reference": "cout",
+            "texte": "72 000 € est un total remboursé, et encore faux ; le coût est 5 × 13 477,63 − 60 000 = 7 388,15 €."
+          },
+          {
+            "reference": "controle",
+            "texte": "Avec l’IA, les amortissements font bien 60 000 €, mais les intérêts, 12 000 €, ne suivent pas le capital restant dû : le tableau juste en donne 7 388,13 €."
+          },
+          {
+            "reference": "garder",
+            "texte": "Piste fausse : rembourser le capital ne suffit pas, les intérêts doivent suivre le capital restant dû."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A3-09-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 3 : emprunts",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b2-05-a3-jalon",
+            "invite": "Je sais calculer une annuité, remplir un tableau d’amortissement et donner le coût d’un crédit.",
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement", "cout-du-credit"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 30 s de vote anonyme.\n• Pause de 15 minutes, hors durée programmée.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A4-01-SITUATION-CAMIONNETTE",
+        "type": "fp-story",
+        "titre": "Mini-situation CCF : la camionnette électrique",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A4-01-SITUATION-CAMIONNETTE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A4-01-SITUATION-CAMIONNETTE",
+              "renderer": "table",
+              "props": {
+                "title": "Mini-situation CCF : la camionnette électrique",
+                "subtitle": "Le dossier de la camionnette de livraison d’Atelier Rivage. Barème sur 10 : une question tableur, puis quatre énigmes.",
+                "note": "Données fictives Atelier Rivage, créées pour ce cours.",
+                "columns": [
+                  {
+                    "key": "rubrique",
+                    "label": "Rubrique"
+                  },
+                  {
+                    "key": "contenu",
+                    "label": "Ce que montre le dossier"
+                  }
+                ],
+                "rows": [
+                  {
+                    "rubrique": "Contexte",
+                    "contenu": "Atelier Rivage remplace sa camionnette de livraison par un modèle électrique. Hélène Garnier boucle le financement."
+                  },
+                  {
+                    "rubrique": "Emprunt",
+                    "contenu": "32 000 € empruntés sur 4 ans au taux annuel de 3,5 %, remboursés par annuités constantes a = C × t ÷ (1 − (1 + t)⁻ⁿ)."
+                  },
+                  {
+                    "rubrique": "Placement",
+                    "contenu": "15 000 € de trésorerie placés 4 ans à intérêts composés, au taux annuel de 2 %."
+                  },
+                  {
+                    "rubrique": "Batterie",
+                    "contenu": "Une batterie de rechange de 20 000 € sera à payer dans 4 ans ; la somme est placée dès aujourd’hui à 2 % par an."
+                  },
+                  {
+                    "rubrique": "Épargne",
+                    "contenu": "5 000 € versés à la fin de chacune des 4 prochaines années, sur un compte à 2 % par an."
+                  },
+                  {
+                    "rubrique": "Barème",
+                    "contenu": "Sur 10 points : question tableur, 3 points ; quatre énigmes, 2, 2, 1,5 et 1,5 points."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "annuites",
+                "tableau-d-amortissement",
+                "valeur-actuelle"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Mini-situation de 33 min (tableur 16, coffre 14, lecture 3), calculatrice, poste individuel ; barème sur 10 : tableur 3, énigmes 2, 2, 1,5 et 1,5.\n• Papier : la situation est en tête de la partie 4 du livret.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A4-02-TABLEUR-CAMIONNETTE",
+        "type": "fp-sheet",
+        "titre": "Question tableur (3 points sur 10) : le tableau d’amortissement",
+        "duree": 16,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b2-05-a4-feuille-camionnette",
+            "intitule": "Question tableur (3 points) — Le tableau d’amortissement de la camionnette",
+            "lignes": 5,
+            "colonnes": 10,
+            "cellules": {
+              "A1": "Année",
+              "B1": "Capital dû en début d’année (€)",
+              "B2": "32000",
+              "C1": "Intérêts (€)",
+              "D1": "Amortissement (€)",
+              "E1": "Capital dû en fin d’année (€)",
+              "G1": "Taux annuel",
+              "G2": "0,035",
+              "H1": "Durée (années)",
+              "H2": "4",
+              "I1": "Annuité (€)",
+              "J1": "Coût du crédit (€)",
+              "A2": "1",
+              "A3": "2",
+              "A4": "3",
+              "A5": "4"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "B2",
+              "C1",
+              "D1",
+              "E1",
+              "G1",
+              "G2",
+              "H1",
+              "H2",
+              "I1",
+              "J1",
+              "A2",
+              "A3",
+              "A4",
+              "A5"
+            ],
+            "consignes": [
+              "En I2, calculez l’annuité avec VPM, à partir du taux (G2), de la durée (H2) et du capital emprunté (B2) ; l’annuité doit s’afficher positive.",
+              "En C2, les intérêts de l’année 1 ; en D2, l’amortissement ; en E2, le capital dû en fin d’année. Recopiez les trois formules jusqu’à la ligne 5.",
+              "En B3, reportez le capital dû en fin d’année 1. Recopiez jusqu’en B5.",
+              "En J2, calculez le coût du crédit.",
+              "Le taux et l’annuité ne s’écrivent pas dans les formules : utilisez G2 et I2, figés par des $ là où la formule est recopiée."
+            ],
+            "metadonnees": {
+              "concepts": [
+                "tableur",
+                "tableau-d-amortissement",
+                "cout-du-credit"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 16,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "renvoi": "B2-05-A4-01-SITUATION-CAMIONNETTE",
+        "notes": "• Temps : réflexion 3 min · travail 11 min · correction 2 min\n• Réflexion : chacun nomme en français les colonnes C, D et E, puis écrit sur papier les formules de la ligne 2.\n• Erreurs à chercher : VPM sans signe moins ; G2 ou I2 sans $ ; intérêts sur 32 000 € chaque ligne ; J2 = total remboursé.\n• Papier : formules écrites sur la copie, valeurs calculées à la calculatrice ; en CCF, la question se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec cette feuille, ouvrez le coffre de la mini-situation. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b2-05-a4-feuille-camionnette",
+            "enonce": "Question tableur (3 points) — Le tableau d’amortissement de la camionnette",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "feuille",
+          "attendus": [
+            {
+              "reference": "I2",
+              "formuleReference": "=VPM(G2;H2;-B2)",
+              "valeur": 8712.036464,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "B3",
+              "formuleReference": "=E2",
+              "valeur": 24407.963536,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "B4",
+              "formuleReference": "=E3",
+              "valeur": 16550.205796,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B3"
+              }
+            },
+            {
+              "reference": "B5",
+              "formuleReference": "=E4",
+              "valeur": 8417.426535,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B3"
+              }
+            },
+            {
+              "reference": "C2",
+              "formuleReference": "=B2*$G$2",
+              "valeur": 1120,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "C3",
+              "formuleReference": "=B3*$G$2",
+              "valeur": 854.278724,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C2"
+              }
+            },
+            {
+              "reference": "C4",
+              "formuleReference": "=B4*$G$2",
+              "valeur": 579.257203,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C2"
+              }
+            },
+            {
+              "reference": "C5",
+              "formuleReference": "=B5*$G$2",
+              "valeur": 294.609929,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C2"
+              }
+            },
+            {
+              "reference": "D2",
+              "formuleReference": "=$I$2-C2",
+              "valeur": 7592.036464,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "D3",
+              "formuleReference": "=$I$2-C3",
+              "valeur": 7857.75774,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "D2"
+              }
+            },
+            {
+              "reference": "D4",
+              "formuleReference": "=$I$2-C4",
+              "valeur": 8132.779261,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "D2"
+              }
+            },
+            {
+              "reference": "D5",
+              "formuleReference": "=$I$2-C5",
+              "valeur": 8417.426535,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "D2"
+              }
+            },
+            {
+              "reference": "E2",
+              "formuleReference": "=B2-D2",
+              "valeur": 24407.963536,
+              "tolerance": {
+                "type": "decimales",
+                "valeur": 2
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "E3",
+              "formuleReference": "=B3-D3",
+              "valeur": 16550.205796,
+              "tolerance": {
+                "type": "decimales",
+                "valeur": 2
+              },
+              "forme": {
+                "memeQue": "E2"
+              }
+            },
+            {
+              "reference": "E4",
+              "formuleReference": "=B4-D4",
+              "valeur": 8417.426535,
+              "tolerance": {
+                "type": "decimales",
+                "valeur": 2
+              },
+              "forme": {
+                "memeQue": "E2"
+              }
+            },
+            {
+              "reference": "E5",
+              "formuleReference": "=B5-D5",
+              "valeur": 0,
+              "tolerance": {
+                "type": "decimales",
+                "valeur": 2
+              },
+              "forme": {
+                "memeQue": "E2"
+              }
+            },
+            {
+              "reference": "J2",
+              "formuleReference": "=I2*H2-B2",
+              "valeur": 2848.145855,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            }
+          ],
+          "seuilReussite": 0.8
+        },
+        "explications": [
+          {
+            "reference": "I2",
+            "texte": "=VPM(G2;H2;-B2) ≈ 8 712,04 €. Sans le signe moins, l’annuité s’affiche négative ; 32 000 ÷ 4 = 8 000 € oublie les intérêts."
+          },
+          {
+            "reference": "C2 à C5",
+            "texte": "=B2*$G$2, recopiée : 1 120 €, puis 854,28 €, 579,26 € et 294,61 €. Sans les $, la recopie lit G3, vide."
+          },
+          {
+            "reference": "D2 à D5 et E2 à E5",
+            "texte": "=$I$2-C2 et =B2-D2, recopiées : le capital dû tombe à 0 en fin d’année 4."
+          },
+          {
+            "reference": "B3 à B5",
+            "texte": "=E2, recopiée : le capital dû en début d’année reprend la fin de l’année précédente."
+          },
+          {
+            "reference": "J2",
+            "texte": "=I2*H2-B2 ≈ 2 848,15 €. =I2*H2 donne le total remboursé, pas le coût."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A4-03-COFFRE-CAMIONNETTE",
+        "type": "fp-escape",
+        "titre": "Mini-situation : boucler le financement de la camionnette",
+        "duree": 14,
+        "interactif": true,
+        "donnees": {
+          "parcours": {
+            "id": "b2-05-a4-coffre-camionnette",
+            "intitule": "Boucler le financement de la camionnette : quatre réponses pour ouvrir le coffre",
+            "delaiIndiceMs": 60000,
+            "budgetEnigmeMs": 150000,
+            "tentativesMax": 10,
+            "enigmes": [
+              {
+                "id": "b2-05-a4-e1-placement",
+                "intitule": "Le placement (2 points)",
+                "enonce": "Que vaudra le placement de 15 000 € au bout de 4 ans, en euros, arrondi au centime ?",
+                "indice": "Les intérêts rapportent à leur tour : multipliez par le coefficient autant de fois qu’il y a d’années."
+              },
+              {
+                "id": "b2-05-a4-e2-batterie",
+                "intitule": "La batterie (2 points)",
+                "enonce": "Quelle somme placer aujourd’hui pour payer la batterie de 20 000 € dans 4 ans, en euros, arrondie au centime ?",
+                "indice": "On remonte le temps : on divise, on ne multiplie pas."
+              },
+              {
+                "id": "b2-05-a4-e3-epargne",
+                "intitule": "L’épargne (1,5 point)",
+                "enonce": "Quelle épargne sera disponible au quatrième versement de 5 000 €, en euros, arrondie au centime ?",
+                "indice": "Le dernier versement ne rapporte rien : utilisez la formule des suites d’annuités."
+              },
+              {
+                "id": "b2-05-a4-e4-cout",
+                "intitule": "Le coût du crédit (1,5 point)",
+                "enonce": "Quel est le coût du crédit de la camionnette, en euros, arrondi au centime ?",
+                "indice": "Lisez votre feuille : ce que l’on rembourse en plus du capital emprunté."
+              }
+            ],
+            "metadonnees": {
+              "concepts": [
+                "interets-composes",
+                "valeur-actuelle",
+                "annuites",
+                "cout-du-credit"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 14,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "renvoi": "B2-05-A4-01-SITUATION-CAMIONNETTE",
+        "notes": "• Temps : réflexion 2 min · travail 10 min · correction 2 min\n• Réflexion : relire le dossier et noter, pour chaque question, s’il faut capitaliser, actualiser, additionner des versements ou lire le tableau.\n• Indices disponibles après 60 s. À 8 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur la décision d’Hélène : la camionnette est financée, batterie comprise.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b2-05-a4-e1-placement",
+            "enonce": "Que vaudra le placement de 15 000 € au bout de 4 ans, en euros, arrondi au centime ?",
+            "options": null
+          },
+          {
+            "id": "b2-05-a4-e2-batterie",
+            "enonce": "Quelle somme placer aujourd’hui pour payer la batterie de 20 000 € dans 4 ans, en euros, arrondie au centime ?",
+            "options": null
+          },
+          {
+            "id": "b2-05-a4-e3-epargne",
+            "enonce": "Quelle épargne sera disponible au quatrième versement de 5 000 €, en euros, arrondie au centime ?",
+            "options": null
+          },
+          {
+            "id": "b2-05-a4-e4-cout",
+            "enonce": "Quel est le coût du crédit de la camionnette, en euros, arrondi au centime ?",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "enigmes",
+          "enigmes": [
+            {
+              "enigmeId": "b2-05-a4-e1-placement",
+              "solution": "16 236,48 euros",
+              "fragment": "K4"
+            },
+            {
+              "enigmeId": "b2-05-a4-e2-batterie",
+              "solution": "18 476,91 euros",
+              "fragment": "V8"
+            },
+            {
+              "enigmeId": "b2-05-a4-e3-epargne",
+              "solution": "20 608,04 euros",
+              "fragment": "M3"
+            },
+            {
+              "enigmeId": "b2-05-a4-e4-cout",
+              "solution": "2 848,15 euros",
+              "fragment": "T6"
+            }
+          ],
+          "codeFinal": "K4V8M3T6"
+        },
+        "explications": [
+          {
+            "reference": "b2-05-a4-e1-placement",
+            "texte": "15 000 × 1,02⁴ ≈ 16 236,48 €. Aux intérêts simples : 15 000 × 1,08 = 16 200 € ; avec une année de trop : 16 561,21 €."
+          },
+          {
+            "reference": "b2-05-a4-e2-batterie",
+            "texte": "20 000 ÷ 1,02⁴ ≈ 18 476,91 €. Multiplier donne 21 648,64 €, plus que la batterie ; diviser par 1,08 donne 18 518,52 €."
+          },
+          {
+            "reference": "b2-05-a4-e3-epargne",
+            "texte": "5 000 × (1,02⁴ − 1) ÷ 0,02 ≈ 20 608,04 €. 20 000 € oublie les intérêts ; 21 020,20 € place chaque versement un an de trop."
+          },
+          {
+            "reference": "b2-05-a4-e4-cout",
+            "texte": "4 × 8 712,04 − 32 000 ≈ 2 848,15 €, la cellule J2. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année."
+          }
+        ]
+      },
+      {
+        "id": "B2-05-A4-04-RAPPEL",
+        "type": "fp-spaced",
+        "titre": "Rappel : de mémoire, sans vos notes",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "rappel": {
+            "id": "b2-05-a4-rappel",
+            "intitule": "Rappel : de mémoire, sans vos notes",
+            "metadonnees": {
+              "concepts": [
+                "interets-composes",
+                "valeur-actuelle",
+                "annuites",
+                "tableau-d-amortissement",
+                "cout-du-credit",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (valeur actuelle, base des intérêts d’un emprunt), en plus de leurs points faibles.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b2-05-r-coefficient",
+            "bonneReponse": "Par 1,04",
+            "confusions": [
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-deux-ans",
+            "bonneReponse": "1 102,50 €, soit 1 000 × 1,05²",
+            "confusions": [
+              {
+                "id": "interets-simples-au-lieu-de-composes",
+                "libelle": "Calculer les intérêts de chaque année sur le seul capital de départ, sans les intérêts déjà acquis : à intérêts composés, on multiplie par 1 + t chaque année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-valeur-actuelle",
+            "bonneReponse": "1 000 €, soit 1 210 ÷ 1,1²",
+            "confusions": [
+              {
+                "id": "actualisation-inversee",
+                "libelle": "Multiplier par (1 + t)ⁿ au lieu de diviser pour ramener une somme future à aujourd’hui : la valeur actuelle est plus petite que la somme future."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-sens",
+            "bonneReponse": "On divise par (1 + t)ⁿ",
+            "confusions": [
+              {
+                "id": "actualisation-inversee",
+                "libelle": "Multiplier par (1 + t)ⁿ au lieu de diviser pour ramener une somme future à aujourd’hui : la valeur actuelle est plus petite que la somme future."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-duree-versement",
+            "bonneReponse": "Trois ans",
+            "confusions": [
+              {
+                "id": "versements-places-toute-la-duree",
+                "libelle": "Placer chaque versement pendant toute la durée : un versement de fin d’année n’est placé que jusqu’au dernier versement, le dernier ne rapporte rien."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-versements",
+            "bonneReponse": "Non : 3 060,40 €, intérêts compris",
+            "confusions": [
+              {
+                "id": "versements-sans-interets",
+                "libelle": "Additionner les versements sans leurs intérêts : la valeur acquise d’une suite d’annuités dépasse le total versé."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-interets-emprunt",
+            "bonneReponse": "Sur le capital restant dû au début de la troisième année",
+            "confusions": [
+              {
+                "id": "interets-sur-capital-initial",
+                "libelle": "Calculer les intérêts de chaque année sur le capital emprunté au départ : ils portent sur le capital restant dû en début d’année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-amortissement",
+            "bonneReponse": "4 200 €",
+            "confusions": [
+              {
+                "id": "annuite-confondue-avec-amortissement",
+                "libelle": "Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-evolution-interets",
+            "bonneReponse": "Ils baissent : le capital restant dû diminue",
+            "confusions": [
+              {
+                "id": "interets-sur-capital-initial",
+                "libelle": "Calculer les intérêts de chaque année sur le capital emprunté au départ : ils portent sur le capital restant dû en début d’année."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-cout",
+            "bonneReponse": "960 €",
+            "confusions": [
+              {
+                "id": "cout-credit-confondu-avec-total-rembourse",
+                "libelle": "Donner le total remboursé pour le coût du crédit : le coût est ce total moins le capital emprunté, soit la somme des intérêts."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-vpm",
+            "bonneReponse": "=VPM(C1;C2;-C3)",
+            "confusions": [
+              {
+                "id": "capital-de-vpm-non-signe",
+                "libelle": "Écrire le capital emprunté sans signe moins dans VPM : le tableur rend alors une annuité négative."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-05-r-figee",
+            "bonneReponse": "=D2*$K$1",
+            "confusions": [
+              {
+                "id": "reference-relative-non-figee",
+                "libelle": "Recopier une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une ligne à chaque recopie."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-05-r-coefficient",
+            "enonce": "Un placement rapporte 4 % par an. Par quel nombre multiplie-t-on le capital chaque année ?",
+            "options": [
+              {
+                "id": "par-1-04-2cc43379",
+                "libelle": "Par 1,04"
+              },
+              {
+                "id": "par-0-04-34270937",
+                "libelle": "Par 0,04"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-deux-ans",
+            "enonce": "1 000 € sont placés à 5 % par an, à intérêts composés. Que valent-ils après deux ans ?",
+            "options": [
+              {
+                "id": "1-102-50-eur-soit-1-000-1-05-6a757919",
+                "libelle": "1 102,50 €, soit 1 000 × 1,05²"
+              },
+              {
+                "id": "1-100-eur-soit-1-000-plus-2-50-a18e1dea",
+                "libelle": "1 100 €, soit 1 000 + 2 × 50"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-valeur-actuelle",
+            "enonce": "Quelle somme placer aujourd’hui à 10 % par an pour disposer de 1 210 € dans deux ans ?",
+            "options": [
+              {
+                "id": "1-000-eur-soit-1-210-1-1-9e2b033b",
+                "libelle": "1 000 €, soit 1 210 ÷ 1,1²"
+              },
+              {
+                "id": "1-464-10-eur-soit-1-210-1-1-ef56483d",
+                "libelle": "1 464,10 €, soit 1 210 × 1,1²"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-sens",
+            "enonce": "Pour actualiser une somme disponible dans n années, que fait-on ?",
+            "options": [
+              {
+                "id": "on-multiplie-par-1-plus-t-1f5a6bef",
+                "libelle": "On multiplie par (1 + t)ⁿ"
+              },
+              {
+                "id": "on-divise-par-1-plus-t-7f4a40d7",
+                "libelle": "On divise par (1 + t)ⁿ"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-duree-versement",
+            "enonce": "Versements en fin d’année, de 2026 à 2030. Combien d’années le versement de fin 2027 rapporte-t-il jusqu’à fin 2030 ?",
+            "options": [
+              {
+                "id": "cinq-ans-toute-la-duree-du-plan-75802888",
+                "libelle": "Cinq ans : toute la durée du plan"
+              },
+              {
+                "id": "trois-ans-c6d764ba",
+                "libelle": "Trois ans"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-versements",
+            "enonce": "Trois versements de 1 000 € en fin d’année, à 2 %. L’épargne au troisième versement vaut-elle 3 000 € ?",
+            "options": [
+              {
+                "id": "non-3-060-40-eur-interets-compris-619e70fa",
+                "libelle": "Non : 3 060,40 €, intérêts compris"
+              },
+              {
+                "id": "oui-trois-fois-1-000-eur-91ddcca9",
+                "libelle": "Oui : trois fois 1 000 €"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-interets-emprunt",
+            "enonce": "Sur quel capital calcule-t-on les intérêts de la troisième année d’un emprunt ?",
+            "options": [
+              {
+                "id": "sur-le-capital-restant-du-au-debut-de-la-e8f11952",
+                "libelle": "Sur le capital restant dû au début de la troisième année"
+              },
+              {
+                "id": "sur-le-capital-emprunte-au-depart-614feb44",
+                "libelle": "Sur le capital emprunté au départ"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-amortissement",
+            "enonce": "Une annuité de 5 000 € contient 800 € d’intérêts. Quel capital rembourse-t-elle ?",
+            "options": [
+              {
+                "id": "4-200-eur-8ad7fe38",
+                "libelle": "4 200 €"
+              },
+              {
+                "id": "5-000-eur-9680c6f0",
+                "libelle": "5 000 €"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-evolution-interets",
+            "enonce": "Emprunt à annuités constantes : comment évoluent les intérêts d’une année à l’autre ?",
+            "options": [
+              {
+                "id": "ils-baissent-le-capital-restant-du-dimin-9fdeedca",
+                "libelle": "Ils baissent : le capital restant dû diminue"
+              },
+              {
+                "id": "ils-restent-egaux-le-taux-ne-change-pas-c7d9a7dd",
+                "libelle": "Ils restent égaux : le taux ne change pas"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-cout",
+            "enonce": "Quatre annuités de 2 740 € remboursent un emprunt de 10 000 €. Quel est le coût du crédit ?",
+            "options": [
+              {
+                "id": "960-eur-7be7010a",
+                "libelle": "960 €"
+              },
+              {
+                "id": "10-960-eur-efb83cc3",
+                "libelle": "10 960 €"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-vpm",
+            "enonce": "Taux en C1, durée en C2, capital emprunté en C3 : quelle formule affiche une annuité positive ?",
+            "options": [
+              {
+                "id": "vpm-c1-c2-c3-55911291",
+                "libelle": "=VPM(C1;C2;C3)"
+              },
+              {
+                "id": "vpm-c1-c2-c3-0fde3305",
+                "libelle": "=VPM(C1;C2;-C3)"
+              }
+            ]
+          },
+          {
+            "id": "b2-05-r-figee",
+            "enonce": "Capital dû en D2, taux en K1 : quelle formule des intérêts recopier vers le bas ?",
+            "options": [
+              {
+                "id": "d2-k1-57e10a57",
+                "libelle": "=D2*K1"
+              },
+              {
+                "id": "d2-k-1-368dfb9b",
+                "libelle": "=D2*$K$1"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A4-05-FICHE-MEMO",
+        "type": "fp-story",
+        "titre": "Fiche mémo : placer, emprunter",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-05-A4-05-FICHE-MEMO",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-05-A4-05-FICHE-MEMO",
+              "renderer": "grid",
+              "props": {
+                "title": "Fiche mémo : placer, emprunter",
+                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "items": [
+                  {
+                    "title": "Intérêts composés",
+                    "description": "Que vaudra le capital ?",
+                    "back": "Cₙ = C₀ × (1 + t)ⁿ. Les intérêts rapportent à leur tour. Intérêts simples : C₀ × (1 + n × t)."
+                  },
+                  {
+                    "title": "Valeur actuelle",
+                    "description": "Combien placer aujourd’hui ?",
+                    "back": "C₀ = Cₙ ÷ (1 + t)ⁿ. On divise pour remonter le temps ; la valeur actuelle est plus petite."
+                  },
+                  {
+                    "title": "Suite d’annuités",
+                    "description": "Des versements réguliers ?",
+                    "back": "Vₙ = a × ((1 + t)ⁿ − 1) ÷ t, au dernier versement. Chaque versement a sa durée ; le dernier ne rapporte rien."
+                  },
+                  {
+                    "title": "Annuité d’emprunt",
+                    "description": "Combien rembourser chaque année ?",
+                    "back": "a = C × t ÷ (1 − (1 + t)⁻ⁿ). Formule donnée au CCF."
+                  },
+                  {
+                    "title": "Tableau d’amortissement",
+                    "description": "Une ligne par année ?",
+                    "back": "Intérêts = capital restant dû × t ; amortissement = a − intérêts ; capital dû suivant = capital − amortissement."
+                  },
+                  {
+                    "title": "Coût du crédit",
+                    "description": "Combien coûte l’emprunt ?",
+                    "back": "n × a − C, ou la somme des intérêts. Le total remboursé n’est pas le coût."
+                  },
+                  {
+                    "title": "VPM",
+                    "description": "L’annuité au tableur ?",
+                    "back": "VPM(taux ; durée ; −capital). Sans le signe moins, l’annuité s’affiche négative."
+                  },
+                  {
+                    "title": "Tableur",
+                    "description": "Quelle formule recopier ?",
+                    "back": "Taux, versement et annuité figés par des $. SOMME pour un total, jamais la dernière cellule."
+                  },
+                  {
+                    "title": "Capitaliser ou actualiser",
+                    "description": "Quel sens du temps ?",
+                    "back": "Vers le futur : × (1 + t)ⁿ. Vers le présent : ÷ (1 + t)ⁿ. Relire la question avant de calculer."
+                  },
+                  {
+                    "title": "Référentiel du BTS CG",
+                    "description": "Le programme de mathématiques et l’épreuve E3.",
+                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
+                    "external": true
+                  }
+                ],
+                "imprimable": true
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "interets-composes",
+                "valeur-actuelle",
+                "annuites",
+                "tableau-d-amortissement",
+                "cout-du-credit",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 90 s de lecture ; la fiche s’imprime pour le classeur de CCF.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-05-A4-06-BILLET-DE-SORTIE",
+        "type": "fp-exit",
+        "titre": "Billet de sortie : la formule des intérêts",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "billet": {
+            "id": "b2-05-a4-billet",
+            "question": "Hélène prépare le tableau d’un nouvel emprunt : capital dû en début d’année en B2, taux annuel en H1. Quelle formule écrire en C2 pour les intérêts, à recopier vers le bas ?",
+            "invite": "En une phrase : pourquoi les intérêts d’un emprunt baissent-ils chaque année ?",
+            "options": [
+              {
+                "id": "b2-h-1-c53d0532",
+                "libelle": "=B2*$H$1"
+              },
+              {
+                "id": "b2-h1-deb692c3",
+                "libelle": "=B2*H1"
+              },
+              {
+                "id": "b2-1-plus-h-1-17afcc15",
+                "libelle": "=B2*(1+$H$1)"
+              },
+              {
+                "id": "b2-plus-h-1-7b994eaf",
+                "libelle": "=B2+$H$1"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["tableau-d-amortissement", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 4 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : taux non figé, addition au lieu de multiplication, coefficient à la place du taux.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b2-05-a4-billet",
+            "bonneReponse": "=B2*$H$1",
+            "confusions": [
+              {
+                "id": "reference-relative-non-figee",
+                "libelle": "Recopier une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une ligne à chaque recopie."
+              },
+              {
+                "id": "nature-de-suite-confondue",
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+              },
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-05-a4-billet",
+            "enonce": "Hélène prépare le tableau d’un nouvel emprunt : capital dû en début d’année en B2, taux annuel en H1. Quelle formule écrire en C2 pour les intérêts, à recopier vers le bas ?",
+            "options": [
+              {
+                "id": "b2-h-1-c53d0532",
+                "libelle": "=B2*$H$1"
+              },
+              {
+                "id": "b2-h1-deb692c3",
+                "libelle": "=B2*H1"
+              },
+              {
+                "id": "b2-1-plus-h-1-17afcc15",
+                "libelle": "=B2*(1+$H$1)"
+              },
+              {
+                "id": "b2-plus-h-1-7b994eaf",
+                "libelle": "=B2+$H$1"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null
       }
-    ]
+    ],
+    "remediations": {
+      "coefficient-confondu-avec-taux": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
+      "nature-de-suite-confondue": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
+      "interets-simples-au-lieu-de-composes": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
+      "rang-decale": "B2-05-A1-07-COURS-INTERETS-COMPOSES",
+      "actualisation-inversee": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
+      "reciproque-meme-taux": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
+      "reference-relative-non-figee": "B2-05-A1-08-COURS-VALEUR-ACTUELLE",
+      "versements-sans-interets": "B2-05-A2-02-COURS-ANNUITES",
+      "versements-places-toute-la-duree": "B2-05-A2-02-COURS-ANNUITES",
+      "nombre-de-termes-decale": "B2-05-A2-02-COURS-ANNUITES",
+      "terme-pris-pour-somme": "B2-05-A2-03-COURS-ANNUITES-TABLEUR",
+      "interets-sur-capital-initial": "B2-05-A3-03-COURS-EMPRUNT",
+      "annuite-confondue-avec-amortissement": "B2-05-A3-03-COURS-EMPRUNT",
+      "cout-credit-confondu-avec-total-rembourse": "B2-05-A3-04-COURS-COUT-TABLEUR",
+      "capital-de-vpm-non-signe": "B2-05-A3-04-COURS-COUT-TABLEUR"
+    }
   }
 }
