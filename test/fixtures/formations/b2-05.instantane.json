@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "ec1b6761c97c08eff03cac337dd92470ba6a193dd30892de6f74be38e254e383",
+  "empreinte": "fca0eeb63e5a37c218b14788cef10de0d99e6932b51a8f9ad13a77c79da1dfd1",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -1216,7 +1216,7 @@
                     "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
                     "steps": [
                       "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
-                      "Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.",
+                      "Capital dû en B2 : intérêts =B2*$K$1, recopiée, le taux restant figé en K1.",
                       "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
                       "Coût : annuité × durée − capital."
                     ]
@@ -3859,7 +3859,7 @@
                     "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
                     "steps": [
                       "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
-                      "Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.",
+                      "Capital dû en B2 : intérêts =B2*$K$1, recopiée, le taux restant figé en K1.",
                       "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
                       "Coût : annuité × durée − capital."
                     ]
@@ -6124,7 +6124,7 @@
                     "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
                     "steps": [
                       "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
-                      "Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.",
+                      "Capital dû en B2 : intérêts =B2*$K$1, recopiée, le taux restant figé en K1.",
                       "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
                       "Coût : annuité × durée − capital."
                     ]

@@ -309,7 +309,8 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - `b2-05-a2-expression` (vote) ; pièges `versements-places-toute-la-duree`,
   `versements-sans-interets`.
 - `b2-05-a2-valeur-acquise` : épargne disponible fin 2030 ; pièges `versements-sans-interets`,
-  `versements-places-toute-la-duree`.
+  `versements-places-toute-la-duree` (cinq versements placés cinq ans), `rang-decale` (un an de
+  trop).
 
 #### A2-06 · `B2-05-A2-06-TABLEUR-EPARGNE` — 10 min · `fp-sheet` · séance
 
@@ -354,7 +355,8 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A3-05 · `B2-05-A3-05-EXEMPLE-EMPRUNT` — 6 min · `fp-worked` · séance
 
 - Titre public : « Exemple guidé : emprunter 24 000 € à 3 % »
-- Annuité avec la formule donnée, trois lignes du tableau, coût du crédit par deux calculs.
+- Annuité avec la formule donnée, deux lignes du tableau, coût du crédit, puis l'annuité au
+  tableur avec VPM.
 
 #### A3-06 · `B2-05-A3-06-ATELIER-EMPRUNT` — 10 min · `questionnaire` · séance
 
@@ -385,8 +387,8 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Temps : réflexion 2 min · travail 6 min · correction 2 min, piste par piste sur place.
 - L'IA ajoute au capital divisé par la durée les intérêts de la première année, garde ces intérêts
   chaque année et prend le total remboursé pour le coût. Pistes justes : formule de l'annuité,
-  capital restant dû, coût, contrôle par la somme des amortissements ; piste fausse : garder le
-  calcul.
+  capital restant dû, coût, contrôle par les intérêts (capital restant dû × 4 %), qui trahit l'IA
+  quand la somme des amortissements ne la trahit pas ; piste fausse : garder le calcul.
 
 #### A3-09 · `B2-05-A3-09-JALON` — 1 min · `fp-pulse` · séance
 
@@ -424,7 +426,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - E1 valeur acquise du placement (2 points ; `interets-simples-au-lieu-de-composes`,
   `rang-decale`) ; E2 valeur actuelle de la batterie (2 points ; `actualisation-inversee`,
   `interets-simples-au-lieu-de-composes`) ; E3 valeur acquise de l'épargne (1,5 point ;
-  `versements-sans-interets`, `versements-places-toute-la-duree`) ; E4 coût du crédit (1,5 point ;
+  `versements-sans-interets`, `versements-places-toute-la-duree`, `rang-decale`) ; E4 coût du crédit (1,5 point ;
   `cout-credit-confondu-avec-total-rembourse`, `interets-sur-capital-initial`).
 - Papier : quatre questions rédigées du livret, sans code de coffre.
 
