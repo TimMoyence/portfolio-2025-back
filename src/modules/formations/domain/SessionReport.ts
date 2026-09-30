@@ -5,6 +5,7 @@ import {
   solutionsDuTirage,
   solutionsIdentiques,
 } from './Bareme';
+import { libelleDeConcept } from './cours/banque/concepts';
 import { libelleLisible } from './cours/banque/confusions';
 import type { Cours, TypeQuestion } from './contrats/cours';
 import type { DetailProduction, ValeurReponse } from './contrats/resultats';
@@ -88,6 +89,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
     },
   );
   signalerTiragesEnEchec(input, tiragesEnEchec);
+  const conceptsFragiles = conceptsFragilesDe(input.answers);
 
   return {
     courseSlug: input.session.courseSlug,
@@ -95,7 +97,10 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
     ouverteLe: input.session.ouverteLe,
     fermeeLe: input.session.fermeeLe ?? new Date(),
     participants,
-    conceptsFragiles: conceptsFragilesDe(input.answers),
+    conceptsFragiles,
+    libellesDesConcepts: Object.fromEntries(
+      conceptsFragiles.map((concept) => [concept, libelleDeConcept(concept)]),
+    ),
   };
 }
 

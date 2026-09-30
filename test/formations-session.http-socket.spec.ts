@@ -41,7 +41,7 @@ import {
 } from '../src/modules/formations/domain/token';
 import type { SessionStateCacheService } from '../src/modules/formations/infrastructure/SessionStateCache.service';
 import { MAX_INCIDENTS_PAR_ENVOI } from '../src/modules/formations/domain/IncidentType';
-import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
+import { COURS_B2_01 } from './factories/contenus-publies';
 import { LIMITE_SUJET_PAR_PARTICIPANT } from '../src/modules/formations/interfaces/formations-throttling';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import {

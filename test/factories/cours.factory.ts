@@ -90,7 +90,12 @@ function numeriqueTest(id: string) {
   });
 }
 
-function voteTest(id: string) {
+function voteTest(
+  id: string,
+  confusionDuSecondPiege:
+    | 'raisonnement-additif'
+    | 'hausse-baisse-symetriques' = 'raisonnement-additif',
+) {
   return questionVote({
     id,
     concept: 'evolutions-successives',
@@ -104,12 +109,17 @@ function voteTest(id: string) {
         libelle: () => 'revenu au prix de départ',
       },
       {
-        confusion: 'raisonnement-additif',
+        confusion: confusionDuSecondPiege,
         libelle: () => 'plus haut qu’au départ',
       },
     ],
   });
 }
+
+export const QUESTION_A_CONFUSION_REPETEE = voteTest(
+  'Q-TEST-REPETEE',
+  'hausse-baisse-symetriques',
+);
 
 export const QUESTION_RAPPEL_TEST = voteTest('Q-TEST-RAPPEL');
 export const QUESTION_VOTE_TEST = voteTest('Q-TEST-VOTE');

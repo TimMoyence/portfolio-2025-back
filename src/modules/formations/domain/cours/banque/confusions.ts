@@ -1,3 +1,4 @@
+import { typographierEnProfondeur } from '../Typographie';
 import type { ConceptId } from './concepts';
 
 interface DefinitionConfusion {
@@ -5,7 +6,7 @@ interface DefinitionConfusion {
   readonly libelle: string;
 }
 
-export const CONFUSIONS = {
+const DEFINITIONS = {
   'hausse-baisse-symetriques': {
     concept: 'evolutions-successives',
     libelle:
@@ -33,7 +34,7 @@ export const CONFUSIONS = {
   'coefficient-confondu-avec-taux': {
     concept: 'coefficient-multiplicateur',
     libelle:
-      'Confondre le coefficient multiplicateur 1,15 avec le taux de 15 %.',
+      'Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15).',
   },
   'taux-valeur-facteur-cent': {
     concept: 'pourcentage',
@@ -177,7 +178,7 @@ export const CONFUSIONS = {
   'reference-relative-non-figee': {
     concept: 'tableur',
     libelle:
-      'Recopier une formule dont la référence au total n’est pas figée ($) : le dénominateur glisse.',
+      'Recopier une formule dont une référence fixe n’est pas figée ($) : elle glisse d’une ligne à chaque recopie.',
   },
   'valeur-saisie-sans-formule': {
     concept: 'tableur',
@@ -395,6 +396,8 @@ export const CONFUSIONS = {
       'Donner le dernier terme à la place du cumul : la somme additionne tous les termes de la période.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
+
+export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);
 
 export type ConfusionId = keyof typeof CONFUSIONS;
 

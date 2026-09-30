@@ -89,7 +89,9 @@ function corrigesDe(
       return {
         questionId: question.id,
         bonneReponse: corrige.bonneReponse,
-        confusions: corrige.confusions.map((id) => confusionPresentateur(id)),
+        confusions: [...new Set(corrige.confusions)].map((id) =>
+          confusionPresentateur(id),
+        ),
       };
     });
 }

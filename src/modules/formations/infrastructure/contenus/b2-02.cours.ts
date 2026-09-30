@@ -609,8 +609,7 @@ const ACTE_2: moteur.Acte = [
     concepts: ['correlation'],
     notes: moteur.puces(
       'Temps « réfléchir » de la notion 2 : vote non noté.',
-      'Vote 1 individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme puis revote ; sinon, revote directement.',
-      'Papier : vote à main levée, puis revote après discussion en binôme.',
+      ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
     ),
     proprietes: {
       modalite: 'solo',

@@ -3,10 +3,11 @@ import {
   texteNormalise,
 } from '../../../../../test/helpers/conception-de-cours';
 import {
-  buildContenuB2_01,
-  buildCoursB2_01,
-  ouvrirLeBaremeV2DuB2_01,
-} from '../../../../../test/factories/cours-b2-01.factory';
+  buildContenuDuCours,
+  buildCoursDuContenu,
+  VERSION_PUBLIEE_DE_TEST,
+} from '../../../../../test/factories/contenus-de-cours.factory';
+import { ouvrirLeBaremeV2DuB2_01 } from '../../../../../test/factories/cours-b2-01.factory';
 import { fuitesDeConfidentialite } from '../../../../../test/factories/structure.factory';
 import {
   attendreLaFeuille,
@@ -31,7 +32,7 @@ import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B2_01 } from './b2-01.cours';
 
 const DOCUMENT = lireConception('cours-b2-01-conception.md');
-const COURS = buildCoursB2_01();
+const COURS = buildCoursDuContenu(COURS_B2_01, VERSION_PUBLIEE_DE_TEST);
 
 function ecranDuCours(screenId: string): Ecran {
   const trouve = COURS.ecrans.find((candidat) => candidat.id === screenId);
@@ -46,7 +47,7 @@ const CLES_NON_TEXTUELLES = new Set(['id', 'formuleReference', 'transcript']);
 const ECRAN_DU_GRAPHIQUE_TRIMESTRIEL = 'B2-01-A4-04-CA-TRIMESTRIEL';
 
 function coursDontLeTitre(screenId: string, titre: string): typeof COURS {
-  const brut = buildContenuB2_01();
+  const brut = buildContenuDuCours(COURS_B2_01, VERSION_PUBLIEE_DE_TEST);
   if (!brut.ecrans.some((ecran) => ecran.screenId === screenId)) {
     throw new Error(`écran inconnu dans le cours : ${screenId}`);
   }

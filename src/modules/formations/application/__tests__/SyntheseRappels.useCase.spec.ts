@@ -78,7 +78,7 @@ describe('SyntheseRappelsUseCase', () => {
     const taux = concepts.find((entree) => entree.concept === 'taux-evolution');
     expect(taux).toEqual({
       concept: 'taux-evolution',
-      libelle: 'taux-evolution',
+      libelle: 'Taux d’évolution',
       boite1: 1,
       boite2: 0,
       boite3: 1,

@@ -1746,6 +1746,16 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
         "description": "Comptes de chaque jalon de confiance",
         "type": "object",
       },
+      "libellesDesConcepts": {
+        "additionalProperties": {
+          "type": "string",
+        },
+        "description": "Libellé lisible de chaque concept fragile",
+        "example": {
+          "taux-evolution": "Taux d’évolution",
+        },
+        "type": "object",
+      },
       "notation": {
         "$ref": "#/components/schemas/RegleDeNotationResponseDto",
       },
@@ -1778,6 +1788,7 @@ exports[`OpenAPI contrat B2-01 fige les schemas des DTO du § 9.5 sans exposer d
       "ouverteLe",
       "fermeeLe",
       "conceptsFragiles",
+      "libellesDesConcepts",
       "statistiques",
       "participants",
       "resultats",

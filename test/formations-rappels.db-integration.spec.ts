@@ -1,6 +1,6 @@
 import type { Test } from 'supertest';
 import type { SpacedQuestionPublique } from '../src/modules/formations/domain/contrats/donnees-publiques';
-import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
+import { COURS_B2_01 } from './factories/contenus-publies';
 import { describeDb } from './helpers/db-integration-datasource';
 import {
   ADMIN_DE_TEST,
