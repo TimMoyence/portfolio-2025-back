@@ -9,6 +9,10 @@ import {
   decrireLaMiniSituation,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
+import {
+  rangsDe,
+  recopier,
+} from '../../../../../test/helpers/feuille-de-cours';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
 import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
 import { evaluerCellule } from '../../domain/cours/Formule';
@@ -121,22 +125,6 @@ decrireLaFicheDuCours('B2-03', COURS, {
 
 const feuilleDe = (id: string): CorrigeFeuille => corrigeDeFeuille(COURS, id);
 
-function recopier(
-  modele: string,
-  colonne: string,
-  lignes: readonly number[],
-): Record<string, string> {
-  return Object.fromEntries(
-    lignes.map((ligne) => [
-      `${colonne}${ligne}`,
-      modele.replaceAll(/([A-G])2\b/g, `$1${ligne}`),
-    ]),
-  );
-}
-
-const lignesDe = (premiere: number, derniere: number): number[] =>
-  Array.from({ length: derniere - premiere + 1 }, (_, rang) => premiere + rang);
-
 decrireLaMiniSituation('B2-03', COURS_B2_03, {
   donneesFictives: ['B2-03-A1-04-FACTURES', 'B2-03-A4-01-SITUATION-FACTURES'],
   coffre: 'B2-03-A4-03-COFFRE-CONTROLE',
@@ -240,7 +228,8 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
     const envoi = recopier(
       '=SI(OU(C2>=5000;B2<>"France");"Visa";"Non")',
       'D',
-      lignesDe(2, 6),
+      2,
+      6,
     );
 
     attendreLaFeuille(corrige, {
@@ -258,7 +247,8 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
     const envoi = recopier(
       '=SI(OU(C2>=5000;B2<>France);"Visa";"Non")',
       'D',
-      lignesDe(2, 6),
+      2,
+      6,
     );
 
     expect(
@@ -270,9 +260,9 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
 
   it('nomme l’oubli des guillemets autour d’un texte accentué ou d’un critère de NB.SI', () => {
     const corrige = feuilleDe('b2-03-a4-feuille-controle');
-    const lignes = lignesDe(2, 17);
+    const lignes = rangsDe(2, 17);
     const envoi = {
-      ...recopier('=SI(ET(F2=Impayée;E2>60);"Relancer";"Non")', 'H', lignes),
+      ...recopier('=SI(ET(F2=Impayée;E2>60);"Relancer";"Non")', 'H', 2, 17),
       K3: '=NB.SI(D2:D17;>=5000)',
     };
     const confusions = new Map(
@@ -310,13 +300,10 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
       ...recopier(
         '=SI(NON(OU(B2="France";C2="Oui"));"Anomalie";"OK")',
         'D',
-        lignesDe(2, 6),
+        2,
+        6,
       ),
-      ...recopier(
-        '=SI(ET(B2<>"France";C2="Non");"Anomalie";"OK")',
-        'E',
-        lignesDe(2, 6),
-      ),
+      ...recopier('=SI(ET(B2<>"France";C2="Non");"Anomalie";"OK")', 'E', 2, 6),
     };
     const colonne = ['OK', 'Anomalie', 'OK', 'Anomalie', 'OK'];
 
@@ -333,10 +320,9 @@ describe('B2-03 — les trois feuilles corrigées par le moteur de formules', ()
 
   it('reconnaît juste la feuille de contrôle de la mini-situation et recompte ses totaux', () => {
     const corrige = feuilleDe('b2-03-a4-feuille-controle');
-    const lignes = lignesDe(2, 17);
     const envoi = {
-      ...recopier('=SI(ET(F2="Impayée";E2>60);"Relancer";"Non")', 'H', lignes),
-      ...recopier('=SI(OU(D2>=5000;C2<>"France");"Visa";"Non")', 'I', lignes),
+      ...recopier('=SI(ET(F2="Impayée";E2>60);"Relancer";"Non")', 'H', 2, 17),
+      ...recopier('=SI(OU(D2>=5000;C2<>"France");"Visa";"Non")', 'I', 2, 17),
       K2: '=NB.SI(H2:H17;"Relancer")',
       K3: '=NB.SI(I2:I17;"Visa")',
     };

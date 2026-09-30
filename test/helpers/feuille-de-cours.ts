@@ -1,10 +1,25 @@
 import type { CorrigeFeuille } from '../../src/modules/formations/domain/cours/Corrige';
 import { corrigerFeuille } from '../../src/modules/formations/domain/cours/CorrectionProduction';
 import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/CoursStocke';
+import type { ValeurFormule } from '../../src/modules/formations/domain/cours/Formule';
 import { ecranDuContenu } from './fiche-de-cours';
 
 export const rangsDe = (premier: number, dernier: number): number[] =>
   Array.from({ length: dernier - premier + 1 }, (_, rang) => premier + rang);
+
+export function attendusDeColonne<T>(
+  colonne: string,
+  premiereLigne: number,
+  elements: readonly T[],
+  valeurs: (element: T, index: number) => readonly ValeurFormule[],
+): Record<string, readonly ValeurFormule[]> {
+  return Object.fromEntries(
+    elements.map((element, index) => [
+      `${colonne}${premiereLigne + index}`,
+      valeurs(element, index),
+    ]),
+  );
+}
 
 export function enFrancais(valeur: number, decimales: number): string {
   return valeur.toFixed(decimales).replace('.', ',');

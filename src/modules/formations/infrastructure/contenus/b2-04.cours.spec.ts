@@ -7,10 +7,12 @@ import {
   corrigeDeFeuille,
   decrireLaFicheDuCours,
   decrireLaMiniSituation,
+  FICHE_DU_GABARIT_V3,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
   attendreUneRecopieNonFigee,
+  attendusDeColonne,
   confusionsDe,
   enFrancais,
   proprietesV2 as proprietesDe,
@@ -66,31 +68,10 @@ function rangDuSeuil(suite: (rang: number) => number, seuil: number): number {
 }
 
 decrireLaFicheDuCours('B2-04', COURS, {
+  ...FICHE_DU_GABARIT_V3,
   conception: 'cours-b2-04-conception.md',
-  ecrans: 34,
-  dureeMinutes: 180,
-  minutesParActe: [49, 39, 47, 45, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 147, exposition: 33 },
   ateliersNotes: ['A1-10 (10)', 'A2-05 (11)', 'A3-07 (11)'],
-  noteesParType: [8, 6, 0, 3, 1],
-  enigmes: 4,
-  rappels: 12,
   remediations: 14,
-  options: 8 + 4 + 12,
-  catalogue: [
-    'A1-02',
-    'A1-04',
-    'A1-05',
-    'A1-07',
-    'A1-08',
-    'A2-02',
-    'A2-03',
-    'A3-01',
-    'A3-03',
-    'A3-04',
-    'A4-01',
-    'A4-05',
-  ],
   corrigesSurPlace: [
     'B2-04-A1-10-ATELIER-ARITHMETIQUE',
     'B2-04-A1-11-TABLEUR-ARITHMETIQUE',
@@ -249,11 +230,8 @@ describe('B2-04 — les trois feuilles corrigées par le moteur de formules', ()
 
     attendreLaFeuille(
       corrige,
-      Object.fromEntries(
-        rangsDe(1, DERNIER_RANG_DU_PLAN).map((rang) => [
-          `C${rang + 2}`,
-          rang === 1 ? [hypotheseA(rang)] : [hypotheseA(rang), hypotheseA(1)],
-        ]),
+      attendusDeColonne('C', 3, rangsDe(1, DERNIER_RANG_DU_PLAN), (rang) =>
+        rang === 1 ? [hypotheseA(rang)] : [hypotheseA(rang), hypotheseA(1)],
       ),
     );
     expect(
@@ -272,21 +250,13 @@ describe('B2-04 — les trois feuilles corrigées par le moteur de formules', ()
     const rangs = rangsDe(1, DERNIER_RANG_DU_PLAN);
 
     attendreLaFeuille(corrige, {
-      ...Object.fromEntries(
-        rangs.map((rang) => [
-          `D${rang + 2}`,
-          [
-            hypotheseB(rang),
-            rang === 1 ? CA_DE_DEPART * TAUX_B : hypotheseB(1),
-          ],
-        ]),
-      ),
-      ...Object.fromEntries(
-        rangs.map((rang) => [
-          `E${rang + 2}`,
-          [hypotheseB(rang) - hypotheseA(rang)],
-        ]),
-      ),
+      ...attendusDeColonne('D', 3, rangs, (rang) => [
+        hypotheseB(rang),
+        rang === 1 ? CA_DE_DEPART * TAUX_B : hypotheseB(1),
+      ]),
+      ...attendusDeColonne('E', 3, rangs, (rang) => [
+        hypotheseB(rang) - hypotheseA(rang),
+      ]),
     });
     expect(
       corrigerFeuille(corrige, {
@@ -315,25 +285,13 @@ describe('B2-04 — les trois feuilles corrigées par le moteur de formules', ()
     const rangs = rangsDe(0, DERNIER_RANG_DE_LA_FEUILLE);
 
     attendreLaFeuille(corrige, {
-      ...Object.fromEntries(
-        rangs
-          .slice(1)
-          .map((rang) => [
-            `C${rang + 2}`,
-            [
-              boutique(rang),
-              rang === 1
-                ? CA_DE_LA_BOUTIQUE * TAUX_DE_LA_BOUTIQUE
-                : boutique(1),
-            ],
-          ]),
-      ),
-      ...Object.fromEntries(
-        rangs.map((rang) => [
-          `D${rang + 2}`,
-          [boutique(rang) >= SEUIL_DE_LA_BOUTIQUE ? 'Oui' : 'Non'],
-        ]),
-      ),
+      ...attendusDeColonne('C', 3, rangs.slice(1), (rang) => [
+        boutique(rang),
+        rang === 1 ? CA_DE_LA_BOUTIQUE * TAUX_DE_LA_BOUTIQUE : boutique(1),
+      ]),
+      ...attendusDeColonne('D', 2, rangs, (rang) => [
+        boutique(rang) >= SEUIL_DE_LA_BOUTIQUE ? 'Oui' : 'Non',
+      ]),
       F3: [
         cumul(boutique, 0, DERNIER_RANG_DU_PLAN),
         cumul(boutique, 1, DERNIER_RANG_DU_PLAN),

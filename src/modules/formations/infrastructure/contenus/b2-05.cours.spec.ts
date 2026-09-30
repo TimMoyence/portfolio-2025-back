@@ -8,13 +8,15 @@ import {
   decrireLaFicheDuCours,
   decrireLaMiniSituation,
   ecranDuContenu,
+  FICHE_DU_GABARIT_V3,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import {
   attendreUneRecopieNonFigee,
+  attendusDeColonne,
   confusionsDe,
   enFrancais,
-  proprietesV2 as proprietesDe,
+  proprietesV2,
   rangsDe,
   recopier,
   texteDeLEcran as texteDe,
@@ -122,31 +124,10 @@ const LIGNES_DE_LA_CAMIONNETTE = tableauDAmortissement(
 );
 
 decrireLaFicheDuCours('B2-05', COURS, {
+  ...FICHE_DU_GABARIT_V3,
   conception: 'cours-b2-05-conception.md',
-  ecrans: 34,
-  dureeMinutes: 180,
-  minutesParActe: [49, 39, 47, 45, 0, 0],
-  rythme: { expositionContinueMax: 6, interactives: 147, exposition: 33 },
   ateliersNotes: ['A1-10 (10)', 'A2-05 (11)', 'A3-06 (10)'],
-  noteesParType: [8, 6, 0, 3, 1],
-  enigmes: 4,
-  rappels: 12,
   remediations: 15,
-  options: 8 + 4 + 12,
-  catalogue: [
-    'A1-02',
-    'A1-04',
-    'A1-05',
-    'A1-07',
-    'A1-08',
-    'A2-02',
-    'A2-03',
-    'A3-01',
-    'A3-03',
-    'A3-04',
-    'A4-01',
-    'A4-05',
-  ],
   corrigesSurPlace: [
     'B2-05-A1-10-ATELIER-PLACEMENT',
     'B2-05-A1-11-TABLEUR-PLACEMENT',
@@ -176,7 +157,7 @@ describe('B2-05 — textes relus contre les données', () => {
   });
 
   it('trace en barres les intérêts et l’amortissement de l’emprunt type, dont la somme reste l’annuité', () => {
-    const { labels, series } = proprietesDe(
+    const { labels, series } = proprietesV2(
       COURS_B2_05,
       'B2-05-A3-01-GRAPHIQUE',
     );
@@ -335,24 +316,18 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
     const rangs = rangsDe(1, DERNIER_RANG_DU_PLACEMENT);
 
     attendreLaFeuille(corrige, {
-      ...Object.fromEntries(
-        rangs.map((rang) => [
-          `C${rang + 2}`,
-          rang === 1
-            ? [placement(rang), TRESORERIE * TAUX_DU_PLACEMENT]
-            : [placement(rang), placement(1)],
-        ]),
+      ...attendusDeColonne('C', 3, rangs, (rang) =>
+        rang === 1
+          ? [placement(rang), TRESORERIE * TAUX_DU_PLACEMENT]
+          : [placement(rang), placement(1)],
       ),
-      ...Object.fromEntries(
-        rangs.map((rang) => [
-          `D${rang + 2}`,
-          rang === 1
-            ? [placement(1) - placement(0)]
-            : [
-                placement(rang) - placement(rang - 1),
-                TRESORERIE * TAUX_DU_PLACEMENT,
-              ],
-        ]),
+      ...attendusDeColonne('D', 3, rangs, (rang) =>
+        rang === 1
+          ? [placement(1) - placement(0)]
+          : [
+              placement(rang) - placement(rang - 1),
+              TRESORERIE * TAUX_DU_PLACEMENT,
+            ],
       ),
     });
     expect(
@@ -384,19 +359,13 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
       arrondi(epargne(rang - 1) * TAUX_DE_L_EPARGNE);
 
     attendreLaFeuille(corrige, {
-      ...Object.fromEntries(
-        rangs.map((rang) => [
-          `B${rang + 1}`,
-          rang === 2
-            ? [epargne(rang), VERSEMENT * 2]
-            : [epargne(rang), epargne(2)],
-        ]),
+      ...attendusDeColonne('B', 3, rangs, (rang) =>
+        rang === 2
+          ? [epargne(rang), VERSEMENT * 2]
+          : [epargne(rang), epargne(2)],
       ),
-      ...Object.fromEntries(
-        rangs.map((rang) => [
-          `C${rang + 1}`,
-          rang === 2 ? [interets(rang)] : [interets(rang), 0, interets(2)],
-        ]),
+      ...attendusDeColonne('C', 3, rangs, (rang) =>
+        rang === 2 ? [interets(rang)] : [interets(rang), 0, interets(2)],
       ),
       F3: [
         arrondi(epargne(VERSEMENTS) - VERSEMENT * VERSEMENTS),
@@ -446,29 +415,19 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
         -ANNUITE_DE_LA_CAMIONNETTE,
         CAMIONNETTE / DUREE_DE_LA_CAMIONNETTE,
       ],
-      ...Object.fromEntries(
-        lignes.slice(1).map((ligne, rang) => [`B${rang + 3}`, [ligne.capital]]),
+      ...attendusDeColonne('B', 3, lignes.slice(1), (ligne) => [ligne.capital]),
+      ...attendusDeColonne('C', 2, lignes, (ligne, rang) =>
+        rang === 0
+          ? [ligne.interets]
+          : [ligne.interets, 0, CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE],
       ),
-      ...Object.fromEntries(
-        lignes.map((ligne, rang) => [
-          `C${rang + 2}`,
-          rang === 0
-            ? [ligne.interets]
-            : [ligne.interets, 0, CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE],
-        ]),
-      ),
-      ...Object.fromEntries(
-        lignes.map((ligne, rang) => [
-          `D${rang + 2}`,
-          [ligne.amortissement, arrondi(ANNUITE_DE_LA_CAMIONNETTE)],
-        ]),
-      ),
-      ...Object.fromEntries(
-        lignes.map((ligne, rang) => [
-          `E${rang + 2}`,
-          [arrondi(ligne.capital - ligne.amortissement)],
-        ]),
-      ),
+      ...attendusDeColonne('D', 2, lignes, (ligne) => [
+        ligne.amortissement,
+        arrondi(ANNUITE_DE_LA_CAMIONNETTE),
+      ]),
+      ...attendusDeColonne('E', 2, lignes, (ligne) => [
+        arrondi(ligne.capital - ligne.amortissement),
+      ]),
       I2: [
         cout,
         cout + CAMIONNETTE,
