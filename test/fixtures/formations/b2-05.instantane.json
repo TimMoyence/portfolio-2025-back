@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "f3b7b22141a5d946f394613ce7e8ddab10594ab80d98cf58d69f809f0be82a54",
+  "empreinte": "ec1b6761c97c08eff03cac337dd92470ba6a193dd30892de6f74be38e254e383",
   "sujet": {
     "id": "b2-05-mathematiques-financieres",
     "titre": "Mathématiques financières : placer, emprunter",
@@ -1149,7 +1149,7 @@
                   {
                     "kind": "definition",
                     "title": "Une annuité paie les intérêts, puis rembourse",
-                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
+                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital : rien à voir avec la dotation aux amortissements d’une immobilisation. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
                     "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ) · intérêts = capital restant dû × t · amortissement = a − intérêts"
                   },
                   {
@@ -1171,7 +1171,7 @@
                       "Capital dû en début d’année : le capital emprunté, puis la fin d’année précédente.",
                       "Intérêts : capital dû × t.",
                       "Amortissement : annuité − intérêts.",
-                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne."
+                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]
@@ -1207,7 +1207,7 @@
                   {
                     "kind": "definition",
                     "title": "Le coût du crédit",
-                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
+                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté, hors frais de dossier et assurance. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
                     "formula": "Coût = n × a − C = somme des intérêts"
                   },
                   {
@@ -1215,7 +1215,7 @@
                     "title": "Au tableur : VPM et formules recopiées",
                     "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
                     "steps": [
-                      "Taux en B1, durée en B2, capital emprunté en B3 : =VPM(B1;B2;-B3).",
+                      "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
                       "Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.",
                       "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
                       "Coût : annuité × durée − capital."
@@ -1228,7 +1228,7 @@
                     "steps": [
                       "Nommer chaque colonne en français avant d’écrire sa formule.",
                       "Figer par des $ ce qui ne change pas d’une ligne à l’autre.",
-                      "Contrôle : dernier capital dû égal à 0 ; somme des amortissements égale au capital."
+                      "Contrôle : dernier capital dû égal à 0 et somme des amortissements égale au capital, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]
@@ -1410,7 +1410,7 @@
             "consignes": [
               "Emprunt de 60 000 € sur 5 ans à 4 %, annuité de 13 477,63 €.",
               "Pour chaque année, saisissez les intérêts (capital dû × 0,04), puis l’amortissement (annuité − intérêts), arrondis au centime.",
-              "Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau."
+              "Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau, à quelques centimes près : l’annuité est arrondie."
             ],
             "echeances": 5,
             "intituleDesLignes": "Année",
@@ -3304,6 +3304,10 @@
               {
                 "id": "versements-places-toute-la-duree",
                 "libelle": "Placer chaque versement pendant toute la durée : un versement de fin d’année n’est placé que jusqu’au dernier versement, le dernier ne rapporte rien."
+              },
+              {
+                "id": "rang-decale",
+                "libelle": "Se décaler d’un rang : prendre le terme d’avant ou d’après, ou compter le premier terme comme le rang 1 alors qu’il porte le rang 0."
               }
             ]
           }
@@ -3368,7 +3372,7 @@
           },
           {
             "reference": "b2-05-a2-valeur-acquise",
-            "texte": "6 000 × (1,03⁵ − 1) ÷ 0,03 ≈ 31 854,81 €, soit 1 854,81 € d’intérêts. 30 000 € oublie les intérêts ; 32 810,46 € place tout un an de trop."
+            "texte": "6 000 × (1,03⁵ − 1) ÷ 0,03 ≈ 31 854,81 €, soit 1 854,81 € d’intérêts. 30 000 € oublie les intérêts ; 5 × 6 000 × 1,03⁵ ≈ 34 778,22 € place chaque versement cinq ans ; 32 810,46 € place tout un an de trop."
           }
         ]
       },
@@ -3782,7 +3786,7 @@
                   {
                     "kind": "definition",
                     "title": "Une annuité paie les intérêts, puis rembourse",
-                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
+                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital : rien à voir avec la dotation aux amortissements d’une immobilisation. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
                     "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ) · intérêts = capital restant dû × t · amortissement = a − intérêts"
                   },
                   {
@@ -3804,7 +3808,7 @@
                       "Capital dû en début d’année : le capital emprunté, puis la fin d’année précédente.",
                       "Intérêts : capital dû × t.",
                       "Amortissement : annuité − intérêts.",
-                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne."
+                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]
@@ -3846,7 +3850,7 @@
                   {
                     "kind": "definition",
                     "title": "Le coût du crédit",
-                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
+                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté, hors frais de dossier et assurance. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
                     "formula": "Coût = n × a − C = somme des intérêts"
                   },
                   {
@@ -3854,7 +3858,7 @@
                     "title": "Au tableur : VPM et formules recopiées",
                     "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
                     "steps": [
-                      "Taux en B1, durée en B2, capital emprunté en B3 : =VPM(B1;B2;-B3).",
+                      "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
                       "Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.",
                       "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
                       "Coût : annuité × durée − capital."
@@ -3867,7 +3871,7 @@
                     "steps": [
                       "Nommer chaque colonne en français avant d’écrire sa formule.",
                       "Figer par des $ ce qui ne change pas d’une ligne à l’autre.",
-                      "Contrôle : dernier capital dû égal à 0 ; somme des amortissements égale au capital."
+                      "Contrôle : dernier capital dû égal à 0 et somme des amortissements égale au capital, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]
@@ -4156,7 +4160,7 @@
           },
           {
             "reference": "b2-05-a3-base",
-            "texte": "Les intérêts portent sur ce qui reste dû : 60 000 − 11 077,63 = 48 922,37 € au début de la deuxième année, soit 1 956,89 € d’intérêts."
+            "texte": "Les intérêts portent sur ce qui reste dû : 60 000 € moins l’amortissement de la première année. L’exercice 6 le calcule ligne par ligne."
           },
           {
             "reference": "b2-05-a3-cout",
@@ -4181,7 +4185,7 @@
             "consignes": [
               "Emprunt de 60 000 € sur 5 ans à 4 %, annuité de 13 477,63 €.",
               "Pour chaque année, saisissez les intérêts (capital dû × 0,04), puis l’amortissement (annuité − intérêts), arrondis au centime.",
-              "Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau."
+              "Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau, à quelques centimes près : l’annuité est arrondie."
             ],
             "echeances": 5,
             "intituleDesLignes": "Année",
@@ -4306,7 +4310,7 @@
           ],
           "tolerance": {
             "type": "absolue",
-            "valeur": 0.01
+            "valeur": 0.02
           },
           "seuilReussite": 0.75
         },
@@ -4363,7 +4367,7 @@
             },
             {
               "id": "controle",
-              "libelle": "Contrôler par le tableau : la somme des amortissements doit redonner les 60 000 € empruntés.",
+              "libelle": "Contrôler par le tableau : les intérêts de chaque année doivent valoir le capital restant dû × 4 %, et baisser.",
               "fausse": false
             },
             {
@@ -4388,7 +4392,7 @@
           },
           {
             "reference": "controle",
-            "texte": "Avec l’IA, les amortissements font bien 60 000 €, mais les intérêts, 12 000 €, ne suivent pas le capital restant dû : le tableau juste en donne 7 388,13 €."
+            "texte": "Deuxième année chez l’IA : 2 400 € d’intérêts sur 48 000 € restant dus, soit 5 %, pas 4 %. Ses amortissements font bien 60 000 €, ce contrôle-là ne la trahit pas ; ses intérêts, 12 000 €, dépassent les 7 388,13 € du tableau juste."
           },
           {
             "reference": "garder",
@@ -4794,7 +4798,7 @@
           },
           {
             "reference": "I2",
-            "texte": "=H2*G2-B2 ≈ 2 848,15 €. =H2*G2 donne le total remboursé, pas le coût."
+            "texte": "=H2*G2-B2 : le total remboursé moins le capital emprunté. =H2*G2 donne le total remboursé, pas le coût."
           }
         ]
       },
@@ -4915,11 +4919,11 @@
           },
           {
             "reference": "b2-05-a4-e3-epargne",
-            "texte": "5 000 × (1,02⁴ − 1) ÷ 0,02 ≈ 20 608,04 €. 20 000 € oublie les intérêts ; 21 020,20 € place chaque versement un an de trop."
+            "texte": "5 000 × (1,02⁴ − 1) ÷ 0,02 ≈ 20 608,04 €. 20 000 € oublie les intérêts ; 4 × 5 000 × 1,02⁴ ≈ 21 648,64 € place chaque versement quatre ans ; 21 020,20 € place tout un an de trop."
           },
           {
             "reference": "b2-05-a4-e4-cout",
-            "texte": "4 × 8 712,04 − 32 000 ≈ 2 848,15 €, la cellule I2. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année."
+            "texte": "4 × 8 712,036… − 32 000 ≈ 2 848,15 €, la cellule I2 ; avec l’annuité arrondie, 2 848,16 €, accepté. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année."
           }
         ]
       },
@@ -6053,7 +6057,7 @@
                   {
                     "kind": "definition",
                     "title": "Une annuité paie les intérêts, puis rembourse",
-                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
+                    "text": "Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital : rien à voir avec la dotation aux amortissements d’une immobilisation. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.",
                     "formula": "a = C × t ÷ (1 − (1 + t)⁻ⁿ) · intérêts = capital restant dû × t · amortissement = a − intérêts"
                   },
                   {
@@ -6075,7 +6079,7 @@
                       "Capital dû en début d’année : le capital emprunté, puis la fin d’année précédente.",
                       "Intérêts : capital dû × t.",
                       "Amortissement : annuité − intérêts.",
-                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne."
+                      "Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]
@@ -6111,7 +6115,7 @@
                   {
                     "kind": "definition",
                     "title": "Le coût du crédit",
-                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
+                    "text": "Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté, hors frais de dossier et assurance. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.",
                     "formula": "Coût = n × a − C = somme des intérêts"
                   },
                   {
@@ -6119,7 +6123,7 @@
                     "title": "Au tableur : VPM et formules recopiées",
                     "text": "VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.",
                     "steps": [
-                      "Taux en B1, durée en B2, capital emprunté en B3 : =VPM(B1;B2;-B3).",
+                      "Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).",
                       "Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.",
                       "Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.",
                       "Coût : annuité × durée − capital."
@@ -6132,7 +6136,7 @@
                     "steps": [
                       "Nommer chaque colonne en français avant d’écrire sa formule.",
                       "Figer par des $ ce qui ne change pas d’une ligne à l’autre.",
-                      "Contrôle : dernier capital dû égal à 0 ; somme des amortissements égale au capital."
+                      "Contrôle : dernier capital dû égal à 0 et somme des amortissements égale au capital, à quelques centimes près si l’annuité est arrondie."
                     ]
                   }
                 ]

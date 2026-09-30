@@ -22,10 +22,24 @@ import {
   texteDeLEcran as texteDe,
 } from '../../../../../test/helpers/feuille-de-cours';
 import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
-import { corrigerFeuille } from '../../domain/cours/CorrectionProduction';
+import {
+  corrigerFeuille,
+  corrigerTableau,
+} from '../../domain/cours/CorrectionProduction';
+import { questionsDe } from '../../domain/cours/Cours';
+import type { CorrigeTableau } from '../../domain/cours/Corrige';
+import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B2_05 } from './b2-05.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_05);
+
+function corrigeDuTableauDAmortissement(): CorrigeTableau {
+  const corrige = corrigeDe(COURS, 'b2-05-a3-tableau-amortissement');
+  if (corrige.type !== 'tableau') {
+    throw new Error('l’exercice 6 n’a pas de corrigé de tableau');
+  }
+  return corrige;
+}
 
 const TRESORERIE = 40000;
 const TAUX_DU_PLACEMENT = 0.025;
@@ -64,6 +78,8 @@ const interetsSimples = (capital: number, taux: number, duree: number) =>
   capital * (1 + taux * duree);
 const suiteDAnnuites = (versement: number, taux: number, nombre: number) =>
   arrondi((versement * ((1 + taux) ** nombre - 1)) / taux);
+const placesToutLaDuree = (versement: number, taux: number, nombre: number) =>
+  nombre * valeurAcquise(versement, taux, nombre);
 const annuite = (capital: number, taux: number, duree: number): number =>
   (capital * taux) / (1 - (1 + taux) ** -duree);
 
@@ -211,6 +227,7 @@ describe('B2-05 — recalcul des corrigés depuis les seuls paramètres', () => 
       'b2-05-a2-valeur-acquise': [
         suiteDAnnuites(VERSEMENT, TAUX_DE_L_EPARGNE, VERSEMENTS),
         VERSEMENT * VERSEMENTS,
+        placesToutLaDuree(VERSEMENT, TAUX_DE_L_EPARGNE, VERSEMENTS),
         suiteDAnnuites(VERSEMENT, TAUX_DE_L_EPARGNE, VERSEMENTS) *
           (1 + TAUX_DE_L_EPARGNE),
       ],
@@ -282,6 +299,11 @@ describe('B2-05 — recalcul des corrigés depuis les seuls paramètres', () => 
       'b2-05-a4-e3-epargne': [
         epargneDeLaMiniSituation,
         VERSEMENT_DE_LA_MINI_SITUATION * DUREE_DE_LA_MINI_SITUATION,
+        placesToutLaDuree(
+          VERSEMENT_DE_LA_MINI_SITUATION,
+          TAUX_DE_LA_MINI_SITUATION,
+          DUREE_DE_LA_MINI_SITUATION,
+        ),
         epargneDeLaMiniSituation * (1 + TAUX_DE_LA_MINI_SITUATION),
       ],
       'b2-05-a4-e4-cout': [
@@ -293,10 +315,7 @@ describe('B2-05 — recalcul des corrigés depuis les seuls paramètres', () => 
   });
 
   it('bâtit le tableau d’amortissement de l’exercice 6 avec l’annuité arrondie et les intérêts au centime', () => {
-    const corrige = corrigeDe(COURS, 'b2-05-a3-tableau-amortissement');
-    if (corrige.type !== 'tableau') {
-      throw new Error('l’exercice 6 n’a pas de corrigé de tableau');
-    }
+    const corrige = corrigeDuTableauDAmortissement();
 
     expect(corrige.attendus.map(valeursEtPieges)).toEqual(
       LIGNES_DE_L_EMPRUNT.flatMap((ligne, rang) => [
@@ -421,10 +440,17 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
           ? [ligne.interets]
           : [ligne.interets, 0, CAMIONNETTE * TAUX_DE_LA_CAMIONNETTE],
       ),
-      ...attendusDeColonne('D', 2, lignes, (ligne) => [
-        ligne.amortissement,
-        arrondi(ANNUITE_DE_LA_CAMIONNETTE),
-      ]),
+      ...attendusDeColonne('D', 2, lignes, (ligne, rang) =>
+        rang === 0
+          ? [ligne.amortissement, arrondi(ANNUITE_DE_LA_CAMIONNETTE)]
+          : [
+              ligne.amortissement,
+              arrondi(ANNUITE_DE_LA_CAMIONNETTE),
+              -arrondi(
+                lignes[1].interets * (1 + TAUX_DE_LA_CAMIONNETTE) ** (rang - 1),
+              ),
+            ],
+      ),
       ...attendusDeColonne('E', 2, lignes, (ligne) => [
         arrondi(ligne.capital - ligne.amortissement),
       ]),
@@ -490,6 +516,16 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
       'C',
       3,
     );
+    attendreUneRecopieNonFigee(
+      corrige,
+      {
+        ...justes,
+        ...recopier('=B2*$F$2', 'C', 2, 5),
+        ...recopier('=H2-C2', 'D', 2, 5),
+      },
+      'D',
+      3,
+    );
     expect(
       confusionsDe(
         corrige,
@@ -497,5 +533,147 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
         'I2',
       ),
     ).toEqual(['cout-credit-confondu-avec-total-rembourse']);
+  });
+});
+
+const TIRAGE = tirer(COURS, 0);
+
+const sansEspaces = (texte: string): string => texte.replaceAll(/\s/gu, '');
+
+function valeursASaisirDe(ecran: (typeof COURS.ecrans)[number]): number[] {
+  return questionsDe(ecran)
+    .flatMap((question): readonly number[] => {
+      if (question.type === 'numeric') {
+        return [Number(TIRAGE.solutions[question.id].valeur)];
+      }
+      if (!('corrige' in question)) {
+        return [];
+      }
+      const { corrige } = question;
+      switch (corrige.type) {
+        case 'enigme':
+          return corrige.solution.type === 'nombre'
+            ? [corrige.solution.valeur]
+            : [];
+        case 'tableau':
+          return corrige.attendus.map(({ valeur }) => valeur);
+        default:
+          return [];
+      }
+    })
+    .filter((valeur) => !Number.isInteger(auCentime(valeur)));
+}
+
+function correctionSurPlaceDe(screenId: string): string {
+  const { proprietes } = ecranDuContenu(COURS_B2_05, screenId);
+  return 'correctionSurPlace' in proprietes
+    ? sansEspaces(JSON.stringify(proprietes.correctionSurPlace))
+    : '';
+}
+
+function piegesDe(id: string): readonly (readonly [number, string])[] {
+  if (id in TIRAGE.solutions) {
+    return TIRAGE.solutions[id].pieges.map(({ valeur, misconception }) => [
+      Number(valeur),
+      misconception,
+    ]);
+  }
+  const corrige = corrigeDe(COURS, id);
+  if (corrige.type !== 'enigme') {
+    throw new Error(`${id} n’est ni une numérique ni une énigme`);
+  }
+  return corrige.pieges.map(({ valeur, confusion }) => [valeur, confusion]);
+}
+
+describe('B2-05 — retours de la relecture adverse', () => {
+  it('ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant, les feuilles exigeant une formule', () => {
+    const ordre = COURS_B2_05.ecrans.map(({ screenId }) => screenId);
+    const devoilees = COURS.ecrans.flatMap((ecran) =>
+      valeursASaisirDe(ecran).flatMap((valeur) =>
+        ordre
+          .slice(0, ordre.indexOf(ecran.id))
+          .filter((anterieur) =>
+            correctionSurPlaceDe(anterieur).includes(enFrancais(valeur, 2)),
+          )
+          .map(
+            (anterieur) =>
+              `${enFrancais(valeur, 2)} de ${ecran.id} dans ${anterieur}`,
+          ),
+      ),
+    );
+
+    expect(devoilees).toEqual([]);
+  });
+
+  it('rattache « toute la durée » aux n versements placés n ans, et l’année de trop au rang décalé', () => {
+    const cas = [
+      ['b2-05-a2-valeur-acquise', VERSEMENT, TAUX_DE_L_EPARGNE, VERSEMENTS],
+      [
+        'b2-05-a4-e3-epargne',
+        VERSEMENT_DE_LA_MINI_SITUATION,
+        TAUX_DE_LA_MINI_SITUATION,
+        DUREE_DE_LA_MINI_SITUATION,
+      ],
+    ] as const;
+
+    for (const [id, versement, taux, nombre] of cas) {
+      const pieges = piegesDe(id);
+      const valeurDe = (confusion: string) =>
+        pieges.find(([, candidate]) => candidate === confusion)?.[0];
+
+      expect(valeurDe('versements-places-toute-la-duree')).toBeCloseTo(
+        placesToutLaDuree(versement, taux, nombre),
+        2,
+      );
+      expect(valeurDe('rang-decale')).toBeCloseTo(
+        suiteDAnnuites(versement, taux, nombre) * (1 + taux),
+        2,
+      );
+    }
+  });
+
+  it('accepte au tableau de l’exercice 6 la dernière ligne ajustée pour solder le capital', () => {
+    const corrige = corrigeDuTableauDAmortissement();
+    const saisies = LIGNES_DE_L_EMPRUNT.map((ligne, rang) => ({
+      interets: ligne.interets,
+      amortissement:
+        rang === LIGNES_DE_L_EMPRUNT.length - 1
+          ? ligne.capital
+          : ligne.amortissement,
+    }));
+
+    expect(LIGNES_DE_L_EMPRUNT.at(-1)?.capital).toBeCloseTo(12959.24, 2);
+    expect(
+      corrigerTableau(corrige, saisies).verdicts.filter(({ juste }) => !juste),
+    ).toEqual([]);
+  });
+
+  it('annonce dans la consigne et la trace écrite le solde de quelques centimes laissé par l’annuité arrondie', () => {
+    for (const ecran of [
+      'B2-05-A3-03-COURS-EMPRUNT',
+      'B2-05-A3-04-COURS-COUT-TABLEUR',
+      'B2-05-A3-07-TABLEAU-AMORTISSEMENT',
+    ]) {
+      expect(texteDe(COURS_B2_05, ecran)).toContain('quelques centimes');
+    }
+  });
+
+  it('propose à l’exercice 7 un contrôle qui détecte l’erreur de l’IA', () => {
+    const { proprietes } = ecranDuContenu(COURS_B2_05, 'B2-05-A3-08-DEFI-IA');
+    const controle = /"id":"controle","libelle":"([^"]+)"/u.exec(
+      JSON.stringify(proprietes),
+    )?.[1];
+
+    expect(controle).toContain('capital restant dû');
+    expect(controle).not.toContain('somme des amortissements');
+  });
+
+  it('distingue l’amortissement d’un emprunt de la dotation d’une immobilisation, et le coût du crédit de ses frais', () => {
+    expect(texteDe(COURS_B2_05, 'B2-05-A3-03-COURS-EMPRUNT')).toContain(
+      'dotation',
+    );
+    expect(texteDe(COURS_B2_05, 'B2-05-A3-04-COURS-COUT-TABLEUR')).toContain(
+      'assurance',
+    );
   });
 });

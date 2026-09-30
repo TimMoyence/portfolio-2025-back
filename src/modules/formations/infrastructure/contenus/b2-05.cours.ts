@@ -10,6 +10,7 @@ import {
   CAPITAL_INITIAL,
   CONCEPTS_DU_COURS,
   DONNEES_FICTIVES,
+  ECART_DE_L_ANNUITE_ARRONDIE,
   DUREE_DE_L_EMPRUNT,
   DUREE_DE_L_EMPRUNT_TYPE,
   EMPRUNT,
@@ -889,7 +890,8 @@ const ACTE_2: moteur.Acte = [
             '31 854,81 €',
             [
               [30000, SANS_INTERETS],
-              [32810.46, TOUTE_LA_DUREE],
+              [34778.22, TOUTE_LA_DUREE],
+              [32810.46, 'rang-decale'],
             ],
           ),
         ],
@@ -917,7 +919,7 @@ const ACTE_2: moteur.Acte = [
       ],
       [
         'b2-05-a2-valeur-acquise',
-        '6 000 × (1,03⁵ − 1) ÷ 0,03 ≈ 31 854,81 €, soit 1 854,81 € d’intérêts. 30 000 € oublie les intérêts ; 32 810,46 € place tout un an de trop.',
+        '6 000 × (1,03⁵ − 1) ÷ 0,03 ≈ 31 854,81 €, soit 1 854,81 € d’intérêts. 30 000 € oublie les intérêts ; 5 × 6 000 × 1,03⁵ ≈ 34 778,22 € place chaque versement cinq ans ; 32 810,46 € place tout un an de trop.',
       ],
     ],
   ),
@@ -1103,7 +1105,7 @@ const ACTE_3: moteur.Acte = [
         {
           kind: 'definition',
           title: 'Une annuité paie les intérêts, puis rembourse',
-          text: 'Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.',
+          text: 'Un emprunt de capital C, au taux t, sur n années, se rembourse par annuités constantes a. Chaque annuité paie les intérêts de l’année, calculés sur le capital restant dû en début d’année ; le reste, l’amortissement, rembourse le capital : rien à voir avec la dotation aux amortissements d’une immobilisation. Les intérêts baissent donc chaque année, et l’amortissement monte. L’annuité est donnée au CCF par une formule.',
           formula:
             'a = C × t ÷ (1 − (1 + t)⁻ⁿ) · intérêts = capital restant dû × t · amortissement = a − intérêts',
         },
@@ -1126,7 +1128,7 @@ const ACTE_3: moteur.Acte = [
             'Capital dû en début d’année : le capital emprunté, puis la fin d’année précédente.',
             'Intérêts : capital dû × t.',
             'Amortissement : annuité − intérêts.',
-            'Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne.',
+            'Capital dû en fin d’année : début − amortissement ; il tombe à 0 à la dernière ligne, à quelques centimes près si l’annuité est arrondie.',
           ],
         },
       ],
@@ -1153,7 +1155,7 @@ const ACTE_3: moteur.Acte = [
         {
           kind: 'definition',
           title: 'Le coût du crédit',
-          text: 'Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.',
+          text: 'Le coût du crédit est ce que l’emprunteur paie en plus du capital : le total remboursé moins le capital emprunté, hors frais de dossier et assurance. C’est aussi la somme des intérêts du tableau, à quelques centimes près quand l’annuité est arrondie.',
           formula: 'Coût = n × a − C = somme des intérêts',
         },
         {
@@ -1161,7 +1163,7 @@ const ACTE_3: moteur.Acte = [
           title: 'Au tableur : VPM et formules recopiées',
           text: 'VPM(taux ; durée ; capital) renvoie l’annuité avec la convention du tableur : un capital reçu positif donne une annuité à payer négative. On écrit donc le capital avec un signe moins.',
           steps: [
-            'Taux en B1, durée en B2, capital emprunté en B3 : =VPM(B1;B2;-B3).',
+            'Taux en K1, durée en K2, capital emprunté en K3 : =VPM(K1;K2;-K3).',
             'Capital dû en B2 et taux en G1 : intérêts =B2*$G$1, recopiée.',
             'Amortissement : annuité figée moins intérêts ; capital en fin d’année : début moins amortissement.',
             'Coût : annuité × durée − capital.',
@@ -1174,7 +1176,7 @@ const ACTE_3: moteur.Acte = [
           steps: [
             'Nommer chaque colonne en français avant d’écrire sa formule.',
             'Figer par des $ ce qui ne change pas d’une ligne à l’autre.',
-            'Contrôle : dernier capital dû égal à 0 ; somme des amortissements égale au capital.',
+            'Contrôle : dernier capital dû égal à 0 et somme des amortissements égale au capital, à quelques centimes près si l’annuité est arrondie.',
           ],
         },
       ],
@@ -1338,7 +1340,7 @@ const ACTE_3: moteur.Acte = [
       ],
       [
         'b2-05-a3-base',
-        'Les intérêts portent sur ce qui reste dû : 60 000 − 11 077,63 = 48 922,37 € au début de la deuxième année, soit 1 956,89 € d’intérêts.',
+        'Les intérêts portent sur ce qui reste dû : 60 000 € moins l’amortissement de la première année. L’exercice 6 le calcule ligne par ligne.',
       ],
       [
         'b2-05-a3-cout',
@@ -1372,7 +1374,7 @@ const ACTE_3: moteur.Acte = [
           consignes: [
             'Emprunt de 60 000 € sur 5 ans à 4 %, annuité de 13 477,63 €.',
             'Pour chaque année, saisissez les intérêts (capital dû × 0,04), puis l’amortissement (annuité − intérêts), arrondis au centime.',
-            'Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau.',
+            'Le capital dû en début d’année se calcule seul à partir de vos saisies ; le solde final contrôle votre tableau, à quelques centimes près : l’annuité est arrondie.',
           ],
           echeances: DUREE_DE_L_EMPRUNT,
           intituleDesLignes: 'Année',
@@ -1423,6 +1425,7 @@ const ACTE_3: moteur.Acte = [
             'b2-05-a3-tableau-amortissement',
             'tableau-d-amortissement',
             [PREMIERE_LIGNE_D_AMORTISSEMENT, ...AUTRES_LIGNES_D_AMORTISSEMENT],
+            ECART_DE_L_ANNUITE_ARRONDIE,
           ),
         ],
       },
@@ -1481,7 +1484,7 @@ const ACTE_3: moteur.Acte = [
             ),
             moteur.strategie(
               'controle',
-              'Contrôler par le tableau : la somme des amortissements doit redonner les 60 000 € empruntés.',
+              'Contrôler par le tableau : les intérêts de chaque année doivent valoir le capital restant dû × 4 %, et baisser.',
             ),
             moteur.strategie(
               'garder',
@@ -1514,7 +1517,7 @@ const ACTE_3: moteur.Acte = [
       ],
       [
         'controle',
-        'Avec l’IA, les amortissements font bien 60 000 €, mais les intérêts, 12 000 €, ne suivent pas le capital restant dû : le tableau juste en donne 7 388,13 €.',
+        'Deuxième année chez l’IA : 2 400 € d’intérêts sur 48 000 € restant dus, soit 5 %, pas 4 %. Ses amortissements font bien 60 000 €, ce contrôle-là ne la trahit pas ; ses intérêts, 12 000 €, dépassent les 7 388,13 € du tableau juste.',
       ],
       [
         'garder',

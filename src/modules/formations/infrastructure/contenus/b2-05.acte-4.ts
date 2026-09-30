@@ -138,7 +138,7 @@ export const ACTE_4: moteur.Acte = [
       ],
       [
         'I2',
-        `${FORMULE_DU_COUT} ≈ 2 848,15 €. =H2*G2 donne le total remboursé, pas le coût.`,
+        `${FORMULE_DU_COUT} : le total remboursé moins le capital emprunté. =H2*G2 donne le total remboursé, pas le coût.`,
       ],
     ],
   ),
@@ -245,7 +245,8 @@ export const ACTE_4: moteur.Acte = [
             'M3',
             [
               [20000, SANS_INTERETS],
-              [21020.2, TOUTE_LA_DUREE],
+              [21648.64, TOUTE_LA_DUREE],
+              [21020.2, 'rang-decale'],
             ],
           ),
           moteur.enigme(
@@ -283,11 +284,11 @@ export const ACTE_4: moteur.Acte = [
       ],
       [
         'b2-05-a4-e3-epargne',
-        '5 000 × (1,02⁴ − 1) ÷ 0,02 ≈ 20 608,04 €. 20 000 € oublie les intérêts ; 21 020,20 € place chaque versement un an de trop.',
+        '5 000 × (1,02⁴ − 1) ÷ 0,02 ≈ 20 608,04 €. 20 000 € oublie les intérêts ; 4 × 5 000 × 1,02⁴ ≈ 21 648,64 € place chaque versement quatre ans ; 21 020,20 € place tout un an de trop.',
       ],
       [
         'b2-05-a4-e4-cout',
-        '4 × 8 712,04 − 32 000 ≈ 2 848,15 €, la cellule I2. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année.',
+        '4 × 8 712,036… − 32 000 ≈ 2 848,15 €, la cellule I2 ; avec l’annuité arrondie, 2 848,16 €, accepté. 34 848,15 € est le total remboursé ; 4 × 1 120 = 4 480 € garde les intérêts de la première année.',
       ],
     ],
   ),

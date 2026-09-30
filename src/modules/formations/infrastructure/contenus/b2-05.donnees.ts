@@ -46,6 +46,7 @@ export const EMPRUNT = 60000;
 export const TAUX_DE_L_EMPRUNT = 0.04;
 export const DUREE_DE_L_EMPRUNT = 5;
 export const ANNUITE_ARRONDIE = 13477.63;
+export const ECART_DE_L_ANNUITE_ARRONDIE = 0.02;
 
 const CAMIONNETTE = 32000;
 const TAUX_DE_LA_CAMIONNETTE = 0.035;
@@ -154,6 +155,9 @@ const LIGNES_DE_LA_CAMIONNETTE = tableauDAmortissement(
   DUREE_DE_LA_CAMIONNETTE,
   (valeur) => valeur,
 );
+const interetsSansAmortir = (annee: number): number =>
+  LIGNES_DE_LA_CAMIONNETTE[1].interets *
+  (1 + TAUX_DE_LA_CAMIONNETTE) ** (annee - 1);
 const COUT_DE_LA_CAMIONNETTE = auMillionieme(
   DUREE_DE_LA_CAMIONNETTE *
     annuiteConstante(
@@ -383,6 +387,9 @@ export const ATTENDUS_DE_LA_CAMIONNETTE: moteur.AuMoinsUn<AttenduDeFeuille> = [
       piegesDuModele: [[ANNUITE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT]],
       piegesDeLaRecopie: [
         [ANNUITE_DE_LA_CAMIONNETTE, ANNUITE_POUR_AMORTISSEMENT],
+      ],
+      piegesDuRang: (annee) => [
+        [-auMillionieme(interetsSansAmortir(annee)), NON_FIGEE],
       ],
     },
     termes(
