@@ -45,6 +45,31 @@ export interface FicheAttendue {
   readonly corrigesSurPlace?: readonly string[];
 }
 
+export const FICHE_DU_GABARIT_V3 = {
+  ecrans: 34,
+  dureeMinutes: 180,
+  minutesParActe: [49, 39, 47, 45, 0, 0],
+  rythme: { expositionContinueMax: 6, interactives: 147, exposition: 33 },
+  noteesParType: [8, 6, 0, 3, 1],
+  enigmes: 4,
+  rappels: 12,
+  options: 8 + 4 + 12,
+  catalogue: [
+    'A1-02',
+    'A1-04',
+    'A1-05',
+    'A1-07',
+    'A1-08',
+    'A2-02',
+    'A2-03',
+    'A3-01',
+    'A3-03',
+    'A3-04',
+    'A4-01',
+    'A4-05',
+  ],
+} as const satisfies Partial<FicheAttendue>;
+
 export function pointsImprimes(texte: string): number[] {
   return [...texte.matchAll(/\((\d+(?:,\d+)?) points?\)/g)].map(([, valeur]) =>
     Number(valeur.replace(',', '.')),

@@ -395,6 +395,46 @@ const DEFINITIONS = {
     libelle:
       'Donner le dernier terme à la place du cumul : la somme additionne tous les termes de la période.',
   },
+  'interets-simples-au-lieu-de-composes': {
+    concept: 'interets-composes',
+    libelle:
+      'Calculer les intérêts de chaque année sur le seul capital de départ, sans les intérêts déjà acquis : à intérêts composés, on multiplie par 1 + t chaque année.',
+  },
+  'actualisation-inversee': {
+    concept: 'valeur-actuelle',
+    libelle:
+      'Multiplier par (1 + t)ⁿ au lieu de diviser pour ramener une somme future à aujourd’hui : la valeur actuelle est plus petite que la somme future.',
+  },
+  'versements-sans-interets': {
+    concept: 'annuites',
+    libelle:
+      'Additionner les versements sans leurs intérêts : la valeur acquise d’une suite d’annuités dépasse le total versé.',
+  },
+  'versements-places-toute-la-duree': {
+    concept: 'annuites',
+    libelle:
+      'Placer chaque versement pendant toute la durée : un versement de fin d’année n’est placé que jusqu’au dernier versement, le dernier ne rapporte rien.',
+  },
+  'interets-sur-capital-initial': {
+    concept: 'tableau-d-amortissement',
+    libelle:
+      'Calculer les intérêts de chaque année sur le capital emprunté au départ : ils portent sur le capital restant dû en début d’année.',
+  },
+  'annuite-confondue-avec-amortissement': {
+    concept: 'tableau-d-amortissement',
+    libelle:
+      'Prendre l’annuité pour le capital remboursé : l’amortissement est l’annuité moins les intérêts de l’année.',
+  },
+  'cout-credit-confondu-avec-total-rembourse': {
+    concept: 'cout-du-credit',
+    libelle:
+      'Donner le total remboursé pour le coût du crédit : le coût est ce total moins le capital emprunté, soit la somme des intérêts.',
+  },
+  'capital-de-vpm-non-signe': {
+    concept: 'tableur',
+    libelle:
+      'Écrire le capital emprunté sans signe moins dans VPM : le tableur rend alors une annuité négative.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);

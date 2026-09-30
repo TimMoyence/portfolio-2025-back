@@ -275,7 +275,8 @@ export function attendu(
   confusionSiErreurFormule: ConfusionId | null = null,
   tolerance:
     | typeof TOLERANCE_RELATIVE
-    | typeof TOLERANCE_NULLE = TOLERANCE_RELATIVE,
+    | typeof TOLERANCE_NULLE
+    | typeof DEUX_DECIMALES = TOLERANCE_RELATIVE,
 ) {
   return {
     reference,
@@ -409,6 +410,7 @@ export function questionDeTableau(
   id: string,
   concept: ConceptId,
   attendus: QuestionDeTableau['corrige']['attendus'],
+  ecartToleree = 0.01,
 ): QuestionDeTableau {
   return {
     type: 'tableau',
@@ -418,7 +420,7 @@ export function questionDeTableau(
     corrige: {
       type: 'tableau',
       attendus,
-      tolerance: { type: 'absolue', valeur: 0.01 },
+      tolerance: { type: 'absolue', valeur: ecartToleree },
       seuilReussite: 0.75,
     },
   };

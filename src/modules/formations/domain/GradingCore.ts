@@ -39,7 +39,7 @@ export function matchesSolution(
     return valeur === solution;
   }
   if (tolerance.type === 'absolue') {
-    return Math.abs(valeur - solution) <= tolerance.valeur;
+    return ecartDansLaBorne(valeur, solution, tolerance.valeur);
   }
   if (tolerance.type === 'decimales') {
     const facteur = 10 ** tolerance.valeur;
@@ -48,7 +48,21 @@ export function matchesSolution(
   if (solution === 0) {
     return valeur === 0;
   }
-  return Math.abs(valeur - solution) <= Math.abs(solution) * tolerance.valeur;
+  return ecartDansLaBorne(
+    valeur,
+    solution,
+    Math.abs(solution) * tolerance.valeur,
+  );
+}
+
+function ecartDansLaBorne(
+  valeur: number,
+  solution: number,
+  borne: number,
+): boolean {
+  const bruitDesFlottants =
+    Number.EPSILON * Math.max(Math.abs(valeur), Math.abs(solution));
+  return Math.abs(valeur - solution) <= borne + bruitDesFlottants;
 }
 
 function estFinie(valeur: AnswerValue): boolean {
