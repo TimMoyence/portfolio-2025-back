@@ -165,6 +165,9 @@ const FONCTIONS_BIVARIEES: ReadonlySet<string> = new Set([
   'ORDONNEE.ORIGINE',
   NOM_CORRELATION,
 ]);
+const NOM_VERSEMENT = 'VPM';
+const ARGUMENTS_MIN_VERSEMENT = 3;
+const ARGUMENTS_MAX_VERSEMENT = 5;
 const RANG_MAX_QUARTILE = 4;
 const ALPHABET = 26;
 const CODE_A = 'A'.charCodeAt(0);
@@ -694,6 +697,28 @@ function deuxSeries(
   return nom === NOM_PENTE ? pente : moyenneGauche - pente * moyenneDroite;
 }
 
+function versementConstant([
+  taux,
+  periodes,
+  valeurActuelle,
+  valeurFuture = 0,
+  enDebutDePeriode = 0,
+]: readonly number[]): number {
+  if (periodes === 0) {
+    return refuser(ERREUR_DIVISION);
+  }
+  if (taux === 0) {
+    return -(valeurActuelle + valeurFuture) / periodes;
+  }
+  const facteur = (1 + taux) ** periodes;
+  if (facteur === 1) {
+    return refuser(ERREUR_DIVISION);
+  }
+  const versement =
+    (-(valeurActuelle * facteur + valeurFuture) * taux) / (facteur - 1);
+  return enDebutDePeriode === 0 ? versement : versement / (1 + taux);
+}
+
 function fini(valeur: number): number {
   return Number.isFinite(valeur)
     ? sansZeroNegatif(valeur)
@@ -1089,7 +1114,22 @@ class Evaluation {
     if (FONCTIONS_BIVARIEES.has(noeud.nom)) {
       return this.bivariee(noeud.nom, noeud.arguments);
     }
+    if (noeud.nom === NOM_VERSEMENT) {
+      return this.versement(noeud.arguments);
+    }
     return refuser(ERREUR_NOM);
+  }
+
+  private versement(parametres: readonly Noeud[]): number {
+    if (
+      parametres.length < ARGUMENTS_MIN_VERSEMENT ||
+      parametres.length > ARGUMENTS_MAX_VERSEMENT
+    ) {
+      return refuser(ERREUR_VALEUR);
+    }
+    return versementConstant(
+      parametres.map((argument) => this.nombre(argument)),
+    );
   }
 
   private variable(nom: string): ValeurFormule {

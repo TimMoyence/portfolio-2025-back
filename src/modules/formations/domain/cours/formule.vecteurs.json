@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sha256": "110417683ed4df02db51af9ac34042105fb529e045cb3df2b0df8bdcec0e850e",
+  "sha256": "68f0c8ac08551cf23447712f144de28beafde06e9bef42fc5529639319543e91",
   "vecteurs": [
     {
       "id": "feuille-cycle-deux-maillons",
@@ -998,6 +998,62 @@
         "C2": {
           "valeur": null,
           "erreur": "#REF!"
+        }
+      }
+    },
+    {
+      "id": "expression-vpm-annuite-d-emprunt",
+      "type": "expression",
+      "entree": {
+        "expression": "VPM(0,035;4;-32000)",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": 8712.036464,
+        "erreur": null
+      }
+    },
+    {
+      "id": "expression-vpm-taux-nul",
+      "type": "expression",
+      "entree": {
+        "expression": "VPM(0;4;-1000;-200)",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": 300,
+        "erreur": null
+      }
+    },
+    {
+      "id": "feuille-vpm-debut-de-periode-et-refus",
+      "type": "feuille",
+      "entree": {
+        "lignes": 1,
+        "colonnes": 4,
+        "cellules": {
+          "A1": "=VPM(0,04;5;-60000;0;1)",
+          "B1": "=VPM(0,04;0;-1000)",
+          "C1": "=VPM(0,04;5)",
+          "D1": "=VPM(0,04;5;-1000;0;0;1)"
+        }
+      },
+      "attendu": {
+        "A1": {
+          "valeur": 12959.256547675028,
+          "erreur": null
+        },
+        "B1": {
+          "valeur": null,
+          "erreur": "#DIV/0!"
+        },
+        "C1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "D1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
         }
       }
     }
