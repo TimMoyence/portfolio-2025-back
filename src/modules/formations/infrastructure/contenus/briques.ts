@@ -410,6 +410,7 @@ export function questionDeTableau(
   id: string,
   concept: ConceptId,
   attendus: QuestionDeTableau['corrige']['attendus'],
+  ecartToleree = 0.01,
 ): QuestionDeTableau {
   return {
     type: 'tableau',
@@ -419,7 +420,7 @@ export function questionDeTableau(
     corrige: {
       type: 'tableau',
       attendus,
-      tolerance: { type: 'absolue', valeur: 0.01 },
+      tolerance: { type: 'absolue', valeur: ecartToleree },
       seuilReussite: 0.75,
     },
   };

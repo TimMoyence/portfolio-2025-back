@@ -62,6 +62,7 @@ export interface Recopie {
   readonly formule: string;
   readonly piegesDuModele?: readonly PiegeDeCellule[];
   readonly piegesDeLaRecopie?: readonly PiegeDeCellule[];
+  readonly piegesDuRang?: (rang: number) => readonly PiegeDeCellule[];
   readonly confusionSiErreur?: ConfusionId;
   readonly tolerance?: AttenduDeFeuille['tolerance'];
 }
@@ -73,6 +74,7 @@ export function colonneRecopiee(
     formule,
     piegesDuModele = [],
     piegesDeLaRecopie = [],
+    piegesDuRang = () => [],
     confusionSiErreur,
     tolerance,
   }: Recopie,
@@ -95,7 +97,7 @@ export function colonneRecopiee(
         recopiee(formule, rang + 1),
         valeur,
         { memeQue: modele },
-        piegesDeLaRecopie,
+        [...piegesDeLaRecopie, ...piegesDuRang(rang + 1)],
         confusionSiErreur ?? null,
         tolerance,
       ),
