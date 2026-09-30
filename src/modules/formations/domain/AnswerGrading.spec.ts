@@ -23,6 +23,19 @@ describe('matchesSolution', () => {
     ).toBe(true);
   });
 
+  it('accepte l’ecart qui atteint pile la tolerance, malgre l’arrondi des flottants', () => {
+    const auCentime = { type: 'absolue', valeur: 0.01 } as const;
+
+    expect(matchesSolution(1956.9, 1956.89, auCentime)).toBe(true);
+    expect(
+      matchesSolution(12959.24, 12959.26, { type: 'absolue', valeur: 0.02 }),
+    ).toBe(true);
+    expect(matchesSolution(1956.91, 1956.89, auCentime)).toBe(false);
+    expect(
+      matchesSolution(1340, 1333.3, { type: 'relative', valeur: 0.005 }),
+    ).toBe(false);
+  });
+
   it('compare a la decimale demandee', () => {
     expect(
       matchesSolution(1338.234, 1338.231, { type: 'decimales', valeur: 2 }),
