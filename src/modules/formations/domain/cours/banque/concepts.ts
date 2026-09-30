@@ -38,10 +38,18 @@ export const CONCEPTS_DU_B2_03 = [
   'quantificateur',
 ] as const;
 
+export const CONCEPTS_DU_B2_04 = [
+  'suite-arithmetique',
+  'suite-geometrique',
+  'algorithme-de-seuil',
+  'somme-de-termes',
+] as const;
+
 export const CONCEPTS = [
   ...CONCEPTS_DU_B2_01,
   ...CONCEPTS_DU_B2_02,
   ...CONCEPTS_DU_B2_03,
+  ...CONCEPTS_DU_B2_04,
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];

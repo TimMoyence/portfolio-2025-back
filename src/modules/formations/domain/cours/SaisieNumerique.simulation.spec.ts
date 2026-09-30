@@ -16,6 +16,10 @@ const SUFFIXES_SAISIS = [
   'factures',
   'ligne',
   'lignes',
+  'k€',
+  'K€',
+  'passage',
+  'passages',
 ] as const;
 const DECIMALES_MAX = 4;
 const BORNE = 1_000_000;

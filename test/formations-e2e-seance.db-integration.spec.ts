@@ -22,6 +22,7 @@ import type { ContenuDeCours } from '../src/modules/formations/domain/cours/Cour
 import { COURS_B2_01 } from '../src/modules/formations/infrastructure/contenus/b2-01.cours';
 import { COURS_B2_02 } from '../src/modules/formations/infrastructure/contenus/b2-02.cours';
 import { COURS_B2_03 } from '../src/modules/formations/infrastructure/contenus/b2-03.cours';
+import { COURS_B2_04 } from '../src/modules/formations/infrastructure/contenus/b2-04.cours';
 import { EN_TETE_JETON } from '../src/modules/formations/interfaces/ParticipantToken.service';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import { clesSecretesDans } from './helpers/cles-du-corrige';
@@ -1386,6 +1387,14 @@ seanceComplete(COURS_B2_03, {
   questionsNotees: 18,
   cellulesDesFeuilles: [5, 10, 34],
   exerciceEnAvance: 'B2-03-A2-04-EXEMPLE-MORGAN',
+  jalons: 3,
+  intervalleLibre: { premier: 1, dernier: 20 },
+});
+
+seanceComplete(COURS_B2_04, {
+  questionsNotees: 18,
+  cellulesDesFeuilles: [5, 10, 16],
+  exerciceEnAvance: 'B2-04-A2-04-EXEMPLE-GEOMETRIQUE',
   jalons: 3,
   intervalleLibre: { premier: 1, dernier: 20 },
 });

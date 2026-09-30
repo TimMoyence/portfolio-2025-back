@@ -434,11 +434,7 @@ const ACTE_1: moteur.Acte = [
     brique: 'fp-vote',
     dureeMinutes: 5,
     concepts: ['connecteur', 'proposition'],
-    notes: moteur.puces(
-      'Temps « réfléchir » de la notion 1 : votes non notés.',
-      'Vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme puis revote ; sinon, révéler directement.',
-      'Papier : vote à main levée, puis revote après discussion en binôme.',
-    ),
+    notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
     proprietes: {
       modalite: 'solo',
       questions: [
@@ -1248,11 +1244,7 @@ const ACTE_3: moteur.Acte = [
     brique: 'fp-vote',
     dureeMinutes: 5,
     concepts: ['quantificateur'],
-    notes: moteur.puces(
-      'Temps « réfléchir » de la notion 3 : votes non notés.',
-      'Vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme puis revote ; sinon, révéler directement.',
-      'Papier : vote à main levée, puis revote après discussion en binôme.',
-    ),
+    notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
     proprietes: {
       modalite: 'solo',
       questions: [

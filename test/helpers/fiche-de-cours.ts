@@ -4,6 +4,7 @@ import type {
   CorrigeFeuille,
 } from '../../src/modules/formations/domain/cours/Corrige';
 import { questionsDuCours } from '../../src/modules/formations/domain/cours/Cours';
+import type { ContenuDeCours } from '../../src/modules/formations/domain/cours/CoursStocke';
 import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Diffusion';
 import type { ValeurFormule } from '../../src/modules/formations/domain/cours/Formule';
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
@@ -183,6 +184,56 @@ export function corrigeDe(cours: Cours, id: string): CorrigeProduction {
     throw new Error(`production ${id} absente du cours`);
   }
   return question.corrige;
+}
+
+export function corrigeDeFeuille(cours: Cours, id: string): CorrigeFeuille {
+  const corrige = corrigeDe(cours, id);
+  if (corrige.type !== 'feuille') {
+    throw new Error(`la production ${id} n’a pas de corrigé de feuille`);
+  }
+  return corrige;
+}
+
+export function ecranDuContenu(contenu: ContenuDeCours, screenId: string) {
+  const ecran = contenu.ecrans.find(
+    (candidat) => candidat.screenId === screenId,
+  );
+  if (ecran === undefined) {
+    throw new Error(`écran ${screenId} absent de ${contenu.slug}`);
+  }
+  return ecran;
+}
+
+export interface MiniSituationAttendue {
+  readonly donneesFictives: readonly string[];
+  readonly coffre: string;
+  readonly tableur: string;
+}
+
+export function decrireLaMiniSituation(
+  code: string,
+  contenu: ContenuDeCours,
+  attendu: MiniSituationAttendue,
+): void {
+  const texteDe = (screenId: string): string =>
+    JSON.stringify(ecranDuContenu(contenu, screenId));
+
+  describe(`${code} — mentions imprimées de la mini-situation`, () => {
+    it('marque les données d’Atelier Rivage comme fictives sur les écrans qui les montrent', () => {
+      for (const ecran of attendu.donneesFictives) {
+        expect(texteDe(ecran)).toContain('Données fictives');
+      }
+    });
+
+    it('note la mini-situation sur dix points, tableur compris', () => {
+      const enigmes = pointsImprimes(texteDe(attendu.coffre));
+      const tableur = pointsImprimes(texteDe(attendu.tableur));
+
+      expect(enigmes).toHaveLength(4);
+      expect(new Set(tableur)).toEqual(new Set([3]));
+      expect(enigmes.reduce((total, points) => total + points, 3)).toBe(10);
+    });
+  });
 }
 
 export function valeursEtPieges(attendu: {

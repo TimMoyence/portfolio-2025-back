@@ -3,6 +3,7 @@ import {
   CONCEPTS_DU_B2_01,
   CONCEPTS_DU_B2_02,
   CONCEPTS_DU_B2_03,
+  CONCEPTS_DU_B2_04,
 } from './concepts';
 import {
   CONFUSIONS,
@@ -270,6 +271,15 @@ const CONFUSIONS_DU_B2_03 = {
   'et-traduit-par-ou': { concept: 'connecteur' },
 };
 
+const CONFUSIONS_DU_B2_04 = {
+  'rang-decale': { concept: 'suite-arithmetique' },
+  'rang-confondu-avec-annee': { concept: 'algorithme-de-seuil' },
+  'nature-de-suite-confondue': { concept: 'suite-geometrique' },
+  'condition-tant-que-inversee': { concept: 'algorithme-de-seuil' },
+  'nombre-de-termes-decale': { concept: 'somme-de-termes' },
+  'terme-pris-pour-somme': { concept: 'somme-de-termes' },
+};
+
 describe('CONCEPTS', () => {
   it('fige les quatorze concepts du B2-01 dans leur ordre', () => {
     expect(CONCEPTS.slice(0, 14)).toEqual([...CONCEPTS_DU_B2_01]);
@@ -294,8 +304,18 @@ describe('CONCEPTS', () => {
     ]);
   });
 
-  it('ajoute en dernier les quatre concepts de logique du B2-03', () => {
-    expect(CONCEPTS.slice(27)).toEqual([...CONCEPTS_DU_B2_03]);
+  it('ajoute en dernier les quatre concepts de suites du B2-04', () => {
+    expect(CONCEPTS.slice(31)).toEqual([...CONCEPTS_DU_B2_04]);
+    expect(CONCEPTS_DU_B2_04).toEqual([
+      'suite-arithmetique',
+      'suite-geometrique',
+      'algorithme-de-seuil',
+      'somme-de-termes',
+    ]);
+  });
+
+  it('ajoute à la suite les quatre concepts de logique du B2-03', () => {
+    expect(CONCEPTS.slice(27, 31)).toEqual([...CONCEPTS_DU_B2_03]);
     expect(CONCEPTS_DU_B2_03).toEqual([
       'proposition',
       'connecteur',
@@ -346,12 +366,19 @@ describe('CONFUSIONS', () => {
     expect(CONFUSIONS).toMatchObject(CONFUSIONS_DES_DEUX_VARIABLES);
   });
 
-  it('ajoute en dernier les onze confusions de logique du B2-03', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(73);
-    expect(Object.keys(CONFUSIONS).slice(62)).toEqual(
+  it('ajoute à la suite les onze confusions de logique du B2-03', () => {
+    expect(Object.keys(CONFUSIONS).slice(62, 73)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_03),
     );
     expect(CONFUSIONS).toMatchObject(CONFUSIONS_DU_B2_03);
+  });
+
+  it('ajoute en dernier les six confusions de suites du B2-04', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(79);
+    expect(Object.keys(CONFUSIONS).slice(73)).toEqual(
+      Object.keys(CONFUSIONS_DU_B2_04),
+    );
+    expect(CONFUSIONS).toMatchObject(CONFUSIONS_DU_B2_04);
   });
 
   it('conserve les huit confusions existantes et ajoute les trente de la V3 (§ 5.9)', () => {

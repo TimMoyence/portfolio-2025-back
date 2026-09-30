@@ -10,6 +10,7 @@ import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
 import { projeterCatalogue } from '../../domain/cours/Diffusion';
 import { ouvrirTirages } from '../../domain/cours/OuvertureTirages';
 import { slugOption } from '../../domain/cours/QuestionStockee';
+import { lireNombreSaisi } from '../../domain/cours/SaisieNumerique';
 import { verifierStructure } from '../../domain/cours/StructureCours';
 import { tirer } from '../../domain/cours/Tirage';
 import { CONTENUS } from './index';
@@ -175,6 +176,25 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
           JSON.stringify(publie).match(/"misconceptionsCiblees":\[[^\]]/g),
         ).toBeNull();
       }
+    });
+
+    it('publie pour chaque énigme une forme que la saisie relit comme la solution', () => {
+      const illisibles = questionsDuCours(cours).flatMap((question) => {
+        if (
+          !('corrige' in question) ||
+          question.corrige.type !== 'enigme' ||
+          question.corrige.solution.type !== 'nombre'
+        ) {
+          return [];
+        }
+        const { formePubliee, valeur, tolerance } = question.corrige.solution;
+        const relue = lireNombreSaisi(formePubliee);
+        return relue !== null && Math.abs(relue - valeur) <= tolerance.valeur
+          ? []
+          : [`${question.id} : ${formePubliee}`];
+      });
+
+      expect(illisibles).toEqual([]);
     });
 
     it('garde la banque de rappel hors du sujet', () => {

@@ -4,8 +4,9 @@ import {
   attendreLesEnigmes,
   attendreLesNumeriques,
   corrigeDe,
+  corrigeDeFeuille,
   decrireLaFicheDuCours,
-  pointsImprimes,
+  decrireLaMiniSituation,
   valeursEtPieges,
 } from '../../../../../test/helpers/fiche-de-cours';
 import type { CorrigeFeuille } from '../../domain/cours/Corrige';
@@ -118,13 +119,7 @@ decrireLaFicheDuCours('B2-03', COURS, {
   ],
 });
 
-function feuilleDe(id: string): CorrigeFeuille {
-  const corrige = corrigeDe(COURS, id);
-  if (corrige.type !== 'feuille') {
-    throw new Error(`la production ${id} n’a pas de corrigé de feuille`);
-  }
-  return corrige;
-}
+const feuilleDe = (id: string): CorrigeFeuille => corrigeDeFeuille(COURS, id);
 
 function recopier(
   modele: string,
@@ -142,38 +137,10 @@ function recopier(
 const lignesDe = (premiere: number, derniere: number): number[] =>
   Array.from({ length: derniere - premiere + 1 }, (_, rang) => premiere + rang);
 
-function texteDeLEcran(screenId: string): string {
-  const ecran = COURS_B2_03.ecrans.find(
-    (candidat) => candidat.screenId === screenId,
-  );
-  if (ecran === undefined) {
-    throw new Error(`écran ${screenId} absent du B2-03`);
-  }
-  return JSON.stringify(ecran);
-}
-
-describe('B2-03 — textes relus contre les données', () => {
-  it('marque les factures d’Atelier Rivage comme fictives sur les écrans qui les montrent', () => {
-    for (const ecran of [
-      'B2-03-A1-04-FACTURES',
-      'B2-03-A4-01-SITUATION-FACTURES',
-    ]) {
-      expect(texteDeLEcran(ecran)).toContain('Données fictives');
-    }
-  });
-
-  it('note la mini-situation sur dix points, tableur compris', () => {
-    const enigmes = pointsImprimes(
-      texteDeLEcran('B2-03-A4-03-COFFRE-CONTROLE'),
-    );
-    const tableur = pointsImprimes(
-      texteDeLEcran('B2-03-A4-02-TABLEUR-CONTROLE'),
-    );
-
-    expect(enigmes).toHaveLength(4);
-    expect(new Set(tableur)).toEqual(new Set([3]));
-    expect(enigmes.reduce((total, points) => total + points, 3)).toBe(10);
-  });
+decrireLaMiniSituation('B2-03', COURS_B2_03, {
+  donneesFictives: ['B2-03-A1-04-FACTURES', 'B2-03-A4-01-SITUATION-FACTURES'],
+  coffre: 'B2-03-A4-03-COFFRE-CONTROLE',
+  tableur: 'B2-03-A4-02-TABLEUR-CONTROLE',
 });
 
 describe('B2-03 — recalcul des corrigés depuis les seize factures', () => {
