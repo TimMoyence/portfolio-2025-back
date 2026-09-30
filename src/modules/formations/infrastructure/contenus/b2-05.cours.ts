@@ -158,7 +158,7 @@ const ACTE_1: moteur.Acte = [
     'comparison',
     {
       title: 'Ce que vous savez déjà',
-      subtitle: 'Trois acquis réinvestis aujourd’hui.',
+      subtitle: 'Trois acquis qui servent à placer et à emprunter.',
       columns: [
         {
           label: 'B2-01 · Information chiffrée',
@@ -585,7 +585,7 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Projeter la feuille d’un poste volontaire et relire la formule de C3, puis celle de C7.',
+        'Projeter la feuille d’un poste volontaire, relire la formule de C3 et montrer les $ qui la font recopier.',
         'Transition : jalon 1, puis pause de 15 minutes.',
       ],
     },
@@ -1495,7 +1495,7 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Faire lire deux corrections écrites par la classe, puis dévoiler les pistes une à une.',
+        'Faire lire deux corrections de la classe, puis dévoiler les pistes une à une en recalculant l’annuité.',
         'Transition : jalon 3, puis pause de 15 minutes.',
       ],
     },

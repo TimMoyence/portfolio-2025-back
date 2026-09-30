@@ -72,7 +72,7 @@ export const ACTE_4: moteur.Acte = [
         {
           rubrique: 'Barème',
           contenu:
-            'Sur 10 points : question tableur, 3 points ; quatre énigmes, 2, 2, 1,5 et 1,5 points.',
+            'Sur 10 points : 3 points pour la question tableur ; 2, 2, 1,5 et 1,5 points pour les quatre énigmes.',
         },
       ],
       note: DONNEES_FICTIVES,
@@ -115,7 +115,7 @@ export const ACTE_4: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Projeter la feuille d’un poste volontaire et relire chaque formule.',
+        'Projeter la feuille d’un poste volontaire et relire H2, puis les intérêts de la ligne 2.',
         'Transition : « Avec cette feuille, ouvrez le coffre de la mini-situation. »',
       ],
     },
