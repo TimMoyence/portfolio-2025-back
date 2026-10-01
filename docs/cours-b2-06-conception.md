@@ -270,7 +270,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 
 - Titre public : « Exercice 2 — Les ventes au tableur »
 - Temps : réflexion 1 min · travail 5 min · correction 2 min sur place.
-- Mois 0 à 6 en colonne A, a en E1 et k en E2 : ventes en colonne B (`EXP`, paramètres figés),
+- Mois 0 à 6 en colonne A, a en E1 et k en G1 : ventes en colonne B (`EXP`, paramètres figés),
   taux d'évolution d'un mois sur l'autre en colonne C. Treize cellules attendues ; pièges
   `exponentielle-lue-comme-produit`, `k-confondu-avec-taux`, `reference-relative-non-figee`,
   `coefficient-confondu-avec-taux`.
@@ -317,7 +317,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
   `ln-produit-en-produit`.
 - `b2-06-a2-capacite` : premier mois où les ventes dépassent 1 000 sacs ; pièges
   `seuil-mal-arrondi`, `seuil-par-division`.
-- `b2-06-a2-sens` (vote) : la résolution de 0,8ⁿ ≤ 0,4 ; pièges `sens-inegalite-ln-negatif`,
+- `b2-06-a2-sens` (vote) : la résolution de 0,8ⁿ < 0,4 ; pièges `sens-inegalite-ln-negatif`,
   `seuil-par-division`.
 - `b2-06-a2-machine` : années au bout desquelles la machine vaut moins de 40 % de son prix ; pièges
   `seuil-mal-arrondi`, `coefficient-confondu-avec-taux`.
@@ -463,8 +463,8 @@ Ventes en ligne V(x) = 400e^(0,06x), x en mois depuis janvier 2026 : 400 ; 424,7
 un taux de 6,18 % par mois. Avec 1,06⁵ à la place de e^0,3 : 535,29 sacs.
 
 Capacité de 1 000 sacs : 400e^(0,06x) ≥ 1 000 ⇔ x ≥ ln 2,5 ÷ 0,06 ≈ 15,27, premier mois entier 16
-(mai 2027). Machine de 18 000 € qui perd 20 % par an, sous 40 % de son prix : 0,8ⁿ ≤ 0,4 ⇔
-n ≥ ln 0,4 ÷ ln 0,8 ≈ 4,11, soit 5 ans.
+(mai 2027). Machine de 18 000 € qui perd 20 % par an, sous 40 % de son prix : 0,8ⁿ < 0,4 ⇔
+n > ln 0,4 ÷ ln 0,8 ≈ 4,11, soit 5 ans.
 
 Objectifs de ventes de l'exercice 4, mois exact ln(s ÷ 400) ÷ 0,06 : 3,72 ; 6,76 ; 11,55 ; 15,27 ;
 18,31 ; 22,03 pour 500, 600, 800, 1 000, 1 200 et 1 500 sacs.
