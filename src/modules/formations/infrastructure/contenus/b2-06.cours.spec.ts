@@ -1,34 +1,16 @@
 import { buildCoursDuContenu } from '../../../../../test/factories/contenus-de-cours.factory';
-import {
-  attendreLaFeuille,
-  attendreLesEnigmes,
-  attendreLesNumeriques,
-  corrigeDe,
-  corrigeDeFeuille,
-  decrireLaFicheDuCours,
-  decrireLaMiniSituation,
-  ecranDuContenu,
-  FICHE_DU_GABARIT_V3,
-  valeursEtPieges,
-} from '../../../../../test/helpers/fiche-de-cours';
-import {
-  attendreUneRecopieNonFigee,
-  attendusDeColonne,
-  confusionsDe,
-  enFrancais,
-  proprietesV2,
-  rangsDe,
-  recopier,
-  texteDeLEcran as texteDe,
-} from '../../../../../test/helpers/feuille-de-cours';
+import * as fiche from '../../../../../test/helpers/fiche-de-cours';
+import * as feuille from '../../../../../test/helpers/feuille-de-cours';
 import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
+import {
+  colonnesVidesDeLaFeuille,
+  valeursDevoileesAvantLeurEcran,
+} from '../../../../../test/helpers/relecture-de-cours';
+import type { CorrigeTableau } from '../../domain/cours/Corrige';
 import {
   corrigerFeuille,
   corrigerTableau,
 } from '../../domain/cours/CorrectionProduction';
-import { questionsDe } from '../../domain/cours/Cours';
-import type { CorrigeTableau } from '../../domain/cours/Corrige';
-import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B2_06 } from './b2-06.cours';
 
 const COURS = buildCoursDuContenu(COURS_B2_06);
@@ -103,15 +85,15 @@ const DROITE_AFFINE_DES_KITS = droiteDesMoindresCarres(
 );
 
 function corrigeDuTableauDesLogarithmes(): CorrigeTableau {
-  const corrige = corrigeDe(COURS, 'b2-06-a3-tableau-logarithmes');
+  const corrige = fiche.corrigeDe(COURS, 'b2-06-a3-tableau-logarithmes');
   if (corrige.type !== 'tableau') {
     throw new Error('l’exercice 5 n’a pas de corrigé de tableau');
   }
   return corrige;
 }
 
-decrireLaFicheDuCours('B2-06', COURS, {
-  ...FICHE_DU_GABARIT_V3,
+fiche.decrireLaFicheDuCours('B2-06', COURS, {
+  ...fiche.FICHE_DU_GABARIT_V3,
   conception: 'cours-b2-06-conception.md',
   ateliersNotes: ['A1-10 (10)', 'A2-05 (11)', 'A3-07 (10)'],
   remediations: 15,
@@ -128,7 +110,7 @@ decrireLaFicheDuCours('B2-06', COURS, {
   ],
 });
 
-decrireLaMiniSituation('B2-06', COURS_B2_06, {
+fiche.decrireLaMiniSituation('B2-06', COURS_B2_06, {
   donneesFictives: ['B2-06-A1-05-DOSSIER', 'B2-06-A4-01-SITUATION-KITS'],
   coffre: 'B2-06-A4-03-COFFRE-KITS',
   tableur: 'B2-06-A4-02-TABLEUR-KITS',
@@ -136,7 +118,7 @@ decrireLaMiniSituation('B2-06', COURS_B2_06, {
 
 describe('B2-06 — textes relus contre les données', () => {
   it('annonce dans le dossier le modèle des ventes, la capacité de l’atelier et l’étude de prix', () => {
-    const texte = texteDe(COURS_B2_06, 'B2-06-A1-05-DOSSIER');
+    const texte = feuille.texteDeLEcran(COURS_B2_06, 'B2-06-A1-05-DOSSIER');
 
     expect(texte).toContain('400e^(0,06x)');
     expect(texte).toContain('1 000 sacs');
@@ -144,7 +126,7 @@ describe('B2-06 — textes relus contre les données', () => {
   });
 
   it('trace en courbe les six demandes relevées, sans leur logarithme', () => {
-    const { labels, series } = proprietesV2(
+    const { labels, series } = feuille.proprietesV2(
       COURS_B2_06,
       'B2-06-A3-01-GRAPHIQUE',
     );
@@ -154,7 +136,7 @@ describe('B2-06 — textes relus contre les données', () => {
   });
 
   it('donne à l’exercice 5 les mêmes prix et demandes que le graphique', () => {
-    const ecran = ecranDuContenu(
+    const ecran = fiche.ecranDuContenu(
       COURS_B2_06,
       'B2-06-A3-06-TABLEAU-LOGARITHMES',
     );
@@ -172,7 +154,10 @@ describe('B2-06 — textes relus contre les données', () => {
   });
 
   it('rappelle dans la mini-situation le modèle retenu et l’unité des prix et des demandes', () => {
-    const texte = texteDe(COURS_B2_06, 'B2-06-A4-01-SITUATION-KITS');
+    const texte = feuille.texteDeLEcran(
+      COURS_B2_06,
+      'B2-06-A4-01-SITUATION-KITS',
+    );
 
     expect(texte).toContain('f(x) = 20e^(−0,7x)');
     expect(texte).toContain('dizaines d’euros');
@@ -188,7 +173,7 @@ describe('B2-06 — recalcul des corrigés depuis les seuls paramètres', () => 
       Math.log(PART_DU_PRIX) / Math.log(1 - BAISSE_DE_LA_MACHINE);
     const partVisee = DEMANDE_VISEE / A_DE_LA_DEMANDE;
 
-    attendreLesNumeriques(COURS, {
+    fiche.attendreLesNumeriques(COURS, {
       'b2-06-a1-ventes': [
         ventes(MOIS_DE_JUIN),
         ventesAuTauxK(MOIS_DE_JUIN),
@@ -246,7 +231,7 @@ describe('B2-06 — recalcul des corrigés depuis les seuls paramètres', () => 
     const plancher = Math.log(KITS_PLANCHER / A_DES_KITS) / K_DES_KITS;
     const coefficientAuTauxK = 1 + K_DES_KITS;
 
-    attendreLesEnigmes(COURS, {
+    fiche.attendreLesEnigmes(COURS, {
       'b2-06-a4-e1-demande': [
         kits(PRIX_DE_L_ENIGME, K_DES_KITS),
         A_DES_KITS * coefficientAuTauxK ** PRIX_DE_L_ENIGME * CENTAINES,
@@ -277,7 +262,7 @@ describe('B2-06 — recalcul des corrigés depuis les seuls paramètres', () => 
   it('calcule z = ln y au millième à l’exercice 5, la touche log pour piège', () => {
     const corrige = corrigeDuTableauDesLogarithmes();
 
-    expect(corrige.attendus.map(valeursEtPieges)).toEqual(
+    expect(corrige.attendus.map(fiche.valeursEtPieges)).toEqual(
       DEMANDES.map((demande) => [
         arrondi(Math.log(demande), 3),
         arrondi(Math.log10(demande), 3),
@@ -294,19 +279,19 @@ describe('B2-06 — recalcul des corrigés depuis les seuls paramètres', () => 
 
 describe('B2-06 — les trois feuilles corrigées par le moteur de formules', () => {
   const VENTES_JUSTES = {
-    ...recopier('=$E$1*EXP($G$1*A2)', 'B', 2, 8),
-    ...recopier('=B3/B2-1', 'C', 3, 8),
+    ...feuille.recopier('=$E$1*EXP($G$1*A2)', 'B', 2, 8),
+    ...feuille.recopier('=B3/B2-1', 'C', 3, 8),
   };
 
   it('reconnaît justes les ventes calculées par EXP jusqu’en B8 et leur taux d’un mois sur l’autre', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b2-06-a1-tableur-ventes');
+    const corrige = fiche.corrigeDeFeuille(COURS, 'b2-06-a1-tableur-ventes');
     const taux = Math.exp(K_DES_VENTES) - 1;
 
-    attendreLaFeuille(corrige, {
-      ...attendusDeColonne(
+    fiche.attendreLaFeuille(corrige, {
+      ...feuille.attendusDeColonne(
         'B',
         2,
-        rangsDe(0, DERNIER_MOIS_DE_LA_FEUILLE),
+        feuille.rangsDe(0, DERNIER_MOIS_DE_LA_FEUILLE),
         (mois) =>
           mois === 0
             ? [ventes(mois), 0]
@@ -317,10 +302,10 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
                 ventesAuTauxK(mois),
               ],
       ),
-      ...attendusDeColonne(
+      ...feuille.attendusDeColonne(
         'C',
         3,
-        rangsDe(1, DERNIER_MOIS_DE_LA_FEUILLE),
+        feuille.rangsDe(1, DERNIER_MOIS_DE_LA_FEUILLE),
         () => [taux, taux + 1, K_DES_VENTES],
       ),
     });
@@ -328,102 +313,106 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
   });
 
   it('nomme dans les ventes les paramètres non figés, l’exponentielle lue comme un produit, k pris pour le taux et le coefficient pris pour le taux', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b2-06-a1-tableur-ventes');
+    const corrige = fiche.corrigeDeFeuille(COURS, 'b2-06-a1-tableur-ventes');
 
-    attendreUneRecopieNonFigee(
+    feuille.attendreUneRecopieNonFigee(
       corrige,
-      recopier('=E1*EXP(G1*A2)', 'B', 2, 8),
+      feuille.recopier('=E1*EXP(G1*A2)', 'B', 2, 8),
       'B',
       DERNIER_MOIS_DE_LA_FEUILLE,
     );
     expect(
-      confusionsDe(corrige, recopier('=$E$1*EXP(1)*$G$1*A2', 'B', 2, 8), 'B'),
-    ).toEqual(
-      rangsDe(0, DERNIER_MOIS_DE_LA_FEUILLE).map(
-        () => 'exponentielle-lue-comme-produit',
+      feuille.confusionsDe(
+        corrige,
+        feuille.recopier('=$E$1*EXP(1)*$G$1*A2', 'B', 2, 8),
+        'B',
       ),
+    ).toEqual(
+      feuille
+        .rangsDe(0, DERNIER_MOIS_DE_LA_FEUILLE)
+        .map(() => 'exponentielle-lue-comme-produit'),
     );
     expect(
-      confusionsDe(
+      feuille.confusionsDe(
         corrige,
-        recopier('=$E$1*PUISSANCE(1+$G$1;A2)', 'B', 2, 8),
+        feuille.recopier('=$E$1*PUISSANCE(1+$G$1;A2)', 'B', 2, 8),
         'B',
       ),
     ).toEqual([
       null,
-      ...rangsDe(1, DERNIER_MOIS_DE_LA_FEUILLE).map(
-        () => 'k-confondu-avec-taux',
-      ),
+      ...feuille
+        .rangsDe(1, DERNIER_MOIS_DE_LA_FEUILLE)
+        .map(() => 'k-confondu-avec-taux'),
     ]);
     expect(
-      confusionsDe(
+      feuille.confusionsDe(
         corrige,
-        { ...VENTES_JUSTES, ...recopier('=B3/B2', 'C', 3, 8) },
+        { ...VENTES_JUSTES, ...feuille.recopier('=B3/B2', 'C', 3, 8) },
         'C',
       ),
     ).toEqual(
-      rangsDe(1, DERNIER_MOIS_DE_LA_FEUILLE).map(
-        () => 'coefficient-confondu-avec-taux',
-      ),
+      feuille
+        .rangsDe(1, DERNIER_MOIS_DE_LA_FEUILLE)
+        .map(() => 'coefficient-confondu-avec-taux'),
     );
   });
 
   it('reconnaît justes les objectifs de ventes résolus par LN, mois exact compris', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b2-06-a2-tableur-objectifs');
+    const corrige = fiche.corrigeDeFeuille(COURS, 'b2-06-a2-tableur-objectifs');
     const exposant = (objectif: number): number =>
       Math.log(objectif / VENTES_DE_JANVIER);
     const part = (objectif: number): number => objectif / VENTES_DE_JANVIER;
 
-    attendreLaFeuille(corrige, {
-      ...attendusDeColonne('B', 2, OBJECTIFS, (objectif) => [
+    fiche.attendreLaFeuille(corrige, {
+      ...feuille.attendusDeColonne('B', 2, OBJECTIFS, (objectif) => [
         exposant(objectif),
         part(objectif),
         Math.log(objectif) / Math.log(VENTES_DE_JANVIER),
       ]),
-      ...attendusDeColonne('C', 2, OBJECTIFS, (objectif) => [
+      ...feuille.attendusDeColonne('C', 2, OBJECTIFS, (objectif) => [
         exposant(objectif) / K_DES_VENTES,
         part(objectif) / K_DES_VENTES,
       ]),
     });
     expect(
       corrigerFeuille(corrige, {
-        ...recopier('=LN(A2/$E$1)', 'B', 2, 7),
-        ...recopier('=B2/$G$1', 'C', 2, 7),
+        ...feuille.recopier('=LN(A2/$E$1)', 'B', 2, 7),
+        ...feuille.recopier('=B2/$G$1', 'C', 2, 7),
       }).score,
     ).toBe(1);
   });
 
   it('nomme dans les objectifs la division sans ln, le logarithme d’un quotient et les paramètres non figés', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b2-06-a2-tableur-objectifs');
-    const logarithmesJustes = recopier('=LN(A2/$E$1)', 'B', 2, 7);
+    const corrige = fiche.corrigeDeFeuille(COURS, 'b2-06-a2-tableur-objectifs');
+    const logarithmesJustes = feuille.recopier('=LN(A2/$E$1)', 'B', 2, 7);
 
-    expect(confusionsDe(corrige, { B2: '=A2/$E$1' }, 'B2')).toEqual([
+    expect(feuille.confusionsDe(corrige, { B2: '=A2/$E$1' }, 'B2')).toEqual([
       'seuil-par-division',
     ]);
-    expect(confusionsDe(corrige, { B2: '=LN(A2)/LN($E$1)' }, 'B2')).toEqual([
-      'ln-produit-en-produit',
-    ]);
-    attendreUneRecopieNonFigee(
+    expect(
+      feuille.confusionsDe(corrige, { B2: '=LN(A2)/LN($E$1)' }, 'B2'),
+    ).toEqual(['ln-produit-en-produit']);
+    feuille.attendreUneRecopieNonFigee(
       corrige,
-      recopier('=LN(A2/E1)', 'B', 2, 7),
+      feuille.recopier('=LN(A2/E1)', 'B', 2, 7),
       'B',
       OBJECTIFS.length - 1,
     );
-    attendreUneRecopieNonFigee(
+    feuille.attendreUneRecopieNonFigee(
       corrige,
-      { ...logarithmesJustes, ...recopier('=B2/G1', 'C', 2, 7) },
+      { ...logarithmesJustes, ...feuille.recopier('=B2/G1', 'C', 2, 7) },
       'C',
       OBJECTIFS.length - 1,
     );
   });
 
   it('reconnaît juste l’ajustement des kits par LN, PENTE, ORDONNEE.ORIGINE et EXP', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b2-06-a4-feuille-kits');
+    const corrige = fiche.corrigeDeFeuille(COURS, 'b2-06-a4-feuille-kits');
     const { pente, ordonnee } = DROITE_DES_KITS;
     const a = Math.exp(ordonnee);
 
-    attendreLaFeuille(corrige, {
-      ...attendusDeColonne('C', 2, DEMANDES_DES_KITS, (demande) => [
+    fiche.attendreLaFeuille(corrige, {
+      ...feuille.attendusDeColonne('C', 2, DEMANDES_DES_KITS, (demande) => [
         Math.log(demande),
       ]),
       D2: [pente, DROITE_AFFINE_DES_KITS.pente, DROITE_INVERSEE_DES_KITS.pente],
@@ -442,7 +431,7 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
     expect(corrige.attendus).toHaveLength(10);
     expect(
       corrigerFeuille(corrige, {
-        ...recopier('=LN(B2)', 'C', 2, 7),
+        ...feuille.recopier('=LN(B2)', 'C', 2, 7),
         D2: '=PENTE(C2:C7;A2:A7)',
         E2: '=ORDONNEE.ORIGINE(C2:C7;A2:A7)',
         F2: '=EXP(E2)',
@@ -452,46 +441,43 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
   });
 
   it('QF-28 · ne laisse dans la feuille des kits aucune colonne sans intitulé ni réponse, pour tenir au poste étudiant', () => {
-    const ecran = ecranDuContenu(COURS_B2_06, 'B2-06-A4-02-TABLEUR-KITS');
-    if (ecran.brique !== 'fp-sheet') {
-      throw new Error('la feuille des kits n’est plus un tableur');
-    }
-    const { plan } = ecran.proprietes;
-    const corrige = corrigeDeFeuille(COURS, 'b2-06-a4-feuille-kits');
-    const references = [
-      ...Object.keys(plan.cellules),
-      ...corrige.attendus.map(({ reference }) => reference),
-    ];
-    const colonnes = Array.from({ length: plan.colonnes }, (_, rang) =>
-      String.fromCodePoint(65 + rang),
-    );
-
     expect(
-      colonnes.filter(
-        (colonne) => !references.some((nom) => nom.startsWith(colonne)),
+      colonnesVidesDeLaFeuille(
+        COURS_B2_06,
+        COURS,
+        'B2-06-A4-02-TABLEUR-KITS',
+        'b2-06-a4-feuille-kits',
       ),
     ).toEqual([]);
   });
 
   it('nomme dans les kits l’ajustement de y, les séries inversées, l’ordonnée non exponentiée et l’exponentielle lue comme un produit', () => {
-    const corrige = corrigeDeFeuille(COURS, 'b2-06-a4-feuille-kits');
+    const corrige = fiche.corrigeDeFeuille(COURS, 'b2-06-a4-feuille-kits');
     const justes = {
-      ...recopier('=LN(B2)', 'C', 2, 7),
+      ...feuille.recopier('=LN(B2)', 'C', 2, 7),
       D2: '=PENTE(C2:C7;A2:A7)',
       E2: '=ORDONNEE.ORIGINE(C2:C7;A2:A7)',
     };
 
     expect(
-      confusionsDe(corrige, { ...justes, D2: '=PENTE(B2:B7;A2:A7)' }, 'D2'),
+      feuille.confusionsDe(
+        corrige,
+        { ...justes, D2: '=PENTE(B2:B7;A2:A7)' },
+        'D2',
+      ),
     ).toEqual(['ajustement-affine-sur-y']);
     expect(
-      confusionsDe(corrige, { ...justes, D2: '=PENTE(A2:A7;C2:C7)' }, 'D2'),
+      feuille.confusionsDe(
+        corrige,
+        { ...justes, D2: '=PENTE(A2:A7;C2:C7)' },
+        'D2',
+      ),
     ).toEqual(['pente-ordonnee-inversees']);
-    expect(confusionsDe(corrige, { ...justes, F2: '=E2' }, 'F2')).toEqual([
-      'ordonnee-non-exponentiee',
-    ]);
     expect(
-      confusionsDe(
+      feuille.confusionsDe(corrige, { ...justes, F2: '=E2' }, 'F2'),
+    ).toEqual(['ordonnee-non-exponentiee']);
+    expect(
+      feuille.confusionsDe(
         corrige,
         { ...justes, F2: '=EXP(E2)', G2: '=F2*EXP(1)*D2*4' },
         'G2',
@@ -500,60 +486,9 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
   });
 });
 
-const TIRAGE = tirer(COURS, 0);
-
-const sansEspaces = (texte: string): string => texte.replaceAll(/\s/gu, '');
-const auCentime = (valeur: number): number => arrondi(valeur, 2);
-
-function valeursASaisirDe(ecran: (typeof COURS.ecrans)[number]): number[] {
-  return questionsDe(ecran)
-    .flatMap((question): readonly number[] => {
-      if (question.type === 'numeric') {
-        return [Number(TIRAGE.solutions[question.id].valeur)];
-      }
-      if (!('corrige' in question)) {
-        return [];
-      }
-      const { corrige } = question;
-      switch (corrige.type) {
-        case 'enigme':
-          return corrige.solution.type === 'nombre'
-            ? [corrige.solution.valeur]
-            : [];
-        case 'tableau':
-          return corrige.attendus.map(({ valeur }) => valeur);
-        default:
-          return [];
-      }
-    })
-    .filter((valeur) => !Number.isInteger(auCentime(valeur)));
-}
-
-function correctionSurPlaceDe(screenId: string): string {
-  const { proprietes } = ecranDuContenu(COURS_B2_06, screenId);
-  return 'correctionSurPlace' in proprietes
-    ? sansEspaces(JSON.stringify(proprietes.correctionSurPlace))
-    : '';
-}
-
 describe('B2-06 — retours de la relecture adverse', () => {
   it('ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant, les feuilles exigeant une formule', () => {
-    const ordre = COURS_B2_06.ecrans.map(({ screenId }) => screenId);
-    const devoilees = COURS.ecrans.flatMap((ecran) =>
-      valeursASaisirDe(ecran).flatMap((valeur) =>
-        ordre
-          .slice(0, ordre.indexOf(ecran.id))
-          .filter((anterieur) =>
-            correctionSurPlaceDe(anterieur).includes(enFrancais(valeur, 2)),
-          )
-          .map(
-            (anterieur) =>
-              `${enFrancais(valeur, 2)} de ${ecran.id} dans ${anterieur}`,
-          ),
-      ),
-    );
-
-    expect(devoilees).toEqual([]);
+    expect(valeursDevoileesAvantLeurEcran(COURS_B2_06, COURS)).toEqual([]);
   });
 
   it('ne parle ni de limite ni d’asymptote, hors programme', () => {
@@ -568,18 +503,21 @@ describe('B2-06 — retours de la relecture adverse', () => {
       'B2-06-A2-02-COURS-LOGARITHME',
       'B2-06-A3-06-TABLEAU-LOGARITHMES',
     ]) {
-      expect(texteDe(COURS_B2_06, ecran)).toContain('touche log');
+      expect(feuille.texteDeLEcran(COURS_B2_06, ecran)).toContain('touche log');
     }
   });
 
   it('dit dans la trace écrite du seuil que diviser par ln q négatif change le sens de l’inégalité', () => {
-    expect(texteDe(COURS_B2_06, 'B2-06-A2-03-COURS-SEUIL')).toContain(
-      'change le sens',
-    );
+    expect(
+      feuille.texteDeLEcran(COURS_B2_06, 'B2-06-A2-03-COURS-SEUIL'),
+    ).toContain('change le sens');
   });
 
   it('propose à l’exercice 7 une piste fausse qui se fie au seul coefficient de corrélation', () => {
-    const { proprietes } = ecranDuContenu(COURS_B2_06, 'B2-06-A3-08-DEFI-IA');
+    const { proprietes } = fiche.ecranDuContenu(
+      COURS_B2_06,
+      'B2-06-A3-08-DEFI-IA',
+    );
     const fausse = /"id":"garder","libelle":"([^"]+)","fausse":true/u.exec(
       JSON.stringify(proprietes),
     )?.[1];
@@ -588,14 +526,20 @@ describe('B2-06 — retours de la relecture adverse', () => {
   });
 
   it('écrit les exposants en notation e^(kx) et le taux e^k − 1 dans la trace écrite des modèles', () => {
-    const texte = texteDe(COURS_B2_06, 'B2-06-A1-08-COURS-MODELE-EXP');
+    const texte = feuille.texteDeLEcran(
+      COURS_B2_06,
+      'B2-06-A1-08-COURS-MODELE-EXP',
+    );
 
     expect(texte).toContain('a e^(kx)');
     expect(texte).toContain('e^k − 1');
   });
 
   it('garde au tableur de la trace écrite des cellules de paramètres distinctes de celles des exercices', () => {
-    const methode = texteDe(COURS_B2_06, 'B2-06-A1-08-COURS-MODELE-EXP');
+    const methode = feuille.texteDeLEcran(
+      COURS_B2_06,
+      'B2-06-A1-08-COURS-MODELE-EXP',
+    );
 
     expect(methode).toContain('=$H$1*EXP($H$2*A2)');
     expect(methode).not.toContain('$G$1');

@@ -23,10 +23,13 @@ import {
 } from '../../../../../test/helpers/feuille-de-cours';
 import { arrondi } from '../../../../../test/helpers/lecture-de-cours';
 import {
+  colonnesVidesDeLaFeuille,
+  valeursDevoileesAvantLeurEcran,
+} from '../../../../../test/helpers/relecture-de-cours';
+import {
   corrigerFeuille,
   corrigerTableau,
 } from '../../domain/cours/CorrectionProduction';
-import { questionsDe } from '../../domain/cours/Cours';
 import type { CorrigeTableau } from '../../domain/cours/Corrige';
 import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B2_05 } from './b2-05.cours';
@@ -474,26 +477,12 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
   });
 
   it('QF-28 · ne laisse dans la feuille de la camionnette aucune colonne sans intitulé ni réponse, pour tenir au poste étudiant', () => {
-    const ecran = ecranDuContenu(
-      COURS_B2_05,
-      'B2-05-A4-02-TABLEUR-CAMIONNETTE',
-    );
-    if (ecran.brique !== 'fp-sheet') {
-      throw new Error('la feuille de la camionnette n’est plus un tableur');
-    }
-    const { plan } = ecran.proprietes;
-    const corrige = corrigeDeFeuille(COURS, 'b2-05-a4-feuille-camionnette');
-    const references = [
-      ...Object.keys(plan.cellules),
-      ...corrige.attendus.map(({ reference }) => reference),
-    ];
-    const colonnes = Array.from({ length: plan.colonnes }, (_, rang) =>
-      String.fromCodePoint(65 + rang),
-    );
-
     expect(
-      colonnes.filter(
-        (colonne) => !references.some((nom) => nom.startsWith(colonne)),
+      colonnesVidesDeLaFeuille(
+        COURS_B2_05,
+        COURS,
+        'B2-05-A4-02-TABLEUR-CAMIONNETTE',
+        'b2-05-a4-feuille-camionnette',
       ),
     ).toEqual([]);
   });
@@ -538,39 +527,6 @@ describe('B2-05 — les trois feuilles corrigées par le moteur de formules', ()
 
 const TIRAGE = tirer(COURS, 0);
 
-const sansEspaces = (texte: string): string => texte.replaceAll(/\s/gu, '');
-
-function valeursASaisirDe(ecran: (typeof COURS.ecrans)[number]): number[] {
-  return questionsDe(ecran)
-    .flatMap((question): readonly number[] => {
-      if (question.type === 'numeric') {
-        return [Number(TIRAGE.solutions[question.id].valeur)];
-      }
-      if (!('corrige' in question)) {
-        return [];
-      }
-      const { corrige } = question;
-      switch (corrige.type) {
-        case 'enigme':
-          return corrige.solution.type === 'nombre'
-            ? [corrige.solution.valeur]
-            : [];
-        case 'tableau':
-          return corrige.attendus.map(({ valeur }) => valeur);
-        default:
-          return [];
-      }
-    })
-    .filter((valeur) => !Number.isInteger(auCentime(valeur)));
-}
-
-function correctionSurPlaceDe(screenId: string): string {
-  const { proprietes } = ecranDuContenu(COURS_B2_05, screenId);
-  return 'correctionSurPlace' in proprietes
-    ? sansEspaces(JSON.stringify(proprietes.correctionSurPlace))
-    : '';
-}
-
 function piegesDe(id: string): readonly (readonly [number, string])[] {
   if (id in TIRAGE.solutions) {
     return TIRAGE.solutions[id].pieges.map(({ valeur, misconception }) => [
@@ -587,22 +543,7 @@ function piegesDe(id: string): readonly (readonly [number, string])[] {
 
 describe('B2-05 — retours de la relecture adverse', () => {
   it('ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant, les feuilles exigeant une formule', () => {
-    const ordre = COURS_B2_05.ecrans.map(({ screenId }) => screenId);
-    const devoilees = COURS.ecrans.flatMap((ecran) =>
-      valeursASaisirDe(ecran).flatMap((valeur) =>
-        ordre
-          .slice(0, ordre.indexOf(ecran.id))
-          .filter((anterieur) =>
-            correctionSurPlaceDe(anterieur).includes(enFrancais(valeur, 2)),
-          )
-          .map(
-            (anterieur) =>
-              `${enFrancais(valeur, 2)} de ${ecran.id} dans ${anterieur}`,
-          ),
-      ),
-    );
-
-    expect(devoilees).toEqual([]);
+    expect(valeursDevoileesAvantLeurEcran(COURS_B2_05, COURS)).toEqual([]);
   });
 
   it('rattache « toute la durée » aux n versements placés n ans, et l’année de trop au rang décalé', () => {
