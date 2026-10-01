@@ -262,7 +262,7 @@ const ACTE_1: moteur.Acte = [
       metier:
         'Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)',
       situation:
-        'Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et la demande des boutiques ne baisse pas en ligne droite. »',
+        'Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et vérifiez le modèle de la demande des boutiques. »',
       geste:
         'Sans calculatrice, répondez aux trois questions à partir du dossier.',
       consequence:
@@ -574,7 +574,7 @@ const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 5 min',
         'Réflexion : écrire sur papier la formule de B2, puis ce qu’elle devient en B3 une fois recopiée.',
-        'Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 sans $ : la colonne tombe à 0 ; G1 sans $ : elle reste à 400 ; =B3/B2 pour le taux.',
+        'Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 sans $ : la colonne tombe à 0 ; G1 sans $ ou A2 figé à tort : elle reste à 400 ; =B3/B2 pour le taux.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
       ),
       proprietes: {
@@ -606,7 +606,7 @@ const ACTE_1: moteur.Acte = [
     [
       [
         'B2 à B8',
-        `${FORMULE_DES_VENTES}, recopiée : 400 sacs en janvier, puis 424,73 ; 451,00 ; 478,89 ; 508,50 ; 539,94 et 573,33. Sans les $, la recopie lit E2 et G2, vides, et affiche 0.`,
+        `${FORMULE_DES_VENTES}, recopiée : 400 sacs en janvier, puis 424,73 ; 451,00 ; 478,89 ; 508,50 ; 539,94 et 573,33. Sans $ sur E1, la recopie lit E2, vide, et affiche 0 ; sans $ sur G1, ou avec A2 figé à tort, elle reste à 400.`,
       ],
       [
         'C3 à C8',
@@ -899,7 +899,7 @@ const ACTE_2: moteur.Acte = [
             'ans',
             5,
             { type: 'absolue', valeur: 0 },
-            '5 années',
+            '5 ans',
             [
               [4, SEUIL_MAL_ARRONDI],
               [1, TAUX_POUR_COEFFICIENT],

@@ -118,10 +118,7 @@ export const ATTENDUS_DES_VENTES: moteur.AuMoinsUn<AttenduDeFeuille> = [
       premiereLigne: 2,
       formule: FORMULE_DES_VENTES,
       piegesDuModele: [[0, LUE_COMME_PRODUIT]],
-      piegesDeLaRecopie: [
-        [0, NON_FIGEE],
-        [VENTES_DE_JANVIER, NON_FIGEE],
-      ],
+      piegesDeLaRecopie: [[0, NON_FIGEE]],
       piegesDuRang: (mois) => [
         [ventesLuesCommeProduit(mois), LUE_COMME_PRODUIT],
         [ventesAuTauxK(mois), K_POUR_TAUX],

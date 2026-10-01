@@ -10,10 +10,6 @@ const UNITES_LUES = [
   'lignes?',
   'passages?',
   'kits?',
-  'sacs?',
-  'clients?',
-  'années?',
-  'mois',
 ];
 const SUFFIXES = new RegExp(`(?:${UNITES_LUES.join('|')})$`, 'i');
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;

@@ -22,13 +22,6 @@ const SUFFIXES_SAISIS = [
   'passages',
   'kit',
   'kits',
-  'sac',
-  'sacs',
-  'client',
-  'clients',
-  'année',
-  'années',
-  'mois',
 ] as const;
 const DECIMALES_MAX = 4;
 const BORNE = 1_000_000;

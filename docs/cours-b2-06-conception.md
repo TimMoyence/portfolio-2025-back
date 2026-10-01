@@ -340,8 +340,8 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A3-01 · `B2-06-A3-01-GRAPHIQUE` — 2 min · v2 `chart` · catalogue
 
 - Titre public : « La demande des boutiques selon le prix de gros »
-- Six demandes relevées, de 20 € à 45 €, en courbe : la demande baisse de moins en moins vite, en
-  perdant à peu près la même part à chaque hausse de 5 €.
+- Six demandes relevées, de 20 € à 45 €, en courbe ; l'écran demande si la demande perd le même
+  nombre de sacs à chaque hausse de 5 €, sans y répondre (§ 2.5).
 
 #### A3-02 · `B2-06-A3-02-VOTE-MODELE` — 4 min · `fp-vote` · séance
 

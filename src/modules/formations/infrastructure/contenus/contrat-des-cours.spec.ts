@@ -19,6 +19,7 @@ import { CONTENUS } from './index';
 const TAILLE_MAX_DU_BAREME = 400 * 1024;
 const TIRAGES_CONTROLES = 61;
 const LONGUEUR_MAX_D_UN_IDENTIFIANT = 60;
+const NOMBRE_EN_TETE = /^[−-]?\d[\d\s]*(?:,\d+)?/u;
 const CLES_DE_CONFUSION = new Set([
   'confusion',
   'confusionSiErreur',
@@ -198,7 +199,7 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
       expect(illisibles).toEqual([]);
     });
 
-    it('publie pour chaque numérique une forme que la saisie relit comme la solution', () => {
+    it('ouvre la forme publiée de chaque numérique sur la valeur de sa solution', () => {
       const { solutions } = tirer(cours, 0);
       const illisibles = questionsDuCours(cours).flatMap((question) => {
         if (
@@ -207,7 +208,8 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         ) {
           return [];
         }
-        const relue = lireNombreSaisi(question.formePubliee);
+        const nombre = NOMBRE_EN_TETE.exec(question.formePubliee)?.[0];
+        const relue = nombre === undefined ? null : lireNombreSaisi(nombre);
         return relue !== null &&
           matchesSolution(
             relue,
