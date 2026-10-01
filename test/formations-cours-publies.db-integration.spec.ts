@@ -52,6 +52,7 @@ const CELLULES_DE_LA_FEUILLE: Readonly<Record<string, number>> = {
   'b2-03-logique': 5,
   'b2-04-suites': 5,
   'b2-05-mathematiques-financieres': 10,
+  'b2-06-exponentielle-logarithme': 13,
 };
 
 function instantaneDe(contenu: ContenuDeCours): { readonly empreinte: string } {
