@@ -53,12 +53,20 @@ export const CONCEPTS_DU_B2_05 = [
   'cout-du-credit',
 ] as const;
 
+export const CONCEPTS_DU_B2_06 = [
+  'fonction-exponentielle',
+  'logarithme-neperien',
+  'resolution-par-logarithme',
+  'ajustement-exponentiel',
+] as const;
+
 export const CONCEPTS = [
   ...CONCEPTS_DU_B2_01,
   ...CONCEPTS_DU_B2_02,
   ...CONCEPTS_DU_B2_03,
   ...CONCEPTS_DU_B2_04,
   ...CONCEPTS_DU_B2_05,
+  ...CONCEPTS_DU_B2_06,
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];
@@ -104,6 +112,10 @@ const LIBELLES_DES_CONCEPTS: Readonly<Record<ConceptId, string>> = {
   annuites: 'Suite d’annuités',
   'tableau-d-amortissement': 'Tableau d’amortissement',
   'cout-du-credit': 'Coût du crédit',
+  'fonction-exponentielle': 'Fonction exponentielle',
+  'logarithme-neperien': 'Logarithme népérien',
+  'resolution-par-logarithme': 'Résolution par le logarithme',
+  'ajustement-exponentiel': 'Ajustement exponentiel',
 };
 
 export function libelleDeConcept(id: string): string {

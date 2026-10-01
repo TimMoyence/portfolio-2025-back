@@ -435,6 +435,51 @@ const DEFINITIONS = {
     libelle:
       'Écrire le capital emprunté sans signe moins dans VPM : le tableur rend alors une annuité négative.',
   },
+  'exponentielle-lue-comme-produit': {
+    concept: 'fonction-exponentielle',
+    libelle:
+      'Calculer e^(kx) comme e × k × x : k × x est un exposant, il se calcule avant d’appliquer l’exponentielle.',
+  },
+  'signe-de-k-ignore': {
+    concept: 'fonction-exponentielle',
+    libelle:
+      'Croire qu’un modèle a e^(kx) croît toujours : il décroît quand k est négatif, en restant positif.',
+  },
+  'k-confondu-avec-taux': {
+    concept: 'fonction-exponentielle',
+    libelle:
+      'Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1.',
+  },
+  'ln-produit-en-produit': {
+    concept: 'logarithme-neperien',
+    libelle:
+      'Écrire ln(a × b) = ln a × ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme et une puissance en produit, ln(aⁿ) = n × ln a.',
+  },
+  'log-decimal-au-lieu-de-ln': {
+    concept: 'logarithme-neperien',
+    libelle:
+      'Utiliser la touche log, le logarithme décimal, au lieu de ln, le logarithme népérien.',
+  },
+  'seuil-par-division': {
+    concept: 'resolution-par-logarithme',
+    libelle:
+      'Diviser la valeur visée par q ou par k au lieu d’appliquer ln : qⁿ ≥ s se résout par n × ln q ≥ ln s.',
+  },
+  'sens-inegalite-ln-negatif': {
+    concept: 'resolution-par-logarithme',
+    libelle:
+      'Garder le sens de l’inégalité en divisant par ln q quand q < 1 : ln q est négatif, le sens change.',
+  },
+  'ajustement-affine-sur-y': {
+    concept: 'ajustement-exponentiel',
+    libelle:
+      'Ajuster y par une droite quand il baisse d’une même part à chaque pas : on ajuste z = ln y, puis on revient à y.',
+  },
+  'ordonnee-non-exponentiee': {
+    concept: 'ajustement-exponentiel',
+    libelle:
+      'Prendre l’ordonnée à l’origine b de z = ax + b pour le coefficient du modèle : ce coefficient vaut e^b.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);
