@@ -4,7 +4,7 @@ const MILLIERS = /(?<!\d)(\d{1,3}) (?=\d{3}(?!\d))/g;
 const NOMBRE_PUIS_UNITE = /(\d) (?=(?:%|‰|[kM]?€|kWh|km|kg)(?!\p{L}))/gu;
 const AVANT_PONCTUATION_HAUTE = / (?=[;:?!»])/g;
 const APRES_GUILLEMET_OUVRANT = /« /g;
-const ORDINAL = /(?<![\p{L}\d\-_/.])(?:(1)(er|re)|(\d+)e)(?![\p{L}\d\-_/])/gu;
+const ORDINAL = /(?<![\p{L}\d\-_/.])(?:(1)(er|re)|(\d+)e)(?![\p{L}\d\-_/^(])/gu;
 const EXPOSANTS_DU_PREMIER: Readonly<Record<string, string>> = {
   er: 'ᵉʳ',
   re: 'ʳᵉ',

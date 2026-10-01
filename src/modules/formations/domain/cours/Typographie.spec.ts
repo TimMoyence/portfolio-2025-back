@@ -33,6 +33,9 @@ describe('typographier', () => {
     'ecran-2e-partie',
     '/assets/cours/2e/figure.webp',
     'La 3ᵉ valeur',
+    'V(x) = 400e^(0,06x)',
+    'f(x) = 20e^(−0,7x)',
+    'avec 50e(0,2x) mal écrit',
     'Rien à lier ici.',
   ])('laisse « %s » intact', (brut) => {
     expect(typographier(brut)).toBe(brut);

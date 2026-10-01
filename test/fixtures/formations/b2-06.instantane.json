@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "e75abf3862b1728a212ea78082ae8502900094e0ec47d85ad8010e42da6b3710",
+  "empreinte": "be515f07b927bb68e066165e10691690f1eacad8f83a1b416adb72ad50bc0e49",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -225,7 +225,7 @@
                   },
                   {
                     "rubrique": "Les ventes en ligne",
-                    "contenu": "Modèle retenu par l’expert-comptable : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier)."
+                    "contenu": "Modèle retenu par l’expert-comptable : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier)."
                   },
                   {
                     "rubrique": "La capacité de l’atelier",
@@ -266,7 +266,7 @@
           "cas": {
             "id": "B2-06-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400ᵉ^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et la demande des boutiques ne baisse pas en ligne droite. »",
+            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et la demande des boutiques ne baisse pas en ligne droite. »",
             "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
             "consequence": "Un seuil mal calculé, et l’atelier sature avant d’avoir recruté ; un prix mal choisi, et les boutiques n’achètent pas.",
             "questionsLibres": [
@@ -382,12 +382,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 1 000ᵉ^(0,02x)",
+                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
                     "text": "a = 1 000 et k = 0,02.",
                     "steps": [
                       "f(0) = 1 000 × e⁰ = 1 000.",
                       "Coefficient : e^0,02 ≈ 1,0202 ; taux ≈ 2,02 % par unité, pas 2 %.",
-                      "g(x) = 1 000ᵉ^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
+                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
                     ]
                   },
                   {
@@ -427,7 +427,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-06-a1-exemple-abonnes",
-            "enonce": "La lettre d’information de la gamme Sillage compte 200 abonnés à son lancement. Au bout de x semaines, le nombre d’abonnés est modélisé par A(x) = 200ᵉ^(0,05x).",
+            "enonce": "La lettre d’information de la gamme Sillage compte 200 abonnés à son lancement. Au bout de x semaines, le nombre d’abonnés est modélisé par A(x) = 200e^(0,05x).",
             "etapes": [
               {
                 "id": "depart",
@@ -450,8 +450,8 @@
               {
                 "id": "decroissant",
                 "intitule": "Un modèle décroissant",
-                "raisonnement": "D(x) = 200ᵉ^(−0,05x) : k < 0, la fonction décroît ; D(10) = 200 × e^(−0,5) ≈ 121,31.",
-                "invite": "Une autre liste perd ses abonnés selon D(x) = 200ᵉ^(−0,05x). Croît-elle ? Que vaut D(10) ?"
+                "raisonnement": "D(x) = 200e^(−0,05x) : k < 0, la fonction décroît ; D(10) = 200 × e^(−0,5) ≈ 121,31.",
+                "invite": "Une autre liste perd ses abonnés selon D(x) = 200e^(−0,05x). Croît-elle ? Que vaut D(10) ?"
               },
               {
                 "id": "tableur",
@@ -479,7 +479,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 1 — Les ventes en ligne",
-          "consigne": "Ventes en ligne : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier).",
+          "consigne": "Ventes en ligne : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier).",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -528,7 +528,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a1-sens",
-                  "enonce": "Les ventes en boutique d’un ancien modèle de sac suivent B(x) = 900ᵉ^(−0,04x). Comment évoluent-elles ?",
+                  "enonce": "Les ventes en boutique d’un ancien modèle de sac suivent B(x) = 900e^(−0,04x). Comment évoluent-elles ?",
                   "options": [
                     {
                       "id": "elles-baissent-chaque-mois-car-k-moins-0-4479918d",
@@ -852,7 +852,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — La capacité de l’atelier",
-          "consigne": "Ventes en ligne : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026. Capacité de l’atelier : 1 000 sacs par mois. Machine à coudre de 18 000 €, qui perd 20 % de sa valeur chaque année.",
+          "consigne": "Ventes en ligne : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026. Capacité de l’atelier : 1 000 sacs par mois. Machine à coudre de 18 000 €, qui perd 20 % de sa valeur chaque année.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -989,7 +989,7 @@
               "A7"
             ],
             "consignes": [
-              "Pour chaque objectif s de la colonne A, on résout 400ᵉ^(0,06x) = s.",
+              "Pour chaque objectif s de la colonne A, on résout 400e^(0,06x) = s.",
               "En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7.",
               "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7.",
               "a et k ne s’écrivent pas dans les formules : utilisez E1 et G1, figés par des $."
@@ -1128,7 +1128,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 500ᵉ^(−0,1x)",
+                    "title": "Pour débuter : f(x) = 500e^(−0,1x)",
                     "text": "a = 500 et k = −0,1 : f décroît.",
                     "steps": [
                       "f(10) = 500 × e^(−1) ≈ 183,94.",
@@ -1256,7 +1256,7 @@
               {
                 "id": "retour",
                 "intitule": "Le retour au modèle",
-                "raisonnement": "y = e^3,91 × e^(0,2x) ≈ 49,9ᵉ^(0,2x), soit environ 50ᵉ^(0,2x).",
+                "raisonnement": "y = e^3,91 × e^(0,2x) ≈ 49,9e^(0,2x), soit environ 50e^(0,2x).",
                 "invite": "Revenez à y : que valent a et k ?"
               },
               {
@@ -1372,7 +1372,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a3-demande",
-                  "enonce": "Avec y = 2 981ᵉ^(−0,05x), quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
+                  "enonce": "Avec y = 2 981e^(−0,05x), quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
                   "unite": "sacs",
                   "metadonnees": {
                     "concepts": [
@@ -1522,7 +1522,7 @@
                   },
                   {
                     "rubrique": "Modèle retenu",
-                    "contenu": "Après ajustement par z = ln y, le cabinet retient f(x) = 20ᵉ^(−0,7x), demande mensuelle en centaines de kits au prix de x dizaines d’euros."
+                    "contenu": "Après ajustement par z = ln y, le cabinet retient f(x) = 20e^(−0,7x), demande mensuelle en centaines de kits au prix de x dizaines d’euros."
                   },
                   {
                     "rubrique": "Barème",
@@ -1633,7 +1633,7 @@
               {
                 "id": "b2-06-a4-e1-demande",
                 "intitule": "La demande à 25 € (2 points)",
-                "enonce": "Avec f(x) = 20ᵉ^(−0,7x), combien de kits les clubs demandent-ils par mois au prix de 25 € ? Arrondir à l’unité.",
+                "enonce": "Avec f(x) = 20e^(−0,7x), combien de kits les clubs demandent-ils par mois au prix de 25 € ? Arrondir à l’unité.",
                 "indice": "Le prix s’exprime en dizaines d’euros et la demande en centaines de kits : convertissez avant et après le calcul."
               },
               {
@@ -2166,7 +2166,7 @@
                   },
                   {
                     "rubrique": "Les ventes en ligne",
-                    "contenu": "Modèle retenu par l’expert-comptable : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier)."
+                    "contenu": "Modèle retenu par l’expert-comptable : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier)."
                   },
                   {
                     "rubrique": "La capacité de l’atelier",
@@ -2213,7 +2213,7 @@
           "cas": {
             "id": "B2-06-A1-06-MISSION",
             "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
-            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400ᵉ^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et la demande des boutiques ne baisse pas en ligne droite. »",
+            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et la demande des boutiques ne baisse pas en ligne droite. »",
             "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
             "consequence": "Un seuil mal calculé, et l’atelier sature avant d’avoir recruté ; un prix mal choisi, et les boutiques n’achètent pas.",
             "questionsLibres": [
@@ -2341,12 +2341,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 1 000ᵉ^(0,02x)",
+                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
                     "text": "a = 1 000 et k = 0,02.",
                     "steps": [
                       "f(0) = 1 000 × e⁰ = 1 000.",
                       "Coefficient : e^0,02 ≈ 1,0202 ; taux ≈ 2,02 % par unité, pas 2 %.",
-                      "g(x) = 1 000ᵉ^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
+                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
                     ]
                   },
                   {
@@ -2392,7 +2392,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-06-a1-exemple-abonnes",
-            "enonce": "La lettre d’information de la gamme Sillage compte 200 abonnés à son lancement. Au bout de x semaines, le nombre d’abonnés est modélisé par A(x) = 200ᵉ^(0,05x).",
+            "enonce": "La lettre d’information de la gamme Sillage compte 200 abonnés à son lancement. Au bout de x semaines, le nombre d’abonnés est modélisé par A(x) = 200e^(0,05x).",
             "etapes": [
               {
                 "id": "depart",
@@ -2415,8 +2415,8 @@
               {
                 "id": "decroissant",
                 "intitule": "Un modèle décroissant",
-                "raisonnement": "D(x) = 200ᵉ^(−0,05x) : k < 0, la fonction décroît ; D(10) = 200 × e^(−0,5) ≈ 121,31.",
-                "invite": "Une autre liste perd ses abonnés selon D(x) = 200ᵉ^(−0,05x). Croît-elle ? Que vaut D(10) ?"
+                "raisonnement": "D(x) = 200e^(−0,05x) : k < 0, la fonction décroît ; D(10) = 200 × e^(−0,5) ≈ 121,31.",
+                "invite": "Une autre liste perd ses abonnés selon D(x) = 200e^(−0,05x). Croît-elle ? Que vaut D(10) ?"
               },
               {
                 "id": "tableur",
@@ -2450,7 +2450,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 1 — Les ventes en ligne",
-          "consigne": "Ventes en ligne : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier).",
+          "consigne": "Ventes en ligne : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier).",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2499,7 +2499,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a1-sens",
-                  "enonce": "Les ventes en boutique d’un ancien modèle de sac suivent B(x) = 900ᵉ^(−0,04x). Comment évoluent-elles ?",
+                  "enonce": "Les ventes en boutique d’un ancien modèle de sac suivent B(x) = 900e^(−0,04x). Comment évoluent-elles ?",
                   "options": [
                     {
                       "id": "elles-baissent-chaque-mois-car-k-moins-0-4479918d",
@@ -2616,7 +2616,7 @@
           },
           {
             "id": "b2-06-a1-sens",
-            "enonce": "Les ventes en boutique d’un ancien modèle de sac suivent B(x) = 900ᵉ^(−0,04x). Comment évoluent-elles ?",
+            "enonce": "Les ventes en boutique d’un ancien modèle de sac suivent B(x) = 900e^(−0,04x). Comment évoluent-elles ?",
             "options": [
               {
                 "id": "elles-baissent-chaque-mois-car-k-moins-0-4479918d",
@@ -3156,7 +3156,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — La capacité de l’atelier",
-          "consigne": "Ventes en ligne : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026. Capacité de l’atelier : 1 000 sacs par mois. Machine à coudre de 18 000 €, qui perd 20 % de sa valeur chaque année.",
+          "consigne": "Ventes en ligne : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026. Capacité de l’atelier : 1 000 sacs par mois. Machine à coudre de 18 000 €, qui perd 20 % de sa valeur chaque année.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3366,7 +3366,7 @@
           },
           {
             "reference": "b2-06-a2-capacite",
-            "texte": "400ᵉ^(0,06x) ≥ 1 000 ⇔ e^(0,06x) ≥ 2,5 ⇔ x ≥ ln 2,5 ÷ 0,06 ≈ 15,27. Premier mois entier : 16, soit mai 2027. 15 arrondit en dessous ; 42 vient de 2,5 ÷ 0,06, sans ln."
+            "texte": "400e^(0,06x) ≥ 1 000 ⇔ e^(0,06x) ≥ 2,5 ⇔ x ≥ ln 2,5 ÷ 0,06 ≈ 15,27. Premier mois entier : 16, soit mai 2027. 15 arrondit en dessous ; 42 vient de 2,5 ÷ 0,06, sans ln."
           },
           {
             "reference": "b2-06-a2-sens",
@@ -3421,7 +3421,7 @@
               "A7"
             ],
             "consignes": [
-              "Pour chaque objectif s de la colonne A, on résout 400ᵉ^(0,06x) = s.",
+              "Pour chaque objectif s de la colonne A, on résout 400e^(0,06x) = s.",
               "En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7.",
               "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7.",
               "a et k ne s’écrivent pas dans les formules : utilisez E1 et G1, figés par des $."
@@ -3435,7 +3435,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire en français les deux étapes de la résolution de 400ᵉ^(0,06x) = s, puis les formules de B2 et C2.\n• Erreurs à chercher : =A2/$E$1 sans LN ; =LN(A2)/LN($E$1) ; E1 ou G1 sans $ : la recopie affiche une erreur.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; comparer la ligne des 1 000 sacs à la réponse de l’exercice 3.\n• Transition : jalon 2.",
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire en français les deux étapes de la résolution de 400e^(0,06x) = s, puis les formules de B2 et C2.\n• Erreurs à chercher : =A2/$E$1 sans LN ; =LN(A2)/LN($E$1) ; E1 ou G1 sans $ : la recopie affiche une erreur.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; comparer la ligne des 1 000 sacs à la réponse de l’exercice 3.\n• Transition : jalon 2.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3803,7 +3803,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 500ᵉ^(−0,1x)",
+                    "title": "Pour débuter : f(x) = 500e^(−0,1x)",
                     "text": "a = 500 et k = −0,1 : f décroît.",
                     "steps": [
                       "f(10) = 500 × e^(−1) ≈ 183,94.",
@@ -3943,7 +3943,7 @@
               {
                 "id": "retour",
                 "intitule": "Le retour au modèle",
-                "raisonnement": "y = e^3,91 × e^(0,2x) ≈ 49,9ᵉ^(0,2x), soit environ 50ᵉ^(0,2x).",
+                "raisonnement": "y = e^3,91 × e^(0,2x) ≈ 49,9e^(0,2x), soit environ 50e^(0,2x).",
                 "invite": "Revenez à y : que valent a et k ?"
               },
               {
@@ -4122,7 +4122,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a3-demande",
-                  "enonce": "Avec y = 2 981ᵉ^(−0,05x), quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
+                  "enonce": "Avec y = 2 981e^(−0,05x), quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
                   "unite": "sacs",
                   "metadonnees": {
                     "concepts": [
@@ -4265,7 +4265,7 @@
           },
           {
             "id": "b2-06-a3-demande",
-            "enonce": "Avec y = 2 981ᵉ^(−0,05x), quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
+            "enonce": "Avec y = 2 981e^(−0,05x), quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
             "options": null
           },
           {
@@ -4304,7 +4304,7 @@
           },
           {
             "reference": "b2-06-a3-methode",
-            "texte": "2 981ᵉ^(−0,05x) = 600 ⇔ e^(−0,05x) = 600 ÷ 2 981 ⇔ −0,05x = ln(600 ÷ 2 981), puis on divise par −0,05. ln(600 ÷ 2 981) n’est pas ln 600 ÷ ln 2 981."
+            "texte": "2 981e^(−0,05x) = 600 ⇔ e^(−0,05x) = 600 ÷ 2 981 ⇔ −0,05x = ln(600 ÷ 2 981), puis on divise par −0,05. ln(600 ÷ 2 981) n’est pas ln 600 ÷ ln 2 981."
           },
           {
             "reference": "b2-06-a3-prix",
@@ -4362,7 +4362,7 @@
             },
             {
               "id": "prevision",
-              "libelle": "Prévoir avec le modèle exponentiel y = 2 981ᵉ^(−0,05x), qui reste positif et ralentit comme les relevés.",
+              "libelle": "Prévoir avec le modèle exponentiel y = 2 981e^(−0,05x), qui reste positif et ralentit comme les relevés.",
               "fausse": false
             },
             {
@@ -4463,7 +4463,7 @@
                   },
                   {
                     "rubrique": "Modèle retenu",
-                    "contenu": "Après ajustement par z = ln y, le cabinet retient f(x) = 20ᵉ^(−0,7x), demande mensuelle en centaines de kits au prix de x dizaines d’euros."
+                    "contenu": "Après ajustement par z = ln y, le cabinet retient f(x) = 20e^(−0,7x), demande mensuelle en centaines de kits au prix de x dizaines d’euros."
                   },
                   {
                     "rubrique": "Barème",
@@ -4725,7 +4725,7 @@
               {
                 "id": "b2-06-a4-e1-demande",
                 "intitule": "La demande à 25 € (2 points)",
-                "enonce": "Avec f(x) = 20ᵉ^(−0,7x), combien de kits les clubs demandent-ils par mois au prix de 25 € ? Arrondir à l’unité.",
+                "enonce": "Avec f(x) = 20e^(−0,7x), combien de kits les clubs demandent-ils par mois au prix de 25 € ? Arrondir à l’unité.",
                 "indice": "Le prix s’exprime en dizaines d’euros et la demande en centaines de kits : convertissez avant et après le calcul."
               },
               {
@@ -4768,7 +4768,7 @@
         "questions": [
           {
             "id": "b2-06-a4-e1-demande",
-            "enonce": "Avec f(x) = 20ᵉ^(−0,7x), combien de kits les clubs demandent-ils par mois au prix de 25 € ? Arrondir à l’unité.",
+            "enonce": "Avec f(x) = 20e^(−0,7x), combien de kits les clubs demandent-ils par mois au prix de 25 € ? Arrondir à l’unité.",
             "options": null
           },
           {
@@ -4816,7 +4816,7 @@
         "explications": [
           {
             "reference": "b2-06-a4-e1-demande",
-            "texte": "25 € donne x = 2,5 : f(2,5) = 20ᵉ^(−1,75) ≈ 3,4755 centaines, soit environ 348 kits. 20 × 0,3^2,5 ≈ 99 kits prend k pour le taux ; e^(+1,75) donnerait 11 509 kits, absurde."
+            "texte": "25 € donne x = 2,5 : f(2,5) = 20e^(−1,75) ≈ 3,4755 centaines, soit environ 348 kits. 20 × 0,3^2,5 ≈ 99 kits prend k pour le taux ; e^(+1,75) donnerait 11 509 kits, absurde."
           },
           {
             "reference": "b2-06-a4-e2-prix",
@@ -4824,7 +4824,7 @@
           },
           {
             "reference": "b2-06-a4-e3-plancher",
-            "texte": "20ᵉ^(−0,7x) < 2 ⇔ −0,7x < ln 0,1 ⇔ x > ln 0,1 ÷ (−0,7) ≈ 3,2894, soit 32,89 € : premier prix entier 33 €. 32 € arrondit en dessous ; 20 € vient de 0,3ˣ, k pris pour le taux."
+            "texte": "20e^(−0,7x) < 2 ⇔ −0,7x < ln 0,1 ⇔ x > ln 0,1 ÷ (−0,7) ≈ 3,2894, soit 32,89 € : premier prix entier 33 €. 32 € arrondit en dessous ; 20 € vient de 0,3ˣ, k pris pour le taux."
           },
           {
             "reference": "b2-06-a4-e4-baisse",
@@ -5000,7 +5000,7 @@
           },
           {
             "id": "b2-06-r-sens",
-            "enonce": "Comment évolue f(x) = 50ᵉ^(−0,2x) quand x augmente ?",
+            "enonce": "Comment évolue f(x) = 50e^(−0,2x) quand x augmente ?",
             "options": [
               {
                 "id": "elle-decroit-car-k-moins-0-2-est-negatif-b411a57a",
@@ -5028,7 +5028,7 @@
           },
           {
             "id": "b2-06-r-valeur",
-            "enonce": "Que vaut 400ᵉ^(0,1x) pour x = 1 ?",
+            "enonce": "Que vaut 400e^(0,1x) pour x = 1 ?",
             "options": [
               {
                 "id": "environ-108-73-soit-400-e-0-1-fb3913b0",
@@ -5523,7 +5523,7 @@
                   },
                   {
                     "rubrique": "Les ventes en ligne",
-                    "contenu": "Modèle retenu par l’expert-comptable : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier)."
+                    "contenu": "Modèle retenu par l’expert-comptable : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier)."
                   },
                   {
                     "rubrique": "La capacité de l’atelier",
@@ -5644,12 +5644,12 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 1 000ᵉ^(0,02x)",
+                    "title": "Pour débuter : f(x) = 1 000e^(0,02x)",
                     "text": "a = 1 000 et k = 0,02.",
                     "steps": [
                       "f(0) = 1 000 × e⁰ = 1 000.",
                       "Coefficient : e^0,02 ≈ 1,0202 ; taux ≈ 2,02 % par unité, pas 2 %.",
-                      "g(x) = 1 000ᵉ^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
+                      "g(x) = 1 000e^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
                     ]
                   },
                   {
@@ -5942,7 +5942,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Pour débuter : f(x) = 500ᵉ^(−0,1x)",
+                    "title": "Pour débuter : f(x) = 500e^(−0,1x)",
                     "text": "a = 500 et k = −0,1 : f décroît.",
                     "steps": [
                       "f(10) = 500 × e^(−1) ≈ 183,94.",
@@ -6120,7 +6120,7 @@
                   },
                   {
                     "rubrique": "Modèle retenu",
-                    "contenu": "Après ajustement par z = ln y, le cabinet retient f(x) = 20ᵉ^(−0,7x), demande mensuelle en centaines de kits au prix de x dizaines d’euros."
+                    "contenu": "Après ajustement par z = ln y, le cabinet retient f(x) = 20e^(−0,7x), demande mensuelle en centaines de kits au prix de x dizaines d’euros."
                   },
                   {
                     "rubrique": "Barème",
