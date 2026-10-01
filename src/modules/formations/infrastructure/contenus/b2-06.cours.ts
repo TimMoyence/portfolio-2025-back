@@ -555,7 +555,7 @@ const ACTE_1: moteur.Acte = [
       ],
       [
         'b2-06-a1-sens',
-        'k = −0,04 < 0 : chaque mois, les ventes sont multipliées par e^(−0,04) ≈ 0,961, une baisse d’environ 3,9 %. Une exponentielle ne croît que si k est positif.',
+        'k = −0,04 < 0 : chaque mois, les ventes sont multipliées par e^(−0,04) ≈ 0,961, un nombre inférieur à 1, donc elles baissent. Une exponentielle ne croît que si k est positif.',
       ],
       [
         'b2-06-a1-taux',
@@ -665,7 +665,7 @@ const ACTE_2: moteur.Acte = [
     {
       correction: {
         expected:
-          'Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans essayer les mois un par un.',
+          'Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans tâtonner ; pour les ventes, l’exposant est 0,06x, et la trace écrite montre comment en tirer le mois.',
         nextAction:
           'Gardez votre réponse : la trace écrite définit ln et ses propriétés.',
       },

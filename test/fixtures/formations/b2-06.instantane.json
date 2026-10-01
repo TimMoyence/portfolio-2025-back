@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "daf4cad20f8bd2e2fb9e15b85e44178fda7f7ca9bd22138cf49a4ca1709e6f17",
+  "empreinte": "9be1793aaeacba5eadbf56cad6b0de286e2d4860189630bd6cd993964af30507",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -2642,7 +2642,7 @@
           },
           {
             "reference": "b2-06-a1-sens",
-            "texte": "k = −0,04 < 0 : chaque mois, les ventes sont multipliées par e^(−0,04) ≈ 0,961, une baisse d’environ 3,9 %. Une exponentielle ne croît que si k est positif."
+            "texte": "k = −0,04 < 0 : chaque mois, les ventes sont multipliées par e^(−0,04) ≈ 0,961, un nombre inférieur à 1, donc elles baissent. Une exponentielle ne croît que si k est positif."
           },
           {
             "reference": "b2-06-a1-taux",
@@ -2954,7 +2954,7 @@
         "questions": [],
         "corrigeEcran": {
           "type": "reflexion",
-          "attendu": "Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans essayer les mois un par un.",
+          "attendu": "Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans tâtonner ; pour les ventes, l’exposant est 0,06x, et la trace écrite montre comment en tirer le mois.",
           "suite": "Gardez votre réponse : la trace écrite définit ln et ses propriétés."
         }
       },

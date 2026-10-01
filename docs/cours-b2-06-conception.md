@@ -62,8 +62,8 @@ b et notes de répartition).
 1. calculer une valeur de x ↦ a e^(kx) à la calculatrice et au tableur avec `EXP` ;
 2. dire le sens de variation de x ↦ a e^(kx) selon le signe de k, et le taux d'évolution e^k − 1
    par unité ;
-3. utiliser ln comme réciproque de l'exponentielle et ses propriétés sur les produits et les
-   puissances ;
+3. utiliser ln comme réciproque de l'exponentielle et ses propriétés sur les produits, les
+   quotients et les puissances ;
 4. résoudre qⁿ ≥ s et a e^(kx) ≥ s par ln, en changeant le sens de l'inégalité quand on divise par
    un nombre négatif, et donner le premier entier solution ;
 5. ajuster une série par z = ln y au tableur (`LN`, `PENTE`, `ORDONNEE.ORIGINE`, `EXP`) et revenir
@@ -293,7 +293,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 
 - Titre public : « Cours : le logarithme népérien »
 - Page 1 sur 2 : ln y est le nombre x tel que eˣ = y, pour y > 0 ; ln 1 = 0, ln e = 1 ; ln change
-  les produits en sommes et ln(aⁿ) = n × ln a ; exemple pour débuter (eˣ = 5) ; méthode et pièges,
+  les produits en sommes, les quotients en différences, et ln(aⁿ) = n × ln a ; exemple pour débuter (eˣ = 5) ; méthode et pièges,
   dont la touche log.
 
 #### A2-03 · `B2-06-A2-03-COURS-SEUIL` — 3 min · v2 `lesson` · catalogue
