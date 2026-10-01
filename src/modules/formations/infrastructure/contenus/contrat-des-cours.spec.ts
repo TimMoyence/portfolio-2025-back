@@ -4,6 +4,7 @@ import {
 } from '../../../../../test/factories/contenus-de-cours.factory';
 import { tireurSequentiel } from '../../../../../test/factories/cours.factory';
 import { CONFUSIONS } from '../../domain/cours/banque/confusions';
+import { matchesSolution } from '../../domain/GradingCore';
 import { questionsDuCours } from '../../domain/cours/Cours';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
@@ -192,6 +193,29 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         return relue !== null && Math.abs(relue - valeur) <= tolerance.valeur
           ? []
           : [`${question.id} : ${formePubliee}`];
+      });
+
+      expect(illisibles).toEqual([]);
+    });
+
+    it('publie pour chaque numérique une forme que la saisie relit comme la solution', () => {
+      const { solutions } = tirer(cours, 0);
+      const illisibles = questionsDuCours(cours).flatMap((question) => {
+        if (
+          question.type !== 'numeric' ||
+          question.formePubliee === undefined
+        ) {
+          return [];
+        }
+        const relue = lireNombreSaisi(question.formePubliee);
+        return relue !== null &&
+          matchesSolution(
+            relue,
+            Number(solutions[question.id].valeur),
+            question.tolerance,
+          )
+          ? []
+          : [`${question.id} : ${question.formePubliee}`];
       });
 
       expect(illisibles).toEqual([]);

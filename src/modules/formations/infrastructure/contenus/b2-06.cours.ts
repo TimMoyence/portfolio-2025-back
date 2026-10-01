@@ -574,7 +574,7 @@ const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 5 min',
         'Réflexion : écrire sur papier la formule de B2, puis ce qu’elle devient en B3 une fois recopiée.',
-        'Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 ou G1 sans $ : la colonne tombe à 0 ; =B3/B2 pour le taux.',
+        'Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 sans $ : la colonne tombe à 0 ; G1 sans $ : elle reste à 400 ; =B3/B2 pour le taux.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
       ),
       proprietes: {
@@ -878,7 +878,7 @@ const ACTE_2: moteur.Acte = [
             null,
             16,
             { type: 'absolue', valeur: 0 },
-            '16 (mai 2027)',
+            '16 mois',
             [
               [15, SEUIL_MAL_ARRONDI],
               [42, SEUIL_PAR_DIVISION],
@@ -899,7 +899,7 @@ const ACTE_2: moteur.Acte = [
             'ans',
             5,
             { type: 'absolue', valeur: 0 },
-            '5 années entières',
+            '5 années',
             [
               [4, SEUIL_MAL_ARRONDI],
               [1, TAUX_POUR_COEFFICIENT],
@@ -926,7 +926,7 @@ const ACTE_2: moteur.Acte = [
       ],
       [
         'b2-06-a2-sens',
-        'ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait des années négatives ou presque nulles, absurdes.',
+        'ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait n < 4,11 : la machine vaudrait moins de 40 % au début, puis plus ensuite, absurde pour un bien qui perd de la valeur.',
       ],
       [
         'b2-06-a2-machine',
@@ -1035,9 +1035,9 @@ const ACTE_3: moteur.Acte = [
         },
       ],
       formula:
-        'Chaque hausse de 5 € fait perdre à peu près la même part de la demande',
+        'La demande perd-elle le même nombre de sacs à chaque hausse de 5 € ?',
       reading:
-        'La demande baisse quand le prix monte, mais de moins en moins vite : 240 sacs perdus entre 20 € et 25 €, 95 seulement entre 40 € et 45 €. Une droite ne suit pas cette courbe.',
+        'La demande baisse quand le prix monte : 240 sacs perdus entre 20 € et 25 €, 95 entre 40 € et 45 €.',
       source: `Étude de prix de la gamme Sillage. ${DONNEES_FICTIVES}`,
       description:
         'Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €.',
@@ -1361,7 +1361,7 @@ const ACTE_3: moteur.Acte = [
           moteur.numerique(
             'b2-06-a3-demande',
             'ajustement-exponentiel',
-            'Avec y = 2 981e^(−0,05x), quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.',
+            'Avec ce modèle, a arrondi à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.',
             'sacs',
             446,
             { type: 'absolue', valeur: 0.5 },
@@ -1376,10 +1376,10 @@ const ACTE_3: moteur.Acte = [
             'resolution-par-logarithme',
             true,
             'Hélène vise une demande de 600 sacs par mois. Quelle égalité donne le prix de gros x ?',
-            'x = ln(600 ÷ 2 981) ÷ (−0,05)',
+            'x = ln(600 ÷ a) ÷ (−0,05)',
             [
-              ['x = (600 ÷ 2 981) ÷ (−0,05)', SEUIL_PAR_DIVISION],
-              ['x = ln 600 ÷ ln 2 981 ÷ (−0,05)', LN_EN_PRODUIT],
+              ['x = (600 ÷ a) ÷ (−0,05)', SEUIL_PAR_DIVISION],
+              ['x = ln 600 ÷ ln a ÷ (−0,05)', LN_EN_PRODUIT],
             ],
           ),
           moteur.numerique(

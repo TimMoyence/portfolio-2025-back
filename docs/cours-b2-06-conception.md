@@ -67,7 +67,7 @@ b et notes de répartition).
 4. résoudre qⁿ ≥ s et a e^(kx) ≥ s par ln, en changeant le sens de l'inégalité quand on divise par
    un nombre négatif, et donner le premier entier solution ;
 5. ajuster une série par z = ln y au tableur (`LN`, `PENTE`, `ORDONNEE.ORIGINE`, `EXP`) et revenir
-   au modèle y = e^b × e^(ax) ;
+   au modèle y = e^β × e^(αx), soit a = e^β ;
 6. utiliser un modèle exponentiel pour calculer une valeur et la valeur de x qui donne une valeur
    visée.
 
@@ -317,8 +317,9 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
   `ln-produit-en-produit`.
 - `b2-06-a2-capacite` : premier mois où les ventes dépassent 1 000 sacs ; pièges
   `seuil-mal-arrondi`, `seuil-par-division`.
-- `b2-06-a2-sens` (vote) : la résolution de 0,8ⁿ < 0,4 ; pièges `sens-inegalite-ln-negatif`,
-  `seuil-par-division`.
+- `b2-06-a2-sens` (vote) : la résolution de 0,8ⁿ < 0,4 ; piège `sens-inegalite-ln-negatif`, seul
+  pour que l'écran tienne sur la toile projetée, `seuil-par-division` étant déjà visé par le premier
+  vote.
 - `b2-06-a2-machine` : années au bout desquelles la machine vaut moins de 40 % de son prix ; pièges
   `seuil-mal-arrondi`, `coefficient-confondu-avec-taux`.
 
@@ -395,7 +396,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - L'IA ajuste la demande par une droite (y = −31x + 1 653, r ≈ −0,985) et en tire une demande
   négative au-delà de 53 €. Pistes justes : les rapports constants, l'ajustement de z = ln y et son
   coefficient de corrélation plus proche de −1, la demande négative qui trahit la droite, la
-  prévision par le modèle exponentiel ; piste fausse : un coefficient de −0,98 suffit à valider la
+  prévision par le modèle exponentiel ; piste fausse : un coefficient de −0,985 suffit à valider la
   droite.
 
 #### A3-09 · `B2-06-A3-09-JALON` — 1 min · `fp-pulse` · séance
@@ -476,7 +477,7 @@ Objectifs de ventes de l'exercice 4, mois exact ln(s ÷ 400) ÷ 0,06 : 3,72 ; 6,
 
 Ajustement de z en x : z ≈ −0,0499x + 8,0026, arrondi à z = −0,05x + 8 ; a = e⁸ ≈ 2 981, d'où
 y ≈ 2 981e^(−0,05x). Demande à 38 € : 445,86 sacs ; prix pour 600 sacs : 32,06 €. L'ajustement
-affine de y donne y = −31x + 1 653, négatif dès 53,34 €.
+affine de y donne y = −31x + 1 653, négatif dès 53,33 €.
 
 Mini-situation, prix x en dizaines d'euros (1 à 3,5), demande y en centaines de kits : 9,9 ; 7 ;
 4,9 ; 3,5 ; 2,4 ; 1,7. Ajustement de z = ln y : pente −0,7061, ordonnée à l'origine 3,0032,
@@ -512,7 +513,7 @@ précédents ou réemployés : `interets-composes`, `suite-geometrique`, `coeffi
 | `sens-inegalite-ln-negatif`            | resolution-par-logarithme  | Garder le sens en divisant par ln q négatif.              | B2-06-A2-03-COURS-SEUIL         |
 | `seuil-mal-arrondi`                    | prevision                  | Arrondir le seuil à l'entier inférieur.                   | B2-06-A2-03-COURS-SEUIL         |
 | `ajustement-affine-sur-y`              | ajustement-exponentiel     | Ajuster y par une droite au lieu de ln y.                 | B2-06-A3-04-COURS-AJUSTEMENT    |
-| `ordonnee-non-exponentiee`             | ajustement-exponentiel     | Prendre l'ordonnée à l'origine b pour le coefficient a.   | B2-06-A3-04-COURS-AJUSTEMENT    |
+| `ordonnee-non-exponentiee`             | ajustement-exponentiel     | Prendre l'ordonnée à l'origine β pour le coefficient a.   | B2-06-A3-04-COURS-AJUSTEMENT    |
 | `pente-ordonnee-inversees`             | ajustement-affine          | Inverser les séries de `PENTE` ou la pente et l'ordonnée. | B2-06-A3-04-COURS-AJUSTEMENT    |
 
 ### 5.10 Rappels espacés
