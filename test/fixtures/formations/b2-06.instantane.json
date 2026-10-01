@@ -1825,5 +1825,1810 @@
         }
       }
     ]
+  },
+  "deroule": {
+    "id": "b2-06-exponentielle-logarithme",
+    "titre": "Exponentielle et logarithme",
+    "niveau": "B2",
+    "duree": 180,
+    "concepts": [
+      "fonction-exponentielle",
+      "logarithme-neperien",
+      "resolution-par-logarithme",
+      "ajustement-exponentiel",
+      "tableur",
+      "interets-composes",
+      "suite-geometrique",
+      "coefficient-multiplicateur",
+      "ajustement-affine",
+      "prevision"
+    ],
+    "ecrans": [
+      {
+        "id": "B2-06-A1-01-RAPPEL-PLACEMENT",
+        "type": "fp-recall",
+        "titre": "Rappel du B2-05 : un capital placé à 3 %",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b2-06-a1-rappel-placement",
+            "enonce": "Rappel du B2-05. 1 000 € sont placés à 3 % par an, à intérêts composés. Que valent-ils au bout de n années ?",
+            "options": [
+              {
+                "id": "1-000-0-03-05286569",
+                "libelle": "1 000 × 0,03ⁿ"
+              },
+              {
+                "id": "1-000-1-plus-0-03-n-d25d8f56",
+                "libelle": "1 000 × (1 + 0,03 × n)"
+              },
+              {
+                "id": "1-000-1-03-d7fba9c1",
+                "libelle": "1 000 × 1,03ⁿ"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["interets-composes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "delaiMs": 0
+        },
+        "notes": "• Avant de lancer : vérifier au pupitre que tous les postes ont rejoint la séance.\n• Annoncer « seule la participation compte ». Chacun répond sans calculatrice.\n• Piège : prendre le taux (0,03) pour le coefficient ; tout l’acte 1 prolonge ces puissances.\n• Papier : la question est en tête du livret ; vote à main levée.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b2-06-a1-rappel-placement",
+            "bonneReponse": "1 000 × 1,03ⁿ",
+            "confusions": [
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              },
+              {
+                "id": "interets-simples-au-lieu-de-composes",
+                "libelle": "Calculer les intérêts de chaque année sur le seul capital de départ, sans les intérêts déjà acquis : à intérêts composés, on multiplie par 1 + t chaque année."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-06-a1-rappel-placement",
+            "enonce": "Rappel du B2-05. 1 000 € sont placés à 3 % par an, à intérêts composés. Que valent-ils au bout de n années ?",
+            "options": [
+              {
+                "id": "1-000-0-03-05286569",
+                "libelle": "1 000 × 0,03ⁿ"
+              },
+              {
+                "id": "1-000-1-plus-0-03-n-d25d8f56",
+                "libelle": "1 000 × (1 + 0,03 × n)"
+              },
+              {
+                "id": "1-000-1-03-d7fba9c1",
+                "libelle": "1 000 × 1,03ⁿ"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A1-02-ACCROCHE",
+        "type": "fp-story",
+        "titre": "Exponentielle et logarithme : croître, viser, ajuster",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-06-A1-02-ACCROCHE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-06-A1-02-ACCROCHE",
+              "renderer": "hero",
+              "props": {
+                "title": "Exponentielle et logarithme : croître, viser, ajuster",
+                "subtitle": "Atelier Rivage, voilerie de La Rochelle, lance la gamme Sillage : des sacs en toile de voile recyclée. Les ventes croissent, l’atelier a une capacité, les boutiques réagissent au prix : trois questions, trois outils.",
+                "bullets": [
+                  "BTS Comptabilité et gestion · 2ᵉ année · sixième cours de mathématiques",
+                  "Un rappel rapide du B2-02, du B2-04 et du B2-05, réinvestis aujourd’hui",
+                  "Trois notions : fonction exponentielle, logarithme népérien, modèles exponentiels",
+                  "Une mini-situation CCF et sa question tableur"
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "fonction-exponentielle",
+                "logarithme-neperien",
+                "ajustement-exponentiel"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Rappeler en une phrase le B2-05 : le financement du second atelier est bouclé ; Hélène lance maintenant une nouvelle gamme.\n• Annoncer le plan : un rappel rapide du B2-02, du B2-04 et du B2-05, puis trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), et une mini-situation CCF.\n• Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A1-03-VOTE-ACQUIS",
+        "type": "fp-vote",
+        "titre": "Vote : deux rappels, B2-04 et B2-02",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b2-06-a1-rappel-suite",
+            "enonce": "Rappel du B2-04. Une suite géométrique a pour premier terme 100 et pour raison 0,9. Comment évoluent ses termes ?",
+            "options": [
+              {
+                "id": "ils-baissent-de-0-9-a-chaque-rang-51541d26",
+                "libelle": "Ils baissent de 0,9 à chaque rang"
+              },
+              {
+                "id": "ils-baissent-de-10-pct-a-chaque-rang-117ce664",
+                "libelle": "Ils baissent de 10 % à chaque rang"
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b2-06-a1-rappel-pente",
+            "enonce": "Rappel du B2-02. Les x sont en A2:A7, les y en B2:B7. Quelle formule donne la pente de la droite d’ajustement de y en x ?",
+            "options": [
+              {
+                "id": "pente-a2-a7-b2-b7-9d4b1f67",
+                "libelle": "=PENTE(A2:A7;B2:B7)"
+              },
+              {
+                "id": "pente-b2-b7-a2-a7-024fc786",
+                "libelle": "=PENTE(B2:B7;A2:A7)"
+              }
+            ]
+          }
+        },
+        "notes": "• Rappel rapide : deux votes non notés, un par cours.\n• Dire où chaque acquis resservira : la raison devient le coefficient e^k, PENTE ajuste z = ln y.\n• Premier vote individuel ; entre 30 et 70 % de bonnes réponses, débat en binôme avant la deuxième question ; sinon, passer directement à la deuxième question.\n• La révélation s’ouvre après la deuxième question : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question, discussion en binôme entre les deux.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b2-06-a1-rappel-suite",
+            "bonneReponse": "Ils baissent de 10 % à chaque rang",
+            "confusions": [
+              {
+                "id": "nature-de-suite-confondue",
+                "libelle": "Confondre « ajouter toujours le même nombre » (suite arithmétique) et « multiplier toujours par le même nombre » (suite géométrique)."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-06-a1-rappel-pente",
+            "bonneReponse": "=PENTE(B2:B7;A2:A7)",
+            "confusions": [
+              {
+                "id": "pente-ordonnee-inversees",
+                "libelle": "Inverser les deux séries dans PENTE ou ORDONNEE.ORIGINE, ou prendre la pente pour l’ordonnée à l’origine."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-06-a1-rappel-suite",
+            "enonce": "Rappel du B2-04. Une suite géométrique a pour premier terme 100 et pour raison 0,9. Comment évoluent ses termes ?",
+            "options": [
+              {
+                "id": "ils-baissent-de-0-9-a-chaque-rang-51541d26",
+                "libelle": "Ils baissent de 0,9 à chaque rang"
+              },
+              {
+                "id": "ils-baissent-de-10-pct-a-chaque-rang-117ce664",
+                "libelle": "Ils baissent de 10 % à chaque rang"
+              }
+            ]
+          },
+          {
+            "id": "b2-06-a1-rappel-pente",
+            "enonce": "Rappel du B2-02. Les x sont en A2:A7, les y en B2:B7. Quelle formule donne la pente de la droite d’ajustement de y en x ?",
+            "options": [
+              {
+                "id": "pente-a2-a7-b2-b7-9d4b1f67",
+                "libelle": "=PENTE(A2:A7;B2:B7)"
+              },
+              {
+                "id": "pente-b2-b7-a2-a7-024fc786",
+                "libelle": "=PENTE(B2:B7;A2:A7)"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": {
+          "type": "revelation",
+          "titre": "Deux acquis qui resservent aujourd’hui",
+          "lignes": [
+            "Raison 0,9 : chaque terme est multiplié par 0,9, il perd 10 % ; retirer 0,9 serait une suite arithmétique.",
+            "PENTE prend d’abord les y, ensuite les x ; dans l’autre ordre, on obtient la droite de x en y.",
+            "L’écran suivant dit ce que ces acquis deviennent aujourd’hui."
+          ]
+        }
+      },
+      {
+        "id": "B2-06-A1-04-ACQUIS",
+        "type": "fp-story",
+        "titre": "Ce que vous savez déjà",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-06-A1-04-ACQUIS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-06-A1-04-ACQUIS",
+              "renderer": "comparison",
+              "props": {
+                "title": "Ce que vous savez déjà",
+                "subtitle": "Trois acquis qui servent à croître, viser et ajuster.",
+                "note": "Les fiches mémo du B2-02, du B2-04 et du B2-05 sont dans votre classeur de CCF.",
+                "columns": [
+                  {
+                    "label": "B2-04 · Suites",
+                    "tone": "info",
+                    "items": [
+                      "Géométrique : uₙ = u₀ × qⁿ.",
+                      "Seuil : tâtonner rang par rang.",
+                      "Aujourd’hui : e^(kx) et le seuil par ln."
+                    ]
+                  },
+                  {
+                    "label": "B2-05 · Placer",
+                    "tone": "success",
+                    "items": [
+                      "Cₙ = C₀ × (1 + t)ⁿ.",
+                      "Coefficient 1 + t, taux t.",
+                      "Aujourd’hui : le taux e^k − 1."
+                    ]
+                  },
+                  {
+                    "label": "B2-02 · Ajustement",
+                    "tone": "warning",
+                    "items": [
+                      "Droite des moindres carrés.",
+                      "PENTE et ORDONNEE.ORIGINE.",
+                      "Aujourd’hui : ajuster z = ln y."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "suite-geometrique",
+                "interets-composes",
+                "ajustement-affine"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 2 min : lire la dernière ligne de chaque colonne, c’est le fil du cours.\n• Question : « Lequel de ces acquis devient une fonction aujourd’hui ? » La puissance qⁿ, prolongée à tout x.\n• Ne pas refaire les cours : renvoyer aux fiches mémo du classeur de CCF.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A1-05-DOSSIER",
+        "type": "fp-story",
+        "titre": "Le dossier de la gamme Sillage",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-06-A1-05-DOSSIER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-06-A1-05-DOSSIER",
+              "renderer": "table",
+              "props": {
+                "title": "Le dossier de la gamme Sillage",
+                "subtitle": "Ce que sait Hélène Garnier sur la nouvelle gamme, avant de fixer son plan de production.",
+                "note": "Données fictives Atelier Rivage, créées pour ce cours.",
+                "columns": [
+                  {
+                    "key": "rubrique",
+                    "label": "Rubrique"
+                  },
+                  {
+                    "key": "contenu",
+                    "label": "Ce que montre le dossier"
+                  }
+                ],
+                "rows": [
+                  {
+                    "rubrique": "Le projet",
+                    "contenu": "La gamme Sillage : des sacs cousus dans de la toile de voile recyclée, lancés en janvier 2026. Hélène Garnier, la dirigeante, prépare le plan de production."
+                  },
+                  {
+                    "rubrique": "Les ventes en ligne",
+                    "contenu": "Modèle retenu par l’expert-comptable : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier)."
+                  },
+                  {
+                    "rubrique": "La capacité de l’atelier",
+                    "contenu": "Avec l’équipe actuelle, l’atelier coud au plus 1 000 sacs par mois."
+                  },
+                  {
+                    "rubrique": "L’étude de prix",
+                    "contenu": "Six prix de gros testés auprès des boutiques nautiques, de 20 € à 45 € le sac, et la demande mensuelle relevée pour chacun."
+                  },
+                  {
+                    "rubrique": "Les questions d’Hélène",
+                    "contenu": "À quel rythme croissent les ventes en ligne ? Quand dépasseront-elles la capacité de l’atelier ? Quel modèle décrit la demande des boutiques selon le prix ?"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "fonction-exponentielle",
+                "resolution-par-logarithme",
+                "ajustement-exponentiel"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min de lecture silencieuse ; ne rien calculer.\n• Faire dire les trois questions d’Hélène : croître, viser, ajuster.\n• Relier aux notions du jour : une question du dossier par notion.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A1-06-MISSION",
+        "type": "fp-pro",
+        "titre": "Votre mission : chiffrer la gamme Sillage",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B2-06-A1-06-MISSION",
+            "metier": "Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)",
+            "situation": "Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400ᵉ^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et la demande des boutiques ne baisse pas en ligne droite. »",
+            "geste": "Sans calculatrice, répondez aux trois questions à partir du dossier.",
+            "consequence": "Un seuil mal calculé, et l’atelier sature avant d’avoir recruté ; un prix mal choisi, et les boutiques n’achètent pas.",
+            "questionsLibres": [
+              {
+                "id": "b2-06-a1-mission:croissance",
+                "question": "Les ventes en ligne gagnent-elles le même nombre de sacs chaque mois ? Pourquoi ?",
+                "placeholder": "Oui / Non, parce que chaque mois…"
+              },
+              {
+                "id": "b2-06-a1-mission:seuil",
+                "question": "Comment trouver le mois des 1 000 sacs sans essayer les mois un par un ?",
+                "placeholder": "Il faudrait une opération qui…"
+              },
+              {
+                "id": "b2-06-a1-mission:prix",
+                "question": "Une droite suffit-elle à décrire la baisse de la demande quand le prix de gros monte ?",
+                "placeholder": "Oui / Non, parce que la demande…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": [
+                "fonction-exponentielle",
+                "resolution-par-logarithme",
+                "ajustement-exponentiel"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Lecture à voix haute du courriel (1 min), puis 4 min d’écriture individuelle et 1 min de mise en commun au pupitre.\n• Question 1 : faire dire que les ventes gagnent de plus en plus de sacs chaque mois ; elles sont multipliées, pas augmentées d’un nombre fixe.\n• Question 2 : faire émerger qu’il faudrait « défaire » l’exponentielle ; c’est l’acte 2.\n• Question 3 : faire dire que la demande baisse de moins en moins vite ; c’est l’acte 3.\n• Papier : trois lignes d’écriture dans le livret.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A1-07-COURS-EXPONENTIELLE",
+        "type": "fp-story",
+        "titre": "Cours : de qⁿ à la fonction exponentielle",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-06-A1-07-COURS-EXPONENTIELLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-06-A1-07-COURS-EXPONENTIELLE",
+              "renderer": "lesson",
+              "props": {
+                "title": "La fonction exponentielle : des puissances pour tous les nombres",
+                "subtitle": "Trace écrite · notion 1 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Prolonger qⁿ à tout nombre x",
+                    "text": "Une suite géométrique u₀ × qⁿ ne prend de valeurs qu’aux rangs entiers. La fonction exponentielle prolonge ces puissances à tout nombre réel x : on note eˣ, où e ≈ 2,718 est un nombre fixe, comme π. Comme les intérêts composés du B2-05, elle multiplie : des intérêts simples ajouteraient. Elle permet de calculer les ventes de la gamme Sillage à tout instant, pas seulement mois par mois.",
+                    "formula": "e⁰ = 1 · eˣ > 0 pour tout x · e^(a + b) = e^a × e^b · x ↦ eˣ est croissante"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : quatre valeurs à la calculatrice",
+                    "text": "Touche eˣ, souvent en seconde fonction de la touche ln.",
+                    "steps": [
+                      "e¹ ≈ 2,718 : c’est le nombre e.",
+                      "e^0,5 ≈ 1,649 : entre e⁰ = 1 et e¹.",
+                      "e^(−1) ≈ 0,368, soit 1 ÷ e : une exponentielle n’est jamais négative.",
+                      "e² ≈ 7,389, soit e × e : e^(a + b) = e^a × e^b."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Calculer une valeur d’exponentielle",
+                    "text": "Pièges : lire e^(kx) comme e × k × x ; ajouter au lieu de multiplier, comme une suite arithmétique ; calculer « en intérêts simples ».",
+                    "steps": [
+                      "Calculer d’abord l’exposant k × x.",
+                      "Appliquer la touche eˣ à tout l’exposant, entre parenthèses.",
+                      "Multiplier par a en dernier, puis arrondir."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["fonction-exponentielle", "suite-geometrique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Avant l’exemple, demander : « Une suite géométrique a-t-elle une valeur au rang 2,5 ? » Non : la fonction exponentielle comble les trous.\n• Relier au B2-04 et au B2-05 : qⁿ et (1 + t)ⁿ multiplient, ils n’ajoutent pas.\n• Faire trouver la touche eˣ sur les calculatrices de la salle.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A1-08-COURS-MODELE-EXP",
+        "type": "fp-story",
+        "titre": "Cours : les modèles a e^(kx) et le tableur",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-06-A1-08-COURS-MODELE-EXP",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-06-A1-08-COURS-MODELE-EXP",
+              "renderer": "lesson",
+              "props": {
+                "title": "Les modèles a e^(kx) : valeur de départ, coefficient, taux",
+                "subtitle": "Trace écrite · notion 1 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Lire a et k avant de calculer",
+                    "text": "Un modèle f(x) = a e^(kx) décrit une grandeur multipliée par le même nombre e^k à chaque unité de x. a est la valeur en 0. Le taux d’évolution par unité est e^k − 1, pas k : les deux sont proches quand k est petit, mais différents. Si k > 0, la fonction croît ; si k < 0, elle décroît.",
+                    "formula": "f(0) = a · coefficient par unité : e^k · taux par unité : e^k − 1 · k > 0 croissante, k < 0 décroissante"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : f(x) = 1 000ᵉ^(0,02x)",
+                    "text": "a = 1 000 et k = 0,02.",
+                    "steps": [
+                      "f(0) = 1 000 × e⁰ = 1 000.",
+                      "Coefficient : e^0,02 ≈ 1,0202 ; taux ≈ 2,02 % par unité, pas 2 %.",
+                      "g(x) = 1 000ᵉ^(−0,02x) décroît : coefficient e^(−0,02) ≈ 0,9802, soit −1,98 % par unité."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Au tableur : EXP et des paramètres figés",
+                    "text": "EXP(nombre) calcule e à la puissance nombre. a et k sont rangés dans deux cellules, figées par des $, pour recopier la formule vers le bas. Au CCF : lire a et k dans l’énoncé avant d’écrire la formule.",
+                    "steps": [
+                      "x en A2 ; a en H1 ; k en H2.",
+                      "En B2 : =$H$1*EXP($H$2*A2), puis recopier vers le bas.",
+                      "Taux d’une ligne à la suivante : =B3/B2-1.",
+                      "Sans les $, la recopie décale H1 et H2 : les valeurs deviennent fausses."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "fonction-exponentielle",
+                "coefficient-multiplicateur",
+                "tableur"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Faire comparer k = 0,02 et le taux 2,02 % : proches, mais pas égaux ; l’écart grandit avec k.\n• Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne devient fausse, l’erreur fixe la règle.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A1-09-EXEMPLE-ABONNES",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : 200 abonnés et e^(0,05x)",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b2-06-a1-exemple-abonnes",
+            "enonce": "La lettre d’information de la gamme Sillage compte 200 abonnés à son lancement. Au bout de x semaines, le nombre d’abonnés est modélisé par A(x) = 200ᵉ^(0,05x).",
+            "etapes": [
+              {
+                "id": "depart",
+                "intitule": "La valeur de départ",
+                "raisonnement": "A(0) = 200 × e⁰ = 200 × 1 = 200 : a est la valeur en 0.",
+                "invite": "Que vaut A(0) ?"
+              },
+              {
+                "id": "dix-semaines",
+                "intitule": "Au bout de dix semaines",
+                "raisonnement": "A(10) = 200 × e^0,5 ≈ 200 × 1,6487 ≈ 329,74, soit environ 330 abonnés.",
+                "invite": "Calculez A(10) à la calculatrice."
+              },
+              {
+                "id": "coefficient",
+                "intitule": "Le coefficient et le taux",
+                "raisonnement": "Chaque semaine, A est multiplié par e^0,05 ≈ 1,0513 : le taux hebdomadaire est d’environ 5,13 %, pas 5 %.",
+                "invite": "Par quel nombre A est-il multiplié chaque semaine ? Quel est le taux ?"
+              },
+              {
+                "id": "decroissant",
+                "intitule": "Un modèle décroissant",
+                "raisonnement": "D(x) = 200ᵉ^(−0,05x) : k < 0, la fonction décroît ; D(10) = 200 × e^(−0,5) ≈ 121,31.",
+                "invite": "Une autre liste perd ses abonnés selon D(x) = 200ᵉ^(−0,05x). Croît-elle ? Que vaut D(10) ?"
+              },
+              {
+                "id": "tableur",
+                "intitule": "Au tableur",
+                "raisonnement": "Semaine en A2 : =200*EXP(0,05*A2). Mieux : a et k dans deux cellules figées, pour changer d’hypothèse sans réécrire la formule.",
+                "invite": "Quelle formule de tableur donne A(x), la semaine étant en A2 ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["fonction-exponentielle"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’écart entre k = 0,05 et le taux 5,13 % (étape 3) et sur le signe de k (étape 4).\n• Transition : « À vous, sur les ventes en ligne de la gamme Sillage : exercice 1. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A1-10-ATELIER-VENTES",
+        "type": "questionnaire",
+        "titre": "Exercice 1 — Les ventes en ligne",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 1 — Les ventes en ligne",
+          "consigne": "Ventes en ligne : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026 (x = 0 en janvier).",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-06-a1-calcul",
+                  "enonce": "Quel calcul donne les ventes de juin 2026, V(5) ?",
+                  "options": [
+                    {
+                      "id": "400-e-0-06-5-soit-400-e-0-3-9f72ad1c",
+                      "libelle": "400 × e^(0,06 × 5), soit 400 × e^0,3"
+                    },
+                    {
+                      "id": "400-1-06-6271ed4f",
+                      "libelle": "400 × 1,06⁵"
+                    },
+                    {
+                      "id": "400-e-0-06-5-d1f95b92",
+                      "libelle": "400 × e × 0,06 × 5"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-06-a1-ventes",
+                  "enonce": "Combien de sacs le modèle prévoit-il en juin 2026 ? Arrondir à l’unité.",
+                  "unite": "sacs",
+                  "metadonnees": {
+                    "concepts": ["fonction-exponentielle"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-06-a1-sens",
+                  "enonce": "Les ventes en boutique d’un ancien modèle de sac suivent B(x) = 900ᵉ^(−0,04x). Comment évoluent-elles ?",
+                  "options": [
+                    {
+                      "id": "elles-baissent-chaque-mois-car-k-moins-0-4479918d",
+                      "libelle": "Elles baissent chaque mois, car k = −0,04 est négatif"
+                    },
+                    {
+                      "id": "elles-augmentent-une-exponentielle-croit-3299b596",
+                      "libelle": "Elles augmentent : une exponentielle croît toujours"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-06-a1-taux",
+                  "enonce": "Quel est le taux d’évolution mensuel des ventes en ligne, en % ? Arrondir au centième.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["fonction-exponentielle"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "renvoi": "B2-06-A1-05-DOSSIER",
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire a et k du modèle, puis l’exposant à calculer, avant la calculatrice.\n• Pièges : e × k × x ; 1,06⁵ au lieu de e^0,3 ; k pris pour le taux ; une exponentielle qui croîtrait toujours.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Faisons calculer tous les mois par le tableur : exercice 2. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b2-06-a1-calcul",
+            "bonneReponse": "400 × e^(0,06 × 5), soit 400 × e^0,3",
+            "confusions": [
+              {
+                "id": "exponentielle-lue-comme-produit",
+                "libelle": "Calculer e^(kx) comme e × k × x : k × x est un exposant, il se calcule avant d’appliquer l’exponentielle."
+              },
+              {
+                "id": "k-confondu-avec-taux",
+                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-06-a1-ventes",
+            "bonneReponse": "540 sacs",
+            "confusions": [
+              {
+                "id": "k-confondu-avec-taux",
+                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+              },
+              {
+                "id": "exponentielle-lue-comme-produit",
+                "libelle": "Calculer e^(kx) comme e × k × x : k × x est un exposant, il se calcule avant d’appliquer l’exponentielle."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-06-a1-sens",
+            "bonneReponse": "Elles baissent chaque mois, car k = −0,04 est négatif",
+            "confusions": [
+              {
+                "id": "signe-de-k-ignore",
+                "libelle": "Croire qu’un modèle a e^(kx) croît toujours : il décroît quand k est négatif, en restant positif."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-06-a1-taux",
+            "bonneReponse": "6,18 %",
+            "confusions": [
+              {
+                "id": "k-confondu-avec-taux",
+                "libelle": "Prendre k pour le taux d’évolution par unité : le coefficient est e^k et le taux e^k − 1."
+              },
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-06-a1-calcul",
+            "enonce": "Quel calcul donne les ventes de juin 2026, V(5) ?",
+            "options": [
+              {
+                "id": "400-e-0-06-5-soit-400-e-0-3-9f72ad1c",
+                "libelle": "400 × e^(0,06 × 5), soit 400 × e^0,3"
+              },
+              {
+                "id": "400-1-06-6271ed4f",
+                "libelle": "400 × 1,06⁵"
+              },
+              {
+                "id": "400-e-0-06-5-d1f95b92",
+                "libelle": "400 × e × 0,06 × 5"
+              }
+            ]
+          },
+          {
+            "id": "b2-06-a1-ventes",
+            "enonce": "Combien de sacs le modèle prévoit-il en juin 2026 ? Arrondir à l’unité.",
+            "options": null
+          },
+          {
+            "id": "b2-06-a1-sens",
+            "enonce": "Les ventes en boutique d’un ancien modèle de sac suivent B(x) = 900ᵉ^(−0,04x). Comment évoluent-elles ?",
+            "options": [
+              {
+                "id": "elles-baissent-chaque-mois-car-k-moins-0-4479918d",
+                "libelle": "Elles baissent chaque mois, car k = −0,04 est négatif"
+              },
+              {
+                "id": "elles-augmentent-une-exponentielle-croit-3299b596",
+                "libelle": "Elles augmentent : une exponentielle croît toujours"
+              }
+            ]
+          },
+          {
+            "id": "b2-06-a1-taux",
+            "enonce": "Quel est le taux d’évolution mensuel des ventes en ligne, en % ? Arrondir au centième.",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-06-a1-calcul",
+            "texte": "On calcule l’exposant 0,06 × 5 = 0,3, puis e^0,3, puis on multiplie par 400. 400 × e × 0,06 × 5 lit l’exponentielle comme un produit ; 400 × 1,06⁵ prend k pour le taux."
+          },
+          {
+            "reference": "b2-06-a1-ventes",
+            "texte": "400 × e^0,3 ≈ 539,94, soit environ 540 sacs en juin 2026. Avec 1,06⁵, on trouverait 535 sacs ; avec e × 0,3, 326 sacs."
+          },
+          {
+            "reference": "b2-06-a1-sens",
+            "texte": "k = −0,04 < 0 : chaque mois, les ventes sont multipliées par e^(−0,04) ≈ 0,961, une baisse d’environ 3,9 %. Une exponentielle ne croît que si k est positif."
+          },
+          {
+            "reference": "b2-06-a1-taux",
+            "texte": "Coefficient mensuel : e^0,06 ≈ 1,0618 ; taux : e^0,06 − 1 ≈ 6,18 %, et non 6 %. 106,18 % est le coefficient écrit en pourcentage."
+          }
+        ]
+      },
+      {
+        "id": "B2-06-A1-11-TABLEUR-VENTES",
+        "type": "fp-sheet",
+        "titre": "Exercice 2 — Les ventes au tableur",
+        "duree": 8,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b2-06-a1-tableur-ventes",
+            "intitule": "Exercice 2 — Les ventes au tableur",
+            "lignes": 8,
+            "colonnes": 7,
+            "cellules": {
+              "A1": "Mois x",
+              "B1": "Ventes V(x) (sacs)",
+              "C1": "Taux d’évolution sur un mois",
+              "D1": "a (sacs)",
+              "E1": "400",
+              "F1": "k",
+              "G1": "0,06",
+              "A2": "0",
+              "A3": "1",
+              "A4": "2",
+              "A5": "3",
+              "A6": "4",
+              "A7": "5",
+              "A8": "6"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "C1",
+              "D1",
+              "E1",
+              "F1",
+              "G1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A8"
+            ],
+            "consignes": [
+              "En B2, écrivez la formule des ventes V(x) = a e^(kx) du mois de la ligne, avec EXP, a en E1 et k en G1. Recopiez-la jusqu’en B8.",
+              "En C3, écrivez le taux d’évolution des ventes entre le mois de la ligne 2 et celui de la ligne 3. Recopiez jusqu’en C8.",
+              "a et k ne s’écrivent pas dans la formule : utilisez E1 et G1, figés par des $."
+            ],
+            "metadonnees": {
+              "concepts": ["tableur", "fonction-exponentielle"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 8,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier la formule de B2, puis ce qu’elle devient en B3 une fois recopiée.\n• Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 ou G1 sans $ : la colonne tombe à 0 ; =B3/B2 pour le taux.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire, relire la formule de B2 et montrer les $ qui la font recopier.\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b2-06-a1-tableur-ventes",
+            "enonce": "Exercice 2 — Les ventes au tableur",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "feuille",
+          "attendus": [
+            {
+              "reference": "B2",
+              "formuleReference": "=$E$1*EXP($G$1*A2)",
+              "valeur": 400,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "B3",
+              "formuleReference": "=$E$1*EXP($G$1*A3)",
+              "valeur": 424.734619,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B4",
+              "formuleReference": "=$E$1*EXP($G$1*A4)",
+              "valeur": 450.998741,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B5",
+              "formuleReference": "=$E$1*EXP($G$1*A5)",
+              "valeur": 478.886945,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B6",
+              "formuleReference": "=$E$1*EXP($G$1*A6)",
+              "valeur": 508.49966,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B7",
+              "formuleReference": "=$E$1*EXP($G$1*A7)",
+              "valeur": 539.943523,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B8",
+              "formuleReference": "=$E$1*EXP($G$1*A8)",
+              "valeur": 573.331766,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "C3",
+              "formuleReference": "=B3/B2-1",
+              "valeur": 0.061837,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "C4",
+              "formuleReference": "=B4/B3-1",
+              "valeur": 0.061837,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C5",
+              "formuleReference": "=B5/B4-1",
+              "valeur": 0.061837,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C6",
+              "formuleReference": "=B6/B5-1",
+              "valeur": 0.061837,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C7",
+              "formuleReference": "=B7/B6-1",
+              "valeur": 0.061837,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            },
+            {
+              "reference": "C8",
+              "formuleReference": "=B8/B7-1",
+              "valeur": 0.061837,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C3"
+              }
+            }
+          ],
+          "seuilReussite": 0.8
+        },
+        "explications": [
+          {
+            "reference": "B2 à B8",
+            "texte": "=$E$1*EXP($G$1*A2), recopiée : 400 sacs en janvier, puis 424,73 ; 451,00 ; 478,89 ; 508,50 ; 539,94 et 573,33. Sans les $, la recopie lit E2 et G2, vides, et affiche 0."
+          },
+          {
+            "reference": "C3 à C8",
+            "texte": "=B3/B2-1, recopiée : environ 6,18 % chaque mois, le même taux sur toute la colonne. =B3/B2 donne le coefficient, environ 1,0618, pas le taux."
+          }
+        ]
+      },
+      {
+        "id": "B2-06-A1-12-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 1 : fonction exponentielle",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b2-06-a1-jalon",
+            "invite": "Je sais calculer une valeur de a e^(kx), en donner le taux par unité et l’écrire au tableur.",
+            "metadonnees": {
+              "concepts": ["fonction-exponentielle"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la trace écrite A1-08 sur le taux e^k − 1 après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A2-01-REFLEXION-RECIPROQUE",
+        "type": "fp-story",
+        "titre": "Réfléchir : remonter de 1 000 sacs au mois",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "recit": {
+            "id": "B2-06-A2-01-REFLEXION-RECIPROQUE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-06-A2-01-REFLEXION-RECIPROQUE",
+              "renderer": "reflection",
+              "props": {
+                "promptData": {
+                  "id": "b2-06-a2-reflexion-reciproque",
+                  "type": "reflection",
+                  "question": "Un stagiaire cherche quand les ventes en ligne atteindront 1 000 sacs : il calcule V(1), V(2), V(3)… jusqu’à dépasser 1 000. Pour retrouver x dans 5 × x = 20, on divise. Sans calculatrice : quelle opération faudrait-il pour retrouver x dans eˣ = 2,5 ?",
+                  "placeholder": "Il faudrait une opération qui…",
+                  "competency": "Raisonner · défaire une fonction"
+                }
+              }
+            },
+            "metadonnees": {
+              "concepts": ["logarithme-neperien", "resolution-par-logarithme"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 5,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "renvoi": "B2-06-A1-05-DOSSIER",
+        "notes": "• Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.\n• Ne rien trancher : la trace écrite suivante répond.\n• Relance : « Pour défaire × 5, on divise. Pour défaire une puissance de e, on fait quoi ? »\n• Papier : cadre de réponse du livret.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": {
+          "type": "reflexion",
+          "attendu": "Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans essayer les mois un par un.",
+          "suite": "Gardez votre réponse : la trace écrite définit ln et ses propriétés."
+        }
+      },
+      {
+        "id": "B2-06-A2-02-COURS-LOGARITHME",
+        "type": "fp-story",
+        "titre": "Cours : le logarithme népérien",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-06-A2-02-COURS-LOGARITHME",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-06-A2-02-COURS-LOGARITHME",
+              "renderer": "lesson",
+              "props": {
+                "title": "Le logarithme népérien : défaire l’exponentielle",
+                "subtitle": "Trace écrite · notion 2 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "ln remonte de l’exponentielle à l’exposant",
+                    "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
+                    "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(aⁿ) = n × ln a"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : eˣ = 5",
+                    "text": "On cherche l’exposant qui donne 5.",
+                    "steps": [
+                      "x = ln 5 ≈ 1,609.",
+                      "Contrôle : e^1,609 ≈ 5.",
+                      "ln 8 = ln(2³) = 3 × ln 2 ≈ 2,079.",
+                      "ln(2 × 4) = ln 2 + ln 4, et non ln 2 × ln 4."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Utiliser ln sans se tromper de touche",
+                    "text": "Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.",
+                    "steps": [
+                      "Repérer l’égalité eˣ = y, avec y > 0.",
+                      "Appliquer ln : x = ln y, touche ln de la calculatrice.",
+                      "Au tableur : =LN(cellule).",
+                      "Contrôler en recalculant eˣ."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["logarithme-neperien"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; garder la réflexion précédente sous les yeux.\n• Faire vérifier e^(ln 5) = 5 à la calculatrice : ln défait l’exponentielle.\n• Faire taper log 5 puis ln 5 : deux touches, deux résultats ; seule ln sert aujourd’hui.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A2-03-COURS-SEUIL",
+        "type": "fp-story",
+        "titre": "Cours : résoudre qⁿ ≥ s avec ln",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-06-A2-03-COURS-SEUIL",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-06-A2-03-COURS-SEUIL",
+              "renderer": "lesson",
+              "props": {
+                "title": "Résoudre qⁿ ≥ s : passer l’exposant devant",
+                "subtitle": "Trace écrite · notion 2 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Appliquer ln, puis diviser par ln q",
+                    "text": "Pour trouver le premier rang n tel que qⁿ ≥ s, on applique ln aux deux membres : ln garde le sens d’une inégalité entre nombres positifs, et ln(qⁿ) = n × ln q. On divise ensuite par ln q : si q > 1, ln q > 0 et le sens reste ; si 0 < q < 1, ln q < 0 et diviser par ln q change le sens de l’inégalité. Fini de tâtonner rang par rang, comme au B2-04.",
+                    "formula": "q > 1 : qⁿ ≥ s ⇔ n ≥ ln s ÷ ln q · 0 < q < 1 : qⁿ ≤ s ⇔ n ≥ ln s ÷ ln q"
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pour débuter : 1,5ⁿ ≥ 10",
+                    "text": "On cherche le premier entier n.",
+                    "steps": [
+                      "n × ln 1,5 ≥ ln 10.",
+                      "ln 1,5 > 0 : n ≥ ln 10 ÷ ln 1,5 ≈ 5,68.",
+                      "Premier entier : n = 6. Contrôle : 1,5⁵ ≈ 7,59 < 10 et 1,5⁶ ≈ 11,39 ≥ 10."
+                    ]
+                  },
+                  {
+                    "kind": "exam",
+                    "title": "Au CCF : même méthode pour a e^(kx) ≥ s",
+                    "text": "a e^(kx) ≥ s ⇔ e^(kx) ≥ s ÷ a ⇔ kx ≥ ln(s ÷ a), puis on divise par k, en changeant le sens si k < 0. Pièges : diviser s par q au lieu de passer par ln ; garder le sens en divisant par un nombre négatif ; arrondir le seuil à l’entier inférieur.",
+                    "steps": [
+                      "Isoler la puissance ou l’exponentielle.",
+                      "Appliquer ln, puis diviser par ln q ou par k, en surveillant le signe.",
+                      "Premier entier : arrondir au-dessus, puis contrôler les deux rangs voisins.",
+                      "Au tableur : =LN(B1/$H$1)/$H$2 donne la valeur exacte de x."
+                    ]
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["resolution-par-logarithme", "tableur"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Relier au B2-04 : le seuil se trouvait en tâtonnant ; ln le donne en une ligne.\n• Question : « ln 0,8 est-il positif ? » Non : diviser par ln 0,8 change le sens.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A2-04-EXEMPLE-DOUBLEMENT",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : doubler, puis perdre la moitié",
+        "duree": 6,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b2-06-a2-exemple-doublement",
+            "enonce": "Hélène relit le B2-05 : la trésorerie est placée à 2,5 % par an. En combien d’années aura-t-elle doublé ? Puis : une surjeteuse de 6 000 € perd 20 % de sa valeur chaque année ; quand vaudra-t-elle moins de la moitié de son prix ?",
+            "etapes": [
+              {
+                "id": "inequation",
+                "intitule": "L’inéquation",
+                "raisonnement": "Doubler, c’est être multiplié par 2 : 1,025ⁿ ≥ 2.",
+                "invite": "Quelle inéquation traduit le doublement ?"
+              },
+              {
+                "id": "logarithme",
+                "intitule": "Appliquer ln",
+                "raisonnement": "n × ln 1,025 ≥ ln 2, et ln 1,025 > 0 : n ≥ ln 2 ÷ ln 1,025 ≈ 28,07.",
+                "invite": "Appliquez ln, puis isolez n."
+              },
+              {
+                "id": "entier",
+                "intitule": "Le premier entier",
+                "raisonnement": "Au bout de 29 ans. Contrôle : 1,025²⁸ ≈ 1,996 < 2 et 1,025²⁹ ≈ 2,046.",
+                "invite": "Quel est le premier nombre entier d’années ?"
+              },
+              {
+                "id": "moitie",
+                "intitule": "La surjeteuse",
+                "raisonnement": "0,8ⁿ < 0,5 ⇔ n × ln 0,8 < ln 0,5 ; ln 0,8 < 0, le sens change : n > ln 0,5 ÷ ln 0,8 ≈ 3,11.",
+                "invite": "Perdre 20 % par an, c’est multiplier par 0,8. Résolvez 0,8ⁿ < 0,5."
+              },
+              {
+                "id": "conclusion",
+                "intitule": "La conclusion",
+                "raisonnement": "Au bout de 4 ans. Garder le sens donnerait n < 3,11 : absurde, la machine perd de la valeur avec le temps.",
+                "invite": "Au bout de combien d’années entières ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["resolution-par-logarithme", "interets-composes"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 6,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur le premier entier (étape 3) et sur le sens qui change (étape 4).\n• Transition : « À vous, sur la capacité de l’atelier : exercice 3. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-06-A2-05-ATELIER-SEUILS",
+        "type": "questionnaire",
+        "titre": "Exercice 3 — La capacité de l’atelier",
+        "duree": 11,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 3 — La capacité de l’atelier",
+          "consigne": "Ventes en ligne : V(x) = 400ᵉ^(0,06x) sacs par mois, x en mois depuis janvier 2026. Capacité de l’atelier : 1 000 sacs par mois. Machine à coudre de 18 000 €, qui perd 20 % de sa valeur chaque année.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-06-a2-equivalence",
+                  "enonce": "Une grandeur gagne 6 % par an. Pour savoir quand elle double, on résout 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?",
+                  "options": [
+                    {
+                      "id": "n-ln-2-1-06-fb1d8dcb",
+                      "libelle": "n ≥ ln(2 ÷ 1,06)"
+                    },
+                    {
+                      "id": "n-ln-2-ln-1-06-b4ca802a",
+                      "libelle": "n ≥ ln 2 ÷ ln 1,06"
+                    },
+                    {
+                      "id": "n-2-1-06-5b9c5115",
+                      "libelle": "n ≥ 2 ÷ 1,06"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-06-a2-capacite",
+                  "enonce": "À partir de quel mois x, entier, les ventes en ligne dépassent-elles la capacité de 1 000 sacs ?",
+                  "unite": null,
+                  "metadonnees": {
+                    "concepts": [
+                      "resolution-par-logarithme",
+                      "logarithme-neperien"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 11,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b2-06-a2-sens",
+                  "enonce": "Pour la machine, on résout 0,8ⁿ < 0,4. Quelle inégalité obtient-on ?",
+                  "options": [
+                    {
+                      "id": "n-0-4-0-8-974779d0",
+                      "libelle": "n < 0,4 ÷ 0,8"
+                    },
+                    {
+                      "id": "n-ln-0-4-ln-0-8-car-ln-0-8-0-00b37277",
+                      "libelle": "n > ln 0,4 ÷ ln 0,8, car ln 0,8 < 0"
+                    },
+                    {
+                      "id": "n-ln-0-4-ln-0-8-c83a2873",
+                      "libelle": "n < ln 0,4 ÷ ln 0,8"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b2-06-a2-machine",
+                  "enonce": "Au bout de combien d’années entières la machine vaut-elle moins de 40 % de son prix d’achat ?",
+                  "unite": "ans",
+                  "metadonnees": {
+                    "concepts": [
+                      "resolution-par-logarithme",
+                      "logarithme-neperien"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 11,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "renvoi": "B2-06-A1-05-DOSSIER",
+        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : pour chaque question, écrire l’inéquation, puis le signe du nombre par lequel on divisera.\n• Pièges : diviser au lieu de passer par ln ; garder le sens avec ln 0,8 ; arrondir le seuil en dessous.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Et pour d’autres objectifs que 1 000 sacs ? Le tableur : exercice 4. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b2-06-a2-equivalence",
+            "bonneReponse": "n ≥ ln 2 ÷ ln 1,06",
+            "confusions": [
+              {
+                "id": "seuil-par-division",
+                "libelle": "Diviser la valeur visée par q ou par k au lieu d’appliquer ln : qⁿ ≥ s se résout par n × ln q ≥ ln s."
+              },
+              {
+                "id": "ln-produit-en-produit",
+                "libelle": "Écrire ln(a × b) = ln a × ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme et une puissance en produit, ln(aⁿ) = n × ln a."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-06-a2-capacite",
+            "bonneReponse": "16 (mai 2027)",
+            "confusions": [
+              {
+                "id": "seuil-mal-arrondi",
+                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+              },
+              {
+                "id": "seuil-par-division",
+                "libelle": "Diviser la valeur visée par q ou par k au lieu d’appliquer ln : qⁿ ≥ s se résout par n × ln q ≥ ln s."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-06-a2-sens",
+            "bonneReponse": "n > ln 0,4 ÷ ln 0,8, car ln 0,8 < 0",
+            "confusions": [
+              {
+                "id": "sens-inegalite-ln-negatif",
+                "libelle": "Garder le sens de l’inégalité en divisant par ln q quand q < 1 : ln q est négatif, le sens change."
+              },
+              {
+                "id": "seuil-par-division",
+                "libelle": "Diviser la valeur visée par q ou par k au lieu d’appliquer ln : qⁿ ≥ s se résout par n × ln q ≥ ln s."
+              }
+            ]
+          },
+          {
+            "questionId": "b2-06-a2-machine",
+            "bonneReponse": "5 années entières",
+            "confusions": [
+              {
+                "id": "seuil-mal-arrondi",
+                "libelle": "Arrondir à l’entier inférieur le rang solution d’une inéquation de seuil, au lieu du premier entier qui la vérifie."
+              },
+              {
+                "id": "coefficient-confondu-avec-taux",
+                "libelle": "Confondre le taux d’évolution t et le coefficient multiplicateur 1 + t (pour + 15 % : 0,15 et 1,15)."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b2-06-a2-equivalence",
+            "enonce": "Une grandeur gagne 6 % par an. Pour savoir quand elle double, on résout 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?",
+            "options": [
+              {
+                "id": "n-ln-2-1-06-fb1d8dcb",
+                "libelle": "n ≥ ln(2 ÷ 1,06)"
+              },
+              {
+                "id": "n-ln-2-ln-1-06-b4ca802a",
+                "libelle": "n ≥ ln 2 ÷ ln 1,06"
+              },
+              {
+                "id": "n-2-1-06-5b9c5115",
+                "libelle": "n ≥ 2 ÷ 1,06"
+              }
+            ]
+          },
+          {
+            "id": "b2-06-a2-capacite",
+            "enonce": "À partir de quel mois x, entier, les ventes en ligne dépassent-elles la capacité de 1 000 sacs ?",
+            "options": null
+          },
+          {
+            "id": "b2-06-a2-sens",
+            "enonce": "Pour la machine, on résout 0,8ⁿ < 0,4. Quelle inégalité obtient-on ?",
+            "options": [
+              {
+                "id": "n-0-4-0-8-974779d0",
+                "libelle": "n < 0,4 ÷ 0,8"
+              },
+              {
+                "id": "n-ln-0-4-ln-0-8-car-ln-0-8-0-00b37277",
+                "libelle": "n > ln 0,4 ÷ ln 0,8, car ln 0,8 < 0"
+              },
+              {
+                "id": "n-ln-0-4-ln-0-8-c83a2873",
+                "libelle": "n < ln 0,4 ÷ ln 0,8"
+              }
+            ]
+          },
+          {
+            "id": "b2-06-a2-machine",
+            "enonce": "Au bout de combien d’années entières la machine vaut-elle moins de 40 % de son prix d’achat ?",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b2-06-a2-equivalence",
+            "texte": "ln garde le sens : n × ln 1,06 ≥ ln 2, puis on divise par ln 1,06, positif. 2 ÷ 1,06 divise sans passer par ln ; ln(2 ÷ 1,06) n’est pas ln 2 ÷ ln 1,06."
+          },
+          {
+            "reference": "b2-06-a2-capacite",
+            "texte": "400ᵉ^(0,06x) ≥ 1 000 ⇔ e^(0,06x) ≥ 2,5 ⇔ x ≥ ln 2,5 ÷ 0,06 ≈ 15,27. Premier mois entier : 16, soit mai 2027. 15 arrondit en dessous ; 42 vient de 2,5 ÷ 0,06, sans ln."
+          },
+          {
+            "reference": "b2-06-a2-sens",
+            "texte": "ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait des années négatives ou presque nulles, absurdes."
+          },
+          {
+            "reference": "b2-06-a2-machine",
+            "texte": "0,8ⁿ < 0,4 ⇔ n > ln 0,4 ÷ ln 0,8 ≈ 4,11 : au bout de 5 ans. 4 arrondit en dessous ; 1 vient de 0,2ⁿ, le taux de baisse pris pour le coefficient."
+          }
+        ]
+      },
+      {
+        "id": "B2-06-A2-06-TABLEUR-OBJECTIFS",
+        "type": "fp-sheet",
+        "titre": "Exercice 4 — Les objectifs de ventes au tableur",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b2-06-a2-tableur-objectifs",
+            "intitule": "Exercice 4 — Les objectifs de ventes au tableur",
+            "lignes": 7,
+            "colonnes": 7,
+            "cellules": {
+              "A1": "Objectif s (sacs par mois)",
+              "B1": "ln(s ÷ a)",
+              "C1": "Mois exact x",
+              "D1": "a (sacs)",
+              "E1": "400",
+              "F1": "k",
+              "G1": "0,06",
+              "A2": "500",
+              "A3": "600",
+              "A4": "800",
+              "A5": "1000",
+              "A6": "1200",
+              "A7": "1500"
+            },
+            "verrouillees": [
+              "A1",
+              "B1",
+              "C1",
+              "D1",
+              "E1",
+              "F1",
+              "G1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7"
+            ],
+            "consignes": [
+              "Pour chaque objectif s de la colonne A, on résout 400ᵉ^(0,06x) = s.",
+              "En B2, calculez ln(s ÷ a) avec LN, a en E1. Recopiez jusqu’en B7.",
+              "En C2, calculez le mois exact x en divisant par k (G1). Recopiez jusqu’en C7.",
+              "a et k ne s’écrivent pas dans les formules : utilisez E1 et G1, figés par des $."
+            ],
+            "metadonnees": {
+              "concepts": ["tableur", "resolution-par-logarithme"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 10,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire en français les deux étapes de la résolution de 400ᵉ^(0,06x) = s, puis les formules de B2 et C2.\n• Erreurs à chercher : =A2/$E$1 sans LN ; =LN(A2)/LN($E$1) ; E1 ou G1 sans $ : la recopie affiche une erreur.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire ; comparer la ligne des 1 000 sacs à la réponse de l’exercice 3.\n• Transition : jalon 2.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b2-06-a2-tableur-objectifs",
+            "enonce": "Exercice 4 — Les objectifs de ventes au tableur",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "feuille",
+          "attendus": [
+            {
+              "reference": "B2",
+              "formuleReference": "=LN(A2/$E$1)",
+              "valeur": 0.223144,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "B3",
+              "formuleReference": "=LN(A3/$E$1)",
+              "valeur": 0.405465,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B4",
+              "formuleReference": "=LN(A4/$E$1)",
+              "valeur": 0.693147,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B5",
+              "formuleReference": "=LN(A5/$E$1)",
+              "valeur": 0.916291,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B6",
+              "formuleReference": "=LN(A6/$E$1)",
+              "valeur": 1.098612,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "B7",
+              "formuleReference": "=LN(A7/$E$1)",
+              "valeur": 1.321756,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "B2"
+              }
+            },
+            {
+              "reference": "C2",
+              "formuleReference": "=B2/$G$1",
+              "valeur": 3.719059,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": "references"
+            },
+            {
+              "reference": "C3",
+              "formuleReference": "=B3/$G$1",
+              "valeur": 6.757752,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C2"
+              }
+            },
+            {
+              "reference": "C4",
+              "formuleReference": "=B4/$G$1",
+              "valeur": 11.552453,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C2"
+              }
+            },
+            {
+              "reference": "C5",
+              "formuleReference": "=B5/$G$1",
+              "valeur": 15.271512,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C2"
+              }
+            },
+            {
+              "reference": "C6",
+              "formuleReference": "=B6/$G$1",
+              "valeur": 18.310205,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C2"
+              }
+            },
+            {
+              "reference": "C7",
+              "formuleReference": "=B7/$G$1",
+              "valeur": 22.029264,
+              "tolerance": {
+                "type": "relative",
+                "valeur": 0.0001
+              },
+              "forme": {
+                "memeQue": "C2"
+              }
+            }
+          ],
+          "seuilReussite": 0.8
+        },
+        "explications": [
+          {
+            "reference": "B2 à B7",
+            "texte": "=LN(A2/$E$1), recopiée : ln(500 ÷ 400) ≈ 0,223 pour 500 sacs. =A2/$E$1 oublie ln ; sans les $, la recopie divise par E2, vide, et la cellule affiche une erreur."
+          },
+          {
+            "reference": "C2 à C7",
+            "texte": "=B2/$G$1, recopiée : environ 3,72 mois pour 500 sacs, 15,27 pour 1 000 sacs, la valeur de l’exercice 3 avant l’arrondi, et 22,03 pour 1 500 sacs. Sans les $, la recopie divise par G2, vide."
+          }
+        ]
+      },
+      {
+        "id": "B2-06-A2-07-JALON",
+        "type": "fp-pulse",
+        "titre": "Jalon 2 : logarithme et seuils",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "sondage": {
+            "id": "b2-06-a2-jalon",
+            "invite": "Je sais résoudre qⁿ ≥ s et a e^(kx) ≥ s avec ln, et donner le premier entier solution.",
+            "metadonnees": {
+              "concepts": ["logarithme-neperien", "resolution-par-logarithme"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’exemple 1,5ⁿ ≥ 10 de la trace écrite A2-03.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      }
+    ]
   }
 }
