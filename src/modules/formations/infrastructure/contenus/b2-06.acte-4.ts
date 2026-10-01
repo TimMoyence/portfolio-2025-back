@@ -68,11 +68,7 @@ export const ACTE_4: moteur.Acte = [
           contenu:
             'Après ajustement par z = ln y, le cabinet retient f(x) = 20e^(−0,7x), demande mensuelle en centaines de kits au prix de x dizaines d’euros.',
         },
-        {
-          rubrique: 'Barème',
-          contenu:
-            'Sur 10 points : 3 points pour la question tableur ; 2, 2, 1,5 et 1,5 points pour les quatre énigmes.',
-        },
+        moteur.BAREME_DE_LA_MINI_SITUATION,
       ],
       note: DONNEES_FICTIVES,
     },

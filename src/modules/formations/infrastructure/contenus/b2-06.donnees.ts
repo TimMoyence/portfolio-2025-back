@@ -79,14 +79,18 @@ const PIEGES_DU_TAUX = [
 export const FORMULE_DES_VENTES = '=$E$1*EXP($G$1*A2)';
 export const FORMULE_DU_TAUX_MENSUEL = '=B3/B2-1';
 
-const CELLULES_DES_VENTES = {
-  A1: 'Mois x',
-  B1: 'Ventes V(x) (sacs)',
-  C1: 'Taux d’évolution sur un mois',
+const PARAMETRES_DES_VENTES = {
   D1: 'a (sacs)',
   E1: String(VENTES_DE_JANVIER),
   F1: 'k',
   G1: avecVirgule(K_DES_VENTES, 2),
+};
+
+const CELLULES_DES_VENTES = {
+  A1: 'Mois x',
+  B1: 'Ventes V(x) (sacs)',
+  C1: 'Taux d’évolution sur un mois',
+  ...PARAMETRES_DES_VENTES,
   ...colonneDeValeurs(
     'A',
     termes(rangIdentique, 0, DERNIER_MOIS_DE_LA_FEUILLE),
@@ -148,10 +152,7 @@ const CELLULES_DES_OBJECTIFS = {
   A1: 'Objectif s (sacs par mois)',
   B1: 'ln(s ÷ a)',
   C1: 'Mois exact x',
-  D1: 'a (sacs)',
-  E1: String(VENTES_DE_JANVIER),
-  F1: 'k',
-  G1: avecVirgule(K_DES_VENTES, 2),
+  ...PARAMETRES_DES_VENTES,
   ...colonneDeValeurs('A', OBJECTIFS),
 };
 
