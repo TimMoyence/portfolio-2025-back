@@ -20,6 +20,8 @@ const SUFFIXES_SAISIS = [
   'K€',
   'passage',
   'passages',
+  'kit',
+  'kits',
 ] as const;
 const DECIMALES_MAX = 4;
 const BORNE = 1_000_000;

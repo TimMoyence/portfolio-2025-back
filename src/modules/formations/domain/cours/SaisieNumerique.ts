@@ -9,6 +9,7 @@ const UNITES_LUES = [
   'factures?',
   'lignes?',
   'passages?',
+  'kits?',
 ];
 const SUFFIXES = new RegExp(`(?:${UNITES_LUES.join('|')})$`, 'i');
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
