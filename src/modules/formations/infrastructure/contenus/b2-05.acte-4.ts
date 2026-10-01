@@ -69,11 +69,7 @@ export const ACTE_4: moteur.Acte = [
           contenu:
             '5 000 € versés à la fin de chacune des 4 prochaines années, sur un compte à 2 % par an.',
         },
-        {
-          rubrique: 'Barème',
-          contenu:
-            'Sur 10 points : 3 points pour la question tableur ; 2, 2, 1,5 et 1,5 points pour les quatre énigmes.',
-        },
+        moteur.BAREME_DE_LA_MINI_SITUATION,
       ],
       note: DONNEES_FICTIVES,
     },

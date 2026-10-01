@@ -26,6 +26,7 @@ import {
   COURS_B2_03,
   COURS_B2_04,
   COURS_B2_05,
+  COURS_B2_06,
 } from './factories/contenus-publies';
 import { prefixeDuCours } from './factories/contenus-de-cours.factory';
 import { clesSecretesDans } from './helpers/cles-du-corrige';
@@ -1406,6 +1407,14 @@ seanceComplete(COURS_B2_05, {
   questionsNotees: 18,
   cellulesDesFeuilles: [10, 9, 17],
   exerciceEnAvance: 'B2-05-A2-04-EXEMPLE-ANNUITES',
+  jalons: 3,
+  intervalleLibre: { premier: 1, dernier: 20 },
+});
+
+seanceComplete(COURS_B2_06, {
+  questionsNotees: 18,
+  cellulesDesFeuilles: [13, 12, 10],
+  exerciceEnAvance: 'B2-06-A2-04-EXEMPLE-DOUBLEMENT',
   jalons: 3,
   intervalleLibre: { premier: 1, dernier: 20 },
 });

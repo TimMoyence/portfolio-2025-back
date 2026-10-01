@@ -5,6 +5,7 @@ import {
   CONCEPTS_DU_B2_03,
   CONCEPTS_DU_B2_04,
   CONCEPTS_DU_B2_05,
+  CONCEPTS_DU_B2_06,
   libelleDeConcept,
 } from './concepts';
 import {
@@ -296,6 +297,18 @@ const CONFUSIONS_DU_B2_05 = {
   'capital-de-vpm-non-signe': { concept: 'tableur' },
 };
 
+const CONFUSIONS_DU_B2_06 = {
+  'exponentielle-lue-comme-produit': { concept: 'fonction-exponentielle' },
+  'signe-de-k-ignore': { concept: 'fonction-exponentielle' },
+  'k-confondu-avec-taux': { concept: 'fonction-exponentielle' },
+  'ln-produit-en-produit': { concept: 'logarithme-neperien' },
+  'log-decimal-au-lieu-de-ln': { concept: 'logarithme-neperien' },
+  'seuil-par-division': { concept: 'resolution-par-logarithme' },
+  'sens-inegalite-ln-negatif': { concept: 'resolution-par-logarithme' },
+  'ajustement-affine-sur-y': { concept: 'ajustement-exponentiel' },
+  'ordonnee-non-exponentiee': { concept: 'ajustement-exponentiel' },
+};
+
 describe('libelleDeConcept', () => {
   it('nomme chaque concept de la banque autrement que par son identifiant', () => {
     expect(CONCEPTS.filter((id) => libelleDeConcept(id) === id)).toEqual([]);
@@ -332,8 +345,18 @@ describe('CONCEPTS', () => {
     ]);
   });
 
-  it('ajoute en dernier les cinq concepts de mathématiques financières du B2-05', () => {
-    expect(CONCEPTS.slice(35)).toEqual([...CONCEPTS_DU_B2_05]);
+  it('ajoute en dernier les quatre concepts d’exponentielle et de logarithme du B2-06', () => {
+    expect(CONCEPTS.slice(40)).toEqual([...CONCEPTS_DU_B2_06]);
+    expect(CONCEPTS_DU_B2_06).toEqual([
+      'fonction-exponentielle',
+      'logarithme-neperien',
+      'resolution-par-logarithme',
+      'ajustement-exponentiel',
+    ]);
+  });
+
+  it('ajoute à la suite les cinq concepts de mathématiques financières du B2-05', () => {
+    expect(CONCEPTS.slice(35, 40)).toEqual([...CONCEPTS_DU_B2_05]);
     expect(CONCEPTS_DU_B2_05).toEqual([
       'interets-composes',
       'valeur-actuelle',
@@ -438,9 +461,16 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_04);
   });
 
-  it('ajoute en dernier les huit confusions de mathématiques financières du B2-05', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(87);
-    expect(Object.keys(CONFUSIONS).slice(79)).toEqual(
+  it('ajoute en dernier les neuf confusions d’exponentielle et de logarithme du B2-06', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(96);
+    expect(Object.keys(CONFUSIONS).slice(87)).toEqual(
+      Object.keys(CONFUSIONS_DU_B2_06),
+    );
+    attendreDansLaBanque(CONFUSIONS_DU_B2_06);
+  });
+
+  it('ajoute à la suite les huit confusions de mathématiques financières du B2-05', () => {
+    expect(Object.keys(CONFUSIONS).slice(79, 87)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_05),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_05);

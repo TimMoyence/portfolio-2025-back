@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sha256": "68f0c8ac08551cf23447712f144de28beafde06e9bef42fc5529639319543e91",
+  "sha256": "7eb23061219fd91bca5b019bd4aa975620f7a248e80c2c1219ab7c15f75438b2",
   "vecteurs": [
     {
       "id": "feuille-cycle-deux-maillons",
@@ -1046,6 +1046,50 @@
         "B1": {
           "valeur": null,
           "erreur": "#DIV/0!"
+        },
+        "C1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        },
+        "D1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
+        }
+      }
+    },
+    {
+      "id": "expression-ln-seuil-d-un-modele-exponentiel",
+      "type": "expression",
+      "entree": {
+        "expression": "LN(2,5)/0,06",
+        "variables": {}
+      },
+      "attendu": {
+        "valeur": 15.271512,
+        "erreur": null
+      }
+    },
+    {
+      "id": "feuille-exp-ln-et-refus",
+      "type": "feuille",
+      "entree": {
+        "lignes": 1,
+        "colonnes": 4,
+        "cellules": {
+          "A1": "=400*EXP(0,06*5)",
+          "B1": "=LN(0)",
+          "C1": "=EXP(1000)",
+          "D1": "=LN(2;3)"
+        }
+      },
+      "attendu": {
+        "A1": {
+          "valeur": 539.9435230304013,
+          "erreur": null
+        },
+        "B1": {
+          "valeur": null,
+          "erreur": "#VALEUR!"
         },
         "C1": {
           "valeur": null,

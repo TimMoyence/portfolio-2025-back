@@ -136,6 +136,11 @@ const PONCTUATION: Readonly<Record<string, GenreJeton | undefined>> = {
   ':': 'deuxpoints',
 };
 const FONCTIONS_MULTIPLES: ReadonlySet<string> = new Set(['SOMME', 'MOYENNE']);
+const NOM_EXPONENTIELLE = 'EXP';
+const FONCTIONS_UNAIRES: ReadonlySet<string> = new Set([
+  NOM_EXPONENTIELLE,
+  'LN',
+]);
 const FONCTIONS_BINAIRES: ReadonlySet<string> = new Set([
   'ARRONDI',
   'PUISSANCE',
@@ -719,6 +724,13 @@ function versementConstant([
   return enDebutDePeriode === 0 ? versement : versement / (1 + taux);
 }
 
+function exponentielleOuLogarithme(nom: string, valeur: number): number {
+  if (nom === NOM_EXPONENTIELLE) {
+    return fini(Math.exp(valeur));
+  }
+  return valeur > 0 ? Math.log(valeur) : refuser(ERREUR_VALEUR);
+}
+
 function fini(valeur: number): number {
   return Number.isFinite(valeur)
     ? sansZeroNegatif(valeur)
@@ -1063,6 +1075,13 @@ class Evaluation {
       : somme / valeurs.length;
   }
 
+  private unaireNommee(nom: string, parametres: readonly Noeud[]): number {
+    if (parametres.length !== 1) {
+      refuser(ERREUR_VALEUR);
+    }
+    return exponentielleOuLogarithme(nom, this.nombre(parametres[0]));
+  }
+
   private binaireNommee(nom: string, parametres: readonly Noeud[]): number {
     if (parametres.length !== 2) {
       refuser(ERREUR_VALEUR);
@@ -1101,6 +1120,9 @@ class Evaluation {
     }
     if (FONCTIONS_MULTIPLES.has(noeud.nom)) {
       return this.agreger(noeud.nom, noeud.arguments);
+    }
+    if (FONCTIONS_UNAIRES.has(noeud.nom)) {
+      return this.unaireNommee(noeud.nom, noeud.arguments);
     }
     if (FONCTIONS_BINAIRES.has(noeud.nom)) {
       return this.binaireNommee(noeud.nom, noeud.arguments);

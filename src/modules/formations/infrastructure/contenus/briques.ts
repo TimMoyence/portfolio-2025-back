@@ -439,6 +439,12 @@ export const COLONNES_DU_DOSSIER = [
   { key: 'contenu', label: 'Ce que montre le dossier' },
 ] as const;
 
+export const BAREME_DE_LA_MINI_SITUATION = {
+  rubrique: 'Barème',
+  contenu:
+    'Sur 10 points : 3 points pour la question tableur ; 2, 2, 1,5 et 1,5 points pour les quatre énigmes.',
+} as const;
+
 export const REFERENTIEL_DU_BTS_CG = {
   title: 'Référentiel du BTS CG',
   description: 'Le programme de mathématiques et l’épreuve E3.',
