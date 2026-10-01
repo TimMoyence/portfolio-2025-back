@@ -856,7 +856,7 @@ const ACTE_2: moteur.Acte = [
         renvoi: RENVOI_AU_DOSSIER,
         intitule: 'Exercice 3 — La capacité de l’atelier',
         consigne:
-          'Ventes en ligne : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026. Capacité de l’atelier : 1 000 sacs par mois. Machine à coudre de 18 000 €, qui perd 20 % de sa valeur chaque année.',
+          'V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 ; capacité : 1 000 sacs par mois. Machine à coudre de 18 000 €, −20 % par an.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -864,7 +864,7 @@ const ACTE_2: moteur.Acte = [
             'b2-06-a2-equivalence',
             'resolution-par-logarithme',
             true,
-            'Une grandeur gagne 6 % par an. Pour savoir quand elle double, on résout 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?',
+            'Doubler à +6 % par an : 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?',
             'n ≥ ln 2 ÷ ln 1,06',
             [
               ['n ≥ 2 ÷ 1,06', SEUIL_PAR_DIVISION],
@@ -874,7 +874,7 @@ const ACTE_2: moteur.Acte = [
           moteur.numerique(
             'b2-06-a2-capacite',
             'resolution-par-logarithme',
-            'À partir de quel mois x, entier, les ventes en ligne dépassent-elles la capacité de 1 000 sacs ?',
+            'À partir de quel mois x entier les ventes dépassent-elles la capacité ?',
             null,
             16,
             { type: 'absolue', valeur: 0 },
@@ -889,16 +889,13 @@ const ACTE_2: moteur.Acte = [
             'resolution-par-logarithme',
             true,
             'Pour la machine, on résout 0,8ⁿ < 0,4. Quelle inégalité obtient-on ?',
-            'n > ln 0,4 ÷ ln 0,8, car ln 0,8 < 0',
-            [
-              ['n < ln 0,4 ÷ ln 0,8', SENS_INCHANGE],
-              ['n < 0,4 ÷ 0,8', SEUIL_PAR_DIVISION],
-            ],
+            'n > ln 0,4 ÷ ln 0,8',
+            [['n < ln 0,4 ÷ ln 0,8', SENS_INCHANGE]],
           ),
           moteur.numerique(
             'b2-06-a2-machine',
             'resolution-par-logarithme',
-            'Au bout de combien d’années entières la machine vaut-elle moins de 40 % de son prix d’achat ?',
+            'Après combien d’années entières la machine vaut-elle moins de 40 % de son prix ?',
             'ans',
             5,
             { type: 'absolue', valeur: 0 },

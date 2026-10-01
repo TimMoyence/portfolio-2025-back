@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "be515f07b927bb68e066165e10691690f1eacad8f83a1b416adb72ad50bc0e49",
+  "empreinte": "b0a73a7985868e767a5a975ceb43bc9bc690b174bd1f10f9399d345635c7c38f",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -852,7 +852,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — La capacité de l’atelier",
-          "consigne": "Ventes en ligne : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026. Capacité de l’atelier : 1 000 sacs par mois. Machine à coudre de 18 000 €, qui perd 20 % de sa valeur chaque année.",
+          "consigne": "V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 ; capacité : 1 000 sacs par mois. Machine à coudre de 18 000 €, −20 % par an.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -861,7 +861,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a2-equivalence",
-                  "enonce": "Une grandeur gagne 6 % par an. Pour savoir quand elle double, on résout 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?",
+                  "enonce": "Doubler à +6 % par an : 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?",
                   "options": [
                     {
                       "id": "n-ln-2-1-06-fb1d8dcb",
@@ -884,7 +884,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a2-capacite",
-                  "enonce": "À partir de quel mois x, entier, les ventes en ligne dépassent-elles la capacité de 1 000 sacs ?",
+                  "enonce": "À partir de quel mois x entier les ventes dépassent-elles la capacité ?",
                   "unite": null,
                   "metadonnees": {
                     "concepts": [
@@ -907,12 +907,8 @@
                   "enonce": "Pour la machine, on résout 0,8ⁿ < 0,4. Quelle inégalité obtient-on ?",
                   "options": [
                     {
-                      "id": "n-0-4-0-8-974779d0",
-                      "libelle": "n < 0,4 ÷ 0,8"
-                    },
-                    {
-                      "id": "n-ln-0-4-ln-0-8-car-ln-0-8-0-00b37277",
-                      "libelle": "n > ln 0,4 ÷ ln 0,8, car ln 0,8 < 0"
+                      "id": "n-ln-0-4-ln-0-8-3ab4eb63",
+                      "libelle": "n > ln 0,4 ÷ ln 0,8"
                     },
                     {
                       "id": "n-ln-0-4-ln-0-8-c83a2873",
@@ -927,7 +923,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a2-machine",
-                  "enonce": "Au bout de combien d’années entières la machine vaut-elle moins de 40 % de son prix d’achat ?",
+                  "enonce": "Après combien d’années entières la machine vaut-elle moins de 40 % de son prix ?",
                   "unite": "ans",
                   "metadonnees": {
                     "concepts": [
@@ -1092,12 +1088,12 @@
             "enonce": "Si y = a e^(kx), que vaut ln y ?",
             "options": [
               {
-                "id": "ln-y-ln-a-plus-kx-ffee7473",
-                "libelle": "ln y = ln a + kx"
-              },
-              {
                 "id": "ln-y-ln-a-kx-161a3efc",
                 "libelle": "ln y = ln a × kx"
+              },
+              {
+                "id": "ln-y-ln-a-plus-kx-ffee7473",
+                "libelle": "ln y = ln a + kx"
               }
             ]
           }
@@ -1352,16 +1348,16 @@
                   "enonce": "Le modèle s’écrit y = a e^(−0,05x). Que vaut a ?",
                   "options": [
                     {
+                      "id": "a-8-cdf35060",
+                      "libelle": "a = 8"
+                    },
+                    {
                       "id": "a-e-soit-environ-2-981-3292dad8",
                       "libelle": "a = e⁸, soit environ 2 981"
                     },
                     {
                       "id": "a-moins-0-05-3ddc6dc3",
                       "libelle": "a = −0,05"
-                    },
-                    {
-                      "id": "a-8-cdf35060",
-                      "libelle": "a = 8"
                     }
                   ]
                 }
@@ -1399,12 +1395,12 @@
                       "libelle": "x = ln(600 ÷ 2 981) ÷ (−0,05)"
                     },
                     {
-                      "id": "x-ln-600-ln-2-981-moins-0-05-559e813a",
-                      "libelle": "x = ln 600 ÷ ln 2 981 ÷ (−0,05)"
-                    },
-                    {
                       "id": "x-600-2-981-moins-0-05-0cabdc8f",
                       "libelle": "x = (600 ÷ 2 981) ÷ (−0,05)"
+                    },
+                    {
+                      "id": "x-ln-600-ln-2-981-moins-0-05-559e813a",
+                      "libelle": "x = ln 600 ÷ ln 2 981 ÷ (−0,05)"
                     }
                   ]
                 }
@@ -1798,20 +1794,20 @@
             "invite": "En une phrase : pourquoi passe-t-on par ln pour trouver un seuil ?",
             "options": [
               {
-                "id": "ln-2-0-03-bd817b71",
-                "libelle": "=LN(2)/0,03"
-              },
-              {
                 "id": "ln-2-ln-1-03-127ca479",
                 "libelle": "=LN(2)/LN(1,03)"
+              },
+              {
+                "id": "ln-2-1-03-151be987",
+                "libelle": "=LN(2/1,03)"
               },
               {
                 "id": "2-1-03-cfd6c21c",
                 "libelle": "=2/1,03"
               },
               {
-                "id": "ln-2-1-03-151be987",
-                "libelle": "=LN(2/1,03)"
+                "id": "ln-2-0-03-bd817b71",
+                "libelle": "=LN(2)/0,03"
               }
             ],
             "metadonnees": {
@@ -3156,7 +3152,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 3 — La capacité de l’atelier",
-          "consigne": "Ventes en ligne : V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026. Capacité de l’atelier : 1 000 sacs par mois. Machine à coudre de 18 000 €, qui perd 20 % de sa valeur chaque année.",
+          "consigne": "V(x) = 400e^(0,06x) sacs par mois, x en mois depuis janvier 2026 ; capacité : 1 000 sacs par mois. Machine à coudre de 18 000 €, −20 % par an.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3165,7 +3161,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a2-equivalence",
-                  "enonce": "Une grandeur gagne 6 % par an. Pour savoir quand elle double, on résout 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?",
+                  "enonce": "Doubler à +6 % par an : 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?",
                   "options": [
                     {
                       "id": "n-ln-2-1-06-fb1d8dcb",
@@ -3188,7 +3184,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a2-capacite",
-                  "enonce": "À partir de quel mois x, entier, les ventes en ligne dépassent-elles la capacité de 1 000 sacs ?",
+                  "enonce": "À partir de quel mois x entier les ventes dépassent-elles la capacité ?",
                   "unite": null,
                   "metadonnees": {
                     "concepts": [
@@ -3211,12 +3207,8 @@
                   "enonce": "Pour la machine, on résout 0,8ⁿ < 0,4. Quelle inégalité obtient-on ?",
                   "options": [
                     {
-                      "id": "n-0-4-0-8-974779d0",
-                      "libelle": "n < 0,4 ÷ 0,8"
-                    },
-                    {
-                      "id": "n-ln-0-4-ln-0-8-car-ln-0-8-0-00b37277",
-                      "libelle": "n > ln 0,4 ÷ ln 0,8, car ln 0,8 < 0"
+                      "id": "n-ln-0-4-ln-0-8-3ab4eb63",
+                      "libelle": "n > ln 0,4 ÷ ln 0,8"
                     },
                     {
                       "id": "n-ln-0-4-ln-0-8-c83a2873",
@@ -3231,7 +3223,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a2-machine",
-                  "enonce": "Au bout de combien d’années entières la machine vaut-elle moins de 40 % de son prix d’achat ?",
+                  "enonce": "Après combien d’années entières la machine vaut-elle moins de 40 % de son prix ?",
                   "unite": "ans",
                   "metadonnees": {
                     "concepts": [
@@ -3283,15 +3275,11 @@
           },
           {
             "questionId": "b2-06-a2-sens",
-            "bonneReponse": "n > ln 0,4 ÷ ln 0,8, car ln 0,8 < 0",
+            "bonneReponse": "n > ln 0,4 ÷ ln 0,8",
             "confusions": [
               {
                 "id": "sens-inegalite-ln-negatif",
                 "libelle": "Garder le sens de l’inégalité en divisant par ln q quand q < 1 : ln q est négatif, le sens change."
-              },
-              {
-                "id": "seuil-par-division",
-                "libelle": "Diviser la valeur visée par q ou par k au lieu d’appliquer ln : qⁿ ≥ s se résout par n × ln q ≥ ln s."
               }
             ]
           },
@@ -3313,7 +3301,7 @@
         "questions": [
           {
             "id": "b2-06-a2-equivalence",
-            "enonce": "Une grandeur gagne 6 % par an. Pour savoir quand elle double, on résout 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?",
+            "enonce": "Doubler à +6 % par an : 1,06ⁿ ≥ 2. Quelle inégalité obtient-on ?",
             "options": [
               {
                 "id": "n-ln-2-1-06-fb1d8dcb",
@@ -3331,7 +3319,7 @@
           },
           {
             "id": "b2-06-a2-capacite",
-            "enonce": "À partir de quel mois x, entier, les ventes en ligne dépassent-elles la capacité de 1 000 sacs ?",
+            "enonce": "À partir de quel mois x entier les ventes dépassent-elles la capacité ?",
             "options": null
           },
           {
@@ -3339,12 +3327,8 @@
             "enonce": "Pour la machine, on résout 0,8ⁿ < 0,4. Quelle inégalité obtient-on ?",
             "options": [
               {
-                "id": "n-0-4-0-8-974779d0",
-                "libelle": "n < 0,4 ÷ 0,8"
-              },
-              {
-                "id": "n-ln-0-4-ln-0-8-car-ln-0-8-0-00b37277",
-                "libelle": "n > ln 0,4 ÷ ln 0,8, car ln 0,8 < 0"
+                "id": "n-ln-0-4-ln-0-8-3ab4eb63",
+                "libelle": "n > ln 0,4 ÷ ln 0,8"
               },
               {
                 "id": "n-ln-0-4-ln-0-8-c83a2873",
@@ -3354,7 +3338,7 @@
           },
           {
             "id": "b2-06-a2-machine",
-            "enonce": "Au bout de combien d’années entières la machine vaut-elle moins de 40 % de son prix d’achat ?",
+            "enonce": "Après combien d’années entières la machine vaut-elle moins de 40 % de son prix ?",
             "options": null
           }
         ],
@@ -3703,12 +3687,12 @@
             "enonce": "Si y = a e^(kx), que vaut ln y ?",
             "options": [
               {
-                "id": "ln-y-ln-a-plus-kx-ffee7473",
-                "libelle": "ln y = ln a + kx"
-              },
-              {
                 "id": "ln-y-ln-a-kx-161a3efc",
                 "libelle": "ln y = ln a × kx"
+              },
+              {
+                "id": "ln-y-ln-a-plus-kx-ffee7473",
+                "libelle": "ln y = ln a + kx"
               }
             ]
           }
@@ -3758,12 +3742,12 @@
             "enonce": "Si y = a e^(kx), que vaut ln y ?",
             "options": [
               {
-                "id": "ln-y-ln-a-plus-kx-ffee7473",
-                "libelle": "ln y = ln a + kx"
-              },
-              {
                 "id": "ln-y-ln-a-kx-161a3efc",
                 "libelle": "ln y = ln a × kx"
+              },
+              {
+                "id": "ln-y-ln-a-plus-kx-ffee7473",
+                "libelle": "ln y = ln a + kx"
               }
             ]
           }
@@ -4102,16 +4086,16 @@
                   "enonce": "Le modèle s’écrit y = a e^(−0,05x). Que vaut a ?",
                   "options": [
                     {
+                      "id": "a-8-cdf35060",
+                      "libelle": "a = 8"
+                    },
+                    {
                       "id": "a-e-soit-environ-2-981-3292dad8",
                       "libelle": "a = e⁸, soit environ 2 981"
                     },
                     {
                       "id": "a-moins-0-05-3ddc6dc3",
                       "libelle": "a = −0,05"
-                    },
-                    {
-                      "id": "a-8-cdf35060",
-                      "libelle": "a = 8"
                     }
                   ]
                 }
@@ -4149,12 +4133,12 @@
                       "libelle": "x = ln(600 ÷ 2 981) ÷ (−0,05)"
                     },
                     {
-                      "id": "x-ln-600-ln-2-981-moins-0-05-559e813a",
-                      "libelle": "x = ln 600 ÷ ln 2 981 ÷ (−0,05)"
-                    },
-                    {
                       "id": "x-600-2-981-moins-0-05-0cabdc8f",
                       "libelle": "x = (600 ÷ 2 981) ÷ (−0,05)"
+                    },
+                    {
+                      "id": "x-ln-600-ln-2-981-moins-0-05-559e813a",
+                      "libelle": "x = ln 600 ÷ ln 2 981 ÷ (−0,05)"
                     }
                   ]
                 }
@@ -4250,16 +4234,16 @@
             "enonce": "Le modèle s’écrit y = a e^(−0,05x). Que vaut a ?",
             "options": [
               {
+                "id": "a-8-cdf35060",
+                "libelle": "a = 8"
+              },
+              {
                 "id": "a-e-soit-environ-2-981-3292dad8",
                 "libelle": "a = e⁸, soit environ 2 981"
               },
               {
                 "id": "a-moins-0-05-3ddc6dc3",
                 "libelle": "a = −0,05"
-              },
-              {
-                "id": "a-8-cdf35060",
-                "libelle": "a = 8"
               }
             ]
           },
@@ -4277,12 +4261,12 @@
                 "libelle": "x = ln(600 ÷ 2 981) ÷ (−0,05)"
               },
               {
-                "id": "x-ln-600-ln-2-981-moins-0-05-559e813a",
-                "libelle": "x = ln 600 ÷ ln 2 981 ÷ (−0,05)"
-              },
-              {
                 "id": "x-600-2-981-moins-0-05-0cabdc8f",
                 "libelle": "x = (600 ÷ 2 981) ÷ (−0,05)"
+              },
+              {
+                "id": "x-ln-600-ln-2-981-moins-0-05-559e813a",
+                "libelle": "x = ln 600 ÷ ln 2 981 ÷ (−0,05)"
               }
             ]
           },
@@ -5262,20 +5246,20 @@
             "invite": "En une phrase : pourquoi passe-t-on par ln pour trouver un seuil ?",
             "options": [
               {
-                "id": "ln-2-0-03-bd817b71",
-                "libelle": "=LN(2)/0,03"
-              },
-              {
                 "id": "ln-2-ln-1-03-127ca479",
                 "libelle": "=LN(2)/LN(1,03)"
+              },
+              {
+                "id": "ln-2-1-03-151be987",
+                "libelle": "=LN(2/1,03)"
               },
               {
                 "id": "2-1-03-cfd6c21c",
                 "libelle": "=2/1,03"
               },
               {
-                "id": "ln-2-1-03-151be987",
-                "libelle": "=LN(2/1,03)"
+                "id": "ln-2-0-03-bd817b71",
+                "libelle": "=LN(2)/0,03"
               }
             ],
             "metadonnees": {
@@ -5316,20 +5300,20 @@
             "enonce": "Hélène place une trésorerie à 3 % par an. Quelle formule de tableur donne le nombre exact d’années pour que le capital double ?",
             "options": [
               {
-                "id": "ln-2-0-03-bd817b71",
-                "libelle": "=LN(2)/0,03"
-              },
-              {
                 "id": "ln-2-ln-1-03-127ca479",
                 "libelle": "=LN(2)/LN(1,03)"
+              },
+              {
+                "id": "ln-2-1-03-151be987",
+                "libelle": "=LN(2/1,03)"
               },
               {
                 "id": "2-1-03-cfd6c21c",
                 "libelle": "=2/1,03"
               },
               {
-                "id": "ln-2-1-03-151be987",
-                "libelle": "=LN(2/1,03)"
+                "id": "ln-2-0-03-bd817b71",
+                "libelle": "=LN(2)/0,03"
               }
             ]
           }
