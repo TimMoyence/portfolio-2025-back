@@ -62,12 +62,12 @@ b et notes de répartition).
 1. calculer une valeur de x ↦ a e^(kx) à la calculatrice et au tableur avec `EXP` ;
 2. dire le sens de variation de x ↦ a e^(kx) selon le signe de k, et le taux d'évolution e^k − 1
    par unité ;
-3. utiliser ln comme réciproque de l'exponentielle et ses propriétés sur les produits et les
-   puissances ;
+3. utiliser ln comme réciproque de l'exponentielle et ses propriétés sur les produits, les
+   quotients et les puissances ;
 4. résoudre qⁿ ≥ s et a e^(kx) ≥ s par ln, en changeant le sens de l'inégalité quand on divise par
    un nombre négatif, et donner le premier entier solution ;
 5. ajuster une série par z = ln y au tableur (`LN`, `PENTE`, `ORDONNEE.ORIGINE`, `EXP`) et revenir
-   au modèle y = e^b × e^(ax) ;
+   au modèle y = e^β × e^(αx), soit a = e^β ;
 6. utiliser un modèle exponentiel pour calculer une valeur et la valeur de x qui donne une valeur
    visée.
 
@@ -293,7 +293,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 
 - Titre public : « Cours : le logarithme népérien »
 - Page 1 sur 2 : ln y est le nombre x tel que eˣ = y, pour y > 0 ; ln 1 = 0, ln e = 1 ; ln change
-  les produits en sommes et ln(aⁿ) = n × ln a ; exemple pour débuter (eˣ = 5) ; méthode et pièges,
+  les produits en sommes, les quotients en différences, et ln(aⁿ) = n × ln a ; exemple pour débuter (eˣ = 5) ; méthode et pièges,
   dont la touche log.
 
 #### A2-03 · `B2-06-A2-03-COURS-SEUIL` — 3 min · v2 `lesson` · catalogue
@@ -317,8 +317,9 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
   `ln-produit-en-produit`.
 - `b2-06-a2-capacite` : premier mois où les ventes dépassent 1 000 sacs ; pièges
   `seuil-mal-arrondi`, `seuil-par-division`.
-- `b2-06-a2-sens` (vote) : la résolution de 0,8ⁿ < 0,4 ; pièges `sens-inegalite-ln-negatif`,
-  `seuil-par-division`.
+- `b2-06-a2-sens` (vote) : la résolution de 0,8ⁿ < 0,4 ; piège `sens-inegalite-ln-negatif`, seul
+  pour que l'écran tienne sur la toile projetée, `seuil-par-division` étant déjà visé par le premier
+  vote.
 - `b2-06-a2-machine` : années au bout desquelles la machine vaut moins de 40 % de son prix ; pièges
   `seuil-mal-arrondi`, `coefficient-confondu-avec-taux`.
 
@@ -339,8 +340,8 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 #### A3-01 · `B2-06-A3-01-GRAPHIQUE` — 2 min · v2 `chart` · catalogue
 
 - Titre public : « La demande des boutiques selon le prix de gros »
-- Six demandes relevées, de 20 € à 45 €, en courbe : la demande baisse de moins en moins vite, en
-  perdant à peu près la même part à chaque hausse de 5 €.
+- Six demandes relevées, de 20 € à 45 €, en courbe ; l'écran demande si la demande perd le même
+  nombre de sacs à chaque hausse de 5 €, sans y répondre (§ 2.5).
 
 #### A3-02 · `B2-06-A3-02-VOTE-MODELE` — 4 min · `fp-vote` · séance
 
@@ -381,7 +382,8 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - Temps : réflexion 2 min · travail 6 min · correction 2 min, question par question sur place.
 - `b2-06-a3-coefficient` (vote) : le coefficient a tiré de z = −0,05x + 8 ; pièges
   `ordonnee-non-exponentiee`, `pente-ordonnee-inversees`.
-- `b2-06-a3-demande` : demande au prix de 38 € avec y = 2 981e^(−0,05x) ; pièges
+- `b2-06-a3-demande` : demande au prix de 38 € avec le modèle de la question précédente, a arrondi
+  à l'unité sans que l'énoncé le donne ; pièges
   `k-confondu-avec-taux`, `signe-de-k-ignore`.
 - `b2-06-a3-methode` (vote) : l'équation qui donne le prix pour 600 sacs ; pièges
   `seuil-par-division`, `ln-produit-en-produit`.
@@ -395,7 +397,7 @@ Rythme : 147 minutes interactives, 33 d'exposition, exposition continue de 6 min
 - L'IA ajuste la demande par une droite (y = −31x + 1 653, r ≈ −0,985) et en tire une demande
   négative au-delà de 53 €. Pistes justes : les rapports constants, l'ajustement de z = ln y et son
   coefficient de corrélation plus proche de −1, la demande négative qui trahit la droite, la
-  prévision par le modèle exponentiel ; piste fausse : un coefficient de −0,98 suffit à valider la
+  prévision par le modèle exponentiel ; piste fausse : un coefficient de −0,985 suffit à valider la
   droite.
 
 #### A3-09 · `B2-06-A3-09-JALON` — 1 min · `fp-pulse` · séance
@@ -476,7 +478,7 @@ Objectifs de ventes de l'exercice 4, mois exact ln(s ÷ 400) ÷ 0,06 : 3,72 ; 6,
 
 Ajustement de z en x : z ≈ −0,0499x + 8,0026, arrondi à z = −0,05x + 8 ; a = e⁸ ≈ 2 981, d'où
 y ≈ 2 981e^(−0,05x). Demande à 38 € : 445,86 sacs ; prix pour 600 sacs : 32,06 €. L'ajustement
-affine de y donne y = −31x + 1 653, négatif dès 53,34 €.
+affine de y donne y = −31x + 1 653, négatif dès 53,33 €.
 
 Mini-situation, prix x en dizaines d'euros (1 à 3,5), demande y en centaines de kits : 9,9 ; 7 ;
 4,9 ; 3,5 ; 2,4 ; 1,7. Ajustement de z = ln y : pente −0,7061, ordonnée à l'origine 3,0032,
@@ -497,23 +499,23 @@ précédents ou réemployés : `interets-composes`, `suite-geometrique`, `coeffi
 `seuil-par-division`, `sens-inegalite-ln-negatif`, `ajustement-affine-sur-y`,
 `ordonnee-non-exponentiee`).
 
-| Identifiant                            | Concept                    | Libellé                                                   | Remédiation                     |
-| -------------------------------------- | -------------------------- | --------------------------------------------------------- | ------------------------------- |
-| `coefficient-confondu-avec-taux`       | coefficient-multiplicateur | Prendre le taux pour le coefficient.                      | B2-06-A1-08-COURS-MODELE-EXP    |
-| `interets-simples-au-lieu-de-composes` | interets-composes          | Calculer les intérêts sur le seul capital de départ.      | B2-06-A1-07-COURS-EXPONENTIELLE |
-| `nature-de-suite-confondue`            | suite-geometrique          | Confondre « ajouter » et « multiplier ».                  | B2-06-A1-07-COURS-EXPONENTIELLE |
-| `exponentielle-lue-comme-produit`      | fonction-exponentielle     | Calculer e^(kx) comme e × k × x.                          | B2-06-A1-07-COURS-EXPONENTIELLE |
-| `signe-de-k-ignore`                    | fonction-exponentielle     | Croire qu'une exponentielle croît toujours.               | B2-06-A1-08-COURS-MODELE-EXP    |
-| `k-confondu-avec-taux`                 | fonction-exponentielle     | Prendre k pour le taux d'évolution.                       | B2-06-A1-08-COURS-MODELE-EXP    |
-| `reference-relative-non-figee`         | tableur                    | Recopier sans figer les cellules des paramètres.          | B2-06-A1-08-COURS-MODELE-EXP    |
-| `ln-produit-en-produit`                | logarithme-neperien        | Écrire ln(a × b) = ln a × ln b.                           | B2-06-A2-02-COURS-LOGARITHME    |
-| `log-decimal-au-lieu-de-ln`            | logarithme-neperien        | Prendre la touche log pour ln.                            | B2-06-A2-02-COURS-LOGARITHME    |
-| `seuil-par-division`                   | resolution-par-logarithme  | Diviser par q au lieu de passer par ln.                   | B2-06-A2-03-COURS-SEUIL         |
-| `sens-inegalite-ln-negatif`            | resolution-par-logarithme  | Garder le sens en divisant par ln q négatif.              | B2-06-A2-03-COURS-SEUIL         |
-| `seuil-mal-arrondi`                    | prevision                  | Arrondir le seuil à l'entier inférieur.                   | B2-06-A2-03-COURS-SEUIL         |
-| `ajustement-affine-sur-y`              | ajustement-exponentiel     | Ajuster y par une droite au lieu de ln y.                 | B2-06-A3-04-COURS-AJUSTEMENT    |
-| `ordonnee-non-exponentiee`             | ajustement-exponentiel     | Prendre l'ordonnée à l'origine b pour le coefficient a.   | B2-06-A3-04-COURS-AJUSTEMENT    |
-| `pente-ordonnee-inversees`             | ajustement-affine          | Inverser les séries de `PENTE` ou la pente et l'ordonnée. | B2-06-A3-04-COURS-AJUSTEMENT    |
+| Identifiant                            | Concept                    | Libellé                                                    | Remédiation                     |
+| -------------------------------------- | -------------------------- | ---------------------------------------------------------- | ------------------------------- |
+| `coefficient-confondu-avec-taux`       | coefficient-multiplicateur | Prendre le taux pour le coefficient.                       | B2-06-A1-08-COURS-MODELE-EXP    |
+| `interets-simples-au-lieu-de-composes` | interets-composes          | Calculer les intérêts sur le seul capital de départ.       | B2-06-A1-07-COURS-EXPONENTIELLE |
+| `nature-de-suite-confondue`            | suite-geometrique          | Confondre « ajouter » et « multiplier ».                   | B2-06-A1-07-COURS-EXPONENTIELLE |
+| `exponentielle-lue-comme-produit`      | fonction-exponentielle     | Calculer e^(kx) comme e × k × x.                           | B2-06-A1-07-COURS-EXPONENTIELLE |
+| `signe-de-k-ignore`                    | fonction-exponentielle     | Croire qu'une exponentielle croît toujours.                | B2-06-A1-08-COURS-MODELE-EXP    |
+| `k-confondu-avec-taux`                 | fonction-exponentielle     | Prendre k pour le taux d'évolution.                        | B2-06-A1-08-COURS-MODELE-EXP    |
+| `reference-relative-non-figee`         | tableur                    | Recopier sans figer les cellules des paramètres.           | B2-06-A1-08-COURS-MODELE-EXP    |
+| `ln-produit-en-produit`                | logarithme-neperien        | Écrire ln(a × b) = ln a × ln b ou ln(a ÷ b) = ln a ÷ ln b. | B2-06-A2-02-COURS-LOGARITHME    |
+| `log-decimal-au-lieu-de-ln`            | logarithme-neperien        | Prendre la touche log pour ln.                             | B2-06-A2-02-COURS-LOGARITHME    |
+| `seuil-par-division`                   | resolution-par-logarithme  | Diviser par q au lieu de passer par ln.                    | B2-06-A2-03-COURS-SEUIL         |
+| `sens-inegalite-ln-negatif`            | resolution-par-logarithme  | Garder le sens en divisant par ln q négatif.               | B2-06-A2-03-COURS-SEUIL         |
+| `seuil-mal-arrondi`                    | prevision                  | Arrondir le seuil à l'entier inférieur.                    | B2-06-A2-03-COURS-SEUIL         |
+| `ajustement-affine-sur-y`              | ajustement-exponentiel     | Ajuster y par une droite au lieu de ln y.                  | B2-06-A3-04-COURS-AJUSTEMENT    |
+| `ordonnee-non-exponentiee`             | ajustement-exponentiel     | Prendre l'ordonnée à l'origine β pour le coefficient a.    | B2-06-A3-04-COURS-AJUSTEMENT    |
+| `pente-ordonnee-inversees`             | ajustement-affine          | Inverser les séries de `PENTE` ou la pente et l'ordonnée.  | B2-06-A3-04-COURS-AJUSTEMENT    |
 
 ### 5.10 Rappels espacés
 

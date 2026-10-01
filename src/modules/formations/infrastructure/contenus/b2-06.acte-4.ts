@@ -260,7 +260,7 @@ export const ACTE_4: moteur.Acte = [
       minutes: 2,
       notes: [
         'Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).',
-        'Finir sur la décision d’Hélène : un prix entre 20 € et 25 € garde la demande au-dessus de 400 kits.',
+        'Finir sur la décision d’Hélène : un prix d’au plus 22,99 €, soit 22 € en prix entier, garde la demande au-dessus de 400 kits.',
       ],
     },
     [
@@ -357,9 +357,9 @@ export const ACTE_4: moteur.Acte = [
         moteur.rappel(
           'b2-06-r-entier',
           'prevision',
-          'Une résolution donne n ≥ 11,53. Quel est le premier entier solution ?',
-          'Douze, l’entier juste au-dessus',
-          [['Onze, l’entier juste en dessous', SEUIL_MAL_ARRONDI]],
+          'Une résolution donne n ≥ 7,2. Quel est le premier entier solution ?',
+          'Huit, l’entier juste au-dessus',
+          [['Sept, l’entier juste en dessous', SEUIL_MAL_ARRONDI]],
         ),
         moteur.rappel(
           'b2-06-r-ajustement',
@@ -399,7 +399,7 @@ export const ACTE_4: moteur.Acte = [
       {
         title: 'Logarithme népérien',
         description: 'Comment défaire eˣ ?',
-        back: 'eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log.',
+        back: 'eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(a ÷ b) = ln a − ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log.',
       },
       {
         title: 'Seuil qⁿ ≥ s',

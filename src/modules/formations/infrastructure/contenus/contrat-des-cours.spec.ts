@@ -4,6 +4,7 @@ import {
 } from '../../../../../test/factories/contenus-de-cours.factory';
 import { tireurSequentiel } from '../../../../../test/factories/cours.factory';
 import { CONFUSIONS } from '../../domain/cours/banque/confusions';
+import { matchesSolution } from '../../domain/GradingCore';
 import { questionsDuCours } from '../../domain/cours/Cours';
 import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import { deroulePresentateur } from '../../domain/cours/DeroulePresentateur';
@@ -18,6 +19,7 @@ import { CONTENUS } from './index';
 const TAILLE_MAX_DU_BAREME = 400 * 1024;
 const TIRAGES_CONTROLES = 61;
 const LONGUEUR_MAX_D_UN_IDENTIFIANT = 60;
+const NOMBRE_EN_TETE = /^[−-]?\d[\d\s]*(?:,\d+)?/u;
 const CLES_DE_CONFUSION = new Set([
   'confusion',
   'confusionSiErreur',
@@ -192,6 +194,30 @@ describe.each(CONTENUS.map((contenu) => [contenu.slug, contenu] as const))(
         return relue !== null && Math.abs(relue - valeur) <= tolerance.valeur
           ? []
           : [`${question.id} : ${formePubliee}`];
+      });
+
+      expect(illisibles).toEqual([]);
+    });
+
+    it('ouvre la forme publiée de chaque numérique sur la valeur de sa solution', () => {
+      const { solutions } = tirer(cours, 0);
+      const illisibles = questionsDuCours(cours).flatMap((question) => {
+        if (
+          question.type !== 'numeric' ||
+          question.formePubliee === undefined
+        ) {
+          return [];
+        }
+        const nombre = NOMBRE_EN_TETE.exec(question.formePubliee)?.[0];
+        const relue = nombre === undefined ? null : lireNombreSaisi(nombre);
+        return relue !== null &&
+          matchesSolution(
+            relue,
+            Number(solutions[question.id].valeur),
+            question.tolerance,
+          )
+          ? []
+          : [`${question.id} : ${question.formePubliee}`];
       });
 
       expect(illisibles).toEqual([]);

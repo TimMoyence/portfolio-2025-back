@@ -321,6 +321,17 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
       'B',
       DERNIER_MOIS_DE_LA_FEUILLE,
     );
+    for (const formule of ['=$E$1*EXP(G1*A2)', '=$E$1*EXP($G$1*$A$2)']) {
+      expect(
+        feuille.confusionsDe(
+          corrige,
+          feuille.recopier(formule, 'B', 2, 8),
+          'B',
+        ),
+      ).toEqual(
+        Array.from({ length: DERNIER_MOIS_DE_LA_FEUILLE + 1 }, () => null),
+      );
+    }
     expect(
       feuille.confusionsDe(
         corrige,

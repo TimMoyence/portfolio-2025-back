@@ -262,7 +262,7 @@ const ACTE_1: moteur.Acte = [
       metier:
         'Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)',
       situation:
-        'Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et la demande des boutiques ne baisse pas en ligne droite. »',
+        'Lundi, 9 h. Hélène Garnier écrit : « La gamme Sillage démarre bien : 400 sacs vendus en ligne en janvier, et l’expert-comptable modélise nos ventes par 400e^(0,06x). Pouvez-vous me dire à quel rythme elles croissent, quand elles dépasseront les 1 000 sacs que l’atelier sait coudre par mois, et quel prix de gros proposer aux boutiques ? » Marc Lefèvre, l’expert-comptable, ajoute : « Attention : 0,06 n’est pas le taux mensuel, et vérifiez le modèle de la demande des boutiques. »',
       geste:
         'Sans calculatrice, répondez aux trois questions à partir du dossier.',
       consequence:
@@ -555,7 +555,7 @@ const ACTE_1: moteur.Acte = [
       ],
       [
         'b2-06-a1-sens',
-        'k = −0,04 < 0 : chaque mois, les ventes sont multipliées par e^(−0,04) ≈ 0,961, une baisse d’environ 3,9 %. Une exponentielle ne croît que si k est positif.',
+        'k = −0,04 < 0 : chaque mois, les ventes sont multipliées par e^(−0,04) ≈ 0,961, un nombre inférieur à 1, donc elles baissent. Une exponentielle ne croît que si k est positif.',
       ],
       [
         'b2-06-a1-taux',
@@ -574,7 +574,7 @@ const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 5 min',
         'Réflexion : écrire sur papier la formule de B2, puis ce qu’elle devient en B3 une fois recopiée.',
-        'Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 ou G1 sans $ : la colonne tombe à 0 ; =B3/B2 pour le taux.',
+        'Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 sans $ : la colonne tombe à 0 ; G1 sans $ ou A2 figé à tort : elle reste à 400 ; =B3/B2 pour le taux.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
       ),
       proprietes: {
@@ -606,7 +606,7 @@ const ACTE_1: moteur.Acte = [
     [
       [
         'B2 à B8',
-        `${FORMULE_DES_VENTES}, recopiée : 400 sacs en janvier, puis 424,73 ; 451,00 ; 478,89 ; 508,50 ; 539,94 et 573,33. Sans les $, la recopie lit E2 et G2, vides, et affiche 0.`,
+        `${FORMULE_DES_VENTES}, recopiée : 400 sacs en janvier, puis 424,73 ; 451,00 ; 478,89 ; 508,50 ; 539,94 et 573,33. Sans $ sur E1, la recopie lit E2, vide, et affiche 0 ; sans $ sur G1, ou avec A2 figé à tort, elle reste à 400.`,
       ],
       [
         'C3 à C8',
@@ -665,7 +665,7 @@ const ACTE_2: moteur.Acte = [
     {
       correction: {
         expected:
-          'Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans essayer les mois un par un.',
+          'Il faut une fonction qui « remonte » de eˣ à x, comme la division remonte d’un produit : c’est le logarithme népérien, noté ln. On trouve x = ln 2,5 sans tâtonner ; pour les ventes, l’exposant est 0,06x, et la trace écrite montre comment en tirer le mois.',
         nextAction:
           'Gardez votre réponse : la trace écrite définit ln et ses propriétés.',
       },
@@ -695,7 +695,7 @@ const ACTE_2: moteur.Acte = [
           title: 'ln remonte de l’exponentielle à l’exposant',
           text: 'Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.',
           formula:
-            'eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(aⁿ) = n × ln a',
+            'eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(a ÷ b) = ln a − ln b · ln(aⁿ) = n × ln a',
         },
         {
           kind: 'example',
@@ -711,7 +711,7 @@ const ACTE_2: moteur.Acte = [
         {
           kind: 'method',
           title: 'Utiliser ln sans se tromper de touche',
-          text: 'Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.',
+          text: 'Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ou ln(a ÷ b) = ln a ÷ ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.',
           steps: [
             'Repérer l’égalité eˣ = y, avec y > 0.',
             'Appliquer ln : x = ln y, touche ln de la calculatrice.',
@@ -878,7 +878,7 @@ const ACTE_2: moteur.Acte = [
             null,
             16,
             { type: 'absolue', valeur: 0 },
-            '16 (mai 2027)',
+            '16 mois',
             [
               [15, SEUIL_MAL_ARRONDI],
               [42, SEUIL_PAR_DIVISION],
@@ -899,7 +899,7 @@ const ACTE_2: moteur.Acte = [
             'ans',
             5,
             { type: 'absolue', valeur: 0 },
-            '5 années entières',
+            '5 ans',
             [
               [4, SEUIL_MAL_ARRONDI],
               [1, TAUX_POUR_COEFFICIENT],
@@ -926,7 +926,7 @@ const ACTE_2: moteur.Acte = [
       ],
       [
         'b2-06-a2-sens',
-        'ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait des années négatives ou presque nulles, absurdes.',
+        'ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait n inférieur au seuil : la machine vaudrait moins de 40 % les premières années, puis plus ensuite, absurde pour un bien qui perd de la valeur.',
       ],
       [
         'b2-06-a2-machine',
@@ -1035,9 +1035,9 @@ const ACTE_3: moteur.Acte = [
         },
       ],
       formula:
-        'Chaque hausse de 5 € fait perdre à peu près la même part de la demande',
+        'La demande perd-elle le même nombre de sacs à chaque hausse de 5 € ?',
       reading:
-        'La demande baisse quand le prix monte, mais de moins en moins vite : 240 sacs perdus entre 20 € et 25 €, 95 seulement entre 40 € et 45 €. Une droite ne suit pas cette courbe.',
+        'La demande baisse quand le prix monte : 240 sacs perdus entre 20 € et 25 €, 95 entre 40 € et 45 €.',
       source: `Étude de prix de la gamme Sillage. ${DONNEES_FICTIVES}`,
       description:
         'Six points reliés : 1 100 sacs à 20 €, 860 à 25 €, 670 à 30 €, 520 à 35 €, 410 à 40 € et 315 à 45 €.',
@@ -1361,7 +1361,7 @@ const ACTE_3: moteur.Acte = [
           moteur.numerique(
             'b2-06-a3-demande',
             'ajustement-exponentiel',
-            'Avec y = 2 981e^(−0,05x), quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.',
+            'Avec ce modèle, en arrondissant a à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir le résultat à l’unité.',
             'sacs',
             446,
             { type: 'absolue', valeur: 0.5 },
@@ -1376,10 +1376,10 @@ const ACTE_3: moteur.Acte = [
             'resolution-par-logarithme',
             true,
             'Hélène vise une demande de 600 sacs par mois. Quelle égalité donne le prix de gros x ?',
-            'x = ln(600 ÷ 2 981) ÷ (−0,05)',
+            'x = ln(600 ÷ a) ÷ (−0,05)',
             [
-              ['x = (600 ÷ 2 981) ÷ (−0,05)', SEUIL_PAR_DIVISION],
-              ['x = ln 600 ÷ ln 2 981 ÷ (−0,05)', LN_EN_PRODUIT],
+              ['x = (600 ÷ a) ÷ (−0,05)', SEUIL_PAR_DIVISION],
+              ['x = ln 600 ÷ ln a ÷ (−0,05)', LN_EN_PRODUIT],
             ],
           ),
           moteur.numerique(
