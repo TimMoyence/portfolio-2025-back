@@ -695,7 +695,7 @@ const ACTE_2: moteur.Acte = [
           title: 'ln remonte de l’exponentielle à l’exposant',
           text: 'Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.',
           formula:
-            'eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(aⁿ) = n × ln a',
+            'eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(a ÷ b) = ln a − ln b · ln(aⁿ) = n × ln a',
         },
         {
           kind: 'example',
@@ -711,7 +711,7 @@ const ACTE_2: moteur.Acte = [
         {
           kind: 'method',
           title: 'Utiliser ln sans se tromper de touche',
-          text: 'Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.',
+          text: 'Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ou ln(a ÷ b) = ln a ÷ ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.',
           steps: [
             'Repérer l’égalité eˣ = y, avec y > 0.',
             'Appliquer ln : x = ln y, touche ln de la calculatrice.',
@@ -926,7 +926,7 @@ const ACTE_2: moteur.Acte = [
       ],
       [
         'b2-06-a2-sens',
-        'ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait n < 4,11 : la machine vaudrait moins de 40 % au début, puis plus ensuite, absurde pour un bien qui perd de la valeur.',
+        'ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait n inférieur au seuil : la machine vaudrait moins de 40 % les premières années, puis plus ensuite, absurde pour un bien qui perd de la valeur.',
       ],
       [
         'b2-06-a2-machine',
@@ -1361,7 +1361,7 @@ const ACTE_3: moteur.Acte = [
           moteur.numerique(
             'b2-06-a3-demande',
             'ajustement-exponentiel',
-            'Avec ce modèle, a arrondi à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.',
+            'Avec ce modèle, en arrondissant a à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir le résultat à l’unité.',
             'sacs',
             446,
             { type: 'absolue', valeur: 0.5 },

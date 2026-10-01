@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "af08e18407578fdd3a7758f0f29d5c8cef0ce4a5b206925e834bb72c8f81b734",
+  "empreinte": "daf4cad20f8bd2e2fb9e15b85e44178fda7f7ca9bd22138cf49a4ca1709e6f17",
   "sujet": {
     "id": "b2-06-exponentielle-logarithme",
     "titre": "Exponentielle et logarithme",
@@ -697,7 +697,7 @@
                     "kind": "definition",
                     "title": "ln remonte de l’exponentielle à l’exposant",
                     "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
-                    "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(aⁿ) = n × ln a"
+                    "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(a ÷ b) = ln a − ln b · ln(aⁿ) = n × ln a"
                   },
                   {
                     "kind": "example",
@@ -713,7 +713,7 @@
                   {
                     "kind": "method",
                     "title": "Utiliser ln sans se tromper de touche",
-                    "text": "Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.",
+                    "text": "Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ou ln(a ÷ b) = ln a ÷ ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.",
                     "steps": [
                       "Repérer l’égalité eˣ = y, avec y > 0.",
                       "Appliquer ln : x = ln y, touche ln de la calculatrice.",
@@ -1368,7 +1368,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a3-demande",
-                  "enonce": "Avec ce modèle, a arrondi à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
+                  "enonce": "Avec ce modèle, en arrondissant a à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir le résultat à l’unité.",
                   "unite": "sacs",
                   "metadonnees": {
                     "concepts": [
@@ -1723,7 +1723,7 @@
                   {
                     "title": "Logarithme népérien",
                     "description": "Comment défaire eˣ ?",
-                    "back": "eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log."
+                    "back": "eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(a ÷ b) = ln a − ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log."
                   },
                   {
                     "title": "Seuil qⁿ ≥ s",
@@ -2979,7 +2979,7 @@
                     "kind": "definition",
                     "title": "ln remonte de l’exponentielle à l’exposant",
                     "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
-                    "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(aⁿ) = n × ln a"
+                    "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(a ÷ b) = ln a − ln b · ln(aⁿ) = n × ln a"
                   },
                   {
                     "kind": "example",
@@ -2995,7 +2995,7 @@
                   {
                     "kind": "method",
                     "title": "Utiliser ln sans se tromper de touche",
-                    "text": "Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.",
+                    "text": "Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ou ln(a ÷ b) = ln a ÷ ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.",
                     "steps": [
                       "Repérer l’égalité eˣ = y, avec y > 0.",
                       "Appliquer ln : x = ln y, touche ln de la calculatrice.",
@@ -3255,7 +3255,7 @@
               },
               {
                 "id": "ln-produit-en-produit",
-                "libelle": "Écrire ln(a × b) = ln a × ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme et une puissance en produit, ln(aⁿ) = n × ln a."
+                "libelle": "Écrire ln(a × b) = ln a × ln b, ln(a ÷ b) = ln a ÷ ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme, un quotient en différence et une puissance en produit, ln(aⁿ) = n × ln a."
               }
             ]
           },
@@ -3354,7 +3354,7 @@
           },
           {
             "reference": "b2-06-a2-sens",
-            "texte": "ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait n < 4,11 : la machine vaudrait moins de 40 % au début, puis plus ensuite, absurde pour un bien qui perd de la valeur."
+            "texte": "ln 0,8 est négatif : diviser par ln 0,8 change le sens de l’inégalité. Garder le sens donnerait n inférieur au seuil : la machine vaudrait moins de 40 % les premières années, puis plus ensuite, absurde pour un bien qui perd de la valeur."
           },
           {
             "reference": "b2-06-a2-machine",
@@ -3717,7 +3717,7 @@
             "confusions": [
               {
                 "id": "ln-produit-en-produit",
-                "libelle": "Écrire ln(a × b) = ln a × ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme et une puissance en produit, ln(aⁿ) = n × ln a."
+                "libelle": "Écrire ln(a × b) = ln a × ln b, ln(a ÷ b) = ln a ÷ ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme, un quotient en différence et une puissance en produit, ln(aⁿ) = n × ln a."
               }
             ]
           }
@@ -4106,7 +4106,7 @@
               "donnees": {
                 "question": {
                   "id": "b2-06-a3-demande",
-                  "enonce": "Avec ce modèle, a arrondi à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
+                  "enonce": "Avec ce modèle, en arrondissant a à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir le résultat à l’unité.",
                   "unite": "sacs",
                   "metadonnees": {
                     "concepts": [
@@ -4209,7 +4209,7 @@
               },
               {
                 "id": "ln-produit-en-produit",
-                "libelle": "Écrire ln(a × b) = ln a × ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme et une puissance en produit, ln(aⁿ) = n × ln a."
+                "libelle": "Écrire ln(a × b) = ln a × ln b, ln(a ÷ b) = ln a ÷ ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme, un quotient en différence et une puissance en produit, ln(aⁿ) = n × ln a."
               }
             ]
           },
@@ -4249,7 +4249,7 @@
           },
           {
             "id": "b2-06-a3-demande",
-            "enonce": "Avec ce modèle, a arrondi à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir à l’unité.",
+            "enonce": "Avec ce modèle, en arrondissant a à l’unité, quelle demande prévoir au prix de gros de 38 € ? Arrondir le résultat à l’unité.",
             "options": null
           },
           {
@@ -4902,7 +4902,7 @@
             "confusions": [
               {
                 "id": "ln-produit-en-produit",
-                "libelle": "Écrire ln(a × b) = ln a × ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme et une puissance en produit, ln(aⁿ) = n × ln a."
+                "libelle": "Écrire ln(a × b) = ln a × ln b, ln(a ÷ b) = ln a ÷ ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme, un quotient en différence et une puissance en produit, ln(aⁿ) = n × ln a."
               }
             ]
           },
@@ -5169,7 +5169,7 @@
                   {
                     "title": "Logarithme népérien",
                     "description": "Comment défaire eˣ ?",
-                    "back": "eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log."
+                    "back": "eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(a ÷ b) = ln a − ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log."
                   },
                   {
                     "title": "Seuil qⁿ ≥ s",
@@ -5285,7 +5285,7 @@
               },
               {
                 "id": "ln-produit-en-produit",
-                "libelle": "Écrire ln(a × b) = ln a × ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme et une puissance en produit, ln(aⁿ) = n × ln a."
+                "libelle": "Écrire ln(a × b) = ln a × ln b, ln(a ÷ b) = ln a ÷ ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme, un quotient en différence et une puissance en produit, ln(aⁿ) = n × ln a."
               },
               {
                 "id": "k-confondu-avec-taux",
@@ -5725,7 +5725,7 @@
                     "kind": "definition",
                     "title": "ln remonte de l’exponentielle à l’exposant",
                     "text": "Pour un nombre y strictement positif, ln y est le nombre x tel que eˣ = y. ln défait l’exponentielle, comme la division défait la multiplication : ln(eˣ) = x et e^(ln y) = y. C’est lui qui donnera le mois où les ventes de la gamme Sillage atteindront 1 000 sacs.",
-                    "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(aⁿ) = n × ln a"
+                    "formula": "eˣ = y ⇔ x = ln y, pour y > 0 · ln 1 = 0 · ln e = 1 · ln(a × b) = ln a + ln b · ln(a ÷ b) = ln a − ln b · ln(aⁿ) = n × ln a"
                   },
                   {
                     "kind": "example",
@@ -5741,7 +5741,7 @@
                   {
                     "kind": "method",
                     "title": "Utiliser ln sans se tromper de touche",
-                    "text": "Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.",
+                    "text": "Pièges : prendre la touche log, le logarithme décimal, pour ln : log 5 ≈ 0,699, pas 1,609 ; écrire ln(a × b) = ln a × ln b ou ln(a ÷ b) = ln a ÷ ln b ; chercher le ln d’un nombre négatif ou nul, qui n’existe pas.",
                     "steps": [
                       "Repérer l’égalité eˣ = y, avec y > 0.",
                       "Appliquer ln : x = ln y, touche ln de la calculatrice.",
@@ -6181,7 +6181,7 @@
                   {
                     "title": "Logarithme népérien",
                     "description": "Comment défaire eˣ ?",
-                    "back": "eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log."
+                    "back": "eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(a ÷ b) = ln a − ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log."
                   },
                   {
                     "title": "Seuil qⁿ ≥ s",

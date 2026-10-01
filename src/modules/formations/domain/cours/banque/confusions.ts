@@ -453,7 +453,7 @@ const DEFINITIONS = {
   'ln-produit-en-produit': {
     concept: 'logarithme-neperien',
     libelle:
-      'Écrire ln(a × b) = ln a × ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme et une puissance en produit, ln(aⁿ) = n × ln a.',
+      'Écrire ln(a × b) = ln a × ln b, ln(a ÷ b) = ln a ÷ ln b ou ln(aⁿ) = (ln a)ⁿ : ln change un produit en somme, un quotient en différence et une puissance en produit, ln(aⁿ) = n × ln a.',
   },
   'log-decimal-au-lieu-de-ln': {
     concept: 'logarithme-neperien',

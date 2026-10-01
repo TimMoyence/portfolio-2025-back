@@ -399,7 +399,7 @@ export const ACTE_4: moteur.Acte = [
       {
         title: 'Logarithme népérien',
         description: 'Comment défaire eˣ ?',
-        back: 'eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log.',
+        back: 'eˣ = y ⇔ x = ln y, pour y > 0. ln(a × b) = ln a + ln b ; ln(a ÷ b) = ln a − ln b ; ln(aⁿ) = n × ln a. Touche ln, pas log.',
       },
       {
         title: 'Seuil qⁿ ≥ s',
