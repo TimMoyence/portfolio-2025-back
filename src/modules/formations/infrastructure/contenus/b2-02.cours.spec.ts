@@ -63,7 +63,7 @@ const premierRangAtteignant = (
 
 decrireLaFicheDuCours('B2-02', COURS, {
   conception: 'cours-b2-02-conception.md',
-  ecrans: 31,
+  ecrans: 37,
   dureeMinutes: 180,
   minutesParActe: [44, 47, 41, 48, 0, 0],
   rythme: { expositionContinueMax: 6, interactives: 149, exposition: 31 },
@@ -78,9 +78,15 @@ decrireLaFicheDuCours('B2-02', COURS, {
     'A1-04',
     'A1-06',
     'A1-06',
+    'A1-06',
+    'A1-06',
     'A2-01',
     'A2-03',
     'A2-03',
+    'A2-03',
+    'A2-03',
+    'A3-02',
+    'A3-02',
     'A3-02',
     'A3-02',
     'A4-01',
@@ -113,6 +119,36 @@ function texteDeLEcran(screenId: string): string {
 
 const enFrancais = (valeur: number): string =>
   valeur.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+
+const ILLUSTRATION_DE_CHAQUE_TRACE_ECRITE: Readonly<Record<string, string>> = {
+  'B2-02-A1-06-COURS-RESUMER': 'cinq-factures.webp',
+  'B2-02-A1-06-COURS-ECART': 'deux-clients-meme-moyenne.webp',
+  'B2-02-A2-03-COURS-NUAGE': 'boutique-nuage-point-moyen.webp',
+  'B2-02-A2-03-COURS-CORRELATION': 'boutique-coefficient-r.webp',
+  'B2-02-A3-02-COURS-DROITE': 'boutique-droite-moindres-carres.webp',
+  'B2-02-A3-02-COURS-PREVOIR': 'boutique-prevision-seuil.webp',
+};
+
+function proprietesDeLEcranQuiSuit(screenId: string): unknown {
+  const rang = COURS_B2_02.ecrans.findIndex(
+    (ecran) => ecran.screenId === screenId,
+  );
+  return COURS_B2_02.ecrans[rang + 1]?.proprietes;
+}
+
+describe('B2-02 — illustration de l’exemple de chaque trace écrite', () => {
+  it.each(Object.entries(ILLUSTRATION_DE_CHAQUE_TRACE_ECRITE))(
+    'fait suivre %s d’un écran qui ne montre que l’image %s',
+    (screenId, fichier) => {
+      expect(proprietesDeLEcranQuiSuit(screenId)).toMatchObject({
+        presentation: {
+          renderer: 'illustration',
+          props: { image: `/assets/cours/b2-02/v2/${fichier}` },
+        },
+      });
+    },
+  );
+});
 
 describe('B2-02 — textes relus contre les données et le programme', () => {
   it('chiffre l’écart entre moyenne et médiane de l’exemple A1-07', () => {
