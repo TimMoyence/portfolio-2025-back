@@ -119,6 +119,10 @@ export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
   },
   'image-left': IMAGE_ET_TEXTE,
   'image-right': IMAGE_ET_TEXTE,
+  illustration: {
+    image: IMAGE,
+    imageAlt: 'Schéma de l’exemple : cinq factures triées, médiane au milieu',
+  },
   cta: {
     title: 'Pour aller plus loin',
     description: 'La boîte à outils du contrôle.',

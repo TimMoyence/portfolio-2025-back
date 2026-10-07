@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "ac94e40b9a56541c58f15fd819b74eabcb7265fb00d0747d7988ea375eb3fff7",
+  "empreinte": "b8094ea53d4ecb0c338d7b8d09f4066d0359084bc8f6c63352ec146b67a2e895",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -302,7 +302,7 @@
         "id": "B2-02-A1-06-COURS-RESUMER",
         "type": "fp-story",
         "titre": "Cours : le centre d’une série, moyenne et médiane",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -349,7 +349,35 @@
             "metadonnees": {
               "concepts": ["moyenne", "mediane"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+        "type": "fp-story",
+        "titre": "Illustration : cinq factures",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/cinq-factures.webp",
+                "imageAlt": "Schéma de l’exemple des cinq factures payées en 10, 14, 8, 12 et 56 jours. Moyenne : 100 ÷ 5 = 20 jours. Série triée : 8 ; 10 ; 12 ; 14 ; 56, la médiane est la valeur du milieu, 12 jours. La facture de 56 jours tire la moyenne vers le haut, alors que quatre factures sur cinq sont payées en 14 jours au plus."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["moyenne", "mediane"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -360,7 +388,7 @@
         "id": "B2-02-A1-06-COURS-ECART",
         "type": "fp-story",
         "titre": "Cours : la régularité d’une série, l’écart-type",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -406,7 +434,35 @@
             "metadonnees": {
               "concepts": ["ecart-type", "dispersion", "choix-du-resume"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A1-06-ILLUSTRATION-ECART",
+        "type": "fp-story",
+        "titre": "Illustration : deux clients, même moyenne",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A1-06-ILLUSTRATION-ECART",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A1-06-ILLUSTRATION-ECART",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/deux-clients-meme-moyenne.webp",
+                "imageAlt": "Schéma de l’exemple des deux clients de même moyenne, 10 jours. Client A payé en 8, 12, 8 et 12 jours : écarts à la moyenne −2, 2, −2, 2, somme des carrés 16, variance 4 jours², écart-type 2 jours. Client B payé en 2, 18, 4 et 16 jours : écarts −8, 8, −6, 6, somme des carrés 200, variance 50 jours², écart-type ≈ 7,07 jours. Même moyenne, mais B est beaucoup moins régulier."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["ecart-type", "dispersion"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -712,7 +768,7 @@
         "id": "B2-02-A2-03-COURS-NUAGE",
         "type": "fp-story",
         "titre": "Cours : nuage de points et point moyen",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -758,7 +814,35 @@
             "metadonnees": {
               "concepts": ["nuage-de-points"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+        "type": "fp-story",
+        "titre": "Illustration : une boutique, trois années",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-nuage-point-moyen.webp",
+                "imageAlt": "Schéma de l’exemple de la boutique : rangs x = 1, 2, 3 pour les années 2022 à 2024, chiffre d’affaires y = 4, 5 et 9 milliers d’euros. Nuage des trois points (1 ; 4), (2 ; 5) et (3 ; 9). Moyennes x̄ = 6 ÷ 3 = 2 et ȳ = 18 ÷ 3 = 6 : le point moyen est G(2 ; 6), qui n’est pas le point du milieu (2 ; 5)."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["nuage-de-points"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -769,7 +853,7 @@
         "id": "B2-02-A2-03-COURS-CORRELATION",
         "type": "fp-story",
         "titre": "Cours : le coefficient de corrélation r",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -815,7 +899,35 @@
             "metadonnees": {
               "concepts": ["correlation"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+        "type": "fp-story",
+        "titre": "Illustration : r de la boutique, à la main",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-coefficient-r.webp",
+                "imageAlt": "Schéma du calcul de r pour la boutique, par les écarts au point moyen G(2 ; 6). Écarts des x : −1, 0, 1 ; écarts des y : −2, −1, 3. Produits des écarts : 2, 0 et 3, de somme 5. Sommes des carrés des écarts : 2 pour x et 14 pour y. r = 5 ÷ √(2 × 14) = 5 ÷ √28 ≈ 0,945 : les points sont presque alignés sur une droite qui monte."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["correlation"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1084,7 +1196,7 @@
         "id": "B2-02-A3-02-COURS-DROITE",
         "type": "fp-story",
         "titre": "Cours : la droite des moindres carrés",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -1131,7 +1243,35 @@
             "metadonnees": {
               "concepts": ["ajustement-affine"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A3-02-ILLUSTRATION-DROITE",
+        "type": "fp-story",
+        "titre": "Illustration : la droite de la boutique",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A3-02-ILLUSTRATION-DROITE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A3-02-ILLUSTRATION-DROITE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-droite-moindres-carres.webp",
+                "imageAlt": "Schéma de la droite des moindres carrés de la boutique. Pente a = 5 ÷ 2 = 2,5 ; ordonnée à l’origine b = 6 − 2,5 × 2 = 1 ; équation y = 2,5x + 1. Contrôle par le point moyen : 2,5 × 2 + 1 = 6, la droite passe par G(2 ; 6). Écarts verticaux des points à la droite : +0,5, −1 et +0,5, dont la somme des carrés vaut 1,5, la plus petite possible."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["ajustement-affine"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -1142,7 +1282,7 @@
         "id": "B2-02-A3-02-COURS-PREVOIR",
         "type": "fp-story",
         "titre": "Cours : prévoir avec la droite, et ses limites",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -1188,7 +1328,35 @@
             "metadonnees": {
               "concepts": ["prevision"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+        "type": "fp-story",
+        "titre": "Illustration : la boutique en 2026, puis le seuil de 18",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["prevision"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -2116,7 +2284,7 @@
         "id": "B2-02-A1-06-COURS-RESUMER",
         "type": "fp-story",
         "titre": "Cours : le centre d’une série, moyenne et médiane",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2163,13 +2331,47 @@
             "metadonnees": {
               "concepts": ["moyenne", "mediane"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Avant de lire l’exemple, demander : « Un artisan est payé en 10, 14, 8, 12 et 56 jours. Quel délai annonceriez-vous à sa banque ? » Laisser venir 20.\n• Relance : « Combien de ces factures sont payées en moins de 20 jours ? » Quatre sur cinq : la moyenne ne dit pas le délai habituel.\n• Faire trouver le piège : demander le milieu de la liste non triée (8), puis faire corriger par le tri.\n• Lien au dossier : « Dans nos vingt délais, quelle facture joue le rôle des 56 jours ? » F105.",
+        "notes": "• 2 min, puis 1 min sur son illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Avant de lire l’exemple, demander : « Un artisan est payé en 10, 14, 8, 12 et 56 jours. Quel délai annonceriez-vous à sa banque ? » Laisser venir 20.\n• Relance : « Combien de ces factures sont payées en moins de 20 jours ? » Quatre sur cinq : la moyenne ne dit pas le délai habituel.\n• Faire trouver le piège : demander le milieu de la liste non triée (8), puis faire corriger par le tri.\n• Lien au dossier : « Dans nos vingt délais, quelle facture joue le rôle des 56 jours ? » F105.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+        "type": "fp-story",
+        "titre": "Illustration : cinq factures",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/cinq-factures.webp",
+                "imageAlt": "Schéma de l’exemple des cinq factures payées en 10, 14, 8, 12 et 56 jours. Moyenne : 100 ÷ 5 = 20 jours. Série triée : 8 ; 10 ; 12 ; 14 ; 56, la médiane est la valeur du milieu, 12 jours. La facture de 56 jours tire la moyenne vers le haut, alors que quatre factures sur cinq sont payées en 14 jours au plus."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["moyenne", "mediane"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.\n• Montrer du doigt la facture de 56 jours : c’est elle qui sépare la moyenne de la médiane.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2180,7 +2382,7 @@
         "id": "B2-02-A1-06-COURS-ECART",
         "type": "fp-story",
         "titre": "Cours : la régularité d’une série, l’écart-type",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2226,13 +2428,47 @@
             "metadonnees": {
               "concepts": ["ecart-type", "dispersion", "choix-du-resume"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite.\n• Question d’ouverture : « Les clients A et B ont la même moyenne. Si vous étiez la banque, lequel préféreriez-vous ? Pourquoi ? »\n• Faire additionner les écarts de A (−2 + 2 − 2 + 2 = 0) : c’est pour cela qu’on les élève au carré.\n• Piège à faire dire : 50 est en jours², ce n’est pas un délai ; l’écart-type, ≈ 7,07 jours, l’est.\n• Relance CCF : « Nos vingt factures, est-ce toutes les factures ou un échantillon ? » Toutes : ECARTYPEP.",
+        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.\n• Question d’ouverture : « Les clients A et B ont la même moyenne. Si vous étiez la banque, lequel préféreriez-vous ? Pourquoi ? »\n• Faire additionner les écarts de A (−2 + 2 − 2 + 2 = 0) : c’est pour cela qu’on les élève au carré.\n• Piège à faire dire : 50 est en jours², ce n’est pas un délai ; l’écart-type, ≈ 7,07 jours, l’est.\n• Relance CCF : « Nos vingt factures, est-ce toutes les factures ou un échantillon ? » Toutes : ECARTYPEP.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-02-A1-06-ILLUSTRATION-ECART",
+        "type": "fp-story",
+        "titre": "Illustration : deux clients, même moyenne",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A1-06-ILLUSTRATION-ECART",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A1-06-ILLUSTRATION-ECART",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/deux-clients-meme-moyenne.webp",
+                "imageAlt": "Schéma de l’exemple des deux clients de même moyenne, 10 jours. Client A payé en 8, 12, 8 et 12 jours : écarts à la moyenne −2, 2, −2, 2, somme des carrés 16, variance 4 jours², écart-type 2 jours. Client B payé en 2, 18, 4 et 16 jours : écarts −8, 8, −6, 6, somme des carrés 200, variance 50 jours², écart-type ≈ 7,07 jours. Même moyenne, mais B est beaucoup moins régulier."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["ecart-type", "dispersion"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.\n• Faire comparer les deux rangées de points avant les calculs : on voit que B est plus dispersé, l’écart-type le chiffre.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2747,7 +2983,7 @@
         "id": "B2-02-A2-03-COURS-NUAGE",
         "type": "fp-story",
         "titre": "Cours : nuage de points et point moyen",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2793,13 +3029,47 @@
             "metadonnees": {
               "concepts": ["nuage-de-points"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; garder le nuage d’Atelier Rivage (A2-01) en tête pour situer x et y.\n• Avant l’exemple, demander : « Le point de la ligne du milieu du tableau est-il le centre du nuage ? » Vote à main levée, sans trancher.\n• Faire calculer ȳ de tête (18 ÷ 3), puis comparer (2 ; 6) à (2 ; 5) : le vote est tranché.\n• Piège à faire émerger : les sommes (6 ; 18) au lieu des moyennes.",
+        "notes": "• 2 min, puis 1 min sur son illustration ; garder le nuage d’Atelier Rivage (A2-01) en tête pour situer x et y.\n• Avant l’exemple, demander : « Le point de la ligne du milieu du tableau est-il le centre du nuage ? » Vote à main levée, sans trancher.\n• Faire calculer ȳ de tête (18 ÷ 3), puis comparer (2 ; 6) à (2 ; 5) : le vote est tranché.\n• Piège à faire émerger : les sommes (6 ; 18) au lieu des moyennes.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+        "type": "fp-story",
+        "titre": "Illustration : une boutique, trois années",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-nuage-point-moyen.webp",
+                "imageAlt": "Schéma de l’exemple de la boutique : rangs x = 1, 2, 3 pour les années 2022 à 2024, chiffre d’affaires y = 4, 5 et 9 milliers d’euros. Nuage des trois points (1 ; 4), (2 ; 5) et (3 ; 9). Moyennes x̄ = 6 ÷ 3 = 2 et ȳ = 18 ÷ 3 = 6 : le point moyen est G(2 ; 6), qui n’est pas le point du milieu (2 ; 5)."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["nuage-de-points"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.\n• Faire placer G sur le nuage projeté : il tombe au-dessus du point du milieu, ce que le vote n’avait pas tranché.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2810,7 +3080,7 @@
         "id": "B2-02-A2-03-COURS-CORRELATION",
         "type": "fp-story",
         "titre": "Cours : le coefficient de corrélation r",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -2856,13 +3126,47 @@
             "metadonnees": {
               "concepts": ["correlation"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé au CCF : il montre ce que la touche r calcule.\n• Question : « Si un point était en haut à gauche de G, quel serait le signe de son produit d’écarts ? » Négatif : il ferait baisser r.\n• Relier au vote A2-02 : voiles et glaces montent ensemble, r élevé, et pourtant aucune cause.\n• Faire dire qu’un r de −0,98 autorise aussi une droite, qui descend.\n• Annoncer l’exercice 3 : on y refait les écarts au point moyen sur Atelier Rivage.",
+        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé au CCF : il montre ce que la touche r calcule.\n• Question : « Si un point était en haut à gauche de G, quel serait le signe de son produit d’écarts ? » Négatif : il ferait baisser r.\n• Relier au vote A2-02 : voiles et glaces montent ensemble, r élevé, et pourtant aucune cause.\n• Faire dire qu’un r de −0,98 autorise aussi une droite, qui descend.\n• Annoncer l’exercice 3 : on y refait les écarts au point moyen sur Atelier Rivage.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+        "type": "fp-story",
+        "titre": "Illustration : r de la boutique, à la main",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-coefficient-r.webp",
+                "imageAlt": "Schéma du calcul de r pour la boutique, par les écarts au point moyen G(2 ; 6). Écarts des x : −1, 0, 1 ; écarts des y : −2, −1, 3. Produits des écarts : 2, 0 et 3, de somme 5. Sommes des carrés des écarts : 2 pour x et 14 pour y. r = 5 ÷ √(2 × 14) = 5 ÷ √28 ≈ 0,945 : les points sont presque alignés sur une droite qui monte."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["correlation"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.\n• Faire repérer les deux produits positifs : les points en bas à gauche et en haut à droite de G font monter r.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3343,7 +3647,7 @@
         "id": "B2-02-A3-02-COURS-DROITE",
         "type": "fp-story",
         "titre": "Cours : la droite des moindres carrés",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -3390,13 +3694,47 @@
             "metadonnees": {
               "concepts": ["ajustement-affine"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min ; reprendre les sommes de l’exemple de r (5 et 2) : rien à recalculer.\n• Question : « Que veut dire a = 2,5 pour la boutique ? » Attendre « 2,5 milliers d’euros de plus par an, en tendance ».\n• Faire vérifier le passage par G avant d’accepter une équation : c’est le contrôle du CCF.\n• Piège à faire dire : PENTE(plage des x;plage des y) donne une autre droite, celle de x en y.",
+        "notes": "• 2 min, puis 1 min sur son illustration ; reprendre les sommes de l’exemple de r (5 et 2) : rien à recalculer.\n• Question : « Que veut dire a = 2,5 pour la boutique ? » Attendre « 2,5 milliers d’euros de plus par an, en tendance ».\n• Faire vérifier le passage par G avant d’accepter une équation : c’est le contrôle du CCF.\n• Piège à faire dire : PENTE(plage des x;plage des y) donne une autre droite, celle de x en y.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-02-A3-02-ILLUSTRATION-DROITE",
+        "type": "fp-story",
+        "titre": "Illustration : la droite de la boutique",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A3-02-ILLUSTRATION-DROITE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A3-02-ILLUSTRATION-DROITE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-droite-moindres-carres.webp",
+                "imageAlt": "Schéma de la droite des moindres carrés de la boutique. Pente a = 5 ÷ 2 = 2,5 ; ordonnée à l’origine b = 6 − 2,5 × 2 = 1 ; équation y = 2,5x + 1. Contrôle par le point moyen : 2,5 × 2 + 1 = 6, la droite passe par G(2 ; 6). Écarts verticaux des points à la droite : +0,5, −1 et +0,5, dont la somme des carrés vaut 1,5, la plus petite possible."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["ajustement-affine"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.\n• Faire lire les trois écarts verticaux : la droite passe entre les points, aucune autre ne rend la somme de leurs carrés plus petite.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3407,7 +3745,7 @@
         "id": "B2-02-A3-02-COURS-PREVOIR",
         "type": "fp-story",
         "titre": "Cours : prévoir avec la droite, et ses limites",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -3453,13 +3791,47 @@
             "metadonnees": {
               "concepts": ["prevision"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la page 1 : 6 min pour les deux pages.\n• Faire calculer à main levée 2,5 × 2026 + 1 : l’absurdité de 5 066 fixe la règle du rang.\n• Question : « À 6,8, on prend le rang 6 ou le rang 7 ? » Faire vérifier que le rang 6 donne 16, sous le seuil.\n• Relance : « Jusqu’à quelle année feriez-vous confiance à cette droite ? » Renvoyer aux réponses de la réflexion A3-01.\n• Insister : x est le rang de l’année, jamais l’année.",
+        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire calculer à main levée 2,5 × 2026 + 1 : l’absurdité de 5 066 fixe la règle du rang.\n• Question : « À 6,8, on prend le rang 6 ou le rang 7 ? » Faire vérifier que le rang 6 donne 16, sous le seuil.\n• Relance : « Jusqu’à quelle année feriez-vous confiance à cette droite ? » Renvoyer aux réponses de la réflexion A3-01.\n• Insister : x est le rang de l’année, jamais l’année.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+        "type": "fp-story",
+        "titre": "Illustration : la boutique en 2026, puis le seuil de 18",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["prevision"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.\n• Faire dire pourquoi on prend le rang 7 et non 6,8 : une année est un rang entier, on arrondit à l’entier supérieur.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4996,7 +5368,7 @@
         "id": "B2-02-A1-06-COURS-RESUMER",
         "type": "fp-story",
         "titre": "Cours : le centre d’une série, moyenne et médiane",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5043,7 +5415,35 @@
             "metadonnees": {
               "concepts": ["moyenne", "mediane"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+        "type": "fp-story",
+        "titre": "Illustration : cinq factures",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A1-06-ILLUSTRATION-RESUMER",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/cinq-factures.webp",
+                "imageAlt": "Schéma de l’exemple des cinq factures payées en 10, 14, 8, 12 et 56 jours. Moyenne : 100 ÷ 5 = 20 jours. Série triée : 8 ; 10 ; 12 ; 14 ; 56, la médiane est la valeur du milieu, 12 jours. La facture de 56 jours tire la moyenne vers le haut, alors que quatre factures sur cinq sont payées en 14 jours au plus."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["moyenne", "mediane"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5054,7 +5454,7 @@
         "id": "B2-02-A1-06-COURS-ECART",
         "type": "fp-story",
         "titre": "Cours : la régularité d’une série, l’écart-type",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5100,7 +5500,35 @@
             "metadonnees": {
               "concepts": ["ecart-type", "dispersion", "choix-du-resume"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A1-06-ILLUSTRATION-ECART",
+        "type": "fp-story",
+        "titre": "Illustration : deux clients, même moyenne",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A1-06-ILLUSTRATION-ECART",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A1-06-ILLUSTRATION-ECART",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/deux-clients-meme-moyenne.webp",
+                "imageAlt": "Schéma de l’exemple des deux clients de même moyenne, 10 jours. Client A payé en 8, 12, 8 et 12 jours : écarts à la moyenne −2, 2, −2, 2, somme des carrés 16, variance 4 jours², écart-type 2 jours. Client B payé en 2, 18, 4 et 16 jours : écarts −8, 8, −6, 6, somme des carrés 200, variance 50 jours², écart-type ≈ 7,07 jours. Même moyenne, mais B est beaucoup moins régulier."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["ecart-type", "dispersion"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5210,7 +5638,7 @@
         "id": "B2-02-A2-03-COURS-NUAGE",
         "type": "fp-story",
         "titre": "Cours : nuage de points et point moyen",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5256,7 +5684,35 @@
             "metadonnees": {
               "concepts": ["nuage-de-points"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+        "type": "fp-story",
+        "titre": "Illustration : une boutique, trois années",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A2-03-ILLUSTRATION-NUAGE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-nuage-point-moyen.webp",
+                "imageAlt": "Schéma de l’exemple de la boutique : rangs x = 1, 2, 3 pour les années 2022 à 2024, chiffre d’affaires y = 4, 5 et 9 milliers d’euros. Nuage des trois points (1 ; 4), (2 ; 5) et (3 ; 9). Moyennes x̄ = 6 ÷ 3 = 2 et ȳ = 18 ÷ 3 = 6 : le point moyen est G(2 ; 6), qui n’est pas le point du milieu (2 ; 5)."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["nuage-de-points"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5267,7 +5723,7 @@
         "id": "B2-02-A2-03-COURS-CORRELATION",
         "type": "fp-story",
         "titre": "Cours : le coefficient de corrélation r",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5313,7 +5769,35 @@
             "metadonnees": {
               "concepts": ["correlation"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+        "type": "fp-story",
+        "titre": "Illustration : r de la boutique, à la main",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A2-03-ILLUSTRATION-CORRELATION",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-coefficient-r.webp",
+                "imageAlt": "Schéma du calcul de r pour la boutique, par les écarts au point moyen G(2 ; 6). Écarts des x : −1, 0, 1 ; écarts des y : −2, −1, 3. Produits des écarts : 2, 0 et 3, de somme 5. Sommes des carrés des écarts : 2 pour x et 14 pour y. r = 5 ÷ √(2 × 14) = 5 ÷ √28 ≈ 0,945 : les points sont presque alignés sur une droite qui monte."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["correlation"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5364,7 +5848,7 @@
         "id": "B2-02-A3-02-COURS-DROITE",
         "type": "fp-story",
         "titre": "Cours : la droite des moindres carrés",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5411,7 +5895,35 @@
             "metadonnees": {
               "concepts": ["ajustement-affine"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A3-02-ILLUSTRATION-DROITE",
+        "type": "fp-story",
+        "titre": "Illustration : la droite de la boutique",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A3-02-ILLUSTRATION-DROITE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A3-02-ILLUSTRATION-DROITE",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-droite-moindres-carres.webp",
+                "imageAlt": "Schéma de la droite des moindres carrés de la boutique. Pente a = 5 ÷ 2 = 2,5 ; ordonnée à l’origine b = 6 − 2,5 × 2 = 1 ; équation y = 2,5x + 1. Contrôle par le point moyen : 2,5 × 2 + 1 = 6, la droite passe par G(2 ; 6). Écarts verticaux des points à la droite : +0,5, −1 et +0,5, dont la somme des carrés vaut 1,5, la plus petite possible."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["ajustement-affine"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5422,7 +5934,7 @@
         "id": "B2-02-A3-02-COURS-PREVOIR",
         "type": "fp-story",
         "titre": "Cours : prévoir avec la droite, et ses limites",
-        "duree": 3,
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
@@ -5468,7 +5980,35 @@
             "metadonnees": {
               "concepts": ["prevision"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 3,
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+        "type": "fp-story",
+        "titre": "Illustration : la boutique en 2026, puis le seuil de 18",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+            "presentation": {
+              "version": 2,
+              "screenId": "B2-02-A3-02-ILLUSTRATION-PREVOIR",
+              "renderer": "illustration",
+              "props": {
+                "image": "/assets/cours/b2-02/v2/boutique-prevision-seuil.webp",
+                "imageAlt": "Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["prevision"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
               "modalite": "solo",
               "regime": "ouvert"
             }

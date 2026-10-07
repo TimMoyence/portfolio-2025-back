@@ -186,8 +186,7 @@ export function decrireLaFicheDuCours(
       expect(
         cours.medias.map((media) => ({
           id: media.id,
-          pageSource:
-            media.pageSource ?? 'capsule produite pour le cours (annexe A)',
+          pageSource: media.pageSource ?? 'production propre du cours',
           licence: media.licence,
           fichiers: media.chemins.map((chemin) => chemin.split('/').at(-1)),
           attribution: media.attribution,

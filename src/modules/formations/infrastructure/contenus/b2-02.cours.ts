@@ -69,6 +69,32 @@ const CA_RIVAGE = [610, 652, 694, 736, 790, 826] as const;
 const ANNEES_FIBRE = [2020, 2021, 2022, 2023, 2024] as const;
 const FIBRE_EN_MILLIONS = ['10,3', '14,5', '18,1', '21,4', '24,4'] as const;
 
+function illustration(
+  {
+    screenId,
+    titre,
+    concepts,
+  }: Pick<moteur.SocleDEcran, 'screenId' | 'titre' | 'concepts'>,
+  { fichier, imageAlt }: { fichier: string; imageAlt: string },
+  relance: string,
+): moteur.EcranDeRecit {
+  return moteur.ecranV2(
+    {
+      screenId,
+      titre,
+      diffusion: 'catalogue',
+      dureeMinutes: 1,
+      concepts,
+      notes: moteur.puces(
+        '1 min ; l’image reprend l’exemple pour débuter de la page qui précède : la projeter pendant qu’on le refait au tableau.',
+        relance,
+      ),
+    },
+    'illustration',
+    { image: `/assets/cours/b2-02/v2/${fichier}`, imageAlt },
+  );
+}
+
 const CONSIGNE_DES_DELAIS =
   'Calculatrice autorisée. Délais de paiement des vingt factures du trimestre, de F101 à F120 : 42 ; 25 ; 58 ; 31 ; 146 ; 38 ; 47 ; 18 ; 62 ; 44 ; 35 ; 52 ; 28 ; 75 ; 40 ; 30 ; 55 ; 34 ; 50 ; 45 (jours). Les vingt factures forment toute la population étudiée.';
 
@@ -246,10 +272,10 @@ const ACTE_1: moteur.Acte = [
       screenId: 'B2-02-A1-06-COURS-RESUMER',
       titre: 'Cours : le centre d’une série, moyenne et médiane',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['moyenne', 'mediane'],
       notes: moteur.puces(
-        '3 min ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
+        '2 min, puis 1 min sur son illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.',
         'Avant de lire l’exemple, demander : « Un artisan est payé en 10, 14, 8, 12 et 56 jours. Quel délai annonceriez-vous à sa banque ? » Laisser venir 20.',
         'Relance : « Combien de ces factures sont payées en moins de 20 jours ? » Quatre sur cinq : la moyenne ne dit pas le délai habituel.',
         'Faire trouver le piège : demander le milieu de la liste non triée (8), puis faire corriger par le tri.',
@@ -292,15 +318,28 @@ const ACTE_1: moteur.Acte = [
       ],
     },
   ),
+  illustration(
+    {
+      screenId: 'B2-02-A1-06-ILLUSTRATION-RESUMER',
+      titre: 'Illustration : cinq factures',
+      concepts: ['moyenne', 'mediane'],
+    },
+    {
+      fichier: 'cinq-factures.webp',
+      imageAlt:
+        'Schéma de l’exemple des cinq factures payées en 10, 14, 8, 12 et 56 jours. Moyenne : 100 ÷ 5 = 20 jours. Série triée : 8 ; 10 ; 12 ; 14 ; 56, la médiane est la valeur du milieu, 12 jours. La facture de 56 jours tire la moyenne vers le haut, alors que quatre factures sur cinq sont payées en 14 jours au plus.',
+    },
+    'Montrer du doigt la facture de 56 jours : c’est elle qui sépare la moyenne de la médiane.',
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-02-A1-06-COURS-ECART',
       titre: 'Cours : la régularité d’une série, l’écart-type',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['ecart-type', 'dispersion', 'choix-du-resume'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite.',
+        '2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.',
         'Question d’ouverture : « Les clients A et B ont la même moyenne. Si vous étiez la banque, lequel préféreriez-vous ? Pourquoi ? »',
         'Faire additionner les écarts de A (−2 + 2 − 2 + 2 = 0) : c’est pour cela qu’on les élève au carré.',
         'Piège à faire dire : 50 est en jours², ce n’est pas un délai ; l’écart-type, ≈ 7,07 jours, l’est.',
@@ -341,6 +380,19 @@ const ACTE_1: moteur.Acte = [
         },
       ],
     },
+  ),
+  illustration(
+    {
+      screenId: 'B2-02-A1-06-ILLUSTRATION-ECART',
+      titre: 'Illustration : deux clients, même moyenne',
+      concepts: ['ecart-type', 'dispersion'],
+    },
+    {
+      fichier: 'deux-clients-meme-moyenne.webp',
+      imageAlt:
+        'Schéma de l’exemple des deux clients de même moyenne, 10 jours. Client A payé en 8, 12, 8 et 12 jours : écarts à la moyenne −2, 2, −2, 2, somme des carrés 16, variance 4 jours², écart-type 2 jours. Client B payé en 2, 18, 4 et 16 jours : écarts −8, 8, −6, 6, somme des carrés 200, variance 50 jours², écart-type ≈ 7,07 jours. Même moyenne, mais B est beaucoup moins régulier.',
+    },
+    'Faire comparer les deux rangées de points avant les calculs : on voit que B est plus dispersé, l’écart-type le chiffre.',
   ),
   moteur.corrigeEtapeParEtape(
     {
@@ -667,10 +719,10 @@ const ACTE_2: moteur.Acte = [
       screenId: 'B2-02-A2-03-COURS-NUAGE',
       titre: 'Cours : nuage de points et point moyen',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['nuage-de-points'],
       notes: moteur.puces(
-        '3 min ; garder le nuage d’Atelier Rivage (A2-01) en tête pour situer x et y.',
+        '2 min, puis 1 min sur son illustration ; garder le nuage d’Atelier Rivage (A2-01) en tête pour situer x et y.',
         'Avant l’exemple, demander : « Le point de la ligne du milieu du tableau est-il le centre du nuage ? » Vote à main levée, sans trancher.',
         'Faire calculer ȳ de tête (18 ÷ 3), puis comparer (2 ; 6) à (2 ; 5) : le vote est tranché.',
         'Piège à faire émerger : les sommes (6 ; 18) au lieu des moyennes.',
@@ -711,15 +763,28 @@ const ACTE_2: moteur.Acte = [
       ],
     },
   ),
+  illustration(
+    {
+      screenId: 'B2-02-A2-03-ILLUSTRATION-NUAGE',
+      titre: 'Illustration : une boutique, trois années',
+      concepts: ['nuage-de-points'],
+    },
+    {
+      fichier: 'boutique-nuage-point-moyen.webp',
+      imageAlt:
+        'Schéma de l’exemple de la boutique : rangs x = 1, 2, 3 pour les années 2022 à 2024, chiffre d’affaires y = 4, 5 et 9 milliers d’euros. Nuage des trois points (1 ; 4), (2 ; 5) et (3 ; 9). Moyennes x̄ = 6 ÷ 3 = 2 et ȳ = 18 ÷ 3 = 6 : le point moyen est G(2 ; 6), qui n’est pas le point du milieu (2 ; 5).',
+    },
+    'Faire placer G sur le nuage projeté : il tombe au-dessus du point du milieu, ce que le vote n’avait pas tranché.',
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-02-A2-03-COURS-CORRELATION',
       titre: 'Cours : le coefficient de corrélation r',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['correlation'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé au CCF : il montre ce que la touche r calcule.',
+        '2 min, puis 1 min sur son illustration, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé au CCF : il montre ce que la touche r calcule.',
         'Question : « Si un point était en haut à gauche de G, quel serait le signe de son produit d’écarts ? » Négatif : il ferait baisser r.',
         'Relier au vote A2-02 : voiles et glaces montent ensemble, r élevé, et pourtant aucune cause.',
         'Faire dire qu’un r de −0,98 autorise aussi une droite, qui descend.',
@@ -760,6 +825,19 @@ const ACTE_2: moteur.Acte = [
         },
       ],
     },
+  ),
+  illustration(
+    {
+      screenId: 'B2-02-A2-03-ILLUSTRATION-CORRELATION',
+      titre: 'Illustration : r de la boutique, à la main',
+      concepts: ['correlation'],
+    },
+    {
+      fichier: 'boutique-coefficient-r.webp',
+      imageAlt:
+        'Schéma du calcul de r pour la boutique, par les écarts au point moyen G(2 ; 6). Écarts des x : −1, 0, 1 ; écarts des y : −2, −1, 3. Produits des écarts : 2, 0 et 3, de somme 5. Sommes des carrés des écarts : 2 pour x et 14 pour y. r = 5 ÷ √(2 × 14) = 5 ÷ √28 ≈ 0,945 : les points sont presque alignés sur une droite qui monte.',
+    },
+    'Faire repérer les deux produits positifs : les points en bas à gauche et en haut à droite de G font monter r.',
   ),
   moteur.corrigeEtapeParEtape(
     {
@@ -1074,10 +1152,10 @@ const ACTE_3: moteur.Acte = [
       screenId: 'B2-02-A3-02-COURS-DROITE',
       titre: 'Cours : la droite des moindres carrés',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['ajustement-affine'],
       notes: moteur.puces(
-        '3 min ; reprendre les sommes de l’exemple de r (5 et 2) : rien à recalculer.',
+        '2 min, puis 1 min sur son illustration ; reprendre les sommes de l’exemple de r (5 et 2) : rien à recalculer.',
         'Question : « Que veut dire a = 2,5 pour la boutique ? » Attendre « 2,5 milliers d’euros de plus par an, en tendance ».',
         'Faire vérifier le passage par G avant d’accepter une équation : c’est le contrôle du CCF.',
         'Piège à faire dire : PENTE(plage des x;plage des y) donne une autre droite, celle de x en y.',
@@ -1119,15 +1197,28 @@ const ACTE_3: moteur.Acte = [
       ],
     },
   ),
+  illustration(
+    {
+      screenId: 'B2-02-A3-02-ILLUSTRATION-DROITE',
+      titre: 'Illustration : la droite de la boutique',
+      concepts: ['ajustement-affine'],
+    },
+    {
+      fichier: 'boutique-droite-moindres-carres.webp',
+      imageAlt:
+        'Schéma de la droite des moindres carrés de la boutique. Pente a = 5 ÷ 2 = 2,5 ; ordonnée à l’origine b = 6 − 2,5 × 2 = 1 ; équation y = 2,5x + 1. Contrôle par le point moyen : 2,5 × 2 + 1 = 6, la droite passe par G(2 ; 6). Écarts verticaux des points à la droite : +0,5, −1 et +0,5, dont la somme des carrés vaut 1,5, la plus petite possible.',
+    },
+    'Faire lire les trois écarts verticaux : la droite passe entre les points, aucune autre ne rend la somme de leurs carrés plus petite.',
+  ),
   moteur.ecranV2(
     {
       screenId: 'B2-02-A3-02-COURS-PREVOIR',
       titre: 'Cours : prévoir avec la droite, et ses limites',
       diffusion: 'catalogue',
-      dureeMinutes: 3,
+      dureeMinutes: 2,
       concepts: ['prevision'],
       notes: moteur.puces(
-        '3 min, enchaînées sur la page 1 : 6 min pour les deux pages.',
+        '2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.',
         'Faire calculer à main levée 2,5 × 2026 + 1 : l’absurdité de 5 066 fixe la règle du rang.',
         'Question : « À 6,8, on prend le rang 6 ou le rang 7 ? » Faire vérifier que le rang 6 donne 16, sous le seuil.',
         'Relance : « Jusqu’à quelle année feriez-vous confiance à cette droite ? » Renvoyer aux réponses de la réflexion A3-01.',
@@ -1168,6 +1259,19 @@ const ACTE_3: moteur.Acte = [
         },
       ],
     },
+  ),
+  illustration(
+    {
+      screenId: 'B2-02-A3-02-ILLUSTRATION-PREVOIR',
+      titre: 'Illustration : la boutique en 2026, puis le seuil de 18',
+      concepts: ['prevision'],
+    },
+    {
+      fichier: 'boutique-prevision-seuil.webp',
+      imageAlt:
+        'Schéma de la prévision de la boutique avec y = 2,5x + 1. L’année 2026 a le rang 5 : 2,5 × 5 + 1 = 13,5 milliers d’euros. Remplacer x par 2026 donnerait 5 066, un résultat absurde : x est le rang, jamais l’année. Seuil de 18 milliers d’euros : 2,5x + 1 ≥ 18 donne x ≥ 6,8 ; le rang 6 donne 16, sous le seuil, donc le seuil est atteint au rang 7, soit en 2028.',
+    },
+    'Faire dire pourquoi on prend le rang 7 et non 6,8 : une année est un rang entier, on arrondit à l’entier supérieur.',
   ),
   moteur.corrigeEtapeParEtape(
     {
@@ -2021,10 +2125,35 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'extrapolation-sans-reserve': 'B2-02-A3-02-COURS-PREVOIR',
 };
 
+const ILLUSTRATIONS = [
+  ['M1', 'cinq-factures.webp', 'Pour débuter : cinq factures'],
+  ['M2', 'deux-clients-meme-moyenne.webp', 'Deux clients, même moyenne'],
+  ['M3', 'boutique-nuage-point-moyen.webp', 'Une boutique, trois années'],
+  ['M4', 'boutique-coefficient-r.webp', 'r de la boutique, à la main'],
+  ['M5', 'boutique-droite-moindres-carres.webp', 'La droite de la boutique'],
+  [
+    'M6',
+    'boutique-prevision-seuil.webp',
+    'La boutique en 2026, puis le seuil de 18',
+  ],
+] as const;
+
+const MEDIAS: ContenuDeCours['medias'] = ILLUSTRATIONS.map(
+  ([id, fichier, titre]) => ({
+    id,
+    chemins: [`/assets/cours/b2-02/v2/${fichier}`],
+    pageSource: null,
+    auteur: 'Asili Design',
+    date: '2026',
+    licence: 'CC BY-SA 4.0',
+    attribution: `${titre} · Asili Design, 2026 · CC BY-SA 4.0`,
+  }),
+);
+
 export const COURS_B2_02 = moteur.coursB2(
   [ACTE_1, ACTE_2, ACTE_3, ACTE_4],
   REMEDIATIONS,
-  [],
+  MEDIAS,
   {
     slug: 'b2-02-series-statistiques',
     titre: 'Séries statistiques : résumer, relier, prévoir',

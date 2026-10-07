@@ -15,8 +15,43 @@ describe('contrat visuel du catalogue', () => {
     },
   );
 
-  it('L4 · couvre chacun des dix-neuf rendus du deck, corrections de tri et de réponses comprises', () => {
-    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(19);
+  it('L4 · couvre chacun des vingt rendus du deck, corrections de tri et de réponses comprises', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(20);
+  });
+
+  describe('illustration', () => {
+    const illustration = PRESENTATIONS_VISUELLES_VALIDES.illustration;
+
+    it.each([
+      ['un titre', { title: 'Pour débuter : cinq factures' }],
+      ['un paragraphe', { paragraphs: ['Moyenne 20 jours.'] }],
+      [
+        'un lien source',
+        { sourceLink: { href: 'https://example.test', label: 'Source' } },
+      ],
+    ])('ne montre que son image : refuse %s', (_cas, ajout) => {
+      expect(() =>
+        parseVisualPresentation({
+          renderer: 'illustration',
+          props: { ...illustration, ...ajout },
+        }),
+      ).toThrow();
+    });
+
+    it.each([
+      ['sans texte alternatif', { imageAlt: '' }],
+      [
+        'servie hors des médias du cours',
+        { image: 'data:image/png;base64,AAAA' },
+      ],
+    ])('refuse une image %s', (_cas, alteration) => {
+      expect(() =>
+        parseVisualPresentation({
+          renderer: 'illustration',
+          props: { ...illustration, ...alteration },
+        }),
+      ).toThrow();
+    });
   });
 
   describe('nuage de points (B2-02 v3)', () => {
