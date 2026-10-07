@@ -259,6 +259,7 @@ export const presentationVisuelle = z.discriminatedUnion('renderer', [
   ),
   rendu('image-left', strict({ ...image, nestedQuiz: quiz.optional() })),
   rendu('image-right', strict(image)),
+  rendu('illustration', strict({ image: media, imageAlt: texte })),
   rendu(
     'cta',
     strict({
