@@ -256,19 +256,13 @@ function versProduction(stockee: ProductionStockee): QuestionProduction {
   };
 }
 
-interface SocleDEcran {
+interface SocleDEcran extends Communes {
   readonly id: string;
   readonly titre: string | null;
   readonly diffusion: Diffusion;
   readonly dureeMinutes: number;
   readonly concepts: Ecran['concepts'];
   readonly notes: string;
-  readonly modalite?: Modalite;
-  readonly guide?: GuideFormateur;
-  readonly renvoi?: string;
-  readonly cadrageDuRenvoi?: CadrageDuRenvoi;
-  readonly correctionSurPlace?: CorrectionSurPlace;
-  readonly pieceJointe?: PieceJointe;
 }
 
 type GuideFormateur = NonNullable<Ecran['guide']>;
