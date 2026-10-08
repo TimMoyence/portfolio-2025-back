@@ -95,4 +95,11 @@ describe('fonctions de classeur à la façon d’Excel', () => {
     expect(dateval('05/04/95')).toBe(dateExcel(1995, 4, 5));
     expect(() => dateval('15 mars')).toThrow('#VALEUR!');
   });
+
+  it('refuse comme DATEVAL une date impossible, et lit l’année sur quatre chiffres', () => {
+    expect(() => dateval('13/25/26')).toThrow('#VALEUR!');
+    expect(() => dateval('31/02/26')).toThrow('#VALEUR!');
+    expect(() => dateval('2026-02-30')).toThrow('#VALEUR!');
+    expect(dateval('05/04/2026')).toBe(dateExcel(2026, 4, 5));
+  });
 });

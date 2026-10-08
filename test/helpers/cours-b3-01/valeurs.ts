@@ -254,12 +254,22 @@ function montantDe(valeur: Valeur): Valeur {
   return typeof valeur === 'string' ? montantTexteVersNombre(valeur) : valeur;
 }
 
-function estAVerifier(ligne: Ligne, convertirLesDates: boolean): boolean {
+type DatesConverties = 'aucune' | 'iso' | 'toutes';
+
+const LONGUEUR_D_UNE_DATE_ISO = 10;
+
+function estConvertie(commande: Valeur, converties: DatesConverties): boolean {
+  if (typeof commande !== 'string' || converties === 'aucune') {
+    return false;
+  }
+  return converties === 'toutes' || commande.length === LONGUEUR_D_UNE_DATE_ISO;
+}
+
+function estAVerifier(ligne: Ligne, converties: DatesConverties): boolean {
   const commande = valeurDe(ligne, 'date_commande');
-  const dateDeCommande =
-    convertirLesDates && typeof commande === 'string'
-      ? dateval(commande)
-      : commande;
+  const dateDeCommande = estConvertie(commande, converties)
+    ? dateval(String(commande))
+    : commande;
   return (
     comparerCommeExcel(valeurDe(ligne, 'date_livraison'), dateDeCommande) < 0 ||
     comparerCommeExcel(valeurDe(ligne, 'quantite'), 0) <= 0 ||
@@ -287,7 +297,7 @@ function valeursDeLActe1(jeu: JeuB301) {
         villes.map((ville) => nomPropre(supprEspace(String(ville)))),
       ),
       'b3-01-a1-a-verifier': uniques.filter((ligne) =>
-        estAVerifier(ligne, false),
+        estAVerifier(ligne, 'aucune'),
       ).length,
     },
     pieges: {
@@ -307,7 +317,10 @@ function valeursDeLActe1(jeu: JeuB301) {
       'b3-01-a1-villes': { 'espaces-non-supprimes': distinctes(villes) },
       'b3-01-a1-a-verifier': {
         'suspect-corrige-sans-validation': uniques.filter((ligne) =>
-          estAVerifier(ligne, true),
+          estAVerifier(ligne, 'toutes'),
+        ).length,
+        'controle-apres-correction': uniques.filter((ligne) =>
+          estAVerifier(ligne, 'iso'),
         ).length,
       },
     },
@@ -400,6 +413,11 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         'valeur-extreme-ignoree': arrondi(
           moyenne(delaisDeStrasbourg.map(delaiOuvre)),
           0,
+        ),
+        'bornes-comptees-dans-le-delai': mediane(
+          delaisDeStrasbourg.map((vente) =>
+            nbJoursOuvres(vente.date, vente.livraison),
+          ),
         ),
       },
       'b3-01-a2-retards': {

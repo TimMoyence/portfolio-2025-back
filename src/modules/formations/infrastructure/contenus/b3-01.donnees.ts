@@ -100,7 +100,10 @@ export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a1-lignes-uniques': { 'doublons-supprimes-sur-une-colonne': 1618 },
   'b3-01-a1-ca-total': { 'texte-pris-pour-nombre': 1_286_319 },
   'b3-01-a1-villes': { 'espaces-non-supprimes': 83 },
-  'b3-01-a1-a-verifier': { 'suspect-corrige-sans-validation': 39 },
+  'b3-01-a1-a-verifier': {
+    'suspect-corrige-sans-validation': 39,
+    'controle-apres-correction': 45,
+  },
   'b3-01-a2-ca-rennes-info': {
     'critere-mal-ecrit': 0,
     'periode-mal-delimitee': 27_862,
@@ -113,6 +116,7 @@ export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a2-delai-strasbourg': {
     'jours-calendaires-pour-ouvres': 11,
     'valeur-extreme-ignoree': 10,
+    'bornes-comptees-dans-le-delai': 9,
   },
   'b3-01-a2-retards': { 'jours-calendaires-pour-ouvres': 481 },
   'b3-01-a2-taux-marge': {

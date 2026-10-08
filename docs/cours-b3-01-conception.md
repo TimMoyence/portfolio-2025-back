@@ -431,10 +431,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `b3-01-a1-villes` : nombre de villes distinctes après normalisation ; piège
   `espaces-non-supprimes` (le comptage d'Excel ignore la casse : seules les espaces en trop
   séparent deux écritures d'une même ville).
-- `b3-01-a1-a-verifier` : nombre de lignes « À vérifier » ; piège
-  `suspect-corrige-sans-validation` (dates converties par `DATEVAL` avant le contrôle : les 40
-  dates ISO sortent du contrôle, mais aussi 6 des 12 dates d'un autre système, écrites mois
-  d'abord et lues jour d'abord ; il ne reste que 39 lignes). La correction désigne le vote A1-04
+- `b3-01-a1-a-verifier` : nombre de lignes « À vérifier » ; pièges
+  `controle-apres-correction` (contrôle posé sur les dates converties par la formule du défi : les
+  40 dates ISO sortent du contrôle, il reste 45 lignes) et `suspect-corrige-sans-validation`
+  (toute date en texte convertie par `DATEVAL` : sortent aussi 6 des 12 dates d'un autre système,
+  écrites mois d'abord et lues jour d'abord ; il ne reste que 39 lignes). La correction désigne le vote A1-04
   par son titre, « le fichier et Dupont, Bordeaux » : le premier vote de la séance est le rappel.
 - La correction révèle la première question du vote A1-04 : part des lignes fausses ou douteuses
   du fichier, recomposée : 85 lignes « À vérifier », 490 corrigées par formule (F1 villes, F2
@@ -799,7 +800,7 @@ aucune ligne doublonnée (F3) ne porte une autre anomalie.
 | F2   | `ca_ht` stocké en texte (« 1 150,00 € », espaces ordinaires)                              | faux · automatique |      180 |
 | F3   | ligne exportée deux fois à l'identique                                                    | faux · automatique |       46 |
 | F4   | `ca_ht` = quantité × prix, remise oubliée, écart de plus d'1 €                            | faux · automatique |       24 |
-| F5   | `date_commande` en texte au format ISO « 2026-03-15 »                                     | faux · automatique |       40 |
+| F5   | `date_commande` en texte au format ISO « 2026-03-17 »                                     | faux · automatique |       40 |
 | H1   | `produit_id` absent de `Produits` (P047, P051)                                            | faux · humain      |        9 |
 | H2   | `date_livraison` antérieure à `date_commande`                                             | faux · humain      |       14 |
 | H3   | `commercial_id` vide                                                                      | faux · humain      |       11 |
@@ -923,6 +924,7 @@ Les valeurs-pièges sont recalculées de la même façon, en reproduisant l'erre
 | `b3-01-a1-ca-total`              | `texte-pris-pour-nombre`             | `SOMME` qui ignore les montants restés en texte                        | 1 286 319 |
 | `b3-01-a1-villes`                | `espaces-non-supprimes`              | villes distinctes sans `SUPPRESPACE`, casse ignorée                    |        83 |
 | `b3-01-a1-a-verifier`            | `suspect-corrige-sans-validation`    | dates F5 et S1 converties par `DATEVAL` avant le contrôle              |        39 |
+| `b3-01-a1-a-verifier`            | `controle-apres-correction`          | contrôle posé sur les dates converties par la formule du défi (F5)     |        45 |
 | `b3-01-a2-ca-rennes-info`        | `critere-mal-ecrit`                  | critère `">=DATE(2026;1;1)"` : aucune date ne correspond               |         0 |
 | `b3-01-a2-ca-rennes-info`        | `periode-mal-delimitee`              | CA Informatique de AG06 sur toutes les dates                           |    27 862 |
 | `b3-01-a2-remises-marseille`     | `critere-mal-ecrit`                  | critère `">15"` au lieu de `">0,15"`                                   |         0 |
@@ -960,7 +962,7 @@ l'énoncent.
 `agregation-conditionnelle`, `calcul-sur-dates`, `indicateur-statistique`,
 `tableau-croise-dynamique`, `choix-du-graphique`, `tableau-de-bord`.
 
-**Confusions** : trente nouvelles et quatre reprises de la banque B2, qui décrivent déjà la même
+**Confusions** : trente et une nouvelles et quatre reprises de la banque B2, qui décrivent déjà la même
 erreur (`valeur-extreme-ignoree`, `moyenne-simple-des-taux`, `axe-tronque-lu-comme-ecart`,
 `marque-confondue-avec-marge`). `reference-absolue-ignoree` reste
 distincte de `reference-relative-non-figee` : l'une lit mal le `$` d'une formule recopiée,
@@ -981,6 +983,7 @@ pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
 | `texte-pris-pour-nombre`                   | nettoyage                 | Additionner une colonne dont des nombres sont du texte.                | B3-01-A1-11-COURS-OUTILS           |
 | `casse-non-normalisee`                     | nettoyage                 | Laisser « Bordeaux » et « BORDEAUX » s'écrire de deux façons.          | B3-01-A1-11-COURS-OUTILS           |
 | `doublons-supprimes-sur-une-colonne`       | nettoyage                 | Dédoublonner sur une seule colonne et perdre des lignes distinctes.    | B3-01-A1-11-COURS-OUTILS           |
+| `controle-apres-correction`                | qualite-des-donnees       | Poser le contrôle sur des données déjà corrigées.                      | B3-01-A1-11-COURS-OUTILS           |
 | `famille-de-probleme-mal-nommee`           | agregation-conditionnelle | Nommer une seule famille de problème, ou la mauvaise.                  | B3-01-A2-02-FAMILLES               |
 | `plage-recherche-non-figee`                | recherche-dans-une-table  | Recopier une recherche sans figer la table.                            | B3-01-A2-03-COURS-CHERCHER-AGREGER |
 | `critere-mal-ecrit`                        | agregation-conditionnelle | Écrire un critère sans joindre l'opérateur par `&`, ou 15 pour 15 %.   | B3-01-A2-03-COURS-CHERCHER-AGREGER |

@@ -629,6 +629,11 @@ const DEFINITIONS = {
     libelle:
       'Compter la ligne d’en-tête parmi les données : NBVAL sur toute la colonne compte aussi le nom de la colonne.',
   },
+  'controle-apres-correction': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Poser le contrôle sur des données déjà corrigées : il ne compte plus les défauts du fichier reçu, à signaler à son émetteur.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);

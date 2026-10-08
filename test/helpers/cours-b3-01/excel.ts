@@ -8,7 +8,7 @@ const RANG_DU_DIMANCHE = 1;
 const CHIFFRES_SIGNIFICATIFS = 15;
 const PIVOT_DES_ANNEES_A_DEUX_CHIFFRES = 30;
 const DATE_ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
-const DATE_FRANCAISE_COURTE = /^(\d{2})\/(\d{2})\/(\d{2})$/;
+const DATE_FRANCAISE = /^(\d{2})\/(\d{2})\/(\d{2}|\d{4})$/;
 const ERREUR_DE_VALEUR = '#VALEUR!';
 
 export function dateExcel(annee: number, mois: number, jour: number): number {
@@ -168,17 +168,32 @@ function anneeSurQuatreChiffres(annee: number): number {
   return annee < PIVOT_DES_ANNEES_A_DEUX_CHIFFRES ? 2000 + annee : 1900 + annee;
 }
 
+function anneeLue(annee: string): number {
+  return annee.length === 4
+    ? Number(annee)
+    : anneeSurQuatreChiffres(Number(annee));
+}
+
+function dateExistante(annee: number, mois: number, jour: number): number {
+  const serie = dateExcel(annee, mois, jour);
+  const lue = partiesDeDate(serie);
+  if (lue.annee !== annee || lue.mois !== mois || lue.jour !== jour) {
+    throw new TypeError(ERREUR_DE_VALEUR);
+  }
+  return serie;
+}
+
 export function dateval(texte: string): number {
   const iso = DATE_ISO.exec(texte);
   if (iso !== null) {
-    return dateExcel(Number(iso[1]), Number(iso[2]), Number(iso[3]));
+    return dateExistante(Number(iso[1]), Number(iso[2]), Number(iso[3]));
   }
-  const courte = DATE_FRANCAISE_COURTE.exec(texte);
-  if (courte !== null) {
-    return dateExcel(
-      anneeSurQuatreChiffres(Number(courte[3])),
-      Number(courte[2]),
-      Number(courte[1]),
+  const francaise = DATE_FRANCAISE.exec(texte);
+  if (francaise !== null) {
+    return dateExistante(
+      anneeLue(francaise[3]),
+      Number(francaise[2]),
+      Number(francaise[1]),
     );
   }
   throw new TypeError(ERREUR_DE_VALEUR);

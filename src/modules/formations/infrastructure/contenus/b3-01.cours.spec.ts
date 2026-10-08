@@ -76,6 +76,12 @@ function libellesDuVote(id: string): string[] {
   return Object.values(tirer(COURS, 0).libellesOptions[id]);
 }
 
+function confusionsDeLaChiffree(id: string): string[] {
+  return tirer(COURS, 0).solutions[id].pieges.map(
+    ({ misconception }) => misconception,
+  );
+}
+
 function confusionsDuVote(screenId: string): (string | null)[] {
   return questionsDe(screenId).flatMap((question) =>
     question.type === 'vote'
@@ -130,7 +136,7 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
   noteesParType: [4, 18, 3, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 34,
+  remediations: 35,
   options: 12,
   catalogue: [
     'A1-02',
@@ -590,22 +596,57 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A1-14 · impute les lignes perdues par DATEVAL aux dates ISO et aux dates écrites mois d’abord, lues jour d’abord', () => {
+  it('A1-14 · diagnostique le contrôle posé sur les dates converties par la formule du défi, puis par DATEVAL sur toute date en texte', () => {
     const aVerifier = explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE').at(-1);
-    const piege =
-      PIEGES_B3_01['b3-01-a1-a-verifier']['suspect-corrige-sans-validation'] ??
-      Number.NaN;
-    const datesMalLues =
-      VALEURS_B3_01['b3-01-a1-a-verifier'] - piege - ANOMALIES_SEMEES.F5;
+    const pieges = PIEGES_B3_01['b3-01-a1-a-verifier'];
+    const apresLeDefi = pieges['controle-apres-correction'] ?? Number.NaN;
+    const apresDatevalPartout =
+      pieges['suspect-corrige-sans-validation'] ?? Number.NaN;
+    const datesMalLues = apresLeDefi - apresDatevalPartout;
 
-    expect(aVerifier).toContain(`les ${ANOMALIES_SEMEES.F5} dates ISO`);
-    expect(aVerifier).toContain(
-      `${datesMalLues} des ${ANOMALIES_SEMEES.S1} dates venues d’un autre système`,
+    expect(apresLeDefi).toBe(
+      VALEURS_B3_01['b3-01-a1-a-verifier'] - ANOMALIES_SEMEES.F5,
     );
-    expect(aVerifier).toContain('lit jour d’abord');
-    expect(aVerifier).toContain(`n’aurait plus signalé que ${piege} lignes`);
+    expect(aVerifier).toContain(
+      `en aurait retiré les ${ANOMALIES_SEMEES.F5} dates ISO : ${apresLeDefi} lignes`,
+    );
+    expect(aVerifier).toContain(
+      `Convertir toute date en texte par DATEVAL en retire aussi ${datesMalLues} des ${ANOMALIES_SEMEES.S1} dates venues d’un autre système`,
+    );
+    expect(aVerifier).toContain(
+      `lues jour d’abord et prises pour justes : ${apresDatevalPartout}.`,
+    );
     expect(aVerifier).not.toContain('au format jj/mm/aa');
     expect(aVerifier).not.toContain('corrigé seul des dates douteuses');
+  });
+
+  it('A1-14 · renvoie le contrôle posé après correction à la règle de A1-11 : la donnée brute reste jusqu’au contrôle', () => {
+    expect(confusionsDeLaChiffree('b3-01-a1-a-verifier')).toEqual([
+      'suspect-corrige-sans-validation',
+      'controle-apres-correction',
+    ]);
+    expect(remediationDe('controle-apres-correction')).toBe(
+      'B3-01-A1-11-COURS-OUTILS',
+    );
+    expect(texteDe('B3-01-A1-11-COURS-OUTILS')).toContain(
+      'On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait.',
+    );
+  });
+
+  it('A2-07 · diagnostique le délai de Strasbourg compté sans retirer le jour de la commande', () => {
+    expect(confusionsDeLaChiffree('b3-01-a2-delai-strasbourg')).toEqual([
+      'jours-calendaires-pour-ouvres',
+      'valeur-extreme-ignoree',
+      'bornes-comptees-dans-le-delai',
+    ]);
+    expect(
+      PIEGES_B3_01['b3-01-a2-delai-strasbourg'][
+        'bornes-comptees-dans-le-delai'
+      ],
+    ).toBe(VALEURS_B3_01['b3-01-a2-delai-strasbourg'] + 1);
+    expect(explicationsDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')[0]).toContain(
+      'Sans le − 1, le jour de la commande compte : 9.',
+    );
   });
 
   it('A1-14 · désigne le vote sur le fichier, et non le premier vote de la séance, qui est le rappel', () => {
@@ -624,6 +665,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     const atelier = texteDe('B3-01-A1-14-ATELIER-NETTOYAGE');
 
     expect(cours).toContain(formule);
+    expect(cours).toContain('Date ISO en texte « 2026-03-17 »');
     expect(cours).toContain('« 08/04/26 » reste à vérifier');
     expect(atelier).toContain(formule);
     for (const texte of [cours, atelier]) {

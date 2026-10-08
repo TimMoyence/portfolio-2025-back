@@ -343,6 +343,7 @@ const CONFUSIONS_DU_B3_01 = {
   'tcd-filtre-ou-dates-mal-groupees': { concept: 'tableau-croise-dynamique' },
   'detail-au-lieu-de-synthese': { concept: 'tableau-de-bord' },
   'en-tete-compte-comme-ligne': { concept: 'jeu-de-donnees' },
+  'controle-apres-correction': { concept: 'qualite-des-donnees' },
 };
 
 describe('libelleDeConcept', () => {
@@ -526,8 +527,8 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
   });
 
-  it('ajoute en dernier les trente confusions de données du B3-01', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(126);
+  it('ajoute en dernier les trente et une confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(127);
     expect(Object.keys(CONFUSIONS).slice(96)).toEqual(
       Object.keys(CONFUSIONS_DU_B3_01),
     );

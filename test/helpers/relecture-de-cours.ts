@@ -195,15 +195,27 @@ function zerosDeFinPermis(valeur: number | string): string {
   return Number.isInteger(valeur) ? '(?:,0+)?' : '0*';
 }
 
+const SEUIL_DES_MILLIERS = 1000;
+
+function formesEcrites(valeur: number | string): string[] {
+  const forme = normaliser(formeFrancaise(valeur));
+  if (typeof valeur === 'string') {
+    return [forme];
+  }
+  const sansEspaceDesMilliers =
+    Math.abs(valeur) >= SEUIL_DES_MILLIERS ? [forme.replaceAll(' ', '')] : [];
+  const sansSigne = valeur < 0 ? formesEcrites(-valeur) : [];
+  return [forme, ...sansEspaceDesMilliers, ...sansSigne];
+}
+
 function contientLaForme(texte: string, valeur: number | string): boolean {
-  const forme = normaliser(formeFrancaise(valeur)).replaceAll(
-    CARACTERES_SPECIAUX,
-    '\\$&',
+  const normalise = normaliser(texte);
+  return formesEcrites(valeur).some((forme) =>
+    new RegExp(
+      `(?<![\\d,])${forme.replaceAll(CARACTERES_SPECIAUX, '\\$&')}${zerosDeFinPermis(valeur)}(?!\\d|,\\d| \\d{3}(?!\\d))`,
+      'u',
+    ).test(normalise),
   );
-  return new RegExp(
-    `(?<![\\d,])${forme}${zerosDeFinPermis(valeur)}(?!\\d|,\\d| \\d{3}(?!\\d))`,
-    'u',
-  ).test(normaliser(texte));
 }
 
 export function valeursAuCatalogue(
@@ -279,7 +291,8 @@ export function valeursDevoileesParLesExplications(
   );
 }
 
-const SEUIL_D_UN_PIEGE_RECONNAISSABLE = 10;
+const SEUIL_D_UN_PIEGE_RECONNAISSABLE_DANS_L_ECRAN = 10;
+const SEUIL_D_UN_PIEGE_RECONNAISSABLE_HORS_DE_L_ECRAN = 100;
 
 type PiegesParQuestion = Readonly<
   Record<string, Readonly<Partial<Record<string, number>>>>
@@ -288,11 +301,12 @@ type PiegesParQuestion = Readonly<
 function piegesReconnaissablesDe(
   pieges: PiegesParQuestion,
   question: string,
+  seuil: number,
 ): [string, number][] {
   return Object.entries(pieges[question] ?? {}).flatMap(
     ([confusion, valeur]): [string, number][] =>
       valeur !== undefined &&
-      Math.abs(valeur) >= SEUIL_D_UN_PIEGE_RECONNAISSABLE
+      (!Number.isInteger(valeur) || Math.abs(valeur) >= seuil)
         ? [[confusion, valeur]]
         : [],
   );
@@ -313,7 +327,11 @@ export function piegesPartagesDevoilesParLesExplications(
   return alertesParExplication(
     cours,
     ({ reference, texte, suivantesDeLEcran }) =>
-      piegesReconnaissablesDe(pieges, reference)
+      piegesReconnaissablesDe(
+        pieges,
+        reference,
+        SEUIL_D_UN_PIEGE_RECONNAISSABLE_DANS_L_ECRAN,
+      )
         .filter(
           ([confusion, valeur]) =>
             confusionPartageeParUneSuivante(
@@ -332,8 +350,9 @@ function piegesDevoilesDansLeTexte(
   pieges: PiegesParQuestion,
   question: string,
   texte: string,
+  seuil: number,
 ): string[] {
-  return piegesReconnaissablesDe(pieges, question)
+  return piegesReconnaissablesDe(pieges, question, seuil)
     .filter(([, valeur]) => contientLaForme(texte, valeur))
     .map(
       ([confusion, valeur]) =>
@@ -345,9 +364,18 @@ export function piegesDesQuestionsSuivantesDevoilesParLesExplications(
   cours: Cours,
   pieges: PiegesParQuestion,
 ): string[] {
-  return alertesParExplication(cours, ({ texte, suivantesDeLEcran }) =>
-    suivantesDeLEcran.flatMap((id) =>
-      piegesDevoilesDansLeTexte(pieges, id, texte),
-    ),
+  return alertesParExplication(
+    cours,
+    ({ texte, ouvertes, suivantesDeLEcran }) =>
+      ouvertes.flatMap((id) =>
+        piegesDevoilesDansLeTexte(
+          pieges,
+          id,
+          texte,
+          suivantesDeLEcran.includes(id)
+            ? SEUIL_D_UN_PIEGE_RECONNAISSABLE_DANS_L_ECRAN
+            : SEUIL_D_UN_PIEGE_RECONNAISSABLE_HORS_DE_L_ECRAN,
+        ),
+      ),
   );
 }

@@ -48,8 +48,13 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       'Le taux de marque vaut 32,0 %.',
       '32 de b3-01-a2-taux-marge',
     ],
+    [
+      'b3-01-a2-ca-ouest',
+      'Le contrat donnerait 99 retards.',
+      '99 de b3-01-a2-retards dans B3-01-A2-04-ATELIER-RECHERCHE',
+    ],
   ])(
-    'valeursDevoileesParLesExplications · voit sous %s une valeur suivante écrite avec ses zéros de fin : « %s »',
+    'valeursDevoileesParLesExplications · voit sous %s une valeur suivante, de l’écran ou d’un écran suivant : « %s »',
     (reference, ajout, alerte) => {
       expect(
         valeursDevoileesParLesExplications(
@@ -76,8 +81,18 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       'Toute la table, 2025 compris, donne 1 313 125 €.',
       '(periode-mal-delimitee) de b3-01-a3-ca-2026',
     ],
+    [
+      'b3-01-a3-agences-sous-objectif',
+      'Prise sur toute la table, la somme donnerait 1 313 125 €.',
+      '(periode-mal-delimitee) de b3-01-a3-ca-2026 dans B3-01-A3-05-ATELIER-GRAPHIQUES',
+    ],
+    [
+      'b3-01-a2-ca-ouest',
+      'En jours calendaires, on compterait 481 retards.',
+      '(jours-calendaires-pour-ouvres) de b3-01-a2-retards dans B3-01-A2-04-ATELIER-RECHERCHE',
+    ],
   ])(
-    'piegesDesQuestionsSuivantesDevoilesParLesExplications · voit sous %s le piège d’une question suivante : « %s »',
+    'piegesDesQuestionsSuivantesDevoilesParLesExplications · voit sous %s le piège d’une question suivante, de l’écran ou d’un écran suivant : « %s »',
     (reference, ajout, alerte) => {
       expect(
         piegesDesQuestionsSuivantesDevoilesParLesExplications(
@@ -88,18 +103,36 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
     },
   );
 
-  it('piegesDesQuestionsSuivantesDevoilesParLesExplications · lit un piège négatif écrit avec le signe moins typographique', () => {
-    const pieges = {
-      ...PIEGES_B3_01,
-      'b3-01-a3-ca-2026': { 'periode-mal-delimitee': -22.1 },
-    };
+  it.each(['Il reculerait de −23,4 %.', 'Il baisserait de 23,4 %.'])(
+    'piegesDesQuestionsSuivantesDevoilesParLesExplications · lit un piège négatif, écrit avec le signe moins typographique ou sans signe : « %s »',
+    (ajout) => {
+      const pieges = {
+        ...PIEGES_B3_01,
+        'b3-01-a3-ca-2026': { 'periode-mal-delimitee': -23.4 },
+      };
 
+      expect(
+        piegesDesQuestionsSuivantesDevoilesParLesExplications(COURS, pieges),
+      ).toEqual([]);
+      expect(
+        piegesDesQuestionsSuivantesDevoilesParLesExplications(
+          allonger('b3-01-a3-evolution', ajout),
+          pieges,
+        ).join(' | '),
+      ).toContain('(periode-mal-delimitee) de b3-01-a3-ca-2026');
+    },
+  );
+
+  it('valeursDevoileesParLesExplications · voit une valeur écrite sans espace des milliers, comme Excel l’affiche', () => {
     expect(
-      piegesDesQuestionsSuivantesDevoilesParLesExplications(
-        allonger('b3-01-a3-evolution', 'Il reculerait de −22,1 %.'),
-        pieges,
+      valeursDevoileesParLesExplications(
+        allonger(
+          'b3-01-a2-ca-rennes-info',
+          'La troisième cellule afficherait 77850.',
+        ),
+        VALEURS,
       ).join(' | '),
-    ).toContain('(periode-mal-delimitee) de b3-01-a3-ca-2026');
+    ).toContain('77 850 de b3-01-a2-ca-ouest');
   });
 
   it('piegesPartagesDevoilesParLesExplications · voit la valeur-piège d’une confusion qu’une question suivante partage, même négative', () => {
@@ -161,4 +194,16 @@ describe('Gardes de relecture sur les cours à feuilles exigeant une formule', (
       ).toEqual([]);
     },
   );
+
+  it('B2-05 · voit une valeur d’un écran suivant écrite sans espace des milliers, comme Excel l’affiche', () => {
+    const cours = buildCoursAvecExplicationAllongee(
+      buildCoursDuContenu(COURS_B2_05),
+      'b2-05-a1-valeur-actuelle',
+      'La cellule affichera 6753,05.',
+    );
+
+    expect(valeursDevoileesAvantLeurEcran(cours).join(' | ')).toContain(
+      '6 753,05 de B2-05-A2-05-ATELIER-ANNUITES dans B2-05-A1-10-ATELIER-PLACEMENT',
+    );
+  });
 });

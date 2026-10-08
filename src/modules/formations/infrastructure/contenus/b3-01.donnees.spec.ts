@@ -306,6 +306,14 @@ describe('jeu Norvane du B3-01', () => {
     expect(valeurDe(ligne, 'date_livraison')).toBe(dateExcel(2026, 8, 7));
   });
 
+  it('porte au brut la date ISO que cite A1-11 : B2884 « 2026-03-17 », commande C-11121, lue le 17 mars par DATEVAL', () => {
+    const ligne = commandesBrutes[2884 - 2];
+
+    expect(valeurDe(ligne, 'n_commande')).toBe('C-11121');
+    expect(valeurDe(ligne, 'date_commande')).toBe('2026-03-17');
+    expect(dateval('2026-03-17')).toBe(dateExcel(2026, 3, 17));
+  });
+
   it('ne donne 10 caractères qu’aux dates ISO : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) laisse en texte les dates d’un autre système', () => {
     const dates = commandesBrutes.map((ligne) =>
       valeurDe(ligne, 'date_commande'),

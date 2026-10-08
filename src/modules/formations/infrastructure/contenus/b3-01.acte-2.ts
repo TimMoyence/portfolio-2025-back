@@ -372,7 +372,11 @@ export const ACTE_2: moteur.Acte = [
             'calcul-sur-dates',
             'Quel est le délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés ?',
             'jours ouvrés',
-            ['jours-calendaires-pour-ouvres', 'valeur-extreme-ignoree'],
+            [
+              'jours-calendaires-pour-ouvres',
+              'valeur-extreme-ignoree',
+              'bornes-comptees-dans-le-delai',
+            ],
           ),
           questionChiffree(
             'b3-01-a2-retards',
@@ -402,7 +406,7 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-delai-strasbourg',
-        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie.',
+        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. Sans le − 1, le jour de la commande compte : 9. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie.',
       ],
       [
         'b3-01-a2-retards',

@@ -22,6 +22,7 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'casse-non-normalisee': 'B3-01-A1-11-COURS-OUTILS',
   'espaces-non-supprimes': 'B3-01-A1-11-COURS-OUTILS',
   'doublons-supprimes-sur-une-colonne': 'B3-01-A1-11-COURS-OUTILS',
+  'controle-apres-correction': 'B3-01-A1-11-COURS-OUTILS',
   'famille-de-probleme-mal-nommee': 'B3-01-A2-02-FAMILLES',
   'plage-recherche-non-figee': 'B3-01-A2-03-COURS-CHERCHER-AGREGER',
   'critere-mal-ecrit': 'B3-01-A2-03-COURS-CHERCHER-AGREGER',
