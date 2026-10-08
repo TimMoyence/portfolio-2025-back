@@ -61,6 +61,19 @@ export function productionJuste(
   throw new Error(`Question ${question.id} sans production jouable`);
 }
 
+export function productionVide(question: QuestionProduction): ValeurProduction {
+  switch (question.type) {
+    case 'feuille':
+      return { type: 'feuille', cellules: {} };
+    case 'tableau':
+      return { type: 'tableau', saisies: [] };
+    case 'classement':
+      return { type: 'classement', classement: {} };
+    default:
+      throw new Error(`Question ${question.id} sans production à vider`);
+  }
+}
+
 export function reponseDEnigme(question: QuestionProduction): string {
   const corrige = question.corrige;
   if (corrige.type !== 'enigme') {
