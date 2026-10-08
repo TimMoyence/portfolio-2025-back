@@ -3517,6 +3517,1653 @@
         "corriges": [],
         "questions": [],
         "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A2-01-VOTE-FAMILLE",
+        "type": "fp-vote",
+        "titre": "Vote : quelle famille de problème ?",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a2-famille",
+            "enonce": "Nadia demande « le CA de Rennes en informatique en 2026 ». De quelle famille de problème s’agit-il ?",
+            "options": [
+              {
+                "id": "chercher-une-valeur-dans-une-table-1834ac39",
+                "libelle": "Chercher une valeur dans une table"
+              },
+              {
+                "id": "regrouper-toutes-les-ventes-de-rennes-2d537168",
+                "libelle": "Regrouper toutes les ventes de Rennes"
+              },
+              {
+                "id": "compter-les-lignes-de-rennes-3da3b78c",
+                "libelle": "Compter les lignes de Rennes"
+              },
+              {
+                "id": "additionner-sous-conditions-apres-avoir-7f957438",
+                "libelle": "Additionner sous conditions, après avoir cherché la catégorie"
+              }
+            ]
+          }
+        },
+        "pieceJointe": {
+          "libelle": "Classeur de reprise de l’acte 2",
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.e63154db.xlsx"
+        },
+        "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.\n• Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b3-01-a2-famille",
+            "bonneReponse": "Additionner sous conditions, après avoir cherché la catégorie",
+            "confusions": [
+              {
+                "id": "plage-recherche-non-figee",
+                "libelle": "Recopier une recherche sans figer la table : la plage glisse et les dernières lignes ne sont plus trouvées."
+              },
+              {
+                "id": "lignes-comptees-pour-commandes",
+                "libelle": "Compter les lignes quand on cherche les commandes : une commande compte autant de lignes que de produits."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a2-famille",
+            "enonce": "Nadia demande « le CA de Rennes en informatique en 2026 ». De quelle famille de problème s’agit-il ?",
+            "options": [
+              {
+                "id": "chercher-une-valeur-dans-une-table-1834ac39",
+                "libelle": "Chercher une valeur dans une table"
+              },
+              {
+                "id": "regrouper-toutes-les-ventes-de-rennes-2d537168",
+                "libelle": "Regrouper toutes les ventes de Rennes"
+              },
+              {
+                "id": "compter-les-lignes-de-rennes-3da3b78c",
+                "libelle": "Compter les lignes de Rennes"
+              },
+              {
+                "id": "additionner-sous-conditions-apres-avoir-7f957438",
+                "libelle": "Additionner sous conditions, après avoir cherché la catégorie"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": {
+          "type": "revelation",
+          "titre": "Deux familles, dans l’ordre",
+          "lignes": [
+            "La catégorie d’un produit vit dans l’onglet Produits : on la cherche d’abord, ligne par ligne.",
+            "Puis on additionne ca_ht sous trois conditions : l’agence de Rennes, la catégorie Informatique, une date en 2026.",
+            "Nommer la famille avant de choisir la fonction : c’est la règle du niveau 3."
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A2-02-FAMILLES",
+        "type": "fp-story",
+        "titre": "Les dix familles de problèmes",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-02-FAMILLES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-02-FAMILLES",
+              "renderer": "table",
+              "props": {
+                "title": "Les dix familles de problèmes",
+                "subtitle": "Avant d’écrire une formule, on nomme la famille de la question posée.",
+                "note": "Le socle fonctionne sur toute version d’Excel depuis 2019 ; la colonne 365 donne un raccourci.",
+                "columns": [
+                  {
+                    "key": "famille",
+                    "label": "Famille"
+                  },
+                  {
+                    "key": "question",
+                    "label": "Question type de la direction"
+                  },
+                  {
+                    "key": "socle",
+                    "label": "Fonction socle"
+                  },
+                  {
+                    "key": "variante",
+                    "label": "Si vous avez Excel 365"
+                  }
+                ],
+                "rows": [
+                  {
+                    "famille": "Chercher",
+                    "question": "Quelle est la catégorie de ce produit ?",
+                    "socle": "INDEX et EQUIV",
+                    "variante": "RECHERCHEX"
+                  },
+                  {
+                    "famille": "Compter",
+                    "question": "Combien de lignes à Marseille avec une forte remise ?",
+                    "socle": "NB.SI.ENS",
+                    "variante": "NB.SI.ENS"
+                  },
+                  {
+                    "famille": "Additionner sous conditions",
+                    "question": "Quel CA pour Rennes en informatique ?",
+                    "socle": "SOMME.SI.ENS, SOMMEPROD",
+                    "variante": "SOMME.SI.ENS"
+                  },
+                  {
+                    "famille": "Comparer",
+                    "question": "Cette ligne est-elle livrée en retard ?",
+                    "socle": "SI, ET, OU",
+                    "variante": "SI.CONDITIONS"
+                  },
+                  {
+                    "famille": "Classer",
+                    "question": "Quelles sont les meilleures agences ?",
+                    "socle": "RANG, GRANDE.VALEUR",
+                    "variante": "TRIER"
+                  },
+                  {
+                    "famille": "Transformer",
+                    "question": "Ce montant saisi en texte, combien vaut-il ?",
+                    "socle": "SUPPRESPACE, CNUM, TEXTE",
+                    "variante": "Power Query"
+                  },
+                  {
+                    "famille": "Filtrer",
+                    "question": "Quelles lignes de Strasbourg sont en retard ?",
+                    "socle": "Filtre automatique",
+                    "variante": "FILTRE"
+                  },
+                  {
+                    "famille": "Regrouper",
+                    "question": "Quel CA par région et par trimestre ?",
+                    "socle": "Tableau croisé dynamique",
+                    "variante": "UNIQUE"
+                  },
+                  {
+                    "famille": "Manipuler le temps",
+                    "question": "Combien de jours ouvrés de délai ?",
+                    "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
+                    "variante": "NB.JOURS.OUVRES"
+                  },
+                  {
+                    "famille": "Détecter une anomalie",
+                    "question": "Quel délai sort de l’ordinaire ?",
+                    "socle": "Mise en forme conditionnelle, MEDIANE, ECARTYPE",
+                    "variante": "Mise en forme conditionnelle"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "recherche-dans-une-table",
+                "agregation-conditionnelle",
+                "calcul-sur-dates"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min, enchaînées sur la trace écrite : 6 min d’exposition au plus.\n• Faire lire la colonne des questions : la direction parle en questions, pas en fonctions.\n• La colonne 365 est un raccourci, jamais une obligation : le cas pratique se fait sur toute version d’Excel.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+        "type": "fp-story",
+        "titre": "Cours : chercher et additionner sous conditions",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+              "renderer": "lesson",
+              "props": {
+                "title": "Chercher dans une table, additionner sous conditions",
+                "subtitle": "Trace écrite · niveau 3 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Chercher : INDEX et EQUIV",
+                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!C:C;EQUIV(H2;Produits!A:A;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Additionner et compter sous conditions",
+                    "text": "SOMME.SI.ENS(plage_somme;plage1;critère1;plage2;critère2) additionne les lignes qui remplissent toutes les conditions ; NB.SI.ENS(plage1;critère1;plage2;critère2) les compte."
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Écrire un critère, figer une plage",
+                    "text": "Un critère est un texte : l’opérateur s’écrit entre guillemets.",
+                    "steps": [
+                      "Un seuil de remise : \">0,15\" pour plus de 15 %, jamais \">15\".",
+                      "Une date : \">=\"&DATE(2026;1;1), la date hors des guillemets, jointe par &.",
+                      "Une plage de référentiel recopiée vers le bas se fige par des $ : Agences!$A$2:$C$13 ne glisse pas."
+                    ]
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Si vous avez Excel 365 : RECHERCHEX",
+                    "text": "=RECHERCHEX(H2;Produits!A:A;Produits!C:C) fait le même travail en une seule fonction."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "recherche-dans-une-table",
+                "agregation-conditionnelle",
+                "reference-de-cellule"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; faire taper la formule INDEX et EQUIV sur un poste volontaire, puis la recopier sans $ : la colonne se vide, l’erreur fixe la règle.\n• Insister sur le critère de date : l’opérateur entre guillemets, la date hors des guillemets, joints par &.\n• Transition : « Reliez et additionnez : exercice 5. »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A2-04-ATELIER-RECHERCHE",
+        "type": "questionnaire",
+        "titre": "Exercice 5 — Relier et additionner",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 5 — Relier et additionner",
+          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez la colonne region, cherchée dans Agences sur agence_id par INDEX et EQUIV, et la colonne categorie, cherchée dans Produits sur produit_id ; figez les plages des référentiels avant de recopier. Répondez ensuite par SOMME.SI.ENS et NB.SI.ENS. Défi : une colonne cout, la quantité multipliée par le coût unitaire du produit.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-ca-rennes-info",
+                  "enonce": "Quel est le CA HT de Rennes (AG06) en informatique, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "recherche-dans-une-table",
+                      "agregation-conditionnelle"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-remises-marseille",
+                  "enonce": "Combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": [
+                      "recherche-dans-une-table",
+                      "agregation-conditionnelle"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-ca-ouest",
+                  "enonce": "Quel est le CA HT de la région Ouest, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "recherche-dans-une-table",
+                      "agregation-conditionnelle"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : critère de date tout entier entre guillemets ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Défi : =I2*INDEX(Produits!$E$2:$E$41;EQUIV(H2;Produits!$A$2:$A$41;0)) donne le coût de la ligne.\n• Transition : « Passons au temps : un vote. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b3-01-a2-ca-rennes-info",
+            "bonneReponse": "8 342 €",
+            "confusions": [
+              {
+                "id": "critere-mal-ecrit",
+                "libelle": "Écrire un critère de comparaison sans joindre l’opérateur à la cellule par & (\">=\"&H1), ou 15 au lieu de 15 %."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a2-remises-marseille",
+            "bonneReponse": "66 lignes",
+            "confusions": [
+              {
+                "id": "critere-mal-ecrit",
+                "libelle": "Écrire un critère de comparaison sans joindre l’opérateur à la cellule par & (\">=\"&H1), ou 15 au lieu de 15 %."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a2-ca-ouest",
+            "bonneReponse": "77 850 €",
+            "confusions": [
+              {
+                "id": "plage-recherche-non-figee",
+                "libelle": "Recopier une recherche sans figer la table : la plage glisse et les dernières lignes ne sont plus trouvées."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a2-ca-rennes-info",
+            "enonce": "Quel est le CA HT de Rennes (AG06) en informatique, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a2-remises-marseille",
+            "enonce": "Combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ? Saisissez un nombre entier.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a2-ca-ouest",
+            "enonce": "Quel est le CA HT de la région Ouest, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b3-01-a2-ca-rennes-info",
+            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Sans critère de date, on additionne aussi 2025 : 27 862 €."
+          },
+          {
+            "reference": "b3-01-a2-remises-marseille",
+            "texte": "Avec le critère \">0,15\" sur la remise, NB.SI.ENS compte 66 lignes de Marseille. La remise est un taux : le critère \">15\" ne trouve aucune ligne."
+          },
+          {
+            "reference": "b3-01-a2-ca-ouest",
+            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse vers le bas : les lignes ne trouvent plus leur agence, aucune ne porte Ouest, et le total tombe à 0 €. Sans critère de date : 188 908 €."
+          }
+        ]
+      },
+      {
+        "id": "B3-01-A2-05-VOTE-DELAI",
+        "type": "fp-vote",
+        "titre": "Vote : vendredi, lundi",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a2-delai",
+            "enonce": "Une commande passée un vendredi est livrée le lundi suivant. Combien de jours de délai compte-t-on ?",
+            "options": [
+              {
+                "id": "un-seul-jour-ouvre-a37bda63",
+                "libelle": "Un seul jour ouvré"
+              },
+              {
+                "id": "3-jours-ae0fe815",
+                "libelle": "3 jours"
+              },
+              {
+                "id": "0-jour-le-week-end-ne-compte-pas-a6a853d1",
+                "libelle": "0 jour : le week-end ne compte pas"
+              }
+            ]
+          }
+        },
+        "notes": "• Temps « réfléchir » de la manipulation du temps : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b3-01-a2-delai",
+            "bonneReponse": "Un seul jour ouvré",
+            "confusions": [
+              {
+                "id": "jours-calendaires-pour-ouvres",
+                "libelle": "Soustraire deux dates quand le contrat compte des jours ouvrés."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a2-delai",
+            "enonce": "Une commande passée un vendredi est livrée le lundi suivant. Combien de jours de délai compte-t-on ?",
+            "options": [
+              {
+                "id": "un-seul-jour-ouvre-a37bda63",
+                "libelle": "Un seul jour ouvré"
+              },
+              {
+                "id": "3-jours-ae0fe815",
+                "libelle": "3 jours"
+              },
+              {
+                "id": "0-jour-le-week-end-ne-compte-pas-a6a853d1",
+                "libelle": "0 jour : le week-end ne compte pas"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": {
+          "type": "revelation",
+          "titre": "Jours calendaires ou jours ouvrés",
+          "lignes": [
+            "Du vendredi au lundi : 3 jours calendaires, mais un seul jour ouvré, puisque le samedi et le dimanche ne se travaillent pas.",
+            "Le contrat de livraison de Norvane promet 5 jours ouvrés : le délai se mesure en jours ouvrés.",
+            "NB.JOURS.OUVRES compte les deux bornes : du vendredi au lundi, il renvoie 2, d’où le − 1 pour obtenir le délai."
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A2-06-COURS-TEMPS-STATS",
+        "type": "fp-story",
+        "titre": "Cours : le temps et les indicateurs",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-06-COURS-TEMPS-STATS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-06-COURS-TEMPS-STATS",
+              "renderer": "lesson",
+              "props": {
+                "title": "Le temps et les indicateurs",
+                "subtitle": "Trace écrite · niveau 3 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "property",
+                    "title": "Une date est un nombre de jours",
+                    "text": "Soustraire deux dates donne des jours calendaires. Les fonctions de date comptent autrement.",
+                    "steps": [
+                      "NB.JOURS.OUVRES(début;fin) compte les jours ouvrés, bornes comprises : on retire 1 pour obtenir un délai.",
+                      "SERIE.JOUR.OUVRE(début;n) donne la date n jours ouvrés plus tard : la date promise.",
+                      "JOURSEM(date;2) donne le jour de la semaine, de 1 pour lundi à 7 pour dimanche.",
+                      "DATEDIF(début;fin;\"m\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une durée."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Moyenne ou médiane",
+                    "text": "Un délai long et rare, comme une rupture de stock livrée deux mois plus tard, tire la moyenne vers le haut ; la médiane, la valeur du milieu, ne bouge pas. Pour un délai typique, on lit la médiane.",
+                    "steps": [
+                      "Médiane sous conditions : filtrer, puis AGREGAT(12;5;plage), qui ignore les lignes masquées.",
+                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 365."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Taux de marge : un ratio de sommes",
+                    "text": "Taux de marge = SOMME(marge) ÷ SOMME(CA), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Les jours fériés",
+                    "text": "Ce cours ne les compte pas. NB.JOURS.OUVRES et SERIE.JOUR.OUVRE acceptent en dernier argument une plage de jours fériés à exclure."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; montrer qu’une date affichée au format nombre devient un entier.\n• Faire dire pourquoi la médiane résiste à une rupture de stock livrée deux mois plus tard.\n• Transition : « Délais et marge du réseau : exercice 6. »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
+        "type": "questionnaire",
+        "titre": "Exercice 6 — Délais et marge",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 6 — Délais et marge",
+          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, date_promise, =SERIE.JOUR.OUVRE(B2;5), cout_unitaire, cherché dans Produits par INDEX et EQUIV, et marge, ca_ht moins quantite × cout_unitaire ; puis répondez. Défi : avec JOURSEM, la part des commandes passées un vendredi ; avec DATEDIF, l’ancienneté des clients en mois.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-delai-strasbourg",
+                  "enonce": "Quel est le délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés ? Saisissez un nombre entier.",
+                  "unite": "jours ouvrés",
+                  "metadonnees": {
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-retards",
+                  "enonce": "Combien de lignes commandées en 2026 sont livrées après leur date promise, cinq jours ouvrés après la commande ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-taux-marge",
+                  "enonce": "Quel est le taux de marge du réseau, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; résumer par la moyenne ; faire la moyenne des taux de ligne.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b3-01-a2-delai-strasbourg",
+            "bonneReponse": "8 jours ouvrés",
+            "confusions": [
+              {
+                "id": "jours-calendaires-pour-ouvres",
+                "libelle": "Soustraire deux dates quand le contrat compte des jours ouvrés."
+              },
+              {
+                "id": "valeur-extreme-ignoree",
+                "libelle": "Résumer par la moyenne une série tirée par une valeur extrême, sans le signaler."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a2-retards",
+            "bonneReponse": "99 lignes",
+            "confusions": [
+              {
+                "id": "jours-calendaires-pour-ouvres",
+                "libelle": "Soustraire deux dates quand le contrat compte des jours ouvrés."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a2-taux-marge",
+            "bonneReponse": "32,0 %",
+            "confusions": [
+              {
+                "id": "moyenne-simple-des-taux",
+                "libelle": "Faire la moyenne simple de taux au lieu de les pondérer par leurs bases."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a2-delai-strasbourg",
+            "enonce": "Quel est le délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés ? Saisissez un nombre entier.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a2-retards",
+            "enonce": "Combien de lignes commandées en 2026 sont livrées après leur date promise, cinq jours ouvrés après la commande ? Saisissez un nombre entier.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a2-taux-marge",
+            "enonce": "Quel est le taux de marge du réseau, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b3-01-a2-delai-strasbourg",
+            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. En jours calendaires, elle monterait à 11 jours ; la moyenne, tirée par les ruptures livrées deux mois plus tard, atteindrait 9,5 jours ouvrés."
+          },
+          {
+            "reference": "b3-01-a2-retards",
+            "texte": "Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5) : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard."
+          },
+          {
+            "reference": "b3-01-a2-taux-marge",
+            "texte": "Marge de la période ÷ CA de la période : 32,0 % de janvier à septembre 2026. La moyenne des taux de marge de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande."
+          }
+        ]
+      },
+      {
+        "id": "B3-01-A2-08-VOTE-NOUVELLES-LIGNES",
+        "type": "fp-vote",
+        "titre": "Vote : 200 lignes de plus",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a2-nouvelles-lignes",
+            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4001 les prennent-elles en compte ?",
+            "options": [
+              {
+                "id": "non-elles-restent-hors-de-la-plage-e87d8a01",
+                "libelle": "Non, elles restent hors de la plage"
+              },
+              {
+                "id": "oui-0a904076",
+                "libelle": "Oui"
+              },
+              {
+                "id": "seulement-apres-recalcul-8d2a1bdb",
+                "libelle": "Seulement après recalcul"
+              }
+            ]
+          }
+        },
+        "notes": "• Temps « réfléchir » du niveau 4 : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire dire ce qui arrivera au tableau de bord quand l’export d’octobre sera collé sous celui de septembre.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b3-01-a2-nouvelles-lignes",
+            "bonneReponse": "Non, elles restent hors de la plage",
+            "confusions": [
+              {
+                "id": "plage-fixe-au-lieu-de-tableau",
+                "libelle": "Construire sur une plage fixe qui ne voit pas les lignes ajoutées ensuite."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a2-nouvelles-lignes",
+            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4001 les prennent-elles en compte ?",
+            "options": [
+              {
+                "id": "non-elles-restent-hors-de-la-plage-e87d8a01",
+                "libelle": "Non, elles restent hors de la plage"
+              },
+              {
+                "id": "oui-0a904076",
+                "libelle": "Oui"
+              },
+              {
+                "id": "seulement-apres-recalcul-8d2a1bdb",
+                "libelle": "Seulement après recalcul"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": {
+          "type": "revelation",
+          "titre": "Une plage fixe ne grandit pas",
+          "lignes": [
+            "A2:A4001 s’arrête à la ligne 4001 : les lignes d’octobre restent dehors, même après recalcul.",
+            "Un tableau structuré s’étend tout seul : chaque formule qui le cite voit les nouvelles lignes.",
+            "C’est l’objet du cours suivant."
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A2-09-COURS-TCD",
+        "type": "fp-story",
+        "titre": "Cours : tableau structuré et tableau croisé dynamique",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-09-COURS-TCD",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-09-COURS-TCD",
+              "renderer": "lesson",
+              "props": {
+                "title": "Tableau structuré et tableau croisé dynamique",
+                "subtitle": "Trace écrite · niveau 4",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Le tableau structuré",
+                    "text": "Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré ; on le nomme T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie seul ses colonnes calculées, et ses formules se lisent : =SOMME(T_Commandes[ca_ht])."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Le tableau croisé dynamique",
+                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes. On place des champs en lignes, en colonnes, en valeurs et en filtres : le TCD additionne, compte ou fait la moyenne pour chaque croisement."
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Regrouper, afficher en %, filtrer",
+                    "text": "Trois réglages font un TCD de direction.",
+                    "steps": [
+                      "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
+                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
+                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic."
+                    ]
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Si vous avez Excel 365 : le modèle de données",
+                    "text": "En cochant « Ajouter ces données au modèle de données », on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-croise-dynamique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; faire Ctrl + T en direct et montrer le nom T_Commandes dans l’onglet Création de tableau.\n• Insister sur le regroupement par années : sans lui, deux printemps se cumulent.\n• Transition : « Construisons-en un ensemble. »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A2-10-EXEMPLE-TCD",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : le TCD agence × mois",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b3-01-a2-exemple-tcd",
+            "enonce": "Dans le classeur de reprise, construisez le TCD du CA par agence et par mois de l’année 2026.",
+            "etapes": [
+              {
+                "id": "source",
+                "intitule": "La source",
+                "raisonnement": "Ctrl + T sur Commandes, nommé T_Commandes ; on y ajoute la colonne calculée annee, =ANNEE([@date_commande]). Puis Insertion › Tableau croisé dynamique, sur une nouvelle feuille.",
+                "invite": "Sur quoi construire le TCD pour qu’il voie les lignes d’octobre ?"
+              },
+              {
+                "id": "champs",
+                "intitule": "Les champs",
+                "raisonnement": "agence_id en lignes ; date_commande en colonnes, groupée par mois et par années ; ca_ht en valeurs, au format monétaire.",
+                "invite": "Où placer l’agence, la date et le CA ?"
+              },
+              {
+                "id": "filtre",
+                "intitule": "Le filtre",
+                "raisonnement": "annee en filtre, sur 2026 : le TCD ne montre plus que l’année en cours. Un filtre reste actif tant qu’on ne l’a pas retiré.",
+                "invite": "Comment ne garder que 2026 ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["tableau-croise-dynamique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun refait les étapes sur son poste ; la correction se dévoile étape par étape sur ce même écran.\n• Montrer le filtre annee dans l’en-tête du TCD : un filtre oublié fausse la lecture suivante.\n• Transition : « Le TCD de la direction : exercice 7. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A2-11-ATELIER-TCD",
+        "type": "questionnaire",
+        "titre": "Exercice 7 — Le TCD de la direction",
+        "duree": 14,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 7 — Le TCD de la direction",
+          "consigne": "Essentiel, à partir de T_Commandes. Premier TCD : agence_id en lignes, categorie en colonnes, ca_ht en valeurs affiché en % du total de la ligne, annee en filtre sur 2026. Second TCD : region en lignes, date_commande en colonnes groupée par trimestres et par années, ca_ht en valeurs. Un segment categorie relié aux deux. Défi : regroupez les remises en tranches de 5 points.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-part-info-rennes",
+                  "enonce": "Quelle part de son CA Rennes (AG06) réalise-t-elle en informatique, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["tableau-croise-dynamique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 14,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-meilleur-trimestre",
+                  "enonce": "Quel trimestre a réalisé le plus fort CA du réseau, du premier trimestre 2025 au troisième trimestre 2026 ?",
+                  "options": [
+                    {
+                      "id": "t2-2025-cc399709",
+                      "libelle": "T2 2025"
+                    },
+                    {
+                      "id": "t4-2025-2dcece61",
+                      "libelle": "T4 2025"
+                    },
+                    {
+                      "id": "t2-2026-5a00afc6",
+                      "libelle": "T2 2026"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général au lieu du % de la ligne ; filtre annee resté actif depuis l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.\n• Transition : « Avant la pause, deux règles de plus. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b3-01-a2-part-info-rennes",
+            "bonneReponse": "27,2 %",
+            "confusions": [
+              {
+                "id": "pourcentage-du-mauvais-total",
+                "libelle": "Afficher la part du total général quand la question porte sur la part dans la ligne."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a2-meilleur-trimestre",
+            "bonneReponse": "T4 2025",
+            "confusions": [
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a2-part-info-rennes",
+            "enonce": "Quelle part de son CA Rennes (AG06) réalise-t-elle en informatique, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a2-meilleur-trimestre",
+            "enonce": "Quel trimestre a réalisé le plus fort CA du réseau, du premier trimestre 2025 au troisième trimestre 2026 ?",
+            "options": [
+              {
+                "id": "t2-2025-cc399709",
+                "libelle": "T2 2025"
+              },
+              {
+                "id": "t4-2025-2dcece61",
+                "libelle": "T4 2025"
+              },
+              {
+                "id": "t2-2026-5a00afc6",
+                "libelle": "T2 2026"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b3-01-a2-part-info-rennes",
+            "texte": "Avec agence_id en lignes et le % du total de la ligne, la case Rennes × Informatique vaut 27,2 % : la part de l’informatique dans le CA de Rennes. En % du total général, la même case donne 1,5 % : sa part dans le CA du réseau."
+          },
+          {
+            "reference": "b3-01-a2-meilleur-trimestre",
+            "texte": "Groupé par trimestres et par années, le TCD place en tête le T4 2025 : d’octobre à décembre, la saison forte du réseau. Un filtre annee resté sur 2026 ne montre que les trimestres de 2026 et met le T2 2026 en tête ; des trimestres groupés sans les années cumulent deux printemps et font gagner le deuxième trimestre."
+          }
+        ]
+      },
+      {
+        "id": "B3-01-A2-12-REGLES-ACTE-2",
+        "type": "fp-pro",
+        "titre": "Cahier de règles : niveaux 3 et 4",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A2-12-REGLES-ACTE-2",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "Avant la pause, vous ajoutez deux règles à votre cahier d’analyste : l’agent de la séance 2 devra transformer et modéliser comme vous.",
+            "geste": "Écrivez une règle par niveau : une phrase impérative et vérifiable.",
+            "consequence": "Un agent qui choisit la fonction avant de comprendre la question calcule vite, et faux.",
+            "questionsLibres": [
+              {
+                "id": "b3-01-a2-regles:regle-transformer",
+                "question": "Niveau 3 · Transformer : votre règle avant d’écrire une formule.",
+                "placeholder": "Avant la fonction, je…"
+              },
+              {
+                "id": "b3-01-a2-regles:regle-modeliser",
+                "question": "Niveau 4 · Modéliser : votre règle pour un calcul qui dure.",
+                "placeholder": "Je travaille sur…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": [
+                "agregation-conditionnelle",
+                "tableau-croise-dynamique"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min d’écriture individuelle, puis 1 min pour lire deux règles au pupitre.\n• Règles modèles, à montrer après la saisie : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 10 h 56 sur le classeur de reprise de l’acte 3.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+        "type": "fp-story",
+        "titre": "Un graphique de la direction",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+              "renderer": "chart",
+              "props": {
+                "title": "Rennes, loin derrière Nantes",
+                "caption": "Diapositive préparée pour le comité de direction",
+                "context": "Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».",
+                "labels": ["Rennes", "Nantes"],
+                "series": [
+                  {
+                    "label": "CA HT 2025",
+                    "values": [52000, 59000],
+                    "tone": "teal"
+                  }
+                ],
+                "axisRanges": [[49000, 59500]],
+                "axisLabels": ["49 000 à 59 500 €"],
+                "unit": "€",
+                "source": "Export des ventes de Norvane Équipement, CA arrondi au millier d’euros (données fictives).",
+                "kind": "bars",
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 59 500 € ; barres de 52 000 € et 59 000 €."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["choix-du-graphique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Projeter sans commentaire ; laisser 30 secondes de lecture avant le vote.\n• Ne pas montrer l’axe du doigt : c’est l’objet du vote.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A3-02-VOTE-GRAPHIQUE",
+        "type": "fp-vote",
+        "titre": "Vote : que décidez-vous ?",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a3-graphique",
+            "enonce": "D’après ce graphique, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
+            "options": [
+              {
+                "id": "impossible-a-dire-f2974021",
+                "libelle": "Impossible à dire"
+              },
+              {
+                "id": "oui-0a904076",
+                "libelle": "Oui"
+              },
+              {
+                "id": "non-l-axe-est-tronque-21b46954",
+                "libelle": "Non : l’axe est tronqué"
+              }
+            ]
+          }
+        },
+        "pieceJointe": {
+          "libelle": "Classeur de reprise de l’acte 3",
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.dccca981.xlsx"
+        },
+        "notes": "• Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.\n• Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : redessiner au tableau les deux barres depuis zéro.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b3-01-a3-graphique",
+            "bonneReponse": "Non : l’axe est tronqué",
+            "confusions": [
+              {
+                "id": "axe-tronque-lu-comme-ecart",
+                "libelle": "Juger une évolution à la hauteur des barres sans lire l’origine et l’amplitude de l’axe."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a3-graphique",
+            "enonce": "D’après ce graphique, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
+            "options": [
+              {
+                "id": "impossible-a-dire-f2974021",
+                "libelle": "Impossible à dire"
+              },
+              {
+                "id": "oui-0a904076",
+                "libelle": "Oui"
+              },
+              {
+                "id": "non-l-axe-est-tronque-21b46954",
+                "libelle": "Non : l’axe est tronqué"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": {
+          "type": "revelation",
+          "titre": "Un axe tronqué grossit l’écart",
+          "lignes": [
+            "L’axe part de 49 000 € : les barres ne montrent que ce qui dépasse ce seuil.",
+            "Rennes a vendu 52 000 €, Nantes 59 000 € : environ 12 % de moins, pas trois fois moins.",
+            "Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité."
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A3-03-COURS-GRAPHIQUES",
+        "type": "fp-story",
+        "titre": "Cours : un graphique répond à une question",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-03-COURS-GRAPHIQUES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-03-COURS-GRAPHIQUES",
+              "renderer": "lesson",
+              "props": {
+                "title": "Un graphique répond à une question",
+                "subtitle": "Trace écrite · niveau 5",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "D’abord la question, ensuite le graphique",
+                    "text": "Chaque question de la direction a son graphique.",
+                    "steps": [
+                      "Comparer des agences ou des produits : barres.",
+                      "Suivre une évolution dans le temps : courbe.",
+                      "Montrer la composition d’un total, en peu de parts : barres empilées.",
+                      "Voir comment se répartissent des valeurs : histogramme.",
+                      "Chercher un lien entre deux mesures : nuage de points.",
+                      "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "À éviter",
+                    "text": "La 3D, qui déforme les hauteurs ; le camembert de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Un titre qui dit la conclusion",
+                    "text": "« Caen à 92 % de son objectif » plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["choix-du-graphique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; faire dire la question avant le type de graphique, à chaque ligne.\n• Montrer qu’un titre qui conclut se lit en deux secondes, un titre « CA par agence » non.\n• Transition : « À chaque question son graphique : exercice 8. »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A3-04-TRI-GRAPHIQUES",
+        "type": "fp-cardsort",
+        "titre": "Exercice 8 — À chaque question son graphique",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b3-01-a3-graphiques",
+            "intitule": "Associez chaque question de la direction au graphique qui y répond.",
+            "cartes": [
+              {
+                "id": "composition-rennes",
+                "libelle": "De quoi est fait le CA de Rennes ?"
+              },
+              {
+                "id": "remise-et-marge",
+                "libelle": "La remise fait-elle baisser la marge ?"
+              },
+              {
+                "id": "agence-qui-vend-le-plus",
+                "libelle": "Quelle agence vend le plus ?"
+              },
+              {
+                "id": "repartition-delais",
+                "libelle": "Comment se répartissent les délais de livraison ?"
+              },
+              {
+                "id": "ca-mois-par-mois",
+                "libelle": "Comment évolue le CA, mois par mois ?"
+              },
+              {
+                "id": "cumul-face-objectif",
+                "libelle": "Où en est le CA cumulé face à l’objectif ?"
+              }
+            ],
+            "categories": [
+              {
+                "id": "barres",
+                "libelle": "Barres"
+              },
+              {
+                "id": "courbe",
+                "libelle": "Courbe"
+              },
+              {
+                "id": "empile",
+                "libelle": "Barres empilées"
+              },
+              {
+                "id": "histogramme",
+                "libelle": "Histogramme"
+              },
+              {
+                "id": "nuage",
+                "libelle": "Nuage de points"
+              },
+              {
+                "id": "kpi",
+                "libelle": "Indicateur et son contexte"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["choix-du-graphique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "binome",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.\n• Pièges : un camembert pour une évolution ; un graphique choisi avant la question.\n• Corriger en partant de la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Le graphique de la direction : exercice 9. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [
+          {
+            "id": "b3-01-a3-graphiques",
+            "enonce": "Associez chaque question de la direction au graphique qui y répond.",
+            "options": null
+          }
+        ],
+        "corrigeEcran": {
+          "type": "classement",
+          "attendus": [
+            {
+              "carteId": "agence-qui-vend-le-plus",
+              "categorieId": "barres",
+              "justification": "on compare des agences entre elles"
+            },
+            {
+              "carteId": "ca-mois-par-mois",
+              "categorieId": "courbe",
+              "justification": "on suit une mesure dans le temps"
+            },
+            {
+              "carteId": "composition-rennes",
+              "categorieId": "empile",
+              "justification": "on décompose un total en quatre catégories"
+            },
+            {
+              "carteId": "repartition-delais",
+              "categorieId": "histogramme",
+              "justification": "on regarde la distribution d’une mesure"
+            },
+            {
+              "carteId": "remise-et-marge",
+              "categorieId": "nuage",
+              "justification": "on cherche un lien entre deux mesures"
+            },
+            {
+              "carteId": "cumul-face-objectif",
+              "categorieId": "kpi",
+              "justification": "un chiffre clé, lu avec son objectif"
+            }
+          ],
+          "seuilReussite": 0.75
+        },
+        "explications": [
+          {
+            "reference": "barres",
+            "texte": "Comparer des agences : des barres, triées de la plus forte à la plus faible."
+          },
+          {
+            "reference": "courbe",
+            "texte": "Suivre le CA mois par mois : une courbe. Un camembert ne montre pas le temps."
+          },
+          {
+            "reference": "empile",
+            "texte": "Décomposer le CA de Rennes en quatre catégories : des barres empilées."
+          },
+          {
+            "reference": "histogramme",
+            "texte": "Répartir les délais de livraison : un histogramme, par tranches de jours."
+          },
+          {
+            "reference": "nuage",
+            "texte": "Relier la remise et la marge : un nuage de points, une ligne par point."
+          },
+          {
+            "reference": "kpi",
+            "texte": "Le CA cumulé face à l’objectif : un indicateur, avec son objectif à côté."
+          }
+        ]
+      },
+      {
+        "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
+        "type": "questionnaire",
+        "titre": "Exercice 9 — CA et objectif par agence",
+        "duree": 8,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 9 — CA et objectif par agence",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, le modèle de données relie les deux tables dans un TCD. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a3-agences-sous-objectif",
+                  "enonce": "Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé de la même période ? Saisissez un nombre entier.",
+                  "unite": "agences",
+                  "metadonnees": {
+                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 8,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a3-atteinte-rennes",
+                  "enonce": "Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 8,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Piège : comparer neuf mois de ventes à l’objectif de toute la table.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b3-01-a3-agences-sous-objectif",
+            "bonneReponse": "3 agences",
+            "confusions": [
+              {
+                "id": "objectif-annuel-pour-cumul",
+                "libelle": "Comparer un cumul de quelques mois à l’objectif de l’année entière."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a3-atteinte-rennes",
+            "bonneReponse": "79,0 %",
+            "confusions": [
+              {
+                "id": "objectif-annuel-pour-cumul",
+                "libelle": "Comparer un cumul de quelques mois à l’objectif de l’année entière."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a3-agences-sous-objectif",
+            "enonce": "Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé de la même période ? Saisissez un nombre entier.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a3-atteinte-rennes",
+            "enonce": "Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b3-01-a3-agences-sous-objectif",
+            "texte": "L’objectif cumulé additionne les objectifs mensuels de janvier à septembre 2026 : trois agences restent en dessous. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences."
+          },
+          {
+            "reference": "b3-01-a3-atteinte-rennes",
+            "texte": "CA de Rennes ÷ objectif cumulé de Rennes, de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Divisé par les vingt et un mois d’objectifs, il tomberait à 33,8 %."
+          }
+        ]
+      },
+      {
+        "id": "B3-01-A3-06-VOTE-TRENTE-SECONDES",
+        "type": "fp-vote",
+        "titre": "Vote : trente secondes",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a3-trente-secondes",
+            "enonce": "Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?",
+            "options": [
+              {
+                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
+                "libelle": "Le tableau de toutes les lignes"
+              },
+              {
+                "id": "dix-graphiques-9bc9ca67",
+                "libelle": "Dix graphiques"
+              },
+              {
+                "id": "quatre-chiffres-chacun-avec-sa-comparais-da3f031e",
+                "libelle": "Quatre chiffres, chacun avec sa comparaison"
+              }
+            ]
+          }
+        },
+        "notes": "• Temps « réfléchir » du niveau 6 : vote non noté, 2 min de vote et 1 min de révélation.\n• Faire dire ce que Nadia fera de chaque option devant le comité.",
+        "diffusion": "seance",
+        "seuil": 0.7,
+        "corriges": [
+          {
+            "questionId": "b3-01-a3-trente-secondes",
+            "bonneReponse": "Quatre chiffres, chacun avec sa comparaison",
+            "confusions": [
+              {
+                "id": "kpi-sans-contexte",
+                "libelle": "Afficher un chiffre seul, sans objectif ni comparaison qui dise s’il est bon."
+              },
+              {
+                "id": "graphique-sans-question",
+                "libelle": "Choisir un graphique avant la question à laquelle il doit répondre."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a3-trente-secondes",
+            "enonce": "Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?",
+            "options": [
+              {
+                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
+                "libelle": "Le tableau de toutes les lignes"
+              },
+              {
+                "id": "dix-graphiques-9bc9ca67",
+                "libelle": "Dix graphiques"
+              },
+              {
+                "id": "quatre-chiffres-chacun-avec-sa-comparais-da3f031e",
+                "libelle": "Quatre chiffres, chacun avec sa comparaison"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": {
+          "type": "revelation",
+          "titre": "Quatre chiffres en contexte, le détail sur demande",
+          "lignes": [
+            "En trente secondes, on lit quatre chiffres, pas quatre mille lignes ni dix graphiques.",
+            "Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé.",
+            "Le détail vient ensuite, sur demande : graphiques, TCD et segments."
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A3-07-COURS-DASHBOARD",
+        "type": "fp-story",
+        "titre": "Cours : l’anatomie d’un tableau de bord",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-07-COURS-DASHBOARD",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-07-COURS-DASHBOARD",
+              "renderer": "lesson",
+              "props": {
+                "title": "L’anatomie d’un tableau de bord",
+                "subtitle": "Trace écrite · niveau 6",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Un tableau de bord répond à une question de décision",
+                    "text": "Pas « toutes les ventes », mais « où le réseau décroche-t-il, et pourquoi ? ». Ce qui n’aide pas à répondre n’y figure pas."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Ce qu’il contient",
+                    "text": "Une page, lisible en trente secondes.",
+                    "steps": [
+                      "Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.",
+                      "Deux graphiques, chacun avec un titre qui conclut.",
+                      "Des segments connectés à tous les TCD : un clic filtre toute la page.",
+                      "Les anomalies signalées par mise en forme conditionnelle."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Une recommandation : constat chiffré, cause, action",
+                    "text": "Le constat se lit dans le tableau de bord ; la cause se cherche dans le détail ; l’action est précise, datée, et confiée à quelqu’un."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Caen",
+                    "text": "Constat : délai médian de 7 jours ouvrés, contre 4 dans le réseau. Cause : changement de transporteur en mars. Action : renégocier le contrat, ou revenir à l’ancien transporteur."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min ; faire dire la question de décision du tableau de bord de Nadia.\n• Lire l’exemple de Caen en trois temps : constat, cause, action.\n• Transition : « Voyons la mise en forme conditionnelle et les segments. »",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A3-08-EXEMPLE-MFC-SEGMENTS",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : MFC et segments connectés",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b3-01-a3-exemple-mfc",
+            "enonce": "Sur la synthèse par agence de l’exercice 9, le taux d’atteinte est en colonne E, à partir de la ligne 5 : faites ressortir les agences en retard, puis reliez un segment à deux TCD.",
+            "etapes": [
+              {
+                "id": "mfc",
+                "intitule": "La règle de couleur",
+                "raisonnement": "Accueil › Mise en forme conditionnelle › Nouvelle règle › Utiliser une formule : =$E5<0,95, remplissage rouge. Le $ fige la colonne E : toute la ligne de l’agence se colore.",
+                "invite": "Quelle formule colore les agences sous 95 % de leur objectif ?"
+              },
+              {
+                "id": "barres",
+                "intitule": "Les barres de données",
+                "raisonnement": "Sur la colonne du CA : Mise en forme conditionnelle › Barres de données. La longueur de la barre se lit avant le nombre.",
+                "invite": "Comment rendre le CA lisible d’un coup d’œil ?"
+              },
+              {
+                "id": "segment",
+                "intitule": "Le segment connecté",
+                "raisonnement": "Clic dans un TCD › Insertion › Segment › region ; puis clic droit sur le segment › Connexions de rapport : cocher les deux TCD. Un clic filtre les deux.",
+                "invite": "Comment un seul segment filtre-t-il deux TCD ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        },
+        "notes": "• Chacun refait les étapes sur sa synthèse de l’exercice 9 ; la correction se dévoile étape par étape sur ce même écran.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 10. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
       }
     ]
   }
