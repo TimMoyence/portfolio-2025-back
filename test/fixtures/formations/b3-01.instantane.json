@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "557fc37c3417f6d26844d679e958fb7788aa96f356c4db55d69d9025e1a873cb",
+  "empreinte": "0066b4689e3c07132bb8caab83bb63b0ff18322ef5bd01e2e88662d55f2343f0",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -218,35 +218,34 @@
                   {
                     "kind": "definition",
                     "title": "Observation et variable",
-                    "text": "Une observation est une ligne du tableau : un fait enregistré. Une variable est une colonne : une caractéristique relevée sur chaque observation. Un jeu de données exploitable a une observation par ligne, une variable par colonne et un en-tête par colonne."
+                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, un en-tête par colonne."
                   },
                   {
                     "kind": "property",
                     "title": "Cinq types de variables, et la donnée manquante",
-                    "text": "Le type dit ce qu’on a le droit de calculer.",
+                    "text": "Le type dit le calcul permis.",
                     "steps": [
-                      "Identifiant (n_commande, client_id) : on le compte, on ne l’additionne jamais.",
-                      "Numérique (quantite, ca_ht) : on l’additionne, on en fait la moyenne.",
-                      "Catégorie (ville, région) : on compte et on regroupe.",
-                      "Date (date_commande) : on calcule des durées, on regroupe par mois.",
-                      "Booléen (facturee, oui ou non) : on compte les « oui ».",
-                      "Donnée manquante : une cellule vide n’est pas un zéro."
+                      "Identifiant : compter, jamais additionner.",
+                      "Numérique : additionner, moyenner.",
+                      "Catégorie : compter, regrouper.",
+                      "Date : calculer des durées.",
+                      "Booléen : compter les « oui ».",
+                      "Vide : donnée manquante, pas un zéro."
                     ]
                   },
                   {
                     "kind": "method",
                     "title": "Trouver la granularité avant de compter",
-                    "text": "Avant tout calcul, finir la phrase « une ligne = … ». Dans l’export Norvane, une ligne est un produit dans une commande : une commande occupe une ou plusieurs lignes.",
+                    "text": "Finir la phrase « une ligne = … » : ici, un produit dans une commande, qui occupe une ou plusieurs lignes.",
                     "steps": [
-                      "Repérer la colonne dont les valeurs se répètent (n_commande).",
-                      "Filtrer une valeur et compter ses lignes.",
-                      "Compter des commandes, c’est compter des n_commande distincts, pas des lignes."
+                      "Repérer la colonne qui se répète (n_commande).",
+                      "Compter des commandes = compter des n_commande distincts."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "La source de vérité",
-                    "text": "La ville d’un client se lit dans l’onglet Clients, saisi une fois par l’administration des ventes. La colonne ville de l’export en est une copie, recopiée à chaque commande, avec ses fautes : en cas de doute, c’est Clients qui fait foi."
+                    "text": "La ville d’un client se lit dans l’onglet Clients, saisi une fois. La colonne ville de l’export n’en est qu’une copie, avec ses fautes : en cas de doute, Clients fait foi."
                   }
                 ]
               }
@@ -893,8 +892,8 @@
               "renderer": "table",
               "props": {
                 "title": "Les dix familles de problèmes",
-                "subtitle": "Avant d’écrire une formule, on nomme la famille de la question posée.",
-                "note": "Le socle fonctionne sur toute version d’Excel depuis 2019 ; la colonne 365 donne un raccourci.",
+                "subtitle": "Nommer la famille de la question avant d’écrire la formule.",
+                "note": "MFC : mise en forme conditionnelle.",
                 "columns": [
                   {
                     "key": "famille",
@@ -902,77 +901,77 @@
                   },
                   {
                     "key": "question",
-                    "label": "Question type de la direction"
+                    "label": "Question de la direction"
                   },
                   {
                     "key": "socle",
-                    "label": "Fonction socle"
+                    "label": "Socle (Excel 2019 et +)"
                   },
                   {
                     "key": "variante",
-                    "label": "Si vous avez Excel 365"
+                    "label": "Avec Excel 365"
                   }
                 ],
                 "rows": [
                   {
                     "famille": "Chercher",
-                    "question": "Quelle est la catégorie de ce produit ?",
+                    "question": "Catégorie de ce produit ?",
                     "socle": "INDEX et EQUIV",
                     "variante": "RECHERCHEX"
                   },
                   {
                     "famille": "Compter",
-                    "question": "Combien de lignes à Marseille avec une forte remise ?",
+                    "question": "Combien de fortes remises ?",
                     "socle": "NB.SI.ENS",
                     "variante": "NB.SI.ENS"
                   },
                   {
                     "famille": "Additionner sous conditions",
-                    "question": "Quel CA pour Rennes en informatique ?",
+                    "question": "CA de Rennes en informatique ?",
                     "socle": "SOMME.SI.ENS, SOMMEPROD",
                     "variante": "SOMME.SI.ENS"
                   },
                   {
                     "famille": "Comparer",
-                    "question": "Cette ligne est-elle livrée en retard ?",
+                    "question": "Cette ligne est-elle en retard ?",
                     "socle": "SI, ET, OU",
                     "variante": "SI.CONDITIONS"
                   },
                   {
                     "famille": "Classer",
-                    "question": "Quelles sont les meilleures agences ?",
+                    "question": "Les meilleures agences ?",
                     "socle": "RANG, GRANDE.VALEUR",
                     "variante": "TRIER"
                   },
                   {
                     "famille": "Transformer",
-                    "question": "Ce montant saisi en texte, combien vaut-il ?",
+                    "question": "Que vaut ce montant en texte ?",
                     "socle": "SUPPRESPACE, CNUM, TEXTE",
                     "variante": "Power Query"
                   },
                   {
                     "famille": "Filtrer",
-                    "question": "Quelles lignes de Strasbourg sont en retard ?",
+                    "question": "Les retards de Strasbourg ?",
                     "socle": "Filtre automatique",
                     "variante": "FILTRE"
                   },
                   {
                     "famille": "Regrouper",
-                    "question": "Quel CA par région et par trimestre ?",
+                    "question": "CA par région et trimestre ?",
                     "socle": "Tableau croisé dynamique",
                     "variante": "UNIQUE"
                   },
                   {
                     "famille": "Manipuler le temps",
-                    "question": "Combien de jours ouvrés de délai ?",
+                    "question": "Combien de jours ouvrés ?",
                     "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
                     "variante": "NB.JOURS.OUVRES"
                   },
                   {
                     "famille": "Détecter une anomalie",
-                    "question": "Quel délai sort de l’ordinaire ?",
-                    "socle": "Mise en forme conditionnelle, MEDIANE, ECARTYPE",
-                    "variante": "Mise en forme conditionnelle"
+                    "question": "Quel délai sort du lot ?",
+                    "socle": "MFC, MEDIANE, ECARTYPE",
+                    "variante": "MFC"
                   }
                 ]
               }
@@ -2477,35 +2476,34 @@
                   {
                     "kind": "definition",
                     "title": "Observation et variable",
-                    "text": "Une observation est une ligne du tableau : un fait enregistré. Une variable est une colonne : une caractéristique relevée sur chaque observation. Un jeu de données exploitable a une observation par ligne, une variable par colonne et un en-tête par colonne."
+                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, un en-tête par colonne."
                   },
                   {
                     "kind": "property",
                     "title": "Cinq types de variables, et la donnée manquante",
-                    "text": "Le type dit ce qu’on a le droit de calculer.",
+                    "text": "Le type dit le calcul permis.",
                     "steps": [
-                      "Identifiant (n_commande, client_id) : on le compte, on ne l’additionne jamais.",
-                      "Numérique (quantite, ca_ht) : on l’additionne, on en fait la moyenne.",
-                      "Catégorie (ville, région) : on compte et on regroupe.",
-                      "Date (date_commande) : on calcule des durées, on regroupe par mois.",
-                      "Booléen (facturee, oui ou non) : on compte les « oui ».",
-                      "Donnée manquante : une cellule vide n’est pas un zéro."
+                      "Identifiant : compter, jamais additionner.",
+                      "Numérique : additionner, moyenner.",
+                      "Catégorie : compter, regrouper.",
+                      "Date : calculer des durées.",
+                      "Booléen : compter les « oui ».",
+                      "Vide : donnée manquante, pas un zéro."
                     ]
                   },
                   {
                     "kind": "method",
                     "title": "Trouver la granularité avant de compter",
-                    "text": "Avant tout calcul, finir la phrase « une ligne = … ». Dans l’export Norvane, une ligne est un produit dans une commande : une commande occupe une ou plusieurs lignes.",
+                    "text": "Finir la phrase « une ligne = … » : ici, un produit dans une commande, qui occupe une ou plusieurs lignes.",
                     "steps": [
-                      "Repérer la colonne dont les valeurs se répètent (n_commande).",
-                      "Filtrer une valeur et compter ses lignes.",
-                      "Compter des commandes, c’est compter des n_commande distincts, pas des lignes."
+                      "Repérer la colonne qui se répète (n_commande).",
+                      "Compter des commandes = compter des n_commande distincts."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "La source de vérité",
-                    "text": "La ville d’un client se lit dans l’onglet Clients, saisi une fois par l’administration des ventes. La colonne ville de l’export en est une copie, recopiée à chaque commande, avec ses fautes : en cas de doute, c’est Clients qui fait foi."
+                    "text": "La ville d’un client se lit dans l’onglet Clients, saisi une fois. La colonne ville de l’export n’en est qu’une copie, avec ses fautes : en cas de doute, Clients fait foi."
                   }
                 ]
               }
@@ -3624,8 +3622,8 @@
               "renderer": "table",
               "props": {
                 "title": "Les dix familles de problèmes",
-                "subtitle": "Avant d’écrire une formule, on nomme la famille de la question posée.",
-                "note": "Le socle fonctionne sur toute version d’Excel depuis 2019 ; la colonne 365 donne un raccourci.",
+                "subtitle": "Nommer la famille de la question avant d’écrire la formule.",
+                "note": "MFC : mise en forme conditionnelle.",
                 "columns": [
                   {
                     "key": "famille",
@@ -3633,77 +3631,77 @@
                   },
                   {
                     "key": "question",
-                    "label": "Question type de la direction"
+                    "label": "Question de la direction"
                   },
                   {
                     "key": "socle",
-                    "label": "Fonction socle"
+                    "label": "Socle (Excel 2019 et +)"
                   },
                   {
                     "key": "variante",
-                    "label": "Si vous avez Excel 365"
+                    "label": "Avec Excel 365"
                   }
                 ],
                 "rows": [
                   {
                     "famille": "Chercher",
-                    "question": "Quelle est la catégorie de ce produit ?",
+                    "question": "Catégorie de ce produit ?",
                     "socle": "INDEX et EQUIV",
                     "variante": "RECHERCHEX"
                   },
                   {
                     "famille": "Compter",
-                    "question": "Combien de lignes à Marseille avec une forte remise ?",
+                    "question": "Combien de fortes remises ?",
                     "socle": "NB.SI.ENS",
                     "variante": "NB.SI.ENS"
                   },
                   {
                     "famille": "Additionner sous conditions",
-                    "question": "Quel CA pour Rennes en informatique ?",
+                    "question": "CA de Rennes en informatique ?",
                     "socle": "SOMME.SI.ENS, SOMMEPROD",
                     "variante": "SOMME.SI.ENS"
                   },
                   {
                     "famille": "Comparer",
-                    "question": "Cette ligne est-elle livrée en retard ?",
+                    "question": "Cette ligne est-elle en retard ?",
                     "socle": "SI, ET, OU",
                     "variante": "SI.CONDITIONS"
                   },
                   {
                     "famille": "Classer",
-                    "question": "Quelles sont les meilleures agences ?",
+                    "question": "Les meilleures agences ?",
                     "socle": "RANG, GRANDE.VALEUR",
                     "variante": "TRIER"
                   },
                   {
                     "famille": "Transformer",
-                    "question": "Ce montant saisi en texte, combien vaut-il ?",
+                    "question": "Que vaut ce montant en texte ?",
                     "socle": "SUPPRESPACE, CNUM, TEXTE",
                     "variante": "Power Query"
                   },
                   {
                     "famille": "Filtrer",
-                    "question": "Quelles lignes de Strasbourg sont en retard ?",
+                    "question": "Les retards de Strasbourg ?",
                     "socle": "Filtre automatique",
                     "variante": "FILTRE"
                   },
                   {
                     "famille": "Regrouper",
-                    "question": "Quel CA par région et par trimestre ?",
+                    "question": "CA par région et trimestre ?",
                     "socle": "Tableau croisé dynamique",
                     "variante": "UNIQUE"
                   },
                   {
                     "famille": "Manipuler le temps",
-                    "question": "Combien de jours ouvrés de délai ?",
+                    "question": "Combien de jours ouvrés ?",
                     "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
                     "variante": "NB.JOURS.OUVRES"
                   },
                   {
                     "famille": "Détecter une anomalie",
-                    "question": "Quel délai sort de l’ordinaire ?",
-                    "socle": "Mise en forme conditionnelle, MEDIANE, ECARTYPE",
-                    "variante": "Mise en forme conditionnelle"
+                    "question": "Quel délai sort du lot ?",
+                    "socle": "MFC, MEDIANE, ECARTYPE",
+                    "variante": "MFC"
                   }
                 ]
               }
@@ -5763,35 +5761,34 @@
                   {
                     "kind": "definition",
                     "title": "Observation et variable",
-                    "text": "Une observation est une ligne du tableau : un fait enregistré. Une variable est une colonne : une caractéristique relevée sur chaque observation. Un jeu de données exploitable a une observation par ligne, une variable par colonne et un en-tête par colonne."
+                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, un en-tête par colonne."
                   },
                   {
                     "kind": "property",
                     "title": "Cinq types de variables, et la donnée manquante",
-                    "text": "Le type dit ce qu’on a le droit de calculer.",
+                    "text": "Le type dit le calcul permis.",
                     "steps": [
-                      "Identifiant (n_commande, client_id) : on le compte, on ne l’additionne jamais.",
-                      "Numérique (quantite, ca_ht) : on l’additionne, on en fait la moyenne.",
-                      "Catégorie (ville, région) : on compte et on regroupe.",
-                      "Date (date_commande) : on calcule des durées, on regroupe par mois.",
-                      "Booléen (facturee, oui ou non) : on compte les « oui ».",
-                      "Donnée manquante : une cellule vide n’est pas un zéro."
+                      "Identifiant : compter, jamais additionner.",
+                      "Numérique : additionner, moyenner.",
+                      "Catégorie : compter, regrouper.",
+                      "Date : calculer des durées.",
+                      "Booléen : compter les « oui ».",
+                      "Vide : donnée manquante, pas un zéro."
                     ]
                   },
                   {
                     "kind": "method",
                     "title": "Trouver la granularité avant de compter",
-                    "text": "Avant tout calcul, finir la phrase « une ligne = … ». Dans l’export Norvane, une ligne est un produit dans une commande : une commande occupe une ou plusieurs lignes.",
+                    "text": "Finir la phrase « une ligne = … » : ici, un produit dans une commande, qui occupe une ou plusieurs lignes.",
                     "steps": [
-                      "Repérer la colonne dont les valeurs se répètent (n_commande).",
-                      "Filtrer une valeur et compter ses lignes.",
-                      "Compter des commandes, c’est compter des n_commande distincts, pas des lignes."
+                      "Repérer la colonne qui se répète (n_commande).",
+                      "Compter des commandes = compter des n_commande distincts."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "La source de vérité",
-                    "text": "La ville d’un client se lit dans l’onglet Clients, saisi une fois par l’administration des ventes. La colonne ville de l’export en est une copie, recopiée à chaque commande, avec ses fautes : en cas de doute, c’est Clients qui fait foi."
+                    "text": "La ville d’un client se lit dans l’onglet Clients, saisi une fois. La colonne ville de l’export n’en est qu’une copie, avec ses fautes : en cas de doute, Clients fait foi."
                   }
                 ]
               }
@@ -6050,8 +6047,8 @@
               "renderer": "table",
               "props": {
                 "title": "Les dix familles de problèmes",
-                "subtitle": "Avant d’écrire une formule, on nomme la famille de la question posée.",
-                "note": "Le socle fonctionne sur toute version d’Excel depuis 2019 ; la colonne 365 donne un raccourci.",
+                "subtitle": "Nommer la famille de la question avant d’écrire la formule.",
+                "note": "MFC : mise en forme conditionnelle.",
                 "columns": [
                   {
                     "key": "famille",
@@ -6059,77 +6056,77 @@
                   },
                   {
                     "key": "question",
-                    "label": "Question type de la direction"
+                    "label": "Question de la direction"
                   },
                   {
                     "key": "socle",
-                    "label": "Fonction socle"
+                    "label": "Socle (Excel 2019 et +)"
                   },
                   {
                     "key": "variante",
-                    "label": "Si vous avez Excel 365"
+                    "label": "Avec Excel 365"
                   }
                 ],
                 "rows": [
                   {
                     "famille": "Chercher",
-                    "question": "Quelle est la catégorie de ce produit ?",
+                    "question": "Catégorie de ce produit ?",
                     "socle": "INDEX et EQUIV",
                     "variante": "RECHERCHEX"
                   },
                   {
                     "famille": "Compter",
-                    "question": "Combien de lignes à Marseille avec une forte remise ?",
+                    "question": "Combien de fortes remises ?",
                     "socle": "NB.SI.ENS",
                     "variante": "NB.SI.ENS"
                   },
                   {
                     "famille": "Additionner sous conditions",
-                    "question": "Quel CA pour Rennes en informatique ?",
+                    "question": "CA de Rennes en informatique ?",
                     "socle": "SOMME.SI.ENS, SOMMEPROD",
                     "variante": "SOMME.SI.ENS"
                   },
                   {
                     "famille": "Comparer",
-                    "question": "Cette ligne est-elle livrée en retard ?",
+                    "question": "Cette ligne est-elle en retard ?",
                     "socle": "SI, ET, OU",
                     "variante": "SI.CONDITIONS"
                   },
                   {
                     "famille": "Classer",
-                    "question": "Quelles sont les meilleures agences ?",
+                    "question": "Les meilleures agences ?",
                     "socle": "RANG, GRANDE.VALEUR",
                     "variante": "TRIER"
                   },
                   {
                     "famille": "Transformer",
-                    "question": "Ce montant saisi en texte, combien vaut-il ?",
+                    "question": "Que vaut ce montant en texte ?",
                     "socle": "SUPPRESPACE, CNUM, TEXTE",
                     "variante": "Power Query"
                   },
                   {
                     "famille": "Filtrer",
-                    "question": "Quelles lignes de Strasbourg sont en retard ?",
+                    "question": "Les retards de Strasbourg ?",
                     "socle": "Filtre automatique",
                     "variante": "FILTRE"
                   },
                   {
                     "famille": "Regrouper",
-                    "question": "Quel CA par région et par trimestre ?",
+                    "question": "CA par région et trimestre ?",
                     "socle": "Tableau croisé dynamique",
                     "variante": "UNIQUE"
                   },
                   {
                     "famille": "Manipuler le temps",
-                    "question": "Combien de jours ouvrés de délai ?",
+                    "question": "Combien de jours ouvrés ?",
                     "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
                     "variante": "NB.JOURS.OUVRES"
                   },
                   {
                     "famille": "Détecter une anomalie",
-                    "question": "Quel délai sort de l’ordinaire ?",
-                    "socle": "Mise en forme conditionnelle, MEDIANE, ECARTYPE",
-                    "variante": "Mise en forme conditionnelle"
+                    "question": "Quel délai sort du lot ?",
+                    "socle": "MFC, MEDIANE, ECARTYPE",
+                    "variante": "MFC"
                   }
                 ]
               }
