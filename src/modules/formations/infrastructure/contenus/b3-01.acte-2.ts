@@ -358,7 +358,7 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 7 min',
         'Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.',
-        'Pièges : soustraire les dates ; résumer par la moyenne ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.',
+        'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.',
       ),
       proprietes: {
         intitule: 'Exercice 6 — Délais et marge',
@@ -383,14 +383,18 @@ export const ACTE_2: moteur.Acte = [
             'calcul-sur-dates',
             'Combien de lignes commandées en 2026 sont livrées après leur date promise, cinq jours ouvrés après la commande ?',
             'lignes',
-            ['jours-calendaires-pour-ouvres'],
+            ['jours-calendaires-pour-ouvres', 'bornes-comptees-dans-le-delai'],
           ),
           questionChiffree(
             'b3-01-a2-taux-marge',
             'indicateur-statistique',
             'Quel est le taux de marque du réseau (marge ÷ CA HT), de janvier à septembre 2026 ?',
             '%',
-            ['moyenne-simple-des-taux', 'marque-confondue-avec-marge'],
+            [
+              'moyenne-simple-des-taux',
+              'marque-confondue-avec-marge',
+              'periode-mal-delimitee',
+            ],
           ),
         ],
       },
@@ -406,15 +410,15 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-delai-strasbourg',
-        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. Sans le − 1, le jour de la commande compte : 9. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie.',
+        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie.',
       ],
       [
         'b3-01-a2-retards',
-        'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5) : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; en jours calendaires, la médiane de Strasbourg de la première question monterait à 11 jours.',
+        'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère ">5", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours.',
       ],
       [
         'b3-01-a2-taux-marge',
-        'Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur.',
+        'Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. Sur toute la table, 2025 compris, le même rapport donne 32,3 %. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur.',
       ],
     ],
   ),
@@ -565,7 +569,7 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 11 min',
         'Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.',
-        'Pièges : % du total général au lieu du % de la ligne ; filtre annee resté actif, recopié du premier TCD ou de l’exemple ; trimestres groupés sans les années.',
+        'Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.',
       ),
       proprietes: {
         intitule: 'Exercice 7 — Le TCD de la direction',
@@ -579,7 +583,11 @@ export const ACTE_2: moteur.Acte = [
             'tableau-croise-dynamique',
             'Quelle part de son CA Rennes (AG06) réalise-t-elle en informatique, de janvier à septembre 2026 ?',
             '%',
-            ['pourcentage-du-mauvais-total'],
+            [
+              'pourcentage-du-mauvais-total',
+              'pourcentage-du-total-de-colonne',
+              'periode-mal-delimitee',
+            ],
           ),
           moteur.vote(
             'b3-01-a2-meilleur-trimestre',
@@ -606,11 +614,11 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-part-info-rennes',
-        'Avec agence_id en lignes et le % du total de la ligne, la case Rennes × Informatique vaut 27,2 % : la part de l’informatique dans le CA de Rennes. En % du total général, la même case donne 1,5 % : sa part dans le CA du réseau.',
+        'Avec agence_id en lignes et le % du total de la ligne, la case Rennes × Informatique vaut 27,2 % : la part de l’informatique dans le CA de Rennes. En % du total général, la même case donne 1,5 % : sa part dans le CA du réseau ; en % du total de la colonne, 3,8 % : la part de Rennes dans l’informatique du réseau.',
       ],
       [
         'b3-01-a2-meilleur-trimestre',
-        'Groupé par trimestres et par années, le TCD place en tête le T4 2025 : d’octobre à décembre, la saison forte du réseau. Un filtre annee resté sur 2026 ne montre que les trimestres de 2026 et met le T2 2026 en tête ; des trimestres groupés sans les années cumulent deux printemps et font gagner le deuxième trimestre.',
+        'Groupé par trimestres et par années, le TCD place en tête le T4 2025 : d’octobre à décembre, la saison forte du réseau. Un filtre annee resté sur 2026 ne montre que les trimestres de 2026 et met le T2 2026 en tête ; des trimestres groupés sans les années cumulent deux printemps et font gagner le deuxième trimestre. Oublié au premier TCD, le filtre annee mêle à l’inverse 2025 et 2026 : l’informatique y pèse 33,9 % du CA de Rennes.',
       ],
     ],
   ),

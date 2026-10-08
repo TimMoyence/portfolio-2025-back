@@ -632,7 +632,12 @@ const DEFINITIONS = {
   'controle-apres-correction': {
     concept: 'qualite-des-donnees',
     libelle:
-      'Poser le contrôle sur des données déjà corrigées : il ne compte plus les défauts du fichier reçu, à signaler à son émetteur.',
+      'Lire le contrôle sur des données déjà corrigées : recalculé, il ne compte plus les défauts du fichier reçu.',
+  },
+  'pourcentage-du-total-de-colonne': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Afficher le % du total de la colonne quand la question porte sur la part dans la ligne : la case donne alors le poids de la ligne dans la colonne.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "082873a524d039c4e4b8b7c35aa81f3d21a208448f13fc3f52d9e290a0073afa",
+  "empreinte": "2d089658b75a06924e5440386d579caff2f931dcd0afeef83faf50ad7c11ef20",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -583,7 +583,7 @@
                   {
                     "kind": "property",
                     "title": "Nettoyer à côté, jamais dessus",
-                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait."
+                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle lui-même figé en valeurs : c’est une formule, il se recalculerait sur les données corrigées."
                   },
                   {
                     "kind": "example",
@@ -3064,7 +3064,7 @@
                   {
                     "kind": "property",
                     "title": "Nettoyer à côté, jamais dessus",
-                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait."
+                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle lui-même figé en valeurs : c’est une formule, il se recalculerait sur les données corrigées."
                   },
                   {
                     "kind": "example",
@@ -3384,7 +3384,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).\n• Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril, or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).\n• Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril, or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3395,6 +3395,10 @@
               {
                 "id": "doublons-supprimes-sur-une-colonne",
                 "libelle": "Dédoublonner sur une seule colonne et perdre des lignes distinctes qui la partagent."
+              },
+              {
+                "id": "en-tete-compte-comme-ligne",
+                "libelle": "Compter la ligne d’en-tête parmi les données : NBVAL sur toute la colonne compte aussi le nom de la colonne."
               }
             ]
           },
@@ -3428,7 +3432,7 @@
               },
               {
                 "id": "controle-apres-correction",
-                "libelle": "Poser le contrôle sur des données déjà corrigées : il ne compte plus les défauts du fichier reçu, à signaler à son émetteur."
+                "libelle": "Lire le contrôle sur des données déjà corrigées : recalculé, il ne compte plus les défauts du fichier reçu."
               }
             ]
           }
@@ -3459,7 +3463,7 @@
         "explications": [
           {
             "reference": "b3-01-a1-lignes-uniques",
-            "texte": "L’export compte 4 144 lignes, dont 46 exportées deux fois : il en reste 4 098. Dédoublonner sur n_commande seule ne garderait qu’une ligne par commande : 1 618 lignes, et des produits perdus."
+            "texte": "L’export compte 4 144 lignes, dont 46 exportées deux fois : il en reste 4 098. Dédoublonner sur n_commande seule ne garderait qu’une ligne par commande : 1 618 lignes, et des produits perdus. Lire le numéro de la dernière ligne compte aussi l’en-tête : 4 099."
           },
           {
             "reference": "b3-01-a1-ca-total",
@@ -3471,7 +3475,7 @@
           },
           {
             "reference": "b3-01-a1-a-verifier",
-            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Pointer le contrôle sur les dates converties par la formule du défi en aurait retiré les 40 dates ISO : 45 lignes. Convertir toute date en texte par DATEVAL en retire aussi 6 des 12 dates venues d’un autre système, lues jour d’abord et prises pour justes : 39."
+            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39."
           }
         ]
       },
@@ -4143,7 +4147,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; résumer par la moyenne ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4172,6 +4176,10 @@
               {
                 "id": "jours-calendaires-pour-ouvres",
                 "libelle": "Soustraire deux dates quand le contrat compte des jours ouvrés."
+              },
+              {
+                "id": "bornes-comptees-dans-le-delai",
+                "libelle": "Prendre NB.JOURS.OUVRES tel quel pour un délai : il compte le jour de départ et le jour d’arrivée, d’où le − 1."
               }
             ]
           },
@@ -4186,6 +4194,10 @@
               {
                 "id": "marque-confondue-avec-marge",
                 "libelle": "Confondre le taux de marque (marge ÷ prix de vente HT) et le taux de marge (marge ÷ coût d’achat HT)."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           }
@@ -4211,15 +4223,15 @@
         "explications": [
           {
             "reference": "b3-01-a2-delai-strasbourg",
-            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. Sans le − 1, le jour de la commande compte : 9. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie."
+            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie."
           },
           {
             "reference": "b3-01-a2-retards",
-            "texte": "Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5) : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; en jours calendaires, la médiane de Strasbourg de la première question monterait à 11 jours."
+            "texte": "Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit quand son delai dépasse 5 : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; la médiane de Strasbourg de la première question monterait à 11 jours. Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère \">5\", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours."
           },
           {
             "reference": "b3-01-a2-taux-marge",
-            "texte": "Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur."
+            "texte": "Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. Sur toute la table, 2025 compris, le même rapport donne 32,3 %. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur."
           }
         ]
       },
@@ -4456,7 +4468,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général au lieu du % de la ligne ; filtre annee resté actif, recopié du premier TCD ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.\n• Transition : « Avant la pause, deux règles de plus. »",
+        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.\n• Transition : « Avant la pause, deux règles de plus. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4467,6 +4479,14 @@
               {
                 "id": "pourcentage-du-mauvais-total",
                 "libelle": "Afficher la part du total général quand la question porte sur la part dans la ligne."
+              },
+              {
+                "id": "pourcentage-du-total-de-colonne",
+                "libelle": "Afficher le % du total de la colonne quand la question porte sur la part dans la ligne : la case donne alors le poids de la ligne dans la colonne."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           },
@@ -4510,11 +4530,11 @@
         "explications": [
           {
             "reference": "b3-01-a2-part-info-rennes",
-            "texte": "Avec agence_id en lignes et le % du total de la ligne, la case Rennes × Informatique vaut 27,2 % : la part de l’informatique dans le CA de Rennes. En % du total général, la même case donne 1,5 % : sa part dans le CA du réseau."
+            "texte": "Avec agence_id en lignes et le % du total de la ligne, la case Rennes × Informatique vaut 27,2 % : la part de l’informatique dans le CA de Rennes. En % du total général, la même case donne 1,5 % : sa part dans le CA du réseau ; en % du total de la colonne, 3,8 % : la part de Rennes dans l’informatique du réseau."
           },
           {
             "reference": "b3-01-a2-meilleur-trimestre",
-            "texte": "Groupé par trimestres et par années, le TCD place en tête le T4 2025 : d’octobre à décembre, la saison forte du réseau. Un filtre annee resté sur 2026 ne montre que les trimestres de 2026 et met le T2 2026 en tête ; des trimestres groupés sans les années cumulent deux printemps et font gagner le deuxième trimestre."
+            "texte": "Groupé par trimestres et par années, le TCD place en tête le T4 2025 : d’octobre à décembre, la saison forte du réseau. Un filtre annee resté sur 2026 ne montre que les trimestres de 2026 et met le T2 2026 en tête ; des trimestres groupés sans les années cumulent deux printemps et font gagner le deuxième trimestre. Oublié au premier TCD, le filtre annee mêle à l’inverse 2025 et 2026 : l’informatique y pèse 33,9 % du CA de Rennes."
           }
         ]
       },
@@ -5300,6 +5320,10 @@
               {
                 "id": "marque-confondue-avec-marge",
                 "libelle": "Confondre le taux de marque (marge ÷ prix de vente HT) et le taux de marge (marge ÷ coût d’achat HT)."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           },
@@ -5344,11 +5368,11 @@
           },
           {
             "reference": "b3-01-a3-ca-2026",
-            "texte": "SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €. Toute la table, 2025 compris, donne 1 313 125 € : deux années mêlées dans un seul indicateur."
+            "texte": "SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €."
           },
           {
             "reference": "b3-01-a3-marge-marseille",
-            "texte": "Marge de Marseille ÷ CA HT de Marseille, de janvier à septembre 2026 : un taux de marque de 26,9 %. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses. Divisée par le coût d’achat, la même marge donne 36,9 % : c’est le taux de marge, un autre indicateur."
+            "texte": "Marge de Marseille ÷ CA HT de Marseille, de janvier à septembre 2026 : un taux de marque de 26,9 %. Toute la table, 2025 compris, mêle deux années : 1 313 125 € de CA à la deuxième question, 29,8 % de taux de marque ici. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses. Divisée par le coût d’achat, la même marge donne 36,9 % : c’est le taux de marge, un autre indicateur."
           },
           {
             "reference": "b3-01-a3-quarantaine",
@@ -5639,6 +5663,7 @@
       "marque-confondue-avec-marge": "B3-01-A2-06-COURS-TEMPS-STATS",
       "plage-fixe-au-lieu-de-tableau": "B3-01-A2-09-COURS-TCD",
       "pourcentage-du-mauvais-total": "B3-01-A2-09-COURS-TCD",
+      "pourcentage-du-total-de-colonne": "B3-01-A2-09-COURS-TCD",
       "tcd-filtre-ou-dates-mal-groupees": "B3-01-A2-09-COURS-TCD",
       "graphique-sans-question": "B3-01-A3-03-COURS-GRAPHIQUES",
       "axe-tronque-lu-comme-ecart": "B3-01-A3-03-COURS-GRAPHIQUES",
@@ -6008,7 +6033,7 @@
                   {
                     "kind": "property",
                     "title": "Nettoyer à côté, jamais dessus",
-                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait."
+                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle lui-même figé en valeurs : c’est une formule, il se recalculerait sur les données corrigées."
                   },
                   {
                     "kind": "example",

@@ -7,6 +7,7 @@ const TITRE_PUBLIC = /Titre public : « (.+) »$/;
 const PREMIER_CODE = /`([^`]+)`/;
 const RENDU_V2 = /v2 `([^`]+)`/;
 const TITRE_DES_REMEDIATIONS = 'Concepts, confusions et remédiations';
+const TITRE_DES_VALEURS = 'Les valeurs attendues';
 const EMPREINTE_DU_NOM = '<empreinte>';
 const CARACTERES_SPECIAUX = /[.*+?^${}()|[\]\\]/g;
 
@@ -132,6 +133,16 @@ export function remediationsDuDocument(
         return [premierCode(confusion), cible];
       }),
   );
+}
+
+export function lignesDesValeursAttendues(document: string): string[][] {
+  return lignesDeSection(
+    document,
+    enteteDeSection(document, TITRE_DES_VALEURS),
+    ['### ', '## '],
+  )
+    .filter((ligne) => ligne.startsWith('| `'))
+    .map(cellules);
 }
 
 export function mediasDuDocument(document: string): MediaDuDocument[] {

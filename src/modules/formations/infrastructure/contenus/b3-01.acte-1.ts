@@ -309,7 +309,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'client-id',
               libelle: 'client_id',
               categorie: 'identifiant',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'cle-prise-pour-categorie',
               justification:
                 'la clé qui renvoie à un client de l’onglet Clients',
             },
@@ -324,7 +324,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'produit-id',
               libelle: 'produit_id',
               categorie: 'identifiant',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'cle-prise-pour-categorie',
               justification: 'la clé qui renvoie à l’onglet Produits',
             },
             {
@@ -608,7 +608,7 @@ export const ACTE_1: moteur.Acte = [
         {
           kind: 'property',
           title: 'Nettoyer à côté, jamais dessus',
-          text: 'On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait.',
+          text: 'On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle lui-même figé en valeurs : c’est une formule, il se recalculerait sur les données corrigées.',
         },
         {
           kind: 'example',
@@ -822,7 +822,7 @@ export const ACTE_1: moteur.Acte = [
         'Temps : réflexion 1 min · travail 9 min',
         'Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
-        'Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).',
+        'Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; poser le contrôle sur les dates converties (45 par la formule du défi, 39 par DATEVAL sur toute date en texte).',
         'Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).',
       ),
       proprietes: {
@@ -837,7 +837,10 @@ export const ACTE_1: moteur.Acte = [
             'nettoyage',
             'Combien de lignes reste-t-il après la suppression des doublons exacts ?',
             'lignes',
-            ['doublons-supprimes-sur-une-colonne'],
+            [
+              'doublons-supprimes-sur-une-colonne',
+              'en-tete-compte-comme-ligne',
+            ],
           ),
           questionChiffree(
             'b3-01-a1-ca-total',
@@ -874,7 +877,7 @@ export const ACTE_1: moteur.Acte = [
     [
       [
         'b3-01-a1-lignes-uniques',
-        'L’export compte 4 144 lignes, dont 46 exportées deux fois : il en reste 4 098. Dédoublonner sur n_commande seule ne garderait qu’une ligne par commande : 1 618 lignes, et des produits perdus.',
+        'L’export compte 4 144 lignes, dont 46 exportées deux fois : il en reste 4 098. Dédoublonner sur n_commande seule ne garderait qu’une ligne par commande : 1 618 lignes, et des produits perdus. Lire le numéro de la dernière ligne compte aussi l’en-tête : 4 099.',
       ],
       [
         'b3-01-a1-ca-total',
@@ -886,7 +889,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'b3-01-a1-a-verifier',
-        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Pointer le contrôle sur les dates converties par la formule du défi en aurait retiré les 40 dates ISO : 45 lignes. Convertir toute date en texte par DATEVAL en retire aussi 6 des 12 dates venues d’un autre système, lues jour d’abord et prises pour justes : 39.',
+        'La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39.',
       ],
     ],
   ),

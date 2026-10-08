@@ -136,7 +136,7 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
   noteesParType: [4, 18, 3, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 35,
+  remediations: 36,
   options: 12,
   catalogue: [
     'A1-02',
@@ -317,7 +317,7 @@ describe('B3-01 — gardes de la relecture', () => {
     ).toEqual([]);
   });
 
-  it('ne dévoile dans aucune explication un piège d’une question suivante du même écran', () => {
+  it('ne dévoile dans aucune explication un piège reconnaissable d’une question suivante, du même écran ou d’un écran suivant', () => {
     expect(
       piegesDesQuestionsSuivantesDevoilesParLesExplications(
         COURS,
@@ -394,12 +394,18 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A1-07 · diagnostique agence_id rangée parmi les catégories comme une clé prise pour une catégorie', () => {
-    expect(
+  it('A1-07 · diagnostique une clé vers un autre onglet rangée parmi les catégories comme une clé prise pour une catégorie', () => {
+    const confusionDe = (carte: string) =>
       attendusDe('B3-01-A1-07-TRI-COLONNES').find(
-        ({ carteId }) => carteId === 'agence-id',
-      )?.confusionSiErreur,
-    ).toBe('cle-prise-pour-categorie');
+        ({ carteId }) => carteId === carte,
+      )?.confusionSiErreur;
+
+    for (const cle of ['agence-id', 'client-id', 'produit-id']) {
+      expect(confusionDe(cle)).toBe('cle-prise-pour-categorie');
+    }
+    for (const code of ['n-commande', 'commercial-id']) {
+      expect(confusionDe(code)).toBe('identifiant-pris-pour-nombre');
+    }
     expect(remediationDe('cle-prise-pour-categorie')).toBe(
       'B3-01-A1-06-COURS-RELATIONS',
     );
@@ -608,13 +614,10 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
       VALEURS_B3_01['b3-01-a1-a-verifier'] - ANOMALIES_SEMEES.F5,
     );
     expect(aVerifier).toContain(
-      `en aurait retiré les ${ANOMALIES_SEMEES.F5} dates ISO : ${apresLeDefi} lignes`,
+      `Recalculé sur les dates converties, le contrôle perd les ${ANOMALIES_SEMEES.F5} dates ISO : ${apresLeDefi}.`,
     );
     expect(aVerifier).toContain(
-      `Convertir toute date en texte par DATEVAL en retire aussi ${datesMalLues} des ${ANOMALIES_SEMEES.S1} dates venues d’un autre système`,
-    );
-    expect(aVerifier).toContain(
-      `lues jour d’abord et prises pour justes : ${apresDatevalPartout}.`,
+      `DATEVAL sur toute date en texte lui ôte aussi ${datesMalLues} des ${ANOMALIES_SEMEES.S1} dates d’un autre système, lues jour d’abord : ${apresDatevalPartout}.`,
     );
     expect(aVerifier).not.toContain('au format jj/mm/aa');
     expect(aVerifier).not.toContain('corrigé seul des dates douteuses');
@@ -629,14 +632,38 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
       'B3-01-A1-11-COURS-OUTILS',
     );
     expect(texteDe('B3-01-A1-11-COURS-OUTILS')).toContain(
-      'On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait.',
+      'On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle lui-même figé en valeurs : c’est une formule, il se recalculerait sur les données corrigées.',
+    );
+    expect(libelleDeConfusion('controle-apres-correction')).not.toContain(
+      'émetteur',
     );
   });
 
-  it('A2-07 · diagnostique le délai de Strasbourg compté sans retirer le jour de la commande', () => {
+  it('A1-14 · diagnostique les lignes restantes comptées avec l’en-tête, comme le NBVAL de la quarantaine en A3-09', () => {
+    expect(confusionsDeLaChiffree('b3-01-a1-lignes-uniques')).toEqual([
+      'doublons-supprimes-sur-une-colonne',
+      'en-tete-compte-comme-ligne',
+    ]);
+    expect(
+      PIEGES_B3_01['b3-01-a1-lignes-uniques']['en-tete-compte-comme-ligne'],
+    ).toBe(VALEURS_B3_01['b3-01-a1-lignes-uniques'] + 1);
+    expect(explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE')[0]).toContain(
+      'Lire le numéro de la dernière ligne compte aussi l’en-tête : 4 099.',
+    );
+  });
+
+  it('A2-07 · diagnostique le délai compté sans retirer le jour de la commande, et ne le dit qu’à la correction des retards, la dernière qu’il fausse', () => {
+    const [mediane, retards] = explicationsDe(
+      'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+    );
+
     expect(confusionsDeLaChiffree('b3-01-a2-delai-strasbourg')).toEqual([
       'jours-calendaires-pour-ouvres',
       'valeur-extreme-ignoree',
+      'bornes-comptees-dans-le-delai',
+    ]);
+    expect(confusionsDeLaChiffree('b3-01-a2-retards')).toEqual([
+      'jours-calendaires-pour-ouvres',
       'bornes-comptees-dans-le-delai',
     ]);
     expect(
@@ -644,8 +671,53 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
         'bornes-comptees-dans-le-delai'
       ],
     ).toBe(VALEURS_B3_01['b3-01-a2-delai-strasbourg'] + 1);
-    expect(explicationsDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')[0]).toContain(
-      'Sans le − 1, le jour de la commande compte : 9.',
+    expect(mediane).not.toContain('Sans le − 1');
+    expect(retards).toContain(
+      'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5), soit quand son delai dépasse 5 : 99 lignes commandées en 2026.',
+    );
+    expect(retards).toContain(
+      'Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère ">5", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours.',
+    );
+  });
+
+  it('A2-07 et A3-09 · diagnostiquent le taux de marque pris sur toute la table, et ne le disent qu’à la dernière correction qu’il fausse', () => {
+    const [, ca2026, margeMarseille] = explicationsDe(
+      'B3-01-A3-09-ATELIER-DASHBOARD',
+    );
+
+    for (const id of ['b3-01-a2-taux-marge', 'b3-01-a3-marge-marseille']) {
+      expect(confusionsDeLaChiffree(id)).toEqual([
+        'moyenne-simple-des-taux',
+        'marque-confondue-avec-marge',
+        'periode-mal-delimitee',
+      ]);
+    }
+    expect(explicationsDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')[2]).toContain(
+      'Sur toute la table, 2025 compris, le même rapport donne 32,3 %.',
+    );
+    expect(ca2026).not.toContain('Toute la table');
+    expect(margeMarseille).toContain(
+      'Toute la table, 2025 compris, mêle deux années : 1 313 125 € de CA à la deuxième question, 29,8 % de taux de marque ici.',
+    );
+  });
+
+  it('A2-11 · diagnostique la part lue en % de la colonne ou sans le filtre annee, et ne dit le filtre oublié qu’à la correction du trimestre', () => {
+    const [part, trimestre] = explicationsDe('B3-01-A2-11-ATELIER-TCD');
+
+    expect(confusionsDeLaChiffree('b3-01-a2-part-info-rennes')).toEqual([
+      'pourcentage-du-mauvais-total',
+      'pourcentage-du-total-de-colonne',
+      'periode-mal-delimitee',
+    ]);
+    expect(remediationDe('pourcentage-du-total-de-colonne')).toBe(
+      'B3-01-A2-09-COURS-TCD',
+    );
+    expect(part).toContain(
+      'en % du total de la colonne, 3,8 % : la part de Rennes dans l’informatique du réseau.',
+    );
+    expect(part).not.toContain('filtre');
+    expect(trimestre).toContain(
+      'Oublié au premier TCD, le filtre annee mêle à l’inverse 2025 et 2026 : l’informatique y pèse 33,9 % du CA de Rennes.',
     );
   });
 

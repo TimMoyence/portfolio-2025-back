@@ -53,6 +53,11 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       'Le contrat donnerait 99 retards.',
       '99 de b3-01-a2-retards dans B3-01-A2-04-ATELIER-RECHERCHE',
     ],
+    [
+      'b3-01-a2-part-info-rennes',
+      'Le trimestre le plus fort, T4 2025, pèse le plus.',
+      'T4 2025 de b3-01-a2-meilleur-trimestre dans B3-01-A2-11-ATELIER-TCD',
+    ],
   ])(
     'valeursDevoileesParLesExplications · voit sous %s une valeur suivante, de l’écran ou d’un écran suivant : « %s »',
     (reference, ajout, alerte) => {
@@ -90,6 +95,11 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       'b3-01-a2-ca-ouest',
       'En jours calendaires, on compterait 481 retards.',
       '(jours-calendaires-pour-ouvres) de b3-01-a2-retards dans B3-01-A2-04-ATELIER-RECHERCHE',
+    ],
+    [
+      'b3-01-a2-ca-ouest',
+      'Rapporté à tout l’objectif annuel, Rennes tomberait à 33,8 %.',
+      '33,8 (objectif-annuel-pour-cumul) de b3-01-a3-atteinte-rennes dans B3-01-A2-04-ATELIER-RECHERCHE',
     ],
   ])(
     'piegesDesQuestionsSuivantesDevoilesParLesExplications · voit sous %s le piège d’une question suivante, de l’écran ou d’un écran suivant : « %s »',
@@ -145,14 +155,41 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       piegesPartagesDevoilesParLesExplications(
         allonger('b3-01-a2-ca-rennes-info', 'Sans borne de date : 27 862 €.'),
         PIEGES_B3_01,
-      ).join(' | '),
-    ).toContain('(periode-mal-delimitee) dans B3-01-A2-04-ATELIER-RECHERCHE');
+      ),
+    ).toEqual([
+      '27 862 (periode-mal-delimitee) dans B3-01-A2-04-ATELIER-RECHERCHE (b3-01-a2-ca-rennes-info)',
+    ]);
     expect(
       piegesPartagesDevoilesParLesExplications(
         allonger('b3-01-a2-ca-rennes-info', 'Écart : −27 862 €.'),
         negatifs,
-      ).join(' | '),
-    ).toContain('(periode-mal-delimitee) dans B3-01-A2-04-ATELIER-RECHERCHE');
+      ),
+    ).toEqual([
+      '-27 862 (periode-mal-delimitee) dans B3-01-A2-04-ATELIER-RECHERCHE (b3-01-a2-ca-rennes-info)',
+    ]);
+  });
+
+  it('piegesPartagesDevoilesParLesExplications · voit dans l’écran un piège entier dès 10, et laisse en deçà les entiers trop communs pour être reconnus', () => {
+    expect(
+      piegesPartagesDevoilesParLesExplications(
+        allonger(
+          'b3-01-a2-delai-strasbourg',
+          'En jours calendaires, la médiane donnerait 11 jours.',
+        ),
+        PIEGES_B3_01,
+      ),
+    ).toEqual([
+      '11 (jours-calendaires-pour-ouvres) dans B3-01-A2-07-ATELIER-DELAIS-MARGE (b3-01-a2-delai-strasbourg)',
+    ]);
+    expect(
+      piegesPartagesDevoilesParLesExplications(
+        allonger(
+          'b3-01-a2-delai-strasbourg',
+          'Sans le − 1, on lirait 9 jours.',
+        ),
+        PIEGES_B3_01,
+      ),
+    ).toEqual([]);
   });
 
   it.each([
@@ -174,6 +211,14 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       ).toContain(alerte);
     },
   );
+
+  it('valeursAuCatalogue · ignore un écran verrouillé, dont seul le titre est servi', () => {
+    expect(
+      COURS.ecrans.find(({ id }) => id === 'B3-01-A2-08-VOTE-NOUVELLES-LIGNES')
+        ?.titre,
+    ).toBe('Vote : 200 lignes de plus');
+    expect(valeursAuCatalogue(COURS, [200])).toEqual([]);
+  });
 
   it('valeursAuCatalogue · voit une valeur écrite au catalogue, sans la confondre avec une valeur plus longue', () => {
     expect(valeursAuCatalogue(COURS, [0.15, 0.1])).toEqual([

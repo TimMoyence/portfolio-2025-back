@@ -474,7 +474,11 @@ export const ACTE_3: moteur.Acte = [
             'indicateur-statistique',
             'Quel est le taux de marque de Marseille (AG09), marge ÷ CA HT, de janvier à septembre 2026 ?',
             '%',
-            ['moyenne-simple-des-taux', 'marque-confondue-avec-marge'],
+            [
+              'moyenne-simple-des-taux',
+              'marque-confondue-avec-marge',
+              'periode-mal-delimitee',
+            ],
           ),
           questionChiffree(
             'b3-01-a3-quarantaine',
@@ -501,11 +505,11 @@ export const ACTE_3: moteur.Acte = [
       ],
       [
         'b3-01-a3-ca-2026',
-        'SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €. Toute la table, 2025 compris, donne 1 313 125 € : deux années mêlées dans un seul indicateur.',
+        'SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €.',
       ],
       [
         'b3-01-a3-marge-marseille',
-        'Marge de Marseille ÷ CA HT de Marseille, de janvier à septembre 2026 : un taux de marque de 26,9 %. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses. Divisée par le coût d’achat, la même marge donne 36,9 % : c’est le taux de marge, un autre indicateur.',
+        'Marge de Marseille ÷ CA HT de Marseille, de janvier à septembre 2026 : un taux de marque de 26,9 %. Toute la table, 2025 compris, mêle deux années : 1 313 125 € de CA à la deuxième question, 29,8 % de taux de marque ici. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses. Divisée par le coût d’achat, la même marge donne 36,9 % : c’est le taux de marge, un autre indicateur.',
       ],
       [
         'b3-01-a3-quarantaine',

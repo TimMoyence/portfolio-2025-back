@@ -310,6 +310,10 @@ function valeursDeLActe1(jeu: JeuB301) {
         'doublons-supprimes-sur-une-colonne': distinctes(
           colonne(brutes, 'n_commande'),
         ),
+        'en-tete-compte-comme-ligne': nbvalDeLaPremiereColonne({
+          ...ongletDe(jeu.brut, 'Commandes'),
+          lignes: uniques,
+        }),
       },
       'b3-01-a1-ca-total': {
         'texte-pris-pour-nombre': euros(somme(colonne(uniques, 'ca_ht'))),
@@ -425,14 +429,26 @@ function valeursDesActes2Et3(jeu: JeuB301) {
           de2026,
           (vente) => vente.livraison > vente.date + DELAI_PROMIS,
         ).length,
+        'bornes-comptees-dans-le-delai': filtrer(
+          de2026,
+          (vente) => nbJoursOuvres(vente.date, vente.livraison) > DELAI_PROMIS,
+        ).length,
       },
       'b3-01-a2-taux-marge': {
         'moyenne-simple-des-taux': pourcent(moyenneDesTaux(de2026)),
         'marque-confondue-avec-marge': pourcent(tauxDeMarge(de2026)),
+        'periode-mal-delimitee': pourcent(tauxDeMarque(ventes)),
       },
       'b3-01-a2-part-info-rennes': {
         'pourcentage-du-mauvais-total': pourcent(
           caDe(informatiqueDeRennes2026) / caDe(de2026),
+        ),
+        'pourcentage-du-total-de-colonne': pourcent(
+          caDe(informatiqueDeRennes2026) /
+            caDe(filtrer(de2026, (vente) => vente.categorie === INFORMATIQUE)),
+        ),
+        'periode-mal-delimitee': pourcent(
+          caDe(informatiqueDeRennes) / caDe(filtrer(ventes, deLAgence(RENNES))),
         ),
       },
       'b3-01-a3-agences-sous-objectif': {
@@ -455,6 +471,9 @@ function valeursDesActes2Et3(jeu: JeuB301) {
       'b3-01-a3-marge-marseille': {
         'moyenne-simple-des-taux': pourcent(moyenneDesTaux(deMarseille2026)),
         'marque-confondue-avec-marge': pourcent(tauxDeMarge(deMarseille2026)),
+        'periode-mal-delimitee': pourcent(
+          tauxDeMarque(filtrer(ventes, deLAgence(MARSEILLE))),
+        ),
       },
       'b3-01-a3-quarantaine': {
         'en-tete-compte-comme-ligne': nbvalDeLaPremiereColonne(

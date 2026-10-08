@@ -10,6 +10,10 @@ import {
   supprEspace,
 } from '../../../../../test/helpers/cours-b3-01/excel';
 import {
+  lignesDesValeursAttendues,
+  lireConception,
+} from '../../../../../test/helpers/conception-de-cours';
+import {
   ANOMALIES_SEMEES,
   GRAINE_B3_01,
   genererJeuB301,
@@ -130,6 +134,13 @@ const lignesDe = (agence: string, annee: number): Ligne[] =>
   );
 const distinctesCommeExcel = (textes: readonly string[]): number =>
   new Set(textes.map((texte) => texte.toLocaleUpperCase('fr'))).size;
+const sansCode = (cellule: string): string => cellule.replaceAll('`', '');
+const valeurDuDocument = (cellule: string): number | string => {
+  const nombre = Number(
+    cellule.replaceAll(/\s/gu, '').replace(',', '.').replace('−', '-'),
+  );
+  return Number.isNaN(nombre) ? cellule : nombre;
+};
 
 describe('jeu Norvane du B3-01', () => {
   it('reproduit le même jeu à partir de la même graine', () => {
@@ -500,6 +511,41 @@ describe('jeu Norvane du B3-01', () => {
       pieges: PIEGES_B3_01,
       histoires: HISTOIRES_B3_01,
     });
+  });
+
+  it('reporte au § 5.1 de la conception chaque valeur attendue et chaque piège, à sa valeur', () => {
+    const lignes = lignesDesValeursAttendues(
+      lireConception('cours-b3-01-conception.md'),
+    );
+    const valeurs = lignes
+      .filter((cellules) => cellules.length === 3)
+      .map(([question, , valeur]) => [
+        sansCode(question),
+        valeurDuDocument(valeur),
+      ]);
+    const pieges = lignes
+      .filter((cellules) => cellules.length === 4)
+      .map(([question, confusion, , valeur]) => [
+        `${sansCode(question)} › ${sansCode(confusion)}`,
+        valeurDuDocument(valeur),
+      ]);
+
+    expect(Object.fromEntries(valeurs)).toEqual(VALEURS_B3_01);
+    expect(pieges).toHaveLength(
+      Object.values(PIEGES_B3_01).flatMap((parConfusion) =>
+        Object.keys(parConfusion),
+      ).length,
+    );
+    expect(Object.fromEntries(pieges)).toEqual(
+      Object.fromEntries(
+        Object.entries(PIEGES_B3_01).flatMap(([question, parConfusion]) =>
+          Object.entries(parConfusion).map(([confusion, piege]) => [
+            `${question} › ${confusion}`,
+            piege,
+          ]),
+        ),
+      ),
+    );
   });
 
   it.each(QUESTIONS_CHIFFREES_B3_01)(

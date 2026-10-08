@@ -34,6 +34,7 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'marque-confondue-avec-marge': 'B3-01-A2-06-COURS-TEMPS-STATS',
   'plage-fixe-au-lieu-de-tableau': 'B3-01-A2-09-COURS-TCD',
   'pourcentage-du-mauvais-total': 'B3-01-A2-09-COURS-TCD',
+  'pourcentage-du-total-de-colonne': 'B3-01-A2-09-COURS-TCD',
   'tcd-filtre-ou-dates-mal-groupees': 'B3-01-A2-09-COURS-TCD',
   'graphique-sans-question': 'B3-01-A3-03-COURS-GRAPHIQUES',
   'axe-tronque-lu-comme-ecart': 'B3-01-A3-03-COURS-GRAPHIQUES',

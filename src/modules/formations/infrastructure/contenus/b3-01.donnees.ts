@@ -97,7 +97,10 @@ export const VALEURS_B3_01: ValeursAttenduesB301 = {
 
 export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a1-lignes-commande': { 'commandes-comptees-pour-lignes': 1 },
-  'b3-01-a1-lignes-uniques': { 'doublons-supprimes-sur-une-colonne': 1618 },
+  'b3-01-a1-lignes-uniques': {
+    'doublons-supprimes-sur-une-colonne': 1618,
+    'en-tete-compte-comme-ligne': 4099,
+  },
   'b3-01-a1-ca-total': { 'texte-pris-pour-nombre': 1_286_319 },
   'b3-01-a1-villes': { 'espaces-non-supprimes': 83 },
   'b3-01-a1-a-verifier': {
@@ -118,12 +121,20 @@ export const PIEGES_B3_01: PiegesB301 = {
     'valeur-extreme-ignoree': 10,
     'bornes-comptees-dans-le-delai': 9,
   },
-  'b3-01-a2-retards': { 'jours-calendaires-pour-ouvres': 481 },
+  'b3-01-a2-retards': {
+    'jours-calendaires-pour-ouvres': 481,
+    'bornes-comptees-dans-le-delai': 284,
+  },
   'b3-01-a2-taux-marge': {
     'moyenne-simple-des-taux': 35.4,
     'marque-confondue-avec-marge': 47,
+    'periode-mal-delimitee': 32.3,
   },
-  'b3-01-a2-part-info-rennes': { 'pourcentage-du-mauvais-total': 1.5 },
+  'b3-01-a2-part-info-rennes': {
+    'pourcentage-du-mauvais-total': 1.5,
+    'pourcentage-du-total-de-colonne': 3.8,
+    'periode-mal-delimitee': 33.9,
+  },
   'b3-01-a3-agences-sous-objectif': { 'objectif-annuel-pour-cumul': 12 },
   'b3-01-a3-atteinte-rennes': { 'objectif-annuel-pour-cumul': 33.8 },
   'b3-01-a3-evolution': { 'evolution-sur-annee-pleine': -22.1 },
@@ -131,6 +142,7 @@ export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a3-marge-marseille': {
     'moyenne-simple-des-taux': 28.7,
     'marque-confondue-avec-marge': 36.9,
+    'periode-mal-delimitee': 29.8,
   },
   'b3-01-a3-quarantaine': { 'en-tete-compte-comme-ligne': 61 },
 };

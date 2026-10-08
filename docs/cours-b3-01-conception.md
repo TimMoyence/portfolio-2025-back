@@ -327,8 +327,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `client_id`, `commercial_id`, `produit_id`, `agence_id`), date (`date_commande`,
   `date_livraison`), catégorie (`ville`), numérique (`quantite`, `prix_unitaire_ht`, `remise`,
   `ca_ht`), booléen (`facturee`). Pièges `identifiant-pris-pour-nombre` (`n_commande`, qui
-  contient des chiffres, pris pour une mesure), `type-de-variable-confondu` (dates, mesures et
-  booléen), `cle-prise-pour-categorie` (`agence_id` rangée parmi les catégories),
+  contient des chiffres, pris pour une mesure, et `commercial_id`), `type-de-variable-confondu`
+  (dates, mesures et booléen), `cle-prise-pour-categorie` (`agence_id`, `client_id` ou
+  `produit_id`, clés vers un autre onglet, rangées parmi les catégories),
   `libelle-pris-pour-cle` (`ville` rangée parmi les identifiants).
 
 #### A1-08 · `B3-01-A1-08-ATELIER-GRANULARITE` — 4 min · `questionnaire` · séance
@@ -378,7 +379,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   formules décale ses références), colonne `controle` avec `SI` et `OU`. `NOMPROPRE` s'illustre
   sur « BORDEAUX », sans référence de cellule : E2 vaut « Vannes ». `property` : on nettoie dans une nouvelle
   colonne, jamais sur la donnée brute, et on ne colle en valeurs par-dessus la donnée brute
-  qu'une fois le contrôle fait ; encadré Power Query (Windows depuis Excel 2016, ou 365 sur
+  qu'une fois le contrôle lui-même figé en valeurs (formule, il se recalculerait sur les données
+  corrigées) ; encadré Power Query (Windows depuis Excel 2016, ou 365 sur
   Mac) : il refait le nettoyage d'un clic au prochain export.
 
 #### A1-12 · `B3-01-A1-12-EXEMPLE-NETTOYAGE` — 3 min · `fp-worked` · séance
@@ -424,16 +426,17 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   dédoublonnée (44 des 46 doublons sont au-dessus) : la formule la laisse en texte ; `DATEVAL`
   lirait « 08/04/26 » comme le 8 avril, la livraison est du 7 août, la commande date sans doute du
   4 août, et seul l'émetteur peut le dire.
-- `b3-01-a1-lignes-uniques` : nombre de lignes après suppression des doublons exacts ; piège
-  `doublons-supprimes-sur-une-colonne`.
+- `b3-01-a1-lignes-uniques` : nombre de lignes après suppression des doublons exacts ; pièges
+  `doublons-supprimes-sur-une-colonne` et `en-tete-compte-comme-ligne` (numéro de la dernière
+  ligne, ou `NBVAL` de la colonne : 4 099).
 - `b3-01-a1-ca-total` : CA total HT, en euros, après dédoublonnage et conversion ; piège
   `texte-pris-pour-nombre`.
 - `b3-01-a1-villes` : nombre de villes distinctes après normalisation ; piège
   `espaces-non-supprimes` (le comptage d'Excel ignore la casse : seules les espaces en trop
   séparent deux écritures d'une même ville).
 - `b3-01-a1-a-verifier` : nombre de lignes « À vérifier » ; pièges
-  `controle-apres-correction` (contrôle posé sur les dates converties par la formule du défi : les
-  40 dates ISO sortent du contrôle, il reste 45 lignes) et `suspect-corrige-sans-validation`
+  `controle-apres-correction` (contrôle recalculé sur les dates converties par la formule du
+  défi : les 40 dates ISO sortent du contrôle, il reste 45 lignes) et `suspect-corrige-sans-validation`
   (toute date en texte convertie par `DATEVAL` : sortent aussi 6 des 12 dates d'un autre système,
   écrites mois d'abord et lues jour d'abord ; il ne reste que 39 lignes). La correction désigne le vote A1-04
   par son titre, « le fichier et Dupont, Bordeaux » : le premier vote de la séance est le rappel.
@@ -539,15 +542,19 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Défi : `JOURSEM` pour la part des commandes passées le vendredi ; `DATEDIF` pour l'ancienneté
   des clients en mois.
 - `b3-01-a2-delai-strasbourg` : délai médian de livraison de Strasbourg en 2026, en jours
-  ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`. Sa correction
-  donne la médiane et la moyenne piégée, pas la médiane en jours calendaires : ce piège est
-  aussi le seul de la question suivante.
+  ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`,
+  `bornes-comptees-dans-le-delai` (médiane de `NB.JOURS.OUVRES` sans le − 1 : 9). Sa correction
+  donne la médiane et la moyenne piégée, pas la médiane en jours calendaires ni sans le − 1 :
+  ces deux pièges sont aussi ceux de la question suivante.
 - `b3-01-a2-retards` : nombre de lignes 2026 livrées après la promesse (commande + 5 jours
-  ouvrés, `SERIE.JOUR.OUVRE`) ; piège `jours-calendaires-pour-ouvres`. Sa correction, révélée
-  après celle de la médiane, donne ce piège pour les deux questions (481 lignes, 11 jours).
+  ouvrés, `SERIE.JOUR.OUVRE`, ou `delai` > 5) ; pièges `jours-calendaires-pour-ouvres` et
+  `bornes-comptees-dans-le-delai` (`delai` sans le − 1 au critère `">5"` : 284 lignes, livrées
+  le jour promis comprises). Sa correction, révélée après celle de la médiane, donne ces deux
+  pièges pour les deux questions (481 lignes et 11 jours, 284 lignes et 9 jours).
 - `b3-01-a2-taux-marge` : taux de marque du réseau (marge ÷ CA HT), janvier à septembre 2026,
-  en % ; pièges `moyenne-simple-des-taux` et `marque-confondue-avec-marge` (marge ÷ coût
-  d'achat). L'identifiant garde son nom d'origine.
+  en % ; pièges `moyenne-simple-des-taux`, `marque-confondue-avec-marge` (marge ÷ coût
+  d'achat) et `periode-mal-delimitee` (toute la table, 2025 compris : 32,3 %). L'identifiant
+  garde son nom d'origine.
 
 #### A2-08 · `B3-01-A2-08-VOTE-NOUVELLES-LIGNES` — 2 min · `fp-vote` · séance
 
@@ -585,7 +592,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Essentiel : tableau structuré, TCD région × trimestre, regroupement par trimestre, % du total
   de ligne, segment « catégorie ». Défi : regroupement des remises en tranches de 5 points.
 - `b3-01-a2-part-info-rennes` : part de l'informatique dans le CA de Rennes de janvier à
-  septembre 2026, en % ; piège `pourcentage-du-mauvais-total`.
+  septembre 2026, en % ; pièges `pourcentage-du-mauvais-total` (% du total général : 1,5),
+  `pourcentage-du-total-de-colonne` (% du total de la colonne : 3,8) et `periode-mal-delimitee`
+  (filtre `annee` oublié : 33,9). Ce dernier ne s'explique qu'à la correction du trimestre :
+  le dire plus tôt soufflerait le piège du filtre de la question suivante.
 - `b3-01-a2-meilleur-trimestre` (vote noté) : le trimestre au CA le plus élevé du réseau, parmi
   les sept trimestres (T4 2025) ; pièges `tcd-filtre-ou-dates-mal-groupees`, remédiés vers
   A2-09 : T2 2026 (le filtre
@@ -714,7 +724,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `b3-01-a3-ca-2026` : CA HT cumulé de janvier à septembre 2026 ; piège
   `periode-mal-delimitee` (toute la table, 2025 compris).
 - `b3-01-a3-marge-marseille` : taux de marque de Marseille (marge ÷ CA HT) de janvier à
-  septembre 2026, en % ; pièges `moyenne-simple-des-taux` et `marque-confondue-avec-marge`.
+  septembre 2026, en % ; pièges `moyenne-simple-des-taux`, `marque-confondue-avec-marge` et
+  `periode-mal-delimitee` (TCD de la marge sans filtre d'année : 29,8 %). Cette période mal
+  délimitée, commune avec la question précédente, ne s'explique qu'ici.
 - `b3-01-a3-quarantaine` : nombre de lignes de données, hors en-tête, de l'onglet `Quarantaine` ;
   piège `en-tete-compte-comme-ligne` (61 : `NBVAL` sur toute la colonne A compte l'en-tête),
   remédié vers A1-05. La correction explique l'écart avec A1-14 : 85 lignes « À vérifier », moins
@@ -921,6 +933,7 @@ Les valeurs-pièges sont recalculées de la même façon, en reproduisant l'erre
 | -------------------------------- | ------------------------------------ | ---------------------------------------------------------------------- | --------: |
 | `b3-01-a1-lignes-commande`       | `commandes-comptees-pour-lignes`     | commandes distinctes de C-10234 au lieu de ses lignes                  |         1 |
 | `b3-01-a1-lignes-uniques`        | `doublons-supprimes-sur-une-colonne` | doublons supprimés sur `n_commande` seule                              |     1 618 |
+| `b3-01-a1-lignes-uniques`        | `en-tete-compte-comme-ligne`         | `NBVAL` de la colonne A de la copie dédoublonnée : l'en-tête compté    |     4 099 |
 | `b3-01-a1-ca-total`              | `texte-pris-pour-nombre`             | `SOMME` qui ignore les montants restés en texte                        | 1 286 319 |
 | `b3-01-a1-villes`                | `espaces-non-supprimes`              | villes distinctes sans `SUPPRESPACE`, casse ignorée                    |        83 |
 | `b3-01-a1-a-verifier`            | `suspect-corrige-sans-validation`    | dates F5 et S1 converties par `DATEVAL` avant le contrôle              |        39 |
@@ -932,16 +945,22 @@ Les valeurs-pièges sont recalculées de la même façon, en reproduisant l'erre
 | `b3-01-a2-ca-ouest`              | `periode-mal-delimitee`              | CA de la région Ouest sur toutes les dates                             |   188 908 |
 | `b3-01-a2-delai-strasbourg`      | `jours-calendaires-pour-ouvres`      | médiane de `date_livraison − date_commande`                            |        11 |
 | `b3-01-a2-delai-strasbourg`      | `valeur-extreme-ignoree`             | moyenne au lieu de la médiane, arrondie à l'entier demandé             |        10 |
+| `b3-01-a2-delai-strasbourg`      | `bornes-comptees-dans-le-delai`      | médiane de `NB.JOURS.OUVRES(date_commande;date_livraison)`, sans − 1   |         9 |
 | `b3-01-a2-retards`               | `jours-calendaires-pour-ouvres`      | livraison après `date_commande + 5`                                    |       481 |
+| `b3-01-a2-retards`               | `bornes-comptees-dans-le-delai`      | `NB.JOURS.OUVRES` sans − 1 au critère `">5"`, 2026                     |       284 |
 | `b3-01-a2-taux-marge`            | `moyenne-simple-des-taux`            | moyenne des taux de marque des lignes                                  |      35,4 |
 | `b3-01-a2-taux-marge`            | `marque-confondue-avec-marge`        | marge ÷ coût d'achat (`quantite × cout_unitaire`), 2026                |      47,0 |
+| `b3-01-a2-taux-marge`            | `periode-mal-delimitee`              | marge ÷ CA HT de toute la table, 2025 compris                          |      32,3 |
 | `b3-01-a2-part-info-rennes`      | `pourcentage-du-mauvais-total`       | CA Informatique de AG06 ÷ CA du réseau                                 |       1,5 |
+| `b3-01-a2-part-info-rennes`      | `pourcentage-du-total-de-colonne`    | CA Informatique de AG06 ÷ CA Informatique du réseau                    |       3,8 |
+| `b3-01-a2-part-info-rennes`      | `periode-mal-delimitee`              | CA Informatique de AG06 ÷ CA de AG06, toutes dates                     |      33,9 |
 | `b3-01-a3-agences-sous-objectif` | `objectif-annuel-pour-cumul`         | CA 2026 comparé à tous les objectifs de l'agence (21 mois)             |        12 |
 | `b3-01-a3-atteinte-rennes`       | `objectif-annuel-pour-cumul`         | CA 2026 de AG06 ÷ tous ses objectifs (21 mois)                         |      33,8 |
 | `b3-01-a3-evolution`             | `evolution-sur-annee-pleine`         | CA janvier-septembre 2026 ÷ CA de toute l'année 2025 − 1               |     −22,1 |
 | `b3-01-a3-ca-2026`               | `periode-mal-delimitee`              | CA de toute la table, janvier 2025 à septembre 2026                    | 1 313 125 |
 | `b3-01-a3-marge-marseille`       | `moyenne-simple-des-taux`            | moyenne des taux de marque des lignes de AG09                          |      28,7 |
 | `b3-01-a3-marge-marseille`       | `marque-confondue-avec-marge`        | marge ÷ coût d'achat de AG09, janvier à septembre 2026                 |      36,9 |
+| `b3-01-a3-marge-marseille`       | `periode-mal-delimitee`              | marge ÷ CA HT de AG09 sur toute la table, 2025 compris                 |      29,8 |
 | `b3-01-a3-quarantaine`           | `en-tete-compte-comme-ligne`         | `NBVAL` sur toute la colonne A de `Quarantaine` : l'en-tête compté     |        61 |
 
 Le spec vérifie aussi les quatre histoires (§ 4.4) sur le jeu généré : Rennes au taux d'atteinte
@@ -962,7 +981,7 @@ l'énoncent.
 `agregation-conditionnelle`, `calcul-sur-dates`, `indicateur-statistique`,
 `tableau-croise-dynamique`, `choix-du-graphique`, `tableau-de-bord`.
 
-**Confusions** : trente et une nouvelles et quatre reprises de la banque B2, qui décrivent déjà la même
+**Confusions** : trente-deux nouvelles et quatre reprises de la banque B2, qui décrivent déjà la même
 erreur (`valeur-extreme-ignoree`, `moyenne-simple-des-taux`, `axe-tronque-lu-comme-ecart`,
 `marque-confondue-avec-marge`). `reference-absolue-ignoree` reste
 distincte de `reference-relative-non-figee` : l'une lit mal le `$` d'une formule recopiée,
@@ -983,7 +1002,7 @@ pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
 | `texte-pris-pour-nombre`                   | nettoyage                 | Additionner une colonne dont des nombres sont du texte.                | B3-01-A1-11-COURS-OUTILS           |
 | `casse-non-normalisee`                     | nettoyage                 | Laisser « Bordeaux » et « BORDEAUX » s'écrire de deux façons.          | B3-01-A1-11-COURS-OUTILS           |
 | `doublons-supprimes-sur-une-colonne`       | nettoyage                 | Dédoublonner sur une seule colonne et perdre des lignes distinctes.    | B3-01-A1-11-COURS-OUTILS           |
-| `controle-apres-correction`                | qualite-des-donnees       | Poser le contrôle sur des données déjà corrigées.                      | B3-01-A1-11-COURS-OUTILS           |
+| `controle-apres-correction`                | qualite-des-donnees       | Lire le contrôle recalculé sur des données déjà corrigées.             | B3-01-A1-11-COURS-OUTILS           |
 | `famille-de-probleme-mal-nommee`           | agregation-conditionnelle | Nommer une seule famille de problème, ou la mauvaise.                  | B3-01-A2-02-FAMILLES               |
 | `plage-recherche-non-figee`                | recherche-dans-une-table  | Recopier une recherche sans figer la table.                            | B3-01-A2-03-COURS-CHERCHER-AGREGER |
 | `critere-mal-ecrit`                        | agregation-conditionnelle | Écrire un critère sans joindre l'opérateur par `&`, ou 15 pour 15 %.   | B3-01-A2-03-COURS-CHERCHER-AGREGER |
@@ -995,6 +1014,7 @@ pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
 | `marque-confondue-avec-marge` (B2-01)      | pourcentage               | Diviser la marge par le coût d'achat pour un taux de marque.           | B3-01-A2-06-COURS-TEMPS-STATS      |
 | `plage-fixe-au-lieu-de-tableau`            | tableau-croise-dynamique  | Construire sur une plage fixe qui ne voit pas les nouvelles lignes.    | B3-01-A2-09-COURS-TCD              |
 | `pourcentage-du-mauvais-total`             | tableau-croise-dynamique  | Afficher le % du total général au lieu du % de la ligne.               | B3-01-A2-09-COURS-TCD              |
+| `pourcentage-du-total-de-colonne`          | tableau-croise-dynamique  | Afficher le % du total de la colonne au lieu du % de la ligne.         | B3-01-A2-09-COURS-TCD              |
 | `tcd-filtre-ou-dates-mal-groupees`         | tableau-croise-dynamique  | Lire un TCD au filtre resté actif ou aux dates groupées sans années.   | B3-01-A2-09-COURS-TCD              |
 | `graphique-sans-question`                  | choix-du-graphique        | Choisir un graphique avant la question à laquelle il répond.           | B3-01-A3-03-COURS-GRAPHIQUES       |
 | `axe-tronque-lu-comme-ecart` (B2-01)       | lecture-graphique         | Juger une évolution à la hauteur des barres sans lire l'axe.           | B3-01-A3-03-COURS-GRAPHIQUES       |
