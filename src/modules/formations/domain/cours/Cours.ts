@@ -231,6 +231,12 @@ export interface SocleHistorique {
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
   readonly correctionSurPlace?: CorrectionSurPlace;
+  readonly pieceJointe?: PieceJointe;
+}
+
+export interface PieceJointe {
+  readonly libelle: string;
+  readonly fichier: string;
 }
 
 export interface ExplicationDeCorrection {

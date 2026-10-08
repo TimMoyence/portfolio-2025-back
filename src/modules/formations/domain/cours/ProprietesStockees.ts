@@ -54,6 +54,16 @@ const cadrageDuRenvoi = z
   .strict()
   .transform(({ extrait }) => (extrait === undefined ? {} : { extrait }));
 
+const FICHIER_DE_PIECE_JOINTE =
+  /^\/assets\/cours\/[a-z0-9-]+\/[A-Za-z0-9_-]+(\.[0-9a-f]{8})?\.(xlsx|csv|pdf)$/;
+
+const pieceJointe = z
+  .object({
+    libelle: texte,
+    fichier: z.string().regex(FICHIER_DE_PIECE_JOINTE),
+  })
+  .strict();
+
 const quizNote = z
   .object({
     id: texte,
@@ -242,6 +252,7 @@ const proprietesRecitStockees = z
     modalite: modalite.optional(),
     renvoi: texte.optional(),
     cadrageDuRenvoi: cadrageDuRenvoi.optional(),
+    pieceJointe: pieceJointe.optional(),
   })
   .strict()
   .superRefine((proprietes, contexte) => {
@@ -278,7 +289,7 @@ const proprietesRecitStockees = z
 
 export type ProprietesRecit = Omit<
   z.output<typeof proprietesRecitStockees>,
-  'modalite' | 'renvoi' | 'cadrageDuRenvoi'
+  'modalite' | 'renvoi' | 'cadrageDuRenvoi' | 'pieceJointe'
 >;
 
 const correctionSurPlace = z
@@ -303,6 +314,7 @@ const communes = {
   renvoi: texte.optional(),
   cadrageDuRenvoi: cadrageDuRenvoi.optional(),
   correctionSurPlace: correctionSurPlace.optional(),
+  pieceJointe: pieceJointe.optional(),
 };
 
 const parametreCurseur = z

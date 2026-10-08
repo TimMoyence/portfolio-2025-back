@@ -17,6 +17,7 @@ import {
   type AuMoinsUn,
   type CorrectionSurPlace,
   type Modalite,
+  type PieceJointe,
   type QuestionVote,
 } from './Cours';
 import {
@@ -267,6 +268,7 @@ interface SocleDEcran {
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
   readonly correctionSurPlace?: CorrectionSurPlace;
+  readonly pieceJointe?: PieceJointe;
 }
 
 type GuideFormateur = NonNullable<Ecran['guide']>;
@@ -277,6 +279,7 @@ interface Communes {
   readonly renvoi?: string;
   readonly cadrageDuRenvoi?: CadrageDuRenvoi;
   readonly correctionSurPlace?: CorrectionSurPlace;
+  readonly pieceJointe?: PieceJointe;
 }
 
 const CLES_COMMUNES: readonly string[] = [
@@ -285,6 +288,7 @@ const CLES_COMMUNES: readonly string[] = [
   'renvoi',
   'cadrageDuRenvoi',
   'correctionSurPlace',
+  'pieceJointe',
 ];
 
 type BriqueDExposition =
@@ -299,7 +303,14 @@ type BriqueDeProductionUnique = 'fp-cardsort' | 'fp-sheet' | 'fp-table-build';
 
 function socleDe(
   ecran: EcranStocke,
-  { modalite, guide, renvoi, cadrageDuRenvoi, correctionSurPlace }: Communes,
+  {
+    modalite,
+    guide,
+    renvoi,
+    cadrageDuRenvoi,
+    correctionSurPlace,
+    pieceJointe,
+  }: Communes,
 ): SocleDEcran {
   return {
     id: ecran.screenId,
@@ -313,6 +324,7 @@ function socleDe(
     ...(renvoi === undefined ? {} : { renvoi }),
     ...(cadrageDuRenvoi === undefined ? {} : { cadrageDuRenvoi }),
     ...(correctionSurPlace === undefined ? {} : { correctionSurPlace }),
+    ...(pieceJointe === undefined ? {} : { pieceJointe }),
   };
 }
 
@@ -347,10 +359,11 @@ function seuilDe(seuil: number | undefined): { readonly seuil?: number } {
 function versEcranDeRecit(
   ecran: Extract<EcranStocke, { readonly brique: 'fp-story' }>,
 ): Ecran {
-  const { modalite, renvoi, cadrageDuRenvoi, ...proprietes } = ecran.proprietes;
+  const { modalite, renvoi, cadrageDuRenvoi, pieceJointe, ...proprietes } =
+    ecran.proprietes;
   const { interaction, guide } = proprietes;
   return {
-    ...socleDe(ecran, { modalite, renvoi, cadrageDuRenvoi }),
+    ...socleDe(ecran, { modalite, renvoi, cadrageDuRenvoi, pieceJointe }),
     brique: ecran.brique,
     proprietes,
     question:

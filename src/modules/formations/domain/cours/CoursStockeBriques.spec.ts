@@ -7,7 +7,9 @@ import {
   buildCasAQuestionsLibres,
   buildContenuPubliable,
   buildCoursDeBriques,
+  buildEcranAPieceJointe,
   buildEcranDeBrique,
+  buildPieceJointe,
   buildProprietesStockees,
   buildProprietesTableDeVerite,
   QUESTIONS_LIBRES_DE_MISSION,
@@ -655,6 +657,57 @@ describe('stockage multi-briques (B1)', () => {
       expect(
         ecran.brique === 'fp-story' && ecran.proprietes,
       ).not.toHaveProperty('renvoi');
+    });
+
+    it.each(['fp-story', 'fp-vote', 'fp-quote', 'questionnaire'])(
+      'porte la pièce jointe d un écran %s hors des propriétés de la brique',
+      (brique) => {
+        const ecran = lireEcran(buildEcranAPieceJointe(brique));
+
+        expect(ecran.pieceJointe).toEqual(buildPieceJointe());
+        expect(
+          'proprietes' in ecran ? ecran.proprietes : {},
+        ).not.toHaveProperty('pieceJointe');
+      },
+    );
+
+    it('accepte un classeur suffixé des huit premiers caractères de son empreinte', () => {
+      const fichier = '/assets/cours/b3-01/B3-01_reprise_acte_2.3f9a1c0e.xlsx';
+
+      expect(
+        lireEcran(
+          buildEcranAPieceJointe('fp-vote', buildPieceJointe({ fichier })),
+        ).pieceJointe?.fichier,
+      ).toBe(fichier);
+    });
+
+    it.each([
+      ['qui remonte d un dossier', '/assets/cours/b3-01/../secret.xlsx'],
+      ['rangé dans un sous-dossier', '/assets/cours/b3-01/reprises/B3-01.xlsx'],
+      [
+        'servi par une autre origine',
+        'https://exemple.fr/assets/cours/b3-01/B3-01.xlsx',
+      ],
+      ['relatif', 'assets/cours/b3-01/B3-01.xlsx'],
+      ['hors des assets des cours', '/assets/images/B3-01.xlsx'],
+      ['exécutable', '/assets/cours/b3-01/B3-01.exe'],
+      ['à macros', '/assets/cours/b3-01/B3-01.xlsm'],
+      ['à l empreinte tronquée', '/assets/cours/b3-01/B3-01_reprise.3f9a.xlsx'],
+    ])('refuse une pièce jointe au fichier %s', (_cas, fichier) => {
+      expect(() =>
+        lireEcran(
+          buildEcranAPieceJointe('fp-vote', buildPieceJointe({ fichier })),
+        ),
+      ).toThrow(ContenuDeCoursInvalideError);
+    });
+
+    it.each([
+      ['sans libellé', buildPieceJointe({ libelle: '' })],
+      ['à la clé inconnue', { ...buildPieceJointe(), taille: 1 }],
+    ])('refuse une pièce jointe %s', (_cas, pieceJointe) => {
+      expect(() =>
+        lireEcran(buildEcranAPieceJointe('fp-story', pieceJointe)),
+      ).toThrow(ContenuDeCoursInvalideError);
     });
 
     it('R3 · porte le cadrage du renvoi hors des propriétés de la brique', () => {
