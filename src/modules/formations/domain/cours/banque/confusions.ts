@@ -573,6 +573,11 @@ const DEFINITIONS = {
     libelle:
       'Afficher un chiffre seul, sans objectif ni comparaison qui dise s’il est bon.',
   },
+  'periode-mal-delimitee': {
+    concept: 'agregation-conditionnelle',
+    libelle:
+      'Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);

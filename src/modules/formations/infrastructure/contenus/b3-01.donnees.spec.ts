@@ -318,9 +318,10 @@ describe('jeu Norvane du B3-01', () => {
   });
 
   it.each(QUESTIONS_CHIFFREES_B3_01)(
-    'écarte chaque piège de %s de la bonne réponse de plus que la tolérance',
+    'donne à %s au moins un piège, écarté de la bonne réponse de plus que la tolérance',
     (question) => {
       const pieges = Object.values(PIEGES_B3_01[question] ?? {});
+      expect(pieges.length).toBeGreaterThan(0);
       for (const piege of pieges) {
         expect(Math.abs(piege - VALEURS_B3_01[question])).toBeGreaterThan(
           TOLERANCES_B3_01[question],

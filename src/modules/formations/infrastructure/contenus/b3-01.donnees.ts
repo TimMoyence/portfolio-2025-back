@@ -30,9 +30,7 @@ export interface ValeursAttenduesB301 extends Readonly<
 }
 
 export type PiegesB301 = Readonly<
-  Partial<
-    Record<QuestionChiffreeB301, Readonly<Partial<Record<ConfusionId, number>>>>
-  >
+  Record<QuestionChiffreeB301, Readonly<Partial<Record<ConfusionId, number>>>>
 >;
 
 export type HistoireB301 =
@@ -93,10 +91,20 @@ export const VALEURS_B3_01: ValeursAttenduesB301 = {
 };
 
 export const PIEGES_B3_01: PiegesB301 = {
+  'b3-01-a1-lignes-commande': { 'lignes-comptees-pour-commandes': 1 },
   'b3-01-a1-lignes-uniques': { 'doublons-supprimes-sur-une-colonne': 1618 },
   'b3-01-a1-ca-total': { 'texte-pris-pour-nombre': 1_286_319 },
   'b3-01-a1-villes': { 'casse-non-normalisee': 83 },
   'b3-01-a1-a-verifier': { 'suspect-corrige-sans-validation': 39 },
+  'b3-01-a2-ca-rennes-info': {
+    'critere-mal-ecrit': 0,
+    'periode-mal-delimitee': 27_862,
+  },
+  'b3-01-a2-remises-marseille': { 'critere-mal-ecrit': 0 },
+  'b3-01-a2-ca-ouest': {
+    'plage-recherche-non-figee': 0,
+    'periode-mal-delimitee': 188_908,
+  },
   'b3-01-a2-delai-strasbourg': {
     'jours-calendaires-pour-ouvres': 11,
     'valeur-extreme-ignoree': 9.5,
@@ -106,8 +114,10 @@ export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a2-part-info-rennes': { 'pourcentage-du-mauvais-total': 1.5 },
   'b3-01-a3-agences-sous-objectif': { 'objectif-annuel-pour-cumul': 12 },
   'b3-01-a3-atteinte-rennes': { 'objectif-annuel-pour-cumul': 33.8 },
+  'b3-01-a3-ca-2026': { 'periode-mal-delimitee': 1_313_125 },
   'b3-01-a3-evolution': { 'evolution-sur-annee-pleine': -22.1 },
   'b3-01-a3-marge-marseille': { 'moyenne-simple-des-taux': 28.7 },
+  'b3-01-a3-quarantaine': { 'suppression-au-lieu-de-signalement': 0 },
 };
 
 export const CLASSEURS_B3_01 = {

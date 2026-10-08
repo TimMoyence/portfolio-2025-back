@@ -42,6 +42,9 @@ const MARSEILLE = 'AG09';
 const STRASBOURG = 'AG12';
 const INFORMATIQUE = 'Informatique';
 const OUEST = 'Ouest';
+const CRITERE_DE_DATE_SANS_ESPERLUETTE = 'DATE(2026;1;1)';
+const REMISE_ECRITE_EN_POINTS = 15;
+const LIGNES_LAISSEES_EN_QUARANTAINE_PAR_UNE_SUPPRESSION = 0;
 
 interface Vente {
   readonly agence: string;
@@ -123,6 +126,15 @@ function ventesDe(jeu: JeuB301): Vente[] {
       coutUnitaire: nombreDe(produit, 'cout_unitaire'),
     };
   });
+}
+
+function regionsTrouveesSansFigerLaTable(jeu: JeuB301): Vente[] {
+  const rangsDesAgences = ongletDe(jeu.reprise1, 'Agences').lignes.map(
+    (agence) => texteDe(agence, 'agence_id'),
+  );
+  return ventesDe(jeu).filter(
+    (vente, rang) => rangsDesAgences.indexOf(vente.agence) >= rang,
+  );
 }
 
 const en2025 = (vente: Vente): boolean =>
@@ -249,11 +261,12 @@ function valeursDeLActe1(jeu: JeuB301) {
   const colonne = (lignes: readonly Ligne[], nom: string): Valeur[] =>
     lignes.map((ligne) => valeurDe(ligne, nom));
   const villes = colonne(uniques, 'ville');
+  const lignesDeLaCommandeTemoin = brutes.filter(
+    (ligne) => valeurDe(ligne, 'n_commande') === COMMANDE_TEMOIN,
+  );
   return {
     attendues: {
-      'b3-01-a1-lignes-commande': brutes.filter(
-        (ligne) => valeurDe(ligne, 'n_commande') === COMMANDE_TEMOIN,
-      ).length,
+      'b3-01-a1-lignes-commande': lignesDeLaCommandeTemoin.length,
       'b3-01-a1-lignes-uniques': uniques.length,
       'b3-01-a1-ca-total': euros(
         somme(colonne(uniques, 'ca_ht').map(montantDe)),
@@ -266,6 +279,11 @@ function valeursDeLActe1(jeu: JeuB301) {
       ).length,
     },
     pieges: {
+      'b3-01-a1-lignes-commande': {
+        'lignes-comptees-pour-commandes': distinctes(
+          colonne(lignesDeLaCommandeTemoin, 'n_commande'),
+        ),
+      },
       'b3-01-a1-lignes-uniques': {
         'doublons-supprimes-sur-une-colonne': distinctes(
           colonne(brutes, 'n_commande'),
@@ -289,10 +307,13 @@ function valeursDesActes2Et3(jeu: JeuB301) {
   const indicateurs = indicateursParAgence(jeu);
   const de2026 = filtrer(ventes, en2026);
   const deRennes2026 = filtrer(de2026, deLAgence(RENNES));
-  const informatiqueDeRennes2026 = filtrer(
-    deRennes2026,
+  const informatiqueDeRennes = filtrer(
+    ventes,
+    deLAgence(RENNES),
     (vente) => vente.categorie === INFORMATIQUE,
   );
+  const informatiqueDeRennes2026 = filtrer(informatiqueDeRennes, en2026);
+  const deLOuest = (vente: Vente): boolean => vente.region === OUEST;
   const delaisDeStrasbourg = filtrer(de2026, deLAgence(STRASBOURG));
   const deMarseille2026 = filtrer(de2026, deLAgence(MARSEILLE));
   const trimestres = Object.entries(caParTrimestre(jeu)).sort(
@@ -312,9 +333,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         deLAgence(MARSEILLE),
         (vente) => vente.remise > SEUIL_DE_REMISE,
       ).length,
-      'b3-01-a2-ca-ouest': euros(
-        caDe(filtrer(de2026, (vente) => vente.region === OUEST)),
-      ),
+      'b3-01-a2-ca-ouest': euros(caDe(filtrer(de2026, deLOuest))),
       'b3-01-a2-delai-strasbourg': mediane(delaisDeStrasbourg.map(delaiOuvre)),
       'b3-01-a2-retards': filtrer(
         de2026,
@@ -334,6 +353,34 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         .length,
     },
     pieges: {
+      'b3-01-a2-ca-rennes-info': {
+        'critere-mal-ecrit': euros(
+          caDe(
+            filtrer(
+              informatiqueDeRennes,
+              (vente) =>
+                comparerCommeExcel(
+                  vente.date,
+                  CRITERE_DE_DATE_SANS_ESPERLUETTE,
+                ) >= 0,
+            ),
+          ),
+        ),
+        'periode-mal-delimitee': euros(caDe(informatiqueDeRennes)),
+      },
+      'b3-01-a2-remises-marseille': {
+        'critere-mal-ecrit': filtrer(
+          ventes,
+          deLAgence(MARSEILLE),
+          (vente) => vente.remise > REMISE_ECRITE_EN_POINTS,
+        ).length,
+      },
+      'b3-01-a2-ca-ouest': {
+        'plage-recherche-non-figee': euros(
+          caDe(filtrer(regionsTrouveesSansFigerLaTable(jeu), deLOuest, en2026)),
+        ),
+        'periode-mal-delimitee': euros(caDe(filtrer(ventes, deLOuest))),
+      },
       'b3-01-a2-delai-strasbourg': {
         'jours-calendaires-pour-ouvres': mediane(
           delaisDeStrasbourg.map((vente) => vente.livraison - vente.date),
@@ -368,6 +415,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
             objectifsDe(jeu, RENNES, toutesLesLignesDObjectif),
         ),
       },
+      'b3-01-a3-ca-2026': { 'periode-mal-delimitee': euros(caDe(ventes)) },
       'b3-01-a3-evolution': {
         'evolution-sur-annee-pleine': pourcent(
           caDe(de2026) / caDe(filtrer(ventes, en2025)) - 1,
@@ -375,6 +423,10 @@ function valeursDesActes2Et3(jeu: JeuB301) {
       },
       'b3-01-a3-marge-marseille': {
         'moyenne-simple-des-taux': pourcent(moyenneDesTaux(deMarseille2026)),
+      },
+      'b3-01-a3-quarantaine': {
+        'suppression-au-lieu-de-signalement':
+          LIGNES_LAISSEES_EN_QUARANTAINE_PAR_UNE_SUPPRESSION,
       },
     },
   };

@@ -330,6 +330,7 @@ const CONFUSIONS_DU_B3_01 = {
   'objectif-annuel-pour-cumul': { concept: 'tableau-de-bord' },
   'evolution-sur-annee-pleine': { concept: 'tableau-de-bord' },
   'kpi-sans-contexte': { concept: 'tableau-de-bord' },
+  'periode-mal-delimitee': { concept: 'agregation-conditionnelle' },
 };
 
 describe('libelleDeConcept', () => {
@@ -513,8 +514,8 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
   });
 
-  it('ajoute en dernier les dix-neuf confusions de données du B3-01', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(115);
+  it('ajoute en dernier les vingt confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(116);
     expect(Object.keys(CONFUSIONS).slice(96)).toEqual(
       Object.keys(CONFUSIONS_DU_B3_01),
     );
