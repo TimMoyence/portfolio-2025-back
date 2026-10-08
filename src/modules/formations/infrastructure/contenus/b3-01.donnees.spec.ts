@@ -530,6 +530,7 @@ describe('jeu Norvane du B3-01', () => {
         valeurDuDocument(valeur),
       ]);
 
+    expect(valeurs).toHaveLength(Object.keys(VALEURS_B3_01).length);
     expect(Object.fromEntries(valeurs)).toEqual(VALEURS_B3_01);
     expect(pieges).toHaveLength(
       Object.values(PIEGES_B3_01).flatMap((parConfusion) =>

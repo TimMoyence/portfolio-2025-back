@@ -32,6 +32,7 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'valeur-extreme-ignoree': 'B3-01-A2-06-COURS-TEMPS-STATS',
   'moyenne-simple-des-taux': 'B3-01-A2-06-COURS-TEMPS-STATS',
   'marque-confondue-avec-marge': 'B3-01-A2-06-COURS-TEMPS-STATS',
+  'mediane-sur-liste-filtree': 'B3-01-A2-06-COURS-TEMPS-STATS',
   'plage-fixe-au-lieu-de-tableau': 'B3-01-A2-09-COURS-TCD',
   'pourcentage-du-mauvais-total': 'B3-01-A2-09-COURS-TCD',
   'pourcentage-du-total-de-colonne': 'B3-01-A2-09-COURS-TCD',

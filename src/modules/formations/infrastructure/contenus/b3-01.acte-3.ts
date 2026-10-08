@@ -250,7 +250,7 @@ export const ACTE_3: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 6 min',
         'Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.',
-        'Piège : comparer neuf mois de ventes à l’objectif de toute la table.',
+        'Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.',
       ),
       proprietes: {
         intitule: 'Exercice 9 — CA et objectif par agence',
@@ -264,14 +264,14 @@ export const ACTE_3: moteur.Acte = [
             'tableau-de-bord',
             'Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé de la même période ?',
             'agences',
-            ['objectif-annuel-pour-cumul'],
+            ['objectif-annuel-pour-cumul', 'periode-mal-delimitee'],
           ),
           questionChiffree(
             'b3-01-a3-atteinte-rennes',
             'tableau-de-bord',
             'Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ?',
             '%',
-            ['objectif-annuel-pour-cumul'],
+            ['objectif-annuel-pour-cumul', 'periode-mal-delimitee'],
           ),
         ],
       },
@@ -291,7 +291,7 @@ export const ACTE_3: moteur.Acte = [
       ],
       [
         'b3-01-a3-atteinte-rennes',
-        'CA de Rennes ÷ objectif cumulé de Rennes, qui additionne ses objectifs mensuels de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %.',
+        'CA de Rennes ÷ objectif cumulé de Rennes, qui additionne ses objectifs mensuels de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %. Sans critère de date, ni sur les ventes ni sur les objectifs, vingt et un mois face à vingt et un mois : 7 agences sous l’objectif, et Rennes à 90,8 %.',
       ],
     ],
   ),

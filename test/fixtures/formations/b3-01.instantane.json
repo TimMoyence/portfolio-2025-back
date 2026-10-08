@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "2d089658b75a06924e5440386d579caff2f931dcd0afeef83faf50ad7c11ef20",
+  "empreinte": "e04841e05fcd84ef69551f036c1059921ebc92b40b6097ab895bc04d7280cbc9",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -2677,7 +2677,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant.\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
+        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3130,7 +3130,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, UNICAR(160) : SUBSTITUE(L2;UNICAR(160);\"\") la retire.\n• S’arrêter sur l’ordre des fonctions : SUPPRESPACE d’abord, NOMPROPRE ensuite ; SUBSTITUE d’abord, CNUM ensuite.\n• Transition : « Avant de nettoyer, classons les anomalies : exercice 3. »",
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, UNICAR(160) : SUBSTITUE(L2;UNICAR(160);\"\") la retire.\n• S’arrêter sur l’ordre des fonctions : SUBSTITUE d’abord, CNUM ensuite. Pour la ville, SUPPRESPACE et NOMPROPRE s’emboîtent dans les deux sens : accepter les deux.\n• Transition : « Avant de nettoyer, classons les anomalies : exercice 3. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3475,7 +3475,7 @@
           },
           {
             "reference": "b3-01-a1-a-verifier",
-            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39."
+            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39."
           }
         ]
       },
@@ -4147,7 +4147,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4166,6 +4166,14 @@
               {
                 "id": "bornes-comptees-dans-le-delai",
                 "libelle": "Prendre NB.JOURS.OUVRES tel quel pour un délai : il compte le jour de départ et le jour d’arrivée, d’où le − 1."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+              },
+              {
+                "id": "mediane-sur-liste-filtree",
+                "libelle": "Calculer MEDIANE sur une liste filtrée : elle compte aussi les lignes masquées, là où AGREGAT ne garde que les lignes visibles."
               }
             ]
           },
@@ -4223,7 +4231,7 @@
         "explications": [
           {
             "reference": "b3-01-a2-delai-strasbourg",
-            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie."
+            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie. Sous un filtre, MEDIANE compte aussi les lignes masquées et rend la médiane de toute la colonne : AGREGAT(12;5;plage) ne garde que les lignes visibles."
           },
           {
             "reference": "b3-01-a2-retards",
@@ -4231,7 +4239,7 @@
           },
           {
             "reference": "b3-01-a2-taux-marge",
-            "texte": "Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. Sur toute la table, 2025 compris, le même rapport donne 32,3 %. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur."
+            "texte": "Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. Sur toute la table, 2025 compris, le même rapport donne 32,3 %. Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur."
           }
         ]
       },
@@ -4485,8 +4493,8 @@
                 "libelle": "Afficher le % du total de la colonne quand la question porte sur la part dans la ligne : la case donne alors le poids de la ligne dans la colonne."
               },
               {
-                "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
+                "id": "tcd-filtre-ou-dates-mal-groupees",
+                "libelle": "Lire un TCD dont un filtre manque ou reste actif, ou dont les dates sont groupées sans les années : il ampute ou mêle les périodes."
               }
             ]
           },
@@ -4496,7 +4504,7 @@
             "confusions": [
               {
                 "id": "tcd-filtre-ou-dates-mal-groupees",
-                "libelle": "Lire un TCD dont un filtre est resté actif ou dont les dates sont groupées sans les années : il ampute ou mêle les périodes."
+                "libelle": "Lire un TCD dont un filtre manque ou reste actif, ou dont les dates sont groupées sans les années : il ampute ou mêle les périodes."
               }
             ]
           }
@@ -4958,7 +4966,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Piège : comparer neuf mois de ventes à l’objectif de toute la table.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4969,6 +4977,10 @@
               {
                 "id": "objectif-annuel-pour-cumul",
                 "libelle": "Comparer un cumul de neuf mois à tous les objectifs de l’agence, sans filtrer la période."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           },
@@ -4979,6 +4991,10 @@
               {
                 "id": "objectif-annuel-pour-cumul",
                 "libelle": "Comparer un cumul de neuf mois à tous les objectifs de l’agence, sans filtrer la période."
+              },
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           }
@@ -5003,7 +5019,7 @@
           },
           {
             "reference": "b3-01-a3-atteinte-rennes",
-            "texte": "CA de Rennes ÷ objectif cumulé de Rennes, qui additionne ses objectifs mensuels de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %."
+            "texte": "CA de Rennes ÷ objectif cumulé de Rennes, qui additionne ses objectifs mensuels de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %. Sans critère de date, ni sur les ventes ni sur les objectifs, vingt et un mois face à vingt et un mois : 7 agences sous l’objectif, et Rennes à 90,8 %."
           }
         ]
       },
@@ -5661,6 +5677,7 @@
       "valeur-extreme-ignoree": "B3-01-A2-06-COURS-TEMPS-STATS",
       "moyenne-simple-des-taux": "B3-01-A2-06-COURS-TEMPS-STATS",
       "marque-confondue-avec-marge": "B3-01-A2-06-COURS-TEMPS-STATS",
+      "mediane-sur-liste-filtree": "B3-01-A2-06-COURS-TEMPS-STATS",
       "plage-fixe-au-lieu-de-tableau": "B3-01-A2-09-COURS-TCD",
       "pourcentage-du-mauvais-total": "B3-01-A2-09-COURS-TCD",
       "pourcentage-du-total-de-colonne": "B3-01-A2-09-COURS-TCD",

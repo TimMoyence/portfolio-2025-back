@@ -278,7 +278,7 @@ export const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 2 min',
         'Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.',
-        'Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant.',
+        'Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).',
       ),
       proprietes: {
         modalite: 'binome',
@@ -317,7 +317,7 @@ export const ACTE_1: moteur.Acte = [
               id: 'commercial-id',
               libelle: 'commercial_id',
               categorie: 'identifiant',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'cle-prise-pour-categorie',
               justification: 'le code du commercial qui a pris la commande',
             },
             {
@@ -669,7 +669,7 @@ export const ACTE_1: moteur.Acte = [
     {
       minutes: 1,
       notes: [
-        'S’arrêter sur l’ordre des fonctions : SUPPRESPACE d’abord, NOMPROPRE ensuite ; SUBSTITUE d’abord, CNUM ensuite.',
+        'S’arrêter sur l’ordre des fonctions : SUBSTITUE d’abord, CNUM ensuite. Pour la ville, SUPPRESPACE et NOMPROPRE s’emboîtent dans les deux sens : accepter les deux.',
         'Transition : « Avant de nettoyer, classons les anomalies : exercice 3. »',
       ],
     },
@@ -889,7 +889,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'b3-01-a1-a-verifier',
-        'La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39.',
+        'La colonne controle marque 85 lignes « À vérifier » : livraisons avant la commande, quantités négatives, commercial absent, dates en texte. Les formules N et O en corrigent 490 autres, le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Recalculé sur les dates converties, le contrôle perd les 40 dates ISO : 45. DATEVAL sur toute date en texte lui ôte aussi 6 des 12 dates d’un autre système, lues jour d’abord : 39.',
       ],
     ],
   ),

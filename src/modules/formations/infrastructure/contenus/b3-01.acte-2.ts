@@ -376,6 +376,8 @@ export const ACTE_2: moteur.Acte = [
               'jours-calendaires-pour-ouvres',
               'valeur-extreme-ignoree',
               'bornes-comptees-dans-le-delai',
+              'periode-mal-delimitee',
+              'mediane-sur-liste-filtree',
             ],
           ),
           questionChiffree(
@@ -403,6 +405,7 @@ export const ACTE_2: moteur.Acte = [
       minutes: 2,
       notes: [
         'Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.',
+        'Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.',
         'Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);"m") donne l’ancienneté en mois au 30 septembre 2026.',
         'Transition : « Et si l’export d’octobre arrive ? Un vote. »',
       ],
@@ -410,7 +413,7 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-delai-strasbourg',
-        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie.',
+        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie. Sous un filtre, MEDIANE compte aussi les lignes masquées et rend la médiane de toute la colonne : AGREGAT(12;5;plage) ne garde que les lignes visibles.',
       ],
       [
         'b3-01-a2-retards',
@@ -418,7 +421,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-taux-marge',
-        'Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. Sur toute la table, 2025 compris, le même rapport donne 32,3 %. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur.',
+        'Marge de la période ÷ CA HT de la période : un taux de marque de 32,0 % de janvier à septembre 2026. Sur toute la table, 2025 compris, le même rapport donne 32,3 %. Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours. La moyenne des taux de chaque ligne donne 35,4 % : une petite ligne très margée y pèse autant qu’une grosse commande. Divisée par le coût d’achat, la même marge donne 47,0 % : c’est le taux de marge, un autre indicateur.',
       ],
     ],
   ),
@@ -586,7 +589,7 @@ export const ACTE_2: moteur.Acte = [
             [
               'pourcentage-du-mauvais-total',
               'pourcentage-du-total-de-colonne',
-              'periode-mal-delimitee',
+              'tcd-filtre-ou-dates-mal-groupees',
             ],
           ),
           moteur.vote(

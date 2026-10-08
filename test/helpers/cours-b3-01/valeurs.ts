@@ -423,6 +423,10 @@ function valeursDesActes2Et3(jeu: JeuB301) {
             nbJoursOuvres(vente.date, vente.livraison),
           ),
         ),
+        'periode-mal-delimitee': mediane(
+          filtrer(ventes, deLAgence(STRASBOURG)).map(delaiOuvre),
+        ),
+        'mediane-sur-liste-filtree': mediane(ventes.map(delaiOuvre)),
       },
       'b3-01-a2-retards': {
         'jours-calendaires-pour-ouvres': filtrer(
@@ -447,7 +451,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
           caDe(informatiqueDeRennes2026) /
             caDe(filtrer(de2026, (vente) => vente.categorie === INFORMATIQUE)),
         ),
-        'periode-mal-delimitee': pourcent(
+        'tcd-filtre-ou-dates-mal-groupees': pourcent(
           caDe(informatiqueDeRennes) / caDe(filtrer(ventes, deLAgence(RENNES))),
         ),
       },
@@ -455,10 +459,19 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         'objectif-annuel-pour-cumul': sousLesObjectifs(
           toutesLesLignesDObjectif,
         ),
+        'periode-mal-delimitee': Object.keys(indicateurs).filter(
+          (agence) =>
+            caDe(filtrer(ventes, deLAgence(agence))) <
+            objectifsDe(jeu, agence, toutesLesLignesDObjectif),
+        ).length,
       },
       'b3-01-a3-atteinte-rennes': {
         'objectif-annuel-pour-cumul': pourcent(
           indicateurs[RENNES].ca2026 /
+            objectifsDe(jeu, RENNES, toutesLesLignesDObjectif),
+        ),
+        'periode-mal-delimitee': pourcent(
+          caDe(filtrer(ventes, deLAgence(RENNES))) /
             objectifsDe(jeu, RENNES, toutesLesLignesDObjectif),
         ),
       },

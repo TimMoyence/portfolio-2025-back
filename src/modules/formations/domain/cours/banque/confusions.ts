@@ -597,7 +597,7 @@ const DEFINITIONS = {
   'cle-prise-pour-categorie': {
     concept: 'cle-et-relation',
     libelle:
-      'Ranger une clé comme agence_id parmi les catégories : elle relie deux tables, et le libellé vit dans la table qu’elle désigne.',
+      'Ranger un identifiant comme agence_id ou commercial_id parmi les catégories : c’est un code qui désigne une seule entité, et son libellé vit dans l’onglet qu’il désigne, quand il existe.',
   },
   'correction-certaine-renvoyee-a-un-humain': {
     concept: 'qualite-des-donnees',
@@ -617,7 +617,7 @@ const DEFINITIONS = {
   'tcd-filtre-ou-dates-mal-groupees': {
     concept: 'tableau-croise-dynamique',
     libelle:
-      'Lire un TCD dont un filtre est resté actif ou dont les dates sont groupées sans les années : il ampute ou mêle les périodes.',
+      'Lire un TCD dont un filtre manque ou reste actif, ou dont les dates sont groupées sans les années : il ampute ou mêle les périodes.',
   },
   'detail-au-lieu-de-synthese': {
     concept: 'tableau-de-bord',
@@ -638,6 +638,11 @@ const DEFINITIONS = {
     concept: 'tableau-croise-dynamique',
     libelle:
       'Afficher le % du total de la colonne quand la question porte sur la part dans la ligne : la case donne alors le poids de la ligne dans la colonne.',
+  },
+  'mediane-sur-liste-filtree': {
+    concept: 'indicateur-statistique',
+    libelle:
+      'Calculer MEDIANE sur une liste filtrée : elle compte aussi les lignes masquées, là où AGREGAT ne garde que les lignes visibles.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 

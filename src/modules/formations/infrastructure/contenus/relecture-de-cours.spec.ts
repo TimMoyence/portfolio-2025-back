@@ -2,7 +2,9 @@ import {
   buildCoursAvecExplicationAllongee,
   buildCoursDuContenu,
 } from '../../../../../test/factories/contenus-de-cours.factory';
+import type { ContenuDeCours } from '../../domain/cours/CoursStocke';
 import {
+  formulesAltereesALaPublication,
   piegesDesQuestionsSuivantesDevoilesParLesExplications,
   piegesPartagesDevoilesParLesExplications,
   valeursAuCatalogue,
@@ -203,6 +205,11 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       'Le CA progresse de +8,6 %.',
       '8,6 de B3-01-A3-09-ATELIER-DASHBOARD dans B3-01-A3-05-ATELIER-GRAPHIQUES',
     ],
+    [
+      'b3-01-a3-agences-sous-objectif',
+      'Au format 0,00 %, le CA progresse de 8,60 %.',
+      '8,6 de B3-01-A3-09-ATELIER-DASHBOARD dans B3-01-A3-05-ATELIER-GRAPHIQUES',
+    ],
   ])(
     'valeursDevoileesAvantLeurEcran · voit sous %s une valeur décimale d’un écran suivant : « %s »',
     (reference, ajout, alerte) => {
@@ -250,5 +257,47 @@ describe('Gardes de relecture sur les cours à feuilles exigeant une formule', (
     expect(valeursDevoileesAvantLeurEcran(cours).join(' | ')).toContain(
       '6 753,05 de B2-05-A2-05-ATELIER-ANNUITES dans B2-05-A1-10-ATELIER-PLACEMENT',
     );
+  });
+
+  it('B2-05 · voit une case du tableau d’amortissement citée avant l’écran qui la fait remplir', () => {
+    const cours = buildCoursAvecExplicationAllongee(
+      buildCoursDuContenu(COURS_B2_05),
+      'b2-05-a1-valeur-actuelle',
+      'Le capital restant dû affichera 11 077,63.',
+    );
+
+    expect(valeursDevoileesAvantLeurEcran(cours).join(' | ')).toContain(
+      '11 077,63 de B2-05-A3-07-TABLEAU-AMORTISSEMENT dans B2-05-A1-10-ATELIER-PLACEMENT',
+    );
+  });
+});
+
+describe('formulesAltereesALaPublication', () => {
+  const avecTexte = (texte: string): ContenuDeCours => ({
+    ...COURS_B3_01,
+    titre: `${COURS_B3_01.titre} ${texte}`,
+  });
+
+  it('ne signale rien sur le cours publié', () => {
+    expect(formulesAltereesALaPublication(COURS_B3_01)).toEqual([]);
+  });
+
+  it.each([
+    ['Écrire =SI(A1>0 ;1;0) en B2.', '=SI(A1>0 ;1;0)'],
+    ['Écrire =SI(B2="";"vide";"1 000") en C2.', '=SI(B2="";"vide";"1 000")'],
+    ['Écrire =SI(A1>0 ;1;0) en B2.', '=SI(A1>0 ;1;0)'],
+  ])(
+    'signale une formule que la typographie altérerait : « %s »',
+    (texte, formule) => {
+      expect(formulesAltereesALaPublication(avecTexte(texte))).toEqual([
+        formule,
+      ]);
+    },
+  );
+
+  it('laisse une formule suivie de la ponctuation de sa phrase', () => {
+    expect(
+      formulesAltereesALaPublication(avecTexte('=SOMME(L2:L4099) : total.')),
+    ).toEqual([]);
   });
 });

@@ -136,7 +136,7 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
   noteesParType: [4, 18, 3, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 36,
+  remediations: 37,
   options: 12,
   catalogue: [
     'A1-02',
@@ -394,21 +394,38 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A1-07 · diagnostique une clé vers un autre onglet rangée parmi les catégories comme une clé prise pour une catégorie', () => {
+  it('A1-07 · diagnostique un code en texte rangé parmi les catégories comme un identifiant pris pour une catégorie, et n_commande seul comme un nombre', () => {
     const confusionDe = (carte: string) =>
       attendusDe('B3-01-A1-07-TRI-COLONNES').find(
         ({ carteId }) => carteId === carte,
       )?.confusionSiErreur;
 
-    for (const cle of ['agence-id', 'client-id', 'produit-id']) {
-      expect(confusionDe(cle)).toBe('cle-prise-pour-categorie');
+    for (const code of [
+      'agence-id',
+      'client-id',
+      'produit-id',
+      'commercial-id',
+    ]) {
+      expect(confusionDe(code)).toBe('cle-prise-pour-categorie');
     }
-    for (const code of ['n-commande', 'commercial-id']) {
-      expect(confusionDe(code)).toBe('identifiant-pris-pour-nombre');
-    }
+    expect(confusionDe('n-commande')).toBe('identifiant-pris-pour-nombre');
+    expect(libelleDeConfusion('cle-prise-pour-categorie')).toContain(
+      'commercial_id',
+    );
+    expect(texteDe('B3-01-A1-07-TRI-COLONNES')).toContain(
+      'identifiant rangé parmi les catégories',
+    );
     expect(remediationDe('cle-prise-pour-categorie')).toBe(
       'B3-01-A1-06-COURS-RELATIONS',
     );
+  });
+
+  it('A1-12 · n’impose aux notes que l’ordre qui change le résultat, SUBSTITUE avant CNUM', () => {
+    const texte = texteDe('B3-01-A1-12-EXEMPLE-NETTOYAGE');
+
+    expect(texte).toContain('SUBSTITUE d’abord, CNUM ensuite');
+    expect(texte).not.toContain('SUPPRESPACE d’abord, NOMPROPRE ensuite');
+    expect(texte).toContain('accepter les deux');
   });
 
   it('A1-08 · ne borne pas à cinq les lignes d’une commande du brut, doublons compris', () => {
@@ -516,6 +533,9 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
   it('A1-14 · range les colonnes nettoyées après la dernière colonne du brut, sans décaler la formule controle', () => {
     expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
       'en N et O, sans insérer de colonne',
+    );
+    expect(explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE')[3]).toContain(
+      'Les formules N et O en corrigent 490 autres',
     );
   });
 
@@ -661,6 +681,8 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
       'jours-calendaires-pour-ouvres',
       'valeur-extreme-ignoree',
       'bornes-comptees-dans-le-delai',
+      'periode-mal-delimitee',
+      'mediane-sur-liste-filtree',
     ]);
     expect(confusionsDeLaChiffree('b3-01-a2-retards')).toEqual([
       'jours-calendaires-pour-ouvres',
@@ -677,6 +699,36 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
     expect(retards).toContain(
       'Sans le − 1, la colonne delai compte aussi le jour de la commande : au critère ">5", 284 lignes, livrées le jour promis comprises, et une médiane de Strasbourg de 9 jours.',
+    );
+  });
+
+  it('A2-07 · diagnostique la médiane de Strasbourg prise sur toute la table, ou par MEDIANE sous un filtre, qui compte les lignes masquées', () => {
+    const [mediane, , tauxDeMarque] = explicationsDe(
+      'B3-01-A2-07-ATELIER-DELAIS-MARGE',
+    );
+
+    expect(PIEGES_B3_01['b3-01-a2-delai-strasbourg']).toMatchObject({
+      'periode-mal-delimitee': 4,
+      'mediane-sur-liste-filtree': 3,
+    });
+    expect(libelleDeConfusion('mediane-sur-liste-filtree')).toContain(
+      'lignes masquées',
+    );
+    expect(remediationDe('mediane-sur-liste-filtree')).toBe(
+      'B3-01-A2-06-COURS-TEMPS-STATS',
+    );
+    expect(mediane).toContain(
+      'Sous un filtre, MEDIANE compte aussi les lignes masquées et rend la médiane de toute la colonne : AGREGAT(12;5;plage) ne garde que les lignes visibles.',
+    );
+    expect(mediane).not.toContain('Toutes années confondues');
+    expect(tauxDeMarque).toContain(
+      'Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours.',
+    );
+  });
+
+  it('A2-07 · fait montrer le critère 2026 des retards, que toute la table ne trahit pas faute de retard en 2025', () => {
+    expect(texteDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')).toContain(
+      'Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.',
     );
   });
 
@@ -701,14 +753,17 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A2-11 · diagnostique la part lue en % de la colonne ou sans le filtre annee, et ne dit le filtre oublié qu’à la correction du trimestre', () => {
+  it('A2-11 · diagnostique la part lue en % de la colonne, ou sans le filtre annee par la confusion du TCD, et ne dit le filtre oublié qu’à la correction du trimestre', () => {
     const [part, trimestre] = explicationsDe('B3-01-A2-11-ATELIER-TCD');
 
     expect(confusionsDeLaChiffree('b3-01-a2-part-info-rennes')).toEqual([
       'pourcentage-du-mauvais-total',
       'pourcentage-du-total-de-colonne',
-      'periode-mal-delimitee',
+      'tcd-filtre-ou-dates-mal-groupees',
     ]);
+    expect(libelleDeConfusion('tcd-filtre-ou-dates-mal-groupees')).toContain(
+      'dont un filtre manque ou reste actif',
+    );
     expect(remediationDe('pourcentage-du-total-de-colonne')).toBe(
       'B3-01-A2-09-COURS-TCD',
     );
@@ -1101,6 +1156,24 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     );
     expect(rennes).toContain('vingt et un mois');
     expect(rennes).toContain('dans les 12 agences');
+  });
+
+  it('A3-05 · diagnostique la période oubliée des deux côtés, et ne la dit qu’à la correction de Rennes', () => {
+    const [agences, rennes] = explicationsDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
+
+    for (const id of [
+      'b3-01-a3-agences-sous-objectif',
+      'b3-01-a3-atteinte-rennes',
+    ]) {
+      expect(confusionsDeLaChiffree(id)).toEqual([
+        'objectif-annuel-pour-cumul',
+        'periode-mal-delimitee',
+      ]);
+    }
+    expect(agences).not.toContain('critère de date');
+    expect(rennes).toContain(
+      'Sans critère de date, ni sur les ventes ni sur les objectifs, vingt et un mois face à vingt et un mois : 7 agences sous l’objectif, et Rennes à 90,8 %.',
+    );
   });
 
   it('A3-09 · pose l’évolution avant le CA cumulé, dont la correction donne le numérateur', () => {

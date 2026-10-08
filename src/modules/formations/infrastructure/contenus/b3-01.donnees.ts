@@ -120,6 +120,8 @@ export const PIEGES_B3_01: PiegesB301 = {
     'jours-calendaires-pour-ouvres': 11,
     'valeur-extreme-ignoree': 10,
     'bornes-comptees-dans-le-delai': 9,
+    'periode-mal-delimitee': 4,
+    'mediane-sur-liste-filtree': 3,
   },
   'b3-01-a2-retards': {
     'jours-calendaires-pour-ouvres': 481,
@@ -133,10 +135,16 @@ export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a2-part-info-rennes': {
     'pourcentage-du-mauvais-total': 1.5,
     'pourcentage-du-total-de-colonne': 3.8,
-    'periode-mal-delimitee': 33.9,
+    'tcd-filtre-ou-dates-mal-groupees': 33.9,
   },
-  'b3-01-a3-agences-sous-objectif': { 'objectif-annuel-pour-cumul': 12 },
-  'b3-01-a3-atteinte-rennes': { 'objectif-annuel-pour-cumul': 33.8 },
+  'b3-01-a3-agences-sous-objectif': {
+    'objectif-annuel-pour-cumul': 12,
+    'periode-mal-delimitee': 7,
+  },
+  'b3-01-a3-atteinte-rennes': {
+    'objectif-annuel-pour-cumul': 33.8,
+    'periode-mal-delimitee': 90.8,
+  },
   'b3-01-a3-evolution': { 'evolution-sur-annee-pleine': -22.1 },
   'b3-01-a3-ca-2026': { 'periode-mal-delimitee': 1_313_125 },
   'b3-01-a3-marge-marseille': {

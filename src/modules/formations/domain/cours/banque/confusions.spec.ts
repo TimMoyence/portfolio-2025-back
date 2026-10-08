@@ -345,6 +345,7 @@ const CONFUSIONS_DU_B3_01 = {
   'en-tete-compte-comme-ligne': { concept: 'jeu-de-donnees' },
   'controle-apres-correction': { concept: 'qualite-des-donnees' },
   'pourcentage-du-total-de-colonne': { concept: 'tableau-croise-dynamique' },
+  'mediane-sur-liste-filtree': { concept: 'indicateur-statistique' },
 };
 
 describe('libelleDeConcept', () => {
@@ -528,8 +529,8 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
   });
 
-  it('ajoute en dernier les trente-deux confusions de données du B3-01', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(128);
+  it('ajoute en dernier les trente-trois confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(129);
     expect(Object.keys(CONFUSIONS).slice(96)).toEqual(
       Object.keys(CONFUSIONS_DU_B3_01),
     );
@@ -565,7 +566,16 @@ describe('CONFUSIONS', () => {
   it('laisse au TCD le filtre resté actif et les années réunies, à la période agrégée la table entière', () => {
     expect(libelleDeConfusion('periode-mal-delimitee')).not.toContain('filtre');
     expect(libelleDeConfusion('tcd-filtre-ou-dates-mal-groupees')).toContain(
-      'filtre',
+      'dont un filtre manque ou reste actif',
+    );
+  });
+
+  it('nomme la médiane prise sous un filtre, qui compte aussi les lignes masquées', () => {
+    expect(libelleDeConfusion('mediane-sur-liste-filtree')).toContain(
+      'MEDIANE',
+    );
+    expect(libelleDeConfusion('mediane-sur-liste-filtree')).toContain(
+      'AGREGAT',
     );
   });
 
