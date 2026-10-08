@@ -234,3 +234,43 @@ export function valeursDevoileesParLesExplications(
     );
   });
 }
+
+const SEUIL_D_UN_PIEGE_RECONNAISSABLE = 10;
+
+type PiegesParQuestion = Readonly<
+  Record<string, Readonly<Partial<Record<string, number>>>>
+>;
+
+function confusionPartageeParUneSuivante(
+  pieges: PiegesParQuestion,
+  suivantes: readonly string[],
+  confusion: string,
+): boolean {
+  return suivantes.some((id) => pieges[id]?.[confusion] !== undefined);
+}
+
+export function piegesPartagesDevoilesParLesExplications(
+  cours: Cours,
+  pieges: PiegesParQuestion,
+): string[] {
+  return cours.ecrans.flatMap((ecran) => {
+    const ordre = questionsDe(ecran).map((question) => question.id);
+    return (ecran.correctionSurPlace?.explications ?? []).flatMap(
+      ({ reference, texte }) => {
+        const rang = ordre.indexOf(reference);
+        const suivantes = rang === -1 ? [] : ordre.slice(rang + 1);
+        return Object.entries(pieges[reference] ?? {}).flatMap(
+          ([confusion, valeur]) =>
+            valeur !== undefined &&
+            valeur >= SEUIL_D_UN_PIEGE_RECONNAISSABLE &&
+            confusionPartageeParUneSuivante(pieges, suivantes, confusion) &&
+            contientLaForme(texte, valeur)
+              ? [
+                  `${formeFrancaise(valeur)} (${confusion}) dans ${ecran.id} (${reference})`,
+                ]
+              : [],
+        );
+      },
+    );
+  });
+}

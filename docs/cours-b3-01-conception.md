@@ -366,7 +366,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 - Titre public : « Cours : les outils du nettoyage »
 - `method` : `SUPPRESPACE`, `NOMPROPRE`, `SUBSTITUE` puis `CNUM` pour un nombre en texte,
-  `DATEVAL` pour une date en texte ISO, « Données › Supprimer les doublons » sur une copie (pour
+  `DATEVAL` pour une date en texte ISO (elle renvoie `#VALEUR!` sur une vraie date : sur toute
+  la colonne, `=SI(ESTTEXTE(B2);DATEVAL(B2);B2)`), « Données › Supprimer les doublons » sur une copie (pour
   compter des valeurs distinctes, on colle la colonne nettoyée, en-tête compris, en valeurs à
   part, Collage spécial › Valeurs, puis le même outil, case « Mes données ont des en-têtes »
   cochée, annonce combien de valeurs uniques il reste, sans compter l'en-tête, qui donnerait 49 :
@@ -395,8 +396,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Dix cartes tirées du fichier, quatre catégories (la case « suspect · automatique » reste
   vide) : faux · automatique (ville en majuscules ou avec espaces ; CA en texte ; ligne exportée
   deux fois ; CA ≠ quantité × prix × (1 − remise)) ; faux · humain (`produit_id` absent du
-  référentiel ; livraison antérieure à la commande) ; suspect · humain (date « 05/04/26 » d'un
-  autre système ; quantité négative ; prix unitaire dix fois le prix catalogue ; client en double
+  référentiel ; livraison antérieure à la commande) ; suspect · humain (date « 08/04/26 » d'un
+  autre système, la ligne 3785 du brut ; quantité négative ; prix unitaire dix fois le prix catalogue ; client en double
   probable dans `Clients`). Une carte « faux · automatique » mal classée porte le piège
   `correction-certaine-renvoyee-a-un-humain` ; une carte « faux · humain » ou « suspect · humain »
   mal classée, `suspect-corrige-sans-validation`. Aucune carte ne porte
@@ -415,7 +416,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `date_commande`, I `quantite` et G `commercial_id`.
   Une date restée en texte est signalée elle aussi (Excel classe tout texte au-dessus de tout
   nombre) : c'est voulu, une date en texte est à vérifier. Défi : convertir les dates ISO par
-  `DATEVAL`, recalculer `ca_ht` et signaler les écarts de plus d'un euro.
+  `=SI(ESTTEXTE(B2);DATEVAL(B2);B2)`, recalculer `ca_ht` et signaler les écarts de plus d'un
+  euro. Les notes formateur citent la ligne 3785 : `DATEVAL` lit « 08/04/26 » comme le 8 avril,
+  la livraison est du 7 août, la commande date sans doute du 4 août.
 - `b3-01-a1-lignes-uniques` : nombre de lignes après suppression des doublons exacts ; piège
   `doublons-supprimes-sur-une-colonne`.
 - `b3-01-a1-ca-total` : CA total HT, en euros, après dédoublonnage et conversion ; piège
@@ -424,7 +427,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `espaces-non-supprimes` (le comptage d'Excel ignore la casse : seules les espaces en trop
   séparent deux écritures d'une même ville).
 - `b3-01-a1-a-verifier` : nombre de lignes « À vérifier » ; piège
-  `suspect-corrige-sans-validation` (dates converties par `DATEVAL` avant le contrôle).
+  `suspect-corrige-sans-validation` (dates converties par `DATEVAL` avant le contrôle : les 40
+  dates ISO sortent du contrôle, mais aussi 6 des 12 dates d'un autre système, écrites mois
+  d'abord et lues jour d'abord ; il ne reste que 39 lignes). La correction désigne le vote A1-04
+  par son titre, « le fichier et Dupont, Bordeaux » : le premier vote de la séance est le rappel.
 - La correction révèle la première question du vote A1-04 : part des lignes fausses ou douteuses
   du fichier, recomposée : 85 lignes « À vérifier », 490 corrigées par formule (F1 villes, F2
   montants en texte), 24 `ca_ht` mal calculés (F4, le défi), et 15 hors contrôle (H1 produits
@@ -458,8 +464,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A2-02 · `B3-01-A2-02-FAMILLES` — 3 min · v2 `table` · catalogue
 
 - Titre public : « Les dix familles de problèmes »
-- Colonnes : famille, question type de la direction, fonction socle, variante « Avec Excel
-  2021 ou 365 » (Power Query : Windows, ou 365 sur Mac). Chercher
+- Colonnes : famille, question type de la direction, fonction socle, variante. La note du
+  tableau date les variantes : `RECHERCHEX`, `TRIER`, `FILTRE` et `UNIQUE` dès Excel 2021 ;
+  Power Query sous Windows dès Excel 2016, sur Mac avec 365. Chercher
   (`INDEX`/`EQUIV` ; `RECHERCHEX`), compter (`NB.SI.ENS`), additionner sous conditions
   (`SOMME.SI.ENS`, `SOMMEPROD`), comparer (`SI`, `ET`, `OU`, `SI.CONDITIONS`, présent depuis
   Excel 2019), classer (`RANG`, `GRANDE.VALEUR` ;
@@ -493,7 +500,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   correction, révélée la dernière, donne les autres causes d'un total nul : le même glissement
   vide la colonne `categorie` de la première question, et un critère de date tout entier entre
   guillemets. Elle seule parle du `$` : dite à la première question, cette cause soufflerait le
-  piège de la troisième, encore ouverte.
+  piège de la troisième, encore ouverte. Elle seule donne aussi la période oubliée, pour la
+  troisième question et pour la première (27 862 €) : ce piège est commun aux deux.
 
 #### A2-05 · `B3-01-A2-05-VOTE-DELAI` — 2 min · `fp-vote` · séance
 
@@ -524,9 +532,12 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Défi : `JOURSEM` pour la part des commandes passées le vendredi ; `DATEDIF` pour l'ancienneté
   des clients en mois.
 - `b3-01-a2-delai-strasbourg` : délai médian de livraison de Strasbourg en 2026, en jours
-  ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`.
+  ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`. Sa correction
+  donne la médiane et la moyenne piégée, pas la médiane en jours calendaires : ce piège est
+  aussi le seul de la question suivante.
 - `b3-01-a2-retards` : nombre de lignes 2026 livrées après la promesse (commande + 5 jours
-  ouvrés, `SERIE.JOUR.OUVRE`) ; piège `jours-calendaires-pour-ouvres`.
+  ouvrés, `SERIE.JOUR.OUVRE`) ; piège `jours-calendaires-pour-ouvres`. Sa correction, révélée
+  après celle de la médiane, donne ce piège pour les deux questions (481 lignes, 11 jours).
 - `b3-01-a2-taux-marge` : taux de marque du réseau (marge ÷ CA HT), janvier à septembre 2026,
   en % ; pièges `moyenne-simple-des-taux` et `marque-confondue-avec-marge` (marge ÷ coût
   d'achat). L'identifiant garde son nom d'origine.
@@ -547,9 +558,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   filtres ; `method` : regrouper les dates par mois ou trimestre, afficher en % du total,
   segments, et un filtre reste actif tant qu'on ne l'a pas retiré (la moitié « filtre » de
   `tcd-filtre-ou-dates-mal-groupees`, remédiée ici) ; encadré : mettre `Agences` aussi sous forme
-  de tableau (la reprise de l'acte 2 n'en contient aucun), puis relier `T_Commandes` et `Agences`
-  dans le modèle de données, sous Windows (Excel 2019, 2021 ou 365) ; Excel pour Mac n'a pas de
-  modèle de données, et la colonne `region` de l'exercice 5 suffit.
+  de tableau (la reprise de l'acte 2 n'en contient aucun), la relier à `T_Commandes` par
+  `agence_id` dans Données › Relations, puis créer le TCD avec « Ajouter ces données au modèle
+  de données » : il prend `region` dans `Agences`, sans colonne cherchée. Sous Windows
+  seulement (Excel 2019, 2021 ou 365) ; Excel pour Mac n'a pas de modèle de données, et la
+  colonne `region` de l'exercice 5 suffit.
 
 #### A2-10 · `B3-01-A2-10-EXEMPLE-TCD` — 3 min · `fp-worked` · séance
 
@@ -632,8 +645,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   pas : l'objectif vit dans une autre table (sur Mac, sans modèle de données, la synthèse par
   `SOMME.SI.ENS` suffit ; sous Windows, Excel 2019, 2021 ou 365 : mettre `Agences` et `Objectifs` sous
   forme de tableau, seul `T_Commandes` en étant un dans la reprise de l'acte 3, puis relier
-  `T_Commandes` et `Objectifs` à `Agences` par `agence_id` dans le modèle de données ; `Agences`
-  est la seule table aux `agence_id` uniques. Le TCD prend `agence_id` dans `Agences` et pose
+  `T_Commandes` et `Objectifs` à `Agences` par `agence_id` dans Données › Relations ; `Agences`
+  est la seule table aux `agence_id` uniques. Le TCD, créé avec « Ajouter ces données au modèle
+  de données », prend `agence_id` dans `Agences` et pose
   deux filtres, car un filtre ne passe pas d'une table à l'autre : `annee` de `T_Commandes` sur
   2026, `mois` d'`Objectifs` de janvier à septembre 2026. Avec le seul filtre `annee`,
   l'objectif resterait celui des vingt et un mois : la valeur du piège).
@@ -705,8 +719,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   action. Correction sur place, quatre explications révélées ensemble (hors questionnaire, la
   brique dévoile tout d'un geste) et commentées une à une : les quatre histoires du
   § 4.4, chacune avec son constat chiffré sur sa période, sa cause lue dans le détail et son
-  action. Garde de dévoilement : aucune explication ne donne une valeur d'une question encore
-  ouverte (les questions de A3-09 sont révélées avant).
+  action, datée et confiée au responsable de l'agence, comme le veut la méthode de A3-07. Garde
+  de dévoilement : aucune explication ne donne une valeur d'une question encore ouverte (les
+  questions de A3-09 sont révélées avant).
+- Notes : Rouen (91,9 %), troisième agence sous l'objectif, recule d'environ 2 % dans toutes
+  ses catégories sans cause dans le détail : à surveiller, pas une histoire.
 
 #### A3-11 · `B3-01-A3-11-FICHE-MEMO` — 3 min · v2 `grid` · catalogue
 
@@ -775,7 +792,7 @@ aucune ligne doublonnée (F3) ne porte une autre anomalie.
 | H1   | `produit_id` absent de `Produits` (P047, P051)                                            | faux · humain      |        9 |
 | H2   | `date_livraison` antérieure à `date_commande`                                             | faux · humain      |       14 |
 | H3   | `commercial_id` vide                                                                      | faux · humain      |       11 |
-| S1   | `date_commande` en texte « 04/05/26 », écrite en mm/jj/aa, que `DATEVAL` lit en jj/mm/aa  | suspect · humain   |       12 |
+| S1   | `date_commande` en texte « 08/04/26 », écrite en mm/jj/aa, que `DATEVAL` lit en jj/mm/aa  | suspect · humain   |       12 |
 | S2   | `quantite` négative                                                                       | suspect · humain   |        8 |
 | S3   | `prix_unitaire_ht` d'une fourniture égal à dix fois le prix catalogue                     | suspect · humain   |        6 |
 | S4   | client en double probable dans `Clients` (même raison sociale et ville, deux `client_id`) | suspect · humain   | 4 paires |
@@ -799,7 +816,8 @@ Aucune livraison n'est postérieure au 9 octobre 2026, date de l'export : une ru
 période est plafonnée à cette date. Les objectifs suivent la règle d'un contrôleur de gestion :
 l'objectif d'un mois de 2025 est le CA réalisé du mois à ± 6 % près, celui d'un mois de 2026 le
 CA réalisé du même mois de 2025 majoré de 5 %, arrondis à la centaine. Le taux d'atteinte 2026
-d'une agence vaut donc environ son évolution sur un an, divisée par 1,05.
+d'une agence vaut donc environ (1 + son évolution sur un an) ÷ 1,05, à l'écart près des lignes
+mises en quarantaine, qui comptent dans le réalisé 2025 servant de base aux objectifs.
 
 ### 4.5 Les classeurs de reprise
 
@@ -843,10 +861,15 @@ graine, les paramètres et les classeurs binaires le sont. Un classeur corrigé 
 formules des ateliers (`SOMME.SI.ENS`, `NB.JOURS.OUVRES`, `MEDIANE`, `SOMMEPROD`…) ; `exceljs`
 n'écrit ni TCD, ni graphique, ni segment. Il est écrit dans `.tmp/b3-01/` par `ECRIRE_CORRIGE=1`,
 distinct d'`ECRIRE_CLASSEURS=1` pour que réécrire les classeurs ne le régénère pas ; ignoré par
-git, ni versionné ni servi, il sert à vérifier que les formules enseignées rendent les valeurs du
-§ 5.1. Il les écrit telles quelles : le montant en texte se convertit par
-`CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";""))`, comme en A1-12. `CNUM` lit la virgule selon la
-langue d'Excel : le recalcul se fait, comme en séance, dans un Excel en français.
+git, ni versionné ni servi, il sert à vérifier que des formules équivalentes aux gestes enseignés
+rendent les valeurs du § 5.1. Le montant en texte se convertit par la formule même de A1-12,
+`CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";""))`, sur toute la colonne. Trois gestes manuels
+deviennent des formules : les doublons exacts se repèrent par `NB.SI` sur la clé concaténée des
+colonnes plutôt que par « Supprimer les doublons », les villes distinctes se comptent par
+`SOMMEPROD` et `NB.SI.ENS` plutôt que par une copie dédoublonnée, et la médiane de Strasbourg se
+lit sur une colonne d'aide plutôt que sur un filtre. `CNUM` lit la virgule selon le séparateur
+décimal des paramètres régionaux (la virgule en France) : le recalcul se fait, comme en séance,
+dans un Excel réglé en français.
 
 ## 5. Contenus
 

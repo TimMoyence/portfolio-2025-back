@@ -20,6 +20,7 @@ import {
   GRAINE_B3_01,
   genererJeuB301,
 } from '../../../../../test/helpers/cours-b3-01/generateur';
+import { ongletDe } from '../../../../../test/helpers/cours-b3-01/modele';
 import { CLASSEURS_B3_01, VALEURS_B3_01 } from './b3-01.donnees';
 
 const RACINE = join(__dirname, '../../../../..');
@@ -178,6 +179,46 @@ describe('classeurs du B3-01', () => {
     }
   });
 
+  it(
+    'écrit au corrigé la formule CNUM enseignée sur chaque montant, un compte de villes arrondi, et les montants des agences hors format date',
+    async () => {
+      const chemin = join(DOSSIER_D_ESSAI, 'B3-01_corrige_formateur.xlsx');
+      await ecrireLeCorrigeFormateur(jeu, chemin);
+      const classeur = await ouvrirClasseur(chemin);
+      const brut = classeur.getWorksheet('Brut');
+      const calculs = classeur.getWorksheet('Calculs');
+      const corrige = classeur.getWorksheet('Corrigé');
+      const derniere = ongletDe(jeu.brut, 'Commandes').lignes.length + 1;
+      const agences = ongletDe(jeu.reprise2, 'Agences').lignes.length;
+      const montantsSansLaFormuleEnseignee = Array.from(
+        { length: derniere - 1 },
+        (_, rang) => rang + 2,
+      ).filter(
+        (r) =>
+          brut?.getCell(`P${r}`).formula !==
+          `VALUE(SUBSTITUTE(SUBSTITUTE(L${r}," €","")," ",""))`,
+      );
+      const villes = corrige?.getColumn(1).values.indexOf('b3-01-a1-villes');
+
+      expect(montantsSansLaFormuleEnseignee).toEqual([]);
+      expect(corrige?.getCell(`B${villes}`).formula).toMatch(
+        /^ROUND\(SUMPRODUCT\(.*\),0\)$/u,
+      );
+      for (const r of [2, 8]) {
+        expect(calculs?.getCell(`B${r}`).numFmt).toBe('dd/mm/yyyy');
+      }
+      const montantsDesAgencesHorsEuros = Array.from(
+        { length: agences },
+        (_, rang) => rang + 11,
+      )
+        .flatMap((r) => [`B${r}`, `C${r}`])
+        .filter((cellule) => !calculs?.getCell(cellule).numFmt?.includes('€'));
+
+      expect(montantsDesAgencesHorsEuros).toEqual([]);
+    },
+    DELAI_D_ECRITURE_MS,
+  );
+
   it('structure les commandes de la reprise de l’acte 3 en tableau T_Commandes', async () => {
     const reprise3 = publies.find((publie) => publie.role === 'repriseActe3');
     if (reprise3 === undefined) {
@@ -209,7 +250,7 @@ const CORRIGE_RECALCULE_PAR_EXCEL = process.env.CORRIGE_RECALCULE_PAR_EXCEL;
   () => {
     const chemin = CORRIGE_RECALCULE_PAR_EXCEL ?? '';
 
-    it('rend chaque valeur attendue du § 5.1 avec les formules enseignées', async () => {
+    it('rend chaque valeur attendue du § 5.1 avec des formules équivalentes aux gestes enseignés', async () => {
       const recalcule = await lireLeCorrigeRecalcule(chemin);
 
       expect(recalcule.valeurs).toEqual(VALEURS_B3_01);

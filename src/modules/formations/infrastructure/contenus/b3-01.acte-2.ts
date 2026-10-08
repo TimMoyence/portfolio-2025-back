@@ -64,7 +64,7 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         '3 min, enchaînées sur la trace écrite : 6 min d’exposition au plus.',
         'Faire lire la colonne des questions : la direction parle en questions, pas en fonctions.',
-        'La colonne 2021 ou 365 est un raccourci, jamais une obligation : le cas pratique se fait sur toute version d’Excel.',
+        'La colonne des variantes est un raccourci, jamais une obligation : le cas pratique se fait sur toute version d’Excel.',
       ),
     },
     'table',
@@ -75,7 +75,7 @@ export const ACTE_2: moteur.Acte = [
         { key: 'famille', label: 'Famille' },
         { key: 'question', label: 'Question de la direction' },
         { key: 'socle', label: 'Socle (Excel 2019 et +)' },
-        { key: 'variante', label: 'Avec Excel 2021 ou 365' },
+        { key: 'variante', label: 'Variante' },
       ],
       rows: [
         {
@@ -112,7 +112,7 @@ export const ACTE_2: moteur.Acte = [
           famille: 'Transformer',
           question: 'Que vaut ce montant en texte ?',
           socle: 'SUPPRESPACE, CNUM, TEXTE',
-          variante: 'Power Query (Windows, ou 365 sur Mac)',
+          variante: 'Power Query',
         },
         {
           famille: 'Filtrer',
@@ -139,7 +139,7 @@ export const ACTE_2: moteur.Acte = [
           variante: 'MFC',
         },
       ],
-      note: 'MFC : mise en forme conditionnelle.',
+      note: 'RECHERCHEX, TRIER, FILTRE et UNIQUE : Excel 2021 ou 365. Power Query : Windows dès Excel 2016, Mac avec 365. MFC : mise en forme conditionnelle.',
     },
   ),
   moteur.ecranV2(
@@ -247,7 +247,7 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-ca-rennes-info',
-        'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Sans critère de date, on additionne aussi 2025 : 27 862 €.',
+        'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €.',
       ],
       [
         'b3-01-a2-remises-marseille',
@@ -255,7 +255,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-ca-ouest',
-        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date : 188 908 €.',
+        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question.',
       ],
     ],
   ),
@@ -402,11 +402,11 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-delai-strasbourg',
-        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. En jours calendaires, elle monterait à 11 jours ; la moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie.',
+        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie.',
       ],
       [
         'b3-01-a2-retards',
-        'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5) : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard.',
+        'Une ligne est en retard quand date_livraison dépasse SERIE.JOUR.OUVRE(date_commande;5) : 99 lignes commandées en 2026. Avec date_commande + 5, en jours calendaires, la promesse tombe trop tôt et 481 lignes paraissent en retard ; en jours calendaires, la médiane de Strasbourg de la première question monterait à 11 jours.',
       ],
       [
         'b3-01-a2-taux-marge',
@@ -492,7 +492,7 @@ export const ACTE_2: moteur.Acte = [
         {
           kind: 'example',
           title: 'Windows seulement : le modèle de données',
-          text: 'Excel 2019, 2021 ou 365 : Agences en tableau et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id. Sur Mac, absent : la colonne region suffit.',
+          text: 'Excel 2019, 2021 ou 365 : Agences en tableau, reliée à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans Agences. Sur Mac, absent : la colonne region suffit.',
         },
       ],
     },

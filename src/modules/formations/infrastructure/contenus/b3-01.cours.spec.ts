@@ -8,6 +8,7 @@ import * as fiche from '../../../../../test/helpers/fiche-de-cours';
 import * as feuille from '../../../../../test/helpers/feuille-de-cours';
 import {
   formulesAltereesALaPublication,
+  piegesPartagesDevoilesParLesExplications,
   valeursAuCatalogue,
   valeursDevoileesAvantLeurEcran,
   valeursDevoileesParLesExplications,
@@ -303,6 +304,12 @@ describe('B3-01 — gardes de la relecture', () => {
     expect(valeursDevoileesParLesExplications(COURS, VALEURS)).toEqual([]);
   });
 
+  it('réserve à la dernière correction la valeur-piège d’une confusion qu’une question suivante du même écran partage', () => {
+    expect(
+      piegesPartagesDevoilesParLesExplications(COURS, PIEGES_B3_01),
+    ).toEqual([]);
+  });
+
   it('ne dévoile dans aucune correction sur place une valeur décimale d’un écran suivant', () => {
     expect(valeursDevoileesAvantLeurEcran(COURS_B3_01, COURS)).toEqual([]);
   });
@@ -570,12 +577,52 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A1-14 · impute les 39 lignes au DATEVAL qui valide des dates jj/mm/aa, pas à la conversion des dates ISO', () => {
+  it('A1-14 · impute les lignes perdues par DATEVAL aux dates ISO et aux dates écrites mois d’abord, lues jour d’abord', () => {
     const aVerifier = explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE').at(-1);
+    const piege =
+      PIEGES_B3_01['b3-01-a1-a-verifier']['suspect-corrige-sans-validation'] ??
+      Number.NaN;
+    const datesMalLues =
+      VALEURS_B3_01['b3-01-a1-a-verifier'] - piege - ANOMALIES_SEMEES.F5;
 
-    expect(aVerifier).toContain('dates au format jj/mm/aa');
-    expect(aVerifier).toContain('n’aurait plus signalé que 39 lignes');
+    expect(aVerifier).toContain(`les ${ANOMALIES_SEMEES.F5} dates ISO`);
+    expect(aVerifier).toContain(
+      `${datesMalLues} des ${ANOMALIES_SEMEES.S1} dates venues d’un autre système`,
+    );
+    expect(aVerifier).toContain('lit jour d’abord');
+    expect(aVerifier).toContain(`n’aurait plus signalé que ${piege} lignes`);
+    expect(aVerifier).not.toContain('au format jj/mm/aa');
     expect(aVerifier).not.toContain('corrigé seul des dates douteuses');
+  });
+
+  it('A1-14 · désigne le vote sur le fichier, et non le premier vote de la séance, qui est le rappel', () => {
+    const atelier = texteDe('B3-01-A1-14-ATELIER-NETTOYAGE');
+
+    expect(atelier).toContain(
+      'la première question du vote sur le fichier et Dupont, Bordeaux',
+    );
+    expect(atelier).not.toContain('premier vote de la séance');
+    expect(atelier).not.toContain('vote d’ouverture');
+  });
+
+  it('A1-11 et A1-14 · réservent DATEVAL aux dates restées en texte, puisqu’elle renvoie #VALEUR! sur une vraie date', () => {
+    const formule = '=SI(ESTTEXTE(B2);DATEVAL(B2);B2)';
+
+    expect(texteDe('B3-01-A1-11-COURS-OUTILS')).toContain(formule);
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(formule);
+  });
+
+  it('A1-13 et A1-14 · citent la date venue d’un autre système telle qu’elle est au brut, en B3785', () => {
+    const tri = texteDe('B3-01-A1-13-TRI-ANOMALIES');
+    const atelier = texteDe('B3-01-A1-14-ATELIER-NETTOYAGE');
+
+    expect(tri).toContain('Date « 08/04/26 » venue d’un autre système');
+    expect(tri).toContain('8 avril ou 4 août ? Seul l’émetteur le sait');
+    expect(tri).toContain('Lire « 08/04/26 » jour d’abord');
+    expect(atelier).toContain('« 08/04/26 » (ligne 3785)');
+    for (const texte of [tri, atelier]) {
+      expect(texte).not.toMatch(/05\/04\/26|04\/05\/26/u);
+    }
   });
 
   it('A1-11 et A1-14 · font cocher « Mes données ont des en-têtes » pour ne pas compter l’en-tête parmi les villes', () => {
@@ -876,6 +923,10 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     const [agences, rennes] = explicationsDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
 
     expect(agences).not.toContain('vingt et un mois');
+    expect(agences).not.toContain('additionne');
+    expect(rennes).toContain(
+      'qui additionne ses objectifs mensuels de janvier à septembre 2026',
+    );
     expect(rennes).toContain('vingt et un mois');
     expect(rennes).toContain('dans les 12 agences');
   });
@@ -927,6 +978,30 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     );
   });
 
+  it('A2-09 et A3-05 · disent où relier les tables, et où cocher le modèle de données', () => {
+    const tcd = texteDe('B3-01-A2-09-COURS-TCD');
+
+    expect(tcd).toContain('Données › Relations');
+    expect(tcd).toContain(
+      'le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans Agences',
+    );
+    expect(texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES')).toContain(
+      'Données › Relations',
+    );
+  });
+
+  it('A2-02 · date chaque variante : Power Query dès Excel 2016 sous Windows, les autres dès Excel 2021', () => {
+    const texte = texteDe('B3-01-A2-02-FAMILLES');
+
+    expect(texte).toContain(
+      'Power Query : Windows dès Excel 2016, Mac avec 365',
+    );
+    expect(texte).toContain(
+      'RECHERCHEX, TRIER, FILTRE et UNIQUE : Excel 2021 ou 365',
+    );
+    expect(texte).not.toContain('Avec Excel 2021 ou 365');
+  });
+
   it('A3-03 et A3-07 · donnent Caen pour un exemple hors dossier, sans souffler une histoire du comité', () => {
     const graphiques = texteDe('B3-01-A3-03-COURS-GRAPHIQUES');
     const dashboard = texteDe('B3-01-A3-07-COURS-DASHBOARD');
@@ -951,6 +1026,28 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     expect(texte).not.toContain('révéler les quatre histoires une à une');
     expect(texte).not.toContain('Révéler une histoire à la fois');
     expect(texte).not.toContain('coche');
+  });
+
+  it('A3-10 · date chaque action et la confie à quelqu’un, comme le veut la méthode de A3-07', () => {
+    const actions = explicationsDe('B3-01-A3-10-RECOMMANDATIONS').map(
+      (histoire) => histoire.split('Action :').at(1) ?? '',
+    );
+
+    expect(texteDe('B3-01-A3-07-COURS-DASHBOARD')).toContain(
+      'l’action est précise, datée, et confiée à quelqu’un',
+    );
+    expect(texteDe('B3-01-A3-10-RECOMMANDATIONS')).toContain(
+      'une action précise, datée, confiée à quelqu’un',
+    );
+    expect(actions).toHaveLength(4);
+    for (const action of actions) {
+      expect(action).toMatch(/(avant|d’ici|dès) /u);
+      expect(action).toContain('confié au responsable de l’agence');
+    }
+  });
+
+  it('A3-10 · dit au formateur que Rouen, troisième agence sous l’objectif, n’est pas une histoire', () => {
+    expect(texteDe('B3-01-A3-10-RECOMMANDATIONS')).toContain('Rouen (91,9 %)');
   });
 
   it.each([

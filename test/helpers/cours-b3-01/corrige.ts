@@ -41,6 +41,7 @@ const TRIMESTRES = [
   [2026, 3],
 ] as const;
 const FORMAT_DATE = 'dd/mm/yyyy';
+const FORMAT_EUROS = '#,##0.00\\ "€"';
 
 const formule = (expression: string) => ({ formula: expression });
 
@@ -64,7 +65,7 @@ function ajouterLesAidesDuBrut(feuille: Worksheet, derniere: number): void {
     ligne.getCell(14).value = formule(cle);
     ligne.getCell(15).value = formule(`IF(COUNTIF(N$2:N${r},N${r})=1,1,0)`);
     ligne.getCell(16).value = formule(
-      `IF(ISTEXT(L${r}),VALUE(SUBSTITUTE(SUBSTITUTE(L${r}," €","")," ","")),L${r})`,
+      `VALUE(SUBSTITUTE(SUBSTITUTE(L${r}," €","")," ",""))`,
     );
     ligne.getCell(17).value = formule(`PROPER(TRIM(E${r}))`);
     ligne.getCell(18).value = formule(
@@ -98,9 +99,9 @@ function ajouterLesCalculs(
         `SUMIFS(Commandes!L:L,Commandes!B:B,">="&B${r},Commandes!B:B,"<="&C${r})`,
       ),
     ]);
+    feuille.getCell(`B${r}`).numFmt = FORMAT_DATE;
+    feuille.getCell(`C${r}`).numFmt = FORMAT_DATE;
   });
-  feuille.getColumn(2).numFmt = FORMAT_DATE;
-  feuille.getColumn(3).numFmt = FORMAT_DATE;
   feuille.getRow(PREMIERE_LIGNE_DES_AGENCES - 1).values = [
     'Agence',
     'CA 2026',
@@ -117,6 +118,8 @@ function ajouterLesCalculs(
       ),
       formule(`B${r}/C${r}`),
     ];
+    feuille.getCell(`B${r}`).numFmt = FORMAT_EUROS;
+    feuille.getCell(`C${r}`).numFmt = FORMAT_EUROS;
   });
 }
 
@@ -141,7 +144,7 @@ function formulesDesQuestions(
     'b3-01-a1-lignes-commande': `COUNTIF(${brut('A')},"C-10234")`,
     'b3-01-a1-lignes-uniques': `SUM(${brut('O')})`,
     'b3-01-a1-ca-total': `ROUND(SUMPRODUCT(${brut('P')},${brut('O')}),0)`,
-    'b3-01-a1-villes': `SUMPRODUCT(${brut('O')}/COUNTIFS(${brut('Q')},${brut('Q')},${brut('O')},1))`,
+    'b3-01-a1-villes': `ROUND(SUMPRODUCT(${brut('O')}/COUNTIFS(${brut('Q')},${brut('Q')},${brut('O')},1)),0)`,
     'b3-01-a1-a-verifier': `COUNTIFS(${brut('R')},"${A_VERIFIER}",${brut('O')},1)`,
     'b3-01-a2-ca-rennes-info': `ROUND(${caDepuis2026(rennes, informatique)},0)`,
     'b3-01-a2-remises-marseille': `COUNTIFS(${marseille},Commandes!K:K,">"&0.15)`,

@@ -1,6 +1,7 @@
 import {
   arrondi,
   dateExcel,
+  dateval,
   estJourOuvre,
   mediane,
   nbJoursOuvres,
@@ -292,6 +293,14 @@ describe('jeu Norvane du B3-01', () => {
 
     expect(valeurDe(aLaLigne(783), 'ville')).toBe(' Bordeaux ');
     expect(valeurDe(aLaLigne(2971), 'ca_ht')).toBe('1 150,00 €');
+  });
+
+  it('porte au brut la date que citent A1-13 et A1-14 : B3785 « 08/04/26 », lue le 8 avril par DATEVAL, livrée le 7 août 2026', () => {
+    const ligne = commandesBrutes[3785 - 2];
+
+    expect(valeurDe(ligne, 'date_commande')).toBe('08/04/26');
+    expect(dateval('08/04/26')).toBe(dateExcel(2026, 4, 8));
+    expect(valeurDe(ligne, 'date_livraison')).toBe(dateExcel(2026, 8, 7));
   });
 
   it('ne laisse trouver sans $ qu’une ligne de l’Ouest, commandée en 2025', () => {

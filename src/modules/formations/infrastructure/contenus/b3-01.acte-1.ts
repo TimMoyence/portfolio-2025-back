@@ -598,10 +598,10 @@ export const ACTE_1: moteur.Acte = [
           text: 'Chaque anomalie « faux · automatique » a son outil.',
           steps: [
             'Espaces en trop : SUPPRESPACE(E2).',
-            'Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
+            'Casse : NOMPROPRE(E2), « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
             'Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.',
-            'Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.',
-            'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil, case « Mes données ont des en-têtes » cochée, annonce combien de valeurs uniques il reste.',
+            'Date ISO en texte « 2026-03-15 » : =SI(ESTTEXTE(B2);DATEVAL(B2);B2), car DATEVAL renvoie #VALEUR! sur une vraie date.',
+            'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.',
             'Colonne controle : SI et OU renvoient « À vérifier » ou « OK ».',
           ],
         },
@@ -752,10 +752,10 @@ export const ACTE_1: moteur.Acte = [
             },
             {
               id: 'date-autre-systeme',
-              libelle: 'Date « 05/04/26 » venue d’un autre système',
+              libelle: 'Date « 08/04/26 » venue d’un autre système',
               categorie: 'suspect-humain',
               confusion: 'suspect-corrige-sans-validation',
-              justification: '5 avril ou 4 mai ? Seul l’émetteur le sait',
+              justification: '8 avril ou 4 août ? Seul l’émetteur le sait',
             },
             {
               id: 'quantite-negative',
@@ -802,7 +802,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'suspect-automatique',
-        'Case vide : une donnée douteuse ne se corrige jamais seule. Lire « 05/04/26 » comme un 5 avril, c’est parier sur le format.',
+        'Case vide : une donnée douteuse ne se corrige jamais seule. Lire « 08/04/26 » jour d’abord, c’est parier sur le format.',
       ],
       [
         'suspect-humain',
@@ -828,7 +828,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 4 — Nettoyer l’export',
         consigne:
-          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.',
+          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(ESTTEXTE(B2);DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -867,8 +867,8 @@ export const ACTE_1: moteur.Acte = [
       minutes: 2,
       notes: [
         'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
-        'Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote d’ouverture.',
-        'Défi : DATEVAL lit « 04/05/26 » comme le 4 mai ; une date d’un autre système ne se convertit pas sans demander.',
+        'Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).',
+        'Défi : DATEVAL lit « 08/04/26 » (ligne 3785) comme le 8 avril ; livrée le 7 août, la commande date sans doute du 4 août : une date d’un autre système ne se convertit pas sans demander.',
       ],
     },
     [
@@ -886,7 +886,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'b3-01-a1-a-verifier',
-        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir toutes les dates en texte par DATEVAL avant le contrôle aurait fait passer pour justes des dates au format jj/mm/aa qu’il fallait faire confirmer : la colonne controle n’aurait plus signalé que 39 lignes.',
+        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse à la première question du vote sur le fichier et Dupont, Bordeaux. Convertir les dates en texte par DATEVAL avant le contrôle aurait retiré du contrôle les 40 dates ISO, qu’elle lit sans ambiguïté, mais aussi 6 des 12 dates venues d’un autre système : écrites mois d’abord, DATEVAL les lit jour d’abord, et la date mal lue passe pour juste. La colonne controle n’aurait plus signalé que 39 lignes.',
       ],
     ],
   ),

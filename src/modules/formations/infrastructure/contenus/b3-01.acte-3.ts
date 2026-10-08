@@ -255,7 +255,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 9 — CA et objectif par agence',
         consigne:
-          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, puis relier T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
+          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, puis relier T_Commandes et Objectifs à Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -287,11 +287,11 @@ export const ACTE_3: moteur.Acte = [
     [
       [
         'b3-01-a3-agences-sous-objectif',
-        'L’objectif cumulé additionne les objectifs mensuels de janvier à septembre 2026 : trois agences restent en dessous.',
+        'Trois agences restent sous leur objectif cumulé de janvier à septembre 2026.',
       ],
       [
         'b3-01-a3-atteinte-rennes',
-        'CA de Rennes ÷ objectif cumulé de Rennes, de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %.',
+        'CA de Rennes ÷ objectif cumulé de Rennes, qui additionne ses objectifs mensuels de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %.',
       ],
     ],
   ),
@@ -524,14 +524,14 @@ export const ACTE_3: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 6 min',
         'Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
-        'Puis révéler la correction : les quatre histoires s’affichent ensemble ; les commenter une à une.',
+        'Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an dans toutes ses catégories, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.',
       ),
       proprietes: {
         metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
         situation:
           'Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande trois recommandations, tirées de votre tableau de bord.',
         geste:
-          'Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise.',
+          'Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise, datée, confiée à quelqu’un.',
         consequence:
           'Une recommandation sans chiffre ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.',
         questionsLibres: [
@@ -563,19 +563,19 @@ export const ACTE_3: moteur.Acte = [
     [
       [
         'marseille',
-        'Marseille : la marge fond. Taux de marque de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction.',
+        'Marseille : la marge fond. Taux de marque de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : dès octobre, toute remise au-delà de 10 % validée par la direction, contrôle confié au responsable de l’agence.',
       ],
       [
         'rennes',
-        'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories sont stables. Action : comprendre la perte en informatique, client par client, et relancer l’offre.',
+        'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories sont stables. Action : d’ici décembre, reprendre la perte en informatique client par client et relancer l’offre, plan confié au responsable de l’agence.',
       ],
       [
         'lille',
-        'Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Cause : toute la demande de l’agence progresse, chacune des catégories croît de plus de 10 %, pas une seule. Action : comprendre ce qui marche à Lille et le partager aux autres agences.',
+        'Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Cause : toute la demande de l’agence progresse, chacune des catégories croît de plus de 10 %, pas une seule. Action : avant le prochain comité, décrire ce qui marche à Lille et le partager aux autres agences, travail confié au responsable de l’agence.',
       ],
       [
         'strasbourg',
-        'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients.',
+        'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées environ deux mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock d’avril à juillet. Action : dès octobre, traiter le transport et le stock de Strasbourg avant de perdre ses clients, plan confié au responsable de l’agence.',
       ],
     ],
   ),
