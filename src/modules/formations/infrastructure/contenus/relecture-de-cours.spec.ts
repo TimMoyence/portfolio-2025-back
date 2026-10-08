@@ -9,6 +9,8 @@ import {
   valeursDevoileesAvantLeurEcran,
   valeursDevoileesParLesExplications,
 } from '../../../../../test/helpers/relecture-de-cours';
+import { COURS_B2_05 } from './b2-05.cours';
+import { COURS_B2_06 } from './b2-06.cours';
 import { COURS_B3_01 } from './b3-01.cours';
 import { PIEGES_B3_01, VALEURS_B3_01 } from './b3-01.donnees';
 
@@ -145,4 +147,18 @@ describe('Gardes de relecture, éprouvées par mutation du B3-01', () => {
       '0,15 dans B3-01-A2-03-COURS-CHERCHER-AGREGER',
     ]);
   });
+});
+
+describe('Gardes de relecture sur les cours à feuilles exigeant une formule', () => {
+  it.each([
+    ['B2-05', COURS_B2_05],
+    ['B2-06', COURS_B2_06],
+  ])(
+    '%s · ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant',
+    (_, contenu) => {
+      expect(
+        valeursDevoileesAvantLeurEcran(buildCoursDuContenu(contenu)),
+      ).toEqual([]);
+    },
+  );
 });

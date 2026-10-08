@@ -253,21 +253,29 @@ function explicationsSituees(cours: Cours): ExplicationSituee[] {
   });
 }
 
+function alertesParExplication(
+  cours: Cours,
+  alertesDe: (explication: ExplicationSituee) => string[],
+): string[] {
+  return explicationsSituees(cours).flatMap((explication) =>
+    alertesDe(explication).map(
+      (alerte) =>
+        `${alerte} dans ${explication.ecran} (${explication.reference})`,
+    ),
+  );
+}
+
 export function valeursDevoileesParLesExplications(
   cours: Cours,
   valeurs: Readonly<Record<string, number | string>>,
 ): string[] {
-  return explicationsSituees(cours).flatMap(
-    ({ ecran, reference, texte, ouvertes }) =>
-      ouvertes
-        .filter(
-          (id) =>
-            valeurs[id] !== undefined && contientLaForme(texte, valeurs[id]),
-        )
-        .map(
-          (id) =>
-            `${formeFrancaise(valeurs[id])} de ${id} dans ${ecran} (${reference})`,
-        ),
+  return alertesParExplication(cours, ({ texte, ouvertes }) =>
+    ouvertes
+      .filter(
+        (id) =>
+          valeurs[id] !== undefined && contientLaForme(texte, valeurs[id]),
+      )
+      .map((id) => `${formeFrancaise(valeurs[id])} de ${id}`),
   );
 }
 
@@ -302,8 +310,9 @@ export function piegesPartagesDevoilesParLesExplications(
   cours: Cours,
   pieges: PiegesParQuestion,
 ): string[] {
-  return explicationsSituees(cours).flatMap(
-    ({ ecran, reference, texte, suivantesDeLEcran }) =>
+  return alertesParExplication(
+    cours,
+    ({ reference, texte, suivantesDeLEcran }) =>
       piegesReconnaissablesDe(pieges, reference)
         .filter(
           ([confusion, valeur]) =>
@@ -314,8 +323,7 @@ export function piegesPartagesDevoilesParLesExplications(
             ) && contientLaForme(texte, valeur),
         )
         .map(
-          ([confusion, valeur]) =>
-            `${formeFrancaise(valeur)} (${confusion}) dans ${ecran} (${reference})`,
+          ([confusion, valeur]) => `${formeFrancaise(valeur)} (${confusion})`,
         ),
   );
 }
@@ -337,10 +345,9 @@ export function piegesDesQuestionsSuivantesDevoilesParLesExplications(
   cours: Cours,
   pieges: PiegesParQuestion,
 ): string[] {
-  return explicationsSituees(cours).flatMap(
-    ({ ecran, reference, texte, suivantesDeLEcran }) =>
-      suivantesDeLEcran
-        .flatMap((id) => piegesDevoilesDansLeTexte(pieges, id, texte))
-        .map((alerte) => `${alerte} dans ${ecran} (${reference})`),
+  return alertesParExplication(cours, ({ texte, suivantesDeLEcran }) =>
+    suivantesDeLEcran.flatMap((id) =>
+      piegesDevoilesDansLeTexte(pieges, id, texte),
+    ),
   );
 }
