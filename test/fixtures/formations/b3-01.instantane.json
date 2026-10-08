@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "5c6ee9661b8f4946dec345be929617e7a8bbd7a645809b2d7d44d90ec7fe3e7e",
+  "empreinte": "be16621678ff8b0b86512f24bf8a375dede9e284b4ebcafbb5129ced65b9b90d",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -92,7 +92,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.ab0980c3.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx"
         }
       },
       {
@@ -218,7 +218,7 @@
                   {
                     "kind": "definition",
                     "title": "Observation et variable",
-                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, un en-tête par colonne."
+                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, nommée dans une ligne d’en-tête, qui n’est pas une observation."
                   },
                   {
                     "kind": "property",
@@ -573,17 +573,17 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : le même outil, sur une colonne copiée à part, annonce combien il en reste.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil annonce combien il en reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
                   {
                     "kind": "property",
                     "title": "Nettoyer à côté, jamais dessus",
-                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs qu’une fois le contrôle fait."
+                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait."
                   },
                   {
                     "kind": "example",
@@ -874,7 +874,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 2",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.84b36eb4.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.67aba78a.xlsx"
         }
       },
       {
@@ -1338,13 +1338,13 @@
                     "steps": [
                       "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
                       "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
-                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic."
+                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "Si vous avez Excel 365 : le modèle de données",
-                    "text": "En cochant « Ajouter ces données au modèle de données », on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                    "text": "Avec Agences aussi sous forme de tableau, et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
                   }
                 ]
               }
@@ -1564,7 +1564,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 3",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.553ec6f4.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.88056d14.xlsx"
         }
       },
       {
@@ -1605,7 +1605,7 @@
                   {
                     "kind": "example",
                     "title": "Un titre qui dit la conclusion",
-                    "text": "« Caen à 92 % de son objectif » plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
+                    "text": "« Caen à 87 % de son objectif », un exemple hors dossier, plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
                   }
                 ]
               }
@@ -1700,7 +1700,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données : un TCD lit alors le CA et l’objectif côte à côte. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Agences et Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -1812,8 +1812,8 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Caen",
-                    "text": "Constat : délai médian de 7 jours ouvrés, contre 4 dans le réseau. Cause : changement de transporteur en mars. Action : renégocier le contrat, ou revenir à l’ancien transporteur."
+                    "title": "Caen, un exemple hors dossier",
+                    "text": "Constat : panier moyen en baisse de 12 % sur un an, quand il progresse ailleurs. Cause : ses deux plus gros clients commandent désormais en ligne. Action : leur proposer un contrat-cadre avant la fin du trimestre, confié au directeur d’agence."
                   }
                 ]
               }
@@ -1885,9 +1885,9 @@
               "brique": "fp-numeric",
               "donnees": {
                 "question": {
-                  "id": "b3-01-a3-ca-2026",
-                  "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
-                  "unite": "€",
+                  "id": "b3-01-a3-evolution",
+                  "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
                   "metadonnees": {
                     "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
@@ -1902,9 +1902,9 @@
               "brique": "fp-numeric",
               "donnees": {
                 "question": {
-                  "id": "b3-01-a3-evolution",
-                  "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
-                  "unite": "%",
+                  "id": "b3-01-a3-ca-2026",
+                  "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+                  "unite": "€",
                   "metadonnees": {
                     "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
@@ -1937,7 +1937,7 @@
               "donnees": {
                 "question": {
                   "id": "b3-01-a3-quarantaine",
-                  "enonce": "Combien de lignes compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
+                  "enonce": "Combien de lignes de données, hors en-tête, compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
                     "concepts": ["tableau-de-bord", "indicateur-statistique"],
@@ -2258,7 +2258,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.ab0980c3.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx"
         },
         "notes": "• Lire le courriel à voix haute, puis faire télécharger le classeur depuis le poste.\n• Vérifier qu’il s’ouvre sans réparation et que l’onglet Commandes est visible.\n• Annoncer la séance : six niveaux, deux pauses de 15 minutes, un tableau de bord pour le comité de jeudi.",
         "diffusion": "catalogue",
@@ -2385,7 +2385,7 @@
             "confusions": [
               {
                 "id": "part-douteuse-estimee-sans-mesure",
-                "libelle": "Estimer à l’œil la part des lignes fausses ou douteuses : seule une colonne de contrôle la mesure."
+                "libelle": "Estimer à l’œil la part des lignes fausses ou douteuses au lieu de la mesurer, anomalie par anomalie."
               }
             ]
           },
@@ -2472,7 +2472,7 @@
                   {
                     "kind": "definition",
                     "title": "Observation et variable",
-                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, un en-tête par colonne."
+                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, nommée dans une ligne d’en-tête, qui n’est pas une observation."
                   },
                   {
                     "kind": "property",
@@ -2890,11 +2890,11 @@
         "explications": [
           {
             "reference": "b3-01-a1-granularite",
-            "texte": "Une commande regroupe un à cinq produits, une ligne par produit, et les lignes exportées deux fois, vues à l’exercice 4, en ajoutent : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts."
+            "texte": "Une commande regroupe un à cinq produits, une ligne par produit, et les lignes exportées deux fois, que l’exercice 4 retirera, en ajoutent : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts."
           },
           {
             "reference": "b3-01-a1-lignes-commande",
-            "texte": "Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1."
+            "texte": "Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1. Effacez ensuite le filtre (Données › Effacer) : la suite lit tout l’onglet."
           }
         ]
       },
@@ -3054,17 +3054,17 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : le même outil, sur une colonne copiée à part, annonce combien il en reste.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil annonce combien il en reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
                   {
                     "kind": "property",
                     "title": "Nettoyer à côté, jamais dessus",
-                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs qu’une fois le contrôle fait."
+                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait."
                   },
                   {
                     "kind": "example",
@@ -3216,7 +3216,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; supprimer une ligne au lieu de la signaler.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
+        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3384,7 +3384,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.\n• Villes distinctes : copier la colonne N en valeurs à part, puis Supprimer les doublons ; sous Excel 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote d’ouverture.\n• Défi : DATEVAL lit « 04/05/26 » comme le 4 mai ; une date d’un autre système ne se convertit pas sans demander.",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.\n• Villes distinctes : copier la colonne N en valeurs à part, puis Supprimer les doublons ; sous Excel 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote d’ouverture.\n• Défi : DATEVAL lit « 04/05/26 » comme le 4 mai ; une date d’un autre système ne se convertit pas sans demander.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3467,7 +3467,7 @@
           },
           {
             "reference": "b3-01-a1-a-verifier",
-            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent et dates restées en texte. Avec les anomalies corrigées par formule, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39."
+            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39."
           }
         ]
       },
@@ -3544,9 +3544,9 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 2",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.84b36eb4.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.67aba78a.xlsx"
         },
-        "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.\n• Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.",
+        "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Montrer l’onglet Quarantaine : les lignes à demander, chacune avec son motif. Les dates ISO, que DATEVAL convertit sans ambiguïté, n’y sont plus ; les produits inconnus et les prix hors norme, que le contrôle de l’exercice 4 ne voyait pas, y sont.\n• Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.\n• Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3857,7 +3857,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : critère de date tout entier entre guillemets ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Défi : =I2*INDEX(Produits!$E$2:$E$41;EQUIV(H2;Produits!$A$2:$A$41;0)) donne le coût de la ligne.\n• Transition : « Passons au temps : un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : critère de date tout entier entre guillemets ; 15 pour 15 % ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : =I2*INDEX(Produits!$E$2:$E$41;EQUIV(H2;Produits!$A$2:$A$41;0)) donne le coût de la ligne.\n• Transition : « Passons au temps : un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3921,7 +3921,7 @@
         "explications": [
           {
             "reference": "b3-01-a2-ca-rennes-info",
-            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Une colonne categorie recopiée sans $ donne aussi 0 € : la plage de Produits glisse, et les lignes de 2026 ne trouvent plus leur catégorie. Sans critère de date, on additionne aussi 2025 : 27 862 €."
+            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Sans critère de date, on additionne aussi 2025 : 27 862 €."
           },
           {
             "reference": "b3-01-a2-remises-marseille",
@@ -3929,7 +3929,7 @@
           },
           {
             "reference": "b3-01-a2-ca-ouest",
-            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date : 188 908 €."
+            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date : 188 908 €."
           }
         ]
       },
@@ -4320,13 +4320,13 @@
                     "steps": [
                       "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
                       "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
-                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic."
+                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "Si vous avez Excel 365 : le modèle de données",
-                    "text": "En cochant « Ajouter ces données au modèle de données », on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                    "text": "Avec Agences aussi sous forme de tableau, et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
                   }
                 ]
               }
@@ -4631,7 +4631,7 @@
         },
         "pieceJointe": {
           "libelle": "Classeur de reprise de l’acte 3",
-          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.553ec6f4.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.88056d14.xlsx"
         },
         "notes": "• Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.\n• Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : redessiner au tableau les deux barres depuis zéro.",
         "diffusion": "seance",
@@ -4716,7 +4716,7 @@
                   {
                     "kind": "example",
                     "title": "Un titre qui dit la conclusion",
-                    "text": "« Caen à 92 % de son objectif » plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
+                    "text": "« Caen à 87 % de son objectif », un exemple hors dossier, plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
                   }
                 ]
               }
@@ -4890,7 +4890,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données : un TCD lit alors le CA et l’objectif côte à côte. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Agences et Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -4971,11 +4971,11 @@
         "explications": [
           {
             "reference": "b3-01-a3-agences-sous-objectif",
-            "texte": "L’objectif cumulé additionne les objectifs mensuels de janvier à septembre 2026 : trois agences restent en dessous. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences."
+            "texte": "L’objectif cumulé additionne les objectifs mensuels de janvier à septembre 2026 : trois agences restent en dessous."
           },
           {
             "reference": "b3-01-a3-atteinte-rennes",
-            "texte": "CA de Rennes ÷ objectif cumulé de Rennes, de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Divisé par les vingt et un mois d’objectifs, il tomberait à 33,8 %."
+            "texte": "CA de Rennes ÷ objectif cumulé de Rennes, de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %."
           }
         ]
       },
@@ -5106,8 +5106,8 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Caen",
-                    "text": "Constat : délai médian de 7 jours ouvrés, contre 4 dans le réseau. Cause : changement de transporteur en mars. Action : renégocier le contrat, ou revenir à l’ancien transporteur."
+                    "title": "Caen, un exemple hors dossier",
+                    "text": "Constat : panier moyen en baisse de 12 % sur un an, quand il progresse ailleurs. Cause : ses deux plus gros clients commandent désormais en ligne. Action : leur proposer un contrat-cadre avant la fin du trimestre, confié au directeur d’agence."
                   }
                 ]
               }
@@ -5121,7 +5121,7 @@
             }
           }
         },
-        "notes": "• 3 min ; faire dire la question de décision du tableau de bord de Nadia.\n• Lire l’exemple de Caen en trois temps : constat, cause, action.\n• Transition : « Voyons la mise en forme conditionnelle et les segments. »",
+        "notes": "• 3 min ; faire dire la question de décision du tableau de bord de Nadia.\n• Lire l’exemple de Caen, pris hors dossier, en trois temps : constat, cause, action.\n• Transition : « Voyons la mise en forme conditionnelle et les segments. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5191,9 +5191,9 @@
               "brique": "fp-numeric",
               "donnees": {
                 "question": {
-                  "id": "b3-01-a3-ca-2026",
-                  "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
-                  "unite": "€",
+                  "id": "b3-01-a3-evolution",
+                  "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
                   "metadonnees": {
                     "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
@@ -5208,9 +5208,9 @@
               "brique": "fp-numeric",
               "donnees": {
                 "question": {
-                  "id": "b3-01-a3-evolution",
-                  "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
-                  "unite": "%",
+                  "id": "b3-01-a3-ca-2026",
+                  "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+                  "unite": "€",
                   "metadonnees": {
                     "concepts": ["tableau-de-bord", "indicateur-statistique"],
                     "misconceptionsCiblees": [],
@@ -5243,7 +5243,7 @@
               "donnees": {
                 "question": {
                   "id": "b3-01-a3-quarantaine",
-                  "enonce": "Combien de lignes compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
+                  "enonce": "Combien de lignes de données, hors en-tête, compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
                   "unite": "lignes",
                   "metadonnees": {
                     "concepts": ["tableau-de-bord", "indicateur-statistique"],
@@ -5257,20 +5257,10 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : toute la table au lieu de 2026 ; neuf mois comparés à douze ; moyenne des taux ; marge divisée par le coût d’achat ; lignes douteuses supprimées.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
-          {
-            "questionId": "b3-01-a3-ca-2026",
-            "bonneReponse": "575 046 €",
-            "confusions": [
-              {
-                "id": "periode-mal-delimitee",
-                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
-              }
-            ]
-          },
           {
             "questionId": "b3-01-a3-evolution",
             "bonneReponse": "8,6 %",
@@ -5278,6 +5268,16 @@
               {
                 "id": "evolution-sur-annee-pleine",
                 "libelle": "Comparer une année en cours, incomplète, à une année pleine au lieu de la même période."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a3-ca-2026",
+            "bonneReponse": "575 046 €",
+            "confusions": [
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               }
             ]
           },
@@ -5300,21 +5300,21 @@
             "bonneReponse": "60 lignes",
             "confusions": [
               {
-                "id": "suppression-au-lieu-de-signalement",
-                "libelle": "Supprimer une ligne douteuse au lieu de la mettre de côté avec son motif."
+                "id": "en-tete-compte-comme-ligne",
+                "libelle": "Compter la ligne d’en-tête parmi les données : NBVAL sur toute la colonne compte aussi le nom de la colonne."
               }
             ]
           }
         ],
         "questions": [
           {
-            "id": "b3-01-a3-ca-2026",
-            "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+            "id": "b3-01-a3-evolution",
+            "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
             "options": null
           },
           {
-            "id": "b3-01-a3-evolution",
-            "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
+            "id": "b3-01-a3-ca-2026",
+            "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
             "options": null
           },
           {
@@ -5324,19 +5324,19 @@
           },
           {
             "id": "b3-01-a3-quarantaine",
-            "enonce": "Combien de lignes compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
+            "enonce": "Combien de lignes de données, hors en-tête, compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
             "options": null
           }
         ],
         "corrigeEcran": null,
         "explications": [
           {
-            "reference": "b3-01-a3-ca-2026",
-            "texte": "SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €. Toute la table, 2025 compris, donne 1 313 125 € : deux années mêlées dans un seul indicateur."
-          },
-          {
             "reference": "b3-01-a3-evolution",
             "texte": "CA de janvier à septembre 2026 ÷ CA de janvier à septembre 2025 − 1 : +8,6 %. Rapporté à toute l’année 2025, douze mois contre neuf, il donnerait −22,1 % : une chute qui n’existe pas."
+          },
+          {
+            "reference": "b3-01-a3-ca-2026",
+            "texte": "SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €. Toute la table, 2025 compris, donne 1 313 125 € : deux années mêlées dans un seul indicateur."
           },
           {
             "reference": "b3-01-a3-marge-marseille",
@@ -5344,7 +5344,7 @@
           },
           {
             "reference": "b3-01-a3-quarantaine",
-            "texte": "L’onglet Quarantaine compte 60 lignes, chacune avec son motif : livraisons impossibles, produits inconnus, commercial absent, dates d’un autre système, quantités négatives, prix hors norme. Une ligne supprimée ne laisse aucune trace : la quarantaine serait vide, et la question ne serait jamais posée."
+            "texte": "L’onglet Quarantaine compte 60 lignes de données, chacune avec son motif : les 85 lignes « À vérifier » de l’exercice 4, moins les 40 dates ISO que DATEVAL convertit sans ambiguïté, plus 9 produits inconnus et 6 prix hors norme. NBVAL sur toute la colonne A compte aussi l’en-tête : 61."
           }
         ]
       },
@@ -5608,6 +5608,7 @@
       "lignes-comptees-pour-commandes": "B3-01-A1-05-COURS-DONNEE",
       "commandes-comptees-pour-lignes": "B3-01-A1-05-COURS-DONNEE",
       "type-de-variable-confondu": "B3-01-A1-05-COURS-DONNEE",
+      "en-tete-compte-comme-ligne": "B3-01-A1-05-COURS-DONNEE",
       "libelle-pris-pour-cle": "B3-01-A1-06-COURS-RELATIONS",
       "cle-prise-pour-categorie": "B3-01-A1-06-COURS-RELATIONS",
       "part-douteuse-estimee-sans-mesure": "B3-01-A1-10-COURS-GRILLE",
@@ -5702,7 +5703,7 @@
         },
         "pieceJointe": {
           "libelle": "Export des ventes Norvane (classeur Excel)",
-          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.ab0980c3.xlsx"
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.d4f2ceab.xlsx"
         }
       },
       {
@@ -5787,7 +5788,7 @@
                   {
                     "kind": "definition",
                     "title": "Observation et variable",
-                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, un en-tête par colonne."
+                    "text": "Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, nommée dans une ligne d’en-tête, qui n’est pas une observation."
                   },
                   {
                     "kind": "property",
@@ -5988,17 +5989,17 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : le même outil, sur une colonne copiée à part, annonce combien il en reste.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil annonce combien il en reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
                   {
                     "kind": "property",
                     "title": "Nettoyer à côté, jamais dessus",
-                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs qu’une fois le contrôle fait."
+                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait."
                   },
                   {
                     "kind": "example",
@@ -6356,13 +6357,13 @@
                     "steps": [
                       "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
                       "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
-                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic."
+                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "Si vous avez Excel 365 : le modèle de données",
-                    "text": "En cochant « Ajouter ces données au modèle de données », on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                    "text": "Avec Agences aussi sous forme de tableau, et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
                   }
                 ]
               }
@@ -6490,7 +6491,7 @@
                   {
                     "kind": "example",
                     "title": "Un titre qui dit la conclusion",
-                    "text": "« Caen à 92 % de son objectif » plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
+                    "text": "« Caen à 87 % de son objectif », un exemple hors dossier, plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
                   }
                 ]
               }
@@ -6569,8 +6570,8 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Caen",
-                    "text": "Constat : délai médian de 7 jours ouvrés, contre 4 dans le réseau. Cause : changement de transporteur en mars. Action : renégocier le contrat, ou revenir à l’ancien transporteur."
+                    "title": "Caen, un exemple hors dossier",
+                    "text": "Constat : panier moyen en baisse de 12 % sur un an, quand il progresse ailleurs. Cause : ses deux plus gros clients commandent désormais en ligne. Action : leur proposer un contrat-cadre avant la fin du trimestre, confié au directeur d’agence."
                   }
                 ]
               }

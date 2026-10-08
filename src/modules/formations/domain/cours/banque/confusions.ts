@@ -592,7 +592,7 @@ const DEFINITIONS = {
   'part-douteuse-estimee-sans-mesure': {
     concept: 'qualite-des-donnees',
     libelle:
-      'Estimer à l’œil la part des lignes fausses ou douteuses : seule une colonne de contrôle la mesure.',
+      'Estimer à l’œil la part des lignes fausses ou douteuses au lieu de la mesurer, anomalie par anomalie.',
   },
   'cle-prise-pour-categorie': {
     concept: 'cle-et-relation',
@@ -623,6 +623,11 @@ const DEFINITIONS = {
     concept: 'tableau-de-bord',
     libelle:
       'Montrer le détail des lignes là où la décision attend quelques indicateurs, chacun avec sa comparaison.',
+  },
+  'en-tete-compte-comme-ligne': {
+    concept: 'jeu-de-donnees',
+    libelle:
+      'Compter la ligne d’en-tête parmi les données : NBVAL sur toute la colonne compte aussi le nom de la colonne.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 

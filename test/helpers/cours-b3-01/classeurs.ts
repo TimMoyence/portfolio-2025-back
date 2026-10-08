@@ -8,6 +8,7 @@ import {
 } from 'node:fs';
 import { join } from 'node:path';
 import { Workbook, type Cell, type CellValue, type Worksheet } from 'exceljs';
+import JSZip from 'jszip';
 import { GRAINE_B3_01 } from './generateur';
 import type { Valeur } from './excel';
 import type {
@@ -201,7 +202,15 @@ async function octetsDuClasseur(publie: ClasseurAPublier): Promise<Buffer> {
   for (const [nom, onglet] of Object.entries(publie.classeur)) {
     ajouterLOnglet(classeur, nom, onglet, publie.tableau);
   }
-  return Buffer.from(await classeur.xlsx.writeBuffer());
+  return dateALExport(Buffer.from(await classeur.xlsx.writeBuffer()));
+}
+
+async function dateALExport(octets: Buffer): Promise<Buffer> {
+  const archive = await JSZip.loadAsync(octets);
+  archive.forEach((_, entree) => {
+    entree.date = DATE_DE_L_EXPORT;
+  });
+  return archive.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
 }
 
 export function empreinteDuFichier(chemin: string): string {

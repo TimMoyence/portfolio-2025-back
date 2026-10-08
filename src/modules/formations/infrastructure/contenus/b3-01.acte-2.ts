@@ -12,6 +12,7 @@ export const ACTE_2: moteur.Acte = [
     concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
     notes: moteur.puces(
       'Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.',
+      'Montrer l’onglet Quarantaine : les lignes à demander, chacune avec son motif. Les dates ISO, que DATEVAL convertit sans ambiguïté, n’y sont plus ; les produits inconnus et les prix hors norme, que le contrôle de l’exercice 4 ne voyait pas, y sont.',
       'Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.',
       'Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.',
     ),
@@ -238,7 +239,7 @@ export const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
         'Défi : =I2*INDEX(Produits!$E$2:$E$41;EQUIV(H2;Produits!$A$2:$A$41;0)) donne le coût de la ligne.',
         'Transition : « Passons au temps : un vote. »',
       ],
@@ -246,7 +247,7 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-ca-rennes-info',
-        'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Une colonne categorie recopiée sans $ donne aussi 0 € : la plage de Produits glisse, et les lignes de 2026 ne trouvent plus leur catégorie. Sans critère de date, on additionne aussi 2025 : 27 862 €.',
+        'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €. Sans critère de date, on additionne aussi 2025 : 27 862 €.',
       ],
       [
         'b3-01-a2-remises-marseille',
@@ -254,7 +255,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-ca-ouest',
-        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date : 188 908 €.',
+        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date : 188 908 €.',
       ],
     ],
   ),
@@ -485,13 +486,13 @@ export const ACTE_2: moteur.Acte = [
           steps: [
             'Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.',
             'Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.',
-            'Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic.',
+            'Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré.',
           ],
         },
         {
           kind: 'example',
           title: 'Si vous avez Excel 365 : le modèle de données',
-          text: 'En cochant « Ajouter ces données au modèle de données », on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée.',
+          text: 'Avec Agences aussi sous forme de tableau, et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée.',
         },
       ],
     },

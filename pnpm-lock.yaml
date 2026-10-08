@@ -244,6 +244,9 @@ importers:
       jscpd4:
         specifier: npm:jscpd@4.3.0
         version: jscpd@4.3.0
+      jszip:
+        specifier: 3.10.2
+        version: 3.10.2
       knip:
         specifier: ^6.32.0
         version: 6.32.0

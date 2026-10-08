@@ -682,16 +682,26 @@ describe('stockage multi-briques (B1)', () => {
     });
 
     it.each([
-      ['qui remonte d un dossier', '/assets/cours/b3-01/../secret.xlsx'],
-      ['rangé dans un sous-dossier', '/assets/cours/b3-01/reprises/B3-01.xlsx'],
+      [
+        'qui remonte d un dossier',
+        '/assets/cours/b3-01/../secret.0c1d2e3f.xlsx',
+      ],
+      [
+        'rangé dans un sous-dossier',
+        '/assets/cours/b3-01/reprises/B3-01.0c1d2e3f.xlsx',
+      ],
       [
         'servi par une autre origine',
-        'https://exemple.fr/assets/cours/b3-01/B3-01.xlsx',
+        'https://exemple.fr/assets/cours/b3-01/B3-01.0c1d2e3f.xlsx',
       ],
-      ['relatif', 'assets/cours/b3-01/B3-01.xlsx'],
-      ['hors des assets des cours', '/assets/images/B3-01.xlsx'],
-      ['exécutable', '/assets/cours/b3-01/B3-01.exe'],
-      ['à macros', '/assets/cours/b3-01/B3-01.xlsm'],
+      [
+        'servi par une origine implicite',
+        '//exemple.fr/assets/cours/b3-01/B3-01.0c1d2e3f.xlsx',
+      ],
+      ['relatif', 'assets/cours/b3-01/B3-01.0c1d2e3f.xlsx'],
+      ['hors des assets des cours', '/assets/images/B3-01.0c1d2e3f.xlsx'],
+      ['exécutable', '/assets/cours/b3-01/B3-01.0c1d2e3f.exe'],
+      ['à macros', '/assets/cours/b3-01/B3-01.0c1d2e3f.xlsm'],
       ['à l empreinte tronquée', '/assets/cours/b3-01/B3-01_reprise.3f9a.xlsx'],
       [
         'sans empreinte, qu un cache servirait encore après une correction',

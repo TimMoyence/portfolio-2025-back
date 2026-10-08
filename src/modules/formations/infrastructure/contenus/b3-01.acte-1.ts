@@ -188,7 +188,7 @@ export const ACTE_1: moteur.Acte = [
         {
           kind: 'definition',
           title: 'Observation et variable',
-          text: 'Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, un en-tête par colonne.',
+          text: 'Une observation est une ligne : un fait enregistré. Une variable est une colonne : une caractéristique de chaque observation. Une observation par ligne, une variable par colonne, nommée dans une ligne d’en-tête, qui n’est pas une observation.',
         },
         {
           kind: 'property',
@@ -481,11 +481,11 @@ export const ACTE_1: moteur.Acte = [
     [
       [
         'b3-01-a1-granularite',
-        'Une commande regroupe un à cinq produits, une ligne par produit, et les lignes exportées deux fois, vues à l’exercice 4, en ajoutent : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts.',
+        'Une commande regroupe un à cinq produits, une ligne par produit, et les lignes exportées deux fois, que l’exercice 4 retirera, en ajoutent : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts.',
       ],
       [
         'b3-01-a1-lignes-commande',
-        'Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1.',
+        'Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1. Effacez ensuite le filtre (Données › Effacer) : la suite lit tout l’onglet.',
       ],
     ],
   ),
@@ -598,17 +598,17 @@ export const ACTE_1: moteur.Acte = [
           text: 'Chaque anomalie « faux · automatique » a son outil.',
           steps: [
             'Espaces en trop : SUPPRESPACE(E2).',
-            'Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
+            'Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
             'Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.',
             'Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.',
-            'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : le même outil, sur une colonne copiée à part, annonce combien il en reste.',
+            'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil annonce combien il en reste.',
             'Colonne controle : SI et OU renvoient « À vérifier » ou « OK ».',
           ],
         },
         {
           kind: 'property',
           title: 'Nettoyer à côté, jamais dessus',
-          text: 'On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs qu’une fois le contrôle fait.',
+          text: 'On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs par-dessus la donnée brute qu’une fois le contrôle fait.',
         },
         {
           kind: 'example',
@@ -684,7 +684,7 @@ export const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 3 min',
         'Réflexion : rappeler les deux questions de la grille avant de trier.',
-        'Pièges : corriger seul une date douteuse ; supprimer une ligne au lieu de la signaler.',
+        'Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.',
       ),
       proprietes: {
         modalite: 'binome',
@@ -865,7 +865,7 @@ export const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
         'Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote d’ouverture.',
         'Défi : DATEVAL lit « 04/05/26 » comme le 4 mai ; une date d’un autre système ne se convertit pas sans demander.',
       ],
@@ -885,7 +885,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'b3-01-a1-a-verifier',
-        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent et dates restées en texte. Avec les anomalies corrigées par formule, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39.',
+        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39.',
       ],
     ],
   ),

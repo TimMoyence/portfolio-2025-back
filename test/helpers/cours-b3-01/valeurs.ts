@@ -26,6 +26,7 @@ import {
   valeurDe,
   type JeuB301,
   type Ligne,
+  type Onglet,
 } from './modele';
 
 const DEBUT_2025 = dateExcel(2025, 1, 1);
@@ -44,7 +45,6 @@ const INFORMATIQUE = 'Informatique';
 const OUEST = 'Ouest';
 const CRITERE_DE_DATE_SANS_ESPERLUETTE = 'DATE(2026;1;1)';
 const REMISE_ECRITE_EN_POINTS = 15;
-const LIGNES_LAISSEES_EN_QUARANTAINE_PAR_UNE_SUPPRESSION = 0;
 
 interface Vente {
   readonly agence: string;
@@ -80,6 +80,13 @@ function cleExcel(valeur: Valeur): string {
 
 function distinctes(valeurs: readonly Valeur[]): number {
   return new Set(valeurs.map(cleExcel)).size;
+}
+
+function nbvalDeLaPremiereColonne({ colonnes, lignes }: Onglet): number {
+  const [{ nom }] = colonnes;
+  return [nom, ...lignes.map((ligne) => valeurDe(ligne, nom))].filter(
+    (valeur) => valeur !== null && valeur !== '',
+  ).length;
 }
 
 function lignesUniques(lignes: readonly Ligne[]): Ligne[] {
@@ -431,8 +438,9 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         'marque-confondue-avec-marge': pourcent(tauxDeMarge(deMarseille2026)),
       },
       'b3-01-a3-quarantaine': {
-        'suppression-au-lieu-de-signalement':
-          LIGNES_LAISSEES_EN_QUARANTAINE_PAR_UNE_SUPPRESSION,
+        'en-tete-compte-comme-ligne': nbvalDeLaPremiereColonne(
+          ongletDe(jeu.reprise1, 'Quarantaine'),
+        ),
       },
     },
   };

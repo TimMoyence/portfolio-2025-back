@@ -3,6 +3,7 @@ import {
   lireConception,
   piecesJointesDuDocument,
 } from '../../../../../test/helpers/conception-de-cours';
+import { ANOMALIES_SEMEES } from '../../../../../test/helpers/cours-b3-01/generateur';
 import * as fiche from '../../../../../test/helpers/fiche-de-cours';
 import * as feuille from '../../../../../test/helpers/feuille-de-cours';
 import {
@@ -11,6 +12,7 @@ import {
   valeursDevoileesAvantLeurEcran,
   valeursDevoileesParLesExplications,
 } from '../../../../../test/helpers/relecture-de-cours';
+import { libelleDeConfusion } from '../../domain/cours/banque/confusions';
 import { questionsDuCours } from '../../domain/cours/Cours';
 import { tirer } from '../../domain/cours/Tirage';
 import { COURS_B3_01 } from './b3-01.cours';
@@ -126,7 +128,7 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
   noteesParType: [4, 18, 3, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 33,
+  remediations: 34,
   options: 12,
   catalogue: [
     'A1-02',
@@ -487,6 +489,80 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
       'en N et O, sans insérer de colonne',
     );
   });
+
+  it('A1-11 · fait coller en valeurs la colonne nettoyée avant d’en compter les valeurs distinctes', () => {
+    const texte = texteDe('B3-01-A1-11-COURS-OUTILS');
+
+    expect(texte).toContain(
+      'collez-la en valeurs à part (Collage spécial › Valeurs)',
+    );
+    expect(texte).not.toContain('sur une colonne copiée à part');
+    expect(texte).toContain('par-dessus la donnée brute');
+  });
+
+  it('A1-08 · fait effacer le filtre dès sa correction, pour que les écrans suivants lisent tout l’onglet', () => {
+    expect(explicationsDe('B3-01-A1-08-ATELIER-GRANULARITE').at(-1)).toContain(
+      'Effacez ensuite le filtre',
+    );
+  });
+
+  it('A1-08 · annonce au futur les doublons que l’exercice 4 retirera', () => {
+    const [granularite] = explicationsDe('B3-01-A1-08-ATELIER-GRANULARITE');
+
+    expect(granularite).not.toContain('vues à l’exercice 4');
+    expect(granularite).toContain('que l’exercice 4 retirera');
+  });
+
+  it('A1-11 · illustre NOMPROPRE sur une ville en capitales, sans la prêter à E2', () => {
+    const texte = texteDe('B3-01-A1-11-COURS-OUTILS');
+
+    expect(texte).not.toContain('NOMPROPRE(E2) écrit');
+    expect(texte).toContain('« BORDEAUX » devient « Bordeaux »');
+  });
+
+  it('A1-04 · ne prétend pas qu’une seule colonne de contrôle mesure la part douteuse', () => {
+    expect(
+      libelleDeConfusion('part-douteuse-estimee-sans-mesure'),
+    ).not.toContain('colonne de contrôle');
+  });
+
+  it('A1-13 · n’annonce en piège aucune suppression, que le tri ne propose pas', () => {
+    expect(texteDe('B3-01-A1-13-TRI-ANOMALIES')).not.toContain(
+      'supprimer une ligne',
+    );
+  });
+
+  it('A1-14 · recompose la part douteuse : contrôle, formules, défi et lignes hors contrôle', () => {
+    const aVerifier = explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE').at(-1);
+    const corrigeesParFormule = ANOMALIES_SEMEES.F1 + ANOMALIES_SEMEES.F2;
+    const horsControle = ANOMALIES_SEMEES.H1 + ANOMALIES_SEMEES.S3;
+
+    expect(
+      VALEURS_B3_01['b3-01-a1-a-verifier'] +
+        corrigeesParFormule +
+        ANOMALIES_SEMEES.F4 +
+        horsControle,
+    ).toBe(614);
+    expect(aVerifier).toContain(`en corrigent ${corrigeesParFormule} autres`);
+    expect(aVerifier).toContain(`${ANOMALIES_SEMEES.F4} ca_ht mal calculés`);
+    expect(aVerifier).toContain(`${horsControle} échappent au contrôle`);
+  });
+
+  it('A1-05 · dit que la ligne d’en-tête n’est pas une observation', () => {
+    expect(texteDe('B3-01-A1-05-COURS-DONNEE')).toContain(
+      'une ligne d’en-tête, qui n’est pas une observation',
+    );
+  });
+
+  it('ne fait commencer aucune correction par la question la moins réussie, que le moteur dévoile dans l’ordre', () => {
+    const fautifs = COURS_B3_01.ecrans
+      .filter(({ screenId }) =>
+        texteDe(screenId).includes('en commençant par la moins réussie'),
+      )
+      .map(({ screenId }) => screenId);
+
+    expect(fautifs).toEqual([]);
+  });
 });
 
 describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
@@ -589,11 +665,12 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A2-04 · donne au total nul ses deux causes, à la première et à la troisième question', () => {
+  it('A2-04 · donne au total nul ses deux causes à la dernière question, sans souffler la recherche non figée à la première', () => {
     const [rennes, , ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
 
-    expect(rennes).toContain(
-      'Une colonne categorie recopiée sans $ donne aussi 0 €',
+    expect(rennes).not.toContain('sans $');
+    expect(ouest).toContain(
+      'Le même glissement vide la colonne categorie : à la première question aussi, 0 €',
     );
     expect(ouest).toContain(
       'Un critère de date écrit tout entier entre guillemets donne aussi 0 €',
@@ -715,6 +792,81 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     expect(texte).toContain(
       'Faites ressortir les agences sous 95 % de leur objectif',
     );
+  });
+
+  it('A3-05 · met Agences et Objectifs en tableau et filtre chaque table, car un filtre ne passe pas d’une table à l’autre', () => {
+    const texte = texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
+
+    expect(texte).toContain(
+      'mettez Agences et Objectifs sous forme de tableau',
+    );
+    expect(texte).toContain('un filtre ne passe pas d’une table à l’autre');
+    expect(texte).toContain('mois d’Objectifs de janvier à septembre 2026');
+  });
+
+  it('A3-05 · ne souffle pas à la première correction le piège des vingt et un mois, seul piège de la seconde', () => {
+    const [agences, rennes] = explicationsDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
+
+    expect(agences).not.toContain('vingt et un mois');
+    expect(rennes).toContain('vingt et un mois');
+    expect(rennes).toContain('dans les 12 agences');
+  });
+
+  it('A3-09 · pose l’évolution avant le CA cumulé, dont la correction donne le numérateur', () => {
+    expect(
+      questionsDe('B3-01-A3-09-ATELIER-DASHBOARD').map(({ id }) => id),
+    ).toEqual([
+      'b3-01-a3-evolution',
+      'b3-01-a3-ca-2026',
+      'b3-01-a3-marge-marseille',
+      'b3-01-a3-quarantaine',
+    ]);
+  });
+
+  it('A3-09 · compte la quarantaine hors en-tête et piège le NBVAL de la colonne entière', () => {
+    expect(enonceDe('b3-01-a3-quarantaine')).toContain('hors en-tête');
+    expect(PIEGES_B3_01['b3-01-a3-quarantaine']).toEqual({
+      'en-tete-compte-comme-ligne': VALEURS_B3_01['b3-01-a3-quarantaine'] + 1,
+    });
+    expect(remediationDe('en-tete-compte-comme-ligne')).toBe(
+      'B3-01-A1-05-COURS-DONNEE',
+    );
+  });
+
+  it('A3-09 · explique l’écart entre les lignes à vérifier de l’exercice 4 et la quarantaine', () => {
+    const quarantaine = explicationsDe('B3-01-A3-09-ATELIER-DASHBOARD').at(-1);
+
+    expect(
+      VALEURS_B3_01['b3-01-a1-a-verifier'] -
+        ANOMALIES_SEMEES.F5 +
+        ANOMALIES_SEMEES.H1 +
+        ANOMALIES_SEMEES.S3,
+    ).toBe(VALEURS_B3_01['b3-01-a3-quarantaine']);
+    expect(quarantaine).toContain(
+      `les ${VALEURS_B3_01['b3-01-a1-a-verifier']} lignes « À vérifier » de l’exercice 4, moins les ${ANOMALIES_SEMEES.F5} dates ISO`,
+    );
+    expect(quarantaine).toContain(
+      `plus ${ANOMALIES_SEMEES.H1} produits inconnus et ${ANOMALIES_SEMEES.S3} prix hors norme`,
+    );
+  });
+
+  it('A2-09 · met Agences en tableau avant de la relier, et rappelle qu’un filtre reste actif', () => {
+    const texte = texteDe('B3-01-A2-09-COURS-TCD');
+
+    expect(texte).toContain('Agences aussi sous forme de tableau');
+    expect(texte).toContain(
+      'un filtre reste actif tant qu’on ne l’a pas retiré',
+    );
+  });
+
+  it('A3-03 et A3-07 · donnent Caen pour un exemple hors dossier, sans souffler une histoire du comité', () => {
+    const graphiques = texteDe('B3-01-A3-03-COURS-GRAPHIQUES');
+    const dashboard = texteDe('B3-01-A3-07-COURS-DASHBOARD');
+
+    expect(graphiques).toContain('hors dossier');
+    expect(graphiques).not.toContain('92 %');
+    expect(dashboard).toContain('hors dossier');
+    expect(dashboard).not.toMatch(/transport|délai|mars/);
   });
 
   it('A3-10 · date les ruptures de Strasbourg d’avril à juillet, livrées environ deux mois plus tard', () => {

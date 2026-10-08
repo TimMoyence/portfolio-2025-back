@@ -123,7 +123,7 @@ export const ACTE_3: moteur.Acte = [
         {
           kind: 'example',
           title: 'Un titre qui dit la conclusion',
-          text: '« Caen à 92 % de son objectif » plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres.',
+          text: '« Caen à 87 % de son objectif », un exemple hors dossier, plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres.',
         },
       ],
     },
@@ -255,7 +255,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 9 — CA et objectif par agence',
         consigne:
-          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données : un TCD lit alors le CA et l’objectif côte à côte. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
+          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Agences et Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -287,11 +287,11 @@ export const ACTE_3: moteur.Acte = [
     [
       [
         'b3-01-a3-agences-sous-objectif',
-        'L’objectif cumulé additionne les objectifs mensuels de janvier à septembre 2026 : trois agences restent en dessous. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences.',
+        'L’objectif cumulé additionne les objectifs mensuels de janvier à septembre 2026 : trois agences restent en dessous.',
       ],
       [
         'b3-01-a3-atteinte-rennes',
-        'CA de Rennes ÷ objectif cumulé de Rennes, de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Divisé par les vingt et un mois d’objectifs, il tomberait à 33,8 %.',
+        'CA de Rennes ÷ objectif cumulé de Rennes, de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences, et Rennes tombe à 33,8 %.',
       ],
     ],
   ),
@@ -342,7 +342,7 @@ export const ACTE_3: moteur.Acte = [
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
         '3 min ; faire dire la question de décision du tableau de bord de Nadia.',
-        'Lire l’exemple de Caen en trois temps : constat, cause, action.',
+        'Lire l’exemple de Caen, pris hors dossier, en trois temps : constat, cause, action.',
         'Transition : « Voyons la mise en forme conditionnelle et les segments. »',
       ),
     },
@@ -374,8 +374,8 @@ export const ACTE_3: moteur.Acte = [
         },
         {
           kind: 'example',
-          title: 'Caen',
-          text: 'Constat : délai médian de 7 jours ouvrés, contre 4 dans le réseau. Cause : changement de transporteur en mars. Action : renégocier le contrat, ou revenir à l’ancien transporteur.',
+          title: 'Caen, un exemple hors dossier',
+          text: 'Constat : panier moyen en baisse de 12 % sur un an, quand il progresse ailleurs. Cause : ses deux plus gros clients commandent désormais en ligne. Action : leur proposer un contrat-cadre avant la fin du trimestre, confié au directeur d’agence.',
         },
       ],
     },
@@ -446,7 +446,7 @@ export const ACTE_3: moteur.Acte = [
         'Temps : réflexion 1 min · travail 12 min',
         'Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
-        'Pièges : toute la table au lieu de 2026 ; neuf mois comparés à douze ; moyenne des taux ; marge divisée par le coût d’achat ; lignes douteuses supprimées.',
+        'Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.',
       ),
       proprietes: {
         intitule: 'Exercice 10 — Le tableau de bord Direction',
@@ -456,18 +456,18 @@ export const ACTE_3: moteur.Acte = [
         ordre: 'fixe',
         questions: [
           questionChiffree(
-            'b3-01-a3-ca-2026',
-            'tableau-de-bord',
-            'Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ?',
-            '€',
-            ['periode-mal-delimitee'],
-          ),
-          questionChiffree(
             'b3-01-a3-evolution',
             'tableau-de-bord',
             'De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ?',
             '%',
             ['evolution-sur-annee-pleine'],
+          ),
+          questionChiffree(
+            'b3-01-a3-ca-2026',
+            'tableau-de-bord',
+            'Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ?',
+            '€',
+            ['periode-mal-delimitee'],
           ),
           questionChiffree(
             'b3-01-a3-marge-marseille',
@@ -479,9 +479,9 @@ export const ACTE_3: moteur.Acte = [
           questionChiffree(
             'b3-01-a3-quarantaine',
             'qualite-des-donnees',
-            'Combien de lignes compte l’onglet Quarantaine du classeur de reprise ?',
+            'Combien de lignes de données, hors en-tête, compte l’onglet Quarantaine du classeur de reprise ?',
             'lignes',
-            ['suppression-au-lieu-de-signalement'],
+            ['en-tete-compte-comme-ligne'],
           ),
         ],
       },
@@ -489,19 +489,19 @@ export const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
         'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.',
         'Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »',
       ],
     },
     [
       [
-        'b3-01-a3-ca-2026',
-        'SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €. Toute la table, 2025 compris, donne 1 313 125 € : deux années mêlées dans un seul indicateur.',
-      ],
-      [
         'b3-01-a3-evolution',
         'CA de janvier à septembre 2026 ÷ CA de janvier à septembre 2025 − 1 : +8,6 %. Rapporté à toute l’année 2025, douze mois contre neuf, il donnerait −22,1 % : une chute qui n’existe pas.',
+      ],
+      [
+        'b3-01-a3-ca-2026',
+        'SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €. Toute la table, 2025 compris, donne 1 313 125 € : deux années mêlées dans un seul indicateur.',
       ],
       [
         'b3-01-a3-marge-marseille',
@@ -509,7 +509,7 @@ export const ACTE_3: moteur.Acte = [
       ],
       [
         'b3-01-a3-quarantaine',
-        'L’onglet Quarantaine compte 60 lignes, chacune avec son motif : livraisons impossibles, produits inconnus, commercial absent, dates d’un autre système, quantités négatives, prix hors norme. Une ligne supprimée ne laisse aucune trace : la quarantaine serait vide, et la question ne serait jamais posée.',
+        'L’onglet Quarantaine compte 60 lignes de données, chacune avec son motif : les 85 lignes « À vérifier » de l’exercice 4, moins les 40 dates ISO que DATEVAL convertit sans ambiguïté, plus 9 produits inconnus et 6 prix hors norme. NBVAL sur toute la colonne A compte aussi l’en-tête : 61.',
       ],
     ],
   ),

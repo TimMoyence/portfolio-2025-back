@@ -28,6 +28,7 @@ const CORRIGE_FORMATEUR = join(
   '.tmp/b3-01/B3-01_corrige_formateur.xlsx',
 );
 const DOSSIER_D_ESSAI = join(RACINE, '.tmp/b3-01/ecriture');
+const DOSSIER_DE_REECRITURE = join(RACINE, '.tmp/b3-01/reecriture');
 const DELAI_D_ECRITURE_MS = 120_000;
 const LONGUEUR_DU_SUFFIXE = 8;
 
@@ -48,6 +49,8 @@ describe('classeurs du B3-01', () => {
   beforeAll(async () => {
     if (process.env.ECRIRE_CLASSEURS === '1') {
       await ecrireLesClasseurs(jeu, DOSSIER_DES_CLASSEURS);
+    }
+    if (process.env.ECRIRE_CORRIGE === '1') {
       await ecrireLeCorrigeFormateur(jeu, CORRIGE_FORMATEUR);
     }
   }, DELAI_D_ECRITURE_MS);
@@ -134,6 +137,21 @@ describe('classeurs du B3-01', () => {
         );
       }
       rmSync(DOSSIER_D_ESSAI, { recursive: true, force: true });
+    },
+    DELAI_D_ECRITURE_MS,
+  );
+
+  it(
+    'récrit le même jeu octet pour octet, sous les noms déjà publiés, quelle que soit l’heure de l’écriture',
+    async () => {
+      rmSync(DOSSIER_DE_REECRITURE, { recursive: true, force: true });
+
+      await ecrireLesClasseurs(jeu, DOSSIER_DE_REECRITURE);
+
+      expect(lireLeManifeste(DOSSIER_DE_REECRITURE)).toEqual(
+        lireLeManifeste(DOSSIER_DES_CLASSEURS),
+      );
+      rmSync(DOSSIER_DE_REECRITURE, { recursive: true, force: true });
     },
     DELAI_D_ECRITURE_MS,
   );

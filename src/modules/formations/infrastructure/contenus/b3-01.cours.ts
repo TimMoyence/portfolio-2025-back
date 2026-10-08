@@ -11,6 +11,7 @@ const REMEDIATIONS: ContenuDeCours['remediations'] = {
   'lignes-comptees-pour-commandes': 'B3-01-A1-05-COURS-DONNEE',
   'commandes-comptees-pour-lignes': 'B3-01-A1-05-COURS-DONNEE',
   'type-de-variable-confondu': 'B3-01-A1-05-COURS-DONNEE',
+  'en-tete-compte-comme-ligne': 'B3-01-A1-05-COURS-DONNEE',
   'libelle-pris-pour-cle': 'B3-01-A1-06-COURS-RELATIONS',
   'cle-prise-pour-categorie': 'B3-01-A1-06-COURS-RELATIONS',
   'part-douteuse-estimee-sans-mesure': 'B3-01-A1-10-COURS-GRILLE',
