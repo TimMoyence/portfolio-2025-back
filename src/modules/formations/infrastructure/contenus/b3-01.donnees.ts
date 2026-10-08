@@ -110,6 +110,12 @@ export const PIEGES_B3_01: PiegesB301 = {
   'b3-01-a3-marge-marseille': { 'moyenne-simple-des-taux': 28.7 },
 };
 
+export const CLASSEURS_B3_01 = {
+  brut: '/assets/cours/b3-01/B3-01_export_ventes.xlsx',
+  repriseActe2: '/assets/cours/b3-01/B3-01_reprise_acte_2.e63154db.xlsx',
+  repriseActe3: '/assets/cours/b3-01/B3-01_reprise_acte_3.dccca981.xlsx',
+} as const;
+
 export const HISTOIRES_B3_01: Readonly<Record<HistoireB301, number>> = {
   'ca-2025-rennes': 52_000,
   'ca-2025-nantes': 59_000,

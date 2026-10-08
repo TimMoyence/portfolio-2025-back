@@ -1,0 +1,111 @@
+{
+  "graine": 20261013,
+  "classeurs": [
+    {
+      "role": "brut",
+      "fichier": "B3-01_export_ventes.xlsx",
+      "empreinte": "ab0980c3e6a97604c7295427dcc1a15efe634f69033d5f213eaa7024881d1e92",
+      "onglets": [
+        {
+          "nom": "Commandes",
+          "lignes": 4144,
+          "empreinte": "e6d8970cb3788fc43fe719b1b7de0b3ab6e953251d1c87279f1b55bd105057a7"
+        },
+        {
+          "nom": "Clients",
+          "lignes": 600,
+          "empreinte": "8ea0f23baafbcec6e830f91fae083fabc39917061e5c2ad1c0c4759faa918743"
+        },
+        {
+          "nom": "Produits",
+          "lignes": 40,
+          "empreinte": "0ecc01b0756538e81ca73030eba2320f130edad5e48d09550bf01c15804b108a"
+        },
+        {
+          "nom": "Agences",
+          "lignes": 12,
+          "empreinte": "9750c3a3bbb43a2c9378413fb1163c01851ca6a3bc4bf551fe97c6d1be12f6e2"
+        },
+        {
+          "nom": "Objectifs",
+          "lignes": 252,
+          "empreinte": "152f1c400397ddc82e4e0b0786bf90e43ccde5d0fa9d24c0aaa35ce1f3c0d515"
+        }
+      ]
+    },
+    {
+      "role": "repriseActe2",
+      "fichier": "B3-01_reprise_acte_2.e63154db.xlsx",
+      "empreinte": "84b36eb4886e3007cdea7c6ac928da17841d4e060fd8e6bb39479cf496a4c5dd",
+      "onglets": [
+        {
+          "nom": "Commandes",
+          "lignes": 4038,
+          "empreinte": "731af296b538aa8e03a221c20514a2ce30220e4748c320baee3b1a27a74e4f1e"
+        },
+        {
+          "nom": "Quarantaine",
+          "lignes": 60,
+          "empreinte": "72aad2224d3528af742c920f8b9855133faf780514014869232ef9de4b5f5a45"
+        },
+        {
+          "nom": "Clients",
+          "lignes": 600,
+          "empreinte": "01feecfbdb6d3b108d7f9ca6e86677de35c6ff61e69ec6db1fffae935015e4cd"
+        },
+        {
+          "nom": "Produits",
+          "lignes": 40,
+          "empreinte": "0ecc01b0756538e81ca73030eba2320f130edad5e48d09550bf01c15804b108a"
+        },
+        {
+          "nom": "Agences",
+          "lignes": 12,
+          "empreinte": "9750c3a3bbb43a2c9378413fb1163c01851ca6a3bc4bf551fe97c6d1be12f6e2"
+        },
+        {
+          "nom": "Objectifs",
+          "lignes": 252,
+          "empreinte": "152f1c400397ddc82e4e0b0786bf90e43ccde5d0fa9d24c0aaa35ce1f3c0d515"
+        }
+      ]
+    },
+    {
+      "role": "repriseActe3",
+      "fichier": "B3-01_reprise_acte_3.dccca981.xlsx",
+      "empreinte": "553ec6f40c0eeaadd94273db3d0f74c521eea4d1600d455580d897c44a8cc115",
+      "onglets": [
+        {
+          "nom": "Commandes",
+          "lignes": 4038,
+          "empreinte": "ced74f80ee52135e6689993e0c2b00593f470b34f8df00e41e8b51d2189ce07e"
+        },
+        {
+          "nom": "Quarantaine",
+          "lignes": 60,
+          "empreinte": "72aad2224d3528af742c920f8b9855133faf780514014869232ef9de4b5f5a45"
+        },
+        {
+          "nom": "Clients",
+          "lignes": 600,
+          "empreinte": "01feecfbdb6d3b108d7f9ca6e86677de35c6ff61e69ec6db1fffae935015e4cd"
+        },
+        {
+          "nom": "Produits",
+          "lignes": 40,
+          "empreinte": "0ecc01b0756538e81ca73030eba2320f130edad5e48d09550bf01c15804b108a"
+        },
+        {
+          "nom": "Agences",
+          "lignes": 12,
+          "empreinte": "9750c3a3bbb43a2c9378413fb1163c01851ca6a3bc4bf551fe97c6d1be12f6e2"
+        },
+        {
+          "nom": "Objectifs",
+          "lignes": 252,
+          "empreinte": "152f1c400397ddc82e4e0b0786bf90e43ccde5d0fa9d24c0aaa35ce1f3c0d515"
+        }
+      ]
+    }
+  ]
+}
