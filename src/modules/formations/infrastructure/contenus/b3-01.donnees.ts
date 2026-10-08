@@ -38,6 +38,11 @@ export type HistoireB301 =
   | 'ca-2025-nantes'
   | 'taux-de-marge-marseille-2025'
   | 'evolution-informatique-rennes'
+  | 'evolution-min-rennes-hors-informatique'
+  | 'evolution-max-rennes-hors-informatique'
+  | 'evolution-rouen'
+  | 'evolution-min-categorie-rouen'
+  | 'evolution-max-categorie-rouen'
   | 'evolution-lille'
   | 'delai-median-strasbourg-2025'
   | 'delai-median-reseau-2026';
@@ -137,6 +142,11 @@ export const HISTOIRES_B3_01: Readonly<Record<HistoireB301, number>> = {
   'ca-2025-nantes': 59_500,
   'taux-de-marge-marseille-2025': 32.3,
   'evolution-informatique-rennes': -40.2,
+  'evolution-min-rennes-hors-informatique': -4.4,
+  'evolution-max-rennes-hors-informatique': 2.4,
+  'evolution-rouen': -2,
+  'evolution-min-categorie-rouen': -2.8,
+  'evolution-max-categorie-rouen': -0.1,
   'evolution-lille': 23.1,
   'delai-median-strasbourg-2025': 2,
   'delai-median-reseau-2026': 3,

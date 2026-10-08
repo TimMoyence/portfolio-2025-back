@@ -499,7 +499,7 @@ describe('B2-06 — les trois feuilles corrigées par le moteur de formules', ()
 
 describe('B2-06 — retours de la relecture adverse', () => {
   it('ne dévoile dans aucune correction sur place une valeur à saisir d’un écran suivant, les feuilles exigeant une formule', () => {
-    expect(valeursDevoileesAvantLeurEcran(COURS_B2_06, COURS)).toEqual([]);
+    expect(valeursDevoileesAvantLeurEcran(COURS)).toEqual([]);
   });
 
   it('ne parle ni de limite ni d’asymptote, hors programme', () => {

@@ -88,19 +88,19 @@ export const ACTE_2: moteur.Acte = [
           famille: 'Compter',
           question: 'Combien de fortes remises ?',
           socle: 'NB.SI.ENS',
-          variante: 'NB.SI.ENS',
+          variante: '—',
         },
         {
           famille: 'Additionner sous conditions',
           question: 'CA de Rennes en informatique ?',
           socle: 'SOMME.SI.ENS, SOMMEPROD',
-          variante: 'SOMME.SI.ENS',
+          variante: '—',
         },
         {
           famille: 'Comparer',
           question: 'Cette ligne est-elle en retard ?',
           socle: 'SI, ET, OU, SI.CONDITIONS',
-          variante: 'SI.CONDITIONS',
+          variante: '—',
         },
         {
           famille: 'Classer',
@@ -130,13 +130,13 @@ export const ACTE_2: moteur.Acte = [
           famille: 'Manipuler le temps',
           question: 'Combien de jours ouvrés ?',
           socle: 'NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF',
-          variante: 'NB.JOURS.OUVRES',
+          variante: '—',
         },
         {
           famille: 'Détecter une anomalie',
           question: 'Quel délai sort du lot ?',
           socle: 'MFC, MEDIANE, ECARTYPE',
-          variante: 'MFC',
+          variante: '—',
         },
       ],
       note: 'RECHERCHEX, TRIER, FILTRE et UNIQUE : Excel 2021 ou 365. Power Query : Windows dès Excel 2016, Mac avec 365. MFC : mise en forme conditionnelle.',
@@ -247,7 +247,7 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-ca-rennes-info',
-        'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €.',
+        'SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande ">="&DATE(2026;1;1). Résultat : 8 342 €.',
       ],
       [
         'b3-01-a2-remises-marseille',
@@ -255,7 +255,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-ca-ouest',
-        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question.',
+        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets ne compare qu’à un texte : 0 €, ici comme à la première question. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question.',
       ],
     ],
   ),
@@ -459,7 +459,7 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        '3 min ; faire Ctrl + T en direct et montrer le nom T_Commandes dans l’onglet Création de tableau.',
+        '3 min ; faire Ctrl + T en direct et montrer le nom T_Commandes dans l’onglet Création de tableau (Tableau sur Mac).',
         'Insister sur le regroupement par années : sans lui, deux printemps se cumulent.',
         'Transition : « Construisons-en un ensemble. »',
       ),
@@ -472,27 +472,27 @@ export const ACTE_2: moteur.Acte = [
         {
           kind: 'method',
           title: 'Le tableau structuré',
-          text: 'Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré ; on le nomme T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie seul ses colonnes calculées, et ses formules se lisent : =SOMME(T_Commandes[ca_ht]).',
+          text: 'Ctrl + T (⌘ + T) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau (Tableau sur Mac) › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht]).',
         },
         {
           kind: 'property',
           title: 'Le tableau croisé dynamique',
-          text: 'Insertion › Tableau croisé dynamique, à partir de T_Commandes : des champs en lignes, en colonnes, en valeurs et en filtres ; le TCD additionne ou compte chaque croisement.',
+          text: 'Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres ; chaque croisement est additionné ou compté.',
         },
         {
           kind: 'method',
           title: 'Regrouper, afficher en %, filtrer',
           text: 'Trois réglages font un TCD de direction.',
           steps: [
-            'Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.',
-            'Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.',
-            'Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré.',
+            'Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.',
+            'Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.',
+            'Insertion › Segment : un bouton par catégorie filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré.',
           ],
         },
         {
           kind: 'example',
           title: 'Windows seulement : le modèle de données',
-          text: 'Excel 2019, 2021 ou 365 : Agences en tableau, reliée à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans Agences. Sur Mac, absent : la colonne region suffit.',
+          text: 'Excel 2019, 2021 ou 365 : Agences en tableau T_Agences, relié à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans T_Agences. Sur Mac, absent : la colonne region suffit.',
         },
       ],
     },

@@ -37,6 +37,7 @@ const DELAI_PROMIS = 5;
 const SEUIL_DE_REMISE = 0.15;
 const COMMANDE_TEMOIN = 'C-10234';
 const RENNES = 'AG06';
+const ROUEN = 'AG02';
 const NANTES = 'AG05';
 const LILLE = 'AG01';
 const MARSEILLE = 'AG09';
@@ -446,6 +447,28 @@ function valeursDesActes2Et3(jeu: JeuB301) {
   };
 }
 
+function evolutionsParCategorie(
+  ventes: readonly Vente[],
+  agence: string,
+  categorieExclue = '',
+): number[] {
+  const siennes = filtrer(ventes, deLAgence(agence));
+  const categories = [
+    ...new Set(siennes.map((vente) => vente.categorie)),
+  ].filter((categorie) => categorie !== categorieExclue);
+  return categories.map((categorie) => {
+    const deLaCategorie = filtrer(
+      siennes,
+      (vente) => vente.categorie === categorie,
+    );
+    return pourcent(
+      caDe(filtrer(deLaCategorie, en2026)) /
+        caDe(filtrer(deLaCategorie, jusquASeptembre2025)) -
+        1,
+    );
+  });
+}
+
 function histoiresDe(jeu: JeuB301): Readonly<Record<HistoireB301, number>> {
   const ventes = ventesDe(jeu);
   const indicateurs = indicateursParAgence(jeu);
@@ -454,6 +477,12 @@ function histoiresDe(jeu: JeuB301): Readonly<Record<HistoireB301, number>> {
     deLAgence(RENNES),
     (vente) => vente.categorie === INFORMATIQUE,
   );
+  const rennesHorsInformatique = evolutionsParCategorie(
+    ventes,
+    RENNES,
+    INFORMATIQUE,
+  );
+  const categoriesDeRouen = evolutionsParCategorie(ventes, ROUEN);
   return {
     'ca-2025-rennes': arrondi(indicateurs[RENNES].ca2025, -2),
     'ca-2025-nantes': arrondi(indicateurs[NANTES].ca2025, -2),
@@ -465,6 +494,15 @@ function histoiresDe(jeu: JeuB301): Readonly<Record<HistoireB301, number>> {
         caDe(filtrer(informatiqueDeRennes, jusquASeptembre2025)) -
         1,
     ),
+    'evolution-min-rennes-hors-informatique': Math.min(
+      ...rennesHorsInformatique,
+    ),
+    'evolution-max-rennes-hors-informatique': Math.max(
+      ...rennesHorsInformatique,
+    ),
+    'evolution-rouen': pourcent(indicateurs[ROUEN].evolution),
+    'evolution-min-categorie-rouen': Math.min(...categoriesDeRouen),
+    'evolution-max-categorie-rouen': Math.max(...categoriesDeRouen),
     'evolution-lille': pourcent(indicateurs[LILLE].evolution),
     'delai-median-strasbourg-2025': mediane(
       filtrer(ventes, deLAgence(STRASBOURG), en2025).map(delaiOuvre),

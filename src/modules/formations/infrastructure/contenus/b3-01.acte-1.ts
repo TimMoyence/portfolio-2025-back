@@ -598,9 +598,9 @@ export const ACTE_1: moteur.Acte = [
           text: 'Chaque anomalie « faux · automatique » a son outil.',
           steps: [
             'Espaces en trop : SUPPRESPACE(E2).',
-            'Casse : NOMPROPRE(E2), « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
+            'Casse : NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
             'Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.',
-            'Date ISO en texte « 2026-03-15 » : =SI(ESTTEXTE(B2);DATEVAL(B2);B2), car DATEVAL renvoie #VALEUR! sur une vraie date.',
+            'Date ISO en texte « 2026-03-15 », seule à 10 caractères : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) ; « 08/04/26 » reste à vérifier.',
             'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.',
             'Colonne controle : SI et OU renvoient « À vérifier » ou « OK ».',
           ],
@@ -828,7 +828,7 @@ export const ACTE_1: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 4 — Nettoyer l’export',
         consigne:
-          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(ESTTEXTE(B2);DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.',
+          'Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(NBCAR(B2)=10;DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -868,7 +868,7 @@ export const ACTE_1: moteur.Acte = [
       notes: [
         'Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).',
         'Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).',
-        'Défi : DATEVAL lit « 08/04/26 » (ligne 3785) comme le 8 avril ; livrée le 7 août, la commande date sans doute du 4 août : une date d’un autre système ne se convertit pas sans demander.',
+        'Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril, or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.',
       ],
     },
     [

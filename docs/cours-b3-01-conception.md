@@ -366,14 +366,17 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 - Titre public : « Cours : les outils du nettoyage »
 - `method` : `SUPPRESPACE`, `NOMPROPRE`, `SUBSTITUE` puis `CNUM` pour un nombre en texte,
-  `DATEVAL` pour une date en texte ISO (elle renvoie `#VALEUR!` sur une vraie date : sur toute
-  la colonne, `=SI(ESTTEXTE(B2);DATEVAL(B2);B2)`), « Données › Supprimer les doublons » sur une copie (pour
+  `DATEVAL` pour une date en texte ISO, la seule à 10 caractères (sur toute la colonne,
+  `=SI(NBCAR(B2)=10;DATEVAL(B2);B2)` : une vraie date, nombre de 5 chiffres, échappe au
+  `#VALEUR!`, et « 08/04/26 », d'un autre système, reste en texte, donc à vérifier ; le spec des
+  données vérifie qu'aucune autre date du brut n'a 10 caractères), « Données › Supprimer les
+  doublons » sur une copie (pour
   compter des valeurs distinctes, on colle la colonne nettoyée, en-tête compris, en valeurs à
   part, Collage spécial › Valeurs, puis le même outil, case « Mes données ont des en-têtes »
   cochée, annonce combien de valeurs uniques il reste, sans compter l'en-tête, qui donnerait 49 :
   copiée telle quelle, une colonne de
   formules décale ses références), colonne `controle` avec `SI` et `OU`. `NOMPROPRE` s'illustre
-  sur « BORDEAUX », pas sur E2, qui vaut « Vannes ». `property` : on nettoie dans une nouvelle
+  sur « BORDEAUX », sans référence de cellule : E2 vaut « Vannes ». `property` : on nettoie dans une nouvelle
   colonne, jamais sur la donnée brute, et on ne colle en valeurs par-dessus la donnée brute
   qu'une fois le contrôle fait ; encadré Power Query (Windows depuis Excel 2016, ou 365 sur
   Mac) : il refait le nettoyage d'un clic au prochain export.
@@ -416,9 +419,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `date_commande`, I `quantite` et G `commercial_id`.
   Une date restée en texte est signalée elle aussi (Excel classe tout texte au-dessus de tout
   nombre) : c'est voulu, une date en texte est à vérifier. Défi : convertir les dates ISO par
-  `=SI(ESTTEXTE(B2);DATEVAL(B2);B2)`, recalculer `ca_ht` et signaler les écarts de plus d'un
-  euro. Les notes formateur citent la ligne 3785 : `DATEVAL` lit « 08/04/26 » comme le 8 avril,
-  la livraison est du 7 août, la commande date sans doute du 4 août.
+  `=SI(NBCAR(B2)=10;DATEVAL(B2);B2)`, recalculer `ca_ht` et signaler les écarts de plus d'un
+  euro. Les notes formateur citent la commande C-11481, ligne 3785 du brut et 3741 de la copie
+  dédoublonnée (44 des 46 doublons sont au-dessus) : la formule la laisse en texte ; `DATEVAL`
+  lirait « 08/04/26 » comme le 8 avril, la livraison est du 7 août, la commande date sans doute du
+  4 août, et seul l'émetteur peut le dire.
 - `b3-01-a1-lignes-uniques` : nombre de lignes après suppression des doublons exacts ; piège
   `doublons-supprimes-sur-une-colonne`.
 - `b3-01-a1-ca-total` : CA total HT, en euros, après dédoublonnage et conversion ; piège
@@ -464,8 +469,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A2-02 · `B3-01-A2-02-FAMILLES` — 3 min · v2 `table` · catalogue
 
 - Titre public : « Les dix familles de problèmes »
-- Colonnes : famille, question type de la direction, fonction socle, variante. La note du
-  tableau date les variantes : `RECHERCHEX`, `TRIER`, `FILTRE` et `UNIQUE` dès Excel 2021 ;
+- Colonnes : famille, question type de la direction, fonction socle, variante ; une famille
+  sans variante porte un tiret, jamais une copie du socle. La note du tableau date les variantes : `RECHERCHEX`, `TRIER`, `FILTRE` et `UNIQUE` dès Excel 2021 ;
   Power Query sous Windows dès Excel 2016, sur Mac avec 365. Chercher
   (`INDEX`/`EQUIV` ; `RECHERCHEX`), compter (`NB.SI.ENS`), additionner sous conditions
   (`SOMME.SI.ENS`, `SOMMEPROD`), comparer (`SI`, `ET`, `OU`, `SI.CONDITIONS`, présent depuis
@@ -499,7 +504,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   14, la seule ligne Ouest trouvée, la ligne 2, date de 2025) et `periode-mal-delimitee`. La
   correction, révélée la dernière, donne les autres causes d'un total nul : le même glissement
   vide la colonne `categorie` de la première question, et un critère de date tout entier entre
-  guillemets. Elle seule parle du `$` : dite à la première question, cette cause soufflerait le
+  guillemets, qui donne 0 € ici comme à la première question : dite à la première, cette cause
+  soufflerait un total nul de la troisième. Elle seule parle du `$` : dite à la première question, cette cause soufflerait le
   piège de la troisième, encore ouverte. Elle seule donne aussi la période oubliée, pour la
   troisième question et pour la première (27 862 €) : ce piège est commun aux deux.
 
@@ -553,14 +559,15 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A2-09 · `B3-01-A2-09-COURS-TCD` — 3 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : tableau structuré et tableau croisé dynamique »
-- `method` : Ctrl + T (⌘ + T), nom `T_Commandes`, colonnes calculées et références
+- `method` : Ctrl + T (⌘ + T), nom `T_Commandes` dans Création de tableau (Tableau sur Mac) ›
+  Nom du tableau, colonnes calculées et références
   `T_Commandes[ca_ht]` ; `property` : un TCD place des champs en lignes, colonnes, valeurs et
   filtres ; `method` : regrouper les dates par mois ou trimestre, afficher en % du total,
   segments, et un filtre reste actif tant qu'on ne l'a pas retiré (la moitié « filtre » de
   `tcd-filtre-ou-dates-mal-groupees`, remédiée ici) ; encadré : mettre `Agences` aussi sous forme
-  de tableau (la reprise de l'acte 2 n'en contient aucun), la relier à `T_Commandes` par
-  `agence_id` dans Données › Relations, puis créer le TCD avec « Ajouter ces données au modèle
-  de données » : il prend `region` dans `Agences`, sans colonne cherchée. Sous Windows
+  de tableau, nommé `T_Agences` (la reprise de l'acte 2 n'en contient aucun), le relier à
+  `T_Commandes` par `agence_id` dans Données › Relations, puis créer le TCD avec « Ajouter ces
+  données au modèle de données » : il prend `region` dans `T_Agences`, sans colonne cherchée. Sous Windows
   seulement (Excel 2019, 2021 ou 365) ; Excel pour Mac n'a pas de modèle de données, et la
   colonne `region` de l'exercice 5 suffit.
 
@@ -619,7 +626,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 - Titre public : « Cours : un graphique répond à une question »
 - `method` : comparer → barres ; évolution → courbe ; composition → barres empilées (peu de
-  parts) ; distribution → histogramme ; relation → nuage de points ; KPI → valeur et contexte ;
+  parts) ; distribution → histogramme, sous Insertion › Graphique statistique (l'« histogramme
+  groupé » du ruban est un graphique en barres) ; relation → nuage de points ; KPI → valeur et contexte ;
   `property` : à éviter : 3D, camembert de plus de cinq parts, axe tronqué non signalé, double axe
   trompeur ; `example` hors dossier, dit tel à l'écran : un titre qui dit la conclusion (« Caen à
   87 % de son objectif ») ; Caen n'est pas une agence de Norvane, et 87 % ne coïncide avec aucun
@@ -644,12 +652,13 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   groupées CA et objectif, titre qui conclut, légende, axe depuis zéro. Un TCD seul ne suffit
   pas : l'objectif vit dans une autre table (sur Mac, sans modèle de données, la synthèse par
   `SOMME.SI.ENS` suffit ; sous Windows, Excel 2019, 2021 ou 365 : mettre `Agences` et `Objectifs` sous
-  forme de tableau, seul `T_Commandes` en étant un dans la reprise de l'acte 3, puis relier
-  `T_Commandes` et `Objectifs` à `Agences` par `agence_id` dans Données › Relations ; `Agences`
-  est la seule table aux `agence_id` uniques. Le TCD, créé avec « Ajouter ces données au modèle
-  de données », prend `agence_id` dans `Agences` et pose
-  deux filtres, car un filtre ne passe pas d'une table à l'autre : `annee` de `T_Commandes` sur
-  2026, `mois` d'`Objectifs` de janvier à septembre 2026. Avec le seul filtre `annee`,
+  forme de tableau, nommés `T_Agences` et `T_Objectifs`, seul `T_Commandes` en étant un dans la
+  reprise de l'acte 3, puis relier `T_Commandes` et `T_Objectifs` à `T_Agences` par `agence_id`
+  dans Données › Relations ; `T_Agences` est la seule table aux `agence_id` uniques. Le TCD, créé
+  avec « Ajouter ces données au modèle de données », prend `agence_id` dans `T_Agences`, `ca_ht`
+  de `T_Commandes` et `objectif_ca_ht` de `T_Objectifs` en valeurs, et pose deux filtres, car un
+  filtre ne passe pas d'une table à l'autre : `annee` de `T_Commandes` sur 2026, `mois` de
+  `T_Objectifs` de janvier à septembre 2026. Avec le seul filtre `annee`,
   l'objectif resterait celui des vingt et un mois : la valeur du piège).
   Défi : courbe du CA mensuel 2025 et 2026 superposées.
 - `b3-01-a3-agences-sous-objectif` : nombre d'agences dont le CA cumulé est sous l'objectif
@@ -722,8 +731,10 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   action, datée et confiée au responsable de l'agence, comme le veut la méthode de A3-07. Garde
   de dévoilement : aucune explication ne donne une valeur d'une question encore ouverte (les
   questions de A3-09 sont révélées avant).
-- Notes : Rouen (91,9 %), troisième agence sous l'objectif, recule d'environ 2 % dans toutes
-  ses catégories sans cause dans le détail : à surveiller, pas une histoire.
+- Notes : Rouen (91,9 %), troisième agence sous l'objectif, recule d'environ 2 % sur un an, de
+  −3 % à 0 % selon la catégorie, sans cause dans le détail : à surveiller, pas une histoire. La
+  correction de Rennes dit que ses autres catégories bougent peu, de −4 % à +2 % ; ces bornes
+  sont recalculées depuis la graine (`HISTOIRES_B3_01`).
 
 #### A3-11 · `B3-01-A3-11-FICHE-MEMO` — 3 min · v2 `grid` · catalogue
 
@@ -808,7 +819,7 @@ lignes. F4, H1 et S3 relèvent du défi et de la quarantaine du classeur de repr
 | Histoire                 | Paramètre semé                                                                                                                                                                                                                                                                             | Ce que le tableau de bord montre                                                           |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | Marseille, la marge fond | à partir de janvier 2026, le commercial C26 reçoit chaque commande de l'agence avec une probabilité de 45 % (avec la graine : 39 % des commandes, 41 % des lignes) et accorde des remises de 18 à 30 % (réseau : 0 à 10 %)                                                                 | CA au-dessus de l'objectif, taux de marque en chute                                        |
-| Rennes, sous l'objectif  | l'informatique de Rennes baisse de 40 % en 2026 par rapport à 2025, les autres catégories sont stables                                                                                                                                                                                     | taux d'atteinte le plus bas du réseau                                                      |
+| Rennes, sous l'objectif  | l'informatique de Rennes baisse de 40 % en 2026 par rapport à 2025, les autres catégories sans paramètre semé (avec la graine, de −4 % à +2 %)                                                                                                                                             | taux d'atteinte le plus bas du réseau                                                      |
 | Lille, la croissance     | CA de Lille de janvier à septembre 2026 supérieur de 25 % à celui de 2025, dans chacune de ses catégories                                                                                                                                                                                  | plus forte évolution du réseau                                                             |
 | Strasbourg, les retards  | à partir de mars 2026, délai de livraison de Strasbourg tiré entre 6 et 12 jours ouvrés (réseau : 1 à 5), et 8 % de ses commandes de mars à juillet tirées en rupture, livrées 40 à 60 jours ouvrés plus tard (environ deux mois) ; avec la graine, les ruptures tombent d'avril à juillet | délai médian et nombre de retards hors norme ; moyenne tirée vers le haut par les ruptures |
 
@@ -1040,9 +1051,10 @@ classeurs dans `src/assets/cours/b3-01/`, copie du manifeste dans
 `node --test` de `test:guards` qui vérifie l'empreinte de chaque fichier copié contre le
 manifeste et son suffixe contre cette empreinte. Le manifeste relie ainsi les deux copies.
 
-Le corrigé formateur est recalculé par Microsoft Excel pour Mac, piloté par AppleScript
-(ouverture, calcul forcé, enregistrement en `xlsx` sous un autre nom) ; le spec des classeurs
-relit ce fichier avec `exceljs` (`CORRIGE_RECALCULE_PAR_EXCEL=<chemin>`) et compare chaque
+Le corrigé formateur sera recalculé par Microsoft Excel pour Mac, piloté par AppleScript
+(ouverture, calcul forcé, enregistrement en `xlsx` sous un autre nom), dès qu'Office sera installé
+sur le poste ; d'ici là, les deux tests qui le relisent sont sautés. Le spec des classeurs relit ce
+fichier avec `exceljs` (`CORRIGE_RECALCULE_PAR_EXCEL=<chemin>`) et compare chaque
 cellule de résultat, calculée par Excel, au § 5.1. Les classeurs sont ensuite ouverts dans Excel
 (365 ou web, et une version 2019 ou 2021 si possible) avant la séance : ouverture sans
 réparation, tableau structuré reconnu, formules du corrigé identiques aux valeurs attendues.

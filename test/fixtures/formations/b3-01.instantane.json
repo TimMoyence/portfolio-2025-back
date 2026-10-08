@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "356c5298a7cbc0da8b8458a4268ae1aa938a1fea78ab20fb20fc5c8e2708a0f5",
+  "empreinte": "981913c72a5f02a37e31703558f18fa6a244293a21dfc2ba6d97a5678dea7dd7",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -573,9 +573,9 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE(E2), « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
-                      "Date ISO en texte « 2026-03-15 » : =SI(ESTTEXTE(B2);DATEVAL(B2);B2), car DATEVAL renvoie #VALEUR! sur une vraie date.",
+                      "Date ISO en texte « 2026-03-15 », seule à 10 caractères : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) ; « 08/04/26 » reste à vérifier.",
                       "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
@@ -732,7 +732,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(ESTTEXTE(B2);DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(NBCAR(B2)=10;DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -923,19 +923,19 @@
                     "famille": "Compter",
                     "question": "Combien de fortes remises ?",
                     "socle": "NB.SI.ENS",
-                    "variante": "NB.SI.ENS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Additionner sous conditions",
                     "question": "CA de Rennes en informatique ?",
                     "socle": "SOMME.SI.ENS, SOMMEPROD",
-                    "variante": "SOMME.SI.ENS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Comparer",
                     "question": "Cette ligne est-elle en retard ?",
                     "socle": "SI, ET, OU, SI.CONDITIONS",
-                    "variante": "SI.CONDITIONS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Classer",
@@ -965,13 +965,13 @@
                     "famille": "Manipuler le temps",
                     "question": "Combien de jours ouvrés ?",
                     "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
-                    "variante": "NB.JOURS.OUVRES"
+                    "variante": "—"
                   },
                   {
                     "famille": "Détecter une anomalie",
                     "question": "Quel délai sort du lot ?",
                     "socle": "MFC, MEDIANE, ECARTYPE",
-                    "variante": "MFC"
+                    "variante": "—"
                   }
                 ]
               }
@@ -1324,27 +1324,27 @@
                   {
                     "kind": "method",
                     "title": "Le tableau structuré",
-                    "text": "Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré ; on le nomme T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie seul ses colonnes calculées, et ses formules se lisent : =SOMME(T_Commandes[ca_ht])."
+                    "text": "Ctrl + T (⌘ + T) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau (Tableau sur Mac) › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
                   },
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes : des champs en lignes, en colonnes, en valeurs et en filtres ; le TCD additionne ou compte chaque croisement."
+                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres ; chaque croisement est additionné ou compté."
                   },
                   {
                     "kind": "method",
                     "title": "Regrouper, afficher en %, filtrer",
                     "text": "Trois réglages font un TCD de direction.",
                     "steps": [
-                      "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
-                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
-                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
+                      "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
+                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
+                      "Insertion › Segment : un bouton par catégorie filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "Windows seulement : le modèle de données",
-                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau, reliée à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans Agences. Sur Mac, absent : la colonne region suffit."
+                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau T_Agences, relié à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans T_Agences. Sur Mac, absent : la colonne region suffit."
                   }
                 ]
               }
@@ -1592,7 +1592,7 @@
                       "Comparer des agences ou des produits : barres.",
                       "Suivre une évolution dans le temps : courbe.",
                       "Montrer la composition d’un total, en peu de parts : barres empilées.",
-                      "Voir comment se répartissent des valeurs : histogramme.",
+                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Graphique statistique ; l’« histogramme groupé » d’Excel, lui, fait des barres.",
                       "Chercher un lien entre deux mesures : nuage de points.",
                       "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
                     ]
@@ -1700,7 +1700,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, puis relier T_Commandes et Objectifs à Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3054,9 +3054,9 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE(E2), « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
-                      "Date ISO en texte « 2026-03-15 » : =SI(ESTTEXTE(B2);DATEVAL(B2);B2), car DATEVAL renvoie #VALEUR! sur une vraie date.",
+                      "Date ISO en texte « 2026-03-15 », seule à 10 caractères : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) ; « 08/04/26 » reste à vérifier.",
                       "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
@@ -3310,7 +3310,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(ESTTEXTE(B2);DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "consigne": "Essentiel : effacez d’abord le filtre de l’exercice 2, puis, sur une copie de l’onglet Commandes, nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par =SI(NBCAR(B2)=10;DATEVAL(B2);B2), recalculez ca_ht et signalez les écarts de plus d’un euro.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3384,7 +3384,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.\n• Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : DATEVAL lit « 08/04/26 » (ligne 3785) comme le 8 avril ; livrée le 7 août, la commande date sans doute du 4 août : une date d’un autre système ne se convertit pas sans demander.",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.\n• Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : la formule laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril, or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3645,19 +3645,19 @@
                     "famille": "Compter",
                     "question": "Combien de fortes remises ?",
                     "socle": "NB.SI.ENS",
-                    "variante": "NB.SI.ENS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Additionner sous conditions",
                     "question": "CA de Rennes en informatique ?",
                     "socle": "SOMME.SI.ENS, SOMMEPROD",
-                    "variante": "SOMME.SI.ENS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Comparer",
                     "question": "Cette ligne est-elle en retard ?",
                     "socle": "SI, ET, OU, SI.CONDITIONS",
-                    "variante": "SI.CONDITIONS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Classer",
@@ -3687,13 +3687,13 @@
                     "famille": "Manipuler le temps",
                     "question": "Combien de jours ouvrés ?",
                     "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
-                    "variante": "NB.JOURS.OUVRES"
+                    "variante": "—"
                   },
                   {
                     "famille": "Détecter une anomalie",
                     "question": "Quel délai sort du lot ?",
                     "socle": "MFC, MEDIANE, ECARTYPE",
-                    "variante": "MFC"
+                    "variante": "—"
                   }
                 ]
               }
@@ -3921,7 +3921,7 @@
         "explications": [
           {
             "reference": "b3-01-a2-ca-rennes-info",
-            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €. Écrit tout entier entre guillemets, le critère de date ne compare qu’à un texte : aucune ligne, 0 €."
+            "texte": "SOMME.SI.ENS sur ca_ht, avec trois critères : agence_id égal à AG06, categorie égale à Informatique, date_commande \">=\"&DATE(2026;1;1). Résultat : 8 342 €."
           },
           {
             "reference": "b3-01-a2-remises-marseille",
@@ -3929,7 +3929,7 @@
           },
           {
             "reference": "b3-01-a2-ca-ouest",
-            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets donne aussi 0 €. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question."
+            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025 : sur 2026, le total tombe à 0 €. Le même glissement vide la colonne categorie : à la première question aussi, 0 €. Un critère de date écrit tout entier entre guillemets ne compare qu’à un texte : 0 €, ici comme à la première question. Sans critère de date, on additionne aussi 2025 : 188 908 €, et 27 862 € à la première question."
           }
         ]
       },
@@ -4306,27 +4306,27 @@
                   {
                     "kind": "method",
                     "title": "Le tableau structuré",
-                    "text": "Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré ; on le nomme T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie seul ses colonnes calculées, et ses formules se lisent : =SOMME(T_Commandes[ca_ht])."
+                    "text": "Ctrl + T (⌘ + T) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau (Tableau sur Mac) › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
                   },
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes : des champs en lignes, en colonnes, en valeurs et en filtres ; le TCD additionne ou compte chaque croisement."
+                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres ; chaque croisement est additionné ou compté."
                   },
                   {
                     "kind": "method",
                     "title": "Regrouper, afficher en %, filtrer",
                     "text": "Trois réglages font un TCD de direction.",
                     "steps": [
-                      "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
-                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
-                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
+                      "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
+                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
+                      "Insertion › Segment : un bouton par catégorie filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "Windows seulement : le modèle de données",
-                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau, reliée à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans Agences. Sur Mac, absent : la colonne region suffit."
+                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau T_Agences, relié à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans T_Agences. Sur Mac, absent : la colonne region suffit."
                   }
                 ]
               }
@@ -4340,7 +4340,7 @@
             }
           }
         },
-        "notes": "• 3 min ; faire Ctrl + T en direct et montrer le nom T_Commandes dans l’onglet Création de tableau.\n• Insister sur le regroupement par années : sans lui, deux printemps se cumulent.\n• Transition : « Construisons-en un ensemble. »",
+        "notes": "• 3 min ; faire Ctrl + T en direct et montrer le nom T_Commandes dans l’onglet Création de tableau (Tableau sur Mac).\n• Insister sur le regroupement par années : sans lui, deux printemps se cumulent.\n• Transition : « Construisons-en un ensemble. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4703,7 +4703,7 @@
                       "Comparer des agences ou des produits : barres.",
                       "Suivre une évolution dans le temps : courbe.",
                       "Montrer la composition d’un total, en peu de parts : barres empilées.",
-                      "Voir comment se répartissent des valeurs : histogramme.",
+                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Graphique statistique ; l’« histogramme groupé » d’Excel, lui, fait des barres.",
                       "Chercher un lien entre deux mesures : nuage de points.",
                       "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
                     ]
@@ -4890,7 +4890,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, puis relier T_Commandes et Objectifs à Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -5387,7 +5387,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an dans toutes ses catégories, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5400,7 +5400,7 @@
           },
           {
             "reference": "rennes",
-            "texte": "Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories sont stables. Action : d’ici décembre, reprendre la perte en informatique client par client et relancer l’offre, plan confié au responsable de l’agence."
+            "texte": "Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories bougent peu, de −4 % à +2 %. Action : d’ici décembre, reprendre la perte en informatique client par client et relancer l’offre, plan confié au responsable de l’agence."
           },
           {
             "reference": "lille",
@@ -5989,9 +5989,9 @@
                     "text": "Chaque anomalie « faux · automatique » a son outil.",
                     "steps": [
                       "Espaces en trop : SUPPRESPACE(E2).",
-                      "Casse : NOMPROPRE(E2), « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Casse : NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
-                      "Date ISO en texte « 2026-03-15 » : =SI(ESTTEXTE(B2);DATEVAL(B2);B2), car DATEVAL renvoie #VALEUR! sur une vraie date.",
+                      "Date ISO en texte « 2026-03-15 », seule à 10 caractères : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) ; « 08/04/26 » reste à vérifier.",
                       "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs) ; le même outil, case « Mes données ont des en-têtes » cochée, compte les valeurs uniques.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
@@ -6105,19 +6105,19 @@
                     "famille": "Compter",
                     "question": "Combien de fortes remises ?",
                     "socle": "NB.SI.ENS",
-                    "variante": "NB.SI.ENS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Additionner sous conditions",
                     "question": "CA de Rennes en informatique ?",
                     "socle": "SOMME.SI.ENS, SOMMEPROD",
-                    "variante": "SOMME.SI.ENS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Comparer",
                     "question": "Cette ligne est-elle en retard ?",
                     "socle": "SI, ET, OU, SI.CONDITIONS",
-                    "variante": "SI.CONDITIONS"
+                    "variante": "—"
                   },
                   {
                     "famille": "Classer",
@@ -6147,13 +6147,13 @@
                     "famille": "Manipuler le temps",
                     "question": "Combien de jours ouvrés ?",
                     "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
-                    "variante": "NB.JOURS.OUVRES"
+                    "variante": "—"
                   },
                   {
                     "famille": "Détecter une anomalie",
                     "question": "Quel délai sort du lot ?",
                     "socle": "MFC, MEDIANE, ECARTYPE",
-                    "variante": "MFC"
+                    "variante": "—"
                   }
                 ]
               }
@@ -6343,27 +6343,27 @@
                   {
                     "kind": "method",
                     "title": "Le tableau structuré",
-                    "text": "Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré ; on le nomme T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie seul ses colonnes calculées, et ses formules se lisent : =SOMME(T_Commandes[ca_ht])."
+                    "text": "Ctrl + T (⌘ + T) transforme la plage en tableau structuré, nommé T_Commandes dans Création de tableau (Tableau sur Mac) › Nom du tableau. Il s’étend aux lignes ajoutées, recopie ses colonnes calculées et se lit : =SOMME(T_Commandes[ca_ht])."
                   },
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes : des champs en lignes, en colonnes, en valeurs et en filtres ; le TCD additionne ou compte chaque croisement."
+                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres ; chaque croisement est additionné ou compté."
                   },
                   {
                     "kind": "method",
                     "title": "Regrouper, afficher en %, filtrer",
                     "text": "Trois réglages font un TCD de direction.",
                     "steps": [
-                      "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
-                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
-                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
+                      "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
+                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
+                      "Insertion › Segment : un bouton par catégorie filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {
                     "kind": "example",
                     "title": "Windows seulement : le modèle de données",
-                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau, reliée à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans Agences. Sur Mac, absent : la colonne region suffit."
+                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau T_Agences, relié à T_Commandes par agence_id dans Données › Relations ; le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans T_Agences. Sur Mac, absent : la colonne region suffit."
                   }
                 ]
               }
@@ -6478,7 +6478,7 @@
                       "Comparer des agences ou des produits : barres.",
                       "Suivre une évolution dans le temps : courbe.",
                       "Montrer la composition d’un total, en peu de parts : barres empilées.",
-                      "Voir comment se répartissent des valeurs : histogramme.",
+                      "Voir comment se répartissent des valeurs : histogramme, sous Insertion › Graphique statistique ; l’« histogramme groupé » d’Excel, lui, fait des barres.",
                       "Chercher un lien entre deux mesures : nuage de points.",
                       "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
                     ]

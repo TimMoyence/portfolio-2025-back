@@ -8,11 +8,8 @@ import { projeterCatalogue } from '../../src/modules/formations/domain/cours/Dif
 import { tirer } from '../../src/modules/formations/domain/cours/Tirage';
 import { typographier } from '../../src/modules/formations/domain/cours/Typographie';
 import { nombreFrancais } from '../../src/modules/formations/infrastructure/contenus/briques';
-import { enFrancais } from './feuille-de-cours';
 import { corrigeDeFeuille, ecranDuContenu } from './fiche-de-cours';
 import { arrondi } from './lecture-de-cours';
-
-const sansEspaces = (texte: string): string => texte.replaceAll(/\s/gu, '');
 
 function valeursASaisirDe(
   ecran: Ecran,
@@ -39,30 +36,28 @@ function valeursASaisirDe(
     .filter((valeur) => !Number.isInteger(arrondi(valeur, 2)));
 }
 
-export function valeursDevoileesAvantLeurEcran(
-  contenu: ContenuDeCours,
-  cours: Cours,
-): string[] {
+export function valeursDevoileesAvantLeurEcran(cours: Cours): string[] {
   const { solutions } = tirer(cours, 0);
-  const ordre = contenu.ecrans.map(({ screenId }) => screenId);
+  const ordre = cours.ecrans.map(({ id }) => id);
   const corrections = new Map(
-    ordre.map((screenId) => {
-      const { proprietes } = ecranDuContenu(contenu, screenId);
-      const texte =
-        'correctionSurPlace' in proprietes
-          ? sansEspaces(JSON.stringify(proprietes.correctionSurPlace))
-          : '';
-      return [screenId, texte] as const;
-    }),
+    cours.ecrans.map(
+      (ecran) =>
+        [ecran.id, JSON.stringify(ecran.correctionSurPlace ?? {})] as const,
+    ),
   );
 
   return cours.ecrans.flatMap((ecran) =>
     valeursASaisirDe(ecran, solutions).flatMap((valeur) => {
-      const forme = enFrancais(valeur, 2);
+      const arrondie = arrondi(valeur, 2);
       return ordre
         .slice(0, ordre.indexOf(ecran.id))
-        .filter((anterieur) => corrections.get(anterieur)?.includes(forme))
-        .map((anterieur) => `${forme} de ${ecran.id} dans ${anterieur}`);
+        .filter((anterieur) =>
+          contientLaForme(corrections.get(anterieur) ?? '', arrondie),
+        )
+        .map(
+          (anterieur) =>
+            `${formeFrancaise(arrondie)} de ${ecran.id} dans ${anterieur}`,
+        );
     }),
   );
 }
@@ -94,6 +89,7 @@ const APPEL_DE_FONCTION = /(?<![\p{L}\d_.$])[A-Z][A-Z0-9]*(?:\.[A-Z0-9]+)*\(/gu;
 const FORMULE_ALTEREE = /[\u{A0}\u{202F}]|\s[;:!]/u;
 const PONCTUATION_FINALE = '.,';
 const ESPACES_TYPOGRAPHIQUES = /[\u{A0}\u{202F}]/gu;
+const SIGNE_MOINS_TYPOGRAPHIQUE = /\u{2212}/gu;
 const CARACTERES_SPECIAUX = /[.*+?^${}()|[\]\\]/g;
 
 function textesDe(valeur: unknown): string[] {
@@ -186,11 +182,28 @@ export function formeFrancaise(valeur: number | string): string {
   return nombreFrancais(valeur, decimales);
 }
 
+function normaliser(texte: string): string {
+  return texte
+    .replaceAll(ESPACES_TYPOGRAPHIQUES, ' ')
+    .replaceAll(SIGNE_MOINS_TYPOGRAPHIQUE, '-');
+}
+
+function zerosDeFinPermis(valeur: number | string): string {
+  if (typeof valeur === 'string') {
+    return '';
+  }
+  return Number.isInteger(valeur) ? '(?:,0+)?' : '0*';
+}
+
 function contientLaForme(texte: string, valeur: number | string): boolean {
-  const forme = formeFrancaise(valeur).replaceAll(CARACTERES_SPECIAUX, '\\$&');
-  return new RegExp(`(?<![\\d,])${forme}(?!\\d|,\\d| \\d{3}(?!\\d))`, 'u').test(
-    texte.replaceAll(ESPACES_TYPOGRAPHIQUES, ' '),
+  const forme = normaliser(formeFrancaise(valeur)).replaceAll(
+    CARACTERES_SPECIAUX,
+    '\\$&',
   );
+  return new RegExp(
+    `(?<![\\d,])${forme}${zerosDeFinPermis(valeur)}(?!\\d|,\\d| \\d{3}(?!\\d))`,
+    'u',
+  ).test(normaliser(texte));
 }
 
 export function valeursAuCatalogue(
@@ -207,32 +220,55 @@ export function valeursAuCatalogue(
     });
 }
 
-export function valeursDevoileesParLesExplications(
-  cours: Cours,
-  valeurs: Readonly<Record<string, number | string>>,
-): string[] {
+interface ExplicationSituee {
+  readonly ecran: string;
+  readonly reference: string;
+  readonly texte: string;
+  readonly ouvertes: readonly string[];
+  readonly suivantesDeLEcran: readonly string[];
+}
+
+function explicationsSituees(cours: Cours): ExplicationSituee[] {
   const ordre = cours.ecrans.flatMap((ecran) =>
     questionsDe(ecran).map((question) => question.id),
   );
   let posees = 0;
   return cours.ecrans.flatMap((ecran) => {
-    posees += questionsDe(ecran).length;
-    return (ecran.correctionSurPlace?.explications ?? []).flatMap(
+    const deLEcran = questionsDe(ecran).map((question) => question.id);
+    posees += deLEcran.length;
+    return (ecran.correctionSurPlace?.explications ?? []).map(
       ({ reference, texte }) => {
         const rang = ordre.indexOf(reference);
-        const ouvertes = ordre.slice(rang === -1 ? posees : rang + 1);
-        return ouvertes
-          .filter(
-            (id) =>
-              valeurs[id] !== undefined && contientLaForme(texte, valeurs[id]),
-          )
-          .map(
-            (id) =>
-              `${formeFrancaise(valeurs[id])} de ${id} dans ${ecran.id} (${reference})`,
-          );
+        const rangDansLEcran = deLEcran.indexOf(reference);
+        return {
+          ecran: ecran.id,
+          reference,
+          texte,
+          ouvertes: ordre.slice(rang === -1 ? posees : rang + 1),
+          suivantesDeLEcran:
+            rangDansLEcran === -1 ? [] : deLEcran.slice(rangDansLEcran + 1),
+        };
       },
     );
   });
+}
+
+export function valeursDevoileesParLesExplications(
+  cours: Cours,
+  valeurs: Readonly<Record<string, number | string>>,
+): string[] {
+  return explicationsSituees(cours).flatMap(
+    ({ ecran, reference, texte, ouvertes }) =>
+      ouvertes
+        .filter(
+          (id) =>
+            valeurs[id] !== undefined && contientLaForme(texte, valeurs[id]),
+        )
+        .map(
+          (id) =>
+            `${formeFrancaise(valeurs[id])} de ${id} dans ${ecran} (${reference})`,
+        ),
+  );
 }
 
 const SEUIL_D_UN_PIEGE_RECONNAISSABLE = 10;
@@ -240,6 +276,19 @@ const SEUIL_D_UN_PIEGE_RECONNAISSABLE = 10;
 type PiegesParQuestion = Readonly<
   Record<string, Readonly<Partial<Record<string, number>>>>
 >;
+
+function piegesReconnaissablesDe(
+  pieges: PiegesParQuestion,
+  question: string,
+): [string, number][] {
+  return Object.entries(pieges[question] ?? {}).flatMap(
+    ([confusion, valeur]): [string, number][] =>
+      valeur !== undefined &&
+      Math.abs(valeur) >= SEUIL_D_UN_PIEGE_RECONNAISSABLE
+        ? [[confusion, valeur]]
+        : [],
+  );
+}
 
 function confusionPartageeParUneSuivante(
   pieges: PiegesParQuestion,
@@ -253,24 +302,45 @@ export function piegesPartagesDevoilesParLesExplications(
   cours: Cours,
   pieges: PiegesParQuestion,
 ): string[] {
-  return cours.ecrans.flatMap((ecran) => {
-    const ordre = questionsDe(ecran).map((question) => question.id);
-    return (ecran.correctionSurPlace?.explications ?? []).flatMap(
-      ({ reference, texte }) => {
-        const rang = ordre.indexOf(reference);
-        const suivantes = rang === -1 ? [] : ordre.slice(rang + 1);
-        return Object.entries(pieges[reference] ?? {}).flatMap(
+  return explicationsSituees(cours).flatMap(
+    ({ ecran, reference, texte, suivantesDeLEcran }) =>
+      piegesReconnaissablesDe(pieges, reference)
+        .filter(
           ([confusion, valeur]) =>
-            valeur !== undefined &&
-            valeur >= SEUIL_D_UN_PIEGE_RECONNAISSABLE &&
-            confusionPartageeParUneSuivante(pieges, suivantes, confusion) &&
-            contientLaForme(texte, valeur)
-              ? [
-                  `${formeFrancaise(valeur)} (${confusion}) dans ${ecran.id} (${reference})`,
-                ]
-              : [],
-        );
-      },
+            confusionPartageeParUneSuivante(
+              pieges,
+              suivantesDeLEcran,
+              confusion,
+            ) && contientLaForme(texte, valeur),
+        )
+        .map(
+          ([confusion, valeur]) =>
+            `${formeFrancaise(valeur)} (${confusion}) dans ${ecran} (${reference})`,
+        ),
+  );
+}
+
+function piegesDevoilesDansLeTexte(
+  pieges: PiegesParQuestion,
+  question: string,
+  texte: string,
+): string[] {
+  return piegesReconnaissablesDe(pieges, question)
+    .filter(([, valeur]) => contientLaForme(texte, valeur))
+    .map(
+      ([confusion, valeur]) =>
+        `${formeFrancaise(valeur)} (${confusion}) de ${question}`,
     );
-  });
+}
+
+export function piegesDesQuestionsSuivantesDevoilesParLesExplications(
+  cours: Cours,
+  pieges: PiegesParQuestion,
+): string[] {
+  return explicationsSituees(cours).flatMap(
+    ({ ecran, reference, texte, suivantesDeLEcran }) =>
+      suivantesDeLEcran
+        .flatMap((id) => piegesDevoilesDansLeTexte(pieges, id, texte))
+        .map((alerte) => `${alerte} dans ${ecran} (${reference})`),
+  );
 }

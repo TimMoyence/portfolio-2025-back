@@ -10,6 +10,7 @@ import {
   supprEspace,
 } from '../../../../../test/helpers/cours-b3-01/excel';
 import {
+  ANOMALIES_SEMEES,
   GRAINE_B3_01,
   genererJeuB301,
 } from '../../../../../test/helpers/cours-b3-01/generateur';
@@ -295,12 +296,32 @@ describe('jeu Norvane du B3-01', () => {
     expect(valeurDe(aLaLigne(2971), 'ca_ht')).toBe('1 150,00 €');
   });
 
-  it('porte au brut la date que citent A1-13 et A1-14 : B3785 « 08/04/26 », lue le 8 avril par DATEVAL, livrée le 7 août 2026', () => {
+  it('porte au brut la date que citent A1-13 et A1-14 : B3785 « 08/04/26 », commande C-11481, en ligne 3741 de la copie dédoublonnée, lue le 8 avril par DATEVAL, livrée le 7 août 2026', () => {
     const ligne = commandesBrutes[3785 - 2];
 
+    expect(valeurDe(ligne, 'n_commande')).toBe('C-11481');
+    expect(lignesUniques.indexOf(ligne) + 2).toBe(3741);
     expect(valeurDe(ligne, 'date_commande')).toBe('08/04/26');
     expect(dateval('08/04/26')).toBe(dateExcel(2026, 4, 8));
     expect(valeurDe(ligne, 'date_livraison')).toBe(dateExcel(2026, 8, 7));
+  });
+
+  it('ne donne 10 caractères qu’aux dates ISO : =SI(NBCAR(B2)=10;DATEVAL(B2);B2) laisse en texte les dates d’un autre système', () => {
+    const dates = commandesBrutes.map((ligne) =>
+      valeurDe(ligne, 'date_commande'),
+    );
+    const isoDe = (date: unknown): boolean =>
+      typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/u.test(date);
+
+    expect(
+      dates.filter((date) => String(date).length === 10 && !isoDe(date)),
+    ).toEqual([]);
+    expect(dates.filter(isoDe).length).toBeGreaterThanOrEqual(
+      ANOMALIES_SEMEES.F5,
+    );
+    expect(
+      dates.filter((date) => typeof date === 'string' && !isoDe(date)).length,
+    ).toBeGreaterThanOrEqual(ANOMALIES_SEMEES.S1);
   });
 
   it('ne laisse trouver sans $ qu’une ligne de l’Ouest, commandée en 2025', () => {

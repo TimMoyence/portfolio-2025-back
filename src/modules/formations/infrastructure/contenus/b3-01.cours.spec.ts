@@ -8,6 +8,7 @@ import * as fiche from '../../../../../test/helpers/fiche-de-cours';
 import * as feuille from '../../../../../test/helpers/feuille-de-cours';
 import {
   formulesAltereesALaPublication,
+  piegesDesQuestionsSuivantesDevoilesParLesExplications,
   piegesPartagesDevoilesParLesExplications,
   valeursAuCatalogue,
   valeursDevoileesAvantLeurEcran,
@@ -310,8 +311,17 @@ describe('B3-01 — gardes de la relecture', () => {
     ).toEqual([]);
   });
 
+  it('ne dévoile dans aucune explication un piège d’une question suivante du même écran', () => {
+    expect(
+      piegesDesQuestionsSuivantesDevoilesParLesExplications(
+        COURS,
+        PIEGES_B3_01,
+      ),
+    ).toEqual([]);
+  });
+
   it('ne dévoile dans aucune correction sur place une valeur décimale d’un écran suivant', () => {
-    expect(valeursDevoileesAvantLeurEcran(COURS_B3_01, COURS)).toEqual([]);
+    expect(valeursDevoileesAvantLeurEcran(COURS)).toEqual([]);
   });
 
   it('écrit les colonnes du classeur où elles sont : ville en E, produit_id en H, ca_ht en L', () => {
@@ -524,7 +534,10 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     const texte = texteDe('B3-01-A1-11-COURS-OUTILS');
 
     expect(texte).not.toContain('NOMPROPRE(E2) écrit');
-    expect(texte).toContain('« BORDEAUX » devient « Bordeaux »');
+    expect(texte).not.toMatch(/NOMPROPRE\(E2\)[^.;]*BORDEAUX/u);
+    expect(texte).toContain(
+      'NOMPROPRE met une majuscule initiale, « BORDEAUX » devient « Bordeaux »',
+    );
   });
 
   it('A1-04 · ne prétend pas qu’une seule colonne de contrôle mesure la part douteuse', () => {
@@ -605,11 +618,17 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     expect(atelier).not.toContain('vote d’ouverture');
   });
 
-  it('A1-11 et A1-14 · réservent DATEVAL aux dates restées en texte, puisqu’elle renvoie #VALEUR! sur une vraie date', () => {
-    const formule = '=SI(ESTTEXTE(B2);DATEVAL(B2);B2)';
+  it('A1-11 et A1-14 · réservent DATEVAL aux dates ISO, seules à 10 caractères, et laissent en texte la date d’un autre système', () => {
+    const formule = '=SI(NBCAR(B2)=10;DATEVAL(B2);B2)';
+    const cours = texteDe('B3-01-A1-11-COURS-OUTILS');
+    const atelier = texteDe('B3-01-A1-14-ATELIER-NETTOYAGE');
 
-    expect(texteDe('B3-01-A1-11-COURS-OUTILS')).toContain(formule);
-    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(formule);
+    expect(cours).toContain(formule);
+    expect(cours).toContain('« 08/04/26 » reste à vérifier');
+    expect(atelier).toContain(formule);
+    for (const texte of [cours, atelier]) {
+      expect(texte).not.toContain('ESTTEXTE(B2);DATEVAL(B2)');
+    }
   });
 
   it('A1-13 et A1-14 · citent la date venue d’un autre système telle qu’elle est au brut, en B3785', () => {
@@ -619,7 +638,9 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     expect(tri).toContain('Date « 08/04/26 » venue d’un autre système');
     expect(tri).toContain('8 avril ou 4 août ? Seul l’émetteur le sait');
     expect(tri).toContain('Lire « 08/04/26 » jour d’abord');
-    expect(atelier).toContain('« 08/04/26 » (ligne 3785)');
+    expect(atelier).toContain(
+      '« 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée)',
+    );
     for (const texte of [tri, atelier]) {
       expect(texte).not.toMatch(/05\/04\/26|04\/05\/26/u);
     }
@@ -767,11 +788,12 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     const [rennes, , ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
 
     expect(rennes).not.toContain('sans $');
+    expect(rennes).not.toContain('guillemets');
     expect(ouest).toContain(
       'Le même glissement vide la colonne categorie : à la première question aussi, 0 €',
     );
     expect(ouest).toContain(
-      'Un critère de date écrit tout entier entre guillemets donne aussi 0 €',
+      'Un critère de date écrit tout entier entre guillemets ne compare qu’à un texte : 0 €, ici comme à la première question',
     );
     expect(ouest).toContain(
       'Avant la ligne 14, la seule ligne Ouest trouvée, la ligne 2, date de 2025',
@@ -860,9 +882,45 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     const texte = texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
 
     expect(texte).toContain(
-      'relier T_Commandes et Objectifs à Agences par agence_id',
+      'relier T_Commandes et T_Objectifs à T_Agences par agence_id',
     );
     expect(texte).not.toContain('relie les deux tables');
+  });
+
+  it('A2-09 et A3-05 · nomment chaque table avant de la relier, et disent quels champs mettre en valeurs', () => {
+    const tcd = texteDe('B3-01-A2-09-COURS-TCD');
+    const atelier = texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
+
+    expect(tcd).toContain(
+      'Création de tableau (Tableau sur Mac) › Nom du tableau',
+    );
+    expect(tcd).toContain('Agences en tableau T_Agences');
+    expect(atelier).toContain(
+      'mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs',
+    );
+    expect(atelier).toContain('agence_id de T_Agences en lignes');
+    expect(atelier).toContain(
+      'ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs',
+    );
+  });
+
+  it('A3-03 · distingue l’histogramme de répartition de l’« histogramme groupé » du ruban', () => {
+    const graphiques = texteDe('B3-01-A3-03-COURS-GRAPHIQUES');
+
+    expect(graphiques).toContain('Insertion › Graphique statistique');
+    expect(graphiques).toContain('l’« histogramme groupé » d’Excel');
+  });
+
+  it('A2-02 · ne donne de variante qu’aux familles qui en ont une, distincte du socle', () => {
+    const { rows } = feuille.proprietesV2(COURS_B3_01, 'B3-01-A2-02-FAMILLES');
+    const lignes = rows as readonly { socle: string; variante: string }[];
+
+    expect(
+      lignes
+        .filter(({ socle, variante }) => socle.split(', ').includes(variante))
+        .map(({ variante }) => variante),
+    ).toEqual([]);
+    expect(lignes.filter(({ variante }) => variante === '—')).toHaveLength(5);
   });
 
   it.each([
@@ -916,7 +974,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
       'mettre Agences et Objectifs sous forme de tableau',
     );
     expect(texte).toContain('un filtre ne passe pas d’une table à l’autre');
-    expect(texte).toContain('mois d’Objectifs de janvier à septembre 2026');
+    expect(texte).toContain('mois de T_Objectifs de janvier à septembre 2026');
   });
 
   it('A3-05 · ne souffle pas à la première correction le piège des vingt et un mois, seul piège de la seconde', () => {
@@ -983,7 +1041,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
 
     expect(tcd).toContain('Données › Relations');
     expect(tcd).toContain(
-      'le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans Agences',
+      'le TCD, créé avec « Ajouter ces données au modèle de données », prend region dans T_Agences',
     );
     expect(texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES')).toContain(
       'Données › Relations',
@@ -1048,6 +1106,27 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
 
   it('A3-10 · dit au formateur que Rouen, troisième agence sous l’objectif, n’est pas une histoire', () => {
     expect(texteDe('B3-01-A3-10-RECOMMANDATIONS')).toContain('Rouen (91,9 %)');
+  });
+
+  it('A3-10 · décrit les catégories de Rennes et de Rouen telles que le jeu les fait évoluer', () => {
+    const enPourcentEntier = (evolution: number): string => {
+      const entier = Math.round(evolution);
+      if (entier < 0) {
+        return `−${-entier} %`;
+      }
+      return entier > 0 ? `+${entier} %` : '0 %';
+    };
+    const [, rennes] = explicationsDe('B3-01-A3-10-RECOMMANDATIONS');
+    const texte = texteDe('B3-01-A3-10-RECOMMANDATIONS');
+
+    expect(rennes).not.toContain('stables');
+    expect(rennes).toContain(
+      `les autres catégories bougent peu, de ${enPourcentEntier(HISTOIRES_B3_01['evolution-min-rennes-hors-informatique'])} à ${enPourcentEntier(HISTOIRES_B3_01['evolution-max-rennes-hors-informatique'])}`,
+    );
+    expect(texte).toContain(
+      `en recul d’environ ${-Math.round(HISTOIRES_B3_01['evolution-rouen'])} % sur un an, de ${enPourcentEntier(HISTOIRES_B3_01['evolution-min-categorie-rouen'])} à ${enPourcentEntier(HISTOIRES_B3_01['evolution-max-categorie-rouen'])} selon la catégorie`,
+    );
+    expect(texte).not.toContain('dans toutes ses catégories');
   });
 
   it.each([

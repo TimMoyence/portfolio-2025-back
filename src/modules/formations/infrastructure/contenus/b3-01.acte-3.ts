@@ -110,7 +110,7 @@ export const ACTE_3: moteur.Acte = [
             'Comparer des agences ou des produits : barres.',
             'Suivre une évolution dans le temps : courbe.',
             'Montrer la composition d’un total, en peu de parts : barres empilées.',
-            'Voir comment se répartissent des valeurs : histogramme.',
+            'Voir comment se répartissent des valeurs : histogramme, sous Insertion › Graphique statistique ; l’« histogramme groupé » d’Excel, lui, fait des barres.',
             'Chercher un lien entre deux mesures : nuage de points.',
             'Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé.',
           ],
@@ -255,7 +255,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 9 — CA et objectif par agence',
         consigne:
-          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, puis relier T_Commandes et Objectifs à Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
+          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, nommés T_Agences et T_Objectifs, puis relier T_Commandes et T_Objectifs à T_Agences par agence_id dans Données › Relations ; dans le TCD, créé avec « Ajouter ces données au modèle de données », agence_id de T_Agences en lignes, ca_ht de T_Commandes et objectif_ca_ht de T_Objectifs en valeurs, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois de T_Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -524,7 +524,7 @@ export const ACTE_3: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 6 min',
         'Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
-        'Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an dans toutes ses catégories, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.',
+        'Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.',
       ),
       proprietes: {
         metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
@@ -567,7 +567,7 @@ export const ACTE_3: moteur.Acte = [
       ],
       [
         'rennes',
-        'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories sont stables. Action : d’ici décembre, reprendre la perte en informatique client par client et relancer l’offre, plan confié au responsable de l’agence.',
+        'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories bougent peu, de −4 % à +2 %. Action : d’ici décembre, reprendre la perte en informatique client par client et relancer l’offre, plan confié au responsable de l’agence.',
       ],
       [
         'lille',
