@@ -1,0 +1,1774 @@
+{
+  "graine": 0,
+  "empreinte": "557fc37c3417f6d26844d679e958fb7788aa96f356c4db55d69d9025e1a873cb",
+  "sujet": {
+    "id": "b3-01-donnee-brute-decision",
+    "titre": "Expert Data : de la donnée brute à la décision",
+    "niveau": "B3",
+    "duree": 180,
+    "concepts": [
+      "reference-de-cellule",
+      "jeu-de-donnees",
+      "cle-et-relation",
+      "granularite",
+      "qualite-des-donnees",
+      "nettoyage",
+      "recherche-dans-une-table",
+      "agregation-conditionnelle",
+      "calcul-sur-dates",
+      "indicateur-statistique",
+      "tableau-croise-dynamique",
+      "choix-du-graphique",
+      "tableau-de-bord"
+    ],
+    "ecrans": [
+      {
+        "id": "B3-01-A1-01-RAPPEL-RECOPIE",
+        "type": "fp-recall",
+        "titre": "Rappel : recopier une formule",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a1-rappel-recopie",
+            "enonce": "En D2, la formule =C2*$H$1 multiplie un montant par le taux rangé en H1. On la recopie en D3. Que contient D3 ?",
+            "options": [
+              {
+                "id": "c3-h-2-ca61e470",
+                "libelle": "=C3*$H$2"
+              },
+              {
+                "id": "c2-h-1-5b9ad61a",
+                "libelle": "=C2*$H$1"
+              },
+              {
+                "id": "c3-h-1-2c847da8",
+                "libelle": "=C3*$H$1"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["reference-de-cellule"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "delaiMs": 0
+        }
+      },
+      {
+        "id": "B3-01-A1-02-COURRIEL",
+        "type": "fp-story",
+        "titre": "Expert Data : de la donnée brute à la décision",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-02-COURRIEL",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-02-COURRIEL",
+              "renderer": "hero",
+              "props": {
+                "title": "Expert Data : de la donnée brute à la décision",
+                "subtitle": "Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »",
+                "bullets": [
+                  "Bachelor 3 · Outils informatiques du manager · séance 1",
+                  "Norvane Équipement : 12 agences, 36 commerciaux, 40 produits et services",
+                  "Un export brut des ventes, de janvier 2025 à septembre 2026, à ouvrir dans Excel",
+                  "Données fictives"
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["jeu-de-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "pieceJointe": {
+          "libelle": "Export des ventes Norvane (classeur Excel)",
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.xlsx"
+        }
+      },
+      {
+        "id": "B3-01-A1-03-CARTE",
+        "type": "fp-story",
+        "titre": "La carte de la séance",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-03-CARTE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-03-CARTE",
+              "renderer": "grid",
+              "props": {
+                "title": "La carte de la séance",
+                "subtitle": "Six niveaux, de l’export brut à la décision. Séance 2 : un agent appliquera vos règles.",
+                "items": [
+                  {
+                    "title": "Niveau 1 · Comprendre",
+                    "description": "Livrable : le dictionnaire des données. Règle du cahier : comment relier deux tables."
+                  },
+                  {
+                    "title": "Niveau 2 · Nettoyer",
+                    "description": "Livrable : un export propre et sa colonne de contrôle. Règle du cahier : ce qui se corrige seul, ce qui se demande."
+                  },
+                  {
+                    "title": "Niveau 3 · Transformer",
+                    "description": "Livrable : les colonnes région et catégorie, des totaux sous conditions. Règle du cahier : nommer le problème avant la fonction."
+                  },
+                  {
+                    "title": "Niveau 4 · Modéliser",
+                    "description": "Livrable : le tableau structuré et le TCD de la direction. Règle du cahier : sur quoi construire un calcul qui dure."
+                  },
+                  {
+                    "title": "Niveau 5 · Visualiser",
+                    "description": "Livrable : le graphique du CA face à l’objectif. Règle du cahier : quelle question avant quel graphique."
+                  },
+                  {
+                    "title": "Niveau 6 · Décider",
+                    "description": "Livrable : le tableau de bord et trois recommandations. Règle du cahier : comment écrire une recommandation."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["jeu-de-donnees", "nettoyage", "tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-04-VOTE-PART-ET-CLE",
+        "type": "fp-vote",
+        "titre": "Vote : le fichier et Dupont, Bordeaux",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a1-part-douteuse",
+            "enonce": "Dans un export commercial d’environ 4 000 lignes, quelle part des lignes est fausse ou douteuse, à votre avis ?",
+            "options": [
+              {
+                "id": "moins-de-1-pct-des-lignes-05d3d383",
+                "libelle": "Moins de 1 % des lignes"
+              },
+              {
+                "id": "environ-5-pct-des-lignes-8e5b3c66",
+                "libelle": "Environ 5 % des lignes"
+              },
+              {
+                "id": "plus-de-30-pct-des-lignes-557205be",
+                "libelle": "Plus de 30 % des lignes"
+              },
+              {
+                "id": "environ-15-pct-des-lignes-0166cfeb",
+                "libelle": "Environ 15 % des lignes"
+              }
+            ]
+          },
+          "questionJumelle": {
+            "id": "b3-01-a1-cle-client",
+            "enonce": "« Dupont – Bordeaux » suffit-il à identifier un client de Norvane ?",
+            "options": [
+              {
+                "id": "non-il-faut-un-identifiant-attribue-par-0a64eae8",
+                "libelle": "Non : il faut un identifiant attribué par le système"
+              },
+              {
+                "id": "non-il-faut-aussi-le-numero-siret-2e32f401",
+                "libelle": "Non : il faut aussi le numéro SIRET"
+              },
+              {
+                "id": "oui-le-nom-et-la-ville-suffisent-80487545",
+                "libelle": "Oui : le nom et la ville suffisent"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-05-COURS-DONNEE",
+        "type": "fp-story",
+        "titre": "Cours : lire un jeu de données",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-05-COURS-DONNEE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-05-COURS-DONNEE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Lire un jeu de données avant de calculer",
+                "subtitle": "Trace écrite · niveau 1 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Observation et variable",
+                    "text": "Une observation est une ligne du tableau : un fait enregistré. Une variable est une colonne : une caractéristique relevée sur chaque observation. Un jeu de données exploitable a une observation par ligne, une variable par colonne et un en-tête par colonne."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Cinq types de variables, et la donnée manquante",
+                    "text": "Le type dit ce qu’on a le droit de calculer.",
+                    "steps": [
+                      "Identifiant (n_commande, client_id) : on le compte, on ne l’additionne jamais.",
+                      "Numérique (quantite, ca_ht) : on l’additionne, on en fait la moyenne.",
+                      "Catégorie (ville, région) : on compte et on regroupe.",
+                      "Date (date_commande) : on calcule des durées, on regroupe par mois.",
+                      "Booléen (facturee, oui ou non) : on compte les « oui ».",
+                      "Donnée manquante : une cellule vide n’est pas un zéro."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Trouver la granularité avant de compter",
+                    "text": "Avant tout calcul, finir la phrase « une ligne = … ». Dans l’export Norvane, une ligne est un produit dans une commande : une commande occupe une ou plusieurs lignes.",
+                    "steps": [
+                      "Repérer la colonne dont les valeurs se répètent (n_commande).",
+                      "Filtrer une valeur et compter ses lignes.",
+                      "Compter des commandes, c’est compter des n_commande distincts, pas des lignes."
+                    ]
+                  },
+                  {
+                    "kind": "example",
+                    "title": "La source de vérité",
+                    "text": "La ville d’un client se lit dans l’onglet Clients, saisi une fois par l’administration des ventes. La colonne ville de l’export en est une copie, recopiée à chaque commande, avec ses fautes : en cas de doute, c’est Clients qui fait foi."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["jeu-de-donnees", "granularite"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-06-COURS-RELATIONS",
+        "type": "fp-story",
+        "titre": "Cours : des tables reliées par des clés",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-06-COURS-RELATIONS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-06-COURS-RELATIONS",
+              "renderer": "lesson",
+              "props": {
+                "title": "Des tables reliées par des clés",
+                "subtitle": "Trace écrite · niveau 1 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Clé primaire, clé étrangère",
+                    "text": "Une clé primaire identifie chaque ligne d’une table : client_id dans Clients, produit_id dans Produits. Recopiée dans une autre table, elle devient une clé étrangère : le client_id d’une ligne de Commandes renvoie à un seul client."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Le schéma du classeur Norvane",
+                    "text": "Commandes est au centre : chaque ligne pointe vers un client, un produit et une agence.",
+                    "steps": [
+                      "Clients ← client_id → Commandes",
+                      "Commandes → produit_id → Produits",
+                      "Commandes → agence_id → Agences",
+                      "Agences → agence_id → Objectifs, un objectif par agence et par mois"
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Reconnaître une bonne clé",
+                    "text": "Une clé est unique (deux lignes ne la partagent pas), stable (elle ne change pas quand le client déménage) et sans signification (un code attribué par le système, pas un nom)."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pourquoi « Dupont, Bordeaux » n’est pas une clé",
+                    "text": "Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se trompent ; un identifiant ne se trompe pas."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["cle-et-relation"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-07-TRI-COLONNES",
+        "type": "fp-cardsort",
+        "titre": "Exercice 1 — Le dictionnaire des données",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b3-01-a1-dictionnaire",
+            "intitule": "Classez chaque colonne de l’onglet Commandes selon son type.",
+            "cartes": [
+              {
+                "id": "produit-id",
+                "libelle": "produit_id"
+              },
+              {
+                "id": "facturee",
+                "libelle": "facturee"
+              },
+              {
+                "id": "prix-unitaire",
+                "libelle": "prix_unitaire_ht"
+              },
+              {
+                "id": "client-id",
+                "libelle": "client_id"
+              },
+              {
+                "id": "remise",
+                "libelle": "remise"
+              },
+              {
+                "id": "agence-id",
+                "libelle": "agence_id"
+              },
+              {
+                "id": "date-commande",
+                "libelle": "date_commande"
+              },
+              {
+                "id": "n-commande",
+                "libelle": "n_commande"
+              },
+              {
+                "id": "ca-ht",
+                "libelle": "ca_ht"
+              },
+              {
+                "id": "quantite",
+                "libelle": "quantite"
+              },
+              {
+                "id": "date-livraison",
+                "libelle": "date_livraison"
+              },
+              {
+                "id": "commercial-id",
+                "libelle": "commercial_id"
+              },
+              {
+                "id": "ville",
+                "libelle": "ville"
+              }
+            ],
+            "categories": [
+              {
+                "id": "identifiant",
+                "libelle": "Identifiant"
+              },
+              {
+                "id": "date",
+                "libelle": "Date"
+              },
+              {
+                "id": "categorie",
+                "libelle": "Catégorie"
+              },
+              {
+                "id": "numerique",
+                "libelle": "Numérique"
+              },
+              {
+                "id": "booleen",
+                "libelle": "Booléen"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["jeu-de-donnees", "cle-et-relation"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "binome",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-08-ATELIER-GRANULARITE",
+        "type": "questionnaire",
+        "titre": "Exercice 2 — Une ligne, c’est quoi ?",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 2 — Une ligne, c’est quoi ?",
+          "consigne": "Dans l’onglet Commandes du classeur brut, filtrez la colonne n_commande sur la commande C-10234.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a1-lignes-commande",
+                  "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": ["granularite"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 4,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a1-granularite",
+                  "enonce": "L’onglet Commandes compte-t-il plus de lignes que de commandes, autant, ou moins ?",
+                  "options": [
+                    {
+                      "id": "moins-de-lignes-que-de-commandes-b3501197",
+                      "libelle": "Moins de lignes que de commandes"
+                    },
+                    {
+                      "id": "plus-de-lignes-que-de-commandes-2dcfa295",
+                      "libelle": "Plus de lignes que de commandes"
+                    },
+                    {
+                      "id": "autant-de-lignes-que-de-commandes-fc6b628e",
+                      "libelle": "Autant de lignes que de commandes"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A1-09-VOTE-CA-TEXTE",
+        "type": "fp-vote",
+        "titre": "Vote : un CA aligné à gauche",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a1-ca-texte",
+            "enonce": "Dans la colonne ca_ht, une cellule affiche « 1 250,00 € », alignée à gauche. Que fait =SOMME(L:L) de cette cellule ?",
+            "options": [
+              {
+                "id": "elle-affiche-une-erreur-valeur-09701c18",
+                "libelle": "Elle affiche une erreur #VALEUR!"
+              },
+              {
+                "id": "elle-l-ignore-sans-aucun-message-91c3e7b3",
+                "libelle": "Elle l’ignore, sans aucun message"
+              },
+              {
+                "id": "elle-l-ajoute-au-total-a8577e65",
+                "libelle": "Elle l’ajoute au total"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-10-COURS-GRILLE",
+        "type": "fp-story",
+        "titre": "Cours : faux, suspect, automatique, humain",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-10-COURS-GRILLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-10-COURS-GRILLE",
+              "renderer": "lesson",
+              "props": {
+                "title": "La grille de la qualité des données",
+                "subtitle": "Trace écrite · niveau 2 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Faux ou suspect",
+                    "text": "Une donnée fausse l’est à coup sûr : une livraison antérieure à sa commande, un produit absent du référentiel. Une donnée suspecte l’est peut-être : une quantité négative peut être une erreur ou un avoir. Seul un humain qui connaît l’activité tranche."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "La grille 2 × 2",
+                    "text": "On croise la certitude (faux, suspect) et le correcteur (automatique, humain).",
+                    "steps": [
+                      "Faux · automatique : on corrige par formule, en gardant la trace (casse, espaces, nombre en texte, doublon exact).",
+                      "Faux · humain : on signale et on demande la bonne valeur (produit inconnu, commercial absent).",
+                      "Suspect · humain : on signale et on demande s’il s’agit d’une erreur.",
+                      "Suspect · automatique : case vide."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Rien de douteux ne se corrige seul ; on signale, on ne supprime pas",
+                    "text": "Une colonne controle marque chaque ligne « OK » ou « À vérifier » ; les lignes douteuses partent dans un onglet Quarantaine avec leur motif. Supprimer une ligne efface la question : personne ne saura qu’il fallait la poser."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Une quantité de −2",
+                    "text": "Erreur de saisie ou retour de marchandise, donc avoir ? Le tableur ne peut pas le savoir : on signale la ligne et on demande au service commercial."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["qualite-des-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-11-COURS-OUTILS",
+        "type": "fp-story",
+        "titre": "Cours : les outils du nettoyage",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-11-COURS-OUTILS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-11-COURS-OUTILS",
+              "renderer": "lesson",
+              "props": {
+                "title": "Les outils du nettoyage",
+                "subtitle": "Trace écrite · niveau 2 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Une anomalie, un outil",
+                    "text": "Chaque anomalie « faux · automatique » a son outil.",
+                    "steps": [
+                      "Espaces en trop : SUPPRESPACE(E2).",
+                      "Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
+                      "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie.",
+                      "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Nettoyer à côté, jamais dessus",
+                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs qu’une fois le contrôle fait."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Si vous avez Excel 365 : Power Query",
+                    "text": "Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["nettoyage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-12-EXEMPLE-NETTOYAGE",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : deux cellules à soigner",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b3-01-a1-exemple-nettoyage",
+            "enonce": "Deux cellules de l’onglet Commandes : en E2, la ville « bordeaux », entourée d’espaces ; en L2, le ca_ht saisi comme le texte « 1 250,00 € ».",
+            "etapes": [
+              {
+                "id": "ville",
+                "intitule": "La ville",
+                "raisonnement": "Dans une nouvelle colonne, =NOMPROPRE(SUPPRESPACE(E2)) retire les espaces en trop, puis met une majuscule initiale : « Bordeaux ».",
+                "invite": "Quelle formule rend « Bordeaux » dans une nouvelle colonne ?"
+              },
+              {
+                "id": "montant",
+                "intitule": "Le montant",
+                "raisonnement": "SUBSTITUE retire d’abord « € », puis l’espace des milliers ; CNUM convertit le texte qui reste. =CNUM(SUBSTITUE(SUBSTITUE(L2;\" €\";\"\");\" \";\"\")) rend le nombre 1250.",
+                "invite": "Quelle formule convertit « 1 250,00 € » en nombre ?"
+              },
+              {
+                "id": "verifier",
+                "intitule": "Vérifier",
+                "raisonnement": "ESTNUM renvoie VRAI pour un nombre et FAUX pour un texte : une colonne entière de VRAI garantit que SOMME n’oubliera rien.",
+                "invite": "Comment s’assurer que la conversion a réussi sur toute la colonne ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["nettoyage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        }
+      },
+      {
+        "id": "B3-01-A1-13-TRI-ANOMALIES",
+        "type": "fp-cardsort",
+        "titre": "Exercice 3 — Classer les anomalies",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b3-01-a1-anomalies",
+            "intitule": "Classez chaque anomalie du fichier dans la grille de la qualité des données.",
+            "cartes": [
+              {
+                "id": "ville-mal-ecrite",
+                "libelle": "Ville écrite « BORDEAUX » ou entourée d’espaces"
+              },
+              {
+                "id": "ligne-en-double",
+                "libelle": "Ligne exportée deux fois, à l’identique"
+              },
+              {
+                "id": "prix-dix-fois",
+                "libelle": "Prix unitaire égal à dix fois le prix catalogue"
+              },
+              {
+                "id": "produit-inconnu",
+                "libelle": "produit_id absent du référentiel Produits"
+              },
+              {
+                "id": "client-en-double",
+                "libelle": "Deux client_id pour la même raison sociale dans la même ville"
+              },
+              {
+                "id": "ca-mal-calcule",
+                "libelle": "ca_ht différent de quantité × prix × (1 − remise)"
+              },
+              {
+                "id": "livraison-avant-commande",
+                "libelle": "Livraison antérieure à la commande"
+              },
+              {
+                "id": "quantite-negative",
+                "libelle": "Quantité négative"
+              },
+              {
+                "id": "date-autre-systeme",
+                "libelle": "Date « 05/04/26 » venue d’un autre système"
+              },
+              {
+                "id": "ca-en-texte",
+                "libelle": "ca_ht stocké en texte : « 1 250,00 € »"
+              }
+            ],
+            "categories": [
+              {
+                "id": "faux-automatique",
+                "libelle": "Faux · correction automatique"
+              },
+              {
+                "id": "faux-humain",
+                "libelle": "Faux · à demander à un humain"
+              },
+              {
+                "id": "suspect-automatique",
+                "libelle": "Suspect · correction automatique"
+              },
+              {
+                "id": "suspect-humain",
+                "libelle": "Suspect · à demander à un humain"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["qualite-des-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 5,
+              "modalite": "binome",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-14-ATELIER-NETTOYAGE",
+        "type": "questionnaire",
+        "titre": "Exercice 4 — Nettoyer l’export",
+        "duree": 12,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 4 — Nettoyer l’export",
+          "consigne": "Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a1-lignes-uniques",
+                  "enonce": "Combien de lignes reste-t-il après la suppression des doublons exacts ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 12,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a1-ca-total",
+                  "enonce": "Quel est le CA total HT des lignes restantes, une fois les montants en texte convertis ? En euros, sans le symbole, arrondi à l’euro.",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 12,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a1-villes",
+                  "enonce": "Combien de villes distinctes compte la colonne ville nettoyée ? Saisissez un nombre entier.",
+                  "unite": "villes",
+                  "metadonnees": {
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 12,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a1-a-verifier",
+                  "enonce": "Combien de lignes la colonne controle marque-t-elle « À vérifier » ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": ["nettoyage", "qualite-des-donnees"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 12,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A1-15-REGLES-ACTE-1",
+        "type": "fp-pro",
+        "titre": "Cahier de règles : niveaux 1 et 2",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A1-15-REGLES-ACTE-1",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "Avant la pause, vous écrivez les deux premières règles de votre cahier d’analyste. En séance 2, un agent Data Analyst les appliquera à votre place.",
+            "geste": "Écrivez une règle par niveau : une phrase impérative et vérifiable.",
+            "consequence": "Une règle vague (« faire attention aux données ») ne guide ni un collègue ni un agent.",
+            "questionsLibres": [
+              {
+                "id": "b3-01-a1-regles:regle-comprendre",
+                "question": "Niveau 1 · Comprendre : votre règle pour relier deux tables.",
+                "placeholder": "Je relie…"
+              },
+              {
+                "id": "b3-01-a1-regles:regle-nettoyer",
+                "question": "Niveau 2 · Nettoyer : votre règle pour une donnée fausse ou douteuse.",
+                "placeholder": "Je corrige seul… ; je signale…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["cle-et-relation", "qualite-des-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-01-VOTE-FAMILLE",
+        "type": "fp-vote",
+        "titre": "Vote : quelle famille de problème ?",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a2-famille",
+            "enonce": "Nadia demande « le CA de Rennes en informatique en 2026 ». De quelle famille de problème s’agit-il ?",
+            "options": [
+              {
+                "id": "chercher-une-valeur-dans-une-table-1834ac39",
+                "libelle": "Chercher une valeur dans une table"
+              },
+              {
+                "id": "regrouper-toutes-les-ventes-de-rennes-2d537168",
+                "libelle": "Regrouper toutes les ventes de Rennes"
+              },
+              {
+                "id": "compter-les-lignes-de-rennes-3da3b78c",
+                "libelle": "Compter les lignes de Rennes"
+              },
+              {
+                "id": "additionner-sous-conditions-apres-avoir-7f957438",
+                "libelle": "Additionner sous conditions, après avoir cherché la catégorie"
+              }
+            ]
+          }
+        },
+        "pieceJointe": {
+          "libelle": "Classeur de reprise de l’acte 2",
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_2.e63154db.xlsx"
+        }
+      },
+      {
+        "id": "B3-01-A2-02-FAMILLES",
+        "type": "fp-story",
+        "titre": "Les dix familles de problèmes",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-02-FAMILLES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-02-FAMILLES",
+              "renderer": "table",
+              "props": {
+                "title": "Les dix familles de problèmes",
+                "subtitle": "Avant d’écrire une formule, on nomme la famille de la question posée.",
+                "note": "Le socle fonctionne sur toute version d’Excel depuis 2019 ; la colonne 365 donne un raccourci.",
+                "columns": [
+                  {
+                    "key": "famille",
+                    "label": "Famille"
+                  },
+                  {
+                    "key": "question",
+                    "label": "Question type de la direction"
+                  },
+                  {
+                    "key": "socle",
+                    "label": "Fonction socle"
+                  },
+                  {
+                    "key": "variante",
+                    "label": "Si vous avez Excel 365"
+                  }
+                ],
+                "rows": [
+                  {
+                    "famille": "Chercher",
+                    "question": "Quelle est la catégorie de ce produit ?",
+                    "socle": "INDEX et EQUIV",
+                    "variante": "RECHERCHEX"
+                  },
+                  {
+                    "famille": "Compter",
+                    "question": "Combien de lignes à Marseille avec une forte remise ?",
+                    "socle": "NB.SI.ENS",
+                    "variante": "NB.SI.ENS"
+                  },
+                  {
+                    "famille": "Additionner sous conditions",
+                    "question": "Quel CA pour Rennes en informatique ?",
+                    "socle": "SOMME.SI.ENS, SOMMEPROD",
+                    "variante": "SOMME.SI.ENS"
+                  },
+                  {
+                    "famille": "Comparer",
+                    "question": "Cette ligne est-elle livrée en retard ?",
+                    "socle": "SI, ET, OU",
+                    "variante": "SI.CONDITIONS"
+                  },
+                  {
+                    "famille": "Classer",
+                    "question": "Quelles sont les meilleures agences ?",
+                    "socle": "RANG, GRANDE.VALEUR",
+                    "variante": "TRIER"
+                  },
+                  {
+                    "famille": "Transformer",
+                    "question": "Ce montant saisi en texte, combien vaut-il ?",
+                    "socle": "SUPPRESPACE, CNUM, TEXTE",
+                    "variante": "Power Query"
+                  },
+                  {
+                    "famille": "Filtrer",
+                    "question": "Quelles lignes de Strasbourg sont en retard ?",
+                    "socle": "Filtre automatique",
+                    "variante": "FILTRE"
+                  },
+                  {
+                    "famille": "Regrouper",
+                    "question": "Quel CA par région et par trimestre ?",
+                    "socle": "Tableau croisé dynamique",
+                    "variante": "UNIQUE"
+                  },
+                  {
+                    "famille": "Manipuler le temps",
+                    "question": "Combien de jours ouvrés de délai ?",
+                    "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
+                    "variante": "NB.JOURS.OUVRES"
+                  },
+                  {
+                    "famille": "Détecter une anomalie",
+                    "question": "Quel délai sort de l’ordinaire ?",
+                    "socle": "Mise en forme conditionnelle, MEDIANE, ECARTYPE",
+                    "variante": "Mise en forme conditionnelle"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "recherche-dans-une-table",
+                "agregation-conditionnelle",
+                "calcul-sur-dates"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+        "type": "fp-story",
+        "titre": "Cours : chercher et additionner sous conditions",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+              "renderer": "lesson",
+              "props": {
+                "title": "Chercher dans une table, additionner sous conditions",
+                "subtitle": "Trace écrite · niveau 3 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Chercher : INDEX et EQUIV",
+                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!C:C;EQUIV(H2;Produits!A:A;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Additionner et compter sous conditions",
+                    "text": "SOMME.SI.ENS(plage_somme;plage1;critère1;plage2;critère2) additionne les lignes qui remplissent toutes les conditions ; NB.SI.ENS(plage1;critère1;plage2;critère2) les compte."
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Écrire un critère, figer une plage",
+                    "text": "Un critère est un texte : l’opérateur s’écrit entre guillemets.",
+                    "steps": [
+                      "Un seuil de remise : \">0,15\" pour plus de 15 %, jamais \">15\".",
+                      "Une date : \">=\"&DATE(2026;1;1), la date hors des guillemets, jointe par &.",
+                      "Une plage de référentiel recopiée vers le bas se fige par des $ : Agences!$A$2:$C$13 ne glisse pas."
+                    ]
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Si vous avez Excel 365 : RECHERCHEX",
+                    "text": "=RECHERCHEX(H2;Produits!A:A;Produits!C:C) fait le même travail en une seule fonction."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "recherche-dans-une-table",
+                "agregation-conditionnelle",
+                "reference-de-cellule"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-04-ATELIER-RECHERCHE",
+        "type": "questionnaire",
+        "titre": "Exercice 5 — Relier et additionner",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 5 — Relier et additionner",
+          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez la colonne region, cherchée dans Agences sur agence_id par INDEX et EQUIV, et la colonne categorie, cherchée dans Produits sur produit_id ; figez les plages des référentiels avant de recopier. Répondez ensuite par SOMME.SI.ENS et NB.SI.ENS. Défi : une colonne cout, la quantité multipliée par le coût unitaire du produit.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-ca-rennes-info",
+                  "enonce": "Quel est le CA HT de Rennes (AG06) en informatique, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "recherche-dans-une-table",
+                      "agregation-conditionnelle"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-remises-marseille",
+                  "enonce": "Combien de lignes de Marseille (AG09) portent une remise supérieure à 15 %, toutes dates confondues ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": [
+                      "recherche-dans-une-table",
+                      "agregation-conditionnelle"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-ca-ouest",
+                  "enonce": "Quel est le CA HT de la région Ouest, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": [
+                      "recherche-dans-une-table",
+                      "agregation-conditionnelle"
+                    ],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A2-05-VOTE-DELAI",
+        "type": "fp-vote",
+        "titre": "Vote : vendredi, lundi",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a2-delai",
+            "enonce": "Une commande passée un vendredi est livrée le lundi suivant. Combien de jours de délai compte-t-on ?",
+            "options": [
+              {
+                "id": "un-seul-jour-ouvre-a37bda63",
+                "libelle": "Un seul jour ouvré"
+              },
+              {
+                "id": "3-jours-ae0fe815",
+                "libelle": "3 jours"
+              },
+              {
+                "id": "0-jour-le-week-end-ne-compte-pas-a6a853d1",
+                "libelle": "0 jour : le week-end ne compte pas"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-06-COURS-TEMPS-STATS",
+        "type": "fp-story",
+        "titre": "Cours : le temps et les indicateurs",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-06-COURS-TEMPS-STATS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-06-COURS-TEMPS-STATS",
+              "renderer": "lesson",
+              "props": {
+                "title": "Le temps et les indicateurs",
+                "subtitle": "Trace écrite · niveau 3 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "property",
+                    "title": "Une date est un nombre de jours",
+                    "text": "Soustraire deux dates donne des jours calendaires. Les fonctions de date comptent autrement.",
+                    "steps": [
+                      "NB.JOURS.OUVRES(début;fin) compte les jours ouvrés, bornes comprises : on retire 1 pour obtenir un délai.",
+                      "SERIE.JOUR.OUVRE(début;n) donne la date n jours ouvrés plus tard : la date promise.",
+                      "JOURSEM(date;2) donne le jour de la semaine, de 1 pour lundi à 7 pour dimanche.",
+                      "DATEDIF(début;fin;\"m\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une durée."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Moyenne ou médiane",
+                    "text": "Un délai long et rare, comme une rupture de stock livrée deux mois plus tard, tire la moyenne vers le haut ; la médiane, la valeur du milieu, ne bouge pas. Pour un délai typique, on lit la médiane.",
+                    "steps": [
+                      "Médiane sous conditions : filtrer, puis AGREGAT(12;5;plage), qui ignore les lignes masquées.",
+                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 365."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Taux de marge : un ratio de sommes",
+                    "text": "Taux de marge = SOMME(marge) ÷ SOMME(CA), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Les jours fériés",
+                    "text": "Ce cours ne les compte pas. NB.JOURS.OUVRES et SERIE.JOUR.OUVRE acceptent en dernier argument une plage de jours fériés à exclure."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
+        "type": "questionnaire",
+        "titre": "Exercice 6 — Délais et marge",
+        "duree": 10,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 6 — Délais et marge",
+          "consigne": "Essentiel, dans l’onglet Commandes du classeur de reprise : ajoutez les colonnes delai, =NB.JOURS.OUVRES(B2;C2)-1, date_promise, =SERIE.JOUR.OUVRE(B2;5), cout_unitaire, cherché dans Produits par INDEX et EQUIV, et marge, ca_ht moins quantite × cout_unitaire ; puis répondez. Défi : avec JOURSEM, la part des commandes passées un vendredi ; avec DATEDIF, l’ancienneté des clients en mois.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-delai-strasbourg",
+                  "enonce": "Quel est le délai médian de livraison de Strasbourg (AG12) en 2026, en jours ouvrés ? Saisissez un nombre entier.",
+                  "unite": "jours ouvrés",
+                  "metadonnees": {
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-retards",
+                  "enonce": "Combien de lignes commandées en 2026 sont livrées après leur date promise, cinq jours ouvrés après la commande ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-taux-marge",
+                  "enonce": "Quel est le taux de marge du réseau, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 10,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A2-08-VOTE-NOUVELLES-LIGNES",
+        "type": "fp-vote",
+        "titre": "Vote : 200 lignes de plus",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a2-nouvelles-lignes",
+            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4001 les prennent-elles en compte ?",
+            "options": [
+              {
+                "id": "non-elles-restent-hors-de-la-plage-e87d8a01",
+                "libelle": "Non, elles restent hors de la plage"
+              },
+              {
+                "id": "oui-0a904076",
+                "libelle": "Oui"
+              },
+              {
+                "id": "seulement-apres-recalcul-8d2a1bdb",
+                "libelle": "Seulement après recalcul"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-09-COURS-TCD",
+        "type": "fp-story",
+        "titre": "Cours : tableau structuré et tableau croisé dynamique",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-09-COURS-TCD",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-09-COURS-TCD",
+              "renderer": "lesson",
+              "props": {
+                "title": "Tableau structuré et tableau croisé dynamique",
+                "subtitle": "Trace écrite · niveau 4",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Le tableau structuré",
+                    "text": "Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré ; on le nomme T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie seul ses colonnes calculées, et ses formules se lisent : =SOMME(T_Commandes[ca_ht])."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Le tableau croisé dynamique",
+                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes. On place des champs en lignes, en colonnes, en valeurs et en filtres : le TCD additionne, compte ou fait la moyenne pour chaque croisement."
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Regrouper, afficher en %, filtrer",
+                    "text": "Trois réglages font un TCD de direction.",
+                    "steps": [
+                      "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
+                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
+                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic."
+                    ]
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Si vous avez Excel 365 : le modèle de données",
+                    "text": "En cochant « Ajouter ces données au modèle de données », on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-croise-dynamique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-10-EXEMPLE-TCD",
+        "type": "fp-worked",
+        "titre": "Exemple guidé : le TCD agence × mois",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "exemple": {
+            "id": "b3-01-a2-exemple-tcd",
+            "enonce": "Dans le classeur de reprise, construisez le TCD du CA par agence et par mois de l’année 2026.",
+            "etapes": [
+              {
+                "id": "source",
+                "intitule": "La source",
+                "raisonnement": "Ctrl + T sur Commandes, nommé T_Commandes ; on y ajoute la colonne calculée annee, =ANNEE([@date_commande]). Puis Insertion › Tableau croisé dynamique, sur une nouvelle feuille.",
+                "invite": "Sur quoi construire le TCD pour qu’il voie les lignes d’octobre ?"
+              },
+              {
+                "id": "champs",
+                "intitule": "Les champs",
+                "raisonnement": "agence_id en lignes ; date_commande en colonnes, groupée par mois et par années ; ca_ht en valeurs, au format monétaire.",
+                "invite": "Où placer l’agence, la date et le CA ?"
+              },
+              {
+                "id": "filtre",
+                "intitule": "Le filtre",
+                "raisonnement": "annee en filtre, sur 2026 : le TCD ne montre plus que l’année en cours. Un filtre reste actif tant qu’on ne l’a pas retiré.",
+                "invite": "Comment ne garder que 2026 ?"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["tableau-croise-dynamique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          },
+          "etayage": 0
+        }
+      },
+      {
+        "id": "B3-01-A2-11-ATELIER-TCD",
+        "type": "questionnaire",
+        "titre": "Exercice 7 — Le TCD de la direction",
+        "duree": 14,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 7 — Le TCD de la direction",
+          "consigne": "Essentiel, à partir de T_Commandes. Premier TCD : agence_id en lignes, categorie en colonnes, ca_ht en valeurs affiché en % du total de la ligne, annee en filtre sur 2026. Second TCD : region en lignes, date_commande en colonnes groupée par trimestres et par années, ca_ht en valeurs. Un segment categorie relié aux deux. Défi : regroupez les remises en tranches de 5 points.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-part-info-rennes",
+                  "enonce": "Quelle part de son CA Rennes (AG06) réalise-t-elle en informatique, de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["tableau-croise-dynamique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 14,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-vote",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a2-meilleur-trimestre",
+                  "enonce": "Quel trimestre a réalisé le plus fort CA du réseau, du premier trimestre 2025 au troisième trimestre 2026 ?",
+                  "options": [
+                    {
+                      "id": "t2-2025-cc399709",
+                      "libelle": "T2 2025"
+                    },
+                    {
+                      "id": "t4-2025-2dcece61",
+                      "libelle": "T4 2025"
+                    },
+                    {
+                      "id": "t2-2026-5a00afc6",
+                      "libelle": "T2 2026"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A2-12-REGLES-ACTE-2",
+        "type": "fp-pro",
+        "titre": "Cahier de règles : niveaux 3 et 4",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A2-12-REGLES-ACTE-2",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "Avant la pause, vous ajoutez deux règles à votre cahier d’analyste : l’agent de la séance 2 devra transformer et modéliser comme vous.",
+            "geste": "Écrivez une règle par niveau : une phrase impérative et vérifiable.",
+            "consequence": "Un agent qui choisit la fonction avant de comprendre la question calcule vite, et faux.",
+            "questionsLibres": [
+              {
+                "id": "b3-01-a2-regles:regle-transformer",
+                "question": "Niveau 3 · Transformer : votre règle avant d’écrire une formule.",
+                "placeholder": "Avant la fonction, je…"
+              },
+              {
+                "id": "b3-01-a2-regles:regle-modeliser",
+                "question": "Niveau 4 · Modéliser : votre règle pour un calcul qui dure.",
+                "placeholder": "Je travaille sur…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": [
+                "agregation-conditionnelle",
+                "tableau-croise-dynamique"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+        "type": "fp-story",
+        "titre": "Un graphique de la direction",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+              "renderer": "chart",
+              "props": {
+                "title": "Rennes, loin derrière Nantes",
+                "caption": "Diapositive préparée pour le comité de direction",
+                "context": "Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».",
+                "labels": ["Rennes", "Nantes"],
+                "series": [
+                  {
+                    "label": "CA HT 2025",
+                    "values": [52000, 59000],
+                    "tone": "teal"
+                  }
+                ],
+                "axisRanges": [[49000, 59500]],
+                "axisLabels": ["49 000 à 59 500 €"],
+                "unit": "€",
+                "source": "Export des ventes de Norvane Équipement, CA arrondi au millier d’euros (données fictives).",
+                "kind": "bars",
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 59 500 € ; barres de 52 000 € et 59 000 €."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["choix-du-graphique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-02-VOTE-GRAPHIQUE",
+        "type": "fp-vote",
+        "titre": "Vote : que décidez-vous ?",
+        "duree": 2,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a3-graphique",
+            "enonce": "D’après ce graphique, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
+            "options": [
+              {
+                "id": "impossible-a-dire-f2974021",
+                "libelle": "Impossible à dire"
+              },
+              {
+                "id": "oui-0a904076",
+                "libelle": "Oui"
+              },
+              {
+                "id": "non-l-axe-est-tronque-21b46954",
+                "libelle": "Non : l’axe est tronqué"
+              }
+            ]
+          }
+        },
+        "pieceJointe": {
+          "libelle": "Classeur de reprise de l’acte 3",
+          "fichier": "/assets/cours/b3-01/B3-01_reprise_acte_3.dccca981.xlsx"
+        }
+      },
+      {
+        "id": "B3-01-A3-03-COURS-GRAPHIQUES",
+        "type": "fp-story",
+        "titre": "Cours : un graphique répond à une question",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-03-COURS-GRAPHIQUES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-03-COURS-GRAPHIQUES",
+              "renderer": "lesson",
+              "props": {
+                "title": "Un graphique répond à une question",
+                "subtitle": "Trace écrite · niveau 5",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "D’abord la question, ensuite le graphique",
+                    "text": "Chaque question de la direction a son graphique.",
+                    "steps": [
+                      "Comparer des agences ou des produits : barres.",
+                      "Suivre une évolution dans le temps : courbe.",
+                      "Montrer la composition d’un total, en peu de parts : barres empilées.",
+                      "Voir comment se répartissent des valeurs : histogramme.",
+                      "Chercher un lien entre deux mesures : nuage de points.",
+                      "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "À éviter",
+                    "text": "La 3D, qui déforme les hauteurs ; le camembert de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Un titre qui dit la conclusion",
+                    "text": "« Caen à 92 % de son objectif » plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["choix-du-graphique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-04-TRI-GRAPHIQUES",
+        "type": "fp-cardsort",
+        "titre": "Exercice 8 — À chaque question son graphique",
+        "duree": 4,
+        "interactif": true,
+        "donnees": {
+          "plan": {
+            "id": "b3-01-a3-graphiques",
+            "intitule": "Associez chaque question de la direction au graphique qui y répond.",
+            "cartes": [
+              {
+                "id": "composition-rennes",
+                "libelle": "De quoi est fait le CA de Rennes ?"
+              },
+              {
+                "id": "remise-et-marge",
+                "libelle": "La remise fait-elle baisser la marge ?"
+              },
+              {
+                "id": "agence-qui-vend-le-plus",
+                "libelle": "Quelle agence vend le plus ?"
+              },
+              {
+                "id": "repartition-delais",
+                "libelle": "Comment se répartissent les délais de livraison ?"
+              },
+              {
+                "id": "ca-mois-par-mois",
+                "libelle": "Comment évolue le CA, mois par mois ?"
+              },
+              {
+                "id": "cumul-face-objectif",
+                "libelle": "Où en est le CA cumulé face à l’objectif ?"
+              }
+            ],
+            "categories": [
+              {
+                "id": "barres",
+                "libelle": "Barres"
+              },
+              {
+                "id": "courbe",
+                "libelle": "Courbe"
+              },
+              {
+                "id": "empile",
+                "libelle": "Barres empilées"
+              },
+              {
+                "id": "histogramme",
+                "libelle": "Histogramme"
+              },
+              {
+                "id": "nuage",
+                "libelle": "Nuage de points"
+              },
+              {
+                "id": "kpi",
+                "libelle": "Indicateur et son contexte"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["choix-du-graphique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 4,
+              "modalite": "binome",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
+        "type": "questionnaire",
+        "titre": "Exercice 9 — CA et objectif par agence",
+        "duree": 8,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 9 — CA et objectif par agence",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, le modèle de données relie les deux tables dans un TCD. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a3-agences-sous-objectif",
+                  "enonce": "Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé de la même période ? Saisissez un nombre entier.",
+                  "unite": "agences",
+                  "metadonnees": {
+                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 8,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a3-atteinte-rennes",
+                  "enonce": "Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["choix-du-graphique", "tableau-de-bord"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 8,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "B3-01-A3-06-VOTE-TRENTE-SECONDES",
+        "type": "fp-vote",
+        "titre": "Vote : trente secondes",
+        "duree": 3,
+        "interactif": true,
+        "donnees": {
+          "question": {
+            "id": "b3-01-a3-trente-secondes",
+            "enonce": "Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?",
+            "options": [
+              {
+                "id": "le-tableau-de-toutes-les-lignes-d52eeee3",
+                "libelle": "Le tableau de toutes les lignes"
+              },
+              {
+                "id": "dix-graphiques-9bc9ca67",
+                "libelle": "Dix graphiques"
+              },
+              {
+                "id": "quatre-chiffres-chacun-avec-sa-comparais-da3f031e",
+                "libelle": "Quatre chiffres, chacun avec sa comparaison"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
