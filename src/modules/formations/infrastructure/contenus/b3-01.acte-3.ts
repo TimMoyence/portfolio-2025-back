@@ -1,0 +1,718 @@
+import { CLASSEURS_B3_01, HISTOIRES_B3_01 } from './b3-01.donnees';
+import { questionChiffree } from './b3-01.questions';
+import * as moteur from './briques';
+
+export const ACTE_3: moteur.Acte = [
+  moteur.ecranV2(
+    {
+      screenId: 'B3-01-A3-01-GRAPHIQUE-TROMPEUR',
+      titre: 'Un graphique de la direction',
+      diffusion: 'catalogue',
+      dureeMinutes: 1,
+      concepts: ['choix-du-graphique'],
+      notes: moteur.puces(
+        'Projeter sans commentaire ; laisser 30 secondes de lecture avant le vote.',
+        'Ne pas montrer l’axe du doigt : c’est l’objet du vote.',
+      ),
+    },
+    'chart',
+    {
+      title: 'Rennes, loin derrière Nantes',
+      caption: 'Diapositive préparée pour le comité de direction',
+      context:
+        'Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».',
+      kind: 'bars',
+      labels: ['Rennes', 'Nantes'],
+      series: [
+        {
+          label: 'CA HT 2025',
+          values: [
+            HISTOIRES_B3_01['ca-2025-rennes'],
+            HISTOIRES_B3_01['ca-2025-nantes'],
+          ],
+          tone: 'teal',
+        },
+      ],
+      axisRanges: [[49000, 59500]],
+      axisLabels: ['49 000 à 59 500 €'],
+      unit: '€',
+      source:
+        'Export des ventes de Norvane Équipement, CA arrondi au millier d’euros (données fictives).',
+      description:
+        'Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 59 500 € ; barres de 52 000 € et 59 000 €.',
+    },
+  ),
+  {
+    screenId: 'B3-01-A3-02-VOTE-GRAPHIQUE',
+    titre: 'Vote : que décidez-vous ?',
+    diffusion: 'seance',
+    brique: 'fp-vote',
+    dureeMinutes: 2,
+    concepts: ['choix-du-graphique'],
+    notes: moteur.puces(
+      'Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.',
+      'Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.',
+      'Révélation : redessiner au tableau les deux barres depuis zéro.',
+    ),
+    proprietes: {
+      modalite: 'solo',
+      pieceJointe: {
+        libelle: 'Classeur de reprise de l’acte 3',
+        fichier: CLASSEURS_B3_01.repriseActe3,
+      },
+      questions: [
+        moteur.vote(
+          'b3-01-a3-graphique',
+          'choix-du-graphique',
+          false,
+          'D’après ce graphique, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?',
+          'Non : l’axe est tronqué',
+          [
+            ['Oui', 'axe-tronque-lu-comme-ecart'],
+            ['Impossible à dire', 'axe-tronque-lu-comme-ecart'],
+          ],
+        ),
+      ],
+      corrige: {
+        type: 'revelation',
+        titre: 'Un axe tronqué grossit l’écart',
+        lignes: [
+          'L’axe part de 49 000 € : les barres ne montrent que ce qui dépasse ce seuil.',
+          'Rennes a vendu 52 000 €, Nantes 59 000 € : environ 12 % de moins, pas trois fois moins.',
+          'Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité.',
+        ],
+      },
+    },
+  },
+  moteur.ecranV2(
+    {
+      screenId: 'B3-01-A3-03-COURS-GRAPHIQUES',
+      titre: 'Cours : un graphique répond à une question',
+      diffusion: 'catalogue',
+      dureeMinutes: 3,
+      concepts: ['choix-du-graphique'],
+      notes: moteur.puces(
+        '3 min ; faire dire la question avant le type de graphique, à chaque ligne.',
+        'Montrer qu’un titre qui conclut se lit en deux secondes, un titre « CA par agence » non.',
+        'Transition : « À chaque question son graphique : exercice 8. »',
+      ),
+    },
+    'lesson',
+    {
+      title: 'Un graphique répond à une question',
+      subtitle: 'Trace écrite · niveau 5',
+      blocks: [
+        {
+          kind: 'method',
+          title: 'D’abord la question, ensuite le graphique',
+          text: 'Chaque question de la direction a son graphique.',
+          steps: [
+            'Comparer des agences ou des produits : barres.',
+            'Suivre une évolution dans le temps : courbe.',
+            'Montrer la composition d’un total, en peu de parts : barres empilées.',
+            'Voir comment se répartissent des valeurs : histogramme.',
+            'Chercher un lien entre deux mesures : nuage de points.',
+            'Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé.',
+          ],
+        },
+        {
+          kind: 'property',
+          title: 'À éviter',
+          text: 'La 3D, qui déforme les hauteurs ; le camembert de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements.',
+        },
+        {
+          kind: 'example',
+          title: 'Un titre qui dit la conclusion',
+          text: '« Caen à 92 % de son objectif » plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres.',
+        },
+      ],
+    },
+  ),
+  moteur.corrigeSurPlace(
+    {
+      screenId: 'B3-01-A3-04-TRI-GRAPHIQUES',
+      titre: 'Exercice 8 — À chaque question son graphique',
+      diffusion: 'seance',
+      brique: 'fp-cardsort',
+      dureeMinutes: 3,
+      concepts: ['choix-du-graphique'],
+      notes: moteur.puces(
+        'Temps : réflexion 1 min · travail 2 min',
+        'Réflexion : faire dire, pour chaque question, si elle compare, suit le temps, décompose, répartit ou relie.',
+        'Pièges : un camembert pour une évolution ; un graphique choisi avant la question.',
+      ),
+      proprietes: {
+        modalite: 'binome',
+        ...moteur.classement(
+          {
+            id: 'b3-01-a3-graphiques',
+            intitule:
+              'Associez chaque question de la direction au graphique qui y répond.',
+          },
+          'choix-du-graphique',
+          [
+            ['barres', 'Barres'],
+            ['courbe', 'Courbe'],
+            ['empile', 'Barres empilées'],
+            ['histogramme', 'Histogramme'],
+            ['nuage', 'Nuage de points'],
+            ['kpi', 'Indicateur et son contexte'],
+          ],
+          [
+            {
+              id: 'agence-qui-vend-le-plus',
+              libelle: 'Quelle agence vend le plus ?',
+              categorie: 'barres',
+              confusion: 'graphique-sans-question',
+              justification: 'on compare des agences entre elles',
+            },
+            {
+              id: 'ca-mois-par-mois',
+              libelle: 'Comment évolue le CA, mois par mois ?',
+              categorie: 'courbe',
+              confusion: 'camembert-pour-evolution',
+              justification: 'on suit une mesure dans le temps',
+            },
+            {
+              id: 'composition-rennes',
+              libelle: 'De quoi est fait le CA de Rennes ?',
+              categorie: 'empile',
+              confusion: 'graphique-sans-question',
+              justification: 'on décompose un total en quatre catégories',
+            },
+            {
+              id: 'repartition-delais',
+              libelle: 'Comment se répartissent les délais de livraison ?',
+              categorie: 'histogramme',
+              confusion: 'graphique-sans-question',
+              justification: 'on regarde la distribution d’une mesure',
+            },
+            {
+              id: 'remise-et-marge',
+              libelle: 'La remise fait-elle baisser la marge ?',
+              categorie: 'nuage',
+              confusion: 'graphique-sans-question',
+              justification: 'on cherche un lien entre deux mesures',
+            },
+            {
+              id: 'cumul-face-objectif',
+              libelle: 'Où en est le CA cumulé face à l’objectif ?',
+              categorie: 'kpi',
+              confusion: 'graphique-sans-question',
+              justification: 'un chiffre clé, lu avec son objectif',
+            },
+          ],
+        ),
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
+        'Corriger en partant de la carte la plus ratée (taux d’erreur au pupitre).',
+        'Transition : « Le graphique de la direction : exercice 9. »',
+      ],
+    },
+    [
+      [
+        'barres',
+        'Comparer des agences : des barres, triées de la plus forte à la plus faible.',
+      ],
+      [
+        'courbe',
+        'Suivre le CA mois par mois : une courbe. Un camembert ne montre pas le temps.',
+      ],
+      [
+        'empile',
+        'Décomposer le CA de Rennes en quatre catégories : des barres empilées.',
+      ],
+      [
+        'histogramme',
+        'Répartir les délais de livraison : un histogramme, par tranches de jours.',
+      ],
+      [
+        'nuage',
+        'Relier la remise et la marge : un nuage de points, une ligne par point.',
+      ],
+      [
+        'kpi',
+        'Le CA cumulé face à l’objectif : un indicateur, avec son objectif à côté.',
+      ],
+    ],
+  ),
+  moteur.corrigeSurPlace(
+    {
+      screenId: 'B3-01-A3-05-ATELIER-GRAPHIQUES',
+      titre: 'Exercice 9 — CA et objectif par agence',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 7,
+      concepts: ['choix-du-graphique', 'tableau-de-bord'],
+      notes: moteur.puces(
+        'Temps : réflexion 1 min · travail 6 min',
+        'Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.',
+        'Piège : comparer neuf mois de ventes à l’objectif de toute la table.',
+      ),
+      proprietes: {
+        intitule: 'Exercice 9 — CA et objectif par agence',
+        consigne:
+          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, le modèle de données relie les deux tables dans un TCD. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          questionChiffree(
+            'b3-01-a3-agences-sous-objectif',
+            'tableau-de-bord',
+            'Combien d’agences ont un CA de janvier à septembre 2026 sous leur objectif cumulé de la même période ?',
+            'agences',
+            ['objectif-annuel-pour-cumul'],
+          ),
+          questionChiffree(
+            'b3-01-a3-atteinte-rennes',
+            'tableau-de-bord',
+            'Quel est le taux d’atteinte de Rennes (AG06), de janvier à septembre 2026 ?',
+            '%',
+            ['objectif-annuel-pour-cumul'],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
+        'Corriger les deux questions ; projeter un graphique réussi, titre compris.',
+        'Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.',
+        'Transition : « Nadia a trente secondes : un vote. »',
+      ],
+    },
+    [
+      [
+        'b3-01-a3-agences-sous-objectif',
+        'L’objectif cumulé additionne les objectifs mensuels de janvier à septembre 2026 : trois agences restent en dessous. Comparé à tous les objectifs de la table, vingt et un mois, le CA de neuf mois paraît sous l’objectif dans les 12 agences.',
+      ],
+      [
+        'b3-01-a3-atteinte-rennes',
+        'CA de Rennes ÷ objectif cumulé de Rennes, de janvier à septembre 2026 : 79,0 %, le taux le plus bas du réseau. Divisé par les vingt et un mois d’objectifs, il tomberait à 33,8 %.',
+      ],
+    ],
+  ),
+  {
+    screenId: 'B3-01-A3-06-VOTE-TRENTE-SECONDES',
+    titre: 'Vote : trente secondes',
+    diffusion: 'seance',
+    brique: 'fp-vote',
+    dureeMinutes: 3,
+    concepts: ['tableau-de-bord'],
+    notes: moteur.puces(
+      'Temps « réfléchir » du niveau 6 : vote non noté, 2 min de vote et 1 min de révélation.',
+      'Faire dire ce que Nadia fera de chaque option devant le comité.',
+    ),
+    proprietes: {
+      modalite: 'solo',
+      questions: [
+        moteur.vote(
+          'b3-01-a3-trente-secondes',
+          'tableau-de-bord',
+          false,
+          'Nadia a trente secondes avant le comité. Que doit-elle voir d’abord ?',
+          'Quatre chiffres, chacun avec sa comparaison',
+          [
+            ['Le tableau de toutes les lignes', 'kpi-sans-contexte'],
+            ['Dix graphiques', 'graphique-sans-question'],
+          ],
+        ),
+      ],
+      corrige: {
+        type: 'revelation',
+        titre: 'Quatre chiffres en contexte, le détail sur demande',
+        lignes: [
+          'En trente secondes, on lit quatre chiffres, pas quatre mille lignes ni dix graphiques.',
+          'Chaque chiffre porte sa comparaison : l’objectif, ou la même période de l’an passé.',
+          'Le détail vient ensuite, sur demande : graphiques, TCD et segments.',
+        ],
+      },
+    },
+  },
+  moteur.ecranV2(
+    {
+      screenId: 'B3-01-A3-07-COURS-DASHBOARD',
+      titre: 'Cours : l’anatomie d’un tableau de bord',
+      diffusion: 'catalogue',
+      dureeMinutes: 3,
+      concepts: ['tableau-de-bord'],
+      notes: moteur.puces(
+        '3 min ; faire dire la question de décision du tableau de bord de Nadia.',
+        'Lire l’exemple de Caen en trois temps : constat, cause, action.',
+        'Transition : « Voyons la mise en forme conditionnelle et les segments. »',
+      ),
+    },
+    'lesson',
+    {
+      title: 'L’anatomie d’un tableau de bord',
+      subtitle: 'Trace écrite · niveau 6',
+      blocks: [
+        {
+          kind: 'definition',
+          title: 'Un tableau de bord répond à une question de décision',
+          text: 'Pas « toutes les ventes », mais « où le réseau décroche-t-il, et pourquoi ? ». Ce qui n’aide pas à répondre n’y figure pas.',
+        },
+        {
+          kind: 'property',
+          title: 'Ce qu’il contient',
+          text: 'Une page, lisible en trente secondes.',
+          steps: [
+            'Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.',
+            'Deux graphiques, chacun avec un titre qui conclut.',
+            'Des segments connectés à tous les TCD : un clic filtre toute la page.',
+            'Les anomalies signalées par mise en forme conditionnelle.',
+          ],
+        },
+        {
+          kind: 'method',
+          title: 'Une recommandation : constat chiffré, cause, action',
+          text: 'Le constat se lit dans le tableau de bord ; la cause se cherche dans le détail ; l’action est précise, datée, et confiée à quelqu’un.',
+        },
+        {
+          kind: 'example',
+          title: 'Caen',
+          text: 'Constat : délai médian de 7 jours ouvrés, contre 4 dans le réseau. Cause : changement de transporteur en mars. Action : renégocier le contrat, ou revenir à l’ancien transporteur.',
+        },
+      ],
+    },
+  ),
+  moteur.corrigeEtapeParEtape(
+    {
+      screenId: 'B3-01-A3-08-EXEMPLE-MFC-SEGMENTS',
+      titre: 'Exemple guidé : MFC et segments connectés',
+      diffusion: 'seance',
+      brique: 'fp-worked',
+      dureeMinutes: 2,
+      concepts: ['tableau-de-bord'],
+      notes: moteur.puces(
+        'Chacun refait les étapes sur sa synthèse de l’exercice 9 ; la correction se dévoile étape par étape sur ce même écran.',
+      ),
+      proprietes: {
+        modalite: 'solo',
+        exemple: {
+          id: 'b3-01-a3-exemple-mfc',
+          enonce:
+            'Sur la synthèse par agence de l’exercice 9, le taux d’atteinte est en colonne E, à partir de la ligne 5 : faites ressortir les agences en retard, puis reliez un segment à deux TCD.',
+          etapes: [
+            {
+              id: 'mfc',
+              intitule: 'La règle de couleur',
+              raisonnement:
+                'Accueil › Mise en forme conditionnelle › Nouvelle règle › Utiliser une formule : =$E5<0,95, remplissage rouge. Le $ fige la colonne E : toute la ligne de l’agence se colore.',
+              invite:
+                'Quelle formule colore les agences sous 95 % de leur objectif ?',
+            },
+            {
+              id: 'barres',
+              intitule: 'Les barres de données',
+              raisonnement:
+                'Sur la colonne du CA : Mise en forme conditionnelle › Barres de données. La longueur de la barre se lit avant le nombre.',
+              invite: 'Comment rendre le CA lisible d’un coup d’œil ?',
+            },
+            {
+              id: 'segment',
+              intitule: 'Le segment connecté',
+              raisonnement:
+                'Clic dans un TCD › Insertion › Segment › region ; puis clic droit sur le segment › Connexions de rapport : cocher les deux TCD. Un clic filtre les deux.',
+              invite: 'Comment un seul segment filtre-t-il deux TCD ?',
+            },
+          ],
+        },
+        etayage: 0,
+      },
+    },
+    {
+      minutes: 1,
+      notes: [
+        'Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.',
+        'Transition : « Le tableau de bord Direction : exercice 10. »',
+      ],
+    },
+  ),
+  moteur.corrigeSurPlace(
+    {
+      screenId: 'B3-01-A3-09-ATELIER-DASHBOARD',
+      titre: 'Exercice 10 — Le tableau de bord Direction',
+      diffusion: 'seance',
+      brique: 'questionnaire',
+      dureeMinutes: 13,
+      concepts: ['tableau-de-bord', 'indicateur-statistique'],
+      notes: moteur.puces(
+        'Temps : réflexion 1 min · travail 12 min',
+        'Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.',
+        'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
+        'Pièges : toute la table au lieu de 2026 ; neuf mois comparés à douze ; moyenne des taux ; lignes douteuses supprimées.',
+      ),
+      proprietes: {
+        intitule: 'Exercice 10 — Le tableau de bord Direction',
+        consigne:
+          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.',
+        regime: 'focus',
+        ordre: 'fixe',
+        questions: [
+          questionChiffree(
+            'b3-01-a3-ca-2026',
+            'tableau-de-bord',
+            'Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ?',
+            '€',
+            ['periode-mal-delimitee'],
+          ),
+          questionChiffree(
+            'b3-01-a3-evolution',
+            'tableau-de-bord',
+            'De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ?',
+            '%',
+            ['evolution-sur-annee-pleine'],
+          ),
+          questionChiffree(
+            'b3-01-a3-marge-marseille',
+            'indicateur-statistique',
+            'Quel est le taux de marge de Marseille (AG09), de janvier à septembre 2026 ?',
+            '%',
+            ['moyenne-simple-des-taux'],
+          ),
+          questionChiffree(
+            'b3-01-a3-quarantaine',
+            'qualite-des-donnees',
+            'Combien de lignes compte l’onglet Quarantaine du classeur de reprise ?',
+            'lignes',
+            ['suppression-au-lieu-de-signalement'],
+          ),
+        ],
+      },
+    },
+    {
+      minutes: 2,
+      notes: [
+        'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).',
+        'Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.',
+        'Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »',
+      ],
+    },
+    [
+      [
+        'b3-01-a3-ca-2026',
+        'SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €. Toute la table, 2025 compris, donne 1 313 125 € : deux années mêlées dans un seul indicateur.',
+      ],
+      [
+        'b3-01-a3-evolution',
+        'CA de janvier à septembre 2026 ÷ CA de janvier à septembre 2025 − 1 : +8,6 %. Rapporté à toute l’année 2025, douze mois contre neuf, il donnerait −22,1 % : une chute qui n’existe pas.',
+      ],
+      [
+        'b3-01-a3-marge-marseille',
+        'Marge de Marseille ÷ CA de Marseille, de janvier à septembre 2026 : 26,9 %. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses.',
+      ],
+      [
+        'b3-01-a3-quarantaine',
+        'L’onglet Quarantaine compte 60 lignes, chacune avec son motif : livraisons impossibles, produits inconnus, commercial absent, dates d’un autre système, quantités négatives, prix hors norme. Une ligne supprimée ne laisse aucune trace : la quarantaine serait vide, et la question ne serait jamais posée.',
+      ],
+    ],
+  ),
+  moteur.corrigeSurPlace(
+    {
+      screenId: 'B3-01-A3-10-RECOMMANDATIONS',
+      titre: 'Vos trois recommandations au comité',
+      diffusion: 'seance',
+      brique: 'fp-pro',
+      dureeMinutes: 7,
+      concepts: ['tableau-de-bord'],
+      notes: moteur.puces(
+        'Temps : réflexion 1 min · travail 6 min',
+        'Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
+        'Puis révéler les quatre histoires une à une ; chacun coche celles qu’il avait trouvées.',
+      ),
+      proprietes: {
+        metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
+        situation:
+          'Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande trois recommandations, tirées de votre tableau de bord.',
+        geste:
+          'Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise.',
+        consequence:
+          'Une recommandation sans chiffre ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.',
+        questionsLibres: [
+          {
+            id: 'b3-01-a3-recommandations:recommandation-1',
+            question: 'Recommandation 1 : constat chiffré → cause → action.',
+            placeholder: 'Constat : … Cause : … Action : …',
+          },
+          {
+            id: 'b3-01-a3-recommandations:recommandation-2',
+            question: 'Recommandation 2 : constat chiffré → cause → action.',
+            placeholder: 'Constat : … Cause : … Action : …',
+          },
+          {
+            id: 'b3-01-a3-recommandations:recommandation-3',
+            question: 'Recommandation 3 : constat chiffré → cause → action.',
+            placeholder: 'Constat : … Cause : … Action : …',
+          },
+        ],
+      },
+    },
+    {
+      minutes: 2,
+      notes: [
+        'Révéler une histoire à la fois ; demander qui l’avait trouvée avant de passer à la suivante.',
+        'Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »',
+      ],
+    },
+    [
+      [
+        'marseille',
+        'Marseille : la marge fond. Taux de marge de 32,3 % en 2025, 26,9 % de janvier à septembre 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction.',
+      ],
+      [
+        'rennes',
+        'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à 2025, les autres catégories sont stables. Action : comprendre la perte en informatique, client par client, et relancer l’offre.',
+      ],
+      [
+        'lille',
+        'Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Action : comprendre ce qui marche à Lille et le partager aux autres agences.',
+      ],
+      [
+        'strasbourg',
+        'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées deux à trois mois plus tard. Le contrat promet 5 jours ouvrés. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients.',
+      ],
+    ],
+  ),
+  moteur.ecranV2(
+    {
+      screenId: 'B3-01-A3-11-FICHE-MEMO',
+      titre: 'Fiche mémo : de la donnée brute à la décision',
+      diffusion: 'catalogue',
+      dureeMinutes: 3,
+      concepts: [
+        'jeu-de-donnees',
+        'nettoyage',
+        'agregation-conditionnelle',
+        'tableau-croise-dynamique',
+        'choix-du-graphique',
+        'tableau-de-bord',
+      ],
+      notes: moteur.puces(
+        '3 min de lecture ; la fiche s’imprime et se garde pour la séance 2.',
+        'Faire relier chaque case à la règle écrite dans le cahier.',
+      ),
+    },
+    'grid',
+    {
+      title: 'Fiche mémo : de la donnée brute à la décision',
+      subtitle:
+        'Six niveaux : pour chacun, la question à se poser, les outils et le piège principal.',
+      imprimable: true,
+      items: [
+        {
+          title: 'Comprendre',
+          description:
+            'Une ligne, c’est quoi, et quelle clé relie les tables ? Granularité, types, clés. Piège : relier par un nom ou une ville.',
+        },
+        {
+          title: 'Nettoyer',
+          description:
+            'Faux ou suspect ? Automatique ou humain ? SUPPRESPACE, NOMPROPRE, CNUM, colonne de contrôle, quarantaine. Piège : supprimer au lieu de signaler.',
+        },
+        {
+          title: 'Transformer',
+          description:
+            'Quelle famille de problème ? INDEX et EQUIV, SOMME.SI.ENS, NB.JOURS.OUVRES, MEDIANE. Piège : un critère mal écrit ou une période mal délimitée.',
+        },
+        {
+          title: 'Modéliser',
+          description:
+            'Le calcul tiendra-t-il au prochain export ? Tableau structuré, TCD, regroupement par années, segments. Piège : la plage fixe.',
+        },
+        {
+          title: 'Visualiser',
+          description:
+            'Quelle question le graphique doit-il trancher ? Barres, courbe, empilé, histogramme, nuage, indicateur. Piège : l’axe tronqué non signalé.',
+        },
+        {
+          title: 'Décider',
+          description:
+            'Que doit voir le comité en trente secondes ? Quatre indicateurs en contexte, constat, cause, action. Piège : un chiffre sans comparaison.',
+        },
+      ],
+    },
+  ),
+  {
+    screenId: 'B3-01-A3-12-CAHIER-DE-REGLES',
+    titre: 'Cahier de règles : niveaux 5 et 6, puis relecture',
+    diffusion: 'seance',
+    brique: 'fp-pro',
+    dureeMinutes: 5,
+    concepts: ['choix-du-graphique', 'tableau-de-bord'],
+    notes: moteur.puces(
+      '4 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.',
+      'Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »',
+      'Annoncer la séance 2 : l’agent Data Analyst appliquera ces six règles au prochain export de Nadia.',
+    ),
+    proprietes: {
+      metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
+      situation:
+        'Votre cahier compte quatre règles. Vous écrivez les deux dernières, puis vous choisissez celle que l’agent de la séance 2 recevra en premier.',
+      geste:
+        'Écrivez une règle par niveau, puis justifiez votre choix en une phrase.',
+      consequence:
+        'L’agent n’a que vos règles : celle qui manque, il ne l’appliquera pas.',
+      questionsLibres: [
+        {
+          id: 'b3-01-a3-regles:regle-visualiser',
+          question:
+            'Niveau 5 · Visualiser : votre règle avant de choisir un graphique.',
+          placeholder: 'Avant le graphique, je…',
+        },
+        {
+          id: 'b3-01-a3-regles:regle-decider',
+          question:
+            'Niveau 6 · Décider : votre règle pour écrire une recommandation.',
+          placeholder: 'Je recommande…',
+        },
+        {
+          id: 'b3-01-a3-regles:regle-la-plus-utile',
+          question:
+            'Laquelle de vos six règles confieriez-vous en premier à un agent, et pourquoi ?',
+          placeholder: 'Ma règle n° … parce que…',
+        },
+      ],
+    },
+  },
+  {
+    screenId: 'B3-01-A3-13-BILLET-DE-SORTIE',
+    titre: 'Billet de sortie',
+    diffusion: 'seance',
+    brique: 'fp-exit',
+    dureeMinutes: 5,
+    concepts: ['qualite-des-donnees'],
+    notes: moteur.puces(
+      '5 min ; clore la séance quand le compteur de billets est complet.',
+      'Pièges : échanger les deux dates ; supprimer la ligne.',
+      'Lire les réponses libres avant la séance 2 : ce qui reste flou ouvre la séance.',
+    ),
+    proprietes: {
+      modalite: 'solo',
+      questions: [
+        moteur.vote(
+          'b3-01-a3-billet',
+          'qualite-des-donnees',
+          true,
+          'Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?',
+          'Non : on la signale et on demande (faux · humain)',
+          [
+            [
+              'Oui : on échange les deux dates',
+              'suspect-corrige-sans-validation',
+            ],
+            [
+              'Oui : on supprime la ligne',
+              'suppression-au-lieu-de-signalement',
+            ],
+          ],
+        ),
+      ],
+      invite:
+        'En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?',
+    },
+  },
+];
