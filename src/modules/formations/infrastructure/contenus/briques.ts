@@ -452,21 +452,37 @@ export const REFERENTIEL_DU_BTS_CG = {
   external: true,
 } as const;
 
-export function coursB2(
-  actes: AuMoinsUn<Acte>,
-  remediations: ContenuDeCours['remediations'],
-  medias: ContenuDeCours['medias'],
-  fiche: Pick<
-    ContenuDeCours,
-    'slug' | 'titre' | 'dureeMinutes' | 'concepts' | 'gabarit'
-  >,
-): ContenuDeCours {
-  const [premier, ...suite] = actes;
-  return {
-    ...fiche,
-    niveau: 'B2',
-    remediations,
-    medias,
-    ecrans: [...premier, ...suite.flat()],
+const ESPACE_FINE_INSECABLE = String.fromCodePoint(0x20_2f);
+
+export function nombreFrancais(valeur: number, decimales: number): string {
+  return new Intl.NumberFormat('fr-FR', {
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
+  })
+    .format(valeur)
+    .replaceAll(ESPACE_FINE_INSECABLE, ' ');
+}
+
+function coursDuNiveau(niveau: string) {
+  return (
+    actes: AuMoinsUn<Acte>,
+    remediations: ContenuDeCours['remediations'],
+    medias: ContenuDeCours['medias'],
+    fiche: Pick<
+      ContenuDeCours,
+      'slug' | 'titre' | 'dureeMinutes' | 'concepts' | 'gabarit'
+    >,
+  ): ContenuDeCours => {
+    const [premier, ...suite] = actes;
+    return {
+      ...fiche,
+      niveau,
+      remediations,
+      medias,
+      ecrans: [...premier, ...suite.flat()],
+    };
   };
 }
+
+export const coursB2 = coursDuNiveau('B2');
+export const coursB3 = coursDuNiveau('B3');
