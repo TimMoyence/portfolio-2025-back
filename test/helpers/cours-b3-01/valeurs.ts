@@ -426,7 +426,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         'periode-mal-delimitee': mediane(
           filtrer(ventes, deLAgence(STRASBOURG)).map(delaiOuvre),
         ),
-        'mediane-sur-liste-filtree': mediane(ventes.map(delaiOuvre)),
+        'mediane-sur-liste-trop-large': mediane(ventes.map(delaiOuvre)),
       },
       'b3-01-a2-retards': {
         'jours-calendaires-pour-ouvres': filtrer(

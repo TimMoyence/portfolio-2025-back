@@ -544,10 +544,12 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `b3-01-a2-delai-strasbourg` : délai médian de livraison de Strasbourg en 2026, en jours
   ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`,
   `bornes-comptees-dans-le-delai` (médiane de `NB.JOURS.OUVRES` sans le − 1 : 9),
-  `periode-mal-delimitee` (toutes années confondues : 4) et `mediane-sur-liste-filtree` (`MEDIANE`
-  sous un filtre, qui compte les lignes masquées : 3, la médiane de toute la colonne). Sa
-  correction donne la médiane, la moyenne piégée et la médiane sous filtre, pas la médiane en
-  jours calendaires ni sans le − 1 : ces deux pièges sont aussi ceux de la question suivante.
+  `periode-mal-delimitee` (toutes années confondues : 4) et `mediane-sur-liste-trop-large` (3 :
+  l'agence oubliée donne la médiane du réseau en 2026, et `MEDIANE` sous un filtre, qui compte
+  les lignes masquées, celle de toute la colonne ; les deux valent 3). Sa correction donne la
+  médiane et la moyenne piégée, et décrit la liste trop large sans la chiffrer : le 3 est la
+  réponse de A3-05, encore ouverte. Elle ne donne pas la médiane en jours calendaires ni sans
+  le − 1 : ces deux pièges sont aussi ceux de la question suivante.
   La médiane toutes années confondues se dit à la correction du taux de marque, la dernière
   question qui partage `periode-mal-delimitee`.
 - `b3-01-a2-retards` : nombre de lignes 2026 livrées après la promesse (commande + 5 jours
@@ -576,8 +578,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `method` : Ctrl + T (⌘ + T), nom `T_Commandes` dans Création de tableau (Tableau sur Mac) ›
   Nom du tableau, colonnes calculées et références
   `T_Commandes[ca_ht]` ; `property` : un TCD place des champs en lignes, colonnes, valeurs et
-  filtres ; `method` : regrouper les dates par mois ou trimestre, afficher en % du total,
-  segments, et un filtre reste actif tant qu'on ne l'a pas retiré (la moitié « filtre » de
+  filtres ; `method` : regrouper les dates par mois ou trimestre, afficher en % du total, les
+  années en filtre pour borner la période, segments, et un filtre reste actif tant qu'on ne l'a
+  pas retiré (la moitié « filtre » de
   `tcd-filtre-ou-dates-mal-groupees`, remédiée ici) ; encadré : mettre `Agences` aussi sous forme
   de tableau, nommé `T_Agences` (la reprise de l'acte 2 n'en contient aucun), le relier à
   `T_Commandes` par `agence_id` dans Données › Relations, puis créer le TCD avec « Ajouter ces
@@ -735,7 +738,7 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `periode-mal-delimitee` (toute la table, 2025 compris).
 - `b3-01-a3-marge-marseille` : taux de marque de Marseille (marge ÷ CA HT) de janvier à
   septembre 2026, en % ; pièges `moyenne-simple-des-taux`, `marque-confondue-avec-marge` et
-  `periode-mal-delimitee` (TCD de la marge sans filtre d'année : 29,8 %). Cette période mal
+  `periode-mal-delimitee` (toute la table, 2025 compris : 29,8 %). Cette période mal
   délimitée, commune avec la question précédente, ne s'explique qu'ici.
 - `b3-01-a3-quarantaine` : nombre de lignes de données, hors en-tête, de l'onglet `Quarantaine` ;
   piège `en-tete-compte-comme-ligne` (61 : `NBVAL` sur toute la colonne A compte l'en-tête),
@@ -957,7 +960,7 @@ Les valeurs-pièges sont recalculées de la même façon, en reproduisant l'erre
 | `b3-01-a2-delai-strasbourg`      | `valeur-extreme-ignoree`             | moyenne au lieu de la médiane, arrondie à l'entier demandé             |        10 |
 | `b3-01-a2-delai-strasbourg`      | `bornes-comptees-dans-le-delai`      | médiane de `NB.JOURS.OUVRES(date_commande;date_livraison)`, sans − 1   |         9 |
 | `b3-01-a2-delai-strasbourg`      | `periode-mal-delimitee`              | médiane des délais de AG12, toutes années confondues                   |         4 |
-| `b3-01-a2-delai-strasbourg`      | `mediane-sur-liste-filtree`          | `MEDIANE` sous un filtre : médiane de toute la colonne `delai`         |         3 |
+| `b3-01-a2-delai-strasbourg`      | `mediane-sur-liste-trop-large`       | Agence oubliée, ou `MEDIANE` sous un filtre : médiane du réseau        |         3 |
 | `b3-01-a2-retards`               | `jours-calendaires-pour-ouvres`      | livraison après `date_commande + 5`                                    |       481 |
 | `b3-01-a2-retards`               | `bornes-comptees-dans-le-delai`      | `NB.JOURS.OUVRES` sans − 1 au critère `">5"`, 2026                     |       284 |
 | `b3-01-a2-taux-marge`            | `moyenne-simple-des-taux`            | moyenne des taux de marque des lignes                                  |      35,4 |
@@ -1026,7 +1029,7 @@ pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
 | `valeur-extreme-ignoree` (B2-02)           | choix-du-resume           | Résumer par la moyenne une série tirée par une valeur extrême.               | B3-01-A2-06-COURS-TEMPS-STATS      |
 | `moyenne-simple-des-taux` (B2-01)          | moyenne-ponderee          | Faire la moyenne simple de taux au lieu de les pondérer.                     | B3-01-A2-06-COURS-TEMPS-STATS      |
 | `marque-confondue-avec-marge` (B2-01)      | pourcentage               | Diviser la marge par le coût d'achat pour un taux de marque.                 | B3-01-A2-06-COURS-TEMPS-STATS      |
-| `mediane-sur-liste-filtree`                | indicateur-statistique    | Calculer MEDIANE sur une liste filtrée, qui compte les lignes masquées.      | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `mediane-sur-liste-trop-large`             | indicateur-statistique    | Médiane d'une liste trop large : critère oublié, ou MEDIANE sous un filtre.  | B3-01-A2-06-COURS-TEMPS-STATS      |
 | `plage-fixe-au-lieu-de-tableau`            | tableau-croise-dynamique  | Construire sur une plage fixe qui ne voit pas les nouvelles lignes.          | B3-01-A2-09-COURS-TCD              |
 | `pourcentage-du-mauvais-total`             | tableau-croise-dynamique  | Afficher le % du total général au lieu du % de la ligne.                     | B3-01-A2-09-COURS-TCD              |
 | `pourcentage-du-total-de-colonne`          | tableau-croise-dynamique  | Afficher le % du total de la colonne au lieu du % de la ligne.               | B3-01-A2-09-COURS-TCD              |

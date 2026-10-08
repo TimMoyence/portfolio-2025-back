@@ -358,7 +358,7 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 7 min',
         'Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.',
-        'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.',
+        'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.',
       ),
       proprietes: {
         intitule: 'Exercice 6 — Délais et marge',
@@ -377,7 +377,7 @@ export const ACTE_2: moteur.Acte = [
               'valeur-extreme-ignoree',
               'bornes-comptees-dans-le-delai',
               'periode-mal-delimitee',
-              'mediane-sur-liste-filtree',
+              'mediane-sur-liste-trop-large',
             ],
           ),
           questionChiffree(
@@ -413,7 +413,7 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-delai-strasbourg',
-        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie. Sous un filtre, MEDIANE compte aussi les lignes masquées et rend la médiane de toute la colonne : AGREGAT(12;5;plage) ne garde que les lignes visibles.',
+        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie. Une liste trop large déplace la médiane : sans le critère de l’agence, c’est celle de tout le réseau ; sous un filtre, MEDIANE compte aussi les lignes masquées, là où AGREGAT(12;5;plage) ne garde que les lignes visibles.',
       ],
       [
         'b3-01-a2-retards',
@@ -488,7 +488,7 @@ export const ACTE_2: moteur.Acte = [
         {
           kind: 'property',
           title: 'Le tableau croisé dynamique',
-          text: 'Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres ; chaque croisement est additionné ou compté.',
+          text: 'Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres.',
         },
         {
           kind: 'method',
@@ -497,7 +497,7 @@ export const ACTE_2: moteur.Acte = [
           steps: [
             'Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.',
             'Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.',
-            'Insertion › Segment : un bouton par catégorie filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré.',
+            'Années en filtre : la période est bornée ; Insertion › Segment filtre d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré.',
           ],
         },
         {

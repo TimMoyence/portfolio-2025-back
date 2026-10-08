@@ -639,10 +639,10 @@ const DEFINITIONS = {
     libelle:
       'Afficher le % du total de la colonne quand la question porte sur la part dans la ligne : la case donne alors le poids de la ligne dans la colonne.',
   },
-  'mediane-sur-liste-filtree': {
+  'mediane-sur-liste-trop-large': {
     concept: 'indicateur-statistique',
     libelle:
-      'Calculer MEDIANE sur une liste filtrée : elle compte aussi les lignes masquées, là où AGREGAT ne garde que les lignes visibles.',
+      'Prendre la médiane d’une liste trop large : un critère oublié l’élargit, et sous un filtre MEDIANE compte aussi les lignes masquées, là où AGREGAT(12;5;plage) ne garde que les lignes visibles.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 

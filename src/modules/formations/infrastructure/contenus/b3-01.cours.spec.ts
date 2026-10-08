@@ -682,7 +682,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
       'valeur-extreme-ignoree',
       'bornes-comptees-dans-le-delai',
       'periode-mal-delimitee',
-      'mediane-sur-liste-filtree',
+      'mediane-sur-liste-trop-large',
     ]);
     expect(confusionsDeLaChiffree('b3-01-a2-retards')).toEqual([
       'jours-calendaires-pour-ouvres',
@@ -702,25 +702,23 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     );
   });
 
-  it('A2-07 · diagnostique la médiane de Strasbourg prise sur toute la table, ou par MEDIANE sous un filtre, qui compte les lignes masquées', () => {
+  it('A2-07 · diagnostique la médiane de Strasbourg prise sur toute la table, ou sur une liste trop large, qu élargit l agence oubliée ou MEDIANE sous un filtre', () => {
     const [mediane, , tauxDeMarque] = explicationsDe(
       'B3-01-A2-07-ATELIER-DELAIS-MARGE',
     );
 
     expect(PIEGES_B3_01['b3-01-a2-delai-strasbourg']).toMatchObject({
       'periode-mal-delimitee': 4,
-      'mediane-sur-liste-filtree': 3,
+      'mediane-sur-liste-trop-large': 3,
     });
-    expect(libelleDeConfusion('mediane-sur-liste-filtree')).toContain(
-      'lignes masquées',
-    );
-    expect(remediationDe('mediane-sur-liste-filtree')).toBe(
+    expect(remediationDe('mediane-sur-liste-trop-large')).toBe(
       'B3-01-A2-06-COURS-TEMPS-STATS',
     );
     expect(mediane).toContain(
-      'Sous un filtre, MEDIANE compte aussi les lignes masquées et rend la médiane de toute la colonne : AGREGAT(12;5;plage) ne garde que les lignes visibles.',
+      'Une liste trop large déplace la médiane : sans le critère de l’agence, c’est celle de tout le réseau ; sous un filtre, MEDIANE compte aussi les lignes masquées, là où AGREGAT(12;5;plage) ne garde que les lignes visibles.',
     );
     expect(mediane).not.toContain('Toutes années confondues');
+    expect(mediane).not.toMatch(/(?<!\d)[34] jours/u);
     expect(tauxDeMarque).toContain(
       'Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours.',
     );
@@ -729,6 +727,12 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
   it('A2-07 · fait montrer le critère 2026 des retards, que toute la table ne trahit pas faute de retard en 2025', () => {
     expect(texteDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')).toContain(
       'Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.',
+    );
+  });
+
+  it('A2-07 · range la liste trop large parmi les pièges du pupitre', () => {
+    expect(texteDe('B3-01-A2-07-ATELIER-DELAIS-MARGE')).toContain(
+      'oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées',
     );
   });
 
@@ -1171,6 +1175,8 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
       ]);
     }
     expect(agences).not.toContain('critère de date');
+    expect(agences).not.toContain('deux côtés');
+    expect(agences).not.toMatch(/(?<!\d)7 agences/u);
     expect(rennes).toContain(
       'Sans critère de date, ni sur les ventes ni sur les objectifs, vingt et un mois face à vingt et un mois : 7 agences sous l’objectif, et Rennes à 90,8 %.',
     );
@@ -1220,6 +1226,15 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     expect(texte).toContain('Agences en tableau');
     expect(texte).toContain(
       'un filtre reste actif tant qu’on ne l’a pas retiré',
+    );
+  });
+
+  it('A2-09 · enseigne les années en filtre, le geste que manque le filtre oublié de A2-11, renvoyé ici', () => {
+    expect(texteDe('B3-01-A2-09-COURS-TCD')).toContain(
+      'Années en filtre : la période est bornée',
+    );
+    expect(remediationDe('tcd-filtre-ou-dates-mal-groupees')).toBe(
+      'B3-01-A2-09-COURS-TCD',
     );
   });
 

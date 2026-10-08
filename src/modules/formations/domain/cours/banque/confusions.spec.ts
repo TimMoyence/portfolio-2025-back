@@ -345,7 +345,7 @@ const CONFUSIONS_DU_B3_01 = {
   'en-tete-compte-comme-ligne': { concept: 'jeu-de-donnees' },
   'controle-apres-correction': { concept: 'qualite-des-donnees' },
   'pourcentage-du-total-de-colonne': { concept: 'tableau-croise-dynamique' },
-  'mediane-sur-liste-filtree': { concept: 'indicateur-statistique' },
+  'mediane-sur-liste-trop-large': { concept: 'indicateur-statistique' },
 };
 
 describe('libelleDeConcept', () => {
@@ -570,13 +570,13 @@ describe('CONFUSIONS', () => {
     );
   });
 
-  it('nomme la médiane prise sous un filtre, qui compte aussi les lignes masquées', () => {
-    expect(libelleDeConfusion('mediane-sur-liste-filtree')).toContain(
-      'MEDIANE',
-    );
-    expect(libelleDeConfusion('mediane-sur-liste-filtree')).toContain(
-      'AGREGAT',
-    );
+  it('nomme la médiane d une liste trop large par son résultat, qu un critère oublié ou MEDIANE sous un filtre l élargisse', () => {
+    const libelle = libelleDeConfusion('mediane-sur-liste-trop-large');
+
+    expect(libelle).toContain('liste trop large');
+    expect(libelle).toContain('un critère oublié');
+    expect(libelle).toContain('MEDIANE');
+    expect(libelle).toContain('AGREGAT');
   });
 
   it('décrit l identifiant par les chiffres qu il contient et le piège d objectif par la table entière', () => {

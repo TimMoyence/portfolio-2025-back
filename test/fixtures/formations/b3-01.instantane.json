@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "e04841e05fcd84ef69551f036c1059921ebc92b40b6097ab895bc04d7280cbc9",
+  "empreinte": "0cb447a1f092520c9c56904bad80b40c86fa092be7b24fa6183baebf71d9b04a",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -1329,7 +1329,7 @@
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres ; chaque croisement est additionné ou compté."
+                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres."
                   },
                   {
                     "kind": "method",
@@ -1338,7 +1338,7 @@
                     "steps": [
                       "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
                       "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
-                      "Insertion › Segment : un bouton par catégorie filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
+                      "Années en filtre : la période est bornée ; Insertion › Segment filtre d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {
@@ -4147,7 +4147,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées ; faire la moyenne des taux de ligne ; diviser la marge par le coût d’achat.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : JOURSEM(B2;2)=5 repère un vendredi ; dans Clients, DATEDIF(E2;DATE(2026;9;30);\"m\") donne l’ancienneté en mois au 30 septembre 2026.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4172,8 +4172,8 @@
                 "libelle": "Agréger une autre période que celle de la question : la table entière au lieu des seuls mois demandés."
               },
               {
-                "id": "mediane-sur-liste-filtree",
-                "libelle": "Calculer MEDIANE sur une liste filtrée : elle compte aussi les lignes masquées, là où AGREGAT ne garde que les lignes visibles."
+                "id": "mediane-sur-liste-trop-large",
+                "libelle": "Prendre la médiane d’une liste trop large : un critère oublié l’élargit, et sous un filtre MEDIANE compte aussi les lignes masquées, là où AGREGAT(12;5;plage) ne garde que les lignes visibles."
               }
             ]
           },
@@ -4231,7 +4231,7 @@
         "explications": [
           {
             "reference": "b3-01-a2-delai-strasbourg",
-            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie. Sous un filtre, MEDIANE compte aussi les lignes masquées et rend la médiane de toute la colonne : AGREGAT(12;5;plage) ne garde que les lignes visibles."
+            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. La moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie. Une liste trop large déplace la médiane : sans le critère de l’agence, c’est celle de tout le réseau ; sous un filtre, MEDIANE compte aussi les lignes masquées, là où AGREGAT(12;5;plage) ne garde que les lignes visibles."
           },
           {
             "reference": "b3-01-a2-retards",
@@ -4339,7 +4339,7 @@
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres ; chaque croisement est additionné ou compté."
+                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres."
                   },
                   {
                     "kind": "method",
@@ -4348,7 +4348,7 @@
                     "steps": [
                       "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
                       "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
-                      "Insertion › Segment : un bouton par catégorie filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
+                      "Années en filtre : la période est bornée ; Insertion › Segment filtre d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {
@@ -5677,7 +5677,7 @@
       "valeur-extreme-ignoree": "B3-01-A2-06-COURS-TEMPS-STATS",
       "moyenne-simple-des-taux": "B3-01-A2-06-COURS-TEMPS-STATS",
       "marque-confondue-avec-marge": "B3-01-A2-06-COURS-TEMPS-STATS",
-      "mediane-sur-liste-filtree": "B3-01-A2-06-COURS-TEMPS-STATS",
+      "mediane-sur-liste-trop-large": "B3-01-A2-06-COURS-TEMPS-STATS",
       "plage-fixe-au-lieu-de-tableau": "B3-01-A2-09-COURS-TCD",
       "pourcentage-du-mauvais-total": "B3-01-A2-09-COURS-TCD",
       "pourcentage-du-total-de-colonne": "B3-01-A2-09-COURS-TCD",
@@ -6399,7 +6399,7 @@
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres ; chaque croisement est additionné ou compté."
+                    "text": "Insertion › Tableau croisé dynamique, depuis T_Commandes : champs en lignes, colonnes, valeurs et filtres."
                   },
                   {
                     "kind": "method",
@@ -6408,7 +6408,7 @@
                     "steps": [
                       "Clic droit sur une date › Grouper : mois ou trimestres, et années pour ne pas mêler deux printemps.",
                       "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : part de chaque catégorie dans l’agence.",
-                      "Insertion › Segment : un bouton par catégorie filtre le TCD d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
+                      "Années en filtre : la période est bornée ; Insertion › Segment filtre d’un clic ; un filtre reste actif tant qu’on ne l’a pas retiré."
                     ]
                   },
                   {

@@ -121,7 +121,7 @@ export const PIEGES_B3_01: PiegesB301 = {
     'valeur-extreme-ignoree': 10,
     'bornes-comptees-dans-le-delai': 9,
     'periode-mal-delimitee': 4,
-    'mediane-sur-liste-filtree': 3,
+    'mediane-sur-liste-trop-large': 3,
   },
   'b3-01-a2-retards': {
     'jours-calendaires-pour-ouvres': 481,
