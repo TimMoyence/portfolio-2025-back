@@ -5164,6 +5164,1505 @@
         "corriges": [],
         "questions": [],
         "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A3-09-ATELIER-DASHBOARD",
+        "type": "questionnaire",
+        "titre": "Exercice 10 — Le tableau de bord Direction",
+        "duree": 15,
+        "interactif": true,
+        "donnees": {
+          "intitule": "Exercice 10 — Le tableau de bord Direction",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
+          "regime": "focus",
+          "ordre": "fixe",
+          "questions": [
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a3-ca-2026",
+                  "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+                  "unite": "€",
+                  "metadonnees": {
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 15,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a3-evolution",
+                  "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 15,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a3-marge-marseille",
+                  "enonce": "Quel est le taux de marge de Marseille (AG09), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+                  "unite": "%",
+                  "metadonnees": {
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 15,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a3-quarantaine",
+                  "enonce": "Combien de lignes compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": ["tableau-de-bord", "indicateur-statistique"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 15,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : toute la table au lieu de 2026 ; neuf mois comparés à douze ; moyenne des taux ; lignes douteuses supprimées.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison.\n• Transition : « Ce tableau de bord raconte quatre histoires : vos recommandations. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b3-01-a3-ca-2026",
+            "bonneReponse": "575 046 €",
+            "confusions": [
+              {
+                "id": "periode-mal-delimitee",
+                "libelle": "Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a3-evolution",
+            "bonneReponse": "8,6 %",
+            "confusions": [
+              {
+                "id": "evolution-sur-annee-pleine",
+                "libelle": "Comparer une année en cours, incomplète, à une année pleine au lieu de la même période."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a3-marge-marseille",
+            "bonneReponse": "26,9 %",
+            "confusions": [
+              {
+                "id": "moyenne-simple-des-taux",
+                "libelle": "Faire la moyenne simple de taux au lieu de les pondérer par leurs bases."
+              }
+            ]
+          },
+          {
+            "questionId": "b3-01-a3-quarantaine",
+            "bonneReponse": "60 lignes",
+            "confusions": [
+              {
+                "id": "suppression-au-lieu-de-signalement",
+                "libelle": "Supprimer une ligne douteuse au lieu de la mettre de côté avec son motif."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a3-ca-2026",
+            "enonce": "Quel est le CA HT cumulé du réseau, de janvier à septembre 2026 ? En euros, sans le symbole, arrondi à l’euro.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a3-evolution",
+            "enonce": "De combien le CA de janvier à septembre 2026 a-t-il évolué par rapport à la même période de 2025 ? En %, sans le symbole, arrondi au dixième de point.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a3-marge-marseille",
+            "enonce": "Quel est le taux de marge de Marseille (AG09), de janvier à septembre 2026 ? En %, sans le symbole, arrondi au dixième de point.",
+            "options": null
+          },
+          {
+            "id": "b3-01-a3-quarantaine",
+            "enonce": "Combien de lignes compte l’onglet Quarantaine du classeur de reprise ? Saisissez un nombre entier.",
+            "options": null
+          }
+        ],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "b3-01-a3-ca-2026",
+            "texte": "SOMME.SI.ENS sur ca_ht, date_commande de janvier à septembre 2026 : 575 046 €. Toute la table, 2025 compris, donne 1 313 125 € : deux années mêlées dans un seul indicateur."
+          },
+          {
+            "reference": "b3-01-a3-evolution",
+            "texte": "CA de janvier à septembre 2026 ÷ CA de janvier à septembre 2025 − 1 : +8,6 %. Rapporté à toute l’année 2025, douze mois contre neuf, il donnerait −22,1 % : une chute qui n’existe pas."
+          },
+          {
+            "reference": "b3-01-a3-marge-marseille",
+            "texte": "Marge de Marseille ÷ CA de Marseille, de janvier à septembre 2026 : 26,9 %. La moyenne des taux de chaque ligne donne 28,7 % : les petites lignes y pèsent autant que les grosses."
+          },
+          {
+            "reference": "b3-01-a3-quarantaine",
+            "texte": "L’onglet Quarantaine compte 60 lignes, chacune avec son motif : livraisons impossibles, produits inconnus, commercial absent, dates d’un autre système, quantités négatives, prix hors norme. Une ligne supprimée ne laisse aucune trace : la quarantaine serait vide, et la question ne serait jamais posée."
+          }
+        ]
+      },
+      {
+        "id": "B3-01-A3-10-RECOMMANDATIONS",
+        "type": "fp-pro",
+        "titre": "Vos trois recommandations au comité",
+        "duree": 9,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A3-10-RECOMMANDATIONS",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "Jeudi, Nadia Ferrand présente le réseau au comité de direction. Elle vous demande trois recommandations, tirées de votre tableau de bord.",
+            "geste": "Pour chacune : un constat chiffré, sa cause trouvée dans le détail, une action précise.",
+            "consequence": "Une recommandation sans chiffre ne convainc pas ; sans cause, elle traite le symptôme ; sans action, elle ne change rien.",
+            "questionsLibres": [
+              {
+                "id": "b3-01-a3-recommandations:recommandation-1",
+                "question": "Recommandation 1 : constat chiffré → cause → action.",
+                "placeholder": "Constat : … Cause : … Action : …"
+              },
+              {
+                "id": "b3-01-a3-recommandations:recommandation-2",
+                "question": "Recommandation 2 : constat chiffré → cause → action.",
+                "placeholder": "Constat : … Cause : … Action : …"
+              },
+              {
+                "id": "b3-01-a3-recommandations:recommandation-3",
+                "question": "Recommandation 3 : constat chiffré → cause → action.",
+                "placeholder": "Constat : … Cause : … Action : …"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 9,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Puis révéler les quatre histoires une à une ; chacun coche celles qu’il avait trouvées.\n• Révéler une histoire à la fois ; demander qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null,
+        "explications": [
+          {
+            "reference": "marseille",
+            "texte": "Marseille : la marge fond. Taux de marge de 32,3 % en 2025, 26,9 % de janvier à septembre 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction."
+          },
+          {
+            "reference": "rennes",
+            "texte": "Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à 2025, les autres catégories sont stables. Action : comprendre la perte en informatique, client par client, et relancer l’offre."
+          },
+          {
+            "reference": "lille",
+            "texte": "Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Action : comprendre ce qui marche à Lille et le partager aux autres agences."
+          },
+          {
+            "reference": "strasbourg",
+            "texte": "Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées deux à trois mois plus tard. Le contrat promet 5 jours ouvrés. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients."
+          }
+        ]
+      },
+      {
+        "id": "B3-01-A3-11-FICHE-MEMO",
+        "type": "fp-story",
+        "titre": "Fiche mémo : de la donnée brute à la décision",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-11-FICHE-MEMO",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-11-FICHE-MEMO",
+              "renderer": "grid",
+              "props": {
+                "title": "Fiche mémo : de la donnée brute à la décision",
+                "subtitle": "Six niveaux : pour chacun, la question à se poser, les outils et le piège principal.",
+                "items": [
+                  {
+                    "title": "Comprendre",
+                    "description": "Une ligne, c’est quoi, et quelle clé relie les tables ? Granularité, types, clés. Piège : relier par un nom ou une ville."
+                  },
+                  {
+                    "title": "Nettoyer",
+                    "description": "Faux ou suspect ? Automatique ou humain ? SUPPRESPACE, NOMPROPRE, CNUM, colonne de contrôle, quarantaine. Piège : supprimer au lieu de signaler."
+                  },
+                  {
+                    "title": "Transformer",
+                    "description": "Quelle famille de problème ? INDEX et EQUIV, SOMME.SI.ENS, NB.JOURS.OUVRES, MEDIANE. Piège : un critère mal écrit ou une période mal délimitée."
+                  },
+                  {
+                    "title": "Modéliser",
+                    "description": "Le calcul tiendra-t-il au prochain export ? Tableau structuré, TCD, regroupement par années, segments. Piège : la plage fixe."
+                  },
+                  {
+                    "title": "Visualiser",
+                    "description": "Quelle question le graphique doit-il trancher ? Barres, courbe, empilé, histogramme, nuage, indicateur. Piège : l’axe tronqué non signalé."
+                  },
+                  {
+                    "title": "Décider",
+                    "description": "Que doit voir le comité en trente secondes ? Quatre indicateurs en contexte, constat, cause, action. Piège : un chiffre sans comparaison."
+                  }
+                ],
+                "imprimable": true
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "jeu-de-donnees",
+                "nettoyage",
+                "agregation-conditionnelle",
+                "tableau-croise-dynamique",
+                "choix-du-graphique",
+                "tableau-de-bord"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 3 min de lecture ; la fiche s’imprime et se garde pour la séance 2.\n• Faire relier chaque case à la règle écrite dans le cahier.",
+        "diffusion": "catalogue",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A3-12-CAHIER-DE-REGLES",
+        "type": "fp-pro",
+        "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "cas": {
+            "id": "B3-01-A3-12-CAHIER-DE-REGLES",
+            "metier": "Analyste data — Norvane Équipement (réseau de 12 agences)",
+            "situation": "Votre cahier compte quatre règles. Vous écrivez les deux dernières, puis vous choisissez celle que l’agent de la séance 2 recevra en premier.",
+            "geste": "Écrivez une règle par niveau, puis justifiez votre choix en une phrase.",
+            "consequence": "L’agent n’a que vos règles : celle qui manque, il ne l’appliquera pas.",
+            "questionsLibres": [
+              {
+                "id": "b3-01-a3-regles:regle-visualiser",
+                "question": "Niveau 5 · Visualiser : votre règle avant de choisir un graphique.",
+                "placeholder": "Avant le graphique, je…"
+              },
+              {
+                "id": "b3-01-a3-regles:regle-decider",
+                "question": "Niveau 6 · Décider : votre règle pour écrire une recommandation.",
+                "placeholder": "Je recommande…"
+              },
+              {
+                "id": "b3-01-a3-regles:regle-la-plus-utile",
+                "question": "Laquelle de vos six règles confieriez-vous en premier à un agent, et pourquoi ?",
+                "placeholder": "Ma règle n° … parce que…"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["choix-du-graphique", "tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 5,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 4 min d’écriture individuelle, puis 1 min pour lire deux réponses à la troisième question.\n• Règles modèles, à montrer après la saisie : « Je pose la question avant de choisir le graphique » ; « Je recommande par un constat chiffré, sa cause et une action. »\n• Annoncer la séance 2 : l’agent Data Analyst appliquera ces six règles au prochain export de Nadia.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [],
+        "questions": [],
+        "corrigeEcran": null
+      },
+      {
+        "id": "B3-01-A3-13-BILLET-DE-SORTIE",
+        "type": "fp-exit",
+        "titre": "Billet de sortie",
+        "duree": 5,
+        "interactif": true,
+        "donnees": {
+          "billet": {
+            "id": "b3-01-a3-billet",
+            "question": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
+            "invite": "En une phrase : qu’est-ce qui reste flou pour vous après cette séance ?",
+            "options": [
+              {
+                "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
+                "libelle": "Non : on la signale et on demande (faux · humain)"
+              },
+              {
+                "id": "oui-on-echange-les-deux-dates-a6d450ff",
+                "libelle": "Oui : on échange les deux dates"
+              },
+              {
+                "id": "oui-on-supprime-la-ligne-73b05cd1",
+                "libelle": "Oui : on supprime la ligne"
+              }
+            ],
+            "metadonnees": {
+              "concepts": ["qualite-des-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 5,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "notes": "• 5 min ; clore la séance quand le compteur de billets est complet.\n• Pièges : échanger les deux dates ; supprimer la ligne.\n• Lire les réponses libres avant la séance 2 : ce qui reste flou ouvre la séance.",
+        "diffusion": "seance",
+        "seuil": null,
+        "corriges": [
+          {
+            "questionId": "b3-01-a3-billet",
+            "bonneReponse": "Non : on la signale et on demande (faux · humain)",
+            "confusions": [
+              {
+                "id": "suspect-corrige-sans-validation",
+                "libelle": "Corriger seul une donnée douteuse au lieu de la signaler à qui peut la vérifier."
+              },
+              {
+                "id": "suppression-au-lieu-de-signalement",
+                "libelle": "Supprimer une ligne douteuse au lieu de la mettre de côté avec son motif."
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "b3-01-a3-billet",
+            "enonce": "Une ligne porte une date_livraison antérieure à sa date_commande. La corrige-t-on automatiquement ?",
+            "options": [
+              {
+                "id": "non-on-la-signale-et-on-demande-faux-hum-c6b7abb5",
+                "libelle": "Non : on la signale et on demande (faux · humain)"
+              },
+              {
+                "id": "oui-on-echange-les-deux-dates-a6d450ff",
+                "libelle": "Oui : on échange les deux dates"
+              },
+              {
+                "id": "oui-on-supprime-la-ligne-73b05cd1",
+                "libelle": "Oui : on supprime la ligne"
+              }
+            ]
+          }
+        ],
+        "corrigeEcran": null
+      }
+    ],
+    "remediations": {
+      "reference-absolue-ignoree": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+      "identifiant-pris-pour-nombre": "B3-01-A1-05-COURS-DONNEE",
+      "lignes-comptees-pour-commandes": "B3-01-A1-05-COURS-DONNEE",
+      "libelle-pris-pour-cle": "B3-01-A1-06-COURS-RELATIONS",
+      "suspect-corrige-sans-validation": "B3-01-A1-10-COURS-GRILLE",
+      "suppression-au-lieu-de-signalement": "B3-01-A1-10-COURS-GRILLE",
+      "texte-pris-pour-nombre": "B3-01-A1-11-COURS-OUTILS",
+      "casse-non-normalisee": "B3-01-A1-11-COURS-OUTILS",
+      "doublons-supprimes-sur-une-colonne": "B3-01-A1-11-COURS-OUTILS",
+      "plage-recherche-non-figee": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+      "critere-mal-ecrit": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+      "periode-mal-delimitee": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+      "jours-calendaires-pour-ouvres": "B3-01-A2-06-COURS-TEMPS-STATS",
+      "valeur-extreme-ignoree": "B3-01-A2-06-COURS-TEMPS-STATS",
+      "moyenne-simple-des-taux": "B3-01-A2-06-COURS-TEMPS-STATS",
+      "plage-fixe-au-lieu-de-tableau": "B3-01-A2-09-COURS-TCD",
+      "pourcentage-du-mauvais-total": "B3-01-A2-09-COURS-TCD",
+      "graphique-sans-question": "B3-01-A3-03-COURS-GRAPHIQUES",
+      "camembert-pour-evolution": "B3-01-A3-03-COURS-GRAPHIQUES",
+      "axe-tronque-lu-comme-ecart": "B3-01-A3-03-COURS-GRAPHIQUES",
+      "objectif-annuel-pour-cumul": "B3-01-A3-07-COURS-DASHBOARD",
+      "evolution-sur-annee-pleine": "B3-01-A3-07-COURS-DASHBOARD",
+      "kpi-sans-contexte": "B3-01-A3-07-COURS-DASHBOARD"
+    }
+  },
+  "catalogue": {
+    "id": "b3-01-donnee-brute-decision",
+    "titre": "Expert Data : de la donnée brute à la décision",
+    "niveau": "B3",
+    "duree": 180,
+    "concepts": [
+      "reference-de-cellule",
+      "jeu-de-donnees",
+      "cle-et-relation",
+      "granularite",
+      "qualite-des-donnees",
+      "nettoyage",
+      "recherche-dans-une-table",
+      "agregation-conditionnelle",
+      "calcul-sur-dates",
+      "indicateur-statistique",
+      "tableau-croise-dynamique",
+      "choix-du-graphique",
+      "tableau-de-bord"
+    ],
+    "ecrans": [
+      {
+        "id": "B3-01-A1-01-RAPPEL-RECOPIE",
+        "type": "ecran-verrouille",
+        "titre": "Rappel : recopier une formule",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A1-02-COURRIEL",
+        "type": "fp-story",
+        "titre": "Expert Data : de la donnée brute à la décision",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-02-COURRIEL",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-02-COURRIEL",
+              "renderer": "hero",
+              "props": {
+                "title": "Expert Data : de la donnée brute à la décision",
+                "subtitle": "Lundi 12 octobre, 8 h. Nadia Ferrand, directrice commerciale de Norvane Équipement, écrit : « Voici l’export des ventes depuis janvier 2025. Qu’est-ce qui ne va pas dans mon réseau ? J’ai le comité de direction jeudi. »",
+                "bullets": [
+                  "Bachelor 3 · Outils informatiques du manager · séance 1",
+                  "Norvane Équipement : 12 agences, 36 commerciaux, 40 produits et services",
+                  "Un export brut des ventes, de janvier 2025 à septembre 2026, à ouvrir dans Excel",
+                  "Données fictives"
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["jeu-de-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        },
+        "pieceJointe": {
+          "libelle": "Export des ventes Norvane (classeur Excel)",
+          "fichier": "/assets/cours/b3-01/B3-01_export_ventes.xlsx"
+        }
+      },
+      {
+        "id": "B3-01-A1-03-CARTE",
+        "type": "fp-story",
+        "titre": "La carte de la séance",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-03-CARTE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-03-CARTE",
+              "renderer": "grid",
+              "props": {
+                "title": "La carte de la séance",
+                "subtitle": "Six niveaux, de l’export brut à la décision. Séance 2 : un agent appliquera vos règles.",
+                "items": [
+                  {
+                    "title": "Niveau 1 · Comprendre",
+                    "description": "Livrable : le dictionnaire des données. Règle du cahier : comment relier deux tables."
+                  },
+                  {
+                    "title": "Niveau 2 · Nettoyer",
+                    "description": "Livrable : un export propre et sa colonne de contrôle. Règle du cahier : ce qui se corrige seul, ce qui se demande."
+                  },
+                  {
+                    "title": "Niveau 3 · Transformer",
+                    "description": "Livrable : les colonnes région et catégorie, des totaux sous conditions. Règle du cahier : nommer le problème avant la fonction."
+                  },
+                  {
+                    "title": "Niveau 4 · Modéliser",
+                    "description": "Livrable : le tableau structuré et le TCD de la direction. Règle du cahier : sur quoi construire un calcul qui dure."
+                  },
+                  {
+                    "title": "Niveau 5 · Visualiser",
+                    "description": "Livrable : le graphique du CA face à l’objectif. Règle du cahier : quelle question avant quel graphique."
+                  },
+                  {
+                    "title": "Niveau 6 · Décider",
+                    "description": "Livrable : le tableau de bord et trois recommandations. Règle du cahier : comment écrire une recommandation."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["jeu-de-donnees", "nettoyage", "tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 2,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-04-VOTE-PART-ET-CLE",
+        "type": "ecran-verrouille",
+        "titre": "Vote : le fichier et Dupont, Bordeaux",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A1-05-COURS-DONNEE",
+        "type": "fp-story",
+        "titre": "Cours : lire un jeu de données",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-05-COURS-DONNEE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-05-COURS-DONNEE",
+              "renderer": "lesson",
+              "props": {
+                "title": "Lire un jeu de données avant de calculer",
+                "subtitle": "Trace écrite · niveau 1 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Observation et variable",
+                    "text": "Une observation est une ligne du tableau : un fait enregistré. Une variable est une colonne : une caractéristique relevée sur chaque observation. Un jeu de données exploitable a une observation par ligne, une variable par colonne et un en-tête par colonne."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Cinq types de variables, et la donnée manquante",
+                    "text": "Le type dit ce qu’on a le droit de calculer.",
+                    "steps": [
+                      "Identifiant (n_commande, client_id) : on le compte, on ne l’additionne jamais.",
+                      "Numérique (quantite, ca_ht) : on l’additionne, on en fait la moyenne.",
+                      "Catégorie (ville, région) : on compte et on regroupe.",
+                      "Date (date_commande) : on calcule des durées, on regroupe par mois.",
+                      "Booléen (facturee, oui ou non) : on compte les « oui ».",
+                      "Donnée manquante : une cellule vide n’est pas un zéro."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Trouver la granularité avant de compter",
+                    "text": "Avant tout calcul, finir la phrase « une ligne = … ». Dans l’export Norvane, une ligne est un produit dans une commande : une commande occupe une ou plusieurs lignes.",
+                    "steps": [
+                      "Repérer la colonne dont les valeurs se répètent (n_commande).",
+                      "Filtrer une valeur et compter ses lignes.",
+                      "Compter des commandes, c’est compter des n_commande distincts, pas des lignes."
+                    ]
+                  },
+                  {
+                    "kind": "example",
+                    "title": "La source de vérité",
+                    "text": "La ville d’un client se lit dans l’onglet Clients, saisi une fois par l’administration des ventes. La colonne ville de l’export en est une copie, recopiée à chaque commande, avec ses fautes : en cas de doute, c’est Clients qui fait foi."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["jeu-de-donnees", "granularite"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-06-COURS-RELATIONS",
+        "type": "fp-story",
+        "titre": "Cours : des tables reliées par des clés",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-06-COURS-RELATIONS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-06-COURS-RELATIONS",
+              "renderer": "lesson",
+              "props": {
+                "title": "Des tables reliées par des clés",
+                "subtitle": "Trace écrite · niveau 1 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Clé primaire, clé étrangère",
+                    "text": "Une clé primaire identifie chaque ligne d’une table : client_id dans Clients, produit_id dans Produits. Recopiée dans une autre table, elle devient une clé étrangère : le client_id d’une ligne de Commandes renvoie à un seul client."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Le schéma du classeur Norvane",
+                    "text": "Commandes est au centre : chaque ligne pointe vers un client, un produit et une agence.",
+                    "steps": [
+                      "Clients ← client_id → Commandes",
+                      "Commandes → produit_id → Produits",
+                      "Commandes → agence_id → Agences",
+                      "Agences → agence_id → Objectifs, un objectif par agence et par mois"
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Reconnaître une bonne clé",
+                    "text": "Une clé est unique (deux lignes ne la partagent pas), stable (elle ne change pas quand le client déménage) et sans signification (un code attribué par le système, pas un nom)."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Pourquoi « Dupont, Bordeaux » n’est pas une clé",
+                    "text": "Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se trompent ; un identifiant ne se trompe pas."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["cle-et-relation"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-07-TRI-COLONNES",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 1 — Le dictionnaire des données",
+        "duree": 4,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A1-08-ATELIER-GRANULARITE",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 2 — Une ligne, c’est quoi ?",
+        "duree": 4,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A1-09-VOTE-CA-TEXTE",
+        "type": "ecran-verrouille",
+        "titre": "Vote : un CA aligné à gauche",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A1-10-COURS-GRILLE",
+        "type": "fp-story",
+        "titre": "Cours : faux, suspect, automatique, humain",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-10-COURS-GRILLE",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-10-COURS-GRILLE",
+              "renderer": "lesson",
+              "props": {
+                "title": "La grille de la qualité des données",
+                "subtitle": "Trace écrite · niveau 2 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Faux ou suspect",
+                    "text": "Une donnée fausse l’est à coup sûr : une livraison antérieure à sa commande, un produit absent du référentiel. Une donnée suspecte l’est peut-être : une quantité négative peut être une erreur ou un avoir. Seul un humain qui connaît l’activité tranche."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "La grille 2 × 2",
+                    "text": "On croise la certitude (faux, suspect) et le correcteur (automatique, humain).",
+                    "steps": [
+                      "Faux · automatique : on corrige par formule, en gardant la trace (casse, espaces, nombre en texte, doublon exact).",
+                      "Faux · humain : on signale et on demande la bonne valeur (produit inconnu, commercial absent).",
+                      "Suspect · humain : on signale et on demande s’il s’agit d’une erreur.",
+                      "Suspect · automatique : case vide."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Rien de douteux ne se corrige seul ; on signale, on ne supprime pas",
+                    "text": "Une colonne controle marque chaque ligne « OK » ou « À vérifier » ; les lignes douteuses partent dans un onglet Quarantaine avec leur motif. Supprimer une ligne efface la question : personne ne saura qu’il fallait la poser."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Une quantité de −2",
+                    "text": "Erreur de saisie ou retour de marchandise, donc avoir ? Le tableur ne peut pas le savoir : on signale la ligne et on demande au service commercial."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["qualite-des-donnees"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-11-COURS-OUTILS",
+        "type": "fp-story",
+        "titre": "Cours : les outils du nettoyage",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A1-11-COURS-OUTILS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A1-11-COURS-OUTILS",
+              "renderer": "lesson",
+              "props": {
+                "title": "Les outils du nettoyage",
+                "subtitle": "Trace écrite · niveau 2 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Une anomalie, un outil",
+                    "text": "Chaque anomalie « faux · automatique » a son outil.",
+                    "steps": [
+                      "Espaces en trop : SUPPRESPACE(E2).",
+                      "Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
+                      "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
+                      "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie.",
+                      "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Nettoyer à côté, jamais dessus",
+                    "text": "On nettoie dans une nouvelle colonne : la donnée brute reste, on peut comparer et revenir en arrière. On ne colle en valeurs qu’une fois le contrôle fait."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Si vous avez Excel 365 : Power Query",
+                    "text": "Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["nettoyage"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A1-12-EXEMPLE-NETTOYAGE",
+        "type": "ecran-verrouille",
+        "titre": "Exemple guidé : deux cellules à soigner",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A1-13-TRI-ANOMALIES",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 3 — Classer les anomalies",
+        "duree": 5,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A1-14-ATELIER-NETTOYAGE",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 4 — Nettoyer l’export",
+        "duree": 12,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A1-15-REGLES-ACTE-1",
+        "type": "ecran-verrouille",
+        "titre": "Cahier de règles : niveaux 1 et 2",
+        "duree": 4,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A2-01-VOTE-FAMILLE",
+        "type": "ecran-verrouille",
+        "titre": "Vote : quelle famille de problème ?",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A2-02-FAMILLES",
+        "type": "fp-story",
+        "titre": "Les dix familles de problèmes",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-02-FAMILLES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-02-FAMILLES",
+              "renderer": "table",
+              "props": {
+                "title": "Les dix familles de problèmes",
+                "subtitle": "Avant d’écrire une formule, on nomme la famille de la question posée.",
+                "note": "Le socle fonctionne sur toute version d’Excel depuis 2019 ; la colonne 365 donne un raccourci.",
+                "columns": [
+                  {
+                    "key": "famille",
+                    "label": "Famille"
+                  },
+                  {
+                    "key": "question",
+                    "label": "Question type de la direction"
+                  },
+                  {
+                    "key": "socle",
+                    "label": "Fonction socle"
+                  },
+                  {
+                    "key": "variante",
+                    "label": "Si vous avez Excel 365"
+                  }
+                ],
+                "rows": [
+                  {
+                    "famille": "Chercher",
+                    "question": "Quelle est la catégorie de ce produit ?",
+                    "socle": "INDEX et EQUIV",
+                    "variante": "RECHERCHEX"
+                  },
+                  {
+                    "famille": "Compter",
+                    "question": "Combien de lignes à Marseille avec une forte remise ?",
+                    "socle": "NB.SI.ENS",
+                    "variante": "NB.SI.ENS"
+                  },
+                  {
+                    "famille": "Additionner sous conditions",
+                    "question": "Quel CA pour Rennes en informatique ?",
+                    "socle": "SOMME.SI.ENS, SOMMEPROD",
+                    "variante": "SOMME.SI.ENS"
+                  },
+                  {
+                    "famille": "Comparer",
+                    "question": "Cette ligne est-elle livrée en retard ?",
+                    "socle": "SI, ET, OU",
+                    "variante": "SI.CONDITIONS"
+                  },
+                  {
+                    "famille": "Classer",
+                    "question": "Quelles sont les meilleures agences ?",
+                    "socle": "RANG, GRANDE.VALEUR",
+                    "variante": "TRIER"
+                  },
+                  {
+                    "famille": "Transformer",
+                    "question": "Ce montant saisi en texte, combien vaut-il ?",
+                    "socle": "SUPPRESPACE, CNUM, TEXTE",
+                    "variante": "Power Query"
+                  },
+                  {
+                    "famille": "Filtrer",
+                    "question": "Quelles lignes de Strasbourg sont en retard ?",
+                    "socle": "Filtre automatique",
+                    "variante": "FILTRE"
+                  },
+                  {
+                    "famille": "Regrouper",
+                    "question": "Quel CA par région et par trimestre ?",
+                    "socle": "Tableau croisé dynamique",
+                    "variante": "UNIQUE"
+                  },
+                  {
+                    "famille": "Manipuler le temps",
+                    "question": "Combien de jours ouvrés de délai ?",
+                    "socle": "NB.JOURS.OUVRES, SERIE.JOUR.OUVRE, DATEDIF",
+                    "variante": "NB.JOURS.OUVRES"
+                  },
+                  {
+                    "famille": "Détecter une anomalie",
+                    "question": "Quel délai sort de l’ordinaire ?",
+                    "socle": "Mise en forme conditionnelle, MEDIANE, ECARTYPE",
+                    "variante": "Mise en forme conditionnelle"
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "recherche-dans-une-table",
+                "agregation-conditionnelle",
+                "calcul-sur-dates"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+        "type": "fp-story",
+        "titre": "Cours : chercher et additionner sous conditions",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
+              "renderer": "lesson",
+              "props": {
+                "title": "Chercher dans une table, additionner sous conditions",
+                "subtitle": "Trace écrite · niveau 3 · page 1 sur 2",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Chercher : INDEX et EQUIV",
+                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!C:C;EQUIV(H2;Produits!A:A;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Additionner et compter sous conditions",
+                    "text": "SOMME.SI.ENS(plage_somme;plage1;critère1;plage2;critère2) additionne les lignes qui remplissent toutes les conditions ; NB.SI.ENS(plage1;critère1;plage2;critère2) les compte."
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Écrire un critère, figer une plage",
+                    "text": "Un critère est un texte : l’opérateur s’écrit entre guillemets.",
+                    "steps": [
+                      "Un seuil de remise : \">0,15\" pour plus de 15 %, jamais \">15\".",
+                      "Une date : \">=\"&DATE(2026;1;1), la date hors des guillemets, jointe par &.",
+                      "Une plage de référentiel recopiée vers le bas se fige par des $ : Agences!$A$2:$C$13 ne glisse pas."
+                    ]
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Si vous avez Excel 365 : RECHERCHEX",
+                    "text": "=RECHERCHEX(H2;Produits!A:A;Produits!C:C) fait le même travail en une seule fonction."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "recherche-dans-une-table",
+                "agregation-conditionnelle",
+                "reference-de-cellule"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-04-ATELIER-RECHERCHE",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 5 — Relier et additionner",
+        "duree": 10,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A2-05-VOTE-DELAI",
+        "type": "ecran-verrouille",
+        "titre": "Vote : vendredi, lundi",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A2-06-COURS-TEMPS-STATS",
+        "type": "fp-story",
+        "titre": "Cours : le temps et les indicateurs",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-06-COURS-TEMPS-STATS",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-06-COURS-TEMPS-STATS",
+              "renderer": "lesson",
+              "props": {
+                "title": "Le temps et les indicateurs",
+                "subtitle": "Trace écrite · niveau 3 · page 2 sur 2",
+                "blocks": [
+                  {
+                    "kind": "property",
+                    "title": "Une date est un nombre de jours",
+                    "text": "Soustraire deux dates donne des jours calendaires. Les fonctions de date comptent autrement.",
+                    "steps": [
+                      "NB.JOURS.OUVRES(début;fin) compte les jours ouvrés, bornes comprises : on retire 1 pour obtenir un délai.",
+                      "SERIE.JOUR.OUVRE(début;n) donne la date n jours ouvrés plus tard : la date promise.",
+                      "JOURSEM(date;2) donne le jour de la semaine, de 1 pour lundi à 7 pour dimanche.",
+                      "DATEDIF(début;fin;\"m\") compte les mois entiers écoulés ; TEMPS(h;m;s) construit une durée."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Moyenne ou médiane",
+                    "text": "Un délai long et rare, comme une rupture de stock livrée deux mois plus tard, tire la moyenne vers le haut ; la médiane, la valeur du milieu, ne bouge pas. Pour un délai typique, on lit la médiane.",
+                    "steps": [
+                      "Médiane sous conditions : filtrer, puis AGREGAT(12;5;plage), qui ignore les lignes masquées.",
+                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 365."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Taux de marge : un ratio de sommes",
+                    "text": "Taux de marge = SOMME(marge) ÷ SOMME(CA), jamais la moyenne des taux de chaque ligne : une petite ligne très margée pèserait autant qu’une grosse commande. SOMMEPROD multiplie terme à terme puis additionne : elle calcule une marge totale sans colonne intermédiaire."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Les jours fériés",
+                    "text": "Ce cours ne les compte pas. NB.JOURS.OUVRES et SERIE.JOUR.OUVRE acceptent en dernier argument une plage de jours fériés à exclure."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["calcul-sur-dates", "indicateur-statistique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-07-ATELIER-DELAIS-MARGE",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 6 — Délais et marge",
+        "duree": 10,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A2-08-VOTE-NOUVELLES-LIGNES",
+        "type": "ecran-verrouille",
+        "titre": "Vote : 200 lignes de plus",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A2-09-COURS-TCD",
+        "type": "fp-story",
+        "titre": "Cours : tableau structuré et tableau croisé dynamique",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A2-09-COURS-TCD",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A2-09-COURS-TCD",
+              "renderer": "lesson",
+              "props": {
+                "title": "Tableau structuré et tableau croisé dynamique",
+                "subtitle": "Trace écrite · niveau 4",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "Le tableau structuré",
+                    "text": "Ctrl + T (⌘ + T sur Mac) transforme la plage en tableau structuré ; on le nomme T_Commandes dans Création de tableau › Nom du tableau. Il s’étend aux lignes ajoutées, recopie seul ses colonnes calculées, et ses formules se lisent : =SOMME(T_Commandes[ca_ht])."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Le tableau croisé dynamique",
+                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes. On place des champs en lignes, en colonnes, en valeurs et en filtres : le TCD additionne, compte ou fait la moyenne pour chaque croisement."
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Regrouper, afficher en %, filtrer",
+                    "text": "Trois réglages font un TCD de direction.",
+                    "steps": [
+                      "Clic droit sur une date › Grouper : par mois ou par trimestres, et par années pour ne pas mêler deux printemps.",
+                      "Paramètres des champs de valeurs › Afficher les valeurs › % du total de la ligne : la part de chaque catégorie dans une agence.",
+                      "Insertion › Segment : un bouton par catégorie, qui filtre le TCD d’un clic."
+                    ]
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Si vous avez Excel 365 : le modèle de données",
+                    "text": "En cochant « Ajouter ces données au modèle de données », on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-croise-dynamique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A2-10-EXEMPLE-TCD",
+        "type": "ecran-verrouille",
+        "titre": "Exemple guidé : le TCD agence × mois",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A2-11-ATELIER-TCD",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 7 — Le TCD de la direction",
+        "duree": 14,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A2-12-REGLES-ACTE-2",
+        "type": "ecran-verrouille",
+        "titre": "Cahier de règles : niveaux 3 et 4",
+        "duree": 4,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+        "type": "fp-story",
+        "titre": "Un graphique de la direction",
+        "duree": 1,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-01-GRAPHIQUE-TROMPEUR",
+              "renderer": "chart",
+              "props": {
+                "title": "Rennes, loin derrière Nantes",
+                "caption": "Diapositive préparée pour le comité de direction",
+                "context": "Un collègue de Nadia a préparé ce graphique avec le commentaire : « Rennes vend trois fois moins que Nantes ».",
+                "labels": ["Rennes", "Nantes"],
+                "series": [
+                  {
+                    "label": "CA HT 2025",
+                    "values": [52000, 59000],
+                    "tone": "teal"
+                  }
+                ],
+                "axisRanges": [[49000, 59500]],
+                "axisLabels": ["49 000 à 59 500 €"],
+                "unit": "€",
+                "source": "Export des ventes de Norvane Équipement, CA arrondi au millier d’euros (données fictives).",
+                "kind": "bars",
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 59 500 € ; barres de 52 000 € et 59 000 €."
+              }
+            },
+            "metadonnees": {
+              "concepts": ["choix-du-graphique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 1,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-02-VOTE-GRAPHIQUE",
+        "type": "ecran-verrouille",
+        "titre": "Vote : que décidez-vous ?",
+        "duree": 2,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-03-COURS-GRAPHIQUES",
+        "type": "fp-story",
+        "titre": "Cours : un graphique répond à une question",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-03-COURS-GRAPHIQUES",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-03-COURS-GRAPHIQUES",
+              "renderer": "lesson",
+              "props": {
+                "title": "Un graphique répond à une question",
+                "subtitle": "Trace écrite · niveau 5",
+                "blocks": [
+                  {
+                    "kind": "method",
+                    "title": "D’abord la question, ensuite le graphique",
+                    "text": "Chaque question de la direction a son graphique.",
+                    "steps": [
+                      "Comparer des agences ou des produits : barres.",
+                      "Suivre une évolution dans le temps : courbe.",
+                      "Montrer la composition d’un total, en peu de parts : barres empilées.",
+                      "Voir comment se répartissent des valeurs : histogramme.",
+                      "Chercher un lien entre deux mesures : nuage de points.",
+                      "Suivre un indicateur clé : la valeur, avec son objectif ou l’an passé."
+                    ]
+                  },
+                  {
+                    "kind": "property",
+                    "title": "À éviter",
+                    "text": "La 3D, qui déforme les hauteurs ; le camembert de plus de cinq parts, illisible ; l’axe tronqué non signalé, qui grossit les écarts ; le double axe, qui fabrique des croisements."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Un titre qui dit la conclusion",
+                    "text": "« Caen à 92 % de son objectif » plutôt que « CA et objectif par agence » : le lecteur sait quoi regarder avant même de lire les barres."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["choix-du-graphique"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-04-TRI-GRAPHIQUES",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 8 — À chaque question son graphique",
+        "duree": 4,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-05-ATELIER-GRAPHIQUES",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 9 — CA et objectif par agence",
+        "duree": 8,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-06-VOTE-TRENTE-SECONDES",
+        "type": "ecran-verrouille",
+        "titre": "Vote : trente secondes",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-07-COURS-DASHBOARD",
+        "type": "fp-story",
+        "titre": "Cours : l’anatomie d’un tableau de bord",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-07-COURS-DASHBOARD",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-07-COURS-DASHBOARD",
+              "renderer": "lesson",
+              "props": {
+                "title": "L’anatomie d’un tableau de bord",
+                "subtitle": "Trace écrite · niveau 6",
+                "blocks": [
+                  {
+                    "kind": "definition",
+                    "title": "Un tableau de bord répond à une question de décision",
+                    "text": "Pas « toutes les ventes », mais « où le réseau décroche-t-il, et pourquoi ? ». Ce qui n’aide pas à répondre n’y figure pas."
+                  },
+                  {
+                    "kind": "property",
+                    "title": "Ce qu’il contient",
+                    "text": "Une page, lisible en trente secondes.",
+                    "steps": [
+                      "Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.",
+                      "Deux graphiques, chacun avec un titre qui conclut.",
+                      "Des segments connectés à tous les TCD : un clic filtre toute la page.",
+                      "Les anomalies signalées par mise en forme conditionnelle."
+                    ]
+                  },
+                  {
+                    "kind": "method",
+                    "title": "Une recommandation : constat chiffré, cause, action",
+                    "text": "Le constat se lit dans le tableau de bord ; la cause se cherche dans le détail ; l’action est précise, datée, et confiée à quelqu’un."
+                  },
+                  {
+                    "kind": "example",
+                    "title": "Caen",
+                    "text": "Constat : délai médian de 7 jours ouvrés, contre 4 dans le réseau. Cause : changement de transporteur en mars. Action : renégocier le contrat, ou revenir à l’ancien transporteur."
+                  }
+                ]
+              }
+            },
+            "metadonnees": {
+              "concepts": ["tableau-de-bord"],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-08-EXEMPLE-MFC-SEGMENTS",
+        "type": "ecran-verrouille",
+        "titre": "Exemple guidé : MFC et segments connectés",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-09-ATELIER-DASHBOARD",
+        "type": "ecran-verrouille",
+        "titre": "Exercice 10 — Le tableau de bord Direction",
+        "duree": 15,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-10-RECOMMANDATIONS",
+        "type": "ecran-verrouille",
+        "titre": "Vos trois recommandations au comité",
+        "duree": 9,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-11-FICHE-MEMO",
+        "type": "fp-story",
+        "titre": "Fiche mémo : de la donnée brute à la décision",
+        "duree": 3,
+        "interactif": false,
+        "donnees": {
+          "recit": {
+            "id": "B3-01-A3-11-FICHE-MEMO",
+            "presentation": {
+              "version": 2,
+              "screenId": "B3-01-A3-11-FICHE-MEMO",
+              "renderer": "grid",
+              "props": {
+                "title": "Fiche mémo : de la donnée brute à la décision",
+                "subtitle": "Six niveaux : pour chacun, la question à se poser, les outils et le piège principal.",
+                "items": [
+                  {
+                    "title": "Comprendre",
+                    "description": "Une ligne, c’est quoi, et quelle clé relie les tables ? Granularité, types, clés. Piège : relier par un nom ou une ville."
+                  },
+                  {
+                    "title": "Nettoyer",
+                    "description": "Faux ou suspect ? Automatique ou humain ? SUPPRESPACE, NOMPROPRE, CNUM, colonne de contrôle, quarantaine. Piège : supprimer au lieu de signaler."
+                  },
+                  {
+                    "title": "Transformer",
+                    "description": "Quelle famille de problème ? INDEX et EQUIV, SOMME.SI.ENS, NB.JOURS.OUVRES, MEDIANE. Piège : un critère mal écrit ou une période mal délimitée."
+                  },
+                  {
+                    "title": "Modéliser",
+                    "description": "Le calcul tiendra-t-il au prochain export ? Tableau structuré, TCD, regroupement par années, segments. Piège : la plage fixe."
+                  },
+                  {
+                    "title": "Visualiser",
+                    "description": "Quelle question le graphique doit-il trancher ? Barres, courbe, empilé, histogramme, nuage, indicateur. Piège : l’axe tronqué non signalé."
+                  },
+                  {
+                    "title": "Décider",
+                    "description": "Que doit voir le comité en trente secondes ? Quatre indicateurs en contexte, constat, cause, action. Piège : un chiffre sans comparaison."
+                  }
+                ],
+                "imprimable": true
+              }
+            },
+            "metadonnees": {
+              "concepts": [
+                "jeu-de-donnees",
+                "nettoyage",
+                "agregation-conditionnelle",
+                "tableau-croise-dynamique",
+                "choix-du-graphique",
+                "tableau-de-bord"
+              ],
+              "misconceptionsCiblees": [],
+              "dureeMinutes": 3,
+              "modalite": "solo",
+              "regime": "ouvert"
+            }
+          }
+        }
+      },
+      {
+        "id": "B3-01-A3-12-CAHIER-DE-REGLES",
+        "type": "ecran-verrouille",
+        "titre": "Cahier de règles : niveaux 5 et 6, puis relecture",
+        "duree": 5,
+        "interactif": false,
+        "donnees": {}
+      },
+      {
+        "id": "B3-01-A3-13-BILLET-DE-SORTIE",
+        "type": "ecran-verrouille",
+        "titre": "Billet de sortie",
+        "duree": 5,
+        "interactif": false,
+        "donnees": {}
       }
     ]
   }
