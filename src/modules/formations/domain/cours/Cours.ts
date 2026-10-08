@@ -251,8 +251,8 @@ export type Ecran = {
   };
 }[BriqueDExpositionHistorique];
 
-export const GABARITS = ['v3'] as const;
-type Gabarit = (typeof GABARITS)[number];
+export const GABARITS = ['v3', 'b3'] as const;
+export type Gabarit = (typeof GABARITS)[number];
 
 export interface Cours {
   readonly slug: string;

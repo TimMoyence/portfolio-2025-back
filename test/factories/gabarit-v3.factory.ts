@@ -126,3 +126,17 @@ export function buildCoursV3(
 ): Cours {
   return lireCoursStocke(buildCoursDeBriques(ecrans, { gabarit: 'v3' }));
 }
+
+export function buildEcransSansMiniSituation(): EcranDeCoursBrut[] {
+  return buildEcransV3Conformes().filter(
+    (ecran) =>
+      ecran.screenId !== IDS_V3.miniSituation &&
+      ecran.screenId !== IDS_V3.correctionFinale,
+  );
+}
+
+export function buildCoursB3(
+  ecrans: readonly EcranDeCoursBrut[] = buildEcransSansMiniSituation(),
+): Cours {
+  return lireCoursStocke(buildCoursDeBriques(ecrans, { gabarit: 'b3' }));
+}

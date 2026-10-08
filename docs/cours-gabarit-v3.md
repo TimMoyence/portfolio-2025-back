@@ -127,3 +127,14 @@ papier, que la fiche de conception décrit écran par écran.
 6. Paramètres du cours dans les e2e DB (`formations-e2e-seance`, `formations-cours-publies`) :
    une entrée de `cellulesDesFeuilles` par écran `fp-sheet`, dans l'ordre du déroulé.
 7. Côté front : `COURS_BTS`, carte de la liste des formations, entrée SEO, XLF fr/en.
+
+## 8. Gabarit b3 des cours Bachelor 3
+
+Un cours B3 déclare `gabarit: 'b3'`. `verifierStructure` lui applique le budget (§ 1), le cycle
+(§ 2) et les trois temps de chaque exercice (§ 3), mais pas la mini-situation CCF (§ 5) : le
+Bachelor n'a pas d'épreuve CCF à préparer. L'équivalence papier (§ 6) ne le concerne pas non
+plus, les manipulations se faisant dans Excel. La valeur `b3` tient dans la colonne `gabarit`
+(`varchar(20)`) sans migration.
+
+Premier cours conforme : B3-01 « Expert Data : de la donnée brute à la décision »
+(`docs/cours-b3-01-conception.md`).
