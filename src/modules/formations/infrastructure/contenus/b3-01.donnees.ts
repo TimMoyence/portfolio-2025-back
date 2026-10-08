@@ -91,10 +91,10 @@ export const VALEURS_B3_01: ValeursAttenduesB301 = {
 };
 
 export const PIEGES_B3_01: PiegesB301 = {
-  'b3-01-a1-lignes-commande': { 'lignes-comptees-pour-commandes': 1 },
+  'b3-01-a1-lignes-commande': { 'commandes-comptees-pour-lignes': 1 },
   'b3-01-a1-lignes-uniques': { 'doublons-supprimes-sur-une-colonne': 1618 },
   'b3-01-a1-ca-total': { 'texte-pris-pour-nombre': 1_286_319 },
-  'b3-01-a1-villes': { 'casse-non-normalisee': 83 },
+  'b3-01-a1-villes': { 'espaces-non-supprimes': 83 },
   'b3-01-a1-a-verifier': { 'suspect-corrige-sans-validation': 39 },
   'b3-01-a2-ca-rennes-info': {
     'critere-mal-ecrit': 0,
@@ -107,7 +107,7 @@ export const PIEGES_B3_01: PiegesB301 = {
   },
   'b3-01-a2-delai-strasbourg': {
     'jours-calendaires-pour-ouvres': 11,
-    'valeur-extreme-ignoree': 9.5,
+    'valeur-extreme-ignoree': 10,
   },
   'b3-01-a2-retards': { 'jours-calendaires-pour-ouvres': 481 },
   'b3-01-a2-taux-marge': { 'moyenne-simple-des-taux': 35.4 },
@@ -127,8 +127,8 @@ export const CLASSEURS_B3_01 = {
 } as const;
 
 export const HISTOIRES_B3_01: Readonly<Record<HistoireB301, number>> = {
-  'ca-2025-rennes': 52_000,
-  'ca-2025-nantes': 59_000,
+  'ca-2025-rennes': 51_600,
+  'ca-2025-nantes': 59_500,
   'taux-de-marge-marseille-2025': 32.3,
   'evolution-informatique-rennes': -40.2,
   'evolution-lille': 23.1,

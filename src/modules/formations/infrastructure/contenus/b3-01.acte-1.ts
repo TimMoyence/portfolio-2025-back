@@ -152,7 +152,7 @@ export const ACTE_1: moteur.Acte = [
           'Non : il faut un identifiant attribué par le système',
           [
             ['Oui : le nom et la ville suffisent', 'libelle-pris-pour-cle'],
-            ['Non : il faut aussi le numéro SIRET', 'libelle-pris-pour-cle'],
+            ['Non : il faut aussi le code postal', 'libelle-pris-pour-cle'],
           ],
         ),
       ],
@@ -199,7 +199,7 @@ export const ACTE_1: moteur.Acte = [
             'Numérique : additionner, moyenner.',
             'Catégorie : compter, regrouper.',
             'Date : calculer des durées.',
-            'Booléen : compter les « oui ».',
+            'Booléen : compter les VRAI.',
             'Vide : donnée manquante, pas un zéro.',
           ],
         },
@@ -278,7 +278,7 @@ export const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 2 min',
         'Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.',
-        'Pièges : n_commande pris pour un nombre, parce qu’il s’écrit en chiffres ; ville prise pour un identifiant.',
+        'Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant.',
       ),
       proprietes: {
         modalite: 'binome',
@@ -339,14 +339,14 @@ export const ACTE_1: moteur.Acte = [
               id: 'date-commande',
               libelle: 'date_commande',
               categorie: 'date',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'type-de-variable-confondu',
               justification: 'le jour de la commande',
             },
             {
               id: 'date-livraison',
               libelle: 'date_livraison',
               categorie: 'date',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'type-de-variable-confondu',
               justification:
                 'le jour de la livraison : avec date_commande, il donne le délai',
             },
@@ -362,36 +362,36 @@ export const ACTE_1: moteur.Acte = [
               id: 'quantite',
               libelle: 'quantite',
               categorie: 'numerique',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'type-de-variable-confondu',
               justification: 'une mesure qu’on additionne',
             },
             {
               id: 'prix-unitaire',
               libelle: 'prix_unitaire_ht',
               categorie: 'numerique',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'type-de-variable-confondu',
               justification: 'un montant en euros',
             },
             {
               id: 'remise',
               libelle: 'remise',
               categorie: 'numerique',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'type-de-variable-confondu',
               justification: 'un taux : 0,15 vaut 15 %',
             },
             {
               id: 'ca-ht',
               libelle: 'ca_ht',
               categorie: 'numerique',
-              confusion: 'identifiant-pris-pour-nombre',
+              confusion: 'type-de-variable-confondu',
               justification: 'le montant de la ligne, qu’on additionne',
             },
             {
               id: 'facturee',
               libelle: 'facturee',
               categorie: 'booleen',
-              confusion: 'identifiant-pris-pour-nombre',
-              justification: 'oui ou non : on compte les « oui »',
+              confusion: 'type-de-variable-confondu',
+              justification: 'VRAI ou FAUX : on compte les VRAI',
             },
           ],
         ),
@@ -407,7 +407,7 @@ export const ACTE_1: moteur.Acte = [
     [
       [
         'identifiant',
-        'Cinq identifiants : n_commande, client_id, commercial_id, produit_id et agence_id. Ce sont des codes : on les compte, on ne les additionne jamais, même quand ils s’écrivent en chiffres.',
+        'Cinq identifiants : n_commande, client_id, commercial_id, produit_id et agence_id. Ce sont des codes : on les compte, on ne les additionne jamais, même quand ils contiennent des chiffres.',
       ],
       [
         'date',
@@ -421,7 +421,7 @@ export const ACTE_1: moteur.Acte = [
         'numerique',
         'quantite, prix_unitaire_ht, remise et ca_ht : des mesures qu’on additionne ou dont on fait la moyenne. La remise est un taux.',
       ],
-      ['booleen', 'facturee vaut oui ou non : on compte les « oui ».'],
+      ['booleen', 'facturee vaut VRAI ou FAUX : on compte les VRAI.'],
     ],
   ),
   moteur.corrigeSurPlace(
@@ -444,13 +444,6 @@ export const ACTE_1: moteur.Acte = [
         regime: 'focus',
         ordre: 'fixe',
         questions: [
-          questionChiffree(
-            'b3-01-a1-lignes-commande',
-            'granularite',
-            'Combien de lignes porte la commande C-10234 ?',
-            'lignes',
-            ['lignes-comptees-pour-commandes'],
-          ),
           moteur.vote(
             'b3-01-a1-granularite',
             'granularite',
@@ -468,6 +461,13 @@ export const ACTE_1: moteur.Acte = [
               ],
             ],
           ),
+          questionChiffree(
+            'b3-01-a1-lignes-commande',
+            'granularite',
+            'Combien de lignes porte la commande C-10234 ?',
+            'lignes',
+            ['commandes-comptees-pour-lignes'],
+          ),
         ],
       },
     },
@@ -480,12 +480,12 @@ export const ACTE_1: moteur.Acte = [
     },
     [
       [
-        'b3-01-a1-lignes-commande',
-        'Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1.',
-      ],
-      [
         'b3-01-a1-granularite',
         'Une commande occupe une à cinq lignes, une par produit : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts.',
+      ],
+      [
+        'b3-01-a1-lignes-commande',
+        'Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1.',
       ],
     ],
   ),
@@ -601,7 +601,7 @@ export const ACTE_1: moteur.Acte = [
             'Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
             'Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.',
             'Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.',
-            'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie.',
+            'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : le même outil, sur une colonne copiée à part, annonce combien il en reste.',
             'Colonne controle : SI et OU renvoient « À vérifier » ou « OK ».',
           ],
         },
@@ -628,7 +628,7 @@ export const ACTE_1: moteur.Acte = [
       concepts: ['nettoyage'],
       notes: moteur.puces(
         'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
-        'Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, CAR(160) : SUBSTITUE(L2;CAR(160);"") la retire.',
+        'Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, UNICAR(160) : SUBSTITUE(L2;UNICAR(160);"") la retire.',
       ),
       proprietes: {
         modalite: 'solo',
@@ -821,12 +821,13 @@ export const ACTE_1: moteur.Acte = [
         'Temps : réflexion 1 min · travail 9 min',
         'Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
-        'Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant de les normaliser ; convertir les dates avant le contrôle.',
+        'Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.',
+        'Villes distinctes : copier la colonne N en valeurs à part, puis Supprimer les doublons ; sous Excel 365, =NBVAL(UNIQUE(N2:N4099)).',
       ),
       proprietes: {
         intitule: 'Exercice 4 — Nettoyer l’export',
         consigne:
-          'Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.',
+          'Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2="");"À vérifier";"OK"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -849,7 +850,7 @@ export const ACTE_1: moteur.Acte = [
             'nettoyage',
             'Combien de villes distinctes compte la colonne ville nettoyée ?',
             'villes',
-            ['casse-non-normalisee'],
+            ['espaces-non-supprimes'],
           ),
           questionChiffree(
             'b3-01-a1-a-verifier',
@@ -880,7 +881,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'b3-01-a1-villes',
-        'NOMPROPRE(SUPPRESPACE(E2)) ramène chaque variante à une seule écriture : il reste 48 villes. Sans nettoyage, une ville suivie d’une espace compte comme une autre ville.',
+        'NOMPROPRE(SUPPRESPACE(E2)) ramène chaque variante à une seule écriture : il reste 48 villes. Le comptage d’Excel ignore la casse : ce sont les espaces en trop qui font compter une même ville deux fois.',
       ],
       [
         'b3-01-a1-a-verifier',

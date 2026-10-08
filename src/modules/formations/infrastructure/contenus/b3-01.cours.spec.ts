@@ -57,6 +57,21 @@ function valeursReconnaissables(): (number | string)[] {
   );
 }
 
+function texteDe(screenId: string): string {
+  return feuille
+    .texteDeLEcran(COURS_B3_01, screenId)
+    .replaceAll(ESPACES_TYPOGRAPHIQUES, ' ');
+}
+
+function questionsDe(screenId: string) {
+  const { proprietes } = fiche.ecranDuContenu(COURS_B3_01, screenId);
+  return 'questions' in proprietes ? proprietes.questions : [];
+}
+
+function libellesDuVote(id: string): string[] {
+  return Object.values(tirer(COURS, 0).libellesOptions[id]);
+}
+
 function explicationsDe(screenId: string): string[] {
   const ecran = COURS.ecrans.find((candidat) => candidat.id === screenId);
   return (ecran?.correctionSurPlace?.explications ?? []).map((explication) =>
@@ -85,7 +100,7 @@ fiche.decrireLaFicheDuCours('B3-01', COURS, {
   noteesParType: [4, 18, 3, 0, 0],
   enigmes: 0,
   rappels: 0,
-  remediations: 23,
+  remediations: 26,
   options: 12,
   catalogue: [
     'A1-02',
@@ -274,6 +289,175 @@ describe('B3-01 — gardes de la relecture', () => {
 
     expect(textes).toContain('=NOMPROPRE(SUPPRESPACE(E2))');
     expect(textes).toContain('SUBSTITUE(L2;');
-    expect(textes).toContain('EQUIV(H2;Produits!A:A;0)');
+    expect(textes).toContain('EQUIV(H2;Produits!$A$2:$A$41;0)');
+  });
+
+  it('V4 · ne pose sur une question en nombre entier que des pièges entiers', () => {
+    const enNombreEntier = new Set(
+      numeriquesStockees()
+        .filter(({ enonce }) => enonce.includes('nombre entier'))
+        .map(({ id }) => id),
+    );
+    const fautifs = QUESTIONS_CHIFFREES_B3_01.filter(
+      (id) =>
+        enNombreEntier.has(id) &&
+        Object.values(PIEGES_B3_01[id]).some(
+          (piege) => !Number.isInteger(piege),
+        ),
+    );
+
+    expect(enNombreEntier.size).toBeGreaterThan(0);
+    expect(fautifs).toEqual([]);
+  });
+});
+
+describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
+  it('A1-04 · n’offre au vote de la clé aucune option défendable', () => {
+    expect(libellesDuVote('b3-01-a1-cle-client').join(' ')).not.toContain(
+      'SIRET',
+    );
+  });
+
+  it('A1-05 et A1-07 · nomment les valeurs du booléen comme Excel les affiche', () => {
+    for (const ecran of [
+      'B3-01-A1-05-COURS-DONNEE',
+      'B3-01-A1-07-TRI-COLONNES',
+    ]) {
+      expect(texteDe(ecran)).toContain('VRAI');
+      expect(texteDe(ecran)).not.toMatch(/«\s?oui\s?»/);
+    }
+  });
+
+  it('A1-07 · rattache les dates, les mesures et le booléen à la confusion de type, n_commande à ses chiffres', () => {
+    const attendus = questionsDe('B3-01-A1-07-TRI-COLONNES').flatMap(
+      (question) =>
+        question.type === 'classement' ? question.corrige.attendus : [],
+    );
+    const horsIdentifiants = attendus.filter(
+      ({ categorieId }) => !['identifiant', 'categorie'].includes(categorieId),
+    );
+
+    expect(horsIdentifiants).toHaveLength(7);
+    expect(
+      horsIdentifiants.filter(
+        ({ confusionSiErreur }) =>
+          confusionSiErreur !== 'type-de-variable-confondu',
+      ),
+    ).toEqual([]);
+    expect(texteDe('B3-01-A1-07-TRI-COLONNES')).not.toMatch(
+      /écri(?:t|vent) en chiffres/,
+    );
+  });
+
+  it('A1-08 · fait voter la granularité avant de compter les lignes de la commande témoin', () => {
+    expect(
+      questionsDe('B3-01-A1-08-ATELIER-GRANULARITE').map(({ id }) => id),
+    ).toEqual(['b3-01-a1-granularite', 'b3-01-a1-lignes-commande']);
+  });
+
+  it('A1-11 · enseigne le comptage des valeurs distinctes que l’exercice 4 demande', () => {
+    expect(texteDe('B3-01-A1-11-COURS-OUTILS')).toContain('Valeurs distinctes');
+  });
+
+  it('A1-12 · désigne l’espace insécable par UNICAR(160)', () => {
+    const texte = texteDe('B3-01-A1-12-EXEMPLE-NETTOYAGE');
+
+    expect(texte).toContain('UNICAR(160)');
+    expect(texte).not.toMatch(/(?<!UNI)CAR\(160\)/);
+  });
+
+  it('A1-14 · range les colonnes nettoyées après la dernière colonne du brut, sans décaler la formule controle', () => {
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
+      'en N et O, sans insérer de colonne',
+    );
+  });
+});
+
+describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
+  it('A2-02 · range SI.CONDITIONS dans le socle, puisqu’il existe depuis Excel 2019', () => {
+    expect(texteDe('B3-01-A2-02-FAMILLES')).toContain(
+      '"socle":"SI, ET, OU, SI.CONDITIONS"',
+    );
+  });
+
+  it('A2-03 · fige les plages du modèle INDEX et EQUIV, pour que la recopie sans $ montre l’erreur', () => {
+    const texte = texteDe('B3-01-A2-03-COURS-CHERCHER-AGREGER');
+
+    expect(texte).toContain(
+      '=INDEX(Produits!$C$2:$C$41;EQUIV(H2;Produits!$A$2:$A$41;0))',
+    );
+    expect(texte).not.toMatch(/Produits!\$?[A-Z]:/);
+  });
+
+  it('A2-04 · décrit la recherche non figée telle qu’elle glisse : la seule ligne Ouest trouvée date de 2025', () => {
+    const [, , ouest] = explicationsDe('B3-01-A2-04-ATELIER-RECHERCHE');
+
+    expect(ouest).not.toContain('aucune ne porte Ouest');
+    expect(ouest).toContain('date de 2025');
+  });
+
+  it('A2-05 · pose le contrat en jours ouvrés dans le vote et des options dans la même unité', () => {
+    expect(texteDe('B3-01-A2-05-VOTE-DELAI')).toContain(
+      'Le contrat de Norvane compte les délais en jours ouvrés',
+    );
+    expect(
+      libellesDuVote('b3-01-a2-delai').filter(
+        (libelle) => !libelle.includes('ouvré'),
+      ),
+    ).toEqual([]);
+  });
+
+  it('A2-08 · borne la plage fixe à la dernière ligne de la reprise', () => {
+    const derniereLigne =
+      VALEURS_B3_01['b3-01-a1-lignes-uniques'] -
+      VALEURS_B3_01['b3-01-a3-quarantaine'] +
+      1;
+    const texte = texteDe('B3-01-A2-08-VOTE-NOUVELLES-LIGNES');
+
+    expect(texte).toContain(`A2:A${derniereLigne}`);
+    expect(texte).not.toContain('A2:A4001');
+  });
+
+  it('A3-02 · renvoie au graphique de l’écran précédent et chiffre l’écart affiché', () => {
+    const ecart = Math.round(
+      (1 -
+        HISTOIRES_B3_01['ca-2025-rennes'] / HISTOIRES_B3_01['ca-2025-nantes']) *
+        100,
+    );
+    const texte = texteDe('B3-01-A3-02-VOTE-GRAPHIQUE');
+
+    expect(texte).toContain('le graphique de l’écran précédent');
+    expect(texte).toContain(`environ ${ecart} % de moins`);
+    expect(ecart).toBe(13);
+  });
+
+  it('A3-07 · ne promet aux segments que les TCD et leurs graphiques', () => {
+    const texte = texteDe('B3-01-A3-07-COURS-DASHBOARD');
+
+    expect(texte).not.toContain('toute la page');
+    expect(texte).toContain('tous les TCD connectés et leurs graphiques');
+  });
+
+  it('A3-08 · démontre au pupitre sur une feuille décrite, sans supposer celle de l’étudiant', () => {
+    const texte = texteDe('B3-01-A3-08-EXEMPLE-MFC-SEGMENTS');
+
+    expect(texte).not.toContain('de l’exercice 9');
+    expect(texte).toContain('au pupitre');
+    expect(texte).toContain('deux TCD');
+  });
+
+  it('A3-10 · chiffre chaque histoire sur sa période et donne à chacune constat, cause et action', () => {
+    const [marseille, rennes, ...suite] = explicationsDe(
+      'B3-01-A3-10-RECOMMANDATIONS',
+    );
+
+    expect(marseille).toContain(
+      `${feuille.enFrancais(HISTOIRES_B3_01['taux-de-marge-marseille-2025'], 1)} % de janvier à septembre 2025`,
+    );
+    expect(rennes).toContain('par rapport à la même période de 2025');
+    for (const histoire of [marseille, rennes, ...suite]) {
+      expect(histoire).toContain('Cause :');
+      expect(histoire).toContain('Action :');
+    }
   });
 });

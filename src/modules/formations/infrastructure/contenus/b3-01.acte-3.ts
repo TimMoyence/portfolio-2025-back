@@ -33,13 +33,13 @@ export const ACTE_3: moteur.Acte = [
           tone: 'teal',
         },
       ],
-      axisRanges: [[49000, 59500]],
-      axisLabels: ['49 000 à 59 500 €'],
+      axisRanges: [[49000, 60000]],
+      axisLabels: ['49 000 à 60 000 €'],
       unit: '€',
       source:
-        'Export des ventes de Norvane Équipement, CA arrondi au millier d’euros (données fictives).',
+        'Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).',
       description:
-        'Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 59 500 € ; barres de 52 000 € et 59 000 €.',
+        'Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 60 000 € ; barres de 51 600 € et 59 500 €.',
     },
   ),
   {
@@ -65,7 +65,7 @@ export const ACTE_3: moteur.Acte = [
           'b3-01-a3-graphique',
           'choix-du-graphique',
           false,
-          'D’après ce graphique, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?',
+          'D’après le graphique de l’écran précédent, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?',
           'Non : l’axe est tronqué',
           [
             ['Oui', 'axe-tronque-lu-comme-ecart'],
@@ -78,7 +78,7 @@ export const ACTE_3: moteur.Acte = [
         titre: 'Un axe tronqué grossit l’écart',
         lignes: [
           'L’axe part de 49 000 € : les barres ne montrent que ce qui dépasse ce seuil.',
-          'Rennes a vendu 52 000 €, Nantes 59 000 € : environ 12 % de moins, pas trois fois moins.',
+          'Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.',
           'Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité.',
         ],
       },
@@ -362,7 +362,7 @@ export const ACTE_3: moteur.Acte = [
           steps: [
             'Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.',
             'Deux graphiques, chacun avec un titre qui conclut.',
-            'Des segments connectés à tous les TCD : un clic filtre toute la page.',
+            'Des segments : un clic filtre tous les TCD connectés et leurs graphiques.',
             'Les anomalies signalées par mise en forme conditionnelle.',
           ],
         },
@@ -388,14 +388,15 @@ export const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
-        'Chacun refait les étapes sur sa synthèse de l’exercice 9 ; la correction se dévoile étape par étape sur ce même écran.',
+        'Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.',
+        'Montrer chaque geste au pupitre dans Excel ; les étudiants les reprennent à l’exercice 10.',
       ),
       proprietes: {
         modalite: 'solo',
         exemple: {
           id: 'b3-01-a3-exemple-mfc',
           enonce:
-            'Sur la synthèse par agence de l’exercice 9, le taux d’atteinte est en colonne E, à partir de la ligne 5 : faites ressortir les agences en retard, puis reliez un segment à deux TCD.',
+            'Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences en retard, puis reliez un segment aux deux TCD.',
           etapes: [
             {
               id: 'mfc',
@@ -449,7 +450,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 10 — Le tableau de bord Direction',
         consigne:
-          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.',
+          'Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -561,19 +562,19 @@ export const ACTE_3: moteur.Acte = [
     [
       [
         'marseille',
-        'Marseille : la marge fond. Taux de marge de 32,3 % en 2025, 26,9 % de janvier à septembre 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction.',
+        'Marseille : la marge fond. Taux de marge de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction.',
       ],
       [
         'rennes',
-        'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à 2025, les autres catégories sont stables. Action : comprendre la perte en informatique, client par client, et relancer l’offre.',
+        'Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories sont stables. Action : comprendre la perte en informatique, client par client, et relancer l’offre.',
       ],
       [
         'lille',
-        'Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Action : comprendre ce qui marche à Lille et le partager aux autres agences.',
+        'Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Cause : toute la demande de l’agence progresse, chacune des catégories croît de plus de 10 %, pas une seule. Action : comprendre ce qui marche à Lille et le partager aux autres agences.',
       ],
       [
         'strasbourg',
-        'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées deux à trois mois plus tard. Le contrat promet 5 jours ouvrés. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients.',
+        'Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées deux à trois mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock de mars à juillet. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients.',
       ],
     ],
   ),

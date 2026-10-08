@@ -280,7 +280,7 @@ function valeursDeLActe1(jeu: JeuB301) {
     },
     pieges: {
       'b3-01-a1-lignes-commande': {
-        'lignes-comptees-pour-commandes': distinctes(
+        'commandes-comptees-pour-lignes': distinctes(
           colonne(lignesDeLaCommandeTemoin, 'n_commande'),
         ),
       },
@@ -292,7 +292,7 @@ function valeursDeLActe1(jeu: JeuB301) {
       'b3-01-a1-ca-total': {
         'texte-pris-pour-nombre': euros(somme(colonne(uniques, 'ca_ht'))),
       },
-      'b3-01-a1-villes': { 'casse-non-normalisee': distinctes(villes) },
+      'b3-01-a1-villes': { 'espaces-non-supprimes': distinctes(villes) },
       'b3-01-a1-a-verifier': {
         'suspect-corrige-sans-validation': uniques.filter((ligne) =>
           estAVerifier(ligne, true),
@@ -387,7 +387,7 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         ),
         'valeur-extreme-ignoree': arrondi(
           moyenne(delaisDeStrasbourg.map(delaiOuvre)),
-          1,
+          0,
         ),
       },
       'b3-01-a2-retards': {
@@ -441,8 +441,8 @@ function histoiresDe(jeu: JeuB301): Readonly<Record<HistoireB301, number>> {
     (vente) => vente.categorie === INFORMATIQUE,
   );
   return {
-    'ca-2025-rennes': arrondi(indicateurs[RENNES].ca2025, -3),
-    'ca-2025-nantes': arrondi(indicateurs[NANTES].ca2025, -3),
+    'ca-2025-rennes': arrondi(indicateurs[RENNES].ca2025, -2),
+    'ca-2025-nantes': arrondi(indicateurs[NANTES].ca2025, -2),
     'taux-de-marge-marseille-2025': pourcent(
       indicateurs[MARSEILLE].tauxDeMarge2025,
     ),

@@ -331,6 +331,9 @@ const CONFUSIONS_DU_B3_01 = {
   'evolution-sur-annee-pleine': { concept: 'tableau-de-bord' },
   'kpi-sans-contexte': { concept: 'tableau-de-bord' },
   'periode-mal-delimitee': { concept: 'agregation-conditionnelle' },
+  'commandes-comptees-pour-lignes': { concept: 'granularite' },
+  'type-de-variable-confondu': { concept: 'jeu-de-donnees' },
+  'espaces-non-supprimes': { concept: 'nettoyage' },
 };
 
 describe('libelleDeConcept', () => {
@@ -514,8 +517,8 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
   });
 
-  it('ajoute en dernier les vingt confusions de données du B3-01', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(116);
+  it('ajoute en dernier les vingt-trois confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(119);
     expect(Object.keys(CONFUSIONS).slice(96)).toEqual(
       Object.keys(CONFUSIONS_DU_B3_01),
     );
@@ -527,6 +530,34 @@ describe('CONFUSIONS', () => {
       libelleDeConfusion('reference-relative-non-figee'),
     );
     expect(libelleDeConfusion('critere-mal-ecrit')).not.toContain('guillemets');
+  });
+
+  it('nomme chaque sens de la granularité par sa propre confusion', () => {
+    expect(libelleDeConfusion('lignes-comptees-pour-commandes')).toContain(
+      'quand on cherche les commandes',
+    );
+    expect(libelleDeConfusion('commandes-comptees-pour-lignes')).toContain(
+      'quand on cherche ses lignes',
+    );
+  });
+
+  it('impute l écart des villes aux espaces, le comptage d Excel ignorant la casse', () => {
+    expect(libelleDeConfusion('espaces-non-supprimes')).toContain(
+      'SUPPRESPACE',
+    );
+    expect(libelleDeConfusion('casse-non-normalisee')).toContain('Power Query');
+    expect(libelleDeConfusion('type-de-variable-confondu')).not.toContain(
+      'identifiant',
+    );
+  });
+
+  it('décrit l identifiant par les chiffres qu il contient et le piège d objectif par la table entière', () => {
+    expect(libelleDeConfusion('identifiant-pris-pour-nombre')).toContain(
+      'contient des chiffres',
+    );
+    expect(libelleDeConfusion('objectif-annuel-pour-cumul')).toContain(
+      'tous les objectifs',
+    );
   });
 
   it('ajoute à la suite les huit confusions de mathématiques financières du B2-05', () => {

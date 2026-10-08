@@ -95,7 +95,7 @@ export const ACTE_2: moteur.Acte = [
         {
           famille: 'Comparer',
           question: 'Cette ligne est-elle en retard ?',
-          socle: 'SI, ET, OU',
+          socle: 'SI, ET, OU, SI.CONDITIONS',
           variante: 'SI.CONDITIONS',
         },
         {
@@ -150,7 +150,7 @@ export const ACTE_2: moteur.Acte = [
         'reference-de-cellule',
       ],
       notes: moteur.puces(
-        '3 min ; faire taper la formule INDEX et EQUIV sur un poste volontaire, puis la recopier sans $ : la colonne se vide, l’erreur fixe la règle.',
+        '3 min ; faire taper la formule INDEX et EQUIV sur un poste volontaire, puis la recopier sans $ : les #N/A gagnent la colonne à mesure que les plages glissent, l’erreur fixe la règle.',
         'Insister sur le critère de date : l’opérateur entre guillemets, la date hors des guillemets, joints par &.',
         'Transition : « Reliez et additionnez : exercice 5. »',
       ),
@@ -163,7 +163,7 @@ export const ACTE_2: moteur.Acte = [
         {
           kind: 'method',
           title: 'Chercher : INDEX et EQUIV',
-          text: 'Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!C:C;EQUIV(H2;Produits!A:A;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte.',
+          text: 'Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!$C$2:$C$41;EQUIV(H2;Produits!$A$2:$A$41;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte.',
         },
         {
           kind: 'property',
@@ -183,7 +183,7 @@ export const ACTE_2: moteur.Acte = [
         {
           kind: 'example',
           title: 'Si vous avez Excel 365 : RECHERCHEX',
-          text: '=RECHERCHEX(H2;Produits!A:A;Produits!C:C) fait le même travail en une seule fonction.',
+          text: '=RECHERCHEX(H2;Produits!$A$2:$A$41;Produits!$C$2:$C$41) fait le même travail en une seule fonction.',
         },
       ],
     },
@@ -251,7 +251,7 @@ export const ACTE_2: moteur.Acte = [
       ],
       [
         'b3-01-a2-ca-ouest',
-        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse vers le bas : les lignes ne trouvent plus leur agence, aucune ne porte Ouest, et le total tombe à 0 €. Sans critère de date : 188 908 €.',
+        'La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. La seule ligne Ouest trouvée avant date de 2025 : sur 2026, le total tombe à 0 €. Sans critère de date : 188 908 €.',
       ],
     ],
   ),
@@ -273,12 +273,12 @@ export const ACTE_2: moteur.Acte = [
           'b3-01-a2-delai',
           'calcul-sur-dates',
           false,
-          'Une commande passée un vendredi est livrée le lundi suivant. Combien de jours de délai compte-t-on ?',
-          'Un seul jour ouvré',
+          'Le contrat de Norvane compte les délais en jours ouvrés. Une commande passée un vendredi est livrée le lundi suivant. Quel délai compte-t-on ?',
+          '1 jour ouvré',
           [
-            ['3 jours', 'jours-calendaires-pour-ouvres'],
+            ['3 jours ouvrés', 'jours-calendaires-pour-ouvres'],
             [
-              '0 jour : le week-end ne compte pas',
+              '0 jour ouvré : le week-end ne compte pas',
               'jours-calendaires-pour-ouvres',
             ],
           ],
@@ -401,7 +401,7 @@ export const ACTE_2: moteur.Acte = [
     [
       [
         'b3-01-a2-delai-strasbourg',
-        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. En jours calendaires, elle monterait à 11 jours ; la moyenne, tirée par les ruptures livrées deux mois plus tard, atteindrait 9,5 jours ouvrés.',
+        'Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. En jours calendaires, elle monterait à 11 jours ; la moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie.',
       ],
       [
         'b3-01-a2-retards',
@@ -431,7 +431,7 @@ export const ACTE_2: moteur.Acte = [
           'b3-01-a2-nouvelles-lignes',
           'tableau-croise-dynamique',
           false,
-          'On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4001 les prennent-elles en compte ?',
+          'On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4039 les prennent-elles en compte ?',
           'Non, elles restent hors de la plage',
           [
             ['Oui', 'plage-fixe-au-lieu-de-tableau'],
@@ -443,7 +443,7 @@ export const ACTE_2: moteur.Acte = [
         type: 'revelation',
         titre: 'Une plage fixe ne grandit pas',
         lignes: [
-          'A2:A4001 s’arrête à la ligne 4001 : les lignes d’octobre restent dehors, même après recalcul.',
+          'A2:A4039 s’arrête à la ligne 4039 : les lignes d’octobre restent dehors, même après recalcul.',
           'Un tableau structuré s’étend tout seul : chaque formule qui le cite voit les nouvelles lignes.',
           'C’est l’objet du cours suivant.',
         ],

@@ -2,7 +2,10 @@ import {
   arrondi,
   dateExcel,
   estJourOuvre,
+  mediane,
+  nbJoursOuvres,
   nomPropre,
+  partiesDeDate,
   supprEspace,
 } from '../../../../../test/helpers/cours-b3-01/excel';
 import {
@@ -99,6 +102,32 @@ const anomaliesDe = (ligne: Ligne): string[] =>
 
 const PREMIER_JOUR = dateExcel(2025, 1, 2);
 const DERNIER_JOUR = dateExcel(2026, 9, 30);
+
+const commandesSaines = ongletDe(jeu.reprise1, 'Commandes').lignes;
+const categories = new Map(
+  ongletDe(jeu.reprise1, 'Produits').lignes.map((produit) => [
+    texteDe(produit, 'produit_id'),
+    texteDe(produit, 'categorie'),
+  ]),
+);
+const periodeDe = (ligne: Ligne) =>
+  partiesDeDate(nombreDe(ligne, 'date_commande'));
+const categorieDe = (ligne: Ligne): string =>
+  categories.get(texteDe(ligne, 'produit_id')) ?? '';
+const delaiOuvreDe = (ligne: Ligne): number =>
+  nbJoursOuvres(
+    nombreDe(ligne, 'date_commande'),
+    nombreDe(ligne, 'date_livraison'),
+  ) - 1;
+const lignesDe = (agence: string, annee: number): Ligne[] =>
+  commandesSaines.filter(
+    (ligne) =>
+      texteDe(ligne, 'agence_id') === agence &&
+      periodeDe(ligne).annee === annee &&
+      periodeDe(ligne).mois <= 9,
+  );
+const distinctesCommeExcel = (textes: readonly string[]): number =>
+  new Set(textes.map((texte) => texte.toLocaleUpperCase('fr'))).size;
 
 describe('jeu Norvane du B3-01', () => {
   it('reproduit le même jeu à partir de la même graine', () => {
@@ -247,6 +276,36 @@ describe('jeu Norvane du B3-01', () => {
     }
   });
 
+  it('ne doit l’écart des villes brutes qu’aux espaces, le comptage d’Excel ignorant la casse', () => {
+    const villes = lignesUniques.map((ligne) => texteDe(ligne, 'ville'));
+    const piege = PIEGES_B3_01['b3-01-a1-villes']['espaces-non-supprimes'];
+
+    expect(distinctesCommeExcel(villes)).toBe(piege);
+    expect(distinctesCommeExcel(villes.map(nomPropre))).toBe(piege);
+    expect(distinctesCommeExcel(villes.map(supprEspace))).toBe(
+      VALEURS_B3_01['b3-01-a1-villes'],
+    );
+  });
+
+  it('ne laisse trouver sans $ qu’une ligne de l’Ouest, commandée en 2025', () => {
+    const agences = ongletDe(jeu.reprise1, 'Agences').lignes;
+    const rangs = agences.map((agence) => texteDe(agence, 'agence_id'));
+    const ouest = new Set(
+      agences
+        .filter((agence) => texteDe(agence, 'region') === 'Ouest')
+        .map((agence) => texteDe(agence, 'agence_id')),
+    );
+    const trouveesDansLOuest = commandesSaines.filter(
+      (ligne, rang) =>
+        rangs.indexOf(texteDe(ligne, 'agence_id')) >= rang &&
+        ouest.has(texteDe(ligne, 'agence_id')),
+    );
+
+    expect(trouveesDansLOuest.map((ligne) => periodeDe(ligne).annee)).toEqual([
+      2025,
+    ]);
+  });
+
   describe('les quatre histoires du § 4.4', () => {
     const indicateurs = indicateursParAgence(jeu);
     const agences = Object.keys(indicateurs);
@@ -299,6 +358,49 @@ describe('jeu Norvane du B3-01', () => {
       expect(HISTOIRES_B3_01['evolution-informatique-rennes']).toBeGreaterThan(
         -50,
       );
+    });
+
+    it('fait croître Lille dans chacune de ses catégories, pas sur une seule', () => {
+      const caParCategorie = (annee: number): Record<string, number> => {
+        const totaux: Record<string, number> = {};
+        for (const ligne of lignesDe('AG01', annee)) {
+          totaux[categorieDe(ligne)] =
+            (totaux[categorieDe(ligne)] ?? 0) + nombreDe(ligne, 'ca_ht');
+        }
+        return totaux;
+      };
+      const avant = caParCategorie(2025);
+      const apres = caParCategorie(2026);
+
+      expect(new Set(Object.keys(apres))).toEqual(new Set(Object.keys(avant)));
+      for (const categorie of Object.keys(avant)) {
+        expect(apres[categorie] / avant[categorie]).toBeGreaterThan(1.1);
+      }
+    });
+
+    it('fait décrocher Strasbourg en mars 2026 dans toutes ses catégories, ruptures de mars à juillet', () => {
+      const de2026 = lignesDe('AG12', 2026);
+      const medianeDe = (lignes: readonly Ligne[]): number =>
+        mediane(lignes.map(delaiOuvreDe));
+      const depuisMars = de2026.filter((ligne) => periodeDe(ligne).mois >= 3);
+      const ruptures = de2026.filter((ligne) => delaiOuvreDe(ligne) > 30);
+
+      expect(
+        medianeDe(de2026.filter((ligne) => periodeDe(ligne).mois < 3)),
+      ).toBeLessThanOrEqual(5);
+      for (const categorie of new Set(depuisMars.map(categorieDe))) {
+        expect(
+          medianeDe(
+            depuisMars.filter((ligne) => categorieDe(ligne) === categorie),
+          ),
+        ).toBeGreaterThanOrEqual(6);
+      }
+      expect(ruptures.length).toBeGreaterThan(0);
+      expect(
+        ruptures.filter(
+          (ligne) => periodeDe(ligne).mois < 3 || periodeDe(ligne).mois > 7,
+        ),
+      ).toEqual([]);
     });
   });
 

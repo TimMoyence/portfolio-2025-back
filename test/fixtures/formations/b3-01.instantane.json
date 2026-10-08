@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "0066b4689e3c07132bb8caab83bb63b0ff18322ef5bd01e2e88662d55f2343f0",
+  "empreinte": "6d9539d22616c8c437fb2b8f50ccffc0a69e0b374a3d50b431eaea6f5c860a76",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -187,8 +187,8 @@
                 "libelle": "Non : il faut un identifiant attribué par le système"
               },
               {
-                "id": "non-il-faut-aussi-le-numero-siret-2e32f401",
-                "libelle": "Non : il faut aussi le numéro SIRET"
+                "id": "non-il-faut-aussi-le-code-postal-8cd68c2a",
+                "libelle": "Non : il faut aussi le code postal"
               },
               {
                 "id": "oui-le-nom-et-la-ville-suffisent-80487545",
@@ -229,7 +229,7 @@
                       "Numérique : additionner, moyenner.",
                       "Catégorie : compter, regrouper.",
                       "Date : calculer des durées.",
-                      "Booléen : compter les « oui ».",
+                      "Booléen : compter les VRAI.",
                       "Vide : donnée manquante, pas un zéro."
                     ]
                   },
@@ -425,23 +425,6 @@
           "ordre": "fixe",
           "questions": [
             {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-01-a1-lignes-commande",
-                  "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
-                  "unite": "lignes",
-                  "metadonnees": {
-                    "concepts": ["granularite"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
-            {
               "brique": "fp-vote",
               "donnees": {
                 "question": {
@@ -461,6 +444,23 @@
                       "libelle": "Autant de lignes que de commandes"
                     }
                   ]
+                }
+              }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a1-lignes-commande",
+                  "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": ["granularite"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 4,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
                 }
               }
             }
@@ -576,7 +576,7 @@
                       "Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : le même outil, sur une colonne copiée à part, annonce combien il en reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
@@ -732,7 +732,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "consigne": "Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -934,7 +934,7 @@
                   {
                     "famille": "Comparer",
                     "question": "Cette ligne est-elle en retard ?",
-                    "socle": "SI, ET, OU",
+                    "socle": "SI, ET, OU, SI.CONDITIONS",
                     "variante": "SI.CONDITIONS"
                   },
                   {
@@ -1010,7 +1010,7 @@
                   {
                     "kind": "method",
                     "title": "Chercher : INDEX et EQUIV",
-                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!C:C;EQUIV(H2;Produits!A:A;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
+                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!$C$2:$C$41;EQUIV(H2;Produits!$A$2:$A$41;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
                   },
                   {
                     "kind": "property",
@@ -1030,7 +1030,7 @@
                   {
                     "kind": "example",
                     "title": "Si vous avez Excel 365 : RECHERCHEX",
-                    "text": "=RECHERCHEX(H2;Produits!A:A;Produits!C:C) fait le même travail en une seule fonction."
+                    "text": "=RECHERCHEX(H2;Produits!$A$2:$A$41;Produits!$C$2:$C$41) fait le même travail en une seule fonction."
                   }
                 ]
               }
@@ -1133,19 +1133,19 @@
         "donnees": {
           "question": {
             "id": "b3-01-a2-delai",
-            "enonce": "Une commande passée un vendredi est livrée le lundi suivant. Combien de jours de délai compte-t-on ?",
+            "enonce": "Le contrat de Norvane compte les délais en jours ouvrés. Une commande passée un vendredi est livrée le lundi suivant. Quel délai compte-t-on ?",
             "options": [
               {
-                "id": "un-seul-jour-ouvre-a37bda63",
-                "libelle": "Un seul jour ouvré"
+                "id": "1-jour-ouvre-a80f6644",
+                "libelle": "1 jour ouvré"
               },
               {
-                "id": "3-jours-ae0fe815",
-                "libelle": "3 jours"
+                "id": "3-jours-ouvres-2400f1a8",
+                "libelle": "3 jours ouvrés"
               },
               {
-                "id": "0-jour-le-week-end-ne-compte-pas-a6a853d1",
-                "libelle": "0 jour : le week-end ne compte pas"
+                "id": "0-jour-ouvre-le-week-end-ne-compte-pas-ca0f98ba",
+                "libelle": "0 jour ouvré : le week-end ne compte pas"
               }
             ]
           }
@@ -1286,7 +1286,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a2-nouvelles-lignes",
-            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4001 les prennent-elles en compte ?",
+            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4039 les prennent-elles en compte ?",
             "options": [
               {
                 "id": "non-elles-restent-hors-de-la-plage-e87d8a01",
@@ -1514,16 +1514,16 @@
                 "series": [
                   {
                     "label": "CA HT 2025",
-                    "values": [52000, 59000],
+                    "values": [51600, 59500],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [[49000, 59500]],
-                "axisLabels": ["49 000 à 59 500 €"],
+                "axisRanges": [[49000, 60000]],
+                "axisLabels": ["49 000 à 60 000 €"],
                 "unit": "€",
-                "source": "Export des ventes de Norvane Équipement, CA arrondi au millier d’euros (données fictives).",
+                "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 59 500 € ; barres de 52 000 € et 59 000 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {
@@ -1545,7 +1545,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a3-graphique",
-            "enonce": "D’après ce graphique, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
+            "enonce": "D’après le graphique de l’écran précédent, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
             "options": [
               {
                 "id": "impossible-a-dire-f2974021",
@@ -1797,7 +1797,7 @@
                     "steps": [
                       "Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.",
                       "Deux graphiques, chacun avec un titre qui conclut.",
-                      "Des segments connectés à tous les TCD : un clic filtre toute la page.",
+                      "Des segments : un clic filtre tous les TCD connectés et leurs graphiques.",
                       "Les anomalies signalées par mise en forme conditionnelle."
                     ]
                   },
@@ -1833,7 +1833,7 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a3-exemple-mfc",
-            "enonce": "Sur la synthèse par agence de l’exercice 9, le taux d’atteinte est en colonne E, à partir de la ligne 5 : faites ressortir les agences en retard, puis reliez un segment à deux TCD.",
+            "enonce": "Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences en retard, puis reliez un segment aux deux TCD.",
             "etapes": [
               {
                 "id": "mfc",
@@ -1873,7 +1873,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 10 — Le tableau de bord Direction",
-          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2361,8 +2361,8 @@
                 "libelle": "Non : il faut un identifiant attribué par le système"
               },
               {
-                "id": "non-il-faut-aussi-le-numero-siret-2e32f401",
-                "libelle": "Non : il faut aussi le numéro SIRET"
+                "id": "non-il-faut-aussi-le-code-postal-8cd68c2a",
+                "libelle": "Non : il faut aussi le code postal"
               },
               {
                 "id": "oui-le-nom-et-la-ville-suffisent-80487545",
@@ -2385,7 +2385,7 @@
               },
               {
                 "id": "casse-non-normalisee",
-                "libelle": "Compter « Bordeaux » et « BORDEAUX » comme deux villes faute d’avoir normalisé la casse."
+                "libelle": "Laisser une même ville s’écrire « Bordeaux » et « BORDEAUX » : Excel les confond, mais Power Query et les autres outils en comptent deux."
               },
               {
                 "id": "doublons-supprimes-sur-une-colonne",
@@ -2436,8 +2436,8 @@
                 "libelle": "Non : il faut un identifiant attribué par le système"
               },
               {
-                "id": "non-il-faut-aussi-le-numero-siret-2e32f401",
-                "libelle": "Non : il faut aussi le numéro SIRET"
+                "id": "non-il-faut-aussi-le-code-postal-8cd68c2a",
+                "libelle": "Non : il faut aussi le code postal"
               },
               {
                 "id": "oui-le-nom-et-la-ville-suffisent-80487545",
@@ -2487,7 +2487,7 @@
                       "Numérique : additionner, moyenner.",
                       "Catégorie : compter, regrouper.",
                       "Date : calculer des durées.",
-                      "Booléen : compter les « oui ».",
+                      "Booléen : compter les VRAI.",
                       "Vide : donnée manquante, pas un zéro."
                     ]
                   },
@@ -2681,7 +2681,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour un nombre, parce qu’il s’écrit en chiffres ; ville prise pour un identifiant.\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
+        "notes": "• Temps : réflexion 1 min · travail 2 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant.\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2758,7 +2758,7 @@
             {
               "carteId": "facturee",
               "categorieId": "booleen",
-              "justification": "oui ou non : on compte les « oui »"
+              "justification": "VRAI ou FAUX : on compte les VRAI"
             }
           ],
           "seuilReussite": 0.75
@@ -2766,7 +2766,7 @@
         "explications": [
           {
             "reference": "identifiant",
-            "texte": "Cinq identifiants : n_commande, client_id, commercial_id, produit_id et agence_id. Ce sont des codes : on les compte, on ne les additionne jamais, même quand ils s’écrivent en chiffres."
+            "texte": "Cinq identifiants : n_commande, client_id, commercial_id, produit_id et agence_id. Ce sont des codes : on les compte, on ne les additionne jamais, même quand ils contiennent des chiffres."
           },
           {
             "reference": "date",
@@ -2782,7 +2782,7 @@
           },
           {
             "reference": "booleen",
-            "texte": "facturee vaut oui ou non : on compte les « oui »."
+            "texte": "facturee vaut VRAI ou FAUX : on compte les VRAI."
           }
         ]
       },
@@ -2798,23 +2798,6 @@
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
-            {
-              "brique": "fp-numeric",
-              "donnees": {
-                "question": {
-                  "id": "b3-01-a1-lignes-commande",
-                  "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
-                  "unite": "lignes",
-                  "metadonnees": {
-                    "concepts": ["granularite"],
-                    "misconceptionsCiblees": [],
-                    "dureeMinutes": 4,
-                    "modalite": "solo",
-                    "regime": "focus"
-                  }
-                }
-              }
-            },
             {
               "brique": "fp-vote",
               "donnees": {
@@ -2837,6 +2820,23 @@
                   ]
                 }
               }
+            },
+            {
+              "brique": "fp-numeric",
+              "donnees": {
+                "question": {
+                  "id": "b3-01-a1-lignes-commande",
+                  "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
+                  "unite": "lignes",
+                  "metadonnees": {
+                    "concepts": ["granularite"],
+                    "misconceptionsCiblees": [],
+                    "dureeMinutes": 4,
+                    "modalite": "solo",
+                    "regime": "focus"
+                  }
+                }
+              }
             }
           ]
         },
@@ -2844,16 +2844,6 @@
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
-          {
-            "questionId": "b3-01-a1-lignes-commande",
-            "bonneReponse": "3 lignes",
-            "confusions": [
-              {
-                "id": "lignes-comptees-pour-commandes",
-                "libelle": "Compter les lignes quand on cherche les commandes : une commande compte autant de lignes que de produits."
-              }
-            ]
-          },
           {
             "questionId": "b3-01-a1-granularite",
             "bonneReponse": "Plus de lignes que de commandes",
@@ -2863,14 +2853,19 @@
                 "libelle": "Compter les lignes quand on cherche les commandes : une commande compte autant de lignes que de produits."
               }
             ]
+          },
+          {
+            "questionId": "b3-01-a1-lignes-commande",
+            "bonneReponse": "3 lignes",
+            "confusions": [
+              {
+                "id": "commandes-comptees-pour-lignes",
+                "libelle": "Compter une commande quand on cherche ses lignes : une commande de trois produits occupe trois lignes."
+              }
+            ]
           }
         ],
         "questions": [
-          {
-            "id": "b3-01-a1-lignes-commande",
-            "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
-            "options": null
-          },
           {
             "id": "b3-01-a1-granularite",
             "enonce": "L’onglet Commandes compte-t-il plus de lignes que de commandes, autant, ou moins ?",
@@ -2888,17 +2883,22 @@
                 "libelle": "Autant de lignes que de commandes"
               }
             ]
+          },
+          {
+            "id": "b3-01-a1-lignes-commande",
+            "enonce": "Combien de lignes porte la commande C-10234 ? Saisissez un nombre entier.",
+            "options": null
           }
         ],
         "corrigeEcran": null,
         "explications": [
           {
-            "reference": "b3-01-a1-lignes-commande",
-            "texte": "Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1."
-          },
-          {
             "reference": "b3-01-a1-granularite",
             "texte": "Une commande occupe une à cinq lignes, une par produit : le fichier compte plus de lignes que de commandes. Pour compter des commandes, on compte des n_commande distincts."
+          },
+          {
+            "reference": "b3-01-a1-lignes-commande",
+            "texte": "Filtrée sur C-10234, la colonne n_commande montre trois lignes : trois produits d’une même commande. Compter les commandes distinctes donnerait 1."
           }
         ]
       },
@@ -3061,7 +3061,7 @@
                       "Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : le même outil, sur une colonne copiée à part, annonce combien il en reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
@@ -3134,7 +3134,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, CAR(160) : SUBSTITUE(L2;CAR(160);\"\") la retire.\n• S’arrêter sur l’ordre des fonctions : SUPPRESPACE d’abord, NOMPROPRE ensuite ; SUBSTITUE d’abord, CNUM ensuite.\n• Transition : « Avant de nettoyer, classons les anomalies : exercice 3. »",
+        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, UNICAR(160) : SUBSTITUE(L2;UNICAR(160);\"\") la retire.\n• S’arrêter sur l’ordre des fonctions : SUPPRESPACE d’abord, NOMPROPRE ensuite ; SUBSTITUE d’abord, CNUM ensuite.\n• Transition : « Avant de nettoyer, classons les anomalies : exercice 3. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3314,7 +3314,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 4 — Nettoyer l’export",
-          "consigne": "Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
+          "consigne": "Essentiel, sur une copie de l’onglet Commandes : nettoyez ville et ca_ht dans deux nouvelles colonnes, en N et O, sans insérer de colonne ; supprimez les doublons exacts, toutes les colonnes cochées ; ajoutez une colonne controle sur les dates brutes, =SI(OU(C2<B2;I2<=0;G2=\"\");\"À vérifier\";\"OK\"), où C est date_livraison, B date_commande, I quantite et G commercial_id. Défi : convertissez les dates ISO par DATEVAL, recalculez ca_ht et signalez les écarts de plus d’un euro.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -3388,7 +3388,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant de les normaliser ; convertir les dates avant le contrôle.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote d’ouverture.\n• Défi : DATEVAL lit « 04/05/26 » comme le 4 mai ; une date d’un autre système ne se convertit pas sans demander.",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.\n• Villes distinctes : copier la colonne N en valeurs à part, puis Supprimer les doublons ; sous Excel 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote d’ouverture.\n• Défi : DATEVAL lit « 04/05/26 » comme le 4 mai ; une date d’un autre système ne se convertit pas sans demander.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3417,8 +3417,8 @@
             "bonneReponse": "48 villes",
             "confusions": [
               {
-                "id": "casse-non-normalisee",
-                "libelle": "Compter « Bordeaux » et « BORDEAUX » comme deux villes faute d’avoir normalisé la casse."
+                "id": "espaces-non-supprimes",
+                "libelle": "Compter « Bordeaux » et « Bordeaux » suivi d’une espace comme deux villes faute de SUPPRESPACE."
               }
             ]
           },
@@ -3467,7 +3467,7 @@
           },
           {
             "reference": "b3-01-a1-villes",
-            "texte": "NOMPROPRE(SUPPRESPACE(E2)) ramène chaque variante à une seule écriture : il reste 48 villes. Sans nettoyage, une ville suivie d’une espace compte comme une autre ville."
+            "texte": "NOMPROPRE(SUPPRESPACE(E2)) ramène chaque variante à une seule écriture : il reste 48 villes. Le comptage d’Excel ignore la casse : ce sont les espaces en trop qui font compter une même ville deux fois."
           },
           {
             "reference": "b3-01-a1-a-verifier",
@@ -3664,7 +3664,7 @@
                   {
                     "famille": "Comparer",
                     "question": "Cette ligne est-elle en retard ?",
-                    "socle": "SI, ET, OU",
+                    "socle": "SI, ET, OU, SI.CONDITIONS",
                     "variante": "SI.CONDITIONS"
                   },
                   {
@@ -3746,7 +3746,7 @@
                   {
                     "kind": "method",
                     "title": "Chercher : INDEX et EQUIV",
-                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!C:C;EQUIV(H2;Produits!A:A;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
+                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!$C$2:$C$41;EQUIV(H2;Produits!$A$2:$A$41;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
                   },
                   {
                     "kind": "property",
@@ -3766,7 +3766,7 @@
                   {
                     "kind": "example",
                     "title": "Si vous avez Excel 365 : RECHERCHEX",
-                    "text": "=RECHERCHEX(H2;Produits!A:A;Produits!C:C) fait le même travail en une seule fonction."
+                    "text": "=RECHERCHEX(H2;Produits!$A$2:$A$41;Produits!$C$2:$C$41) fait le même travail en une seule fonction."
                   }
                 ]
               }
@@ -3784,7 +3784,7 @@
             }
           }
         },
-        "notes": "• 3 min ; faire taper la formule INDEX et EQUIV sur un poste volontaire, puis la recopier sans $ : la colonne se vide, l’erreur fixe la règle.\n• Insister sur le critère de date : l’opérateur entre guillemets, la date hors des guillemets, joints par &.\n• Transition : « Reliez et additionnez : exercice 5. »",
+        "notes": "• 3 min ; faire taper la formule INDEX et EQUIV sur un poste volontaire, puis la recopier sans $ : les #N/A gagnent la colonne à mesure que les plages glissent, l’erreur fixe la règle.\n• Insister sur le critère de date : l’opérateur entre guillemets, la date hors des guillemets, joints par &.\n• Transition : « Reliez et additionnez : exercice 5. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3937,7 +3937,7 @@
           },
           {
             "reference": "b3-01-a2-ca-ouest",
-            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse vers le bas : les lignes ne trouvent plus leur agence, aucune ne porte Ouest, et le total tombe à 0 €. Sans critère de date : 188 908 €."
+            "texte": "La région Ouest réunit Nantes (AG05) et Rennes (AG06) : 77 850 € de janvier à septembre 2026. Recopiée sans $, la plage de recherche glisse d’une ligne à chaque ligne : dès la ligne 14, elle a quitté la table et plus aucune agence n’est trouvée. La seule ligne Ouest trouvée avant date de 2025 : sur 2026, le total tombe à 0 €. Sans critère de date : 188 908 €."
           }
         ]
       },
@@ -3950,19 +3950,19 @@
         "donnees": {
           "question": {
             "id": "b3-01-a2-delai",
-            "enonce": "Une commande passée un vendredi est livrée le lundi suivant. Combien de jours de délai compte-t-on ?",
+            "enonce": "Le contrat de Norvane compte les délais en jours ouvrés. Une commande passée un vendredi est livrée le lundi suivant. Quel délai compte-t-on ?",
             "options": [
               {
-                "id": "un-seul-jour-ouvre-a37bda63",
-                "libelle": "Un seul jour ouvré"
+                "id": "1-jour-ouvre-a80f6644",
+                "libelle": "1 jour ouvré"
               },
               {
-                "id": "3-jours-ae0fe815",
-                "libelle": "3 jours"
+                "id": "3-jours-ouvres-2400f1a8",
+                "libelle": "3 jours ouvrés"
               },
               {
-                "id": "0-jour-le-week-end-ne-compte-pas-a6a853d1",
-                "libelle": "0 jour : le week-end ne compte pas"
+                "id": "0-jour-ouvre-le-week-end-ne-compte-pas-ca0f98ba",
+                "libelle": "0 jour ouvré : le week-end ne compte pas"
               }
             ]
           }
@@ -3973,7 +3973,7 @@
         "corriges": [
           {
             "questionId": "b3-01-a2-delai",
-            "bonneReponse": "Un seul jour ouvré",
+            "bonneReponse": "1 jour ouvré",
             "confusions": [
               {
                 "id": "jours-calendaires-pour-ouvres",
@@ -3985,19 +3985,19 @@
         "questions": [
           {
             "id": "b3-01-a2-delai",
-            "enonce": "Une commande passée un vendredi est livrée le lundi suivant. Combien de jours de délai compte-t-on ?",
+            "enonce": "Le contrat de Norvane compte les délais en jours ouvrés. Une commande passée un vendredi est livrée le lundi suivant. Quel délai compte-t-on ?",
             "options": [
               {
-                "id": "un-seul-jour-ouvre-a37bda63",
-                "libelle": "Un seul jour ouvré"
+                "id": "1-jour-ouvre-a80f6644",
+                "libelle": "1 jour ouvré"
               },
               {
-                "id": "3-jours-ae0fe815",
-                "libelle": "3 jours"
+                "id": "3-jours-ouvres-2400f1a8",
+                "libelle": "3 jours ouvrés"
               },
               {
-                "id": "0-jour-le-week-end-ne-compte-pas-a6a853d1",
-                "libelle": "0 jour : le week-end ne compte pas"
+                "id": "0-jour-ouvre-le-week-end-ne-compte-pas-ca0f98ba",
+                "libelle": "0 jour ouvré : le week-end ne compte pas"
               }
             ]
           }
@@ -4203,7 +4203,7 @@
         "explications": [
           {
             "reference": "b3-01-a2-delai-strasbourg",
-            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. En jours calendaires, elle monterait à 11 jours ; la moyenne, tirée par les ruptures livrées deux mois plus tard, atteindrait 9,5 jours ouvrés."
+            "texte": "Délai = NB.JOURS.OUVRES(date_commande;date_livraison) − 1 ; la médiane des lignes de Strasbourg commandées en 2026 vaut 8 jours ouvrés. En jours calendaires, elle monterait à 11 jours ; la moyenne, tirée par les ruptures livrées deux mois plus tard, monterait à 10 jours ouvrés une fois arrondie."
           },
           {
             "reference": "b3-01-a2-retards",
@@ -4224,7 +4224,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a2-nouvelles-lignes",
-            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4001 les prennent-elles en compte ?",
+            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4039 les prennent-elles en compte ?",
             "options": [
               {
                 "id": "non-elles-restent-hors-de-la-plage-e87d8a01",
@@ -4259,7 +4259,7 @@
         "questions": [
           {
             "id": "b3-01-a2-nouvelles-lignes",
-            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4001 les prennent-elles en compte ?",
+            "enonce": "On colle 200 lignes d’octobre sous le tableau. Les formules écrites sur A2:A4039 les prennent-elles en compte ?",
             "options": [
               {
                 "id": "non-elles-restent-hors-de-la-plage-e87d8a01",
@@ -4280,7 +4280,7 @@
           "type": "revelation",
           "titre": "Une plage fixe ne grandit pas",
           "lignes": [
-            "A2:A4001 s’arrête à la ligne 4001 : les lignes d’octobre restent dehors, même après recalcul.",
+            "A2:A4039 s’arrête à la ligne 4039 : les lignes d’octobre restent dehors, même après recalcul.",
             "Un tableau structuré s’étend tout seul : chaque formule qui le cite voit les nouvelles lignes.",
             "C’est l’objet du cours suivant."
           ]
@@ -4575,16 +4575,16 @@
                 "series": [
                   {
                     "label": "CA HT 2025",
-                    "values": [52000, 59000],
+                    "values": [51600, 59500],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [[49000, 59500]],
-                "axisLabels": ["49 000 à 59 500 €"],
+                "axisRanges": [[49000, 60000]],
+                "axisLabels": ["49 000 à 60 000 €"],
                 "unit": "€",
-                "source": "Export des ventes de Norvane Équipement, CA arrondi au millier d’euros (données fictives).",
+                "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 59 500 € ; barres de 52 000 € et 59 000 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {
@@ -4612,7 +4612,7 @@
         "donnees": {
           "question": {
             "id": "b3-01-a3-graphique",
-            "enonce": "D’après ce graphique, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
+            "enonce": "D’après le graphique de l’écran précédent, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
             "options": [
               {
                 "id": "impossible-a-dire-f2974021",
@@ -4651,7 +4651,7 @@
         "questions": [
           {
             "id": "b3-01-a3-graphique",
-            "enonce": "D’après ce graphique, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
+            "enonce": "D’après le graphique de l’écran précédent, Rennes a-t-elle vendu trois fois moins que Nantes en 2025 ?",
             "options": [
               {
                 "id": "impossible-a-dire-f2974021",
@@ -4673,7 +4673,7 @@
           "titre": "Un axe tronqué grossit l’écart",
           "lignes": [
             "L’axe part de 49 000 € : les barres ne montrent que ce qui dépasse ce seuil.",
-            "Rennes a vendu 52 000 €, Nantes 59 000 € : environ 12 % de moins, pas trois fois moins.",
+            "Rennes a vendu 51 600 €, Nantes 59 500 € : environ 13 % de moins, pas trois fois moins.",
             "Depuis zéro, les deux barres ont presque la même hauteur. Un axe tronqué se signale, ou ne se montre pas à un comité."
           ]
         }
@@ -4940,7 +4940,7 @@
             "confusions": [
               {
                 "id": "objectif-annuel-pour-cumul",
-                "libelle": "Comparer un cumul de quelques mois à l’objectif de l’année entière."
+                "libelle": "Comparer un cumul de neuf mois à tous les objectifs de l’agence, sans filtrer la période."
               }
             ]
           },
@@ -4950,7 +4950,7 @@
             "confusions": [
               {
                 "id": "objectif-annuel-pour-cumul",
-                "libelle": "Comparer un cumul de quelques mois à l’objectif de l’année entière."
+                "libelle": "Comparer un cumul de neuf mois à tous les objectifs de l’agence, sans filtrer la période."
               }
             ]
           }
@@ -5083,7 +5083,7 @@
                     "steps": [
                       "Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.",
                       "Deux graphiques, chacun avec un titre qui conclut.",
-                      "Des segments connectés à tous les TCD : un clic filtre toute la page.",
+                      "Des segments : un clic filtre tous les TCD connectés et leurs graphiques.",
                       "Les anomalies signalées par mise en forme conditionnelle."
                     ]
                   },
@@ -5125,7 +5125,7 @@
         "donnees": {
           "exemple": {
             "id": "b3-01-a3-exemple-mfc",
-            "enonce": "Sur la synthèse par agence de l’exercice 9, le taux d’atteinte est en colonne E, à partir de la ligne 5 : faites ressortir les agences en retard, puis reliez un segment à deux TCD.",
+            "enonce": "Une feuille de synthèse : une agence par ligne à partir de la ligne 5, le taux d’atteinte en colonne E ; à côté, deux TCD, le CA par mois et la marge par agence. Faites ressortir les agences en retard, puis reliez un segment aux deux TCD.",
             "etapes": [
               {
                 "id": "mfc",
@@ -5156,7 +5156,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun refait les étapes sur sa synthèse de l’exercice 9 ; la correction se dévoile étape par étape sur ce même écran.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 10. »",
+        "notes": "• Exemple lu, pas refait : chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Montrer chaque geste au pupitre dans Excel ; les étudiants les reprennent à l’exercice 10.\n• Montrer la règle appliquée à toute la plage, de A5 à la dernière agence.\n• Transition : « Le tableau de bord Direction : exercice 10. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5171,7 +5171,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 10 — Le tableau de bord Direction",
-          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
+          "consigne": "Essentiel, dans un onglet Dashboard : quatre indicateurs (CA cumulé 2026, évolution par rapport à la même période de 2025, taux de marge, lignes en quarantaine), le graphique de l’exercice 9, un TCD de la marge par agence avec une mise en forme conditionnelle, et deux segments connectés à ce TCD, region et categorie. Défi : une mise en page A4 paysage, prête à imprimer.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -5380,19 +5380,19 @@
         "explications": [
           {
             "reference": "marseille",
-            "texte": "Marseille : la marge fond. Taux de marge de 32,3 % en 2025, 26,9 % de janvier à septembre 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction."
+            "texte": "Marseille : la marge fond. Taux de marge de 32,3 % de janvier à septembre 2025, 26,9 % sur la même période de 2026, alors que le CA dépasse l’objectif. Cause : depuis janvier, le commercial C26 accorde des remises de 18 à 30 %, quand le réseau reste entre 0 et 10 %. Action : encadrer les remises, au-delà de 10 % sur validation de la direction."
           },
           {
             "reference": "rennes",
-            "texte": "Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à 2025, les autres catégories sont stables. Action : comprendre la perte en informatique, client par client, et relancer l’offre."
+            "texte": "Rennes : sous l’objectif. Taux d’atteinte de 79,0 %, le plus bas du réseau. Cause : l’informatique recule de 40,2 % par rapport à la même période de 2025, les autres catégories sont stables. Action : comprendre la perte en informatique, client par client, et relancer l’offre."
           },
           {
             "reference": "lille",
-            "texte": "Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Action : comprendre ce qui marche à Lille et le partager aux autres agences."
+            "texte": "Lille : la croissance. CA de janvier à septembre 2026 en hausse de 23,1 % sur la même période de 2025, la plus forte évolution du réseau. Cause : toute la demande de l’agence progresse, chacune des catégories croît de plus de 10 %, pas une seule. Action : comprendre ce qui marche à Lille et le partager aux autres agences."
           },
           {
             "reference": "strasbourg",
-            "texte": "Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées deux à trois mois plus tard. Le contrat promet 5 jours ouvrés. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients."
+            "texte": "Strasbourg : les retards. Délai médian de 8 jours ouvrés en 2026, contre 2 en 2025, et des ruptures livrées deux à trois mois plus tard. Le contrat promet 5 jours ouvrés. Cause : le décrochage date de mars 2026 et touche toutes les catégories, signe d’un problème de transport à l’agence, aggravé par des ruptures de stock de mars à juillet. Action : traiter le transport et le stock de Strasbourg avant de perdre ses clients."
           }
         ]
       },
@@ -5590,11 +5590,14 @@
       "reference-absolue-ignoree": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
       "identifiant-pris-pour-nombre": "B3-01-A1-05-COURS-DONNEE",
       "lignes-comptees-pour-commandes": "B3-01-A1-05-COURS-DONNEE",
+      "commandes-comptees-pour-lignes": "B3-01-A1-05-COURS-DONNEE",
+      "type-de-variable-confondu": "B3-01-A1-05-COURS-DONNEE",
       "libelle-pris-pour-cle": "B3-01-A1-06-COURS-RELATIONS",
       "suspect-corrige-sans-validation": "B3-01-A1-10-COURS-GRILLE",
       "suppression-au-lieu-de-signalement": "B3-01-A1-10-COURS-GRILLE",
       "texte-pris-pour-nombre": "B3-01-A1-11-COURS-OUTILS",
       "casse-non-normalisee": "B3-01-A1-11-COURS-OUTILS",
+      "espaces-non-supprimes": "B3-01-A1-11-COURS-OUTILS",
       "doublons-supprimes-sur-une-colonne": "B3-01-A1-11-COURS-OUTILS",
       "plage-recherche-non-figee": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
       "critere-mal-ecrit": "B3-01-A2-03-COURS-CHERCHER-AGREGER",
@@ -5772,7 +5775,7 @@
                       "Numérique : additionner, moyenner.",
                       "Catégorie : compter, regrouper.",
                       "Date : calculer des durées.",
-                      "Booléen : compter les « oui ».",
+                      "Booléen : compter les VRAI.",
                       "Vide : donnée manquante, pas un zéro."
                     ]
                   },
@@ -5965,7 +5968,7 @@
                       "Casse : NOMPROPRE(E2) écrit « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : le même outil, sur une colonne copiée à part, annonce combien il en reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
@@ -6089,7 +6092,7 @@
                   {
                     "famille": "Comparer",
                     "question": "Cette ligne est-elle en retard ?",
-                    "socle": "SI, ET, OU",
+                    "socle": "SI, ET, OU, SI.CONDITIONS",
                     "variante": "SI.CONDITIONS"
                   },
                   {
@@ -6165,7 +6168,7 @@
                   {
                     "kind": "method",
                     "title": "Chercher : INDEX et EQUIV",
-                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!C:C;EQUIV(H2;Produits!A:A;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
+                    "text": "Pour ramener la catégorie du produit de la ligne 2 : =INDEX(Produits!$C$2:$C$41;EQUIV(H2;Produits!$A$2:$A$41;0)). EQUIV trouve le rang de H2 parmi les produit_id ; INDEX lit la catégorie à ce rang. Le 0 exige une correspondance exacte."
                   },
                   {
                     "kind": "property",
@@ -6185,7 +6188,7 @@
                   {
                     "kind": "example",
                     "title": "Si vous avez Excel 365 : RECHERCHEX",
-                    "text": "=RECHERCHEX(H2;Produits!A:A;Produits!C:C) fait le même travail en une seule fonction."
+                    "text": "=RECHERCHEX(H2;Produits!$A$2:$A$41;Produits!$C$2:$C$41) fait le même travail en une seule fonction."
                   }
                 ]
               }
@@ -6396,16 +6399,16 @@
                 "series": [
                   {
                     "label": "CA HT 2025",
-                    "values": [52000, 59000],
+                    "values": [51600, 59500],
                     "tone": "teal"
                   }
                 ],
-                "axisRanges": [[49000, 59500]],
-                "axisLabels": ["49 000 à 59 500 €"],
+                "axisRanges": [[49000, 60000]],
+                "axisLabels": ["49 000 à 60 000 €"],
                 "unit": "€",
-                "source": "Export des ventes de Norvane Équipement, CA arrondi au millier d’euros (données fictives).",
+                "source": "Export des ventes de Norvane Équipement, CA arrondi à la centaine d’euros (données fictives).",
                 "kind": "bars",
-                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 59 500 € ; barres de 52 000 € et 59 000 €."
+                "description": "Diagramme en barres : CA HT 2025 de Rennes et de Nantes, axe vertical de 49 000 € à 60 000 € ; barres de 51 600 € et 59 500 €."
               }
             },
             "metadonnees": {
@@ -6532,7 +6535,7 @@
                     "steps": [
                       "Quatre indicateurs clés, chacun avec son contexte : l’objectif, ou la même période de l’an passé.",
                       "Deux graphiques, chacun avec un titre qui conclut.",
-                      "Des segments connectés à tous les TCD : un clic filtre toute la page.",
+                      "Des segments : un clic filtre tous les TCD connectés et leurs graphiques.",
                       "Les anomalies signalées par mise en forme conditionnelle."
                     ]
                   },

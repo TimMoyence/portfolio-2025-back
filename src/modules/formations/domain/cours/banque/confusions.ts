@@ -488,7 +488,7 @@ const DEFINITIONS = {
   'identifiant-pris-pour-nombre': {
     concept: 'jeu-de-donnees',
     libelle:
-      'Prendre un identifiant écrit en chiffres pour une quantité qu’on additionne.',
+      'Prendre un identifiant qui contient des chiffres pour une quantité qu’on additionne.',
   },
   'lignes-comptees-pour-commandes': {
     concept: 'granularite',
@@ -518,7 +518,7 @@ const DEFINITIONS = {
   'casse-non-normalisee': {
     concept: 'nettoyage',
     libelle:
-      'Compter « Bordeaux » et « BORDEAUX » comme deux villes faute d’avoir normalisé la casse.',
+      'Laisser une même ville s’écrire « Bordeaux » et « BORDEAUX » : Excel les confond, mais Power Query et les autres outils en comptent deux.',
   },
   'doublons-supprimes-sur-une-colonne': {
     concept: 'nettoyage',
@@ -561,7 +561,7 @@ const DEFINITIONS = {
   'objectif-annuel-pour-cumul': {
     concept: 'tableau-de-bord',
     libelle:
-      'Comparer un cumul de quelques mois à l’objectif de l’année entière.',
+      'Comparer un cumul de neuf mois à tous les objectifs de l’agence, sans filtrer la période.',
   },
   'evolution-sur-annee-pleine': {
     concept: 'tableau-de-bord',
@@ -577,6 +577,21 @@ const DEFINITIONS = {
     concept: 'agregation-conditionnelle',
     libelle:
       'Agréger une autre période que celle de la question, toute la table, un filtre resté actif ou deux années réunies.',
+  },
+  'commandes-comptees-pour-lignes': {
+    concept: 'granularite',
+    libelle:
+      'Compter une commande quand on cherche ses lignes : une commande de trois produits occupe trois lignes.',
+  },
+  'type-de-variable-confondu': {
+    concept: 'jeu-de-donnees',
+    libelle:
+      'Ranger une date, une mesure ou un booléen sous un autre type : le type dit le calcul permis.',
+  },
+  'espaces-non-supprimes': {
+    concept: 'nettoyage',
+    libelle:
+      'Compter « Bordeaux » et « Bordeaux » suivi d’une espace comme deux villes faute de SUPPRESPACE.',
   },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
