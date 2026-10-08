@@ -21,7 +21,14 @@ export interface RapportParticipant {
   note: number;
   sousSeuil: boolean;
   reponses: readonly RapportQuestion[];
+  reponsesLibres: readonly RapportReponseLibre[];
   incidents: number;
+}
+
+export interface RapportReponseLibre {
+  screenId: string;
+  activityId: string;
+  reponse: string;
 }
 
 export interface RapportSession {

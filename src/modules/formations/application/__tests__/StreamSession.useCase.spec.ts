@@ -12,6 +12,7 @@ import {
   createMockAnswersRepo,
   buildResultatQuestion,
   createMockEscapeRepo,
+  createMockFreeResponsesRepo,
   createMockIncidentsRepo,
   createMockPulsesRepo,
   createMockParticipantsRepo,
@@ -193,6 +194,7 @@ describe('StreamSessionUseCase', () => {
       creerCatalogueDeTest(),
       createMockPulsesRepo(),
       createMockEscapeRepo(),
+      createMockFreeResponsesRepo(),
     );
     sut = new StreamSessionUseCase(sessions, cache, resultats, participants);
   });

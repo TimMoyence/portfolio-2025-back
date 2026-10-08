@@ -4,6 +4,7 @@ import type { ResultatsDeSeance } from '../domain/contrats/resultats';
 import { agregerEnigmes } from '../domain/cours/Enigmes';
 import type { ICatalogueCours } from '../domain/cours/ICatalogueCours.port';
 import type { IEscapeRepository } from '../domain/IEscape.repository';
+import type { IFreeResponsesRepository } from '../domain/IFreeResponses.repository';
 import type { IPulsesRepository } from '../domain/IPulses.repository';
 import type { IAnswersRepository } from '../domain/IAnswers.repository';
 import type { IIncidentsRepository } from '../domain/IIncidents.repository';
@@ -24,6 +25,7 @@ import {
   ANSWERS_REPOSITORY,
   CATALOGUE_COURS,
   ESCAPE_REPOSITORY,
+  FREE_RESPONSES_REPOSITORY,
   INCIDENTS_REPOSITORY,
   PARTICIPANTS_REPOSITORY,
   PULSES_REPOSITORY,
@@ -55,6 +57,8 @@ export class GetSessionResultsUseCase {
     private readonly pulses: IPulsesRepository,
     @Inject(ESCAPE_REPOSITORY)
     private readonly escape: IEscapeRepository,
+    @Inject(FREE_RESPONSES_REPOSITORY)
+    private readonly reponsesLibres: IFreeResponsesRepository,
   ) {}
 
   async execute(
@@ -66,14 +70,21 @@ export class GetSessionResultsUseCase {
   }
 
   async bilanDe(session: SessionRecord): Promise<BilanDeSeance> {
-    const [participantsListe, reponses, incidentsListe, jalons, progressions] =
-      await Promise.all([
-        this.participants.listBySession(session.id),
-        this.answers.listBySession(session.id),
-        this.incidents.listBySession(session.id),
-        this.pulses.compterParSondage(session.id),
-        this.escape.listerProgressionDeSeance(session.id),
-      ]);
+    const [
+      participantsListe,
+      reponses,
+      incidentsListe,
+      jalons,
+      progressions,
+      reponsesLibres,
+    ] = await Promise.all([
+      this.participants.listBySession(session.id),
+      this.answers.listBySession(session.id),
+      this.incidents.listBySession(session.id),
+      this.pulses.compterParSondage(session.id),
+      this.escape.listerProgressionDeSeance(session.id),
+      this.reponsesLibres.listBySession(session.id),
+    ]);
     const cours = await this.catalogue.trouver(
       session.courseSlug,
       session.courseVersion,
@@ -84,6 +95,7 @@ export class GetSessionResultsUseCase {
       participants: participantsListe,
       answers: reponses,
       incidents: incidentsListe,
+      reponsesLibres,
       avertir: (message) => this.logger.warn(message),
     });
     const resultats = agregerResultats({

@@ -9,6 +9,7 @@ import { libelleDeConcept } from './cours/banque/concepts';
 import { libelleLisible } from './cours/banque/confusions';
 import type { Cours, TypeQuestion } from './contrats/cours';
 import type { DetailProduction, ValeurReponse } from './contrats/resultats';
+import { activitesLibres } from './cours/EcranServi';
 import { tirer } from './cours/Tirage';
 import type { LibellesDesOptions } from './cours/Tirage';
 import { computeCohortScore } from './CompletionScore';
@@ -17,8 +18,10 @@ import type { AnswerRecord } from './IAnswers.repository';
 import type {
   RapportParticipant,
   RapportQuestion,
+  RapportReponseLibre,
   RapportSession,
 } from './IFormationMailer.port';
+import type { FreeResponseRecord } from './IFreeResponses.repository';
 import type { IncidentRecord } from './IIncidents.repository';
 import type { ParticipantRecord } from './IParticipants.repository';
 import type { SessionRecord } from './ISessions.repository';
@@ -34,6 +37,7 @@ export interface SessionReportInput {
   participants: readonly ParticipantRecord[];
   answers: readonly AnswerRecord[];
   incidents: readonly IncidentRecord[];
+  reponsesLibres: readonly FreeResponseRecord[];
   avertir(message: string): void;
 }
 
@@ -53,6 +57,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
       question.type,
     ]),
   );
+  const rangDeLibre = rangsDesActivitesLibres(input.cours);
   const tiragesEnEchec: string[] = [];
   const libellesDe = (graine: number): LibellesDesOptions => {
     try {
@@ -82,6 +87,7 @@ export function buildRapportSession(input: SessionReportInput): RapportSession {
           libellesDe(participant.seed),
           types,
         ),
+        reponsesLibres: reponsesLibresDe(participant.id, input, rangDeLibre),
         incidents: input.incidents.filter(
           (incident) => incident.participantId === participant.id,
         ).length,
@@ -158,6 +164,49 @@ function reponsesDe(
       misconception: reponse.misconception,
       libelleConfusion: libelleLisible(reponse.misconception),
       dureeMs: reponse.dureeMs,
+    }));
+}
+
+type RangDeLibre = (libre: FreeResponseRecord) => readonly [number, number];
+
+function rangsDesActivitesLibres(cours: Cours | null): RangDeLibre {
+  if (cours === null) {
+    return () => [0, 0];
+  }
+  const libres = activitesLibres(cours);
+  const rangDEcran = new Map(
+    cours.ecrans.map((ecran, rang) => [ecran.id, rang]),
+  );
+  return (libre) => {
+    const activites = libres.get(libre.screenId) ?? [];
+    const rangDActivite = activites.indexOf(libre.activityId);
+    return [
+      rangDEcran.get(libre.screenId) ?? cours.ecrans.length,
+      rangDActivite < 0 ? activites.length : rangDActivite,
+    ];
+  };
+}
+
+function reponsesLibresDe(
+  participantId: string,
+  input: SessionReportInput,
+  rangDe: RangDeLibre,
+): readonly RapportReponseLibre[] {
+  const comparer = (
+    premiere: FreeResponseRecord,
+    seconde: FreeResponseRecord,
+  ): number => {
+    const [ecranPremiere, activitePremiere] = rangDe(premiere);
+    const [ecranSeconde, activiteSeconde] = rangDe(seconde);
+    return ecranPremiere - ecranSeconde || activitePremiere - activiteSeconde;
+  };
+  return input.reponsesLibres
+    .filter((libre) => libre.participantId === participantId)
+    .sort(comparer)
+    .map((libre) => ({
+      screenId: libre.screenId,
+      activityId: libre.activityId,
+      reponse: libre.response,
     }));
 }
 

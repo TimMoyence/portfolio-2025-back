@@ -415,8 +415,15 @@ describeDb('catalogue B2 migré', () => {
   });
 
   it('persiste à la clôture la note et la complétion de chaque participant et les statistiques de la séance', async () => {
-    const { sessions, participants, answers, incidents, catalogue, scores } =
-      contexte;
+    const {
+      sessions,
+      participants,
+      answers,
+      incidents,
+      catalogue,
+      scores,
+      freeResponses,
+    } = contexte;
     const session = await ouvrirSeanceB2('7315');
     const ada = await inscrireParticipant(participants, {
       sessionId: session.id,
@@ -455,6 +462,7 @@ describeDb('catalogue B2 migré', () => {
         catalogue,
         createMockPulsesRepo(),
         createMockEscapeRepo(),
+        freeResponses,
       ),
       scores,
       createMockFormationMailer(),

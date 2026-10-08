@@ -1,40 +1,16 @@
-import { buildResultatQuestion } from '../../../../test/factories/formation.factory';
+import {
+  buildRapportParticipant,
+  buildResultatQuestion,
+} from '../../../../test/factories/formation.factory';
 import { calculerStatistiquesSeance } from './SessionStatistics';
 
 describe('calculerStatistiquesSeance', () => {
   it('calcule moyenne, médiane, dispersion et taux de classe', () => {
     const statistiques = calculerStatistiquesSeance(
       [
-        {
-          prenom: 'A',
-          nom: 'A',
-          email: 'a',
-          completion: 1,
-          note: 10,
-          sousSeuil: true,
-          reponses: [],
-          incidents: 0,
-        },
-        {
-          prenom: 'B',
-          nom: 'B',
-          email: 'b',
-          completion: 0.5,
-          note: 20,
-          sousSeuil: false,
-          reponses: [],
-          incidents: 0,
-        },
-        {
-          prenom: 'C',
-          nom: 'C',
-          email: 'c',
-          completion: 0,
-          note: 0,
-          sousSeuil: true,
-          reponses: [],
-          incidents: 0,
-        },
+        buildRapportParticipant({ completion: 1, note: 10, sousSeuil: true }),
+        buildRapportParticipant({ completion: 0.5, note: 20 }),
+        buildRapportParticipant({ completion: 0, note: 0, sousSeuil: true }),
       ],
       {
         participants: 3,

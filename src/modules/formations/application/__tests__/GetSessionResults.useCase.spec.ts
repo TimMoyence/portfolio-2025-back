@@ -10,6 +10,7 @@ import {
   buildActeurFormation,
   buildAdministrateur,
   buildAnswerRecord,
+  buildFreeResponseRecord,
   buildResultatQuestion,
   createMockDepotsFormations,
 } from '../../../../../test/factories/formation.factory';
@@ -43,11 +44,27 @@ describe('GetSessionResultsUseCase', () => {
       catalogue,
       depots.pulses,
       depots.escape,
+      depots.freeResponses,
     );
 
   beforeEach(() => {
     depots = createMockDepotsFormations();
     sut = monter(creerCatalogueDeTest());
+  });
+
+  it('V6 · joint au rapport de chaque participant les réponses libres de la séance', async () => {
+    depots.freeResponses.listBySession.mockResolvedValue([
+      buildFreeResponseRecord({ response: 'Je nomme chaque colonne.' }),
+    ]);
+
+    const rapport = await sut.execute('session-uuid', PROPRIETAIRE);
+
+    expect(depots.freeResponses.listBySession).toHaveBeenCalledWith(
+      'session-uuid',
+    );
+    expect(rapport.participants[0].reponsesLibres).toEqual([
+      expect.objectContaining({ reponse: 'Je nomme chaque colonne.' }),
+    ]);
   });
 
   it('rend la valeur envoyee telle quelle quand le cours de la seance est absent du catalogue', async () => {

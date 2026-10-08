@@ -1,3 +1,5 @@
+import { buildCoursDuContenu } from '../../../../test/factories/contenus-de-cours.factory';
+import { COURS_B3_01 } from '../../../../test/factories/contenus-publies';
 import {
   buildCoursAuTirageEnErreur,
   buildCoursDeTest,
@@ -6,6 +8,7 @@ import {
 import {
   buildAnswerRecord,
   buildBareme,
+  buildFreeResponseRecord,
   buildIncidentInput,
   buildParticipantRecord,
   buildSessionRecord,
@@ -32,6 +35,7 @@ function rapportDe(overrides: Partial<SessionReportInput> = {}) {
     participants: [],
     answers: [],
     incidents: [],
+    reponsesLibres: [],
     avertir: () => undefined,
     ...overrides,
   });
@@ -435,6 +439,90 @@ describe('buildRapportSession', () => {
           },
         ]),
       );
+    });
+  });
+
+  describe('V6 · règles du cahier rédigées en réponses libres', () => {
+    const REGLES_ACTE_1 = 'B3-01-A1-15-REGLES-ACTE-1';
+    const REGLES_ACTE_2 = 'B3-01-A2-12-REGLES-ACTE-2';
+    const libre = (
+      participantId: string,
+      screenId: string,
+      activityId: string,
+    ) =>
+      buildFreeResponseRecord({
+        participantId,
+        screenId,
+        activityId,
+        response: `Règle de ${participantId} pour ${activityId}`,
+      });
+    const activitesRenduesAP1 = (
+      cours: SessionReportInput['cours'],
+      reponsesLibres: SessionReportInput['reponsesLibres'],
+    ): string[] =>
+      rapportDe({
+        cours,
+        participants: [buildParticipantRecord({ id: 'p1' })],
+        reponsesLibres,
+      }).participants[0].reponsesLibres.map(({ activityId }) => activityId);
+
+    it('rend à chaque participant ses seules réponses libres, dans l’ordre des écrans puis des activités du cours', () => {
+      const rapport = rapportDe({
+        cours: buildCoursDuContenu(COURS_B3_01),
+        participants: deuxParticipants(),
+        reponsesLibres: [
+          libre('p1', REGLES_ACTE_2, 'b3-01-a2-regles:regle-transformer'),
+          libre('p2', REGLES_ACTE_1, 'b3-01-a1-regles:regle-comprendre'),
+          libre('p1', REGLES_ACTE_1, 'b3-01-a1-regles:regle-nettoyer'),
+          libre('p1', REGLES_ACTE_1, 'b3-01-a1-regles:regle-comprendre'),
+        ],
+      });
+
+      expect(
+        rapport.participants.map((participant) =>
+          participant.reponsesLibres.map(({ activityId }) => activityId),
+        ),
+      ).toEqual([
+        [
+          'b3-01-a1-regles:regle-comprendre',
+          'b3-01-a1-regles:regle-nettoyer',
+          'b3-01-a2-regles:regle-transformer',
+        ],
+        ['b3-01-a1-regles:regle-comprendre'],
+      ]);
+      expect(rapport.participants[1].reponsesLibres).toEqual([
+        {
+          screenId: REGLES_ACTE_1,
+          activityId: 'b3-01-a1-regles:regle-comprendre',
+          reponse: 'Règle de p2 pour b3-01-a1-regles:regle-comprendre',
+        },
+      ]);
+    });
+
+    it('classe une écriture hors des activités libres, comme une tentative de défi, au rang de son écran', () => {
+      const activites = activitesRenduesAP1(buildCoursDuContenu(COURS_B3_01), [
+        libre('p1', REGLES_ACTE_2, 'b3-01-a2-regles:regle-transformer'),
+        libre('p1', 'B3-01-A2-01-VOTE-FAMILLE', 'defi-de-l-ecran'),
+        libre('p1', REGLES_ACTE_1, 'b3-01-a1-regles:regle-comprendre'),
+      ]);
+
+      expect(activites).toEqual([
+        'b3-01-a1-regles:regle-comprendre',
+        'defi-de-l-ecran',
+        'b3-01-a2-regles:regle-transformer',
+      ]);
+    });
+
+    it('garde l’ordre de saisie quand le cours de la séance est introuvable', () => {
+      const activites = activitesRenduesAP1(null, [
+        libre('p1', REGLES_ACTE_2, 'b3-01-a2-regles:regle-transformer'),
+        libre('p1', REGLES_ACTE_1, 'b3-01-a1-regles:regle-comprendre'),
+      ]);
+
+      expect(activites).toEqual([
+        'b3-01-a2-regles:regle-transformer',
+        'b3-01-a1-regles:regle-comprendre',
+      ]);
     });
   });
 });

@@ -176,28 +176,39 @@ export class FormationMailerService
       'confusion',
       'durée_ms',
     ];
-    const lignes = rapport.participants.flatMap((participant) =>
-      participant.reponses.map((reponse) =>
-        [
-          participant.prenom,
-          participant.nom,
-          participant.email,
+    const lignes = rapport.participants.flatMap((participant) => {
+      const etudiant = [participant.prenom, participant.nom, participant.email];
+      return [
+        ...participant.reponses.map((reponse) => [
+          ...etudiant,
           reponse.questionId,
           reponse.concept,
           reponse.reponse,
           reponse.correcte ? 'oui' : 'non',
           reponse.libelleConfusion ?? '',
           String(reponse.dureeMs),
-        ]
-          .map(
-            (cellule) =>
-              `"${neutraliserCelluleCsv(cellule).replace(/"/g, '""')}"`,
-          )
-          .join(';'),
-      ),
-    );
+        ]),
+        ...participant.reponsesLibres.map((libre) => [
+          ...etudiant,
+          libre.activityId,
+          CONCEPT_D_UNE_REPONSE_LIBRE,
+          libre.reponse,
+          '',
+          '',
+          '',
+        ]),
+      ].map(ligneCsv);
+    });
     return `${BOM_UTF8}${[entetes.join(';'), ...lignes].join('\r\n')}`;
   }
+}
+
+const CONCEPT_D_UNE_REPONSE_LIBRE = 'réponse libre';
+
+function ligneCsv(cellules: readonly string[]): string {
+  return cellules
+    .map((cellule) => `"${neutraliserCelluleCsv(cellule).replace(/"/g, '""')}"`)
+    .join(';');
 }
 
 const CARACTERES_FORMULE_RE = /^[=+@\t\r]/;

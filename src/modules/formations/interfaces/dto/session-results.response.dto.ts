@@ -38,6 +38,19 @@ export class RapportQuestionResponseDto {
   dureeMs: number;
 }
 
+export class RapportReponseLibreResponseDto {
+  @ApiProperty({ example: 'B3-01-A1-15-REGLES-ACTE-1' })
+  screenId: string;
+
+  @ApiProperty({ example: 'b3-01-a1-regles:regle-comprendre' })
+  activityId: string;
+
+  @ApiProperty({
+    example: 'Je lis le dictionnaire des données avant de calculer.',
+  })
+  reponse: string;
+}
+
 export class RapportParticipantResponseDto {
   @ApiProperty({ example: 'Theo' })
   prenom: string;
@@ -62,6 +75,13 @@ export class RapportParticipantResponseDto {
 
   @ApiProperty({ type: [RapportQuestionResponseDto] })
   reponses: RapportQuestionResponseDto[];
+
+  @ApiProperty({
+    type: [RapportReponseLibreResponseDto],
+    description:
+      'Réponses libres du poste, dans l’ordre des écrans puis des activités',
+  })
+  reponsesLibres: RapportReponseLibreResponseDto[];
 
   @ApiProperty({ description: 'Nombre d incidents du poste', example: 0 })
   incidents: number;
