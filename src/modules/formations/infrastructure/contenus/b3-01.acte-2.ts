@@ -64,7 +64,7 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         '3 min, enchaînées sur la trace écrite : 6 min d’exposition au plus.',
         'Faire lire la colonne des questions : la direction parle en questions, pas en fonctions.',
-        'La colonne 365 est un raccourci, jamais une obligation : le cas pratique se fait sur toute version d’Excel.',
+        'La colonne 2021 ou 365 est un raccourci, jamais une obligation : le cas pratique se fait sur toute version d’Excel.',
       ),
     },
     'table',
@@ -75,7 +75,7 @@ export const ACTE_2: moteur.Acte = [
         { key: 'famille', label: 'Famille' },
         { key: 'question', label: 'Question de la direction' },
         { key: 'socle', label: 'Socle (Excel 2019 et +)' },
-        { key: 'variante', label: 'Avec Excel 365' },
+        { key: 'variante', label: 'Avec Excel 2021 ou 365' },
       ],
       rows: [
         {
@@ -112,7 +112,7 @@ export const ACTE_2: moteur.Acte = [
           famille: 'Transformer',
           question: 'Que vaut ce montant en texte ?',
           socle: 'SUPPRESPACE, CNUM, TEXTE',
-          variante: 'Power Query',
+          variante: 'Power Query (Windows, ou 365 sur Mac)',
         },
         {
           famille: 'Filtrer',
@@ -186,7 +186,7 @@ export const ACTE_2: moteur.Acte = [
         },
         {
           kind: 'example',
-          title: 'Si vous avez Excel 365 : RECHERCHEX',
+          title: 'Si vous avez Excel 2021 ou 365 : RECHERCHEX',
           text: '=RECHERCHEX(H2;Produits!$A$2:$A$41;Produits!$C$2:$C$41) fait le même travail en une seule fonction.',
         },
       ],
@@ -331,7 +331,7 @@ export const ACTE_2: moteur.Acte = [
           text: 'Un délai long et rare, comme une rupture de stock livrée deux mois plus tard, tire la moyenne vers le haut ; la médiane, la valeur du milieu, ne bouge pas. Pour un délai typique, on lit la médiane.',
           steps: [
             'Médiane sous conditions : filtrer, puis AGREGAT(12;5;plage), qui ignore les lignes masquées.',
-            'Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 365.',
+            'Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 2021.',
           ],
         },
         {
@@ -477,7 +477,7 @@ export const ACTE_2: moteur.Acte = [
         {
           kind: 'property',
           title: 'Le tableau croisé dynamique',
-          text: 'Insertion › Tableau croisé dynamique, à partir de T_Commandes. On place des champs en lignes, en colonnes, en valeurs et en filtres : le TCD additionne, compte ou fait la moyenne pour chaque croisement.',
+          text: 'Insertion › Tableau croisé dynamique, à partir de T_Commandes : des champs en lignes, en colonnes, en valeurs et en filtres ; le TCD additionne ou compte chaque croisement.',
         },
         {
           kind: 'method',
@@ -491,8 +491,8 @@ export const ACTE_2: moteur.Acte = [
         },
         {
           kind: 'example',
-          title: 'Si vous avez Excel 365 : le modèle de données',
-          text: 'Avec Agences aussi sous forme de tableau, et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée.',
+          title: 'Windows seulement : le modèle de données',
+          text: 'Excel 2019, 2021 ou 365 : Agences en tableau et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id. Sur Mac, absent : la colonne region suffit.',
         },
       ],
     },
@@ -561,7 +561,7 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 11 min',
         'Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.',
-        'Pièges : % du total général au lieu du % de la ligne ; filtre annee resté actif depuis l’exemple ; trimestres groupés sans les années.',
+        'Pièges : % du total général au lieu du % de la ligne ; filtre annee resté actif, recopié du premier TCD ou de l’exemple ; trimestres groupés sans les années.',
       ),
       proprietes: {
         intitule: 'Exercice 7 — Le TCD de la direction',

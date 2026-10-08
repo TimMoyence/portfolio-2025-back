@@ -548,6 +548,57 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
     expect(aVerifier).toContain(`${horsControle} échappent au contrôle`);
   });
 
+  it('A1-04 et A1-06 · laissent au métier les raisons sociales en double, que le tri A1-13 classe suspectes', () => {
+    const revelation = texteDe('B3-01-A1-04-VOTE-PART-ET-CLE');
+    const relations = texteDe('B3-01-A1-06-COURS-RELATIONS');
+
+    expect(revelation).toContain('doublon ou deux établissements');
+    expect(revelation).not.toContain('clients saisis deux fois');
+    expect(revelation).not.toContain('ne se trompe pas');
+    expect(relations).not.toContain('ne se trompe pas');
+    expect(relations).toContain('des clients peut-être saisis deux fois');
+    expect(
+      attendusDe('B3-01-A1-13-TRI-ANOMALIES').find(
+        ({ carteId }) => carteId === 'client-en-double',
+      )?.categorieId,
+    ).toBe('suspect-humain');
+  });
+
+  it('A1-13 · nomme le champ fautif du ca_ht mal calculé, que la formule corrige seule', () => {
+    expect(texteDe('B3-01-A1-13-TRI-ANOMALIES')).toContain(
+      'ca_ht saisi sans appliquer la remise de la ligne',
+    );
+  });
+
+  it('A1-14 · impute les 39 lignes au DATEVAL qui valide des dates jj/mm/aa, pas à la conversion des dates ISO', () => {
+    const aVerifier = explicationsDe('B3-01-A1-14-ATELIER-NETTOYAGE').at(-1);
+
+    expect(aVerifier).toContain('dates au format jj/mm/aa');
+    expect(aVerifier).toContain('n’aurait plus signalé que 39 lignes');
+    expect(aVerifier).not.toContain('corrigé seul des dates douteuses');
+  });
+
+  it('A1-11 et A1-14 · font cocher « Mes données ont des en-têtes » pour ne pas compter l’en-tête parmi les villes', () => {
+    expect(texteDe('B3-01-A1-11-COURS-OUTILS')).toContain(
+      'case « Mes données ont des en-têtes » cochée',
+    );
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
+      'case « Mes données ont des en-têtes » cochée',
+    );
+  });
+
+  it('A1-11 et A1-14 · ouvrent UNIQUE dès Excel 2021, et Power Query sous Windows ou avec 365 sur Mac', () => {
+    const outils = texteDe('B3-01-A1-11-COURS-OUTILS');
+
+    expect(outils).toContain(
+      'Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query',
+    );
+    expect(outils).not.toContain('Si vous avez Excel 365');
+    expect(texteDe('B3-01-A1-14-ATELIER-NETTOYAGE')).toContain(
+      'sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099))',
+    );
+  });
+
   it('A1-05 · dit que la ligne d’en-tête n’est pas une observation', () => {
     expect(texteDe('B3-01-A1-05-COURS-DONNEE')).toContain(
       'une ligne d’en-tête, qui n’est pas une observation',
@@ -762,10 +813,27 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     const texte = texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
 
     expect(texte).toContain(
-      'reliez T_Commandes et Objectifs à Agences par agence_id',
+      'relier T_Commandes et Objectifs à Agences par agence_id',
     );
     expect(texte).not.toContain('relie les deux tables');
   });
+
+  it.each([
+    ['A2-09', 'B3-01-A2-09-COURS-TCD'],
+    ['A3-05', 'B3-01-A3-05-ATELIER-GRAPHIQUES'],
+  ])(
+    '%s · réserve le modèle de données à Excel sous Windows, absent d’Excel pour Mac',
+    (_ecran, screenId) => {
+      const texte = texteDe(screenId);
+
+      expect(texte).toContain('Windows');
+      expect(texte).toContain('Excel 2019, 2021 ou 365');
+      expect(texte).toMatch(
+        /Sur Mac, (le modèle de données n’existe pas|absent)/u,
+      );
+      expect(texte).not.toContain('Si vous avez Excel 365');
+    },
+  );
 
   it('A3-06 · diagnostique chaque option par l’erreur qu’elle commet', () => {
     expect(confusionsDuVote('B3-01-A3-06-VOTE-TRENTE-SECONDES')).toEqual([
@@ -798,7 +866,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     const texte = texteDe('B3-01-A3-05-ATELIER-GRAPHIQUES');
 
     expect(texte).toContain(
-      'mettez Agences et Objectifs sous forme de tableau',
+      'mettre Agences et Objectifs sous forme de tableau',
     );
     expect(texte).toContain('un filtre ne passe pas d’une table à l’autre');
     expect(texte).toContain('mois d’Objectifs de janvier à septembre 2026');
@@ -853,7 +921,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
   it('A2-09 · met Agences en tableau avant de la relier, et rappelle qu’un filtre reste actif', () => {
     const texte = texteDe('B3-01-A2-09-COURS-TCD');
 
-    expect(texte).toContain('Agences aussi sous forme de tableau');
+    expect(texte).toContain('Agences en tableau');
     expect(texte).toContain(
       'un filtre reste actif tant qu’on ne l’a pas retiré',
     );
@@ -875,4 +943,24 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     expect(strasbourg).toContain('ruptures de stock d’avril à juillet');
     expect(strasbourg).toContain('livrées environ deux mois plus tard');
   });
+
+  it('A3-10 · fait révéler les quatre histoires ensemble, comme le fait la brique, puis les commenter une à une', () => {
+    const texte = texteDe('B3-01-A3-10-RECOMMANDATIONS');
+
+    expect(texte).toContain('les quatre histoires s’affichent ensemble');
+    expect(texte).not.toContain('révéler les quatre histoires une à une');
+    expect(texte).not.toContain('Révéler une histoire à la fois');
+    expect(texte).not.toContain('coche');
+  });
+
+  it.each([
+    ['A2-02', 'B3-01-A2-02-FAMILLES'],
+    ['A2-03', 'B3-01-A2-03-COURS-CHERCHER-AGREGER'],
+    ['A2-06', 'B3-01-A2-06-COURS-TEMPS-STATS'],
+  ])(
+    '%s · ouvre RECHERCHEX, UNIQUE et les formules matricielles dès Excel 2021',
+    (_ecran, screenId) => {
+      expect(texteDe(screenId)).not.toContain('Excel 365');
+    },
+  );
 });

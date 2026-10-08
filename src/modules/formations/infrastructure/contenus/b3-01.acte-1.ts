@@ -161,7 +161,7 @@ export const ACTE_1: moteur.Acte = [
         titre: 'Dupont, Bordeaux : deux clients',
         lignes: [
           'L’onglet Clients compte deux Dupont à Bordeaux : Dupont Bureautique et Dupont & Fils. Le nom et la ville ne les distinguent pas.',
-          'Il compte aussi des clients saisis deux fois, sous deux client_id : un libellé se trompe, un identifiant attribué par le système ne se trompe pas.',
+          'Il compte aussi des raisons sociales présentes deux fois dans la même ville, sous deux client_id : doublon ou deux établissements, seul le métier peut le dire. Le nom et la ville ne suffisent ni à distinguer deux clients, ni à les fusionner.',
           'La part des lignes fausses ou douteuses se révèle à la correction de l’exercice 4.',
         ],
       },
@@ -229,7 +229,7 @@ export const ACTE_1: moteur.Acte = [
       concepts: ['cle-et-relation'],
       notes: moteur.puces(
         '3 min ; montrer les onglets du classeur pendant la lecture du schéma.',
-        'Revenir sur le vote : deux Dupont à Bordeaux, et des clients saisis deux fois.',
+        'Revenir sur le vote : deux Dupont à Bordeaux, et des clients peut-être saisis deux fois.',
         'Transition : « Classez les colonnes de Commandes : exercice 1. »',
       ),
     },
@@ -262,7 +262,7 @@ export const ACTE_1: moteur.Acte = [
         {
           kind: 'example',
           title: 'Pourquoi « Dupont, Bordeaux » n’est pas une clé',
-          text: 'Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se trompent ; un identifiant ne se trompe pas.',
+          text: 'Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se confondent ; un identifiant désigne une seule fiche.',
         },
       ],
     },
@@ -601,7 +601,7 @@ export const ACTE_1: moteur.Acte = [
             'Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.',
             'Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.',
             'Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.',
-            'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil annonce combien il en reste.',
+            'Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil, case « Mes données ont des en-têtes » cochée, annonce combien de valeurs uniques il reste.',
             'Colonne controle : SI et OU renvoient « À vérifier » ou « OK ».',
           ],
         },
@@ -612,7 +612,8 @@ export const ACTE_1: moteur.Acte = [
         },
         {
           kind: 'example',
-          title: 'Si vous avez Excel 365 : Power Query',
+          title:
+            'Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query',
           text: 'Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export.',
         },
       ],
@@ -728,7 +729,7 @@ export const ACTE_1: moteur.Acte = [
             },
             {
               id: 'ca-mal-calcule',
-              libelle: 'ca_ht différent de quantité × prix × (1 − remise)',
+              libelle: 'ca_ht saisi sans appliquer la remise de la ligne',
               categorie: 'faux-automatique',
               confusion: 'correction-certaine-renvoyee-a-un-humain',
               justification: 'la bonne valeur se recalcule depuis la ligne',
@@ -822,7 +823,7 @@ export const ACTE_1: moteur.Acte = [
         'Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
         'Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.',
-        'Villes distinctes : copier la colonne N en valeurs à part, puis Supprimer les doublons ; sous Excel 365, =NBVAL(UNIQUE(N2:N4099)).',
+        'Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).',
       ),
       proprietes: {
         intitule: 'Exercice 4 — Nettoyer l’export',
@@ -885,7 +886,7 @@ export const ACTE_1: moteur.Acte = [
       ],
       [
         'b3-01-a1-a-verifier',
-        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39.',
+        'La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir toutes les dates en texte par DATEVAL avant le contrôle aurait fait passer pour justes des dates au format jj/mm/aa qu’il fallait faire confirmer : la colonne controle n’aurait plus signalé que 39 lignes.',
       ],
     ],
   ),

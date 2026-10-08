@@ -2,6 +2,7 @@ import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   classeursPublies,
+  datesSansFormatDeDate,
   ecrireLesClasseurs,
   empreinteDuFichier,
   lireLeManifeste,
@@ -154,6 +155,15 @@ describe('classeurs du B3-01', () => {
       rmSync(DOSSIER_DE_REECRITURE, { recursive: true, force: true });
     },
     DELAI_D_ECRITURE_MS,
+  );
+
+  it.each(publies.map((publie) => [publie.role, publie] as const))(
+    'écrit dans %s chaque date en vraie date, au format jj/mm/aaaa ou au mois',
+    async (_role, publie) => {
+      expect(
+        await datesSansFormatDeDate(cheminDe(publie), publie.classeur),
+      ).toEqual([]);
+    },
   );
 
   it('fige la ligne d’en-tête de chaque onglet', async () => {

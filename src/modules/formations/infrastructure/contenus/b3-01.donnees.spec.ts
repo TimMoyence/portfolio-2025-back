@@ -421,6 +421,41 @@ describe('jeu Norvane du B3-01', () => {
     expect(premier / deuxieme).toBeGreaterThan(1.02);
   });
 
+  describe('pièges du vote sur le meilleur trimestre', () => {
+    const ECART_MINIMAL_D_UN_PIEGE = 1.01;
+
+    function classement(
+      ca: Readonly<Record<string, number>>,
+    ): readonly (readonly [string, number])[] {
+      return Object.entries(ca).sort(([, a], [, b]) => b - a);
+    }
+
+    it('met le T2 2026 en tête quand le filtre annee reste sur 2026', () => {
+      const [[premier, caPremier], [, caDeuxieme]] = classement(
+        Object.fromEntries(
+          Object.entries(caParTrimestre(jeu)).filter(([trimestre]) =>
+            trimestre.endsWith(' 2026'),
+          ),
+        ),
+      );
+
+      expect(premier).toBe('T2 2026');
+      expect(caPremier / caDeuxieme).toBeGreaterThan(ECART_MINIMAL_D_UN_PIEGE);
+    });
+
+    it('met le deuxième trimestre en tête quand les trimestres sont groupés sans les années', () => {
+      const sansLesAnnees: Record<string, number> = {};
+      for (const [trimestre, ca] of Object.entries(caParTrimestre(jeu))) {
+        const seul = trimestre.split(' ')[0];
+        sansLesAnnees[seul] = (sansLesAnnees[seul] ?? 0) + ca;
+      }
+      const [[premier, caPremier], [, caDeuxieme]] = classement(sansLesAnnees);
+
+      expect(premier).toBe('T2');
+      expect(caPremier / caDeuxieme).toBeGreaterThan(ECART_MINIMAL_D_UN_PIEGE);
+    });
+  });
+
   it('recalcule les valeurs attendues, les pièges et les histoires à partir de la seule graine', () => {
     expect(calculerValeursB301(jeu)).toEqual({
       attendues: VALEURS_B3_01,

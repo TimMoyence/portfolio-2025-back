@@ -255,7 +255,7 @@ export const ACTE_3: moteur.Acte = [
       proprietes: {
         intitule: 'Exercice 9 — CA et objectif par agence',
         consigne:
-          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Agences et Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
+          'Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, puis relier T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.',
         regime: 'focus',
         ordre: 'fixe',
         questions: [
@@ -524,7 +524,7 @@ export const ACTE_3: moteur.Acte = [
       notes: moteur.puces(
         'Temps : réflexion 1 min · travail 6 min',
         'Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
-        'Puis révéler les quatre histoires une à une ; chacun coche celles qu’il avait trouvées.',
+        'Puis révéler la correction : les quatre histoires s’affichent ensemble ; les commenter une à une.',
       ),
       proprietes: {
         metier: 'Analyste data — Norvane Équipement (réseau de 12 agences)',
@@ -556,7 +556,7 @@ export const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        'Révéler une histoire à la fois ; demander qui l’avait trouvée avant de passer à la suivante.',
+        'Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.',
         'Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »',
       ],
     },

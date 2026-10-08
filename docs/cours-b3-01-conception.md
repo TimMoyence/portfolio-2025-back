@@ -32,9 +32,11 @@
 - **Runtime `/cours` + vrai Excel.** Le moteur `fp-sheet` ne connaît ni `INDEX`, ni
   `SOMME.SI.ENS`, ni les TCD : les manipulations se font dans Excel, et chaque atelier se
   termine par la saisie de résultats chiffrés, corrigés contre le jeu de données.
-- **Socle commun + variantes 365.** Le cours enseigne ce qui fonctionne sur toute version
+- **Socle commun + variantes.** Le cours enseigne ce qui fonctionne sur toute version
   d'Excel depuis 2019 (`INDEX`/`EQUIV`, `SOMME.SI.ENS`, `NB.SI.ENS`, TCD, segments) ;
-  `RECHERCHEX`, `FILTRE`, `UNIQUE`, `TRIER` et Power Query sont des encadrés « si vous avez 365 ».
+  `RECHERCHEX`, `FILTRE`, `UNIQUE` et `TRIER` sont des encadrés « si vous avez Excel 2021 ou
+  365 ». Power Query (Windows depuis Excel 2016, ou 365 sur Mac) et le modèle de données (Windows
+  seulement : Excel pour Mac n'en a pas) ont chacun l'encadré qui nomme leurs versions.
 - **Fil rouge : Norvane Équipement**, réseau commercial fictif de 12 agences, 36 commerciaux,
   ≈ 4 000 lignes de commande de janvier 2025 à septembre 2026, avec des anomalies semées en
   nombre connu et quatre « histoires cachées » que le tableau de bord doit révéler.
@@ -196,8 +198,8 @@ catalogue ne porte une réponse : le classeur brut est la matière de l'exercice
 ### 2.8 Notation
 
 Fonctions en français et en majuscules (`SOMME.SI.ENS`), arguments séparés par `;`, nombres au
-format français (1 250,50 €, 18,4 %). Les variantes 365 s'écrivent dans un encadré « Si vous avez
-Excel 365 ». Saisies numériques : montants arrondis à l'euro, tolérance de 1 € ; pourcentages
+format français (1 250,50 €, 18,4 %). Les variantes s'écrivent dans un encadré qui nomme les versions
+concernées : « Si vous avez Excel 2021 ou 365 », « Sous Windows (Excel 2019, 2021 ou 365) ». Saisies numériques : montants arrondis à l'euro, tolérance de 1 € ; pourcentages
 arrondis au dixième de point, tolérance de 0,1 point ; comptages exacts. L'étudiant saisit le
 nombre seul (`1250`, `18,4`) : l'unité est affichée à côté du champ, et le lecteur de saisie du
 poste refuse « 1 250 € » ou « 18,4 % ». Chaque énoncé le rappelle (« en euros, sans le
@@ -295,7 +297,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Question 2 (`questionJumelle`) : « Dupont – Bordeaux » suffit-il à identifier un client ?
   Oui ; non, il faut aussi le code postal ; non, il faut un identifiant attribué par le système. Les
   deux mauvaises réponses portent le piège `libelle-pris-pour-cle`. Révélation commentée : deux
-  Dupont à Bordeaux dans `Clients`, et des clients saisis deux fois sous deux `client_id`.
+  Dupont à Bordeaux dans `Clients`, et des raisons sociales présentes deux fois dans la même
+  ville sous deux `client_id` : doublon ou deux établissements, seul le métier peut le dire (la
+  carte `client-en-double` de A1-13 les classe « suspect · humain »).
 
 #### A1-05 · `B3-01-A1-05-COURS-DONNEE` — 3 min · v2 `lesson` · catalogue
 
@@ -363,13 +367,15 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Titre public : « Cours : les outils du nettoyage »
 - `method` : `SUPPRESPACE`, `NOMPROPRE`, `SUBSTITUE` puis `CNUM` pour un nombre en texte,
   `DATEVAL` pour une date en texte ISO, « Données › Supprimer les doublons » sur une copie (pour
-  compter des valeurs distinctes, on colle la colonne nettoyée en valeurs à part, Collage spécial
-  › Valeurs, puis le même outil annonce combien il en reste : copiée telle quelle, une colonne de
+  compter des valeurs distinctes, on colle la colonne nettoyée, en-tête compris, en valeurs à
+  part, Collage spécial › Valeurs, puis le même outil, case « Mes données ont des en-têtes »
+  cochée, annonce combien de valeurs uniques il reste, sans compter l'en-tête, qui donnerait 49 :
+  copiée telle quelle, une colonne de
   formules décale ses références), colonne `controle` avec `SI` et `OU`. `NOMPROPRE` s'illustre
   sur « BORDEAUX », pas sur E2, qui vaut « Vannes ». `property` : on nettoie dans une nouvelle
   colonne, jamais sur la donnée brute, et on ne colle en valeurs par-dessus la donnée brute
-  qu'une fois le contrôle fait ; encadré 365 : Power Query refait le nettoyage d'un clic au
-  prochain export.
+  qu'une fois le contrôle fait ; encadré Power Query (Windows depuis Excel 2016, ou 365 sur
+  Mac) : il refait le nettoyage d'un clic au prochain export.
 
 #### A1-12 · `B3-01-A1-12-EXEMPLE-NETTOYAGE` — 3 min · `fp-worked` · séance
 
@@ -452,7 +458,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 #### A2-02 · `B3-01-A2-02-FAMILLES` — 3 min · v2 `table` · catalogue
 
 - Titre public : « Les dix familles de problèmes »
-- Colonnes : famille, question type de la direction, fonction socle, variante 365. Chercher
+- Colonnes : famille, question type de la direction, fonction socle, variante « Avec Excel
+  2021 ou 365 » (Power Query : Windows, ou 365 sur Mac). Chercher
   (`INDEX`/`EQUIV` ; `RECHERCHEX`), compter (`NB.SI.ENS`), additionner sous conditions
   (`SOMME.SI.ENS`, `SOMMEPROD`), comparer (`SI`, `ET`, `OU`, `SI.CONDITIONS`, présent depuis
   Excel 2019), classer (`RANG`, `GRANDE.VALEUR` ;
@@ -466,8 +473,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `method` : `=INDEX(Produits!$C$2:$C$41;EQUIV(H2;Produits!$A$2:$A$41;0))`, le 0 pour une
   correspondance exacte ; des plages bornées, pour que la recopie sans `$` montre l'erreur (une
   colonne entière ne glisse pas) ; `property` : `SOMME.SI.ENS(somme;plage1;critère1;…)` et `NB.SI.ENS` ; `method` :
-  critères écrits `">0,15"` ou `">="&DATE(2026;1;1)` ; figer les plages avec `$` ; encadré 365 :
-  `RECHERCHEX`.
+  critères écrits `">0,15"` ou `">="&DATE(2026;1;1)` ; figer les plages avec `$` ; encadré 2021 ou
+  365 : `RECHERCHEX`.
 
 #### A2-04 · `B3-01-A2-04-ATELIER-RECHERCHE` — 10 min · `questionnaire` · séance
 
@@ -504,8 +511,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `DATEDIF(début;fin;"m")`, `TEMPS(h;m;s)` ; `method` : un délai long et rare tire la moyenne,
   pas la médiane ; `property` : taux de marque = `SOMME(marge) ÷ SOMME(CA HT)`, jamais la moyenne
   des taux de ligne ; le taux de marge, lui, divise la marge par le coût d'achat HT, d'où la
-  consigne d'écrire toujours le dénominateur ; `SOMMEPROD(quantite;prix−cout)` calcule la marge
-  sans colonne intermédiaire.
+  consigne d'écrire toujours le dénominateur ;
+  `SOMMEPROD(quantite;prix_unitaire_ht×(1−remise)−cout_unitaire)` calcule la marge sans colonne
+  intermédiaire ; sans la remise, la marge serait surestimée.
 - Jours fériés : non comptés dans ce cours (les fonctions acceptent une liste en dernier
   argument ; encadré).
 
@@ -540,7 +548,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   segments, et un filtre reste actif tant qu'on ne l'a pas retiré (la moitié « filtre » de
   `tcd-filtre-ou-dates-mal-groupees`, remédiée ici) ; encadré : mettre `Agences` aussi sous forme
   de tableau (la reprise de l'acte 2 n'en contient aucun), puis relier `T_Commandes` et `Agences`
-  dans le modèle de données (365).
+  dans le modèle de données, sous Windows (Excel 2019, 2021 ou 365) ; Excel pour Mac n'a pas de
+  modèle de données, et la colonne `region` de l'exercice 5 suffit.
 
 #### A2-10 · `B3-01-A2-10-EXEMPLE-TCD` — 3 min · `fp-worked` · séance
 
@@ -559,8 +568,9 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `b3-01-a2-meilleur-trimestre` (vote noté) : le trimestre au CA le plus élevé du réseau, parmi
   les sept trimestres (T4 2025) ; pièges `tcd-filtre-ou-dates-mal-groupees`, remédiés vers
   A2-09 : T2 2026 (le filtre
-  `annee` = 2026 de l'exemple A2-10 resté actif) et T2 2025 (trimestres regroupés sans l'année,
-  qui cumulent deux printemps).
+  `annee` = 2026 resté actif, recopié du premier TCD ou de l'exemple A2-10) et T2 2025
+  (trimestres regroupés sans l'année, qui cumulent deux printemps). Le spec des données recalcule
+  les deux lectures fautives et exige leur trimestre en tête.
 
 #### A2-12 · `B3-01-A2-12-REGLES-ACTE-2` — 4 min · `fp-pro` · séance
 
@@ -619,7 +629,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Essentiel : tableau de synthèse par agence (CA cumulé par `SOMME.SI.ENS` sur `T_Commandes`,
   objectif cumulé par `SOMME.SI.ENS` sur `Objectifs`, taux d'atteinte), puis graphique en barres
   groupées CA et objectif, titre qui conclut, légende, axe depuis zéro. Un TCD seul ne suffit
-  pas : l'objectif vit dans une autre table (encadré 365 : mettre `Agences` et `Objectifs` sous
+  pas : l'objectif vit dans une autre table (sur Mac, sans modèle de données, la synthèse par
+  `SOMME.SI.ENS` suffit ; sous Windows, Excel 2019, 2021 ou 365 : mettre `Agences` et `Objectifs` sous
   forme de tableau, seul `T_Commandes` en étant un dans la reprise de l'acte 3, puis relier
   `T_Commandes` et `Objectifs` à `Agences` par `agence_id` dans le modèle de données ; `Agences`
   est la seule table aux `agence_id` uniques. Le TCD prend `agence_id` dans `Agences` et pose
@@ -691,7 +702,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 
 - Titre public : « Vos trois recommandations au comité »
 - Trois questions libres (`recommandation-1` à `recommandation-3`) : constat chiffré → cause →
-  action. Correction sur place, quatre explications révélées une à une : les quatre histoires du
+  action. Correction sur place, quatre explications révélées ensemble (hors questionnaire, la
+  brique dévoile tout d'un geste) et commentées une à une : les quatre histoires du
   § 4.4, chacune avec son constat chiffré sur sa période, sa cause lue dans le détail et son
   action. Garde de dévoilement : aucune explication ne donne une valeur d'une question encore
   ouverte (les questions de A3-09 sont révélées avant).
@@ -778,7 +790,7 @@ lignes. F4, H1 et S3 relèvent du défi et de la quarantaine du classeur de repr
 
 | Histoire                 | Paramètre semé                                                                                                                                                                                                                                                                             | Ce que le tableau de bord montre                                                           |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| Marseille, la marge fond | à partir de janvier 2026, le commercial C26 prend 45 % des commandes de l'agence (41 % de ses lignes avec la graine) et accorde des remises de 18 à 30 % (réseau : 0 à 10 %)                                                                                                               | CA au-dessus de l'objectif, taux de marque en chute                                        |
+| Marseille, la marge fond | à partir de janvier 2026, le commercial C26 reçoit chaque commande de l'agence avec une probabilité de 45 % (avec la graine : 39 % des commandes, 41 % des lignes) et accorde des remises de 18 à 30 % (réseau : 0 à 10 %)                                                                 | CA au-dessus de l'objectif, taux de marque en chute                                        |
 | Rennes, sous l'objectif  | l'informatique de Rennes baisse de 40 % en 2026 par rapport à 2025, les autres catégories sont stables                                                                                                                                                                                     | taux d'atteinte le plus bas du réseau                                                      |
 | Lille, la croissance     | CA de Lille de janvier à septembre 2026 supérieur de 25 % à celui de 2025, dans chacune de ses catégories                                                                                                                                                                                  | plus forte évolution du réseau                                                             |
 | Strasbourg, les retards  | à partir de mars 2026, délai de livraison de Strasbourg tiré entre 6 et 12 jours ouvrés (réseau : 1 à 5), et 8 % de ses commandes de mars à juillet tirées en rupture, livrées 40 à 60 jours ouvrés plus tard (environ deux mois) ; avec la graine, les ruptures tombent d'avril à juillet | délai médian et nombre de retards hors norme ; moyenne tirée vers le haut par les ruptures |
@@ -832,7 +844,9 @@ formules des ateliers (`SOMME.SI.ENS`, `NB.JOURS.OUVRES`, `MEDIANE`, `SOMMEPROD`
 n'écrit ni TCD, ni graphique, ni segment. Il est écrit dans `.tmp/b3-01/` par `ECRIRE_CORRIGE=1`,
 distinct d'`ECRIRE_CLASSEURS=1` pour que réécrire les classeurs ne le régénère pas ; ignoré par
 git, ni versionné ni servi, il sert à vérifier que les formules enseignées rendent les valeurs du
-§ 5.1.
+§ 5.1. Il les écrit telles quelles : le montant en texte se convertit par
+`CNUM(SUBSTITUE(SUBSTITUE(L2;" €";"");" ";""))`, comme en A1-12. `CNUM` lit la virgule selon la
+langue d'Excel : le recalcul se fait, comme en séance, dans un Excel en français.
 
 ## 5. Contenus
 

@@ -7,7 +7,13 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { join } from 'node:path';
-import { Workbook, type Cell, type CellValue, type Worksheet } from 'exceljs';
+import {
+  ValueType,
+  Workbook,
+  type Cell,
+  type CellValue,
+  type Worksheet,
+} from 'exceljs';
 import JSZip from 'jszip';
 import { GRAINE_B3_01 } from './generateur';
 import type { Valeur } from './excel';
@@ -335,5 +341,45 @@ export async function relireClasseur(
   const classeur = await ouvrirClasseur(chemin);
   return Object.fromEntries(
     classeur.worksheets.map((feuille) => [feuille.name, ongletRelu(feuille)]),
+  );
+}
+
+const FORMATS_DE_DATE: ReadonlySet<FormatDeColonne> = new Set(['date', 'mois']);
+
+const estUneDateEcrite = (cellule: Cellule | undefined): boolean =>
+  typeof (typeof cellule === 'object' && cellule !== null
+    ? cellule.resultat
+    : cellule) === 'number';
+
+const estUneDateRelue = (cellule: Cell, format: FormatDeColonne): boolean =>
+  cellule.effectiveType === ValueType.Date &&
+  cellule.numFmt === FORMATS_EXCEL[format];
+
+function datesSansFormatDansLOnglet(
+  feuille: Worksheet | undefined,
+  nom: string,
+  onglet: Onglet,
+): readonly string[] {
+  return onglet.colonnes.flatMap((colonne, rang) =>
+    FORMATS_DE_DATE.has(colonne.format)
+      ? onglet.lignes.flatMap((ligne, index) => {
+          const cellule = feuille?.getRow(index + 2).getCell(rang + 1);
+          const enDefaut =
+            estUneDateEcrite(ligne[colonne.nom]) &&
+            (cellule === undefined ||
+              !estUneDateRelue(cellule, colonne.format));
+          return enDefaut ? [`${nom}!${colonne.nom}:${index + 2}`] : [];
+        })
+      : [],
+  );
+}
+
+export async function datesSansFormatDeDate(
+  chemin: string,
+  classeur: Classeur,
+): Promise<readonly string[]> {
+  const relu = await ouvrirClasseur(chemin);
+  return Object.entries(classeur).flatMap(([nom, onglet]) =>
+    datesSansFormatDansLOnglet(relu.getWorksheet(nom), nom, onglet),
   );
 }

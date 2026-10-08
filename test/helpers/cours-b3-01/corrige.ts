@@ -64,7 +64,7 @@ function ajouterLesAidesDuBrut(feuille: Worksheet, derniere: number): void {
     ligne.getCell(14).value = formule(cle);
     ligne.getCell(15).value = formule(`IF(COUNTIF(N$2:N${r},N${r})=1,1,0)`);
     ligne.getCell(16).value = formule(
-      `IF(ISTEXT(L${r}),_xlfn.NUMBERVALUE(SUBSTITUTE(L${r},"€",""),","," "),L${r})`,
+      `IF(ISTEXT(L${r}),VALUE(SUBSTITUTE(SUBSTITUTE(L${r}," €","")," ","")),L${r})`,
     );
     ligne.getCell(17).value = formule(`PROPER(TRIM(E${r}))`);
     ligne.getCell(18).value = formule(

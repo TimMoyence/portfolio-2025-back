@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "be16621678ff8b0b86512f24bf8a375dede9e284b4ebcafbb5129ced65b9b90d",
+  "empreinte": "cf6b691c474d186b4af90703e5214d443536a47204f7e11f59cf8e855c04e60d",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -301,7 +301,7 @@
                   {
                     "kind": "example",
                     "title": "Pourquoi « Dupont, Bordeaux » n’est pas une clé",
-                    "text": "Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se trompent ; un identifiant ne se trompe pas."
+                    "text": "Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se confondent ; un identifiant désigne une seule fiche."
                   }
                 ]
               }
@@ -576,7 +576,7 @@
                       "Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil annonce combien il en reste.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil, case « Mes données ont des en-têtes » cochée, annonce combien de valeurs uniques il reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
@@ -587,7 +587,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : Power Query",
+                    "title": "Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query",
                     "text": "Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
                   }
                 ]
@@ -677,7 +677,7 @@
               },
               {
                 "id": "ca-mal-calcule",
-                "libelle": "ca_ht différent de quantité × prix × (1 − remise)"
+                "libelle": "ca_ht saisi sans appliquer la remise de la ligne"
               },
               {
                 "id": "livraison-avant-commande",
@@ -909,7 +909,7 @@
                   },
                   {
                     "key": "variante",
-                    "label": "Avec Excel 365"
+                    "label": "Avec Excel 2021 ou 365"
                   }
                 ],
                 "rows": [
@@ -947,7 +947,7 @@
                     "famille": "Transformer",
                     "question": "Que vaut ce montant en texte ?",
                     "socle": "SUPPRESPACE, CNUM, TEXTE",
-                    "variante": "Power Query"
+                    "variante": "Power Query (Windows, ou 365 sur Mac)"
                   },
                   {
                     "famille": "Filtrer",
@@ -1029,7 +1029,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : RECHERCHEX",
+                    "title": "Si vous avez Excel 2021 ou 365 : RECHERCHEX",
                     "text": "=RECHERCHEX(H2;Produits!$A$2:$A$41;Produits!$C$2:$C$41) fait le même travail en une seule fonction."
                   }
                 ]
@@ -1185,7 +1185,7 @@
                     "text": "Un délai long et rare, comme une rupture de stock livrée deux mois plus tard, tire la moyenne vers le haut ; la médiane, la valeur du milieu, ne bouge pas. Pour un délai typique, on lit la médiane.",
                     "steps": [
                       "Médiane sous conditions : filtrer, puis AGREGAT(12;5;plage), qui ignore les lignes masquées.",
-                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 365."
+                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 2021."
                     ]
                   },
                   {
@@ -1329,7 +1329,7 @@
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes. On place des champs en lignes, en colonnes, en valeurs et en filtres : le TCD additionne, compte ou fait la moyenne pour chaque croisement."
+                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes : des champs en lignes, en colonnes, en valeurs et en filtres ; le TCD additionne ou compte chaque croisement."
                   },
                   {
                     "kind": "method",
@@ -1343,8 +1343,8 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : le modèle de données",
-                    "text": "Avec Agences aussi sous forme de tableau, et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                    "title": "Windows seulement : le modèle de données",
+                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id. Sur Mac, absent : la colonne region suffit."
                   }
                 ]
               }
@@ -1700,7 +1700,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Agences et Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, puis relier T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -2447,7 +2447,7 @@
           "titre": "Dupont, Bordeaux : deux clients",
           "lignes": [
             "L’onglet Clients compte deux Dupont à Bordeaux : Dupont Bureautique et Dupont & Fils. Le nom et la ville ne les distinguent pas.",
-            "Il compte aussi des clients saisis deux fois, sous deux client_id : un libellé se trompe, un identifiant attribué par le système ne se trompe pas.",
+            "Il compte aussi des raisons sociales présentes deux fois dans la même ville, sous deux client_id : doublon ou deux établissements, seul le métier peut le dire. Le nom et la ville ne suffisent ni à distinguer deux clients, ni à les fusionner.",
             "La part des lignes fausses ou douteuses se révèle à la correction de l’exercice 4."
           ]
         }
@@ -2561,7 +2561,7 @@
                   {
                     "kind": "example",
                     "title": "Pourquoi « Dupont, Bordeaux » n’est pas une clé",
-                    "text": "Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se trompent ; un identifiant ne se trompe pas."
+                    "text": "Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se confondent ; un identifiant désigne une seule fiche."
                   }
                 ]
               }
@@ -2575,7 +2575,7 @@
             }
           }
         },
-        "notes": "• 3 min ; montrer les onglets du classeur pendant la lecture du schéma.\n• Revenir sur le vote : deux Dupont à Bordeaux, et des clients saisis deux fois.\n• Transition : « Classez les colonnes de Commandes : exercice 1. »",
+        "notes": "• 3 min ; montrer les onglets du classeur pendant la lecture du schéma.\n• Revenir sur le vote : deux Dupont à Bordeaux, et des clients peut-être saisis deux fois.\n• Transition : « Classez les colonnes de Commandes : exercice 1. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3057,7 +3057,7 @@
                       "Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil annonce combien il en reste.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil, case « Mes données ont des en-têtes » cochée, annonce combien de valeurs uniques il reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
@@ -3068,7 +3068,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : Power Query",
+                    "title": "Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query",
                     "text": "Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
                   }
                 ]
@@ -3170,7 +3170,7 @@
               },
               {
                 "id": "ca-mal-calcule",
-                "libelle": "ca_ht différent de quantité × prix × (1 − remise)"
+                "libelle": "ca_ht saisi sans appliquer la remise de la ligne"
               },
               {
                 "id": "livraison-avant-commande",
@@ -3384,7 +3384,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.\n• Villes distinctes : copier la colonne N en valeurs à part, puis Supprimer les doublons ; sous Excel 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote d’ouverture.\n• Défi : DATEVAL lit « 04/05/26 » comme le 4 mai ; une date d’un autre système ne se convertit pas sans demander.",
+        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; additionner avant de convertir ; compter les villes avant d’en retirer les espaces ; convertir les dates avant le contrôle.\n• Villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote d’ouverture.\n• Défi : DATEVAL lit « 04/05/26 » comme le 4 mai ; une date d’un autre système ne se convertit pas sans demander.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -3467,7 +3467,7 @@
           },
           {
             "reference": "b3-01-a1-a-verifier",
-            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir les dates par DATEVAL avant le contrôle aurait corrigé seul des dates douteuses, et n’en aurait signalé que 39."
+            "texte": "La colonne controle marque 85 lignes « À vérifier » : livraisons antérieures à la commande, quantités négatives, commercial absent, dates restées en texte. Les formules en corrigent 490 autres (villes, montants en texte), le défi 24 ca_ht mal calculés, et 15 échappent au contrôle : produits inconnus, prix hors norme. En tout, 614 des 4 098 lignes uniques étaient fausses ou douteuses, environ 15 % : la réponse au premier vote de la séance. Convertir toutes les dates en texte par DATEVAL avant le contrôle aurait fait passer pour justes des dates au format jj/mm/aa qu’il fallait faire confirmer : la colonne controle n’aurait plus signalé que 39 lignes."
           }
         ]
       },
@@ -3631,7 +3631,7 @@
                   },
                   {
                     "key": "variante",
-                    "label": "Avec Excel 365"
+                    "label": "Avec Excel 2021 ou 365"
                   }
                 ],
                 "rows": [
@@ -3669,7 +3669,7 @@
                     "famille": "Transformer",
                     "question": "Que vaut ce montant en texte ?",
                     "socle": "SUPPRESPACE, CNUM, TEXTE",
-                    "variante": "Power Query"
+                    "variante": "Power Query (Windows, ou 365 sur Mac)"
                   },
                   {
                     "famille": "Filtrer",
@@ -3711,7 +3711,7 @@
             }
           }
         },
-        "notes": "• 3 min, enchaînées sur la trace écrite : 6 min d’exposition au plus.\n• Faire lire la colonne des questions : la direction parle en questions, pas en fonctions.\n• La colonne 365 est un raccourci, jamais une obligation : le cas pratique se fait sur toute version d’Excel.",
+        "notes": "• 3 min, enchaînées sur la trace écrite : 6 min d’exposition au plus.\n• Faire lire la colonne des questions : la direction parle en questions, pas en fonctions.\n• La colonne 2021 ou 365 est un raccourci, jamais une obligation : le cas pratique se fait sur toute version d’Excel.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3757,7 +3757,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : RECHERCHEX",
+                    "title": "Si vous avez Excel 2021 ou 365 : RECHERCHEX",
                     "text": "=RECHERCHEX(H2;Produits!$A$2:$A$41;Produits!$C$2:$C$41) fait le même travail en une seule fonction."
                   }
                 ]
@@ -4042,7 +4042,7 @@
                     "text": "Un délai long et rare, comme une rupture de stock livrée deux mois plus tard, tire la moyenne vers le haut ; la médiane, la valeur du milieu, ne bouge pas. Pour un délai typique, on lit la médiane.",
                     "steps": [
                       "Médiane sous conditions : filtrer, puis AGREGAT(12;5;plage), qui ignore les lignes masquées.",
-                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 365."
+                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 2021."
                     ]
                   },
                   {
@@ -4311,7 +4311,7 @@
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes. On place des champs en lignes, en colonnes, en valeurs et en filtres : le TCD additionne, compte ou fait la moyenne pour chaque croisement."
+                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes : des champs en lignes, en colonnes, en valeurs et en filtres ; le TCD additionne ou compte chaque croisement."
                   },
                   {
                     "kind": "method",
@@ -4325,8 +4325,8 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : le modèle de données",
-                    "text": "Avec Agences aussi sous forme de tableau, et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                    "title": "Windows seulement : le modèle de données",
+                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id. Sur Mac, absent : la colonne region suffit."
                   }
                 ]
               }
@@ -4448,7 +4448,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général au lieu du % de la ligne ; filtre annee resté actif depuis l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.\n• Transition : « Avant la pause, deux règles de plus. »",
+        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général au lieu du % de la ligne ; filtre annee resté actif, recopié du premier TCD ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic droit sur remise › Grouper, de 0 à 0,30 par pas de 0,05.\n• Transition : « Avant la pause, deux règles de plus. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [
@@ -4890,7 +4890,7 @@
         "interactif": true,
         "donnees": {
           "intitule": "Exercice 9 — CA et objectif par agence",
-          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Si vous avez Excel 365, mettez Agences et Objectifs sous forme de tableau, puis reliez T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
+          "consigne": "Essentiel, dans le classeur de reprise de l’acte 3 : une synthèse par agence, de janvier à septembre 2026 : le CA cumulé par SOMME.SI.ENS sur T_Commandes, l’objectif cumulé par SOMME.SI.ENS sur Objectifs, le taux d’atteinte. Puis un graphique en barres groupées CA et objectif, avec un titre qui conclut, une légende et un axe depuis zéro. Sous Windows (Excel 2019, 2021 ou 365), vous pouvez aussi mettre Agences et Objectifs sous forme de tableau, puis relier T_Commandes et Objectifs à Agences par agence_id dans le modèle de données ; dans le TCD, agence_id d’Agences en lignes, et deux filtres, car un filtre ne passe pas d’une table à l’autre : annee de T_Commandes sur 2026, mois d’Objectifs de janvier à septembre 2026. Sur Mac, le modèle de données n’existe pas : la synthèse par SOMME.SI.ENS suffit. Défi : les courbes du CA mensuel 2025 et 2026, superposées.",
           "regime": "focus",
           "ordre": "fixe",
           "questions": [
@@ -5387,7 +5387,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Puis révéler les quatre histoires une à une ; chacun coche celles qu’il avait trouvées.\n• Révéler une histoire à la fois ; demander qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »",
+        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Puis révéler la correction : les quatre histoires s’affichent ensemble ; les commenter une à une.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Gardez la fiche mémo, puis complétez votre cahier de règles. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5871,7 +5871,7 @@
                   {
                     "kind": "example",
                     "title": "Pourquoi « Dupont, Bordeaux » n’est pas une clé",
-                    "text": "Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se trompent ; un identifiant ne se trompe pas."
+                    "text": "Deux entreprises peuvent porter le même nom dans la même ville ; une même entreprise peut s’écrire « Dupont SARL » ou « DUPONT ». Un nom et une ville se confondent ; un identifiant désigne une seule fiche."
                   }
                 ]
               }
@@ -5992,7 +5992,7 @@
                       "Casse : NOMPROPRE(E2) met une majuscule initiale, « BORDEAUX » devient « Bordeaux » ; MAJUSCULE et MINUSCULE existent aussi.",
                       "Nombre en texte : SUBSTITUE retire le symbole et les espaces, puis CNUM convertit le texte en nombre.",
                       "Date en texte au format ISO « 2026-03-15 » : DATEVAL la convertit en date.",
-                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil annonce combien il en reste.",
+                      "Doublons exacts : Données › Supprimer les doublons, toutes les colonnes cochées, sur une copie. Valeurs distinctes : copiez la colonne nettoyée avec son en-tête, collez-la en valeurs à part (Collage spécial › Valeurs), puis le même outil, case « Mes données ont des en-têtes » cochée, annonce combien de valeurs uniques il reste.",
                       "Colonne controle : SI et OU renvoient « À vérifier » ou « OK »."
                     ]
                   },
@@ -6003,7 +6003,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : Power Query",
+                    "title": "Sous Windows depuis Excel 2016, ou sur Mac avec 365 : Power Query",
                     "text": "Données › À partir d’un tableau ou d’une plage : Power Query enregistre chaque étape du nettoyage et la rejoue d’un clic au prochain export."
                   }
                 ]
@@ -6091,7 +6091,7 @@
                   },
                   {
                     "key": "variante",
-                    "label": "Avec Excel 365"
+                    "label": "Avec Excel 2021 ou 365"
                   }
                 ],
                 "rows": [
@@ -6129,7 +6129,7 @@
                     "famille": "Transformer",
                     "question": "Que vaut ce montant en texte ?",
                     "socle": "SUPPRESPACE, CNUM, TEXTE",
-                    "variante": "Power Query"
+                    "variante": "Power Query (Windows, ou 365 sur Mac)"
                   },
                   {
                     "famille": "Filtrer",
@@ -6211,7 +6211,7 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : RECHERCHEX",
+                    "title": "Si vous avez Excel 2021 ou 365 : RECHERCHEX",
                     "text": "=RECHERCHEX(H2;Produits!$A$2:$A$41;Produits!$C$2:$C$41) fait le même travail en une seule fonction."
                   }
                 ]
@@ -6281,7 +6281,7 @@
                     "text": "Un délai long et rare, comme une rupture de stock livrée deux mois plus tard, tire la moyenne vers le haut ; la médiane, la valeur du milieu, ne bouge pas. Pour un délai typique, on lit la médiane.",
                     "steps": [
                       "Médiane sous conditions : filtrer, puis AGREGAT(12;5;plage), qui ignore les lignes masquées.",
-                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 365."
+                      "Ou MEDIANE(SI((plage1=critère1)*(plage2=critère2);valeurs)), validée par Ctrl + Maj + Entrée avant Excel 2021."
                     ]
                   },
                   {
@@ -6348,7 +6348,7 @@
                   {
                     "kind": "property",
                     "title": "Le tableau croisé dynamique",
-                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes. On place des champs en lignes, en colonnes, en valeurs et en filtres : le TCD additionne, compte ou fait la moyenne pour chaque croisement."
+                    "text": "Insertion › Tableau croisé dynamique, à partir de T_Commandes : des champs en lignes, en colonnes, en valeurs et en filtres ; le TCD additionne ou compte chaque croisement."
                   },
                   {
                     "kind": "method",
@@ -6362,8 +6362,8 @@
                   },
                   {
                     "kind": "example",
-                    "title": "Si vous avez Excel 365 : le modèle de données",
-                    "text": "Avec Agences aussi sous forme de tableau, et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id : le TCD lit la région sans colonne cherchée."
+                    "title": "Windows seulement : le modèle de données",
+                    "text": "Excel 2019, 2021 ou 365 : Agences en tableau et « Ajouter ces données au modèle de données » coché, on relie T_Commandes et Agences par agence_id. Sur Mac, absent : la colonne region suffit."
                   }
                 ]
               }
