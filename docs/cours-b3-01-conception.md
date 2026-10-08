@@ -142,11 +142,11 @@ rapides sans retarder la correction collective.
 
 ### 2.4 Les classeurs de reprise
 
-| Classeur                    | Servi sur | Contenu                                                                                        |
-| --------------------------- | --------- | ---------------------------------------------------------------------------------------------- |
-| `B3-01_export_ventes.xlsx`  | A1-02     | Export brut : `Commandes` sale, `Clients`, `Produits`, `Agences`, `Objectifs`                  |
-| `B3-01_reprise_acte_2.xlsx` | A2-01     | `Commandes` nettoyée (lignes saines seulement), `Quarantaine`, référentiels inchangés          |
-| `B3-01_reprise_acte_3.xlsx` | A3-02     | Reprise 1 + tableau structuré `T_Commandes` avec région, catégorie, coût, marge, délai, retard |
+| Classeur                                | Servi sur | Contenu                                                                                        |
+| --------------------------------------- | --------- | ---------------------------------------------------------------------------------------------- |
+| `B3-01_export_ventes.xlsx`              | A1-02     | Export brut : `Commandes` sale, `Clients`, `Produits`, `Agences`, `Objectifs`                  |
+| `B3-01_reprise_acte_2.<empreinte>.xlsx` | A2-01     | `Commandes` nettoyée (lignes saines seulement), `Quarantaine`, référentiels inchangés          |
+| `B3-01_reprise_acte_3.<empreinte>.xlsx` | A3-02     | Reprise 1 + tableau structuré `T_Commandes` avec région, catégorie, coût, marge, délai, retard |
 
 À l'ouverture des actes 2 et 3, **tout le monde ouvre le classeur de reprise**, y compris ceux
 qui ont tout réussi : les résultats saisis se comparent ainsi à une même base. Les deux classeurs
@@ -462,11 +462,11 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - Défi : `JOURSEM` pour la part des commandes passées le vendredi ; `DATEDIF` pour l'ancienneté
   des clients en mois.
 - `b3-01-a2-delai-strasbourg` : délai médian de livraison de Strasbourg en 2026, en jours
-  ouvrés ; pièges `jours-calendaires-pour-ouvres`, `moyenne-au-lieu-de-mediane`.
+  ouvrés ; pièges `jours-calendaires-pour-ouvres`, `valeur-extreme-ignoree`.
 - `b3-01-a2-retards` : nombre de lignes 2026 livrées après la promesse (commande + 5 jours
   ouvrés, `SERIE.JOUR.OUVRE`) ; piège `jours-calendaires-pour-ouvres`.
 - `b3-01-a2-taux-marge` : taux de marge du réseau, janvier à septembre 2026, en % ; piège
-  `taux-moyen-par-moyenne-des-taux`.
+  `moyenne-simple-des-taux`.
 
 #### A2-08 · `B3-01-A2-08-VOTE-NOUVELLES-LIGNES` — 2 min · `fp-vote` · séance
 
@@ -594,7 +594,7 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
 - `b3-01-a3-evolution` : évolution du CA par rapport à janvier-septembre 2025, en % ; piège
   `evolution-sur-annee-pleine`.
 - `b3-01-a3-marge-marseille` : taux de marge de Marseille de janvier à septembre 2026, en % ;
-  piège `taux-moyen-par-moyenne-des-taux`.
+  piège `moyenne-simple-des-taux`.
 - `b3-01-a3-quarantaine` : nombre de lignes en quarantaine ; piège
   `suppression-au-lieu-de-signalement`.
 
@@ -769,29 +769,35 @@ l'énoncent.
 `agregation-conditionnelle`, `calcul-sur-dates`, `indicateur-statistique`,
 `tableau-croise-dynamique`, `choix-du-graphique`, `tableau-de-bord`.
 
-| Identifiant                          | Concept                   | Libellé                                                             | Remédiation                        |
-| ------------------------------------ | ------------------------- | ------------------------------------------------------------------- | ---------------------------------- |
-| `reference-absolue-ignoree`          | reference-de-cellule      | Recopier une formule sans voir ce que le `$` fige.                  | B3-01-A2-03-COURS-CHERCHER-AGREGER |
-| `identifiant-pris-pour-nombre`       | jeu-de-donnees            | Prendre un identifiant numérique pour une quantité.                 | B3-01-A1-05-COURS-DONNEE           |
-| `lignes-comptees-pour-commandes`     | granularite               | Compter les lignes quand on cherche les commandes.                  | B3-01-A1-05-COURS-DONNEE           |
-| `libelle-pris-pour-cle`              | cle-et-relation           | Relier deux tables par un nom ou une ville.                         | B3-01-A1-06-COURS-RELATIONS        |
-| `suspect-corrige-sans-validation`    | qualite-des-donnees       | Corriger seul une donnée douteuse.                                  | B3-01-A1-10-COURS-GRILLE           |
-| `suppression-au-lieu-de-signalement` | qualite-des-donnees       | Supprimer une ligne au lieu de la signaler.                         | B3-01-A1-10-COURS-GRILLE           |
-| `texte-pris-pour-nombre`             | nettoyage                 | Additionner une colonne dont des nombres sont du texte.             | B3-01-A1-11-COURS-OUTILS           |
-| `casse-non-normalisee`               | nettoyage                 | Compter « Bordeaux » et « BORDEAUX » comme deux villes.             | B3-01-A1-11-COURS-OUTILS           |
-| `doublons-supprimes-sur-une-colonne` | nettoyage                 | Dédoublonner sur une seule colonne et perdre des lignes distinctes. | B3-01-A1-11-COURS-OUTILS           |
-| `plage-recherche-non-figee`          | recherche-dans-une-table  | Recopier une recherche sans figer la table.                         | B3-01-A2-03-COURS-CHERCHER-AGREGER |
-| `critere-mal-ecrit`                  | agregation-conditionnelle | Écrire un critère sans guillemets ni `&`, ou 15 pour 15 %.          | B3-01-A2-03-COURS-CHERCHER-AGREGER |
-| `jours-calendaires-pour-ouvres`      | calcul-sur-dates          | Soustraire deux dates quand le contrat compte des jours ouvrés.     | B3-01-A2-06-COURS-TEMPS-STATS      |
-| `moyenne-au-lieu-de-mediane`         | indicateur-statistique    | Résumer des délais très dispersés par la moyenne.                   | B3-01-A2-06-COURS-TEMPS-STATS      |
-| `taux-moyen-par-moyenne-des-taux`    | indicateur-statistique    | Calculer un taux de marge par la moyenne des taux de ligne.         | B3-01-A2-06-COURS-TEMPS-STATS      |
-| `plage-fixe-au-lieu-de-tableau`      | tableau-croise-dynamique  | Construire sur une plage fixe qui ne voit pas les nouvelles lignes. | B3-01-A2-09-COURS-TCD              |
-| `pourcentage-du-mauvais-total`       | tableau-croise-dynamique  | Afficher le % du total général au lieu du % de la ligne.            | B3-01-A2-09-COURS-TCD              |
-| `graphique-sans-question`            | choix-du-graphique        | Choisir un graphique avant la question à laquelle il répond.        | B3-01-A3-03-COURS-GRAPHIQUES       |
-| `camembert-pour-evolution`           | choix-du-graphique        | Montrer une évolution par un camembert.                             | B3-01-A3-03-COURS-GRAPHIQUES       |
-| `objectif-annuel-pour-cumul`         | tableau-de-bord           | Comparer un cumul à neuf mois à l'objectif de l'année.              | B3-01-A3-07-COURS-DASHBOARD        |
-| `evolution-sur-annee-pleine`         | tableau-de-bord           | Comparer neuf mois de 2026 à douze mois de 2025.                    | B3-01-A3-07-COURS-DASHBOARD        |
-| `kpi-sans-contexte`                  | tableau-de-bord           | Afficher un chiffre sans objectif ni comparaison.                   | B3-01-A3-07-COURS-DASHBOARD        |
+**Confusions** : dix-neuf nouvelles et deux reprises de la banque B2, qui décrivent déjà la même
+erreur (`valeur-extreme-ignoree`, `moyenne-simple-des-taux`). `reference-absolue-ignoree` reste
+distincte de `reference-relative-non-figee` : l'une lit mal le `$` d'une formule recopiée,
+l'autre oublie de l'écrire. `critere-mal-ecrit` ne couvre que l'opérateur joint par `&` et le
+pourcentage ; le critère sans guillemets est `critere-sans-guillemets`.
+
+| Identifiant                          | Concept                   | Libellé                                                              | Remédiation                        |
+| ------------------------------------ | ------------------------- | -------------------------------------------------------------------- | ---------------------------------- |
+| `reference-absolue-ignoree`          | reference-de-cellule      | Recopier une formule sans voir ce que le `$` fige.                   | B3-01-A2-03-COURS-CHERCHER-AGREGER |
+| `identifiant-pris-pour-nombre`       | jeu-de-donnees            | Prendre un identifiant numérique pour une quantité.                  | B3-01-A1-05-COURS-DONNEE           |
+| `lignes-comptees-pour-commandes`     | granularite               | Compter les lignes quand on cherche les commandes.                   | B3-01-A1-05-COURS-DONNEE           |
+| `libelle-pris-pour-cle`              | cle-et-relation           | Relier deux tables par un nom ou une ville.                          | B3-01-A1-06-COURS-RELATIONS        |
+| `suspect-corrige-sans-validation`    | qualite-des-donnees       | Corriger seul une donnée douteuse.                                   | B3-01-A1-10-COURS-GRILLE           |
+| `suppression-au-lieu-de-signalement` | qualite-des-donnees       | Supprimer une ligne au lieu de la signaler.                          | B3-01-A1-10-COURS-GRILLE           |
+| `texte-pris-pour-nombre`             | nettoyage                 | Additionner une colonne dont des nombres sont du texte.              | B3-01-A1-11-COURS-OUTILS           |
+| `casse-non-normalisee`               | nettoyage                 | Compter « Bordeaux » et « BORDEAUX » comme deux villes.              | B3-01-A1-11-COURS-OUTILS           |
+| `doublons-supprimes-sur-une-colonne` | nettoyage                 | Dédoublonner sur une seule colonne et perdre des lignes distinctes.  | B3-01-A1-11-COURS-OUTILS           |
+| `plage-recherche-non-figee`          | recherche-dans-une-table  | Recopier une recherche sans figer la table.                          | B3-01-A2-03-COURS-CHERCHER-AGREGER |
+| `critere-mal-ecrit`                  | agregation-conditionnelle | Écrire un critère sans joindre l'opérateur par `&`, ou 15 pour 15 %. | B3-01-A2-03-COURS-CHERCHER-AGREGER |
+| `jours-calendaires-pour-ouvres`      | calcul-sur-dates          | Soustraire deux dates quand le contrat compte des jours ouvrés.      | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `valeur-extreme-ignoree` (B2-02)     | choix-du-resume           | Résumer par la moyenne une série tirée par une valeur extrême.       | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `moyenne-simple-des-taux` (B2-01)    | moyenne-ponderee          | Faire la moyenne simple de taux au lieu de les pondérer.             | B3-01-A2-06-COURS-TEMPS-STATS      |
+| `plage-fixe-au-lieu-de-tableau`      | tableau-croise-dynamique  | Construire sur une plage fixe qui ne voit pas les nouvelles lignes.  | B3-01-A2-09-COURS-TCD              |
+| `pourcentage-du-mauvais-total`       | tableau-croise-dynamique  | Afficher le % du total général au lieu du % de la ligne.             | B3-01-A2-09-COURS-TCD              |
+| `graphique-sans-question`            | choix-du-graphique        | Choisir un graphique avant la question à laquelle il répond.         | B3-01-A3-03-COURS-GRAPHIQUES       |
+| `camembert-pour-evolution`           | choix-du-graphique        | Montrer une évolution par un camembert.                              | B3-01-A3-03-COURS-GRAPHIQUES       |
+| `objectif-annuel-pour-cumul`         | tableau-de-bord           | Comparer un cumul à neuf mois à l'objectif de l'année.               | B3-01-A3-07-COURS-DASHBOARD        |
+| `evolution-sur-annee-pleine`         | tableau-de-bord           | Comparer neuf mois de 2026 à douze mois de 2025.                     | B3-01-A3-07-COURS-DASHBOARD        |
+| `kpi-sans-contexte`                  | tableau-de-bord           | Afficher un chiffre sans objectif ni comparaison.                    | B3-01-A3-07-COURS-DASHBOARD        |
 
 ## 6. Fonctionnalités à construire
 

@@ -480,6 +480,99 @@ const DEFINITIONS = {
     libelle:
       'Prendre l’ordonnée à l’origine b de z = ax + b pour le coefficient du modèle : ce coefficient vaut e^b.',
   },
+  'reference-absolue-ignoree': {
+    concept: 'reference-de-cellule',
+    libelle:
+      'Lire une formule recopiée sans voir ce que le $ fige : la référence figée ne glisse pas, la référence relative glisse.',
+  },
+  'identifiant-pris-pour-nombre': {
+    concept: 'jeu-de-donnees',
+    libelle:
+      'Prendre un identifiant écrit en chiffres pour une quantité qu’on additionne.',
+  },
+  'lignes-comptees-pour-commandes': {
+    concept: 'granularite',
+    libelle:
+      'Compter les lignes quand on cherche les commandes : une commande compte autant de lignes que de produits.',
+  },
+  'libelle-pris-pour-cle': {
+    concept: 'cle-et-relation',
+    libelle:
+      'Relier deux tables par un nom ou une ville au lieu de leur identifiant commun.',
+  },
+  'suspect-corrige-sans-validation': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Corriger seul une donnée douteuse au lieu de la signaler à qui peut la vérifier.',
+  },
+  'suppression-au-lieu-de-signalement': {
+    concept: 'qualite-des-donnees',
+    libelle:
+      'Supprimer une ligne douteuse au lieu de la mettre de côté avec son motif.',
+  },
+  'texte-pris-pour-nombre': {
+    concept: 'nettoyage',
+    libelle:
+      'Additionner une colonne dont certains nombres sont du texte : la somme les ignore sans prévenir.',
+  },
+  'casse-non-normalisee': {
+    concept: 'nettoyage',
+    libelle:
+      'Compter « Bordeaux » et « BORDEAUX » comme deux villes faute d’avoir normalisé la casse.',
+  },
+  'doublons-supprimes-sur-une-colonne': {
+    concept: 'nettoyage',
+    libelle:
+      'Dédoublonner sur une seule colonne et perdre des lignes distinctes qui la partagent.',
+  },
+  'plage-recherche-non-figee': {
+    concept: 'recherche-dans-une-table',
+    libelle:
+      'Recopier une recherche sans figer la table : la plage glisse et les dernières lignes ne sont plus trouvées.',
+  },
+  'critere-mal-ecrit': {
+    concept: 'agregation-conditionnelle',
+    libelle:
+      'Écrire un critère de comparaison sans joindre l’opérateur à la cellule par & (">="&H1), ou 15 au lieu de 15 %.',
+  },
+  'jours-calendaires-pour-ouvres': {
+    concept: 'calcul-sur-dates',
+    libelle: 'Soustraire deux dates quand le contrat compte des jours ouvrés.',
+  },
+  'plage-fixe-au-lieu-de-tableau': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Construire sur une plage fixe qui ne voit pas les lignes ajoutées ensuite.',
+  },
+  'pourcentage-du-mauvais-total': {
+    concept: 'tableau-croise-dynamique',
+    libelle:
+      'Afficher la part du total général quand la question porte sur la part dans la ligne.',
+  },
+  'graphique-sans-question': {
+    concept: 'choix-du-graphique',
+    libelle:
+      'Choisir un graphique avant la question à laquelle il doit répondre.',
+  },
+  'camembert-pour-evolution': {
+    concept: 'choix-du-graphique',
+    libelle: 'Montrer une évolution dans le temps par un camembert.',
+  },
+  'objectif-annuel-pour-cumul': {
+    concept: 'tableau-de-bord',
+    libelle:
+      'Comparer un cumul de quelques mois à l’objectif de l’année entière.',
+  },
+  'evolution-sur-annee-pleine': {
+    concept: 'tableau-de-bord',
+    libelle:
+      'Comparer une année en cours, incomplète, à une année pleine au lieu de la même période.',
+  },
+  'kpi-sans-contexte': {
+    concept: 'tableau-de-bord',
+    libelle:
+      'Afficher un chiffre seul, sans objectif ni comparaison qui dise s’il est bon.',
+  },
 } as const satisfies Readonly<Record<string, DefinitionConfusion>>;
 
 export const CONFUSIONS = typographierEnProfondeur(DEFINITIONS);

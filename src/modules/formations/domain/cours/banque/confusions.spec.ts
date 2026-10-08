@@ -6,6 +6,7 @@ import {
   CONCEPTS_DU_B2_04,
   CONCEPTS_DU_B2_05,
   CONCEPTS_DU_B2_06,
+  CONCEPTS_DU_B3_01,
   libelleDeConcept,
 } from './concepts';
 import {
@@ -309,6 +310,28 @@ const CONFUSIONS_DU_B2_06 = {
   'ordonnee-non-exponentiee': { concept: 'ajustement-exponentiel' },
 };
 
+const CONFUSIONS_DU_B3_01 = {
+  'reference-absolue-ignoree': { concept: 'reference-de-cellule' },
+  'identifiant-pris-pour-nombre': { concept: 'jeu-de-donnees' },
+  'lignes-comptees-pour-commandes': { concept: 'granularite' },
+  'libelle-pris-pour-cle': { concept: 'cle-et-relation' },
+  'suspect-corrige-sans-validation': { concept: 'qualite-des-donnees' },
+  'suppression-au-lieu-de-signalement': { concept: 'qualite-des-donnees' },
+  'texte-pris-pour-nombre': { concept: 'nettoyage' },
+  'casse-non-normalisee': { concept: 'nettoyage' },
+  'doublons-supprimes-sur-une-colonne': { concept: 'nettoyage' },
+  'plage-recherche-non-figee': { concept: 'recherche-dans-une-table' },
+  'critere-mal-ecrit': { concept: 'agregation-conditionnelle' },
+  'jours-calendaires-pour-ouvres': { concept: 'calcul-sur-dates' },
+  'plage-fixe-au-lieu-de-tableau': { concept: 'tableau-croise-dynamique' },
+  'pourcentage-du-mauvais-total': { concept: 'tableau-croise-dynamique' },
+  'graphique-sans-question': { concept: 'choix-du-graphique' },
+  'camembert-pour-evolution': { concept: 'choix-du-graphique' },
+  'objectif-annuel-pour-cumul': { concept: 'tableau-de-bord' },
+  'evolution-sur-annee-pleine': { concept: 'tableau-de-bord' },
+  'kpi-sans-contexte': { concept: 'tableau-de-bord' },
+};
+
 describe('libelleDeConcept', () => {
   it('nomme chaque concept de la banque autrement que par son identifiant', () => {
     expect(CONCEPTS.filter((id) => libelleDeConcept(id) === id)).toEqual([]);
@@ -345,8 +368,30 @@ describe('CONCEPTS', () => {
     ]);
   });
 
-  it('ajoute en dernier les quatre concepts d’exponentielle et de logarithme du B2-06', () => {
-    expect(CONCEPTS.slice(40)).toEqual([...CONCEPTS_DU_B2_06]);
+  it('ajoute en dernier les treize concepts de données du B3-01', () => {
+    expect(CONCEPTS.slice(44)).toEqual([...CONCEPTS_DU_B3_01]);
+    expect(CONCEPTS_DU_B3_01).toEqual([
+      'reference-de-cellule',
+      'jeu-de-donnees',
+      'cle-et-relation',
+      'granularite',
+      'qualite-des-donnees',
+      'nettoyage',
+      'recherche-dans-une-table',
+      'agregation-conditionnelle',
+      'calcul-sur-dates',
+      'indicateur-statistique',
+      'tableau-croise-dynamique',
+      'choix-du-graphique',
+      'tableau-de-bord',
+    ]);
+    expect(libelleDeConcept('tableau-croise-dynamique')).toBe(
+      'Tableau croisé dynamique',
+    );
+  });
+
+  it('ajoute à la suite les quatre concepts d’exponentielle et de logarithme du B2-06', () => {
+    expect(CONCEPTS.slice(40, 44)).toEqual([...CONCEPTS_DU_B2_06]);
     expect(CONCEPTS_DU_B2_06).toEqual([
       'fonction-exponentielle',
       'logarithme-neperien',
@@ -461,12 +506,26 @@ describe('CONFUSIONS', () => {
     attendreDansLaBanque(CONFUSIONS_DU_B2_04);
   });
 
-  it('ajoute en dernier les neuf confusions d’exponentielle et de logarithme du B2-06', () => {
-    expect(Object.keys(CONFUSIONS)).toHaveLength(96);
-    expect(Object.keys(CONFUSIONS).slice(87)).toEqual(
+  it('ajoute à la suite les neuf confusions d’exponentielle et de logarithme du B2-06', () => {
+    expect(Object.keys(CONFUSIONS).slice(87, 96)).toEqual(
       Object.keys(CONFUSIONS_DU_B2_06),
     );
     attendreDansLaBanque(CONFUSIONS_DU_B2_06);
+  });
+
+  it('ajoute en dernier les dix-neuf confusions de données du B3-01', () => {
+    expect(Object.keys(CONFUSIONS)).toHaveLength(115);
+    expect(Object.keys(CONFUSIONS).slice(96)).toEqual(
+      Object.keys(CONFUSIONS_DU_B3_01),
+    );
+    attendreDansLaBanque(CONFUSIONS_DU_B3_01);
+  });
+
+  it('distingue la lecture du $ d une formule recopiée de l oubli du $', () => {
+    expect(libelleDeConfusion('reference-absolue-ignoree')).not.toBe(
+      libelleDeConfusion('reference-relative-non-figee'),
+    );
+    expect(libelleDeConfusion('critere-mal-ecrit')).not.toContain('guillemets');
   });
 
   it('ajoute à la suite les huit confusions de mathématiques financières du B2-05', () => {

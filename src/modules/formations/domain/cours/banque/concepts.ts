@@ -60,6 +60,22 @@ export const CONCEPTS_DU_B2_06 = [
   'ajustement-exponentiel',
 ] as const;
 
+export const CONCEPTS_DU_B3_01 = [
+  'reference-de-cellule',
+  'jeu-de-donnees',
+  'cle-et-relation',
+  'granularite',
+  'qualite-des-donnees',
+  'nettoyage',
+  'recherche-dans-une-table',
+  'agregation-conditionnelle',
+  'calcul-sur-dates',
+  'indicateur-statistique',
+  'tableau-croise-dynamique',
+  'choix-du-graphique',
+  'tableau-de-bord',
+] as const;
+
 export const CONCEPTS = [
   ...CONCEPTS_DU_B2_01,
   ...CONCEPTS_DU_B2_02,
@@ -67,6 +83,7 @@ export const CONCEPTS = [
   ...CONCEPTS_DU_B2_04,
   ...CONCEPTS_DU_B2_05,
   ...CONCEPTS_DU_B2_06,
+  ...CONCEPTS_DU_B3_01,
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number];
@@ -116,6 +133,19 @@ const LIBELLES_DES_CONCEPTS: Readonly<Record<ConceptId, string>> = {
   'logarithme-neperien': 'Logarithme népérien',
   'resolution-par-logarithme': 'Résolution par le logarithme',
   'ajustement-exponentiel': 'Ajustement exponentiel',
+  'reference-de-cellule': 'Référence de cellule',
+  'jeu-de-donnees': 'Jeu de données',
+  'cle-et-relation': 'Clé et relation entre tables',
+  granularite: 'Granularité',
+  'qualite-des-donnees': 'Qualité des données',
+  nettoyage: 'Nettoyage des données',
+  'recherche-dans-une-table': 'Recherche dans une table',
+  'agregation-conditionnelle': 'Agrégation conditionnelle',
+  'calcul-sur-dates': 'Calcul sur des dates',
+  'indicateur-statistique': 'Indicateur statistique',
+  'tableau-croise-dynamique': 'Tableau croisé dynamique',
+  'choix-du-graphique': 'Choix du graphique',
+  'tableau-de-bord': 'Tableau de bord',
 };
 
 export function libelleDeConcept(id: string): string {
