@@ -575,8 +575,10 @@ describe('CONFUSIONS', () => {
 
     expect(libelle).toContain('liste trop large');
     expect(libelle).toContain('un critère oublié');
-    expect(libelle).toContain('MEDIANE');
-    expect(libelle).toContain('AGREGAT');
+    expect(libelle).toContain('MEDIANE compte aussi les lignes masquées');
+    expect(libelle).toContain(
+      'AGREGAT(12;5;plage) ne garde que les lignes visibles',
+    );
   });
 
   it('décrit l identifiant par les chiffres qu il contient et le piège d objectif par la table entière', () => {

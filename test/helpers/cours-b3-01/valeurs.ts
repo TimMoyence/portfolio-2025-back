@@ -236,6 +236,17 @@ export function indicateursParAgence(
   );
 }
 
+export function medianesDUneListeTropLarge(jeu: JeuB301): {
+  readonly agenceOubliee: number;
+  readonly touteLaColonne: number;
+} {
+  const ventes = ventesDe(jeu);
+  return {
+    agenceOubliee: mediane(filtrer(ventes, en2026).map(delaiOuvre)),
+    touteLaColonne: mediane(ventes.map(delaiOuvre)),
+  };
+}
+
 function trimestreDe(date: number): string {
   const { annee, mois } = partiesDeDate(date);
   return `T${Math.ceil(mois / 3)} ${annee}`;
@@ -426,7 +437,8 @@ function valeursDesActes2Et3(jeu: JeuB301) {
         'periode-mal-delimitee': mediane(
           filtrer(ventes, deLAgence(STRASBOURG)).map(delaiOuvre),
         ),
-        'mediane-sur-liste-trop-large': mediane(ventes.map(delaiOuvre)),
+        'mediane-sur-liste-trop-large':
+          medianesDUneListeTropLarge(jeu).touteLaColonne,
       },
       'b3-01-a2-retards': {
         'jours-calendaires-pour-ouvres': filtrer(

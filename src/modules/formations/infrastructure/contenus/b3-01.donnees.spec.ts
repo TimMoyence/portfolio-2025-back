@@ -29,6 +29,7 @@ import {
   caParTrimestre,
   calculerValeursB301,
   indicateursParAgence,
+  medianesDUneListeTropLarge,
 } from '../../../../../test/helpers/cours-b3-01/valeurs';
 import {
   HISTOIRES_B3_01,
@@ -571,5 +572,17 @@ describe('jeu Norvane du B3-01', () => {
         ] ?? 0) - VALEURS_B3_01['b3-01-a2-delai-strasbourg'],
       ),
     ).toBeGreaterThanOrEqual(1);
+  });
+
+  it('tient le piège de la liste trop large par ses deux chemins : l agence oubliée, et MEDIANE sous un filtre, qui rend la médiane de toute la colonne', () => {
+    const piege =
+      PIEGES_B3_01['b3-01-a2-delai-strasbourg']?.[
+        'mediane-sur-liste-trop-large'
+      ];
+
+    expect(medianesDUneListeTropLarge(jeu)).toEqual({
+      agenceOubliee: piege,
+      touteLaColonne: piege,
+    });
   });
 });

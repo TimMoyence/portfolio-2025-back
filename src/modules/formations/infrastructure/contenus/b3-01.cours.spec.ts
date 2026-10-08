@@ -718,7 +718,7 @@ describe('B3-01 — acte 1 : consignes et corrections exactes', () => {
       'Une liste trop large déplace la médiane : sans le critère de l’agence, c’est celle de tout le réseau ; sous un filtre, MEDIANE compte aussi les lignes masquées, là où AGREGAT(12;5;plage) ne garde que les lignes visibles.',
     );
     expect(mediane).not.toContain('Toutes années confondues');
-    expect(mediane).not.toMatch(/(?<!\d)[34] jours/u);
+    expect(mediane).not.toMatch(/(?<!\d)[34] jours|\b(?:trois|quatre) jours/iu);
     expect(tauxDeMarque).toContain(
       'Toutes années confondues, la médiane de Strasbourg de la première question tombe à 4 jours.',
     );
@@ -1176,7 +1176,7 @@ describe('B3-01 — actes 2 et 3 : consignes et corrections exactes', () => {
     }
     expect(agences).not.toContain('critère de date');
     expect(agences).not.toContain('deux côtés');
-    expect(agences).not.toMatch(/(?<!\d)7 agences/u);
+    expect(agences).not.toMatch(/(?<!\d)7 agences|\bsept agences/iu);
     expect(rennes).toContain(
       'Sans critère de date, ni sur les ventes ni sur les objectifs, vingt et un mois face à vingt et un mois : 7 agences sous l’objectif, et Rennes à 90,8 %.',
     );
