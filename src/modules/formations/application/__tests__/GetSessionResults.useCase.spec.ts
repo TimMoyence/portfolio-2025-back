@@ -12,6 +12,7 @@ import {
   buildAnswerRecord,
   buildFreeResponseRecord,
   buildResultatQuestion,
+  buildSessionRecord,
   createMockDepotsFormations,
 } from '../../../../../test/factories/formation.factory';
 import type { ICatalogueCours } from '../../domain/cours/ICatalogueCours.port';
@@ -65,6 +66,15 @@ describe('GetSessionResultsUseCase', () => {
     expect(rapport.participants[0].reponsesLibres).toEqual([
       expect.objectContaining({ reponse: 'Je nomme chaque colonne.' }),
     ]);
+  });
+
+  it('R1-25 · ne lit pas les réponses libres pour un bilan qui les écarte', async () => {
+    const bilan = await sut.bilanDe(buildSessionRecord(), {
+      sansReponsesLibres: true,
+    });
+
+    expect(depots.freeResponses.listBySession).not.toHaveBeenCalled();
+    expect(bilan.resultats.participants[0].reponsesLibres).toEqual([]);
   });
 
   it('rend la valeur envoyee telle quelle quand le cours de la seance est absent du catalogue', async () => {

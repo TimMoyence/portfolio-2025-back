@@ -147,6 +147,7 @@ describe('StreamSessionUseCase', () => {
   let cache: SessionStateCacheService;
   let answers: ReturnType<typeof createMockAnswersRepo>;
   let participants: ReturnType<typeof createMockParticipantsRepo>;
+  let reponsesLibres: ReturnType<typeof createMockFreeResponsesRepo>;
   let resultats: GetSessionResultsUseCase;
   let sut: StreamSessionUseCase;
 
@@ -186,6 +187,7 @@ describe('StreamSessionUseCase', () => {
     cache = new SessionStateCacheService();
     answers = createMockAnswersRepo();
     participants = createMockParticipantsRepo();
+    reponsesLibres = createMockFreeResponsesRepo();
     resultats = new GetSessionResultsUseCase(
       sessions,
       participants,
@@ -194,7 +196,7 @@ describe('StreamSessionUseCase', () => {
       creerCatalogueDeTest(),
       createMockPulsesRepo(),
       createMockEscapeRepo(),
-      createMockFreeResponsesRepo(),
+      reponsesLibres,
     );
     sut = new StreamSessionUseCase(sessions, cache, resultats, participants);
   });
@@ -762,6 +764,14 @@ describe('StreamSessionUseCase', () => {
       ]);
       expect(answers.listBySession).toHaveBeenCalledWith(SESSION);
       expect(participants.listBySession).toHaveBeenCalledWith(SESSION);
+      fermer([ecoute]);
+    });
+
+    it('R1-25 · pousse les resultats sans lire les reponses libres de la seance', async () => {
+      const ecoute = await formateurALEcoute();
+
+      expect(ecoute.types()).toEqual(['etat', 'resultats']);
+      expect(reponsesLibres.listBySession).not.toHaveBeenCalled();
       fermer([ecoute]);
     });
 

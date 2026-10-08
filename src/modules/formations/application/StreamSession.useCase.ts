@@ -422,7 +422,9 @@ export class StreamSessionUseCase {
   private async lireResultats(
     session: SessionRecord,
   ): Promise<ResultatsEnDirect> {
-    const { resultats } = await this.presenterResults.bilanDe(session);
+    const { resultats } = await this.presenterResults.bilanDe(session, {
+      sansReponsesLibres: true,
+    });
     return {
       ...resultats.resultats,
       statistiques: resultats.statistiques,

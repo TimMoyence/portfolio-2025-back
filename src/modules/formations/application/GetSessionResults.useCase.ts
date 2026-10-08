@@ -69,7 +69,10 @@ export class GetSessionResultsUseCase {
     return (await this.bilanDe(session)).resultats;
   }
 
-  async bilanDe(session: SessionRecord): Promise<BilanDeSeance> {
+  async bilanDe(
+    session: SessionRecord,
+    options: { readonly sansReponsesLibres?: boolean } = {},
+  ): Promise<BilanDeSeance> {
     const [
       participantsListe,
       reponses,
@@ -83,7 +86,9 @@ export class GetSessionResultsUseCase {
       this.incidents.listBySession(session.id),
       this.pulses.compterParSondage(session.id),
       this.escape.listerProgressionDeSeance(session.id),
-      this.reponsesLibres.listBySession(session.id),
+      options.sansReponsesLibres
+        ? []
+        : this.reponsesLibres.listBySession(session.id),
     ]);
     const cours = await this.catalogue.trouver(
       session.courseSlug,
