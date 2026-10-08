@@ -384,7 +384,8 @@ Rythme : 142 minutes interactives, 38 d'exposition, exposition continue de 6 min
   `texte-pris-pour-nombre`.
 - `b3-01-a1-villes` : nombre de villes distinctes après normalisation ; piège
   `casse-non-normalisee`.
-- `b3-01-a1-a-verifier` : nombre de lignes « À vérifier » ; piège
+- `b3-01-a1-a-verifier` : nombre de lignes « À vérifier » ; pièges
+  `suspect-corrige-sans-validation` (dates converties par `DATEVAL` avant le contrôle) et
   `suppression-au-lieu-de-signalement`.
 - La correction révèle la première question du vote A1-04 : part des lignes fausses ou douteuses
   du fichier.
@@ -666,14 +667,14 @@ aucune ligne doublonnée (F3) ne porte une autre anomalie.
 | F1   | `ville` en majuscules, en minuscules ou entourée d'espaces                                | faux · automatique |      310 |
 | F2   | `ca_ht` stocké en texte (« 1 250,00 € », espaces ordinaires)                              | faux · automatique |      180 |
 | F3   | ligne exportée deux fois à l'identique                                                    | faux · automatique |       46 |
-| F4   | `ca_ht` ≠ quantité × prix × (1 − remise), écart de plus d'1 €                             | faux · automatique |       24 |
+| F4   | `ca_ht` = quantité × prix, remise oubliée, écart de plus d'1 €                            | faux · automatique |       24 |
 | F5   | `date_commande` en texte au format ISO « 2026-03-15 »                                     | faux · automatique |       40 |
 | H1   | `produit_id` absent de `Produits` (P047, P051)                                            | faux · humain      |        9 |
 | H2   | `date_livraison` antérieure à `date_commande`                                             | faux · humain      |       14 |
 | H3   | `commercial_id` vide                                                                      | faux · humain      |       11 |
-| S1   | `date_commande` en texte « 05/04/26 », format d'origine inconnu                           | suspect · humain   |       12 |
+| S1   | `date_commande` en texte « 04/05/26 », écrite en mm/jj/aa, que `DATEVAL` lit en jj/mm/aa  | suspect · humain   |       12 |
 | S2   | `quantite` négative                                                                       | suspect · humain   |        8 |
-| S3   | `prix_unitaire_ht` égal à dix fois le prix catalogue                                      | suspect · humain   |        6 |
+| S3   | `prix_unitaire_ht` d'une fourniture égal à dix fois le prix catalogue                     | suspect · humain   |        6 |
 | S4   | client en double probable dans `Clients` (même raison sociale et ville, deux `client_id`) | suspect · humain   | 4 paires |
 
 Total des lignes de `Commandes` touchées : 660, soit environ 16 % des lignes uniques, d'où la
@@ -683,18 +684,25 @@ lignes. F4, H1 et S3 relèvent du défi et de la quarantaine du classeur de repr
 
 ### 4.4 Les quatre histoires cachées
 
-| Histoire                 | Paramètre semé                                                                                           | Ce que le tableau de bord montre                   |
-| ------------------------ | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Marseille, la marge fond | à partir de janvier 2026, le commercial C26 accorde des remises de 18 à 30 % (réseau : 0 à 10 %)         | CA au-dessus de l'objectif, taux de marge en chute |
-| Rennes, sous l'objectif  | l'informatique de Rennes baisse de 40 % en 2026 par rapport à 2025, les autres catégories sont stables   | taux d'atteinte le plus bas du réseau              |
-| Lille, la croissance     | CA de Lille de janvier à septembre 2026 supérieur de 25 % à celui de 2025                                | plus forte évolution du réseau                     |
-| Strasbourg, les retards  | à partir de mars 2026, délai de livraison de Strasbourg tiré entre 6 et 12 jours ouvrés (réseau : 1 à 5) | délai médian et nombre de retards hors norme       |
+| Histoire                 | Paramètre semé                                                                                                                                                                                      | Ce que le tableau de bord montre                                                           |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Marseille, la marge fond | à partir de janvier 2026, le commercial C26 prend 45 % des lignes de l'agence et accorde des remises de 18 à 30 % (réseau : 0 à 10 %)                                                               | CA au-dessus de l'objectif, taux de marge en chute                                         |
+| Rennes, sous l'objectif  | l'informatique de Rennes baisse de 40 % en 2026 par rapport à 2025, les autres catégories sont stables                                                                                              | taux d'atteinte le plus bas du réseau                                                      |
+| Lille, la croissance     | CA de Lille de janvier à septembre 2026 supérieur de 25 % à celui de 2025                                                                                                                           | plus forte évolution du réseau                                                             |
+| Strasbourg, les retards  | à partir de mars 2026, délai de livraison de Strasbourg tiré entre 6 et 12 jours ouvrés (réseau : 1 à 5), et 8 % de ses lignes de mars à juillet en rupture, livrées 40 à 60 jours ouvrés plus tard | délai médian et nombre de retards hors norme ; moyenne tirée vers le haut par les ruptures |
+
+Aucune livraison n'est postérieure au 9 octobre 2026, date de l'export : une rupture de fin de
+période est plafonnée à cette date. Les objectifs suivent la règle d'un contrôleur de gestion :
+l'objectif d'un mois de 2025 est le CA réalisé du mois à ± 6 % près, celui d'un mois de 2026 le
+CA réalisé du même mois de 2025 majoré de 5 %, arrondis à la centaine. Le taux d'atteinte 2026
+d'une agence vaut donc environ son évolution sur un an, divisée par 1,05.
 
 ### 4.5 Les classeurs de reprise
 
 - **Reprise 1** (`B3-01_reprise_acte_2.xlsx`) : `Commandes` sans F1 à F5 (corrigées), sans les
   doublons F3, sans les lignes H1, H2, H3, S1, S2 et S3, déplacées dans `Quarantaine` avec une
-  colonne `motif` ; référentiels inchangés, `Clients` avec ses doublons S4 signalés.
+  colonne `motif` ; référentiels inchangés, `Clients` avec une colonne `doublon_probable` qui
+  porte, pour chaque client d'une paire S4, le `client_id` de son jumeau (vide sinon).
 - **Reprise 2** (`B3-01_reprise_acte_3.xlsx`) : reprise 1, plus le tableau structuré
   `T_Commandes` et ses colonnes `annee`, `region`, `categorie`, `cout`, `marge`,
   `delai_ouvre`, `date_promise`, `en_retard`, écrites en formules avec leur valeur. Pas de TCD :
@@ -733,30 +741,56 @@ versionné ni servi, et sert à vérifier que les formules enseignées rendent l
 ### 5.1 Les valeurs attendues
 
 Chaque valeur est calculée par le générateur à la première génération, recopiée dans le contenu
-et dans le tableau ci-dessous, puis recalculée par `b3-01.cours.spec.ts` à partir de la seule
-graine. Toute régénération qui change une valeur doit la mettre à jour aux trois endroits.
+et dans le tableau ci-dessous, puis recalculée par `b3-01.donnees.spec.ts` à partir de la seule
+graine (20 261 013). Toute régénération qui change une valeur doit la mettre à jour aux trois
+endroits. Les valeurs vivent dans `b3-01.donnees.ts` ; le générateur, ses paramètres et le
+recalcul à la sémantique d'Excel vivent sous `test/helpers/cours-b3-01/`.
 
-| Question                         | Définition exacte                                                                                          |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `b3-01-a1-lignes-commande`       | lignes du brut où `n_commande` = C-10234 (3)                                                               |
-| `b3-01-a1-lignes-uniques`        | lignes du brut moins les 46 doublons F3                                                                    |
-| `b3-01-a1-ca-total`              | somme de `ca_ht` converti, lignes uniques, F4 non recalculées, arrondie à l'euro                           |
-| `b3-01-a1-villes`                | valeurs distinctes de `NOMPROPRE(SUPPRESPACE(ville))` sur les lignes uniques                               |
-| `b3-01-a1-a-verifier`            | lignes uniques signalées par la colonne `controle` sur les dates brutes (85, § 4.3)                        |
-| `b3-01-a2-ca-rennes-info`        | reprise 1, AG06, catégorie Informatique, `date_commande` de janvier à septembre 2026                       |
-| `b3-01-a2-remises-marseille`     | reprise 1, AG09, `remise` > 0,15, toutes dates                                                             |
-| `b3-01-a2-ca-ouest`              | reprise 1, région Ouest, janvier à septembre 2026                                                          |
-| `b3-01-a2-delai-strasbourg`      | médiane de `NB.JOURS.OUVRES(date_commande;date_livraison) − 1`, AG12, 2026                                 |
-| `b3-01-a2-retards`               | lignes 2026 où `date_livraison` > `SERIE.JOUR.OUVRE(date_commande;5)`                                      |
-| `b3-01-a2-taux-marge`            | `SOMMEPROD(quantite;prix_unitaire_ht×(1−remise)−cout_unitaire) ÷ SOMME(ca_ht)`, 2026, en %                 |
-| `b3-01-a2-part-info-rennes`      | CA Informatique de AG06 ÷ CA de AG06, janvier à septembre 2026, en %                                       |
-| `b3-01-a2-meilleur-trimestre`    | trimestre civil au plus fort CA du réseau, T1 2025 à T3 2026                                               |
-| `b3-01-a3-agences-sous-objectif` | agences dont le CA de janvier à septembre 2026 est sous la somme de leurs objectifs mensuels de la période |
-| `b3-01-a3-atteinte-rennes`       | CA ÷ objectif cumulé de AG06, janvier à septembre 2026, en %                                               |
-| `b3-01-a3-ca-2026`               | CA du réseau, janvier à septembre 2026                                                                     |
-| `b3-01-a3-evolution`             | CA janvier-septembre 2026 ÷ CA janvier-septembre 2025 − 1, en %                                            |
-| `b3-01-a3-marge-marseille`       | taux de marge de AG09, janvier à septembre 2026, en %                                                      |
-| `b3-01-a3-quarantaine`           | lignes de l'onglet `Quarantaine` de la reprise 1 : H1 + H2 + H3 + S1 + S2 + S3 = 60                        |
+| Question                         | Définition exacte                                                                                          |    Valeur |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------: |
+| `b3-01-a1-lignes-commande`       | lignes du brut où `n_commande` = C-10234                                                                   |         3 |
+| `b3-01-a1-lignes-uniques`        | lignes du brut (4 144) moins les 46 doublons F3                                                            |     4 098 |
+| `b3-01-a1-ca-total`              | somme de `ca_ht` converti, lignes uniques, F4 non recalculées, arrondie à l'euro                           | 1 340 208 |
+| `b3-01-a1-villes`                | valeurs distinctes de `NOMPROPRE(SUPPRESPACE(ville))` sur les lignes uniques                               |        48 |
+| `b3-01-a1-a-verifier`            | lignes uniques signalées par la colonne `controle` sur les dates brutes (§ 4.3)                            |        85 |
+| `b3-01-a2-ca-rennes-info`        | reprise 1, AG06, catégorie Informatique, `date_commande` de janvier à septembre 2026                       |     8 342 |
+| `b3-01-a2-remises-marseille`     | reprise 1, AG09, `remise` > 0,15, toutes dates                                                             |        66 |
+| `b3-01-a2-ca-ouest`              | reprise 1, région Ouest, janvier à septembre 2026                                                          |    77 850 |
+| `b3-01-a2-delai-strasbourg`      | médiane de `NB.JOURS.OUVRES(date_commande;date_livraison) − 1`, AG12, 2026                                 |         8 |
+| `b3-01-a2-retards`               | lignes 2026 où `date_livraison` > `SERIE.JOUR.OUVRE(date_commande;5)`                                      |        99 |
+| `b3-01-a2-taux-marge`            | `SOMMEPROD(quantite;prix_unitaire_ht×(1−remise)−cout_unitaire) ÷ SOMME(ca_ht)`, 2026, en %                 |      32,0 |
+| `b3-01-a2-part-info-rennes`      | CA Informatique de AG06 ÷ CA de AG06, janvier à septembre 2026, en %                                       |      27,2 |
+| `b3-01-a2-meilleur-trimestre`    | trimestre civil au plus fort CA du réseau, T1 2025 à T3 2026                                               |   T4 2025 |
+| `b3-01-a3-agences-sous-objectif` | agences dont le CA de janvier à septembre 2026 est sous la somme de leurs objectifs mensuels de la période |         3 |
+| `b3-01-a3-atteinte-rennes`       | CA ÷ objectif cumulé de AG06, janvier à septembre 2026, en %                                               |      79,0 |
+| `b3-01-a3-ca-2026`               | CA du réseau, janvier à septembre 2026                                                                     |   575 046 |
+| `b3-01-a3-evolution`             | CA janvier-septembre 2026 ÷ CA janvier-septembre 2025 − 1, en %                                            |       8,6 |
+| `b3-01-a3-marge-marseille`       | taux de marge de AG09, janvier à septembre 2026, en %                                                      |      26,9 |
+| `b3-01-a3-quarantaine`           | lignes de l'onglet `Quarantaine` de la reprise 1 : H1 + H2 + H3 + S1 + S2 + S3                             |        60 |
+
+Les valeurs-pièges sont recalculées de la même façon, en reproduisant l'erreur de la confusion :
+
+| Question                         | Confusion                            | Erreur reproduite                                          |     Piège |
+| -------------------------------- | ------------------------------------ | ---------------------------------------------------------- | --------: |
+| `b3-01-a1-lignes-uniques`        | `doublons-supprimes-sur-une-colonne` | doublons supprimés sur `n_commande` seule                  |     1 618 |
+| `b3-01-a1-ca-total`              | `texte-pris-pour-nombre`             | `SOMME` qui ignore les montants restés en texte            | 1 286 319 |
+| `b3-01-a1-villes`                | `casse-non-normalisee`               | villes distinctes sans `NOMPROPRE` ni `SUPPRESPACE`        |        83 |
+| `b3-01-a1-a-verifier`            | `suspect-corrige-sans-validation`    | dates F5 et S1 converties par `DATEVAL` avant le contrôle  |        39 |
+| `b3-01-a2-delai-strasbourg`      | `jours-calendaires-pour-ouvres`      | médiane de `date_livraison − date_commande`                |        11 |
+| `b3-01-a2-delai-strasbourg`      | `valeur-extreme-ignoree`             | moyenne au lieu de la médiane, au dixième                  |       9,5 |
+| `b3-01-a2-retards`               | `jours-calendaires-pour-ouvres`      | livraison après `date_commande + 5`                        |       481 |
+| `b3-01-a2-taux-marge`            | `moyenne-simple-des-taux`            | moyenne des taux de marge des lignes                       |      35,4 |
+| `b3-01-a2-part-info-rennes`      | `pourcentage-du-mauvais-total`       | CA Informatique de AG06 ÷ CA du réseau                     |       1,5 |
+| `b3-01-a3-agences-sous-objectif` | `objectif-annuel-pour-cumul`         | CA 2026 comparé à tous les objectifs de l'agence (21 mois) |        12 |
+| `b3-01-a3-atteinte-rennes`       | `objectif-annuel-pour-cumul`         | CA 2026 de AG06 ÷ tous ses objectifs (21 mois)             |      33,8 |
+| `b3-01-a3-evolution`             | `evolution-sur-annee-pleine`         | CA janvier-septembre 2026 ÷ CA de toute l'année 2025 − 1   |     −22,1 |
+| `b3-01-a3-marge-marseille`       | `moyenne-simple-des-taux`            | moyenne des taux de marge des lignes de AG09               |      28,7 |
+
+Le spec vérifie aussi les quatre histoires (§ 4.4) sur le jeu généré : Rennes au taux d'atteinte
+le plus bas (79 %), Lille à la plus forte évolution (+23,1 %), Marseille à la plus forte baisse
+de marge (32,3 % en 2025, 26,9 % en 2026) avec un objectif atteint, Strasbourg au délai médian
+2026 le plus long (8 jours ouvrés contre 2 en 2025), et un meilleur trimestre devant le suivant
+de plus de 2 %.
 
 Convention du délai : `NB.JOURS.OUVRES` compte les deux bornes ; le délai d'une commande livrée
 le jour ouvré suivant vaut 1, d'où le `− 1`. La trace écrite A2-06 et l'exemple de A2-05
